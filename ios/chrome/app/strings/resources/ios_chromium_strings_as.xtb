@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">আপোনাৰ Chromium ডেটা ছিংক কৰক</translation>
 <translation id="2592940277904433508">Chromium ব্যৱহাৰ কৰাটো অব্যাহত ৰাখক</translation>
 <translation id="2607609479243848905">আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰিছে অথবা এই ছেটিংটো সলাব বিচাৰে, <ph name="BEGIN_LINK" />আপোনাৰ একাউণ্টৰ Chromiumৰ ডেটা মচক<ph name="END_LINK" />।</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromiumএ এই পেকেজটো নতুন টেবৰ পৃষ্ঠাখনত ট্ৰেক কৰাত সহায় কৰিব।}one{Chromiumএ এই পেকেজসমূহ নতুন টেবৰ পৃষ্ঠাখনত ট্ৰেক কৰাত সহায় কৰিব।}other{Chromiumএ এই পেকেজসমূহ নতুন টেবৰ পৃষ্ঠাখনত ট্ৰেক কৰাত সহায় কৰিব।}}</translation>
 <translation id="2650312721222849884">আপুনি Chromium ব্যৱহাৰ কৰা সকলো ডিভাইচৰ পৰা নিজৰ টেবসমূহ চাবলৈ ছিংক অন কৰক</translation>
 <translation id="2684230048001240293">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ টেব, পাছৱৰ্ড আৰু পৰিশোধ বিষয়ক তথ্য ছিংক কৰিবলৈ Chromiumক ডিফ’ল্ট হিচাপে ছেট কৰক</translation>
 <translation id="2730884209570016437">অন্য কোনো এপ্লিকেশ্বনে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰি থকাৰ বাবে Chromiumএ সেয়া ব্যৱহাৰ কৰিব নোৱাৰে</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">Chromium একেবাৰে শেহতীয়া অৱস্থাত আছে</translation>
 <translation id="3044857325852340337">Chromiumৰ ডেটা মচা হৈছে</translation>
 <translation id="3054480780637153380">iOSত Chromiumৰ ছেটিং খোলক আৰু তাৰ পাছত "ডিফ’ল্ট ব্ৰাউজাৰ এপ"ত টিপক আৰু Chromium বাছনি কৰক।</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromiumএ আপোনাক এই পেকেজটো নতুন টেবৰ পৃষ্ঠাখনত ট্ৰেক কৰাত সহায় কৰিব পাৰে।}one{Chromiumএ আপোনাক এই পেকেজসমূহ নতুন টেবৰ পৃষ্ঠাখনত ট্ৰেক কৰাত সহায় কৰিব পাৰে।}other{Chromiumএ আপোনাক এই পেকেজসমূহ নতুন টেবৰ পৃষ্ঠাখনত ট্ৰেক কৰাত সহায় কৰিব পাৰে।}}</translation>
 <translation id="3102849287235003384">আটাইবোৰ ৱেবছাইটত আপোনাৰ Google একাউণ্টৰ পৰা ছাইন আউট কৰিবলৈ <ph name="BEGIN_LINK" />Chromiumৰ পৰা ছাইন আউট কৰক<ph name="END_LINK" />।</translation>
 <translation id="3115956258722352278">Chromiumক আপোনাৰ ডি’ফল্ট ব্ৰাউজাৰ কৰিবনে?</translation>
 <translation id="3242612358525156339">আপোনাৰ ডিভাইচৰ ছেটিঙৰ পৰা "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" খোলক আৰু "Chromium" বাছনি কৰক</translation>

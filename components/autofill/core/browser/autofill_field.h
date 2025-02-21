@@ -410,6 +410,21 @@ class AutofillField : public FormFieldData {
   void set_was_focused(bool was_focused) { was_focused_ = was_focused; }
   bool was_focused() const { return was_focused_; }
 
+  void set_ml_supported_types(const FieldTypeSet& s) {
+    ml_supported_types_ = s;
+  }
+
+  const std::optional<FieldTypeSet>& ml_supported_types() const {
+    return ml_supported_types_;
+  }
+
+#if defined(UNIT_TEST)
+  const std::array<FieldType, static_cast<size_t>(HeuristicSource::kMaxValue) + 1>&
+  local_type_predictions() const {
+    return local_type_predictions_;
+  }
+#endif
+
  private:
   explicit AutofillField(FieldSignature field_signature);
 
@@ -580,6 +595,10 @@ class AutofillField : public FormFieldData {
 
   // True iff the field was ever focused.
   bool was_focused_ = false;
+
+  // Field types that the ML model is able to output.
+  // Assigned by the model when it has classified the field.
+  std::optional<FieldTypeSet> ml_supported_types_;
 };
 
 }  // namespace autofill

@@ -402,7 +402,8 @@ class CONTENT_EXPORT PrefetchContainer {
   // Allows for |PrefetchCookieListener|s to be reigsitered for
   // `GetCurrentSinglePrefetchToPrefetch()`.
   void RegisterCookieListener(network::mojom::CookieManager* cookie_manager);
-  void StopAllCookieListeners();
+  void PauseAllCookieListeners();
+  void ResumeAllCookieListeners();
 
   // The network context used to make network requests for the next prefetch.
   PrefetchNetworkContext* GetOrCreateNetworkContextForCurrentPrefetch();

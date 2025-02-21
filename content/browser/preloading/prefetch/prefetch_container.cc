@@ -1081,10 +1081,24 @@ void PrefetchContainer::RegisterCookieListener(
       this_prefetch.url_, cookie_manager);
 }
 
-void PrefetchContainer::StopAllCookieListeners() {
+void PrefetchContainer::PauseAllCookieListeners() {
+  // TODO(crbug.com/377440445): Consider whether we actually need to
+  // pause/resume all single prefetch's cookie listener during each single
+  // prefetch's isolated cookie copy.
   for (const auto& single_prefetch : redirect_chain_) {
     if (single_prefetch->cookie_listener_) {
-      single_prefetch->cookie_listener_->StopListening();
+      single_prefetch->cookie_listener_->PauseListening();
+    }
+  }
+}
+
+void PrefetchContainer::ResumeAllCookieListeners() {
+  // TODO(crbug.com/377440445): Consider whether we actually need to
+  // pause/resume all single prefetch's cookie listener during each single
+  // prefetch's isolated cookie copy.
+  for (const auto& single_prefetch : redirect_chain_) {
+    if (single_prefetch->cookie_listener_) {
+      single_prefetch->cookie_listener_->ResumeListening();
     }
   }
 }
@@ -1120,9 +1134,17 @@ bool PrefetchContainer::Reader::IsIsolatedCookieCopyInProgress() const {
 void PrefetchContainer::Reader::OnIsolatedCookieCopyStart() const {
   DCHECK(!IsIsolatedCookieCopyInProgress());
 
-  // We don't want any of the cookie listeners for this prefetch to pick up
-  // changes from the copy.
-  prefetch_container_->StopAllCookieListeners();
+  // We should temporarily ignore the cookie monitoring by
+  // `PrefetchCookieListener` during the isolated cookie is written to the
+  // default network context.
+  // `PrefetchCookieListener` should monitor whether the cookie is changed from
+  // what we stored in isolated network context when prefetching so that we can
+  // avoid serving the stale prefetched content. Currently
+  // `PrefetchCookieListener` will also catch isolated cookie copy as a cookie
+  // change. To handle this event as a false positive (as the cookie isn't
+  // changed from what we stored on prefetching), we can pause the lisner during
+  // copying, keeping the prefetch servable.
+  prefetch_container_->PauseAllCookieListeners();
 
   GetCurrentSinglePrefetchToServe().cookie_copy_status_ =
       SinglePrefetch::CookieCopyStatus::kInProgress;
@@ -1141,6 +1163,10 @@ void PrefetchContainer::Reader::OnIsolatedCookiesReadCompleteAndWriteStart()
 
 void PrefetchContainer::Reader::OnIsolatedCookieCopyComplete() const {
   DCHECK(IsIsolatedCookieCopyInProgress());
+
+  // Resumes `PrefetchCookieListener` so that we can keep monitoring the
+  // cookie change for the prefetch, which may be served again.
+  prefetch_container_->ResumeAllCookieListeners();
 
   const auto& this_prefetch = GetCurrentSinglePrefetchToServe();
 
@@ -2035,7 +2061,7 @@ void PrefetchContainer::OnInitialPrefetchFailedIneligible(
   CHECK(redirect_chain_.size() == 1);
   CHECK_NE(eligibility, PreloadingEligibility::kEligible);
   if (request_status_listener_) {
-    request_status_listener_->OnPrefetchStartFailed();
+    request_status_listener_->OnPrefetchStartFailedGeneric();
   }
 }
 

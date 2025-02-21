@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Kártyák mentése…</translation>
 <translation id="1060136083665017312">Játékrendszerek és konzolok</translation>
 <translation id="1060320201901229167">Kaku 5 boríték</translation>
-<translation id="10614374240317010">Az alábbi oldalakról soha ne mentsen jelszavakat</translation>
 <translation id="1062407476771304334">Csere</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Keresőmotor részletei</translation>
@@ -263,7 +262,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1432187715652018471">Ez az oldal szolgáltatáskezelőt kíván telepíteni.</translation>
 <translation id="1432581352905426595">Keresőmotorok beállítása</translation>
 <translation id="1433225466058025572">Próbálja meg ismét áthelyezni a fájlokat</translation>
-<translation id="1435940442311036198">Azonosítókulcs használata másik eszközön</translation>
 <translation id="1436185428532214179">Engedélyt kérhet arra, hogy szerkeszthesse az Ön eszközén található fájlokat és mappákat</translation>
 <translation id="1442386063175183758">Jobb oldalon kihajtható</translation>
 <translation id="1442987760062738829">Lyukasztás</translation>
@@ -357,7 +355,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="159274626729231974">filmfesztiválok</translation>
 <translation id="1593359183944365958">270 fok</translation>
 <translation id="1594030484168838125">Kiválaszt</translation>
-<translation id="1598816256585174656">Azonosítókulcs a Windows Hello szolgáltatásból</translation>
 <translation id="1599199147673445968">Új kártya? <ph name="BEGIN_LINK" />Adja meg a kártya adatait<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Szépség és fitnesz</translation>
 <translation id="160851722280695521">A Dino Run játék elindítása a Chrome-ban</translation>
@@ -469,7 +466,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Engedélyezi az internetes alkalmazások telepítését?</translation>
 <translation id="1791415068765905273">Az összes összehasonlító táblázat megjelenítése</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt az adatai, az adatvédelem és a biztonság kezeléséhez a Google-fiókjában</translation>
 <translation id="1793473605302304726">Részletfizetés</translation>
 <translation id="1793631236004319016">Utoljára használva ennyi ideje: <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -2124,7 +2120,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4754461935447132332">Nincs engedélyezve nem biztonságos webhelyeknél</translation>
 <translation id="4756388243121344051">&amp;Előzmények</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Azonosítókulcs az Ön Chrome-profiljából</translation>
 <translation id="4757993714154412917">Megtévesztő webhelyen adta meg jelszavát. Fiókjai védelmében a Chromium azt javasolja, hogy ellenőrizze mentett jelszavait.</translation>
 <translation id="4758311279753947758">Névjegyadatok hozzáadása</translation>
 <translation id="4761326898079498987">További részleteket itt találhat</translation>
@@ -2697,7 +2692,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5764920692828389743">Küldés ide: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">A kézbesítési módok és követelmények megtekintéséhez válassza ki a címet</translation>
 <translation id="57689295674415555">Nincs kitöltve a virtuális kártya száma?</translation>
-<translation id="5772086939108830423">Azonosítókulcs használata másik eszközön</translation>
 <translation id="5776313857861697733">Prioritás</translation>
 <translation id="577804500166306874">Az eredmény betöltése folyamatban van</translation>
 <translation id="5781136890105823427">Kísérlet engedélyezve</translation>
@@ -2828,7 +2822,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (szinkronizálva)</translation>
 <translation id="6028591542479806248">Mobilos és e-mailes értesítések kezelése</translation>
 <translation id="6028833024483927901">Világkonyha</translation>
-<translation id="6030251660719692307">Azonosítókulcs a Google Jelszókezelőből</translation>
 <translation id="603068602130820122">Két kapocs a jobb oldalon</translation>
 <translation id="6032524144326295339">2. postaláda</translation>
 <translation id="6032955021262906325">Kötés a bal oldalon</translation>
@@ -3436,7 +3429,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7096937462164235847">Igazolatlan azonosságú webhely.</translation>
 <translation id="7102554173784142865">A Chrome dinós játékának elindítása</translation>
 <translation id="7102760431686146931">Főzőeszközök és étkészletek</translation>
-<translation id="7105998430540165694">Azonosítókulcs az iCloud-kulcstárból</translation>
 <translation id="7106762743910369165">Böngészőjét a szervezete kezeli.</translation>
 <translation id="7107249414147762907">A PDF nem áll rendelkezésre. Nincs kinyert szöveg.</translation>
 <translation id="7107427078069498123">SHA-256-ujjlenyomatok</translation>
@@ -4528,7 +4520,6 @@ További részletek:
 <translation id="9040341831873780534">Itt találja a feltételeket</translation>
 <translation id="9042617223719777575">Nagy kapacitás</translation>
 <translation id="9042827002460091668">Ellenőrizze az internetkapcsolatot, és próbálja újra</translation>
-<translation id="9044359186343685026">Touch ID használata</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Mikrofonok (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Ezen műveletek elvégzéséhez a következő értékre kell állítani a(z) <ph name="POLICY_NAME" /> házirendet: <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

@@ -642,6 +642,11 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         HeuristicSource s = static_cast<HeuristicSource>(i);
         field->set_heuristic_type(s, cached_field->heuristic_type(s));
       }
+      std::optional<FieldTypeSet> cached_ml_types =
+          cached_field->ml_supported_types();
+      if (cached_ml_types.has_value()) {
+        field->set_ml_supported_types(cached_ml_types.value());
+      }
       field->SetHtmlType(cached_field->html_type(), cached_field->html_mode());
       if (reason == RetrieveFromCacheReason::kFormCacheUpdateWithoutParsing) {
         // TODO: crbug.com/392179445 - Also do this for `kFormImport`, i.e.,

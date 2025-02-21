@@ -41,6 +41,7 @@ class ColorSpace;
 }  // namespace gfx
 
 namespace gpu {
+class SharedContextState;
 struct Mailbox;
 
 // Implementation of SharedImageBacking that holds buffer (front buffer/back
@@ -143,6 +144,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
     return dxgi_shared_handle_state_ &&
            dxgi_shared_handle_state_->has_keyed_mutex();
   }
+
+  bool SupportsDeferredGraphiteSubmit() const;
 
   // Holds a gles2::TexturePassthrough and corresponding egl image.
   class GLTextureHolder : public base::RefCounted<GLTextureHolder> {
@@ -253,6 +256,12 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   std::string debug_label,
                   Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource);
 
+  bool use_cross_device_synchronization() const {
+    // Cross device sync is needed if we have DXGI shared handle or dcomp
+    // texture.
+    return dxgi_shared_handle_state_ != nullptr || dcomp_texture_ != nullptr;
+  }
+
   bool use_cross_device_fence_synchronization() const {
     // Fences are needed if we're sharing between devices and there's no keyed
     // mutex for synchronization.
@@ -284,6 +293,28 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // DComp visual tree that `dcomp_texture_` is attached to.
   void BeginDCompTextureAccess();
   void EndDCompTextureAccess();
+
+  void CheckForDawnDeviceLoss(const wgpu::Device& device,
+                              const wgpu::SharedTextureMemory& texture_memory)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  void InitPersistentGraphiteDawnAccess(
+      scoped_refptr<SharedContextState> context_state,
+      const wgpu::Device device,
+      const wgpu::SharedTextureMemory& shared_texture_memory,
+      const std::vector<wgpu::TextureFormat>& view_formats)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  wgpu::Texture GetOrCreateDawnTexture(
+      const wgpu::Device device,
+      const wgpu::SharedTextureMemory& shared_texture_memory,
+      wgpu::TextureUsage wgpu_usage,
+      wgpu::TextureUsage wgpu_internal_usage,
+      const std::vector<wgpu::TextureFormat>& view_formats)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void NotifyGraphiteAboutInitializedStatus() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Flush pending graphite submits. It will call Graphite's Context::submit.
+  void FlushGraphiteCommandsIfNeeded() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Get a list of fences to wait on in BeginAccessD3D11/Dawn. If the waiting
   // device is backed by D3D11 (ANGLE or Dawn), |wait_d3d11_device| can be
@@ -415,6 +446,14 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   std::optional<base::WaitableEventWatcher> pending_copy_event_watcher_
       GUARDED_BY(lock_);
+
+  // Persistent Graphite's Dawn's access. Calls Dawn's BeginAccess in ctor and
+  // EndAccess in dtor. This is only used when the backing is not shared across
+  // devices. Since no cross device synchronization is needed, it is also safe
+  // to keep this scoped access indefinitely as long as the backing is alive.
+  class PersistentGraphiteDawnAccess;
+  std::unique_ptr<PersistentGraphiteDawnAccess>
+      persistent_graphite_dawn_access_;
 
   base::WeakPtrFactory<D3DImageBacking> weak_ptr_factory_{this};
 };

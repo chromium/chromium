@@ -1333,6 +1333,27 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, NonInteractiveSuccess) {
       1);
 }
 
+IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
+                       NonInteractiveSuccessWaitForRefreshTokensLoaded) {
+  SignIn("primary@example.com");
+  scoped_refptr<FakeGetAuthTokenFunction> func(new FakeGetAuthTokenFunction());
+  scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
+  func->set_extension(extension.get());
+  func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
+
+  identity_test_env()->ResetToAccountsNotYetLoadedFromDiskState();
+  RunFunctionAsync(func.get(), "[{\"interactive\": true}]");
+
+  // Allow the function to start asynchronously.
+  base::RunLoop().RunUntilIdle();
+  identity_test_env()->ReloadAccountsFromDisk();
+
+  std::string access_token;
+  std::set<std::string> granted_scopes;
+  WaitForGetAuthTokenResults(func.get(), &access_token, &granted_scopes);
+  EXPECT_EQ(access_token, kAccessToken);
+}
+
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, InteractiveLoginCanceled) {
   scoped_refptr<FakeGetAuthTokenFunction> func(new FakeGetAuthTokenFunction());
   func->set_extension(CreateExtension(CLIENT_ID | SCOPES));

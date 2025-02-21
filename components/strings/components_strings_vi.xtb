@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Đang lưu thẻ...</translation>
 <translation id="1060136083665017312">Hệ thống và máy chơi trò chơi</translation>
 <translation id="1060320201901229167">Phong bì Kaku 5</translation>
-<translation id="10614374240317010">Không bao giờ lưu</translation>
 <translation id="1062407476771304334">Thay thế</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Thông tin chi tiết về công cụ tìm kiếm</translation>
@@ -263,7 +262,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1432187715652018471">trang muốn cài đặt trình xử lý dịch vụ.</translation>
 <translation id="1432581352905426595">Quản lý công cụ tìm kiếm</translation>
 <translation id="1433225466058025572">Hãy thử di chuyển các tệp lần nữa</translation>
-<translation id="1435940442311036198">Sử dụng khoá đăng nhập trên một thiết bị khác</translation>
 <translation id="1436185428532214179">Trang web có thể yêu cầu chỉnh sửa các tệp và thư mục trên thiết bị của bạn</translation>
 <translation id="1442386063175183758">Gấp dạng cửa bên phải</translation>
 <translation id="1442987760062738829">Đục lỗ</translation>
@@ -357,7 +355,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="159274626729231974">Liên hoan phim</translation>
 <translation id="1593359183944365958">270 độ</translation>
 <translation id="1594030484168838125">Chọn</translation>
-<translation id="1598816256585174656">Khoá truy cập từ Windows Hello</translation>
 <translation id="1599199147673445968">Bạn sử dụng thẻ mới? <ph name="BEGIN_LINK" />Nhập chi tiết thẻ<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Làm đẹp và thể hình</translation>
 <translation id="160851722280695521">Chơi trò chơi khủng long trên Chrome</translation>
@@ -469,7 +466,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Cài đặt ứng dụng web?</translation>
 <translation id="1791415068765905273">Hiện tất cả các bảng so sánh</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để quản lý thông tin, quyền riêng tư và chế độ bảo mật cho Tài khoản Google của bạn</translation>
 <translation id="1793473605302304726">Thanh toán dần</translation>
 <translation id="1793631236004319016">Sử dụng lần gần đây nhất vào <ph name="NUM_HOURS_MINUTES_SECONDS" /> trước</translation>
@@ -2127,7 +2123,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4754461935447132332">Không được phép đối với các trang web không an toàn</translation>
 <translation id="4756388243121344051">&amp;Lịch sử</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Khoá truy cập từ Hồ sơ của bạn trên Chrome</translation>
 <translation id="4757993714154412917">Bạn vừa nhập mật khẩu vào một trang web lừa đảo. Để bảo mật tài khoản của mình, bạn nên kiểm tra các mật khẩu đã lưu trên Chromium.</translation>
 <translation id="4758311279753947758">Thêm thông tin liên hệ</translation>
 <translation id="4761326898079498987">Xem để biết thêm chi tiết</translation>
@@ -2700,7 +2695,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5764920692828389743">Gửi tới <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Để xem các yêu cầu và phương thức phân phối, hãy chọn một địa chỉ</translation>
 <translation id="57689295674415555">Bạn chưa điền số thẻ ảo?</translation>
-<translation id="5772086939108830423">Sử dụng khoá đăng nhập trên một thiết bị khác</translation>
 <translation id="5776313857861697733">Mức độ ưu tiên</translation>
 <translation id="577804500166306874">Đang tải kết quả</translation>
 <translation id="5781136890105823427">Đã bật tính năng thử nghiệm</translation>
@@ -2831,7 +2825,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (được đồng bộ hóa)</translation>
 <translation id="6028591542479806248">Quản lý thông báo qua email và thiết bị di động</translation>
 <translation id="6028833024483927901">Ẩm thực thế giới</translation>
-<translation id="6030251660719692307">Khoá truy cập từ Trình quản lý mật khẩu của Google</translation>
 <translation id="603068602130820122">Dập 2 ghim bên phải</translation>
 <translation id="6032524144326295339">Hộp thư 2</translation>
 <translation id="6032955021262906325">Đóng gáy bên trái</translation>
@@ -3439,7 +3432,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7096937462164235847">Danh tính của trang web này chưa được xác minh.</translation>
 <translation id="7102554173784142865">Chơi trò chơi khủng long trên Chrome</translation>
 <translation id="7102760431686146931">Dụng cụ nấu ăn và dụng cụ ăn</translation>
-<translation id="7105998430540165694">Khoá truy cập từ Chuỗi khoá iCloud</translation>
 <translation id="7106762743910369165">Trình duyệt này do tổ chức của bạn quản lý</translation>
 <translation id="7107249414147762907">Không thể truy cập tệp PDF này. Không có văn bản nào được trích xuất</translation>
 <translation id="7107427078069498123">Vân tay số SHA-256</translation>
@@ -4530,7 +4522,6 @@ Thông tin chi tiết bổ sung:
 <translation id="9040341831873780534">Xem điều khoản tại đây</translation>
 <translation id="9042617223719777575">Khay sức chứa lớn</translation>
 <translation id="9042827002460091668">Kiểm tra kết nối Internet rồi thử lại</translation>
-<translation id="9044359186343685026">Sử dụng Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Micrô (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Những hành động sau yêu cầu bạn phải đặt chính sách <ph name="POLICY_NAME" /> thành <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

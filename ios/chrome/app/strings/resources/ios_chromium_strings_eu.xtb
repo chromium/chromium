@@ -74,7 +74,6 @@ Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datua
 <translation id="2517624234762908348">Sinkronizatu Chromium datuak</translation>
 <translation id="2592940277904433508">Jarraitu Chromium erabiltzen</translation>
 <translation id="2607609479243848905">Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />ezabatu kontuko Chromium-eko datuak<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium-ek Fitxa berria orrian pakete honen jarraipena egiten lagunduko dizu.}other{Chromium-ek Fitxa berria orrian pakete hauen jarraipena egiten lagunduko dizu.}}</translation>
 <translation id="2650312721222849884">Chromium erabiltzen duzun gailu guztietan zure fitxak eskura izateko, aktibatu sinkronizazioa</translation>
 <translation id="2684230048001240293">Ezarri Chromium arakatzaile lehenetsi gisa fitxak, pasahitzak eta ordainketa-informazioa gailu guztietan sinkronizatzeko</translation>
 <translation id="2730884209570016437">Chromium-ek ezin du erabili kamera, beste aplikazio bat ari delako hura erabiltzen</translation>
@@ -89,7 +88,6 @@ Chromium-en erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikust
 <translation id="2977470724722393594">Eguneratuta dago Chromium</translation>
 <translation id="3044857325852340337">Ezabatu Chromium-eko datuak</translation>
 <translation id="3054480780637153380">Ireki Chromium-en ezarpenak iOS-en, sakatu "Arakatzaile lehenetsia" eta hautatu Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium-ek Fitxa berria orrian pakete honen jarraipena egiten lagundu ahal dizu.}other{Chromium-ek Fitxa berria orrian pakete hauen jarraipena egiten lagundu ahal dizu.}}</translation>
 <translation id="3102849287235003384">Google-ko kontuko saioa webgune guztietan amaitzeko, <ph name="BEGIN_LINK" />amaitu Chromium-eko saioa<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium arakatzaile lehenetsi bihurtu nahi duzu?</translation>
 <translation id="3242612358525156339">Gailuaren ezarpenetan, ireki "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" eta hautatu "Chromium"</translation>

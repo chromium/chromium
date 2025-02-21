@@ -74,7 +74,6 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="2517624234762908348">Synkroniser dine Chromium-data</translation>
 <translation id="2592940277904433508">Fortsæt med at bruge Chromium</translation>
 <translation id="2607609479243848905">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />slette Chromium-dataene på din konto<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium hjælper med at spore denne pakke på siden Ny fane.}one{Chromium hjælper med at spore denne pakke på siden Ny fane.}other{Chromium hjælper med at spore disse pakker på siden Ny fane.}}</translation>
 <translation id="2650312721222849884">Aktivér synkronisering for at se dine faner på alle de enheder, hvor du bruger Chromium</translation>
 <translation id="2684230048001240293">Angiv Chromium som standardbrowser for at synkronisere faner, adgangskoder og betalingsoplysninger på alle dine enheder</translation>
 <translation id="2730884209570016437">Chromium kan ikke bruge dit kamera, da det bruges af en anden app</translation>
@@ -89,7 +88,6 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chromium-o
 <translation id="2977470724722393594">Chromium er opdateret</translation>
 <translation id="3044857325852340337">Chromium-dataene er slettet</translation>
 <translation id="3054480780637153380">Åbn Chromium-indstillingerne i iOS, tryk på "Standardapp til browsing", og vælg Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium kan hjælpe dig med at spore denne pakke på siden Ny fane.}one{Chromium kan hjælpe dig med at spore denne pakke på siden Ny fane.}other{Chromium kan hjælpe dig med at spore disse pakker på siden Ny fane.}}</translation>
 <translation id="3102849287235003384">Hvis du vil logge ud af din Google-konto på alle websites, skal du <ph name="BEGIN_LINK" />logge ud af Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Vil du gøre Chromium til din standardbrowser?</translation>
 <translation id="3242612358525156339">Åbn "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" via indstillingerne på din enhed, og vælg "Chromium"</translation>

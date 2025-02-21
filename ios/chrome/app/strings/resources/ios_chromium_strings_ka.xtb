@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">თქვენი Chromium მონაცემების სინქრონიზაცია</translation>
 <translation id="2592940277904433508">Chromium-ის გამოყენების გაგრძელება</translation>
 <translation id="2607609479243848905">საიდუმლო ფრაზის დავიწყების ან ამ პარამეტრის შეცვლის სურვილის შემთხვევაში, <ph name="BEGIN_LINK" />წაშალეთ Chromium მონაცემები თქვენს ანგარიშში<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium დაგეხმარებათ, თვალი ადევნოთ ამ ამანათს ახალი ჩანართის გვერდზე.}other{Chromium დაგეხმარებათ, თვალი ადევნოთ ამ ამანათებს ახალი ჩანართის გვერდზე.}}</translation>
 <translation id="2650312721222849884">იმისთვის, რომ იხილოთ თქვენი ჩანართები ნებისმიერი მოწყობილობიდან, საიდანაც Chromium-ს იყენებთ, ჩართეთ სინქრონიზაცია</translation>
 <translation id="2684230048001240293">დააყენეთ Chromium ნაგულისხმევ ბრაუზერად, რომ თქვენი ჩანართები, პაროლები და საგადახდო ინფორმაცია სინქრონიზებული გქონდეთ თქვენს ყველა მოწყობილობას შორის</translation>
 <translation id="2730884209570016437">Chromium ვერ ისარგებლებს თქვენი კამერით, რადგან მას სხვა აპლიკაცია იყენებს</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">Chromium განახლებულია</translation>
 <translation id="3044857325852340337">Chromium-ის მონაცემების წაშლა</translation>
 <translation id="3054480780637153380">iOS-ში გახსენით Chromium-ის პარამეტრები, შემდეგ შეეხეთ „ბრაუზერის ნაგულისხმევ აპს“ და აირჩიეთ Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium-ს შეუძლია დაგეხმაროთ, თვალი ადევნოთ ამ ამანათს ახალი ჩანართის გვერდზე.}other{Chromium-ს შეუძლია დაგეხმაროთ, თვალი ადევნოთ ამ ამანათებს ახალი ჩანართის გვერდზე.}}</translation>
 <translation id="3102849287235003384">თქვენი Google ანგარიშიდან ყველა ვებსაიტზე რომ გამოხვიდეთ, <ph name="BEGIN_LINK" />გადით Chromium-იდან<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">გსურთ, დააყენოთ Chromium თქვენს ნაგულისხმევ ბრაუზერად?</translation>
 <translation id="3242612358525156339">თქვენი მოწყობილობის პარამეტრებიდან გახსენით „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ და აირჩიეთ „Chromium“</translation>

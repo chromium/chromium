@@ -8,6 +8,8 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
+
 #include "base/time/time.h"
 
 namespace base {
@@ -62,10 +64,10 @@ class DiagnosticsModel {
     // tests.
     virtual int GetId() const = 0;
     // A parse-able ASCII string that indicates what is being tested.
-    virtual std::string GetName() const = 0;
+    virtual std::string_view GetName() const = 0;
     // A human readable string that tells you what is being tested.
     // This is not localized: it is only meant for developer consumption.
-    virtual std::string GetTitle() const = 0;
+    virtual std::string_view GetTitle() const = 0;
     // The result of running the test. If called before the test is ran the
     // answer is TEST_NOT_RUN.
     virtual TestResult GetResult() const = 0;

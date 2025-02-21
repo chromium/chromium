@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Lagrer kort …</translation>
 <translation id="1060136083665017312">Spillsystemer og -konsoller</translation>
 <translation id="1060320201901229167">Kaku 5-konvolutt</translation>
-<translation id="10614374240317010">Aldri lagret</translation>
 <translation id="1062407476771304334">Erstatt</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Søkemotordetaljer</translation>
@@ -263,7 +262,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1432187715652018471">siden vil installere en tjenestebehandler</translation>
 <translation id="1432581352905426595">Administrer søkemotorer</translation>
 <translation id="1433225466058025572">Prøv å flytte filene på nytt</translation>
-<translation id="1435940442311036198">Bruk en passnøkkel på en annen enhet</translation>
 <translation id="1436185428532214179">Kan be om å få redigere filer og mapper på enheten</translation>
 <translation id="1442386063175183758">Høyre vindusfals</translation>
 <translation id="1442987760062738829">Hull</translation>
@@ -357,7 +355,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="159274626729231974">Filmfestivaler</translation>
 <translation id="1593359183944365958">270 grader</translation>
 <translation id="1594030484168838125">Velg</translation>
-<translation id="1598816256585174656">Passnøkkel fra Windows Hello</translation>
 <translation id="1599199147673445968">Nytt kort? <ph name="BEGIN_LINK" />Oppgi kortopplysningene<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Skjønnhet og trening</translation>
 <translation id="160851722280695521">Spill Dino Run-spillet i Chrome</translation>
@@ -469,7 +466,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Vil du installere nettapper?</translation>
 <translation id="1791415068765905273">Vis alle sammenligningstabeller</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere informasjon, personvern og sikkerhet i Google-kontoen din</translation>
 <translation id="1793473605302304726">Kjøp på avbetaling</translation>
 <translation id="1793631236004319016">Sist brukt for <ph name="NUM_HOURS_MINUTES_SECONDS" /> siden.</translation>
@@ -2127,7 +2123,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4754461935447132332">Ikke tillatt for nettsteder som ikke er sikre</translation>
 <translation id="4756388243121344051">&amp;Logg</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Passnøkkel fra Chrome-profilen din</translation>
 <translation id="4757993714154412917">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chromium anbefaler at du sikrer kontoene dine ved å sjekke de lagrede passordene dine.</translation>
 <translation id="4758311279753947758">Legg til kontaktinformasjon</translation>
 <translation id="4761326898079498987">Gjennomgå for å få mer informasjon</translation>
@@ -2260,6 +2255,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4989809363548539747">Dette programtillegget støttes ikke</translation>
 <translation id="4990241977441916452">A2-konvolutt</translation>
 <translation id="4992066212339426712">Slå på lyden</translation>
+<translation id="4994095017621319069">1 fanegruppe er ikke tilgjengelig lenger</translation>
 <translation id="4994348767896109801">Hvorvidt en annonse du ser, er personlig tilpasset, kan avhenge av flere ting, inkludert denne innstillingen, <ph name="BEGIN_LINK_1" />annonseemner<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />innstillingene dine for informasjonskapsler<ph name="END_LINK_2" /> og hvorvidt nettstedet du ser på, viser personlig tilpassede annonser. Finn ut mer om hvordan du <ph name="BEGIN_LINK_3" />administrerer annonsepersonvernet ditt<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Endret:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere nettstedsøk og standard søkemotor</translation>
@@ -2700,7 +2696,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5764920692828389743">Send til <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">For å se leveringsmetoder og -krav, velg en adresse</translation>
 <translation id="57689295674415555">Ble ikke det virtuelle kortnummeret fylt ut?</translation>
-<translation id="5772086939108830423">Bruk en passnøkkel på en annen enhet</translation>
 <translation id="5776313857861697733">Prioritet</translation>
 <translation id="577804500166306874">Resultatet lastes inn</translation>
 <translation id="5781136890105823427">Et eksperiment er slått på</translation>
@@ -2831,7 +2826,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" /> og <ph name="TYPE_3" /> (synkronisert)</translation>
 <translation id="6028591542479806248">Administrer mobilvarsler og e-postvarsler</translation>
 <translation id="6028833024483927901">Internasjonal mat</translation>
-<translation id="6030251660719692307">Passnøkkel fra Google Passordlagring</translation>
 <translation id="603068602130820122">To stifter høyre</translation>
 <translation id="6032524144326295339">Postkasse 2</translation>
 <translation id="6032955021262906325">Innbinding venstre</translation>
@@ -3439,7 +3433,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7096937462164235847">Identiteten til dette nettstedet er ikke bekreftet.</translation>
 <translation id="7102554173784142865">Spill Chrome Dino-spillet</translation>
 <translation id="7102760431686146931">Matlagingsutstyr og servise</translation>
-<translation id="7105998430540165694">Passnøkkel fra iCloud-nøkkelring</translation>
 <translation id="7106762743910369165">Nettleseren administreres av organisasjonen din</translation>
 <translation id="7107249414147762907">Denne PDF-en er ikke tilgjengelig. Ingen tekst er hentet ut</translation>
 <translation id="7107427078069498123">SHA-256-fingeravtrykk</translation>
@@ -3477,6 +3470,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> til}other{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> til}}</translation>
 <translation id="7153618581592392745">Lavendel</translation>
 <translation id="7156870133441232244">Tjeneren bør oppgraderes til TLS 1.2 eller nyere.</translation>
+<translation id="7156885531105222428">Fant ikke den forespurte siden i appen</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{For å sende denne filen med <ph name="FEATURE_NAME" /> må du frigjøre plass (<ph name="DISK_SPACE_SIZE" />) på enheten}other{For å sende disse filene med <ph name="FEATURE_NAME" /> må du frigjøre plass (<ph name="DISK_SPACE_SIZE" />) på enheten}}</translation>
 <translation id="7160999678034985039">Lagre arbeidet ditt, og start oppdateringen når du er klar.</translation>
 <translation id="7162277662076933695">Smartkortleser</translation>
@@ -4263,6 +4257,7 @@ Mer informasjon:
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Gå til &lt;strong&gt;chrome://policy&lt;/strong&gt; for å se listen over blokkerte nettadresser og andre regler systemadministratoren din har fastsatt.</translation>
 <translation id="8536234749087605613">Konvolutt (vindu)</translation>
+<translation id="8538228968820006247">Fanegruppen din er full. Nye medlemmer kan ikke bli med via linken.</translation>
 <translation id="8539500321752640291">Vil du gi 2 tillatelser?</translation>
 <translation id="8541158209346794904">Bluetooth-enhet</translation>
 <translation id="8541410041357371550">Dette nettstedet henter annonseemnene dine fra Chrome for å kunne vise deg mer relevante annonser</translation>
@@ -4528,7 +4523,6 @@ Mer informasjon:
 <translation id="9040341831873780534">Se vilkårene her</translation>
 <translation id="9042617223719777575">Stor kapasitet</translation>
 <translation id="9042827002460091668">Sjekk internettilkoblingen, og prøv på nytt</translation>
-<translation id="9044359186343685026">Bruk Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Mikrofoner (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Disse handlingene krever at regelen <ph name="POLICY_NAME" /> er satt til <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

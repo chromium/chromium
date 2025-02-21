@@ -74,7 +74,6 @@ Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas d
 <translation id="2517624234762908348">Synkronisera data i Chromium</translation>
 <translation id="2592940277904433508">Fortsätt att använda Chromium</translation>
 <translation id="2607609479243848905">Om du har glömt lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chromium-datan i kontot<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Du spårar det här paketet på sidan Ny flik i Chromium.}other{Du spårar de här paketen på sidan Ny flik i Chromium.}}</translation>
 <translation id="2650312721222849884">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chromium</translation>
 <translation id="2684230048001240293">Ställ in Chromium som standardwebbläsare och synkronisera flikar, lösenord och betalningsuppgifter på alla enheter</translation>
 <translation id="2730884209570016437">Chromium kan inte använda kameran eftersom den används av en annan app</translation>
@@ -89,7 +88,6 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="2977470724722393594">Chromium är uppdaterat</translation>
 <translation id="3044857325852340337">Data i Chromium har raderats</translation>
 <translation id="3054480780637153380">Öppna Chromium-inställningarna i iOS, tryck på Standardwebbläsarapp och välj Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Du kan spåra paketet på sidan Ny flik i Chromium.}other{Du kan spåra paketen på sidan Ny flik i Chromium.}}</translation>
 <translation id="3102849287235003384"><ph name="BEGIN_LINK" />Logga ut från Chromium<ph name="END_LINK" /> om du vill logga ut från Google-kontot på alla webbplatser.</translation>
 <translation id="3115956258722352278">Vill du göra Chromium till din standardwebbläsare?</translation>
 <translation id="3242612358525156339">Öppna <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> i enhetens inställningar och välj Chromium</translation>

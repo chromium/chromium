@@ -8,7 +8,7 @@
 #include <map>
 #include <string>
 
-#include "ash/multi_capture/multi_capture_service_client.h"
+#include "ash/multi_capture/multi_capture_service.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/gtest_prod_util.h"

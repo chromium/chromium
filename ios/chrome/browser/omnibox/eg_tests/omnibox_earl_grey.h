@@ -49,6 +49,9 @@ class EmbeddedTestServer;
 /// Returns a matcher for a valid URL.
 - (id<GREYMatcher>)isURLMatcher;
 
+/// Defocus the omnibox.
+- (void)defocusOmnibox;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_OMNIBOX_EARL_GREY_H_

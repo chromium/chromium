@@ -331,6 +331,9 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void toggledOptionSetsPrefAndRestarts() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillOptionsMediator.HISTOGRAM_RESTART_ACCEPTED, true);
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
         PropertyModel model =
                 new AutofillOptionsCoordinator(mFragment, () -> mDialogManager, mRestartRunnable)
@@ -344,12 +347,16 @@ public class AutofillOptionsTest {
         verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE), eq(true));
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         verifyOptionReflectedInView(USE_3P);
+        histogramWatcher.assertExpected();
         verify(mRestartRunnable).run();
     }
 
     @Test
     @SmallTest
     public void toggledOptionResetsWithoutConfirmation() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillOptionsMediator.HISTOGRAM_RESTART_ACCEPTED, false);
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
         PropertyModel model =
                 new AutofillOptionsCoordinator(mFragment, () -> mDialogManager, mRestartRunnable)
@@ -364,6 +371,7 @@ public class AutofillOptionsTest {
                 .setBoolean(eq(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE), anyBoolean());
         assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         verifyOptionReflectedInView(DEFAULT);
+        histogramWatcher.assertExpected();
         verify(mRestartRunnable, times(0)).run();
     }
 

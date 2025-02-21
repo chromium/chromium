@@ -23,6 +23,7 @@
 #include "content/public/browser/prefetch_handle.h"
 #include "content/public/browser/service_worker_context.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/http/http_no_vary_search_data.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
@@ -128,6 +129,17 @@ class CONTENT_EXPORT PrefetchService {
       std::unique_ptr<PrefetchContainer> prefetch_container);
   void AddPrefetchContainerWithoutStartingPrefetchForTesting(
       std::unique_ptr<PrefetchContainer> prefetch_container);
+
+  // Returns `true` if a new prefetch request with `url` and
+  // `no_vary_search_hint` has a duplicate in the prefetch cache and thus the
+  // caller can choose not to start the prefetch request.
+  //
+  // Note: This is currently used for WebView initiated prefetches
+  // so consideration should be taken if updating the
+  // underlying implementation (or its dependencies).
+  bool IsPrefetchDuplicate(
+      GURL& url,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint);
 
   // An interface to notify `PrefetchService` that the given `PrefetchContainer`
   // is no longer needed from outside of the service.
@@ -402,6 +414,15 @@ class CONTENT_EXPORT PrefetchService {
 
   void ResetPrefetchContainer(
       base::WeakPtr<PrefetchContainer> prefetch_container);
+
+  // Returns `true` if the `prefetch_container` is stale. I.e.
+  // the prefetch either is not or never will be servable to a
+  // navigation.
+  //
+  // Note: This is currently used for WebView initiated prefetches so
+  // consideration should be taken if updating the underlying implementation (or
+  // its dependencies).
+  bool IsPrefetchStale(base::WeakPtr<PrefetchContainer> prefetch_container);
 
   void DumpPrefetchesForDebug() const;
 

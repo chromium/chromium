@@ -136,7 +136,6 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="4830799082179398588">Make Chrome your default browser?</translation>
 <translation id="484033449593719797">Not supported on Chrome beta</translation>
 <translation id="4840404732697892756">Google Password Manager can check your passwords when you sign in with your Google Account.</translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{Chrome can help you track this package on the New tab page.}other{Chrome can help you track these packages on the New tab page.}}</translation>
 <translation id="4903674399067644695">This card shows you suggestions on how to get the most out of Chrome.</translation>
 <translation id="49200511069271369">Your organisation, <ph name="DOMAIN" />, manages the account you're signing in to and how Chrome can be used. Your administrator can set up or restrict certain features.</translation>
 <translation id="4925322001044117929">Use Chrome on iPad by default</translation>
@@ -158,7 +157,6 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="5439191312780166229">Warns you about dangerous sites, even ones that Google didn't know about before, by analysing more data from sites than standard protection. You can choose to skip Chrome warnings.</translation>
 <translation id="5442013002200339429">If you hide '<ph name="MODULE_NAME" />, Chrome will no longer auto-track your future packages and will delete all your past package tracking data.</translation>
 <translation id="5460571915754665838">4. Select Chrome</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{Chrome will help track this package on the New tab page.}other{Chrome will help track these parcels on the New tab page.}}</translation>
 <translation id="5492504007368565877">Google Password Manager can’t check your passwords.</translation>
 <translation id="5525095647255982834">To send this tab to another device, sign in to Chrome there.</translation>
 <translation id="5527026824954593399">Tap 'View with Google Maps on Chrome'</translation>

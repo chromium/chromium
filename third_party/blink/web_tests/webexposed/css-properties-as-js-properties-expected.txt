@@ -425,6 +425,7 @@ scrollMarginInlineStart
 scrollMarginLeft
 scrollMarginRight
 scrollMarginTop
+scrollMarkerContain
 scrollMarkerGroup
 scrollPadding
 scrollPaddingBlock

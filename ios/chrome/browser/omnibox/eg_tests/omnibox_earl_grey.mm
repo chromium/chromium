@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_matchers.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_test_util.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -106,6 +107,23 @@ using base::test::ios::WaitUntilConditionOrTimeout;
       [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
                                            descriptionBlock:describe];
   return URLMatcher;
+}
+
+- (void)defocusOmnibox {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // Defocus omnibox by tapping the typing shield.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Typing Shield")]
+        performAction:grey_tap()];
+
+  } else {
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_allOf(
+                grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier),
+                grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
+  }
+  // Wait for animation to finish.
+  [ChromeEarlGreyUI waitForAppToIdle];
 }
 
 @end

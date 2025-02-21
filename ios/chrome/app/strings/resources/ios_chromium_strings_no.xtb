@@ -74,7 +74,6 @@ Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir di
 <translation id="2517624234762908348">Synkroniser Chromium-dataene dine</translation>
 <translation id="2592940277904433508">Fortsett å bruke Chromium</translation>
 <translation id="2607609479243848905">Hvis du har glemt passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium hjelper deg med å spore denne pakken på Ny fane-siden.}other{Chromium hjelper deg med å spore disse pakkene på Ny fane-siden.}}</translation>
 <translation id="2650312721222849884">For å se fanene dine overalt hvor du bruker Chromium, slå på synkronisering</translation>
 <translation id="2684230048001240293">Angi Chromium som standard for å synkronisere fanene, passordene og betalingsopplysningene dine på alle enhetene dine</translation>
 <translation id="2730884209570016437">Chromium kan ikke bruke kameraet fordi det brukes av en annen app</translation>
@@ -89,7 +88,6 @@ For å se flere innstillinger som bruker data for å forbedre Chromium-opplevels
 <translation id="2977470724722393594">Chromium er oppdatert</translation>
 <translation id="3044857325852340337">Slettet Chromium-data</translation>
 <translation id="3054480780637153380">Åpne Chromium-innstillingene i iOS, trykk på «Standard nettleserapp», og velg Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium kan hjelpe deg med å spore denne pakken på Ny fane-siden.}other{Chromium kan hjelpe deg med å spore disse pakkene på Ny fane-siden.}}</translation>
 <translation id="3102849287235003384">For å logge av Google-kontoen din på alle nettsteder, <ph name="BEGIN_LINK" />logg av Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Vil du gjøre Chromium til standardnettleseren din?</translation>
 <translation id="3242612358525156339">Åpne «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />» i enhetsinnstillingene, og velg «Chromium»</translation>

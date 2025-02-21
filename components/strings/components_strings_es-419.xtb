@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Guardando tarjetas…</translation>
 <translation id="1060136083665017312">Sistemas y consolas de juegos</translation>
 <translation id="1060320201901229167">Sobre Kaku n.º 5</translation>
-<translation id="10614374240317010">Nunca guardado</translation>
 <translation id="1062407476771304334">Reemplazar</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Detalles del motor de búsqueda</translation>
@@ -263,7 +262,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1432187715652018471">Esta página quiere instalar un controlador de servicios.</translation>
 <translation id="1432581352905426595">Administrar motores de búsqueda</translation>
 <translation id="1433225466058025572">Intenta volver a mover tus archivos</translation>
-<translation id="1435940442311036198">Usar una clave de acceso en otro dispositivo</translation>
 <translation id="1436185428532214179">Puede solicitar permiso para editar archivos y carpetas del dispositivo</translation>
 <translation id="1442386063175183758">Plegado en ventana a la derecha</translation>
 <translation id="1442987760062738829">Perforar</translation>
@@ -357,7 +355,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="159274626729231974">Festivales de cine</translation>
 <translation id="1593359183944365958">270 grados</translation>
 <translation id="1594030484168838125">Seleccionar</translation>
-<translation id="1598816256585174656">Llave de acceso de Windows Hello</translation>
 <translation id="1599199147673445968">¿Tienes una tarjeta nueva? <ph name="BEGIN_LINK" />Ingresa sus detalles aquí<ph name="END_LINK" />.</translation>
 <translation id="1604192142734009334">Belleza y estado físico</translation>
 <translation id="160851722280695521">Jugar al juego del dinosaurio de Chrome</translation>
@@ -469,7 +466,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">¿Quieres instalar apps web?</translation>
 <translation id="1791415068765905273">Mostrar todas las tablas de comparación</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar la información, privacidad y seguridad de tu Cuenta de Google</translation>
 <translation id="1793473605302304726">Pagar en cuotas</translation>
 <translation id="1793631236004319016">Se usó por última vez hace <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -2128,7 +2124,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4754461935447132332">No se permite para los sitios no seguros</translation>
 <translation id="4756388243121344051">&amp;Historial</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Llave de acceso de tu perfil de Chrome</translation>
 <translation id="4757993714154412917">Ingresaste tu contraseña en un sitio engañoso. Para proteger tus cuentas, Chromium te recomienda revisar las contraseñas que tengas guardadas.</translation>
 <translation id="4758311279753947758">Agregar información de contacto</translation>
 <translation id="4761326898079498987">Revisa las acciones para obtener más detalles</translation>
@@ -2261,6 +2256,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4989809363548539747">Este complemento no es compatible</translation>
 <translation id="4990241977441916452">Sobre A2</translation>
 <translation id="4992066212339426712">Dejar de silenciar</translation>
+<translation id="4994095017621319069">1 grupo de pestañas ya no está disponible</translation>
 <translation id="4994348767896109801">La personalización de un anuncio que ves puede depender de muchos factores, como este parámetro de configuración, los <ph name="BEGIN_LINK_1" />temas de anuncios<ph name="END_LINK_1" />, tu <ph name="BEGIN_LINK_2" />configuración de cookies<ph name="END_LINK_2" /> y si el sitio que estás viendo personaliza los anuncios. Obtén más información para <ph name="BEGIN_LINK_3" />administrar tu privacidad en los anuncios<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Modificado:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar la búsqueda de sitios y tu motor de búsqueda predeterminado</translation>
@@ -2701,7 +2697,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5764920692828389743">Enviar a <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Para ver los requisitos y métodos de entrega, selecciona una dirección</translation>
 <translation id="57689295674415555">¿No se completó el número de la tarjeta virtual?</translation>
-<translation id="5772086939108830423">Usar una llave de acceso en otro dispositivo</translation>
 <translation id="5776313857861697733">Prioridad</translation>
 <translation id="577804500166306874">Cargando el resultado</translation>
 <translation id="5781136890105823427">Se habilitó un experimento</translation>
@@ -2832,7 +2827,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sincronizados)</translation>
 <translation id="6028591542479806248">Administra las notificaciones por correo electrónico y en dispositivos móviles.</translation>
 <translation id="6028833024483927901">Cocina internacional</translation>
-<translation id="6030251660719692307">Llave de acceso del Administrador de contraseñas de Google</translation>
 <translation id="603068602130820122">Grapas dobles a la derecha</translation>
 <translation id="6032524144326295339">Buzón 2</translation>
 <translation id="6032955021262906325">Encuadernado a la izquierda</translation>
@@ -3440,7 +3434,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7096937462164235847">No se verificó la identidad de este sitio web.</translation>
 <translation id="7102554173784142865">Jugar al juego del dinosaurio de Chrome</translation>
 <translation id="7102760431686146931">Utensilios de cocina y vajilla</translation>
-<translation id="7105998430540165694">Llave de acceso del llavero de iCloud</translation>
 <translation id="7106762743910369165">Tu organización administra el navegador.</translation>
 <translation id="7107249414147762907">El PDF es inaccesible. No se extrajo texto</translation>
 <translation id="7107427078069498123">Huellas digitales SHA-256</translation>
@@ -3478,6 +3471,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}other{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">El servidor debe actualizarse a TLS 1.2 o versiones posteriores.</translation>
+<translation id="7156885531105222428">No se pudo encontrar la página que solicitaste en la aplicación</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Para enviar este archivo con <ph name="FEATURE_NAME" />, libera espacio (<ph name="DISK_SPACE_SIZE" />) en el dispositivo.}other{Para enviar estos archivos con <ph name="FEATURE_NAME" />, libera espacio (<ph name="DISK_SPACE_SIZE" />) en el dispositivo.}}</translation>
 <translation id="7160999678034985039">Guarda tu trabajo y comienza la actualización cuando esté todo listo.</translation>
 <translation id="7162277662076933695">Lector de tarjetas inteligente</translation>
@@ -4164,7 +4158,7 @@ Detalles adicionales:
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8352849934814541340">El administrador de este dispositivo instaló aplicaciones para funciones adicionales. Las aplicaciones tienen acceso a algunos de tus datos.</translation>
 <translation id="8355270400102541638">Contexto de falla local:</translation>
-<translation id="8363502534493474904">Desactivar el modo de avión.</translation>
+<translation id="8363502534493474904">Desactivar el modo avión.</translation>
 <translation id="8364627913115013041">Sin establecer</translation>
 <translation id="8366057325711477500">Noticias del mundo</translation>
 <translation id="836616551641291797">Más información sobre cómo se administra tu navegador</translation>
@@ -4265,6 +4259,7 @@ Detalles adicionales:
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver la lista de URL bloqueadas y otras políticas que estableció el administrador del sistema.</translation>
 <translation id="8536234749087605613">Sobre (con ventana)</translation>
+<translation id="8538228968820006247">Tu grupo de pestañas está completo; los miembros nuevos no pueden unirse con el vínculo</translation>
 <translation id="8539500321752640291">¿Quieres habilitar 2 permisos?</translation>
 <translation id="8541158209346794904">Dispositivo Bluetooth</translation>
 <translation id="8541410041357371550">Este sitio obtiene de Chrome tus temas de anuncios para mostrarte anuncios más relevantes</translation>
@@ -4531,7 +4526,6 @@ Detalles adicionales:
 <translation id="9040341831873780534">Ver las condiciones aquí</translation>
 <translation id="9042617223719777575">Gran capacidad</translation>
 <translation id="9042827002460091668">Revisa la conexión a Internet y vuelve a intentarlo</translation>
-<translation id="9044359186343685026">Usar Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Micrófonos (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Estas acciones requieren que se establezca la política <ph name="POLICY_NAME" /> como <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

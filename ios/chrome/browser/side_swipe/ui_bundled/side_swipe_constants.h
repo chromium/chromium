@@ -7,6 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
+// The different swipe types.
+enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
+
+// Navigation Directions.
+typedef NS_ENUM(NSInteger, NavigationDirection) {
+  NavigationDirectionBack,
+  NavigationDirectionForward
+};
+
 // Notification sent when the user starts a side swipe (on iPad).
 NSString* const kSideSwipeWillStartNotification =
     @"kSideSwipeWillStartNotification";

@@ -109,6 +109,7 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
+    "//components/regional_capabilities",
     "//components/search_engines",
     "//components/signin/public/base:signin_switches",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",

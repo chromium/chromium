@@ -463,7 +463,7 @@ TEST_F(SyncPrefsTest,
                             kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             switches::kEnablePreferencesAccountStorage,
-                            kSyncEnableExtensionsInTransportMode},
+                            switches::kEnableExtensionsExplicitBrowserSignin},
       /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
   // Based on the feature flags set above, Passwords, Autofill and Payments are
@@ -499,7 +499,7 @@ TEST_F(SyncPrefsTest,
                             syncer::kMoveThemePrefsToSpecifics,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             switches::kEnablePreferencesAccountStorage,
-                            kSyncEnableExtensionsInTransportMode},
+                            switches::kEnableExtensionsExplicitBrowserSignin},
       /*disabled_features=*/{});
 
   // Based on the feature flags set above, Bookmarks, ReadingList, Passwords,
@@ -534,7 +534,7 @@ class SyncPrefsExplicitBrowserSigninTest : public SyncPrefsTest {
  public:
   SyncPrefsExplicitBrowserSigninTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kSyncEnableExtensionsInTransportMode,
+        /*enabled_features=*/{switches::kEnableExtensionsExplicitBrowserSignin,
                               switches::kExplicitBrowserSigninUIOnDesktop,
                               kSeparateLocalAndAccountSearchEngines,
                               switches::kEnablePreferencesAccountStorage,

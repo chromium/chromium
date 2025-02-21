@@ -45,7 +45,7 @@ source_set("request_header_integrity") {
     "//base",
     "//build:branding_buildflags",
     "//chrome/common:channel_info",
-    "//components/embedder_support:browser_util",
+    "//components/embedder_support:user_agent",
     "//components/google/core/common",
     "//google_apis",
     "//services/network/public/cpp",

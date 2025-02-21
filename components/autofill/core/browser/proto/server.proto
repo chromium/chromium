@@ -177,6 +177,23 @@ message AutofillRandomizedFieldMetadata {
 
   // Value of the pattern attribute. Example: <input pattern="XXXXX">
   optional AutofillRandomizedValue pattern = 11;
+
+  // Value of the maxlength attribute. Example: <input maxlength=4>
+  optional AutofillRandomizedValue max_length = 12;
+
+  // Corresponds to a `autofill::SelectOption`.
+  message AutofillRandomizedSelectOption {
+    // The option's "value" attribute, or, if not present, its text content.
+    optional AutofillRandomizedValue value = 1;
+    // The option's "label" attribute, or, if not present, its text content.
+    // Emitted only if it is not the same as the "value" field above.
+    optional AutofillRandomizedValue text = 2;
+  }
+
+  // The <option>s if the field is a <select>. Note that if the <select>
+  // has more than 3 options, this only includes the first, the second, and the
+  // last option.
+  repeated AutofillRandomizedSelectOption select_option = 13;
 }
 
 // This message contains information about the field types in a single form.

@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">‏همگام‌سازی داده‌های Chromium</translation>
 <translation id="2592940277904433508">‏ادامه استفاده از Chromium</translation>
 <translation id="2607609479243848905">‏اگر گذرعبارت را فراموش کردید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" /> داده‌های Chromium ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{‏‫Chromium به ردیابی این بسته در «صفحه برگه جدید» کمک خواهد کرد.}one{‏‫Chromium به ردیابی این بسته در «صفحه برگه جدید» کمک خواهد کرد.}other{‏‫Chromium به ردیابی این بسته‌ها در «صفحه برگه جدید» کمک خواهد کرد.}}</translation>
 <translation id="2650312721222849884">‏در همه دستگاه‌هایی که در آن‌ها از Chromium استفاده می‌کنید، همگام‌سازی را روشن کنید تا بتوانید برگه‌هایتان را ببینید</translation>
 <translation id="2684230048001240293">‏Chromium را برای همگام‌سازی برگه‌ها، گذرواژه‌ها، و اطلاعات پرداخت در همه دستگاه‌ها به‌عنوان پیش‌فرض تنظیم کنید</translation>
 <translation id="2730884209570016437">‏Chromium نمی‌تواند از دوربین استفاده کند زیرا برنامه دیگری از آن استفاده می‌کند</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">‏Chromium به‌روز است</translation>
 <translation id="3044857325852340337">‏حذف داده‌های Chromium</translation>
 <translation id="3054480780637153380">‏تنظیمات Chromium را در iOS باز کنید، سپس روی «برنامه مرورگر پیش‌فرض» تک‌ضرب بزنید و Chromium را انتخاب کنید.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{‏‫Chromium می‌تواند به شما کمک کند این بسته را در «صفحه برگه جدید» ردیابی کنید.}one{‏‫Chromium می‌تواند به شما کمک کند این بسته را در «صفحه برگه جدید» ردیابی کنید.}other{‏‫Chromium می‌تواند به شما کمک کند این بسته‌ها را در «صفحه برگه جدید» ردیابی کنید.}}</translation>
 <translation id="3102849287235003384">‏برای خارج شدن از سیستم «حساب Google» خود در همه وب‌سایت‌ها، <ph name="BEGIN_LINK" />از سیستم Chromium خارج شوید<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">‏آیا Chromium مرورگر پیش‌فرض شود؟</translation>
 <translation id="3242612358525156339">‏در تنظیمات دستگاه، «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />» را باز کنید و «Chromium» را انتخاب کنید</translation>

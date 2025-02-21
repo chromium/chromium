@@ -1370,6 +1370,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kInternalTextareaAuto ||
              (RuntimeEnabledFeatures::CSSResizeAutoEnabled() &&
               value_id == CSSValueID::kAuto);
+    case CSSPropertyID::kScrollMarkerContain:
+      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
     case CSSPropertyID::kScrollMarkerGroup:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kAfter ||
              value_id == CSSValueID::kBefore;
@@ -1783,6 +1785,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kReadingFlow,
     CSSPropertyID::kResize,
     CSSPropertyID::kRowRuleBreak,
+    CSSPropertyID::kScrollMarkerContain,
     CSSPropertyID::kScrollMarkerGroup,
     CSSPropertyID::kScrollBehavior,
     CSSPropertyID::kOverscrollBehaviorInline,

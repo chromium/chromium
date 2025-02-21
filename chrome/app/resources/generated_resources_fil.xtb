@@ -1011,6 +1011,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1682696837763999627">Malaking cursor ng mouse</translation>
 <translation id="1682867089915960590">I-on ang Caret Browsing?</translation>
 <translation id="1686550358074589746">I-enable ang pag-type nang pa-glide</translation>
+<translation id="1686785653877010442">Karaniwang nagpapadala ng mga notification ang mga site para ipaalam sa iyo ang tungkol sa breaking news o mga mensahe sa chat.</translation>
 <translation id="168715261339224929">Para mailagay ang iyong mga bookmark sa lahat ng device mo, i-on ang sync.</translation>
 <translation id="1688935057616748272">Mag-type ng titik</translation>
 <translation id="1689333818294560261">Nickname</translation>
@@ -1295,6 +1296,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1878885068166344708">Iha-highlight ang item kapag ginalaw mo ang focus. Pindutin ang tab o pumili ng item para baguhin ang focus.</translation>
 <translation id="1879000426787380528">Mag-sign in bilang</translation>
 <translation id="18802377548000045">Paliitin ang mga tab sa malaking lapad</translation>
+<translation id="1880618477732738742">Baguhin ang access at magbigay ng access sa mga feature gaya ng geolocation, mikropono, camera, cookies, atbp., para sa lahat ng iyong website at extension, kabilang ang extension na ito.</translation>
 <translation id="1880905663253319515">Tanggalin ang certificate na "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Layout ng keyboard</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Item}one{# item}other{# na item}}</translation>
@@ -3482,6 +3484,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="343578350365773421">Wala nang papel</translation>
 <translation id="3435896845095436175">I-enable</translation>
+<translation id="3437397693214267762">Tingnan ang iyong Outlook Calendar at mga SharePoint at OneDrive file</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Palaging pahintulutan ang <ph name="HOST" /> na i-access ang iyong mikropono</translation>
 <translation id="3439970425423980614">Binubuksan ang PDF sa Preview</translation>
@@ -7142,6 +7145,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
     Gamitin ang account mo para madaling ma-access ang lahat ng iyong bookmark, file, at higit pa. Kung wala kang account, puwede kang gumawa nito sa susunod na screen.</translation>
 <translation id="6054138466019582920">Maghan&amp;ap sa Page na Ito gamit ang Google...</translation>
 <translation id="6054284857788651331">Grupo ng Tab na Kamakailang Isinara</translation>
+<translation id="6054819000749443354">Buksan ang System Settings</translation>
 <translation id="6054961935262556546">Baguhin ang visibility</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 na May RSA Encryption</translation>
 <translation id="6055544610007596637">Mag-install ng mga app para sa iyong <ph name="DEVICE_TYPE" /> mula sa Google Play Store</translation>
@@ -8143,7 +8147,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786480815699355166">Puwede lang isalin ang mga sinusuportahang wika para sa Instant Caption</translation>
 <translation id="6786747875388722282">Mga Extension</translation>
-<translation id="6787097042755590313">Ibang Tab</translation>
 <translation id="6787531944787756058">naka-save lang ang username na <ph name="USER_EMAIL" /> sa device na ito. Tingnan ang mga detalye</translation>
 <translation id="6787839852456839824">Mga keyboard shortcut</translation>
 <translation id="6788210894632713004">Hindi naka-pack na extension</translation>
@@ -8968,6 +8971,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7380459290951585794">Tiyaking nasa malapit at naka-unlock ang iyong telepono at naka-on ang Bluetooth at Wi-Fi nito</translation>
 <translation id="7380622428988553498">Naglalaman ng mga invalid na character ang pangalan ng device</translation>
 <translation id="7380768571499464492">Na-update ang <ph name="PRINTER_NAME" /></translation>
+<translation id="7382009635620830394">Kung naka-disable ang card na ito, madi-disable din ang iyong mga card sa Microsoft tulad ng mga SharePoint at OneDrive file, at Outlook Calendar.</translation>
 <translation id="7382085868019811559">Pinapayagan ng Suporta sa Legacy Browser (Legacy Browser Support o LBS) na mabuksan ang ilang partikular na pattern ng URL sa alternatibong browser na sumusuporta sa mga legacy na feature na kinakailangan para mapatakbo nang maayos ang mga site na iyon.</translation>
 <translation id="7382980704744807223">Kahina-hinala</translation>
 <translation id="738322632977123193">Hindi ma-upload. Gumamit ng larawan na nasa isa sa mga format na ito: .jpg, .gif, .png, .bmp, .tif, o .webp</translation>
@@ -10639,6 +10643,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" />Ang <ph name="USER_EMAIL" /> ay pinapamahalaan ng <ph name="MANAGER" />. Hindi mo maidaragdag ang email na ito bilang karagdagang account.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para magamit ang <ph name="USER_EMAIL" />, mag-sign out sa iyong <ph name="DEVICE_TYPE" />. Sa ibaba ng screen sa pag-log in, piliin ang Magdagdag ng Tao.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Pindutin nang matagal ang Key sa paghahanap upang palitan ang gawi ng mga key sa itaas na row</translation>
+<translation id="8549127125482561383">Paano ipapakita ang mga request</translation>
 <translation id="8549316893834449916">Gagamitin mo ang iyong Google Account para mag-sign in sa Chromebook mo – ang parehong account na ginagamit mo para sa Gmail, Drive, YouTube, at higit pa.</translation>
 <translation id="8550239873869577759">Na-download ang kahina-hinalang file</translation>
 <translation id="8551388862522347954">Mga Lisensya</translation>

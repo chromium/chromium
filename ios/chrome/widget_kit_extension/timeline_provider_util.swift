@@ -46,7 +46,7 @@ struct Provider: TimelineProvider {
       Entry(date: Date(), isPreview: true, avatar: nil, gaiaID: nil)
     }
     func snapshot(for configuration: SelectProfileIntent, in context: Context) async -> Entry {
-      let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
+      let avatar: Image? = configuration.avatarForAccount(account: configuration.profile)
       let gaiaID: String? = configuration.gaiaForAccount(account: configuration.profile)
 
       return Entry(date: Date(), isPreview: context.isPreview, avatar: avatar, gaiaID: gaiaID)
@@ -54,7 +54,7 @@ struct Provider: TimelineProvider {
     func timeline(for configuration: SelectProfileIntent, in context: Context) async -> Timeline<
       Entry
     > {
-      let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
+      let avatar: Image? = configuration.avatarForAccount(account: configuration.profile)
       let gaiaID: String? = configuration.gaiaForAccount(account: configuration.profile)
       return Timeline(
         entries: [

@@ -128,7 +128,7 @@ class BrowserAutofillManager : public AutofillManager {
   // refreshes the popup.
   virtual bool ShouldShowCardsFromAccountOption(
       const FormData& form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source) const;
   virtual void OnUserAcceptedCardsFromAccountOption();
   virtual void RefetchCardsAndUpdatePopup(const FormData& form,
@@ -207,8 +207,8 @@ class BrowserAutofillManager : public AutofillManager {
   // Invoked when the user selected the `suggestion` in a suggestions list from
   // single field filling.
   void OnSingleFieldSuggestionSelected(const Suggestion& suggestion,
-                                       const FormData& form,
-                                       const FormFieldData& field);
+                                       const FormGlobalId& form_id,
+                                       const FieldGlobalId& field_id);
 
   // Update the pending form with |form|, possibly processing the current
   // pending form for upload.

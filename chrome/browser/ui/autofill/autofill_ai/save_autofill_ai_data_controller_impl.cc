@@ -87,6 +87,10 @@ void SaveAutofillAiDataControllerImpl::OnSaveButtonClicked() {
   OnBubbleClosed(AutofillAiBubbleClosedReason::kAccepted);
 }
 
+bool SaveAutofillAiDataControllerImpl::IsSavePrompt() const {
+  return !old_entity_.has_value();
+}
+
 std::vector<SaveAutofillAiDataController::EntityAttributeUpdateDetails>
 SaveAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
   std::vector<SaveAutofillAiDataController::EntityAttributeUpdateDetails>
@@ -114,8 +118,8 @@ SaveAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
        new_entity_->attributes()) {
     EntityAttributeUpdateType update_type =
         get_attribute_update_type(attribute_instance);
-    details.push_back({attribute_instance.type().GetNameForI18n(),
-                       attribute_instance.value(), update_type});
+    details.emplace_back(attribute_instance.type().GetNameForI18n(),
+                         attribute_instance.value(), update_type);
 
     // Also add the old value when an attribute is updated to display
     // before/after to the user.
@@ -125,9 +129,9 @@ SaveAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
           old_entity_attribute =
               old_entity_->attribute(attribute_instance.type());
       CHECK(old_entity_attribute);
-      details.push_back({old_entity_attribute->type().GetNameForI18n(),
-                         old_entity_attribute->value(),
-                         kOldEntityAttributeUpdated});
+      details.emplace_back(old_entity_attribute->type().GetNameForI18n(),
+                           old_entity_attribute->value(),
+                           kOldEntityAttributeUpdated);
     }
   }
 
@@ -157,8 +161,7 @@ SaveAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
 }
 
 std::u16string SaveAutofillAiDataControllerImpl::GetDialogTitle() const {
-  const bool is_update = old_entity_.has_value();
-  if (!is_update) {
+  if (IsSavePrompt()) {
     switch (new_entity_->type().name()) {
       case autofill::EntityTypeName::kVehicle:
         return l10n_util::GetStringUTF16(

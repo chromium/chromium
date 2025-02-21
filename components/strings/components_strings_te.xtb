@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">కార్డ్‌లు సేవ్ చేయబడుతున్నాయి...</translation>
 <translation id="1060136083665017312">గేమ్ సిస్టమ్‌లు &amp; కన్సోల్స్</translation>
 <translation id="1060320201901229167">ఎన్వలప్ కాకు 5</translation>
-<translation id="10614374240317010">ఎప్పటికి సేవ్ చేయబడవు</translation>
 <translation id="1062407476771304334">భర్తీ చేయి</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">సెర్చ్ ఇంజిన్ వివరాలు</translation>
@@ -258,7 +257,6 @@
 <translation id="1432187715652018471">సర్వీస్ హ్యాండ్లర్‌ను ఇన్‌స్టాల్ చేయమని పేజీ కోరుతోంది.</translation>
 <translation id="1432581352905426595">సెర్చ్ ఇంజిన్‌లను మేనేజ్ చేయండి</translation>
 <translation id="1433225466058025572">మీ ఫైళ్లను మళ్లీ తరలించడానికి ట్రై చేయండి</translation>
-<translation id="1435940442311036198">వేరే పరికరంలో పాస్-కీని ఉపయోగించండి</translation>
 <translation id="1436185428532214179">మీ పరికరంలో ఫైళ్లు, అలాగే ఫోల్డర్‌లను ఎడిట్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="1442386063175183758">కుడివైపు గేట్ ఫోల్డ్</translation>
 <translation id="1442987760062738829">రంధ్రం</translation>
@@ -352,7 +350,6 @@
 <translation id="159274626729231974">సినిమా ఉత్సవాలు</translation>
 <translation id="1593359183944365958">270 డిగ్రీలు</translation>
 <translation id="1594030484168838125">ఎంచుకోండి</translation>
-<translation id="1598816256585174656">మీ Windows Hello అందించిన పాస్‌కీ</translation>
 <translation id="1599199147673445968">కొత్త కార్డా? <ph name="BEGIN_LINK" />కార్డ్ వివరాలను ఎంటర్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">అందం &amp; ఆరోగ్యం</translation>
 <translation id="160851722280695521">Chromeలో Dino Run గేమ్‌ను ఆడండి</translation>
@@ -464,7 +461,6 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">వెబ్ యాప్‌లను ఇన్‌స్టాల్ చేయాలా?</translation>
 <translation id="1791415068765905273">కంపారిజన్ టేబుల్స్ అన్నింటినీ చూడండి</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Google ఖాతాలో మీ సమాచారం, గోప్యత, ఇంకా భద్రతను మేనేజ్ చేయడం కోసం Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="1793473605302304726">కాలక్రమేణా పేమెంట్ చేయండి</translation>
 <translation id="1793631236004319016">చివరిగా <ph name="NUM_HOURS_MINUTES_SECONDS" /> క్రితం ఉపయోగించడం జరిగింది</translation>
@@ -2122,7 +2118,6 @@
 <translation id="4754461935447132332">సురక్షితం కాని సైట్‌లకు అనుమతి లేదు</translation>
 <translation id="4756388243121344051">&amp;చరిత్ర</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">మీ Chrome ప్రొఫైల్ అందించిన పాస్‌కీ</translation>
 <translation id="4757993714154412917">మీరు మోసపూరితమైన సైట్‌లో మీ పాస్‌వర్డ్‌ను ఎంటర్ చేశారు. మీ ఖాతాలను సురక్షితంగా ఉంచడానికి, Chromium మీ సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయాలని సిఫార్సు చేస్తోంది.</translation>
 <translation id="4758311279753947758">సంప్రదింపు సమాచారాన్ని జోడించండి</translation>
 <translation id="4761326898079498987">మరిన్ని వివరాల కోసం రివ్యూ చేయండి</translation>
@@ -2696,7 +2691,6 @@
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" />‌కి పంపండి</translation>
 <translation id="5765072501007116331">డెలివరీ పద్ధతులు మరియు అవసరాలను చూడాలంటే, అడ్రస్‌ను ఎంచుకోండి</translation>
 <translation id="57689295674415555">వర్చువల్ కార్డ్ నంబర్ పూరించబడలేదా?</translation>
-<translation id="5772086939108830423">వేరే పరికరంలో పాస్-కీని ఉపయోగించండి</translation>
 <translation id="5776313857861697733">ప్రాధాన్యత</translation>
 <translation id="577804500166306874">ఫలితం లోడ్ అవుతోంది</translation>
 <translation id="5781136890105823427">ప్రయోగం ప్రారంభించబడింది</translation>
@@ -2827,7 +2821,6 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (సింక్ చేయబడ్డాయి)</translation>
 <translation id="6028591542479806248">మొబైల్, ఈమెయిల్ నోటిఫికేషన్‌లను మేనేజ్ చేయండి</translation>
 <translation id="6028833024483927901">వివిధ దేశాల వంటకాలు</translation>
-<translation id="6030251660719692307">Google Password Managerలోని పాస్-కీ</translation>
 <translation id="603068602130820122">కుడివైపు డ్యుయల్ స్టేపుల్</translation>
 <translation id="6032524144326295339">మెయిల్‌బాక్స్ 2</translation>
 <translation id="6032955021262906325">ఎడమవైపు బైండ్</translation>
@@ -3435,7 +3428,6 @@
 <translation id="7096937462164235847">ఈ వెబ్‍సైట్‌కు సంబంధించిన గుర్తింపు వెరిఫై చేయబడలేదు.</translation>
 <translation id="7102554173784142865">Chrome Dino గేమ్‌ను ఆడండి</translation>
 <translation id="7102760431686146931">వంట సామగ్రి &amp; డైనింగ్ వస్తువులు</translation>
-<translation id="7105998430540165694">మీ iCloud కీచెయిన్ అందించిన పాస్‌కీ</translation>
 <translation id="7106762743910369165">మీ బ్రౌజర్ మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="7107249414147762907">ఈ PDFను యాక్సెస్ చేయడం సాధ్యం కాదు. టెక్స్ట్ ఏదీ ఎక్స్‌ట్రాక్ట్ అవ్వలేదు</translation>
 <translation id="7107427078069498123">SHA-256 వేలిముద్రలు</translation>
@@ -4527,7 +4519,6 @@
 <translation id="9040341831873780534">నియమాలను ఇక్కడ చూడండి</translation>
 <translation id="9042617223719777575">లార్జ్ కెపాసిటీ</translation>
 <translation id="9042827002460091668">మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి</translation>
-<translation id="9044359186343685026">Touch IDని ఉపయోగించండి</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">(<ph name="MICS_COUNT" />) మైక్రోఫోన్‌లు</translation>
 <translation id="9048035366624198823">ఈ చర్యలకు <ph name="POLICY_NAME" /> పాలసీని <ph name="POLICY_VALUE" />‌కు సెట్ చేయాల్సిన అవసరం ఉంది: <ph name="ACTION_LIST" />.</translation>

@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">ଆପଣଙ୍କର Chromium ଡାଟା ସିଙ୍କ୍ କରନ୍ତୁ</translation>
 <translation id="2592940277904433508">Chromium ବ୍ୟବହାର କରିବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2607609479243848905">ଯଦି ଆପଣଙ୍କ ପାସଫ୍ରେଜକୁ ଆପଣ ଭୁଲି ଯାଇଛନ୍ତି କିମ୍ବା ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଚାହାଁନ୍ତି, ତେବେ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chromium ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଏହି ପେକେଜକୁ ଟ୍ରାକ କରିବାରେ ସାହାଯ୍ୟ କରିବ।}other{Chromium ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଏହି ପେକେଜଗୁଡ଼ିକୁ ଟ୍ରାକ କରିବାରେ ସାହାଯ୍ୟ କରିବ।}}</translation>
 <translation id="2650312721222849884">ଆପଣ Chromium ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ସ୍ଥାନରୁ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ଦେଖିବାକୁ, ସିଙ୍କ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2684230048001240293">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ଟାବ୍, ପାସୱାର୍ଡ ଏବଂ ପେମେଣ୍ଟ ସୂଚନାକୁ ସିଙ୍କ୍ କରିବା ପାଇଁ Chromiumକୁ ଡିଫଲ୍ଟ ଭାବେ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="2730884209570016437">Chromium ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର କରିପାରିବ ନାହିଁ କାରଣ ଏହା ଅନ୍ୟ ଆପ୍ଲିକେସନ୍ ଦ୍ଵାରା ବ୍ୟବହୃତ ହେଉଛି</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">Chromium ଅପ୍‍-ଟୁ-ଡେଟ୍‍ ଅଛି</translation>
 <translation id="3044857325852340337">Chromium ଡାଟାକୁ ଡିଲିଟ କରାଯାଇଛି</translation>
 <translation id="3054480780637153380">iOSରେ Chromium ସେଟିଂସ ଖୋଲନ୍ତୁ, ତା'ପରେ "ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଆପ"ରେ ଟାପ କରି Chromiumକୁ ଚୟନ କରନ୍ତୁ।</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium ଆପଣଙ୍କୁ ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଏହି ପେକେଜକୁ ଟ୍ରାକ କରିବାରେ ସାହାଯ୍ୟ କରିପାରିବ।}other{Chromium ଆପଣଙ୍କୁ ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଏହି ପେକେଜଗୁଡ଼ିକୁ ଟ୍ରାକ କରିବାରେ ସାହାଯ୍ୟ କରିପାରିବ।}}</translation>
 <translation id="3102849287235003384">ସମସ୍ତ ୱେବସାଇଟରେ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ ସାଇନ ଆଉଟ କରିବା ପାଇଁ, <ph name="BEGIN_LINK" />Chromiumରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="3115956258722352278">Chromiumକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରିବେ?</translation>
 <translation id="3242612358525156339">ଆପଣଙ୍କ ଡିଭାଇସର ସେଟିଂସରୁ "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ଖୋଲି "Chromium"କୁ ଚୟନ କରନ୍ତୁ</translation>

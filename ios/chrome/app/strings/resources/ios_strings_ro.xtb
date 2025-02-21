@@ -153,7 +153,6 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{O adresă}few{# adrese}other{# de adrese}}</translation>
 <translation id="1605405588277479165">Dezactivată – Nu este recomandată</translation>
 <translation id="1605658421715042784">Copiază imaginea</translation>
-<translation id="1612642630650745968">S-a anulat urmărirea pachetului</translation>
 <translation id="1612754831519568745">Navigarea sigură este dezactivată momentan. Protejează-te împotriva site-urilor, a descărcărilor și a extensiilor periculoase.</translation>
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="1622717322707146952">Selectează Adaugă în Google Calendar sau Adaugă în Apple Calendar.</translation>
@@ -1387,7 +1386,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="6930162026494574854">Resetează setările de Traducere</translation>
 <translation id="6930799952781667037">Atinge ca să schimbi limba.</translation>
 <translation id="693761253105515415">Setează o parolă</translation>
-<translation id="6943681254152031826">{COUNT,plural, =1{Urmărești coletul?}few{Urmărești {COUNT} colete?}other{Urmărești {COUNT} de colete?}}</translation>
 <translation id="6945221475159498467">Selectează</translation>
 <translation id="6950522403736391608">Ascuns</translation>
 <translation id="6964300328304469089">Ai selectat: <ph name="NAME" />, <ph name="EMAIL" />. Alege un cont.</translation>
@@ -1589,7 +1587,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7859988229622350291">Nu traduce niciodată</translation>
 <translation id="7863211248337747225">Descarcă aplicația</translation>
 <translation id="7865127013871431856">Opțiuni de traducere</translation>
-<translation id="7866501058614003444">S-a anulat urmărirea pachetului.</translation>
 <translation id="7866872729285243843">Pentru a accesa lista de lecturi de pe toate dispozitivele, activează Lista de lecturi în setări.</translation>
 <translation id="7874107544081154809">Completează automat formularul cu <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Ai parole refolosite.</translation>

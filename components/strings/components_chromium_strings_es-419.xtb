@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">Chromium bloqueó esta página</translation>
 <translation id="48558539577516920">Permite que Chromium acceda a la red en tu configuración de firewall o
           antivirus.</translation>
+<translation id="4949828774841497663">Ve a Aplicaciones &gt; Configuración del sistema &gt; Red, selecciona la
+          red activa, haz clic en el botón Detalles… y anula la selección de los proxies
+          que se hayan seleccionado.</translation>
 <translation id="580822234363523061">Accede
           al menú de Chromium &gt;
           <ph name="SETTINGS_TITLE" />

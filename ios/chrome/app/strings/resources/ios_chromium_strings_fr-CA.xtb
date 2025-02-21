@@ -74,7 +74,6 @@ Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous dé
 <translation id="2517624234762908348">Synchroniser vos données Chromium</translation>
 <translation id="2592940277904433508">Continuer à utiliser Chromium</translation>
 <translation id="2607609479243848905">Si vous avez oublié votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium vous aidera à suivre ce colis sur la page Nouvel onglet.}one{Chromium vous aidera à suivre ce colis sur la page Nouvel onglet.}other{Chromium vous aidera à suivre ces colis sur la page Nouvel onglet.}}</translation>
 <translation id="2650312721222849884">Pour voir vos onglets partout où vous utilisez Chromium, activez la synchronisation</translation>
 <translation id="2684230048001240293">Définissez Chromium comme navigateur par défaut pour synchroniser vos onglets, vos mots de passe et vos renseignements de paiement sur tous vos appareils</translation>
 <translation id="2730884209570016437">Chromium ne peut pas utiliser votre appareil photo, car il est utilisé par une autre application</translation>
@@ -89,7 +88,6 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="2977470724722393594">Chromium est à jour</translation>
 <translation id="3044857325852340337">Données Chromium supprimées</translation>
 <translation id="3054480780637153380">Ouvrez les paramètres Chromium dans iOS, puis touchez « Appli de navigation par défaut » et sélectionnez Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium peut vous aider à suivre ce colis sur la page Nouvel onglet.}one{Chromium peut vous aider à suivre ce colis sur la page Nouvel onglet.}other{Chromium peut vous aider à suivre ces colis sur la page Nouvel onglet.}}</translation>
 <translation id="3102849287235003384">Pour vous déconnecter de votre compte Google sur tous les sites Web, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Faire de Chromium votre navigateur par défaut?</translation>
 <translation id="3242612358525156339">Dans les réglages de l'appareil, ouvrir « <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> » et sélectionner « Chromium »</translation>

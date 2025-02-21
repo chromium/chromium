@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 
+#import <optional>
+
+#import "base/functional/callback.h"
+#import "base/run_loop.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "components/omnibox/browser/autocomplete_classifier.h"
@@ -29,6 +33,9 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/gfx/image/image.h"
+#import "ui/gfx/image/image_skia.h"
+#import "ui/gfx/image/image_unittest_util.h"
 
 using testing::AtMost;
 
@@ -80,9 +87,14 @@ class MockOmniboxEditModel : public OmniboxEditModel {
                      base::TimeTicks timestamp,
                      WindowOpenDisposition disposition) override {
     last_opened_selection = selection;
+    if (open_selection_closure) {
+      open_selection_closure.Run();
+      open_selection_closure.Reset();
+    }
   }
 
   OmniboxPopupSelection last_opened_selection;
+  base::RepeatingClosure open_selection_closure;
 };
 
 }  // namespace
@@ -330,4 +342,37 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenClipboardTextMatch) {
 
   // Expect the clipboard content to be loaded.
   EXPECT_EQ(LastOpenedMatch().fill_into_edit, pasteboard_text);
+}
+
+// Tests opening a clipboard Image match.
+TEST_F(OmniboxAutocompleteControllerTest, OpenClipboardImageMatch) {
+  // Create an empty clipboard match in autocompleteController.
+  AutocompleteMatch clipboard_match = CreateAutocompleteMatch(
+      "Clipboard image match", AutocompleteMatchType::CLIPBOARD_IMAGE, false,
+      false, 100, std::nullopt);
+  clipboard_match.destination_url = GURL();
+  autocomplete_controller_->SetAutocompleteMatches({clipboard_match});
+
+  // Set the clipboard content.
+  gfx::Image pasteboard_image =
+      gfx::test::CreateImage(/*width=*/10, /*height=*/10);
+  clipboard_->SetClipboardImage(pasteboard_image, base::TimeDelta::Min());
+
+  // Setup the OpenSelection waiter.
+  base::RunLoop open_selection_waiter;
+  omnibox_edit_model_->open_selection_closure =
+      open_selection_waiter.QuitClosure();
+
+  // Open the clipboard match.
+  [controller_ selectMatchForOpening:clipboard_match
+                               inRow:0
+                              openIn:WindowOpenDisposition::CURRENT_TAB];
+
+  // Wait for the image match.
+  open_selection_waiter.Run();
+
+  // Expect the clipboard content to be loaded.
+  EXPECT_EQ(LastOpenedMatch().type, AutocompleteMatchType::CLIPBOARD_IMAGE);
+  EXPECT_FALSE(LastOpenedMatch().post_content->first.empty());
+  EXPECT_FALSE(LastOpenedMatch().post_content->second.empty());
 }

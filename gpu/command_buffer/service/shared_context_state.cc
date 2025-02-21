@@ -447,6 +447,15 @@ bool SharedContextState::IsGraphiteDawnD3D() const {
 #endif
 }
 
+bool SharedContextState::IsGraphiteDawnD3D11() const {
+#if BUILDFLAG(SKIA_USE_DAWN)
+  return IsGraphiteDawn() &&
+         dawn_context_provider()->backend_type() == wgpu::BackendType::D3D11;
+#else
+  return false;
+#endif
+}
+
 bool SharedContextState::IsGraphiteDawnVulkan() const {
 #if BUILDFLAG(SKIA_USE_DAWN)
   return IsGraphiteDawn() &&

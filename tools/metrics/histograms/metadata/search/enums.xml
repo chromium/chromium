@@ -25,8 +25,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<!-- LINT.IfChange(AmbientSearchEntryPoint) -->
-
 <enum name="AmbientSearchEntryPoint">
   <summary>
     The entry point that initiated an ambient search query. (e.g. Context Menu
@@ -83,8 +81,6 @@ chromium-metrics-reviews@google.com.
       label="Lens Overlay Location Bar entry point that leads to Lens
              Overlay, entered via keyboard (Image)"/>
 </enum>
-
-<!-- LINT.ThenChange(//ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h:IOSLensEntrypoint) -->
 
 <enum name="AuxiliarySearchRequestStatus">
   <int value="0" label="Sent (overall number of requests issued)"/>

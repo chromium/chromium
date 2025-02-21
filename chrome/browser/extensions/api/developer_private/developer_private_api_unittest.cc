@@ -58,7 +58,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/common/features.h"
-#include "components/sync/base/features.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -3479,7 +3478,7 @@ class DeveloperPrivateApiTransportModeUnitTest
  public:
   DeveloperPrivateApiTransportModeUnitTest() {
     scoped_feature_list_.InitWithFeatures(
-        {syncer::kSyncEnableExtensionsInTransportMode},
+        {switches::kEnableExtensionsExplicitBrowserSignin},
         /*disabled_features=*/{});
   }
 

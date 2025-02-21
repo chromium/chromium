@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Menyimpan kad...</translation>
 <translation id="1060136083665017312">Sistem &amp; Konsol Permainan</translation>
 <translation id="1060320201901229167">Sampul Kaku 5</translation>
-<translation id="10614374240317010">Tidak pernah disimpan</translation>
 <translation id="1062407476771304334">Gantikan</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Butiran enjin carian</translation>
@@ -263,7 +262,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1432187715652018471">halaman mahu memasang pengendali perkhidmatan.</translation>
 <translation id="1432581352905426595">Urus enjin carian</translation>
 <translation id="1433225466058025572">Cuba alihkan semula fail anda</translation>
-<translation id="1435940442311036198">Gunakan kunci laluan pada peranti lain</translation>
 <translation id="1436185428532214179">Boleh meminta untuk mengedit fail dan folder pada peranti anda</translation>
 <translation id="1442386063175183758">Lipatan pintu kanan</translation>
 <translation id="1442987760062738829">Tebuk</translation>
@@ -357,7 +355,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="159274626729231974">Festival Filem</translation>
 <translation id="1593359183944365958">270 darjah</translation>
 <translation id="1594030484168838125">Pilih</translation>
-<translation id="1598816256585174656">Kunci laluan daripada Windows Hello</translation>
 <translation id="1599199147673445968">Kad baharu? <ph name="BEGIN_LINK" />Masukkan Butiran Kad<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Kecantikan &amp; Kecergasan</translation>
 <translation id="160851722280695521">Main permainan Dino Run dalam Chrome</translation>
@@ -469,7 +466,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Pasang apl web?</translation>
 <translation id="1791415068765905273">Paparkan Semua Jadual Perbandingan</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk mengurus maklumat, privasi dan keselamatan anda dalam Google Account anda</translation>
 <translation id="1793473605302304726">Bayaran ansuran</translation>
 <translation id="1793631236004319016">Terakhir digunakan <ph name="NUM_HOURS_MINUTES_SECONDS" /> yang lalu</translation>
@@ -2128,7 +2124,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4754461935447132332">Tidak dibenarkan untuk laman yang tidak selamat</translation>
 <translation id="4756388243121344051">&amp;Sejarah</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Kunci laluan daripada Profil Chrome anda</translation>
 <translation id="4757993714154412917">Anda baru sahaja memasukkan kata laluan pada laman yang menipu. Untuk melindungi akaun anda, Chromium mengesyorkan agar anda menyemak kata laluan anda yang disimpan.</translation>
 <translation id="4758311279753947758">Tambahkan maklumat hubungan</translation>
 <translation id="4761326898079498987">Semak untuk mendapatkan butiran lanjut</translation>
@@ -2702,7 +2697,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5764920692828389743">Hantar kepada <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Pilih alamat untuk melihat kaedah dan syarat penghantaran</translation>
 <translation id="57689295674415555">Nombor kad maya tidak diisikan?</translation>
-<translation id="5772086939108830423">Gunakan Kunci Laluan pada Peranti Lain</translation>
 <translation id="5776313857861697733">Keutamaan</translation>
 <translation id="577804500166306874">Hasil carian sedang dimuatkan</translation>
 <translation id="5781136890105823427">Percubaan didayakan</translation>
@@ -2833,7 +2827,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (disegerakkan)</translation>
 <translation id="6028591542479806248">Urus peranti mudah alih dan pemberitahuan e-mel</translation>
 <translation id="6028833024483927901">Masakan Taraf Dunia</translation>
-<translation id="6030251660719692307">Kunci laluan daripada Google Password Manager</translation>
 <translation id="603068602130820122">Dua tebukan kanan</translation>
 <translation id="6032524144326295339">Peti mel 2</translation>
 <translation id="6032955021262906325">Ikatan kiri</translation>
@@ -3441,7 +3434,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7096937462164235847">Identiti laman web ini tidak disahkan.</translation>
 <translation id="7102554173784142865">Main permainan Dino Chrome</translation>
 <translation id="7102760431686146931">Peralatan Memasak &amp; Hidangan Makanan</translation>
-<translation id="7105998430540165694">Kunci laluan daripada iCloud Keychain</translation>
 <translation id="7106762743910369165">Penyemak imbas anda diurus oleh organisasi anda</translation>
 <translation id="7107249414147762907">PDF ini tidak boleh diakses. Tiada teks yang diekstrak</translation>
 <translation id="7107427078069498123">Cap jari SHA-256</translation>
@@ -4534,7 +4526,6 @@ Butiran tambahan:
 <translation id="9040341831873780534">Lihat syarat di sini</translation>
 <translation id="9042617223719777575">Kapasiti Besar</translation>
 <translation id="9042827002460091668">Periksa sambungan Internet anda, kemudian cuba lagi</translation>
-<translation id="9044359186343685026">Gunakan Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Mikrofon (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Tindakan ini memerlukan dasar <ph name="POLICY_NAME" /> ditetapkan kepada <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

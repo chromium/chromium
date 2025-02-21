@@ -74,7 +74,6 @@ Provo të presësh për disa minuta para se të dalësh nga ajo. Nëse del tani,
 <translation id="2517624234762908348">Sinkronizo të dhënat e Chromium</translation>
 <translation id="2592940277904433508">Vazhdo të përdorësh Chromium</translation>
 <translation id="2607609479243848905">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium do të të ndihmojë ta gjurmosh këtë paketë në faqen e skedës së re.}other{Chromium do të të ndihmojë t'i gjurmosh këto paketa në faqen e skedës së re.}}</translation>
 <translation id="2650312721222849884">Për të parë skedat e tua nga çdo vend ku përdor Chromium, aktivizo sinkronizimin</translation>
 <translation id="2684230048001240293">Caktoje Chromium si parazgjedhje për të sinkronizuar skedat, fjalëkalimet dhe informacionet e pagesës në të gjitha pajisjet e tua</translation>
 <translation id="2730884209570016437">Chromium nuk mund të përdorë kamerën tënde sepse ajo është në përdorim nga një aplikacion tjetër</translation>
@@ -89,7 +88,6 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="2977470724722393594">Chromium është i përditësuar</translation>
 <translation id="3044857325852340337">Të dhënat e Chromium u fshinë</translation>
 <translation id="3054480780637153380">Hap cilësimet e Chromium në iOS dhe më pas trokit tek "Aplikacioni i parazgjedhur i shfletuesit" dhe zgjidh Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium mund të të ndihmojë ta gjurmosh këtë paketë në faqen e skedës së re.}other{Chromium mund të të ndihmojë t'i gjurmosh këto paketa në faqen e skedës së re.}}</translation>
 <translation id="3102849287235003384">Për të dalë nga "Llogaria jote e Google" në të gjitha uebsajtet, <ph name="BEGIN_LINK" />dil nga Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Të bëhet Chromium shfletuesi yt i parazgjedhur?</translation>
 <translation id="3242612358525156339">Nga cilësimet e pajisjes sate, hap "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" dhe zgjidh "Chromium"</translation>

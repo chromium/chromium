@@ -1011,6 +1011,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1682696837763999627">Veliki pokazivač miša</translation>
 <translation id="1682867089915960590">Uključiti pregledavanje kursorom?</translation>
 <translation id="1686550358074589746">Omogući pisanje klizanjem</translation>
+<translation id="1686785653877010442">Web-lokacije obično šalju obavijesti o izvanrednim vijestima ili porukama chata.</translation>
 <translation id="168715261339224929">Da bi se vaše oznake prikazale na svim vašim uređajima, uključite sinkronizaciju.</translation>
 <translation id="1688935057616748272">Upišite slovo</translation>
 <translation id="1689333818294560261">Nadimak</translation>
@@ -1286,6 +1287,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1878885068166344708">Stavka je istaknuta kada premjestite fokus. Pritisnite karticu ili odaberite stavku da biste promijenili fokus.</translation>
 <translation id="1879000426787380528">Prijavite se kao</translation>
 <translation id="18802377548000045">Kartice se smanjuju na najveću širinu</translation>
+<translation id="1880618477732738742">Promijenite i dodijelite pristup značajkama kao što su geolociranje, mikrofon, kamera, kolačići itd. za sve svoje web-lokacije i proširenja, uključujući ovo proširenje.</translation>
 <translation id="1880905663253319515">Izbrisati certifikat "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Raspored tipkovnice</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Stavka}one{# stavka}few{# stavke}other{# stavki}}</translation>
@@ -3470,6 +3472,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3435738964857648380">Sigurnost</translation>
 <translation id="343578350365773421">Nema papira</translation>
 <translation id="3435896845095436175">Omogući</translation>
+<translation id="3437397693214267762">Pogledajte svoj Outlook kalendar i SharePoint te OneDrive datoteke</translation>
 <translation id="3438633801274389918">Nindža</translation>
 <translation id="3439153939049640737">Uvijek dopusti hostu <ph name="HOST" /> pristup mikrofonu</translation>
 <translation id="3439970425423980614">Otvori PDF u Pregledu</translation>
@@ -7125,6 +7128,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
     Pomoću računa možete jednostavno pristupiti svim svojim oznakama, datotekama i drugim podacima. Ako nemate račun, možete ga izraditi na sljedećem zaslonu.</translation>
 <translation id="6054138466019582920">Pretražite ovu strani&amp;cu pomoću Googlea...</translation>
 <translation id="6054284857788651331">Nedavno zatvorena grupa kartica</translation>
+<translation id="6054819000749443354">Otvorite postavke sustava</translation>
 <translation id="6054961935262556546">Promijeni vidljivost</translation>
 <translation id="6055392876709372977">PKCS br. 1 SHA-256 s RSA enkripcijom</translation>
 <translation id="6055544610007596637">Instalirajte aplikacije za svoj uređaj <ph name="DEVICE_TYPE" /> iz Trgovine Google Play</translation>
@@ -8128,7 +8132,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="67862343314499040">Ljubičasta</translation>
 <translation id="6786480815699355166">Mogu se prevesti samo podržani jezici automatskih titlova</translation>
 <translation id="6786747875388722282">Proširenja</translation>
-<translation id="6787097042755590313">Druga kartica</translation>
 <translation id="6787531944787756058">Korisničko ime <ph name="USER_EMAIL" /> sprema se samo na ovaj uređaj. Prikaži pojedinosti</translation>
 <translation id="6787839852456839824">Tipkovnički prečaci</translation>
 <translation id="6788210894632713004">Raspakirano proširenje</translation>
@@ -8953,6 +8956,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7380459290951585794">Provjerite je li telefon u blizini, je li otključan i jesu li na njemu uključeni Bluetooth i Wi-Fi</translation>
 <translation id="7380622428988553498">Naziv uređaja sadrži nevažeće znakove</translation>
 <translation id="7380768571499464492">Ažurirano: <ph name="PRINTER_NAME" /></translation>
+<translation id="7382009635620830394">Ako se kartica onemogući, onemogućit će se i vaše Microsoftove kartice kao što su SharePoint i OneDrive datoteke te Outlook kalendar.</translation>
 <translation id="7382085868019811559">Podrška za stare preglednike omogućuje da se određeni uzorci URL-ova otvaraju u drugom pregledniku koji podržava stare značajke potrebne za pravilno izvođenje tih web-lokacija.</translation>
 <translation id="7382980704744807223">Sumnjivo</translation>
 <translation id="738322632977123193">Prijenos nije moguć. Upotrijebite sliku u jednom od sljedećih formata: .jpg, .gif, .png, .bmp, .tif ili .webp</translation>
@@ -10623,6 +10627,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" />Računom <ph name="USER_EMAIL" /> upravlja <ph name="MANAGER" />. Tu e-adresu ne možete dodati kao dodatni račun.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Da biste koristili <ph name="USER_EMAIL" />, najprije se odjavite s uređaja <ph name="DEVICE_TYPE" />. Zatim pri dnu zaslona za prijavu odaberite Dodaj osobu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Držite tipku Pretraživanje da biste izmjenjivali ponašanje tipki u najvišem retku</translation>
+<translation id="8549127125482561383">Kako prikazivati zahtjeve</translation>
 <translation id="8549316893834449916">Na Chromebook se prijavljujete svojim Google računom – istim računom koji upotrebljavate za Gmail, Disk, YouTube itd.</translation>
 <translation id="8550239873869577759">Preuzeta je sumnjiva datoteka</translation>
 <translation id="8551388862522347954">Licence</translation>

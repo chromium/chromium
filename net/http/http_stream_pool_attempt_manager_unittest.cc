@@ -2366,6 +2366,39 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   }
 }
 
+// Regression test for crbug.com/397535403.
+// Tests that limit ignoring requests are allowed to exceeds pool's default
+// limit.
+TEST_F(HttpStreamPoolAttemptManagerTest, IgnoreLimitsExceedsPoolDefaultLimit) {
+  const HttpStreamKey stream_key =
+      StreamKeyBuilder().set_destination("http://a.test").Build();
+
+  std::list<std::unique_ptr<SequencedSocketData>> data_providers;
+  std::list<std::unique_ptr<StreamRequester>> requesters;
+
+  for (size_t i = 0; i < HttpStreamPool::kDefaultMaxStreamSocketsPerPool + 1;
+       ++i) {
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(MockConnect(ASYNC, OK));
+    socket_factory()->AddSocketDataProvider(data.get());
+    data_providers.emplace_back(std::move(data));
+    resolver()
+        ->AddFakeRequest()
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+        .CompleteStartSynchronously(OK);
+    auto requester = std::make_unique<StreamRequester>(stream_key);
+    requester->set_load_flags(LOAD_IGNORE_LIMITS).RequestStream(pool());
+    requesters.emplace_back(std::move(requester));
+  }
+
+  // Complete requests.
+  while (!requesters.empty()) {
+    requesters.front()->WaitForResult();
+    EXPECT_THAT(requesters.front()->result(), Optional(IsOk()));
+    requesters.pop_front();
+  }
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, UseIdleStreamSocketAfterRelease) {
   StreamRequester requester;
   Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());

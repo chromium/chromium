@@ -1006,6 +1006,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1682696837763999627">Cursor grande del mouse</translation>
 <translation id="1682867089915960590">¿Deseas activar la navegación por cursor de texto?</translation>
 <translation id="1686550358074589746">Habilitar la escritura gestual</translation>
+<translation id="1686785653877010442">Por lo general, los sitios envían notificaciones sobre noticias de último momento o mensajes de chat.</translation>
 <translation id="168715261339224929">Activa la sincronización para que tus favoritos estén en todos tus dispositivos.</translation>
 <translation id="1688935057616748272">Escribe una letra</translation>
 <translation id="1689333818294560261">Sobrenombre</translation>
@@ -1281,6 +1282,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1878885068166344708">El elemento se destaca cuando mueves el foco. Presiona Tab o selecciona un elemento para cambiar el foco.</translation>
 <translation id="1879000426787380528">Acceder como</translation>
 <translation id="18802377548000045">Las pestañas se achican a un ancho grande</translation>
+<translation id="1880618477732738742">Cambiar y otorgar acceso a funciones como la ubicación geográfica, el micrófono, la cámara, las cookies, etc., para todos tus sitios web y extensiones, incluida esta extensión.</translation>
 <translation id="1880905663253319515">¿Eliminar certificado "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Diseño del teclado</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Elemento}other{# elementos}}</translation>
@@ -3465,6 +3467,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="343578350365773421">Se agotó el papel</translation>
 <translation id="3435896845095436175">Habilitar</translation>
+<translation id="3437397693214267762">Consulta tus archivos de SharePoint y OneDrive, y el calendario de Outlook</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Permitir siempre que <ph name="HOST" /> acceda al micrófono</translation>
 <translation id="3439970425423980614">Abriendo PDF en vista previa</translation>
@@ -7125,6 +7128,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
     Usa tu cuenta para acceder fácilmente a todos tus favoritos, archivos y mucho más. Si no tienes una cuenta, puedes crear una en la siguiente pantalla.</translation>
 <translation id="6054138466019582920">Bus&amp;ca en esta página con Google…</translation>
 <translation id="6054284857788651331">Grupo de pestañas recientemente cerrado</translation>
+<translation id="6054819000749443354">Abrir la Configuración del sistema</translation>
 <translation id="6054961935262556546">Cambiar visibilidad</translation>
 <translation id="6055392876709372977">PKCS N. º 1 SHA-256 con encriptación RSA</translation>
 <translation id="6055544610007596637">Instala apps en tu <ph name="DEVICE_TYPE" /> desde Google Play Store</translation>
@@ -8124,7 +8128,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786480815699355166">Solo se pueden traducir los idiomas admitidos de Subtitulado instantáneo</translation>
 <translation id="6786747875388722282">Extensiones</translation>
-<translation id="6787097042755590313">Otra pestaña</translation>
 <translation id="6787531944787756058">el nombre de usuario <ph name="USER_EMAIL" /> solo se guarda en este dispositivo. Ver detalles</translation>
 <translation id="6787839852456839824">Accesos directos</translation>
 <translation id="6788210894632713004">Extensión sin empaquetar</translation>
@@ -8949,6 +8952,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7380459290951585794">Asegúrate de que el teléfono esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas</translation>
 <translation id="7380622428988553498">El nombre del dispositivo incluye caracteres no válidos</translation>
 <translation id="7380768571499464492">Se actualizó <ph name="PRINTER_NAME" /></translation>
+<translation id="7382009635620830394">Si inhabilitas esta tarjeta, también se inhabilitarán tus tarjetas de Microsoft, como los archivos de SharePoint y OneDrive y el calendario de Outlook.</translation>
 <translation id="7382085868019811559">La Compatibilidad con navegadores heredados (LBS) permite que patrones de URL específicos se abran en un navegador alternativo compatible con las funciones heredadas necesarias para ejecutar correctamente esos sitios.</translation>
 <translation id="7382980704744807223">Sospechosa</translation>
 <translation id="738322632977123193">No se puede subir. Usa una imagen que tenga uno de estos formatos: .jpg, .gif, .png, .bmp, .tif o .webp</translation>
@@ -10619,6 +10623,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" /> administra la cuenta <ph name="USER_EMAIL" />. No puedes agregar este correo electrónico como una cuenta adicional.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Si quieres usar <ph name="USER_EMAIL" />, primero debes salir de tu <ph name="DEVICE_TYPE" />. Luego, en la parte inferior de la pantalla de acceso, selecciona Agregar a una persona.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Mantén presionada la tecla de búsqueda para cambiar el comportamiento de las teclas en la fila superior</translation>
+<translation id="8549127125482561383">Cómo mostrar solicitudes</translation>
 <translation id="8549316893834449916">Usarás tu Cuenta de Google para acceder a la Chromebook; es la misma que usas para Gmail, Drive, YouTube y otros servicios.</translation>
 <translation id="8550239873869577759">Se descargó un archivo sospechoso</translation>
 <translation id="8551388862522347954">Licencias</translation>

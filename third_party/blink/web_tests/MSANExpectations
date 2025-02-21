@@ -10,6 +10,9 @@
 # Those stress V8's simulator, making them very slow under MSan.
 crbug.com/420198 [ Linux ] fast/js/regress/* [ Skip ]
 crbug.com/420198 [ Linux ] fast/css/fontface-arraybuffer.html [ Skip ]
+crbug.com/386451783 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Skip ]
+crbug.com/386451783 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_pmin_pmax.wast.js.html [ Skip ]
+
 
 # Deliberate infinite recursion. A JS exception is expected, but may crash with
 # a stack overflow due to bloated stack frames under MSan.
@@ -137,9 +140,6 @@ crbug.com/40667709 [ Linux ] external/wpt/html/canvas/offscreen/manual/filter/of
 
 # Gardener 2025-01-08
 crbug.com/388428511 [ Linux ] external/wpt/webrtc/protocol/crypto-suite.https.html [ Failure Pass ]
-crbug.com/388428511 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Crash Failure Pass ]
-crbug.com/388428511 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_pmin_pmax.wast.js.html [ Crash Failure Pass ]
-
 # Gardener 2025-01-10
 # Very slow under MSAN. Similar to crbug.com/40948871.
 crbug.com/389039349 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.any.html [ Skip ]

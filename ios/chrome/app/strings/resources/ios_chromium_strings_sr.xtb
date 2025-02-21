@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">Синхронизуј Chromium податке</translation>
 <translation id="2592940277904433508">Настави са коришћењем Chromium-а</translation>
 <translation id="2607609479243848905">Ако сте заборавили приступну фразу или желите да промените ово подешавање, <ph name="BEGIN_LINK" />избришите Chromium податке на налогу<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium ће вам помоћи да пратите овај пакет на страници нове картице.}one{Chromium ће вам помоћи да пратите ове пакете на страници нове картице.}few{Chromium ће вам помоћи да пратите ове пакете на страници нове картице.}other{Chromium ће вам помоћи да пратите ове пакете на страници нове картице.}}</translation>
 <translation id="2650312721222849884">Да бисте видели картице на било којем уређају на ком користите Chromium, укључите синхронизацију</translation>
 <translation id="2684230048001240293">Подесите Chromium као подразумевану апликацију за синхронизовање картица, лозинки и информација о плаћању на свим уређајима</translation>
 <translation id="2730884209570016437">Chromium не може да користи камеру зато што је већ користи друга апликација</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">Chromium је ажуриран</translation>
 <translation id="3044857325852340337">Chromium подаци су избрисани</translation>
 <translation id="3054480780637153380">Отворите подешавања Chromium-а у iOS-у, па додирните Default Browser App (Подразумевана апликација за прегледач) и изаберите Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium може да вам помогне да пратите овај пакет на страници нове картице.}one{Chromium може да вам помогне да пратите ове пакете на страници нове картице.}few{Chromium може да вам помогне да пратите ове пакете на страници нове картице.}other{Chromium може да вам помогне да пратите ове пакете на страници нове картице.}}</translation>
 <translation id="3102849287235003384">Да бисте се одјавили са Google налога на свим веб-сајтовима, <ph name="BEGIN_LINK" />одјавите се из Chromium-а<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Желите да подесите Chromium за подразумевани прегледач?</translation>
 <translation id="3242612358525156339">У подешавањима уређаја отворите „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ и изаберите „Chromium“</translation>

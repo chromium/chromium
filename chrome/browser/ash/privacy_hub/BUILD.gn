@@ -25,3 +25,21 @@ static_library("privacy_hub") {
     "//chrome/browser:browser_public_dependencies",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "privacy_hub_geolocation_browsertest.cc" ]
+
+  deps = [
+    "//ash",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ui/ash/login",
+    "//chromeos/ash/components/geolocation",
+    "//testing/gtest",
+  ]
+}

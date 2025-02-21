@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">మీ Chromium డేటాను సింక్ చేయండి</translation>
 <translation id="2592940277904433508">Chromiumని ఉపయోగించడం కొనసాగించండి</translation>
 <translation id="2607609479243848905">మీ రహస్య పదబంధాన్ని మీరు మర్చిపోయినా లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకున్నా, <ph name="BEGIN_LINK" />మీ ఖాతాలోని Chromium డేటాను తొలగించండి<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{కొత్త ట్యాబ్ పేజీలో ఈ ప్యాకేజీని ట్రాక్ చేయడంలో Chromium సహాయం చేస్తుంది.}other{కొత్త ట్యాబ్ పేజీలో ఈ ప్యాకేజీలను ట్రాక్ చేయడంలో Chromium సహాయం చేస్తుంది.}}</translation>
 <translation id="2650312721222849884">మీరు Chromiumను ఎక్కడ ఉపయోగించినా, అక్కడి నుండి మీ ట్యాబ్‌లను చూసేందుకు, సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="2684230048001240293">మీ అన్ని పరికరాలలో ట్యాబ్‌లు, పాస్‌వర్డ్‌లు, పేమెంట్ సమాచారాన్ని సింక్ చేయడానికి Chromiumను డిఫాల్ట్‌గా సెట్ చేయండి</translation>
 <translation id="2730884209570016437">మీ కెమెరాను మరొక అప్లికేషన్‌ ఉపయోగిస్తున్నందున Chromium దాన్ని ఉపయోగించలేదు</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">Chromium తాజాగా ఉంది</translation>
 <translation id="3044857325852340337">Chromium డేటా తొలగింపు పూర్తయింది</translation>
 <translation id="3054480780637153380">iOSలో Chromium సెట్టింగ్‌లను తెరిచి, ఆపై "ఆటోమేటిక్ బ్రౌజర్ యాప్"పై ట్యాప్ చేసి, Chromiumను ఎంచుకోండి.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{కొత్త ట్యాబ్ పేజీలో ఈ ప్యాకేజీని ట్రాక్ చేయడంలో Chromium మీకు సహాయం చేయవచ్చు.}other{కొత్త ట్యాబ్ పేజీలో ఈ ప్యాకేజీలను ట్రాక్ చేయడంలో Chromium మీకు సహాయం చేయవచ్చు.}}</translation>
 <translation id="3102849287235003384">అన్ని వెబ్‌సైట్‌లలో మీ Google ఖాతా నుండి సైన్ అవుట్ చేయడానికి, <ph name="BEGIN_LINK" />Chromium నుండి సైన్ అవుట్ చేయండి<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromiumను మీ డిఫాల్ట్ బ్రౌజర్‌గా సెట్ చేయాలా?</translation>
 <translation id="3242612358525156339">మీ పరికరం సెట్టింగ్‌ల నుండి, "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ఆప్షన్‌ను తెరిచి, "Chromium"ను ఎంచుకోండి</translation>

@@ -152,6 +152,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE)) {
             SafetyHubLocalPasswordsDataSource localPasswordsDataSource =
                     new SafetyHubLocalPasswordsDataSource(
+                            mDelegate,
                             UserPrefs.get(getProfile()),
                             safetyHubFetchService,
                             new PasswordStoreBridge(getProfile()));

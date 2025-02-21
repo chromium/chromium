@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -32,6 +33,13 @@ using ::base::Bucket;
 using ::base::BucketsAre;
 using ::testing::WithParamInterface;
 
+constexpr FieldTypeSet kMLSupportedTypesForTesting = {
+    UNKNOWN_TYPE,       NAME_FIRST,
+    NAME_LAST,          NAME_FULL,
+    EMAIL_ADDRESS,      PHONE_HOME_NUMBER,
+    ADDRESS_HOME_LINE1, ADDRESS_HOME_STREET_ADDRESS,
+    ADDRESS_HOME_CITY};
+
 class PredictionQualityMetricsTest : public AutofillMetricsBaseTest,
                                      public testing::Test {
  public:
@@ -46,13 +54,19 @@ class PredictionQualityMetricsTest : public AutofillMetricsBaseTest,
 // one.
 TEST_F(PredictionQualityMetricsTest, SaneMetricsWithCacheMismatch) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kAutofillFixValueSemantics,
-       features::kAutofillFixInitialValueOfSelect,
-       features::kAutofillFixCurrentValueInImport,
-       // Enable model predictions but don't make it the active source.
-       features::kAutofillModelPredictions},
+  base::FieldTrialParams model_predictions_feature_params;
+  model_predictions_feature_params["model_active"] = "false";
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {
+          {features::kAutofillFixValueSemantics, {}},
+          {features::kAutofillFixInitialValueOfSelect, {}},
+          {features::kAutofillFixCurrentValueInImport, {}},
+          // Enable the model, but not as the active heuristic source.
+          {features::kAutofillModelPredictions,
+           {model_predictions_feature_params}},
+      },
       {});
+
   FormData form = CreateForm(
       {CreateTestFormField("Both match", "match", "Elvis Aaron Presley",
                            FormControlType::kInputText),
@@ -70,17 +84,23 @@ TEST_F(PredictionQualityMetricsTest, SaneMetricsWithCacheMismatch) {
                                          PHONE_HOME_NUMBER, UNKNOWN_TYPE};
   std::vector<FieldType> ml_types = server_types;
 
-  std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>
-      all_heuristic_types;
-  ASSERT_EQ(heuristic_types.size(), ml_types.size());
-  for (size_t i = 0; i < heuristic_types.size(); ++i) {
-    all_heuristic_types.push_back(
-        {{GetActiveHeuristicSource(), heuristic_types[i]},
-         {HeuristicSource::kAutofillMachineLearning, ml_types[i]}});
-  }
+  std::unique_ptr<FormStructure> form_structure =
+      std::make_unique<FormStructure>(test::WithoutValues(form));
 
-  autofill_manager().AddSeenForm(test::WithoutValues(form), all_heuristic_types,
-                                 server_types);
+  for (size_t i = 0; i < form_structure->field_count(); ++i) {
+    AutofillField* field = form_structure->field(i);
+    field->set_heuristic_type(GetActiveHeuristicSource(),
+                              heuristic_types[i]);
+    field->set_server_predictions(
+        {test::CreateFieldPrediction(server_types[i])});
+    // ML predictions can be overridden when regexes predict a type that the ML
+    // model does not know - we need to set these so that the ML predction is
+    // used.
+    field->set_ml_supported_types(kMLSupportedTypesForTesting);
+    field->set_heuristic_type(HeuristicSource::kAutofillMachineLearning,
+                              ml_types[i]);
+  }
+  autofill_manager().AddSeenFormStructure(std::move(form_structure));
 
   // Add a field and re-arrange the remaining form fields before submitting. The
   // five submitted fields are filled with
@@ -142,7 +162,7 @@ TEST_F(PredictionQualityMetricsTest, SaneMetricsWithCacheMismatch) {
                            b(EMAIL_ADDRESS, FALSE_NEGATIVE_MISMATCH),
                            b(NAME_FULL, TRUE_POSITIVE)));
 
-    std::vector<FieldType>& predicted_type = [&]() -> std::vector<FieldType>& {
+    std::vector<FieldType>& predicted_types = [&]() -> std::vector<FieldType>& {
       if (source == "Heuristic") {
         return heuristic_types;
       } else if (source == "Server") {
@@ -156,16 +176,13 @@ TEST_F(PredictionQualityMetricsTest, SaneMetricsWithCacheMismatch) {
     }();
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FieldPrediction." + source),
-        // The first field has the ML prediction type NO_SERVER_DATA because the
-        // ML predictions were never executed and NO_SERVER_DATA is used to
-        // indicate that a specific heuristic type is unset.
-        BucketsAre(source == "Server" || source == "ML"
+        BucketsAre(source == "Server"
                        ? Bucket((NO_SERVER_DATA << 16) | EMPTY_TYPE, 1)
                        : Bucket((UNKNOWN_TYPE << 16) | EMPTY_TYPE, 1),
-                   Bucket((predicted_type[0] << 16) | actual_types[0], 1),
-                   Bucket((predicted_type[1] << 16) | actual_types[1], 1),
-                   Bucket((predicted_type[2] << 16) | actual_types[2], 1),
-                   Bucket((predicted_type[3] << 16) | actual_types[3], 1)));
+                   Bucket((predicted_types[0] << 16) | actual_types[0], 1),
+                   Bucket((predicted_types[1] << 16) | actual_types[1], 1),
+                   Bucket((predicted_types[2] << 16) | actual_types[2], 1),
+                   Bucket((predicted_types[3] << 16) | actual_types[3], 1)));
   }
 }
 

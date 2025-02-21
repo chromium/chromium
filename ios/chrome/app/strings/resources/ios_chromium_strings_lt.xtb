@@ -74,7 +74,6 @@ Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar,
 <translation id="2517624234762908348">Sinchronizuoti „Chromium“ duomenis</translation>
 <translation id="2592940277904433508">Toliau naudoti „Chromium“</translation>
 <translation id="2607609479243848905">Jei pamiršote slaptafrazę ar norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chromium“ duomenis paskyroje<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{„Chromium“ padės stebėti šį paketą „Naujo skirtuko“ puslapyje.}one{„Chromium“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}few{„Chromium“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}many{„Chromium“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}other{„Chromium“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}}</translation>
 <translation id="2650312721222849884">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chromium“, įjunkite sinchronizavimą</translation>
 <translation id="2684230048001240293">Nustatykite „Chromium“ kaip numatytąjį nustatymą, kad būtų sinchronizuojami skirtukai, slaptažodžiai ir mokėjimo informacija visuose įrenginiuose</translation>
 <translation id="2730884209570016437">„Chromium“ negali naudoti fotoaparato, nes jį naudoja kita programa</translation>
@@ -89,7 +88,6 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chromium“ f
 <translation id="2977470724722393594">„Chromium“ naujausios versijos</translation>
 <translation id="3044857325852340337">Ištrinti „Chromium“ duomenys</translation>
 <translation id="3054480780637153380">Atidarykite „Chromium“ nustatymus sistemoje „iOS“, tada palieskite „Numatytoji naršyklės programa“ ir pasirinkite „Chromium“.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{„Chromium“ gali padėti stebėti šį paketą „Naujo skirtuko“ puslapyje.}one{„Chromium“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}few{„Chromium“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}many{„Chromium“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}other{„Chromium“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}}</translation>
 <translation id="3102849287235003384">Jei norite atsijungti nuo „Google“ paskyros visose svetainėse, <ph name="BEGIN_LINK" />atsijunkite nuo „Chromium“<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Nustatyti „Chromium“ kaip numatytąją naršyklę?</translation>
 <translation id="3242612358525156339">Įrenginio nustatymų skiltyje atidarykite „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ ir pasirinkite „Chromium“</translation>

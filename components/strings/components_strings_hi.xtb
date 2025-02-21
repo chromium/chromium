@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">कार्ड सेव किए जा रहे हैं...</translation>
 <translation id="1060136083665017312">गेम सिस्टम और कंसोल</translation>
 <translation id="1060320201901229167">काकू 5 साइज़ का लिफ़ाफ़ा</translation>
-<translation id="10614374240317010">कभी नहीं सेव किया गया</translation>
 <translation id="1062407476771304334">प्रतिस्थापित करें</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">सर्च इंजन के बारे में जानकारी</translation>
@@ -263,7 +262,6 @@
 <translation id="1432187715652018471">यह पेज, सेवा हैंडलर इंस्टॉल करना चाहता है.</translation>
 <translation id="1432581352905426595">सर्च इंजन प्रबंधित करें</translation>
 <translation id="1433225466058025572">अपनी फ़ाइलें फिर से मूव करने की कोशिश करें</translation>
-<translation id="1435940442311036198">Use a passkey on a different device</translation>
 <translation id="1436185428532214179">साइट, आपके डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति मांग सकती है</translation>
 <translation id="1442386063175183758">दायां गेट फ़ोल्ड</translation>
 <translation id="1442987760062738829">पंच</translation>
@@ -357,7 +355,6 @@
 <translation id="159274626729231974">फ़िल्म फ़ेस्टिवल</translation>
 <translation id="1593359183944365958">270 डिग्री</translation>
 <translation id="1594030484168838125">चुनें</translation>
-<translation id="1598816256585174656">Windows Hello की पासकी</translation>
 <translation id="1599199147673445968">नया कार्ड है? <ph name="BEGIN_LINK" />कार्ड की जानकारी डालें<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">ब्यूटी और फ़िटनेस</translation>
 <translation id="160851722280695521">Chrome में Dino Run गेम चलाएं</translation>
@@ -470,7 +467,6 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">क्या वेब ऐप्लिकेशन इंस्टॉल करने हैं?</translation>
 <translation id="1791415068765905273">तुलना करने वाली सभी टेबल दिखाएं</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google खाते में अपनी जानकारी, निजता, और सुरक्षा को मैनेज करने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="1793473605302304726">किश्तों में पैसे चुकाएं</translation>
 <translation id="1793631236004319016">आखिरी बार <ph name="NUM_HOURS_MINUTES_SECONDS" /> पहले इस्तेमाल किया गया</translation>
@@ -2127,7 +2123,6 @@
 <translation id="4754461935447132332">सिर्फ़ सुरक्षित साइटों को ही अनुमति है</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">आपकी Chrome प्रोफ़ाइल की पासकी</translation>
 <translation id="4757993714154412917">आपने अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. अपने खातों को सुरक्षित करने के लिए, Chromium का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें.</translation>
 <translation id="4758311279753947758">संपर्क जानकारी जोड़ें</translation>
 <translation id="4761326898079498987">ज़्यादा जानकारी के लिए समीक्षा करें</translation>
@@ -2700,7 +2695,6 @@
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> पर भेजें</translation>
 <translation id="5765072501007116331">वितरण के तरीके और ज़रूरतें देखने के लिए, कोई पता चुनें</translation>
 <translation id="57689295674415555">वर्चुअल कार्ड नंबर नहीं भरा गया?</translation>
-<translation id="5772086939108830423">पासकी का इस्तेमाल दूसरे डिवाइस पर करें</translation>
 <translation id="5776313857861697733">प्राथमिकता</translation>
 <translation id="577804500166306874">नतीजा लोड हो रहा है</translation>
 <translation id="5781136890105823427">परफ़ॉर्मेंस जांचना चालू है</translation>
@@ -2831,7 +2825,6 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (सिंक किए गए)</translation>
 <translation id="6028591542479806248">मोबाइल और ईमेल सूचनाएं मैनेज करें</translation>
 <translation id="6028833024483927901">दुनिया भर की जगहों के पकवान</translation>
-<translation id="6030251660719692307">Google Password Manager की पासकी</translation>
 <translation id="603068602130820122">दाईं ओर ड्युएल स्टेपल</translation>
 <translation id="6032524144326295339">मेलबॉक्स 2</translation>
 <translation id="6032955021262906325">बाईं ओर बाइंड</translation>
@@ -3439,7 +3432,6 @@
 <translation id="7096937462164235847">इस वेबसाइट की पहचान की पुष्टि नहीं हुई है.</translation>
 <translation id="7102554173784142865">Chrome Dino गेम खेलें</translation>
 <translation id="7102760431686146931">खाना बनाने और खाने वाले बर्तन</translation>
-<translation id="7105998430540165694">iCloud Keychain की पासकी</translation>
 <translation id="7106762743910369165">आपका संगठन आपके ब्राउज़र को मैनेज करता है</translation>
 <translation id="7107249414147762907">इस PDF को ऐक्सेस नहीं किया जा सकता. टेक्स्ट नहीं निकाला गया</translation>
 <translation id="7107427078069498123">SHA-256 फ़िंगरप्रिंट</translation>
@@ -4530,7 +4522,6 @@
 <translation id="9040341831873780534">शर्तें यहां देखें</translation>
 <translation id="9042617223719777575">ज़्यादा क्षमता</translation>
 <translation id="9042827002460091668">अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें</translation>
-<translation id="9044359186343685026">टच आईडी का इस्तेमाल करें</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">माइक्रोफ़ोन (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">इन कार्रवाइयों के लिए, <ph name="POLICY_NAME" /> नीति को <ph name="POLICY_VALUE" /> पर सेट करना ज़रूरी है: <ph name="ACTION_LIST" />.</translation>

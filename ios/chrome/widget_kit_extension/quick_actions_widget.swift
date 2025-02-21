@@ -118,7 +118,7 @@ struct QuickActionsWidget: Widget {
     func snapshot(for configuration: SelectProfileIntent, in context: Context) async
       -> ConfigureQuickActionsWidgetEntry
     {
-      let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
+      let avatar: Image? = configuration.avatarForAccount(account: configuration.profile)
       let gaiaID: String? = configuration.gaiaForAccount(account: configuration.profile)
       let entry = ConfigureQuickActionsWidgetEntry(
         date: Date(),
@@ -134,7 +134,7 @@ struct QuickActionsWidget: Widget {
     func timeline(for configuration: SelectProfileIntent, in context: Context) async -> Timeline<
       ConfigureQuickActionsWidgetEntry
     > {
-      let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
+      let avatar: Image? = configuration.avatarForAccount(account: configuration.profile)
       let gaiaID: String? = configuration.gaiaForAccount(account: configuration.profile)
       let entry = ConfigureQuickActionsWidgetEntry(
         date: Date(),

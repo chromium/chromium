@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">ซิงค์ข้อมูล Chromium</translation>
 <translation id="2592940277904433508">ใช้ Chromium ต่อ</translation>
 <translation id="2607609479243848905">หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ลบข้อมูล Chromium ในบัญชี<ph name="END_LINK" /></translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium จะช่วยติดตามพัสดุนี้ในหน้าแท็บใหม่}other{Chromium จะช่วยติดตามพัสดุเหล่านี้ในหน้าแท็บใหม่}}</translation>
 <translation id="2650312721222849884">เปิดการซิงค์เพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chromium</translation>
 <translation id="2684230048001240293">ตั้ง Chromium เป็นค่าเริ่มต้นเพื่อซิงค์แท็บ รหัสผ่าน และข้อมูลการชำระเงินในอุปกรณ์ทุกเครื่องของคุณ</translation>
 <translation id="2730884209570016437">Chromium ไม่สามารถใช้กล้องถ่ายรูปเนื่องจากแอปพลิเคชันอื่นใช้งานอยู่</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">Chromium อัปเดตแล้ว</translation>
 <translation id="3044857325852340337">ลบข้อมูลใน Chromium แล้ว</translation>
 <translation id="3054480780637153380">เปิดการตั้งค่า Chromium ใน iOS จากนั้นแตะ "แอปเบราว์เซอร์เริ่มต้น" แล้วเลือก Chromium</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium จะช่วยคุณติดตามพัสดุนี้ในหน้าแท็บใหม่ได้}other{Chromium จะช่วยคุณติดตามพัสดุเหล่านี้ในหน้าแท็บใหม่ได้}}</translation>
 <translation id="3102849287235003384">หากต้องการออกจากระบบบัญชี Google ในเว็บไซต์ทั้งหมด ให้<ph name="BEGIN_LINK" />ออกจากระบบ Chromium<ph name="END_LINK" /></translation>
 <translation id="3115956258722352278">กำหนดให้ Chromium เป็นเบราว์เซอร์เริ่มต้นใช่ไหม</translation>
 <translation id="3242612358525156339">จากการตั้งค่าของอุปกรณ์ ให้เปิด "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" และเลือก "Chromium"</translation>

@@ -54,9 +54,9 @@ _SECONDARY_ABI_OUTPUT_PATH = None
 # https://hg.python.org/cpython/rev/6dd5e9556a60#l2.8
 def _PatchZipFile():
   oldDecodeExtra = zipfile.ZipInfo._decodeExtra
-  def decodeExtra(self):
+  def decodeExtra(self, *args):
     try:
-      oldDecodeExtra(self)
+      oldDecodeExtra(self, *args)
     except struct.error:
       pass
   zipfile.ZipInfo._decodeExtra = decodeExtra

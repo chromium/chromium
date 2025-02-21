@@ -74,7 +74,6 @@ Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsan
 <translation id="2517624234762908348">Chromium verilerimi senkronize et</translation>
 <translation id="2592940277904433508">Chromium'u kullanmaya devam et</translation>
 <translation id="2607609479243848905">Parolanızı unuttuysanız veya bu ayarı değiştirmek istiyorsanız <ph name="BEGIN_LINK" />hesabınızdaki Chromium verilerini silin<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium, Yeni Sekme sayfasında bu kargoyu takip etmenize yardımcı olacak.}other{Chromium, Yeni Sekme sayfasında bu kargoları takip etmenize yardımcı olacak.}}</translation>
 <translation id="2650312721222849884">Chromium kullandığınız her yerde sekmelerinizi görmek için senkronizasyonu açın.</translation>
 <translation id="2684230048001240293">Tüm cihazlarınızdaki sekmelerinizi, parolalarınızı ve ödeme bilgilerinizi senkronize etmek için Chromium'u varsayılan olarak ayarlayın</translation>
 <translation id="2730884209570016437">Kameranız başka bir uygulama tarafından kullanıldığından Chromium, kameranızı kullanamıyor.</translation>
@@ -89,7 +88,6 @@ Veri kullanarak Chromium deneyiminizi iyileştiren daha fazla ayar görmek için
 <translation id="2977470724722393594">Chromium güncel durumda</translation>
 <translation id="3044857325852340337">Chromium verileri silindi</translation>
 <translation id="3054480780637153380">iOS'te Chromium ayarlarını açtıktan sonra "Varsayılan Tarayıcı Uygulaması"na dokunup Chromium'u seçin.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium, Yeni Sekme sayfasında bu kargoyu takip etmenize yardımcı olabilir.}other{Chromium, Yeni Sekme sayfasında bu kargoları takip etmenize yardımcı olabilir.}}</translation>
 <translation id="3102849287235003384">Tüm web sitelerinde Google Hesabınızın oturumunu kapatmak için <ph name="BEGIN_LINK" />Chromium oturumunu kapatın<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium varsayılan tarayıcı yapılsın mı?</translation>
 <translation id="3242612358525156339">Cihazınızda Ayarlar'dan, "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" bölümünü açıp "Chromium"u seçin</translation>

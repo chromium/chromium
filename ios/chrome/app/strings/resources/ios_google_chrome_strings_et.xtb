@@ -136,7 +136,6 @@ Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andme
 <translation id="4830799082179398588">Kas soovite Chrome'i vaikebrauseriks määrata?</translation>
 <translation id="484033449593719797">Ei toetata Chrome'i beetaversioonis</translation>
 <translation id="4840404732697892756">Google'i paroolihaldur saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga.</translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{Chrome aitab teil seda saadetist uuel vahelehel jälgida.}other{Chrome aitab teil neid saadetisi uuel vahelehel jälgida.}}</translation>
 <translation id="4903674399067644695">Sellel kaardil kuvatakse soovitusi selle kohta, kuidas Chrome'i parimal moel kasutada.</translation>
 <translation id="49200511069271369">Teie organisatsioon <ph name="DOMAIN" /> haldab kontot, millele sisse logite, ja Chrome'i kasutamist. Teie administraator saab teatud funktsioone seadistada või piirata.</translation>
 <translation id="4925322001044117929">Kasutage iPadis vaikimisi Chrome'i</translation>
@@ -158,7 +157,6 @@ Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andme
 <translation id="5439191312780166229">Hoiatab teid ohtlike saitide eest, isegi nende eest, millest Google varem ei teadnud, analüüsides standardse kaitsega võrreldes rohkem saitidelt pärinevaid andmeid. Soovi korral saate Chrome'i hoiatused vahele jätta.</translation>
 <translation id="5442013002200339429">Kui peidate mooduli „<ph name="MODULE_NAME" />”, ei jälgi Chrome enam teie tulevasi saadetisi automaatselt ja kustutab kõik teie varasemad saadetiste jälgimisandmed.</translation>
 <translation id="5460571915754665838">4. Valige Chrome</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{Chrome aitab teil seda saadetist uuel vahelehel jälgida.}other{Chrome aitab teil neid saadetisi uuel vahelehel jälgida.}}</translation>
 <translation id="5492504007368565877">Google'i paroolihaldur ei saa teie paroole kontrollida.</translation>
 <translation id="5525095647255982834">Selle vahelehe saatmiseks teise seadmesse logige selles Chrome'i sisse.</translation>
 <translation id="5527026824954593399">Puudutage valikut „Kuva Google Mapsi abil Chrome'is“.</translation>

@@ -21,9 +21,9 @@ class SaveAutofillAiDataBubbleView
   METADATA_HEADER(SaveAutofillAiDataBubbleView, views::View)
 
  public:
-  static constexpr int kLearnMoreStyledLabelViewID = 436;
-  static constexpr int kThumbsUpButtonViewID = 437;
-  static constexpr int kThumbsDownButtonViewID = 438;
+  static constexpr int kNewEntityAddedOrUpdatedAttributesContainer = 437;
+  static constexpr int kNewEntityUnchagedOrOldEntityUpdatedAttributesContainer =
+      438;
 
   SaveAutofillAiDataBubbleView(views::View* anchor_view,
                                content::WebContents* web_contents,

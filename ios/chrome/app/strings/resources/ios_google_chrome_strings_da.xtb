@@ -136,7 +136,6 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="4830799082179398588">Vil du gøre Chrome til din standardbrowser?</translation>
 <translation id="484033449593719797">Understøttes ikke i Chrome Beta</translation>
 <translation id="4840404732697892756">Google Adgangs­kode­admin­istrator kan tjekke dine adgangskoder, når du logger ind med din Google-konto.</translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{Chrome kan hjælpe dig med at spore denne pakke på siden Ny fane.}one{Chrome kan hjælpe dig med at spore denne pakke på siden Ny fane.}other{Chrome kan hjælpe dig med at spore disse pakker på siden Ny fane.}}</translation>
 <translation id="4903674399067644695">Dette kort viser dig forslag til, hvordan du får mest muligt ud af Chrome.</translation>
 <translation id="49200511069271369">Din organisation, <ph name="DOMAIN" />, administrerer den konto, du logger ind på, og hvordan Chrome kan bruges. Din administrator kan konfigurere eller begrænse visse funktioner.</translation>
 <translation id="4925322001044117929">Brug Chrome på iPad som standard</translation>
@@ -158,7 +157,6 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="5439191312780166229">Advarer dig om skadelige websites – også websites, som Google ikke tidligere har kendt til – ved at analysere flere data fra websites end Standardbeskyttelse. Du kan vælge at springe Chrome-advarsler over.</translation>
 <translation id="5442013002200339429">Hvis du skjuler "<ph name="MODULE_NAME" />", sporer Chrome ikke længere automatisk dine fremtidige pakker, og alle dine tidligere pakkesporingsdata slettes.</translation>
 <translation id="5460571915754665838">4. Vælg Chrome</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{Chrome hjælper med at spore denne pakke på siden Ny fane.}one{Chrome hjælper med at spore denne pakke på siden Ny fane.}other{Chrome hjælper med at spore disse pakker på siden Ny fane.}}</translation>
 <translation id="5492504007368565877">Google Adgangs­kode­admin­istrator kan ikke tjekke dine adgangskoder.</translation>
 <translation id="5525095647255982834">Hvis du vil sende denne fane til en anden enhed, skal du logge ind på Chrome på den pågældende enhed.</translation>
 <translation id="5527026824954593399">Tryk på "Se med Google Maps i Chrome".</translation>

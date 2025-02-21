@@ -218,6 +218,17 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   void UpdatePrefetchServiceDelegateAcceptLanguageHeader(
       std::string accept_language_header);
 
+  // Returns `true` if a new prefetch request with `url` and
+  // `no_vary_search_hint` has a duplicate in the prefetch cache and thus the
+  // caller can choose not to start the prefetch request.
+  //
+  // Note: This is currently used for WebView initiated prefetches
+  // so consideration should be taken if updating the
+  // underlying implementation (or its dependencies).
+  bool IsPrefetchDuplicate(
+      GURL& url,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint);
+
   using BlobCallback = base::OnceCallback<void(std::unique_ptr<BlobHandle>)>;
   using BlobContextGetter =
       base::RepeatingCallback<base::WeakPtr<storage::BlobStorageContext>()>;

@@ -472,6 +472,7 @@
 <translation id="3226657629376379887">Handlingsmeny for layout</translation>
 <translation id="3227186760713762082">Divider <ph name="CATEGORY_TEXT" />-verdien med <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Utskriftsjobber som er eldre enn 1 dag, blir fjernet</translation>
+<translation id="3248791727258378769">Ingen transkripsjon blir opprettet</translation>
 <translation id="324961752321393509">Administratoren din tillater ikke lukking av denne appen</translation>
 <translation id="3263941347294171263">Koble <ph name="DEVICE_NAME" /> fra og koble den til igjen for å fortsette oppdateringsprosessen</translation>
 <translation id="3268178239013324452">Mislykket – luken er åpen</translation>
@@ -670,6 +671,7 @@
 <translation id="420283545744377356">Slå av skjermspareren</translation>
 <translation id="4210636113897977670">Lagre og avslutt</translation>
 <translation id="4210659479607886331">isbreelv</translation>
+<translation id="4212169537710712814">Transkripsjonsmodellen for <ph name="LANGUAGE_NAME" /> er ferdig lastet ned</translation>
 <translation id="42126664696688958">Eksportér</translation>
 <translation id="4213104098953699324">USB-tastatur</translation>
 <translation id="4227825898293920515">Passordet utløper om <ph name="TIME" /></translation>
@@ -940,6 +942,7 @@
 <translation id="5431318178759467895">Farge</translation>
 <translation id="5457599981699367932">Surf som gjest</translation>
 <translation id="54609108002486618">Administrert</translation>
+<translation id="5461608756903394951">Laster ned transkripsjonsmodellen for <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5470776029649730099">strie</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} forsøk igjen}other{{0} forsøk igjen}}</translation>
 <translation id="5488280942828718790">magenta</translation>
@@ -1191,6 +1194,7 @@
 <translation id="6595046262780525922">Vil du slå på transkripsjon og laste ned transkripsjonsmodellen?</translation>
 <translation id="6596816719288285829">IP-adresse</translation>
 <translation id="6599673642868607614">Takk for tilbakemeldingen. Tilbakemeldingen din hjelper oss med å gjøre Chromebook-opplevelsen bedre, og den blir gjennomgått av teamet vårt. På grunn av det store antallet rapporter kan vi ikke sende svar.</translation>
+<translation id="6608043585557830684">Transkripsjon er av. Slå det på i innstillingene eller på <ph name="THREE_DOTS_MENU_ICON" />-menyen.</translation>
 <translation id="660846213831377756">Musetaster</translation>
 <translation id="6618744767048954150">Kjører</translation>
 <translation id="6620487321149975369">Utskriftsjobber vises i loggen med mindre de fjernes manuelt</translation>

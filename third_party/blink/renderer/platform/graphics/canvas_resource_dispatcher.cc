@@ -141,10 +141,14 @@ void UpdatePlaceholderDispatcher(
 void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
     scoped_refptr<CanvasResource>&& canvas_resource,
     viz::ResourceId resource_id) {
-  if (placeholder_canvas_id_ == kInvalidPlaceholderCanvasId) {
+  if (placeholder_canvas_id_ == kInvalidPlaceholderCanvasId ||
+      // `agent_group_scheduler_compositor_task_runner_` may be null if this
+      // was created from a SharedWorker.
+      !agent_group_scheduler_compositor_task_runner_) {
     ReclaimResourceInternal(resource_id, std::move(canvas_resource));
     return;
   }
+
   // Determines whether the main thread may be blocked. If unblocked, post
   // |canvas_resource|. Otherwise, save it but do not post it.
   if (num_unreclaimed_frames_posted_ < kMaxUnreclaimedPlaceholderFrames) {
@@ -170,10 +174,7 @@ void CanvasResourceDispatcher::PostImageToPlaceholder(
   // until it is returned.
   canvas_resource->Transfer();
 
-  // `agent_group_scheduler_compositor_task_runner_` may be null if this
-  // was created from a SharedWorker.
-  if (!agent_group_scheduler_compositor_task_runner_)
-    return;
+  CHECK(agent_group_scheduler_compositor_task_runner_);
   PostCrossThreadTask(
       *agent_group_scheduler_compositor_task_runner_, FROM_HERE,
       CrossThreadBindOnce(UpdatePlaceholderImage, placeholder_canvas_id_,

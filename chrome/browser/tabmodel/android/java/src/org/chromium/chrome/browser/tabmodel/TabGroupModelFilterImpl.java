@@ -1588,32 +1588,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
-        for (TabModelObserver observer : mFilteredObservers) {
-            observer.onFinishingMultipleTabClosure(tabs, canRestore);
-        }
-        Set<Token> processedTabGroups = new HashSet<>();
-        LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
-                getLazyAllTabGroupIds(tabs, /* includePendingClosures= */ true);
-        for (Tab tab : tabs) {
-            @Nullable Token tabGroupId = tab.getTabGroupId();
-            if (tabGroupId == null) continue;
-
-            boolean alreadyProcessed = !processedTabGroups.add(tabGroupId);
-            if (alreadyProcessed) continue;
-
-            // If the tab group still exists in the comprehensive tab model then we shouldn't signal
-            // that it is finished closing.
-            if (tabGroupIdsInComprehensiveModel.get().contains(tabGroupId)) continue;
-
-            boolean wasHiding = mHidingTabGroups.remove(tabGroupId);
-            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.committedTabGroupClosure(tabGroupId, wasHiding);
-            }
-        }
-    }
-
-    @Override
     public LazyOneshotSupplier<Set<Token>> getLazyAllTabGroupIds(
             List<Tab> tabsToExclude, boolean includePendingClosures) {
         return LazyOneshotSupplier.fromSupplier(
@@ -1692,6 +1666,35 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         }
     }
 
+    private void maybeSendCloseTabGroupEvent(List<Tab> tabs, boolean committing) {
+        LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
+                getLazyAllTabGroupIds(tabs, /* includePendingClosures= */ committing);
+        Set<Token> processedTabGroups = new HashSet<>();
+        for (Tab tab : tabs) {
+            @Nullable Token tabGroupId = tab.getTabGroupId();
+            if (tabGroupId == null) continue;
+
+            boolean alreadyProcessed = !processedTabGroups.add(tabGroupId);
+            if (alreadyProcessed) continue;
+
+            // If the tab group still exists in the comprehensive tab model we should send an event.
+            if (tabGroupIdsInComprehensiveModel.get().contains(tabGroupId)) continue;
+
+            boolean hiding;
+            if (committing) {
+                hiding = mHidingTabGroups.remove(tabGroupId);
+                for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                    observer.committedTabGroupClosure(tabGroupId, hiding);
+                }
+            } else {
+                hiding = mHidingTabGroups.contains(tabGroupId);
+                for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                    observer.willCloseTabGroup(tabGroupId, hiding);
+                }
+            }
+        }
+    }
+
     @Override
     public void didSelectTab(Tab tab, int type, int lastId) {
         RecordHistogram.recordBooleanHistogram(
@@ -1706,6 +1709,9 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     @Override
     public void willCloseTab(Tab tab, boolean didCloseAlone) {
         closeTab(tab);
+        if (didCloseAlone) {
+            maybeSendCloseTabGroupEvent(Collections.singletonList(tab), /* committing= */ false);
+        }
         for (TabModelObserver observer : mFilteredObservers) {
             observer.willCloseTab(tab, didCloseAlone);
         }
@@ -1716,6 +1722,14 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         for (TabModelObserver observer : mFilteredObservers) {
             observer.onFinishingTabClosure(tab);
         }
+    }
+
+    @Override
+    public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
+        for (TabModelObserver observer : mFilteredObservers) {
+            observer.onFinishingMultipleTabClosure(tabs, canRestore);
+        }
+        maybeSendCloseTabGroupEvent(tabs, /* committing= */ true);
     }
 
     @Override
@@ -1737,6 +1751,9 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         }
     }
 
+    // willMoveTab is above as it has a complex implementation integral to the behavior of this
+    // class.
+
     @Override
     public void tabPendingClosure(Tab tab) {
         for (TabModelObserver observer : mFilteredObservers) {
@@ -1751,6 +1768,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         }
     }
 
+    // tabClosureUndone is above as it is more involved in the core behavior of this class.
+
     @Override
     public void tabClosureCommitted(Tab tab) {
         for (TabModelObserver observer : mFilteredObservers) {
@@ -1760,8 +1779,18 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
     @Override
     public void willCloseAllTabs(boolean incognito) {
+        maybeSendCloseTabGroupEvent(
+                TabModelUtils.convertTabListToListOfTabs(mTabModel), /* committing= */ false);
         for (TabModelObserver observer : mFilteredObservers) {
             observer.willCloseAllTabs(incognito);
+        }
+    }
+
+    @Override
+    public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
+        maybeSendCloseTabGroupEvent(tabs, /* committing= */ false);
+        for (TabModelObserver observer : mFilteredObservers) {
+            observer.willCloseMultipleTabs(allowUndo, tabs);
         }
     }
 

@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "third_party/omnibox_proto/groups.pb.h"
+#import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 
 using base::UserMetricsAction;
@@ -204,6 +205,17 @@ using base::UserMetricsAction;
           },
           weakSelf, disposition, matchSelectionTimestamp));
       return;
+    } else if (match.type == AutocompleteMatchType::CLIPBOARD_IMAGE) {
+      clipboardRecentContent->GetRecentImageFromClipboard(base::BindOnce(
+          [](OmniboxAutocompleteController* controller,
+             WindowOpenDisposition disposition, base::TimeTicks timestamp,
+             std::optional<gfx::Image> optionalImage) {
+            [controller openClipboardImage:optionalImage
+                               disposition:disposition
+                                 timestamp:timestamp];
+          },
+          weakSelf, disposition, matchSelectionTimestamp));
+      return;
     }
   }
 
@@ -287,4 +299,25 @@ using base::UserMetricsAction;
       selectionTimestamp:timestamp];
 }
 
+/// Creates a match with the clipboard image and open it.
+- (void)openClipboardImage:(std::optional<gfx::Image>)optionalImage
+               disposition:(WindowOpenDisposition)disposition
+                 timestamp:(base::TimeTicks)timestamp {
+  if (!optionalImage || !_autocompleteController) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  _autocompleteController->clipboard_provider()->NewClipboardImageMatch(
+      optionalImage,
+      base::BindOnce(
+          [](OmniboxAutocompleteController* controller,
+             WindowOpenDisposition disposition, base::TimeTicks timestamp,
+             std::optional<AutocompleteMatch> optionalMatch) {
+            [controller openCustomMatch:optionalMatch
+                            disposition:disposition
+                     selectionTimestamp:timestamp];
+          },
+          weakSelf, disposition, timestamp));
+}
 @end

@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Po ruhen kartat...</translation>
 <translation id="1060136083665017312">Sisteme dhe konsola lojërash</translation>
 <translation id="1060320201901229167">Zarf Kaku 5</translation>
-<translation id="10614374240317010">Nuk u ruaj asnjëherë</translation>
 <translation id="1062407476771304334">Zëvendëso</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Detajet e motorit të kërkimit</translation>
@@ -263,7 +262,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1432187715652018471">faqja kërkon të instalojë një përpunues të shërbimit.</translation>
 <translation id="1432581352905426595">Menaxho motorët e kërkimit</translation>
 <translation id="1433225466058025572">Provo t'i zhvendosësh përsëri skedarët e tu</translation>
-<translation id="1435940442311036198">Përdor një çelës kalimi në një pajisje tjetër</translation>
 <translation id="1436185428532214179">Mund të kërkojë të modifikojë skedarët ose dosjet në pajisjen tënde</translation>
 <translation id="1442386063175183758">Palosje me dritare djathtas</translation>
 <translation id="1442987760062738829">Shpim</translation>
@@ -357,7 +355,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="159274626729231974">Festivalet e filmave</translation>
 <translation id="1593359183944365958">270 gradë</translation>
 <translation id="1594030484168838125">Zgjidh</translation>
-<translation id="1598816256585174656">Çelësi i kalimit nga Windows Hello</translation>
 <translation id="1599199147673445968">Kartë e re? <ph name="BEGIN_LINK" />Fut detajet e kartës<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Estetikë dhe fitnes</translation>
 <translation id="160851722280695521">Luaj lojën Dino Run në Chrome</translation>
@@ -469,7 +466,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Të instalohen aplikacionet e uebit?</translation>
 <translation id="1791415068765905273">Shfaq të gjitha tabelat e krahasimit</translation>
-<translation id="1791429645902722292">Smart Lock-u i Google</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp butonin Tab pastaj Enter për të menaxhuar informacionin, privatësinë dhe sigurinë tënde në "Llogarinë tënde të Google</translation>
 <translation id="1793473605302304726">Paguaj me kalimin e kohës</translation>
 <translation id="1793631236004319016">Përdorur së fundi <ph name="NUM_HOURS_MINUTES_SECONDS" /> më parë</translation>
@@ -2127,7 +2123,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4754461935447132332">Nuk lejohet për sajtet e pasigurta</translation>
 <translation id="4756388243121344051">&amp;Historiku</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Çelësi i kalimit nga profili yt i Chrome</translation>
 <translation id="4757993714154412917">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Për të siguruar llogaritë e tua, Chromium rekomandon të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="4758311279753947758">Shto informacionet e kontaktit</translation>
 <translation id="4761326898079498987">Rishiko për detaje të mëtejshme</translation>
@@ -2700,7 +2695,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5764920692828389743">Dërgo te <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Për të parë mënyrat dhe kërkesat e dorëzimit, zgjidh një adresë</translation>
 <translation id="57689295674415555">Nuk është plotësuar numri i kartës virtuale?</translation>
-<translation id="5772086939108830423">Përdor një çelës kalimi në një pajisje tjetër</translation>
 <translation id="5776313857861697733">Përparësia</translation>
 <translation id="577804500166306874">Rezultati po ngarkohet</translation>
 <translation id="5781136890105823427">Eksperimenti u aktivizua</translation>
@@ -2831,7 +2825,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sinkronizuar)</translation>
 <translation id="6028591542479806248">Menaxho njoftimet e email-it dhe pajisjes celulare</translation>
 <translation id="6028833024483927901">Kuzhina botërore</translation>
-<translation id="6030251660719692307">Çelësi i kalimit nga "Menaxheri i fjalëkalimeve i Google"</translation>
 <translation id="603068602130820122">Dy kapje me tel djathtas</translation>
 <translation id="6032524144326295339">Kutia postare 2</translation>
 <translation id="6032955021262906325">Lidhje majtas</translation>
@@ -3438,7 +3431,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7096937462164235847">Identiteti i këtij sajti uebi nuk është i verifikuar.</translation>
 <translation id="7102554173784142865">Luaj lojën Chrome Dino</translation>
 <translation id="7102760431686146931">Enë gatimi dhe artikuj tavoline</translation>
-<translation id="7105998430540165694">Çelësi i kalimit nga iCloud Keychain</translation>
 <translation id="7106762743910369165">Shfletuesi yt menaxhohet nga organizata jote</translation>
 <translation id="7107249414147762907">Kjo PDF është e paarritshme. Nuk është nxjerrë asnjë tekst</translation>
 <translation id="7107427078069498123">Gjurmët e gishtave me SHA-256</translation>
@@ -4527,7 +4519,6 @@ Detaje shtesë:
 <translation id="9040341831873780534">Shiko kushtet këtu</translation>
 <translation id="9042617223719777575">Kapacitet i madh</translation>
 <translation id="9042827002460091668">Kontrollo lidhjen e internetit dhe provo përsëri</translation>
-<translation id="9044359186343685026">Përdor Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Mikrofonat (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Këto veprime kërkojnë që politika <ph name="POLICY_NAME" /> të caktohet si "<ph name="POLICY_VALUE" />": <ph name="ACTION_LIST" />.</translation>

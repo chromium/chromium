@@ -228,6 +228,11 @@ class _TemplateType(str, enum.Enum):
     TESTHARNESS = 'testharness'
 
 
+_REFERENCE_TEMPLATES = (_TemplateType.REFERENCE,
+                        _TemplateType.HTML_REFERENCE,
+                        _TemplateType.CAIRO_REFERENCE)
+
+
 class MutableDictLoader(jinja2.BaseLoader):
     """Loads Jinja templates from a `dict` that can be updated.
 
@@ -585,21 +590,16 @@ class _Variant():
         return frozenset(_CanvasType(t) for t in canvas_types)
 
     def _get_template_type(self) -> _TemplateType:
-        reference_types = (('reference' in self.params) +
-                           ('html_reference' in self.params) +
-                           ('cairo_reference' in self.params))
+        reference_types = sum(t in self.params for t in _REFERENCE_TEMPLATES)
         if reference_types > 1:
             raise InvalidTestDefinitionError(
                 f'Test {self.params["name"]} is invalid, only one of '
-                '"reference", "html_reference" or "cairo_reference" can be '
-                'specified at the same time.')
+                f'{[t.value for t in _REFERENCE_TEMPLATES]} can be specified '
+                'at the same time.')
 
-        if 'reference' in self.params:
-            return _TemplateType.REFERENCE
-        if 'html_reference' in self.params:
-            return _TemplateType.HTML_REFERENCE
-        if 'cairo_reference' in self.params:
-            return _TemplateType.CAIRO_REFERENCE
+        for template_type in _REFERENCE_TEMPLATES:
+            if template_type.value in self.params:
+                return template_type
         return _TemplateType.TESTHARNESS
 
     def finalize_params(self, jinja_env: jinja2.Environment,
@@ -811,9 +811,7 @@ class _VariantGrid:
                 'svgimages': self._param_set([canvas_type], 'svgimages'),
                 'fonts': self._param_set([canvas_type], 'fonts'),
             })
-            if self.template_type in (_TemplateType.REFERENCE,
-                                      _TemplateType.HTML_REFERENCE,
-                                      _TemplateType.CAIRO_REFERENCE):
+            if self.template_type in _REFERENCE_TEMPLATES:
                 params['desc'] = self._unique_param([canvas_type], 'desc')
         return grid_params
 
@@ -978,9 +976,7 @@ class _VariantGrid:
 
         output_files = output_dirs.sub_path(self.file_name)
 
-        if self.template_type in (_TemplateType.REFERENCE,
-                                  _TemplateType.HTML_REFERENCE,
-                                  _TemplateType.CAIRO_REFERENCE):
+        if self.template_type in _REFERENCE_TEMPLATES:
             self._write_reference_test(jinja_env, output_files)
         else:
             self._write_testharness_test(jinja_env, output_files)

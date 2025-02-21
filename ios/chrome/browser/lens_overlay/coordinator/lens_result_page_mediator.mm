@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator_delegate.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_url_utils.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_error_handler.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -46,32 +47,25 @@
 
 namespace {
 
-BOOL URLHostIsGoogle(const GURL& URL) {
-  std::string_view host = URL.host_piece();
-
-  return (base::EqualsCaseInsensitiveASCII(host, "google.com") ||
-          base::EqualsCaseInsensitiveASCII(host, "www.google.com"));
-}
-
 BOOL URLIsFlights(const GURL& URL) {
   std::string_view path = URL.path_piece();
   BOOL pathIsFlights = path.rfind("/travel/flights", 0) == 0;
 
-  return URLHostIsGoogle(URL) && pathIsFlights;
+  return lens::IsGoogleHostURL(URL) && pathIsFlights;
 }
 
 BOOL URLIsFinance(const GURL& URL) {
   std::string_view path = URL.path_piece();
   BOOL pathIsFinance = path.rfind("/finance", 0) == 0;
 
-  return URLHostIsGoogle(URL) && pathIsFinance;
+  return lens::IsGoogleHostURL(URL) && pathIsFinance;
 }
 
 BOOL URLIsShopping(const GURL& URL) {
   std::string_view query = URL.query_piece();
   BOOL queryMatchesShoppingParam = query.find("udm=28") != std::string::npos;
 
-  return URLHostIsGoogle(URL) && queryMatchesShoppingParam;
+  return lens::IsGoogleHostURL(URL) && queryMatchesShoppingParam;
 }
 
 BOOL URLHasLensRequestQueryParam(const GURL& URL) {
@@ -98,7 +92,7 @@ GURL URLByRemovingLensSurfaceParamIfNecessary(const GURL& URL) {
 std::pair<BOOL, std::optional<GURL>> IsValidURLToOpenInResultsPage(
     const GURL& originalURL) {
   GURL URL = URLByRemovingLensSurfaceParamIfNecessary(originalURL);
-  if (!URLHostIsGoogle(URL)) {
+  if (!lens::IsGoogleHostURL(URL)) {
     return std::pair(NO, std::nullopt);
   }
 
@@ -307,6 +301,13 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   URL = allowURL.second.value_or(URL);
 
   if (requestInfo.target_frame_is_main && !allowURL.first) {
+    // Allow redirection from google host, search request from some countries
+    // use redirection. crbug.com/397536947
+    if (lens::IsGoogleRedirection(URL, requestInfo)) {
+      decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
+      return;
+    }
+
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
 
     if (URL.IsAboutBlank()) {

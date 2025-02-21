@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">正在儲存卡…</translation>
 <translation id="1060136083665017312">遊戲系統及遊戲機</translation>
 <translation id="1060320201901229167">Kaku 5 信封</translation>
-<translation id="10614374240317010">永不儲存</translation>
 <translation id="1062407476771304334">取代</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">搜尋引擎詳情</translation>
@@ -263,7 +262,6 @@
 <translation id="1432187715652018471">網頁想要安裝服務處理常式。</translation>
 <translation id="1432581352905426595">管理搜尋引擎</translation>
 <translation id="1433225466058025572">嘗試再次移動檔案</translation>
-<translation id="1435940442311036198">在其他裝置上使用密鑰</translation>
 <translation id="1436185428532214179">可要求編輯裝置中的檔案和資料夾</translation>
 <translation id="1442386063175183758">右半邊對摺</translation>
 <translation id="1442987760062738829">打孔</translation>
@@ -357,7 +355,6 @@
 <translation id="159274626729231974">電影節</translation>
 <translation id="1593359183944365958">270 度</translation>
 <translation id="1594030484168838125">選擇</translation>
-<translation id="1598816256585174656">Windows Hello 的密鑰</translation>
 <translation id="1599199147673445968">要使用新信用卡嗎？<ph name="BEGIN_LINK" />請輸入信用卡詳情<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">美容及健身</translation>
 <translation id="160851722280695521">暢玩 Chrome 恐龍遊戲</translation>
@@ -469,7 +466,6 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">要安裝網絡應用程式嗎？</translation>
 <translation id="1791415068765905273">顯示所有比較表格</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Google 帳戶度管理你嘅資料、私隱權同埋安全設定</translation>
 <translation id="1793473605302304726">分期付款</translation>
 <translation id="1793631236004319016">上次使用時間：<ph name="NUM_HOURS_MINUTES_SECONDS" />前</translation>
@@ -2126,7 +2122,6 @@
 <translation id="4754461935447132332">不允許用於不安全的網站</translation>
 <translation id="4756388243121344051">記錄(&amp;H)</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Chrome 設定檔的密鑰</translation>
 <translation id="4757993714154412917">您剛才在欺詐網站上輸入了密碼。為確保帳戶安全，Chromium 建議您檢查已儲存的密碼。</translation>
 <translation id="4758311279753947758">新增聯絡人資訊</translation>
 <translation id="4761326898079498987">查看以瞭解詳情</translation>
@@ -2699,7 +2694,6 @@
 <translation id="5764920692828389743">傳送至 <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">如要查看送貨方式和要求，請選取一個地址</translation>
 <translation id="57689295674415555">未填入虛擬卡號嗎？</translation>
-<translation id="5772086939108830423">在其他裝置上使用密鑰</translation>
 <translation id="5776313857861697733">優先次序</translation>
 <translation id="577804500166306874">正在載入結果</translation>
 <translation id="5781136890105823427">實驗已啟用</translation>
@@ -2830,7 +2824,6 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /> (已同步)</translation>
 <translation id="6028591542479806248">管理流動裝置/應用程式和電郵通知</translation>
 <translation id="6028833024483927901">環球美食</translation>
-<translation id="6030251660719692307">「Google 密碼管理工具」密鑰</translation>
 <translation id="603068602130820122">雙釘 (右側)</translation>
 <translation id="6032524144326295339">出紙槽 2</translation>
 <translation id="6032955021262906325">釘裝 (左側)</translation>
@@ -3438,7 +3431,6 @@
 <translation id="7096937462164235847">這個網站的身分未經驗證。</translation>
 <translation id="7102554173784142865">暢玩 Chrome 恐龍遊戲</translation>
 <translation id="7102760431686146931">廚具和餐具</translation>
-<translation id="7105998430540165694">iCloud 鑰匙圈的密鑰</translation>
 <translation id="7106762743910369165">您的瀏覽器由組織管理</translation>
 <translation id="7107249414147762907">無法存取此 PDF。�系統未擷取任何文字</translation>
 <translation id="7107427078069498123">SHA-256 指紋</translation>
@@ -4528,7 +4520,6 @@
 <translation id="9040341831873780534">在這裡查看條款</translation>
 <translation id="9042617223719777575">大容量</translation>
 <translation id="9042827002460091668">請檢查您的互聯網連線，然後再試一次</translation>
-<translation id="9044359186343685026">使用 Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">麥克風 (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">您需要將 <ph name="POLICY_NAME" /> 政策設定為「<ph name="POLICY_VALUE" />」，才能執行以下操作：<ph name="ACTION_LIST" />。</translation>

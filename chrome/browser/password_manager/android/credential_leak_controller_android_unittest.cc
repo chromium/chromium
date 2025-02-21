@@ -264,6 +264,11 @@ TEST_F(CredentialLeakControllerAndroidTest,
 
 TEST_F(CredentialLeakControllerAndroidTest,
        LeakTypeNotResetIfPasswordsExported) {
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // Automotive only uses the base leak type and doesn't display the
+    // "Check passwords" button.
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_manager::features::kLoginDbDeprecationAndroid);
@@ -300,6 +305,11 @@ TEST_F(CredentialLeakControllerAndroidTest,
 
 TEST_F(CredentialLeakControllerAndroidTest,
        LeakTypeNotResetIfUPMAlreadyActive) {
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // Automotive only uses the base leak type and doesn't display the
+    // "Check passwords" button.
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_manager::features::kLoginDbDeprecationAndroid);

@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">Chromium தரவை ஒத்திசைக்கவும்</translation>
 <translation id="2592940277904433508">தொடர்ந்து Chromium பயன்படுத்துக</translation>
 <translation id="2607609479243848905">கடவுச்சொற்றொடரை மறந்துவிட்டாலோ இந்த அமைப்பை மாற்ற விரும்பினாலோ, <ph name="BEGIN_LINK" />உங்கள் கணக்கில் உள்ள Chromium தரவை நீக்கவும்<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{புதிய பக்கத்தில் இந்தத் தொகுப்பைக் கண்காணிக்க Chromium உதவும்.}other{புதிய பக்கத்தில் இந்தத் தொகுப்புகளைக் கண்காணிக்க Chromium உதவும்.}}</translation>
 <translation id="2650312721222849884">நீங்கள் Chromiumமைப் பயன்படுத்தும் சாதனங்களில் உங்கள் தாவல்களைப் பார்க்க, ஒத்திசைவை இயக்கவும்</translation>
 <translation id="2684230048001240293">உங்கள் சாதனங்கள் அனைத்திலும் உள்ள தாவல்கள், கடவுச்சொற்கள், பேமெண்ட் தகவல் ஆகியவற்றை ஒத்திசைக்க Chromiumமை இயல்பு உலாவியாக அமைக்கலாம்</translation>
 <translation id="2730884209570016437">கேமராவை மற்றொரு ஆப்ஸ் உபயோகிப்பதால், Chromium அதைப் பயன்படுத்த முடியாது</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">Chromium புதுப்பித்த நிலையில் உள்ளது</translation>
 <translation id="3044857325852340337">Chromium தரவு நீக்கப்பட்டது</translation>
 <translation id="3054480780637153380">iOSஸில் Chromium அமைப்புகளைத் திறந்து "பிரவுசருக்கான இயல்பான ஆப்ஸ்" என்பதைத் தட்டி Chromium என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{புதிய பக்கத்தில் இந்தத் தொகுப்பைக் கண்காணிக்க Chromium உதவலாம்.}other{புதிய பக்கத்தில் இந்தத் தொகுப்புகளைக் கண்காணிக்க Chromium உதவலாம்.}}</translation>
 <translation id="3102849287235003384">இணையதளங்கள் அனைத்திலும் உங்கள் Google கணக்கில் இருந்து வெளியேற <ph name="BEGIN_LINK" />Chromiumமில் இருந்து வெளியேறுங்கள்<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromiumமை இயல்பு உலாவியாக அமைக்கவா?</translation>
 <translation id="3242612358525156339">உங்கள் சாதன அமைப்புகளில் "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" என்பதைத் திறந்து "Chromium" என்பதைத் தேர்ந்தெடுக்கவும்</translation>

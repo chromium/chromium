@@ -74,7 +74,6 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="2517624234762908348">Sync your Chromium data</translation>
 <translation id="2592940277904433508">Continue using Chromium</translation>
 <translation id="2607609479243848905">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your account<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium will help track this parcel on the New tab page.}other{Chromium will help track these parcels on the New tab page.}}</translation>
 <translation id="2650312721222849884">To see your tabs from wherever you use Chromium, turn on sync</translation>
 <translation id="2684230048001240293">Set Chromium as default to sync your tabs, passwords and payment info on all your devices</translation>
 <translation id="2730884209570016437">Chromium can't use your camera because it's in use by another application</translation>
@@ -89,7 +88,6 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 <translation id="2977470724722393594">Chromium is up to date</translation>
 <translation id="3044857325852340337">Deleted Chromium data</translation>
 <translation id="3054480780637153380">Open Chromium settings in iOS, then tap on 'Default browser app' and select Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium can help you track this parcel on the New tab page.}other{Chromium can help you track these parcels on the New tab page.}}</translation>
 <translation id="3102849287235003384">To sign out of your Google Account on all websites, <ph name="BEGIN_LINK" />sign out of Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Make Chromium your default browser?</translation>
 <translation id="3242612358525156339">From your device's settings, open '<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />' and select 'Chromium'</translation>

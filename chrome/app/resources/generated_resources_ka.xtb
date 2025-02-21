@@ -1009,6 +1009,7 @@
 <translation id="1682696837763999627">მაუსის დიდი კურსორი</translation>
 <translation id="1682867089915960590">გსურთ კურსორით დათვალიერების ჩართვა?</translation>
 <translation id="1686550358074589746">გასრიალებით აკრეფის ჩართვა</translation>
+<translation id="1686785653877010442">შეტყობინებების მეშვეობით საიტები, როგორც წესი, გამცნობენ მთავარი ახალი ამბების თუ ჩეთებში მოწერილის შესახებ.</translation>
 <translation id="168715261339224929">ჩართეთ სინქრონიზაცია სანიშნეებზე თქვენი ყველა მოწყობილობიდან წვდომისთვის.</translation>
 <translation id="1688935057616748272">აკრიფეთ ასო</translation>
 <translation id="1689333818294560261">მეტსახელი</translation>
@@ -1284,6 +1285,7 @@
 <translation id="1878885068166344708">ფოკუსის გადანაცვლებისას ერთეულის გამოყოფა მოხდება. ფოკუსის შესაცვლელად დააჭირეთ კლავიშს Tab ან აირჩიეთ ერთეული.</translation>
 <translation id="1879000426787380528">შესვლა, როგორც</translation>
 <translation id="18802377548000045">ჩანართები შევიწროვდება დიდ სიგანეზე</translation>
+<translation id="1880618477732738742">შეცვალეთ და დაუშვით წვდომა ისეთ ფუნქციებზე, როგორიცაა გეოლოკაცია, მიკროფონი, კამერა, ქუქი-ჩანაწერები და სხვა, ყველა თქვენი ვებსაიტისა და გაფართოებისთვის, ამ გაფართოების ჩათვლით.</translation>
 <translation id="1880905663253319515">წავშალოთ სერთიფიკატი „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="1881445033931614352">კლავიატურის განლაგება</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{ერთეული}other{# ერთეული}}</translation>
@@ -3468,6 +3470,7 @@
 <translation id="3435738964857648380">უსაფრთხოება</translation>
 <translation id="343578350365773421">ქაღალდი ამოიწურა</translation>
 <translation id="3435896845095436175">ჩართვა</translation>
+<translation id="3437397693214267762">იხილეთ თქვენი Outlook Calendar, SharePoint და OneDrive ფაილები</translation>
 <translation id="3438633801274389918">ნინძა</translation>
 <translation id="3439153939049640737">ყოველთვის მიეცი ნება <ph name="HOST" />-ს, მიიღოს წვდომა მიკროფონზე</translation>
 <translation id="3439970425423980614">PDF-ის გახსნა წინასწარ ხედში</translation>
@@ -7128,6 +7131,7 @@
     თქვენი ანგარიშის მეშვეობით მარტივად შეგიძლიათ თქვენს ყველა სანიშნეზე, ფაილსა და სხვა კონტენტზე წვდომა. თუ ანგარიში არ გაქვთ, მის შექმნას მომდევნო ეკრანზე შეძლებთ.</translation>
 <translation id="6054138466019582920">ამ გვერდზე ძიებ&amp;ა Google-ით...</translation>
 <translation id="6054284857788651331">ახლახან დახურული ჩანართების ჯგუფი</translation>
+<translation id="6054819000749443354">სისტემის პარამეტრების გახსნა</translation>
 <translation id="6054961935262556546">ხილვადობის შეცვლა</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 თან ერთად RSA დაშიფვრა</translation>
 <translation id="6055544610007596637">დააინსტალირეთ აპები თქვენი <ph name="DEVICE_TYPE" />-ისთვის Google Play Store-იდან</translation>
@@ -8127,7 +8131,6 @@
 <translation id="67862343314499040">იისფერი</translation>
 <translation id="6786480815699355166">ავტოსუბტიტრების თარგმნა შესაძლებელია მხოლოდ მხარდაჭერილ ენებზე</translation>
 <translation id="6786747875388722282">გაფართოებები</translation>
-<translation id="6787097042755590313">სხვა ჩანართი</translation>
 <translation id="6787531944787756058">მომხმარებლის სახელი <ph name="USER_EMAIL" /> შენახულია მხოლოდ ამ მოწყობილობაზე. დეტალების ნახვა</translation>
 <translation id="6787839852456839824">კლავიატურის მალსახმობები</translation>
 <translation id="6788210894632713004">გაუხსნელი გაფართოება</translation>
@@ -8951,6 +8954,7 @@
 <translation id="7380459290951585794">დარწმუნდით, რომ ტელეფონი ახლოს გაქვთ, განბლოკილია და მასზე ჩართულია Bluetooth/Wi-Fi</translation>
 <translation id="7380622428988553498">მოწყობილობის სახელი შეიცავს არასწორ სიმბოლოებს</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> განახლდა</translation>
+<translation id="7382009635620830394">თუ ეს ბარათი გათიშულია, თქვენი Microsoft ბარათებიც (მაგალითად, SharePoint და OneDrive ფაილები და Outlook Calendar) გაითიშება.</translation>
 <translation id="7382085868019811559">მოძველებული ბრაუზერის მხარდაჭერა (LBS) საშუალებას იძლევა, URL-ების კონკრეტული ნიმუშები გაიხსნას ალტერნატიულ ბრაუზერში, რომლის მიერაც მხარდაჭერილია შესაბამისი საიტების სათანადო მუშაობისთვის აუცილებელი მოძველებული ფუნქციები.</translation>
 <translation id="7382980704744807223">საეჭვო</translation>
 <translation id="738322632977123193">ატვირთვა ვერ ხერხდება. გამოიყენეთ სურათი ერთ-ერთ შემდეგ ფორმატში: .jpg, .gif, .png, .bmp, .tif ან .webp.</translation>
@@ -10619,6 +10623,7 @@
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" />-ს მართავს <ph name="MANAGER" />. ამ ელფოსტას ვერ დაამატებთ დამატებითი ანგარიშის სახით.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" /><ph name="USER_EMAIL" /> რომ გამოიყენოთ, პირველ რიგში, გამოდით თქვენი <ph name="DEVICE_TYPE" />-დან. ამის შემდეგ, შესვლის ეკრანის ქვედა ნაწილიდან, აირჩიეთ „ადამიანის დამატება“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">ზედა მწკრივის ღილაკების რეჟიმის გადასართავად ხანგრძლივად დააჭირეთ ძიების კლავიშს</translation>
+<translation id="8549127125482561383">მოთხოვნების ჩვენების წესი</translation>
 <translation id="8549316893834449916">Chromebook-ში შესასვლელად გამოიყენეთ თქვენი Google ანგარიში, რომლითაც Gmail-ისთვის, Drive-ისთვის, YouTube-ისა თუ სხვა პლატფორმებისთვის სარგებლობთ.</translation>
 <translation id="8550239873869577759">ჩამოტვირთულია საეჭვო ფაილი</translation>
 <translation id="8551388862522347954">ლიცენზიები</translation>

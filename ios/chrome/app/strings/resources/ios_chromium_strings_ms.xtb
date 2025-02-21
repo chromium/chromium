@@ -74,7 +74,6 @@ Tunggu beberapa minit sebelum log keluar. Jika anda log keluar sekarang, data in
 <translation id="2517624234762908348">Segerakkan data Chromium anda</translation>
 <translation id="2592940277904433508">Terus menggunakan Chromium</translation>
 <translation id="2607609479243848905">Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chromium dalam akaun anda<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium akan membantu menjejaki pakej ini pada Halaman Tab Baharu.}other{Chromium akan membantu menjejaki pakej ini pada Halaman Tab Baharu.}}</translation>
 <translation id="2650312721222849884">Untuk melihat tab anda daripada mana-mana tempat anda menggunakan Chromium, hidupkan penyegerakan</translation>
 <translation id="2684230048001240293">Tetapkan Chromium sebagai penyemak imbas lalai untuk menyegerakkan tab, kata laluan dan maklumat pembayaran anda pada semua peranti anda</translation>
 <translation id="2730884209570016437">Chromium tidak dapat menggunakan kamera anda kerana kamera sedang digunakan oleh aplikasi lain</translation>
@@ -89,7 +88,6 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="2977470724722393594">Chromium telah dikemas kini</translation>
 <translation id="3044857325852340337">Data Chromium yang dipadamkan</translation>
 <translation id="3054480780637153380">Buka tetapan Chromium dalam iOS, kemudian ketik "Apl Penyemak imbas Lalai" dan pilih Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium boleh membantu anda menjejaki pakej ini pada Halaman Tab Baharu.}other{Chromium boleh membantu anda menjejaki pakej ini pada Halaman Tab Baharu.}}</translation>
 <translation id="3102849287235003384">Untuk log keluar daripada Google Account dalam semua laman web, <ph name="BEGIN_LINK" />log keluar daripada Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Jadikan Chromium penyemak imbas lalai anda?</translation>
 <translation id="3242612358525156339">Buka "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" dan pilih "Chromium" daripada tetapan peranti anda</translation>

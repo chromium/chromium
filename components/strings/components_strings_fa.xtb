@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">درحال ذخیره‌سازی کارت‌ها...</translation>
 <translation id="1060136083665017312">سیستم‌های بازی و کنسول</translation>
 <translation id="1060320201901229167">پاکت کاکو ۵</translation>
-<translation id="10614374240317010">هرگز ذخیره نمی‌شود</translation>
 <translation id="1062407476771304334">جایگزینی</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">جزئیات موتور جستجو</translation>
@@ -263,7 +262,6 @@
 <translation id="1432187715652018471">این صفحه می‌خواهد کنترل‌کننده سرویس نصب کند.</translation>
 <translation id="1432581352905426595">مدیریت موتورهای جستجو</translation>
 <translation id="1433225466058025572">فایل‌ها را دوباره جابه‌جا کنید</translation>
-<translation id="1435940442311036198">استفاده از گذرکلید در دستگاهی دیگر</translation>
 <translation id="1436185428532214179">می‌تواند برای ویرایش فایل‌ها و پوشه‌های موجود در دستگاهتان درخواست دهد</translation>
 <translation id="1442386063175183758">سمت راست تاخوردگی دروازه‌ای</translation>
 <translation id="1442987760062738829">سوراخ کردن</translation>
@@ -357,7 +355,6 @@
 <translation id="159274626729231974">جشنواره‌های فیلم</translation>
 <translation id="1593359183944365958">۲۷۰ درجه</translation>
 <translation id="1594030484168838125">انتخاب</translation>
-<translation id="1598816256585174656">‏گذرکلید از Windows Hello</translation>
 <translation id="1599199147673445968">کارت جدیدی دارید؟ <ph name="BEGIN_LINK" />جزئیات کارت را وارد کنید<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">زیبایی و تناسب اندام</translation>
 <translation id="160851722280695521">‏بازی کردن بازی دویدن دایناسور در Chrome</translation>
@@ -469,7 +466,6 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">برنامه‌های وب نصب شود؟</translation>
 <translation id="1791415068765905273">نمایش همه جدول‌های مقایسه</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507">‏<ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت اطلاعات، حریم خصوصی، و امنیت در «حساب Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="1793473605302304726">پرداخت اقساطی</translation>
 <translation id="1793631236004319016">آخرین‌بار <ph name="NUM_HOURS_MINUTES_SECONDS" /> قبل استفاده شده است</translation>
@@ -2127,7 +2123,6 @@
 <translation id="4754461935447132332">برای سایت‌های ناامن مجاز نیست</translation>
 <translation id="4756388243121344051">&amp;سابقه</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">‏گذرکلید از «نمایه Chrome» شما</translation>
 <translation id="4757993714154412917">‏اخیراً گذرواژه‌تان را در سایتی فریب‌کار وارد کرده‌اید. برای ایمن کردن حسابتان، Chromium توصیه می‌کند گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
 <translation id="4758311279753947758">افزودن اطلاعات تماس</translation>
 <translation id="4761326898079498987">مرور جزئیات بیشتر</translation>
@@ -2700,7 +2695,6 @@
 <translation id="5764920692828389743">ارسال به <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">برای دیدن روش‌های تحویل و شرایط موردنیاز، یک نشانی انتخاب کنید</translation>
 <translation id="57689295674415555">شماره کارت مجازی تکمیل نشود؟</translation>
-<translation id="5772086939108830423">استفاده از گذرکلید در دستگاهی دیگر</translation>
 <translation id="5776313857861697733">اولویت</translation>
 <translation id="577804500166306874">نتیجه درحال بار شدن است</translation>
 <translation id="5781136890105823427">آزمایش فعال شد</translation>
@@ -2831,7 +2825,6 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /> (همگام‌سازی‌شده)</translation>
 <translation id="6028591542479806248">مدیریت تلفن همراه و اعلان‌های ایمیلی</translation>
 <translation id="6028833024483927901">غذای ملل</translation>
-<translation id="6030251660719692307">‏گذرکلید از «مدیر گذرواژه Google»</translation>
 <translation id="603068602130820122">دو منگنه در راست</translation>
 <translation id="6032524144326295339">صندوق پست ۲</translation>
 <translation id="6032955021262906325">به‌هم چسباندن از چپ</translation>
@@ -3439,7 +3432,6 @@
 <translation id="7096937462164235847">هویت این وب‌سایت به‌تأیید نرسیده است.</translation>
 <translation id="7102554173784142865">‏بازی کردن بازی «دایناسور Chrome»</translation>
 <translation id="7102760431686146931">وسایل آشپزی و غذاخوری</translation>
-<translation id="7105998430540165694">‏گذرکلید از iCloud Keychain</translation>
 <translation id="7106762743910369165">سازمانتان مرورگر را مدیریت می‌کند</translation>
 <translation id="7107249414147762907">‏این فایل PDF غیرقابل‌دسترس است. نوشتاری استخراج نشد</translation>
 <translation id="7107427078069498123">‏اثر انگشت SHA-256</translation>
@@ -4529,7 +4521,6 @@
 <translation id="9040341831873780534">شرایط را در اینجا ببینید</translation>
 <translation id="9042617223719777575">ظرفیت بالا</translation>
 <translation id="9042827002460091668">اتصال اینترنت را بررسی کنید و دوباره امتحان کنید</translation>
-<translation id="9044359186343685026">استفاده از شناسه لمسی</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">میکروفون‌ها (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">برای این کنش‌ها، خط‌مشی <ph name="POLICY_NAME" /> باید روی <ph name="POLICY_VALUE" /> تنظیم شود: <ph name="ACTION_LIST" /></translation>

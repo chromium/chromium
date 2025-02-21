@@ -5722,6 +5722,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
                =1 {Join tab group with <ph name="OWNER_NAME">$1<ex>Ali</ex></ph> and {COUNT} other}
                other {Join tab group with <ph name="OWNER_NAME">$1<ex>Ali</ex></ph> and {COUNT} others}}
       </message>
+      <message name="IDS_IOS_SHARE_KIT_MANAGE_ACTIVITY_LOG_TITLE" desc="Title of the button to open the activity log of the shared group.">
+          Shared tab group activity
+      </message>
       <message name="IDS_IOS_SHARE_KIT_MANAGE_DISCLAIMER" desc="Disclaimer for managing a tab group.">
         Anyone with the link can edit all tabs.
       </message>

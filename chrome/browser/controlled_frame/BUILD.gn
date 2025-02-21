@@ -23,7 +23,7 @@ source_set("controlled_frame") {
     "//chrome/browser/extensions",
     "//chrome/browser/web_applications",
     "//chrome/common/controlled_frame/api",
-    "//components/embedder_support:browser_util",
+    "//components/embedder_support:user_agent",
     "//components/guest_view/browser",
     "//content/public/common",
     "//extensions/browser",

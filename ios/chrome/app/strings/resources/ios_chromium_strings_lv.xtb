@@ -74,7 +74,6 @@ Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, ši
 <translation id="2517624234762908348">Sinhronizēt jūsu Chromium datus</translation>
 <translation id="2592940277904433508">Turpināt lietot Chromium</translation>
 <translation id="2607609479243848905">Ja aizmirstat ieejas frāzi vai vēlaties mainīt šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chromium datus savā kontā<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium palīdzēs izsekot šo sūtījumu jaunas cilnes lapā.}zero{Chromium palīdzēs izsekot šos sūtījumus jaunas cilnes lapā.}one{Chromium palīdzēs izsekot šos sūtījumus jaunas cilnes lapā.}other{Chromium palīdzēs izsekot šos sūtījumus jaunas cilnes lapā.}}</translation>
 <translation id="2650312721222849884">Lai skatītu cilnes no ierīcēm, kurās lietojat pārlūku Chromium, ieslēdziet sinhronizāciju.</translation>
 <translation id="2684230048001240293">Lai visās ierīcēs sinhronizētu savas cilnes, paroles un maksājumu informāciju, iestatiet pārlūku Chromium kā noklusējuma pārlūku</translation>
 <translation id="2730884209570016437">Chromium nevar izmantot kameru, jo to izmanto cita lietojumprogramma.</translation>
@@ -89,7 +88,6 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chromium lietošanas
 <translation id="2977470724722393594">Chromium ir atjaunināts</translation>
 <translation id="3044857325852340337">Chromium dati ir izdzēsti</translation>
 <translation id="3054480780637153380">Atveriet Chromium iestatījumus iOS ierīcē, pēc tam pieskarieties iestatījumam “Noklusējuma pārlūka lietotne” un atlasiet pārlūku Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium var palīdzēt jums izsekot šo sūtījumu jaunas cilnes lapā.}zero{Chromium var palīdzēt jums izsekot šos sūtījumus jaunas cilnes lapā.}one{Chromium var palīdzēt jums izsekot šos sūtījumus jaunas cilnes lapā.}other{Chromium var palīdzēt jums izsekot šos sūtījumus jaunas cilnes lapā.}}</translation>
 <translation id="3102849287235003384">Lai izrakstītos no sava Google konta visās vietnēs, <ph name="BEGIN_LINK" />izrakstieties no pārlūka Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Vai iestatīt Chromium kā noklusējuma pārlūku?</translation>
 <translation id="3242612358525156339">Ierīces iestatījumos atveriet sadaļu “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” un atlasiet iespēju “Chromium”.</translation>

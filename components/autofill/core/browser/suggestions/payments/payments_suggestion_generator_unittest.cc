@@ -874,12 +874,12 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   EXPECT_THAT(get_cards(u"2"), ElementsAre(credit_card));
 }
 
+#if !BUILDFLAG(IS_IOS)
 // Tests that all the credit card suggestions are shown when a credit card field
-// was autofilled and focused if `kAutofillEnablePaymentsFieldSwapping` is
-// enabled.
+// was autofilled and focused if `kAutofillPaymentsFieldSwapping` is enabled.
 TEST_F(PaymentsSuggestionGeneratorTest, PaymentsFieldSwapping) {
   base::test::ScopedFeatureList features{
-      features::kAutofillEnablePaymentsFieldSwapping};
+      features::kAutofillPaymentsFieldSwapping};
   CreditCard credit_card1;
   test::SetCreditCardInfo(&credit_card1, /*name_on_card=*/"Cardholder name",
                           /*card_number=*/"1111222233334444",
@@ -926,6 +926,7 @@ TEST_F(PaymentsSuggestionGeneratorTest, PaymentsFieldSwapping) {
   EXPECT_THAT(get_cards(u"Cardholder name", CREDIT_CARD_NAME_FULL, false),
               ElementsAre(credit_card2, credit_card1));
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(PaymentsSuggestionGeneratorTest, GetServerCardForLocalCard) {
   CreditCard server_card = CreateServerCard();

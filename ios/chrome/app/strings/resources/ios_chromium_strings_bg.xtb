@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">Синхронизиране на данните ви в Chromium</translation>
 <translation id="2592940277904433508">Продължаване на използването на Chromium</translation>
 <translation id="2607609479243848905">Ако сте забравили пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />изтрийте данните от Chromium в профила си<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium ще помогне за проследяването на тази пратка в нов раздел.}other{Chromium ще помогне за проследяването на тези пратки в нов раздел.}}</translation>
 <translation id="2650312721222849884">Включете синхронизирането, за да виждате разделите си навсякъде, където използвате Chromium</translation>
 <translation id="2684230048001240293">Задайте Chromium като браузър по подразбиране, така че разделите, паролите и данните ви за плащане да се синхронизират на всичките ви устройства</translation>
 <translation id="2730884209570016437">Chromium не може да използва камерата ви, защото е заета от друго приложение</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">Chromium е актуален</translation>
 <translation id="3044857325852340337">Данните в Chromium бяха изтрити</translation>
 <translation id="3054480780637153380">Отворете настройките на Chromium на устройство с iOS, след което докоснете „Стандартно приложение за браузър“ и изберете Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium може да ви помогне да проследявате тази пратка в нов раздел.}other{Chromium може да ви помогне да проследявате тези пратки в нов раздел.}}</translation>
 <translation id="3102849287235003384">За да излезете от профила си в Google на всички уебсайтове, <ph name="BEGIN_LINK" />излезте от профила си в Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Искате ли да направите Chromium своя браузър по подразбиране?</translation>
 <translation id="3242612358525156339">От настройките на устройството си отворете „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ и изберете Chromium</translation>

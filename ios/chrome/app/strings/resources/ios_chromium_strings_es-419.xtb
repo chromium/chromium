@@ -74,7 +74,6 @@ Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</t
 <translation id="2517624234762908348">Sincronizar tus datos de Chromium</translation>
 <translation id="2592940277904433508">Seguir usando Chromium</translation>
 <translation id="2607609479243848905">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium te ayudará a realizar el seguimiento de este paquete en la página Nueva pestaña.}other{Chromium te ayudará a realizar el seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="2650312721222849884">Para ver tus pestañas donde sea que uses Chromium, activa la sincronización</translation>
 <translation id="2684230048001240293">Establece Chromium como navegador predeterminado para sincronizar tus pestañas, información de pago y contraseñas en todos tus dispositivos</translation>
 <translation id="2730884209570016437">Chromium no puede utilizar tu cámara porque la está usando otra aplicación</translation>
@@ -89,7 +88,6 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="2977470724722393594">Chromium está actualizado.</translation>
 <translation id="3044857325852340337">Se borraron los datos en Chromium</translation>
 <translation id="3054480780637153380">Abre la configuración de Chromium en iOS, presiona "App del navegador predeterminado" y selecciona Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium puede ayudarte a realizar el seguimiento de este paquete en la página Nueva pestaña.}other{Chromium puede ayudarte a realizar el seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="3102849287235003384">Para salir de tu Cuenta de Google en todos los sitios web, debes <ph name="BEGIN_LINK" />salir de Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">¿Quieres establecer Chromium como navegador predeterminado?</translation>
 <translation id="3242612358525156339">En la configuración de tu dispositivo, abre "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" y selecciona "Chromium"</translation>

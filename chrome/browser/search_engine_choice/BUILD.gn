@@ -126,6 +126,7 @@ if (!is_android) {
           "//chrome/browser/ui:browser_element_identifiers",
           "//chrome/test:test_support_ui",
           "//components/country_codes",
+          "//components/regional_capabilities",
           "//components/search_engines",
           "//components/variations",
           "//content/test:test_support",

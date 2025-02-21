@@ -48,7 +48,9 @@ class UserAddingScreenImpl : public UserAddingScreen {
 
 void UserAddingScreenImpl::Start() {
   CHECK(!IsRunning());
-  display_host_ = new LoginDisplayHostMojo(DisplayedScreen::USER_ADDING_SCREEN);
+  display_host_ =
+      new LoginDisplayHostMojo(DisplayedScreen::USER_ADDING_SCREEN,
+                               /*update_geolocation_usage_allowed=*/false);
 
   // This triggers input method manager to filter login screen methods. This
   // should happen before setting user input method, which happens when focusing

@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Gemmer kort...</translation>
 <translation id="1060136083665017312">Spilsystemer og -konsoller</translation>
 <translation id="1060320201901229167">Konvolut Kaku 5</translation>
-<translation id="10614374240317010">Gemmes aldrig</translation>
 <translation id="1062407476771304334">Erstat</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Oplysninger om søgemaskine</translation>
@@ -263,7 +262,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1432187715652018471">Denne side ønsker at installere en tjenestehandler.</translation>
 <translation id="1432581352905426595">Administrer søgemaskiner</translation>
 <translation id="1433225466058025572">Prøv at flytte dine filer igen</translation>
-<translation id="1435940442311036198">Brug en adgangsnøgle på en anden enhed</translation>
 <translation id="1436185428532214179">Websitet kan anmode om tilladelse til at redigere filer og mapper på din enhed</translation>
 <translation id="1442386063175183758">Portfals i højre side</translation>
 <translation id="1442987760062738829">Hul</translation>
@@ -357,7 +355,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="159274626729231974">Filmfestivaler</translation>
 <translation id="1593359183944365958">270 grader</translation>
 <translation id="1594030484168838125">Vælg</translation>
-<translation id="1598816256585174656">Adgangsnøgle fra Windows Hello</translation>
 <translation id="1599199147673445968">Har du fået nyt kort? <ph name="BEGIN_LINK" />Angiv kortoplysningerne<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Skønhed og fitness</translation>
 <translation id="160851722280695521">Spil Dino Run-spillet i Chrome</translation>
@@ -469,7 +466,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Vil du installere webapps?</translation>
 <translation id="1791415068765905273">Vis alle sammenligningstabeller</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at administrere dine oplysninger, dit privatliv og beskyttelsen på din Google-konto</translation>
 <translation id="1793473605302304726">Afbetaling</translation>
 <translation id="1793631236004319016">Senest brugt for <ph name="NUM_HOURS_MINUTES_SECONDS" /> siden</translation>
@@ -2127,7 +2123,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4754461935447132332">Ikke tilladt på websites, der ikke er sikre</translation>
 <translation id="4756388243121344051">&amp;Historik</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Adgangsnøgle fra din Chrome-profil</translation>
 <translation id="4757993714154412917">Du har lige angivet din adgangskode på et vildledende website. Chromium anbefaler, at du tjekker dine gemte adgangskoder for at sikre dine konti.</translation>
 <translation id="4758311279753947758">Tilføj kontaktoplysninger</translation>
 <translation id="4761326898079498987">Gennemgå for at få flere oplysninger</translation>
@@ -2700,7 +2695,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5764920692828389743">Send til <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Vælg en adresse for at se leveringsmetoder og -krav</translation>
 <translation id="57689295674415555">Er det virtuelle kortnummer ikke udfyldt?</translation>
-<translation id="5772086939108830423">Brug en adgangsnøgle på en anden enhed</translation>
 <translation id="5776313857861697733">Prioritet</translation>
 <translation id="577804500166306874">Resultatet indlæses</translation>
 <translation id="5781136890105823427">Eksperimentet er aktiveret</translation>
@@ -2831,7 +2825,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synkroniseret)</translation>
 <translation id="6028591542479806248">Administrer notifikationer på mobilenheder og mail</translation>
 <translation id="6028833024483927901">Verdensmad</translation>
-<translation id="6030251660719692307">Adgangsnøgle fra Google Adgangskodeadministrator</translation>
 <translation id="603068602130820122">Dobbelthæftning i højre side</translation>
 <translation id="6032524144326295339">Postkasse 2</translation>
 <translation id="6032955021262906325">Bind i venstre side</translation>
@@ -3439,7 +3432,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7096937462164235847">Dette websites identitet er ikke verificeret.</translation>
 <translation id="7102554173784142865">Spil Chrome Dino-spillet</translation>
 <translation id="7102760431686146931">Køkkengrej og service</translation>
-<translation id="7105998430540165694">Adgangsnøgle fra iCloud-nøglering</translation>
 <translation id="7106762743910369165">Din browser administreres af din organisation</translation>
 <translation id="7107249414147762907">Denne PDF er ikke tilgængelig. Der er ikke udtrukket nogen tekst</translation>
 <translation id="7107427078069498123">SHA-256-fingeraftryk</translation>
@@ -4530,7 +4522,6 @@ Yderligere oplysninger:
 <translation id="9040341831873780534">Se vilkårene her</translation>
 <translation id="9042617223719777575">Stor kapacitet</translation>
 <translation id="9042827002460091668">Tjek din internetforbindelse, og prøv igen</translation>
-<translation id="9044359186343685026">Brug Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Mikrofoner (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Disse handlinger kræver, at politikken <ph name="POLICY_NAME" /> er angivet som <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

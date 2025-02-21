@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">Համաժամացնել Chromium-ի տվյալները</translation>
 <translation id="2592940277904433508">Շարունակել Chromium-ի օգտագործումը</translation>
 <translation id="2607609479243848905">Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, <ph name="BEGIN_LINK" />ջնջեք Chromium-ի տվյալները ձեր հաշվում<ph name="END_LINK" />։</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium-ը կօգնի հետագծել այս փաթեթը նոր ներդիրի էջում։}one{Chromium-ը կօգնի հետագծել այս փաթեթը նոր ներդիրի էջում։}other{Chromium-ը կօգնի հետագծել այս փաթեթները նոր ներդիրի էջում։}}</translation>
 <translation id="2650312721222849884">Chromium-ն օգտագործելիս ձեր բոլոր ներդիրները տեսնելու համար միացրեք համաժամացումը։</translation>
 <translation id="2684230048001240293">Դարձրեք Chromium-ը ձեր կանխադրված դիտարկիչը՝ ներդիրները, գաղտնաբառերը և վճարային տվյալները ձեր բոլոր սարքերում համաժամացնելու համար</translation>
 <translation id="2730884209570016437">Chromium-ը չի կարող օգտագործել ձեր ֆոտոխցիկը, քանի որ այն օգտագործվում է մեկ այլ հավելվածի կողմից</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">Chromium-ը թարմացված է</translation>
 <translation id="3044857325852340337">Տվյալները ջնջվել են Chromium-ից</translation>
 <translation id="3054480780637153380">Բացեք Chromium-ի կարգավորումները iOS-ում, ապա հպեք «Դիտարկիչի կանխադրված հավելված» և ընտրեք Chromium-ը։</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium-ը կարող է օգնել ձեզ հետագծել այս փաթեթը նոր ներդիրի էջում։}one{Chromium-ը կարող է օգնել ձեզ հետագծել այս փաթեթը նոր ներդիրի էջում։}other{Chromium-ը կարող է օգնել ձեզ հետագծել այս փաթեթները նոր ներդիրի էջում։}}</translation>
 <translation id="3102849287235003384">Բոլոր կայքերում ձեր Google հաշվից դուրս գալու համար <ph name="BEGIN_LINK" />դուրս եկեք Chromium-ից<ph name="END_LINK" />։</translation>
 <translation id="3115956258722352278">Դարձնե՞լ Chromium-ը ձեր կանխադրված դիտարկիչը</translation>
 <translation id="3242612358525156339">Ձեր սարքի կարգավորումներում բացեք «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />» պարամետրը և ընտրեք «Chromium»</translation>

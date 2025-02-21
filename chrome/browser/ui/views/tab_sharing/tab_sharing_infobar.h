@@ -36,7 +36,6 @@ class TabSharingInfoBar : public InfoBarView {
   void Layout(PassKey) override;
 
   views::Label* label_for_testing() { return label_; }
-  views::MdTextButton* stop_button_for_testing() { return stop_button_; }
 
  protected:
   // InfoBarView:

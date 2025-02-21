@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">הכרטיסים נשמרים...</translation>
 <translation id="1060136083665017312">קונסולות ומערכות למשחקים</translation>
 <translation id="1060320201901229167">‏מעטפה – Kaku 5</translation>
-<translation id="10614374240317010">פריטים שאף פעם לא יישמרו</translation>
 <translation id="1062407476771304334">החלפה</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">הפרטים של מנוע החיפוש</translation>
@@ -263,7 +262,6 @@
 <translation id="1432187715652018471">‏התקבלה מהדף הזה בקשה להתקין handler של שירות.</translation>
 <translation id="1432581352905426595">ניהול מנועי חיפוש</translation>
 <translation id="1433225466058025572">רוצה לנסות שוב להזיז את הקבצים?</translation>
-<translation id="1435940442311036198">שימוש במפתח גישה במכשיר אחר</translation>
 <translation id="1436185428532214179">האתר יכול לבקש הרשאה לערוך קבצים ותיקיות במכשיר</translation>
 <translation id="1442386063175183758">כנף ימנית בקיפול</translation>
 <translation id="1442987760062738829">ניקוב</translation>
@@ -357,7 +355,6 @@
 <translation id="159274626729231974">פסטיבלי סרטים</translation>
 <translation id="1593359183944365958">270 מעלות</translation>
 <translation id="1594030484168838125">בחירה</translation>
-<translation id="1598816256585174656">‏מפתח הגישה מ-Windows Hello</translation>
 <translation id="1599199147673445968">כרטיס חדש? <ph name="BEGIN_LINK" />להזנת פרטי הכרטיס<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">יופי וכושר גופני</translation>
 <translation id="160851722280695521">‏הפעלת המשחק Dino Run ב-Chrome</translation>
@@ -469,7 +466,6 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">להתקין אפליקציות אינטרנט?</translation>
 <translation id="1791415068765905273">הצגת כל טבלאות ההשוואה</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507">‏<ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, צריך להקיש על Tab ואז על Enter כדי לנהל את המידע, הפרטיות והאבטחה בחשבון Google</translation>
 <translation id="1793473605302304726">תשלום בתשלומים</translation>
 <translation id="1793631236004319016">השימוש האחרון היה לפני <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -2127,7 +2123,6 @@
 <translation id="4754461935447132332">אין הרשאה באתרים שאינם מאובטחים</translation>
 <translation id="4756388243121344051">&amp;היסטוריה</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">‏מפתח הגישה מפרופיל Chrome</translation>
 <translation id="4757993714154412917">‏הזנת כרגע את הסיסמה שלך באתר מטעה. כדי להגן על החשבונות שלך, ההמלצה של Chromium היא לבדוק את הסיסמאות השמורות.</translation>
 <translation id="4758311279753947758">הוספת פרטים ליצירת קשר</translation>
 <translation id="4761326898079498987">ניתן לפתוח כדי לבדוק פרטים נוספים</translation>
@@ -2705,7 +2700,6 @@ Del</translation>
 <translation id="5764920692828389743">שליחה לכתובת <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">עליך לבחור כתובת כדי לראות שיטות מסירה ודרישות</translation>
 <translation id="57689295674415555">מספר הכרטיס הווירטואלי לא הוזן?</translation>
-<translation id="5772086939108830423">שימוש במפתח גישה במכשיר אחר</translation>
 <translation id="5776313857861697733">עדיפות</translation>
 <translation id="577804500166306874">התוצאה נטענת</translation>
 <translation id="5781136890105823427">הניסוי מופעל</translation>
@@ -2836,7 +2830,6 @@ Del</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (מסונכרנים)</translation>
 <translation id="6028591542479806248">ניהול של ההתראות בנייד ובאימייל</translation>
 <translation id="6028833024483927901">מטבח עולמי</translation>
-<translation id="6030251660719692307">‏מפתח הגישה ממנהל הסיסמאות של Google</translation>
 <translation id="603068602130820122">שתי סיכות הידוק בצד ימין</translation>
 <translation id="6032524144326295339">תיבת דואר 2</translation>
 <translation id="6032955021262906325">כריכה בקצה השמאלי</translation>
@@ -3444,7 +3437,6 @@ Del</translation>
 <translation id="7096937462164235847">הזהות של האתר הזה לא אומתה.</translation>
 <translation id="7102554173784142865">‏הפעלת המשחק Chrome Dino</translation>
 <translation id="7102760431686146931">כלי בישול וכלי אוכל</translation>
-<translation id="7105998430540165694">‏מפתח הגישה מ-iCloud Keychain</translation>
 <translation id="7106762743910369165">הדפדפן מנוהל על ידי הארגון שלך</translation>
 <translation id="7107249414147762907">‏אין גישה לקובץ ה-PDF הזה. לא חולץ טקסט.</translation>
 <translation id="7107427078069498123">‏טביעות אצבע דיגיטליות מסוג SHA-256</translation>
@@ -4534,7 +4526,6 @@ Del</translation>
 <translation id="9040341831873780534">לעיון בתנאים</translation>
 <translation id="9042617223719777575">קיבולת גדולה</translation>
 <translation id="9042827002460091668">מומלץ לבדוק את החיבור לאינטרנט ולנסות שוב</translation>
-<translation id="9044359186343685026">‏שימוש ב-Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">מיקרופונים (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">כדי שהפעולות האלה יתבצעו, צריך להגדיר את המדיניות <ph name="POLICY_NAME" /> לערך <ph name="POLICY_VALUE" />:‏ <ph name="ACTION_LIST" />.</translation>

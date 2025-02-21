@@ -136,7 +136,6 @@ Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini a
 <translation id="4830799082179398588">Jadikan Chrome sebagai browser default?</translation>
 <translation id="484033449593719797">Tidak didukung di Chrome Beta</translation>
 <translation id="4840404732697892756">Pengelola Sandi Google dapat memeriksa sandi jika Anda login dengan Akun Google Anda.</translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{Chrome dapat membantu Anda melacak paket ini di Halaman Tab Baru.}other{Chrome dapat membantu Anda melacak paket tersebut di Halaman Tab Baru.}}</translation>
 <translation id="4903674399067644695">Kartu ini menampilkan saran tentang cara memaksimalkan penggunaan Chrome.</translation>
 <translation id="49200511069271369">Organisasi Anda, <ph name="DOMAIN" />, mengelola akun yang Anda gunakan untuk login dan cara Chrome dapat digunakan. Administrator Anda dapat menyiapkan atau membatasi fitur tertentu.</translation>
 <translation id="4925322001044117929">Gunakan Chrome di iPad secara Default</translation>
@@ -158,7 +157,6 @@ Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini a
 <translation id="5439191312780166229">Memperingatkan Anda tentang situs berbahaya, bahkan situs yang tidak diketahui Google sebelumnya, dengan menganalisis lebih banyak data dari situs dibandingkan perlindungan standar. Anda dapat memilih untuk melewati peringatan Chrome.</translation>
 <translation id="5442013002200339429">Jika Anda menyembunyikan "<ph name="MODULE_NAME" />", Chrome tidak lagi melacak paket mendatang secara otomatis dan akan menghapus semua data pelacakan paket sebelumnya.</translation>
 <translation id="5460571915754665838">4. Pilih Chrome</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{Chrome akan membantu melacak paket ini di Halaman Tab Baru.}other{Chrome akan membantu melacak paket tersebut di Halaman Tab Baru.}}</translation>
 <translation id="5492504007368565877">Pengelola Sandi Google tidak dapat memeriksa sandi Anda.</translation>
 <translation id="5525095647255982834">Untuk mengirim tab ini ke perangkat lain, login ke Chrome di perangkat tersebut.</translation>
 <translation id="5527026824954593399">Ketuk “Lihat dengan Google Maps di Chrome”.</translation>

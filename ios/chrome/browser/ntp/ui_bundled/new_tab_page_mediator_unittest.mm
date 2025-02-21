@@ -11,7 +11,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/feed/core/v2/public/common_enums.h"
-#import "components/search_engines/search_engines_switches.h"
+#import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_data.h"
 #import "components/search_engines/template_url_service.h"

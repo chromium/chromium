@@ -42,6 +42,12 @@ public interface SafetyHubModuleDelegate {
     int getAccountPasswordsCount(@Nullable PasswordStoreBridge passwordStoreBridge);
 
     /**
+     * @param passwordStoreBridge Provides access to stored passwords.
+     * @return the total passwords count for local-level passwords.
+     */
+    int getLocalPasswordsCount(@Nullable PasswordStoreBridge passwordStoreBridge);
+
+    /**
      * Opens the sign-in bottomsheet.
      *
      * @param context used to launch the promo in.

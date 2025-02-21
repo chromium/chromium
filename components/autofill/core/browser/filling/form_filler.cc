@@ -218,9 +218,7 @@ bool AllowPaymentSwapping(const AutofillField& trigger_field,
              FieldTypeGroup::kCreditCard &&
          GroupTypeOfFieldType(field.Type().GetStorableType()) ==
              FieldTypeGroup::kCreditCard &&
-         !is_refill &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillEnablePaymentsFieldSwapping);
+         !is_refill && IsPaymentsFieldSwappingEnabled();
 }
 
 // Returns whether a filling action for `filling_product` should be included in
@@ -304,7 +302,7 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
 
   // Don't fill previously autofilled fields except the initiating field or
   // when it's a refill or for credit card fields, when
-  // `kAutofillEnablePaymentsFieldSwapping` is enabled.
+  // `kAutofillPaymentsFieldSwapping` is enabled.
   add_if(field.is_autofilled() && !is_trigger_field && !is_refill &&
              !AllowPaymentSwapping(trigger_field, autofill_field, is_refill),
          FieldFillingSkipReason::kAlreadyAutofilled);
@@ -451,14 +449,19 @@ FillingProduct FormFiller::UndoAutofill(
   // by the renderer.
   std::erase_if(
       fields, [this, &operation, &cached_fields](const FormFieldData& field) {
-        // Skip not-autofilled fields as undo only acts on autofilled fields.
-        return !field.is_autofilled() ||
-               // Skip fields whose last autofill operations is different than
-               // the one of the trigger field.
-               form_autofill_history_.GetLastFillingOperationForField(
-                   field.global_id()) != operation ||
-               // Skip fields that are not cached to avoid unexpected outcomes.
-               !cached_fields.contains(field.global_id());
+        return
+            // Skip fields whose last autofill operation is different
+            // than the one of the trigger field.
+            form_autofill_history_.GetLastFillingOperationForField(
+                field.global_id()) != operation ||
+            // Skip not-autofilled fields as undo only acts on autofilled
+            // fields. Only exception is the fields that were emptied due to
+            // suggestion swapping.
+            (!field.is_autofilled() && !field.value().empty() &&
+             operation.GetFieldFillingEntry(field.global_id())
+                 .ignore_is_autofilled) ||
+            // Skip fields that are not cached to avoid unexpected outcomes.
+            !cached_fields.contains(field.global_id());
       });
 
   for (FormFieldData& field : fields) {
@@ -641,29 +644,26 @@ void FormFiller::FillOrPreviewForm(
         refill_context ? refill_context->forced_fill_values
                        : std::map<FieldGlobalId, std::u16string>();
 
+    bool allow_suggestion_swapping =
+        AllowPaymentSwapping(autofill_trigger_field, autofill_field,
+                             is_refill) &&
+        form.fields()[i].is_autofilled();
+
     // Fill the data from `filling_payload` into `result_form`, which will be
     // sent to the renderer.
-    const bool is_newly_autofilled =
-        FillField(autofill_field, filling_payload, forced_fill_values,
-                  result_fields[i], action_persistence, &failure_to_fill);
+    // When `allow_suggestion_swapping` is true, the fields can also be emptied.
+    // In that scenario, the `field->is_autofilled()` becomes false.
+    const bool is_newly_autofilled_or_emptied = FillField(
+        autofill_field, filling_payload, forced_fill_values, result_fields[i],
+        action_persistence, allow_suggestion_swapping, &failure_to_fill);
     const bool autofilled_value_did_not_change =
         form.fields()[i].is_autofilled() && result_fields[i].is_autofilled() &&
         form.fields()[i].value() == result_fields[i].value();
-    if (is_newly_autofilled && !autofilled_value_did_not_change) {
-      // For credit card fields, override the autofilled field value if the
-      // field is autofilled.
-      if (AllowPaymentSwapping(autofill_trigger_field, autofill_field,
-                               is_refill) &&
-          form.fields()[i].is_autofilled() &&
-          result_fields[i].is_autofilled() &&
-          form.fields()[i].value() != result_fields[i].value()) {
-        // Override the autofilled value.
-        result_fields[i].set_force_override(true);
-      }
-    } else if (is_newly_autofilled) {
+
+    if (is_newly_autofilled_or_emptied && autofilled_value_did_not_change) {
       skip_reasons[form.fields()[i].global_id()].insert(
           FieldFillingSkipReason::kAutofilledValueDidNotChange);
-    } else {
+    } else if (!is_newly_autofilled_or_emptied) {
       skip_reasons[form.fields()[i].global_id()].insert(
           FieldFillingSkipReason::kNoValueToFill);
     }
@@ -1002,10 +1002,18 @@ bool FormFiller::FillField(
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
     FormFieldData& field_data,
     mojom::ActionPersistence action_persistence,
+    bool allow_suggestion_swapping,
     std::string* failure_to_fill) {
   const FieldFillingData filling_content =
       GetFieldFillingData(autofill_field, filling_payload, forced_fill_values,
                           field_data, action_persistence, failure_to_fill);
+
+  if (allow_suggestion_swapping) {
+    field_data.set_value(filling_content.value_to_fill);
+    field_data.set_force_override(true);
+    field_data.set_is_autofilled(!filling_content.value_to_fill.empty());
+    return true;
+  }
 
   // Do not attempt to fill empty values as it would skew the metrics.
   if (filling_content.value_to_fill.empty()) {

@@ -32,6 +32,7 @@ source_set("unit_tests") {
     "//components/metrics:metrics_pref_names",
     "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
+    "//components/regional_capabilities",
     "//components/search_engines",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/policy/model:test_support",

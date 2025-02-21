@@ -249,6 +249,14 @@ BASE_FEATURE(kCompressionDictionaryTransport,
              "CompressionDictionaryTransport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When this feature, the kCompressionDictionaryTransport and
+// the kCompressionDictionaryTransportBackend features are enabled then the
+// response to a main-frame navigation request may be registered as a
+// dictionary if the response header contains a `use-as-dictionary` header.
+BASE_FEATURE(kSharedDictionaryRegisterNavigationRequests,
+             "SharedDictionaryRegisterNavigationRequests",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When this feature is enabled, preloaded dictionaries will not be used for
 // network requests if the binary has not yet been preloaded.
 BASE_FEATURE(kPreloadedDictionaryConditionalUse,

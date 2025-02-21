@@ -74,7 +74,6 @@ Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sess�
 <translation id="2517624234762908348">Sincronizar dados do Chromium</translation>
 <translation id="2592940277904433508">Continuar a usar o Chromium</translation>
 <translation id="2607609479243848905">Se se esqueceu da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{O Chromium vai ajudar a acompanhar esta embalagem na página Novo separador.}other{O Chromium vai ajudar a acompanhar estas embalagens na página Novo separador.}}</translation>
 <translation id="2650312721222849884">Para ver os seus separadores onde quer que esteja a utilizar o Chromium, ative a sincronização.</translation>
 <translation id="2684230048001240293">Defina o Chromium como a predefinição para sincronizar os separadores, as palavras-chave e as informações de pagamento em todos os seus dispositivos</translation>
 <translation id="2730884209570016437">O Chromium não pode utilizar a câmara porque está a ser utilizada por outra aplicação</translation>
@@ -89,7 +88,6 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="2977470724722393594">O Chromium está atualizado</translation>
 <translation id="3044857325852340337">Dados do Chromium eliminados</translation>
 <translation id="3054480780637153380">Abra as definições do Chromium no iOS, toque em "App de navegador predefinida" e selecione o Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{O Chromium pode ajudar a acompanhar esta embalagem na página Novo separador.}other{O Chromium pode ajudar a acompanhar estas embalagens na página Novo separador.}}</translation>
 <translation id="3102849287235003384">Para terminar sessão na sua Conta Google em todos os Websites, <ph name="BEGIN_LINK" />termine sessão no Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Tornar o Chromium o navegador predefinido?</translation>
 <translation id="3242612358525156339">Nas definições do dispositivo, abra "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" e selecione "Chromium"</translation>

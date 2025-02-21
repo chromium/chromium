@@ -165,8 +165,8 @@ TEST_F(AutofillFeedbackDataUnitTest, IncludesLastAutofillEventLogEntry) {
 
   // Simulates an autofill event.
   Suggestion suggestion(u"TestValue", SuggestionType::kIbanEntry);
-  browser_autofill_manager_->OnSingleFieldSuggestionSelected(suggestion, form,
-                                                             field);
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
+      suggestion, form.global_id(), field.global_id());
 
   ASSERT_OK_AND_ASSIGN(
       auto expected_data,
@@ -197,8 +197,8 @@ TEST_F(AutofillFeedbackDataUnitTest,
 
   // Simulates an autofill event.
   Suggestion suggestion(u"TestValue", SuggestionType::kIbanEntry);
-  browser_autofill_manager_->OnSingleFieldSuggestionSelected(suggestion, form,
-                                                             field);
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
+      suggestion, form.global_id(), field.global_id());
 
   // Advance the clock 4 minutes should disregard the last autofill event log.
   task_environment_.FastForwardBy(base::Minutes(4));

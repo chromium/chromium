@@ -328,6 +328,7 @@ class CORE_EXPORT StyleCascade {
     bool has_font_units_ = false;
     bool has_root_font_units_ = false;
     bool has_line_height_units_ = false;
+    bool has_dashed_functions_ = false;
     // Attr tainted intervals [start, end).
     Vector<std::pair<wtf_size_t, wtf_size_t>> attr_taint_ranges_;
   };

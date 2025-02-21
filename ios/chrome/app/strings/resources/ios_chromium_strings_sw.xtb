@@ -74,7 +74,6 @@ Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kw
 <translation id="2517624234762908348">Sawazisha data yako kwenye Chromium</translation>
 <translation id="2592940277904433508">Endelea kutumia Chromium</translation>
 <translation id="2607609479243848905">Ikiwa ulisahau kauli yako ya siri au ungependa kubadilisha mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chromium kwenye akaunti yako<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium itasaidia kufuatilia kifurushi hiki kwenye Ukurasa Mpya wa Kichupo.}other{Chromium itasaidia kufuatilia vifurushi hivi kwenye Ukurasa Mpya wa Kichupo.}}</translation>
 <translation id="2650312721222849884">Ili uone vichupo vyako kwenye kifaa chochote unakotumia Chromium, washa kipengele cha kusawazisha</translation>
 <translation id="2684230048001240293">Weka Chromium iwe kivinjari chaguomsingi cha kusawazisha vichupo, manenosiri na maelezo yako ya malipo kwenye vifaa vyako vyote</translation>
 <translation id="2730884209570016437">Chromium imeshindwa kutumia kamera yako kwa sababu inatumiwa na programu nyingine</translation>
@@ -89,7 +88,6 @@ Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chromium
 <translation id="2977470724722393594">Chromium imesasishwa</translation>
 <translation id="3044857325852340337">Umefuta data kwenye Chromium</translation>
 <translation id="3054480780637153380">Fungua mipangilio ya Chromium kwenye iOS, kisha uguse "Programu Chaguomsingi ya Kivinjari" na uchague Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium inaweza kukusaidia kufuatilia kifurushi hiki kwenye Ukurasa Mpya wa Kichupo.}other{Chromium inaweza kukusaidia kufuatilia vifurushi hivi kwenye Ukurasa Mpya wa Kichupo.}}</translation>
 <translation id="3102849287235003384">Ili uondoke kwenye akaunti yako ya Google katika tovuti zote, <ph name="BEGIN_LINK" />ondoka kwenye akaunti yako katika kivinjari cha Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Je ungependa kufanya Chromium iwe kivinjari chako chaguomsingi?</translation>
 <translation id="3242612358525156339">Kwenye mipangilio ya kifaa chako, fungua "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" kisha uchague "Chromium"</translation>

@@ -74,7 +74,6 @@ Probeer om ’n paar minute te wag voordat jy afmeld. As jy nou afmeld, sal hier
 <translation id="2517624234762908348">Sinkroniseer jou Chromium-data</translation>
 <translation id="2592940277904433508">Hou aan om Chromium te gebruik</translation>
 <translation id="2607609479243848905"><ph name="BEGIN_LINK" />Vee die Chromium-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet het of hierdie instelling wil verander.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium sal help om hierdie pakkie op die Nuwe oortjie-bladsy na te spoor.}other{Chromium sal help om hierdie pakkies op die Nuwe oortjie-bladsy na te spoor.}}</translation>
 <translation id="2650312721222849884">Skakel sinkronisering aan om jou oortjies te sien van waar ook al jy Chromium gebruik</translation>
 <translation id="2684230048001240293">Stel Chromium as verstek om jou oortjies, wagwoorde en betaalinligting op al jou toestelle te sinkroniseer</translation>
 <translation id="2730884209570016437">Chromium kan nie jou kamera gebruik nie omdat dit deur 'n ander program gebruik word</translation>
@@ -89,7 +88,6 @@ Gaan na <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer in
 <translation id="2977470724722393594">Chromium is op datum</translation>
 <translation id="3044857325852340337">Chromium-data uitgevee</translation>
 <translation id="3054480780637153380">Maak Chromium-instellings in iOS oop, en tik dan op “Verstekblaaier-app” en kies Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium kan jou help om hierdie pakkie op die Nuwe oortjie-bladsy na te spoor.}other{Chromium kan jou help om hierdie pakkies op die Nuwe oortjie-bladsy na te spoor.}}</translation>
 <translation id="3102849287235003384"><ph name="BEGIN_LINK" />Meld af by Chromium<ph name="END_LINK" /> om op alle webwerwe by jou Google-rekening af te meld.</translation>
 <translation id="3115956258722352278">Maak Chromium jou verstekblaaier?</translation>
 <translation id="3242612358525156339">Maak “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” in jou toestel se instellings oop en kies “Chromium”</translation>

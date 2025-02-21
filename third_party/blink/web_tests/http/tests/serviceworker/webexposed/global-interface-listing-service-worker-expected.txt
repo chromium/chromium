@@ -1914,18 +1914,6 @@ interface Response
 interface RestrictionTarget
     attribute @@toStringTag
     method constructor
-interface Sanitizer
-    attribute @@toStringTag
-    method allowAttribute
-    method allowElement
-    method constructor
-    method get
-    method removeAttribute
-    method removeElement
-    method removeUnsafe
-    method replaceWithChildrenElement
-    method setComments
-    method setDataAttributes
 interface Scheduler
     attribute @@toStringTag
     method constructor

@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -27,22 +28,36 @@ public class SafetyHubLocalPasswordsDataSource
     }
 
     // Represents the type of local password module.
-    @IntDef({ModuleType.UNAVAILABLE_PASSWORDS})
+    @IntDef({
+        ModuleType.UNAVAILABLE_PASSWORDS,
+        ModuleType.NO_SAVED_PASSWORDS,
+        ModuleType.HAS_COMPROMISED_PASSWORDS,
+        ModuleType.HAS_WEAK_PASSWORDS
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ModuleType {
         int UNAVAILABLE_PASSWORDS = 0;
+        int NO_SAVED_PASSWORDS = 1;
+        int HAS_COMPROMISED_PASSWORDS = 2;
+        int HAS_WEAK_PASSWORDS = 3;
     };
 
+    @NonNull private final SafetyHubModuleDelegate mModuleDelegate;
     @NonNull private final PrefService mPrefService;
     @NonNull private final SafetyHubFetchService mSafetyHubFetchService;
     @Nullable private final PasswordStoreBridge mPasswordStoreBridge;
 
     private Observer mObserver;
 
+    private int mCompromisedPasswordCount;
+    private int mWeakPasswordCount;
+
     SafetyHubLocalPasswordsDataSource(
+            @NonNull SafetyHubModuleDelegate moduleDelegate,
             @NonNull PrefService prefService,
             @NonNull SafetyHubFetchService safetyHubFetchService,
             @Nullable PasswordStoreBridge passwordStoreBridge) {
+        mModuleDelegate = moduleDelegate;
         mPrefService = prefService;
         mSafetyHubFetchService = safetyHubFetchService;
         mPasswordStoreBridge = passwordStoreBridge;
@@ -56,7 +71,7 @@ public class SafetyHubLocalPasswordsDataSource
     }
 
     public boolean maybeTriggerPasswordCheckup() {
-        // TODO(crbug.com/388788969): Only trigger the checkup if there are local passwords.
+        // TODO(crbug.com/388788969): Only trigger the checkup if it can be ran.
         // After triggering the checkup, this data source will be notified of
         // changes to the count values via @{link localPasswordCountsChanged}.
         mSafetyHubFetchService.runLocalPasswordCheckup();
@@ -65,6 +80,9 @@ public class SafetyHubLocalPasswordsDataSource
 
     public void updateState() {
         // TODO(crbug.com/388788969): Update password counts.
+        updateCompromisedPasswordCount();
+        updateWeakPasswordCount();
+
         if (mObserver != null) {
             mObserver.stateChanged(getModuleType());
         }
@@ -77,7 +95,45 @@ public class SafetyHubLocalPasswordsDataSource
     // Returns the password module type according to the application state.
     private @ModuleType int getModuleType() {
         // TODO(crbug.com/388788969): Add more module types.
+        if (getTotalPasswordCount() == 0) {
+            return ModuleType.NO_SAVED_PASSWORDS;
+        }
+        if (mCompromisedPasswordCount > 0) {
+            return ModuleType.HAS_COMPROMISED_PASSWORDS;
+        }
+        // TODO(crbug.com/388788969): Test when weak and reuse feature is disabled.
+        if (ChromeFeatureList.sSafetyHubWeakAndReusedPasswords.isEnabled()) {
+            if (mWeakPasswordCount > 0) {
+                return ModuleType.HAS_WEAK_PASSWORDS;
+            }
+        }
         return ModuleType.UNAVAILABLE_PASSWORDS;
+    }
+
+    public int getCompromisedPasswordCount() {
+        return mCompromisedPasswordCount;
+    }
+
+    private void updateCompromisedPasswordCount() {
+        assert mPrefService != null
+                : "A null PrefService was detected in SafetyHubLocalPasswordsDataSource";
+        mCompromisedPasswordCount = mPrefService.getInteger(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT);
+    }
+
+    public int getWeakPasswordCount() {
+        return mWeakPasswordCount;
+    }
+
+    private void updateWeakPasswordCount() {
+        assert mPrefService != null
+                : "A null PrefService was detected in SafetyHubLocalPasswordsDataSource";
+        mWeakPasswordCount = mPrefService.getInteger(Pref.LOCAL_WEAK_CREDENTIALS_COUNT);
+    }
+
+    private int getTotalPasswordCount() {
+        assert mModuleDelegate != null
+                : "A null ModuleDelegate was detected in SafetyHubLocalPasswordsDataSource";
+        return mModuleDelegate.getLocalPasswordsCount(mPasswordStoreBridge);
     }
 
     public void destroy() {

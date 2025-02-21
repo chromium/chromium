@@ -284,12 +284,7 @@ component("search_engines_switches") {
     "search_engines_switches.h",
   ]
 
-  deps = [
-    "//base",
-
-    # TODO(crbug.com/390993114): Remove with the header forwarding.
-    "//components/regional_capabilities",
-  ]
+  deps = [ "//base" ]
 }
 
 if (!is_android) {

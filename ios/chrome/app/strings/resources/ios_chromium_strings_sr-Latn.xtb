@@ -74,7 +74,6 @@ Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi
 <translation id="2517624234762908348">Sinhronizuj Chromium podatke</translation>
 <translation id="2592940277904433508">Nastavi sa korišćenjem Chromium-a</translation>
 <translation id="2607609479243848905">Ako ste zaboravili pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium podatke na nalogu<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium će vam pomoći da pratite ovaj paket na stranici nove kartice.}one{Chromium će vam pomoći da pratite ove pakete na stranici nove kartice.}few{Chromium će vam pomoći da pratite ove pakete na stranici nove kartice.}other{Chromium će vam pomoći da pratite ove pakete na stranici nove kartice.}}</translation>
 <translation id="2650312721222849884">Da biste videli kartice na bilo kojem uređaju na kom koristite Chromium, uključite sinhronizaciju</translation>
 <translation id="2684230048001240293">Podesite Chromium kao podrazumevanu aplikaciju za sinhronizovanje kartica, lozinki i informacija o plaćanju na svim uređajima</translation>
 <translation id="2730884209570016437">Chromium ne može da koristi kameru zato što je već koristi druga aplikacija</translation>
@@ -89,7 +88,6 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chromium-a po
 <translation id="2977470724722393594">Chromium je ažuriran</translation>
 <translation id="3044857325852340337">Chromium podaci su izbrisani</translation>
 <translation id="3054480780637153380">Otvorite podešavanja Chromium-a u iOS-u, pa dodirnite Default Browser App (Podrazumevana aplikacija za pregledač) i izaberite Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium može da vam pomogne da pratite ovaj paket na stranici nove kartice.}one{Chromium može da vam pomogne da pratite ove pakete na stranici nove kartice.}few{Chromium može da vam pomogne da pratite ove pakete na stranici nove kartice.}other{Chromium može da vam pomogne da pratite ove pakete na stranici nove kartice.}}</translation>
 <translation id="3102849287235003384">Da biste se odjavili sa Google naloga na svim veb-sajtovima, <ph name="BEGIN_LINK" />odjavite se iz Chromium-a<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Želite da podesite Chromium za podrazumevani pregledač?</translation>
 <translation id="3242612358525156339">U podešavanjima uređaja otvorite „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ i izaberite „Chromium“</translation>

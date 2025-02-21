@@ -20,7 +20,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +32,7 @@ class ExtensionInstalledBubbleViewsSignInBrowserTest
  public:
   ExtensionInstalledBubbleViewsSignInBrowserTest() {
     scoped_feature_list_.InitAndDisableFeature(
-        syncer::kSyncEnableExtensionsInTransportMode);
+        switches::kEnableExtensionsExplicitBrowserSignin);
   }
 
   ~ExtensionInstalledBubbleViewsSignInBrowserTest() override = default;
@@ -108,7 +107,7 @@ class ExtensionInstalledBubbleViewsExplicitSignInBrowserTest
  public:
   ExtensionInstalledBubbleViewsExplicitSignInBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {syncer::kSyncEnableExtensionsInTransportMode}, {});
+        {switches::kEnableExtensionsExplicitBrowserSignin}, {});
   }
 
  protected:

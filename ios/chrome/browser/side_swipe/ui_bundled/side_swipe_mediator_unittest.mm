@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_consumer.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator+Testing.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/common/crw_web_view_content_view.h"
@@ -28,6 +29,33 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "third_party/ocmock/ocmock_extensions.h"
+
+@interface FakeSideSwipeUIController : NSObject <SideSwipeConsumer>
+
+@property(nonatomic, assign) BOOL leadingEdgeNavigationEnabled;
+@property(nonatomic, assign) BOOL trailingEdgeNavigationEnabled;
+
+@end
+
+@implementation FakeSideSwipeUIController
+
+- (void)setLeadingEdgeNavigationEnabled:(BOOL)enabled {
+  _leadingEdgeNavigationEnabled = enabled;
+}
+
+- (void)setTrailingEdgeNavigationEnabled:(BOOL)enabled {
+  _trailingEdgeNavigationEnabled = enabled;
+}
+
+- (void)cancelOnGoingSwipe {
+  // NO-OP
+}
+
+- (void)webPageLoaded {
+  // NO-OP
+}
+
+@end
 
 namespace {
 
@@ -65,6 +93,8 @@ class SideSwipeMediatorTest : public PlatformTest {
     view_ = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 240)];
 
     [side_swipe_mediator_ addHorizontalGesturesToView:view_];
+    fake_swipe_ui_controller_ = [[FakeSideSwipeUIController alloc] init];
+    side_swipe_mediator_.consumer = fake_swipe_ui_controller_;
   }
 
   ~SideSwipeMediatorTest() override { [side_swipe_mediator_ disconnect]; }
@@ -74,6 +104,7 @@ class SideSwipeMediatorTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   UIView* view_;
   SideSwipeMediator* side_swipe_mediator_;
+  FakeSideSwipeUIController* fake_swipe_ui_controller_;
   ScopedKeyWindow scoped_window_;
   WKWebView* web_view_ = nil;
   CRWWebViewContentView* content_view_ = nil;
@@ -95,52 +126,52 @@ TEST_F(SideSwipeMediatorTest, TestEdgeNavigationEnabled) {
   item->SetURL(GURL(kChromeUINewTabURL));
   [side_swipe_mediator_
       updateNavigationEdgeSwipeForWebState:fake_web_state.get()];
-  EXPECT_TRUE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
-  EXPECT_TRUE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
+  EXPECT_TRUE(fake_swipe_ui_controller_.leadingEdgeNavigationEnabled);
+  EXPECT_TRUE(fake_swipe_ui_controller_.trailingEdgeNavigationEnabled);
 
   item->SetURL(GURL("chrome://crash"));
   [side_swipe_mediator_
       updateNavigationEdgeSwipeForWebState:fake_web_state.get()];
-  EXPECT_TRUE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
-  EXPECT_TRUE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
+  EXPECT_TRUE(fake_swipe_ui_controller_.leadingEdgeNavigationEnabled);
+  EXPECT_TRUE(fake_swipe_ui_controller_.trailingEdgeNavigationEnabled);
 
   item->SetURL(GURL("http://wwww.test.com"));
   [side_swipe_mediator_
       updateNavigationEdgeSwipeForWebState:fake_web_state.get()];
-  EXPECT_FALSE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
-  EXPECT_FALSE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
+  EXPECT_FALSE(fake_swipe_ui_controller_.leadingEdgeNavigationEnabled);
+  EXPECT_FALSE(fake_swipe_ui_controller_.trailingEdgeNavigationEnabled);
 
   item->SetURL(GURL("chrome://foo"));
   [side_swipe_mediator_
       updateNavigationEdgeSwipeForWebState:fake_web_state.get()];
-  EXPECT_FALSE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
-  EXPECT_FALSE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
+  EXPECT_FALSE(fake_swipe_ui_controller_.leadingEdgeNavigationEnabled);
+  EXPECT_FALSE(fake_swipe_ui_controller_.trailingEdgeNavigationEnabled);
 
   item->SetURL(GURL("chrome://version"));
   [side_swipe_mediator_
       updateNavigationEdgeSwipeForWebState:fake_web_state.get()];
-  EXPECT_FALSE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
-  EXPECT_FALSE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
+  EXPECT_FALSE(fake_swipe_ui_controller_.leadingEdgeNavigationEnabled);
+  EXPECT_FALSE(fake_swipe_ui_controller_.trailingEdgeNavigationEnabled);
 
   // Tests that when webstate is nil calling
   // updateNavigationEdgeSwipeForWebState doesn't change the edge navigation
   // state.
   item->SetURL(GURL("http://wwww.test.com"));
   [side_swipe_mediator_ updateNavigationEdgeSwipeForWebState:nil];
-  EXPECT_FALSE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
-  EXPECT_FALSE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
-  side_swipe_mediator_.leadingEdgeNavigationEnabled = YES;
-  side_swipe_mediator_.trailingEdgeNavigationEnabled = YES;
+  EXPECT_FALSE(fake_swipe_ui_controller_.leadingEdgeNavigationEnabled);
+  EXPECT_FALSE(fake_swipe_ui_controller_.trailingEdgeNavigationEnabled);
+  fake_swipe_ui_controller_.leadingEdgeNavigationEnabled = YES;
+  fake_swipe_ui_controller_.trailingEdgeNavigationEnabled = YES;
   [side_swipe_mediator_ updateNavigationEdgeSwipeForWebState:nil];
-  EXPECT_TRUE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
-  EXPECT_TRUE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
+  EXPECT_TRUE(fake_swipe_ui_controller_.leadingEdgeNavigationEnabled);
+  EXPECT_TRUE(fake_swipe_ui_controller_.trailingEdgeNavigationEnabled);
 }
 
 // Tests that when the active webState is changed or when the active webState
 // finishes navigation, the edge state will be updated accordingly.
 TEST_F(SideSwipeMediatorTest, ObserversTriggerStateUpdate) {
-  ASSERT_FALSE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
-  ASSERT_FALSE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
+  ASSERT_FALSE(fake_swipe_ui_controller_.leadingEdgeNavigationEnabled);
+  ASSERT_FALSE(fake_swipe_ui_controller_.trailingEdgeNavigationEnabled);
 
   auto fake_web_state = std::make_unique<web::FakeWebState>();
   fake_web_state->SetView(content_view_);
@@ -165,8 +196,8 @@ TEST_F(SideSwipeMediatorTest, ObserversTriggerStateUpdate) {
   browser_->GetWebStateList()->InsertWebState(
       std::move(fake_web_state),
       WebStateList::InsertionParams::AtIndex(1).Activate());
-  EXPECT_TRUE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
-  EXPECT_TRUE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
+  EXPECT_TRUE(fake_swipe_ui_controller_.leadingEdgeNavigationEnabled);
+  EXPECT_TRUE(fake_swipe_ui_controller_.trailingEdgeNavigationEnabled);
 
   // Non native URL should have shouldn't be handled by SideSwipeMediator.
   item->SetURL(GURL("http://wwww.test.test"));
@@ -174,58 +205,8 @@ TEST_F(SideSwipeMediatorTest, ObserversTriggerStateUpdate) {
   context.SetHasCommitted(true);
   // Navigation finish should also update the edge navigation state.
   fake_web_state_ptr->OnNavigationFinished(&context);
-  EXPECT_FALSE(side_swipe_mediator_.leadingEdgeNavigationEnabled);
-  EXPECT_FALSE(side_swipe_mediator_.trailingEdgeNavigationEnabled);
-}
-
-// Tests if edge navigation is enabled on an RTL layout for a given direction.
-TEST_F(SideSwipeMediatorTest, TestNativeSwipeIsEnabledOnRtlEnv) {
-  side_swipe_mediator_.leadingEdgeNavigationEnabled = YES;
-  side_swipe_mediator_.trailingEdgeNavigationEnabled = NO;
-
-  // Set the env lang to Arabic.
-  base::i18n::SetICUDefaultLocale("ar");
-
-  BOOL edgeNavigationIsEnabledOnLeftDirection =
-      [side_swipe_mediator_ edgeNavigationIsEnabledForDirection:
-                                UISwipeGestureRecognizerDirectionLeft];
-
-  // On an RTL layout, edge navigation is enabled on left direction since
-  // leading edge navigation is enabled.
-  EXPECT_TRUE(edgeNavigationIsEnabledOnLeftDirection);
-
-  BOOL edgeNavigationIsEnabledOnRightDirection =
-      [side_swipe_mediator_ edgeNavigationIsEnabledForDirection:
-                                UISwipeGestureRecognizerDirectionRight];
-
-  // On an RTL layout, edge navigation is disabled on right direction since
-  // trailing edge navigation is disabled.
-  EXPECT_FALSE(edgeNavigationIsEnabledOnRightDirection);
-
-  // Reset the lang env to en-US.
-  base::i18n::SetICUDefaultLocale("en-US");
-}
-
-// Tests if edge navigation is enabled on an LTR layout for a given direction.
-TEST_F(SideSwipeMediatorTest, TestNativeSwipeIsEnabledOnLtrEnv) {
-  side_swipe_mediator_.leadingEdgeNavigationEnabled = YES;
-  side_swipe_mediator_.trailingEdgeNavigationEnabled = NO;
-
-  BOOL edgeNavigationIsEnabledOnLeftDirection =
-      [side_swipe_mediator_ edgeNavigationIsEnabledForDirection:
-                                UISwipeGestureRecognizerDirectionLeft];
-
-  // On an LTR layout, edge navigation is disabled on left direction since
-  // trailing edge navigation is disabled.
-  EXPECT_FALSE(edgeNavigationIsEnabledOnLeftDirection);
-
-  BOOL edgeNavigationIsEnabledOnRightDirection =
-      [side_swipe_mediator_ edgeNavigationIsEnabledForDirection:
-                                UISwipeGestureRecognizerDirectionRight];
-
-  // On an LTR layout, edge navigation is enabled on right direction since
-  // leading edge navigation is enabled.
-  EXPECT_TRUE(edgeNavigationIsEnabledOnRightDirection);
+  EXPECT_FALSE(fake_swipe_ui_controller_.leadingEdgeNavigationEnabled);
+  EXPECT_FALSE(fake_swipe_ui_controller_.trailingEdgeNavigationEnabled);
 }
 
 }  // anonymous namespace

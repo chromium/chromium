@@ -74,7 +74,6 @@ Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þ
 <translation id="2517624234762908348">Samstilla Chromium gögnin þín</translation>
 <translation id="2592940277904433508">Halda áfram að nota Chromium</translation>
 <translation id="2607609479243848905">Ef þú gleymdir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chromium-gögnunum á reikningnum þínum<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium getur rakið þennan pakka á síðu nýrra flipa.}one{Chromium getur rakið þessa pakka á síðu nýrra flipa.}other{Chromium getur rakið þessa pakka á síðu nýrra flipa.}}</translation>
 <translation id="2650312721222849884">Kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chromium</translation>
 <translation id="2684230048001240293">Notaðu Chromium sem sjálfgefinn kost til að samstilla flipa, aðgangsorð og greiðsluupplýsingar í öllum tækjunum þínum</translation>
 <translation id="2730884209570016437">Chromium getur ekki notað myndavélina því að annað forrit er að nota hana</translation>
@@ -89,7 +88,6 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chromium-upplifuni
 <translation id="2977470724722393594">Chromium er uppfært</translation>
 <translation id="3044857325852340337">Chromium-gögnum var eytt</translation>
 <translation id="3054480780637153380">Opnaðu stillingar Chromium í iOS, ýttu síðan á „Sjálfgefið vafraforrit“ og veldu Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium getur hjálpað þér að rekja þennan pakka á síðu nýrra flipa.}one{Chromium getur hjálpað þér að rekja þessa pakka á síðu nýrra flipa.}other{Chromium getur hjálpað þér að rekja þessa pakka á síðu nýrra flipa.}}</translation>
 <translation id="3102849287235003384">Til að skrá þig út af Google reikningnum þínum á öllum vefsvæðum skaltu <ph name="BEGIN_LINK" />skrá þig út af Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Gera Chromium að sjálfgefnum vafra?</translation>
 <translation id="3242612358525156339">Opnaðu „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ og veldu „Chromium“ í stillingum tækisins</translation>

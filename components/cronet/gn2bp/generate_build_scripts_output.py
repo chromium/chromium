@@ -7,6 +7,7 @@ Generates the rust build script output into a well-structured JSON format.
 import argparse
 from typing import Set, List, Dict
 import glob
+import multiprocessing.dummy
 import json
 import tempfile
 import re
@@ -138,14 +139,18 @@ def _generate_build_scripts_outputs(
         archs: List[str],
         targets: List[str]) -> Dict[str, Dict[str, List[str]]]:
   build_scripts_output_per_arch = {}
-  for arch in archs:
-    build_script_output = _generate_build_script_outputs_for_arch(arch)
-    for (target_name, output) in build_script_output.items():
-      if targets and target_name not in targets:
-        continue
-      if target_name not in build_scripts_output_per_arch:
-        build_scripts_output_per_arch[target_name] = {}
-      build_scripts_output_per_arch[target_name][arch] = output
+  with multiprocessing.dummy.Pool(len(archs)) as pool:
+    results = [(arch,
+                pool.apply_async(_generate_build_script_outputs_for_arch,
+                                 (arch, ))) for arch in archs]
+    for (arch, result) in results:
+      build_script_output = result.get()
+      for (target_name, output) in build_script_output.items():
+        if targets and target_name not in targets:
+          continue
+        if target_name not in build_scripts_output_per_arch:
+          build_scripts_output_per_arch[target_name] = {}
+        build_scripts_output_per_arch[target_name][arch] = output
 
   # Generate host-specific build script outputs
   build_script_output = _generate_build_script_outputs_for_host()

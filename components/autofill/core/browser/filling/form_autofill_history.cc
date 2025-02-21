@@ -18,13 +18,15 @@ FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(
     bool field_is_autofilled,
     std::optional<std::string> field_autofill_source_profile_guid,
     std::optional<FieldType> field_autofilled_type,
-    FillingProduct field_filling_product)
+    FillingProduct field_filling_product,
+    bool ignore_is_autofilled)
     : value(field_value),
       is_autofilled(field_is_autofilled),
       autofill_source_profile_guid(
           std::move(field_autofill_source_profile_guid)),
       autofilled_type(std::move(field_autofilled_type)),
-      filling_product(field_filling_product) {}
+      filling_product(field_filling_product),
+      ignore_is_autofilled(ignore_is_autofilled) {}
 
 FormAutofillHistory::FieldFillingEntry::~FieldFillingEntry() = default;
 
@@ -75,15 +77,23 @@ void FormAutofillHistory::AddFormFillEntry(
     // refilled with a newer value `C`. We do not store this so that upon
     // undoing Autofill, the field's value reverts from `C` to `A` directly as
     // this is what happened from a user's perspective.
-    size_ += history_.front()
-                 .field_filling_entries
-                 .emplace(field->global_id(),
-                          FieldFillingEntry(
-                              field->value(), field->is_autofilled(),
-                              autofill_field->autofill_source_profile_guid(),
-                              autofill_field->autofilled_type(),
-                              autofill_field->filling_product()))
-                 .second;
+    size_ +=
+        history_.front()
+            .field_filling_entries
+            .emplace(field->global_id(),
+                     FieldFillingEntry(
+                         field->value(), field->is_autofilled(),
+                         autofill_field->autofill_source_profile_guid(),
+                         autofill_field->autofilled_type(),
+                         autofill_field->filling_product(),
+                         // `FormAutofillHistory::AddFormFillingEntry` only gets
+                         // fields that were autofilled. In case a field has an
+                         // empty value, this means Autofill intentionally
+                         // filled an empty string into it, and therefore when
+                         // undoing changes to this field we should not look at
+                         // `FormFieldData::is_autofilled`.
+                         /*ignore_is_autofilled=*/field->value().empty()))
+            .second;
   }
   // Drop the last history entry while the history size exceeds the limit.
   while (size_ > kMaxStorableFieldFillHistory) {

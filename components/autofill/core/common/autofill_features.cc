@@ -175,13 +175,6 @@ BASE_FEATURE(kAutofillEnableLoyaltyCardsFilling,
              "AutofillEnableLoyaltyCardsFilling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, focusing on a credit card number field that was traditionally
-// autofilled will yield all credit card suggestions.
-// TODO(crbug.com/354175563): Remove when launched.
-BASE_FEATURE(kAutofillEnablePaymentsFieldSwapping,
-             "AutofillEnablePaymentsFieldSwapping",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, only non-ad frames are extracted.
 // Otherwise, non-ad frames as well as *visible* ad frames are extracted.
 // "Extracted" means that FormFieldData::child_frames is populated, which is
@@ -242,6 +235,13 @@ BASE_FEATURE(kAutofillFixCurrentValueInImport,
              "AutofillFixCurrentValueInImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, focusing on a credit card number field that was traditionally
+// autofilled will yield all credit card suggestions.
+// TODO(crbug.com/354175563): Remove when launched.
+BASE_FEATURE(kAutofillPaymentsFieldSwapping,
+             "AutofillPaymentsFieldSwapping",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, and upon receiving a signal that a select element has been
 // edited by the user, BrowserAutofillManager will record this correction, which
 // will affect many correctness metrics.
@@ -296,6 +296,19 @@ const base::FeatureParam<bool>
     kAutofillImprovedLabelsParamWithDifferentiatingLabelsInFrontParam{
         &kAutofillImprovedLabels,
         "autofill_improved_labels_with_differentiating_labels_in_front", false};
+
+// If enabled, we include a `FormFieldData`'s maxlength in crowdsourcing votes.
+// TODO(crbug.com/393995180): Clean up when launched.
+BASE_FEATURE(kAutofillIncludeMaxLengthInCrowdsourcing,
+             "AutofillIncludeMaxLengthInCrowdsourcing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, we include a <select>'s first, second, and last <option> in
+// crowdsourcing votes.
+// TODO(crbug.com/393999140): Clean up when launched.
+BASE_FEATURE(kAutofillIncludeSelectOptionsInCrowdsourcing,
+             "AutofillIncludeSelectOptionsInCrowdsourcing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, we include a `FormData`'s URL in crowdsourcing votes.
 // TODO(crbug.com/385043924): Clean up when launched.

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Overflow: parsing scroll-marker-contain property computed values</title>
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/10916">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+<div id="target"></div>
+<script>
+  test_computed_value('scroll-marker-contain', 'initial', 'none');
+  test_computed_value('scroll-marker-contain', 'inherit', 'none');
+  test_computed_value('scroll-marker-contain', 'unset', 'none');
+  test_computed_value('scroll-marker-contain', 'revert', 'none');
+
+  test_computed_value('scroll-marker-contain', 'none');
+  test_computed_value('scroll-marker-contain', 'auto');
+
+  test(() => {
+    let style = getComputedStyle(document.getElementById('target'));
+    assert_not_equals(Array.from(style).indexOf('scroll-marker-contain'), -1);
+  }, 'The scroll-marker-contain property shows up in CSSStyleDeclaration enumeration');
+
+  test(() => {
+    let style = document.getElementById('target').style;
+    assert_not_equals(style.cssText.indexOf('scroll-marker-contain'), -1);
+  }, 'The scroll-marker-contain property shows up in CSSStyleDeclaration.cssText');
+</script>

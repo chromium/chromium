@@ -12,6 +12,15 @@ namespace password_manager::prefs {
 // Alphabetical list of preference names specific to the PasswordManager
 // component.
 
+// Boolean controlling whether websites and apps can automatically upgrade
+// existing accounts to use passkeys when available.
+//
+// This pref doesn't have a policy mapped to it directly. Passkey creation in
+// general can be disabled using `kCredentialsEnableService` and
+// `kCredentialsEnablePasskeys`, in which case this pref's value is ignored.
+inline constexpr char kAutomaticPasskeyUpgrades[] =
+    "password_manager.automatic_passkey_upgrades";
+
 // Boolean controlling whether the password manager allows automatic signing in
 // through Credential Management API.
 //

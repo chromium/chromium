@@ -155,7 +155,7 @@
       updateIdentityViewItem:[self identityViewItemForIdentity:identity]];
 }
 
-- (void)onEndBatchOfRefreshTokenStateChanges {
+- (void)onAccountsOnDeviceChanged {
   if (!_authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     // This accounts table view will be popped or dismissed when the user
     // is signed out. Avoid reloading it in that case as that would lead to an

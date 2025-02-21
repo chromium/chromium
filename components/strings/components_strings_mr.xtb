@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">कार्डे सेव्ह करत आहे...</translation>
 <translation id="1060136083665017312">गेम सिस्टीम आणि कन्सोल</translation>
 <translation id="1060320201901229167">एन्व्हलप काकू ५</translation>
-<translation id="10614374240317010">कधीही सेव्ह न केलेले</translation>
 <translation id="1062407476771304334">पुनर्स्थित करा</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">शोध इंजीनचे तपशील</translation>
@@ -263,7 +262,6 @@
 <translation id="1432187715652018471">पेजला सेवा हँडलर इंस्टॉल करायचा आहे.</translation>
 <translation id="1432581352905426595">शोध इंजीन व्यवस्थापित करा</translation>
 <translation id="1433225466058025572">तुमच्या फाइल हलवण्याचा पुन्हा प्रयत्न करा</translation>
-<translation id="1435940442311036198">वेगळ्या डिव्हाइसवर पासकी वापरा</translation>
 <translation id="1436185428532214179">तुमच्या डिव्हाइसवरील फाइल आणि फोल्डर संपादित करण्याची विनंती करू शकते</translation>
 <translation id="1442386063175183758">राइट गेट फोल्ड</translation>
 <translation id="1442987760062738829">पंच</translation>
@@ -357,7 +355,6 @@
 <translation id="159274626729231974">चित्रपट महोत्सव</translation>
 <translation id="1593359183944365958">२७० अंश</translation>
 <translation id="1594030484168838125">निवडा</translation>
-<translation id="1598816256585174656">Windows Hello कडील पासकी</translation>
 <translation id="1599199147673445968">नवीन कार्ड हवे आहे? <ph name="BEGIN_LINK" />कार्ड तपशील एंटर करा<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">सौंदर्य आणि फिटनेस</translation>
 <translation id="160851722280695521">Chrome मध्ये Dino Run गेम खेळा</translation>
@@ -469,7 +466,6 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">वेब अ‍ॅप्स इंस्टॉल करायची आहेत का?</translation>
 <translation id="1791415068765905273">सर्व तुलना सारण्या दाखवा</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या Google खाते मध्ये तुमची माहिती, गोपनीयता आणि सुरक्षा व्यवस्थापित करण्यासाठी टॅब व त्यानंतर एंटर प्रेस करा</translation>
 <translation id="1793473605302304726">कालांतराने पेमेंट करा</translation>
 <translation id="1793631236004319016"><ph name="NUM_HOURS_MINUTES_SECONDS" /> पूर्वी शेवटचे वापरले</translation>
@@ -2126,7 +2122,6 @@
 <translation id="4754461935447132332">सुरक्षित नसलेल्या साइटसाठी अनुमती नाही</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">तुमच्या Chrome प्रोफाइल मधील पासकी</translation>
 <translation id="4757993714154412917">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला. तुमची खाती सुरक्षित करण्यासाठी, Chromium तुमचे सेव्ह केलेले पासवर्ड तपासण्याची शिफारस करते.</translation>
 <translation id="4758311279753947758">संपर्क माहिती जोडा</translation>
 <translation id="4761326898079498987">अधिक तपशिलांसाठी पुनरावलोकन करा</translation>
@@ -2699,7 +2694,6 @@
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> ला पाठवा</translation>
 <translation id="5765072501007116331">वितरण पद्धती आणि आवश्यकता पाहण्यासाठी, एक पत्ता निवडा</translation>
 <translation id="57689295674415555">व्हर्च्युअल कार्ड नंबर भरला नाही का?</translation>
-<translation id="5772086939108830423">वेगळ्या डिव्हाइसवर पासकी वापरा</translation>
 <translation id="5776313857861697733">प्राधान्य</translation>
 <translation id="577804500166306874">परिणाम लोड करत आहे</translation>
 <translation id="5781136890105823427">प्रयोग सुरू केला आहे</translation>
@@ -2830,7 +2824,6 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (सिंक केलेले)</translation>
 <translation id="6028591542479806248">मोबाइल आणि ईमेल सूचना व्यवस्थापित करा</translation>
 <translation id="6028833024483927901">जागतिक पाकशैली</translation>
-<translation id="6030251660719692307">Google Password Manager कडून पासकी</translation>
 <translation id="603068602130820122">ड्युअल स्टेपल राइट</translation>
 <translation id="6032524144326295339">मेलबॉक्स २</translation>
 <translation id="6032955021262906325">बाइंड लेफ्ट</translation>
@@ -3439,7 +3432,6 @@
 <translation id="7096937462164235847">या वेबसाइटच्या ओळखीची पडताळणी केलेली नाही.</translation>
 <translation id="7102554173784142865">Chrome Dino गेम खेळा</translation>
 <translation id="7102760431686146931">स्वयंपाकाच्या वस्तू आणि डायनिंगवेअर</translation>
-<translation id="7105998430540165694">iCloud Keychain कडील पासकी</translation>
 <translation id="7106762743910369165">तुमचा ब्राउझर तुमच्या संस्थेद्वारे व्यवस्थापित केला जातो</translation>
 <translation id="7107249414147762907">ही PDF ॲक्सेस करण्यायोग्य नाही. कोणताही मजकूर काढला नाही</translation>
 <translation id="7107427078069498123">SHA-256 फिंगरप्रिंट</translation>
@@ -4529,7 +4521,6 @@
 <translation id="9040341831873780534">इथे अटी पहा</translation>
 <translation id="9042617223719777575">जास्त क्षमता</translation>
 <translation id="9042827002460091668">तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा</translation>
-<translation id="9044359186343685026">टच आयडी वापरा</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">मायक्रोफोन (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">या कृतींसाठी <ph name="POLICY_NAME" /> हे धोरण <ph name="POLICY_VALUE" />वर सेट करणे आवश्यक आहे : <ph name="ACTION_LIST" />.</translation>

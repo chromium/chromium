@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.safety_hub;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -27,6 +29,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.safety_hub.SafetyHubLocalPasswordsDataSource.ModuleType;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.prefs.PrefService;
@@ -66,6 +69,7 @@ public class SafetyHubLocalPasswordsDataSourceTest {
     private SafetyHubLocalPasswordsDataSource mDataSource;
     private SafetyHubLocalPasswordsDataSourceObserverTest mObserver;
 
+    @Mock private SafetyHubModuleDelegate mModuleDelegateMock;
     @Mock private PrefService mPrefServiceMock;
     @Mock private SafetyHubFetchService mSafetyHubFetchServiceMock;
     @Mock private SigninManager mSigninManagerMock;
@@ -80,20 +84,65 @@ public class SafetyHubLocalPasswordsDataSourceTest {
         mObserver = new SafetyHubLocalPasswordsDataSourceObserverTest();
         mDataSource =
                 new SafetyHubLocalPasswordsDataSource(
-                        mPrefServiceMock, mSafetyHubFetchServiceMock, mPasswordStoreBridge);
+                        mModuleDelegateMock,
+                        mPrefServiceMock,
+                        mSafetyHubFetchServiceMock,
+                        mPasswordStoreBridge);
         mDataSource.setObserver(mObserver);
         mDataSource.setUp();
+    }
+
+    public void mockTotalPasswordsCount(int totalPasswordsCount) {
+        doReturn(totalPasswordsCount).when(mModuleDelegateMock).getLocalPasswordsCount(any());
+    }
+
+    private void mockPasswordCounts(int compromised, int weak, int reused) {
+        doReturn(compromised)
+                .when(mPrefServiceMock)
+                .getInteger(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT);
+        doReturn(weak).when(mPrefServiceMock).getInteger(Pref.LOCAL_WEAK_CREDENTIALS_COUNT);
+        doReturn(reused).when(mPrefServiceMock).getInteger(Pref.LOCAL_REUSED_CREDENTIALS_COUNT);
     }
 
     @Test
     public void countsUnavailable() {
         // TODO(crbug.com/388788969): After adding logic to the local password module, set
         // appropriate counts for the unavailable state.
+        mockTotalPasswordsCount(1);
 
         assertTrue(mDataSource.maybeTriggerPasswordCheckup());
         verify(mSafetyHubFetchServiceMock, times(1)).runLocalPasswordCheckup();
 
         mDataSource.updateState();
         assertEquals(ModuleType.UNAVAILABLE_PASSWORDS, mObserver.getModuleType());
+    }
+
+    @Test
+    public void noPasswords() {
+        mockTotalPasswordsCount(0);
+
+        mDataSource.updateState();
+
+        assertEquals(ModuleType.NO_SAVED_PASSWORDS, mObserver.getModuleType());
+    }
+
+    @Test
+    public void hasCompromisedPasswords() {
+        mockTotalPasswordsCount(5);
+        mockPasswordCounts(/* compromised= */ 4, 0, 0);
+
+        mDataSource.updateState();
+
+        assertEquals(ModuleType.HAS_COMPROMISED_PASSWORDS, mObserver.getModuleType());
+    }
+
+    @Test
+    public void hasWeakPasswords() {
+        mockTotalPasswordsCount(5);
+        mockPasswordCounts(0, /* weak= */ 2, 0);
+
+        mDataSource.updateState();
+
+        assertEquals(ModuleType.HAS_WEAK_PASSWORDS, mObserver.getModuleType());
     }
 }

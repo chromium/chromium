@@ -153,7 +153,6 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 aadress}other{# aadressi}}</translation>
 <translation id="1605405588277479165">Väljas – Ei soovitata</translation>
 <translation id="1605658421715042784">Kopeeri pilt</translation>
-<translation id="1612642630650745968">Saadetist ei jälgita</translation>
 <translation id="1612754831519568745">Teie Google'i ohutu sirvimine on praegu välja lülitatud. Kaitske end ohtlike saitide, allalaadimiste ja laienduste eest.</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="1622717322707146952">Tehke valik „Lisa Google'i kalendrisse“ või „Lisa teenusesse Apple Calendar“.</translation>
@@ -1387,7 +1386,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="6930162026494574854">Lähtesta tõlkimisseaded</translation>
 <translation id="6930799952781667037">Puudutage selle keele valimiseks.</translation>
 <translation id="693761253105515415">Seadistage pääsukood</translation>
-<translation id="6943681254152031826">{COUNT,plural, =1{Kas jälgida seda saadetist?}other{Kas jälgida {COUNT} saadetist?}}</translation>
 <translation id="6945221475159498467">Vali</translation>
 <translation id="6950522403736391608">Peidetud</translation>
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> on praegu valitud. Valige konto.</translation>
@@ -1589,7 +1587,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7859988229622350291">Ära kunagi tõlgi</translation>
 <translation id="7863211248337747225">Hankige rakendus</translation>
 <translation id="7865127013871431856">Tõlkimise valikud</translation>
-<translation id="7866501058614003444">Selle saadetise jälgimine on edukalt tühistatud.</translation>
 <translation id="7866872729285243843">Selleks et näha lugemisloendit kõigis seadmetes, lülitage seadetes sisse „Lugemisloend“.</translation>
 <translation id="7874107544081154809">Vormi automaatne täitmine: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Teil on korduvalt kasutatud paroolid.</translation>

@@ -316,6 +316,12 @@ bool IsDefaultKeyword(StringView);
 bool IsHashIdentifier(const CSSParserToken&);
 CORE_EXPORT bool IsDashedIdent(const CSSParserToken&);
 
+// https://drafts.csswg.org/css-mixins-1/#function-rule
+inline bool IsDashedFunctionName(const CSSParserToken& token) {
+  return token.GetType() == kFunctionToken && token.Value().length() >= 3 &&
+         token.Value()[0] == '-' && token.Value()[1] == '-';
+}
+
 CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream&);
 
 // This function returns false for CSS-wide keywords, 'default', and any

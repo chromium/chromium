@@ -70,15 +70,13 @@
 class FullscreenUIUpdaterTest : public PlatformTest {
  public:
   FullscreenUIUpdaterTest()
-      : controller_(&model_),
-        element_([[TestFullscreenUIElement alloc] init]),
+      : element_([[TestFullscreenUIElement alloc] init]),
         updater_(&controller_, element_) {}
 
   TestFullscreenController* controller() { return &controller_; }
   TestFullscreenUIElement* element() { return element_; }
 
  private:
-  FullscreenModel model_;
   TestFullscreenController controller_;
   __strong TestFullscreenUIElement* element_;
   FullscreenUIUpdater updater_;

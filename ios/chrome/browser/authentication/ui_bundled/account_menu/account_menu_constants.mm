@@ -20,3 +20,5 @@ NSString* const kAccountMenuActivityIndicatorId =
     @"AccountMenuActivityIndicatorId";
 NSString* const kAccountMenuOpenSettingsButtonId =
     @"AccountMenuOpenSettingsButtonId";
+NSString* const kAccountMenuManageAccountsButtonId =
+    @"AccountMenuManageAccountsButtonId";

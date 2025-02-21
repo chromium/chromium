@@ -37,7 +37,7 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
   void EndReadAccess() override;
   bool SupportsMultipleConcurrentReadAccess() override;
 
- private:
+ protected:
   SkiaGraphiteDawnImageRepresentation(
       std::unique_ptr<DawnImageRepresentation> dawn_representation,
       skgpu::graphite::Recorder* recorder,
@@ -45,8 +45,7 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      int array_slice,
-      wgpu::TextureUsage supported_tex_usages);
+      int array_slice);
 
   std::vector<skgpu::graphite::BackendTexture> CreateBackendTextures(
       wgpu::Texture texture,

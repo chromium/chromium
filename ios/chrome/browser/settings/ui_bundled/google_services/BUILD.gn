@@ -231,6 +231,7 @@ source_set("eg2_tests") {
     "//components/password_manager/core/common",
     "//components/policy:generated",
     "//components/policy/core/common:common_constants",
+    "//components/regional_capabilities",
     "//components/search_engines",
     "//components/signin/internal/identity_manager:capabilities",
     "//components/signin/public/base",

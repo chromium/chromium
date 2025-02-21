@@ -259,6 +259,7 @@ public class TabbedNavigationBarColorControllerTest {
     })
     @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
     @EnableAnimations
+    @DisabledTest(message = "crbug.com/398173466")
     public void testNavBarColorAnimationsEdgeToEdgeBottomChin() throws InterruptedException {
         Assume.assumeTrue(
                 "E2E not applicable.",
@@ -275,6 +276,7 @@ public class TabbedNavigationBarColorControllerTest {
     })
     @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     @EnableAnimations
+    @DisabledTest(message = "crbug.com/398143087")
     public void testNavBarColorAnimationsEdgeToEdgeEverywhere() throws InterruptedException {
         testNavBarColorAnimations();
     }

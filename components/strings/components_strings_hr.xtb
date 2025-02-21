@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Spremanje kartica...</translation>
 <translation id="1060136083665017312">Igraći sustavi i konzole</translation>
 <translation id="1060320201901229167">Omotnica Kaku 5</translation>
-<translation id="10614374240317010">Zaporke se nikad ne spremaju</translation>
 <translation id="1062407476771304334">Zamijeni</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Pojedinosti o tražilici</translation>
@@ -263,7 +262,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1432187715652018471">Ova stranica želi instalirati rukovatelja usluge.</translation>
 <translation id="1432581352905426595">Upravljaj tražilicama</translation>
 <translation id="1433225466058025572">Pokušajte ponovno premjestiti datoteke</translation>
-<translation id="1435940442311036198">Upotrijebite pristupni ključ na drugom uređaju</translation>
 <translation id="1436185428532214179">Može tražiti dopuštenje za uređivanje datoteka i mapa na vašem uređaju</translation>
 <translation id="1442386063175183758">Presavijanje s desne strane u obliku prozora</translation>
 <translation id="1442987760062738829">Bušenje</translation>
@@ -357,7 +355,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="159274626729231974">Filmski festivali</translation>
 <translation id="1593359183944365958">270 stupnjeva</translation>
 <translation id="1594030484168838125">Odaberi</translation>
-<translation id="1598816256585174656">Pristupni ključ iz značajke Windows Hello</translation>
 <translation id="1599199147673445968">Nova kartica? <ph name="BEGIN_LINK" />Unesite podatke o kartici<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Ljepota i fitness</translation>
 <translation id="160851722280695521">Igrajte igru Dino Run u Chromeu</translation>
@@ -469,7 +466,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Instalirati web-aplikacije?</translation>
 <translation id="1791415068765905273">Prikaži sve tablice za usporedbu</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste upravljali podacima, privatnošću i sigurnošću na svojem Google računu</translation>
 <translation id="1793473605302304726">Obročno plaćanje</translation>
 <translation id="1793631236004319016">Posljednji put korišteno prije <ph name="NUM_HOURS_MINUTES_SECONDS" />.</translation>
@@ -2126,7 +2122,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4754461935447132332">Nije dopušteno za web-lokacije koje nisu sigurne</translation>
 <translation id="4756388243121344051">&amp;Povijest</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Pristupni ključ s profila na Chromeu</translation>
 <translation id="4757993714154412917">Upravo ste unijeli zaporku na obmanjujućoj web-lokaciji. Da bi zaštitio vaše račune, Chromium preporučuje da provjerite spremljene zaporke.</translation>
 <translation id="4758311279753947758">Dodaj pod. za kontakt</translation>
 <translation id="4761326898079498987">Pregledajte za više pojedinosti</translation>
@@ -2259,6 +2254,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4989809363548539747">Taj dodatak nije podržan</translation>
 <translation id="4990241977441916452">Omotnica A2</translation>
 <translation id="4992066212339426712">Uključi zvuk</translation>
+<translation id="4994095017621319069">Jedna grupa kartica više nije dostupna</translation>
 <translation id="4994348767896109801">Hoće li se oglas koji vam se prikazuje personalizirati ovisi o brojnim čimbenicima, uključujući tu postavku, <ph name="BEGIN_LINK_1" />teme oglasa<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />postavke kolačića<ph name="END_LINK_2" /> i to je li web-lokacija koju pregledavate postavljena tako da personalizira oglase. Saznajte više o <ph name="BEGIN_LINK_3" />upravljanju zaštitom privatnosti u online oglašavanju<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Izmijenjeno:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste upravljali pretraživanjem web-lokacije i svojom zadanom tražilicom</translation>
@@ -2699,7 +2695,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5764920692828389743">Pošalji na uređaj <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Odaberite adresu za prikaz načina dostave i zahtjeva za dostavu.</translation>
 <translation id="57689295674415555">Broj virtualne kartice nije ispunjen?</translation>
-<translation id="5772086939108830423">Upotrijebi pristupni ključ na drugom uređaju</translation>
 <translation id="5776313857861697733">Prioritet</translation>
 <translation id="577804500166306874">Učitavanje rezultata</translation>
 <translation id="5781136890105823427">Eksperiment omogućen</translation>
@@ -2830,7 +2825,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sinkronizirano)</translation>
 <translation id="6028591542479806248">Upravljajte obavijestima e-poštom i na mobilnom uređaju</translation>
 <translation id="6028833024483927901">Svjetska kuhinja</translation>
-<translation id="6030251660719692307">Pristupni ključ iz Google upravitelja zaporki</translation>
 <translation id="603068602130820122">Dvostruko spajanje s desne strane</translation>
 <translation id="6032524144326295339">Izlazni spremnik s odjeljcima 2</translation>
 <translation id="6032955021262906325">Uvez s lijeve strane</translation>
@@ -3438,7 +3432,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="7096937462164235847">Identitet te web-lokacije nije potvrđen.</translation>
 <translation id="7102554173784142865">Igrajte igru Dinosaur na Chromeu</translation>
 <translation id="7102760431686146931">Pribor za kuhanje i jelo</translation>
-<translation id="7105998430540165694">Pristupni ključ iz iCloud privjeska ključeva</translation>
 <translation id="7106762743910369165">Vašim preglednikom upravlja vaša organizacija</translation>
 <translation id="7107249414147762907">Taj PDF nije dostupan. Tekst nije izdvojen</translation>
 <translation id="7107427078069498123">SHA-256 otisci prstiju</translation>
@@ -3476,6 +3469,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">Poslužitelj bi se trebao nadograditi na TLS 1.2 ili noviju verziju.</translation>
+<translation id="7156885531105222428">Stranica koju ste zatražili nije pronađena u aplikaciji</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Da biste poslali tu datoteku putem značajke <ph name="FEATURE_NAME" />, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}one{Da biste poslali te datoteke pomoću značajke <ph name="FEATURE_NAME" />, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}few{Da biste poslali te datoteke pomoću značajke <ph name="FEATURE_NAME" />, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}other{Da biste poslali te datoteke pomoću značajke <ph name="FEATURE_NAME" />, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}}</translation>
 <translation id="7160999678034985039">Spremite svoj rad i pokrenite ažuriranje kad budete spremni.</translation>
 <translation id="7162277662076933695">Čitač pametnih kartica</translation>
@@ -4263,6 +4257,7 @@ Dodatne pojedinosti:
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Posjetite &lt;strong&gt;chrome://policy&lt;/strong&gt; da biste vidjeli popis blokiranih URL-ova i druga pravila koja je postavio vaš administrator sustava.</translation>
 <translation id="8536234749087605613">Omotnica (prozor)</translation>
+<translation id="8538228968820006247">Vaša je grupa kartica puna i novi članovi ne mogu se pridružiti putem veze</translation>
 <translation id="8539500321752640291">Želite li dopustiti dva dopuštenja?</translation>
 <translation id="8541158209346794904">Bluetooth uređaj</translation>
 <translation id="8541410041357371550">Ova web-lokacija prima podatke o temama vaših oglasa kako bi vam prikazivala relevantnije oglase.</translation>
@@ -4529,7 +4524,6 @@ Dodatne pojedinosti:
 <translation id="9040341831873780534">Ovdje pogledajte uvjete</translation>
 <translation id="9042617223719777575">Veliki kapacitet</translation>
 <translation id="9042827002460091668">Provjerite internetsku vezu i pokušajte ponovo</translation>
-<translation id="9044359186343685026">Koristi Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Mikrofoni (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Za ove radnje potrebno je postaviti pravilo <ph name="POLICY_NAME" /> na <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

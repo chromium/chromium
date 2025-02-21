@@ -12,9 +12,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
-// TODO(crbug.com/390993114): Remove, replace with direct includes.
-#include "components/regional_capabilities/regional_capabilities_switches.h"  // IWYU pragma: export
-
 namespace switches {
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)

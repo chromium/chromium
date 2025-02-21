@@ -12,11 +12,13 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({
     PrefetchOperationStatusCode.SUCCESS,
     PrefetchOperationStatusCode.FAILURE,
-    PrefetchOperationStatusCode.SERVER_FAILURE
+    PrefetchOperationStatusCode.SERVER_FAILURE,
+    PrefetchOperationStatusCode.DUPLICATE_REQUEST
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface PrefetchOperationStatusCode {
     int SUCCESS = 0;
     int FAILURE = 1;
     int SERVER_FAILURE = 2;
+    int DUPLICATE_REQUEST = 3;
 }

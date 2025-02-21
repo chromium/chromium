@@ -1007,6 +1007,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1682696837763999627">Stor musemarkør</translation>
 <translation id="1682867089915960590">Vil du slå på markørsurfing?</translation>
 <translation id="1686550358074589746">Slå på sveipeskriving</translation>
+<translation id="1686785653877010442">Nettsteder sender vanligvis varsler for å informere deg om siste nytt eller chatmeldinger.</translation>
 <translation id="168715261339224929">For å få bokmerkene dine på alle enhetene dine, slå på synkronisering.</translation>
 <translation id="1688935057616748272">Skriv inn en bokstav</translation>
 <translation id="1689333818294560261">Kallenavn</translation>
@@ -1288,6 +1289,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1878885068166344708">Elementet fremheves når du flytter fokuset. Trykk på Tab eller velg et element for å bytte fokus.</translation>
 <translation id="1879000426787380528">Logg på som</translation>
 <translation id="18802377548000045">Faner krymper til stor bredde</translation>
+<translation id="1880618477732738742">Endre og gi tilgang til funksjoner som geolokalisering, mikrofon, kamera, informasjonskapsler osv. for alle nettstedene og utvidelsene dine, inkludert denne utvidelsen.</translation>
 <translation id="1880905663253319515">Vil du slette sertifikatet «<ph name="CERTIFICATE_NAME" />»?</translation>
 <translation id="1881445033931614352">Tastaturoppsett</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Element}other{# elementer}}</translation>
@@ -3475,6 +3477,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="343578350365773421">Tom for papir</translation>
 <translation id="3435896845095436175">Aktivér</translation>
+<translation id="3437397693214267762">Se Outlook-kalenderen og SharePoint- og OneDrive-filene dine</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Tillat alltid at <ph name="HOST" /> bruker mikrofonen din</translation>
 <translation id="3439970425423980614">Åpner PDF i forhåndsvisning</translation>
@@ -7130,6 +7133,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
     Bruk kontoen din for å få enkel tilgang til alle bokmerkene dine, filene dine med mer. Hvis du ikke har konto, kan du opprette en på det neste skjermbildet.</translation>
 <translation id="6054138466019582920">Sø&amp;k på denne siden med Google…</translation>
 <translation id="6054284857788651331">Nylig lukket fanegruppe</translation>
+<translation id="6054819000749443354">Åpne Systeminnstillinger</translation>
 <translation id="6054961935262556546">Endre tilgang</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 med RSA-kryptering</translation>
 <translation id="6055544610007596637">Installer apper på <ph name="DEVICE_TYPE" /> fra Google Play-butikken</translation>
@@ -8129,7 +8133,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="67862343314499040">Fiolett</translation>
 <translation id="6786480815699355166">Bare støttede språk for direkteoversetting kan oversettes</translation>
 <translation id="6786747875388722282">Utvidelser</translation>
-<translation id="6787097042755590313">Annen fane</translation>
 <translation id="6787531944787756058">brukernavnet <ph name="USER_EMAIL" /> er bare lagret på denne enheten. Se detaljer</translation>
 <translation id="6787839852456839824">Hurtigtaster</translation>
 <translation id="6788210894632713004">Upakket utvidelse</translation>
@@ -8954,6 +8957,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7380459290951585794">Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og wifi er slått på</translation>
 <translation id="7380622428988553498">Enhetsnavnet inneholder ugyldige tegn</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> er oppdatert</translation>
+<translation id="7382009635620830394">Hvis dette kortet er deaktivert, er Microsoft-kortene dine, for eksempel SharePoint- og OneDrive-filer og Outlook-kalenderen, også deaktivert.</translation>
 <translation id="7382085868019811559">Støtte for eldre nettlesere gjør at spesifikke nettadressemønstre kan åpnes i en alternativ nettleser med støtte for eldre funksjoner som kreves for å kunne kjøre de aktuelle nettstedene på riktig måte.</translation>
 <translation id="7382980704744807223">Mistenkelig</translation>
 <translation id="738322632977123193">Kan ikke laste opp. Bruk et bilde i et av disse formatene: .jpg, .gif, .png, .bmp, .tif eller .webp</translation>
@@ -10624,6 +10628,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> administreres av <ph name="MANAGER" />. Du kan ikke legge til denne e-postadressen som en tilleggskonto.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />For å bruke <ph name="USER_EMAIL" />, logg av <ph name="DEVICE_TYPE" /> først. Deretter velger du Legg til person nederst på påloggingsskjermen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Hold Søk-tasten inne for å endre funksjonene for tastene på øverste rad</translation>
+<translation id="8549127125482561383">Hvordan forespørsler skal vises</translation>
 <translation id="8549316893834449916">Du bruker Google-kontoen din til å logge på Chromebook – den samme kontoen som du bruker for Gmail, Disk, YouTube med mer.</translation>
 <translation id="8550239873869577759">Lastet ned en mistenkelig fil</translation>
 <translation id="8551388862522347954">Lisenser</translation>

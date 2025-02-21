@@ -421,15 +421,13 @@
       [_mediator deleteGroup:tabGroupItem];
       break;
     case TabGroupActionType::kLeaveSharedTabGroup:
+    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
       [_mediator leaveSharedGroup:tabGroupItem];
       break;
     case TabGroupActionType::kDeleteSharedTabGroup:
+    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
       [_mediator deleteSharedGroup:tabGroupItem];
       break;
-    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
-    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
-      // Not implemented yet.
-      NOTREACHED();
   }
 
   [_tabGroupConfirmationCoordinator stop];

@@ -774,8 +774,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           query_form_, query_field_, suggestion.main_text.value,
           suggestion.type, /*field_type_used=*/std::nullopt);
-      manager_->OnSingleFieldSuggestionSelected(suggestion, query_form_,
-                                                query_field_);
+      manager_->OnSingleFieldSuggestionSelected(
+          suggestion, query_form_.global_id(), query_field_.global_id());
       break;
     case SuggestionType::kFillExistingPlusAddress:
       if (AutofillPlusAddressDelegate* plus_address_delegate =
@@ -1336,8 +1336,8 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
                              }
                            },
                            GetWeakPtr()));
-      manager_->OnSingleFieldSuggestionSelected(suggestion, query_form_,
-                                                query_field_);
+      manager_->OnSingleFieldSuggestionSelected(
+          suggestion, query_form_.global_id(), query_field_.global_id());
       break;
     case SuggestionType::kMerchantPromoCodeEntry:
       // User selected an Autocomplete or Merchant Promo Code field, so we fill
@@ -1346,16 +1346,16 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           query_form_, query_field_, suggestion.main_text.value,
           suggestion.type, MERCHANT_PROMO_CODE);
-      manager_->OnSingleFieldSuggestionSelected(suggestion, query_form_,
-                                                query_field_);
+      manager_->OnSingleFieldSuggestionSelected(
+          suggestion, query_form_.global_id(), query_field_.global_id());
       break;
     case SuggestionType::kSeePromoCodeDetails:
       // Open a new tab and navigate to the offer details page.
       manager_->client()
           .GetPaymentsAutofillClient()
           ->OpenPromoCodeOfferDetailsURL(suggestion.GetPayload<GURL>());
-      manager_->OnSingleFieldSuggestionSelected(suggestion, query_form_,
-                                                query_field_);
+      manager_->OnSingleFieldSuggestionSelected(
+          suggestion, query_form_.global_id(), query_field_.global_id());
       break;
     case SuggestionType::kSaveAndFillCreditCardEntry:
       manager_->client()

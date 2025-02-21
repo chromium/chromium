@@ -6,7 +6,7 @@
 // Extracted from: https://wicg.github.io/sanitizer-api/
 
 [
-  Exposed=(Window,Worker),
+  Exposed=Window,
   RuntimeEnabled=SanitizerAPI
 ]
 interface Sanitizer {

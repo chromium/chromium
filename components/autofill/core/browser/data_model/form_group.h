@@ -91,8 +91,8 @@ class FormGroup {
   bool HasInfo(FieldType type) const;
   bool HasInfo(const AutofillType& type) const;
 
-  // Returns a set of server field types for which this FormGroup can store
-  // data. This method is additive on |supported_types|.
+  // Returns the set of `FieldType`s for which `SetInfo()` and friends may be
+  // called.
   virtual FieldTypeSet GetSupportedTypes() const = 0;
 };
 

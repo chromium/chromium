@@ -167,6 +167,10 @@ void FieldClassificationModelHandler::OnModelUpdated(
   }
   state.encoder = FieldClassificationModelEncoder(
       state.metadata.input_token(), state.metadata.encoding_parameters());
+  supported_types_.clear();
+  for (int type : state.metadata.output_type()) {
+    supported_types_.insert(ToSafeFieldType(FieldType(type), NO_SERVER_DATA));
+  }
   state_.emplace(std::move(state));
 }
 
@@ -184,6 +188,7 @@ void FieldClassificationModelHandler::AssignMostLikelyTypes(
   std::map<FieldType, std::pair<size_t, float>> unique_types_assignment;
 
   for (size_t i = 0; i < relevant_fields; i++) {
+    form.field(i)->set_ml_supported_types(supported_types_);
     auto [most_likely_type, current_confidence] = GetMostLikelyType(output[i]);
 
     if (state_->metadata.postprocessing_parameters()

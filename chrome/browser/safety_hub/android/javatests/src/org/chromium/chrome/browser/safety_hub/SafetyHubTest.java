@@ -211,6 +211,7 @@ public final class SafetyHubTest {
         // Reset state to the default of the compromised passwords count and the browsing data
         // state.
         clearAccountCompromisedPasswordsCount();
+        clearLocalCompromisedPasswordsCount();
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
     }
 
@@ -749,7 +750,7 @@ public final class SafetyHubTest {
         addCredentialToAccountStore();
         setAccountCompromisedPasswordsCount(0);
         setAccountReusedPasswordsCount(0);
-        setAccountWeakPasswordsCount(weakPasswordsCount);
+        setAccountWeakPasswordsCount(5);
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
@@ -909,6 +910,10 @@ public final class SafetyHubTest {
     public void testLocalPasswordModule_AllCountsUnavailable() {
         // TODO(crbug.com/388788969): After adding logic to the local password module, set
         // appropriate counts for the unavailable state.
+        addCredentialToProfileStore();
+        setLocalCompromisedPasswordsCount(0);
+        setLocalWeakPasswordsCount(0);
+
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
@@ -925,6 +930,104 @@ public final class SafetyHubTest {
                 safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
         scrollToPreference(withText(safeBrowsingTitle));
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
+    })
+    public void testLocalPasswordModule_NoPasswords() {
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that local passwords module which is in the info state is expanded by
+        // default.
+        String noPasswordsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_no_local_passwords_title);
+        scrollToExpandedPreference(noPasswordsTitle);
+        verifyButtonsNextToTextVisibility(noPasswordsTitle, true);
+
+        // Verify the other information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
+    })
+    public void testLocalPasswordModule_HasCompromisedPasswords() {
+        // Set the local passwords module to the warning state.
+        int compromisedPasswordsCount = 5;
+        setLocalCompromisedPasswordsCount(compromisedPasswordsCount);
+        setLocalWeakPasswordsCount(2);
+        addCredentialToProfileStore();
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that local passwords module which is in the warning state is expanded by
+        // default.
+        String compromisedPasswordsTitle =
+                safetyHubFragment
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_local_passwords_compromised_title,
+                                compromisedPasswordsCount,
+                                compromisedPasswordsCount);
+        scrollToExpandedPreference(compromisedPasswordsTitle);
+        verifyButtonsNextToTextVisibility(compromisedPasswordsTitle, true);
+
+        // Verify the information module is not expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, false);
+
+        clearLocalCompromisedPasswordsCount();
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
+    })
+    public void testLocalPasswordModule_HasWeakPasswords() {
+        // Set the local passwords module to the info state.
+        setLocalCompromisedPasswordsCount(0);
+        setLocalWeakPasswordsCount(5);
+        addCredentialToProfileStore();
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that local passwords module which is in the info state is expanded by
+        // default.
+        String weakPasswordsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_reused_weak_local_passwords_title);
+        scrollToExpandedPreference(weakPasswordsTitle);
+        verifyButtonsNextToTextVisibility(weakPasswordsTitle, true);
+
+        // Verify the other information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        clearLocalCompromisedPasswordsCount();
     }
 
     @Test
@@ -1466,6 +1569,28 @@ public final class SafetyHubTest {
                 });
     }
 
+    private void clearLocalCompromisedPasswordsCount() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(mProfile).clearPref(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT);
+                });
+    }
+
+    private void setLocalCompromisedPasswordsCount(int count) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(mProfile)
+                            .setInteger(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT, count);
+                });
+    }
+
+    private void setLocalWeakPasswordsCount(int count) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(mProfile).setInteger(Pref.LOCAL_WEAK_CREDENTIALS_COUNT, count);
+                });
+    }
+
     private void addCredentialToAccountStore() {
         // Set up an account with at least one password in the account store.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
@@ -1484,6 +1609,24 @@ public final class SafetyHubTest {
                     Criteria.checkThat(
                             "The account store should've had one password",
                             passwordStoreBridge.getPasswordStoreCredentialsCountForAccountStore(),
+                            is(1));
+                });
+    }
+
+    private void addCredentialToProfileStore() {
+        PasswordStoreBridge passwordStoreBridge =
+                ThreadUtils.runOnUiThreadBlocking(() -> new PasswordStoreBridge(mProfile));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    passwordStoreBridge.insertPasswordCredentialInProfileStore(
+                            new PasswordStoreCredential(
+                                    new GURL("https://site2.com"), "user2", "pwd2"));
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "The local store should've had one password.",
+                            passwordStoreBridge.getPasswordStoreCredentialsCountForProfileStore(),
                             is(1));
                 });
     }

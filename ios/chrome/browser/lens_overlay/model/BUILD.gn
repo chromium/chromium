@@ -22,6 +22,7 @@ source_set("model") {
   deps = [
     ":detent_state_header",
     "//base",
+    "//components/google/core/common",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/shared/model/web_state_list",

@@ -766,7 +766,8 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
     case UserSelectableType::kSavedTabGroups:
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
     case UserSelectableType::kExtensions:
-      return base::FeatureList::IsEnabled(kSyncEnableExtensionsInTransportMode);
+      return base::FeatureList::IsEnabled(
+          switches::kEnableExtensionsExplicitBrowserSignin);
     case UserSelectableType::kThemes:
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       return false;

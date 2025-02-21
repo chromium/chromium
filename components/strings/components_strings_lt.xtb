@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Išsaugomos kortelės...</translation>
 <translation id="1060136083665017312">Žaidimų sistemos ir pultai</translation>
 <translation id="1060320201901229167">„Kaku 5“ vokas</translation>
-<translation id="10614374240317010">Niekada neišsaugota</translation>
 <translation id="1062407476771304334">Pakeisti</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Išsami paieškos variklio informacija</translation>
@@ -263,7 +262,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1432187715652018471">puslapis prašo leidimo įdiegti paslaugos doroklę.</translation>
 <translation id="1432581352905426595">Tvarkyti paieškos sistemas</translation>
 <translation id="1433225466058025572">Pabandykite dar kartą perkelti failus</translation>
-<translation id="1435940442311036198">Naudoti slaptažodį kitame įrenginyje</translation>
 <translation id="1436185428532214179">Gali būti prašoma redaguoti failus ir aplankus jūsų įrenginyje</translation>
 <translation id="1442386063175183758">Atvartas dešinėje</translation>
 <translation id="1442987760062738829">Skylių pramušimas</translation>
@@ -357,7 +355,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="159274626729231974">Filmų festivaliai</translation>
 <translation id="1593359183944365958">270 laipsnių</translation>
 <translation id="1594030484168838125">Pasirinkti</translation>
-<translation id="1598816256585174656">Prieigos raktas iš „Windows Hello“</translation>
 <translation id="1599199147673445968">Nauja kortelė? <ph name="BEGIN_LINK" />Įveskite išsamią kortelės informaciją<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Grožis ir kūno rengyba</translation>
 <translation id="160851722280695521">Žaisti žaidimą „Dino Run“ naršyklėje „Chrome“</translation>
@@ -469,7 +466,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Įdiegti žiniatinklio programas?</translation>
 <translation id="1791415068765905273">Rodyti visas palyginimo lenteles</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite tvarkyti savo informaciją, privatumo ir saugos nustatymus „Google“ paskyroje</translation>
 <translation id="1793473605302304726">Mokėti per tam tikrą laiką</translation>
 <translation id="1793631236004319016">Paskutinį kartą naudota prieš <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -2128,7 +2124,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4754461935447132332">Neleidžiama nesaugiose svetainėse</translation>
 <translation id="4756388243121344051">&amp;Istorija</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Prieigos raktas iš „Chrome“ profilio</translation>
 <translation id="4757993714154412917">Ką tik savo slaptažodį įvedėte apgaulingoje svetainėje. Kad apsaugotumėte paskyras, „Chromium“ rekomenduoja patikrinti išsaugotus slaptažodžius.</translation>
 <translation id="4758311279753947758">Pridėti kontaktinę informaciją</translation>
 <translation id="4761326898079498987">Peržiūrėkite, jei reikia išsamesnės informacijos</translation>
@@ -2702,7 +2697,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5764920692828389743">Siųsti: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Jei norite peržiūrėti pristatymo metodus ir reikalavimus, pasirinkite adresą.</translation>
 <translation id="57689295674415555">Virtualios kortelės numeris neįvestas?</translation>
-<translation id="5772086939108830423">Naudoti slaptažodį kitame įrenginyje</translation>
 <translation id="5776313857861697733">Prioritetas</translation>
 <translation id="577804500166306874">Rezultatas įkeliamas</translation>
 <translation id="5781136890105823427">Eksperimentas įgalintas</translation>
@@ -2833,7 +2827,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sinchronizuota)</translation>
 <translation id="6028591542479806248">Tvarkykite pranešimus mobiliuosiuose ir el. pašte</translation>
 <translation id="6028833024483927901">Pasaulio virtuvė</translation>
-<translation id="6030251660719692307">Prieigos raktas iš „Google“ slaptažodžių tvarkyklės</translation>
 <translation id="603068602130820122">Dvi sankabėlės dešinėje</translation>
 <translation id="6032524144326295339">2 pašto dėžutė</translation>
 <translation id="6032955021262906325">Įrišimas kairėje</translation>
@@ -3441,7 +3434,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7096937462164235847">Šios svetainės tapatybė nepatvirtinta.</translation>
 <translation id="7102554173784142865">Žaisti „Chrome“ dinozauro žaidimą</translation>
 <translation id="7102760431686146931">Virtuvės ir pietų stalo indai</translation>
-<translation id="7105998430540165694">Prieigos raktas iš „iCloud Keychain“</translation>
 <translation id="7106762743910369165">Jūsų naršyklę tvarko jūsų organizacija</translation>
 <translation id="7107249414147762907">Šis PDF failas nepasiekiamas. Neišskirtas joks tekstas</translation>
 <translation id="7107427078069498123">SHA-256 skaitmeniniai pėdsakai</translation>
@@ -4534,7 +4526,6 @@ Papildoma išsami informacija:
 <translation id="9040341831873780534">Žr. sąlygas čia</translation>
 <translation id="9042617223719777575">Didelė talpa</translation>
 <translation id="9042827002460091668">Patikrinkite interneto ryšį ir bandykite dar kartą</translation>
-<translation id="9044359186343685026">Naudoti „Touch ID“</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Mikrofonai (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Kad būtų galima atlikti šiuos veiksmus, politika „<ph name="POLICY_NAME" />“ turi būti nustatyta kaip „<ph name="POLICY_VALUE" />“: <ph name="ACTION_LIST" />.</translation>

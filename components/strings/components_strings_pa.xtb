@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">ਕਾਰਡ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ...</translation>
 <translation id="1060136083665017312">ਗੇਮ ਸਿਸਟਮ ਅਤੇ ਕੰਸੋਲ</translation>
 <translation id="1060320201901229167">ਕਾਕੂ 5 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
-<translation id="10614374240317010">ਕਦੇ ਵੀ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="1062407476771304334">ਬਦਲੋ</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">ਖੋਜ ਇੰਜਣ ਸੰਬੰਧੀ ਵੇਰਵੇ</translation>
@@ -263,7 +262,6 @@
 <translation id="1432187715652018471">ਪੰਨਾ ਕਿਸੇ ਸੇਵਾ ਹੈਂਡਲਰ ਨੂੰ ਸਥਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ।</translation>
 <translation id="1432581352905426595">ਖੋਜ ਇੰਜਣਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1433225466058025572">ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੁਬਾਰਾ ਲਿਜਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
-<translation id="1435940442311036198">ਕਿਸੇ ਵੱਖਰੇ ਡੀਵਾਈਸ 'ਤੇ ਪਾਸਕੀ ਵਰਤੋ</translation>
 <translation id="1436185428532214179">ਸਾਈਟ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਫੋਲਡਰਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="1442386063175183758">ਸੱਜੇ ਪੱਲੇ ਵਾਲੀ ਤਹਿ</translation>
 <translation id="1442987760062738829">ਮੋਰੀ</translation>
@@ -357,7 +355,6 @@
 <translation id="159274626729231974">ਫ਼ਿਲਮੀ ਉਤਸਵ</translation>
 <translation id="1593359183944365958">270 ਡਿਗਰੀ</translation>
 <translation id="1594030484168838125">ਚੁਣੋ</translation>
-<translation id="1598816256585174656">Windows Hello ਤੋਂ ਪਾਸਕੀ</translation>
 <translation id="1599199147673445968">ਕੀ ਨਵਾਂ ਕਾਰਡ ਹੈ? <ph name="BEGIN_LINK" />ਕਾਰਡ ਦੇ ਵੇਰਵੇ ਦਾਖਲ ਕਰੋ<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">ਸੁੰਦਰਤਾ ਅਤੇ ਫਿੱਟਨੈੱਸ</translation>
 <translation id="160851722280695521">Chrome ਵਿੱਚ Dino Run ਗੇਮ ਖੇਡੋ</translation>
@@ -469,7 +466,6 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">ਕੀ ਵੈੱਬ ਐਪਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1791415068765905273">ਸਾਰੀਆਂ ਤੁਲਨਾ ਸਾਰਨੀਆਂ ਦਿਖਾਓ</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google ਖਾਤੇ ਵਿੱਚ ਆਪਣੀ ਜਾਣਕਾਰੀ, ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Tab ਦਬਾ ਕੇ Enter ਦਬਾਓ</translation>
 <translation id="1793473605302304726">ਕਿਸ਼ਤਾਂ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੋ</translation>
 <translation id="1793631236004319016">ਪਿਛਲੀ ਵਾਰ <ph name="NUM_HOURS_MINUTES_SECONDS" /> ਪਹਿਲਾਂ ਵਰਤੋਂ ਕੀਤੀ ਗਈ</translation>
@@ -2124,7 +2120,6 @@
 <translation id="4754461935447132332">ਗੈਰ-ਸੁਰੱਖਿਅਤ ਸਾਈਟਾਂ ਲਈ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="4756388243121344051">&amp;ਇਤਿਹਾਸ</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">ਆਪਣੇ Chrome ਪ੍ਰੋਫਾਈਲ ਤੋਂ ਪਾਸਕੀ</translation>
 <translation id="4757993714154412917">ਤੁਸੀਂ ਹੁਣੇ-ਹੁਣੇ ਕਿਸੇ ਭਰਮਾਊ ਸਾਈਟ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕੀਤਾ ਹੈ। ਤੁਹਾਡੇ ਖਾਤਿਆਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ, Chromium ਤੁਹਾਡੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਦੀ ਹੁਣੇ ਜਾਂਚ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ।</translation>
 <translation id="4758311279753947758">ਸੰਪਰਕ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="4761326898079498987">ਹੋਰ ਵੇਰਵਿਆਂ ਲਈ ਸਮੀਖਿਆ ਕਰੋ</translation>
@@ -2698,7 +2693,6 @@
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> 'ਤੇ ਭੇਜੋ</translation>
 <translation id="5765072501007116331">ਅਦਾਇਗੀ ਵਿਧੀਆਂ ਅਤੇ ਲੋੜਾਂ ਨੂੰ ਦੇਖਣ ਲਈ, ਇੱਕ ਪਤਾ ਚੁਣੋ</translation>
 <translation id="57689295674415555">ਕੀ ਆਭਾਸੀ ਕਾਰਡ ਨੰਬਰ ਭਰਿਆ ਨਹੀਂ ਗਿਆ?</translation>
-<translation id="5772086939108830423">ਕਿਸੇ ਵੱਖਰੇ ਡੀਵਾਈਸ 'ਤੇ ਪਾਸਕੀ ਵਰਤੋ</translation>
 <translation id="5776313857861697733">ਤਰਜੀਹ</translation>
 <translation id="577804500166306874">ਨਤੀਜਾ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ</translation>
 <translation id="5781136890105823427">ਪ੍ਰਯੋਗ ਚਾਲੂ ਕੀਤਾ ਗਿਆ</translation>
@@ -2829,7 +2823,6 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (ਸਿੰਕ ਕੀਤੇ ਗਏ)</translation>
 <translation id="6028591542479806248">ਮੋਬਾਈਲ ਅਤੇ ਈਮੇਲ ਸੂਚਨਾਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6028833024483927901">ਅੰਤਰਰਾਸ਼ਟਰੀ ਪਕਵਾਨ</translation>
-<translation id="6030251660719692307">Google Password Manager ਤੋਂ ਪਾਸਕੀ</translation>
 <translation id="603068602130820122">ਸੱਜੇ ਪਾਸੇ ਦੋ ਪਿੰਨਾਂ</translation>
 <translation id="6032524144326295339">ਮੇਲਬਾਕਸ 2</translation>
 <translation id="6032955021262906325">ਖੱਬੇ ਜਿਲਦਬੰਦ</translation>
@@ -3436,7 +3429,6 @@
 <translation id="7096937462164235847">ਇਸ ਵੈੱਬਸਾਈਟ ਦੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਹੋਈ ਹੈ।</translation>
 <translation id="7102554173784142865">Chrome Dino ਗੇਮ ਖੇਡੋ</translation>
 <translation id="7102760431686146931">ਭੋਜਨ ਬਣਾਉਣ ਅਤੇ ਭੋਜਨ ਖਾਣ ਵਾਲੇ ਭਾਂਡੇ</translation>
-<translation id="7105998430540165694">iCloud Keychain ਤੋਂ ਪਾਸਕੀ</translation>
 <translation id="7106762743910369165">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="7107249414147762907">ਇਹ PDF ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ। ਕਿਸੇ ਲਿਖਤ ਨੂੰ ਐਕਸਟ੍ਰੈਕਟ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7107427078069498123">SHA-256 ਫਿੰਗਰਪ੍ਰਿੰਟ</translation>
@@ -4527,7 +4519,6 @@
 <translation id="9040341831873780534">ਨਿਯਮ ਇੱਥੇ ਦੇਖੋ</translation>
 <translation id="9042617223719777575">ਜ਼ਿਆਦਾ ਸਮਰੱਥਾ</translation>
 <translation id="9042827002460091668">ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
-<translation id="9044359186343685026">ਸਪਰਸ਼ ਆਈਡੀ ਨੂੰ ਵਰਤੋ</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">ਮਾਈਕ੍ਰੋਫ਼ੋਨ (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">ਇਨ੍ਹਾਂ ਕਾਰਵਾਈਆਂ ਲਈ <ph name="POLICY_NAME" /> ਨੀਤੀ ਨੂੰ <ph name="POLICY_VALUE" /> 'ਤੇ ਸੈੱਟ ਕਰਨਾ ਪਵੇਗਾ: <ph name="ACTION_LIST" />।</translation>

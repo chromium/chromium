@@ -28,10 +28,12 @@ FullscreenController* FullscreenController::FromBrowser(Browser* browser) {
 
 FullscreenControllerImpl::FullscreenControllerImpl(Browser* browser)
     : broadcaster_([[ChromeBroadcaster alloc] init]),
-      mediator_(this, &model_),
-      web_state_list_observer_(this, &model_, &mediator_),
+      model_(std::make_unique<FullscreenModel>()),
+      mediator_(this, model_.get()),
+      web_state_list_observer_(this, model_.get(), &mediator_),
       fullscreen_browser_observer_(&web_state_list_observer_, browser),
-      bridge_([[ChromeBroadcastOberverBridge alloc] initWithObserver:&model_]),
+      bridge_(
+          [[ChromeBroadcastOberverBridge alloc] initWithObserver:model_.get()]),
       notification_observer_([[FullscreenSystemNotificationObserver alloc]
           initWithController:this
                     mediator:&mediator_]) {
@@ -109,19 +111,19 @@ void FullscreenControllerImpl::RemoveObserver(
 }
 
 bool FullscreenControllerImpl::IsEnabled() const {
-  return model_.enabled();
+  return model_->enabled();
 }
 
 void FullscreenControllerImpl::IncrementDisabledCounter() {
-  model_.IncrementDisabledCounter();
+  model_->IncrementDisabledCounter();
 }
 
 void FullscreenControllerImpl::DecrementDisabledCounter() {
-  model_.DecrementDisabledCounter();
+  model_->DecrementDisabledCounter();
 }
 
 bool FullscreenControllerImpl::ResizesScrollView() const {
-  return model_.ResizesScrollView();
+  return model_->ResizesScrollView();
 }
 
 void FullscreenControllerImpl::BrowserTraitCollectionChangedBegin() {
@@ -133,19 +135,19 @@ void FullscreenControllerImpl::BrowserTraitCollectionChangedEnd() {
 }
 
 CGFloat FullscreenControllerImpl::GetProgress() const {
-  return model_.progress();
+  return model_->progress();
 }
 
 UIEdgeInsets FullscreenControllerImpl::GetMinViewportInsets() const {
-  return model_.min_toolbar_insets();
+  return model_->min_toolbar_insets();
 }
 
 UIEdgeInsets FullscreenControllerImpl::GetMaxViewportInsets() const {
-  return model_.max_toolbar_insets();
+  return model_->max_toolbar_insets();
 }
 
 UIEdgeInsets FullscreenControllerImpl::GetCurrentViewportInsets() const {
-  return model_.current_toolbar_insets();
+  return model_->current_toolbar_insets();
 }
 
 void FullscreenControllerImpl::EnterFullscreen() {
@@ -161,13 +163,13 @@ void FullscreenControllerImpl::ExitFullscreenWithoutAnimation() {
 }
 
 bool FullscreenControllerImpl::IsForceFullscreenMode() const {
-  return model_.IsForceFullscreenMode();
+  return model_->IsForceFullscreenMode();
 }
 
 void FullscreenControllerImpl::EnterForceFullscreenMode(
     bool insets_update_enabled) {
-  model_.SetForceFullscreenMode(true);
-  model_.SetInsetsUpdateEnabled(insets_update_enabled);
+  model_->SetForceFullscreenMode(true);
+  model_->SetInsetsUpdateEnabled(insets_update_enabled);
   // Disable fullscreen because:
   // - It interfers with the animation when moving the secondary toolbar above
   // the keyboard.
@@ -181,8 +183,8 @@ void FullscreenControllerImpl::ExitForceFullscreenMode() {
     return;
   }
   DecrementDisabledCounter();
-  model_.SetForceFullscreenMode(false);
-  model_.SetInsetsUpdateEnabled(true);
+  model_->SetForceFullscreenMode(false);
+  model_->SetInsetsUpdateEnabled(true);
   mediator_.ExitFullscreenWithoutAnimation();
 }
 

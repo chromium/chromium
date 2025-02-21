@@ -404,6 +404,18 @@ TEST_P(PrefetchContainerTest, CookieListener) {
     EXPECT_FALSE(reader.HaveDefaultContextCookiesChanged());
   }
 
+  prefetch_container->PauseAllCookieListeners();
+  ASSERT_TRUE(SetCookie(kTestUrl1, "test-cookie0"));
+  {
+    auto reader = prefetch_container->CreateReader();
+    EXPECT_FALSE(reader.HaveDefaultContextCookiesChanged());
+    reader.AdvanceCurrentURLToServe();
+    EXPECT_FALSE(reader.HaveDefaultContextCookiesChanged());
+    reader.AdvanceCurrentURLToServe();
+    EXPECT_FALSE(reader.HaveDefaultContextCookiesChanged());
+  }
+
+  prefetch_container->ResumeAllCookieListeners();
   ASSERT_TRUE(SetCookie(kTestUrl1, "test-cookie1"));
 
   {
@@ -416,18 +428,6 @@ TEST_P(PrefetchContainerTest, CookieListener) {
   }
 
   ASSERT_TRUE(SetCookie(kTestUrl2, "test-cookie2"));
-
-  {
-    auto reader = prefetch_container->CreateReader();
-    EXPECT_TRUE(reader.HaveDefaultContextCookiesChanged());
-    reader.AdvanceCurrentURLToServe();
-    EXPECT_TRUE(reader.HaveDefaultContextCookiesChanged());
-    reader.AdvanceCurrentURLToServe();
-    EXPECT_FALSE(reader.HaveDefaultContextCookiesChanged());
-  }
-
-  prefetch_container->StopAllCookieListeners();
-  ASSERT_TRUE(SetCookie(kTestUrl2, "test-cookie3"));
 
   {
     auto reader = prefetch_container->CreateReader();

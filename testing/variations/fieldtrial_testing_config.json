@@ -1986,26 +1986,6 @@
             ]
         }
     ],
-    "AutofillEnablePaymentsFieldSwapping": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnablePaymentsFieldSwapping"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableSupportForParsingWithSharedLabels": [
         {
             "platforms": [
@@ -2318,6 +2298,46 @@
             ]
         }
     ],
+    "AutofillIncludeMaxLengthInCrowdsourcing": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "ios",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillIncludeMaxLengthInCrowdsourcing"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillIncludeSelectOptionsInCrowdsourcing": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "ios",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillIncludeSelectOptionsInCrowdsourcing"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillIncludeUrlInCrowdsourcing": [
         {
             "platforms": [
@@ -2497,6 +2517,25 @@
                     },
                     "enable_features": [
                         "AutofillPasswordUserPerceptionSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillPaymentsFieldSwapping": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillPaymentsFieldSwapping"
                     ]
                 }
             ]

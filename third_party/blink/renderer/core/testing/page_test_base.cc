@@ -321,6 +321,10 @@ Element* PageTestBase::GetElementById(const char* id) const {
   return GetDocument().getElementById(AtomicString(id));
 }
 
+Element* PageTestBase::QuerySelector(const char* selector) const {
+  return GetDocument().QuerySelector(AtomicString(selector));
+}
+
 AnimationClock& PageTestBase::GetAnimationClock() {
   return GetDocument().GetAnimationClock();
 }

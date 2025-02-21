@@ -54,7 +54,7 @@ class FullscreenControllerImpl : public FullscreenController {
   // The broadcaster that drives the model.
   __strong ChromeBroadcaster* broadcaster_ = nil;
   // The model used to calculate fullscreen state.
-  FullscreenModel model_;
+  std::unique_ptr<FullscreenModel> model_ = nullptr;
   // Object that manages sending signals to FullscreenControllerImplObservers.
   FullscreenMediator mediator_;
   // A WebStateListObserver that updates `model_` for WebStateList changes.

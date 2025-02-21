@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
@@ -82,6 +83,12 @@ class CORE_EXPORT CSSVariableParser {
   // from values as per spec, but we assume the tokenizer has already done the
   // leading ones for us; see comment on CSSPropertyParser::ParseValue().
   static StringView StripTrailingWhitespaceAndComments(StringView);
+
+  // Collect any instances of <dashed-function> anywhere in the stream.
+  //
+  // https://drafts.csswg.org/css-mixins-1/#typedef-dashed-function
+  static void CollectDashedFunctions(CSSParserTokenStream&,
+                                     HashSet<AtomicString>& result);
 };
 
 }  // namespace blink

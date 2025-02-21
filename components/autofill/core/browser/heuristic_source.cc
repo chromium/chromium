@@ -15,14 +15,14 @@ namespace autofill {
 
 HeuristicSource GetActiveHeuristicSource() {
   if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
-    static bool model_predictions_active =
+    bool model_predictions_active =
         features::kAutofillModelPredictionsAreActive.Get();
     if (model_predictions_active) {
       return HeuristicSource::kAutofillMachineLearning;
     }
   }
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  static const HeuristicSource active_source =
+  const HeuristicSource active_source =
       GetActiveRegexFeatures().empty() ? HeuristicSource::kDefaultRegexes
                                        : HeuristicSource::kExperimentalRegexes;
   return active_source;

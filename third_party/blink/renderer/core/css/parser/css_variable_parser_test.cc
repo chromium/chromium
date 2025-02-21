@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -384,6 +385,111 @@ TEST_P(InvalidIfTest, ContainsInvalidIf) {
       /*is_animation_tainted=*/false, /*must_contain_variable_reference=*/true,
       /*restricted_value=*/true, /*comma_ends_declaration=*/false, important,
       *context));
+}
+
+TEST(CSSVariableParserTest, ParseDeclarationValueWithDashedFunctions) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  CSSUnparsedDeclarationValue* value = CSSVariableParser::ParseDeclarationValue(
+      "--foo()",
+      /*is_animation_tainted=*/false, *context);
+  ASSERT_TRUE(value);
+  EXPECT_TRUE(value->VariableDataValue()->HasDashedFunctions());
+}
+
+TEST(CSSVariableParserTest, ParseDeclarationValueWithoutDashedFunctions) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  CSSUnparsedDeclarationValue* value = CSSVariableParser::ParseDeclarationValue(
+      "--foo",
+      /*is_animation_tainted=*/false, *context);
+  ASSERT_TRUE(value);
+  EXPECT_FALSE(value->VariableDataValue()->HasDashedFunctions());
+}
+
+struct DashedFunctionCollectionData {
+  const char* declaration = nullptr;
+  const char* expected_names = nullptr;  // Comma-separated.
+};
+DashedFunctionCollectionData dashed_function_collection_data[] = {
+    // clang-format off
+    {
+      .declaration = "abc",
+      .expected_names = ""
+    },
+    {
+      .declaration = "abc --foo(42) --bar(56)",
+      .expected_names = "--bar, --foo"
+    },
+    // Start/end of value
+    {
+      .declaration = "--foo(42) abc --bar(56)",
+      .expected_names = "--bar, --foo"
+    },
+    // Inside blocks:
+    {
+      .declaration = "abc ( --foo(42) --bar(56) ) ",
+      .expected_names = "--bar, --foo"
+    },
+    {
+      .declaration = "abc { --foo(42) --bar(56) } ",
+      .expected_names = "--bar, --foo"
+    },
+    {
+      .declaration = "abc [ --foo(42) --bar(56) ] ",
+      .expected_names = "--bar, --foo"
+    },
+    // Inside nested blocks:
+    {
+      .declaration = "abc [ ( --foo(42) ) {{ --bar(56) }} ] ",
+      .expected_names = "--bar, --foo"
+    },
+    // Inside var() fallback:
+    {
+      .declaration = "abc var(--x, --bar()) ",
+      .expected_names = "--bar"
+    },
+    // Inside function argument list:
+    {
+      .declaration = "abc --bar(5, 2, --foo(), --baz())",
+      .expected_names = "--bar, --baz, --foo"
+    },
+
+    // clang-format on
+};
+
+class CollectDashedFunctionsTest
+    : public testing::Test,
+      public testing::WithParamInterface<DashedFunctionCollectionData> {
+ public:
+  CollectDashedFunctionsTest() = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CollectDashedFunctionsTest,
+                         testing::ValuesIn(dashed_function_collection_data));
+
+TEST_P(CollectDashedFunctionsTest, CollectionTest) {
+  DashedFunctionCollectionData param = GetParam();
+  String input(param.declaration);
+  CSSParserTokenStream stream(input);
+
+  HashSet<AtomicString> actual_result;
+  CSSVariableParser::CollectDashedFunctions(stream, actual_result);
+
+  Vector<AtomicString> actual_result_vector(actual_result);
+  std::sort(actual_result_vector.begin(), actual_result_vector.end(),
+            WTF::CodeUnitCompareLessThan);
+
+  StringBuilder actual_joined;
+  for (const AtomicString& a : actual_result_vector) {
+    if (!actual_joined.empty()) {
+      actual_joined.Append(", ");
+    }
+    actual_joined.Append(a);
+  }
+
+  EXPECT_EQ(String(param.expected_names), actual_joined.ToString());
 }
 
 }  // namespace blink

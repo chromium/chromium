@@ -57,6 +57,7 @@ class RecalculateStyle;
 }  // namespace probe
 
 class CSSContainerRule;
+class CSSFunctionRule;
 class CSSPropertyName;
 class CSSRule;
 class CSSStyleRule;
@@ -123,6 +124,16 @@ class CORE_EXPORT InspectorCSSAgent final
                                   String* computed_font_size,
                                   String* computed_font_weight,
                                   float* text_opacity);
+
+  // Collects all function references (i.e. <dashed-ident>s) within
+  // the rule list, and the CSSFunctionRules that resulted from looking up
+  // those function references.
+  static void CollectReferencedFunctionRules(
+      Document&,
+      const HeapHashSet<Member<CSSStyleSheet>>& document_style_sheets,
+      const RuleIndexList&,
+      HeapHashMap<Member<const ScopedCSSName>, Member<CSSFunctionRule>>&
+          result);
 
   InspectorCSSAgent(InspectorDOMAgent*,
                     InspectedFrames*,

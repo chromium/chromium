@@ -27,5 +27,7 @@ extern NSString* const kAccountMenuSecondaryAccountButtonId;
 extern NSString* const kAccountMenuActivityIndicatorId;
 // The accessibility identifier of the open settings button.
 extern NSString* const kAccountMenuOpenSettingsButtonId;
+// The accessibility identifier of manage accounts button.
+extern NSString* const kAccountMenuManageAccountsButtonId;
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_CONSTANTS_H_

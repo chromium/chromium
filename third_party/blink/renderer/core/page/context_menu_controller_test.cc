@@ -1909,6 +1909,27 @@ TEST_F(ContextMenuControllerTest, OpenedFromHighlight) {
   EXPECT_TRUE(context_menu_data.opened_from_highlight);
 }
 
+TEST_F(ContextMenuControllerTest, SelectAllEnabledForEditContext) {
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <div id=target>123</div>
+    </body>
+  )HTML");
+  Element* target = GetDocument()->getElementById(AtomicString("target"));
+  // Attach `EditContext` to the target.
+  Element* script = GetDocument()->CreateRawElement(html_names::kScriptTag);
+  script->setInnerHTML(
+      "document.getElementById('target').editContext = new EditContext()");
+  GetDocument()->body()->AppendChild(script);
+  target->Focus();
+
+  EXPECT_TRUE(target->editContext());
+  EXPECT_TRUE(ShowContextMenuForElement(target, kMenuSourceMouse));
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_TRUE(!!(context_menu_data.edit_flags &
+                 ContextMenuDataEditFlags::kCanSelectAll));
+}
+
 // Test that opening context menu with keyboard does not change text selection.
 TEST_F(ContextMenuControllerTest,
        KeyboardTriggeredContextMenuPreservesSelection) {

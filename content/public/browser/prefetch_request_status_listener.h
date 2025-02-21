@@ -33,7 +33,11 @@ class PrefetchRequestStatusListener {
   virtual ~PrefetchRequestStatusListener() = default;
 
   // Called when the prefetch request failed to start.
-  virtual void OnPrefetchStartFailed() = 0;
+  virtual void OnPrefetchStartFailedGeneric() = 0;
+
+  // Called when an outgoing prefetch request is deemed to be a duplicate
+  // (based on prefetch cache heuristics) and will therefore not be sent.
+  virtual void OnPrefetchStartFailedDuplicate() = 0;
 
   // Called when the prefetch response has been fetched.
   // This is only emitted for the final response (i.e. after all redirects).

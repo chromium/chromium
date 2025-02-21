@@ -176,6 +176,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1546492247443594934">Escritorio 2</translation>
 <translation id="1546930421365146760">Pídele a tu administrador que configure este dispositivo en la Consola del administrador de Google</translation>
 <translation id="1549512626801247439">administración de almacenamiento</translation>
+<translation id="1549721333775633305">Mostrar la configuración de Quick Share. Quick Share inhabilitado.</translation>
 <translation id="1550406609415860283">Dispositivos disponibles</translation>
 <translation id="1550523713251050646">Haz clic para obtener más opciones</translation>
 <translation id="1555130319947370107">Azul</translation>
@@ -1475,6 +1476,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5856638668464565213">La red <ph name="NETWORK_NAME" /> no está activa.</translation>
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5860491529813859533">Activar</translation>
+<translation id="5864691701242730005">Mostrar la configuración de Quick Share. Se seleccionó la visibilidad de <ph name="VISIBILITY" />.</translation>
 <translation id="5864748620896638071"><ph name="BATTERY_PERCENTAGE" />% de batería</translation>
 <translation id="5867217927013474703">Recopilando información de la red</translation>
 <translation id="5867606971598166637">El administrador del sistema está supervisando las pantallas</translation>
@@ -2263,6 +2265,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="851660987304951246">Usa Help me read para resumir contenido o hacer preguntas rápidamente</translation>
 <translation id="8517041960877371778">Tu <ph name="DEVICE_TYPE" /> podría no cargarse si el dispositivo está encendido.</translation>
 <translation id="8535393432370007982">Deshacer el orden por color</translation>
+<translation id="8536886494750559755">Mostrar la configuración de Quick Share. Visible para todos durante <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Se copió el texto en el Portapapeles</translation>
 <translation id="8541078764854166027">Encuadre</translation>
 <translation id="8542053257095774575">No hay escritorios ni plantillas guardados</translation>

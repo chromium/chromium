@@ -472,6 +472,7 @@
 <translation id="3226657629376379887">ម៉ឺនុយសកម្មភាព​ប្លង់​</translation>
 <translation id="3227186760713762082">ចែក​តម្លៃ<ph name="CATEGORY_TEXT" />នឹង <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">កិច្ចការបោះពុម្ពដែលចាស់ជាង 1 ថ្ងៃនឹងត្រូវលុបចេញ</translation>
+<translation id="3248791727258378769">គ្មាន​ប្រតិចារឹក​ដែលនឹង​ត្រូវបាន​បង្កើតទេ</translation>
 <translation id="324961752321393509">អ្នកគ្រប់គ្រងរបស់អ្នកមិនអនុញ្ញាតឱ្យបិទកម្មវិធីនេះទេ</translation>
 <translation id="3263941347294171263">ដករួចដោតខ្សែ <ph name="DEVICE_NAME" /> វិញ ដើម្បីបន្តដំណើរការដំឡើងកំណែ</translation>
 <translation id="3268178239013324452">មិនបានសម្រេច - ​​​ទ្វារចំហ</translation>
@@ -670,6 +671,7 @@
 <translation id="420283545744377356">បិទធាតុរក្សាអេក្រង់</translation>
 <translation id="4210636113897977670">រក្សាទុក រួចចាកចេញ</translation>
 <translation id="4210659479607886331">ទន្លេដែលកើតពីផែនទឹកកក</translation>
+<translation id="4212169537710712814">ការទាញយក​គំរូ​ប្រតិចារឹក​ជាភាសា<ph name="LANGUAGE_NAME" />បាន​ចប់​ហើយ</translation>
 <translation id="42126664696688958">នាំចេញ</translation>
 <translation id="4213104098953699324">ក្តារចុច USB</translation>
 <translation id="4227825898293920515">ពាក្យសម្ងាត់ផុតកំណត់​ក្នុងរយៈពេល <ph name="TIME" /></translation>
@@ -940,6 +942,7 @@
 <translation id="5431318178759467895">ពណ៌</translation>
 <translation id="5457599981699367932">រុករកជារបៀបភ្ញៀវ</translation>
 <translation id="54609108002486618">បាន​គ្រប់គ្រង</translation>
+<translation id="5461608756903394951">ការទាញយក​គំរូ​ប្រតិចារឹក​ជាភាសា<ph name="LANGUAGE_NAME" />កំពុង​ដំណើរការ</translation>
 <translation id="5470776029649730099">បាវ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{អាចព្យាយាមបាន {0} ដងទៀត}other{អាចព្យាយាមបាន {0} ដងទៀត}}</translation>
 <translation id="5488280942828718790">ក្រហម​ស្វាយ</translation>
@@ -1191,6 +1194,7 @@
 <translation id="6595046262780525922">បើក​ប្រតិចារឹក និងទាញយក​គំរូប្រតិចារឹកឬ?</translation>
 <translation id="6596816719288285829">អាសយដ្ឋាន IP</translation>
 <translation id="6599673642868607614">សូមអរគុណ​សម្រាប់​មតិកែលម្អ​របស់អ្នក។ មតិកែលម្អ​របស់អ្នក​ជួយ​យើង​កែលម្អ​បទពិសោធន៍​ប្រើប្រាស់ Chromebook ហើយនឹង​ត្រូវបាន​ពិនិត្យមើល​ដោយ​ក្រុមការងារ​របស់យើង។ ដោយសារតែ​មាន​ចំនួននៃការរាយការណ៍​ច្រើន យើង​នឹង​មិន​អាច​ផ្ញើ​ការឆ្លើយតប​បានទេ។</translation>
+<translation id="6608043585557830684">ប្រតិចារឹក​ត្រូវបាន​បិទ។ សូមបើក​នៅក្នុង "ការកំណត់" ឬ​នៅក្នុង​ម៉ឺនុយ <ph name="THREE_DOTS_MENU_ICON" />។</translation>
 <translation id="660846213831377756">គ្រាប់ចុច​ម៉ៅស៍</translation>
 <translation id="6618744767048954150">កំពុងដំណើរការ</translation>
 <translation id="6620487321149975369">កិច្ចការបោះពុម្ពនឹងបង្ហាញនៅក្នុងប្រវត្តិ ប្រសិនបើអ្នកមិនលុបវាដោយដៃទេ</translation>

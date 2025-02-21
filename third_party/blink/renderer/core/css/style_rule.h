@@ -750,7 +750,8 @@ struct DowncastTraits<StyleRuleGroup> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsMediaRule() || rule.IsSupportsRule() ||
            rule.IsContainerRule() || rule.IsLayerBlockRule() ||
-           rule.IsScopeRule() || rule.IsStartingStyleRule();
+           rule.IsScopeRule() || rule.IsStartingStyleRule() ||
+           rule.IsFunctionRule();
   }
 };
 

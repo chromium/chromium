@@ -66,6 +66,7 @@
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_coordinator.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/swipe_view.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
@@ -167,6 +168,7 @@ enum HeaderBehaviour {
 @interface BrowserViewController () <FullscreenUIElement,
                                      MainContentUI,
                                      SideSwipeMediatorDelegate,
+                                     SideSwipeUIControllerDelegate,
                                      TabStripPresentation,
                                      UIGestureRecognizerDelegate> {
   // Identifier for each animation of an NTP opening.
@@ -357,6 +359,7 @@ enum HeaderBehaviour {
     _keyCommandsProvider = keyCommandsProvider;
     _sideSwipeCoordinator = dependencies.sideSwipeCoordinator;
     [_sideSwipeCoordinator setSwipeDelegate:self];
+    [_sideSwipeCoordinator setSideSwipeUIControllerDelegate:self];
     _bookmarksCoordinator = dependencies.bookmarksCoordinator;
     self.toolbarAccessoryPresenter = dependencies.toolbarAccessoryPresenter;
     self.ntpCoordinator = dependencies.ntpCoordinator;

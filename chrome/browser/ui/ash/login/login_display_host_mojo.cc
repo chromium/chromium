@@ -186,8 +186,11 @@ LoginDisplayHostMojo::AuthState::AuthState(
 
 LoginDisplayHostMojo::AuthState::~AuthState() = default;
 
-LoginDisplayHostMojo::LoginDisplayHostMojo(DisplayedScreen displayed_screen)
-    : user_selection_screen_(
+LoginDisplayHostMojo::LoginDisplayHostMojo(
+    DisplayedScreen displayed_screen,
+    bool update_geolocation_usage_allowed)
+    : LoginDisplayHostCommon(update_geolocation_usage_allowed),
+      user_selection_screen_(
           std::make_unique<ChromeUserSelectionScreen>(displayed_screen)),
       auth_performer_(UserDataAuthClient::Get()),
       system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {

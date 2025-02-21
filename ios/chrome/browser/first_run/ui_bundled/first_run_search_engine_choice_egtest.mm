@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/policy_constants.h"
+#import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"

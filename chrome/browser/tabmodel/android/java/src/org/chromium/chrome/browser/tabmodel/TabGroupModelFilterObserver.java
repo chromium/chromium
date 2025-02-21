@@ -178,6 +178,14 @@ public interface TabGroupModelFilterObserver {
             @DidRemoveTabGroupReason int removalReason) {}
 
     /**
+     * Called when a tab group closure starts.
+     *
+     * @param tabGroupId The tab group id.
+     * @param isHiding Whether the tab group is set to hide.
+     */
+    default void willCloseTabGroup(Token tabGroupId, boolean isHiding) {}
+
+    /**
      * Called when a tab group closure is fully committed.
      *
      * @param tabGroupId The tab group id.

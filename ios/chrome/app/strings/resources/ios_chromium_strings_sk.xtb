@@ -74,7 +74,6 @@ Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tie
 <translation id="2517624234762908348">Synchronizovať údaje prehliadača Chromium</translation>
 <translation id="2592940277904433508">Pokračovať v používaní prehliadača Chromium</translation>
 <translation id="2607609479243848905">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje prehliadača Chromium vo svojom účte<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium vám pomôže sledovať túto zásielku na stránke na novej karte.}few{Chromium vám pomôže sledovať tieto zásielky na stránke na novej karte.}many{Chromium will help track these packages on the New Tab Page.}other{Chromium vám pomôže sledovať tieto zásielky na stránke na novej karte.}}</translation>
 <translation id="2650312721222849884">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chromium, zapnite synchronizáciu</translation>
 <translation id="2684230048001240293">Nastavte si Chromium ako predvolený prehliadač na synchronizovanie kariet, hesiel a platobných údajov vo všetkých zariadeniach</translation>
 <translation id="2730884209570016437">Chromium nemôže použiť váš fotoaparát, pretože ho práve používa iná aplikácia</translation>
@@ -89,7 +88,6 @@ Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tie
 <translation id="2977470724722393594">Prehliadač Chromium bol aktualizovaný</translation>
 <translation id="3044857325852340337">Dáta prehliadača Chromium boli odstránené</translation>
 <translation id="3054480780637153380">V zariadení iOS otvorte nastavenia prehliadača Chromium, klepnite na Predvolený prehliadač a vyberte Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium vám môže pomôcť sledovať túto zásielku na stránke na novej karte.}few{Chromium vám môže pomôcť sledovať tieto zásielky na stránke na novej karte.}many{Chromium can help you track these packages on the New Tab Page.}other{Chromium vám môže pomôcť sledovať tieto zásielky na stránke na novej karte.}}</translation>
 <translation id="3102849287235003384">Ak sa chcete odhlásiť zo svojho účtu Google na všetkých weboch, <ph name="BEGIN_LINK" />odhláste sa z prehliadača Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chcete nastaviť Chromium ako predvolený prehliadač?</translation>
 <translation id="3242612358525156339">V Nastaveniach zariadenia otvorte <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> a vyberte Chromium</translation>

@@ -35,11 +35,12 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-using password_manager::CredentialUIEntry;
-using password_manager::prefs::kCredentialsEnablePasskeys;
-using password_manager::prefs::kCredentialsEnableService;
-
 namespace {
+
+using ::password_manager::CredentialUIEntry;
+using ::password_manager::prefs::kAutomaticPasskeyUpgrades;
+using ::password_manager::prefs::kCredentialsEnablePasskeys;
+using ::password_manager::prefs::kCredentialsEnableService;
 
 // The user action for when the bulk move passwords to account section button is
 // clicked.
@@ -151,6 +152,8 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
     _prefChangeRegistrar->Init(_prefService);
     _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
     _prefObserverBridge->ObserveChangesForPreference(
+        kAutomaticPasskeyUpgrades, _prefChangeRegistrar.get());
+    _prefObserverBridge->ObserveChangesForPreference(
         kCredentialsEnablePasskeys, _prefChangeRegistrar.get());
     _prefObserverBridge->ObserveChangesForPreference(
         kCredentialsEnableService, _prefChangeRegistrar.get());
@@ -187,9 +190,11 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
                                         _syncService->GetAccountInfo().email)];
 
   [self.consumer
-      setAutomaticPasskeyUpgradesManagedByPolicy:
-          savingCredentialsManagedByPolicy ||
-          _prefService->IsManagedPreference(kCredentialsEnablePasskeys)];
+      setAutomaticPasskeyUpgradesEnabled:_prefService->GetBoolean(
+                                             kAutomaticPasskeyUpgrades)
+                         managedByPolicy:savingCredentialsManagedByPolicy ||
+                                         _prefService->IsManagedPreference(
+                                             kCredentialsEnablePasskeys)];
 
   [self passwordAutoFillStatusDidChange];
 
@@ -344,6 +349,10 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   _prefService->SetBoolean(kCredentialsEnableService, enabled);
 }
 
+- (void)automaticPasskeyUpgradesSwitchDidChange:(BOOL)enabled {
+  _prefService->SetBoolean(kAutomaticPasskeyUpgrades, enabled);
+}
+
 #pragma mark - SavedPasswordsPresenterObserver
 
 - (void)savedPasswordsDidChange {
@@ -358,7 +367,8 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 
 // Called when the value of one of the prefs changes.
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  CHECK(preferenceName == kCredentialsEnablePasskeys ||
+  CHECK(preferenceName == kAutomaticPasskeyUpgrades ||
+        preferenceName == kCredentialsEnablePasskeys ||
         preferenceName == kCredentialsEnableService)
       << "Unsupported preference: " << preferenceName;
 
@@ -367,8 +377,10 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   bool savingPasskeysManagedByPolicy =
       _prefService->IsManagedPreference(kCredentialsEnablePasskeys);
   [self.consumer
-      setAutomaticPasskeyUpgradesManagedByPolicy:
-          savingCredentialsManagedByPolicy || savingPasskeysManagedByPolicy];
+      setAutomaticPasskeyUpgradesEnabled:_prefService->GetBoolean(
+                                             kAutomaticPasskeyUpgrades)
+                         managedByPolicy:savingCredentialsManagedByPolicy ||
+                                         savingPasskeysManagedByPolicy];
 
   if (preferenceName == kCredentialsEnableService) {
     [self.consumer setSavePasswordsEnabled:_prefService->GetBoolean(

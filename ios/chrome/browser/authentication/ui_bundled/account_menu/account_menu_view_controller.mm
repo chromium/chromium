@@ -79,6 +79,7 @@ typedef NS_ENUM(NSUInteger, RowIdentifier) {
   RowIdentifierSignOut,
   // Accounts section.
   RowIdentifierAddAccount,
+  RowIdentifierManageAccounts,
   // The secondary account entries use the gaia ID as item identifier.
   // Settings section.
   RowIdentifierSettings,
@@ -111,6 +112,16 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   // If preferredContentSize is set with different values in the same runloop,
   // UIKit will pick the biggest or the first one (but not the last one).
   BOOL _resizeReady;
+  // Whether or not to hide the ellipsis menu.
+  BOOL _hideEllipsisMenu;
+}
+
+- (instancetype)initWithHideEllipsisMenu:(BOOL)hideEllipsisMenu {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _hideEllipsisMenu = hideEllipsisMenu;
+  }
+  return self;
 }
 
 #pragma mark - UIViewController
@@ -277,20 +288,26 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
               }];
   manageYourAccountAction.subtitle = [self.dataSource primaryAccountEmail];
 
-  UIAction* editAccountListAction = [UIAction
-      actionWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST)
-                image:DefaultSymbolWithConfiguration(@"pencil",
-                                                     symbolConfiguration)
-           identifier:base::SysUTF8ToNSString(kEditAccountListIdentifier)
-              handler:^(UIAction* action) {
-                base::RecordAction(base::UserMetricsAction(
-                    "Signin_AccountMenu_EditAccountList"));
-                [self.mutator didTapManageAccounts];
-              }];
-
-  UIMenu* ellipsisMenu = [UIMenu
-      menuWithChildren:@[ manageYourAccountAction, editAccountListAction ]];
+  UIMenu* ellipsisMenu;
+  if (_hideEllipsisMenu) {
+    // TODO(crbug.com/392534699): Remove manageYourAccountAction and the
+    // ellipsisMenu completely.
+    ellipsisMenu = [UIMenu menuWithChildren:@[ manageYourAccountAction ]];
+  } else {
+    UIAction* editAccountListAction = [UIAction
+        actionWithTitle:l10n_util::GetNSString(
+                            IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST)
+                  image:DefaultSymbolWithConfiguration(@"pencil",
+                                                       symbolConfiguration)
+             identifier:base::SysUTF8ToNSString(kEditAccountListIdentifier)
+                handler:^(UIAction* action) {
+                  base::RecordAction(base::UserMetricsAction(
+                      "Signin_AccountMenu_EditAccountList"));
+                  [self.mutator didTapManageAccounts];
+                }];
+    ellipsisMenu = [UIMenu
+        menuWithChildren:@[ manageYourAccountAction, editAccountListAction ]];
+  }
 
   _ellipsisButton =
       [self addTopButtonWithSymbolName:kEllipsisCircleFillSymbol
@@ -378,6 +395,10 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       label =
           l10n_util::GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_ADD_ACCOUNT_BUTTON);
       accessibilityIdentifier = kAccountMenuAddAccountButtonId;
+      break;
+    case RowIdentifierManageAccounts:
+      label = l10n_util::GetNSString(IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST);
+      accessibilityIdentifier = kAccountMenuManageAccountsButtonId;
       break;
     case RowIdentifierSignOut:
       label =
@@ -470,6 +491,11 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [accountsIdentifiers addObject:@(RowIdentifierAddAccount)];
   [snapshot appendItemsWithIdentifiers:accountsIdentifiers
              intoSectionWithIdentifier:@(AccountsSectionIdentifier)];
+  if (_hideEllipsisMenu) {
+    [accountsIdentifiers addObject:@(RowIdentifierManageAccounts)];
+    [snapshot appendItemsWithIdentifiers:accountsIdentifiers
+               intoSectionWithIdentifier:@(AccountsSectionIdentifier)];
+  }
   [snapshot appendItemsWithIdentifiers:@[ @(RowIdentifierSignOut) ]
              intoSectionWithIdentifier:@(AccountsSectionIdentifier)];
 
@@ -523,6 +549,11 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
         break;
       case RowIdentifierErrorButton:
         [self.mutator didTapErrorButton];
+        break;
+      case RowIdentifierManageAccounts:
+        base::RecordAction(
+            base::UserMetricsAction("Signin_AccountMenu_EditAccountList"));
+        [self.mutator didTapManageAccounts];
         break;
       case RowIdentifierSignOut:
         base::RecordAction(

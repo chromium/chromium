@@ -3607,18 +3607,20 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("selection-container.html"));
 }
 
-// Times out on android: https://issues.chromium.org/issues/384959329
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AccessibilitySelect DISABLED_AccessibiltySelect
-#else
-#define MAYBE_AccessibilitySelect ENABLED_AccessibiltySelect
-#endif
 IN_PROC_BROWSER_TEST_P(CustomizableSelectEnabledDumpAccessibilityTreeTest,
-                       MAYBE_AccessibilitySelect) {
+                       AccessibilitySelect) {
   RunHtmlTest(FILE_PATH_LITERAL("select.html"));
 }
+// Temporarily has different expectations on android due to <select multiple>
+// differences. This will be addressed when the CustomizableSelect flag goes
+// away.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccessibilitySelect DISABLED_AccessibilitySelect
+#else
+#define MAYBE_AccessibilitySelect AccessibilitySelect
+#endif
 IN_PROC_BROWSER_TEST_P(CustomizableSelectDisabledDumpAccessibilityTreeTest,
-                       AccessibilitySelect) {
+                       MAYBE_AccessibilitySelect) {
   RunHtmlTest(FILE_PATH_LITERAL("select.html"));
 }
 
@@ -4084,16 +4086,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("ignored-selection.html"));
 }
 
-// Times out on android: https://issues.chromium.org/issues/384959329
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AccessibilityLabelWithSelectedOption \
-  DISABLED_AccessibilityLabelWithSelectedOption
-#else
-#define MAYBE_AccessibilityLabelWithSelectedOption \
-  AccessibilityLabelWithSelectedOption
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityLabelWithSelectedOption) {
+                       AccessibilityLabelWithSelectedOption) {
   RunHtmlTest(FILE_PATH_LITERAL("label-with-selected-option.html"));
 }
 

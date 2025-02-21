@@ -532,13 +532,17 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequestForNavigation(
 
   new_request->priority = priority;
 
-  // When set, `update_first_party_url_on_redirect` will cause a
-  // server-redirect to update the URL used to determine if cookies are
-  // first-party. Since fenced frames are main frames in terms of cookie
-  // partitioning, this needs to be `is_main_frame` rather than
-  // `is_outermost_main_frame`.
   if (is_main_frame) {
+    // When set, `update_first_party_url_on_redirect` will cause a
+    // server-redirect to update the URL used to determine if cookies are
+    // first-party. Since fenced frames are main frames in terms of cookie
+    // partitioning, this needs to be `is_main_frame` rather than
+    // `is_outermost_main_frame`.
     new_request->update_first_party_url_on_redirect = true;
+
+    // Navigation responses for the top-level document are able to be used as
+    // compression dictionaries.
+    new_request->shared_dictionary_writer_enabled = true;
   }
 
   new_request->enable_load_timing = true;

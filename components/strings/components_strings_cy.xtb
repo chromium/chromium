@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Yn cadw'r cardiau…</translation>
 <translation id="1060136083665017312">Systemau Gêm a Chonsolau</translation>
 <translation id="1060320201901229167">Amlen Kaku 5</translation>
-<translation id="10614374240317010">Erioed wedi'i gadw</translation>
 <translation id="1062407476771304334">Disodli</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Manylion peiriant chwilio</translation>
@@ -263,7 +262,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1432187715652018471">mae tudalen eisiau gosod trinydd gwasanaethau.</translation>
 <translation id="1432581352905426595">Rheoli peiriannau chwilio</translation>
 <translation id="1433225466058025572">Rhowch gynnig ar symud eich ffeiliau eto</translation>
-<translation id="1435940442311036198">Defnyddio cod pas ar ddyfais wahanol</translation>
 <translation id="1436185428532214179">Yn gallu gofyn am olygu ffeiliau a ffolderi ar eich dyfais</translation>
 <translation id="1442386063175183758">Plyg giât dde</translation>
 <translation id="1442987760062738829">Twll</translation>
@@ -357,7 +355,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="159274626729231974">Gwyliau Ffilm</translation>
 <translation id="1593359183944365958">270 gradd</translation>
 <translation id="1594030484168838125">Dewis</translation>
-<translation id="1598816256585174656">Cod pas o Windows Hello</translation>
 <translation id="1599199147673445968">Cerdyn newydd? <ph name="BEGIN_LINK" />Rhowch Fanylion y Cerdyn<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Harddwch a Ffitrwydd</translation>
 <translation id="160851722280695521">Chwarae'r gêm Dino Run yn Chrome</translation>
@@ -469,7 +466,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Gosod apiau gwe?</translation>
 <translation id="1791415068765905273">Dangos yr Holl Dablau Cymharu</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i reoli eich gwybodaeth, preifatrwydd, a diogelwch yn eich Cyfrif Google</translation>
 <translation id="1793473605302304726">Talu dros amser</translation>
 <translation id="1793631236004319016">Defnyddiwyd ddiwethaf <ph name="NUM_HOURS_MINUTES_SECONDS" /> yn ôl</translation>
@@ -2127,7 +2123,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4754461935447132332">Ni chaniateir ar gyfer gwefannau nad ydynt yn ddiogel</translation>
 <translation id="4756388243121344051">&amp;Hanes</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Cod pas o'ch Proffil Chrome</translation>
 <translation id="4757993714154412917">Rydych newydd roi'ch cyfrinair ar wefan dwyllodrus. I ddiogelu eich cyfrifon, mae Chromium yn argymell eich bod yn gwirio'ch cyfrineiriau sydd wedi'u cadw.</translation>
 <translation id="4758311279753947758">Ychwanegu manylion cyswllt</translation>
 <translation id="4761326898079498987">Adolygwch am fanylion pellach</translation>
@@ -2700,7 +2695,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5764920692828389743">Anfon at <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">I weld dulliau anfon a gofynion, dewiswch gyfeiriad</translation>
 <translation id="57689295674415555">Rhif cerdyn rhithwir heb ei llenwi?</translation>
-<translation id="5772086939108830423">Defnyddio Cod Pas ar Ddyfais Wahanol</translation>
 <translation id="5776313857861697733">Blaenoriaeth</translation>
 <translation id="577804500166306874">Canlyniad yn llwytho</translation>
 <translation id="5781136890105823427">Mae'r arbrawf wedi'i alluogi</translation>
@@ -2831,7 +2825,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (cysonwyd)</translation>
 <translation id="6028591542479806248">Rheoli hysbysiadau symudol ac e-bost</translation>
 <translation id="6028833024483927901">Bwyd o'r Byd</translation>
-<translation id="6030251660719692307">Cod pas o'r Rheolwr Cyfrineiriau Google</translation>
 <translation id="603068602130820122">Dwy stapl ar y dde</translation>
 <translation id="6032524144326295339">Blwch negeseuon 2</translation>
 <translation id="6032955021262906325">Rhwymo i'r chwith</translation>
@@ -3439,7 +3432,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7096937462164235847">Nid yw hunaniaeth y wefan hon wedi'i dilysu.</translation>
 <translation id="7102554173784142865">Chwarae'r gêm Chrome Dino</translation>
 <translation id="7102760431686146931">Offer coginio a llestri bwyta</translation>
-<translation id="7105998430540165694">Cod pas o iCloud Keychain</translation>
 <translation id="7106762743910369165">Rheolir eich porwr gan eich sefydliad</translation>
 <translation id="7107249414147762907">Mae'r PDF hwn yn anhygyrch. Dim testun wedi'i echdynnu</translation>
 <translation id="7107427078069498123">Ôl bysedd SHA-256</translation>
@@ -4528,7 +4520,6 @@ Manylion ychwanegol:
 <translation id="9040341831873780534">Gweler y telerau yma</translation>
 <translation id="9042617223719777575">Capasiti Mawr</translation>
 <translation id="9042827002460091668">Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni</translation>
-<translation id="9044359186343685026">Defnyddio Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Meicroffonau (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Mae'r gweithredoedd hyn yn ei gwneud yn ofynnol i'r polisi <ph name="POLICY_NAME" /> gael ei osod i <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

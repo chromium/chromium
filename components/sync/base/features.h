@@ -174,10 +174,6 @@ BASE_DECLARE_FEATURE(kMoveThemePrefsToSpecifics);
 BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Enables syncing for extensions when in transport mode (when a user is signed
-// in but has not turned on full sync).
-BASE_DECLARE_FEATURE(kSyncEnableExtensionsInTransportMode);
-
 #if BUILDFLAG(IS_ANDROID)
 // Flag to test different alternatives for the passwords sync error message
 // content.

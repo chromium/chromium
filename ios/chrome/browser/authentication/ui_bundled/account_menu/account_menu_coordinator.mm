@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
@@ -123,7 +124,8 @@
   _identityManager = IdentityManagerFactory::GetForProfile(profile);
   _prefService = profile->GetPrefs();
 
-  _viewController = [[AccountMenuViewController alloc] init];
+  _viewController = [[AccountMenuViewController alloc]
+      initWithHideEllipsisMenu:IdentityDiscAccountMenuEnabledWithoutEllipsis()];
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];

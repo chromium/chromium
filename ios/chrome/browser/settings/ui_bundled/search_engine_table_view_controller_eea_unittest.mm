@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #import "base/command_line.h"
+#import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/search_engines_pref_names.h"
-#import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/search_engine_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/search_engine_table_view_controller_unittest.h"

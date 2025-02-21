@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Shranjevanje kartic …</translation>
 <translation id="1060136083665017312">Sistemi za igre in konzole</translation>
 <translation id="1060320201901229167">Kuverta Kaku 5</translation>
-<translation id="10614374240317010">Nikoli shranjeno</translation>
 <translation id="1062407476771304334">Zamenjaj</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Podrobnosti o iskalniku</translation>
@@ -263,7 +262,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1432187715652018471">stran želi namestiti rutino za obravnavo storitev.</translation>
 <translation id="1432581352905426595">Upravljanje iskalnikov</translation>
 <translation id="1433225466058025572">Poskusite znova premakniti datoteke</translation>
-<translation id="1435940442311036198">Uporaba gesla v drugi napravi</translation>
 <translation id="1436185428532214179">Lahko zahteva urejanje datotek in map v napravi.</translation>
 <translation id="1442386063175183758">Prepogibanje v obliki okna z desne</translation>
 <translation id="1442987760062738829">Luknjanje</translation>
@@ -357,7 +355,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="159274626729231974">Filmski festivali</translation>
 <translation id="1593359183944365958">270-stopinjsko</translation>
 <translation id="1594030484168838125">Izberi</translation>
-<translation id="1598816256585174656">Ključ za dostop iz storitve Windows Hello</translation>
 <translation id="1599199147673445968">Nova kartica? <ph name="BEGIN_LINK" />Vnesite podrobnosti o kartici<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Lepota in fitnes</translation>
 <translation id="160851722280695521">Igranje igre Dino Run v Chromu</translation>
@@ -469,7 +466,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Želite namestiti spletne aplikacije?</translation>
 <translation id="1791415068765905273">Prikaži vse primerjalne tabele</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati podatke, zasebnost in varnost v računu Google</translation>
 <translation id="1793473605302304726">Plačilo na obroke</translation>
 <translation id="1793631236004319016">Nazadnje uporabljeno pred: <ph name="NUM_HOURS_MINUTES_SECONDS" />.</translation>
@@ -2127,7 +2123,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4754461935447132332">Ni dovoljeno za spletna mesta, ki niso varna</translation>
 <translation id="4756388243121344051">&amp;Zgodovina</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Ključ za dostop iz profila v Chromu</translation>
 <translation id="4757993714154412917">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chromium zaradi zaščite računov priporoča, da preverite shranjena gesla.</translation>
 <translation id="4758311279753947758">Dodaj podatke za stik</translation>
 <translation id="4761326898079498987">Preglejte za več podrobnosti</translation>
@@ -2700,7 +2695,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5764920692828389743">Pošiljanje na <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="5765072501007116331">Če si želite ogledati načine dostave in zahteve, izberite naslov</translation>
 <translation id="57689295674415555">Številka virtualne kartice ni izpolnjena?</translation>
-<translation id="5772086939108830423">Uporaba ključa za dostop v drugi napravi</translation>
 <translation id="5776313857861697733">Prednost</translation>
 <translation id="577804500166306874">Nalaganje rezultata</translation>
 <translation id="5781136890105823427">Preizkus je omogočen</translation>
@@ -2831,7 +2825,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sinhronizirano)</translation>
 <translation id="6028591542479806248">Upravljanje obvestil v mobilnih napravah in po e-pošti.</translation>
 <translation id="6028833024483927901">Svetovna kuhinja</translation>
-<translation id="6030251660719692307">Ključ za dostop iz Googlovega upravitelja gesel</translation>
 <translation id="603068602130820122">Dvojno spenjanje na desni</translation>
 <translation id="6032524144326295339">Nabiralnik 2</translation>
 <translation id="6032955021262906325">Vezava na levi</translation>
@@ -3439,7 +3432,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7096937462164235847">Identiteta tega spletnega mesta ni potrjena.</translation>
 <translation id="7102554173784142865">Igranje igre Dino za Chrome</translation>
 <translation id="7102760431686146931">Kuhinjska posoda, servisi in jedilni pribor</translation>
-<translation id="7105998430540165694">Ključ za dostop iz storitve iCloud Keychain</translation>
 <translation id="7106762743910369165">Vaš brskalnik upravlja organizacija</translation>
 <translation id="7107249414147762907">Ta datoteka PDF ni dostopna. Besedilo ni bilo pridobljeno</translation>
 <translation id="7107427078069498123">Prstni odtisi SHA-256</translation>
@@ -4529,7 +4521,6 @@ Dodatne podrobnosti:
 <translation id="9040341831873780534">Pogoje si oglejte tukaj</translation>
 <translation id="9042617223719777575">Velika zmogljivost</translation>
 <translation id="9042827002460091668">Preverite internetno povezavo in poskusite znova.</translation>
-<translation id="9044359186343685026">Uporabi Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Mikrofoni (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Za ta dejanja mora biti pravilnik <ph name="POLICY_NAME" /> nastavljen na <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

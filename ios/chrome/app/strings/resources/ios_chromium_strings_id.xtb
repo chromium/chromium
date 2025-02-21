@@ -74,7 +74,6 @@ Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini a
 <translation id="2517624234762908348">Sinkronkan data Chromium Anda</translation>
 <translation id="2592940277904433508">Terus gunakan Chromium</translation>
 <translation id="2607609479243848905">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun Anda<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium akan membantu melacak paket ini di Halaman Tab Baru.}other{Chromium akan membantu melacak paket tersebut di Halaman Tab Baru.}}</translation>
 <translation id="2650312721222849884">Untuk melihat tab Chromium Anda dari perangkat lain, aktifkan sinkronisasi</translation>
 <translation id="2684230048001240293">Setel Chromium sebagai browser default untuk menyinkronkan tab, sandi, dan info pembayaran di semua perangkat Anda</translation>
 <translation id="2730884209570016437">Chromium tidak dapat menggunakan kamera karena sedang digunakan aplikasi lain</translation>
@@ -89,7 +88,6 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chromiu
 <translation id="2977470724722393594">Chromium sudah diperbarui</translation>
 <translation id="3044857325852340337">Data Chromium berhasil dihapus</translation>
 <translation id="3054480780637153380">Buka setelan Chromium di iOS, lalu ketuk "Aplikasi Browser Default" dan pilih Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium dapat membantu Anda melacak paket ini di Halaman Tab Baru.}other{Chromium dapat membantu Anda melacak paket tersebut di Halaman Tab Baru.}}</translation>
 <translation id="3102849287235003384">Untuk logout dari Akun Google Anda di semua situs, <ph name="BEGIN_LINK" />logout dari Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Jadikan Chromium sebagai browser default?</translation>
 <translation id="3242612358525156339">Dari setelan perangkat, buka "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", lalu pilih "Chromium"</translation>

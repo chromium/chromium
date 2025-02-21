@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">ကတ်များကို သိမ်းဆည်းနေသည်...</translation>
 <translation id="1060136083665017312">ဂိမ်းစနစ်နှင့် ကွန်ဆိုးလ်</translation>
 <translation id="1060320201901229167">Kaku 5 စာအိတ်</translation>
-<translation id="10614374240317010">ဘယ်တော့မှ မသိမ်းဆည်းရန်</translation>
 <translation id="1062407476771304334">အစားထိုးရန်</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">ရှာဖွေရေး အင်ဂျင် အသေးစိတ်</translation>
@@ -263,7 +262,6 @@
 <translation id="1432187715652018471">စာမျက်နှာက ဝန်ဆောင်မှု စီမံသူအား ထည့်သွင်းလိုသည်။</translation>
 <translation id="1432581352905426595">ရှာဖွေမှုအင်ဂျင်များကို စီမံခန့်ခွဲရန်</translation>
 <translation id="1433225466058025572">သင့်ဖိုင်များကို ထပ်မံရွှေ့ကြည့်ပါ</translation>
-<translation id="1435940442311036198">အခြားစက်တစ်ခုတွင် လျှို့ဝှက်ကီးသုံးရန်</translation>
 <translation id="1436185428532214179">သင့်စက်ပေါ်ရှိ ဖိုင်နှင့် ဖိုင်တွဲများ တည်းဖြတ်ရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="1442386063175183758">ညာတံခါးရွက်ပုံစံ ခေါက်ရန်</translation>
 <translation id="1442987760062738829">ဖောက်ရန်</translation>
@@ -357,7 +355,6 @@
 <translation id="159274626729231974">ရုပ်ရှင်ပွဲတော်</translation>
 <translation id="1593359183944365958">၂၇၀ ဒီဂရီ</translation>
 <translation id="1594030484168838125">ရွေးချယ်ရန်</translation>
-<translation id="1598816256585174656">Windows Hello မှ လျှို့ဝှက်ကီး</translation>
 <translation id="1599199147673445968">ကတ် အသစ်လား? <ph name="BEGIN_LINK" />ကတ် အသေးစိတ်ထည့်ရန်<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">အလှအပ၊ ကြံ့ခိုင်ရေး</translation>
 <translation id="160851722280695521">Chrome တွင် Dino Run ဂိမ်းကစားရန်</translation>
@@ -470,7 +467,6 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">ဝဘ်အက်ပ်များ ထည့်သွင်းမလား။</translation>
 <translation id="1791415068765905273">နှိုင်းယှဉ်မှု ဇယားအားလုံးကို ပြပါ</translation>
-<translation id="1791429645902722292">Google ကစမတ်သော့ခတ်</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင်၏ Google Account တွင် သင့်အချက်အလက်၊ ပုဂ္ဂိုလ်ရေးနှင့် လုံခြုံရေးဆိုင်ရာများကို စီမံရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="1793473605302304726">ငွေခွဲ၍ပေးချေရန်</translation>
 <translation id="1793631236004319016">ပြီးခဲ့သော <ph name="NUM_HOURS_MINUTES_SECONDS" /> က သုံးထားသည်</translation>
@@ -2128,7 +2124,6 @@
 <translation id="4754461935447132332">မလုံခြုံသော ဝဘ်ဆိုက်များအတွက် ခွင့်မပြုပါ</translation>
 <translation id="4756388243121344051">မှတ်တမ်း</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">သင့် Chrome ပရိုဖိုင်မှ လျှို့ဝှက်ကီး</translation>
 <translation id="4757993714154412917">လှည့်ဖြားတတ်သော ဝဘ်ဆိုက်တစ်ခုတွင် သင့်စကားဝှက်ကို သင်က ယခုလေးတွင် ထည့်လိုက်သည်။ အကောင့်များ လုံခြုံစေရန်အတွက် သင်သိမ်းထားသည့် စကားဝှက်များကို စစ်ဆေးရန် Chromium ကအကြုံပြုပါသည်။</translation>
 <translation id="4758311279753947758">ဆက်သွယ်ရန်အချက်အလက် ထည့်ရန်</translation>
 <translation id="4761326898079498987">နောက်ထပ်အသေးစိတ်အတွက် သုံးသပ်ရန်</translation>
@@ -2701,7 +2696,6 @@
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> သို့ ပို့ရန်</translation>
 <translation id="5765072501007116331">ပစ္စည်းပို့ခြင်းနည်းလမ်းများနှင့် သတ်မှတ်ချက်များကို ကြည့်ရန် လိပ်စာရွေးပါ</translation>
 <translation id="57689295674415555">ပကတိအသွင်ကတ် နံပါတ် ဖြည့်မထားဘူးလား။</translation>
-<translation id="5772086939108830423">အခြားစက်တစ်ခုတွင် လျှို့ဝှက်ကီးသုံးရန်</translation>
 <translation id="5776313857861697733">ဦးစားပေး</translation>
 <translation id="577804500166306874">ရလဒ် ဖွင့်နေသည်</translation>
 <translation id="5781136890105823427">စမ်းသပ်မှု ဖွင့်ထားသည်</translation>
@@ -2832,7 +2826,6 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />၊ <ph name="TYPE_2" />၊ <ph name="TYPE_3" /> (စင့်ခ်လုပ်ထားသည်)</translation>
 <translation id="6028591542479806248">မိုဘိုင်းနှင့် အီးမေးလ် အကြောင်းကြားချက်များကို စီမံနိုင်သည်</translation>
 <translation id="6028833024483927901">ကမ္ဘာ့အစားအစာ</translation>
-<translation id="6030251660719692307">Google Password Manager မှ လျှို့ဝှက်ကီး</translation>
 <translation id="603068602130820122">ညာဘက်တွင် ချုပ်စက်ဖြင့် နှစ်ချက်ချုပ်ရန်</translation>
 <translation id="6032524144326295339">စာတိုက်ပုံး ၂</translation>
 <translation id="6032955021262906325">ဘယ်ဘက်တွင် တွဲချုပ်ရန်</translation>
@@ -3439,7 +3432,6 @@
 <translation id="7096937462164235847">ဤဝဘ်ဆိုက်၏ အထောက်အထားကို စိစစ်မထားပါ။</translation>
 <translation id="7102554173784142865">Chrome Dino ဂိမ်းကစားရန်</translation>
 <translation id="7102760431686146931">အိုးခွက်ပန်းကန်</translation>
-<translation id="7105998430540165694">iCloud Keychain မှ လျှို့ဝှက်ကီး</translation>
 <translation id="7106762743910369165">သင့်ဘရောင်ဇာကို သင့်အဖွဲ့အစည်းက စီမံခန့်ခွဲသည်</translation>
 <translation id="7107249414147762907">ဤ PDF ကို ဖွင့်၍မရပါ။ စာသားများ ထုတ်ယူမထားပါ</translation>
 <translation id="7107427078069498123">SHA-256 Fingerprints</translation>
@@ -4530,7 +4522,6 @@
 <translation id="9040341831873780534">စည်းမျဉ်းများကို ဤနေရာတွင် ကြည့်ရန်</translation>
 <translation id="9042617223719777575">ကြီးမားသည့်ပမာဏ</translation>
 <translation id="9042827002460091668">အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ</translation>
-<translation id="9044359186343685026">'တို့ထိ ID' အသုံးပြုရန်</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">မိုက်ခရိုဖုန်း (<ph name="MICS_COUNT" />) ခု</translation>
 <translation id="9048035366624198823"><ph name="POLICY_VALUE" /> အဖြစ် သတ်မှတ်ရန် ဤလုပ်ဆောင်ချက်များက <ph name="POLICY_NAME" /> မူဝါဒလိုအပ်သည်- <ph name="ACTION_LIST" />။</translation>

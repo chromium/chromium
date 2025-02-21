@@ -267,6 +267,7 @@ void DeviceLocalAccountPolicyBroker::OnStoreLoaded(CloudPolicyStore* store) {
 }
 
 void DeviceLocalAccountPolicyBroker::OnStoreError(CloudPolicyStore* store) {
+  LOG(ERROR) << "Failed to store the policy for " << account_id_;
   policy_update_callback_.Run();
 }
 

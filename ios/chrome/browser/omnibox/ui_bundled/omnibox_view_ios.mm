@@ -71,40 +71,6 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
 
 OmniboxViewIOS::~OmniboxViewIOS() = default;
 
-void OmniboxViewIOS::OnReceiveClipboardImageForOpenMatch(
-    const AutocompleteMatch& match,
-    WindowOpenDisposition disposition,
-    const GURL& alternate_nav_url,
-    const std::u16string& pasted_text,
-    size_t selected_line,
-    base::TimeTicks match_selection_timestamp,
-    std::optional<gfx::Image> optional_image) {
-  ClipboardProvider* clipboard_provider =
-      controller()->autocomplete_controller()->clipboard_provider();
-  clipboard_provider->NewClipboardImageMatch(
-      optional_image,
-      base::BindOnce(&OmniboxViewIOS::OnReceiveImageMatchForOpenMatch,
-                     weak_ptr_factory_.GetWeakPtr(), disposition,
-                     alternate_nav_url, pasted_text, selected_line,
-                     match_selection_timestamp));
-}
-
-void OmniboxViewIOS::OnReceiveImageMatchForOpenMatch(
-    WindowOpenDisposition disposition,
-    const GURL& alternate_nav_url,
-    const std::u16string& pasted_text,
-    size_t selected_line,
-    base::TimeTicks match_selection_timestamp,
-    std::optional<AutocompleteMatch> optional_match) {
-  if (!optional_match) {
-    return;
-  }
-  OmniboxPopupSelection selection(
-      controller()->autocomplete_controller()->InjectAdHocMatch(
-          optional_match.value()));
-  model()->OpenSelection(selection, match_selection_timestamp, disposition);
-}
-
 std::u16string OmniboxViewIOS::GetText() const {
   return base::SysNSStringToUTF16([field_ displayedText]);
 }
@@ -676,18 +642,6 @@ void OmniboxViewIOS::OnSelectedMatchForOpening(
     size_t index) {
   const auto match_selection_timestamp = base::TimeTicks();
 
-  // Fill in clipboard matches if they don't have a destination URL.
-  if (match.destination_url.is_empty()) {
-    if (match.type == AutocompleteMatchType::CLIPBOARD_IMAGE) {
-      ClipboardRecentContent* clipboard_recent_content =
-          ClipboardRecentContent::GetInstance();
-      clipboard_recent_content->GetRecentImageFromClipboard(base::BindOnce(
-          &OmniboxViewIOS::OnReceiveClipboardImageForOpenMatch,
-          weak_ptr_factory_.GetWeakPtr(), match, disposition, alternate_nav_url,
-          pasted_text, index, match_selection_timestamp));
-      return;
-    }
-  }
   model()->OpenSelection(OmniboxPopupSelection(index),
                          match_selection_timestamp, disposition);
 }

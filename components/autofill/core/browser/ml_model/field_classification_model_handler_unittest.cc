@@ -38,10 +38,12 @@ using optimization_guide::proto::
     AutofillFieldClassificationPostprocessingParameters;
 
 // The matcher expects two arguments of types std::unique_ptr<AutofillField>
-// and FieldType respectively.
+// and FieldType respectively. It accesses `local_type_predictions_` directly
+// because heuristic_type() returns the post-processed prediction, after
+// potentially falling back to regex.
 MATCHER(MlTypeEq, "") {
-  return std::get<0>(arg)->heuristic_type(
-             HeuristicSource::kAutofillMachineLearning) == std::get<1>(arg);
+  return std::get<0>(arg)->local_type_predictions()[static_cast<size_t>(
+             HeuristicSource::kAutofillMachineLearning)] == std::get<1>(arg);
 }
 
 class FieldClassificationModelHandlerTest : public testing::Test {
@@ -147,6 +149,16 @@ class FieldClassificationModelHandlerTest : public testing::Test {
   base::FilePath test_data_dir_;
   AutofillFieldClassificationModelMetadata model_metadata_;
 };
+
+// Test that supported types are registered correctly when the model is loaded.
+TEST_F(FieldClassificationModelHandlerTest,
+       SupportedTypesSetCorrectlyOnModelUpdate) {
+  ReadModelMetadata("autofill_model_metadata.binarypb");
+  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite");
+  FieldTypeSet supported_types = model_handler().get_supported_types();
+  ASSERT_TRUE(supported_types.contains(FieldType::ADDRESS_HOME_ZIP));
+  ASSERT_FALSE(supported_types.contains(FieldType::IBAN_VALUE));
+}
 
 TEST_F(FieldClassificationModelHandlerTest, GetModelPredictionsForForm) {
   ReadModelMetadata("autofill_model_metadata.binarypb");

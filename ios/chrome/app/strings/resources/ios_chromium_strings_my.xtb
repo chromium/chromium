@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">သင်၏ Chromium ဒေတာများကို စင့်ခ်လုပ်ပါ</translation>
 <translation id="2592940277904433508">Chromium ဆက်သုံးရန်</translation>
 <translation id="2607609479243848905">သင့်စကားဝှက်စာ မေ့သွားပါက (သို့) ဤဆက်တင်ကို ပြောင်းလိုပါက <ph name="BEGIN_LINK" />သင့်အကောင့်ရှိ Chromium ဒေတာကို ဖျက်ပါ<ph name="END_LINK" />။</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium က ဤပက်ကေ့ဂျ်ကို ‘တဘ်စာမျက်နှာသစ်’ တွင် ခြေရာခံပေးပါမည်။}other{Chromium က ဤပက်ကေ့ဂျ်များကို ‘တဘ်စာမျက်နှာသစ်’ တွင် ခြေရာခံပေးပါမည်။}}</translation>
 <translation id="2650312721222849884">Chromium အသုံးပြုသည့် နေရာမှန်သမျှမှ သင့်တဘ်များကိုကြည့်ရန် စင့်ခ်လုပ်ခြင်း ဖွင့်ပါ</translation>
 <translation id="2684230048001240293">သင့်စက်အားလုံးတွင် သင်၏တဘ်များ၊ စကားဝှက်များနှင့် ငွေပေးချေမှုအချက်အလက်များကို စင့်ခ်လုပ်ရန် Chromium ကို မူရင်းအဖြစ် သတ်မှတ်နိုင်သည်</translation>
 <translation id="2730884209570016437">အခြားအက်ပ်တစ်ခုက သင့်ကင်မရာကို အသုံးပြုနေသောကြောင့် Chromium သည် ၎င်းကို အသုံးပြု၍မရပါ</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">Chroumium ကို အပ်ဒိတ်လုပ်ထားပြီးပါပြီ</translation>
 <translation id="3044857325852340337">Chromium ဒေတာကို ဖျက်ထားသည်</translation>
 <translation id="3054480780637153380">iOS တွင် Chromium ဆက်တင်များ ဖွင့်ပြီးနောက် “မူရင်း ဘရောင်ဇာအက်ပ်” ကိုတို့ပြီး Chromium ကိုရွေးပါ။</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium က ဤပက်ကေ့ဂျ်ကို ‘တဘ်စာမျက်နှာသစ်’ တွင် ခြေရာခံပေးနိုင်သည်။}other{Chromium က ဤပက်ကေ့ဂျ်များကို ‘တဘ်စာမျက်နှာသစ်’ တွင် ခြေရာခံပေးနိုင်သည်။}}</translation>
 <translation id="3102849287235003384">ဝဘ်ဆိုက်အားလုံးမှ သင့် Google Account ထွက်ရန် <ph name="BEGIN_LINK" />Chromium မှ ထွက်ပါ<ph name="END_LINK" />။</translation>
 <translation id="3115956258722352278">Chromium ကို သင့်မူရင်းဘရောင်ဇာအဖြစ် ပြုလုပ်မလား။</translation>
 <translation id="3242612358525156339">သင့်စက်၏ ဆက်တင်များတွင် “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” ဖွင့်ပြီး “Chromium” ရွေးပါ</translation>
