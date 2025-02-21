@@ -28,18 +28,8 @@ message EnhancedCalendarLoggingData {
 }
 
 // The request to execute an Enhanced Calendar query.
-// Next ID: 5
+// Next ID: 6
 message EnhancedCalendarRequest {
-  // The start date of the event. Ideally in the format of HH:MM MM/DD/YYYY
-  // (E.g. 10:00 AM 01/01/2024) but because this is an LLM output, the format is
-  // not guaranteed.
-  string start_date = 1;
-
-  // The end date of the event. Ideally in the format of HH:MM MM/DD/YYYY (E.g.
-  // 10:00 AM 01/01/2024) but because this is an LLM output, the format is not
-  // guaranteed.
-  string end_date = 2;
-
   // The web page context used for generating the event. Context is expected to
   // contain calendar event dates or related information to populate the
   // calendar description.
@@ -48,10 +38,18 @@ message EnhancedCalendarRequest {
   // The prompt used for generating the event. If the prompt is not provided,
   // the default prompt from the feature config will be used.
   string prompt = 4;
+
+  // The selected text which represents a "moment" (date or time). This will
+  // likely be the start date, end date, start time or end time of the event.
+  // Used by the model to know which "moment" within the webpage this request
+  // refers to.
+  string selected_text = 5;
+
+  reserved 1, 2;
 }
 
 // The response from executing a Enhanced Calendar query.
-// Next ID: 8
+// Next ID: 10
 message EnhancedCalendarResponse {
   // The model's output title for the calendar event.
   string event_title = 1;
@@ -59,10 +57,12 @@ message EnhancedCalendarResponse {
   // The model's output summary for the calendar event.
   string event_summary = 2;
 
-  // The model's output start date for the calendar event.
+  // The model's output start date for the calendar event (time is separate).
+  // Format should be "DD/MM/YYYY". Empty if none could be found.
   string start_date = 3;
 
-  // The model's output end date for the calendar event.
+  // The model's output end date for the calendar event (time is separate).
+  // Format should be "DD/MM/YYYY". Empty if none could be found.
   string end_date = 4;
 
   // The model's output recurrence state for the calendar event.
@@ -73,6 +73,16 @@ message EnhancedCalendarResponse {
 
   // The model's output for if the event is an all day event.
   bool is_all_day = 7;
+
+  // The model's output start time for the calendar event (date is separate).
+  // Format should be "HH:MM" (in 24hr format). Empty if none could be found, or
+  // if the event is an all day event.
+  string start_time = 8;
+
+  // The model's output end time for the calendar event (date is separate).
+  // Format should be "HH:MM" (in 24hr format). Empty if none could be found, or
+  // if the event is an all day event.
+  string end_time = 9;
 }
 
 // The recurrence cadence for a repeated calendar event. If there's no
