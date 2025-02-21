@@ -21,6 +21,11 @@ using SendThumbnailCallback = base::OnceCallback<void(Thumbnail)>;
 
 class Thumbnail final {
  public:
+  // This is the equivalent to Thumbnail(...).image_size(), without the need to
+  // allocate memory for `image_data_`.
+  static gfx::Size CalculateImageSize(const gfx::SizeF& page_size,
+                                      float device_pixel_ratio);
+
   // `page_size` is in points.
   Thumbnail(const gfx::SizeF& page_size, float device_pixel_ratio);
   Thumbnail(Thumbnail&& other) noexcept;

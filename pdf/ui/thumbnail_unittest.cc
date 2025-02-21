@@ -24,8 +24,14 @@ struct BestFitSizeParams {
 void TestBestFitSize(const BestFitSizeParams& params) {
   Thumbnail thumbnail(params.page_size, params.device_pixel_ratio);
   EXPECT_EQ(thumbnail.image_size(), params.expected_thumbnail_size)
-      << "Failed for page of size of " << params.page_size.ToString()
+      << "Failed for ctor with page of size of " << params.page_size.ToString()
       << " and device to pixel ratio of " << params.device_pixel_ratio;
+  EXPECT_EQ(Thumbnail::CalculateImageSize(params.page_size,
+                                          params.device_pixel_ratio),
+            params.expected_thumbnail_size)
+      << "Failed for CalculateImageSize() with page of size of "
+      << params.page_size.ToString() << " and device to pixel ratio of "
+      << params.device_pixel_ratio;
 }
 
 TEST(ThumbnailTest, CalculateBestFitSizeNormal) {

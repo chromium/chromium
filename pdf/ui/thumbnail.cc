@@ -22,9 +22,6 @@ namespace chrome_pdf {
 
 namespace {
 
-constexpr float kMinDevicePixelRatio = 0.25;
-constexpr float kMaxDevicePixelRatio = 2;
-
 constexpr int kImageColorChannels = 4;
 
 // TODO(crbug.com/40511452): Reevaluate the thumbnail size cap when the PDF
@@ -48,6 +45,13 @@ constexpr int kMaxWidthLandscapePx = 140;
 constexpr int kPdfPageMinDimension = 3;
 constexpr int kPdfPageMaxDimension = 14400;
 constexpr int kPdfMaxAspectRatio = kPdfPageMaxDimension / kPdfPageMinDimension;
+
+float ClampDevicePixelRatio(float device_pixel_ratio) {
+  static constexpr float kMinDevicePixelRatio = 0.25;
+  static constexpr float kMaxDevicePixelRatio = 2;
+  return std::clamp(device_pixel_ratio, kMinDevicePixelRatio,
+                    kMaxDevicePixelRatio);
+}
 
 // Limit the proportions within PDF limits to handle pathological PDF pages.
 gfx::SizeF LimitAspectRatio(gfx::SizeF page_size) {
@@ -111,10 +115,15 @@ size_t CalculateImageDataSize(int stride, int height) {
 
 }  // namespace
 
+// static
+gfx::Size Thumbnail::CalculateImageSize(const gfx::SizeF& page_size,
+                                        float device_pixel_ratio) {
+  return CalculateBestFitSize(page_size,
+                              ClampDevicePixelRatio(device_pixel_ratio));
+}
+
 Thumbnail::Thumbnail(const gfx::SizeF& page_size, float device_pixel_ratio)
-    : device_pixel_ratio_(std::clamp(device_pixel_ratio,
-                                     kMinDevicePixelRatio,
-                                     kMaxDevicePixelRatio)),
+    : device_pixel_ratio_(ClampDevicePixelRatio(device_pixel_ratio)),
       image_size_(CalculateBestFitSize(page_size, device_pixel_ratio_)),
       stride_(CalculateStride(image_size_.width())),
       image_data_(CalculateImageDataSize(stride(), image_size().height())) {
