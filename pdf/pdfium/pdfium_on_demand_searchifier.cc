@@ -156,13 +156,9 @@ void PDFiumOnDemandSearchifier::SearchifyNextImage() {
   }
 
   // Report metric only once for each page.
-  bool not_reported =
-      searchify_added_text_metric_reported_.insert(current_page_->index())
-          .second;
-  if (not_reported) {
-    base::UmaHistogramBoolean("PDF.SearchifyAddedText",
-                              !current_page_ocr_results_.empty());
-  }
+  CHECK(!current_page_->IsPageSearchified());
+  base::UmaHistogramBoolean("PDF.SearchifyAddedText",
+                            !current_page_ocr_results_.empty());
 
   CommitResultsToPage();
 }
