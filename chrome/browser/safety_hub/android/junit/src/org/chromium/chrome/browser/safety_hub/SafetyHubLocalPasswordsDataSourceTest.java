@@ -136,9 +136,9 @@ public class SafetyHubLocalPasswordsDataSourceTest {
     }
 
     @Test
-    public void hasWeakAndReusedPasswords() {
+    public void noCompromisedPasswords_hasWeakAndReusedPasswords_enabled() {
         mockTotalPasswordsCount(5);
-        mockPasswordCounts(0, /* weak= */ 2, /* reused= */ 1);
+        mockPasswordCounts(/* compromised= */ 0, /* weak= */ 2, /* reused= */ 1);
 
         mDataSource.updateState();
 
@@ -146,13 +146,35 @@ public class SafetyHubLocalPasswordsDataSourceTest {
     }
 
     @Test
-    public void hasWeakPasswords() {
+    @Features.DisableFeatures(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)
+    public void noCompromisedPasswords_hasWeakAndReusedPasswords_disabled() {
         mockTotalPasswordsCount(5);
-        mockPasswordCounts(0, /* weak= */ 1, /* reused= */ 0);
+        mockPasswordCounts(/* compromised= */ 0, /* weak= */ 2, /* reused= */ 1);
+
+        mDataSource.updateState();
+
+        assertEquals(ModuleType.NO_COMPROMISED_PASSWORDS, mObserver.getModuleType());
+    }
+
+    @Test
+    public void noCompromisedPasswords_hasWeakPasswords_enabled() {
+        mockTotalPasswordsCount(5);
+        mockPasswordCounts(/* compromised= */ 0, /* weak= */ 1, /* reused= */ 0);
 
         mDataSource.updateState();
 
         assertEquals(ModuleType.HAS_WEAK_PASSWORDS, mObserver.getModuleType());
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)
+    public void noCompromisedPasswords_hasWeakPasswords_disabled() {
+        mockTotalPasswordsCount(5);
+        mockPasswordCounts(/* compromised= */ 0, /* weak= */ 1, /* reused= */ 0);
+
+        mDataSource.updateState();
+
+        assertEquals(ModuleType.NO_COMPROMISED_PASSWORDS, mObserver.getModuleType());
     }
 
     @Test

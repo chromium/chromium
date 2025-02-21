@@ -114,7 +114,6 @@ public class SafetyHubLocalPasswordsDataSource
         if (mCompromisedPasswordCount > 0) {
             return ModuleType.HAS_COMPROMISED_PASSWORDS;
         }
-        // TODO(crbug.com/388788969): Test when weak and reuse feature is disabled.
         if (ChromeFeatureList.sSafetyHubWeakAndReusedPasswords.isEnabled()) {
             // Reused passwords take priority over the weak passwords count.
             if (mReusedPasswordCount > 0) {
