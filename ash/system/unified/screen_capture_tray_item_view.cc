@@ -4,7 +4,7 @@
 
 #include "ash/system/unified/screen_capture_tray_item_view.h"
 
-#include "ash/multi_capture/multi_capture_service_client.h"
+#include "ash/multi_capture/multi_capture_service.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"

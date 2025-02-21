@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_MULTI_CAPTURE_MULTI_CAPTURE_SERVICE_CLIENT_H_
-#define ASH_MULTI_CAPTURE_MULTI_CAPTURE_SERVICE_CLIENT_H_
+#ifndef ASH_MULTI_CAPTURE_MULTI_CAPTURE_SERVICE_H_
+#define ASH_MULTI_CAPTURE_MULTI_CAPTURE_SERVICE_H_
 
 #include <string>
 
@@ -78,4 +78,4 @@ class ASH_EXPORT MultiCaptureServiceClient
 
 }  // namespace ash
 
-#endif  // ASH_MULTI_CAPTURE_MULTI_CAPTURE_SERVICE_CLIENT_H_
+#endif  // ASH_MULTI_CAPTURE_MULTI_CAPTURE_SERVICE_H_

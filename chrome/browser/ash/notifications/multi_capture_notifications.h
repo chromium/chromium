@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "ash/multi_capture/multi_capture_service_client.h"
+#include "ash/multi_capture/multi_capture_service.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"

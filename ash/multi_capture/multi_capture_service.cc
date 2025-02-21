@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/multi_capture/multi_capture_service_client.h"
+#include "ash/multi_capture/multi_capture_service.h"
 
 #include "base/logging.h"
 
@@ -17,8 +17,9 @@ MultiCaptureServiceClient::MultiCaptureServiceClient(
 }
 
 MultiCaptureServiceClient::~MultiCaptureServiceClient() {
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.MultiCaptureServiceClientDestroyed();
+  }
 }
 
 void MultiCaptureServiceClient::AddObserver(Observer* observer) {

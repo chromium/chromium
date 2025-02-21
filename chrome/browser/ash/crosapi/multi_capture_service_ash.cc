@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 
-#include "ash/multi_capture/multi_capture_service_client.h"
+#include "ash/multi_capture/multi_capture_service.h"
 #include "ash/shell.h"
 #include "base/check_is_test.h"
 #include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service.h"
