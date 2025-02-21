@@ -655,9 +655,6 @@ public class ToolbarManager
      * @param initializeWithIncognitoColors Whether the toolbar should be initialized with incognito
      * @param backPressManager The {@link BackPressManager} handling back press gesture.
      * @param overviewColorSupplier Notifies when the overview color changes.
-     * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
-     *     suggestion list) will position themselves relative to. If null, the content view will be
-     *     used.
      * @param desktopWindowStateManager The {@link DesktopWindowStateManager} instance.
      */
     public ToolbarManager(
@@ -703,7 +700,6 @@ public class ToolbarManager
             boolean initializeWithIncognitoColors,
             @Nullable BackPressManager backPressManager,
             @Nullable ObservableSupplier<Integer> overviewColorSupplier,
-            @Nullable View baseChromeLayout,
             ObservableSupplier<ReadAloudController> readAloudControllerSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
@@ -1003,7 +999,7 @@ public class ToolbarManager
                             scrollListener,
                             tabModelSelectorSupplier,
                             new LocationBarEmbedderUiOverrides(),
-                            baseChromeLayout,
+                            mActivity.findViewById(R.id.coordinator),
                             bottomWindowPaddingSupplier,
                             onLongClickListener,
                             mBrowserControlsSizer,

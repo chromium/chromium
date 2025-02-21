@@ -357,7 +357,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         /* omniboxSuggestionsDropdownScrollListener= */ null,
                         /* tabModelSelectorSupplier= */ null,
                         mLocationBarUiOverrides,
-                        null,
+                        findViewById(R.id.control_container),
                         /* bottomWindowPaddingSupplier */ () -> 0,
                         /* onLongClickListener= */ null,
                         /* browserControlsStateProvider= */ null,
