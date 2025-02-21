@@ -805,10 +805,10 @@ void AXObject::Detach() {
   }
 
   parent_ = nullptr;
+  SetCachedValuesNeedUpdate(false);
   ax_object_cache_ = nullptr;
   children_dirty_ = false;
   child_cached_values_need_update_ = false;
-  cached_values_need_update_ = false;
   has_dirty_descendants_ = false;
   id_ = 0;
 }
@@ -1332,6 +1332,21 @@ const AtomicString& AXObject::GetInternalsAttribute(
     return g_null_atom;
   }
   return internals->FastGetAttribute(attribute);
+}
+
+void AXObject::SetCachedValuesNeedUpdate(
+    bool cached_values_need_update,
+    std::optional<TreeUpdateReason> reason) {
+  cached_values_need_update_ = cached_values_need_update;
+#if AX_FAIL_FAST_BUILD()
+  CHECK(ax_object_cache_);
+  if (cached_values_need_update) {
+    CHECK(reason);
+    AXObjectCache().AddNodeRequiringCacheUpdate(AXObjectID(), reason.value());
+  } else {
+    AXObjectCache().RemoveNodeRequiringCacheUpdate(AXObjectID());
+  }
+#endif
 }
 
 namespace {
@@ -3633,7 +3648,7 @@ void AXObject::CheckCanAccessCachedValues() const {
   }
 }
 
-void AXObject::InvalidateCachedValues() {
+void AXObject::InvalidateCachedValues(TreeUpdateReason reason) {
   CHECK(AXObjectCache().lifecycle().StateAllowsAXObjectsToBeDirtied())
       << AXObjectCache();
 #if DCHECK_IS_ON()
@@ -3641,7 +3656,7 @@ void AXObject::InvalidateCachedValues() {
       << "Should not invalidate cached values while updating them.";
 #endif
 
-  cached_values_need_update_ = true;
+  SetCachedValuesNeedUpdate(true, reason);
 }
 
 void AXObject::UpdateCachedAttributeValuesIfNeeded(
@@ -3656,7 +3671,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     return;
   }
 
-  cached_values_need_update_ = false;
+  SetCachedValuesNeedUpdate(false);
 
   // TODO(almaher): This should never happen and should be updated back to a
   // CHECK once the root cause of the related crashes is better understood.
