@@ -26,6 +26,16 @@ extern const char kEditAccountListIdentifier[];
 // The data source for the account menu.
 @property(nonatomic, weak) id<AccountMenuDataSource> dataSource;
 
+- (instancetype)initWithHideEllipsisMenu:(BOOL)hideEllipsisMenu
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+
+- (instancetype)init NS_UNAVAILABLE;
+
 // Sets up the sheet presentation controller and its properties.
 // It must be called before the view is presented, in order to work on
 // popover adapted as sheet on compact width tablets.

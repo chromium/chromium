@@ -134,7 +134,20 @@ class AccountMenuViewControllerTest : public PlatformTest,
     AddPrimaryIdentity();
     AddSecondaryIdentity();
 
-    view_controller_ = [[AccountMenuViewController alloc] init];
+    view_controller_ =
+        [[AccountMenuViewController alloc] initWithHideEllipsisMenu:NO];
+    mutator_ = OCMStrictProtocolMock(@protocol(AccountMenuMutator));
+
+    view_controller_.dataSource = data_source_;
+    view_controller_.mutator = mutator_;
+    navigation_controller_ = [[UINavigationController alloc]
+        initWithRootViewController:view_controller_];
+    [view_controller_ viewDidLoad];
+  }
+
+  void ViewControllerWithEllipsisMenuHidden() {
+    view_controller_ =
+        [[AccountMenuViewController alloc] initWithHideEllipsisMenu:YES];
     mutator_ = OCMStrictProtocolMock(@protocol(AccountMenuMutator));
 
     view_controller_.dataSource = data_source_;
@@ -240,6 +253,16 @@ TEST_P(AccountMenuViewControllerTest, TestDefaultSetting) {
   EXPECT_EQ(table_header_view.name, kPrimaryIdentity.userFullName);
   EXPECT_EQ(table_header_view.email, kPrimaryIdentity.userEmail);
   EXPECT_EQ(table_header_view.managed, true);
+}
+
+// Test the account menu without ellipsis.
+TEST_P(AccountMenuViewControllerTest, TestAccountMenuWithoutEllipsis) {
+  ViewControllerWithEllipsisMenuHidden();
+
+  [view_controller_ updatePrimaryAccount];
+  EXPECT_EQ(2, TableView().numberOfSections);
+  // The secondary account, Add Account..., and Sign Out.
+  EXPECT_EQ(4, [TableView() numberOfRowsInSection:0]);
 }
 
 #pragma mark - Test tapping on the views.
