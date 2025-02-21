@@ -770,6 +770,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Called when a first contentful paint happened in the primary main frame.
   virtual void OnFirstContentfulPaintInPrimaryMainFrame() {}
 
+  // Returns the top-level native window for the associated WebContents.
+  virtual gfx::NativeWindow GetOwnerNativeWindow();
+
  protected:
   virtual ~RenderFrameHostDelegate() = default;
 };

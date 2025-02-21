@@ -225,4 +225,8 @@ WebContents* RenderFrameHostDelegate::GetOpenedPartitionedPopin() const {
   return nullptr;
 }
 
+gfx::NativeWindow RenderFrameHostDelegate::GetOwnerNativeWindow() {
+  return nullptr;
+}
+
 }  // namespace content
