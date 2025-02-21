@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -125,10 +126,12 @@ void SessionStoreImpl::LoadSessions(LoadSessionsCallback callback) {
                      db_storage_path_, base::Unretained(table_manager_.get()),
                      base::Unretained(session_data_.get())),
       base::BindOnce(&SessionStoreImpl::OnDatabaseLoaded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     base::ElapsedTimer()));
 }
 
 void SessionStoreImpl::OnDatabaseLoaded(LoadSessionsCallback callback,
+                                        base::ElapsedTimer timer,
                                         DBStatus db_status) {
   db_status_ = db_status;
   SessionsMap sessions;
@@ -140,6 +143,10 @@ void SessionStoreImpl::OnDatabaseLoaded(LoadSessionsCallback callback,
       session_data_->DeleteData(keys_to_delete);
     }
   }
+  base::UmaHistogramBoolean("Net.DeviceBoundSessions.SessionStoreLoadSuccess",
+                            db_status == DBStatus::kSuccess);
+  base::UmaHistogramTimes("Net.DeviceBoundSessions.SessionStoreLoadDuration",
+                          timer.Elapsed());
   std::move(callback).Run(std::move(sessions));
 }
 
