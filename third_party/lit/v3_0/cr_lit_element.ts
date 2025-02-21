@@ -137,9 +137,9 @@ export class CrLitElement extends LitElement {
             // 'undefined'.
             continue;
           }
-          this.fire(
+          this.dispatchEvent(new CustomEvent(
               `${toDashCase(key.toString())}-changed`,
-              {value: indexableThis[key]});
+              {composed: true, detail: {value: indexableThis[key]}}));
         }
       }
     }
