@@ -78,10 +78,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Vulkan.CreateGraphicsPipelines"/>
 </variants>
 
-<variants name="WebGPUFeatureName">
-  <variant name="ShaderF16"/>
-</variants>
-
 <variants name="WebGPUModule">
   <variant name="ComputePipeline"/>
   <variant name="RenderPipeline"/>
@@ -1524,18 +1520,6 @@ chromium-metrics-reviews@google.com.
     available. Software adapters are considered as None in this metric.
   </summary>
   <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
-</histogram>
-
-<histogram name="GPU.{GraphiteDawnOrWebGPU}.Support.{FeatureName}"
-    enum="Boolean" expires_after="2025-02-16">
-  <owner>enga@chromium.org</owner>
-  <owner>mdb.webgpu-dev-team@google.com</owner>
-  <summary>
-    Records whether {FeatureName} is supported if an Integrated or Discrete GPU
-    is available. This is recorded during GPU process startup.
-  </summary>
-  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
-  <token key="FeatureName" variants="WebGPUFeatureName"/>
 </histogram>
 
 <histogram name="GPU.{GraphiteDawnOrWebGPU}.{Cacheable}.CacheHit"
