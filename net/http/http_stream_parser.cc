@@ -21,7 +21,9 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_tokenizer.h"
@@ -96,6 +98,15 @@ bool ShouldTryReadingOnUploadError(int error_code) {
 // storage. The motivation is to avoid repeated allocations of
 // DrainableIOBuffer.
 //
+// Tracks both bytes written to the buffer (`bytes_written_`) and bytes
+// subsequently consumed and sent over the network (`bytes_consumed_`). The way
+// this class is used is that it's populated with some data, which updates
+// `bytes_written_`, and then that data is consumed until `bytes_consumed_`
+// matches `bytes_written_`, which while point both values are cleared and the
+// process repeats. The IOBuffer's accessors always reflects the offset of
+// `bytes_consumed_` relative to the underlying buffer, and extends to the
+// end of the full buffer.
+//
 // Example:
 //
 // scoped_refptr<SeekableIOBuffer> buf =
@@ -125,61 +136,50 @@ bool ShouldTryReadingOnUploadError(int error_code) {
 class HttpStreamParser::SeekableIOBuffer : public IOBufferWithSize {
  public:
   explicit SeekableIOBuffer(int capacity)
-      : IOBufferWithSize(capacity), real_data_(data_), capacity_(capacity) {}
+      : IOBufferWithSize(capacity), full_span_(span()) {}
 
   // DidConsume() changes the |data_| pointer so that |data_| always points
   // to the first unconsumed byte.
-  void DidConsume(int bytes) {
-    SetOffset(used_ + bytes);
-  }
+  void DidConsume(int bytes) { SetOffset(bytes_consumed_ + bytes); }
 
   // Returns the number of unconsumed bytes.
-  int BytesRemaining() const {
-    return size_ - used_;
-  }
+  int BytesRemaining() const { return bytes_written_ - bytes_consumed_; }
 
   // Seeks to an arbitrary point in the buffer. The notion of bytes consumed
   // and remaining are updated appropriately.
   void SetOffset(int bytes) {
-    DCHECK_GE(bytes, 0);
-    DCHECK_LE(bytes, size_);
-    used_ = bytes;
-    data_ = real_data_ + used_;
+    CHECK_LE(bytes, bytes_written_);
+    bytes_consumed_ = bytes;
+    SetSpan(full_span_.subspan(base::checked_cast<size_t>(bytes_consumed_)));
   }
 
   // Called after data is added to the buffer. Adds |bytes| added to
   // |size_|. data() is unaffected.
   void DidAppend(int bytes) {
-    DCHECK_GE(bytes, 0);
-    DCHECK_GE(size_ + bytes, 0);
-    DCHECK_LE(size_ + bytes, capacity_);
-    size_ += bytes;
+    CHECK_GE(bytes, 0);
+    CHECK_GE(bytes_written_ + bytes, 0);
+    CHECK_LE(bytes_written_ + bytes, capacity());
+    bytes_written_ += bytes;
   }
 
   // Changes the logical size to 0, and the offset to 0.
   void Clear() {
-    size_ = 0;
+    bytes_written_ = 0;
     SetOffset(0);
   }
 
-  // Returns the logical size of the buffer (i.e the number of bytes of data
-  // in the buffer).
-  int size() const { return size_; }
-
   // Returns the capacity of the buffer. The capacity is the size used when
   // the object is created.
-  int capacity() const { return capacity_; }
+  int capacity() const { return full_span_.size(); }
 
  private:
-  ~SeekableIOBuffer() override {
-    // data_ will be deleted in IOBuffer::~IOBuffer().
-    data_ = real_data_;
-  }
+  // No need to do anything here. The IOBufferWithSize parent class owned the
+  // underlying buffer, and takes care of freeing it.
+  ~SeekableIOBuffer() override = default;
 
-  raw_ptr<char, AllowPtrArithmetic> real_data_;
-  const int capacity_;
-  int size_ = 0;
-  int used_ = 0;
+  const base::raw_span<uint8_t> full_span_;
+  int bytes_written_ = 0;
+  int bytes_consumed_ = 0;
 };
 
 // 2 CRLFs + max of 8 hex chars.
