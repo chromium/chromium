@@ -20,7 +20,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
-#include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -37,7 +36,6 @@
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_annotations/user_annotations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -115,8 +113,7 @@ ChromeAutofillAiClient::GetModelExecutor() {
         std::make_unique<autofill_ai::AutofillAiModelExecutorImpl>(
             optimization_guide_keyed_service,
             optimization_guide_keyed_service
-                ->GetModelQualityLogsUploaderService(),
-            UserAnnotationsServiceFactory::GetForProfile(profile));
+                ->GetModelQualityLogsUploaderService());
   }
   return filling_engine_.get();
 }

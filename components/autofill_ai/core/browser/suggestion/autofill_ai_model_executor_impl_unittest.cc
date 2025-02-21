@@ -19,7 +19,6 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_annotations/test_user_annotations_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -64,11 +63,8 @@ class AutofillAiModelExecutorImplTest : public testing::Test {
   void SetUp() override {
     logs_uploader_ = std::make_unique<
         optimization_guide::TestModelQualityLogsUploaderService>(&local_state_);
-    user_annotations_service_ =
-        std::make_unique<user_annotations::TestUserAnnotationsService>();
     engine_ = std::make_unique<AutofillAiModelExecutorImpl>(
-        &model_executor_, logs_uploader_.get(),
-        user_annotations_service_.get());
+        &model_executor_, logs_uploader_.get());
   }
 
   void TearDown() override {
@@ -83,17 +79,11 @@ class AutofillAiModelExecutorImplTest : public testing::Test {
     return &model_executor_;
   }
 
-  user_annotations::TestUserAnnotationsService* user_annotations_service() {
-    return user_annotations_service_.get();
-  }
-
  private:
   base::test::TaskEnvironment task_environment_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
   testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
       model_executor_;
-  std::unique_ptr<user_annotations::TestUserAnnotationsService>
-      user_annotations_service_;
   std::unique_ptr<AutofillAiModelExecutorImpl> engine_;
   std::unique_ptr<optimization_guide::TestModelQualityLogsUploaderService>
       logs_uploader_;
@@ -101,12 +91,6 @@ class AutofillAiModelExecutorImplTest : public testing::Test {
 };
 
 TEST_F(AutofillAiModelExecutorImplTest, EndToEnd) {
-  // Seed user annotations service with entries.
-  optimization_guide::proto::UserAnnotationsEntry entry;
-  entry.set_key("label");
-  entry.set_value("value");
-  user_annotations_service()->ReplaceAllEntries({entry});
-
   // Set up mock.
   optimization_guide::proto::FormsPredictionsResponse response;
   AddFieldToResponse(response, "label", "normalized label", "value", 0);
@@ -130,7 +114,7 @@ TEST_F(AutofillAiModelExecutorImplTest, EndToEnd) {
           optimization_guide::OptimizationGuideModelExecutionResult(
 
               optimization_guide::AnyWrapProto(response),
-              /*model_execution_info=*/nullptr),
+              /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
 
   autofill::test::FormDescription form_description = {
@@ -181,35 +165,7 @@ TEST_F(AutofillAiModelExecutorImplTest, EndToEnd) {
                                         u"North Carolina")))));
 }
 
-TEST_F(AutofillAiModelExecutorImplTest, NoUserAnnotationEntries) {
-  // Seed user annotations service explicitly with no entries.
-  user_annotations_service()->ReplaceAllEntries({});
-
-  // Make sure model executor not called.
-  EXPECT_CALL(*model_executor(), ExecuteModel).Times(0);
-
-  autofill::FormFieldData form_field_data;
-  form_field_data.set_label(u"label");
-  autofill::FormData form_data;
-  form_data.set_fields({form_field_data});
-  optimization_guide::proto::AXTreeUpdate ax_tree;
-  base::test::TestFuture<PredictionsOrError, std::optional<std::string>>
-      test_future;
-  engine()->GetPredictions(form_data, {}, {}, ax_tree,
-                           test_future.GetCallback());
-
-  const PredictionsOrError predictions_or_error =
-      std::get<0>(test_future.Take());
-  EXPECT_FALSE(predictions_or_error.has_value());
-}
-
 TEST_F(AutofillAiModelExecutorImplTest, ModelExecutionError) {
-  // Seed user annotations service with entries.
-  optimization_guide::proto::UserAnnotationsEntry entry;
-  entry.set_key("label");
-  entry.set_value("value");
-  user_annotations_service()->ReplaceAllEntries({entry});
-
   // Set up mock.
   EXPECT_CALL(
       *model_executor(),
@@ -225,7 +181,7 @@ TEST_F(AutofillAiModelExecutorImplTest, ModelExecutionError) {
                           optimization_guide::
                               OptimizationGuideModelExecutionError::
                                   ModelExecutionError::kGenericFailure)),
-              /*model_execution_info=*/nullptr),
+              /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
 
   autofill::FormFieldData form_field_data;
@@ -244,12 +200,6 @@ TEST_F(AutofillAiModelExecutorImplTest, ModelExecutionError) {
 }
 
 TEST_F(AutofillAiModelExecutorImplTest, ModelExecutionWrongTypeReturned) {
-  // Seed user annotations service with entries.
-  optimization_guide::proto::UserAnnotationsEntry entry;
-  entry.set_key("label");
-  entry.set_value("value");
-  user_annotations_service()->ReplaceAllEntries({entry});
-
   // Set up mock.
   optimization_guide::proto::Any any;
   EXPECT_CALL(
@@ -260,7 +210,7 @@ TEST_F(AutofillAiModelExecutorImplTest, ModelExecutionWrongTypeReturned) {
                  OptimizationGuideModelExecutionResultCallback>()))
       .WillOnce(base::test::RunOnceCallback<3>(
           optimization_guide::OptimizationGuideModelExecutionResult(
-              any, /*model_execution_info=*/nullptr),
+              any, /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
 
   autofill::FormFieldData form_field_data;

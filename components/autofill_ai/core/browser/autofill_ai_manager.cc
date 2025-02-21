@@ -55,8 +55,6 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_annotations/user_annotations_features.h"
-#include "components/user_annotations/user_annotations_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill_ai {

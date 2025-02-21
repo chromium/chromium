@@ -12,7 +12,6 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/user_annotations/user_annotations_types.h"
 
 namespace optimization_guide::proto {
 class AXTreeUpdate;

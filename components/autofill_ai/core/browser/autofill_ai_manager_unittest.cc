@@ -589,26 +589,6 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
             u"01/02/2020");
 }
 
-// Tests that `import_form_callback` is run with an empty list of entries when
-// `user_annotations::ShouldAddFormSubmissionForURL()` returns `false`.
-TEST_F(AutofillAiManagerTest,
-       MaybeImportFormRunsCallbackWithFalseWhenImportIsNotAttempted) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kAutofillAi, {{"allowed_hosts_for_form_submissions", "otherhost.com"}});
-  auto ineligible_form_structure =
-      std::make_unique<autofill::FormStructure>(autofill::FormData());
-
-  base::MockOnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
-                              bool autofill_ai_shows_bubble)>
-      autofill_callback;
-  EXPECT_CALL(client(), ShowSaveAutofillAiBubble).Times(0);
-  EXPECT_CALL(autofill_callback,
-              Run(Pointer(ineligible_form_structure.get()), false));
-  manager().MaybeImportForm(std::move(ineligible_form_structure),
-                            autofill_callback.Get());
-}
-
 class AutofillAiEligibilityTests : public BaseAutofillAiManagerTest {
  public:
   AutofillAiEligibilityTests() {
