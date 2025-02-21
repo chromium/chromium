@@ -385,6 +385,7 @@ static_library("ui") {
     "//chrome/browser/signin",
     "//chrome/browser/signin:identity_manager_provider",
     "//chrome/browser/signin:impl",
+    "//chrome/browser/status_icons:status_icons",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/sync",
     "//chrome/browser/task_manager:impl",
@@ -1674,6 +1675,7 @@ static_library("ui") {
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/apps/app_service/app_icon:util",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/background:background",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/contextual_cueing",
 

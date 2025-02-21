@@ -148,7 +148,9 @@ static_library("test_support") {
   defines = []
   deps = [
     "//chrome/browser:global_features",
+    "//chrome/browser/background:background",
     "//chrome/browser/regional_capabilities",
+    "//chrome/browser/status_icons:status_icons",
     "//chrome/browser/ui:ui_features",
     "//chrome/test/data/webui:resources",
   ]
@@ -2047,6 +2049,7 @@ if (!is_android) {
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:browser_tests",
+      "//chrome/browser/background:background",
       "//chrome/browser/battery",
       "//chrome/browser/bitmap_fetcher:browser_tests",
       "//chrome/browser/breadcrumbs:browser_tests",
@@ -4356,10 +4359,6 @@ if (!is_android) {
         ]
       }
 
-      if (enable_background_mode) {
-        sources += [ "../browser/extensions/background_app_browsertest.cc" ]
-      }
-
       if (enable_pdf) {
         sources += [ "../browser/extensions/api/pdf_viewer_private/pdf_viewer_private_apitest.cc" ]
       }
@@ -6474,6 +6473,7 @@ test("unit_tests") {
     "//chrome/browser/search_engines",
     "//chrome/browser/segmentation_platform:test_utils",
     "//chrome/browser/share",
+    "//chrome/browser/status_icons:status_icons",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/supervised_user:test_support",
     "//chrome/browser/sync",
@@ -8047,6 +8047,7 @@ test("unit_tests") {
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/apps/link_capturing:unit_tests",
+      "//chrome/browser/background:background",
       "//chrome/browser/companion/text_finder:unit_tests",
       "//chrome/browser/content_settings:unit_tests",
       "//chrome/browser/enterprise/connectors/analysis:features",
@@ -10801,6 +10802,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/search_engines",
       "//chrome/browser/signin",
       "//chrome/browser/signin/e2e_tests:test_support",
+      "//chrome/browser/status_icons:status_icons",
       "//chrome/browser/sync",
       "//chrome/browser/themes",
       "//chrome/browser/ui",

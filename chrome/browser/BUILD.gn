@@ -124,7 +124,10 @@ source_set("browser_process") {
     "browser_process.cc",
     "browser_process.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chrome/browser/status_icons:status_icons",
+  ]
   public_deps = [
     "//build:chromeos_buildflags",
     "//chrome/common:buildflags",
@@ -1542,13 +1545,6 @@ static_library("browser") {
     "ssl/typed_navigation_upgrade_throttle.h",
     "startup_data.cc",
     "startup_data.h",
-    "status_icons/status_icon.cc",
-    "status_icons/status_icon.h",
-    "status_icons/status_icon_menu_model.cc",
-    "status_icons/status_icon_menu_model.h",
-    "status_icons/status_icon_observer.h",
-    "status_icons/status_tray.cc",
-    "status_icons/status_tray.h",
     "storage/durable_storage_permission_context.cc",
     "storage/durable_storage_permission_context.h",
     "subresource_filter/chrome_content_subresource_filter_web_contents_helper_factory.cc",
@@ -1874,6 +1870,8 @@ static_library("browser") {
     "//chrome/browser/ai",
     "//chrome/browser/ai:impl",
     "//chrome/browser/autofill",
+    "//chrome/browser/background:background",
+    "//chrome/browser/background:impl",
     "//chrome/browser/battery",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
@@ -1959,6 +1957,8 @@ static_library("browser") {
     "//chrome/browser/signin",
     "//chrome/browser/signin:identity_manager_provider",
     "//chrome/browser/signin:impl",
+    "//chrome/browser/status_icons",
+    "//chrome/browser/status_icons:impl",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/sync",
     "//chrome/browser/tab_group_sync:utils",
@@ -3541,9 +3541,6 @@ static_library("browser") {
       "autocomplete/tab_matcher_desktop.h",
       "autofill_ai/chrome_autofill_ai_client.cc",
       "autofill_ai/chrome_autofill_ai_client.h",
-      "background/background_contents.cc",
-      "background/background_contents.h",
-      "background/background_contents_service_observer.h",
       "badging/badge_manager.cc",
       "badging/badge_manager.h",
       "badging/badge_manager_delegate.h",
@@ -7028,9 +7025,7 @@ static_library("browser") {
   if (enable_background_contents) {
     sources += [
       "background/background_contents_service.cc",
-      "background/background_contents_service.h",
       "background/background_contents_service_factory.cc",
-      "background/background_contents_service_factory.h",
     ]
   }
 

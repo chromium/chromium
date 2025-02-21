@@ -130,6 +130,7 @@ source_set("webrtc") {
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/status_icons:status_icons",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",
     "//chrome/common:channel_info",
