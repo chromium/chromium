@@ -235,20 +235,19 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
     return;
   }
 
+  auto headers = url_loader_->ResponseInfo()->headers;
   // If there is an error or if no content upload is required,
   // CanUploadContent() returns false.
-  response_code = url_loader_->ResponseInfo()->headers->response_code();
-  if (!CanUploadContent(url_loader_->ResponseInfo()->headers)) {
+  response_code = headers->response_code();
+  if (!CanUploadContent(headers)) {
     Finish(url_loader_->NetError(), response_code, std::move(response_body));
     return;
   }
 
   if (base::FeatureList::IsEnabled(
           enterprise_connectors::kEnableAsyncUploadAfterVerdict)) {
-    if (url_loader_->ResponseInfo()->headers->HasHeader(
-            kUploadIntermediateHeader)) {
-      response_body = url_loader_->ResponseInfo()->headers->GetNormalizedHeader(
-          kUploadIntermediateHeader);
+    if (headers->HasHeader(kUploadIntermediateHeader)) {
+      response_body = headers->GetNormalizedHeader(kUploadIntermediateHeader);
       std::string output;
       bool decode_result = base::Base64Decode(response_body.value(), &output);
 
@@ -270,9 +269,7 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
   }
 
   // At this point, we are guaranteed to have the upload url header
-  SendContentSoon(url_loader_->ResponseInfo()
-                      ->headers->GetNormalizedHeader(kUploadUrlHeader)
-                      .value());
+  SendContentSoon(headers->GetNormalizedHeader(kUploadUrlHeader).value());
 }
 
 void ResumableUploadRequest::SendContentSoon(const std::string& upload_url) {
