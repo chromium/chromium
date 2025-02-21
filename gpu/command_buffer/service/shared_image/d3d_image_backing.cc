@@ -720,6 +720,8 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
       // devices, open Dawn's access indefinitely so that we can defer submits.
       // TODO(40239870): We don't support deferred submits if multithread
       // support is enabled yet.
+      // TODO(354942507): Investigate whether we can enable persistent graphite
+      // access for dcomp texture.
       if (is_graphite_device && !is_thread_safe() &&
           !use_cross_device_synchronization() &&
           context_state->IsGraphiteDawnD3D11()) {
