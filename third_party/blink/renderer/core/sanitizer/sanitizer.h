@@ -90,8 +90,12 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   void SanitizeUnsafe(Node* node) const;
 
  private:
-  // Helper for Sanitize: Sanitize a single element in the allow-element case.
+  // Helper methods for SanitizeSafe/Unsafe:
+  void Sanitize(Node* node, bool safe) const;
   void SanitizeElement(Element* element) const;
+  void SanitizeJavascriptNavigationAttributes(Element* element,
+                                              bool safe) const;
+  void SanitizeTemplate(Node* node, bool safe) const;
 
   // Helper for copy constructor and Create: Convert from IDL representation
   // to internal.
