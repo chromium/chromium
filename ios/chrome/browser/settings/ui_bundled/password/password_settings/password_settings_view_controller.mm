@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
@@ -182,7 +183,7 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 // The item related to the description of bulk moving passwords to the user's
 // account.
 @property(nonatomic, readonly)
-    TableViewImageItem* bulkMovePasswordsToAccountDescriptionItem;
+    TableViewDetailTextItem* bulkMovePasswordsToAccountDescriptionItem;
 
 // The item related to the button allowing users to bulk move passwords to their
 // account.
@@ -498,22 +499,18 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 }
 
 // Creates and returns the move passwords to account description item.
-- (TableViewImageItem*)bulkMovePasswordsToAccountDescriptionItem {
+- (TableViewDetailTextItem*)bulkMovePasswordsToAccountDescriptionItem {
   if (_bulkMovePasswordsToAccountDescriptionItem) {
     return _bulkMovePasswordsToAccountDescriptionItem;
   }
 
-  _bulkMovePasswordsToAccountDescriptionItem = [[TableViewImageItem alloc]
+  _bulkMovePasswordsToAccountDescriptionItem = [[TableViewDetailTextItem alloc]
       initWithType:ItemTypeBulkMovePasswordsToAccountDescription];
-  _bulkMovePasswordsToAccountDescriptionItem.title = l10n_util::GetNSString(
+  _bulkMovePasswordsToAccountDescriptionItem.text = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SECTION_TITLE);
-  // TODO(crbug.com/40283775): Without setting the table view image item to
-  // enabled, the accessibility voiceover reads out dimmed.
-  _bulkMovePasswordsToAccountDescriptionItem.enabled = YES;
   _bulkMovePasswordsToAccountDescriptionItem.accessibilityIdentifier =
       kPasswordSettingsBulkMovePasswordsToAccountDescriptionTableViewId;
-  _bulkMovePasswordsToAccountDescriptionItem.accessibilityTraits =
-      UIAccessibilityTraitHeader;
+  _bulkMovePasswordsToAccountDescriptionItem.allowMultilineDetailText = YES;
 
   std::u16string pattern = l10n_util::GetStringUTF16(
       IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SECTION_DESCRIPTION);
