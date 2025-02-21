@@ -48,10 +48,9 @@ class FullscreenWebStateListObserverTest : public PlatformTest {
  public:
   FullscreenWebStateListObserverTest()
       : PlatformTest(),
-        controller_(&model_),
-        mediator_(&controller_, &model_),
+        mediator_(&controller_, controller_.getModel()),
         web_state_list_(&web_state_list_delegate_),
-        observer_(&controller_, &model_, &mediator_) {
+        observer_(&controller_, controller_.getModel(), &mediator_) {
     observer_.SetWebStateList(&web_state_list_);
   }
 
@@ -60,11 +59,10 @@ class FullscreenWebStateListObserverTest : public PlatformTest {
     observer_.Disconnect();
   }
 
-  FullscreenModel& model() { return model_; }
+  FullscreenModel* model() { return controller_.getModel(); }
   WebStateList& web_state_list() { return web_state_list_; }
 
  private:
-  FullscreenModel model_;
   TestFullscreenController controller_;
   TestFullscreenMediator mediator_;
   FakeWebStateListDelegate web_state_list_delegate_;
@@ -86,15 +84,15 @@ TEST_F(FullscreenWebStateListObserverTest, ObserveActiveWebState) {
       std::move(inserted_web_state),
       WebStateList::InsertionParams::Automatic().Activate());
   // Simulate a scroll to 0.5 progress.
-  SetUpFullscreenModelForTesting(&model(), 100.0);
-  SimulateFullscreenUserScrollForProgress(&model(), 0.5);
-  EXPECT_EQ(model().progress(), 0.5);
+  SetUpFullscreenModelForTesting(model(), 100.0);
+  SimulateFullscreenUserScrollForProgress(model(), 0.5);
+  EXPECT_EQ(model()->progress(), 0.5);
   // Simulate a navigation.  The model should be reset by the observers.
   std::unique_ptr<web::NavigationItem> committed_item =
       web::NavigationItem::Create();
   navigation_manager->SetLastCommittedItem(committed_item.get());
   web::FakeNavigationContext context;
   web_state->OnNavigationFinished(&context);
-  EXPECT_FALSE(model().has_base_offset());
-  EXPECT_EQ(model().progress(), 1.0);
+  EXPECT_FALSE(model()->has_base_offset());
+  EXPECT_EQ(model()->progress(), 1.0);
 }

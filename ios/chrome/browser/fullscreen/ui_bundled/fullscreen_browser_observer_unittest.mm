@@ -21,7 +21,7 @@ class FullscreenBrowserObserverTest : public PlatformTest {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     model_ = std::make_unique<FullscreenModel>();
-    controller_ = std::make_unique<TestFullscreenController>(model_.get());
+    controller_ = std::make_unique<TestFullscreenController>();
     mediator_ =
         std::make_unique<FullscreenMediator>(controller_.get(), model_.get());
     web_state_list_observer_ = std::make_unique<FullscreenWebStateListObserver>(

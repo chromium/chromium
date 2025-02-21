@@ -39,7 +39,7 @@ class FullscreenWebStateObserver : public web::WebStateObserver {
   // The FullscreenController passed on construction.
   raw_ptr<FullscreenController> controller_;
   // The model passed on construction.
-  raw_ptr<FullscreenModel> model_;
+  raw_ptr<FullscreenModel> model_ = nullptr;
   // The mediator passed on construction.
   raw_ptr<FullscreenMediator> mediator_ = nullptr;
   // Observer for `web_state_`'s scroll view proxy.

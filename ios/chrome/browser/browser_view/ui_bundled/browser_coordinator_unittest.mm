@@ -244,9 +244,8 @@ TEST_F(BrowserCoordinatorTest, ShowDownloadsFolder) {
 // Tests that `-showShareSheet` is leaving fullscreen and starting the share
 // coordinator.
 TEST_F(BrowserCoordinatorTest, ShowShareSheet) {
-  FullscreenModel model;
   std::unique_ptr<TestFullscreenController> controller =
-      std::make_unique<TestFullscreenController>(&model);
+      std::make_unique<TestFullscreenController>();
   TestFullscreenController* controller_ptr = controller.get();
 
   browser_->SetUserData(TestFullscreenController::UserDataKeyForTesting(),
@@ -285,9 +284,8 @@ TEST_F(BrowserCoordinatorTest, ShowShareSheet) {
 // SharingCoordinator with SharingParams where scenario is ShareChrome, leaving
 // fullscreen and starting the share coordinator.
 TEST_F(BrowserCoordinatorTest, ShowShareSheetForChromeApp) {
-  FullscreenModel model;
   std::unique_ptr<TestFullscreenController> controller =
-      std::make_unique<TestFullscreenController>(&model);
+      std::make_unique<TestFullscreenController>();
   TestFullscreenController* controller_ptr = controller.get();
 
   browser_->SetUserData(TestFullscreenController::UserDataKeyForTesting(),

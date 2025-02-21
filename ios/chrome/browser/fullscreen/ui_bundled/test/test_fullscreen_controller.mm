@@ -9,9 +9,9 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model_observer.h"
 
-TestFullscreenController::TestFullscreenController(FullscreenModel* model)
+TestFullscreenController::TestFullscreenController()
     : FullscreenController(),
-      model_(model),
+      model_(std::make_unique<FullscreenModel>()),
       broadcaster_([[ChromeBroadcaster alloc] init]) {}
 
 TestFullscreenController::~TestFullscreenController() {
@@ -149,4 +149,8 @@ void TestFullscreenController::ResizeHorizontalViewport() {
 // static
 const void* TestFullscreenController::UserDataKeyForTesting() {
   return FullscreenController::UserDataKey();
+}
+
+raw_ptr<FullscreenModel> TestFullscreenController::getModel() {
+  return model_.get();
 }

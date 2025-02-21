@@ -18,7 +18,7 @@ class FullscreenModel;
 // - Supports FullscreenControllerObserver::FullscreenControllerWillShutDown().
 class TestFullscreenController : public FullscreenController {
  public:
-  explicit TestFullscreenController(FullscreenModel* model);
+  TestFullscreenController();
   ~TestFullscreenController() override;
 
   // FullscreenController:
@@ -57,9 +57,11 @@ class TestFullscreenController : public FullscreenController {
   // browser.
   static const void* UserDataKeyForTesting();
 
+  raw_ptr<FullscreenModel> getModel();
+
  private:
   // The model.
-  raw_ptr<FullscreenModel> model_ = nullptr;
+  std::unique_ptr<FullscreenModel> model_ = std::make_unique<FullscreenModel>();
   // The broadcaster.
   ChromeBroadcaster* broadcaster_ = nil;
   // The observers.
