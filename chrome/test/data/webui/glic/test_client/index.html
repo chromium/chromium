@@ -68,6 +68,9 @@ found in the LICENSE file.
     right: 0;
     bottom: 0;
   }
+  #fileDrop {
+    border: double black;
+  }
 </style>
 <div id="pageHeader">
   <h1>Test Web Client</h1>
@@ -203,6 +206,14 @@ found in the LICENSE file.
   <div>
     Navigate webview to <input id="navigateWebviewUrl" type="text"
       value="https://www.google.com" />
+  </div>
+</div>
+<div class="section">
+  <h1>File</h1>
+  <div id="fileDrop">
+    <button id="showDirectoryPicker">show directory picker</button>
+    <p>Drag files here</p>
+    <div id="fileDropList"></div>
   </div>
 </div>
 <div class="section">

@@ -803,6 +803,26 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       return;
     }
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+    // A permission request from a webview is normally delegated to its embedder
+    // without showing a prompt. However, filesystem permissions are known to be
+    // broken:
+    // TODO(crbug.com/352520731): Remove this once the bug is fixed.
+    // Until that's fixed, we auto-grant for WebUI embedders to enable use cases
+    // that need this capability: crbug.com/391586357.
+    if (auto* guest = extensions::WebViewGuest::FromRenderFrameHost(rfh);
+        guest != nullptr && guest->IsOwnedByWebUI()) {
+      PermissionRequestOutcome outcome =
+          PermissionRequestOutcome::kGrantedByAncestorPersistentPermission;
+      RecordPermissionRequestOutcome(outcome);
+      // May destroy `this`.
+      SetStatus(PermissionStatus::GRANTED,
+                PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
+      std::move(callback).Run(outcome);
+      return;
+    }
+#endif
+
     auto* request_manager =
         FileSystemAccessPermissionRequestManager::FromWebContents(web_contents);
     if (!request_manager) {
