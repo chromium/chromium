@@ -49,6 +49,10 @@
 #include "extensions/test/test_extension_dir.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace {
 
 constexpr char kHostname[] = "direct-sockets.com";
@@ -729,14 +733,30 @@ class IsolatedWebAppServiceWorkerApiTest
       blink::features::kDirectSocketsInServiceWorkers};
 };
 
+template <typename T>
+class ChromeDirectSocketsTcpIsolatedWebAppTestBase
+    : public ChromeDirectSocketsTcpTest<T> {
+  void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_MAC)
+    if (base::mac::MacOSMajorVersion() == 13) {
+      GTEST_SKIP()
+          << "Skipping flaky test on MacOS 13, see crbug.com/397993345";
+    }
+#endif  // BUILDFLAG(IS_MAC)
+    ChromeDirectSocketsTcpTest<T>::SetUpOnMainThread();
+  }
+};
+
 using ChromeDirectSocketsTcpIsolatedWebAppTest =
-    ChromeDirectSocketsTcpTest<IsolatedWebAppApiTest>;
+    ChromeDirectSocketsTcpIsolatedWebAppTestBase<IsolatedWebAppApiTest>;
 
 using ChromeDirectSocketsTcpIsolatedWebAppSharedWorkerTest =
-    ChromeDirectSocketsTcpTest<IsolatedWebAppSharedWorkerApiTest>;
+    ChromeDirectSocketsTcpIsolatedWebAppTestBase<
+        IsolatedWebAppSharedWorkerApiTest>;
 
 using ChromeDirectSocketsTcpIsolatedWebAppServiceWorkerTest =
-    ChromeDirectSocketsTcpTest<IsolatedWebAppServiceWorkerApiTest>;
+    ChromeDirectSocketsTcpIsolatedWebAppTestBase<
+        IsolatedWebAppServiceWorkerApiTest>;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest, TcpReadWrite) {
   content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
@@ -811,14 +831,30 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest,
               ErrorIs(PrivateNetworkAccessBlocked()));
 }
 
+template <typename T>
+class ChromeDirectSocketsUdpIsolatedWebAppTestBase
+    : public ChromeDirectSocketsUdpTest<T> {
+  void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_MAC)
+    if (base::mac::MacOSMajorVersion() == 13) {
+      GTEST_SKIP()
+          << "Skipping flaky test on MacOS 13, see crbug.com/397993345";
+    }
+#endif  // BUILDFLAG(IS_MAC)
+    ChromeDirectSocketsUdpTest<T>::SetUpOnMainThread();
+  }
+};
+
 using ChromeDirectSocketsUdpIsolatedWebAppTest =
-    ChromeDirectSocketsUdpTest<IsolatedWebAppApiTest>;
+    ChromeDirectSocketsUdpIsolatedWebAppTestBase<IsolatedWebAppApiTest>;
 
 using ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest =
-    ChromeDirectSocketsUdpTest<IsolatedWebAppSharedWorkerApiTest>;
+    ChromeDirectSocketsUdpIsolatedWebAppTestBase<
+        IsolatedWebAppSharedWorkerApiTest>;
 
 using ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest =
-    ChromeDirectSocketsUdpTest<IsolatedWebAppServiceWorkerApiTest>;
+    ChromeDirectSocketsUdpIsolatedWebAppTestBase<
+        IsolatedWebAppServiceWorkerApiTest>;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest, UdpReadWrite) {
   content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
