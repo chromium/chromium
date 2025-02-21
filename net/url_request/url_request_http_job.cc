@@ -943,6 +943,10 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
     // If the request needs to be deferred while waiting for refresh, do not
     // start the transaction at this time. This may also kick off a refresh.
     if (id) {
+      device_bound_session_deferral_count_++;
+      if (device_bound_session_deferral_count_ == 1) {
+        device_bound_session_first_deferral_ = base::TimeTicks::Now();
+      }
       service->DeferRequestForRefresh(
           request_, *id,
           // restart with new cookies callback
@@ -952,6 +956,14 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
           base::BindOnce(&URLRequestHttpJob::StartTransaction,
                          weak_factory_.GetWeakPtr()));
       return;
+    }
+
+    base::UmaHistogramCounts100("Net.DeviceBoundSessions.RequestDeferralCount",
+                                device_bound_session_deferral_count_);
+    if (device_bound_session_deferral_count_ > 0) {
+      base::UmaHistogramTimes(
+          "Net.DeviceBoundSessions.TotalRequestDeferredDuration",
+          base::TimeTicks::Now() - device_bound_session_first_deferral_);
     }
   }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)

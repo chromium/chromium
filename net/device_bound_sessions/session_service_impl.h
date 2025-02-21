@@ -15,6 +15,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/registration_fetcher.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
@@ -47,6 +48,7 @@ struct DeferredURLRequest {
   ~DeferredURLRequest();
 
   raw_ptr<const URLRequest> request = nullptr;
+  base::ElapsedTimer timer;
   SessionService::RefreshCompleteCallback restart_callback;
   SessionService::RefreshCompleteCallback continue_callback;
 };
