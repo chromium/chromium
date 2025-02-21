@@ -404,7 +404,17 @@ void DemoLoginController::SendSetupDemoAccountRequest() {
   std::optional<base::Value::Dict> device_identifier =
       GetDeviceIdentifier(sign_in_scoped_device_id);
   if (!device_identifier) {
-    OnSetupDemoAccountError(ResultCode::kCannotObtainDMTokenAndClientID);
+    OnSetupDemoAccountError(ResultCode::kCloudPolicyNotConnected);
+    return;
+  }
+  // DM Token is empty.
+  if (device_identifier->FindString(kDMToken)->empty()) {
+    OnSetupDemoAccountError(ResultCode::kEmptyDMToken);
+    return;
+  }
+  // Client ID is empty.
+  if (device_identifier->FindString(kClientID)->empty()) {
+    OnSetupDemoAccountError(ResultCode::kEmptyClientID);
     return;
   }
 
@@ -539,8 +549,22 @@ void DemoLoginController::MaybeCleanupPreviousDemoAccount() {
   std::optional<base::Value::Dict> device_identifier =
       GetDeviceIdentifier(login_scope_device_id);
   if (!device_identifier) {
-    OnCleanUpDemoAccountError(ResultCode::kCannotObtainDMTokenAndClientID);
-    // Try request for new demo account regardless of the cleanup result.
+    OnCleanUpDemoAccountError(ResultCode::kCloudPolicyNotConnected);
+    // Try requesting for a new demo account regardless of the cleanup result.
+    SendSetupDemoAccountRequest();
+    return;
+  }
+  // DM Token is empty.
+  if (device_identifier->FindString(kDMToken)->empty()) {
+    OnCleanUpDemoAccountError(ResultCode::kEmptyDMToken);
+    // Try requesting for a new demo account regardless of the cleanup result.
+    SendSetupDemoAccountRequest();
+    return;
+  }
+  // Client ID is empty.
+  if (device_identifier->FindString(kClientID)->empty()) {
+    OnCleanUpDemoAccountError(ResultCode::kEmptyClientID);
+    // Try requesting for a new demo account regardless of the cleanup result.
     SendSetupDemoAccountRequest();
     return;
   }

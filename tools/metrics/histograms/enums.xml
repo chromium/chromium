@@ -3838,7 +3838,11 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="3" label="Empty Http response."/>
   <int value="4" label="Network error."/>
   <int value="5" label="Server side error or out of quota."/>
-  <int value="6" label="Unbale to obtain the DM Token and the Client ID."/>
+  <int value="6"
+      label="Unbale to obtain the DM Token and the Client ID due to the cloud
+             policy not connected."/>
+  <int value="7" label="Empty DM Token."/>
+  <int value="8" label="Empty Client ID."/>
 </enum>
 
 <enum name="DeprecatedArcKioskUserStatus">

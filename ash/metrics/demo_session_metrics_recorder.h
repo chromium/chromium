@@ -109,9 +109,12 @@ class ASH_EXPORT DemoSessionMetricsRecorder
     kEmptyReponse = 3,          // Empty Http response.
     kNetworkError = 4,          // Network error.
     kRequestFailed = 5,         // Server side error or out of quota.
-    kCannotObtainDMTokenAndClientID =
-        6,  // Unable to obtain the DM Token and the Client ID.
-    kMaxValue = kCannotObtainDMTokenAndClientID,
+    kCloudPolicyNotConnected =
+        6,  // Unable to obtain the DM Token and the Client ID due to the cloud
+            // policy not connected.
+    kEmptyDMToken = 7,   // The DM Token on the device is empty.
+    kEmptyClientID = 8,  // The Client ID on the device is empty.
+    kMaxValue = kEmptyClientID,
   };
 
   static constexpr char kUserClicksAndPressesMetric[] =
