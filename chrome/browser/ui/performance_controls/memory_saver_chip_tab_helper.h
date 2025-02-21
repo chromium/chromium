@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_TAB_HELPER_H_
 
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
@@ -34,7 +35,9 @@ enum class ChipState {
 // the memory saver chip.
 class MemorySaverChipTabHelper
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<MemorySaverChipTabHelper> {
+      public content::WebContentsUserData<MemorySaverChipTabHelper>,
+      public performance_manager::user_tuning::UserPerformanceTuningManager::
+          Observer {
  public:
   MemorySaverChipTabHelper(const MemorySaverChipTabHelper&) = delete;
   MemorySaverChipTabHelper& operator=(const MemorySaverChipTabHelper&) = delete;
@@ -49,6 +52,10 @@ class MemorySaverChipTabHelper
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
+
+  // performance_manager::user_tuning::UserPerformanceTuningManager::Observer:
+  // Checks whether memory saver mode is currently enabled.
+  void OnMemorySaverModeChanged() override;
 
   // Returns whether the tab associated with this helper has been navigated
   // away from and to another tab.
@@ -88,6 +95,14 @@ class MemorySaverChipTabHelper
   // gets reset when a tab gets hidden so the chip can be redrawn.
   bool was_rendered_ = false;
   raw_ptr<PrefService> pref_service_;
+
+  // Used to track whether MemorySaver mode is enabled, and hence whether
+  // related UI should be surfaced.
+  base::ScopedObservation<
+      performance_manager::user_tuning::UserPerformanceTuningManager,
+      performance_manager::user_tuning::UserPerformanceTuningManager::Observer>
+      user_performance_tuning_manager_observation_{this};
+  bool is_memory_saver_mode_enabled_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

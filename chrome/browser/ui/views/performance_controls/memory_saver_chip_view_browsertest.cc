@@ -76,6 +76,9 @@ class MemorySaverChipViewBrowserTest
   }
 };
 
+// TODO(crbug.com/376283619): Remove this test after the page action is
+// migrated to the new framework, and sufficient ink-drop test coverage is
+// present in the framework itself.
 IN_PROC_BROWSER_TEST_F(MemorySaverChipViewBrowserTest,
                        ShowAndHideInkDropOnDialog) {
   PageActionIconView* chip = GetMemorySaverChipView();
