@@ -57,6 +57,11 @@ public class AutofillImageFetcher {
         Context context = ContextUtils.getApplicationContext();
 
         for (GURL url : urls) {
+            // Capital One card art image is stored in Chrome binary.
+            if (url == null || url.getSpec().equals(AutofillUiUtils.CAPITAL_ONE_ICON_URL)) {
+                continue;
+            }
+
             for (@ImageSize int size : imageSizes) {
                 CardIconSpecs cardIconSpecs = CardIconSpecs.create(context, size);
                 fetchImage(url, cardIconSpecs);
@@ -131,16 +136,10 @@ public class AutofillImageFetcher {
             return;
         }
 
-        // The Capital One icon for virtual cards is available in a single size via a static
-        // URL. Cache this image at different sizes so it can be used by different surfaces.
-        GURL urlToCache =
+        GURL urlToFetch =
                 AutofillUiUtils.getCreditCardIconUrlWithParams(
                         url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
-        GURL urlToFetch =
-                url.getSpec().equals(AutofillUiUtils.CAPITAL_ONE_ICON_URL) ? url : urlToCache;
-
-        // If the image already exists in the cache, return.
-        if (mImagesCache.containsKey(urlToCache.getSpec())) {
+        if (mImagesCache.containsKey(urlToFetch.getSpec())) {
             return;
         }
 
@@ -148,7 +147,7 @@ public class AutofillImageFetcher {
                 ImageFetcher.Params.create(
                         urlToFetch.getSpec(), ImageFetcher.AUTOFILL_CARD_ART_UMA_CLIENT_NAME);
         mImageFetcher.fetchImage(
-                params, bitmap -> treatAndCacheImage(bitmap, urlToCache, cardIconSpecs));
+                params, bitmap -> treatAndCacheImage(bitmap, urlToFetch, cardIconSpecs));
     }
 
     private void treatAndCacheImage(Bitmap bitmap, GURL urlToCache, CardIconSpecs cardIconSpecs) {

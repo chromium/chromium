@@ -119,6 +119,17 @@ public class AutofillImageFetcherTest {
 
     @Test
     @SmallTest
+    public void testPrefetchImages_capitalOneStaticImageUrl_notFetched() {
+        GURL capitalOneStaticImageUrl = new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL);
+
+        mImageFetcher.prefetchImages(
+                new GURL[] {capitalOneStaticImageUrl}, new int[] {ImageSize.SMALL});
+
+        assertTrue(mImageFetcher.getCachedImagesForTesting().isEmpty());
+    }
+
+    @Test
+    @SmallTest
     public void testPrefetchPixAccountImages_validUrl_successfulImageFetch() {
         GURL validUrl1 = new GURL("https://www.google.com/valid-image-url-1");
         GURL validUrl2 = new GURL("https://www.google.com/valid-image-url-2");
