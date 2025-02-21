@@ -443,25 +443,6 @@ bool BackgroundModeManager::IsBackgroundModeActive() {
   return in_background_mode_;
 }
 
-bool BackgroundModeManager::IsBackgroundWithoutWindows() const {
-  return KeepAliveRegistry::GetInstance()->WouldRestartWithout({
-      // Transient startup related KeepAlives, not related to any UI.
-      KeepAliveOrigin::SESSION_RESTORE,
-      KeepAliveOrigin::BACKGROUND_MODE_MANAGER_STARTUP,
-
-      KeepAliveOrigin::BACKGROUND_SYNC,
-
-      // Notification KeepAlives are not dependent on the Chrome UI being
-      // loaded, and can be registered when we were in pure background mode.
-      // They just block it to avoid issues. Ignore them when determining if we
-      // are in that mode.
-      KeepAliveOrigin::NOTIFICATION,
-      KeepAliveOrigin::PENDING_NOTIFICATION_CLICK_EVENT,
-      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT,
-      KeepAliveOrigin::IN_FLIGHT_PUSH_MESSAGE,
-  });
-}
-
 size_t BackgroundModeManager::NumberOfBackgroundModeData() {
   return background_mode_data_.size();
 }

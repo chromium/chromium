@@ -81,10 +81,6 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-#include "chrome/browser/background/background_mode_manager.h"
-#endif
-
 namespace {
 
 const char kManifestSenderId[] = "1234567890";
