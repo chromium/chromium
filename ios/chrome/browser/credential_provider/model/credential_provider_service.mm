@@ -213,6 +213,12 @@ CredentialProviderService::CredentialProviderService(
           &CredentialProviderService::OnPrefOrPolicyStatusChanged,
           base::Unretained(this)));
 
+  automatic_passkey_upgrades_enabled_.Init(
+      password_manager::prefs::kAutomaticPasskeyUpgrades, prefs,
+      base::BindRepeating(
+          &CredentialProviderService::OnPrefOrPolicyStatusChanged,
+          base::Unretained(this)));
+
   // Make sure the initial value of the pref is stored.
   OnPrefOrPolicyStatusChanged();
   UpdatePasswordSyncSetting();
@@ -536,8 +542,11 @@ void CredentialProviderService::UpdatePasswordSyncSetting() {
 }
 
 void CredentialProviderService::UpdateAutomaticPasskeyUpgradeSetting() {
-  BOOL is_enabled =
-      base::FeatureList::IsEnabled(kCredentialProviderAutomaticPasskeyUpgrade);
+  BOOL is_enabled = base::FeatureList::IsEnabled(
+                        kCredentialProviderAutomaticPasskeyUpgrade) &&
+                    saving_passwords_enabled_.GetValue() &&
+                    saving_passkeys_enabled_.GetValue() &&
+                    automatic_passkey_upgrades_enabled_.GetValue();
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:is_enabled]
          forKey:
@@ -666,6 +675,7 @@ void CredentialProviderService::OnPrefOrPolicyStatusChanged() {
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:saving_passkeys_enabled_.GetValue()]
          forKey:AppGroupUserDefaultsCredentialProviderSavingPasskeysEnabled()];
+  UpdateAutomaticPasskeyUpgradeSetting();
 }
 
 MemoryCredentialStore* CredentialProviderService::GetCredentialStore(
