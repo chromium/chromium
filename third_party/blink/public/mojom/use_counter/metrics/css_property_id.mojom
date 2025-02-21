@@ -900,6 +900,7 @@ enum CSSSampleId {
     kRowRuleOutset = 841,
     kCornerShape = 842,
     kScrollMarkerContain = 843,
+    kRowRuleStyle = 844,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

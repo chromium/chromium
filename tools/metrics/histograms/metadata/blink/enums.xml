@@ -7457,6 +7457,7 @@ Called by update_use_counter_css.py.-->
   <int value="841" label="row-rule-outset"/>
   <int value="842" label="corner-shape"/>
   <int value="843" label="scroll-marker-contain"/>
+  <int value="844" label="row-rule-style"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
