@@ -176,6 +176,9 @@
   <message desc="Label of the option to include system audio in the recording." name="IDS_RECORDER_MIC_SELECTION_MENU_CHROMEBOOK_AUDIO_OPTION">
     Chromebook audio
   </message>
+  <message desc="Description of mic connection error in the mic selection menu." name="IDS_RECORDER_MIC_SELECTION_MENU_MIC_CONNECTION_ERROR_DESCRIPTION">
+    Connect a mic to start recording audio
+  </message>
   <message desc="Button to defer transcription language selection and go next step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_LANGUAGE_SELECTION_CANCEL_BUTTON">
     Cancel
   </message>

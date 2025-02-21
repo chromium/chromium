@@ -67,6 +67,7 @@ const noArgStringNames = [
   'micConnectionErrorDialogHeader',
   'micSelectionMenuButtonTooltip',
   'micSelectionMenuChromebookAudioOption',
+  'micSelectionMenuMicConnectionErrorDescription',
   'onboardingDialogLanguageSelectionCancelButton',
   'onboardingDialogLanguageSelectionDescription',
   'onboardingDialogLanguageSelectionDownloadButton',

@@ -21,6 +21,7 @@ icons = [
   "language.svg",
   "laptop_chromebook.svg",
   "mic.svg",
+  "mic_alert.svg",
   "mic_external_on.svg",
   "mic_mute.svg",
   "more_vertical.svg",
