@@ -54,6 +54,7 @@ class SaveAutofillAiDataControllerImpl
   std::u16string GetDialogTitle() const override;
   std::vector<EntityAttributeUpdateDetails> GetUpdatedAttributesDetails()
       const override;
+  bool IsSavePrompt() const override;
 
  protected:
   explicit SaveAutofillAiDataControllerImpl(content::WebContents* web_contents);

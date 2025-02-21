@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_AUTOFILL_AI_DATA_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_AUTOFILL_AI_DATA_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -50,6 +51,17 @@ class SaveAutofillAiDataController {
   // new, updated, or unchanged. Also includes updates of an old instance
   // attribute that had its value changed.
   struct EntityAttributeUpdateDetails {
+    EntityAttributeUpdateDetails();
+    EntityAttributeUpdateDetails(std::u16string attribute_name,
+                                 std::u16string attribute_value,
+                                 EntityAttributeUpdateType update_type);
+    EntityAttributeUpdateDetails(const EntityAttributeUpdateDetails&);
+    EntityAttributeUpdateDetails(EntityAttributeUpdateDetails&&);
+    EntityAttributeUpdateDetails& operator=(
+        const EntityAttributeUpdateDetails&);
+    EntityAttributeUpdateDetails& operator=(EntityAttributeUpdateDetails&&);
+    ~EntityAttributeUpdateDetails();
+
     std::u16string attribute_name;
     std::u16string attribute_value;
     EntityAttributeUpdateType update_type{};
@@ -82,6 +94,10 @@ class SaveAutofillAiDataController {
   // accept the prompt.
   virtual std::vector<EntityAttributeUpdateDetails>
   GetUpdatedAttributesDetails() const = 0;
+
+  // Whether the prompt shown is for a new entity or whether it is an
+  // update prompt.
+  virtual bool IsSavePrompt() const = 0;
 
   // Returns the Autofill AI data to be displayed in the UI.
   virtual base::optional_ref<const autofill::EntityInstance> GetAutofillAiData()

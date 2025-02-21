@@ -29,7 +29,6 @@
 // TODO(crbug.com/362227379): Consider having an interactive UI test to evaluate
 // both the controller and the view working together.
 namespace autofill_ai {
-
 class MockSaveAutofillAiDataController : public SaveAutofillAiDataController {
  public:
   MockSaveAutofillAiDataController() = default;
@@ -50,6 +49,7 @@ class MockSaveAutofillAiDataController : public SaveAutofillAiDataController {
       GetUpdatedAttributesDetails,
       (),
       (const override));
+  MOCK_METHOD(bool, IsSavePrompt, (), (const override));
   MOCK_METHOD(void, OnBubbleClosed, (AutofillAiBubbleClosedReason), (override));
   base::WeakPtr<SaveAutofillAiDataController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -109,10 +109,42 @@ void SaveAutofillAiDataBubbleViewTest::CreateViewAndShow() {
   anchor_widget_ = std::make_unique<views::Widget>();
   anchor_widget_->Init(std::move(params));
   anchor_widget_->Show();
-
-  ON_CALL(mock_controller(), GetAutofillAiData())
-      .WillByDefault(
-          testing::Return(autofill::test::GetPassportEntityInstance()));
+  std::vector<SaveAutofillAiDataController::EntityAttributeUpdateDetails>
+      details = {
+          // The first two values are updates done by the user. Specifically
+          // they updated their name and added country data.
+          SaveAutofillAiDataController::EntityAttributeUpdateDetails(
+              /*attribute_name=*/u"Name", /*attribute_value=*/u"Jon doe",
+              /*update_type=*/
+              SaveAutofillAiDataController::EntityAttributeUpdateType::
+                  kNewEntityAttributeUpdated),
+          SaveAutofillAiDataController::EntityAttributeUpdateDetails(
+              /*attribute_name=*/u"Country", /*attribute_value=*/u"Brazil",
+              /*update_type=*/
+              SaveAutofillAiDataController::EntityAttributeUpdateType::
+                  kNewEntityAttributeAdded),
+          // The next three values are saying:
+          // 1. That the user had a name stored as "Jonas doe" and that it was
+          // changed.
+          // 2. That their passport expiry date information has not changed.
+          // 3. That their passport issue date information has not changed.
+          SaveAutofillAiDataController::EntityAttributeUpdateDetails(
+              /*attribute_name=*/u"Name", /*attribute_value=*/u"Jonas doe",
+              /*update_type=*/
+              SaveAutofillAiDataController::EntityAttributeUpdateType::
+                  kOldEntityAttributeUpdated),
+          SaveAutofillAiDataController::EntityAttributeUpdateDetails(
+              /*attribute_name=*/u"Expiry date",
+              /*attribute_value=*/u"12/12/2027", /*update_type=*/
+              SaveAutofillAiDataController::EntityAttributeUpdateType::
+                  kNewEntityAttributeUnchanged),
+          SaveAutofillAiDataController::EntityAttributeUpdateDetails(
+              /*attribute_name=*/u"Issue date",
+              /*attribute_value=*/u"12/12/2020", /*update_type=*/
+              SaveAutofillAiDataController::EntityAttributeUpdateType::
+                  kNewEntityAttributeUnchanged)};
+  ON_CALL(mock_controller(), GetUpdatedAttributesDetails())
+      .WillByDefault(testing::Return(details));
 
   auto view_unique = std::make_unique<SaveAutofillAiDataBubbleView>(
       anchor_widget_->GetContentsView(), web_contents_.get(),
@@ -136,6 +168,26 @@ TEST_F(SaveAutofillAiDataBubbleViewTest, CancelInvokesTheController) {
   CreateViewAndShow();
   EXPECT_CALL(mock_controller(), OnBubbleClosed);
   view().CancelDialog();
+}
+
+TEST_F(SaveAutofillAiDataBubbleViewTest, ViewHasExpectedSections) {
+  CreateViewAndShow();
+  views::View* new_entity_added_or_updated_attributes_container =
+      view().GetViewByID(SaveAutofillAiDataBubbleView::
+                             kNewEntityAddedOrUpdatedAttributesContainer);
+  EXPECT_EQ(new_entity_added_or_updated_attributes_container->children().size(),
+            2u);
+
+  // Test that there 3 row in the container that stores unchanged values or old
+  // values from the old entity.
+  views::View* new_entity_unchanged_or_old_entity_updated_attributes_container =
+      view().GetViewByID(
+          SaveAutofillAiDataBubbleView::
+              kNewEntityUnchagedOrOldEntityUpdatedAttributesContainer);
+  EXPECT_EQ(new_entity_unchanged_or_old_entity_updated_attributes_container
+                ->children()
+                .size(),
+            3u);
 }
 
 }  // namespace autofill_ai

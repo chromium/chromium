@@ -70,6 +70,7 @@ source_set("autofill") {
       "address_bubbles_controller.h",
       "address_bubbles_icon_controller.h",
       "address_editor_controller.h",
+      "autofill_ai/save_autofill_ai_data_controller.cc",
       "autofill_ai/save_autofill_ai_data_controller.h",
       "autofill_ai/save_autofill_ai_data_controller_impl.h",
       "autofill_context_menu_manager.h",
