@@ -70,6 +70,11 @@ public class SafetyHubLocalPasswordsModuleMediatorTest {
         clearInvocations(mMediatorDelegateMock);
     }
 
+    // TODO(crbug.com/388788969): Mock reused and weak passwords.
+    private void mockPasswordCounts(int compromised) {
+        doReturn(compromised).when(mDataSource).getCompromisedPasswordCount();
+    }
+
     private void mockManaged(boolean isManaged) {
         doReturn(isManaged).when(mDataSource).isManaged();
     }
@@ -78,6 +83,7 @@ public class SafetyHubLocalPasswordsModuleMediatorTest {
     public void countsUnavailable() {
         // TODO(crbug.com/388788969): After adding logic to the local password module, set
         // appropriate counts for the unavailable state.
+        mockPasswordCounts(/* compromised= */ 0);
         mockManaged(false);
 
         mModuleMediator.stateChanged(ModuleType.UNAVAILABLE_PASSWORDS);
@@ -148,6 +154,66 @@ public class SafetyHubLocalPasswordsModuleMediatorTest {
         String expectedTitle = mActivity.getString(R.string.safety_hub_no_local_passwords_title);
         String expectedManagedSummary =
                 mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_passwords_navigation_button);
+
+        assertEquals(expectedTitle, mPreference.getTitle().toString());
+        assertEquals(expectedManagedSummary, mPreference.getSummary().toString());
+        assertEquals(MANAGED_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPreference.getPrimaryButtonText());
+        assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
+    }
+
+    @Test
+    public void hasCompromisedPasswords() {
+        int compromisedPasswordsCount = 1;
+        mockPasswordCounts(compromisedPasswordsCount);
+        mockManaged(false);
+
+        mModuleMediator.stateChanged(ModuleType.HAS_COMPROMISED_PASSWORDS);
+        verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
+
+        String expectedTitle =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_local_passwords_compromised_title,
+                                compromisedPasswordsCount);
+        String expectedSummary =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_compromised_passwords_summary,
+                                compromisedPasswordsCount);
+        String expectedPrimaryButtonText =
+                mActivity.getString(R.string.safety_hub_passwords_navigation_button);
+
+        assertEquals(expectedTitle, mPreference.getTitle().toString());
+        assertEquals(expectedSummary, mPreference.getSummary().toString());
+        assertEquals(WARNING_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
+        assertEquals(expectedPrimaryButtonText, mPreference.getPrimaryButtonText());
+        assertNull(mPreference.getSecondaryButtonText());
+    }
+
+    @Test
+    public void hasCompromisedPasswords_managed() {
+        int compromisedPasswordsCount = 1;
+        mockPasswordCounts(compromisedPasswordsCount);
+        mockManaged(true);
+
+        mModuleMediator.stateChanged(ModuleType.HAS_COMPROMISED_PASSWORDS);
+        verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
+
+        String expectedTitle =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_local_passwords_compromised_title,
+                                compromisedPasswordsCount);
+        String expectedManagedSummary =
+                mActivity
+                        .getResources()
+                        .getString(R.string.safety_hub_no_passwords_summary_managed);
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_passwords_navigation_button);
 

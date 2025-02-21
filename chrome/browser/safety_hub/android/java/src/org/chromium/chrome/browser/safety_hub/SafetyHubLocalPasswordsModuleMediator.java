@@ -81,6 +81,11 @@ public class SafetyHubLocalPasswordsModuleMediator
                         context, mModuleDelegate);
             case ModuleType.NO_SAVED_PASSWORDS:
                 return new SafetyHubLocalPasswordsNoPasswordsModuleHelper(context, mModuleDelegate);
+            case ModuleType.HAS_COMPROMISED_PASSWORDS:
+                return new SafetyHubLocalPasswordsHasCompromisedPasswordsModuleHelper(
+                        context,
+                        mModuleDelegate,
+                        mLocalPasswordsDataSource.getCompromisedPasswordCount());
             default:
                 throw new IllegalArgumentException();
         }

@@ -29,6 +29,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.safety_hub.SafetyHubLocalPasswordsDataSource.ModuleType;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.prefs.PrefService;
@@ -95,6 +96,14 @@ public class SafetyHubLocalPasswordsDataSourceTest {
         doReturn(totalPasswordsCount).when(mModuleDelegateMock).getLocalPasswordsCount(any());
     }
 
+    private void mockPasswordCounts(int compromised, int weak, int reused) {
+        doReturn(compromised)
+                .when(mPrefServiceMock)
+                .getInteger(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT);
+        doReturn(weak).when(mPrefServiceMock).getInteger(Pref.LOCAL_WEAK_CREDENTIALS_COUNT);
+        doReturn(reused).when(mPrefServiceMock).getInteger(Pref.LOCAL_REUSED_CREDENTIALS_COUNT);
+    }
+
     @Test
     public void countsUnavailable() {
         // TODO(crbug.com/388788969): After adding logic to the local password module, set
@@ -115,5 +124,15 @@ public class SafetyHubLocalPasswordsDataSourceTest {
         mDataSource.updateState();
 
         assertEquals(ModuleType.NO_SAVED_PASSWORDS, mObserver.getModuleType());
+    }
+
+    @Test
+    public void hasCompromisedPasswords() {
+        mockTotalPasswordsCount(5);
+        mockPasswordCounts(/* compromised= */ 4, 0, 0);
+
+        mDataSource.updateState();
+
+        assertEquals(ModuleType.HAS_COMPROMISED_PASSWORDS, mObserver.getModuleType());
     }
 }

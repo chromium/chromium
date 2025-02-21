@@ -27,11 +27,16 @@ public class SafetyHubLocalPasswordsDataSource
     }
 
     // Represents the type of local password module.
-    @IntDef({ModuleType.UNAVAILABLE_PASSWORDS, ModuleType.NO_SAVED_PASSWORDS})
+    @IntDef({
+        ModuleType.UNAVAILABLE_PASSWORDS,
+        ModuleType.NO_SAVED_PASSWORDS,
+        ModuleType.HAS_COMPROMISED_PASSWORDS
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ModuleType {
         int UNAVAILABLE_PASSWORDS = 0;
         int NO_SAVED_PASSWORDS = 1;
+        int HAS_COMPROMISED_PASSWORDS = 2;
     };
 
     @NonNull private final SafetyHubModuleDelegate mModuleDelegate;
@@ -40,6 +45,8 @@ public class SafetyHubLocalPasswordsDataSource
     @Nullable private final PasswordStoreBridge mPasswordStoreBridge;
 
     private Observer mObserver;
+
+    private int mCompromisedPasswordCount;
 
     SafetyHubLocalPasswordsDataSource(
             @NonNull SafetyHubModuleDelegate moduleDelegate,
@@ -69,6 +76,8 @@ public class SafetyHubLocalPasswordsDataSource
 
     public void updateState() {
         // TODO(crbug.com/388788969): Update password counts.
+        updateCompromisedPasswordCount();
+
         if (mObserver != null) {
             mObserver.stateChanged(getModuleType());
         }
@@ -84,12 +93,25 @@ public class SafetyHubLocalPasswordsDataSource
         if (getTotalPasswordCount() == 0) {
             return ModuleType.NO_SAVED_PASSWORDS;
         }
+        if (mCompromisedPasswordCount > 0) {
+            return ModuleType.HAS_COMPROMISED_PASSWORDS;
+        }
         return ModuleType.UNAVAILABLE_PASSWORDS;
+    }
+
+    public int getCompromisedPasswordCount() {
+        return mCompromisedPasswordCount;
+    }
+
+    private void updateCompromisedPasswordCount() {
+        assert mPrefService != null
+                : "A null PrefService was detected in SafetyHubLocalPasswordsDataSource";
+        mCompromisedPasswordCount = mPrefService.getInteger(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT);
     }
 
     private int getTotalPasswordCount() {
         assert mModuleDelegate != null
-                : "A null ModuleDelegate was detected in" + " SafetyHubAccountPasswordsDataSource";
+                : "A null ModuleDelegate was detected in SafetyHubLocalPasswordsDataSource";
         return mModuleDelegate.getLocalPasswordsCount(mPasswordStoreBridge);
     }
 
