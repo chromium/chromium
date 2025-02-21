@@ -54,6 +54,7 @@ class BookmarkBarMediator
     private final PropertyModel mModel;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver;
+    private final @NonNull BookmarkOpener mBookmarkOpener;
 
     private @Nullable BookmarkImageFetcher mImageFetcher;
     private @Nullable BookmarkBarItemsProvider mItemsProvider;
@@ -79,7 +80,8 @@ class BookmarkBarMediator
             @NonNull ModelList itemsModel,
             @NonNull ObservableSupplier<Boolean> itemsOverflowSupplier,
             @NonNull PropertyModel model,
-            @NonNull ObservableSupplier<Profile> profileSupplier) {
+            @NonNull ObservableSupplier<Profile> profileSupplier,
+            @NonNull BookmarkOpener bookmarkOpener) {
         mActivity = activity;
 
         mAllBookmarksButtonModel = allBookmarksButtonModel;
@@ -120,6 +122,8 @@ class BookmarkBarMediator
         mProfileSupplier = profileSupplier;
         mProfileSupplierObserver = this::onProfileChange;
         mProfileSupplier.addObserver(mProfileSupplierObserver);
+
+        mBookmarkOpener = bookmarkOpener;
 
         updateTopMargin();
         updateVisibility();
@@ -252,23 +256,16 @@ class BookmarkBarMediator
             return;
         }
 
-        final var opener =
-                new BookmarkOpener(
-                        BookmarkModel.getForProfile(profile),
-                        mActivity,
-                        mActivity.getComponentName(),
-                        /* bookmarkOpenedCallback= */ null);
-
         final boolean isCtrlPressed = (metaState & KeyEvent.META_CTRL_ON) != 0;
         if (isCtrlPressed) {
-            opener.openBookmarksInNewTabs(
+            mBookmarkOpener.openBookmarksInNewTabs(
                     List.of(item.getId()),
                     profile.isOffTheRecord(),
                     Optional.of(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
             return;
         }
 
-        opener.openBookmarkInCurrentTab(item.getId(), profile.isOffTheRecord());
+        mBookmarkOpener.openBookmarkInCurrentTab(item.getId(), profile.isOffTheRecord());
     }
 
     private void onItemsOverflowChange(boolean itemsOverflow) {

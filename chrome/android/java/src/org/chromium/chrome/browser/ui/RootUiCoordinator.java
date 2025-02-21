@@ -269,7 +269,7 @@ public class RootUiCoordinator
     private final ObservableSupplierImpl<MerchantTrustSignalsCoordinator>
             mMerchantTrustSignalsCoordinatorSupplier = new ObservableSupplierImpl<>();
     protected final ObservableSupplier<Profile> mProfileSupplier;
-    private final ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
+    protected final ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
     private BottomSheetObserver mBottomSheetObserver;

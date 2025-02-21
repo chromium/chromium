@@ -4,55 +4,33 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.provider.Browser;
-import android.text.format.DateUtils;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import org.chromium.base.IntentUtils;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.ActivityUtils;
-import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.bookmarks.BookmarkItem;
-import org.chromium.components.bookmarks.BookmarkType;
-import org.chromium.ui.base.PageTransition;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /** Consolidates logic about opening bookmarks. */
-public class BookmarkOpener {
-    private final BookmarkModel mModel;
-    private final Context mContext;
-    private final ComponentName mComponentName;
-    private final @Nullable Runnable mBookmarkOpenedCallback;
-
-    /**
-     * @param model The bookmark model, used to query for bookmark urls and type.
-     * @param context The android context, used to build the intent to open bookmarks.
-     * @param componentName The name of the parent component, can be null on tablets.
-     * @param bookmarkOpenedCallback Callback that's run when a bookmark is opened.
-     */
-    public BookmarkOpener(
-            BookmarkModel model,
-            Context context,
-            @Nullable ComponentName componentName,
-            @Nullable Runnable bookmarkOpenedCallback) {
-        mModel = model;
-        mContext = context;
-        mComponentName = componentName;
-        mBookmarkOpenedCallback = bookmarkOpenedCallback;
+@NullMarked
+public interface BookmarkOpener {
+    /** Observer interface for when bookmarks are opened. */
+    interface Observer {
+        /**
+         * Called when a bookmark opened event happens. This is invoked once when multiple bookmarks
+         * are opened in new tabs.
+         */
+        void onAnyBookmarkOpenedEvent();
     }
+
+    /** Destroys the opener. */
+    void destroy();
+
+    /** Add an observer to the class. */
+    void addObserver(Observer obs);
+
+    /** Remove an observer from the class. */
+    void removeObserver(Observer obs);
 
     /**
      * Open the given id in the current tab.
@@ -60,22 +38,7 @@ public class BookmarkOpener {
      * @param incognito Whether the bookmark should be opened in incognito mode.
      * @return Whether the bookmark id was successfully opened.
      */
-    public boolean openBookmarkInCurrentTab(BookmarkId id, boolean incognito) {
-        if (id == null) return false;
-        BookmarkItem item = mModel.getBookmarkById(id);
-        if (item == null) return false;
-        maybeMarkReadingListItemAsRead(item);
-        recordMetricsForOpenBookmarkInCurrentTab(item);
-
-        Intent intent = createBasicOpenIntent(item, incognito);
-        IntentHandler.startActivityForTrustedIntent(intent);
-
-        if (mBookmarkOpenedCallback != null) {
-            mBookmarkOpenedCallback.run();
-        }
-
-        return true;
-    }
+    boolean openBookmarkInCurrentTab(BookmarkId id, boolean incognito);
 
     /**
      * Open the given bookmarkIds in new tabs.
@@ -84,7 +47,7 @@ public class BookmarkOpener {
      * @param incognito Whether the bookmarks should be opened in incognito mode.
      * @return Whether the bookmark ids were successfully opened.
      */
-    public boolean openBookmarksInNewTabs(List<BookmarkId> bookmarkIds, boolean incognito) {
+    default boolean openBookmarksInNewTabs(List<BookmarkId> bookmarkIds, boolean incognito) {
         return openBookmarksInNewTabs(
                 bookmarkIds, incognito, /* tabLaunchType= */ Optional.empty());
     }
@@ -97,125 +60,8 @@ public class BookmarkOpener {
      * @param tabLaunchType The launch type to use when creating new tabs.
      * @return Whether the bookmark ids were successfully opened.
      */
-    public boolean openBookmarksInNewTabs(
+    boolean openBookmarksInNewTabs(
             List<BookmarkId> bookmarkIds,
             boolean incognito,
-            Optional<@TabLaunchType Integer> tabLaunchType) {
-        if (bookmarkIds == null || bookmarkIds.size() == 0) return false;
-
-        BookmarkItem firstItem = null;
-        ArrayList<String> additionalUrls = new ArrayList<>();
-        List<BookmarkItem> items = new ArrayList<>();
-        for (BookmarkId id : bookmarkIds) {
-            // Might need to check if this is a folder.
-            if (id == null) continue;
-            BookmarkItem item = mModel.getBookmarkById(id);
-            if (item == null) continue;
-            maybeMarkReadingListItemAsRead(item);
-
-            if (firstItem == null) {
-                firstItem = item;
-            } else {
-                additionalUrls.add(item.getUrl().getSpec());
-            }
-
-            // Collected for metrics to avoid additional JNI calls.
-            items.add(item);
-        }
-        recordMetricsForOpenBookmarksInNewTabs(items);
-
-        Intent intent = createBasicOpenIntent(firstItem, incognito);
-        intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
-        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, incognito);
-        intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, additionalUrls);
-        tabLaunchType.ifPresent(v -> IntentHandler.setTabLaunchType(intent, v));
-        IntentHandler.startActivityForTrustedIntent(intent);
-
-        if (mBookmarkOpenedCallback != null) {
-            mBookmarkOpenedCallback.run();
-        }
-
-        return true;
-    }
-
-    private Intent createBasicOpenIntent(@NonNull BookmarkItem item, boolean incognito) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getUrl().getSpec()));
-        intent.putExtra(
-                Browser.EXTRA_APPLICATION_ID, mContext.getApplicationContext().getPackageName());
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, PageTransition.AUTO_BOOKMARK);
-        intent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_BOOKMARK_ID, item.getId().toString());
-        intent.putExtra(IntentHandler.EXTRA_INCOGNITO_MODE, incognito);
-
-        if (mComponentName != null) {
-            ActivityUtils.setNonAliasedComponentForMainBrowsingActivity(intent, mComponentName);
-        } else {
-            // If the bookmark manager is shown in a tab on a phone (rather than in a separate
-            // activity) the component name may be null. Send the intent through
-            // ChromeLauncherActivity instead to avoid crashing. See crbug.com/615012.
-            intent.setClass(mContext.getApplicationContext(), ChromeLauncherActivity.class);
-        }
-
-        // Reading list has special back button behavior which brings the reading list back up
-        // as the first back action when viewing an item. This is driven by the FROM_READING_LIST
-        // TabLaunchType.
-        if (item.getId().getType() == BookmarkType.READING_LIST) {
-            IntentHandler.setTabLaunchType(intent, TabLaunchType.FROM_READING_LIST);
-            intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
-            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, incognito);
-        }
-
-        IntentUtils.addTrustedIntentExtras(intent);
-        return intent;
-    }
-
-    private void maybeMarkReadingListItemAsRead(@NonNull BookmarkItem item) {
-        if (item.getId().getType() == BookmarkType.READING_LIST) {
-            mModel.setReadStatusForReadingList(item.getId(), true);
-        }
-    }
-
-    // Metrics
-
-    private void recordMetricsForOpenBookmarkInCurrentTab(@NonNull BookmarkItem item) {
-        RecordUserAction.record("MobileBookmarkManagerEntryOpened");
-        recordTypeOpened(item, "Bookmarks.OpenBookmarkType");
-        recordTimeSinceAdded(item, "Bookmarks.OpenBookmarkTimeInterval2.");
-    }
-
-    private void recordMetricsForOpenBookmarksInNewTabs(List<BookmarkItem> items) {
-        RecordUserAction.record("MobileBookmarkManagerMultipleEntriesOpened");
-
-        for (BookmarkItem item : items) {
-            recordTypeOpened(item, "Bookmarks.MultipleOpened.OpenBookmarkType");
-            recordTimeSinceAdded(item, "Bookmarks.MultipleOpened.OpenBookmarkTimeInterval2.");
-        }
-    }
-
-    private String bookmarkTypeToHistogramSuffix(@BookmarkType int type) {
-        switch (type) {
-            case BookmarkType.NORMAL:
-                return "Normal";
-            case BookmarkType.PARTNER:
-                return "Partner";
-            case BookmarkType.READING_LIST:
-                return "ReadingList";
-        }
-        assert false : "Unknown BookmarkType";
-        return "";
-    }
-
-    private void recordTypeOpened(BookmarkItem item, String histogram) {
-        RecordHistogram.recordEnumeratedHistogram(
-                histogram, item.getId().getType(), BookmarkType.LAST);
-    }
-
-    private void recordTimeSinceAdded(BookmarkItem item, String histogramPrefix) {
-        RecordHistogram.recordCustomTimesHistogram(
-                histogramPrefix + bookmarkTypeToHistogramSuffix(item.getId().getType()),
-                System.currentTimeMillis() - item.getDateAdded(),
-                1,
-                DateUtils.DAY_IN_MILLIS * 30,
-                50);
-    }
+            Optional<@TabLaunchType Integer> tabLaunchType);
 }

@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.ComponentName;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -15,8 +18,9 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** A native page holding a {@link BookmarkManagerCoordinator} on _tablet_. */
 public class BookmarkPage extends BasicNativePage {
-    private BookmarkManagerCoordinator mBookmarkManagerCoordinator;
-    private String mTitle;
+    private final BookmarkManagerCoordinator mBookmarkManagerCoordinator;
+    private final BookmarkOpener mBookmarkOpener;
+    private final String mTitle;
 
     /**
      * Create a new instance of the bookmarks page.
@@ -27,24 +31,28 @@ public class BookmarkPage extends BasicNativePage {
      * @param host A NativePageHost to load urls.
      */
     public BookmarkPage(
-            ComponentName componentName,
-            SnackbarManager snackbarManager,
-            Profile profile,
-            NativePageHost host) {
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull Profile profile,
+            @NonNull NativePageHost host,
+            @Nullable ComponentName componentName) {
         super(host);
+        mTitle = host.getContext().getString(R.string.bookmarks);
 
+        mBookmarkOpener =
+                new BookmarkOpenerImpl(
+                        () -> BookmarkModel.getForProfile(profile),
+                        /* context= */ host.getContext(),
+                        componentName);
         mBookmarkManagerCoordinator =
                 new BookmarkManagerCoordinator(
                         host.getContext(),
-                        componentName,
                         false,
                         snackbarManager,
                         profile,
                         new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
-                        /* bookmarkOpenedCallback= */ null);
+                        mBookmarkOpener,
+                        componentName);
         mBookmarkManagerCoordinator.setBasicNativePage(this);
-        mTitle = host.getContext().getString(R.string.bookmarks);
-
         initWithView(mBookmarkManagerCoordinator.getView());
     }
 
@@ -66,9 +74,10 @@ public class BookmarkPage extends BasicNativePage {
 
     @Override
     public void destroy() {
-        mBookmarkManagerCoordinator.onDestroyed();
-        mBookmarkManagerCoordinator = null;
         super.destroy();
+
+        mBookmarkOpener.destroy();
+        mBookmarkManagerCoordinator.onDestroyed();
     }
 
     public BookmarkManagerCoordinator getManagerForTesting() {

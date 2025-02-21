@@ -41,6 +41,8 @@ import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.accessibility.PageZoomIphController;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
+import org.chromium.chrome.browser.bookmarks.BookmarkOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarCoordinator;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
@@ -241,6 +243,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     protected @Nullable InstantMessageDelegateImpl mInstantMessageDelegateImpl;
     private @Nullable BookmarkBarCoordinator mBookmarkBarCoordinator;
     private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
+    private @Nullable BookmarkOpener mBookmarkOpener;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -588,6 +591,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarCoordinator = null;
         }
 
+        if (mBookmarkOpener != null) {
+            mBookmarkOpener.destroy();
+            mBookmarkOpener = null;
+        }
+
         if (mLoadingFullscreenCoordinator != null) {
             mLoadingFullscreenCoordinator.destroy();
             mLoadingFullscreenCoordinator = null;
@@ -830,13 +838,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (ChromeFeatureList.sAndroidBookmarkBar.isEnabled()
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+            mBookmarkOpener =
+                    new BookmarkOpenerImpl(
+                            mBookmarkModelSupplier, mActivity, mActivity.getComponentName());
             mBookmarkBarCoordinator =
                     new BookmarkBarCoordinator(
                             mActivity,
                             mBrowserControlsManager,
                             /* heightChangeCallback= */ (height) -> updateTopControlsHeight(),
                             mProfileSupplier,
-                            /* viewStub= */ mActivity.findViewById(R.id.bookmark_bar_stub));
+                            /* viewStub= */ mActivity.findViewById(R.id.bookmark_bar_stub),
+                            mBookmarkOpener);
 
             if (mToolbarManager != null) {
                 mToolbarManager.setBookmarkBarHeightSupplier(
