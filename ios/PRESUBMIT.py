@@ -285,7 +285,7 @@ def _IsAlphabeticallySortedXML(file):
     """Check that the `file` is alphabetically sorted"""
     parser = ElementTree.XMLParser(target=ElementTree.TreeBuilder(
         insert_comments=True))
-    with open(file, 'r') as xml_file:
+    with open(file, 'r', encoding='utf8') as xml_file:
         tree = ElementTree.parse(xml_file, parser)
     root = tree.getroot()
 
@@ -414,7 +414,7 @@ def _CheckNewColorIntroduction(input_api, output_api):
 
     return output
 
-def CheckChangeOnUpload(input_api, output_api):
+def CheckChange(input_api, output_api):
     results = []
     results.extend(_CheckBugInToDo(input_api, output_api))
     results.extend(_CheckNullabilityAnnotations(input_api, output_api))
@@ -427,3 +427,9 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckNotUsingNSUserDefaults(input_api, output_api))
     results.extend(_CheckNewColorIntroduction(input_api, output_api))
     return results
+
+def CheckChangeOnUpload(input_api, output_api):
+  return CheckChange(input_api, output_api)
+
+def CheckChangeOnCommit(input_api, output_api):
+  return CheckChange(input_api, output_api)
