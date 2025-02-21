@@ -38,14 +38,25 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
   ZeroCopyRasterBufferImpl(
       base::WaitableEvent* shutdown_event,
       const ResourcePool::InUsePoolResource& in_use_resource,
-      ResourcePool::Backing* backing,
       scoped_refptr<gpu::SharedImageInterface> sii)
-      : backing_(backing),
-        sii_(sii),
+      : sii_(sii),
         shutdown_event_(shutdown_event),
         resource_size_(in_use_resource.size()),
         format_(in_use_resource.format()),
-        resource_color_space_(in_use_resource.color_space()) {}
+        resource_color_space_(in_use_resource.color_space()) {
+    if (!in_use_resource.backing()) {
+      auto backing = std::make_unique<ResourcePool::Backing>();
+      backing->overlay_candidate = true;
+      // This RasterBufferProvider will modify the resource outside of the
+      // GL command stream. So resources should not become available for reuse
+      // until they are not in use by the gpu anymore, which a fence is used
+      // to determine.
+      backing->wait_on_fence_required = true;
+      in_use_resource.set_backing(std::move(backing));
+    }
+    backing_ = in_use_resource.backing();
+  }
+
   ZeroCopyRasterBufferImpl(const ZeroCopyRasterBufferImpl&) = delete;
 
   ~ZeroCopyRasterBufferImpl() override {
@@ -113,7 +124,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
 
  private:
   // These fields are safe to access on both the compositor and worker thread.
-  const raw_ptr<ResourcePool::Backing> backing_;
+  raw_ptr<ResourcePool::Backing> backing_;
   const scoped_refptr<gpu::SharedImageInterface> sii_;
 
   // These fields are for use on the worker thread.
@@ -141,20 +152,8 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
-  if (!resource.backing()) {
-    auto backing = std::make_unique<ResourcePool::Backing>();
-    backing->overlay_candidate = true;
-    // This RasterBufferProvider will modify the resource outside of the
-    // GL command stream. So resources should not become available for reuse
-    // until they are not in use by the gpu anymore, which a fence is used
-    // to determine.
-    backing->wait_on_fence_required = true;
-    resource.set_backing(std::move(backing));
-  }
-  ResourcePool::Backing* backing = resource.backing();
-
   return std::make_unique<ZeroCopyRasterBufferImpl>(
-      shutdown_event_, resource, backing,
+      shutdown_event_, resource,
       base::WrapRefCounted(
           compositor_context_provider_->SharedImageInterface()));
 }
