@@ -144,7 +144,7 @@ struct ShortcutsWidget: Widget {
     // Provides a timeline entry that represents the current time and state of a widget.
     func snapshot(for configuration: SelectProfileIntent, in context: Context) async -> Entry {
 
-      let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
+      let avatar: Image? = configuration.avatarForAccount(account: configuration.profile)
       let gaiaID: String? = configuration.gaiaForAccount(account: configuration.profile)
       let entry = loadMostVisitedSitesEntry(
         isPreview: context.isPreview, avatar: avatar, gaia: gaiaID)
@@ -155,7 +155,7 @@ struct ShortcutsWidget: Widget {
     func timeline(for configuration: SelectProfileIntent, in context: Context) async -> Timeline<
       Entry
     > {
-      let avatar: Image? = configuration.avatarForProfile(profile: configuration.profile)
+      let avatar: Image? = configuration.avatarForAccount(account: configuration.profile)
       let gaiaID: String? = configuration.gaiaForAccount(account: configuration.profile)
       let entry = loadMostVisitedSitesEntry(
         isPreview: context.isPreview, avatar: avatar, gaia: gaiaID)
