@@ -718,6 +718,11 @@
       status: "experimental",
     },
     {
+      // https://crbug.com/394052224
+      name: "CanvasGradientCSSColor4",
+      status: "experimental",
+    },
+    {
       name: "CanvasHDR",
       status: "experimental",
     },
@@ -729,6 +734,11 @@
     {
       // https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md
       name: "CanvasPlaceElement",
+      status: "experimental",
+    },
+    {
+      // https://chromestatus.com/feature/5066778773028864
+      name: "CanvasTextLang",
       status: "experimental",
     },
     {
@@ -4976,11 +4986,6 @@
       status: "experimental",
       // Also enabled as part of all experimental WebGPU features.
       implied_by: ["WebGPUExperimentalFeatures"],
-    },
-    {
-      // Launch feature flag for 1-component GPUVertexFormat and unorm8x4-bgra
-      name: "WebGPUOneComponentVertexFormats",
-      status: "stable",
     },
     {
       // Using subgroup related features in WebGPU.

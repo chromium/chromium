@@ -88,7 +88,7 @@ class MojomParserTest(MojomParserTestCase):
         module a;
         import "non-existent.mojom";
         struct Bar {};""")
-    with self.assertRaisesRegexp(ValueError, "does not exist"):
+    with self.assertRaisesRegex(ValueError, "does not exist"):
       self.ParseMojoms([a])
 
   def testUnparsedImport(self):
@@ -108,7 +108,7 @@ class MojomParserTest(MojomParserTestCase):
 
     # a.mojom has not been parsed yet, so its import will fail when processing
     # b.mojom here.
-    with self.assertRaisesRegexp(ValueError, "does not exist"):
+    with self.assertRaisesRegex(ValueError, "does not exist"):
       self.ParseMojoms([b])
 
   def testCheckImportsBasic(self):
@@ -182,5 +182,5 @@ class MojomParserTest(MojomParserTestCase):
         struct Foo { a.Bar bar; };""")
 
     self.ParseMojoms([a], metadata=a_metadata)
-    with self.assertRaisesRegexp(ValueError, "not allowed by build"):
+    with self.assertRaisesRegex(ValueError, "not allowed by build"):
       self.ParseMojoms([b], metadata=b_metadata)

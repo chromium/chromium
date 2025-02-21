@@ -12,7 +12,6 @@
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/update_model.h"
-#include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/default_clock.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -63,10 +63,10 @@ constexpr GaiaId::Literal kGaiaId("1234");
 constexpr char kFirstAppName[] = "kFirstAppName";
 constexpr char kSecondAppName[] = "kSecondAppName";
 
-class ExtendedUpdatesControllerTest : public AshTestBase {
+class ExtendedUpdatesControllerTest : public ChromeAshTestBase {
  public:
   ExtendedUpdatesControllerTest()
-      : AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
+      : ChromeAshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
             std::make_unique<content::BrowserTaskEnvironment>())),
         fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {}
@@ -76,7 +76,7 @@ class ExtendedUpdatesControllerTest : public AshTestBase {
   ~ExtendedUpdatesControllerTest() override = default;
 
   void SetUp() override {
-    AshTestBase::SetUp();
+    ChromeAshTestBase::SetUp();
 
     ExtendedUpdatesController::ResetInstanceForTesting();
 
@@ -104,7 +104,7 @@ class ExtendedUpdatesControllerTest : public AshTestBase {
   void TearDown() override {
     controller()->SetClockForTesting(base::DefaultClock::GetInstance());
 
-    AshTestBase::TearDown();
+    ChromeAshTestBase::TearDown();
   }
 
  protected:

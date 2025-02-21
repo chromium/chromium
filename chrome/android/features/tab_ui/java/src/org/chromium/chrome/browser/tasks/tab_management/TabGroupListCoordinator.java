@@ -7,9 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListProperties.ON_IS_SCROLLED_CHANGED;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -18,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Consumer;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
@@ -35,18 +31,14 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
-import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
-import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -54,7 +46,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -137,7 +128,7 @@ public class TabGroupListCoordinator {
                         R.dimen.default_favicon_corner_radius,
                         TabFavicon::getBitmap);
         FaviconResolver faviconResolver =
-                buildFaviconResolver(context, profile, mTabListFaviconProvider);
+                TabGroupListFaviconResolverFactory.build(context, profile, mTabListFaviconProvider);
         @Nullable TabGroupSyncService tabGroupSyncService = null;
         if (TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) {
             tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
@@ -180,59 +171,6 @@ public class TabGroupListCoordinator {
                     EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
                             mView.getRecyclerView(), edgeToEdgeSupplier);
         }
-    }
-
-    /** TODO(crbug.com)394154545: Move to a better location. */
-    public static FaviconResolver buildFaviconResolver(
-            Context context, Profile profile, TabListFaviconProvider fallbackProvider) {
-        return (GURL url, Callback<Drawable> callback) -> {
-            if (UrlUtilities.isInternalScheme(url)) {
-                callback.onResult(
-                        fallbackProvider
-                                .getRoundedChromeFavicon(/* isIncognito= */ false)
-                                .getDefaultDrawable());
-            } else {
-                resolveForeignFavicon(context, profile, fallbackProvider, url, callback);
-            }
-        };
-    }
-
-    private static void resolveForeignFavicon(
-            Context context,
-            Profile profile,
-            TabListFaviconProvider fallbackProvider,
-            GURL url,
-            Callback<Drawable> callback) {
-        Resources resources = context.getResources();
-        int faviconSizePixels = resources.getDimensionPixelSize(R.dimen.tab_grid_favicon_size);
-        FaviconHelper faviconHelper = new FaviconHelper();
-        FaviconImageCallback faviconImageCallback =
-                (Bitmap bitmap, GURL ignored) -> {
-                    onForeignFavicon(context, fallbackProvider, callback, bitmap);
-                    faviconHelper.destroy();
-                };
-        faviconHelper.getForeignFaviconImageForURL(
-                profile, url, faviconSizePixels, faviconImageCallback);
-    }
-
-    private static void onForeignFavicon(
-            Context context,
-            TabListFaviconProvider fallbackProvider,
-            Callback<Drawable> callback,
-            Bitmap bitmap) {
-        Resources resources = context.getResources();
-        final Drawable drawable;
-        if (bitmap == null) {
-            drawable =
-                    fallbackProvider
-                            .getDefaultFavicon(/* isIncognito= */ false)
-                            .getDefaultDrawable();
-        } else {
-            int cornerRadiusPixels =
-                    resources.getDimensionPixelSize(R.dimen.default_favicon_corner_radius);
-            drawable = ViewUtils.createRoundedBitmapDrawable(resources, bitmap, cornerRadiusPixels);
-        }
-        callback.onResult(drawable);
     }
 
     /** Returns the root view of this component, allowing the parent to anchor in the hierarchy. */

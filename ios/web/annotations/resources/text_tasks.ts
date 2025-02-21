@@ -39,8 +39,15 @@ const TASK_ACTIVITY_DELAY_MS = 300;
 class IdleTaskTracker {
   // The events to monitor for user activity.
   private eventNames = [
-    'gesturechange', 'gesturestart', 'mousemove', 'mousedown', 'touchmove',
-    'touchstart', 'click', 'keydown', 'scroll'
+    'gesturechange',
+    'gesturestart',
+    'mousemove',
+    'mousedown',
+    'touchmove',
+    'touchstart',
+    'click',
+    'keydown',
+    'scroll',
   ];
 
   // Id for the current timer for the next task.
@@ -51,7 +58,7 @@ class IdleTaskTracker {
   private activityListenersCount = 0;
 
   // The last time a user activity was recorded.
-  public lastActivityMs = 0;
+  lastActivityMs = 0;
 
   // Map of all tasks, keyed by the task callback `Function`. `value` is the
   // current wake up time requested.
@@ -127,9 +134,10 @@ class IdleTaskTracker {
 
   // Returns next wakeup time based on current set of tasks.
   private nextWakeUpMs(): number {
-    let [earlierTask, earlierTaskMs] = this.nextTask();
-    if (!earlierTask)
+    const [earlierTask, earlierTaskMs] = this.nextTask();
+    if (!earlierTask) {
       return 0;
+    }
     return earlierTaskMs;
   }
 
@@ -156,7 +164,7 @@ class IdleTaskTracker {
     if (this.lastActivityMs + this.activityDelayMs > now) {
       this.setNextWakeup(this.lastActivityMs + this.activityDelayMs);
     } else {
-      let [earlierTask] = this.nextTask();
+      const [earlierTask] = this.nextTask();
       if (earlierTask) {
         this.tasks.delete(earlierTask);
         earlierTask();
@@ -178,4 +186,4 @@ export {
   TaskTimer,
   LiveTaskTimer,
   IdleTaskTracker,
-}
+};

@@ -1605,8 +1605,6 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kFillAutofillAi:
-    case SuggestionType::kAutofillAiError:
-    case SuggestionType::kAutofillAiLoadingState:
     case SuggestionType::kBnplEntry:
       return false;
   }

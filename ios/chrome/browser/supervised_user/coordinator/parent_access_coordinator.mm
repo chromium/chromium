@@ -94,13 +94,16 @@
 #pragma mark - ParentAccessTabHelperDelegate
 
 - (void)hideParentAccessBottomSheetWithResult:
-    (supervised_user::LocalApprovalResult)result {
+            (supervised_user::LocalApprovalResult)result
+                                    errorType:
+                                        (std::optional<
+                                            supervised_user::
+                                                LocalWebApprovalErrorType>)
+                                            errorType {
   id<ParentAccessCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ParentAccessCommands);
   if (_callback) {
-    // TODO(crbug.com/384891227): Communicate the potential error type.
-    std::move(_callback).Run(result,
-                             /*local_approval_error_type=*/std::nullopt);
+    std::move(_callback).Run(result, errorType);
   }
 
   // Dismiss the parent access bottom sheet, which will also stop this
@@ -111,16 +114,20 @@
 #pragma mark - ParentAccessMediatorDelegate
 
 - (void)hideParentAccessBottomSheetOnTimeout {
-  [self hideParentAccessBottomSheetWithResult:
-            supervised_user::LocalApprovalResult::kCanceled];
+  [self hideParentAccessBottomSheetWithResult:supervised_user::
+                                                  LocalApprovalResult::kError
+                                    errorType:supervised_user::
+                                                  LocalWebApprovalErrorType::
+                                                      kPacpTimeoutExceeded];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self hideParentAccessBottomSheetWithResult:
-            supervised_user::LocalApprovalResult::kDeclined];
+  [self hideParentAccessBottomSheetWithResult:supervised_user::
+                                                  LocalApprovalResult::kCanceled
+                                    errorType:std::nullopt];
 }
 
 @end

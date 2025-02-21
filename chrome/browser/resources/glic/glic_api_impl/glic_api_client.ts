@@ -4,6 +4,7 @@
 
 import type {AnnotatedPageData, ChromeVersion, DraggableArea, FocusedTabCandidate, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, ScrollToParams, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
+import {replaceProperties} from './conversions.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClientRequestTypes} from './request_types.js';
 import {ImageAlphaType, ImageColorType} from './request_types.js';
@@ -23,7 +24,7 @@ export class GlicHostRegistryImpl implements GlicHostRegistry {
       await webClient.initialize(host);
       success = true;
     } catch (e) {
-      console.error(e);
+      console.warn(e);
     }
     host.webClientInitialized(success);
   }
@@ -66,7 +67,7 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
         openPanelInfo = result;
       }
     } catch (e) {
-      console.error(e);
+      console.warn(e);
     }
     return {openPanelInfo};
   }
@@ -81,7 +82,7 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     try {
       await this.webClient.notifyPanelWasClosed?.();
     } catch (e) {
-      console.error(e);
+      console.warn(e);
     }
   }
 
@@ -321,12 +322,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!profileInfo) {
       throw new Error('getUserProfileInfo failed');
     }
-    const {displayName, email, avatarIcon} = profileInfo;
-    return {
-      displayName,
-      email,
-      avatarIcon: async () => avatarIcon && rgbaImageToBlob(avatarIcon),
-    };
+    const {avatarIcon} = profileInfo;
+    return replaceProperties(
+        profileInfo,
+        {avatarIcon: async () => avatarIcon && rgbaImageToBlob(avatarIcon)});
   }
 
   async refreshSignInCookies(): Promise<void> {
@@ -437,14 +436,6 @@ async function rgbaImageToBlob(image: RgbaImage): Promise<Blob> {
       resolve(result);
     });
   });
-}
-
-// Helper function to shallow-copy an object and replace some properties.
-// Useful to convert from these private types to public types. This will fail to
-// compile if a property is missed.
-function replaceProperties<O, R>(
-    original: O, replacements: R): Omit<O, keyof R>&R {
-  return Object.assign(Object.assign({}, original) as any, replacements);
 }
 
 function convertTabDataFromPrivate(data: TabDataPrivate): TabData {

@@ -407,6 +407,8 @@ if (!is_android) {
       "tab_activity_simulator.h",
       "tab_ukm_test_helper.cc",
       "tab_ukm_test_helper.h",
+      "test_tab_strip_model_delegate.cc",
+      "test_tab_strip_model_delegate.h",
       "test_util.cc",
       "test_util.h",
     ]
@@ -421,7 +423,9 @@ if (!is_android) {
       ":tab_strip",
       ":tabs_public",
       "//base",
+      "//chrome/browser/extensions:extensions",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/tab_contents:tab_contents",
       "//content/public/browser",
       "//content/test:test_support",
       "//services/metrics/public/cpp:metrics_cpp",
@@ -434,15 +438,18 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
+      "pinned_tab_codec_browsertest.cc",
       "pinned_tab_service_browsertest.cc",
       "recent_tabs_builder_test_helper.cc",
       "recent_tabs_builder_test_helper.h",
       "recent_tabs_sub_menu_model_browsertest.cc",
+      "tab_menu_model_browsertest.cc",
       "tab_strip_model_browsertest.cc",
     ]
 
     deps = [
       ":tab_enums",
+      ":tab_menu",
       ":tab_strip",
       ":tab_strip_model_observer",
       ":tabs",
@@ -464,6 +471,10 @@ if (!is_android) {
       "//chrome/common:chrome_features",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
+      "//components/commerce/core:account_checker_test_support",
+      "//components/commerce/core:feature_list",
+      "//components/commerce/core:shopping_service",
+      "//components/commerce/core:shopping_service_test_support",
       "//components/policy:generated",
       "//components/policy:policy_code_generate",
       "//components/policy/core/browser",
@@ -487,18 +498,14 @@ if (!is_android) {
       "existing_comparison_table_sub_menu_model_unittest.cc",
       "existing_tab_group_sub_menu_model_unittest.cc",
       "existing_window_sub_menu_model_unittest.cc",
-      "pinned_tab_codec_unittest.cc",
       "pinned_tab_service_unittest.cc",
       "supports_handles_unittest.cc",
       "tab_collection_storage_unittest.cc",
       "tab_collection_unittest.cc",
       "tab_group_deletion_dialog_controller_unittest.cc",
-      "tab_menu_model_unittest.cc",
       "tab_model_unittest.cc",
       "tab_strip_model_stats_recorder_unittest.cc",
       "tab_strip_model_unittest.cc",
-      "test_tab_strip_model_delegate.cc",
-      "test_tab_strip_model_delegate.h",
     ]
 
     public_deps = [

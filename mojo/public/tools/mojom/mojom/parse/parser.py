@@ -303,7 +303,30 @@ class Parser:
     p[0] = None
 
   def p_response_2(self, p):
-    """response : RESPONSE LPAREN parameter_list RPAREN"""
+    """response : response_push_state RESPONSE response_type"""
+    p[0] = p[3]
+
+  # Embedded action to disambiguate 'result' keyword from an name. A push
+  # embedded action should be followed by a pop action before the response
+  # type is reduced. Otherwise, 'result' will not be allowed as an identifier
+  # name.
+  def p_response_push_state(self, p):
+    """response_push_state :"""
+    p.lexer.push_state('responsetype')
+    p[0] = None
+
+  def p_response_pop_state(self, p):
+    """response_pop_state :"""
+    p.lexer.pop_state()
+    p[0] = None
+
+  def p_response_type_1(self, p):
+    """response_type : RESULT response_pop_state LANGLE typename COMMA typename RANGLE"""
+    # TODO(crbug.com/40841428): implement result type.
+    p[0] = None
+
+  def p_response_type_2(self, p):
+    """response_type : LPAREN response_pop_state parameter_list RPAREN"""
     p[0] = p[3]
 
   def p_method(self, p):

@@ -1151,8 +1151,9 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         testing::Values(u"AppName", std::nullopt),
         testing::Values(FaviconOptions(SK_ColorBLUE),
-                        absl::monostate(),
+                        absl::monostate()
 #if BUILDFLAG(IS_MAC)
+                            ,
                         FaviconOptions(base::FilePath(FILE_PATH_LITERAL(
                             "chrome/test/data/web_apps/pattern3-256.png")))
 #endif

@@ -139,7 +139,7 @@ found in the LICENSE file.
     <!-- First Run and Bookmark/recent-tabs dialogs.
         TODO(crbug.com/41374924): Remove textAppearance when all TextViews have text style
         explicitly specified. -->
-    <style name="Base.V17.Theme.Chromium.DialogWhenLarge"
+    <style name="Base.Theme.Chromium.DialogWhenLarge"
         parent="Theme.BrowserUI.DialogWhenLarge.DayNight">
         <item name="android:windowBackground">@drawable/bg_white_dialog</item>
         <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary</item>
@@ -154,9 +154,8 @@ found in the LICENSE file.
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
     </style>
-    <style name="Base.Theme.Chromium.DialogWhenLarge"
-        parent="Base.V17.Theme.Chromium.DialogWhenLarge" />
-    <style name="Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge" />
+    <style name="Base.V27.Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge" />
+    <style name="Theme.Chromium.DialogWhenLarge" parent="Base.V27.Theme.Chromium.DialogWhenLarge" />
     <style name="DimmingDialog" parent="Base.Theme.Chromium.DialogWhenLarge">
         <item name="android:windowLightNavigationBar" tools:targetApi="28">false</item>
     </style>

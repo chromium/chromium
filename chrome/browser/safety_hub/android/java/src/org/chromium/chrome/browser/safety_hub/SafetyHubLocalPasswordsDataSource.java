@@ -27,19 +27,29 @@ public class SafetyHubLocalPasswordsDataSource
         void stateChanged(@ModuleType int moduleType);
     }
 
+    /**
+     * This should match the default value for {@link
+     * org.chromium.chrome.browser.preferences.Pref.LOCAL_BREACHED_CREDENTIALS_COUNT}.
+     */
+    private static final int INVALID_BREACHED_CREDENTIALS_COUNT = -1;
+
     // Represents the type of local password module.
     @IntDef({
         ModuleType.UNAVAILABLE_PASSWORDS,
         ModuleType.NO_SAVED_PASSWORDS,
         ModuleType.HAS_COMPROMISED_PASSWORDS,
-        ModuleType.HAS_WEAK_PASSWORDS
+        ModuleType.NO_COMPROMISED_PASSWORDS,
+        ModuleType.HAS_WEAK_PASSWORDS,
+        ModuleType.HAS_REUSED_PASSWORDS,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ModuleType {
         int UNAVAILABLE_PASSWORDS = 0;
         int NO_SAVED_PASSWORDS = 1;
         int HAS_COMPROMISED_PASSWORDS = 2;
-        int HAS_WEAK_PASSWORDS = 3;
+        int NO_COMPROMISED_PASSWORDS = 3;
+        int HAS_WEAK_PASSWORDS = 4;
+        int HAS_REUSED_PASSWORDS = 5;
     };
 
     @NonNull private final SafetyHubModuleDelegate mModuleDelegate;
@@ -50,6 +60,7 @@ public class SafetyHubLocalPasswordsDataSource
     private Observer mObserver;
 
     private int mCompromisedPasswordCount;
+    private int mReusedPasswordCount;
     private int mWeakPasswordCount;
 
     SafetyHubLocalPasswordsDataSource(
@@ -79,8 +90,8 @@ public class SafetyHubLocalPasswordsDataSource
     }
 
     public void updateState() {
-        // TODO(crbug.com/388788969): Update password counts.
         updateCompromisedPasswordCount();
+        updateReusedPasswordCount();
         updateWeakPasswordCount();
 
         if (mObserver != null) {
@@ -94,20 +105,28 @@ public class SafetyHubLocalPasswordsDataSource
 
     // Returns the password module type according to the application state.
     private @ModuleType int getModuleType() {
-        // TODO(crbug.com/388788969): Add more module types.
         if (getTotalPasswordCount() == 0) {
             return ModuleType.NO_SAVED_PASSWORDS;
+        }
+        if (mCompromisedPasswordCount == INVALID_BREACHED_CREDENTIALS_COUNT) {
+            return ModuleType.UNAVAILABLE_PASSWORDS;
         }
         if (mCompromisedPasswordCount > 0) {
             return ModuleType.HAS_COMPROMISED_PASSWORDS;
         }
-        // TODO(crbug.com/388788969): Test when weak and reuse feature is disabled.
         if (ChromeFeatureList.sSafetyHubWeakAndReusedPasswords.isEnabled()) {
+            // Reused passwords take priority over the weak passwords count.
+            if (mReusedPasswordCount > 0) {
+                return ModuleType.HAS_REUSED_PASSWORDS;
+            }
             if (mWeakPasswordCount > 0) {
                 return ModuleType.HAS_WEAK_PASSWORDS;
             }
         }
-        return ModuleType.UNAVAILABLE_PASSWORDS;
+
+        // If both reused passwords and weak passwords counts are invalid, ignore them in favour
+        // of showing the compromised passwords count.
+        return ModuleType.NO_COMPROMISED_PASSWORDS;
     }
 
     public int getCompromisedPasswordCount() {
@@ -118,6 +137,16 @@ public class SafetyHubLocalPasswordsDataSource
         assert mPrefService != null
                 : "A null PrefService was detected in SafetyHubLocalPasswordsDataSource";
         mCompromisedPasswordCount = mPrefService.getInteger(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT);
+    }
+
+    public int getReusedPasswordCount() {
+        return mReusedPasswordCount;
+    }
+
+    private void updateReusedPasswordCount() {
+        assert mPrefService != null
+                : "A null PrefService was detected in SafetyHubLocalPasswordsDataSource";
+        mReusedPasswordCount = mPrefService.getInteger(Pref.LOCAL_REUSED_CREDENTIALS_COUNT);
     }
 
     public int getWeakPasswordCount() {

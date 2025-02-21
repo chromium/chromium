@@ -32,6 +32,8 @@ bool IsReservedFeature(const blink::UseCounterFeature& feature) {
         kPermissionsPolicyViolationEnforce:
     case blink::mojom::UseCounterFeatureType::kPermissionsPolicyHeader:
     case blink::mojom::UseCounterFeatureType::kPermissionsPolicyIframeAttribute:
+    case blink::mojom::UseCounterFeatureType::
+        kPermissionsPolicyEnabledPrivacySensitive:
       return feature.value() ==
              static_cast<blink::UseCounterFeature::EnumValue>(
                  network::mojom::PermissionsPolicyFeature::kNotFound);

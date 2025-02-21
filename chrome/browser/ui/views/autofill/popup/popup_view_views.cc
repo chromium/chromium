@@ -37,7 +37,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_loading_state_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_no_suggestions_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
@@ -1003,26 +1002,17 @@ void PopupViewViews::CreateSuggestionViews() {
           rows_.push_back(body_container->AddChildView(
               std::make_unique<PopupSeparatorView>(kInterItemsPadding)));
           break;
-
         case SuggestionType::kTitle:
           rows_.push_back(
               body_container->AddChildView(std::make_unique<PopupTitleView>(
                   suggestions[current_line_number].main_text.value)));
           break;
-
         case SuggestionType::kMixedFormMessage:
         case SuggestionType::kInsecureContextPaymentDisabledMessage:
           rows_.push_back(
               body_container->AddChildView(std::make_unique<PopupWarningView>(
                   suggestions[current_line_number])));
           break;
-
-        case SuggestionType::kAutofillAiLoadingState:
-          rows_.push_back(body_container->AddChildView(
-              std::make_unique<autofill_ai::AutofillAiLoadingStateView>(
-                  suggestions[current_line_number])));
-          break;
-
         // The default section contains all selectable rows and includes
         // autocomplete, address, credit cards and passwords.
         default:
@@ -1404,18 +1394,11 @@ void PopupViewViews::MaybeA11yFocusInformationalSuggestion() {
     return;
   }
 
-  RowPointer first_row = rows_[0];
-  views::View* view_to_focus = nullptr;
-  if (auto* loading_view =
-          absl::get_if<autofill_ai::AutofillAiLoadingStateView*>(&first_row)) {
-    view_to_focus = *loading_view;
-  } else if (auto* warning_view = absl::get_if<PopupWarningView*>(&first_row)) {
-    view_to_focus = *warning_view;
-  }
-  if (view_to_focus) {
-    NotifyAXSelection(*view_to_focus);
-    view_to_focus->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus,
-                                                      true);
+  if (auto* warning_view = absl::get_if<PopupWarningView*>(&rows_[0]);
+      warning_view && *warning_view) {
+    NotifyAXSelection(**warning_view);
+    (*warning_view)
+        ->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
   }
 }
 

@@ -835,6 +835,20 @@ BASE_FEATURE(kReduceSubresourceResponseStartedIPC,
              "ReduceSubresourceResponseStartedIPC",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// When a Web application is video-capturing a tab, it can use the Region
+// Capture API to crop the resulting video.
+// - If `kRegionCaptureOfOtherTabs` is disabled, the Web application can only
+// crop self-capture tracks. (That is, cropping is only possible when the
+// application is capturing its own tab.)
+// - If `kRegionCaptureOfOtherTabs` is enabled, the Web application  can crop
+// video-captures of any tab (so long as that other tab collaborates by sending
+// a CropTarget).
+BASE_FEATURE(kRegionCaptureOfOtherTabs,
+             "RegionCaptureOfOtherTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 // RenderDocument:
 //
 // Currently, a RenderFrameHost represents neither a frame nor a document, but a
@@ -1201,6 +1215,20 @@ BASE_FEATURE(kWebAssemblyBaseline,
              "WebAssemblyBaseline",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// When a Web application is video-capturing a tab, it can use the Element
+// Capture API to restrict the resulting video.
+// - If `kElementCaptureOfOtherTabs` is disabled, the Web application can only
+// restrict self-capture tracks. (That is, restrictping is only possible when
+// the application is capturing its own tab.)
+// - If `kElementCaptureOfOtherTabs` is enabled, the Web application  can
+// restrict video-captures of any tab (so long as that other tab collaborates by
+// sending a RestrictionTarget).
+BASE_FEATURE(kElementCaptureOfOtherTabs,
+             "ElementCaptureOfOtherTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 // Enable WebAssembly JSPI.
 BASE_FEATURE(kEnableExperimentalWebAssemblyJSPI,
              "WebAssemblyExperimentalJSPI",
@@ -1305,12 +1333,6 @@ BASE_FEATURE(kAccessibilityIncludeLongClickAction,
 // This version of the experiment explores enabling OS-level adjustments.
 BASE_FEATURE(kAccessibilityPageZoomV2,
              "AccessibilityPageZoomV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables the addition of text formatting information to the Android
-// AccessibilityNodeInfo accessibility tree.
-BASE_FEATURE(kAccessibilityTextFormatting,
-             "AccessibilityTextFormatting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the use of a unified code path for AXTree snapshots.

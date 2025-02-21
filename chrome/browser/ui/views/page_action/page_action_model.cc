@@ -98,15 +98,16 @@ bool PageActionModel::GetShowSuggestionChip() const {
 }
 
 const ui::ImageModel& PageActionModel::GetImage() const {
-  return action_item_image_;
+  return override_image_.has_value() ? override_image_.value()
+                                     : action_item_image_;
 }
 
-const std::u16string PageActionModel::GetText() const {
-  return override_text_.value_or(text_);
+const std::u16string& PageActionModel::GetText() const {
+  return override_text_.has_value() ? override_text_.value() : text_;
 }
 
-const std::u16string PageActionModel::GetTooltipText() const {
-  return tooltip_;
+const std::u16string& PageActionModel::GetTooltipText() const {
+  return override_tooltip_.has_value() ? override_tooltip_.value() : tooltip_;
 }
 
 void PageActionModel::SetOverrideText(
@@ -116,6 +117,26 @@ void PageActionModel::SetOverrideText(
     return;
   }
   override_text_ = override_text;
+  NotifyChange();
+}
+
+void PageActionModel::SetOverrideImage(
+    base::PassKey<PageActionController>,
+    const std::optional<ui::ImageModel>& override_image) {
+  if (override_image_ == override_image) {
+    return;
+  }
+  override_image_ = override_image;
+  NotifyChange();
+}
+
+void PageActionModel::SetOverrideTooltip(
+    base::PassKey<PageActionController>,
+    const std::optional<std::u16string>& override_tooltip) {
+  if (override_tooltip_ == override_tooltip) {
+    return;
+  }
+  override_tooltip_ = override_tooltip;
   NotifyChange();
 }
 

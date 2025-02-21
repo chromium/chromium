@@ -358,13 +358,33 @@ std::vector<LocalTabID> IOSTabGroupSyncDelegate::GetLocalTabIdsForTabGroup(
 }
 
 std::set<LocalTabID> IOSTabGroupSyncDelegate::GetSelectedTabs() {
-  // TODO(crbug.com/396530700): Implement.
-  return std::set<LocalTabID>();
+  std::set<LocalTabID> selected_tab_ids;
+  for (Browser* browser :
+       browser_list_->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
+    WebStateList* web_state_list = browser->GetWebStateList();
+    web::WebState* active_web_state = web_state_list->GetActiveWebState();
+    if (active_web_state) {
+      selected_tab_ids.insert(
+          active_web_state->GetUniqueIdentifier().identifier());
+    }
+  }
+
+  return selected_tab_ids;
 }
 
 std::u16string IOSTabGroupSyncDelegate::GetTabTitle(
     const LocalTabID& local_tab_id) {
-  // TODO(crbug.com/396530700): Implement.
+  for (Browser* browser :
+       browser_list_->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
+    WebStateList* web_state_list = browser->GetWebStateList();
+    for (int index = 0; index < web_state_list->count(); ++index) {
+      web::WebState* web_state = web_state_list->GetWebStateAt(index);
+      if (local_tab_id == web_state->GetUniqueIdentifier().identifier()) {
+        return web_state->GetTitle();
+      }
+    }
+  }
+
   return std::u16string();
 }
 

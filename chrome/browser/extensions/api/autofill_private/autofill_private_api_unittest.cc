@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router.h"
@@ -28,6 +29,7 @@
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_service.h"
@@ -247,6 +249,8 @@ class AutofillPrivateApiUnitTest : public extensions::ExtensionApiTest {
       test_autofill_client_injector_;
   raw_ptr<user_annotations::TestUserAnnotationsService>
       user_annotations_service_;
+  base::test::ScopedFeatureList feature_list_{
+      autofill::features::kAutofillAiWithDataSchema};
 };
 
 // Test to verify all the CVCs(server and local) are bulk deleted when the API
@@ -397,6 +401,16 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
   EXPECT_TRUE(RunAutofillSubtest("setAutofillSyncToggleEnabled"));
   EXPECT_TRUE(test_sync_service.GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kAutofill));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, EntityInstances) {
+  ASSERT_TRUE(RunAutofillSubtest("loadEmptyEntityInstancesList"));
+  ASSERT_TRUE(RunAutofillSubtest("addEntityInstance"));
+  ASSERT_TRUE(RunAutofillSubtest("loadFirstEntityInstance"));
+  ASSERT_TRUE(RunAutofillSubtest("updateEntityInstance"));
+  ASSERT_TRUE(RunAutofillSubtest("loadUpdatedEntityInstance"));
+  ASSERT_TRUE(RunAutofillSubtest("removeEntityInstance"));
+  ASSERT_TRUE(RunAutofillSubtest("loadEmptyEntityInstancesList"));
 }
 
 }  // namespace

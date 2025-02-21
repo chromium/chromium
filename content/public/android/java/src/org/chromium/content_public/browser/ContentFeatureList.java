@@ -23,8 +23,6 @@ public class ContentFeatureList {
 
     public static final String ACCESSIBILITY_PAGE_ZOOM_V2 = "AccessibilityPageZoomV2";
 
-    public static final String ACCESSIBILITY_TEXT_FORMATTING = "AccessibilityTextFormatting";
-
     public static final String ACCESSIBILITY_UNIFIED_SNAPSHOTS = "AccessibilityUnifiedSnapshots";
     public static final String ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND =
             "AccessibilityManageBroadcastReceiverOnBackground";

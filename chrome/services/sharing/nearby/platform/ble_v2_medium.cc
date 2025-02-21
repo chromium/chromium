@@ -187,14 +187,6 @@ bool BleV2Medium::StartAdvertising(
     }
   }
 
-  // Connectable is set to false due to privacy bug caused from connectable
-  // advertisements leaking the device name and not rotating the address.
-  //
-  // TODO(crbug/395934066): Change this back to reflect the advertisement
-  // connectable setting once the Nearby SDK sets Fast advertisements to
-  // non-connectable.
-  advertise_set_parameters.is_connectable = false;
-
   std::string service_data_info;
   for (auto it = advertising_data.service_data.begin();
        it != advertising_data.service_data.end(); it++) {

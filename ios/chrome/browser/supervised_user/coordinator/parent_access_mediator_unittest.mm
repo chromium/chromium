@@ -6,7 +6,6 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
-#import "components/supervised_user/core/browser/web_content_handler.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
@@ -53,8 +52,8 @@
 - (void)hideParentAccessBottomSheetOnTimeout {
   CHECK(_completion);
   std::move(_completion)
-      .Run(supervised_user::LocalApprovalResult::kCanceled,
-           /*error_type=*/std::nullopt);
+      .Run(supervised_user::LocalApprovalResult::kError,
+           supervised_user::LocalWebApprovalErrorType::kPacpTimeoutExceeded);
   _isBottomSheetDismissed = YES;
 }
 
@@ -153,14 +152,17 @@ TEST_F(ParentAccessMediatorTest, TestBottomSheetDismissedOnTimeout) {
   EXPECT_TRUE(delegate_.isBottomSheetDismissed);
 
   histogram_tester_.ExpectBucketCount(
-      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
-      supervised_user::LocalApprovalResult::kCanceled, 1);
+      supervised_user::kLocalWebApprovalResultHistogramName,
+      supervised_user::LocalApprovalResult::kError, 1);
   histogram_tester_.ExpectTotalCount(
-      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(), 1);
+      supervised_user::kLocalWebApprovalResultHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName,
+      supervised_user::LocalWebApprovalErrorType::kPacpTimeoutExceeded, 1);
   histogram_tester_.ExpectTotalCount(
-      supervised_user::WebContentHandler::
-          GetLocalApprovalDurationMillisecondsHistogram(),
-      0);
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName, 1);
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::kLocalWebApprovalDurationMillisecondsHistogramName, 0);
 }
 
 // Verifies that the bottom sheet is displayed and the WebView is visible when
@@ -178,9 +180,9 @@ TEST_F(ParentAccessMediatorTest, TestBottomSheetDisplayedOnSuccessfulLoad) {
   EXPECT_FALSE(consumer_.isWebViewHidden);
 
   histogram_tester_.ExpectTotalCount(
-      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(), 0);
+      supervised_user::kLocalWebApprovalResultHistogramName, 0);
   histogram_tester_.ExpectTotalCount(
-      supervised_user::WebContentHandler::
-          GetLocalApprovalDurationMillisecondsHistogram(),
-      0);
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::kLocalWebApprovalDurationMillisecondsHistogramName, 0);
 }

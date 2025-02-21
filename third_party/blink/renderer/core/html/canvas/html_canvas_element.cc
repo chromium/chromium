@@ -1701,6 +1701,12 @@ void HTMLCanvasElement::LayoutObjectDestroyed() {
   SetIsDisplayed(false);
 }
 
+void HTMLCanvasElement::LangAttributeChanged() {
+  if (context_) {
+    context_->LangAttributeChanged();
+  }
+}
+
 void HTMLCanvasElement::DidMoveToNewDocument(Document& old_document) {
   SetExecutionContext(GetExecutionContext());
   SetPage(GetDocument().GetPage());
@@ -1922,6 +1928,27 @@ TextDirection HTMLCanvasElement::GetTextDirection(const ComputedStyle* style) {
   // direction. This value would have been pushed to the style had there been
   // a style.
   return CachedDirectionality();
+}
+
+const LayoutLocale* HTMLCanvasElement::GetLocale() const {
+  const AtomicString language = ComputeInheritedLanguage();
+  if (!language.IsNull()) {
+    return LayoutLocale::Get(language);
+  }
+
+  // The computed language may be null if the element is disconnected and does
+  // not have it's own language attribute. Fall back to the language of the
+  // document from the execution context.
+  if (const auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
+    const Element* document_element = window->document()->documentElement();
+    if (document_element) {
+      return &LayoutLocale::ValueOrDefault(
+          LayoutLocale::Get(document_element->ComputeInheritedLanguage()));
+    }
+  }
+
+  // If all else fails, return the default.
+  return &LayoutLocale::GetDefault();
 }
 
 FontSelector* HTMLCanvasElement::GetFontSelector() {

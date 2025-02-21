@@ -84,6 +84,8 @@ import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerProperties;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerTestingDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -176,6 +178,7 @@ public class BookmarkTest {
     @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
     @Captor private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
 
+    private final BookmarkManagerOpener mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();
     private BookmarkModel mBookmarkModel;
     // Constant but can only be initialized after parameterized test runner setup because this would
     // trigger native load / CommandLineFlag setup.
@@ -354,10 +357,10 @@ public class BookmarkTest {
 
         runOnUiThreadBlocking(
                 () -> {
-                    BookmarkUtils.showBookmarkManager(
+                    mBookmarkManagerOpener.showBookmarkManager(
                             mActivityTestRule.getActivity(),
-                            mBookmarkModel.getMobileFolderId(),
-                            mActivityTestRule.getProfile(false));
+                            mActivityTestRule.getProfile(false),
+                            mBookmarkModel.getMobileFolderId());
                 });
 
         BookmarkTestUtil.waitForBookmarkActivity();
@@ -376,7 +379,7 @@ public class BookmarkTest {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
 
         assertEquals(BookmarkUiMode.FOLDER, mDelegate.getCurrentUiMode());
-        assertEquals("chrome-native://bookmarks/folder/3", BookmarkUtils.getLastUsedUrl());
+        assertEquals("chrome-native://bookmarks/folder/3", mBookmarkManagerOpener.getLastUsedUrl());
     }
 
     @Test

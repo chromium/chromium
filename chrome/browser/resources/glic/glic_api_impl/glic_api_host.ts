@@ -22,9 +22,10 @@ import {WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.
 import type {DraggableArea, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
 import {CaptureScreenshotErrorReason, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason, InvalidCandidateError, NoCandidateTabError, ScrollToErrorReason} from '../glic_api/glic_api.js';
 
+import {replaceProperties} from './conversions.js';
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
-import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, UserProfileInfoPrivate} from './request_types.js';
+import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate} from './request_types.js';
 import {ErrorWithReasonImpl, ImageAlphaType, ImageColorType} from './request_types.js';
 
 // Implemented by the embedder of GlicApiHost.
@@ -397,15 +398,15 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     if (!mojoProfileInfo) {
       return {};
     }
-    const {displayName, email, avatarIcon} = mojoProfileInfo;
-    const profileInfo: UserProfileInfoPrivate = {displayName, email};
-    if (avatarIcon) {
-      profileInfo.avatarIcon = bitmapN32ToRGBAImage(avatarIcon);
-      if (profileInfo.avatarIcon) {
-        transfer.push(profileInfo.avatarIcon.dataRGBA);
+
+    let avatarIcon: RgbaImage|undefined;
+    if (mojoProfileInfo.avatarIcon) {
+      avatarIcon = bitmapN32ToRGBAImage(mojoProfileInfo.avatarIcon);
+      if (avatarIcon) {
+        transfer.push(avatarIcon.dataRGBA);
       }
     }
-    return {profileInfo};
+    return {profileInfo: replaceProperties(mojoProfileInfo, {avatarIcon})};
   }
 
   glicBrowserRefreshSignInCookies(): Promise<{success: boolean}> {
@@ -548,7 +549,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
       Promise<{payload: any, transfer: Transferable[]}|undefined> {
     const handlerFunction = (this.messageHandler as any)[type];
     if (typeof handlerFunction !== 'function') {
-      console.error(`GlicApiHost: Unknown message type ${type}`);
+      console.warn(`GlicApiHost: Unknown message type ${type}`);
       return;
     }
 

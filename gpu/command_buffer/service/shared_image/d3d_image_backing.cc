@@ -771,6 +771,12 @@ void D3DImageBacking::InitPersistentGraphiteDawnAccess(
   wgpu::SharedTextureMemoryProperties props;
   CHECK(shared_texture_memory.GetProperties(&props) == wgpu::Status::Success);
 
+  // Make sure we cache the shared texture memory so that the texture will be
+  // properly cleaned up when the cache is destroyed.
+  dawn_shared_texture_holder_.MaybeCacheSharedTextureMemory(
+      device, shared_texture_memory);
+
+  // Create a single texture that has all supported usages.
   wgpu::Texture texture = GetOrCreateDawnTexture(
       device, shared_texture_memory, /*wgpu_usage=*/props.usage,
       /*wgpu_internal_usage=*/wgpu::TextureUsage::None, view_formats);
@@ -1239,7 +1245,7 @@ void D3DImageBacking::BeginDCompTextureAccess() {
   CHECK(dcomp_texture_);
   num_dcomp_texture_readers_++;
 
-  if (num_dcomp_texture_readers_ > 0) {
+  if (num_dcomp_texture_readers_ > 1) {
     // If the DComp texture is already in a visual tree, the available fence is
     // invalid and should not be stored.
     CHECK(!dcomp_texture_available_fence_);

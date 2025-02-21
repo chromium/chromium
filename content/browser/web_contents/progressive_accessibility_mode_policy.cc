@@ -9,8 +9,9 @@
 namespace content {
 
 ProgressiveAccessibilityModePolicy::ProgressiveAccessibilityModePolicy(
-    WebContentsImpl& web_contents)
-    : WebContentsObserver(&web_contents) {}
+    WebContentsImpl& web_contents,
+    bool disable_on_hide)
+    : WebContentsObserver(&web_contents), disable_on_hide_(disable_on_hide) {}
 
 ProgressiveAccessibilityModePolicy::~ProgressiveAccessibilityModePolicy() =
     default;
@@ -29,12 +30,24 @@ void ProgressiveAccessibilityModePolicy::SetAccessibilityMode(
 
 void ProgressiveAccessibilityModePolicy::OnVisibilityChanged(
     Visibility visibility) {
+  if (web_contents_impl().IsBeingDestroyed()) {
+    // Do nothing if the WebContents is being destroyed.
+    return;
+  }
+
+  if (visibility == Visibility::HIDDEN && !disable_on_hide_) {
+    // Do nothing if the WebContents has been hidden and the policy is not
+    // configured to disable accessibility upon hide.
+    return;
+  }
+
   // TODO(https://crbug.com/336843455): Propagate mode changes to inner
   // WebContentses if the kUpdateInnerWebContentsVisibility feature is disabled
   // or reverted.
-  if (!web_contents_impl().IsBeingDestroyed()) {
-    apply_or_clear_mode_.Run(/*apply=*/visibility != Visibility::HIDDEN);
-  }
+
+  // Apply the latest changes if the WebContents has become un-hidden, or clear
+  // the mode flags if is being hidden (and disable_on_hide_ is set).
+  apply_or_clear_mode_.Run(/*apply=*/visibility != Visibility::HIDDEN);
 }
 
 // TODO(https://crbug.com/336843455): Observe InnerWebContentsAttached and

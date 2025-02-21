@@ -10,11 +10,11 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 declare interface Message {
-  command: 'willChangeState' | 'didPushState' | 'didReplaceState',
-  frame_id: string,
-  stateObject?: string,
-  baseUrl?: string,
-  pageUrl?: string,
+  command: 'willChangeState'|'didPushState'|'didReplaceState';
+  frame_id: string;
+  stateObject?: string;
+  baseUrl?: string;
+  pageUrl?: string;
 }
 
 class DataCloneError {
@@ -37,7 +37,7 @@ class MessageQueue {
         try {
           sendWebKitMessage(
               'NavigationEventMessage', this.queuedMessages[0] as Message);
-          this.queuedMessages.shift()
+          this.queuedMessages.shift();
         } catch (e) {
           // 'NavigationEventMessage' message handler
           // is not currently registered. Send the
@@ -45,13 +45,13 @@ class MessageQueue {
           break;
         }
       }
-    };
+    }
 
     // Queues the `message` and triggers the queue to be sent.
     queueNavigationEventMessage(message: Message): void {
       this.queuedMessages.push(message);
       this.sendQueuedMessages();
-    };
+    }
 }
 
 const messageQueue = new MessageQueue();
@@ -78,12 +78,11 @@ const originalWindowHistoryReplaceState = window.history.replaceState;
  * TODO(crbug.com/41354482): Remove this once DidStartLoading is no longer
  * called for same-document navigation.
  */
-History.prototype.pushState =
-    function(stateObject: object, pageTitle: string,
-        pageUrl: string | URL): void {
+History.prototype.pushState = function(
+    stateObject: object, pageTitle: string, pageUrl: string|URL): void {
   messageQueue.queueNavigationEventMessage({
     'command': 'willChangeState',
-    'frame_id': gCrWeb.message.getFrameId()
+    'frame_id': gCrWeb.message.getFrameId(),
   });
 
   // JSONStringify throws an exception when given a cyclical object. This
@@ -92,7 +91,7 @@ History.prototype.pushState =
   let serializedState = '';
   try {
     // Calling stringify() on undefined causes a JSON parse error.
-    if (typeof (stateObject) != 'undefined') {
+    if (typeof (stateObject) !== 'undefined') {
       serializedState = JSONStringify(stateObject);
     }
   } catch (e) {
@@ -105,16 +104,15 @@ History.prototype.pushState =
     'stateObject': serializedState,
     'baseUrl': document.baseURI,
     'pageUrl': pageUrl.toString(),
-    'frame_id': gCrWeb.message.getFrameId()
+    'frame_id': gCrWeb.message.getFrameId(),
   });
 };
 
-History.prototype.replaceState =
-    function(stateObject: object, pageTitle: string,
-        pageUrl: string | URL): void {
+History.prototype.replaceState = function(
+    stateObject: object, pageTitle: string, pageUrl: string|URL): void {
   messageQueue.queueNavigationEventMessage({
     'command': 'willChangeState',
-    'frame_id': gCrWeb.message.getFrameId()
+    'frame_id': gCrWeb.message.getFrameId(),
   });
 
   // JSONStringify throws an exception when given a cyclical object. This
@@ -124,7 +122,7 @@ History.prototype.replaceState =
   let serializedState = '';
   try {
     // Calling stringify() on undefined causes a JSON parse error.
-    if (typeof (stateObject) != 'undefined') {
+    if (typeof (stateObject) !== 'undefined') {
       serializedState = JSONStringify(stateObject);
     }
   } catch (e) {
@@ -138,6 +136,6 @@ History.prototype.replaceState =
     'stateObject': serializedState,
     'baseUrl': document.baseURI,
     'pageUrl': pageUrl.toString(),
-    'frame_id': gCrWeb.message.getFrameId()
+    'frame_id': gCrWeb.message.getFrameId(),
   });
 };

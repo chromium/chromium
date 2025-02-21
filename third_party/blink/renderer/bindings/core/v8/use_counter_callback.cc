@@ -453,6 +453,12 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kErrorIsError:
       webdx_feature = WebDXFeature::kDRAFT_ErrorIsError;
       break;
+    case v8::Isolate::kRegExpEscape:
+      webdx_feature = WebDXFeature::kDRAFT_RegExpEscape;
+      break;
+    case v8::Isolate::kFloat16Array:
+      webdx_feature = WebDXFeature::kFloat16array;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.

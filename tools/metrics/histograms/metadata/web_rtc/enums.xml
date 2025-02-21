@@ -237,11 +237,15 @@ chromium-metrics-reviews@google.com.
   <int value="67" label="AudioCodecsFmtpOpusPacketizationTime"/>
   <int value="68" label="AudioCodecsFmtpOpusStereo"/>
   <int value="69" label="AudioCodecsFmtpOpusDtx"/>
+  <int value="70" label="AudioCodecsFmtp"/>
+  <int value="71" label="AudioCodecsRtcpFb"/>
   <int value="80" label="VideoCodecsRemoved"/>
   <int value="81" label="VideoCodecsAdded"/>
   <int value="82" label="VideoCodecsReordered"/>
   <int value="83" label="VideoCodecsLegacySimulcast"/>
   <int value="84" label="VideoCodecsFmtpH264SpsPpsIdrInKeyframe"/>
+  <int value="85" label="VideoCodecsFmtp"/>
+  <int value="86" label="VideoCodecsRtcpFb"/>
 </enum>
 
 <enum name="SocketErrorCode">

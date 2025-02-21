@@ -398,6 +398,20 @@ bool PersistentSystemProfile::GetSystemProfile(
     return false;
 
   MergeUpdateRecords(memory_allocator, system_profile);
+
+  // For now, prevent independent logs from having a `fg_bg_id` field set,
+  // since there are many edge cases that would result in an incorrect value.
+  // Otherwise, for example, if the user foregrounds, backgrounds, and closes
+  // the application all before the first log can be closed, `fg_bg_id` should
+  // be unset, but an independent log generated from that session would have a
+  // value set. Or, if the user backgrounds the application, and very shortly
+  // after kills the application, an independent log generated from the leftover
+  // background metrics from that session would have its `fg_bg_id` set to the
+  // value of when the application was still in the foreground (since that's the
+  // last complete system profile written to the PMA file).
+  // TODO(crbug.com/383881315): Improve this.
+  system_profile->clear_fg_bg_id();
+
   return true;
 }
 

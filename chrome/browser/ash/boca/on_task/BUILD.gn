@@ -16,6 +16,8 @@ static_library("on_task") {
     "on_task_locked_session_navigation_throttle.h",
     "on_task_locked_session_window_tracker.cc",
     "on_task_locked_session_window_tracker.h",
+    "on_task_pod_controller_impl.cc",
+    "on_task_pod_controller_impl.h",
     "on_task_system_web_app_manager_impl.cc",
     "on_task_system_web_app_manager_impl.h",
   ]
@@ -49,6 +51,7 @@ static_library("on_task") {
     "//chromeos/ash/components/boca/on_task:activity",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/strings:strings_grit",
+    "//chromeos/ui/frame",
     "//components/keyed_service/content",
     "//components/policy/core/browser",
     "//components/policy/core/common",
@@ -93,12 +96,14 @@ source_set("browser_tests") {
   sources = [
     "on_task_locked_session_navigation_throttle_interactive_ui_test.cc",
     "on_task_locked_session_window_tracker_browsertest.cc",
+    "on_task_pod_controller_impl_browsertest.cc",
     "on_task_session_manager_browsertest.cc",
     "on_task_system_web_app_manager_impl_browsertest.cc",
   ]
 
   deps = [
     ":on_task",
+    "//ash",
     "//ash/webui/boca_ui",
     "//base/test:test_support",
     "//chrome/browser/ash/boca",

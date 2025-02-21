@@ -8095,6 +8095,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"element-capture", flag_descriptions::kElementCaptureName,
      flag_descriptions::kElementCaptureDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kElementCapture)},
+
+    {"element-capture-cross-tab",
+     flag_descriptions::kCrossTabElementCaptureName,
+     flag_descriptions::kCrossTabElementCaptureDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kElementCaptureOfOtherTabs)},
 #endif
 
     {"device-posture", flag_descriptions::kDevicePostureName,
@@ -9097,13 +9102,15 @@ const FeatureEntry kFeatureEntries[] = {
     {"canvas-oop-rasterization", flag_descriptions::kCanvasOopRasterizationName,
      flag_descriptions::kCanvasOopRasterizationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kCanvasOopRasterization)},
-#endif
 
-#if !BUILDFLAG(IS_ANDROID)
     {"captured-surface-control", flag_descriptions::kCapturedSurfaceControlName,
      flag_descriptions::kCapturedSurfaceControlDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kCapturedSurfaceControl)},
-#endif
+
+    {"region-capture-cross-tab", flag_descriptions::kCrossTabRegionCaptureName,
+     flag_descriptions::kCrossTabRegionCaptureDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kRegionCaptureOfOtherTabs)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     {"skia-graphite", flag_descriptions::kSkiaGraphiteName,
      flag_descriptions::kSkiaGraphiteDescription, kOsAll,
@@ -10196,27 +10203,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kPlatformKeysChangesWave1)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"autofill-enable-save-card-loading-and-confirmation",
-     flag_descriptions::kAutofillEnableSaveCardLoadingAndConfirmationName,
-     flag_descriptions::
-         kAutofillEnableSaveCardLoadingAndConfirmationDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)},
-
     {"autofill-enable-loyalty-cards-filling",
      flag_descriptions::kAutofillEnableLoyaltyCardsFillingName,
      flag_descriptions::kAutofillEnableLoyaltyCardsFillingDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableLoyaltyCardsFilling)},
-
-    {"autofill-enable-vcn-enroll-loading-and-confirmation",
-     flag_descriptions::kAutofillEnableVcnEnrollLoadingAndConfirmationName,
-     flag_descriptions::
-         kAutofillEnableVcnEnrollLoadingAndConfirmationDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"boarding-pass-detector", flag_descriptions::kBoardingPassDetectorName,
@@ -10521,13 +10512,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReduceIPAddressChangeNotificationDescription, kOsMac,
      FEATURE_VALUE_TYPE(net::features::kReduceIPAddressChangeNotification)},
 #endif  // BUILDFLAG(IS_MAC)
-
-    {"autofill-enable-save-card-local-save-fallback",
-     flag_descriptions::kAutofillEnableSaveCardLocalSaveFallbackName,
-     flag_descriptions::kAutofillEnableSaveCardLocalSaveFallbackDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableSaveCardLocalSaveFallback)},
 
     {"enable-fingerprinting-protection-blocklist",
      flag_descriptions::kEnableFingerprintingProtectionBlocklistName,

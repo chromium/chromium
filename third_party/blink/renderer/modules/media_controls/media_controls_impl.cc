@@ -58,9 +58,11 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element_controls_list.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/time_ranges.h"
+#include "third_party/blink/renderer/core/html/track/audio_track_list.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track_container.h"
 #include "third_party/blink/renderer/core/html/track/text_track_list.h"
+#include "third_party/blink/renderer/core/html/track/video_track_list.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
@@ -91,6 +93,8 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_text_track_list_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_timeline_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_toggle_closed_captions_button_element.h"
+#include "third_party/blink/renderer/modules/media_controls/elements/media_control_track_selector_list_element.h"
+#include "third_party/blink/renderer/modules/media_controls/elements/media_control_track_selector_menu_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_volume_control_container_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_volume_slider_element.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_display_cutout_delegate.h"
@@ -176,6 +180,22 @@ bool ShouldShowPlaybackSpeedButton(HTMLMediaElement& media_element) {
   }
 
   return true;
+}
+
+bool ShouldShowTrackSelectionButton(WebMediaPlayer::TrackType track_type,
+                                    HTMLMediaElement& element) {
+  if (!RuntimeEnabledFeatures::AudioVideoTracksEnabled()) {
+    return false;
+  }
+  switch (track_type) {
+    case WebMediaPlayer::TrackType::kVideoTrack:
+      return element.videoTracks().length() >= 2;
+    case WebMediaPlayer::TrackType::kAudioTrack:
+      return element.audioTracks().length() >= 2;
+    case WebMediaPlayer::TrackType::kTextTrack:
+      NOTREACHED();
+  }
+  return false;
 }
 
 bool ShouldShowPictureInPictureButton(HTMLMediaElement& media_element) {
@@ -368,6 +388,10 @@ MediaControlsImpl::MediaControlsImpl(HTMLMediaElement& media_element)
       volume_control_container_(nullptr),
       toggle_closed_captions_button_(nullptr),
       text_track_list_(nullptr),
+      audio_track_selector_button_(nullptr),
+      video_track_selector_button_(nullptr),
+      video_track_selector_list_(nullptr),
+      audio_track_selector_list_(nullptr),
       playback_speed_button_(nullptr),
       playback_speed_list_(nullptr),
       overflow_list_(nullptr),
@@ -598,8 +622,20 @@ void MediaControlsImpl::InitializeControls() {
           *this);
   playback_speed_button_ =
       MakeGarbageCollected<MediaControlPlaybackSpeedButtonElement>(*this);
+
   playback_speed_button_->SetIsWanted(
       ShouldShowPlaybackSpeedButton(MediaElement()));
+
+  video_track_selector_button_ =
+      MakeGarbageCollected<MediaControlTrackSelectorMenuButtonElement>(
+          *this, WebMediaPlayer::TrackType::kVideoTrack);
+  audio_track_selector_button_ =
+      MakeGarbageCollected<MediaControlTrackSelectorMenuButtonElement>(
+          *this, WebMediaPlayer::TrackType::kAudioTrack);
+  video_track_selector_button_->SetIsWanted(ShouldShowTrackSelectionButton(
+      WebMediaPlayer::TrackType::kVideoTrack, MediaElement()));
+  audio_track_selector_button_->SetIsWanted(ShouldShowTrackSelectionButton(
+      WebMediaPlayer::TrackType::kAudioTrack, MediaElement()));
   overflow_menu_ =
       MakeGarbageCollected<MediaControlOverflowMenuButtonElement>(*this);
 
@@ -615,6 +651,13 @@ void MediaControlsImpl::InitializeControls() {
   playback_speed_list_ =
       MakeGarbageCollected<MediaControlPlaybackSpeedListElement>(*this);
   ParserAppendChild(playback_speed_list_);
+
+  video_track_selector_list_ =
+      MakeGarbageCollected<MediaControlTrackSelectorListElement>(*this, true);
+  audio_track_selector_list_ =
+      MakeGarbageCollected<MediaControlTrackSelectorListElement>(*this, false);
+  ParserAppendChild(video_track_selector_list_);
+  ParserAppendChild(audio_track_selector_list_);
 
   overflow_list_ =
       MakeGarbageCollected<MediaControlOverflowMenuListElement>(*this);
@@ -641,6 +684,15 @@ void MediaControlsImpl::InitializeControls() {
   overflow_list_->ParserAppendChild(
       playback_speed_button_->CreateOverflowElement(
           MakeGarbageCollected<MediaControlPlaybackSpeedButtonElement>(*this)));
+  overflow_list_->ParserAppendChild(
+      video_track_selector_button_->CreateOverflowElement(
+          MakeGarbageCollected<MediaControlTrackSelectorMenuButtonElement>(
+              *this, WebMediaPlayer::TrackType::kVideoTrack)));
+  overflow_list_->ParserAppendChild(
+      audio_track_selector_button_->CreateOverflowElement(
+          MakeGarbageCollected<MediaControlTrackSelectorMenuButtonElement>(
+              *this, WebMediaPlayer::TrackType::kAudioTrack)));
+
   if (picture_in_picture_button_) {
     overflow_list_->ParserAppendChild(
         picture_in_picture_button_->CreateOverflowElement(
@@ -954,6 +1006,11 @@ void MediaControlsImpl::OnControlsListUpdated() {
 
   playback_speed_button_->SetIsWanted(
       ShouldShowPlaybackSpeedButton(MediaElement()));
+
+  video_track_selector_button_->SetIsWanted(ShouldShowTrackSelectionButton(
+      WebMediaPlayer::TrackType::kVideoTrack, MediaElement()));
+  audio_track_selector_button_->SetIsWanted(ShouldShowTrackSelectionButton(
+      WebMediaPlayer::TrackType::kAudioTrack, MediaElement()));
 }
 
 LayoutObject* MediaControlsImpl::PanelLayoutObject() {
@@ -1202,6 +1259,22 @@ void MediaControlsImpl::TogglePlaybackSpeedList() {
   playback_speed_list_->SetIsWanted(!playback_speed_list_->IsWanted());
 }
 
+void MediaControlsImpl::ToggleTrackSelectionList(
+    WebMediaPlayer::TrackType type) {
+  switch (type) {
+    case WebMediaPlayer::TrackType::kAudioTrack:
+      audio_track_selector_list_->SetIsWanted(
+          !audio_track_selector_list_->IsWanted());
+      break;
+    case WebMediaPlayer::TrackType::kVideoTrack:
+      video_track_selector_list_->SetIsWanted(
+          !video_track_selector_list_->IsWanted());
+      break;
+    case WebMediaPlayer::TrackType::kTextTrack:
+      NOTREACHED();
+  }
+}
+
 bool MediaControlsImpl::PlaybackSpeedListIsWanted() {
   return playback_speed_list_->IsWanted();
 }
@@ -1287,6 +1360,8 @@ void MediaControlsImpl::UpdateOverflowMenuWanted() const {
       std::make_pair(download_button_.Get(), false),
       std::make_pair(toggle_closed_captions_button_.Get(), false),
       std::make_pair(playback_speed_button_.Get(), false),
+      std::make_pair(video_track_selector_button_.Get(), false),
+      std::make_pair(audio_track_selector_button_.Get(), false),
   };
 
   // These are the elements in order of priority that take up vertical room.
@@ -2016,6 +2091,8 @@ void MediaControlsImpl::MaybeRecordElementsDisplayed() const {
       volume_slider_.Get(),
       toggle_closed_captions_button_.Get(),
       playback_speed_button_.Get(),
+      video_track_selector_button_.Get(),
+      audio_track_selector_button_.Get(),
       picture_in_picture_button_.Get(),
       cast_button_.Get(),
       current_time_display_.Get(),
@@ -2138,6 +2215,14 @@ void MediaControlsImpl::HidePopupMenu() {
 
   if (PlaybackSpeedListIsWanted())
     TogglePlaybackSpeedList();
+
+  if (video_track_selector_list_->IsWanted()) {
+    ToggleTrackSelectionList(WebMediaPlayer::TrackType::kVideoTrack);
+  }
+
+  if (audio_track_selector_list_->IsWanted()) {
+    ToggleTrackSelectionList(WebMediaPlayer::TrackType::kAudioTrack);
+  }
 }
 
 void MediaControlsImpl::VolumeSliderWantedTimerFired(TimerBase*) {
@@ -2231,6 +2316,13 @@ void MediaControlsImpl::Trace(Visitor* visitor) const {
   visitor->Trace(animated_arrow_container_element_);
   visitor->Trace(toggle_closed_captions_button_);
   visitor->Trace(playback_speed_button_);
+
+  visitor->Trace(video_track_selector_button_);
+  visitor->Trace(audio_track_selector_button_);
+
+  visitor->Trace(video_track_selector_list_);
+  visitor->Trace(audio_track_selector_list_);
+
   visitor->Trace(fullscreen_button_);
   visitor->Trace(download_button_);
   visitor->Trace(duration_display_);

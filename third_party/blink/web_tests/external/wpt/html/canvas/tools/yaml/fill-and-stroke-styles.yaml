@@ -2383,3 +2383,93 @@
     @assert pixel 25,25 ==~ 236,116,0,255 +/- 3;
     @assert pixel 50,25 ==~ 208,170,0,255 +/- 3;
     @assert pixel 75,25 ==~ 159,214,0,255 +/- 3;
+
+- name: 2d.gradient.colorInterpolationMethod
+  desc: CSS color spaces work as a CanvasGradient color interpolation methods
+  fuzzy: maxDifference=0-1; totalPixels=0-60000
+  code: |
+    var g = ctx.createLinearGradient(0, 0, 100, 0);
+    g.addColorStop(0, 'color(srgb 1 0 0)');
+    g.addColorStop(1, 'color(srgb 0 1 0)');
+    g.colorInterpolationMethod = '{{ variant_name }}';
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 100, 50);
+  html_reference: |
+    <style>
+      #swatch-{{ variant_name }} {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to right in {{ variant_name }},
+          color(srgb 1 0 0), color(srgb 0 1 0));
+      }
+    </style>
+    <div id="swatch-{{ variant_name }}"></div>
+  variants_layout: [single_file]
+  grid_width: 5
+  variants:
+  - srgb:
+    hsl:
+    hwb:
+    srgb-linear:
+    display-p3:
+    a98-rgb:
+    prophoto-rgb:
+    rec2020:
+    lab:
+    oklab:
+    lch:
+    oklch:
+    xyz:
+    xyz-d50:
+    xyz-d65:
+
+- name: 2d.gradient.hueInterpolationMethod
+  desc: CSS hue interpolation methods work for CanvasGradients
+  fuzzy: maxDifference=0-1; totalPixels=0-60000
+  code: |
+    // Generate two gradients, one from red to green, the other from red to blue.
+    // In the first instance "shorter" is equivalent to "increasing".
+    // In the second, "shorter" is equivalent to "decreasing".
+
+    var g = ctx.createLinearGradient(0, 0, 100, 0);
+    g.addColorStop(0, 'color(srgb 1 0 0)');
+    g.addColorStop(1, 'color(srgb 0 1 0)');
+    g.colorInterpolationMethod = '{{ variant_names[1] }}';
+    g.hueInterpolationMethod = '{{ variant_names[0] }}';
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 100, 25);
+
+    var g2 = ctx.createLinearGradient(0, 0, 100, 0);
+    g2.addColorStop(0, 'color(srgb 1 0 0)');
+    g2.addColorStop(1, 'color(srgb 0 0 1)');
+    g2.colorInterpolationMethod = '{{ variant_names[1] }}';
+    g2.hueInterpolationMethod = '{{ variant_names[0] }}';
+    ctx.fillStyle = g2;
+    ctx.fillRect(0, 25, 100, 25);
+  html_reference: |
+    <style>
+      .swatch {
+        width: 100%;
+        height: 50%;
+      }
+    </style>
+    <div class="swatch" style="background:
+      linear-gradient(to right in {{ variant_names[1] }} {{ variant_names[0] }}
+        hue, color(srgb 1 0 0), color(srgb 0 1 0));
+    "></div>
+    <div class="swatch" style="background:
+      linear-gradient(to right in {{ variant_names[1] }} {{ variant_names[0] }}
+        hue, color(srgb 1 0 0), color(srgb 0 0 1));
+    "></div>
+  variants_layout: [single_file, single_file]
+  variants:
+  # Hue interpolation methods
+  - shorter:
+    longer:
+    increasing:
+    decreasing:
+  # Polar color interpolation spaces
+  - hsl:
+    hwb:
+    lch:
+    oklch:

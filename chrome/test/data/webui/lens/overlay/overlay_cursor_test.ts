@@ -10,6 +10,7 @@ import type {CursorTooltipElement} from 'chrome-untrusted://lens-overlay/cursor_
 import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import type {LensOverlayAppElement} from 'chrome-untrusted://lens-overlay/lens_overlay_app.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
+import type {TextLayerElement} from 'chrome-untrusted://lens-overlay/text_layer.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
@@ -78,6 +79,10 @@ suite('OverlayCursor', () => {
     await addWords();
     await addObjects();
   });
+
+  function getTextSelectionLayer(): TextLayerElement {
+    return selectionOverlayElement.getTextSelectionLayerForTesting()!;
+  }
 
   // Normalizes the given values to the size of selection overlay.
   function normalizedBox(box: RectF): RectF {
@@ -149,7 +154,7 @@ suite('OverlayCursor', () => {
     await simulateEnterViewport();
 
     // Hover over a text element.
-    const textLayer = selectionOverlayElement.$.textSelectionLayer;
+    const textLayer = getTextSelectionLayer();
     const textElement = textLayer.shadowRoot!.querySelector('.word')!;
     await simulateHover(textElement);
 
@@ -174,8 +179,7 @@ suite('OverlayCursor', () => {
         selectionOverlayElement.style.getPropertyValue('--cursor-img-url'));
 
     // Now enable translate mode.
-    dispatchTranslateStateEvent(
-        selectionOverlayElement.$.textSelectionLayer, true, 'es');
+    dispatchTranslateStateEvent(getTextSelectionLayer(), true, 'es');
 
     // Hover over the selection overlay.
     await simulateHover(selectionOverlayElement.$.selectionOverlay);
@@ -265,7 +269,7 @@ suite('OverlayCursor', () => {
     await simulateEnterViewport();
 
     // Hover over some text.
-    const textLayer = selectionOverlayElement.$.textSelectionLayer;
+    const textLayer = getTextSelectionLayer();
     const textElement = textLayer.shadowRoot!.querySelector('.word')!;
     await simulateHover(textElement);
     assertTrue(isRendered(tooltipEl));

@@ -1388,6 +1388,18 @@
     'ios_ntp': {
       'filepath': 'ios/chrome/browser/ui/ntp/',
     },
+    'ios_payments_autofill': {
+      'filepath': 'ios/chrome/browser/autofill/ui_bundled/ios_chrome_payments'\
+                  '|ios/chrome/browser/autofill/model/bottom_sheet/'\
+                  '|ios/chrome/browser/autofill/model/credit_card/'\
+                  '|ios/chrome/browser/autofill/model/message/'\
+                  '|ios/chrome/browser/autofill/ui_bundled/authentication/'\
+                  '|ios/chrome/browser/autofill/ui_bundled/bottom_sheet/'\
+                  '|ios/chrome/browser/autofill/ui_bundled/progress_dialog/'\
+                  '|ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_card/'\
+                  '|ios/chrome/browser/overlays/ui_bundled/infobar_modal/save_card/'\
+                  '|ios/chrome/browser/infobars/ui_bundled/modals/.*save_card'
+    },
     'ios_transactions': {
       'filepath': 'components/autofill/ios|'\
                   'components/password_manager/ios|'\
@@ -2994,6 +3006,7 @@
     'ios_credential_provider': ['rkgibson+watch@chromium.org'],
     'ios_flags': ['noyau+watch@chromium.org'],
     'ios_ntp': ['thegreenfrog+watch@chromium.org'],
+    'ios_payments_autofill': ['slobodan+watch@chromium.org'],
     'ios_transactions': ['tmartino+transactions-watch@chromium.org'],
     'ios_web': ['ios-reviews+web@chromium.org'],
     'ios_web_view': ['ios-web-view-eng+reviews@google.com'],
@@ -3153,7 +3166,8 @@
                         'milicau+watchlistpasswordmanager@google.com'],
     'payments': ['rouslan+payments@chromium.org',
                  'gogerald+paymentswatch@chromium.org',
-                 'npnavarro+paymentswatch@chromium.org'],
+                 'npnavarro+paymentswatch@chromium.org',
+                 'slobodan+watch@chromium.org'],
     'pdf': ['pdf-reviews@chromium.org'],
     'pdf_ocr': ['kyungjunlee+watch@google.com',
                 'rhalavati+watch@chromium.org'],

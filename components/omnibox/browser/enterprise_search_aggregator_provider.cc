@@ -358,8 +358,7 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
   match.contents = AutocompleteMatch::SanitizeString(contents);
   match.contents_class = ClassifyTermMatches(
       FindTermMatches(input.text(), match.contents), match.contents.size(),
-      ACMatchClassification::MATCH | ACMatchClassification::URL,
-      ACMatchClassification::URL);
+      ACMatchClassification::MATCH, ACMatchClassification::NONE);
 
   match.keyword = keyword;
   match.transition = ui::PAGE_TRANSITION_KEYWORD;

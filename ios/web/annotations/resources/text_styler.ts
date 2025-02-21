@@ -44,4 +44,4 @@ class TextStyler {
 
 export {
   TextStyler,
-}
+};

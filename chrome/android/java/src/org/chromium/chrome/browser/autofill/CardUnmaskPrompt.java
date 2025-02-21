@@ -586,7 +586,7 @@ public class CardUnmaskPrompt
     private void setNoRetryError(String message) {
         mNoRetryErrorMessage.setText(message);
         mNoRetryErrorMessage.setVisibility(View.VISIBLE);
-        mNoRetryErrorMessage.announceForAccessibility(message);
+        ViewCompat.setAccessibilityPaneTitle(mNoRetryErrorMessage, message);
     }
 
     private void logCheckBoxInitialStateStats(boolean isChecked) {

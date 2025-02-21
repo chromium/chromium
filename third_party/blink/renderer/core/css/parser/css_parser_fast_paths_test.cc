@@ -518,6 +518,10 @@ TEST(CSSParserFastPathsTest, IsSafeAreaInsetBottom) {
       "calc(env(safe-area-inset-bottom) + 50kg)"));
   EXPECT_FALSE(CSSParserFastPaths::IsSafeAreaInsetBottom(
       "calc(env(safe-area-inset-bottom) + 50px bar)"));
+  EXPECT_FALSE(CSSParserFastPaths::IsSafeAreaInsetBottom(
+      "calc(env(safe-area-inset-bottom) + env(safe-area-max-inset-left))"));
+  EXPECT_FALSE(CSSParserFastPaths::IsSafeAreaInsetBottom(
+      "calc(env(safe-area-inset-bottom) + env(safe-area-inset-bottom))"));
 
   EXPECT_TRUE(
       CSSParserFastPaths::IsSafeAreaInsetBottom("env(safe-area-inset-bottom)"));
@@ -531,6 +535,11 @@ TEST(CSSParserFastPathsTest, IsSafeAreaInsetBottom) {
       "calc(env(safe-area-inset-bottom, 0px)+999px)"));
   EXPECT_TRUE(CSSParserFastPaths::IsSafeAreaInsetBottom(
       "calc(env(safe-area-inset-bottom, 0px)-var(--foo))"));
+  EXPECT_TRUE(CSSParserFastPaths::IsSafeAreaInsetBottom(
+      "calc(env(safe-area-inset-bottom) + env(safe-area-max-inset-bottom))"));
+  EXPECT_TRUE(CSSParserFastPaths::IsSafeAreaInsetBottom(
+      "calc(env(safe-area-inset-bottom, 0px) - env(safe-area-max-inset-bottom, "
+      "1px))"));
 }
 
 }  // namespace blink

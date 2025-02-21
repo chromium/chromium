@@ -18,9 +18,6 @@ struct Suggestion;
 
 namespace autofill_ai {
 
-// Creates the animated suggestion shown while improved predictions are loaded.
-std::vector<autofill::Suggestion> CreateLoadingSuggestions();
-
 // Creates filling suggestions using `autofill::EntityInstance`s.
 std::vector<autofill::Suggestion> CreateFillingSuggestions(
     const autofill::FormStructure& form,

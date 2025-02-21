@@ -26,7 +26,9 @@ async_test(function(t) {
 
     // The overflow menu should always have the same number of elements.
     // Their visibility will change over time based on the size of the video.
-    assert_equals(children.length, 8);
+    assert_equals(children.length, 10);
+
+    const invisible_buttons = new Set([overflowButtonsCSS[7], overflowButtonsCSS[8]]);
 
     // Ensure that all of the buttons are visible in the right order
     for (var i = 0; i < children.length; i++) {
@@ -34,10 +36,17 @@ async_test(function(t) {
       var innerButton = child.children[0];
       assert_equals(internals.shadowPseudoId(child), "-internal-media-controls-overflow-menu-list-item");
       assert_equals(internals.shadowPseudoId(innerButton), overflowButtonsCSS[i]);
-      // Items should be visible
-      assert_not_equals(getComputedStyle(child).display, "none");
-      // Buttons should be visible
-      assert_not_equals(getComputedStyle(innerButton).display, "none");
+
+      if (invisible_buttons.has(internals.shadowPseudoId(innerButton))) {
+        assert_equals(getComputedStyle(child).display, "none");
+        assert_equals(getComputedStyle(innerButton).display, "none");
+      } else {
+        // Items should be visible
+        assert_not_equals(getComputedStyle(child).display, "none");
+        // Buttons should be visible
+        assert_not_equals(getComputedStyle(innerButton).display, "none");
+      }
+
     }
   });
 });

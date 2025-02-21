@@ -59,6 +59,11 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilityPruneRedundantInlineConnectivity);
 AX_BASE_EXPORT bool IsAccessibilityPruneRedundantInlineConnectivityEnabled();
 
+// Enables the addition of text formatting information to the Android
+// AccessibilityNodeInfo accessibility tree.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityTextFormatting);
+AX_BASE_EXPORT bool IsAccessibilityTextFormattingEnabled();
+
 // Expose the accessibility tree for views via an AXTree of AXNodes.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityTreeForViews);
 AX_BASE_EXPORT bool IsAccessibilityTreeForViewsEnabled();

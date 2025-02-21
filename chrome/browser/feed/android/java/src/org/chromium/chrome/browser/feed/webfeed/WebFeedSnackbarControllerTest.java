@@ -41,7 +41,6 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
@@ -74,7 +73,6 @@ import java.util.Locale;
         manifest = Config.NONE,
         shadows = {})
 @DisableFeatures(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE)
-@EnableFeatures(ChromeFeatureList.FEED_LOW_MEMORY_IMPROVEMENT)
 @SmallTest
 public final class WebFeedSnackbarControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

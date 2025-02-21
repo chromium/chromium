@@ -62,6 +62,19 @@ namespace {
 
 constexpr ink::AffineTransform kIdentityTransform;
 
+base::Value::Dict CreateUpdateThumbnailMessage(
+    int page_index,
+    std::vector<uint8_t> image_data,
+    const gfx::Size& thumbnail_size) {
+  base::Value::Dict message;
+  message.Set("type", "updateInk2Thumbnail");
+  message.Set("pageNumber", page_index + 1);
+  message.Set("imageData", std::move(image_data));
+  message.Set("width", thumbnail_size.width());
+  message.Set("height", thumbnail_size.height());
+  return message;
+}
+
 ink::StrokeInput::ToolType GetToolTypeFromTouchEvent(
     const blink::WebTouchEvent& event) {
   // Assumes the caller already handled multi-touch events.
@@ -169,6 +182,33 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
     auto status = skia_renderer.Draw(nullptr, segment, transform, canvas);
     CHECK(status.ok());
   }
+}
+
+void PdfInkModule::GenerateAndSendInkThumbnail(
+    int page_index,
+    const gfx::Size& thumbnail_size) {
+  CHECK(!thumbnail_size.IsEmpty());
+
+  auto info = SkImageInfo::Make(thumbnail_size.width(), thumbnail_size.height(),
+                                kRGBA_8888_SkColorType, kUnpremul_SkAlphaType);
+  const size_t alloc_size = info.computeMinByteSize();
+  CHECK(!SkImageInfo::ByteSizeOverflowed(alloc_size));
+  std::vector<uint8_t> image_data(alloc_size);
+
+  SkBitmap sk_bitmap;
+  sk_bitmap.installPixels(info, image_data.data(), info.minRowBytes());
+  SkCanvas canvas(sk_bitmap);
+  if (!DrawThumbnail(canvas, page_index)) {
+    return;
+  }
+
+  client_->PostMessage(CreateUpdateThumbnailMessage(
+      page_index, std::move(image_data), thumbnail_size));
+}
+
+void PdfInkModule::GenerateAndSendInkThumbnailInternal(int page_index) {
+  return GenerateAndSendInkThumbnail(page_index,
+                                     client_->GetThumbnailSize(page_index));
 }
 
 bool PdfInkModule::DrawThumbnail(SkCanvas& canvas, int page_index) {
@@ -615,7 +655,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   }
 
   client_->StrokeFinished();
-  client_->UpdateThumbnail(state.page_index);
+  GenerateAndSendInkThumbnailInternal(state.page_index);
 
   bool undo_redo_success = undo_redo_model_.FinishDraw();
   CHECK(undo_redo_success);
@@ -651,9 +691,7 @@ bool PdfInkModule::StartEraseStroke(const gfx::PointF& position,
   CHECK(discards.has_value());
   ApplyUndoRedoDiscards(discards.value());
 
-  if (EraseHelper(position, page_index)) {
-    state.page_indices_with_erasures.insert(page_index);
-  }
+  EraseHelper(position, page_index);
 
   // Remember this position to possibly compensate for missed input events.
   CHECK(!state.input_last_event_position.has_value());
@@ -683,9 +721,7 @@ bool PdfInkModule::ContinueEraseStroke(const gfx::PointF& position,
     return true;
   }
 
-  if (EraseHelper(position, page_index)) {
-    state.page_indices_with_erasures.insert(page_index);
-  }
+  EraseHelper(position, page_index);
 
   // Remember this position for possible use in the next event.
   state.input_last_event_position = position;
@@ -709,7 +745,7 @@ bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position,
   if (!state.page_indices_with_erasures.empty()) {
     client_->StrokeFinished();
     for (int page_index : state.page_indices_with_erasures) {
-      client_->UpdateThumbnail(page_index);
+      GenerateAndSendInkThumbnailInternal(page_index);
     }
 
     ReportEraseStroke(eraser_size_, tool_type);
@@ -726,7 +762,7 @@ bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position,
   return true;
 }
 
-bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
+void PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
   CHECK_GE(page_index, 0);
 
   const gfx::PointF canonical_position =
@@ -784,14 +820,16 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
   }
 
   if (invalidate_envelope.IsEmpty()) {
-    return false;
+    return;
   }
 
   // If `invalidate_envelope` isn't empty, then something got erased.
   client_->Invalidate(CanonicalInkEnvelopeToInvalidationScreenRect(
       invalidate_envelope, client_->GetOrientation(),
       client_->GetPageContentsRect(page_index), client_->GetZoom()));
-  return true;
+
+  EraserState& state = erasing_stroke_state();
+  state.page_indices_with_erasures.insert(page_index);
 }
 
 void PdfInkModule::MaybeRecordPenInput(ink::StrokeInput::ToolType tool_type) {
@@ -1174,7 +1212,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
   }
 
   for (int page_index : page_indices_with_thumbnail_updates) {
-    client_->UpdateThumbnail(page_index);
+    GenerateAndSendInkThumbnailInternal(page_index);
   }
 }
 

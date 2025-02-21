@@ -7012,6 +7012,9 @@
       </message>
 
       <!-- Strings for the OnTask pod -->
+      <message name="IDS_ON_TASK_POD_ACCESSIBLE_NAME" desc="Accessible name for the OnTask pod widget.">
+        OnTask Pod
+      </message>
       <message name="IDS_ON_TASK_POD_RELOAD_ACCESSIBLE_NAME" desc="Accessible name for the Reload tab button in the OnTask pod.">
         Reload tab
       </message>

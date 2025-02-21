@@ -109,6 +109,10 @@ void TaskManagerInterface::RecalculateRefreshFlags() {
   SetEnabledResourceFlags(flags);
 }
 
+bool TaskManagerInterface::IsTaskValid(TaskId task_id) const {
+  return true;
+}
+
 bool TaskManagerInterface::IsResourceRefreshEnabled(RefreshType type) const {
   return (enabled_resources_flags_ & type) != 0;
 }

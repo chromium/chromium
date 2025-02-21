@@ -12028,12 +12028,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TITLE" desc="Title for the recent activity dialog.">
               Recent Activity
             </message>
-            <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_LATEST_UPDATE_TAB" desc="Title for the subsection for the last tab update.">
-              Last Update to this Tab
-            </message>
-            <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_LATEST_UPDATE_GROUP" desc="Title for the subsection for the last group updates.">
-              Latest Updates to this Group
-            </message>
           <!-- /Recent Activity -->
         </if>
         <if expr="not use_titlecase">
@@ -12179,15 +12173,18 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TITLE" desc="Title for the recent activity dialog.">
               Recent activity
             </message>
-            <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_LATEST_UPDATE_TAB" desc="Title for the subsection for the last tab update.">
-              Last update to this tab
-            </message>
-            <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_LATEST_UPDATE_GROUP" desc="Title for the subsection for the last group updates.">
-              Latest updates to this group
-            </message>
           <!-- /Recent Activity -->
         </if>
       <!-- /Title Case Specific IDs -->
+
+      <!-- Recent Activity -->
+        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_LATEST_UPDATE_TAB" desc="Title for the subsection for the last tab update.">
+          Last update to this tab
+        </message>
+        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_LATEST_UPDATE_GROUP" desc="Title for the subsection for the last group updates.">
+          Latest updates to this group
+        </message>
+      <!-- /Recent Activity -->
 
       <!-- Data Sharing Create Flow -->
         <message name ="IDS_DATA_SHARING_SHARE_GROUP_BODY" desc="The description of how shared group links work.">

@@ -106,6 +106,10 @@ base::expected<WebContents*, std::string> OpenInNewTab(
     WebContents* original_tab,
     const GURL& url);
 
+[[nodiscard]] testing::AssertionResult AccessStorage(
+    RenderFrameHost* frame,
+    blink::mojom::StorageTypeAccessed type);
+
 // Helper function for performing client side cookie access via JS.
 void AccessCookieViaJSIn(WebContents* web_contents, RenderFrameHost* frame);
 

@@ -1,30 +1,6 @@
 This is a testharness.js-based test.
-Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Testcase #28, "<div id='div' title='div'>DIV</div>", config: "{ "elements": [{ "name": "div", "attributes": ["id"], "removeAttributes": ["id"] }]}".
   assert_true: [object HTMLDivElement].isEqual([object HTMLDivElement]) fails. Path: <DIV> / <DIV>. expected true got false
-[FAIL] Testcase #35, "<a href='javascript:evil.com'>Click.</a>", config: "undefined".
-  assert_true: javascript:evil.com.isEqual() fails. Path: <DIV> / <A>. expected true got false
-[FAIL] Testcase #36, "<a href='  javascript:evil.com'>Click.</a>", config: "undefined".
-  assert_true: javascript:evil.com.isEqual() fails. Path: <DIV> / <A>. expected true got false
-[FAIL] Testcase #38, "<area href='javascript:evil.com'>Click.</area>", config: "undefined".
-  assert_true: javascript:evil.com.isEqual() fails. Path: <DIV> / <AREA>. expected true got false
-[FAIL] Testcase #39, "<area href=' javascript:evil.com'>Click.</area>", config: "undefined".
-  assert_true: javascript:evil.com.isEqual() fails. Path: <DIV> / <AREA>. expected true got false
-[FAIL] Testcase #40, "<area href='http:evil.com'>Click.</area>", config: "undefined".
-  assert_true: http://web-platform.test:8001/sanitizer-api/evil.com.isEqual(http://web-platform.test:8001/sanitizer-api/evil.com) fails. Path: <DIV> / <AREA>. expected true got false
-[FAIL] Testcase #41, "<form action='javascript:evil.com'>Click.</form>", config: "undefined".
-  assert_true: [object HTMLFormElement].isEqual([object HTMLFormElement]) fails. Path: <DIV> / <FORM>. expected true got false
-[FAIL] Testcase #42, "<form action=' javascript:evil.com'>Click.</form>", config: "undefined".
-  assert_true: [object HTMLFormElement].isEqual([object HTMLFormElement]) fails. Path: <DIV> / <FORM>. expected true got false
-[FAIL] Testcase #44, "<input formaction='javascript:evil.com'>Click.</input>", config: "undefined".
-  assert_true: [object HTMLInputElement].isEqual([object HTMLInputElement]) fails. Path: <DIV> / <INPUT>. expected true got false
-[FAIL] Testcase #45, "<input formaction=' javascript:evil.com'>Click.</input>", config: "undefined".
-  assert_true: [object HTMLInputElement].isEqual([object HTMLInputElement]) fails. Path: <DIV> / <INPUT>. expected true got false
-[FAIL] Testcase #46, "<input formaction='http:evil.com'>Click.</input>", config: "undefined".
-  assert_true: [object HTMLInputElement].isEqual([object HTMLInputElement]) fails. Path: <DIV> / <INPUT>. expected true got false
-[FAIL] Testcase #47, "<button formaction='javascript:evil.com'>Click.</button>", config: "undefined".
-  assert_true: [object HTMLButtonElement].isEqual([object HTMLButtonElement]) fails. Path: <DIV> / <BUTTON>. expected true got false
-[FAIL] Testcase #48, "<button formaction=' javascript:evil.com'>Click.</button>", config: "undefined".
-  assert_true: [object HTMLButtonElement].isEqual([object HTMLButtonElement]) fails. Path: <DIV> / <BUTTON>. expected true got false
 Harness: the test ran to completion.
 

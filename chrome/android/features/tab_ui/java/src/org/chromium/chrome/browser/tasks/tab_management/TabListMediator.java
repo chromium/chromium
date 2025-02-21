@@ -1173,7 +1173,10 @@ class TabListMediator implements TabListNotificationHandler {
                     // crbug/1319859.
                     boolean shouldDisableItemAnimations =
                             mCurrentTabGroupModelFilterSupplier.hasValue()
-                                    && mCurrentTabGroupModelFilterSupplier.get().getTotalTabCount()
+                                    && mCurrentTabGroupModelFilterSupplier
+                                                    .get()
+                                                    .getTabModel()
+                                                    .getCount()
                                             <= 1;
                     if (shouldDisableItemAnimations) {
                         mRecyclerViewItemAnimationToggle.setDisableItemAnimations(true);

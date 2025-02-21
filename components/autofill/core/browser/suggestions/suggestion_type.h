@@ -136,13 +136,12 @@ enum class SuggestionType {
   kDevtoolsTestAddressByCountry = 51,
 
   // kRetrieveAutofillAi = 53, // DEPRECATED
-  // Loading indicator shown while retrieving Autofill AI suggestions.
-  kAutofillAiLoadingState = 54,
+  // kAutofillAiLoadingState = 54, // DEPRECATED
   // Autofill AI filling suggestion.
   kFillAutofillAi = 55,
   // kAutofillAiFeedback = 56, // DEPRECATED
   // kPredictionImprovementsDetails = 58, // DEPRECATED
-  kAutofillAiError = 59,
+  // kAutofillAiError = 59, // DEPRECATED
   // kEditAutofillAiData = 60, // DEPRECATED
 
   kMaxValue = kManageAutofillAi

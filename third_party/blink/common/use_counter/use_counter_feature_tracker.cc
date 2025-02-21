@@ -30,6 +30,8 @@ bool UseCounterFeatureTracker::Test(const UseCounterFeature& feature) const {
       return iframe_permissions_policy_features_.test(feature.value());
     case FeatureType::kPermissionsPolicyHeader:
       return header_permissions_policy_features_.test(feature.value());
+    case FeatureType::kPermissionsPolicyEnabledPrivacySensitive:
+      return private_permissions_policy_features_.test(feature.value());
   }
 }
 
@@ -111,6 +113,9 @@ void UseCounterFeatureTracker::Set(const UseCounterFeature& feature,
       break;
     case FeatureType::kPermissionsPolicyHeader:
       header_permissions_policy_features_[feature.value()] = value;
+      break;
+    case FeatureType::kPermissionsPolicyEnabledPrivacySensitive:
+      private_permissions_policy_features_[feature.value()] = value;
       break;
   }
 }

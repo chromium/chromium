@@ -173,19 +173,6 @@ BASE_FEATURE(kAutofillEnableSaveAndFill,
              "AutofillEnableSaveAndFill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the save card screen will present a loading spinner when
-// uploading the card to the server and present a confirmation screen with the
-// result when completed.
-BASE_FEATURE(kAutofillEnableSaveCardLoadingAndConfirmation,
-             "AutofillEnableSaveCardLoadingAndConfirmation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, save card will fallback to a local save if the server upload of
-// a card encounters a failure.
-BASE_FEATURE(kAutofillEnableSaveCardLocalSaveFallback,
-             "AutofillEnableSaveCardLocalSaveFallback",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, Pix bank accounts are synced from Chrome Sync backend and
 // stored in the local db.
@@ -200,13 +187,6 @@ BASE_FEATURE(kAutofillEnableSyncingOfPixBankAccounts,
 BASE_FEATURE(kAutofillEnableVcn3dsAuthentication,
              "AutofillEnableVcn3dsAuthentication",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, the vcn enroll screen will present a loading spinner while
-// enrolling the card to the server and present a confirmation screen with the
-// result when completed.
-BASE_FEATURE(kAutofillEnableVcnEnrollLoadingAndConfirmation,
-             "AutofillEnableVcnEnrollLoadingAndConfirmation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Chrome will display grayed out virtual card suggestions on
 // merchant websites where the merchant has opted-out of virtual cards.

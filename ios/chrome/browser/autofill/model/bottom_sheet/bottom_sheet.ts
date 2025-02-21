@@ -19,7 +19,7 @@ let lastBlurredElement_: HTMLElement|null = null;
 /**
  * The list of observed elements.
  */
-let observedElements_: Element[] = [];
+const observedElements_: Element[] = [];
 
 /*
  * Returns whether an element is of a type we wish to observe.
@@ -119,7 +119,7 @@ function focusEventHandler_(event: Event): void {
 function detachListeners_(renderer_ids: number[]): void {
   for (const renderer_id of renderer_ids) {
     const element = gCrWeb.fill.getElementByUniqueID(renderer_id);
-    let index = observedElements_.indexOf(element);
+    const index = observedElements_.indexOf(element);
     if (index > -1) {
       element.removeEventListener('focus', focusEventHandler_, true);
       observedElements_.splice(index, 1);
@@ -137,7 +137,7 @@ function attachListeners(
     renderer_ids: number[], allow_autofocus: boolean): void {
   // Build list of elements
   let elementToBlur: HTMLElement|null = null;
-  let elementsToObserve: Element[] = [];
+  const elementsToObserve: Element[] = [];
   for (const renderer_id of renderer_ids) {
     const element = gCrWeb.fill.getElementByUniqueID(renderer_id);
     // Only add element to list of observed elements if we aren't already
@@ -209,5 +209,5 @@ function detachListeners(renderer_ids: number[], refocus: boolean): void {
 gCrWeb.bottomSheet = {
   attachListeners,
   detachListeners,
-  refocusLastBlurredElement
+  refocusLastBlurredElement,
 };

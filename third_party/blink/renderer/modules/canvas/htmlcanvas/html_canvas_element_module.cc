@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_helpers.h"
+#include "third_party/blink/renderer/platform/text/layout_locale.h"
 
 namespace blink {
 
@@ -78,6 +79,7 @@ OffscreenCanvas* HTMLCanvasElementModule::TransferControlToOffscreenInternal(
   canvas.RegisterPlaceholderCanvas(static_cast<int>(canvas_id));
   offscreen_canvas->SetPlaceholderCanvasId(canvas_id);
   offscreen_canvas->SetTextDirection(canvas.GetTextDirection(nullptr));
+  offscreen_canvas->SetLocale(canvas.GetLocale());
 
   SurfaceLayerBridge* bridge = canvas.SurfaceLayerBridge();
   if (bridge) {

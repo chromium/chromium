@@ -608,7 +608,20 @@ bool WebContentsViewMac::DragPromisedFileTo(const base::FilePath& file_path,
 void WebContentsViewMac::EndDrag(uint32_t drag_operation,
                                  const gfx::PointF& local_point,
                                  const gfx::PointF& screen_point) {
-  [drag_dest_ endDrag];
+  [drag_dest_
+      endDrag:base::BindOnce(&WebContentsViewMac::PerformEndDrag,
+                             deferred_close_weak_ptr_factory_.GetWeakPtr(),
+                             drag_operation, local_point, screen_point)];
+}
+
+void WebContentsViewMac::PerformEndDrag(uint32_t drag_operation,
+                                        const gfx::PointF& local_point,
+                                        const gfx::PointF& screen_point) {
+  // Validate internal members are non-null as this method can be called
+  // asynchronously.
+  if (!web_contents_ || !drag_source_start_rwh_) {
+    return;
+  }
 
   web_contents_->SystemDragEnded(drag_source_start_rwh_.get());
 

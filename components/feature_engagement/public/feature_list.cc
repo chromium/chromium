@@ -180,7 +180,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDesktopCustomizeChromeFeature,
     &kIPHDesktopCustomizeChromeRefreshFeature,
     &kIPHDesktopNewTabPageModulesCustomizeFeature,
-    &kIPHDesktopReEngagementFeature,
     &kIPHDiscardRingFeature,
     &kIPHDownloadEsbPromoFeature,
     &kIPHExperimentalAIPromoFeature,

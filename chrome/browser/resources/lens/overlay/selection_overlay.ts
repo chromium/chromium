@@ -96,7 +96,6 @@ export interface SelectionOverlayElement {
     selectedRegionContextMenu: HTMLElement,
     selectedTextContextMenu: HTMLElement,
     selectionOverlay: HTMLElement,
-    textSelectionLayer: TextLayerElement,
   };
 }
 
@@ -187,6 +186,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
+      simplifiedSelectionEnabled: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('simplifiedSelectionEnabled'),
+        reflectToAttribute: true,
+      },
       darkenExtraScrim: {
         type: Boolean,
         reflectToAttribute: true,
@@ -263,6 +267,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // Whether the shimmer is currently focused on a segmentation mask.
   private shimmerOnSegmentation: boolean = false;
   private shimmerFadeOutComplete: boolean = true;
+  // The text selection layer rendered on the selection overlay if it exists.
+  private textSelectionLayer?: TextLayerElement;
 
   private eventTracker_: EventTracker = new EventTracker();
   // Listener ids for events from the browser side.
@@ -615,7 +621,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     }
 
     if (event.button === 2 /* right button */) {
-      if (this.$.textSelectionLayer.handleRightClick(event)) {
+      if (this.getTextSelectionLayer()?.handleRightClick(event)) {
         return;
       }
       this.$.postSelectionRenderer.handleRightClick(event);
@@ -724,7 +730,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
     if (this.$.postSelectionRenderer.handleGestureStart(this.currentGesture)) {
       this.draggingRespondent = DragFeature.POST_SELECTION;
-    } else if (this.$.textSelectionLayer.handleGestureStart(
+    } else if (this.getTextSelectionLayer()?.handleGestureStart(
                    this.currentGesture)) {
       // Text is responding to this sequence of gestures.
       this.draggingRespondent = DragFeature.TEXT;
@@ -741,7 +747,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
     if (this.draggingRespondent === DragFeature.TEXT) {
       this.setCursorToText();
-      this.$.textSelectionLayer.handleGestureDrag(this.currentGesture);
+      this.getTextSelectionLayer()?.handleGestureDrag(this.currentGesture);
     } else if (this.draggingRespondent === DragFeature.POST_SELECTION) {
       this.$.postSelectionRenderer.handleGestureDrag(this.currentGesture);
     } else if (!this.translateModeEnabled) {
@@ -765,7 +771,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         if (this.draggingRespondent === DragFeature.MANUAL_REGION) {
           this.$.regionSelectionLayer.handleGestureEnd(this.currentGesture);
         } else if (this.draggingRespondent === DragFeature.TEXT) {
-          this.$.textSelectionLayer.handleGestureEnd();
+          this.getTextSelectionLayer()?.handleGestureEnd();
         } else if (this.draggingRespondent === DragFeature.POST_SELECTION) {
           this.$.postSelectionRenderer.handleGestureEnd();
         }
@@ -773,7 +779,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       case GestureState.STARTING:
         // This gesture was a tap. Let the features respond to a tap.
         if (this.draggingRespondent === DragFeature.TEXT) {
-          this.$.textSelectionLayer.handleGestureEnd();
+          this.getTextSelectionLayer()?.handleGestureEnd();
           break;
         }
         if (this.translateModeEnabled) {
@@ -799,7 +805,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   }
 
   private handleGestureCancel() {
-    this.$.textSelectionLayer.cancelGesture();
+    this.getTextSelectionLayer()?.cancelGesture();
     this.$.regionSelectionLayer.cancelGesture();
     this.$.postSelectionRenderer.cancelGesture();
   }
@@ -961,13 +967,13 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   }
 
   private handleSelectText() {
-    this.$.textSelectionLayer.selectAndSendWords(
+    this.getTextSelectionLayer()?.selectAndSendWords(
         this.detectedTextStartIndex, this.detectedTextEndIndex);
     this.$.postSelectionRenderer.clearSelection();
   }
 
   private handleTranslateDetectedText() {
-    this.$.textSelectionLayer.selectAndTranslateWords(
+    this.getTextSelectionLayer()?.selectAndTranslateWords(
         this.detectedTextStartIndex, this.detectedTextEndIndex);
     this.$.postSelectionRenderer.clearSelection();
   }
@@ -1104,12 +1110,29 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   }
 
   /**
+   * Attempts to fetch the text layer in the selection overlay and returns it.
+   */
+  private getTextSelectionLayer(): TextLayerElement|undefined {
+    if (this.textSelectionLayer) {
+      return this.textSelectionLayer;
+    }
+
+    this.textSelectionLayer =
+        this.shadowRoot!.querySelector('lens-text-layer') ?? undefined;
+    return this.textSelectionLayer;
+  }
+
+  /**
    * Returns the bounding rect of the selection overlay. This is preferred over
    * using getBoundingClientRect() because it is a cached DOM property which
    * doesn't need to be recalculated every time.
    */
   getBoundingRect() {
     return this.selectionOverlayRect;
+  }
+
+  getTextSelectionLayerForTesting(): TextLayerElement|undefined {
+    return this.getTextSelectionLayer();
   }
 
   fetchNewScreenshotForTesting() {

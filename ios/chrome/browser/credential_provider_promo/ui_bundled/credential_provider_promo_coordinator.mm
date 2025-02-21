@@ -129,17 +129,18 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
             requestToTurnOnCredentialProviderExtensionWithCompletionHandler:^(
                 BOOL){
             }];
-        // TODO(crbug.com/392652904): Record "Turn on autofill" action.
+        [self recordAction:IOSCredentialProviderPromoAction::kTurnOnAutofill];
         return;
       }
     }
 
-    // Show the screen informing the user how they can set the app as a
+    // Show the screen informing the user on how they can set the app as a
     // credential provider.
     [self presentLearnMore];
     [self recordAction:IOSCredentialProviderPromoAction::kLearnMore];
   } else {
     [self openiOSSettings];
+    [self recordAction:IOSCredentialProviderPromoAction::kGoToSettings];
     [self promoWasDismissed];
   }
 }
@@ -201,14 +202,11 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
     if (IOSPasskeysM2Enabled()) {
       [ASSettingsHelper
           openCredentialProviderAppSettingsWithCompletionHandler:nil];
-      // TODO(crbug.com/392652904): Maybe record separate "Go to settings"
-      // action.
       return;
     }
   }
 
   ios::provider::PasswordsInOtherAppsOpensSettings();
-  [self recordAction:IOSCredentialProviderPromoAction::kGoToSettings];
 }
 
 // Dismisses the feature.

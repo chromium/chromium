@@ -1267,14 +1267,13 @@ TEST(SpanTest, TemplatedLastOnDynamicSpan) {
   }
 }
 
-TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
+TEST(SpanTest, TemplatedSubspanOnDynamicSpan) {
   int array[] = {1, 2, 3};
-  span<int, 3> span(array);
+  span<int> span(array);
 
   {
     auto subspan = span.subspan<0>();
     EXPECT_EQ(span.data(), subspan.data());
-    static_assert(3 == decltype(subspan)::extent);
     EXPECT_THAT(subspan, ElementsAre(1, 2, 3));
   }
 
@@ -1283,7 +1282,6 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 1` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 1), subspan.data());
-    static_assert(2 == decltype(subspan)::extent);
     EXPECT_THAT(subspan, ElementsAre(2, 3));
   }
 
@@ -1292,7 +1290,6 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // SAFETY: `array` has three elmenents, so `span` has three elements, so
     // `span.data() + 2` points within it.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 2), subspan.data());
-    static_assert(1 == decltype(subspan)::extent);
     EXPECT_THAT(subspan, ElementsAre(3));
   }
 
@@ -1302,7 +1299,6 @@ TEST(SpanTest, TemplatedSubspanFromDynamicSpan) {
     // `span.data() + 3` points to one byte beyond the object as permitted by
     // C++ specification.
     EXPECT_EQ(UNSAFE_BUFFERS(span.data() + 3), subspan.data());
-    static_assert(0 == decltype(subspan)::extent);
     EXPECT_THAT(subspan, IsEmpty());
   }
 

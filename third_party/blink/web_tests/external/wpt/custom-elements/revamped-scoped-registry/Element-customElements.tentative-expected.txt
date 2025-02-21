@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] customElements on a newly constrcuted element should return window.customElements by default
+  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] customElements on an element inside a declarative shadow DOM should return window.customElements by default
+  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] customElements on an element inside a declarative shadow DOM with shadowrootcustomelements should return null
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] customElements on a clone of a declarative shadow tree with shadowrootcustomelements should return null
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] customElements on a clone of a declarative shadow tree with shadowrootcustomelements should return the global registry after getting inserted into a document
+  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] customElements on an element inside a declarative shadow DOM with shadowrootcustomelements should return the scoped registry after calling initialize
+  registry.initialize is not a function
+[FAIL] customElements on a builtin element created by calling createElement on CustomElementRegistry should return the registry
+  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] customElements on an upgarde candidate created by calling createElement on CustomElementRegistry should return the registry
+  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] customElements on an unknown element created by calling createElement on CustomElementRegistry should return the registry
+  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] customElements on a defined custom element created by calling createElement on CustomElementRegistry should return the registry
+  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+Harness: the test ran to completion.
+

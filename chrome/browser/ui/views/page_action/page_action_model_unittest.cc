@@ -91,6 +91,38 @@ TEST_F(PageActionModelTest, OverrideText) {
   EXPECT_EQ(model_.GetText(), std::u16string());
 }
 
+TEST_F(PageActionModelTest, OverrideImage) {
+  model_.SetActionItemProperties(
+      PassKey(), ActionItem::Builder().SetImage(kTestImage).Build().get());
+  EXPECT_EQ(model_.GetImage(), kTestImage);
+
+  ui::ImageModel kOverrideImage =
+      ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(/*size=*/32));
+
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetOverrideImage(PassKey(), kOverrideImage);
+  EXPECT_EQ(model_.GetImage(), kOverrideImage);
+
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetOverrideImage(PassKey(), std::nullopt);
+  EXPECT_EQ(model_.GetImage(), kTestImage);
+}
+
+TEST_F(PageActionModelTest, OverrideTooltip) {
+  auto action_item = ActionItem::Builder().SetTooltipText(kTooltipText).Build();
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetActionItemProperties(PassKey(), action_item.get());
+  EXPECT_EQ(model_.GetTooltipText(), kTooltipText);
+
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetOverrideTooltip(PassKey(), kOverrideText);
+  EXPECT_EQ(model_.GetTooltipText(), kOverrideText);
+
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetOverrideTooltip(PassKey(), std::nullopt);
+  EXPECT_EQ(model_.GetTooltipText(), kTooltipText);
+}
+
 TEST_F(PageActionModelTest, SetActionItemProperties) {
   // NOTE: The visibility is exercised by the test VisibilityConditions.
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);

@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -21,6 +22,13 @@ namespace glic {
 GlicLauncherConfiguration::GlicLauncherConfiguration(Observer* manager)
     : manager_(manager) {
   if (PrefService* local_state = g_browser_process->local_state()) {
+    // Update the default hotkey value once `FeatureList` is initialized.
+    const std::string default_hotkey = features::kGlicDefaultHotkey.Get();
+    if (!default_hotkey.empty()) {
+      local_state->SetDefaultPrefValue(prefs::kGlicLauncherHotkey,
+                                       base::Value(default_hotkey));
+    }
+
     pref_registrar_.Init(local_state);
     pref_registrar_.Add(
         prefs::kGlicLauncherEnabled,

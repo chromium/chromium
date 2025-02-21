@@ -922,6 +922,9 @@ void OutlinePainter::PaintOutlineRects(
 void OutlinePainter::PaintFocusRingPath(GraphicsContext& context,
                                         const Path& focus_ring_path,
                                         const ComputedStyle& style) {
+  if (!style.OutlineStyleIsAuto()) {
+    return;
+  }
   // TODO(crbug/251206): Implement outline-offset and double focus rings like
   // right angle focus rings, which requires SkPathOps to support expanding and
   // shrinking generic paths.

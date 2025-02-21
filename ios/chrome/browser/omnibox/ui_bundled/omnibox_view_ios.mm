@@ -634,18 +634,6 @@ void OmniboxViewIOS::OnSelectedMatchForAppending(const std::u16string& str) {
   }
 }
 
-void OmniboxViewIOS::OnSelectedMatchForOpening(
-    AutocompleteMatch match,
-    WindowOpenDisposition disposition,
-    const GURL& alternate_nav_url,
-    const std::u16string& pasted_text,
-    size_t index) {
-  const auto match_selection_timestamp = base::TimeTicks();
-
-  model()->OpenSelection(OmniboxPopupSelection(index),
-                         match_selection_timestamp, disposition);
-}
-
 #pragma mark - Thumbnail
 
 void OmniboxViewIOS::SetThumbnailImage(UIImage* image) {

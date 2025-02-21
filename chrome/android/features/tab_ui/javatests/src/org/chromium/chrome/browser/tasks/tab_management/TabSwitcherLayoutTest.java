@@ -397,8 +397,7 @@ public class TabSwitcherLayoutTest {
                     hasAtLeastOneValidViewHolder = true;
                     ViewLookupCachingFrameLayout tabView =
                             (ViewLookupCachingFrameLayout) viewHolder.itemView;
-                    TabThumbnailView thumbnail =
-                            (TabThumbnailView) tabView.fastFindViewById(R.id.tab_thumbnail);
+                    TabThumbnailView thumbnail = tabView.fastFindViewById(R.id.tab_thumbnail);
 
                     double thumbnailViewRatio = thumbnail.getWidth() * 1.0 / thumbnail.getHeight();
                     int pixelDelta =

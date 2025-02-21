@@ -31,7 +31,7 @@ using SandboxedFileMap = base::flat_map<std::string, SandboxedFile>;
 //
 //  // Acquire a vfs file set, for example via a Mojo call to a process
 //  // which is allowed to open files.
-//  SqliteVfsFileSet vfs_file_set = GetVfsFileSet();
+//  SqliteVfsFileSet vfs_file_set = CreateFilesAndBuildVfsFileSet();
 //
 //  // Register the file set for use by any sql::Database in this process
 //  // that uses the `SqliteSandboxedVfsDelegate`.

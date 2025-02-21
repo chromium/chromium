@@ -7,6 +7,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/observer_list.h"
@@ -46,12 +47,18 @@ class PageActionModelInterface {
   virtual void SetOverrideText(
       base::PassKey<PageActionController>,
       const std::optional<std::u16string>& override_text) = 0;
+  virtual void SetOverrideImage(
+      base::PassKey<PageActionController>,
+      const std::optional<ui::ImageModel>& override_image) = 0;
+  virtual void SetOverrideTooltip(
+      base::PassKey<PageActionController>,
+      const std::optional<std::u16string>& override_tooltip) = 0;
 
   virtual bool GetVisible() const = 0;
   virtual bool GetShowSuggestionChip() const = 0;
   virtual const ui::ImageModel& GetImage() const = 0;
-  virtual const std::u16string GetText() const = 0;
-  virtual const std::u16string GetTooltipText() const = 0;
+  virtual const std::u16string& GetText() const = 0;
+  virtual const std::u16string& GetTooltipText() const = 0;
 };
 
 // PageActionModel represents the page action's state, scoped to a single tab.
@@ -82,13 +89,21 @@ class PageActionModel : public PageActionModelInterface {
       base::PassKey<PageActionController>,
       const std::optional<std::u16string>& override_text) override;
 
+  void SetOverrideImage(
+      base::PassKey<PageActionController>,
+      const std::optional<ui::ImageModel>& override_image) override;
+
+  void SetOverrideTooltip(
+      base::PassKey<PageActionController>,
+      const std::optional<std::u16string>& override_tooltip) override;
+
   // The model distills all visibility properties into a single result.
   bool GetVisible() const override;
   bool GetShowSuggestionChip() const override;
 
   const ui::ImageModel& GetImage() const override;
-  const std::u16string GetText() const override;
-  const std::u16string GetTooltipText() const override;
+  const std::u16string& GetText() const override;
+  const std::u16string& GetTooltipText() const override;
 
  private:
   // Notifies observers of a model change.
@@ -115,7 +130,11 @@ class PageActionModel : public PageActionModelInterface {
   // When set, it will always take precedence over `text_`.
   std::optional<std::u16string> override_text_;
   std::u16string tooltip_;
+  // When set, it will always take precedence over `tooltip_`.
+  std::optional<std::u16string> override_tooltip_;
   ui::ImageModel action_item_image_;
+  // When set, it will always take precedence over `action_item_image_`.
+  std::optional<ui::ImageModel> override_image_;
 
   // Flag used to disallow reentrant behaviour.
   bool is_notifying_observers_ = false;

@@ -30,6 +30,9 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
  public:
   using GetProductInfoCallback =
       base::RepeatingCallback<void(const GURL&, ProductInfoCallback)>;
+  using GetProductInfoBatchCallback =
+      base::RepeatingCallback<void(const std::vector<GURL>& urls,
+                                   ProductInfoBatchCallback)>;
   using GetOpenUrlInfosCallback =
       base::RepeatingCallback<const std::vector<UrlInfo>()>;
   using GetEntryPointInfoCallback =
@@ -45,6 +48,7 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
   ClusterManager(ProductSpecificationsService* product_specification_service,
                  std::unique_ptr<ClusterServerProxy> cluster_server_proxy,
                  const GetProductInfoCallback& get_product_info_cb,
+                 const GetProductInfoBatchCallback& get_product_info_batch_cb,
                  const GetOpenUrlInfosCallback& get_open_url_infos_cb);
   ~ClusterManager() override;
   ClusterManager(const ClusterManager&) = delete;
@@ -140,7 +144,7 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
 
   void OnProductInfoFetchedForSimilarUrls(
       GetEntryPointInfoCallback callback,
-      const std::vector<std::pair<GURL, const ProductInfo>>& product_infos);
+      const std::map<GURL, std::optional<ProductInfo>> product_infos);
 
   // Check if product set is still eligible for clustering recommendations given
   // its uuid and last updated time. Please note that this method can be used
@@ -162,6 +166,9 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
 
   // Callback to get product info.
   GetProductInfoCallback get_product_info_cb_;
+
+  // Callback to get product info in batches.
+  GetProductInfoBatchCallback get_product_info_batch_cb_;
 
   // Callback to get currently opened urls.
   GetOpenUrlInfosCallback get_open_url_infos_cb_;

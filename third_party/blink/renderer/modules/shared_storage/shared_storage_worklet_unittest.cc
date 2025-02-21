@@ -287,6 +287,12 @@ class MockMojomPrivateAggregationHost
       ContributeToHistogram,
       (Vector<blink::mojom::blink::AggregatableReportHistogramContributionPtr>),
       (override));
+  MOCK_METHOD(
+      void,
+      ContributeToHistogramOnEvent,
+      (blink::mojom::PrivateAggregationErrorEvent,
+       Vector<blink::mojom::blink::AggregatableReportHistogramContributionPtr>),
+      (override));
   MOCK_METHOD(void,
               EnableDebugMode,
               (blink::mojom::blink::DebugKeyPtr),

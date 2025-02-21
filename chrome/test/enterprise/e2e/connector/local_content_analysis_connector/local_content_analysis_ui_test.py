@@ -26,8 +26,9 @@ SafeBrowsingReportingUrl = "chrome://safe-browsing/#tab-reporting"
 
 def main(argv):
   chrome_options = Options()
-  chrome_options.add_experimental_option("prefs",
-                                         {"printing.print_to_pdf": True})
+
+  chrome_options.add_experimental_option("localState",
+                                         {"internal_only_uis_enabled": True})
   driver = create_chrome_webdriver(chrome_options=chrome_options)
   time.sleep(10)
   driver.get(SafeBrowsingReportingUrl)

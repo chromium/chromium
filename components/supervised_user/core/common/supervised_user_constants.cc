@@ -134,6 +134,8 @@ extern const char kClassifyUrlThrottleStatusHistogramName[] =
 extern const char kClassifyUrlThrottleFinalStatusHistogramName[] =
     "SupervisedUsers.ClassifyUrlThrottle.FinalStatus";
 
+const char kLocalWebApprovalDurationMillisecondsHistogramName[] =
+    "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration";
 const char kLocalWebApprovalErrorTypeHistogramName[] =
     "FamilyLinkUser.LocalWebApprovalErrorType";
 }  // namespace supervised_user

@@ -7,9 +7,11 @@
  * for Autofill AI.
  */
 
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/icons.html.js';
@@ -22,22 +24,22 @@ import '../simple_confirmation_dialog.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
 import {getTemplate} from './autofill_ai_section.html.js';
-import type {UserAnnotationsManagerProxy} from './user_annotations_manager_proxy.js';
-import {UserAnnotationsManagerProxyImpl} from './user_annotations_manager_proxy.js';
+import type {EntityDataManagerProxy} from './entity_data_manager_proxy.js';
+import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 
-type UserAnnotationsEntry = chrome.autofillPrivate.UserAnnotationsEntry;
+type EntityInstance = chrome.autofillPrivate.EntityInstance;
 
 // browser_element_identifiers constants
 const AUTOFILL_AI_HEADER_ELEMENT_ID =
@@ -45,7 +47,7 @@ const AUTOFILL_AI_HEADER_ELEMENT_ID =
 
 export interface SettingsAutofillAiSectionElement {
   $: {
-    prefToggle: SettingsToggleButtonElement,
+    actionMenu: CrLazyRenderElement<CrActionMenuElement>,
     entriesHeaderTitle: HTMLElement,
   };
 }
@@ -65,44 +67,73 @@ export class SettingsAutofillAiSectionElement extends
 
   static get properties() {
     return {
-      disabled: {
+      /**
+         If a user is not eligible for Autofill with Ai, but they have data
+         saved, the code allows them only to edit and delete their data. They
+         are not allowed to add new data, or to opt-in or opt-out of Autofill
+         with Ai using the toggle at the top of this page.
+         If a user is not eligible for Autofill with Ai and they also have no
+         data saved, then they cannot access this page at all.
+       */
+      ineligibleUser: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
 
-      entryToDelete_: Object,
-
-      deleteEntryConfirmationText_: {
-        type: String,
-        computed: 'getDeleteEntryConfirmationText_(entryToDelete_)',
+      /**
+         The correspondent model for any entity related action menus or
+         dialogs.
+       */
+      activeEntity_: {
+        type: Object,
+        value: null,
       },
 
-      deleteAllEntriesConfirmationShown_: {
+      /** The same dialog can be used for both adding and editing entities. */
+      showAddOrEditEntityDialog_: {
         type: Boolean,
         value: false,
+      },
+
+      showRemoveEntityDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      entityInstances_: {
+        Array,
+        value: () => [],
       },
     };
   }
 
-  disabled: boolean = false;
-  private userAnnotationsEntries_: UserAnnotationsEntry[] = [];
-  private userAnnotationsManager_: UserAnnotationsManagerProxy =
-      UserAnnotationsManagerProxyImpl.getInstance();
-  private entryToDelete_?: UserAnnotationsEntry;
-  private deleteEntryConfirmationText_: string;
-  private deleteAllEntriesConfirmationShown_: boolean;
+  ineligibleUser: boolean;
+  private activeEntity_: EntityInstance|null;
+  private showAddOrEditEntityDialog_: boolean;
+  private showRemoveEntityDialog_: boolean;
+  private entityInstances_: EntityInstance[];
+  private entityDataManager_: EntityDataManagerProxy =
+      EntityDataManagerProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
 
-    this.userAnnotationsManager_.getEntries().then(
-        (entries: UserAnnotationsEntry[]) => {
-          if (this.disabled && entries.length === 0) {
+    this.entityDataManager_.loadEntityInstances().then(
+        (entityInstances: EntityInstance[]) => {
+          // If the user is ineligible for Autofill with Ai and has no data
+          // saved, then they should not be able to access this page. These
+          // lines prevent such a user manually navigating to this page by
+          // typing its URL.
+          if (this.ineligibleUser && entityInstances.length === 0) {
             Router.getInstance().navigateTo(routes.AUTOFILL);
+            return;
           }
-          this.userAnnotationsEntries_ = entries;
+          this.entityInstances_ = entityInstances;
         });
 
+    // TODO(crbug.com/393318914): Remove this help bubble, which was introduced
+    // in crrev.com/c/5939704.
     this.registerHelpBubble(
         AUTOFILL_AI_HEADER_ELEMENT_ID, this.$.entriesHeaderTitle);
   }
@@ -112,57 +143,75 @@ export class SettingsAutofillAiSectionElement extends
         loadTimeData.getString('autofillAiLearnMoreURL'));
   }
 
-  private onPrefToggleChanged_() {
-    this.userAnnotationsManager_.predictionImprovementsIphFeatureUsed();
+  /**
+   * Returns the first attribute of the entity, to be used as a label.
+   */
+  private getEntityLabel_(entity: EntityInstance): string {
+    // TODO(crbug.com/393318914): Use better labels.
+    return entity.attributes[0].value;
   }
 
-  private onDeleteEntryCick_(e: DomRepeatEvent<UserAnnotationsEntry>): void {
-    this.entryToDelete_ = e.model.item;
+  /**
+   * Returns the text to be used in the "Delete" entity dialog.
+   */
+  private getRemoveEntityText_(entity: EntityInstance): string {
+    // TODO(crbug.com/393319296): Make the string more suggestive.
+    return this.i18n(
+        'autofillAiDeleteEntryDialogText', this.getEntityLabel_(entity),
+        this.getEntityLabel_(entity));
   }
 
-  private onDeleteEntryDialogClose_(): void {
-    assert(this.entryToDelete_);
+  /**
+   * Open the action menu.
+   */
+  private onMoreButtonClick_(e: DomRepeatEvent<EntityInstance>) {
+    this.activeEntity_ = e.model.item;
+    const moreButton = e.target as HTMLElement;
+    this.$.actionMenu.get().showAt(moreButton);
+  }
 
+  /**
+   * Handles tapping on the "Add" entity button.
+   */
+  private onAddEntityClick_(e: Event) {
+    e.preventDefault();
+    this.showAddOrEditEntityDialog_ = true;
+  }
+
+  /**
+   * Handles tapping on the "Edit" entity button in the action menu.
+   */
+  private onMenuEditEntityClick_(e: Event) {
+    e.preventDefault();
+    // Clone item so dialog won't update model on cancel.
+    this.activeEntity_ = structuredClone(this.activeEntity_);
+    this.showAddOrEditEntityDialog_ = true;
+    this.$.actionMenu.get().close();
+  }
+
+  /**
+   * Handles tapping on the "Delete" entity button in the action menu.
+   */
+  private onMenuRemoveEntityClick_(e: Event) {
+    e.preventDefault();
+    this.showRemoveEntityDialog_ = true;
+    this.$.actionMenu.get().close();
+  }
+
+  private onRemoveEntityDialogClose_() {
     const wasDeletionConfirmed =
         this.shadowRoot!
             .querySelector<SettingsSimpleConfirmationDialogElement>(
-                '#deleteEntryDialog')!.wasConfirmed();
-
+                '#removeEntityDialog')!.wasConfirmed();
     if (wasDeletionConfirmed) {
-      this.userAnnotationsManager_.deleteEntry(this.entryToDelete_.entryId);
-
+      this.entityDataManager_.removeEntityInstance(this.activeEntity_!.guid);
       // Speculatively update local list to avoid potential stale data issues.
-      const index = this.userAnnotationsEntries_.findIndex(
-          entry => this.entryToDelete_!.entryId === entry.entryId);
-      this.splice('userAnnotationsEntries_', index, 1);
+      const deletedEntityIndex = this.entityInstances_.findIndex(
+          entityInstance => entityInstance.guid === this.activeEntity_!.guid);
+      this.splice('entityInstances_', deletedEntityIndex, 1);
     }
 
-    this.entryToDelete_ = undefined;
-  }
-
-  private onDeleteAllEntriesClick_(): void {
-    this.deleteAllEntriesConfirmationShown_ = true;
-  }
-
-  private onDeleteAllEntriesDialogClose_(): void {
-    const wasDeletionConfirmed =
-        this.shadowRoot!
-            .querySelector<SettingsSimpleConfirmationDialogElement>(
-                '#deleteAllEntriesDialog')!.wasConfirmed();
-    if (wasDeletionConfirmed) {
-      this.userAnnotationsManager_.deleteAllEntries();
-      this.userAnnotationsEntries_ = [];
-    }
-
-    this.deleteAllEntriesConfirmationShown_ = false;
-  }
-
-  private getDeleteEntryConfirmationText_(entry?: UserAnnotationsEntry):
-      string {
-    if (!entry) {
-      return '';
-    }
-    return this.i18n('autofillAiDeleteEntryDialogText', entry.key, entry.value);
+    this.showRemoveEntityDialog_ = false;
   }
 }
 

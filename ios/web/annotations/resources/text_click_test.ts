@@ -6,7 +6,8 @@
  * @fileoverview Tests for text_click.ts.
  */
 
-import {AnnotationsTapConsumer, TextClick} from '//ios/web/annotations/resources/text_click.js';
+import type {AnnotationsTapConsumer} from '//ios/web/annotations/resources/text_click.js';
+import {TextClick} from '//ios/web/annotations/resources/text_click.js';
 import {expectEq, FakeTaskTimer, load, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
 class TestTextClick extends TestSuite {
@@ -180,4 +181,4 @@ class TestTextClick extends TestSuite {
   }
 }
 
-export {TestTextClick}
+export {TestTextClick};

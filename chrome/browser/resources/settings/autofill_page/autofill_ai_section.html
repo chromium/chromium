@@ -13,18 +13,22 @@
     margin-block-start: 0;
   }
 
-  :host([disabled]) #topSection {
+  /* If the user is not eligible for Autofill with Ai, the top section should
+   * look like it is disabled. */
+  :host([ineligible-user]) #topSection {
     opacity: 50%;
   }
 </style>
 <div id="topSection">
    <!-- 'label=" "'' is intentional here to avoid dropping the sub-label. -->
+   <!-- Disabled: If the user is not eligible for Autofill with Ai, the user
+        should not be able to switch this toggle. This toggle is used for opting
+        in and out of Autofill with Ai. -->
    <settings-toggle-button
-       id="prefToggle" disabled$="[[disabled]]"
+       id="prefToggle" disabled$="[[ineligibleUser]]"
        no-extension-indicator label=" "
        sub-label-with-link="$i18n{autofillAiToggleSubLabel}"
        on-sub-label-link-clicked="onToggleSubLabelLinkClick_"
-       on-settings-boolean-control-change="onPrefToggleChanged_"
        pref="{{prefs.autofill.prediction_improvements.enabled}}">
    </settings-toggle-button>
    <div class="settings-columned-section">
@@ -84,45 +88,51 @@
     <span id="entriesHeaderTitle">
       $i18n{autofillAiUserAnnotationsHeader}</span>
   </h2>
-  <cr-button id="deleteAllEntries" class="header-aligned-button"
-      on-click="onDeleteAllEntriesClick_"
-      disabled="[[!userAnnotationsEntries_.length]]">
-    $i18n{autofillAiDeleteAllEntriesButtonLabel}
+  <!-- Disabled: If the user is not eligible for Autofill with Ai, the user
+       should not be able to add entities. -->
+  <!-- TODO(crbug.com/393318914): Disable also if the toggle is turned off. -->
+  <cr-button id="addEntity" class="header-aligned-button"
+      disabled$="[[ineligibleUser]]" on-click="onAddEntityClick_">
+    <!-- TODO(crbug.com/393318914): Use settings localized strings provider. -->
+    Add
   </cr-button>
 </div>
 <ul id="entries" class="list-frame vertical-list">
-  <template is="dom-repeat" items="[[userAnnotationsEntries_]]">
+  <template is="dom-repeat" items="[[entityInstances_]]">
     <li class="list-item">
       <div class="start">
-        <div class="cr-secondary-text item-label">[[item.key]]</div>
-        [[item.value]]
+        [[getEntityLabel_(item)]]
+        <div class="cr-secondary-text">[[getEntityLabel_(item)]]</div>
       </div>
-      <cr-icon-button iron-icon="cr20:delete" on-click="onDeleteEntryCick_"
-          title="$i18n{autofillAiDeleteEntryDialogTitle}">
+      <!-- TODO(crbug.com/393318914): Add title. -->
+      <cr-icon-button id="moreButton" class="icon-more-vert"
+          on-click="onMoreButtonClick_" title="">
       </cr-icon-button>
     </li>
   </template>
-  <template is="dom-if" if="[[!userAnnotationsEntries_.length]]" restamp>
-    <li id="entriesNone" class="list-item">
-      $i18n{autofillAiUserAnnotationsNone}
-    </li>
-  </template>
+  <li id="entriesNone" class="list-item" hidden="[[entityInstances_.length]]">
+    $i18n{autofillAiUserAnnotationsNone}
+  </li>
 </ul>
 
-<template is="dom-if" if="[[entryToDelete_]]" restamp>
-  <settings-simple-confirmation-dialog id="deleteEntryDialog"
+<cr-lazy-render id="actionMenu">
+  <template>
+    <cr-action-menu role-description="$i18n{menu}">
+      <button id="menuEditEntity" class="dropdown-item"
+          on-click="onMenuEditEntityClick_">$i18n{edit}</button>
+      <button id="menuRemoveEntity" class="dropdown-item"
+          on-click="onMenuRemoveEntityClick_">$i18n{delete}</button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
+
+<template is="dom-if" if="[[showRemoveEntityDialog_]]" restamp>
+  <settings-simple-confirmation-dialog id="removeEntityDialog"
       title-text="$i18n{autofillAiDeleteEntryDialogTitle}"
-      body-text="[[deleteEntryConfirmationText_]]"
+      body-text="[[getRemoveEntityText_(activeEntity_)]]"
       confirm-text="$i18n{delete}"
-      on-close="onDeleteEntryDialogClose_">
+      on-close="onRemoveEntityDialogClose_">
   </settings-simple-confirmation-dialog>
 </template>
 
-<template is="dom-if" if="[[deleteAllEntriesConfirmationShown_]]" restamp>
-  <settings-simple-confirmation-dialog id="deleteAllEntriesDialog"
-      title-text="$i18n{autofillAiDeleteAllEntriesDialogTitle}"
-      body-text="$i18n{autofillAiDeleteAllEntriesDialogText}"
-      confirm-text="$i18n{delete}"
-      on-close="onDeleteAllEntriesDialogClose_">
-  </settings-simple-confirmation-dialog>
-</template>
+<!-- TODO(crbug.com/393319296): Add dialog for adding and editing entities. -->

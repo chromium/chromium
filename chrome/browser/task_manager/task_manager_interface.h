@@ -240,6 +240,11 @@ class TaskManagerInterface {
   virtual TaskId GetTaskIdForWebContents(
       content::WebContents* web_contents) const = 0;
 
+  // Returns whether a task is valid by the implementer. Concept of 'valid' is
+  // delegated to the implementer. An example of validness is
+  // task_manager_impl.cc tracking tasks in task_groups_by_task_ids_.
+  virtual bool IsTaskValid(TaskId task_id) const;
+
   // Returns true if the resource |type| usage calculation is enabled and
   // the implementation should refresh its value (this means that at least one
   // of the observers require this value). False otherwise.

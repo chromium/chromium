@@ -255,7 +255,7 @@ public class TabListCoordinator
 
                         ViewLookupCachingFrameLayout root =
                                 (ViewLookupCachingFrameLayout) holder.itemView;
-                        ImageView thumbnail = (ImageView) root.fastFindViewById(R.id.tab_thumbnail);
+                        ImageView thumbnail = root.fastFindViewById(R.id.tab_thumbnail);
                         if (thumbnail == null) return;
 
                         thumbnail.setImageDrawable(null);

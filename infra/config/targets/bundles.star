@@ -2874,11 +2874,6 @@ targets.bundle(
         "zlib_unittests",
     ],
     per_test_modifications = {
-        "cc_unittests": targets.mixin(
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
         "components_browsertests": targets.mixin(
             args = [
                 "--test-arg=--disable-gpu",
@@ -2888,7 +2883,7 @@ targets.bundle(
         ),
         "components_unittests": targets.mixin(
             swarming = targets.swarming(
-                shards = 2,
+                shards = 4,
             ),
         ),
         "content_browsertests": targets.mixin(
@@ -2905,9 +2900,6 @@ targets.bundle(
             args = [
                 "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
             ],
-            swarming = targets.swarming(
-                shards = 4,
-            ),
         ),
         "ozone_gl_unittests": targets.mixin(
             args = [

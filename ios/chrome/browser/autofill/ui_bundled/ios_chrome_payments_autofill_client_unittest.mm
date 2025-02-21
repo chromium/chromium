@@ -197,9 +197,6 @@ class IOSChromePaymentsAutofillClientTest : public PlatformTest {
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
        CreditCardUploadCompleted_CardSaved) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
-
   EXPECT_CALL(*(client()->GetAutofillSaveCardInfoBarDelegateIOS()),
               CreditCardUploadCompleted(/*card_saved=*/true, _));
   payments_client()->CreditCardUploadCompleted(
@@ -210,8 +207,6 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
        CreditCardUploadCompleted_CardNotSaved) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
   EXPECT_CALL(*(client()->GetAutofillSaveCardInfoBarDelegateIOS()),
               CreditCardUploadCompleted(/*card_saved=*/false, _));
 
@@ -232,9 +227,6 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 // and error dialog is not shown.
 TEST_F(IOSChromePaymentsAutofillClientTest,
        CreditCardUploadCompleted_ClientSideTimeout_NoErrorConfirmation) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
-
   EXPECT_CALL(*(client()->GetAutofillSaveCardInfoBarDelegateIOS()),
               CreditCardUploadCompleted(/*card_saved=*/false, _));
   payments_client()->CreditCardUploadCompleted(
@@ -249,8 +241,6 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
        VirtualCardEnrollCompletedWithSucess) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   std::unique_ptr<VirtualCardEnrollUiModel> ui_model =
       ShowVirtualCardEnrollDialog();
 
@@ -263,8 +253,6 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
        VirtualCardEnrollCompletedWithFailureSetsEnrollmentProgress) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   std::unique_ptr<VirtualCardEnrollUiModel> ui_model =
       ShowVirtualCardEnrollDialog();
 
@@ -275,12 +263,9 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
             autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kFailed);
 }
 
-// Tests metrics for save card confirmation view shown for card not uploaded
-// with loading and confirmation and confirmation enabled.
+// Tests metrics for save card confirmation view shown for card not uploaded.
 TEST_F(IOSChromePaymentsAutofillClientTest,
        ConfirmationViewShownForCardNotUploaded_Metrics) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
   base::HistogramTester histogram_tester;
 
   payments_client()->CreditCardUploadCompleted(
@@ -293,47 +278,8 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
       /*is_shown=*/true, 1);
 }
 
-// Tests metrics for save card confirmation view not shown for card not
-// uploaded with loading and confirmation not enabled.
-TEST_F(IOSChromePaymentsAutofillClientTest,
-       ConfirmationViewNotShownForCardNotUploaded_Metrics) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
-
-  payments_client()->CreditCardUploadCompleted(
-      /*result=*/payments::PaymentsAutofillClient::PaymentsRpcResult::
-          kPermanentFailure,
-      /*on_confirmation_closed_callback=*/std::nullopt);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCardUpload.ConfirmationShown.CardNotUploaded",
-      /*is_shown=*/false, 1);
-}
-
-// Tests metrics for save card confirmation view not shown when card is uploaded
-// with loading and confirmation is not enabled.
-TEST_F(IOSChromePaymentsAutofillClientTest,
-       ConfirmationViewNotShownForCardUploaded_Metrics) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
-
-  payments_client()->CreditCardUploadCompleted(
-      /*result=*/payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
-      /*on_confirmation_closed_callback=*/std::nullopt);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCardUpload.ConfirmationShown.CardUploaded",
-      /*is_shown=*/false, 1);
-}
-
 TEST_F(IOSChromePaymentsAutofillClientTest,
        VirtualCardEnrollCompletedWithFailureShowsErrorDialog) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   ShowVirtualCardEnrollDialog();
 
   payments_client()->VirtualCardEnrollCompleted(
@@ -348,8 +294,6 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
        VirtualCardEnrollCompletedWithSuccessDoesNotShowAlert) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   ShowVirtualCardEnrollDialog();
 
   payments_client()->VirtualCardEnrollCompleted(
@@ -361,8 +305,6 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
        VirtualCardEnrollCompletedWithClientSideTimeoutDoesNotShowAlert) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   ShowVirtualCardEnrollDialog();
 
   payments_client()->VirtualCardEnrollCompleted(

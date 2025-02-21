@@ -1062,6 +1062,19 @@ bool TaskManagerTableModel::IsTaskFirstInGroup(size_t row_index) const {
   return false;
 }
 
+bool TaskManagerTableModel::FetchTaskTypes(TaskId child_task_id,
+                                           Task::Type& out_type,
+                                           Task::SubType& out_subtype) const {
+  const TaskId root = observed_task_manager()->GetRootTaskId(child_task_id);
+  if (!observed_task_manager()->IsTaskValid(root)) {
+    return false;
+  }
+
+  out_type = observed_task_manager()->GetType(root);
+  out_subtype = observed_task_manager()->GetSubType(root);
+  return true;
+}
+
 bool TaskManagerTableModel::ShouldKeepTaskForSupportedType(
     TaskId task_id) const {
   // TODO(crbug.com/364926055): Remove when the refreshed Task Manager launches.
@@ -1070,9 +1083,14 @@ bool TaskManagerTableModel::ShouldKeepTaskForSupportedType(
     return true;
   }
 
-  const TaskId root = observed_task_manager()->GetRootTaskId(task_id);
-  const Task::Type type = observed_task_manager()->GetType(root);
-  const Task::SubType subtype = observed_task_manager()->GetSubType(root);
+  Task::Type type;
+  Task::SubType subtype;
+
+  if (!FetchTaskTypes(task_id, type, subtype)) {
+    // crbug.com/396002122: It is possible that the root task id is not
+    // valid/tracked anymore, so discard this task.
+    return false;
+  }
 
   return ShouldKeepTaskForTabsAndExtensions(type, subtype) ||
          ShouldKeepTaskForSystem(type, subtype);
@@ -1094,11 +1112,16 @@ bool TaskManagerTableModel::ShouldKeepTask(TaskId task_id) const {
     return true;
   }
 
+  Task::Type type;
+  Task::SubType subtype;
+
   // Keep any TaskId iff the task that spawned it (root node) has a type that
   // matches the current category.
-  const TaskId root = observed_task_manager()->GetRootTaskId(task_id);
-  const Task::Type type = observed_task_manager()->GetType(root);
-  const Task::SubType subtype = observed_task_manager()->GetSubType(root);
+  if (!FetchTaskTypes(task_id, type, subtype)) {
+    // crbug.com/396002122: It is possible that the root task id is not
+    // valid/tracked anymore, so discard this task.
+    return false;
+  }
 
   switch (display_category_) {
     case DisplayCategory::kTabsAndExtensions:

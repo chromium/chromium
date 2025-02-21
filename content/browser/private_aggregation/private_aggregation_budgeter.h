@@ -9,7 +9,8 @@
 #include <set>
 #include <vector>
 
-#include "base/functional/callback.h"
+#include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -20,7 +21,6 @@
 #include "content/public/browser/storage_partition.h"
 
 namespace base {
-class FilePath;
 class UpdateableSequencedTaskRunner;
 }  // namespace base
 
@@ -131,7 +131,7 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   PrivateAggregationBudgeter(
       scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner,
       bool exclusively_run_in_memory,
-      const base::FilePath& path_to_db_dir);
+      base::FilePath path_to_db_dir);
 
   PrivateAggregationBudgeter(const PrivateAggregationBudgeter& other) = delete;
   PrivateAggregationBudgeter& operator=(
@@ -198,17 +198,22 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   // storage.
   PrivateAggregationBudgeter();
 
-  // Virtual for testing.
+  // Called when storage is initialized. Iff initialization failed, `storage`
+  // will be nullptr. Virtual for testing.
   virtual void OnStorageDoneInitializing(
       std::unique_ptr<PrivateAggregationBudgetStorage> storage);
 
   StorageStatus storage_status_ = StorageStatus::kPendingInitialization;
 
  private:
+  // Begins initializing storage asynchronously. Repeat calls are no-ops.
+  // Registers a callback to `OnStorageDoneInitializing()`.
+  //
+  // We initialize storage lazily to keep startup code fast. This laziness also
+  // avoids unnecessary work when storage is not needed. So, rather than eagerly
+  // initializing storage in the constructor, the first call to `ConsumeBudget`,
+  // `ClearData()`, or `GetAllDataKeys()` will call this method.
   void EnsureStorageInitializationBegun();
-
-  void InitializeStorage(bool exclusively_run_in_memory,
-                         base::FilePath path_to_db_dir);
 
   void ConsumeBudgetImpl(int additional_budget,
                          const PrivateAggregationBudgetKey& budget_key,
@@ -227,7 +232,7 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
 
   void ProcessAllPendingCalls();
 
-  bool DidStorageInitializationSucceed();
+  bool DidStorageInitializationSucceed() const;
 
   // Deletes any budgeting data that is too old to affect current or future
   // calls to the API.
@@ -252,6 +257,13 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   // have been posted but the reply has not been run.
   int num_pending_user_visible_tasks_ = 0;
 
+  // Whether `storage_` should not write to disk.
+  bool exclusively_run_in_memory_ = false;
+
+  // Directory where `storage_` should search for its database. Do not use once
+  // storage initialization has begun as it will be in an unspecified state.
+  base::FilePath path_to_db_dir_;
+
   // `nullptr` until initialization is complete or if initialization failed.
   // Otherwise, owned by this class until destruction. Iff present,
   // `storage_status_` should be `kOpen`.
@@ -268,13 +280,6 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   // Holds a closure that will shut down the initializing storage until
   // initialization is complete. After then, it is null.
   base::OnceClosure shutdown_initializing_storage_;
-
-  // When constructing this class, we create a closure that contains the storage
-  // initialization parameters. On the first call to `ConsumeBudget` or
-  // `ClearData`, the closure is run to call `InitializeStorage`. This ensures
-  // that the storage is only initialized when it is needed and avoid incurring
-  // delay on startup. After then, it is null;
-  base::OnceClosure initialize_storage_;
 
   base::WeakPtrFactory<PrivateAggregationBudgeter> weak_factory_{this};
 };

@@ -136,8 +136,11 @@ WPT_FINGERPRINT = 'GHzeRS4aLf+NeadKdUm+tUlmntyCJI4XyqCVWkDCnoc='
 # One for `//third_party/wpt_tools/certs/127.0.0.1.sxg.pem` used by non-WPT
 # tests under `web_tests/http/`.
 SXG_FINGERPRINT = '55qC1nKu2A88ESbFmk5sTPQS/ScG+8DD7P+2bgFA9iM='
-# And one for external/wpt/signed-exchange/resources/127.0.0.1.sxg.pem
+# One for external/wpt/signed-exchange/resources/127.0.0.1.sxg.pem
 SXG_WPT_FINGERPRINT = '0Rt4mT6SJXojEMHTnKnlJ/hBKMBcI4kteBlhR1eTTdk='
+# And one for `//third_party/blink/tools/apache_config/webkit-httpd.pem` used by
+# non-WPT tests under `web_tests/http/`.
+WEB_TESTS_HTTP_FINGERPRINT = 'KLy6vv6synForXwI6lDIl+D3ZrMV6Y1EMTY6YpOcAos='
 
 # A convervative rule for names that are valid for file or directory names.
 VALID_FILE_NAME_REGEX = re.compile(r'^[\w\-=]+$')
@@ -452,6 +455,7 @@ class Port(object):
             WPT_FINGERPRINT,
             SXG_FINGERPRINT,
             SXG_WPT_FINGERPRINT,
+            WEB_TESTS_HTTP_FINGERPRINT,
         ]
         flags.extend([
             '--ignore-certificate-errors-spki-list=' +

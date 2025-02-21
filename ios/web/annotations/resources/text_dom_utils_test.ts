@@ -38,8 +38,8 @@ class TestDomUtils extends TestSuite {
         '<div><span>4<A>5</A></span>6</div>' +
         '<div>7<span><span id="last">8</span></span></div>' +
         '</div>');
-    let first: Node|null = document.querySelector('#first');
-    let last: Node|null = document.querySelector('#last');
+    const first: Node|null = document.querySelector('#first');
+    const last: Node|null = document.querySelector('#last');
     expectEq(this.iterateOnPreviousLeaf(first, true), '1');
     expectEq(this.iterateOnPreviousLeaf(first, false), '1');
     expectEq(this.iterateOnPreviousLeaf(last, true), '876');
@@ -60,8 +60,8 @@ class TestDomUtils extends TestSuite {
         '<div contenteditable="true" id="n4">invalid</div>' +
         '</div>');
     for (let i = 1; i <= 4; i++) {
-      let id = '#n' + i;
-      let node: Node|null = document.querySelector(id);
+      const id = '#n' + i;
+      const node: Node|null = document.querySelector(id);
       expectEq(node?.textContent === 'valid', isValidNode(node!), id + ': ');
     }
   }
@@ -101,4 +101,4 @@ class TestDomUtils extends TestSuite {
   }
 }
 
-export {TestDomUtils}
+export {TestDomUtils};

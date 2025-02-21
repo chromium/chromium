@@ -612,9 +612,7 @@ class ChromePaymentsAutofillIOSPromoClientTest
   ChromePaymentsAutofillIOSPromoClientTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kAutofillEnableSaveCardLoadingAndConfirmation,
-         features::kAutofillEnableVcnEnrollLoadingAndConfirmation,
-         features::kAutofillEnableCvcStorageAndFilling,
+        {features::kAutofillEnableCvcStorageAndFilling,
          features::kAutofillEnablePrefetchingRiskDataForRetrieval},
         /*disabled_features=*/{});
   }

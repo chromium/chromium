@@ -26,10 +26,33 @@
 
 // https://html.spec.whatwg.org/C#canvasgradient
 
+enum ColorInterpolationMethod {
+  "srgb",
+  "hsl",
+  "hwb",
+  "srgb-linear",
+  "display-p3",
+  "a98-rgb",
+  "prophoto-rgb",
+  "rec2020",
+  "lab",
+  "oklab",
+  "lch",
+  "oklch",
+  "xyz",
+  "xyz-d50",
+  "xyz-d65"
+};
+
+enum HueInterpolationMethod { "shorter", "longer", "increasing", "decreasing" };
+
 [
     Exposed=(Window,Worker)
 ] interface CanvasGradient {
 
     [RaisesException] void addColorStop(double offset, DOMString color);
+    [RuntimeEnabled=CanvasGradientCSSColor4] attribute ColorInterpolationMethod colorInterpolationMethod; // (default: "srgb")
+    [RuntimeEnabled=CanvasGradientCSSColor4] attribute HueInterpolationMethod hueInterpolationMethod; // (default: "shorter")
+    [RuntimeEnabled=CanvasGradientCSSColor4] attribute boolean premultipliedAlpha; // (default: false)
 
 };

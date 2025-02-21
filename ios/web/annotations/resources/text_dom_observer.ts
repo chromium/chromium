@@ -10,9 +10,9 @@ import {isDecorationNode} from '//ios/web/annotations/resources/text_decoration.
 import {isValidNode} from '//ios/web/annotations/resources/text_dom_utils.js';
 
 // Consumer of decoration `Node` removed callback.
-type TextDecorationNodeRemovedConsumer = {
+interface TextDecorationNodeRemovedConsumer {
   (node: Node): void;
-};
+}
 
 // Interface for an `IntersectionObserver` that should count `observe` and
 // `unobserve` call and actually `unobserve` only when the count reaches 0.
@@ -126,5 +126,5 @@ class TextDOMObserver {
 export {
   CountedIntersectionObserver,
   TextDOMObserver,
-  TextDecorationNodeRemovedConsumer
-}
+  TextDecorationNodeRemovedConsumer,
+};

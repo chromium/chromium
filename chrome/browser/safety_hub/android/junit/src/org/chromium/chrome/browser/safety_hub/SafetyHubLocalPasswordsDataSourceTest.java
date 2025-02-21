@@ -106,9 +106,8 @@ public class SafetyHubLocalPasswordsDataSourceTest {
 
     @Test
     public void countsUnavailable() {
-        // TODO(crbug.com/388788969): After adding logic to the local password module, set
-        // appropriate counts for the unavailable state.
         mockTotalPasswordsCount(1);
+        mockPasswordCounts(/* compromised= */ -1, /* weak= */ -1, /* reused= */ -1);
 
         assertTrue(mDataSource.maybeTriggerPasswordCheckup());
         verify(mSafetyHubFetchServiceMock, times(1)).runLocalPasswordCheckup();
@@ -137,12 +136,54 @@ public class SafetyHubLocalPasswordsDataSourceTest {
     }
 
     @Test
-    public void hasWeakPasswords() {
+    public void noCompromisedPasswords_hasWeakAndReusedPasswords_enabled() {
         mockTotalPasswordsCount(5);
-        mockPasswordCounts(0, /* weak= */ 2, 0);
+        mockPasswordCounts(/* compromised= */ 0, /* weak= */ 2, /* reused= */ 1);
+
+        mDataSource.updateState();
+
+        assertEquals(ModuleType.HAS_REUSED_PASSWORDS, mObserver.getModuleType());
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)
+    public void noCompromisedPasswords_hasWeakAndReusedPasswords_disabled() {
+        mockTotalPasswordsCount(5);
+        mockPasswordCounts(/* compromised= */ 0, /* weak= */ 2, /* reused= */ 1);
+
+        mDataSource.updateState();
+
+        assertEquals(ModuleType.NO_COMPROMISED_PASSWORDS, mObserver.getModuleType());
+    }
+
+    @Test
+    public void noCompromisedPasswords_hasWeakPasswords_enabled() {
+        mockTotalPasswordsCount(5);
+        mockPasswordCounts(/* compromised= */ 0, /* weak= */ 1, /* reused= */ 0);
 
         mDataSource.updateState();
 
         assertEquals(ModuleType.HAS_WEAK_PASSWORDS, mObserver.getModuleType());
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)
+    public void noCompromisedPasswords_hasWeakPasswords_disabled() {
+        mockTotalPasswordsCount(5);
+        mockPasswordCounts(/* compromised= */ 0, /* weak= */ 1, /* reused= */ 0);
+
+        mDataSource.updateState();
+
+        assertEquals(ModuleType.NO_COMPROMISED_PASSWORDS, mObserver.getModuleType());
+    }
+
+    @Test
+    public void noCompromisedPasswords() {
+        mockTotalPasswordsCount(5);
+        mockPasswordCounts(0, 0, 0);
+
+        mDataSource.updateState();
+
+        assertEquals(ModuleType.NO_COMPROMISED_PASSWORDS, mObserver.getModuleType());
     }
 }

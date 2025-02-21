@@ -1,0 +1,33 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("status_icons") {
+  sources = [
+    "status_icon.h",
+    "status_icon_menu_model.h",
+    "status_icon_observer.h",
+    "status_tray.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ui/base",
+    "//ui/menus",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "status_icon.cc",
+    "status_icon_menu_model.cc",
+    "status_tray.cc",
+  ]
+
+  deps = [
+    ":status_icons",
+    "//base",
+    "//ui/base",
+    "//ui/gfx:gfx",
+  ]
+}

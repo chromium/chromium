@@ -25,7 +25,7 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
         algorithm.VirtualMasonryItems(line_resolver, &start_offset);
 
     grid_axis_tracks_ = std::make_unique<GridSizingTrackCollection>(
-        algorithm.BuildGridAxisTracks());
+        algorithm.BuildGridAxisTracks(line_resolver, &start_offset));
   }
 
   const GridRangeVector& Ranges() { return grid_axis_tracks_->ranges_; }
@@ -216,6 +216,46 @@ TEST_F(MasonryLayoutAlgorithmTest, ExplicitlyPlacedVirtualItems) {
     }
     EXPECT_EQ(MaxContentContribution(i), expected_max_size);
     EXPECT_EQ(MinContentContribution(i), expected_min_size);
+  }
+}
+
+TEST_F(MasonryLayoutAlgorithmTest, BuildIntrinsicTrackSizes) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body { font: 10px/1 Ahem }
+    #masonry {
+      display: masonry;
+      masonry-template-tracks: min-content max-content;
+    }
+    </style>
+    <div id="masonry">
+      <div style="masonry-track: 1">XX XX</div>
+      <div style="masonry-track: 2">XX XX</div>
+      <div style="masonry-track: 1 / 3">XXX XXXXXX XXXXXXXXX</div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("masonry"));
+
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+
+  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  ComputeGeometry(algorithm);
+
+  const Vector<int> expected_track_sizes = {30, 170};
+
+  const auto set_count = SetCount();
+  EXPECT_EQ(set_count, expected_track_sizes.size());
+  for (wtf_size_t i = 0; i < set_count; ++i) {
+    EXPECT_EQ(TrackSize(i), LayoutUnit(expected_track_sizes[i]));
   }
 }
 

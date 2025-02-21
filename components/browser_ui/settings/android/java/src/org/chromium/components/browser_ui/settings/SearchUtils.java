@@ -98,7 +98,6 @@ public class SearchUtils {
 
                     @Override
                     public boolean onQueryTextChange(String query) {
-                        // TODO(fhorschig) Exit early if a tracked query indicates no changes.
                         updateActionBarButtons(searchItem, query, activity);
                         changeListener.onQueryTextChange(query);
                         return true; // Consume event.

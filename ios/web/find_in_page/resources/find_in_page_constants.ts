@@ -25,8 +25,14 @@ const CSS_STYLE_ID = '__gCrWeb.findInPageStyle';
  * @type {Object}
  */
 const IGNORE_NODE_NAMES = new Set([
-  'SCRIPT', 'STYLE', 'EMBED', 'OBJECT', 'SELECT', 'TEXTAREA', 'IFRAME',
-  'NOSCRIPT'
+  'SCRIPT',
+  'STYLE',
+  'EMBED',
+  'OBJECT',
+  'SELECT',
+  'TEXTAREA',
+  'IFRAME',
+  'NOSCRIPT',
 ]);
 
 /**
@@ -47,5 +53,5 @@ export {
   CSS_STYLE_ID,
   IGNORE_NODE_NAMES,
   MAX_VISIBLE_ELEMENTS,
-  TIMEOUT
-}
+  TIMEOUT,
+};

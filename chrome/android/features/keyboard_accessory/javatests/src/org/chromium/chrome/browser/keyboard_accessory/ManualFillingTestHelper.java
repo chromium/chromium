@@ -471,11 +471,11 @@ public class ManualFillingTestHelper {
 
     // --------------------------------------------------
     // Generic helpers to match, check or wait for views.
-    // TODO(fhorschig): Consider Moving to ViewUtils.
     // --------------------------------------------------
 
     /**
      * Use in a |onView().perform| action to select the tab at |tabIndex| for the found tab layout.
+     *
      * @param tabIndex The index to be selected.
      * @return The action executed by |perform|.
      */
@@ -628,7 +628,6 @@ public class ManualFillingTestHelper {
 
     // --------------------------------------------
     // Helpers that force override the native side.
-    // TODO(fhorschig): Search alternatives.
     // --------------------------------------------
 
     public void addGenerationButton() {

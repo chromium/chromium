@@ -2443,6 +2443,23 @@ const CSSValue* ColumnRuleStyle::CSSValueFromComputedStyleInternal(
       style.ColumnRuleStyle(), style, value_phase);
 }
 
+const CSSValue* RowRuleStyle::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeGapDecorationPropertyList(
+      stream, context, CSSGapDecorationPropertyType::kStyle);
+}
+
+const CSSValue* RowRuleStyle::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForGapDecorationStyleDataList(
+      style.RowRuleStyle(), style, value_phase);
+}
+
 const CSSValue* ColumnRuleWidth::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,

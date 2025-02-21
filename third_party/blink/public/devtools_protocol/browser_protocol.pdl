@@ -8811,6 +8811,10 @@ domain Page
 
   # Enables page domain notifications.
   command enable
+    parameters
+      # If true, the `Page.fileChooserOpened` event will be emitted regardless of the state set by
+      # `Page.setInterceptFileChooserDialog` command (default: false).
+      experimental optional boolean enableFileChooserOpenedEvent
 
   # The manifest of a webapp, see
   # https://www.w3.org/TR/appmanifest/#dfn-manifest.

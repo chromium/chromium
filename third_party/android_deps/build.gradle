@@ -143,6 +143,9 @@ dependencies {
     String daggerVersion = '2.52'
     compile "com.google.dagger:dagger:${daggerVersion}"
 
+    // Dependency of androidx.xr.scenecore
+    compile "com.google.ar:impress:0.0.2"
+
     // Used by ModuleInterfaceProcessor.java
     buildCompile 'com.squareup:javapoet:1.13.0'
 

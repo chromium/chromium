@@ -48,7 +48,7 @@ class EcheAppManagerFactoryTest : public ChromeAshTestBase {
   EcheAppManagerFactoryTest& operator=(const EcheAppManagerFactoryTest&) =
       delete;
 
-  // AshTestBase::Test:
+  // ChromeAshTestBase::
   void SetUp() override {
     DCHECK(profile_);
     DCHECK(test_web_view_factory_.get());

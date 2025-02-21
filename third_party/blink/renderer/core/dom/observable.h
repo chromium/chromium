@@ -28,6 +28,7 @@ class V8SubscribeCallback;
 class V8UnionObservableInspectorOrObserverCallback;
 class V8UnionObserverOrObserverCallback;
 class V8Visitor;
+class V8VoidFunction;
 
 // Implementation of the DOM `Observable` API. See
 // https://github.com/WICG/observable and
@@ -89,6 +90,7 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
   // internally in C++ it has to be named something other than `catch()` due to
   // `catch` being a language keyword.
   Observable* catchImpl(ScriptState*, V8CatchCallback*, ExceptionState&);
+  Observable* finally(ScriptState*, V8VoidFunction*);
 
   // Promise-returning operators. See
   // https://wicg.github.io/observable/#promise-returning-operators.
@@ -110,10 +112,6 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
                                SubscribeOptions*);
 
   void Trace(Visitor*) const override;
-
-  void ClearSubscriber(base::PassKey<Subscriber>) {
-    active_subscriber_ = nullptr;
-  }
 
   // The `subscribe()` API is used when web content subscribes to an Observable
   // with a `V8UnionObserverOrObserverCallback`, whereas this API is used when
@@ -150,11 +148,12 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
   const Member<V8SubscribeCallback> subscribe_callback_;
   const Member<SubscribeDelegate> subscribe_delegate_;
 
-  // The active subscriber associated with `this`. It is set in
+  // The most recent `Subscriber` associated with `this`. It is set in
   // `SubscribeInternal`, and used to register all subsequent subscriptions
-  // until it becomes inactive. Once inactive, `this` clears this pointer until
-  // the next invocation of `SubscribeInternal()`.
-  Member<Subscriber> active_subscriber_;
+  // until it becomes inactive or garbage collected. Once inactive or garbage
+  // collected, `this` no longer has an "active" subscription, and this member
+  // will be set anew in subsequent invocations of `SubscribeInternal()`.
+  WeakMember<Subscriber> weak_subscriber_;
 };
 
 }  // namespace blink

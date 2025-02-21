@@ -196,7 +196,7 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
 
   // Fields that vary by method.
   if (isScoreAd) {
-    if (Object.keys(browserSignals).length !== 10) {
+    if (Object.keys(browserSignals).length !== 11) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -213,6 +213,9 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
     if (browserSignals.forDebuggingOnlyInCooldownOrLockout)
       throw 'Wrong forDebuggingOnlyInCooldownOrLockout ' +
           browserSignals.forDebuggingOnlyInCooldownOrLockout;
+    if (browserSignals.forDebuggingOnlySampling)
+      throw 'Wrong forDebuggingOnlySampling ' +
+          browserSignals.forDebuggingOnlySampling;
   } else {
     if (Object.keys(browserSignals).length !== 10) {
       throw 'Wrong number of browser signals fields ' +

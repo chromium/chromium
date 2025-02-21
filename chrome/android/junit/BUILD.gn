@@ -563,6 +563,7 @@ if (is_android) {
     resources_package = "org.chromium.chrome"
 
     sources = [
+      "//chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromeUnitTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/phone/NewTabAnimationLayoutUnitTest.java",
       "src/org/chromium/chrome/browser/compositor/CompositorSurfaceManagerImplTest.java",
       "src/org/chromium/chrome/browser/compositor/CompositorViewHolderUnitTest.java",
@@ -1012,6 +1013,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/suggestions/tile/TileGroupDelegateImplUnitTest.java",
       "src/org/chromium/chrome/browser/suggestions/tile/TileInteractionDelegateTest.java",
       "src/org/chromium/chrome/browser/suggestions/tile/TileRendererTest.java",
+      "src/org/chromium/chrome/browser/suggestions/tile/tile_edit_dialog/CustomTileEditMediatorUnitTest.java",
     ]
 
     deps = chrome_junit_tests_deps
@@ -1104,6 +1106,7 @@ if (is_android) {
       "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupShareNoticeBottomSheetMediatorUnitTest.java",
       "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupShareNoticeBottomSheetViewUnitTest.java",
       "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupTimeAgoResolverUnitTest.java",
+      "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiCoordinatorUnitTest.java",
       "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiOneshotSupplierUnitTest.java",
       "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupsPaneUnitTest.java",
       "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabLabellerUnitTest.java",

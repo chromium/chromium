@@ -144,7 +144,7 @@ class BookmarkBarDragAndDropInteractiveTest : public InteractiveBrowserTest {
     return Steps(PollState(kMenuShownId, base::BindLambdaForTesting([this]() {
                              return BookmarkBarActiveMenu();
                            })),
-                 WaitForState(kMenuShownId, testing::NotNull()), );
+                 WaitForState(kMenuShownId, testing::NotNull()));
   }
 
   // Returns a relative-position callback that gets the top-center point of
@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
       NameBarMenuChild(kANodeMenuId, 1u),
       CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"),
       NameBarMenuChild(kBNodeMenuId, 0u),
-      CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"), );
+      CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"));
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
       NameBarMenuChild(kBNodeMenuId, 0u),
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
       NameSubmenuChild(kBNodeMenuId, kANodeMenuId, 0u),
-      CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"), );
+      CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"));
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
@@ -347,6 +347,6 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
       NameBarMenuChild(kBNodeMenuId, 0u),
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
       NameBarMenuChild(kANodeMenuId, 1u),
-      CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"), );
+      CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"));
 }
 }  // namespace

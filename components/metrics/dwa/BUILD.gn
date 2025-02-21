@@ -29,8 +29,12 @@ static_library("dwa") {
     "dwa_recorder_interface.h",
     "dwa_reporting_service.cc",
     "dwa_reporting_service.h",
+    "dwa_rotation_scheduler.cc",
+    "dwa_rotation_scheduler.h",
     "dwa_service.cc",
     "dwa_service.h",
+    "dwa_unsent_log_store_metrics.cc",
+    "dwa_unsent_log_store_metrics.h",
   ]
   public_deps = [
     ":dwa_recorder",

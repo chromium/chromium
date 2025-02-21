@@ -235,15 +235,22 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
     return;
   }
 
-  response_code = url_loader_->ResponseInfo()->headers->response_code();
+  auto headers = url_loader_->ResponseInfo()->headers;
+  // If there is an error or if no content upload is required,
+  // CanUploadContent() returns false.
+  response_code = headers->response_code();
+  if (!CanUploadContent(headers)) {
+    Finish(url_loader_->NetError(), response_code, std::move(response_body));
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(
           enterprise_connectors::kEnableAsyncUploadAfterVerdict)) {
-    if (ContainsIntermediateHeader(url_loader_->ResponseInfo()->headers)) {
-      // Intermediate change, simply unblock the user and cleanup the request.
-      response_body = url_loader_->ResponseInfo()->headers->GetNormalizedHeader(
-          kUploadIntermediateHeader);
+    if (headers->HasHeader(kUploadIntermediateHeader)) {
+      response_body = headers->GetNormalizedHeader(kUploadIntermediateHeader);
       std::string output;
       bool decode_result = base::Base64Decode(response_body.value(), &output);
+
       // TODO(329293309): Add logic to perform async upload before calling
       // Finish(). Depending on whether or not this takes place in a callback,
       // delay the Finish() call until the content upload is complete.
@@ -251,13 +258,6 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
              response_code, std::move(output));
       return;
     }
-  }
-
-  // If there is an error or if the metadata check has already
-  // determined a verdict, CanUploadContent() returns false.
-  if (!CanUploadContent(url_loader_->ResponseInfo()->headers)) {
-    Finish(url_loader_->NetError(), response_code, std::move(response_body));
-    return;
   }
 
   // If chrome is being told to upload the content but the content is too large
@@ -268,13 +268,14 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
     return;
   }
 
-  SendContentSoon();
+  // At this point, we are guaranteed to have the upload url header
+  SendContentSoon(headers->GetNormalizedHeader(kUploadUrlHeader).value());
 }
 
-void ResumableUploadRequest::SendContentSoon() {
+void ResumableUploadRequest::SendContentSoon(const std::string& upload_url) {
   auto request = std::make_unique<network::ResourceRequest>();
   request->method = "POST";
-  request->url = GURL(upload_url_);
+  request->url = GURL(upload_url);
   // Only sends content smaller than 50MB, in a single request.
   request->headers.SetHeader(kUploadCommandHeader, "upload, finalize");
   request->headers.SetHeader(kUploadOffsetHeader, "0");
@@ -370,30 +371,11 @@ bool ResumableUploadRequest::CanUploadContent(
   }
   std::optional<std::string> upload_status =
       headers->GetNormalizedHeader(kUploadStatusHeader);
-  std::optional<std::string> upload_url =
-      headers->GetNormalizedHeader(kUploadUrlHeader);
-  if (!upload_status || !upload_url) {
+  if (!upload_status || !headers->HasHeader(kUploadUrlHeader)) {
     return false;
   }
-  upload_url_ = std::move(upload_url).value();
   return base::EqualsCaseInsensitiveASCII(upload_status.value_or(std::string()),
                                           "active");
-}
-
-bool ResumableUploadRequest::ContainsIntermediateHeader(
-    const scoped_refptr<net::HttpResponseHeaders>& headers) {
-  if (headers->response_code() != net::HTTP_OK) {
-    return false;
-  }
-  // the upload URL is also required because we need a destination for our
-  // content
-  std::optional<std::string> upload_url =
-      headers->GetNormalizedHeader(kUploadUrlHeader);
-  if (upload_url && headers->HasHeader(kUploadIntermediateHeader)) {
-    upload_url_ = std::move(upload_url).value();
-    return true;
-  }
-  return false;
 }
 
 void ResumableUploadRequest::Finish(int net_error,

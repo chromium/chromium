@@ -148,7 +148,7 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
   void TearDown() override {
     observer_.reset();
     crosapi_environment_.TearDown();
-    AshTestBase::TearDown();
+    ChromeAshTestBase::TearDown();
   }
 
   void SimulateShowNotification(base::UnguessableToken id) {

@@ -278,8 +278,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() override;
   const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage() const;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                    const std::string& parent_path,
-                    size_t bytes_per_pixel) const;
+                    const std::string& parent_path) const;
 
   // Signals that an external write has completed, passing the token that should
   // be waited on to ensure that the service-side operations of the external

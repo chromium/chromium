@@ -248,6 +248,8 @@ class RecordReplayContext : public GpuControl {
     command_buffer_->AdvanceMode();
   }
 
+  void WaitExec() { gles2_helper_->Finish(); }
+
   void StartReplay() {
     DCHECK_EQ(command_buffer_->mode(), RecordReplayCommandBuffer::kRecord);
     gles2_helper_->FlushLazy();
@@ -427,6 +429,8 @@ class DecoderPerfTest : public testing::Test {
   void StartRecord() { context_->StartRecord(); }
 
   void StartReplay() { context_->StartReplay(); }
+
+  void WaitExec() { context_->WaitExec(); }
 
   void Replay() { context_->Replay(); }
 
@@ -684,6 +688,7 @@ TEST_F(DecoderPerfTest, ProgramDraw) {
       program = 1 - program;
     }
   }
+  WaitExec();
 
   StartReplay();
   PerfIterator iterator("program_draw_100", kDefaultRuns, kDefaultIterations);

@@ -353,9 +353,8 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   release_ctx->context_provider_wrapper = context_provider_wrapper;
 
   sk_sp<SkImage> sk_image = SkImages::BorrowTextureFrom(
-      shared_gr_context, backend_texture, origin, sk_image_info_.colorType(),
-      sk_image_info_.alphaType(), sk_image_info_.refColorSpace(),
-      &ReleaseTexture, release_ctx);
+      shared_gr_context, backend_texture, origin, GetSkColorType(),
+      GetAlphaType(), GetSkColorSpace(), &ReleaseTexture, release_ctx);
 
   if (sk_image) {
     skia_context_provider_wrapper_ = context_provider_wrapper;

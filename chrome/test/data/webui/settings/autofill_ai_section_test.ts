@@ -6,22 +6,24 @@
 import 'chrome://settings/settings.js';
 
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {assertTrue, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertTrue, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import type { SettingsToggleButtonElement } from 'chrome://settings/settings.js';
 import type {SettingsSimpleConfirmationDialogElement, SettingsAutofillAiSectionElement} from 'chrome://settings/lazy_load.js';
-import {UserAnnotationsManagerProxyImpl} from 'chrome://settings/lazy_load.js';
-
-import {TestUserAnnotationsManagerProxyImpl} from './test_user_annotations_manager_proxy.js';
-
+import { EntityDataManagerProxyImpl } from 'chrome://settings/lazy_load.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+
+import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 // clang-format on
 
-suite('AutofillAiSectionUiDisabledToggleTest', function() {
+// TODO(crbug.com/393318914): Parameterize this suite and also test that the add
+// button is disabled accordingly.
+suite('AutofillAiSectionUiEligbilityTest', function() {
+  let section: SettingsAutofillAiSectionElement;
+
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-  });
-
-  test('testEntriesWithInitiallyDisabledToggle', async function() {
-    const section = document.createElement('settings-autofill-ai-section');
+    section = document.createElement('settings-autofill-ai-section');
+    // The toggle is turned off.
     section.prefs = {
       autofill: {
         prediction_improvements: {
@@ -33,43 +35,74 @@ suite('AutofillAiSectionUiDisabledToggleTest', function() {
         },
       },
     };
+  });
+
+  test('testEntriesWithEligibleUserAndTurnedOffToggle', async function() {
+    section.ineligibleUser = false;
 
     document.body.appendChild(section);
     await flushTasks();
 
-    assertTrue(
-        isVisible(section.shadowRoot!.querySelector('#entriesHeader')),
-        'With the toggle disabled, the entries should be visible');
+    const toggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#prefToggle')!;
+    assertFalse(
+        toggle.disabled,
+        'The toggle should be enabled if the user is eligible');
     assertTrue(
         isVisible(section.shadowRoot!.querySelector('#entries')),
-        'With the toggle disabled, the entries should be visible');
+        'The entries should always be visible');
+  });
+
+  test('testEntriesWithNotEligibleUserAndTurnedOffToggle', async function() {
+    section.ineligibleUser = true;
+
+    document.body.appendChild(section);
+    await flushTasks();
+
+    const toggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#prefToggle')!;
+    assertTrue(
+        toggle.disabled,
+        'The toggle should be disabled if the user is ineligible');
+    assertTrue(
+        isVisible(section.shadowRoot!.querySelector('#entries')),
+        'The entries should always be visible');
   });
 });
 
 suite('AutofillAiSectionUiTest', function() {
   let section: SettingsAutofillAiSectionElement;
-  let entries: HTMLElement;
-  let userAnnotationManager: TestUserAnnotationsManagerProxyImpl;
+  let entitiesListElement: HTMLElement;
+  let entityDataManager: TestEntityDataManagerProxy;
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    entityDataManager = new TestEntityDataManagerProxy();
+    EntityDataManagerProxyImpl.setInstance(entityDataManager);
 
-    userAnnotationManager = new TestUserAnnotationsManagerProxyImpl();
-    UserAnnotationsManagerProxyImpl.setInstance(userAnnotationManager);
-
-    const testEntries: chrome.autofillPrivate.UserAnnotationsEntry[] = [
+    const testEntities: chrome.autofillPrivate.EntityInstance[] = [
       {
-        entryId: 1,
-        key: 'Date of birth',
-        value: '15/02/1989',
+        type: 1,  // Loyalty Card
+        attributes: [
+          {type: 5, value: 'The Discount'},  // Loyalty Card Program
+          {type: 6, value: 'The Airline'},   // Loyalty Card Provider
+        ],
+        guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
+        nickname: 'Airline card',
       },
       {
-        entryId: 2,
-        key: 'Frequent flyer program',
-        value: 'Aadvantage',
+        type: 0,  // Passport
+        attributes: [
+          {type: 0, value: 'John Doe'},  // Passport Name
+          {type: 1, value: '123456'},    // Passport Number
+        ],
+        guid: '1fd09cdc-35b8-4367-8f1a-18c8c0733af0',
+        nickname: 'Personal passport',
       },
     ];
-    userAnnotationManager.setEntries(testEntries);
+    entityDataManager.setloadEntityInstancesResponse(testEntities);
 
     section = document.createElement('settings-autofill-ai-section');
     section.prefs = {
@@ -86,131 +119,105 @@ suite('AutofillAiSectionUiTest', function() {
     document.body.appendChild(section);
     await flushTasks();
 
-    const entriesQueried =
+    const entitiesQueried =
         section.shadowRoot!.querySelector<HTMLElement>('#entries');
-    assertTrue(!!entriesQueried);
-    entries = entriesQueried;
+    assertTrue(!!entitiesQueried);
+    entitiesListElement = entitiesQueried;
 
     assertTrue(!!section.shadowRoot!.querySelector('#entriesHeader'));
   });
 
-  test('testEntriesListDataFromUserAnnotationsManager', async function() {
-    await userAnnotationManager.whenCalled('getEntries');
+  test('testEntitiesLoaded', async function() {
+    await entityDataManager.whenCalled('loadEntityInstances');
+    const listItems =
+        entitiesListElement.querySelectorAll<HTMLElement>('.list-item');
+
     assertEquals(
-        2, entries.querySelectorAll('.list-item').length,
-        '2 entries come from TestUserAnnotationsManagerImpl.getEntries().');
+        3, listItems.length, '2 entities and a hidden element were loaded.');
+    assertTrue(listItems[0]!.textContent!.includes('The Discount'));
+    assertTrue(listItems[1]!.textContent!.includes('John Doe'));
+    assertTrue(listItems[2]!.hidden);
+  });
+
+  test('testRemoveEntityConfirmed', async function() {
+    const actionMenuButton =
+        entitiesListElement.querySelector<HTMLElement>('#moreButton');
+    assertTrue(!!actionMenuButton);
+    actionMenuButton.click();
+    await flushTasks();
+
+    const deleteButton =
+        section.shadowRoot!.querySelector<HTMLElement>('#menuRemoveEntity');
+
+    assertTrue(!!deleteButton);
+    deleteButton.click();
+    await flushTasks();
+
+    const removeEntityDialog =
+        section.shadowRoot!
+            .querySelector<SettingsSimpleConfirmationDialogElement>(
+                '#removeEntityDialog');
+    assertTrue(!!removeEntityDialog);
+
+    removeEntityDialog.$.confirm.click();
+    const guid = await entityDataManager.whenCalled('removeEntityInstance');
+    await flushTasks();
+
+    assertEquals(1, entityDataManager.getCallCount('removeEntityInstance'));
+    assertEquals('e4bbe384-ee63-45a4-8df3-713a58fdc181', guid);
+
+    const listItems =
+        entitiesListElement.querySelectorAll<HTMLElement>('.list-item');
+    assertEquals(
+        2, listItems.length,
+        'only one entity and a hidden element should be present.');
+    assertTrue(listItems[0]!.textContent!.includes('John Doe'));
+    assertTrue(listItems[1]!.hidden);
+  });
+
+  test('testRemoveEntityCancelled', async function() {
+    const actionMenuButton =
+        entitiesListElement.querySelector<HTMLElement>('#moreButton');
+    assertTrue(!!actionMenuButton);
+    actionMenuButton.click();
+    await flushTasks();
+
+    const deleteButton =
+        section.shadowRoot!.querySelector<HTMLElement>('#menuRemoveEntity');
+    assertTrue(!!deleteButton);
+    deleteButton.click();
+    await flushTasks();
+
+    const removeEntityDialog =
+        section.shadowRoot!
+            .querySelector<SettingsSimpleConfirmationDialogElement>(
+                '#removeEntityDialog');
+    assertTrue(!!removeEntityDialog);
+    removeEntityDialog.$.cancel.click();
+    await flushTasks();
+
+    assertEquals(0, entityDataManager.getCallCount('removeEntityInstance'));
+
+    const listItems =
+        entitiesListElement.querySelectorAll<HTMLElement>('.list-item');
+    assertEquals(
+        3, listItems.length,
+        '2 entities and a hidden element should still be present.');
+    assertTrue(listItems[0]!.textContent!.includes('The Discount'));
+    assertTrue(listItems[1]!.textContent!.includes('John Doe'));
+    assertTrue(listItems[2]!.hidden);
   });
 
   test('testEntriesDoNotDisappearAfterToggleDisabling', async function() {
     // The toggle is initially enabled (see the setup() method), clicking it
     // disables the 'autofill.prediction_improvements.enabled' pref.
-    section.$.prefToggle.click();
+    assertTrue(section.prefs.autofill.prediction_improvements.enabled.value);
+    section.shadowRoot!.querySelector<HTMLElement>('#prefToggle')!.click();
     await flushTasks();
+    assertFalse(section.prefs.autofill.prediction_improvements.enabled.value);
 
-    assertTrue(
-        isVisible(section.shadowRoot!.querySelector('#entriesHeader')),
-        'With the toggle disabled, the entries should be visible');
     assertTrue(
         isVisible(section.shadowRoot!.querySelector('#entries')),
         'With the toggle disabled, the entries should be visible');
-  });
-
-  test('testCancelingEntryDeleteDialog', async function() {
-    const deleteButton = entries.querySelector<HTMLElement>(
-        '.list-item:nth-of-type(1) cr-icon-button');
-    assertTrue(!!deleteButton);
-    deleteButton.click();
-    await flushTasks();
-
-    const deleteEntryDialog =
-        section.shadowRoot!
-            .querySelector<SettingsSimpleConfirmationDialogElement>(
-                '#deleteEntryDialog');
-    assertTrue(
-        !!deleteEntryDialog,
-        '#deleteEntryDialog should be in DOM after clicking delete button');
-    deleteEntryDialog.$.cancel.click();
-    await flushTasks();
-
-    assertEquals(0, userAnnotationManager.getCallCount('deleteEntry'));
-    assertEquals(
-        2, entries.querySelectorAll('.list-item').length,
-        'The 2 entries should remain intact.');
-  });
-
-  test('testConfirmingEntryDeleteDialog', async function() {
-    const deleteButton = entries.querySelector<HTMLElement>(
-        '.list-item:nth-of-type(1) cr-icon-button');
-    assertTrue(!!deleteButton);
-    deleteButton.click();
-    await flushTasks();
-
-    const deleteEntryDialog =
-        section.shadowRoot!
-            .querySelector<SettingsSimpleConfirmationDialogElement>(
-                '#deleteEntryDialog');
-    assertTrue(
-        !!deleteEntryDialog,
-        '#deleteEntryDialog should be in DOM after clicking delete button');
-    deleteEntryDialog.$.confirm.click();
-
-    const entryId = await userAnnotationManager.whenCalled('deleteEntry');
-    await flushTasks();
-
-    assertEquals(1, userAnnotationManager.getCallCount('deleteEntry'));
-    assertEquals(1, entryId);
-    assertEquals(
-        1, entries.querySelectorAll('.list-item').length,
-        'One of the 2 entries should be removed');
-  });
-
-  test('testCancelingDeleteAllEntriesDialog', async function() {
-    const deleteButton =
-        section.shadowRoot!.querySelector<HTMLElement>('#deleteAllEntries');
-    assertTrue(!!deleteButton);
-    deleteButton.click();
-    await flushTasks();
-
-    const deleteAllEntriesDialog =
-        section.shadowRoot!
-            .querySelector<SettingsSimpleConfirmationDialogElement>(
-                '#deleteAllEntriesDialog');
-    assertTrue(
-        !!deleteAllEntriesDialog, '#deleteAllEntriesDialog should be in DOM');
-    deleteAllEntriesDialog.$.cancel.click();
-    await flushTasks();
-
-    assertEquals(0, userAnnotationManager.getCallCount('deleteAllEntries'));
-    assertEquals(
-        entries.querySelectorAll('.list-item').length, 2,
-        'The 2 entries should remain intact.');
-  });
-
-  test('testConfirmingDeleteAllEntriesDialog', async function() {
-    const deleteButton =
-        section.shadowRoot!.querySelector<HTMLElement>('#deleteAllEntries');
-    assertTrue(!!deleteButton);
-    deleteButton.click();
-    await flushTasks();
-
-    const deleteAllEntriesDialog =
-        section.shadowRoot!
-            .querySelector<SettingsSimpleConfirmationDialogElement>(
-                '#deleteAllEntriesDialog');
-    assertTrue(
-        !!deleteAllEntriesDialog, '#deleteAllEntriesDialog should be in DOM');
-    deleteAllEntriesDialog.$.confirm.click();
-
-    await userAnnotationManager.whenCalled('deleteAllEntries');
-    await flushTasks();
-
-    assertEquals(1, userAnnotationManager.getCallCount('deleteAllEntries'));
-    assertEquals(
-        entries.querySelectorAll('.list-item').length, 1,
-        'All entries should be removed (-2), the "no entries" message shows ' +
-            'up instead (+1).');
-    assertTrue(
-        isVisible(entries.querySelector('#entriesNone')),
-        'The "no entries" message shows up when the list is empty');
   });
 });

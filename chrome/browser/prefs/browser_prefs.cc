@@ -1082,6 +1082,7 @@ inline constexpr char kUserMicrophoneCaptionLanguageCode[] =
 #if BUILDFLAG(IS_CHROMEOS)
 // Deprecated 02/2025.
 constexpr char kScannerFeedbackEnabled[] = "ash.scanner.feedback_enabled";
+constexpr char kHmrFeedbackAllowed[] = "settings.mahi_feedback_allowed";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1525,6 +1526,7 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS)
   // Deprecated 02/2025.
   registry->RegisterBooleanPref(kScannerFeedbackEnabled, true);
+  registry->RegisterBooleanPref(kHmrFeedbackAllowed, true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -2210,12 +2212,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(prefs::kLensDesktopNTPSearchEnabled, true);
 #endif
 
+  registry->RegisterListPref(
+      webauthn::pref_names::kRemoteDesktopAllowedOrigins);
+
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(
       webauthn::pref_names::kRemoteProxiedRequestsAllowed, false);
-
-  registry->RegisterListPref(
-      webauthn::pref_names::kRemoteDesktopAllowedOrigins);
 
   registry->RegisterStringPref(
       webauthn::pref_names::kLastUsedPairingFromSyncPublicKey, "");
@@ -2790,6 +2792,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if BUILDFLAG(IS_CHROMEOS)
   // Added 02/2025.
   profile_prefs->ClearPref(kScannerFeedbackEnabled);
+  profile_prefs->ClearPref(kHmrFeedbackAllowed);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

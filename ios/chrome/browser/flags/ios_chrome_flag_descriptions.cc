@@ -108,36 +108,11 @@ const char kAutofillEnableRankingFormulaCreditCardsDescription[] =
     "When enabled, Autofill will use a new ranking formula to rank Autofill "
     "data model credit card suggestions.";
 
-const char kAutofillEnableSaveCardLoadingAndConfirmationName[] =
-    "Enable save card loading and confirmation UX";
-const char kAutofillEnableSaveCardLoadingAndConfirmationDescription[] =
-    "When enabled, a loading spinner will be shown when uploading a card to "
-    "the server and a confirmation screen will be will be shown based on the "
-    "result of the upload. If the upload is unsuccessful in being uploaded to "
-    "the server, it will be saved locally.";
-
-const char kAutofillEnableSaveCardLocalSaveFallbackName[] =
-    "Enable save card local save fallback";
-const char kAutofillEnableSaveCardLocalSaveFallbackDescription[] =
-    "When enabled, if a card fails to be uploaded to the server, the card "
-    "details will be saved locally instead. If a card with the same card "
-    "number and expiration date already exists in the local database, this "
-    "will be a no-op and the existing card will not be updated with any card "
-    "details from the form.";
-
 const char kAutofillEnableCardProductNameName[] =
     "Enable showing card product name";
 const char kAutofillEnableCardProductNameDescription[] =
     "When enabled, card product name (instead of issuer network) will be shown "
     "in Payments UI.";
-
-const char kAutofillEnableVcnEnrollLoadingAndConfirmationName[] =
-    "Enable showing loading and confirmation screens for virtual card "
-    "enrollment";
-const char kAutofillEnableVcnEnrollLoadingAndConfirmationDescription[] =
-    "When enabled, the virtual card enrollment screen will present a loading "
-    "spinner while enrolling the card to the server and present a confirmation "
-    "screen with the result when completed.";
 
 const char kAutofillEnableVerveCardSupportName[] =
     "Enable autofill support for Verve cards";

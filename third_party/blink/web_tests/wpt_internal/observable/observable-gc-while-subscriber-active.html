@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+promise_test(async t => {
+  let strong_subscriber = null;
+  let weak_observable = null;
+
+  const results = [];
+  {
+    // Populate the above variables.
+    weak_observable = new WeakRef(new Observable(subscriber => {
+      strong_subscriber = subscriber;
+    }))
+    weak_observable.deref().subscribe(v => results.push(v));
+  }
+
+  assert_true(strong_subscriber instanceof Subscriber);
+  assert_true(weak_observable.deref() instanceof Observable);
+  // Trigger garbage collection, and verify that `weak_subscriber` has been
+  // garbage collected.
+  await gc({type: 'major', execution: 'async'});
+  assert_equals(weak_observable.deref(), undefined);
+
+  strong_subscriber.next(1);
+  assert_array_equals(results, [1]);
+}, "Subscriber can outlive Observable, as long as JavaScript is keeping " +
+   "the Subscriber alive");
+</script>
+</body>

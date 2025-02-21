@@ -94,6 +94,19 @@ void ResetAvailableDocumentPolicyFeaturesForTest() {
   GetAvailableDocumentPolicyFeaturesInternal().clear();
 }
 
+bool IsPrivacySensitiveFeature(network::mojom::blink::PermissionsPolicyFeature feature) {
+  switch (feature) {
+    {% for feature in permissions_policy_features %}
+    {% if feature.privacy_sensitive %}
+    case network::mojom::PermissionsPolicyFeature::k{{feature.name}}:
+      return true;
+    {% endif %}
+    {% endfor %}
+    default:
+      return false;
+  }
+  NOTREACHED();
+}
 
 const DocumentPolicyFeatureSet& GetAvailableDocumentPolicyFeatures() {
   DocumentPolicyFeatureSet& features = GetAvailableDocumentPolicyFeaturesInternal();

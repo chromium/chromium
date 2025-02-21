@@ -111,11 +111,7 @@ class OmniboxViewIOS : public OmniboxView,
   // OmniboxAutocompleteController interactions.
   void OnPopupDidScroll();
   void OnSelectedMatchForAppending(const std::u16string& str);
-  void OnSelectedMatchForOpening(AutocompleteMatch match,
-                                 WindowOpenDisposition disposition,
-                                 const GURL& alternate_nav_url,
-                                 const std::u16string& pasted_text,
-                                 size_t index);
+
   void OnCallActionTap();
 
   // Updates this edit view to show the proper text, highlight and images.

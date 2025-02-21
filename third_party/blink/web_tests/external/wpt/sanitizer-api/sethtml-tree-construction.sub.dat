@@ -306,23 +306,20 @@ test
 |   "Click."
 
 #data
-<area href='javascript:evil.com'>Click.</area>
+<area href='javascript:evil.com'>
 #document
 | <area>
-|   "Click."
 
 #data
-<area href=' javascript:evil.com'>Click.</area>
+<area href=' javascript:evil.com'>
 #document
 | <area>
-|   "Click."
 
 #data
-<area href='http:evil.com'>Click.</area>
+<area href='http:evil.com'>
 #document
 | <area>
 |   href="http:evil.com"
-|   "Click."
 
 #data
 <form action='javascript:evil.com'>Click.</form>
@@ -344,23 +341,20 @@ test
 |   "Click."
 
 #data
-<input formaction='javascript:evil.com'>Click.</input>
+<input formaction='javascript:evil.com'>
 #document
 | <input>
-|   "Click."
 
 #data
-<input formaction=' javascript:evil.com'>Click.</input>
+<input formaction=' javascript:evil.com'>
 #document
 | <input>
-|   "Click."
 
 #data
-<input formaction='http:evil.com'>Click.</input>
+<input formaction='http:evil.com'>
 #document
 | <input>
 |   formaction="http:evil.com"
-|   "Click."
 
 #data
 <button formaction='javascript:evil.com'>Click.</button>

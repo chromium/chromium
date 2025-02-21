@@ -127,7 +127,6 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "remoting/host/audio_capturer_mac.h"
-#include "remoting/host/desktop_capturer_checker.h"
 #include "remoting/host/mac/agent_process_broker_client.h"
 #include "remoting/host/mac/permission_utils.h"
 #endif  // BUILDFLAG(IS_APPLE)
@@ -588,13 +587,14 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
     return false;
   }
   if (cmd_line->HasSwitch(kCheckScreenRecordingPermissionSwitchName)) {
-    // Trigger screen-capture, even if CanRecordScreen() returns true. It uses a
-    // heuristic that might not be 100% reliable, but it is critically
-    // important to add the host bundle to the list of apps under
-    // Security & Privacy -> Screen Recording.
-    DesktopCapturerChecker().TriggerSingleCapture();
     checking_permission_state_ = true;
     permission_granted_ = mac::CanRecordScreen();
+    if (!permission_granted_) {
+      // This adds the host bundle to the list of apps under Security & Privacy
+      // -> Screen Recording. This may also show a system prompt (if the bundle
+      // was not previously in the list).
+      mac::RequestScreenCapturePermission();
+    }
     return false;
   }
   if (cmd_line->HasSwitch(kListAudioDevicesSwitchName)) {

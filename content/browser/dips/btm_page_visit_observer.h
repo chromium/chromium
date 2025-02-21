@@ -70,6 +70,9 @@ class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
   // WebContentsObserver overrides:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+  void NotifyStorageAccessed(RenderFrameHost* render_frame_host,
+                             blink::mojom::StorageTypeAccessed storage_type,
+                             bool blocked) override;
   void OnCookiesAccessed(RenderFrameHost* render_frame_host,
                          const CookieAccessDetails& details) override;
   void OnCookiesAccessed(NavigationHandle* navigation_handle,

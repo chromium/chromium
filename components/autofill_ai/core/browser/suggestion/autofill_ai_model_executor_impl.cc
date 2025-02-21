@@ -23,19 +23,14 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/forms_predictions.pb.h"
-#include "components/user_annotations/user_annotations_service.h"
-#include "components/user_annotations/user_annotations_types.h"
 
 namespace autofill_ai {
 
 AutofillAiModelExecutorImpl::AutofillAiModelExecutorImpl(
     optimization_guide::OptimizationGuideModelExecutor* model_executor,
-    optimization_guide::ModelQualityLogsUploaderService* logs_uploader,
-    user_annotations::UserAnnotationsService* user_annotations_service)
-    : model_executor_(model_executor),
-      user_annotations_service_(user_annotations_service) {
+    optimization_guide::ModelQualityLogsUploaderService* logs_uploader)
+    : model_executor_(model_executor) {
   CHECK(model_executor_);
-  CHECK(user_annotations_service_);
   if (logs_uploader) {
     logs_uploader_ = logs_uploader->GetWeakPtr();
   }
@@ -48,29 +43,6 @@ void AutofillAiModelExecutorImpl::GetPredictions(
     base::flat_map<autofill::FieldGlobalId, bool> field_sensitivity_map,
     optimization_guide::proto::AXTreeUpdate ax_tree_update,
     PredictionsReceivedCallback callback) {
-  user_annotations_service_->RetrieveAllEntries(base::BindOnce(
-      &AutofillAiModelExecutorImpl::OnUserAnnotationsRetrieved,
-      weak_ptr_factory_.GetWeakPtr(), std::move(form_data),
-      std::move(field_eligibility_map), std::move(field_sensitivity_map),
-      std::move(ax_tree_update), std::move(callback)));
-}
-
-void AutofillAiModelExecutorImpl::OnUserAnnotationsRetrieved(
-    autofill::FormData form_data,
-    const base::flat_map<autofill::FieldGlobalId, bool>& field_eligibility_map,
-    const base::flat_map<autofill::FieldGlobalId, bool>& field_sensitivity_map,
-    optimization_guide::proto::AXTreeUpdate ax_tree_update,
-    PredictionsReceivedCallback callback,
-    user_annotations::UserAnnotationsEntries user_annotations) {
-  // At this point there should be user annotations. Return an error if there
-  // aren't.
-  // TODO(crbug.com/361414075): Check that `user_annotations` aren't empty in
-  // `AutofillAiDelegate::ShouldProvidePredictionImprovements()`.
-  if (user_annotations.empty()) {
-    std::move(callback).Run(base::unexpected(false), std::nullopt);
-    return;
-  }
-
   // Construct request.
   optimization_guide::proto::FormsPredictionsRequest request;
   optimization_guide::proto::PageContext* page_context =
@@ -85,9 +57,6 @@ void AutofillAiModelExecutorImpl::OnUserAnnotationsRetrieved(
 
   *request.mutable_form_data() =
       ToFormDataProto(form_data, field_eligibility_map, field_sensitivity_map);
-  *request.mutable_entries() = {
-      std::make_move_iterator(user_annotations.begin()),
-      std::make_move_iterator(user_annotations.end())};
 
   SetLatestRequestForDebugging(request);
   optimization_guide::ModelExecutionCallbackWithLogging<

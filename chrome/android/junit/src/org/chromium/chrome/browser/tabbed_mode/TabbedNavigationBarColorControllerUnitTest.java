@@ -325,6 +325,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
     })
     @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
+    @Config(sdk = 30) // Min version needed for e2e everywhere
     public void testNavBarColorAnimationsEdgeToEdgeEverywhere() {
         when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
@@ -380,6 +381,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
     })
     @DisableFeatures({ChromeFeatureList.NAV_BAR_COLOR_ANIMATION})
+    @Config(sdk = 30) // Min version needed for e2e everywhere
     public void testNavBarColorAnimationsDisabled() {
         when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);

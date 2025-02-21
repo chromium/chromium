@@ -451,6 +451,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   void RestoreMatrixClipStack(cc::PaintCanvas*) const;
 
+  String lang() const;
+  void setLang(const String&);
+
   V8CanvasDirection direction() const;
   void setDirection(const V8CanvasDirection);
 
@@ -603,6 +606,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   virtual bool WillSetFont() const;
   virtual bool ResolveFont(const String& new_font) = 0;
   virtual bool CurrentFontResolvedAndUpToDate() const;
+  const LayoutLocale* LocaleFromLang();
 
   ALWAYS_INLINE CanvasRenderingContext2DState& GetState() const {
     return *state_stack_.back();
@@ -659,6 +663,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   virtual void TryRestoreContextEvent(TimerBase*) {}
 
   static const char kDefaultFont[];
+  static const char kInheritString[];
+
   virtual void DisableAcceleration() {}
 
   // Override to prematurely disable acceleration because of a readback.

@@ -87,6 +87,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/disk/histograms.xml",
   "//tools/metrics/histograms/metadata/download/enums.xml",
   "//tools/metrics/histograms/metadata/download/histograms.xml",
+  "//tools/metrics/histograms/metadata/dwa/histograms.xml",
   "//tools/metrics/histograms/metadata/enterprise/enums.xml",
   "//tools/metrics/histograms/metadata/enterprise/histograms.xml",
   "//tools/metrics/histograms/metadata/event/enums.xml",

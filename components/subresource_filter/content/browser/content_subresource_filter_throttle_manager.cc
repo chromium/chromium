@@ -151,11 +151,14 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitInFrameNavigation(
   if (!IsInSubresourceFilterRoot(navigation_handle)) {
     blink::FrameAdEvidence& ad_evidence =
         EnsureFrameAdEvidence(navigation_handle);
-    CHECK_EQ(ad_evidence.parent_is_ad(),
-             base::Contains(
-                 ad_frames_,
-                 frame_host->GetParentOrOuterDocument()->GetFrameTreeNodeId()),
-             base::NotFatalUntil::M134);
+
+    // TODO(crbug.com/367253342): This is rarely hit. After fixing, upgrade to a
+    // CHECK.
+    DCHECK_EQ(
+        ad_evidence.parent_is_ad(),
+        base::Contains(
+            ad_frames_,
+            frame_host->GetParentOrOuterDocument()->GetFrameTreeNodeId()));
     ad_evidence.set_is_complete();
     ad_evidence_for_navigation = ad_evidence;
 
@@ -298,13 +301,15 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
     // TODO(crbug.com/40156884): Once these load policies are no longer saved,
     // update the CHECK to verify that the evidence doesn't indicate a subframe
     // (regardless of the URL).
-    CHECK(!(navigation_handle->GetURL().IsAboutBlank() &&
-            EnsureFrameAdEvidence(navigation_handle).IndicatesAdFrame()),
-          base::NotFatalUntil::M134);
+    // TODO(crbug.com/342351452): This is rarely hit. After fixing, upgrade to a
+    // CHECK.
+    DCHECK(!(navigation_handle->GetURL().IsAboutBlank() &&
+             EnsureFrameAdEvidence(navigation_handle).IndicatesAdFrame()));
   } else {
-    CHECK(navigation_handle->IsInMainFrame() ||
-              EnsureFrameAdEvidence(navigation_handle).is_complete(),
-          base::NotFatalUntil::M134);
+    // TODO(crbug.com/373672161): This is rarely hit. After fixing, upgrade to a
+    // CHECK.
+    DCHECK(navigation_handle->IsInMainFrame() ||
+           EnsureFrameAdEvidence(navigation_handle).is_complete());
   }
 
   bool did_inherit_opener_activation;
@@ -501,11 +506,13 @@ void ContentSubresourceFilterThrottleManager::OnChildFrameNavigationEvaluated(
 
   blink::FrameAdEvidence& ad_evidence =
       EnsureFrameAdEvidence(navigation_handle);
-  CHECK_EQ(ad_evidence.parent_is_ad(),
-           base::Contains(ad_frames_,
-                          navigation_handle->GetParentFrameOrOuterDocument()
-                              ->GetFrameTreeNodeId()),
-           base::NotFatalUntil::M134);
+
+  // TODO(crbug.com/347625215): This is rarely hit. After fixing, upgrade to a
+  // CHECK.
+  DCHECK_EQ(ad_evidence.parent_is_ad(),
+            base::Contains(ad_frames_,
+                           navigation_handle->GetParentFrameOrOuterDocument()
+                               ->GetFrameTreeNodeId()));
 
   ad_evidence.UpdateFilterListResult(
       InterpretLoadPolicyAsEvidence(load_policy));
@@ -717,8 +724,11 @@ void ContentSubresourceFilterThrottleManager::SetIsAdFrame(
       render_frame_host->GetFrameTreeNodeId();
   CHECK(base::Contains(tracked_ad_evidence_, frame_tree_node_id),
         base::NotFatalUntil::M129);
-  CHECK_EQ(tracked_ad_evidence_.at(frame_tree_node_id).IndicatesAdFrame(),
-           is_ad_frame, base::NotFatalUntil::M134);
+
+  // TODO(crbug.com/373985560): This is rarely hit. After fixing, upgrade to a
+  // CHECK.
+  DCHECK_EQ(tracked_ad_evidence_.at(frame_tree_node_id).IndicatesAdFrame(),
+            is_ad_frame);
   CHECK(render_frame_host->GetParentOrOuterDocument(),
         base::NotFatalUntil::M129);
 

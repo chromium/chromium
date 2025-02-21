@@ -41,7 +41,9 @@ chrome.test.runTests([
     const selector = createSelector();
     const colorButtons = getColorButtons(selector);
 
-    colorButtons[6].click();
+    const button = colorButtons[6];
+    chrome.test.assertTrue(!!button);
+    button.click();
     await microtasksFinished();
 
     assertSelectedColor(colorButtons, /*buttonIndex=*/ 6);
@@ -72,7 +74,9 @@ chrome.test.runTests([
     const selector = createSelector();
     const colorButtons = getColorButtons(selector);
 
-    colorButtons[2].click();
+    const button = colorButtons[2];
+    chrome.test.assertTrue(!!button);
+    button.click();
     await microtasksFinished();
 
     assertSelectedColor(colorButtons, /*buttonIndex=*/ 2);
@@ -103,23 +107,27 @@ chrome.test.runTests([
     const selector = createSelector();
     const colorButtons = getColorButtons(selector);
 
-    colorButtons[2].click();
+    const button = colorButtons[2];
+    chrome.test.assertTrue(!!button);
+    button.click();
     await microtasksFinished();
 
     assertSelectedColor(colorButtons, /*buttonIndex=*/ 2);
 
     await testColorKeyboardEvent(
-        colorButtons, colorButtons[2], 'ArrowLeft', /*expectedButtonIndex=*/ 1);
+        colorButtons, colorButtons[2]!, 'ArrowLeft',
+        /*expectedButtonIndex=*/ 1);
 
     await testColorKeyboardEvent(
-        colorButtons, colorButtons[1], 'ArrowRight',
+        colorButtons, colorButtons[1]!, 'ArrowRight',
         /*expectedButtonIndex=*/ 2);
 
     await testColorKeyboardEvent(
-        colorButtons, colorButtons[2], 'ArrowDown', /*expectedButtonIndex=*/ 7);
+        colorButtons, colorButtons[2]!, 'ArrowDown',
+        /*expectedButtonIndex=*/ 7);
 
     await testColorKeyboardEvent(
-        colorButtons, colorButtons[7], 'ArrowUp', /*expectedButtonIndex=*/ 2);
+        colorButtons, colorButtons[7]!, 'ArrowUp', /*expectedButtonIndex=*/ 2);
 
     chrome.test.succeed();
   },
@@ -134,16 +142,19 @@ chrome.test.runTests([
     const selector = createSelector();
     const colorButtons = getColorButtons(selector);
 
-    colorButtons[5].click();
+    const button = colorButtons[5];
+    chrome.test.assertTrue(!!button);
+    button.click();
     await microtasksFinished();
 
     assertSelectedColor(colorButtons, /*buttonIndex=*/ 5);
 
     await testColorKeyboardEvent(
-        colorButtons, colorButtons[5], 'ArrowLeft', /*expectedButtonIndex=*/ 9);
+        colorButtons, colorButtons[5]!, 'ArrowLeft',
+        /*expectedButtonIndex=*/ 9);
 
     await testColorKeyboardEvent(
-        colorButtons, colorButtons[9], 'ArrowRight',
+        colorButtons, colorButtons[9]!, 'ArrowRight',
         /*expectedButtonIndex=*/ 5);
 
     chrome.test.succeed();
@@ -162,16 +173,18 @@ chrome.test.runTests([
     const colorButtons = getColorButtons(selector);
     chrome.test.assertEq(20, colorButtons.length);
 
-    colorButtons[1].click();
+    const button = colorButtons[1];
+    chrome.test.assertTrue(!!button);
+    button.click();
     await microtasksFinished();
 
     assertSelectedColor(colorButtons, /*buttonIndex=*/ 1);
 
     await testColorKeyboardEvent(
-        colorButtons, colorButtons[1], 'ArrowUp', /*expectedButtonIndex=*/ 16);
+        colorButtons, colorButtons[1]!, 'ArrowUp', /*expectedButtonIndex=*/ 16);
 
     await testColorKeyboardEvent(
-        colorButtons, colorButtons[16], 'ArrowDown',
+        colorButtons, colorButtons[16]!, 'ArrowDown',
         /*expectedButtonIndex=*/ 1);
 
     chrome.test.succeed();
@@ -200,7 +213,7 @@ chrome.test.runTests([
     chrome.test.assertEq(expectedLabels.length, colorButtons.length);
 
     for (let i = 0; i < colorButtons.length; ++i) {
-      assertLabels(colorButtons[i], expectedLabels[i]);
+      assertLabels(colorButtons[i]!, expectedLabels[i]!);
     }
 
     chrome.test.succeed();
@@ -222,7 +235,7 @@ chrome.test.runTests([
     chrome.test.assertEq(expectedLabels.length, colorButtons.length);
 
     for (let i = 0; i < colorButtons.length; ++i) {
-      assertLabels(colorButtons[i], expectedLabels[i]);
+      assertLabels(colorButtons[i]!, expectedLabels[i]!);
     }
 
     chrome.test.succeed();

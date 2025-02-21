@@ -12,13 +12,13 @@ import {CSS_CLASS_NAME_SELECT}
  * @return {number} Width of the document body.
  */
 function getBodyWidth_(): number {
-  let body = document.body;
-  let documentElement = document.documentElement;
+  const body = document.body;
+  const documentElement = document.documentElement;
   return Math.max(
       body.scrollWidth, documentElement.scrollWidth, body.offsetWidth,
       documentElement.offsetWidth, body.clientWidth,
       documentElement.clientWidth);
-};
+}
 
 /**
  * Returns the height of the document.body.  Sometimes though the body lies to
@@ -27,13 +27,13 @@ function getBodyWidth_(): number {
  * @return {number} Height of the document body.
  */
 function getBodyHeight_(): number {
-  let body = document.body;
-  let documentElement = document.documentElement;
+  const body = document.body;
+  const documentElement = document.documentElement;
   return Math.max(
       body.scrollHeight, documentElement.scrollHeight, body.offsetHeight,
       documentElement.offsetHeight, body.clientHeight,
       documentElement.clientHeight);
-};
+}
 
 /**
  * Helper function that determines if an element is visible.
@@ -49,7 +49,7 @@ function isElementVisible_(elem: HTMLElement): boolean {
   let bottom = Infinity;
   let right = Infinity;
 
-  let originalElement = elem;
+  const originalElement = elem;
   let nextOffsetParent = originalElement.offsetParent;
 
   // We are currently handling all scrolling through the app, which means we can
@@ -57,8 +57,8 @@ function isElementVisible_(elem: HTMLElement): boolean {
   // for now this function returns false if the element is scrolled outside the
   // viewable area of its ancestors.
   // TODO(crbug.com/40606656): handle scrolling within the DOM.
-  let bodyHeight = getBodyHeight_();
-  let bodyWidth = getBodyWidth_();
+  const bodyHeight = getBodyHeight_();
+  const bodyWidth = getBodyWidth_();
 
   while (elem && elem.nodeName.toUpperCase() !== 'BODY') {
     if (elem.style.display === 'none' || elem.style.visibility === 'hidden') {
@@ -97,10 +97,11 @@ function isElementVisible_(elem: HTMLElement): boolean {
     // For the original element and all ancestor offsetParents, trim down the
     // visible area of the original element.
     if (elem.isSameNode(originalElement) || elem.isSameNode(nextOffsetParent)) {
-      let visible = elem.getBoundingClientRect();
+      const visible = elem.getBoundingClientRect();
       if (elem.style.overflow === 'hidden' &&
-          (visible.width === 0 || visible.height === 0))
+          (visible.width === 0 || visible.height === 0)) {
         return false;
+      }
 
       top = Math.max(top, visible.top + window.pageYOffset);
       bottom = Math.min(bottom, visible.bottom + window.pageYOffset);
@@ -108,13 +109,13 @@ function isElementVisible_(elem: HTMLElement): boolean {
       right = Math.min(right, visible.right + window.pageXOffset);
 
       // The element is not within the original viewport.
-      let notWithinViewport = top < 0 || left < 0;
+      const notWithinViewport = top < 0 || left < 0;
 
       // The element is flowing off the boundary of the page. Note this is
       // not comparing to the size of the window, but the calculated offset
       // size of the document body. This can happen if the element is within
       // a scrollable container in the page.
-      let offPage = right > bodyWidth || bottom > bodyHeight;
+      const offPage = right > bodyWidth || bottom > bodyHeight;
       if (notWithinViewport || offPage) {
         return false;
       }
@@ -128,7 +129,7 @@ function isElementVisible_(elem: HTMLElement): boolean {
     elem = elem.parentNode;
   }
   return true;
-};
+}
 
 
 /**
@@ -146,8 +147,9 @@ class Match {
    */
   visible(): boolean {
     for (const node of this.nodes) {
-      if (!isElementVisible_(node))
+      if (!isElementVisible_(node)) {
         return false;
+      }
     }
     return true;
   }
@@ -210,9 +212,10 @@ class Replacement {
    * Executes the replacement to highlight search result.
    */
   doSwap(): void {
-    let parentNode = this.oldNode.parentNode;
-    if (!parentNode)
+    const parentNode = this.oldNode.parentNode;
+    if (!parentNode) {
       return;
+    }
     for (const newNode of this.newNodes) {
       parentNode.insertBefore(newNode, this.oldNode);
     }
@@ -227,9 +230,10 @@ class Replacement {
     if (!firstNewNode) {
       return;
     }
-    let parentNode = firstNewNode.parentNode;
-    if (!parentNode)
+    const parentNode = firstNewNode.parentNode;
+    if (!parentNode) {
       return;
+    }
     parentNode.insertBefore(this.oldNode, firstNewNode);
     for (const newNode of this.newNodes) {
       parentNode.removeChild(newNode);
@@ -270,4 +274,4 @@ class Timer {
   }
 }
 
-export {Match, PartialMatch, Replacement, Section, Timer}
+export {Match, PartialMatch, Replacement, Section, Timer};

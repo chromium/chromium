@@ -98,6 +98,7 @@ void ManageSharingRow::RebuildChildren() {
   manage_group_label_->SetSkipSubpixelRenderingOpacityCheck(true);
   manage_group_label_->SetPaintToLayer();
   manage_group_label_->layer()->SetFillsBoundsOpaquely(false);
+  manage_group_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
 
   avatar_container_ =
       AddChildView(std::make_unique<ManageSharingAvatarContainer>(

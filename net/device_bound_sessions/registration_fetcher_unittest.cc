@@ -1190,7 +1190,7 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure) {
   EXPECT_TRUE(session_params);
 }
 
-TEST_F(RegistrationTest, NetLogResultLogged) {
+TEST_F(RegistrationTest, NetLogRegistrationResultLogged) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
@@ -1203,6 +1203,30 @@ TEST_F(RegistrationTest, NetLogResultLogged) {
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
       /*net_log_source=*/std::nullopt,
       /*original_request_initiator=*/std::nullopt, callback.callback());
+  callback.WaitForCall();
+
+  EXPECT_EQ(net_log_observer
+                .GetEntriesWithType(NetLogEventType::DBSC_REGISTRATION_RESULT)
+                .size(),
+            1u);
+}
+
+TEST_F(RegistrationTest, NetLogRefreshResultLogged) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  ASSERT_TRUE(server_.Start());
+
+  RecordingNetLogObserver net_log_observer;
+  TestRegistrationCallback callback;
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      server_.base_url(), kSessionIdentifier, kChallenge);
+  CreateKeyAndRunCallback(base::BindOnce(
+      &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
+      std::ref(unexportable_key_service()), context_.get(),
+      std::ref(isolation_info), /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback()));
   callback.WaitForCall();
 
   EXPECT_EQ(

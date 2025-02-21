@@ -7,8 +7,9 @@
  * at the ends, and pass it on to the a consumer.
  */
 
-import {nextLeaf, previousLeaf, TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
-import {TextNodeVisitor} from '//ios/web/annotations/resources/text_intersection_observer.js';
+import type {TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
+import {nextLeaf, previousLeaf} from '//ios/web/annotations/resources/text_dom_utils.js';
+import type {TextNodeVisitor} from '//ios/web/annotations/resources/text_intersection_observer.js';
 
 // TODO(crbug.com/40936184): investigate concatening of nodes and RTL languages.
 
@@ -19,8 +20,21 @@ const SECTION_BREAK = ' ‡ ';
 const EXTRA_CHARACTERS_AT_END = 128;
 
 const KNOWN_INLINE_ELEMENTS: Set<string> = new Set([
-  'A', 'ABBR', 'B', 'CITE', 'CODE', 'I', 'DFN', 'EM', 'MARK', 'SMALL', 'SPAN',
-  'STRONG', 'SUB', 'SUP', 'VAR'
+  'A',
+  'ABBR',
+  'B',
+  'CITE',
+  'CODE',
+  'I',
+  'DFN',
+  'EM',
+  'MARK',
+  'SMALL',
+  'SPAN',
+  'STRONG',
+  'SUB',
+  'SUP',
+  'VAR',
 ]);
 
 // A section is a `textNode` and an index. The index is the position when this
@@ -40,9 +54,9 @@ class TextSection {
 }
 
 // Consumer of `TextChunk` callback.
-type TextChunkConsumer = {
+interface TextChunkConsumer {
   (chunk: TextChunk): void;
-};
+}
 
 // A piece of extracted text and the sections needed to locate back the nodes
 // from which the text, at a given index, comes from.
@@ -278,4 +292,4 @@ export {
   TextChunk,
   TextChunkConsumer,
   TextExtractor,
-}
+};

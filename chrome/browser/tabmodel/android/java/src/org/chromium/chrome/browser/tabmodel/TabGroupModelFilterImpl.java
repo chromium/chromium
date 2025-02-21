@@ -136,11 +136,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public boolean isCurrentlySelectedFilter() {
-        return getTabModel().isActiveModel();
-    }
-
-    @Override
     public @NonNull TabModel getTabModel() {
         return mTabModel;
     }
@@ -152,11 +147,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         // marked after the TabModelSelector is initialized, therefore it is the true state of the
         // TabModel.
         return mTabRestoreCompleted || mTabStateInitialized;
-    }
-
-    @Override
-    public int getTotalTabCount() {
-        return mTabModel.getCount();
     }
 
     @Override

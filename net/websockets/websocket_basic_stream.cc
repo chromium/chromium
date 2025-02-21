@@ -369,7 +369,11 @@ int WebSocketBasicStream::HandleReadResult(
     int result,
     std::vector<std::unique_ptr<WebSocketFrame>>* frames) {
   DCHECK_NE(ERR_IO_PENDING, result);
-  DCHECK(frames->empty());
+
+  // This CHECK() is critical to prevent data corruption. See
+  // https://crbug.com/393000981.
+  CHECK(frames->empty());
+
   if (result < 0)
     return result;
   if (result == 0)

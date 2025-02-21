@@ -15,8 +15,8 @@
  * TypeScript compiler to recognize that the Window has an __gCrWeb object.
  */
 declare interface GCRWebInterface {
-  __gCrWeb: any
-};
+  __gCrWeb: any;
+}
 
 declare type GCRWebType =
     Window & typeof globalThis & GCRWebInterface;

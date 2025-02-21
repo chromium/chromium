@@ -855,7 +855,8 @@ TEST_P(VulkanOverlayAdaptorTest, Correctness) {
         libyuv_out_frame->stride(VideoFrame::Plane::kARGB), output_size.width(),
         output_size.height());
   }
-  ASSERT_TRUE(psnr >= psnr_threshold);
+
+  EXPECT_GE(psnr, psnr_threshold);
 }
 
 TEST_P(VulkanOverlayAdaptorTest, Performance) {

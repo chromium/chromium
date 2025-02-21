@@ -570,7 +570,8 @@ void AXRelationCache::MarkNewRelationTargetDirty(Node* target) {
     // processing deferred events, and must manually invalidate the
     // cached values (is_used_for_label_or_description may have changed).
     if (AXObject* ax_target = Get(target)) {
-      ax_target->InvalidateCachedValues();
+      ax_target->InvalidateCachedValues(
+          TreeUpdateReason::kNewRelationTargetDirty);
     }
     // Must use clean layout method.
     object_cache_->MarkElementDirtyWithCleanLayout(target);
@@ -761,7 +762,7 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
     // Invalidating ensures that cached "included in tree" state is recomputed
     // on objects with changed ownership -- owned children must always be
     // included in the tree.
-    added_child->InvalidateCachedValues();
+    added_child->InvalidateCachedValues(TreeUpdateReason::kUpdateAriaOwns);
 
     // Add this child to the mapping from child to owner.
     aria_owned_child_to_owner_mapping_.Set(added_child_id, owner->AXObjectID());
@@ -1014,7 +1015,7 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
       // Invalidating ensures that cached "included in tree" state is recomputed
       // on objects with changed ownership -- owned children must always be
       // included in the tree.
-      ax_unparented->InvalidateCachedValues();
+      ax_unparented->InvalidateCachedValues(TreeUpdateReason::kUpdateAriaOwns);
 
       // Find the unparented child's new parent, and reparent it to that
       // back to its real parent in the tree by finding  its current parent,

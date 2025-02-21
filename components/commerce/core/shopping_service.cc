@@ -309,6 +309,8 @@ ShoppingService::ShoppingService(
               identity_manager, url_loader_factory, account_checker_.get()),
           base::BindRepeating(&ShoppingService::GetProductInfoForUrl,
                               weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(&ShoppingService::GetProductInfoForUrls,
+                              weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&ShoppingService::GetUrlInfosForActiveWebWrappers,
                               base::Unretained(this)));
     }

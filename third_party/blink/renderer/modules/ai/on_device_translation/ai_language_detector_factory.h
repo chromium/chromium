@@ -36,7 +36,8 @@ class AILanguageDetectorFactory final : public ScriptWrappable,
       ExceptionState& exception_state);
 
   ScriptPromise<AILanguageDetectorCapabilities> capabilities(
-      ScriptState* script_state);
+      ScriptState* script_state,
+      ExceptionState& exception_state);
 
   HeapMojoRemote<
       language_detection::mojom::blink::ContentLanguageDetectionDriver>&

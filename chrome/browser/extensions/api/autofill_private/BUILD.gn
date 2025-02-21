@@ -34,6 +34,7 @@ source_set("autofill_private") {
     "//chrome/browser/user_annotations",
     "//chrome/common/extensions/api:api",
     "//components/autofill/content/browser",
+    "//components/autofill/core/browser",
     "//components/autofill/core/common:credit_card_number_validation",
     "//components/device_reauth:device_reauth",
     "//components/feature_engagement/public",

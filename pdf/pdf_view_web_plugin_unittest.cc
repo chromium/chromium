@@ -2622,7 +2622,7 @@ class PdfViewWebPluginInkTest : public PdfViewWebPluginTest {
         blink::WebInputEventResult::kHandledApplication);
   }
 
-  void SendThumbnail(std::string_view message_id, const gfx::Size& page_size) {
+  void SendThumbnail(std::string_view message_id, const gfx::SizeF& page_size) {
     base::Value::Dict reply;
     reply.Set("type", "getThumbnailReply");
     reply.Set("messageId", message_id);
@@ -2766,6 +2766,13 @@ TEST_F(PdfViewWebPluginInkTest, UpdateCursor) {
   EXPECT_EQ(ui::mojom::CursorType::kPointer, cursor.type());
 }
 
+TEST_F(PdfViewWebPluginInkTest, GetThumbnailSize) {
+  SetUpWithTrivialInkStrokes();
+  EXPECT_EQ(gfx::Size(50, 25),
+            plugin_->ink_module_client_for_testing()->GetThumbnailSize(
+                /*page_index=*/0));
+}
+
 TEST_F(PdfViewWebPluginInkTest, GetZoom) {
   // Demonstrate that default zoom is identity.
   EXPECT_EQ(1.0f, plugin_->ink_module_client_for_testing()->GetZoom());
@@ -2794,36 +2801,6 @@ TEST_F(PdfViewWebPluginInkTest, GetZoom) {
   plugin_->UpdateGeometry(kWindowRect, kWindowRect, kWindowRect,
                           /*is_visible=*/true);
   EXPECT_EQ(2.5f, plugin_->ink_module_client_for_testing()->GetZoom());
-}
-
-TEST_F(PdfViewWebPluginInkTest, UpdateThumbnail) {
-  SetUpWithTrivialInkStrokes();
-
-  EXPECT_CALL(*client_ptr_, PostMessage)
-      .WillOnce([](const base::Value::Dict& dict) {
-        auto expected = base::test::ParseJsonDict(R"({
-            "type": "updateInk2Thumbnail",
-            "pageNumber": 1,
-            "width": 50,
-            "height": 25,
-        })");
-        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
-
-        // Test `dict` contains the image data, but not the exact value.
-        const auto* blob = dict.FindBlob("imageData");
-        ASSERT_TRUE(blob);
-        EXPECT_FALSE(blob->empty());
-      });
-
-  plugin_->ink_module_client_for_testing()->UpdateThumbnail(/*page_index=*/0);
-}
-
-TEST_F(PdfViewWebPluginInkTest, UpdateThumbnailWithNoStrokes) {
-  ON_CALL(*engine_ptr_, GetThumbnailSize)
-      .WillByDefault(Return(gfx::Size(50, 25)));
-
-  EXPECT_CALL(*client_ptr_, PostMessage).Times(0);
-  plugin_->ink_module_client_for_testing()->UpdateThumbnail(/*page_index=*/0);
 }
 
 TEST_F(PdfViewWebPluginInkTest, AddUpdateDiscardStroke) {

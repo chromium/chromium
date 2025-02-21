@@ -24,7 +24,6 @@ class MockAutofillAiDelegate : public AutofillAiDelegate {
               GetSuggestions,
               (autofill::FormGlobalId form_global_id,
                autofill::FieldGlobalId field_global_id,
-               bool is_manual_fallback,
                GetSuggestionsCallback callback),
               (override));
   MOCK_METHOD(bool,

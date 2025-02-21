@@ -692,62 +692,6 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // as focusable objects requiring a name.
   bool IsInternalUICheckerOn() const { return internal_ui_checker_on_; }
 
-  // The following represent functions that could be used as callbacks for
-  // DeferTreeUpdate. Every enum value represents a function that would be
-  // called after a tree update is complete.
-  // Please don't reuse these enums in multiple callers to DeferTreeUpdate().
-  // Instead, add an enum where the suffix describes where it's being called
-  // from (this helps when debugging an issue apparent in clean layout, by
-  // helping clarify the code paths).
-  enum class TreeUpdateReason : uint8_t {
-    // These updates are always associated with a DOM Node:
-    kActiveDescendantChanged,
-    kAriaExpandedChanged,
-    kAriaOwnsChanged,
-    kAriaPressedChanged,
-    kAriaSelectedChanged,
-    kCSSAnchorChanged,
-    kDelayEventFromPostNotification,
-    kDidShowMenuListPopup,
-    kEditableTextContentChanged,
-    kFocusableChanged,
-    kIdChanged,
-    kMaybeDisallowImplicitSelection,
-    kNodeIsAttached,
-    kNodeGainedFocus,
-    kNodeLostFocus,
-    kPostNotificationFromHandleLoadComplete,
-    kPostNotificationFromHandleLoadStart,
-    kPostNotificationFromHandleScrolledToAnchor,
-    kReferenceTargetChanged,
-    kRemoveValidationMessageObjectFromFocusedUIElement,
-    kRemoveValidationMessageObjectFromValidationMessageObject,
-    kRestoreParentOrPrune,
-    kRoleChangeFromAriaHasPopup,
-    kRoleChangeFromImageMapName,
-    kRoleChangeFromRoleOrType,
-    kRoleMaybeChangedFromEventListener,
-    kRoleMaybeChangedFromHref,
-    kRoleMaybeChangedOnSelect,
-    kSectionOrRegionRoleMaybeChangedFromLabel,
-    kSectionOrRegionRoleMaybeChangedFromLabelledBy,
-    kSectionOrRegionRoleMaybeChangedFromTitle,
-    kTextChangedOnNode,
-    kTextChangedOnClosestNodeForLayoutObject,
-    kTextMarkerDataAdded,
-    kUpdateActiveMenuOption,
-    kUpdateAriaOwns,
-    kUpdateTableRole,
-    kUseMapAttributeChanged,
-    kValidationMessageVisibilityChanged,
-
-    // These updates are associated with an AXID:
-    kChildrenChanged,
-    kMarkAXObjectDirty,
-    kMarkAXSubtreeDirty,
-    kTextChangedOnLayoutObject
-  };
-
   struct TreeUpdateParams final : public GarbageCollected<TreeUpdateParams> {
     TreeUpdateParams(
         Node* node_arg,
@@ -811,6 +755,11 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Updates the node on which the browser last requested accessibility focus.
   void UpdateAccessibilityFocus(AXID id) { accessibility_focus_ = id; }
 
+#if AX_FAIL_FAST_BUILD()
+  void AddNodeRequiringCacheUpdate(AXID ax_id, TreeUpdateReason reason);
+  void RemoveNodeRequiringCacheUpdate(AXID ax_id);
+#endif
+
  protected:
   void ScheduleImmediateSerialization() override;
 
@@ -828,6 +777,12 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   BlinkAXEventIntentsSet& ActiveEventIntents() override {
     return active_event_intents_;
   }
+
+#if AX_FAIL_FAST_BUILD()
+  const HashMap<AXID, TreeUpdateReason>& GetNodesRequiringCacheUpdate() const {
+    return nodes_requiring_cache_update_;
+  }
+#endif
 
  private:
   struct AXDirtyObject : public GarbageCollected<AXDirtyObject> {
@@ -1024,6 +979,12 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   bool updating_layout_and_ax_ = false;
   int tree_check_counter_ = 0;
   base::Time last_tree_check_time_stamp_ = base::Time::Now();
+
+  // AXIDs of nodes that need their cached attribute values updated mapped to
+  // the reason for the update. This is used to validate whether there are any
+  // such nodes after the tree is finalized. Otherwise, there may be missed
+  // cache updates.
+  HashMap<AXID, TreeUpdateReason> nodes_requiring_cache_update_;
 #endif
 
   // If non-zero, do not do work to process a11y or build the a11y tree in
@@ -1072,14 +1033,14 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Enqueue a callback to the given method to be run after layout is
   // complete.
   void DeferTreeUpdate(
-      AXObjectCacheImpl::TreeUpdateReason update_reason,
+      TreeUpdateReason update_reason,
       Node* node,
       ax::mojom::blink::Event event = ax::mojom::blink::Event::kNone);
 
   // Provide either a DOM node or AXObject. If both are provided, then they must
   // match, meaning that the AXObject's DOM node must equal the provided node.
   void DeferTreeUpdate(
-      AXObjectCacheImpl::TreeUpdateReason update_reason,
+      TreeUpdateReason update_reason,
       AXObject* obj,
       ax::mojom::blink::Event event = ax::mojom::blink::Event::kNone,
       bool invalidate_cached_values = true);
@@ -1285,6 +1246,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,
                            UpdateAXForAllDocumentsAfterPausedUpdates);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, RemoveReferencesToAXID);
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, NodesRequiringCacheUpdate);
 
   // The ID of the object to fetch image data for.
   AXID image_data_node_id_ = ui::AXNodeData::kInvalidAXID;

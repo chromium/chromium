@@ -881,6 +881,28 @@ static inline bool ConsumeMatchingLiteral(const LChar** a,
   return true;
 }
 
+static inline bool ConsumeFallbackValuesAndEndOfEnv(const LChar** a,
+                                                    const LChar* end) {
+  while (true) {
+    if (**a == *end) {
+      return false;
+    }
+    char ch = **a;
+    if (ch == ')') {
+      ConsumeMatchingLiteral(a, end, ")");
+      break;
+    }
+    // Tolerate simple fallback values like ", 0px".
+    if (!(IsHTMLSpace(ch) || ch == ',' || ch == '-' || ch == '.' ||
+          (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9'))) {
+      return false;
+    }
+    (*a)++;
+  }
+
+  return true;
+}
+
 // Right-hand side must already be lowercase.
 static inline bool MatchesCaseInsensitiveLiteral4(const LChar* a,
                                                   const char (&b)[5]) {
@@ -1209,6 +1231,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kBorderInlineEndStyle:
     case CSSPropertyID::kBorderInlineStartStyle:
     case CSSPropertyID::kColumnRuleStyle:
+    case CSSPropertyID::kRowRuleStyle:
       return IsBorderStyleValue(value_id);
     case CSSPropertyID::kBoxSizing:
       return value_id == CSSValueID::kBorderBox ||
@@ -2272,27 +2295,16 @@ bool CSSParserFastPaths::IsSafeAreaInsetBottom(StringView string) {
     if (!ConsumeMatchingLiteral(&pos, end, "safe-area-inset-bottom")) {
       return false;
     }
-    // Look for the end of the env(...)
-    while (true) {
-      if (pos == end) {
-        return false;
-      }
-      char ch = *pos;
-      if (ch == ')') {
-        ConsumeMatchingLiteral(&pos, end, ")");
-        break;
-      }
-      // Tolerate simple fallback values like ", 0px".
-      if (!(IsHTMLSpace(ch) || ch == ',' || ch == '-' || ch == '.' ||
-            (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9'))) {
-        return false;
-      }
-      pos++;
+    // Look for fallback values and the end of the env(...)
+    if (!ConsumeFallbackValuesAndEndOfEnv(&pos, end)) {
+      return false;
     }
+
     // Operator must be + or -
     if (ConsumeMatchingLiteral(&pos, end, "+") ||
         ConsumeMatchingLiteral(&pos, end, "-")) {
-      // Second operand can be var(--foo) or simple length like "10px".
+      // Second operand can be var(--foo), simple length like "10px" or
+      // env(SAMIB).
       if (ConsumeMatchingLiteral(&pos, end, "var(")) {
         // TODO(crbug.com/373980016): Verify that the var actually exists.
         while (pos != end && IsCustomIdentChar(*pos)) {
@@ -2302,6 +2314,14 @@ bool CSSParserFastPaths::IsSafeAreaInsetBottom(StringView string) {
           pos++;
         }
         if (!ConsumeMatchingLiteral(&pos, end, ")")) {
+          return false;
+        }
+      } else if (ConsumeMatchingLiteral(&pos, end, "env(")) {
+        if (!ConsumeMatchingLiteral(&pos, end, "safe-area-max-inset-bottom")) {
+          return false;
+        }
+        // Look for fallback values and the end of the env(...)
+        if (!ConsumeFallbackValuesAndEndOfEnv(&pos, end)) {
           return false;
         }
       } else {

@@ -7,7 +7,7 @@
 namespace extensions {
 
 MockCrxInstaller::MockCrxInstaller(ExtensionService* frontend)
-    : CrxInstaller(frontend->AsExtensionServiceWeakPtr(), nullptr, nullptr) {}
+    : CrxInstaller(frontend, nullptr, nullptr) {}
 
 MockCrxInstaller::~MockCrxInstaller() = default;
 

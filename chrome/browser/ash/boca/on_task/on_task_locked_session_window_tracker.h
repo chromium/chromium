@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_BOCA_ON_TASK_ON_TASK_LOCKED_SESSION_WINDOW_TRACKER_H_
 #define CHROME_BROWSER_ASH_BOCA_ON_TASK_ON_TASK_LOCKED_SESSION_WINDOW_TRACKER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
@@ -24,6 +26,10 @@ class Browser;
 
 namespace ash::boca {
 class BocaWindowObserver;
+}
+
+namespace ash {
+class OnTaskPodController;
 }
 
 // This class is used to track the windows and tabs that are opened in the
@@ -89,6 +95,8 @@ class LockedSessionWindowTracker : public KeyedService,
       std::unique_ptr<ash::boca::OnTaskNotificationsManager>
           notification_manager);
 
+  ash::OnTaskPodController* GetOnTaskPodControllerForTesting();
+
   OnTaskBlocklist* on_task_blocklist();
   Browser* browser();
 
@@ -123,6 +131,7 @@ class LockedSessionWindowTracker : public KeyedService,
   const std::unique_ptr<OnTaskBlocklist> on_task_blocklist_;
   const bool is_consumer_profile_;
   std::unique_ptr<ash::boca::OnTaskNotificationsManager> notifications_manager_;
+  std::unique_ptr<ash::OnTaskPodController> on_task_pod_controller_;
   raw_ptr<Browser> browser_ = nullptr;
 
   base::ObserverList<ash::boca::BocaWindowObserver> observers_;

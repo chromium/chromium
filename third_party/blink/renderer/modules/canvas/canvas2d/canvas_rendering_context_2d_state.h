@@ -145,6 +145,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   const Font* GetFont() const;
   const FontDescription& GetFontDescription() const;
   inline bool HasRealizedFont() const { return realized_font_; }
+  inline bool LangIsDirty() const { return lang_is_dirty_; }
   void SetUnparsedFont(const String& font) { unparsed_font_ = font; }
   const String& UnparsedFont() const { return unparsed_font_; }
 
@@ -220,6 +221,9 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
     DCHECK(HasPattern(type));
     return Style(type).GetCanvasPattern()->GetPattern()->IsTextureBacked();
   }
+
+  void SetLang(const String& lang);
+  String GetLang() const { return lang_; }
 
   void SetDirection(V8CanvasDirection direction) { direction_ = direction; }
   V8CanvasDirection GetDirection() const { return direction_; }
@@ -402,6 +406,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   sk_sp<PaintFilter> resolved_filter_;
 
   // Text state.
+  String lang_ = "inherit";
   V8CanvasTextAlign text_align_{V8CanvasTextAlign::Enum::kStart};
   V8CanvasTextBaseline text_baseline_{V8CanvasTextBaseline::Enum::kAlphabetic};
   V8CanvasDirection direction_{V8CanvasDirection::Enum::kInherit};
@@ -427,6 +432,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   bool has_complex_clip_ : 1;
   bool letter_spacing_is_set_ : 1;
   bool word_spacing_is_set_ : 1;
+  bool lang_is_dirty_ : 1;
   mutable bool line_dash_dirty_ : 1;
 
   bool image_smoothing_enabled_;

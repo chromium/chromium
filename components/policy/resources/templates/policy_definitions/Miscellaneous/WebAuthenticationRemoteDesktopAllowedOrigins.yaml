@@ -16,6 +16,7 @@ features:
 future_on:
 - chrome.*
 - chrome_os
+- android
 example_value:
 - https://remotedesktop.google.com
 - https://vdi.corp.example

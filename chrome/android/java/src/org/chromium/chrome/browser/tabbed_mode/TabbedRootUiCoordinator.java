@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.accessibility.PageZoomIphController;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpenerImpl;
@@ -143,7 +144,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.FaviconResolver;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListFaviconResolverFactory;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -249,6 +250,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable BookmarkBarCoordinator mBookmarkBarCoordinator;
     private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
     private @Nullable BookmarkOpener mBookmarkOpener;
+    private @NonNull ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -386,7 +388,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Nullable MultiInstanceManager multiInstanceManager,
             @NonNull ObservableSupplier<Integer> overviewColorSupplier,
             @NonNull ManualFillingComponentSupplier manualFillingComponentSupplier,
-            @NonNull EdgeToEdgeManager edgeToEdgeManager) {
+            @NonNull EdgeToEdgeManager edgeToEdgeManager,
+            @NonNull ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier) {
         super(
                 activity,
                 onOmniboxFocusChangedListener,
@@ -504,6 +507,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mEdgeToEdgeManager = edgeToEdgeManager;
         initAppHeaderCoordinator(
                 savedInstanceState, mEdgeToEdgeManager.getEdgeToEdgeStateProvider());
+
+        mBookmarkManagerOpenerSupplier = bookmarkManagerOpenerSupplier;
     }
 
     @Override
@@ -869,7 +874,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             /* heightChangeCallback= */ (height) -> updateTopControlsHeight(),
                             mProfileSupplier,
                             /* viewStub= */ mActivity.findViewById(R.id.bookmark_bar_stub),
-                            mBookmarkOpener);
+                            mBookmarkOpener,
+                            mBookmarkManagerOpenerSupplier);
 
             if (mToolbarManager != null) {
                 mToolbarManager.setBookmarkBarHeightSupplier(
@@ -1437,7 +1443,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 R.dimen.default_favicon_corner_radius,
                                 TabFavicon::getBitmap);
                 FaviconResolver faviconResolver =
-                        TabGroupListCoordinator.buildFaviconResolver(
+                        TabGroupListFaviconResolverFactory.build(
                                 mActivity, profile, tabListFaviconProvider);
 
                 Callback<Bitmap> cleanUpAndContinue =

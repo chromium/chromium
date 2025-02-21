@@ -2453,7 +2453,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.History.VisitedLinks.IsLinkStyledAsVisited"
     enum="Boolean" expires_after="2025-06-24">
   <owner>kyraseevers@chromium.org</owner>
-  <owner>brgoldstein@google.com</owner>
+  <owner>janiceliu@chromium.org</owner>
   <summary>
     Each time we determine an anchor element's VisitedLinkState, we record
     whether the link will be styled as visited. :visited is true and :unvisited
@@ -2464,7 +2464,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.History.VisitedLinks.IsSaltFromNavigationThrottle"
     enum="Boolean" expires_after="2025-06-24">
   <owner>kyraseevers@chromium.org</owner>
-  <owner>brgoldstein@google.com</owner>
+  <owner>janiceliu@chromium.org</owner>
   <summary>
     Each time we add an origin, salt pair to VisitedLinkReader, this histogram
     records whether the salt came from the VisitedLinkNavigationThrottle or the
@@ -5171,6 +5171,19 @@ chromium-metrics-reviews@google.com.
     &quot;Feature-Policy&quot; and &quot;Permissions-Policy&quot; HTTP response
     header. Each policy is counted only once per page load. Version 2 fixes the
     mismatched histogram name with data collected.
+
+    Not recorded if the page is prerendered and cancelled.
+  </summary>
+</histogram>
+
+<histogram name="Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled"
+    enum="FeaturePolicyFeature" expires_after="2026-02-19">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-team@chromium.org</owner>
+  <summary>
+    Counts the use of a specific permissions policy that is enabled by the API
+    but is marked as sensitive and advertising script is in the stack when the
+    feature policy is checked. Each policy is counted only once per page load.
 
     Not recorded if the page is prerendered and cancelled.
   </summary>

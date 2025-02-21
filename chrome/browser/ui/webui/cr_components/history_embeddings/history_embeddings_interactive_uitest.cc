@@ -20,6 +20,7 @@
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
+#include "components/passage_embeddings/passage_embeddings_test_util.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
@@ -45,12 +46,14 @@ class HistoryEmbeddingsInteractiveTest
   void SetUpOnMainThread() override {
     HistoryEmbeddingsServiceFactory::GetInstance()->SetTestingFactory(
         browser()->profile(),
-        base::BindLambdaForTesting([](content::BrowserContext* context) {
+        base::BindLambdaForTesting([this](content::BrowserContext* context) {
           return HistoryEmbeddingsServiceFactory::
               BuildServiceInstanceForBrowserContextForTesting(
-                  context, /*answerer=*/nullptr, /*intent_classifier=*/nullptr);
+                  context,
+                  passage_embeddings_test_env_.embedder_metadata_provider(),
+                  passage_embeddings_test_env_.embedder(),
+                  /*answerer=*/nullptr, /*intent_classifier=*/nullptr);
         }));
-    service()->EmbedderMetadataUpdated({1, 768});
 
     InteractiveBrowserTest::SetUpOnMainThread();
   }
@@ -84,6 +87,7 @@ class HistoryEmbeddingsInteractiveTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   page_content_annotations::TestPageContentAnnotator page_content_annotator_;
+  passage_embeddings::TestEnvironment passage_embeddings_test_env_;
 };
 
 // Opening the feedback dialog on CrOS & LaCrOS open a system level dialog,

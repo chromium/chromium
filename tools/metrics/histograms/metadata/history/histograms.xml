@@ -2790,7 +2790,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.VisitedLinks.HashTableLengthOnReaderInit"
     units="entries" expires_after="2025-08-17">
   <owner>kyraseevers@chromium.org</owner>
-  <owner>brgoldstein@google.com</owner>
+  <owner>janiceliu@chromium.org</owner>
   <summary>
     When VisitedLinkReader's in-memory hashtable is initialized, this metric
     records the value for table_length_ (the maximum number of entries that can
@@ -2801,7 +2801,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.VisitedLinks.HashTableSizeOnTableCreate" units="MB"
     expires_after="2025-08-17">
   <owner>kyraseevers@chromium.org</owner>
-  <owner>brgoldstein@google.com</owner>
+  <owner>janiceliu@chromium.org</owner>
   <summary>
     When a new in-memory hashtable is created in VisitedLinkWriter, this metric
     records the size of the memory allocated for that new hashtable in MB.
@@ -2811,7 +2811,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.VisitedLinks.HashTableUsageOnLinkAdded"
     units="fingerprints" expires_after="2025-08-17">
   <owner>kyraseevers@chromium.org</owner>
-  <owner>brgoldstein@google.com</owner>
+  <owner>janiceliu@chromium.org</owner>
   <summary>
     When a new URL fingerprint is added to the VisitedLink hashtable, this
     metric logs value for used_items_ (the number of entries in the hashtable
@@ -2822,7 +2822,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.VisitedLinks.NumSaltsForNavigationsDuringBuild"
     units="salts" expires_after="2025-06-24">
   <owner>kyraseevers@chromium.org</owner>
-  <owner>brgoldstein@google.com</owner>
+  <owner>janiceliu@chromium.org</owner>
   <summary>
     After the partitioned hashtable has completed building on the DB thread, we
     return to the main thread and determine the per-origin salts corresponding
@@ -2836,7 +2836,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.VisitedLinks.TryToAddFingerprint"
     enum="AddFingerprint" expires_after="2025-07-20">
   <owner>kyraseevers@chromium.org</owner>
-  <owner>brgoldstein@google.com</owner>
+  <owner>janiceliu@chromium.org</owner>
   <summary>
     When VisitedLinkWriter is asked to add a URL, it calculates that URL's
     fingerprint and tries to add that fingerprint to the hashtable. This metric
@@ -2851,7 +2851,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.VisitedLinks.VisitLoggedFromMainFrame" enum="Boolean"
     expires_after="2025-06-29">
   <owner>kyraseevers@chromium.org</owner>
-  <owner>brgoldstein@google.com</owner>
+  <owner>janiceliu@chromium.org</owner>
   <summary>
     For each visit being logged in the VisitedLinks hashtable by the
     HistoryService, record whether its ui::PageTransition type came from the
@@ -2862,7 +2862,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.VisitedLinks.VisitLoggedFromTransition"
     enum="PageTransitionForVisitedLinks" expires_after="2025-06-29">
   <owner>kyraseevers@chromium.org</owner>
-  <owner>brgoldstein@google.com</owner>
+  <owner>janiceliu@chromium.org</owner>
   <summary>
     For each visit being logged in the VisitedLinks hashtable by the
     HistoryService, record its PageTransitionForVisitedLinks type. This enum
@@ -2874,7 +2874,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.VisitedLinkTableCount" units="VisitedLinks"
     expires_after="2025-07-13">
   <owner>kyraseevers@chromium.org</owner>
-  <owner>brgoldstein@google.com</owner>
+  <owner>janiceliu@chromium.org</owner>
   <component>1456589</component>
   <summary>
     Number of rows in visited_links table in History DB. Metrics are logged on

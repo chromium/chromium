@@ -140,6 +140,7 @@ CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method drop
 CONSOLE MESSAGE:     method every
 CONSOLE MESSAGE:     method filter
+CONSOLE MESSAGE:     method finally
 CONSOLE MESSAGE:     method find
 CONSOLE MESSAGE:     method first
 CONSOLE MESSAGE:     method flatMap

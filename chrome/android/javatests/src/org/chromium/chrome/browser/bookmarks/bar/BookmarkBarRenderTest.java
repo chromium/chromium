@@ -34,6 +34,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -71,6 +72,7 @@ public class BookmarkBarRenderTest {
 
     @Mock private BrowserControlsManager mBrowserControlsManager;
     @Mock private BookmarkOpener mBookmarkOpener;
+    @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
 
     private BookmarkBarCoordinator mCoordinator;
     private BookmarkBar mView;
@@ -100,7 +102,8 @@ public class BookmarkBarRenderTest {
                                     /* heightChangeCallback= */ (h) -> {},
                                     /* profileSupplier= */ new ObservableSupplierImpl<>(),
                                     viewStub,
-                                    mBookmarkOpener);
+                                    mBookmarkOpener,
+                                    new ObservableSupplierImpl<>(mBookmarkManagerOpener));
 
                     assertNotNull(mView);
                     ChromeRenderTestRule.sanitize(mView);

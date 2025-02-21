@@ -66,8 +66,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
 
   // Used to open a cache with a backend of type `impl`. Returns nullptr in
   // case of failure.
-  static std::unique_ptr<PersistentCache> Open(
-      const BackendParams& backend_params);
+  static std::unique_ptr<PersistentCache> Open(BackendParams backend_params);
 
   // Used to get a handle to entry associated with `key`. Returns `nullptr` if
   // `key` is not found. Returned entry will remain valid and its contents will

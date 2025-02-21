@@ -11,16 +11,17 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
 declare type LogLevel = 'log' | 'debug' | 'info' | 'warn' | 'error';
 
 function sendConsoleMessage(log_level: LogLevel, originalArgs: unknown[]) {
-  let message, slicedArgs = Array.prototype.slice.call(originalArgs);
+  let message;
+  const slicedArgs = Array.prototype.slice.call(originalArgs);
   try {
     message = slicedArgs.join(' ');
   } catch (err) {
   }
   sendWebKitMessage('ConsoleMessageHandler', {
-    'sender_frame' : gCrWeb.message.getFrameId(),
-    'log_level' : log_level,
-    'message' : message,
-    'url': document.location.href
+    'sender_frame': gCrWeb.message.getFrameId(),
+    'log_level': log_level,
+    'message': message,
+    'url': document.location.href,
   });
 }
 

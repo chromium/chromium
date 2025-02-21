@@ -140,6 +140,7 @@ build_webui_tests("build") {
     "tab_discard_exception_dialog_test.ts",
     "test_about_page_browser_proxy.ts",
     "test_clear_browsing_data_browser_proxy.ts",
+    "test_entity_data_manager_proxy.ts",
     "test_extension_control_browser_proxy.ts",
     "test_hats_browser_proxy.ts",
     "test_lifetime_browser_proxy.ts",

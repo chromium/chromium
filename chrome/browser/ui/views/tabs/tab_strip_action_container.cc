@@ -420,18 +420,24 @@ void TabStripActionContainer::OnGlicButtonClicked() {
                      : glic::InvocationSource::kTopChromeButton);
 
   if (glic_button_->GetIsShowingNudge()) {
-    contextual_cueing::ContextualCueingServiceFactory::GetForProfile(
-        tab_strip_controller_->GetProfile())
-        ->CueingNudgeClicked();
+    auto* contextual_cueing_service =
+        contextual_cueing::ContextualCueingServiceFactory::GetForProfile(
+            tab_strip_controller_->GetProfile());
+    if (contextual_cueing_service) {
+      contextual_cueing_service->CueingNudgeClicked();
+    }
   }
 
   ExecuteHideTabStripNudge(glic_button_);
 }
 
 void TabStripActionContainer::OnGlicButtonDismissed() {
-  contextual_cueing::ContextualCueingServiceFactory::GetForProfile(
-      tab_strip_controller_->GetProfile())
-      ->CueingNudgeDismissed();
+  auto* contextual_cueing_service =
+      contextual_cueing::ContextualCueingServiceFactory::GetForProfile(
+          tab_strip_controller_->GetProfile());
+  if (contextual_cueing_service) {
+    contextual_cueing_service->CueingNudgeDismissed();
+  }
 
   // Force hide the button when pressed, bypassing locked expansion mode.
   ExecuteHideTabStripNudge(glic_button_);

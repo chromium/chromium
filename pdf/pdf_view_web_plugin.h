@@ -688,8 +688,6 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
       PdfViewWebPlugin& plugin);
   static std::unique_ptr<PdfInkModule> MaybeCreatePdfInkModule(
       PdfInkModuleClient* client);
-
-  void GenerateAndSendInkThumbnail(int page_index, const gfx::Size& size);
 #endif
 
   // Converts `frame_coordinates` to PDF coordinates.

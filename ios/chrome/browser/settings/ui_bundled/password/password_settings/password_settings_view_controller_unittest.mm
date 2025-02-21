@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_consumer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
@@ -92,11 +93,11 @@ TEST_F(PasswordSettingsViewControllerTest,
       base::apple::ObjCCast<PasswordSettingsViewController>(controller());
   [consumer setLocalPasswordsCount:2 withUserEligibility:YES];
 
-  TableViewImageItem* movePasswordsToAccountDescriptionItem =
-      static_cast<TableViewImageItem*>(
+  TableViewDetailTextItem* movePasswordsToAccountDescriptionItem =
+      static_cast<TableViewDetailTextItem*>(
           GetTableViewItem(/*section=*/1, /*item=*/0));
   EXPECT_NSEQ(
-      movePasswordsToAccountDescriptionItem.title,
+      movePasswordsToAccountDescriptionItem.text,
       l10n_util::GetNSString(
           IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SECTION_TITLE));
 

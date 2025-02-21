@@ -97,6 +97,7 @@ class TaskManagerImpl : public TaskManagerInterface,
   bool IsRunningInVM(TaskId task_id) const override;
   TaskId GetTaskIdForWebContents(
       content::WebContents* web_contents) const override;
+  bool IsTaskValid(TaskId task_id) const override;
 
   // task_manager::TaskProviderObserver:
   void TaskAdded(Task* task) override;

@@ -1717,8 +1717,6 @@ callbacks.
 **Notes:**
 *** promo
 Requires significant support code and planning around API and migration.
-
-[Prototyping bug](https://crbug.com/1403840)
 ***
 
 ## C++20 TBD Library Features {#library-review-20}

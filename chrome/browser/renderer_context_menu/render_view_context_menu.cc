@@ -818,6 +818,19 @@ bool IsLensOptionEnteredThroughKeyboard(int event_flags) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+bool IsGlicWindow(RenderViewContextMenu* menu,
+                  content::BrowserContext* browser_context) {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic::GlicEnabling::IsEnabledByFlags()) {
+    auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+        browser_context, false);
+    return glic_service && glic_service->IsActiveWebContents(
+                               menu->GetWebContents()->GetOuterWebContents());
+  }
+#endif  // BUILDFLAG(ENABLE_GLIC)
+  return false;
+}
+
 }  // namespace
 
 // static
@@ -1991,8 +2004,11 @@ void RenderViewContextMenu::AppendImageItems() {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_LOAD_IMAGE,
                                     IDS_CONTENT_CONTEXT_LOAD_IMAGE);
   }
-  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB,
-                                  IDS_CONTENT_CONTEXT_OPENIMAGENEWTAB);
+  if (!IsGlicWindow(this, browser_context_)) {
+    // Glic doesn't have tabs, to this option doesn't make sense there.
+    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB,
+                                    IDS_CONTENT_CONTEXT_OPENIMAGENEWTAB);
+  }
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SAVEIMAGEAS,
                                   IDS_CONTENT_CONTEXT_SAVEIMAGEAS);
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYIMAGE,
@@ -2318,24 +2334,18 @@ void RenderViewContextMenu::AppendReadingModeItem() {
 
 void RenderViewContextMenu::AppendGlicItems() {
 #if BUILDFLAG(ENABLE_GLIC)
-  if (glic::GlicEnabling::IsEnabledByFlags()) {
-    auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-        browser_context_, false);
-    if (glic_service && glic_service->IsActiveWebContents(
-                            GetWebContents()->GetOuterWebContents())) {
-      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_RELOAD_GLIC,
-                                      IDS_CONTENT_CONTEXT_RELOAD);
-      menu_model_.SetElementIdentifierAt(
-          menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_RELOAD_GLIC)
-              .value(),
-          kGlicReloadMenuItem);
-      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_CLOSE_GLIC,
-                                      IDS_CONTENT_CONTEXT_CLOSE_GLIC);
-      menu_model_.SetElementIdentifierAt(
-          menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_CLOSE_GLIC)
-              .value(),
-          kGlicCloseMenuItem);
-    }
+  if (IsGlicWindow(this, browser_context_)) {
+    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_RELOAD_GLIC,
+                                    IDS_CONTENT_CONTEXT_RELOAD);
+    menu_model_.SetElementIdentifierAt(
+        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_RELOAD_GLIC)
+            .value(),
+        kGlicReloadMenuItem);
+    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_CLOSE_GLIC,
+                                    IDS_CONTENT_CONTEXT_CLOSE_GLIC);
+    menu_model_.SetElementIdentifierAt(
+        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_CLOSE_GLIC).value(),
+        kGlicCloseMenuItem);
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }

@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -21,21 +23,20 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /** {@link org.chromium.ui.modelutil.SimpleRecyclerViewMcp.ViewBinder} for tab strip. */
 class TabStripViewBinder {
-    private static final int FAVICON_BACKGROUND_DEFAULT_ALPHA = 255;
-    private static final int FAVICON_BACKGROUND_SELECTED_ALPHA = 0;
-
     /**
      * Partially or fully update the given ViewHolder based on the given model over propertyKey.
+     *
      * @param model The model to use.
      * @param group The view group to bind to.
      * @param propertyKey If present, to be used as the key to partially update. If null, a full
-     *                    bind is done.
+     *     bind is done.
      */
     public static void bind(
             PropertyModel model, ViewGroup group, @Nullable PropertyKey propertyKey) {
@@ -46,7 +47,7 @@ class TabStripViewBinder {
             return;
         }
         if (TabProperties.IS_SELECTED == propertyKey) {
-            ImageButton button = (ImageButton) view.fastFindViewById(R.id.tab_strip_item_button);
+            ImageButton button = view.fastFindViewById(R.id.tab_strip_item_button);
             int selectedDrawableId =
                     model.get(TabProperties.IS_INCOGNITO)
                             ? R.drawable.tab_strip_selected_ring_incognito
@@ -67,14 +68,12 @@ class TabStripViewBinder {
                             assert data.type != TabActionButtonData.TabActionButtonType.OVERFLOW;
                             data.tabActionListener.run(v, model.get(TabProperties.TAB_ID));
                         });
-                button.getBackground().setAlpha(FAVICON_BACKGROUND_SELECTED_ALPHA);
             } else {
                 button.setOnClickListener(
                         v -> {
                             model.get(TabProperties.TAB_CLICK_LISTENER)
                                     .run(v, model.get(TabProperties.TAB_ID));
                         });
-                button.getBackground().setAlpha(FAVICON_BACKGROUND_DEFAULT_ALPHA);
             }
             setContentDescription(view, model);
         } else if (TabProperties.FAVICON_FETCHER == propertyKey) {
@@ -94,8 +93,7 @@ class TabStripViewBinder {
                         model.set(TabProperties.FAVICON_FETCHED, true);
                     });
         } else if (TabProperties.HAS_NOTIFICATION_BUBBLE == propertyKey) {
-            ImageView notificationView =
-                    (ImageView) view.fastFindViewById(R.id.tab_strip_notification_bubble);
+            ImageView notificationView = view.fastFindViewById(R.id.tab_strip_notification_bubble);
 
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
                 int visibility =
@@ -135,25 +133,25 @@ class TabStripViewBinder {
     /** Returns true if the favicon was successfully set. */
     private static boolean setFavicon(
             ViewLookupCachingFrameLayout view, PropertyModel model, Drawable faviconDrawable) {
-        @Nullable
-        ImageButton button = (ImageButton) view.fastFindViewById(R.id.tab_strip_item_button);
+        @Nullable ImageButton button = view.fastFindViewById(R.id.tab_strip_item_button);
         if (button == null) return false;
 
-        button.setBackgroundResource(
-                org.chromium.chrome.browser.tab_ui.R.drawable.tabstrip_favicon_background);
+        button.setBackgroundResource(R.drawable.tabstrip_favicon_background);
 
-        ViewCompat.setBackgroundTintList(
-                button,
-                AppCompatResources.getColorStateList(
-                        view.getContext(),
-                        model.get(TabProperties.IS_INCOGNITO)
-                                ? R.color.favicon_background_color_incognito
-                                : R.color.favicon_background_color));
-        if (!model.get(TabProperties.IS_SELECTED)) {
-            button.getBackground().setAlpha(FAVICON_BACKGROUND_DEFAULT_ALPHA);
+        final ColorStateList backgroundTint;
+        if (model.get(TabProperties.IS_INCOGNITO)) {
+            backgroundTint =
+                    AppCompatResources.getColorStateList(
+                            view.getContext(), R.color.default_bg_color_dark_elev_6_baseline);
         } else {
-            button.getBackground().setAlpha(FAVICON_BACKGROUND_SELECTED_ALPHA);
+            @ColorInt
+            int faviconBgColor =
+                    ChromeColors.getSurfaceColor(
+                            button.getContext(), R.dimen.tab_strip_favicon_background_elevation);
+            backgroundTint = ColorStateList.valueOf(faviconBgColor);
         }
+        ViewCompat.setBackgroundTintList(button, backgroundTint);
+
         button.setImageDrawable(faviconDrawable);
         return true;
     }
@@ -161,7 +159,7 @@ class TabStripViewBinder {
     private static void setContentDescription(
             ViewLookupCachingFrameLayout view, PropertyModel model) {
         Context context = view.getContext();
-        ImageButton button = (ImageButton) view.fastFindViewById(R.id.tab_strip_item_button);
+        ImageButton button = view.fastFindViewById(R.id.tab_strip_item_button);
         String title = model.get(TabProperties.TITLE);
         @StringRes int contentDescRes;
 

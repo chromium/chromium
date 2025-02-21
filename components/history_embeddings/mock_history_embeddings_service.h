@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history_embeddings/history_embeddings_service.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace os_crypt_async {
@@ -32,7 +33,9 @@ class MockHistoryEmbeddingsService : public HistoryEmbeddingsService {
               (override));
   explicit MockHistoryEmbeddingsService(
       os_crypt_async::OSCryptAsync* os_crypt_async,
-      history::HistoryService* history_service);
+      history::HistoryService* history_service,
+      passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
+      passage_embeddings::Embedder* embedder);
   ~MockHistoryEmbeddingsService() override;
 };
 

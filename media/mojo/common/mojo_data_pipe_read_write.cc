@@ -166,18 +166,16 @@ MojoDataPipeWriter::~MojoDataPipeWriter() {
   DVLOG(1) << __func__;
 }
 
-void MojoDataPipeWriter::Write(const uint8_t* buffer,
-                               uint32_t buffer_size,
+void MojoDataPipeWriter::Write(base::span<const uint8_t> buffer,
                                DoneCB done_cb) {
   DVLOG(3) << __func__;
   // Write() can not be called when another writing request is in process.
   DCHECK(current_buffer_.empty());
   DCHECK(done_cb);
-  if (!buffer_size) {
+  if (buffer.empty()) {
     std::move(done_cb).Run(true);
     return;
   }
-  DCHECK(buffer);
 
   // Cannot write if the pipe is already closed.
   if (!producer_handle_.is_valid()) {
@@ -187,9 +185,7 @@ void MojoDataPipeWriter::Write(const uint8_t* buffer,
     return;
   }
 
-  // TODO(lukasza): Take `span` instead of `buffer` + `buffer_size`.
-  current_buffer_ =
-      UNSAFE_TODO(base::span<const uint8_t>(buffer, size_t{buffer_size}));
+  current_buffer_ = buffer;
   done_cb_ = std::move(done_cb);
   // Try writing data immediately to reduce latency.
   TryWriteData(MOJO_RESULT_OK);

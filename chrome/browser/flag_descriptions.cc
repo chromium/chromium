@@ -40,10 +40,22 @@ const char kCanvasOopRasterizationDescription[] =
     "The rasterization of 2d canvas contents is performed in the GPU process. "
     "Requires that out-of-process rasterization be enabled.";
 
+#if !BUILDFLAG(IS_ANDROID)
 const char kCapturedSurfaceControlName[] = "Captured Surface Control";
 const char kCapturedSurfaceControlDescription[] =
     "Enables an API that allows an application to control scroll and zoom on "
     "the tab which it is capturing.";
+
+const char kCrossTabElementCaptureName[] = "Element Capture cross-tab";
+const char kCrossTabElementCaptureDescription[] =
+    "Allows the Element Capture API to be used cross-tab. (Only has an effect "
+    "if Element Capture is generally enabled.)";
+
+const char kCrossTabRegionCaptureName[] = "Region Capture cross-tab";
+const char kCrossTabRegionCaptureDescription[] =
+    "Allows the Region Capture API to be used cross-tab. (Only has an effect "
+    "if Region Capture is generally enabled.)";
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 const char kAcceleratedVideoDecodeName[] = "Hardware-accelerated video decode";
 const char kAcceleratedVideoDecodeDescription[] =
@@ -707,23 +719,6 @@ const char kAutofillEnableSaveAndFillDescription[] =
     "When enabled, show an option to offer saving and filling a credit card "
     "with a single click when users don't have any cards saved in Autofill.";
 
-const char kAutofillEnableSaveCardLoadingAndConfirmationName[] =
-    "Enable save card loading and confirmation UX";
-const char kAutofillEnableSaveCardLoadingAndConfirmationDescription[] =
-    "When enabled, a loading spinner will be shown when uploading a card to "
-    "the server and a confirmation screen will be will be shown based on the "
-    "result of the upload. If the upload is unsuccessful in being uploaded to "
-    "the server, it will be saved locally.";
-
-const char kAutofillEnableSaveCardLocalSaveFallbackName[] =
-    "Enable save card local save fallback";
-const char kAutofillEnableSaveCardLocalSaveFallbackDescription[] =
-    "When enabled, if a card fails to be uploaded to the server, the card "
-    "details will be saved locally instead. If a card with the same card "
-    "number and expiration date already exists in the local database, this "
-    "will be a no-op and the existing card will not be updated with any card "
-    "details from the form.";
-
 #if BUILDFLAG(IS_ANDROID)
 const char kAutofillEnableSyncingOfPixBankAccountsName[] =
     "Sync Pix bank accounts from Google Payments";
@@ -744,14 +739,6 @@ const char kAutofillEnableVcnGrayOutForMerchantOptOutName[] =
 const char kAutofillEnableVcnGrayOutForMerchantOptOutDescription[] =
     "When enabled, Chrome will display grayed out virtual card suggestions on "
     "merchant websites where the merchant has opted-out of virtual cards.";
-
-const char kAutofillEnableVcnEnrollLoadingAndConfirmationName[] =
-    "Enable showing loading and confirmation screens for virtual card "
-    "enrollment";
-const char kAutofillEnableVcnEnrollLoadingAndConfirmationDescription[] =
-    "When enabled, the virtual card enrollment screen will present a loading "
-    "spinner while enrolling the card to the server and present a confirmation "
-    "screen with the result when completed.";
 
 const char kAutofillEnableVerveCardSupportName[] =
     "Enable autofill support for Verve cards";

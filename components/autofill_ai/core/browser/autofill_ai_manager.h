@@ -37,7 +37,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   // autofill::AutofillAiDelegate:
   void GetSuggestions(autofill::FormGlobalId form_global_id,
                       autofill::FieldGlobalId field_global_id,
-                      bool is_manual_fallback,
                       GetSuggestionsCallback callback) override;
   bool IsFormAndFieldEligibleForAutofillAi(
       const autofill::FormStructure& form,

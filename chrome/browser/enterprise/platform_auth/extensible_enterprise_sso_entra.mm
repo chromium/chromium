@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
 #import "chrome/browser/platform_util.h"
 #import "components/policy/core/common/policy_logger.h"
 #import "net/base/apple/http_response_headers_util.h"
@@ -96,7 +97,10 @@ void AddMSAuthHeadersFromSSOCookiesResponse(
 // Class that allows fetching authentication headers for a url if it is
 // supported by any SSO extension on the device.
 @implementation SSOServiceEntraAuthControllerDelegate {
-  enterprise_auth::PlatformAuthProviderManager::GetDataCallback _callback;
+  base::OnceCallback<void(
+      std::unique_ptr<
+          enterprise_auth::ExtensibleEnterpriseSSOProvider::DelegateResult>)>
+      _callback;
   ASAuthorizationSingleSignOnProvider* _auth_provider;
   ASAuthorizationController* _controller;
 }
@@ -117,7 +121,12 @@ void AddMSAuthHeadersFromSSOCookiesResponse(
   if (_callback) {
     VLOG_POLICY(2, EXTENSIBLE_SSO)
         << "[ExtensibleEnterpriseSSO] Fetching headers aborted.";
-    std::move(_callback).Run(net::HttpRequestHeaders());
+
+    auto result = std::make_unique<
+        enterprise_auth::ExtensibleEnterpriseSSOProvider::DelegateResult>(
+        /*name=*/enterprise_auth::kMicrosoftIdentityProvider,
+        /*success=*/false);
+    std::move(_callback).Run(std::move(result));
   }
 }
 
@@ -141,6 +150,12 @@ void AddMSAuthHeadersFromSSOCookiesResponse(
   return request;
 }
 
+- (void)performRequest {
+  ASAuthorizationSingleSignOnRequest* request = [self createRequest];
+  _controller = [self createAuthorizationControllerWithRequest:request];
+  [_controller performRequests];
+}
+
 - (ASAuthorizationController*)createAuthorizationControllerWithRequest:
     (ASAuthorizationSingleSignOnRequest*)request {
   ASAuthorizationController* controller = [[ASAuthorizationController alloc]
@@ -157,13 +172,12 @@ void AddMSAuthHeadersFromSSOCookiesResponse(
 // with empty headers.
 - (void)getAuthHeaders:(NSURL*)url
           withCallback:
-              (enterprise_auth::PlatformAuthProviderManager::GetDataCallback)
-                  callback {
+              (base::OnceCallback<
+                  void(std::unique_ptr<
+                       enterprise_auth::ExtensibleEnterpriseSSOProvider::
+                           DelegateResult>)>)callback {
   _callback = std::move(callback);
-
-  ASAuthorizationSingleSignOnRequest* request = [self createRequest];
-  _controller = [self createAuthorizationControllerWithRequest:request];
-  [_controller performRequests];
+  [self performRequest];
 }
 
 - (net::HttpRequestHeaders)getHeadersFromHttpResponse:
@@ -216,8 +230,13 @@ void AddMSAuthHeadersFromSSOCookiesResponse(
   VLOG_POLICY(2, EXTENSIBLE_SSO)
       << "[ExtensibleEnterpriseSSO] Fetching headers completed.";
   ASAuthorizationSingleSignOnCredential* credential = authorization.credential;
-  std::move(_callback).Run(
+  auto result = std::make_unique<
+      enterprise_auth::ExtensibleEnterpriseSSOProvider::DelegateResult>(
+      /*name=*/enterprise_auth::kMicrosoftIdentityProvider,
+      /*success=*/true,
+      /*headers=*/
       [self getHeadersFromHttpResponse:credential.authenticatedResponse]);
+  std::move(_callback).Run(std::move(result));
 }
 
 // Called when the authentication failed and creates a
@@ -226,7 +245,11 @@ void AddMSAuthHeadersFromSSOCookiesResponse(
            didCompleteWithError:(NSError*)error {
   VLOG_POLICY(2, EXTENSIBLE_SSO)
       << "[ExtensibleEnterpriseSSO] Fetching headers failed";
-  std::move(_callback).Run(net::HttpRequestHeaders());
+  auto result = std::make_unique<
+      enterprise_auth::ExtensibleEnterpriseSSOProvider::DelegateResult>(
+      /*name=*/enterprise_auth::kMicrosoftIdentityProvider,
+      /*success=*/false);
+  std::move(_callback).Run(std::move(result));
 }
 
 #pragma mark - ASAuthorizationControllerPresentationContextProviding

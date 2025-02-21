@@ -232,6 +232,10 @@ extern const char kClassifyUrlThrottleStatusHistogramName[];
 // Histogram name to track the final throttle verdict.
 extern const char kClassifyUrlThrottleFinalStatusHistogramName[];
 
+// Histogram name to track the duration of successful local web approval flows,
+// in milliseconds.
+extern const char kLocalWebApprovalDurationMillisecondsHistogramName[];
+
 // Histogram name to track the different error types that may occur during the
 // local web approval flow.
 extern const char kLocalWebApprovalErrorTypeHistogramName[];

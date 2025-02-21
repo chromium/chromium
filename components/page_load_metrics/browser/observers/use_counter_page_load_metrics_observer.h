@@ -98,6 +98,9 @@ class UseCounterMetricsRecorder {
   std::unique_ptr<
       AtMostOnceEnumUmaDeferrer<network::mojom::PermissionsPolicyFeature>>
       uma_permissions_policy_header2_;
+  std::unique_ptr<
+      AtMostOnceEnumUmaDeferrer<network::mojom::PermissionsPolicyFeature>>
+      uma_permissions_policy_enabled_private_;
 
   // To keep tracks of which features have been measured.
   std::bitset<static_cast<size_t>(blink::mojom::WebFeature::kMaxValue) + 1>

@@ -49,6 +49,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
@@ -98,13 +99,51 @@ std::optional<data_sharing::GroupMember> GetRelevantUserForActivity(
   return user;
 }
 
+// TODO(crbug.com/392150086): Refactor this into utilities.
+bool UnwrapTriggeringUserGivenName(const ActivityLogItem& item,
+                                   std::u16string& given_name) {
+  auto triggering_user = item.activity_metadata.triggering_user;
+  if (!triggering_user) {
+    return false;
+  }
+  given_name = base::UTF8ToUTF16(triggering_user->given_name);
+  return true;
+}
+
 // Get the string for the title line to describe the action.
 std::u16string GetTitleText(const ActivityLogItem& item, bool is_current_tab) {
-  if (is_current_tab) {
-    // TODO(crbug.com/396122264): This string should be updated to read
-    // "this tab" instead of "a tab".
+  using collaboration::messaging::CollaborationEvent;
+
+  if (!is_current_tab) {
+    return item.title_text;
   }
-  return item.title_text;
+
+  // Return early if not a tab event.
+  //
+  // TAB_REMOVED is not included here because the tab no longer exists,
+  // therefore RecentActivity cannot be shown in the context of that tab.
+  bool is_tab_event_type =
+      item.collaboration_event == CollaborationEvent::TAB_ADDED ||
+      item.collaboration_event == CollaborationEvent::TAB_UPDATED;
+  if (!is_tab_event_type) {
+    return item.title_text;
+  }
+
+  std::u16string given_name;
+  if (!UnwrapTriggeringUserGivenName(item, given_name)) {
+    return item.title_text;
+  }
+
+  switch (item.collaboration_event) {
+    case CollaborationEvent::TAB_ADDED:
+      return l10n_util::GetStringFUTF16(
+          IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB, given_name);
+    case CollaborationEvent::TAB_UPDATED:
+      return l10n_util::GetStringFUTF16(
+          IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB, given_name);
+    default:
+      NOTREACHED();
+  }
 }
 
 // Gets the string for the metadata line to describe an event.
@@ -150,6 +189,20 @@ std::optional<std::string> UnwrapTabUrl(const ActivityLogItem& item) {
   return std::nullopt;
 }
 
+bool GetActionEnabledForItem(const ActivityLogItem& item) {
+  using collaboration::messaging::RecentActivityAction;
+
+  switch (item.action) {
+    case RecentActivityAction::kFocusTab:
+    case RecentActivityAction::kReopenTab:
+    case RecentActivityAction::kOpenTabGroupEditDialog:
+    case RecentActivityAction::kManageSharing:
+      return true;
+    case RecentActivityAction::kNone:
+      return false;
+  }
+}
+
 }  // namespace
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kRecentActivityBubbleDialogId);
@@ -180,6 +233,17 @@ RecentActivityBubbleDialogView::RecentActivityBubbleDialogView(
 
   CreateTabActivity();
   CreateGroupActivity();
+
+  // Add bottom margin to tab container if the group container will appear
+  // below.
+  if (group_activity_container_->GetVisible()) {
+    const int container_vertical_margin =
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_MARGIN);
+    tab_activity_container_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(0, 0, container_vertical_margin, 0));
+  }
 }
 
 RecentActivityBubbleDialogView::~RecentActivityBubbleDialogView() = default;
@@ -194,11 +258,23 @@ void RecentActivityBubbleDialogView::CreateEmptyState() {
 }
 
 void RecentActivityBubbleDialogView::CreateTabActivity() {
-  bool should_show_tab_activity =
+  // If an index is supplied, show this element in the tab container
+  // to highlight it was the last action on the current tab.
+  const bool should_show_tab_activity =
       !activity_log_.empty() && current_tab_activity_index_.has_value();
 
-  // If an index is supplied, show this element in a separate container
-  // to highlight it was the last action on the current tab.
+  // Margin used between labels and containers.
+  const int container_vertical_margin =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_MARGIN);
+  // Padding used within the container above and below rowset.
+  const int container_vertical_padding =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_PADDING);
+  // Border radius for the container.
+  const int container_radius = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RECENT_ACTIVITY_CONTAINER_RADIUS);
+
   // Tab activity container label.
   auto* label = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(
@@ -207,10 +283,8 @@ void RecentActivityBubbleDialogView::CreateTabActivity() {
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label->SetTextStyle(views::style::TextStyle::STYLE_BODY_3_MEDIUM);
   label->SetVisible(should_show_tab_activity);
-
-  const int activity_container_radius =
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_RECENT_ACTIVITY_CONTAINER_RADIUS);
+  label->SetProperty(views::kMarginsKey,
+                     gfx::Insets::TLBR(0, 0, container_vertical_margin, 0));
 
   // Tab activity container.
   tab_activity_container_ = AddChildView(std::make_unique<views::View>());
@@ -222,29 +296,47 @@ void RecentActivityBubbleDialogView::CreateTabActivity() {
   tab_activity_container_->SetBackground(
       views::CreateThemedRoundedRectBackground(
           kColorSharingRecentActivityDialogActivityContainer,
-          activity_container_radius));
-  tab_activity_container_->SetProperty(
-      views::kMarginsKey, ChromeLayoutProvider::Get()->GetInsetsMetric(
-                              INSETS_RECENT_ACTIVITY_TAB_CONTAINER_MARGIN));
+          container_radius));
 
+  // Skip creating the content if there is no tab activity to show.
   if (!should_show_tab_activity) {
-    // Skip creating the content if there is no tab activity to show.
     return;
   }
 
-  tab_activity_container_->AddChildView(std::make_unique<RecentActivityRowView>(
-      activity_log_.at(current_tab_activity_index_.value()),
-      /*is_current_tab=*/true, profile_,
-      base::BindOnce(&RecentActivityBubbleDialogView::Close,
-                     weak_factory_.GetWeakPtr())));
+  tab_activity_container_
+      ->AddChildView(std::make_unique<RecentActivityRowView>(
+          activity_log_.at(current_tab_activity_index_.value()),
+          /*is_current_tab=*/true, profile_,
+          base::BindOnce(&RecentActivityBubbleDialogView::Close,
+                         weak_factory_.GetWeakPtr())))
+      ->SetProperty(views::kMarginsKey,
+                    gfx::Insets::TLBR(container_vertical_padding, 0,
+                                      container_vertical_padding, 0));
 }
 
 void RecentActivityBubbleDialogView::CreateGroupActivity() {
-  bool should_show_group_activity = !activity_log_.empty();
+  // Enforce an upper bound of kMaxNumberRows to protect against the
+  // backend returning more data than expected.
+  const int max_rows =
+      std::min(static_cast<int>(activity_log_.size()), kMaxNumberRows);
 
-  const int activity_container_radius =
+  // If an item will be shown in the tab activity container, it will
+  // not show in the group activity. Reduce size to account for this.
+  const int total_group_rows =
+      current_tab_activity_index_.has_value() ? max_rows - 1 : max_rows;
+  const bool should_show_group_activity = total_group_rows > 0;
+
+  // Margin used between labels and containers.
+  const int container_vertical_margin =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_RECENT_ACTIVITY_CONTAINER_RADIUS);
+          DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_MARGIN);
+  // Padding used within the container above and below rowset.
+  const int container_vertical_padding =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_PADDING);
+  // Border radius for the container.
+  const int container_radius = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RECENT_ACTIVITY_CONTAINER_RADIUS);
 
   // Group activity container label.
   auto* label = AddChildView(std::make_unique<views::Label>(
@@ -254,6 +346,8 @@ void RecentActivityBubbleDialogView::CreateGroupActivity() {
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label->SetTextStyle(views::style::TextStyle::STYLE_BODY_3_MEDIUM);
   label->SetVisible(should_show_group_activity);
+  label->SetProperty(views::kMarginsKey,
+                     gfx::Insets::TLBR(0, 0, container_vertical_margin, 0));
 
   // Group activity container.
   group_activity_container_ = AddChildView(std::make_unique<views::View>());
@@ -265,25 +359,36 @@ void RecentActivityBubbleDialogView::CreateGroupActivity() {
   group_activity_container_->SetBackground(
       views::CreateThemedRoundedRectBackground(
           kColorSharingRecentActivityDialogActivityContainer,
-          activity_container_radius));
-  group_activity_container_->SetProperty(
-      views::kMarginsKey, ChromeLayoutProvider::Get()->GetInsetsMetric(
-                              INSETS_RECENT_ACTIVITY_GROUP_CONTAINER_MARGIN));
+          container_radius));
 
-  const auto num_rows =
-      std::min(static_cast<int>(activity_log_.size()), kMaxNumberRows);
-  for (int i = 0; i < num_rows; i++) {
+  int group_rows_added = 0;
+  for (int i = 0; i < max_rows; i++) {
     // If an index is supplied, skip the corresponding element since it
     // will be shown in the tab_activity_container.
     if (current_tab_activity_index_.has_value() &&
         i == current_tab_activity_index_.value()) {
       continue;
     }
-    group_activity_container_->AddChildView(
+
+    auto* activity_row = group_activity_container_->AddChildView(
         std::make_unique<RecentActivityRowView>(
             activity_log_.at(i), /*is_current_tab=*/false, profile_,
             base::BindOnce(&RecentActivityBubbleDialogView::Close,
                            weak_factory_.GetWeakPtr())));
+
+    // If the row is the first or last in the container, a margin is added
+    // separate the hoverable area of the row from the border radius of
+    // its container.
+    activity_row->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(
+            (group_rows_added == 0) ? container_vertical_padding : 0, 0,
+            (group_rows_added == total_group_rows - 1)
+                ? container_vertical_padding
+                : 0,
+            0));
+
+    ++group_rows_added;
   }
 }
 
@@ -310,47 +415,66 @@ END_METADATA
 
 RecentActivityRowView::RecentActivityRowView(
     ActivityLogItem item,
-    bool is_current_tab,
+    const bool is_current_tab,
     Profile* profile,
     base::OnceCallback<void()> close_callback)
-    : item_(item),
+    : HoverButton(base::BindRepeating(&RecentActivityRowView::ButtonPressed,
+                                      base::Unretained(this)),
+                  std::u16string()),
+      is_current_tab_(is_current_tab),
+      item_(item),
       profile_(profile),
       close_callback_(std::move(close_callback)) {
   SetLayoutManager(
       std::make_unique<views::BoxLayout>(views::LayoutOrientation::kHorizontal))
       ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kCenter);
-  SetProperty(views::kMarginsKey, ChromeLayoutProvider::Get()->GetInsetsMetric(
-                                      INSETS_RECENT_ACTIVITY_ROW_MARGIN));
+  // Remove HoverButton's empty border.
+  SetBorder({});
+
   GetViewAccessibility().SetRole(ax::mojom::Role::kRow);
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_DATA_SHARING_RECENT_ACTIVITY_TITLE));
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
+  SetEnabled(GetActionEnabledForItem(item_));
 
-  image_view_ =
-      AddChildView(std::make_unique<RecentActivityRowImageView>(item, profile));
+  image_view_ = AddChildView(
+      std::make_unique<RecentActivityRowImageView>(item_, profile_));
+  // Let hover button process events.
+  image_view_->SetCanProcessEventsWithinSubtree(false);
 
   auto* label_container = AddChildView(std::make_unique<views::View>());
   label_container->SetLayoutManager(
       std::make_unique<views::BoxLayout>(views::LayoutOrientation::kVertical));
+  // Let hover button process events.
+  label_container->SetCanProcessEventsWithinSubtree(false);
 
-  activity_text_ = GetTitleText(item, is_current_tab);
+  activity_text_ = GetTitleText(item_, is_current_tab_);
   auto* activity_label =
       label_container->AddChildView(std::make_unique<views::Label>());
   activity_label->SetText(activity_text_);
   activity_label->SetTextStyle(views::style::TextStyle::STYLE_BODY_4_MEDIUM);
   activity_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
-  metadata_text_ = GetMetadataText(item);
+  metadata_text_ = GetMetadataText(item_);
   auto* metadata_label =
       label_container->AddChildView(std::make_unique<views::Label>());
   metadata_label->SetText(metadata_text_);
   metadata_label->SetTextStyle(views::style::TextStyle::STYLE_BODY_5);
   metadata_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  metadata_label->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);
+
+  // Set a preferred height so the HoverButton will not cut off the row's
+  // contents. Set height based on image size and vertical row padding.
+  const int image_height = image_view_->GetPreferredSize().height();
+  const int vertical_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RECENT_ACTIVITY_ROW_VERTICAL_PADDING);
+  SetPreferredSize(gfx::Size({}, image_height + (vertical_padding * 2)));
 }
 
 RecentActivityRowView::~RecentActivityRowView() = default;
 
-bool RecentActivityRowView::OnMousePressed(const ui::MouseEvent& event) {
+void RecentActivityRowView::ButtonPressed() {
   using collaboration::messaging::RecentActivityAction;
 
   switch (item_.action) {
@@ -371,8 +495,6 @@ bool RecentActivityRowView::OnMousePressed(const ui::MouseEvent& event) {
   }
 
   std::move(close_callback_).Run();
-
-  return true;
 }
 
 void RecentActivityRowView::FocusTab() {

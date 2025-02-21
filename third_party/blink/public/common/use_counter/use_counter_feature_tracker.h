@@ -54,6 +54,10 @@ class BLINK_COMMON_EXPORT UseCounterFeatureTracker {
                   network::mojom::PermissionsPolicyFeature::kMaxValue) +
               1>
       header_permissions_policy_features_;
+  std::bitset<static_cast<size_t>(
+                  network::mojom::PermissionsPolicyFeature::kMaxValue) +
+              1>
+      private_permissions_policy_features_;
 };
 
 }  // namespace blink

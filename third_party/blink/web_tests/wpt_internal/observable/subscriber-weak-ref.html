@@ -7,21 +7,35 @@
 // lifetime defies usual garbage collection semantics for weakly-referenced
 // objects.
 promise_test(async t => {
+  let strong_observable = null;
   let weak_subscriber = null;
-  const controller = new AbortController();
 
+  const results = [];
   {
     // Create a new Observable, subscribe to it, and throw it out.
-    new Observable(subscriber => {
+    strong_observable = new Observable(subscriber => {
+      results.push('new subscription');
       weak_subscriber = new WeakRef(subscriber);
-    }).subscribe({signal: controller.signal});
+    });
+    // Subscribe to start the subscription and make `weak_subscriber` "active",
+    // but we don't need any handlers.
+    strong_observable.subscribe();
   }
 
+  assert_true(strong_observable instanceof Observable);
   assert_true(weak_subscriber.deref() instanceof Subscriber);
   // Trigger garbage collection, and verify that `weak_subscriber` has been
-  // garbage collected.
+  // garbage collected despite the fact that it was "active".
   await gc({type: 'major', execution: 'async'});
   assert_equals(weak_subscriber.deref(), undefined);
+
+  // `strong_observable` detects that its associated "weak subscriber" [1] has
+  // been garbage collected and is null, so that subsequent subscriptions can
+  // start anew.
+  // [1]: https://wicg.github.io/observable/#observable-weak-subscriber.
+  strong_observable.subscribe();
+  assert_true(weak_subscriber.deref() instanceof Subscriber);
+  assert_array_equals(results, ['new subscription', 'new subscription']);
 }, "Subscriber is not arbitrarily kept alive until the subscription ends, " +
    "but can be garbage collected if it is weakly owned throughout the " +
    "subscription");

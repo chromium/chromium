@@ -93,6 +93,10 @@ std::optional<Rotation> GetRotationFromRawValue(int rotation) {
   }
 }
 
+gfx::SizeF GetPageSizeInPoints(FPDF_PAGE page) {
+  return gfx::SizeF(FPDF_GetPageWidthF(page), FPDF_GetPageHeightF(page));
+}
+
 gfx::RectF FloatPageRectToPixelRect(FPDF_PAGE page, const gfx::RectF& input) {
   int output_width = FPDF_GetPageWidthF(page);
   int output_height = FPDF_GetPageHeightF(page);
@@ -769,7 +773,7 @@ gfx::RectF PDFiumPage::GetBoundingBox() {
   }
 
   // Page width and height are already swapped based on page rotation.
-  gfx::SizeF page_size(FPDF_GetPageWidthF(page), FPDF_GetPageHeightF(page));
+  gfx::SizeF page_size = GetPageSizeInPoints(page);
 
   // Start with bounds with the left and bottom values at the max possible
   // bounds and the right and top values at the min possible bounds. Bounds are
@@ -1834,7 +1838,7 @@ Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
   const bool has_alpha = !!FPDFPage_HasTransparency(page);
   const int format = has_alpha ? FPDFBitmap_BGRA : FPDFBitmap_BGRx;
 
-  Thumbnail thumbnail = CreateThumbnail(device_pixel_ratio);
+  Thumbnail thumbnail(GetPageSizeInPoints(page), device_pixel_ratio);
   const gfx::Size& image_size = thumbnail.image_size();
 
   // Create and initialize the bitmap.
@@ -1865,22 +1869,16 @@ Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 gfx::Size PDFiumPage::GetThumbnailSize(float device_pixel_ratio) {
-  return CreateThumbnail(device_pixel_ratio).image_size();
+  CHECK(available());
+  FPDF_PAGE page = GetPage();
+  return Thumbnail::CalculateImageSize(GetPageSizeInPoints(page),
+                                       device_pixel_ratio);
 }
 #endif
 
 void PDFiumPage::GenerateAndSendThumbnail(float device_pixel_ratio,
                                           SendThumbnailCallback send_callback) {
   std::move(send_callback).Run(GenerateThumbnail(device_pixel_ratio));
-}
-
-Thumbnail PDFiumPage::CreateThumbnail(float device_pixel_ratio) {
-  CHECK(available());
-
-  FPDF_PAGE page = GetPage();
-  gfx::Size page_size(base::saturated_cast<int>(FPDF_GetPageWidthF(page)),
-                      base::saturated_cast<int>(FPDF_GetPageHeightF(page)));
-  return Thumbnail(page_size, device_pixel_ratio);
 }
 
 void PDFiumPage::MarkAvailable() {

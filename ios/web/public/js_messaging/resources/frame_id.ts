@@ -35,14 +35,14 @@ function generateRandomId(): string {
     id += component.toString(16).padStart(8, '0');
   }
   return id;
-};
+}
 
 /**
  * Registers this frame by sending its frameId to the native application.
  */
 function registerFrame() {
   sendWebKitMessage('FrameBecameAvailable', {'crwFrameId': getFrameId()});
-};
+}
 
 
 export {getFrameId, generateRandomId, registerFrame};

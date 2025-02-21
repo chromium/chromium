@@ -57,6 +57,7 @@ group("api_implementations") {
       "//extensions/browser/api/bluetooth",
       "//extensions/browser/api/bluetooth_low_energy",
       "//extensions/browser/api/bluetooth_socket",
+      "//extensions/browser/api/content_settings",
       "//extensions/browser/api/dns",
       "//extensions/browser/api/feedback_private",
       "//extensions/browser/api/file_handlers",

@@ -1232,27 +1232,6 @@ TEST_F(AutofillExternalDelegateTest, AcceptManageAutofillAi) {
   external_delegate().DidAcceptSuggestion(manage_suggestion, {});
 }
 
-// Tests that the `AutofillAutofillAiDelegate` is notified when the
-// `kAutofillAiLoadingState` suggestion is shown.
-TEST_F(AutofillExternalDelegateTest,
-       OnAutofillAiSuggestionsShownNotifiesDelegate) {
-  FormData form = CreateTestAddressFormData();
-  ASSERT_GT(form.fields().size(), 0UL);
-  const std::u16string value_to_fill = u"John";
-  FormFieldData* field_to_fill =
-      test_api(form).FindFieldByNameForTest(u"firstname");
-  ASSERT_TRUE(field_to_fill);
-
-  manager().OnFormsSeen({form}, {});
-  external_delegate().OnQuery(form, *field_to_fill,
-                              /*caret_bounds=*/gfx::Rect(),
-                              AutofillSuggestionTriggerSource::kAutofillAi,
-                              /*update_datalist=*/false);
-  EXPECT_CALL(*client().GetAutofillAiDelegate(), OnSuggestionsShown);
-  external_delegate().OnSuggestionsShown(std::vector<Suggestion>{
-      Suggestion(SuggestionType::kAutofillAiLoadingState)});
-}
-
 class AutofillExternalDelegatePlusAddressTest
     : public AutofillExternalDelegateTest {
  public:

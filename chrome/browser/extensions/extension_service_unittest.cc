@@ -1632,11 +1632,10 @@ TEST_F(ExtensionServiceTest, InstallUserScript) {
 TEST_F(ExtensionServiceTest, InstallExtensionDuringShutdown) {
   InitializeEmptyExtensionService();
 
-  // Simulate shutdown.
-  service()->set_browser_terminating_for_test(true);
-
   base::FilePath path = data_dir().AppendASCII("good.crx");
   scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(service()));
+  // Simulate shutdown.
+  installer->set_browser_terminating_for_test(true);
   installer->set_allow_silent_install(true);
   installer->InstallCrx(path);
   task_environment()->RunUntilIdle();

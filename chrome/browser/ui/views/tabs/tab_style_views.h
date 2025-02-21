@@ -63,10 +63,6 @@ class TabStyleViews {
   // active opacity.
   virtual TabActive GetApparentActiveState() const = 0;
 
-  // Returns the target opacity of the "active" portion of the tab's state. The
-  // current opacity may be animating towards this value.
-  virtual float GetTargetActiveOpacity() const = 0;
-
   // Returns the current opacity of the "active" portion of the tab's state.
   virtual float GetCurrentActiveOpacity() const = 0;
 

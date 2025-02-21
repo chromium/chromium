@@ -6,7 +6,7 @@
  * @fileoverview Obsers taps on Choose file inputs.
  */
 
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js'
+import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 const CHOOSE_FILE_INPUT_HANDLER_NAME = 'ChooseFileHandler';
 
@@ -14,15 +14,33 @@ const CHOOSE_FILE_INPUT_HANDLER_NAME = 'ChooseFileHandler';
 // are filtered.
 const AUDIO_FILES = ['aac', 'flac', 'm4a', 'mp3', 'ogg', 'pcm', 'wav', 'wma'];
 const IMAGE_FILES = [
-  'apng', 'avif', 'gif', 'jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'png', 'svg',
-  'webp'
+  'apng',
+  'avif',
+  'gif',
+  'jpg',
+  'jpeg',
+  'jfif',
+  'pjpeg',
+  'pjp',
+  'png',
+  'svg',
+  'webp',
 ];
 const VIDEO_FILES = ['avi', 'flv', 'mkv', 'mov', 'mp4', 'mpeg', 'webm', 'wmv'];
 const COMPRESSED_FILES = ['7z', 'cab', 'gz', 'rar', 'tar', 'zip'];
 const PDF_FILES = ['pdf'];
 const DOC_FILES = [
-  'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'key', 'numbers', 'pages',
-  'epub', 'txt'
+  'doc',
+  'docx',
+  'xls',
+  'xlsx',
+  'ppt',
+  'pptx',
+  'key',
+  'numbers',
+  'pages',
+  'epub',
+  'txt',
 ];
 const APPLE_FILES = ['pkpass', 'mobileprovision'];
 
@@ -41,8 +59,8 @@ enum AcceptType {
 }
 
 // Converts a single accept string to an AcceptType
-function stringToAcceptType(acceptString: String): AcceptType {
-  var accept = acceptString.trim().toLowerCase();
+function stringToAcceptType(acceptString: string): AcceptType {
+  let accept = acceptString.trim().toLowerCase();
   if (accept === '') {
     return AcceptType.NoAccept;
   }
@@ -83,9 +101,9 @@ function stringToAcceptType(acceptString: String): AcceptType {
 }
 
 // Converts a multiple accept string to an AcceptType
-function MultipleStringToAcceptType(acceptString: String): AcceptType {
+function MultipleStringToAcceptType(acceptString: string): AcceptType {
   const accepts = acceptString.split(',');
-  var acceptType = AcceptType.NoAccept;
+  let acceptType = AcceptType.NoAccept;
   for (const accept of accepts) {
     const current = stringToAcceptType(accept);
     if (acceptType == AcceptType.NoAccept ||
@@ -105,7 +123,7 @@ function MultipleStringToAcceptType(acceptString: String): AcceptType {
 
 // Returns whether `ch` is a string with a single UTF-16 code unit which is a
 // valid RFC2616 token character. This is mimicking verifications done by Blink.
-function isRFC2616TokenCharacter(ch: String): boolean {
+function isRFC2616TokenCharacter(ch: string): boolean {
   const code = ch.charCodeAt(0);
   if (code < 32 || code > 127) {
     return false;
@@ -138,8 +156,8 @@ function isRFC2616TokenCharacter(ch: String): boolean {
 }
 
 // Returns whether `mimeType` is a string which represents a valid MIME type.
-function isValidMIMEType(mimeType: String): boolean {
-  let slashPosition = mimeType.indexOf('/');
+function isValidMIMEType(mimeType: string): boolean {
+  const slashPosition = mimeType.indexOf('/');
   if (slashPosition == -1 || slashPosition == mimeType.length - 1 ||
       slashPosition == 0) {
     return false;
@@ -154,7 +172,7 @@ function isValidMIMEType(mimeType: String): boolean {
 
 // Returns whether `fileExtension` is a string which represents a valid file
 // extension.
-function isValidFileExtension(fileExtension: String): boolean {
+function isValidFileExtension(fileExtension: string): boolean {
   if (fileExtension.length < 2) {
     return false;
   }
@@ -167,9 +185,9 @@ function isValidFileExtension(fileExtension: String): boolean {
 }
 
 // Filters `acceptString` so it only contains valid MIME types.
-function parseAcceptAttributeMimeTypes(acceptString: String): String {
+function parseAcceptAttributeMimeTypes(acceptString: string): string {
   const acceptTypes = acceptString.split(',');
-  var mimeTypes: String[] = [];
+  const mimeTypes: string[] = [];
   for (const acceptType of acceptTypes) {
     const trimmedType = acceptType.trim();
     if (isValidMIMEType(trimmedType)) {
@@ -180,9 +198,9 @@ function parseAcceptAttributeMimeTypes(acceptString: String): String {
 }
 
 // Filters `acceptString` so it only contains valid file extensions.
-function parseAcceptAttributeFileExtensions(acceptString: String): String {
+function parseAcceptAttributeFileExtensions(acceptString: string): string {
   const acceptTypes = acceptString.split(',');
-  var fileExtensions: String[] = [];
+  const fileExtensions: string[] = [];
   for (const acceptType of acceptTypes) {
     const trimmedType = acceptType.trim();
     if (isValidFileExtension(trimmedType)) {
@@ -198,15 +216,15 @@ function processChooseFileClick(inputEvent: MouseEvent): void {
     return;
   }
   const target = inputEvent.target as HTMLInputElement;
-  if (target.type.toLowerCase() !== "file") {
+  if (target.type.toLowerCase() !== 'file') {
     return;
   }
-  var accept = AcceptType.NoAccept;
-  var acceptString = target.getAttribute('accept')
+  let accept = AcceptType.NoAccept;
+  let acceptString = target.getAttribute('accept');
   if (acceptString) {
     accept = MultipleStringToAcceptType(acceptString!);
   }
-  var hasFiles = false;
+  let hasFiles = false;
   if (target.files && target.files.length > 0) {
     hasFiles = true;
   }

@@ -68,10 +68,10 @@ const char* RenderSurfaceReasonToString(RenderSurfaceReason reason) {
       return "subtree being captured";
     case RenderSurfaceReason::kViewTransitionParticipant:
       return "view transition participant";
+    case RenderSurfaceReason::k2DTransformWithCompositedDescendants:
+      return "2D transform with composited descendants";
     case RenderSurfaceReason::kTest:
       return "test";
-    default:
-      NOTREACHED() << static_cast<int>(reason);
   }
 }
 

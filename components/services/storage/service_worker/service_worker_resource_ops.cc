@@ -82,30 +82,8 @@ std::unique_ptr<base::Pickle> ConvertToPickle(
 
   const bool kSkipTransientHeaders = true;
   const bool kTruncated = false;
-  auto pickle = std::make_unique<base::Pickle>();
-  response_info.Persist(pickle.get(), kSkipTransientHeaders, kTruncated);
-  return pickle;
+  return response_info.MakePickle(kSkipTransientHeaders, kTruncated);
 }
-
-// An IOBuffer that wraps a pickle's data. Used to write URLResponseHead.
-class WrappedPickleIOBuffer : public net::WrappedIOBuffer {
- public:
-  explicit WrappedPickleIOBuffer(std::unique_ptr<const base::Pickle> pickle)
-      : net::WrappedIOBuffer(*pickle), pickle_(std::move(pickle)) {
-    DCHECK(pickle_->data());
-  }
-
-  size_t size() const { return pickle_->size(); }
-
- private:
-  ~WrappedPickleIOBuffer() override {
-    // `data_` is a pointer on `pickle_` and should be nullified before that to
-    // prevent it from being dangling.
-    data_ = nullptr;
-  }
-
-  const std::unique_ptr<const base::Pickle> pickle_;
-};
 
 }  // namespace
 
@@ -677,7 +655,7 @@ void ServiceWorkerResourceWriterImpl::WriteResponseHeadToEntry(
 
   std::unique_ptr<const base::Pickle> pickle =
       ConvertToPickle(std::move(response_head));
-  auto buffer = base::MakeRefCounted<WrappedPickleIOBuffer>(std::move(pickle));
+  auto buffer = base::MakeRefCounted<net::PickledIOBuffer>(std::move(pickle));
 
   size_t write_amount = buffer->size();
   int rv = entry_creator_.entry()->Write(

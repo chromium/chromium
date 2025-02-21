@@ -15,7 +15,6 @@
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/forms_predictions.pb.h"
-#include "components/user_annotations/user_annotations_types.h"
 
 namespace autofill {
 class FormData;
@@ -26,18 +25,13 @@ class AXTreeUpdate;
 class FilledFormData;
 }  // namespace optimization_guide::proto
 
-namespace user_annotations {
-class UserAnnotationsService;
-}  // namespace user_annotations
-
 namespace autofill_ai {
 
 class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
  public:
   AutofillAiModelExecutorImpl(
       optimization_guide::OptimizationGuideModelExecutor* model_executor,
-      optimization_guide::ModelQualityLogsUploaderService* logs_uploader,
-      user_annotations::UserAnnotationsService* user_annotations_service);
+      optimization_guide::ModelQualityLogsUploaderService* logs_uploader);
   ~AutofillAiModelExecutorImpl() override;
 
   // AutofillAiModelExecutor:
@@ -53,17 +47,6 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
   GetLatestResponse() const override;
 
  private:
-  // Invokes `callback` when user annotations were retrieved.
-  void OnUserAnnotationsRetrieved(
-      autofill::FormData form_data,
-      const base::flat_map<autofill::FieldGlobalId, bool>&
-          field_eligibility_map,
-      const base::flat_map<autofill::FieldGlobalId, bool>&
-          field_sensitivity_map,
-      optimization_guide::proto::AXTreeUpdate ax_tree_update,
-      PredictionsReceivedCallback callback,
-      user_annotations::UserAnnotationsEntries user_annotations);
-
   // Invokes `callback` when model execution response has been returned.
   void OnModelExecuted(
       autofill::FormData form_data,
@@ -101,8 +84,6 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
       nullptr;
   base::WeakPtr<optimization_guide::ModelQualityLogsUploaderService>
       logs_uploader_;
-  raw_ptr<user_annotations::UserAnnotationsService> user_annotations_service_ =
-      nullptr;
 
   base::WeakPtrFactory<AutofillAiModelExecutorImpl> weak_ptr_factory_{this};
 };

@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/numerics/safe_math.h"
+#include "base/pickle.h"
 
 namespace net {
 
@@ -182,13 +183,11 @@ GrowableIOBuffer::~GrowableIOBuffer() {
   ClearSpan();
 }
 
-PickledIOBuffer::PickledIOBuffer() = default;
-
-void PickledIOBuffer::Done() {
-  // SAFETY: const cast does not affect size.
-  UNSAFE_BUFFERS(SetSpan(
-      base::span(const_cast<uint8_t*>(pickle_.data()), pickle_.size())));
-}
+PickledIOBuffer::PickledIOBuffer(std::unique_ptr<const base::Pickle> pickle)
+    :  // SAFETY: const cast does not affect size.
+      IOBuffer(UNSAFE_BUFFERS(
+          base::span(const_cast<uint8_t*>(pickle->data()), pickle->size()))),
+      pickle_(std::move(pickle)) {}
 
 PickledIOBuffer::~PickledIOBuffer() {
   // Avoid dangling ptr when this destructor destroys the pickle.

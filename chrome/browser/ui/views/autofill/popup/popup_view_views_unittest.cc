@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_loading_state_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
@@ -1988,33 +1987,6 @@ TEST_F(PopupViewViewsTest, SearchBar_PressedKeysPassedToController) {
                                         ui::DomKey::Key::ARROW_DOWN)));
 
   generator().PressAndReleaseKey(ui::VKEY_DOWN);
-}
-
-TEST_F(PopupViewViewsTest, AutofillAiLoadingOnShowA11yFocus) {
-  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
-  CreateAndShowView({SuggestionType::kAutofillAiLoadingState});
-
-  ASSERT_EQ(1u, test_api(view()).rows().size());
-  auto* const* row_view =
-      absl::get_if<autofill_ai::AutofillAiLoadingStateView*>(
-          &test_api(view()).rows()[0]);
-  ASSERT_TRUE(row_view);
-
-  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kFocus, *row_view));
-}
-
-TEST_F(PopupViewViewsTest, AutofillAiLoadingOnSuggestionsChangedA11yFocus) {
-  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
-  CreateAndShowView({SuggestionType::kFillAutofillAi});
-  UpdateSuggestions({SuggestionType::kAutofillAiLoadingState});
-
-  ASSERT_EQ(1u, test_api(view()).rows().size());
-  auto* const* row_view =
-      absl::get_if<autofill_ai::AutofillAiLoadingStateView*>(
-          &test_api(view()).rows()[0]);
-  ASSERT_TRUE(row_view);
-
-  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kFocus, *row_view));
 }
 
 TEST_F(PopupViewViewsTest, WarningOnShowA11yFocus) {

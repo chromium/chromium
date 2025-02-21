@@ -21,6 +21,8 @@ enum UseCounterFeatureType {
   kPermissionsPolicyHeader,
   // Blink.UseCounter.WebDXFeatures
   kWebDXFeature,
+  // Blink.UseCounter.PermissionPolicy.PrivacySensitive.Enabled
+  kPermissionsPolicyEnabledPrivacySensitive,
 };
 
 // This struct corresponds to `blink::UseCounterFeature`.

@@ -191,6 +191,10 @@ TaskId TestTaskManager::GetTaskIdForWebContents(
   return -1;
 }
 
+bool TestTaskManager::IsTaskValid(TaskId task_id) const {
+  return true;
+}
+
 base::TimeDelta TestTaskManager::GetRefreshTime() {
   return GetCurrentRefreshTime();
 }

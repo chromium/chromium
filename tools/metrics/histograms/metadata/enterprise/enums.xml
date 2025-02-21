@@ -2130,7 +2130,7 @@ chromium-metrics-reviews@google.com.
   <int value="1256" label="PdfViewerOutOfProcessIframeEnabled"/>
   <int value="1257" label="LockScreenAutoStartOnlineReauth"/>
   <int value="1258" label="KeyboardFocusableScrollersEnabled"/>
-  <int value="1259" label="ExtensibleEnterpriseSSOEnabled"/>
+  <int value="1259" label="ExtensibleEnterpriseSSOBlocklist"/>
   <int value="1260" label="CSSCustomStateDeprecatedSyntaxEnabled"/>
   <int value="1261" label="MemorySaverModeSavings"/>
   <int value="1262" label="KioskVisionTelemetryEnabled"/>

@@ -93,6 +93,8 @@ dependencies {
     compileLatest 'androidx.window:window:+'
     compileLatest 'androidx.window.extensions:extensions:+'
     compileLatest 'androidx.window.sidecar:sidecar:+'
+    compileLatest 'androidx.xr.arcore:arcore:+'
+    compileLatest 'androidx.xr.scenecore:scenecore:+'
 
     // Those are for use by doubledown libraries.
     compileLatest 'androidx.arch.core:core-common:+'

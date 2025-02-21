@@ -63,6 +63,13 @@ class GridTrackSizingAlgorithm {
       const LogicalSize& container_available_size,
       const BoxStrut& container_border_scrollbar_padding);
 
+  // Calculates the used track size from the min and max track sizing functions
+  // as defined in https://drafts.csswg.org/css-grid-2/#algo-track-sizing.
+  void ComputeUsedTrackSizes(
+      const ContributionSizeFunctionRef& contribution_size,
+      GridSizingTrackCollection* track_collection,
+      GridItems* grid_items) const;
+
  private:
   // These methods implement the steps of the algorithm for intrinsic track size
   // resolution defined in https://drafts.csswg.org/css-grid-2/#algo-content.

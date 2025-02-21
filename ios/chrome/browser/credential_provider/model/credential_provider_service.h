@@ -225,6 +225,10 @@ class CredentialProviderService
   // for important caveats.
   BooleanPrefMember saving_passkeys_enabled_;
 
+  // The preference associated with
+  // password_manager::prefs::kAutomaticPasskeyUpgrades.
+  BooleanPrefMember automatic_passkey_upgrades_enabled_;
+
   // Weak pointer factory.
   base::WeakPtrFactory<CredentialProviderService> weak_ptr_factory_{this};
 };

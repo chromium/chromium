@@ -109,6 +109,11 @@ const DocumentPolicyFeatureSet& GetAvailableDocumentPolicyFeatures();
 // Refresh the set content based on current RuntimeFeatures environment.
 CORE_EXPORT void ResetAvailableDocumentPolicyFeaturesForTest();
 
+// Returns if the given API has been configured as privacy sensitive. If
+// sensitive, access to the feature may be denied in some circumstances.
+bool IsPrivacySensitiveFeature(
+    network::mojom::blink::PermissionsPolicyFeature feature);
+
 // Returns true if this PermissionsPolicyFeature is currently disabled by an
 // origin trial (it is origin trial controlled, and the origin trial is not
 // enabled). The first String param should be a name of

@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -76,6 +77,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     private final HubLayoutDependencyHolder mHubLayoutDependencyHolder;
     private final ThumbnailChangeListener mThumbnailChangeListener = (id) -> requestUpdate();
     private final Callback<TabContentManager> mOnTabContentManager = this::onTabContentManager;
+    private final DestroyChecker mDestroyChecker = new DestroyChecker();
 
     protected @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
@@ -205,6 +207,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     @Override
     public void showLayout(int layoutType, boolean animate) {
+        if (mDestroyChecker.isDestroyed()) return;
+
         if (layoutType == LayoutType.TAB_SWITCHER && mHubLayout == null) {
             initTabSwitcher();
         }
@@ -236,6 +240,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     @Override
     public void destroy() {
         super.destroy();
+        mDestroyChecker.destroy();
 
         if (mTabContentManagerSupplier != null) {
             mTabContentManagerSupplier.removeObserver(mOnTabContentManager);

@@ -43,7 +43,8 @@ namespace blink {
 
 class WebAudioSourceProvider;
 
-class PLATFORM_EXPORT MediaStreamWebAudioSource : public AudioSourceProvider {
+class PLATFORM_EXPORT MediaStreamWebAudioSource final
+    : public AudioSourceProvider {
  public:
   explicit MediaStreamWebAudioSource(std::unique_ptr<WebAudioSourceProvider>);
   MediaStreamWebAudioSource(const MediaStreamWebAudioSource&) = delete;
@@ -54,6 +55,7 @@ class PLATFORM_EXPORT MediaStreamWebAudioSource : public AudioSourceProvider {
  private:
   // blink::AudioSourceProvider implementation.
   void ProvideInput(AudioBus*, int frames_to_process) override;
+  void SetClient(AudioSourceProviderClient*) override {}
 
   std::unique_ptr<WebAudioSourceProvider> web_audio_source_provider_;
   std::vector<float*> web_audio_data_

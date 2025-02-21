@@ -95,8 +95,6 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kTitle:
     case SuggestionType::kUndoOrClear:
       return FillingProduct::kNone;
-    case SuggestionType::kAutofillAiError:
-    case SuggestionType::kAutofillAiLoadingState:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kManageAutofillAi:
       return FillingProduct::kAutofillAi;

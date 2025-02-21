@@ -112,6 +112,20 @@ template("_androidx_prebuilt") {
       ]
     } else if (target_name == "androidx_compose_ui_ui_java") {
       public_deps = [ ":compose_ui_overrides_java" ]
+    } else if (filter_include([ target_name ], [ "androidx_xr_*" ]) != []) {
+      # Configs are overly broad.
+      ignore_proguard_configs = true
+
+      # We do not use the APIs that require the native code.
+      ignore_native_libraries = true
+
+      # It adds:
+      #   <uses-native-library android:name="libopenxr.google.so" android:required="false"/>
+      #   <uses-library android:name="com.android.extensions.xr" android:required="false"/>
+      # We do not need the uses-native-library, but do need the uses-library.
+      # However, we add it via the dep onto android_xr_extensions_java.
+      ignore_manifest = true
+      deps += [ "//third_party/android_sdk:android_xr_extensions_java" ]
     }
   }
 

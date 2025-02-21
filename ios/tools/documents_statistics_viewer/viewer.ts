@@ -39,8 +39,23 @@ const IMAGE_FORMATS =
     new Set(['BMP', 'GIF', 'JPEG', 'JPG', 'PNG', 'TIF', 'TIFF']);
 // A set of common video file extensions.
 const VIDEO_FORMATS = new Set([
-  'AVCHD', 'AVI', 'FLV', 'M4P', 'M4V', 'MOV', 'MP2', 'MP4', 'MPE', 'MPEG',
-  'MPG', 'MPV', 'OGG', 'QT', 'SWF', 'WEBM', 'WMV'
+  'AVCHD',
+  'AVI',
+  'FLV',
+  'M4P',
+  'M4V',
+  'MOV',
+  'MP2',
+  'MP4',
+  'MPE',
+  'MPEG',
+  'MPG',
+  'MPV',
+  'OGG',
+  'QT',
+  'SWF',
+  'WEBM',
+  'WMV',
 ]);
 
 // Returns an icon (as a single emoji item) based on the given `filename`'s
@@ -84,11 +99,11 @@ declare interface Item {
 
   excludedFromBackups?: boolean;
 
-  contents?: Item[]
+  contents?: Item[];
 }
 
 // Returns a sorted list of the given `items` based on the value of `sorting`.
-function sortItems(items: Array<Item>, sorting: string): Array<Item> {
+function sortItems(items: Item[], sorting: string): Item[] {
   const sortedItems = items;
   // return items.toSorted((a: Item, b: Item) => {
   sortedItems.sort((a: Item, b: Item) => {
@@ -145,7 +160,7 @@ function sortItems(items: Array<Item>, sorting: string): Array<Item> {
   return sortedItems;
 }
 
-let collapsedDirectoryPaths: Set<string> = new Set();
+const collapsedDirectoryPaths: Set<string> = new Set();
 
 // Updates the expanded/collapsed state of directory contents and updates
 // directory icons to be in the correct open/closed state.
@@ -187,7 +202,7 @@ function createEntryRowForRoot(root: Item, level = 0, parentPath = ''): void {
 
   let currentRootIncludesThisRow = true;
   if (window.location.hash) {
-    const rootPath = decodeURIComponent(window.location.hash.substring(1))
+    const rootPath = decodeURIComponent(window.location.hash.substring(1));
     currentRootIncludesThisRow = path.indexOf(rootPath) == 0;
   }
 
@@ -307,7 +322,7 @@ function reloadStatistics(): void {
   }
 
   if (window.location.hash) {
-    rootPath = decodeURIComponent(window.location.hash.substring(1))
+    rootPath = decodeURIComponent(window.location.hash.substring(1));
     document.getElementById('root_path')!.innerText = rootPath;
 
     let one_up_location = '';
@@ -330,7 +345,7 @@ function reloadStatistics(): void {
 }
 
 // Recursively marks all directories in items as collapsed
-function collapseDirectories(items: Array<Item>, parentPath = ''): void {
+function collapseDirectories(items: Item[], parentPath = ''): void {
   if (!items || items.length == 0) {
     return;
   }
@@ -339,12 +354,11 @@ function collapseDirectories(items: Array<Item>, parentPath = ''): void {
     if (item.contents) {
       let currentRootIncludesThisItemAsChild = true;
       if (window.location.hash) {
-        const rootPath = decodeURIComponent(window.location.hash.substring(1))
+        const rootPath = decodeURIComponent(window.location.hash.substring(1));
         if (path == rootPath) {
           // Don't collapse the top level item.
           currentRootIncludesThisItemAsChild = false;
-        }
-        else {
+        } else {
           currentRootIncludesThisItemAsChild = path.indexOf(rootPath) == 0;
         }
       }

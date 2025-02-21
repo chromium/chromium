@@ -114,7 +114,8 @@ class PageHandler : public DevToolsDomainHandler,
 
   void IsPrerenderingAllowed(bool& is_allowed);
 
-  Response Enable() override;
+  Response Enable(
+      std::optional<bool> enable_file_chooser_opened_event) override;
   Response Disable() override;
 
   Response Crash() override;

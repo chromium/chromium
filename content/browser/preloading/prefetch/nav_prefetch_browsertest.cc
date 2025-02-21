@@ -6,6 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
 #include "base/timer/elapsed_timer.h"
+#include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/preloading.h"
@@ -34,7 +35,8 @@ namespace {
 
 using net::test_server::ControllableHttpResponse;
 
-class NavPrefetchBrowserTest : public ContentBrowserTest {
+class NavPrefetchBrowserTest : public ContentBrowserTest,
+                               public BackForwardCacheMetricsTestMatcher {
  public:
   NavPrefetchBrowserTest() {
     scoped_feature_list_.InitWithFeatures({features::kPrefetchReusable}, {});
@@ -83,8 +85,20 @@ class NavPrefetchBrowserTest : public ContentBrowserTest {
     return request_count_by_path_[url.PathForRequest()];
   }
 
-  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
-    return ukm_recorder_.get();
+  // BackForwardCacheMetricsTestMatcher implementation.
+  const base::HistogramTester& histogram_tester() override {
+    return histogram_tester_;
+  }
+
+  // BackForwardCacheMetricsTestMatcher implementation.
+  const ukm::TestAutoSetUkmRecorder& ukm_recorder() override {
+    return *ukm_recorder_;
+  }
+
+  // TODO(taiyo): Merge this into `ukm_recorder()` by changing
+  // test::ExpectPreloadingAttemptUkm.
+  ukm::TestAutoSetUkmRecorder& non_const_ukm_recorder() {
+    return *ukm_recorder_;
   }
 
   const test::PreloadingAttemptUkmEntryBuilder&
@@ -95,6 +109,7 @@ class NavPrefetchBrowserTest : public ContentBrowserTest {
  private:
   base::ScopedMockElapsedTimersForTest test_timer_;
   std::map<std::string, int> request_count_by_path_ GUARDED_BY(lock_);
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   std::unique_ptr<test::PreloadingAttemptUkmEntryBuilder>
       attempt_ukm_entry_builder_;
@@ -181,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, ServedToRedirectionChain) {
   ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
 
   test::ExpectPreloadingAttemptUkm(
-      *test_ukm_recorder(),
+      non_const_ukm_recorder(),
       {attempt_entry_builder().BuildEntry(
           ukm_source_id, PreloadingType::kPrefetch,
           PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
@@ -322,6 +337,11 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     NavPrefetchBrowserTest,
     CrossSitePrefetchNotServedWhenCookieChange_AfterFirstServe) {
+  if (!BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    GTEST_SKIP()
+        << "This test assumes that BFCache is used when back navigation";
+  }
+
   net::test_server::EmbeddedTestServer ssl_server{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
   ssl_server.RegisterRequestMonitor(base::BindRepeating(
@@ -359,12 +379,15 @@ IN_PROC_BROWSER_TEST_F(
                     net::MatchesCookieNameValue("server_cookie", "1")));
   }
 
-  // Back to the initial site.
+  // Back to the initial site. Since the document that initiated prefetch has
+  // been restored from BFCache, `PrefetchDocumentManager` and the prefetch
+  // should still be alive in this timing.
   {
     TestNavigationObserver observer1(shell()->web_contents());
     shell()->GoBackOrForward(-1);
     observer1.Wait();
     ASSERT_EQ(shell()->web_contents()->GetLastCommittedURL(), initiator_url);
+    ExpectRestored(FROM_HERE);
   }
 
   // Activate a prefetch again. Prefetch is served if `kPrefetchReusable` is
@@ -392,6 +415,7 @@ IN_PROC_BROWSER_TEST_F(
     shell()->GoBackOrForward(-1);
     nav_observer.Wait();
     ASSERT_EQ(shell()->web_contents()->GetLastCommittedURL(), initiator_url);
+    ExpectRestored(FROM_HERE);
   }
   {
     TestNavigationObserver nav_observer(shell()->web_contents());

@@ -36,6 +36,7 @@ using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsToolbarAddButton;
+using chrome_test_util::SettingsToolbarEditButton;
 using chrome_test_util::TabGridEditButton;
 using policy_test_utils::SetPolicy;
 
@@ -135,11 +136,6 @@ id<GREYMatcher> AddressesAndMoreNavBarTitle() {
       grey_text(l10n_util::GetNSString(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE)),
       grey_kindOfClass([UILabel class]),
       grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
-}
-
-// Matcher for the toolbar's edit button.
-id<GREYMatcher> SettingsToolbarEditButton() {
-  return grey_accessibilityID(kSettingsToolbarEditButtonId);
 }
 
 // Matcher for the toolbar's done button.

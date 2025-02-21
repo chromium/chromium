@@ -39,6 +39,7 @@
 #include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/pickle.h"
 #include "base/strings/string_util.h"  // For EqualsCaseInsensitiveASCII.
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
@@ -3547,11 +3548,10 @@ int HttpCache::Transaction::WriteResponseInfoToEntry(
 
   // When writing headers, we only write the non-transient headers.
   static constexpr bool kSkipTransientHeaders = true;
-  auto data = base::MakeRefCounted<PickledIOBuffer>();
-  response.Persist(data->pickle(), kSkipTransientHeaders, truncated);
-  data->Done();
+  auto data = base::MakeRefCounted<PickledIOBuffer>(
+      response.MakePickle(kSkipTransientHeaders, truncated));
 
-  io_buf_len_ = data->pickle()->size();
+  io_buf_len_ = data->size();
 
   // Summarize some info on cacheability in memory. Don't do it if doomed
   // since then |entry_| isn't definitive for |cache_key_|.

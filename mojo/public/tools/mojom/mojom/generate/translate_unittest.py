@@ -14,14 +14,14 @@ class TranslateTest(unittest.TestCase):
   def testSimpleArray(self):
     """Tests a simple int32[]."""
     # pylint: disable=W0212
-    self.assertEquals(
+    self.assertEqual(
         translate._MapKind(ast.Array(ast.Typename(ast.Identifier('int32')))),
         "a:i32")
 
   def testAssociativeArray(self):
     """Tests a simple uint8{string}."""
     # pylint: disable=W0212
-    self.assertEquals(
+    self.assertEqual(
         translate._MapKind(
             ast.Map(ast.Identifier('string'),
                     ast.Typename(ast.Identifier('uint8')))), "m[s][u8]")
@@ -30,7 +30,7 @@ class TranslateTest(unittest.TestCase):
     """Makes sure that parsing is done from right to left on the internal kinds
        in the presence of an associative array."""
     # pylint: disable=W0212
-    self.assertEquals(
+    self.assertEqual(
         translate._MapKind(
             ast.Map(
                 ast.Identifier('string'),
@@ -75,7 +75,7 @@ class TranslateTest(unittest.TestCase):
   def testAssociatedKinds(self):
     """Tests type spec translation of associated interfaces and requests."""
     # pylint: disable=W0212
-    self.assertEquals(
+    self.assertEqual(
         translate._MapKind(
             ast.Typename(ast.Receiver(ast.Identifier('SomeInterface'),
                                       associated=True),

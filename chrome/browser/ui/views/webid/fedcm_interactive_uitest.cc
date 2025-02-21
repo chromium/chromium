@@ -86,7 +86,7 @@ class FedCmCUJTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(FedCmCUJTest, SelectAccount) {
   RunTestSequence(OpenAccountsModal(),
                   WaitForShow(kFedCmAccountChooserDialogAccountElementId),
-                  PressButton(kFedCmAccountChooserDialogAccountElementId), );
+                  PressButton(kFedCmAccountChooserDialogAccountElementId));
 }
 
 // Shows the bubble account picker. It should hide when a modal UI is shown. It
@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(FedCmCUJTest, BubbleHidesWhenModalUIShown) {
       OpenAccountsBubble(),
       WaitForShow(kFedCmAccountChooserDialogAccountElementId), ShowTabModalUI(),
       WaitForHide(kFedCmAccountChooserDialogAccountElementId), HideTabModalUI(),
-      WaitForShow(kFedCmAccountChooserDialogAccountElementId), );
+      WaitForShow(kFedCmAccountChooserDialogAccountElementId));
 }
 
 // TODO(https://crbug.com/387473078): Fix this on windows.
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(FedCmCUJTest, MAYBE_OneClickOutsideBubble) {
       ClickMouse(),
       CheckJsResult(
           kActiveTab,
-          "() => document.getElementById('text').style.display == 'block'"), );
+          "() => document.getElementById('text').style.display == 'block'"));
 }
 
 }  // namespace

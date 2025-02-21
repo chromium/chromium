@@ -245,62 +245,6 @@ TEST_F(AutofillAiManagerTest,
 
   base::test::TestFuture<std::vector<autofill::Suggestion>> suggestions;
   manager().GetSuggestions(form.global_id(), form.fields().front().global_id(),
-                           /*is_manual_fallback=*/false,
-                           suggestions.GetCallback());
-  EXPECT_THAT(suggestions.Take(),
-              ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
-                          HasType(kManageAutofillAi)));
-}
-
-// Tests that the user receives a loading suggestions when using AutofillAi
-// manual fallback on a field that was not previously classified as such. This
-// leads to a model call to classify the form.
-TEST_F(
-    AutofillAiManagerTest,
-    GetSuggestionsManualFallback_TriggeringFieldNotAutofillAi_ReturnLoadingSuggestion) {
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  autofill::FormStructure form_structure = autofill::FormStructure(form);
-  ON_CALL(client(), GetCachedFormStructure)
-      .WillByDefault(Return(&form_structure));
-
-  AddOrUpdateEntityInstance(autofill::test::GetPassportEntityInstance());
-  base::MockCallback<AutofillAiManager::GetSuggestionsCallback>
-      get_suggestions_callback;
-
-  base::test::TestFuture<std::vector<autofill::Suggestion>> suggestions;
-  manager().GetSuggestions(form.global_id(), form.fields().front().global_id(),
-                           /*is_manual_fallback=*/true,
-                           suggestions.GetCallback());
-  EXPECT_THAT(suggestions.Take(),
-              ElementsAre(HasType(kAutofillAiLoadingState)));
-}
-
-// Tests that the user receives a filling suggestion when using AutofillAi
-// manual fallback on a field that was previously classified as such. Since the
-// field is already classified, no model call is required.
-TEST_F(
-    AutofillAiManagerTest,
-    GetSuggestionsManualFallback_TriggeringFieldIsAutofillAi_ReturnFillingSuggestion) {
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  autofill::FormStructure form_structure = autofill::FormStructure(form);
-  AddPredictionsToFormStructure(
-      form_structure, {{autofill::NAME_FIRST, autofill::PASSPORT_NAME_TAG}});
-  ON_CALL(client(), GetCachedFormStructure)
-      .WillByDefault(Return(&form_structure));
-
-  AddOrUpdateEntityInstance(autofill::test::GetPassportEntityInstance());
-  base::MockCallback<AutofillAiManager::GetSuggestionsCallback>
-      get_suggestions_callback;
-
-  base::test::TestFuture<std::vector<autofill::Suggestion>> suggestions;
-  manager().GetSuggestions(form.global_id(), form.fields().front().global_id(),
-                           /*is_manual_fallback=*/true,
                            suggestions.GetCallback());
   EXPECT_THAT(suggestions.Take(),
               ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
@@ -587,26 +531,6 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
   EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
                 saved_entity, autofill::AttributeTypeName::kPassportExpiryDate),
             u"01/02/2020");
-}
-
-// Tests that `import_form_callback` is run with an empty list of entries when
-// `user_annotations::ShouldAddFormSubmissionForURL()` returns `false`.
-TEST_F(AutofillAiManagerTest,
-       MaybeImportFormRunsCallbackWithFalseWhenImportIsNotAttempted) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kAutofillAi, {{"allowed_hosts_for_form_submissions", "otherhost.com"}});
-  auto ineligible_form_structure =
-      std::make_unique<autofill::FormStructure>(autofill::FormData());
-
-  base::MockOnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
-                              bool autofill_ai_shows_bubble)>
-      autofill_callback;
-  EXPECT_CALL(client(), ShowSaveAutofillAiBubble).Times(0);
-  EXPECT_CALL(autofill_callback,
-              Run(Pointer(ineligible_form_structure.get()), false));
-  manager().MaybeImportForm(std::move(ineligible_form_structure),
-                            autofill_callback.Get());
 }
 
 class AutofillAiEligibilityTests : public BaseAutofillAiManagerTest {

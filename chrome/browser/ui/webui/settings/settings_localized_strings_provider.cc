@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/autofill_ai/autofill_ai_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -1351,12 +1352,16 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_IMPROVEMENT},
       {"autofillAiUserAnnotationsHeader",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_HEADER},
+      // TODO(crbug.com/393318914): Rename string.
       {"autofillAiUserAnnotationsNone",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_NONE},
+      // TODO(crbug.com/393318914): Rename string.
       {"autofillAiDeleteEntryDialogTitle",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TITLE},
+      // TODO(crbug.com/393318914): Rename string.
       {"autofillAiDeleteEntryDialogText",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TEXT},
+      // TODO(crbug.com/393318914): Remove string.
       {"autofillAiDeleteAllEntriesButtonLabel",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_BUTTON_LABEL},
       {"autofillAiDeleteAllEntriesDialogTitle",
@@ -1469,9 +1474,15 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "plusAddressManagementUrl",
       plus_addresses::features::kPlusAddressManagementUrl.Get());
 
+  html_source->AddBoolean("autofillAiFeatureEnabled",
+                          base::FeatureList::IsEnabled(
+                              autofill::features::kAutofillAiWithDataSchema));
+
   html_source->AddBoolean(
-      "autofillAiEnabled",
-      autofill_ai::IsAutofillAiSupported(profile->GetPrefs()));
+      "userEligibleForAutofillAi",
+      autofill_ai::AutofillAiIsPlatformAndEnterprisePolicyEligible(
+          profile->GetPrefs()) &&
+          autofill_ai::IsUserEligible(profile));
 
   html_source->AddString(
       "autofillAiToggleSubLabel",

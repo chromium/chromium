@@ -464,15 +464,11 @@ a bug in Chromium. However, they may be covered by the
 
 **Other Extensions:** A security bug in a third-party extension _would not_ be
 considered a security bug in Chromium. This is true even if the extension has
-sensitive and powerful permissions, which could leak user data  or allow
+sensitive and powerful permissions, which could leak user data or allow
 cross-site scripting attacks
 ([example](https://bugs.chromium.org/p/chromium/issues/detail?id=1213523)).
 Some third-party extensions may have their own vulnerability reward programs;
-please check with the extension developer. It may also be eligible for a reward
-through the Developer Data Protection Reward Program (though this typically
-targets abuse, rather than vulnerabilities); visit
-[this site](https://www.google.com/about/appsecurity/ddprp/) for more
-information.
+please check with the extension developer.
 
 [new-security-bug]: https://bugs.chromium.org/p/chromium/issues/entry?template=Security+Bug
 [physically-local-attacks]: https://chromium.googlesource.com/chromium/src/+/main/docs/security/faq.md#why-arent-physically_local-attacks-in-chromes-threat-model

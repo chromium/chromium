@@ -74,6 +74,7 @@ class TestTaskManager : public TaskManagerInterface {
   bool IsRunningInVM(TaskId task_id) const override;
   TaskId GetTaskIdForWebContents(
       content::WebContents* web_contents) const override;
+  bool IsTaskValid(TaskId task_id) const override;
 
   base::TimeDelta GetRefreshTime();
   int64_t GetEnabledFlags();

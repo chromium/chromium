@@ -341,13 +341,6 @@ Suggestion::Icon GetSuggestionIcon(
 
 }  // namespace
 
-std::vector<Suggestion> CreateLoadingSuggestions() {
-  Suggestion loading_suggestion(SuggestionType::kAutofillAiLoadingState);
-  loading_suggestion.trailing_icon = Suggestion::Icon::kAutofillAi;
-  loading_suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
-  return {loading_suggestion};
-}
-
 std::vector<Suggestion> CreateFillingSuggestions(
     const autofill::FormStructure& form,
     FieldGlobalId field_global_id,

@@ -17,9 +17,9 @@ window.__proto__.webkit.messageHandlers =
       get(target, property) {
         return {
           'postMessage': function(message: object|string) {
-            var payload = {'handler_name': property, 'message': message};
+            const payload = {'handler_name': property, 'message': message};
             target.postMessage(JSON.stringify(payload));
-          }
-        }
-      }
+          },
+        };
+      },
     });

@@ -211,7 +211,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterBooleanPref(prefs::kSuggestedContentEnabled, true);
     registry->RegisterBooleanPref(prefs::kMagicBoostEnabled, true);
     registry->RegisterBooleanPref(prefs::kHmrEnabled, true);
-    registry->RegisterBooleanPref(prefs::kHmrFeedbackAllowed, true);
     registry->RegisterIntegerPref(
         prefs::kHmrManagedSettings,
         static_cast<int>(

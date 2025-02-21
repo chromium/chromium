@@ -4,7 +4,7 @@
 
 import 'chrome://settings/settings.js';
 
-import {FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName, UserAnnotationsManagerProxyImpl} from 'chrome://settings/lazy_load.js';
+import {EntityDataManagerProxyImpl, FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, SettingsAiPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {AiPageInteractions, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -12,15 +12,15 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestUserAnnotationsManagerProxyImpl} from './test_user_annotations_manager_proxy.js';
 
 suite('ExperimentalAdvancedPage', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
   let page: SettingsAiPageElement;
   let settingsPrefs: SettingsPrefsElement;
-  let userAnnotationManager: TestUserAnnotationsManagerProxyImpl;
+  let entityDataManager: TestEntityDataManagerProxy;
 
   suiteSetup(function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
@@ -28,9 +28,9 @@ suite('ExperimentalAdvancedPage', function() {
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
 
-    // Override the UserAnnotationsManagerProxyImpl for testing.
-    userAnnotationManager = new TestUserAnnotationsManagerProxyImpl();
-    UserAnnotationsManagerProxyImpl.setInstance(userAnnotationManager);
+    // Override the `EntityDataManagerProxyImpl` for testing.
+    entityDataManager = new TestEntityDataManagerProxy();
+    EntityDataManagerProxyImpl.setInstance(entityDataManager);
 
     loadTimeData.overrideValues({showAdvancedFeaturesMainControl: true});
     settingsPrefs = document.createElement('settings-prefs');
@@ -73,7 +73,8 @@ suite('ExperimentalAdvancedPage', function() {
   test('FeaturesVisibilityWithRefreshEnabled', async () => {
     // Case 1, a subset of the controls should be visible.
     loadTimeData.overrideValues({
-      autofillAiEnabled: true,
+      autofillAiFeatureEnabled: true,
+      userEligibleForAutofillAi: true,
       showHistorySearchControl: false,
       showCompareControl: true,
       showComposeControl: true,
@@ -123,7 +124,8 @@ suite('ExperimentalAdvancedPage', function() {
 
     // Case 2, a different subset of the controls should be visible.
     loadTimeData.overrideValues({
-      autofillAiEnabled: false,
+      autofillAiFeatureEnabled: false,
+      userEligibleForAutofillAi: false,
       showHistorySearchControl: true,
       showCompareControl: false,
       showComposeControl: false,
@@ -280,9 +282,11 @@ suite('ExperimentalAdvancedPage', function() {
   });
 
   test('autofillAiRowVisible', async () => {
-    // The AutofillAI row should be visible if autofillAiEnabled is true.
+    // The AutofillAI row should be visible if autofillAiFeatureEnabled and
+    // userEligibleForAutofillAi are true.
     loadTimeData.overrideValues({
-      autofillAiEnabled: true,
+      autofillAiFeatureEnabled: true,
+      userEligibleForAutofillAi: true,
       showAiSettingsForTesting: false,
     });
     resetRouterForTesting();
@@ -298,7 +302,8 @@ suite('ExperimentalAdvancedPage', function() {
   test('autofillAiRowVisibleForTesting', async () => {
     // The AutofillAI row should be visible if showAiSettingsForTesting is true.
     loadTimeData.overrideValues({
-      autofillAiEnabled: false,
+      autofillAiFeatureEnabled: false,
+      userEligibleForAutofillAi: false,
       showAiSettingsForTesting: true,
     });
     resetRouterForTesting();
@@ -312,10 +317,11 @@ suite('ExperimentalAdvancedPage', function() {
   });
 
   test('autofillAiRowNotVisible', async () => {
-    // The AutofillAI row should not be visible if autofillAiEnabled and
-    // showAiSettingsForTesting are false.
+    // The AutofillAI row should not be visible if autofillAiFeatureEnabled,
+    // userEligibleForAutofillAi and showAiSettingsForTesting are false.
     loadTimeData.overrideValues({
-      autofillAiEnabled: false,
+      autofillAiFeatureEnabled: false,
+      userEligibleForAutofillAi: false,
       showAiSettingsForTesting: false,
     });
     resetRouterForTesting();
@@ -330,7 +336,8 @@ suite('ExperimentalAdvancedPage', function() {
 
   test('autofillAiRowClick', async () => {
     loadTimeData.overrideValues({
-      autofillAiEnabled: true,
+      autofillAiFeatureEnabled: true,
+      userEligibleForAutofillAi: true,
     });
     resetRouterForTesting();
 
@@ -384,17 +391,27 @@ suite('ExperimentalAdvancedPage', function() {
 suite('ExperimentalAdvancedPageRefreshDisabled', () => {
   let page: SettingsAiPageElement;
   let settingsPrefs: SettingsPrefsElement;
-  let userAnnotationManager: TestUserAnnotationsManagerProxyImpl;
+  let entityDataManager: TestEntityDataManagerProxy;
+  const testEntity: chrome.autofillPrivate.EntityInstance = {
+    type: 1,  // Loyalty Card
+    attributes: [
+      {type: 5, value: 'The Discount'},  // Loyalty Card Program
+      {type: 6, value: 'The Airline'},   // Loyalty Card Provider
+    ],
+    guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
+    nickname: 'Airline card',
+  };
 
   suiteSetup(function() {
     loadTimeData.overrideValues({enableAiSettingsPageRefresh: false});
-
-    // Override the UserAnnotationsManagerProxyImpl for testing.
-    userAnnotationManager = new TestUserAnnotationsManagerProxyImpl();
-    UserAnnotationsManagerProxyImpl.setInstance(userAnnotationManager);
-
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    // Override the `EntityDataManagerProxyImpl` for testing.
+    entityDataManager = new TestEntityDataManagerProxy();
+    EntityDataManagerProxyImpl.setInstance(entityDataManager);
   });
 
   function createPage() {
@@ -427,20 +444,51 @@ suite('ExperimentalAdvancedPageRefreshDisabled', () => {
     assertFalse(isChildVisible(page, '#historySearchRowV2'));
   });
 
-  test('AutofillAIVisibility', async () => {
-    // Hide Autofill AI row.
+  // Always hide the Autofill AI row if `autofillAiFeatureEnabled` is false.
+  test('AutofillAIHiddenIfFeatureNotEnabled', async () => {
+    entityDataManager.setloadEntityInstancesResponse([testEntity]);
     loadTimeData.overrideValues({
-      autofillAiEnabled: false,
+      autofillAiFeatureEnabled: false,
+      userEligibleForAutofillAi: true,
     });
     await createPage();
 
     assertFalse(isChildVisible(page, '#autofillAiRow'));
     // V2 UI should be hidden while the refresh flag is disabled.
     assertFalse(isChildVisible(page, '#autofillAiRowV2'));
+  });
 
-    // Show Autofill AI search row.
+  // The Autofill AI row is hidden if the user is not eligible and if the user
+  // has no data saved.
+  test('AutofillAIHiddenIfFeatureEnabled', async () => {
     loadTimeData.overrideValues({
-      autofillAiEnabled: true,
+      autofillAiFeatureEnabled: true,
+      userEligibleForAutofillAi: false,
+    });
+    await createPage();
+
+    assertFalse(isChildVisible(page, '#autofillAiRow'));
+    // V2 UI should still be hidden while the refresh flag is disabled.
+    assertFalse(isChildVisible(page, '#autofillAiRowV2'));
+  });
+
+  // The Autofill AI row is visible if the user is eligible or if the user has
+  // data saved.
+  test('AutofillAIVisible', async () => {
+    loadTimeData.overrideValues({
+      autofillAiFeatureEnabled: true,
+      userEligibleForAutofillAi: true,
+    });
+    await createPage();
+
+    assertTrue(isChildVisible(page, '#autofillAiRow'));
+    // V2 UI should still be hidden while the refresh flag is disabled.
+    assertFalse(isChildVisible(page, '#autofillAiRowV2'));
+
+    entityDataManager.setloadEntityInstancesResponse([testEntity]);
+    loadTimeData.overrideValues({
+      autofillAiFeatureEnabled: true,
+      userEligibleForAutofillAi: false,
     });
     await createPage();
 

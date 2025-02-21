@@ -223,7 +223,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
 
         when(mIncognitoReauthController.isIncognitoReauthPending()).thenReturn(true);
         when(mIncognitoReauthController.isReauthPageShowing()).thenReturn(true);
-        when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        when(mIncognitoTabModel.isActiveModel()).thenReturn(true);
         mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         verify(coordinator).resetWithTabList(null);
         checkNewTabButton(/* enabled= */ false);
@@ -246,7 +246,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
         verify(coordinator, times(2)).requestAccessibilityFocusOnCurrentTab();
         checkNewTabButton(/* enabled= */ true);
 
-        when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(false);
+        when(mIncognitoTabModel.isActiveModel()).thenReturn(false);
         callback.onIncognitoReauthSuccess();
         verifyNoMoreInteractions(coordinator);
     }
@@ -263,15 +263,15 @@ public class IncognitoTabSwitcherPaneUnitTest {
         assertTrue(mIncognitoTabSwitcherPane.resetWithTabList(null, false));
         verify(coordinator).resetWithTabList(null);
 
-        when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        when(mIncognitoTabModel.isActiveModel()).thenReturn(true);
         mIncognitoTabSwitcherPane.showAllTabs();
         verify(coordinator, times(2)).resetWithTabList(null);
-        when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(false);
+        when(mIncognitoTabModel.isActiveModel()).thenReturn(false);
 
         mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         verify(coordinator, times(3)).resetWithTabList(null);
 
-        when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        when(mIncognitoTabModel.isActiveModel()).thenReturn(true);
         mIncognitoTabSwitcherPane.showAllTabs();
         verify(coordinator).resetWithTabList(mTabGroupModelFilter);
     }
@@ -304,7 +304,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
     @Test
     @SmallTest
     public void testLoadHintColdHot_TabStateNotInitialized() {
-        when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        when(mIncognitoTabModel.isActiveModel()).thenReturn(true);
         when(mTabGroupModelFilter.isTabModelRestored()).thenReturn(false);
 
         mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
@@ -338,7 +338,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
         TabSwitcherPaneCoordinator coordinator =
                 mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator();
 
-        when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        when(mIncognitoTabModel.isActiveModel()).thenReturn(true);
         mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         verify(coordinator).resetWithTabList(mTabGroupModelFilter);
 

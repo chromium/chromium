@@ -35,6 +35,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/metrics/daily_event.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -44,10 +46,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-
-#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-#include "chrome/browser/background/background_mode_manager.h"
-#endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
 namespace metrics {
 
@@ -699,12 +697,25 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportTabDuplicateMetrics(
 bool TabStatsTracker::UmaStatsReportingDelegate::
     IsChromeBackgroundedWithoutWindows() {
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-  if (g_browser_process && g_browser_process->background_mode_manager()
-                               ->IsBackgroundWithoutWindows()) {
-    return true;
-  }
-#endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
+  return KeepAliveRegistry::GetInstance()->WouldRestartWithout({
+      // Transient startup related KeepAlives, not related to any UI.
+      KeepAliveOrigin::SESSION_RESTORE,
+      KeepAliveOrigin::BACKGROUND_MODE_MANAGER_STARTUP,
+
+      KeepAliveOrigin::BACKGROUND_SYNC,
+
+      // Notification KeepAlives are not dependent on the Chrome UI being
+      // loaded, and can be registered when we were in pure background mode.
+      // They just block it to avoid issues. Ignore them when determining if we
+      // are in that mode.
+      KeepAliveOrigin::NOTIFICATION,
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLICK_EVENT,
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT,
+      KeepAliveOrigin::IN_FLIGHT_PUSH_MESSAGE,
+  });
+#else
   return false;
+#endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 }
 
 TabStatsTracker::UmaStatsReportingDelegate::DuplicateData::DuplicateData() {

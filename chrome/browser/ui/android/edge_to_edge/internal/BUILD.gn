@@ -20,7 +20,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeBottomChinViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeControllerFactory.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeControllerImpl.java",
-    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeFieldTrial.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeOSWrapper.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeOSWrapperImpl.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/SimpleEdgeToEdgePadAdjuster.java",

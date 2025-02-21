@@ -33,6 +33,7 @@
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -84,16 +85,15 @@ namespace extensions {
 // static
 scoped_refptr<CrxInstaller> CrxInstaller::CreateSilent(
     ExtensionService* frontend) {
-  return new CrxInstaller(frontend->AsExtensionServiceWeakPtr(),
-                          std::unique_ptr<ExtensionInstallPrompt>(), nullptr);
+  return new CrxInstaller(frontend, std::unique_ptr<ExtensionInstallPrompt>(),
+                          nullptr);
 }
 
 // static
 scoped_refptr<CrxInstaller> CrxInstaller::Create(
     ExtensionService* frontend,
     std::unique_ptr<ExtensionInstallPrompt> client) {
-  return new CrxInstaller(frontend->AsExtensionServiceWeakPtr(),
-                          std::move(client), nullptr);
+  return new CrxInstaller(frontend, std::move(client), nullptr);
 }
 
 // static
@@ -101,21 +101,20 @@ scoped_refptr<CrxInstaller> CrxInstaller::Create(
     ExtensionService* service,
     std::unique_ptr<ExtensionInstallPrompt> client,
     const InstallApproval* approval) {
-  return new CrxInstaller(service->AsExtensionServiceWeakPtr(),
-                          std::move(client), approval);
+  return new CrxInstaller(service, std::move(client), approval);
 }
 
-CrxInstaller::CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
+CrxInstaller::CrxInstaller(ExtensionService* service,
                            std::unique_ptr<ExtensionInstallPrompt> client,
                            const InstallApproval* approval)
-    : profile_(service_weak->profile()),
-      install_directory_(service_weak->install_directory()),
+    : profile_(service->profile()),
+      install_directory_(service->install_directory()),
       install_source_(mojom::ManifestLocation::kInternal),
       approved_(false),
       fail_install_if_unexpected_version_(false),
-      extensions_enabled_(service_weak->extensions_enabled()),
+      extensions_enabled_(service->extensions_enabled()),
       delete_source_(false),
-      service_weak_(service_weak),
+      service_(service),
       // See header file comment on |client_| for why we use a raw pointer here.
       client_(client.release()),
       apps_require_extension_mime_type_(false),
@@ -129,7 +128,14 @@ CrxInstaller::CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
       shared_file_task_runner_(GetExtensionFileTaskRunner()),
       update_from_settings_page_(false),
       install_flags_(kInstallFlagNone) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   profile_observation_.Observe(profile_);
+
+  // Observe for browser shutdown. Unretained is safe because the callback
+  // subscription is owned by this object.
+  on_browser_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+          &CrxInstaller::OnBrowserTerminating, base::Unretained(this)));
 
   if (!approval)
     return;
@@ -162,8 +168,7 @@ CrxInstaller::CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
 }
 
 CrxInstaller::~CrxInstaller() {
-  DCHECK(!service_weak_ || service_weak_->browser_terminating() ||
-         installer_callbacks_.empty());
+  DCHECK(!profile_ || browser_terminating_ || installer_callbacks_.empty());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Ensure |client_| and |install_checker_| data members are destroyed on the
   // UI thread. The |client_| dialog has a weak reference as |this| is its
@@ -182,9 +187,9 @@ void CrxInstaller::InstallCrx(const base::FilePath& source_file) {
 }
 
 void CrxInstaller::InstallCrxFile(const CRXFileInfo& source_file) {
-  ExtensionService* service = service_weak_.get();
-  if (!service || service->browser_terminating())
+  if (!profile_ || browser_terminating_) {
     return;
+  }
 
   NotifyCrxInstallBegin();
 
@@ -204,9 +209,9 @@ void CrxInstaller::InstallCrxFile(const CRXFileInfo& source_file) {
 void CrxInstaller::InstallUnpackedCrx(const ExtensionId& extension_id,
                                       const std::string& public_key,
                                       const base::FilePath& unpacked_dir) {
-  ExtensionService* service = service_weak_.get();
-  if (!service || service->browser_terminating())
+  if (!profile_ || browser_terminating_) {
     return;
+  }
 
   NotifyCrxInstallBegin();
 
@@ -260,12 +265,12 @@ void CrxInstaller::UpdateExtensionFromUnpackedCrx(
     const ExtensionId& extension_id,
     const std::string& public_key,
     const base::FilePath& unpacked_dir) {
-  ExtensionService* service = service_weak_.get();
-  if (!service || service->browser_terminating())
+  if (!profile_ || browser_terminating_) {
     return;
+  }
 
-  const Extension* extension = ExtensionRegistry::Get(service->profile())
-                                   ->GetInstalledExtension(extension_id);
+  const Extension* extension =
+      ExtensionRegistry::Get(profile_)->GetInstalledExtension(extension_id);
   if (!extension) {
     LOG(WARNING) << "Will not update extension " << extension_id
                  << " because it is not installed";
@@ -291,8 +296,7 @@ void CrxInstaller::UpdateExtensionFromUnpackedCrx(
   install_cause_ = extension_misc::INSTALL_CAUSE_UPDATE;
   InitializeCreationFlagsForUpdate(extension, Extension::NO_FLAGS);
 
-  const ExtensionPrefs* extension_prefs =
-      ExtensionPrefs::Get(service->GetBrowserContext());
+  const ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile_);
   DCHECK(extension_prefs);
   set_do_not_sync(extension_prefs->DoNotSync(extension_id));
 
@@ -464,9 +468,9 @@ void CrxInstaller::ShouldComputeHashesOnUI(
     scoped_refptr<const Extension> extension,
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ExtensionService* service = service_weak_.get();
-  if (!service || service->browser_terminating())
+  if (!profile_ || browser_terminating_) {
     return;
+  }
 
   extensions::ContentVerifier* content_verifier =
       extensions::ExtensionSystem::Get(profile_)->content_verifier();
@@ -604,20 +608,23 @@ void CrxInstaller::OnProfileWillBeDestroyed(Profile* profile) {
   DCHECK_EQ(profile, profile_);
   profile_keep_alive_.reset();
   profile_observation_.Reset();
+  profile_ = nullptr;
+  // The service will be deleted shortly.
+  service_ = nullptr;
 }
 
 void CrxInstaller::CheckInstall() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ExtensionService* service = service_weak_.get();
-  if (!service || service->browser_terminating())
+  if (!profile_ || browser_terminating_) {
     return;
+  }
 
   // TODO(crbug.com/40387578): Move this code to a utility class to avoid
   // duplication of SharedModuleService::CheckImports code.
   if (SharedModuleInfo::ImportsModules(extension())) {
     const std::vector<SharedModuleInfo::ImportInfo>& imports =
         SharedModuleInfo::GetImports(extension());
-    ExtensionRegistry* registry = ExtensionRegistry::Get(service->profile());
+    ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
     for (const auto& import : imports) {
       const Extension* imported_module = registry->GetExtensionById(
           import.extension_id, ExtensionRegistry::EVERYTHING);
@@ -678,8 +685,9 @@ void CrxInstaller::CheckInstall() {
 
 void CrxInstaller::OnInstallChecksComplete(const PreloadCheck::Errors& errors) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!service_weak_)
+  if (!profile_) {
     return;
+  }
 
   if (errors.empty()) {
     ConfirmInstall();
@@ -744,9 +752,10 @@ void CrxInstaller::OnInstallChecksComplete(const PreloadCheck::Errors& errors) {
 void CrxInstaller::ConfirmInstall() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ReportInstallationStage(InstallationStage::kFinalizing);
-  ExtensionService* service = service_weak_.get();
-  if (!service || service->browser_terminating())
+
+  if (!profile_ || browser_terminating_) {
     return;
+  }
 
   if (KioskModeInfo::IsKioskOnly(extension())) {
     bool in_kiosk_mode = false;
@@ -767,7 +776,7 @@ void CrxInstaller::ConfirmInstall() {
   CheckUpdateFromSettingsPage();
 
   GURL overlapping_url;
-  ExtensionRegistry* registry = ExtensionRegistry::Get(service->profile());
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
   const Extension* overlapping_extension =
       registry->enabled_extensions().GetHostedAppByOverlappingWebExtent(
           extension()->web_extent());
@@ -783,8 +792,8 @@ void CrxInstaller::ConfirmInstall() {
     return;
   }
 
-  current_version_ = base::Version(ExtensionPrefs::Get(service->profile())
-                         ->GetVersionString(extension()->id()));
+  current_version_ = base::Version(
+      ExtensionPrefs::Get(profile_)->GetVersionString(extension()->id()));
 
   if (client_ &&
       (!allow_silent_install_ || !approved_) &&
@@ -807,12 +816,12 @@ void CrxInstaller::OnInstallPromptDone(
   // and if it is false, this function is called in response to
   // ExtensionInstallPrompt::ShowDialog().
 
-  ExtensionService* service = service_weak_.get();
   switch (payload.result) {
     case ExtensionInstallPrompt::Result::ACCEPTED:
     case ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS:
-      if (!service || service->browser_terminating())
+      if (!profile_ || browser_terminating_) {
         return;
+      }
 
       // Install (or re-enable) the extension with full permissions.
       if (update_from_settings_page_) {
@@ -821,7 +830,7 @@ void CrxInstaller::OnInstallPromptDone(
         DCHECK_NE(
             payload.result,
             ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS);
-        service->GrantPermissionsAndEnableExtension(extension());
+        service_->GrantPermissionsAndEnableExtension(extension());
       } else {
         WithholdingBehavior withholding_behavior =
             payload.result == ExtensionInstallPrompt::Result::
@@ -975,8 +984,9 @@ void CrxInstaller::ReportFailureFromUIThread(const CrxInstallError& error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_NE(CrxInstallErrorType::NONE, error.type());
 
-  if (!service_weak_.get() || service_weak_->browser_terminating())
+  if (!profile_ || browser_terminating_) {
     return;
+  }
 
   // This isn't really necessary, it is only used because unit tests expect to
   // see errors get reported via this interface.
@@ -1015,8 +1025,9 @@ void CrxInstaller::ReportSuccessFromSharedFileThread() {
 void CrxInstaller::ReportSuccessFromUIThread() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!service_weak_.get() || service_weak_->browser_terminating())
+  if (!profile_ || browser_terminating_) {
     return;
+  }
 
   extension()->permissions_data()->BindToCurrentThread();
 
@@ -1037,9 +1048,8 @@ void CrxInstaller::ReportSuccessFromUIThread() {
     }
   }
 
-  service_weak_->OnExtensionInstalled(extension(), page_ordinal_,
-                                      install_flags_,
-                                      std::move(ruleset_install_prefs_));
+  service_->OnExtensionInstalled(extension(), page_ordinal_, install_flags_,
+                                 std::move(ruleset_install_prefs_));
   NotifyCrxInstallComplete(std::nullopt);
 }
 
@@ -1055,8 +1065,9 @@ void CrxInstaller::ReportInstallationStage(InstallationStage stage) {
     return;
   }
 
-  if (!service_weak_.get() || service_weak_->browser_terminating())
+  if (!profile_ || browser_terminating_) {
     return;
+  }
   // In case of force installed extensions, expected_id_ should always be set.
   // We do not want to report in case of other extensions.
   if (expected_id_.empty())
@@ -1149,16 +1160,16 @@ void CrxInstaller::CleanupTempFiles() {
 void CrxInstaller::CheckUpdateFromSettingsPage() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  ExtensionService* service = service_weak_.get();
-  if (!service || service->browser_terminating())
+  if (!profile_ || browser_terminating_) {
     return;
+  }
 
   if (off_store_install_allow_reason_ != OffStoreInstallAllowedFromSettingsPage)
     return;
 
   const Extension* installed_extension =
-      ExtensionRegistry::Get(service->profile())
-          ->GetInstalledExtension(extension()->id());
+      ExtensionRegistry::Get(profile_)->GetInstalledExtension(
+          extension()->id());
   if (installed_extension) {
     // Previous version of the extension exists.
     update_from_settings_page_ = true;
@@ -1171,22 +1182,22 @@ void CrxInstaller::CheckUpdateFromSettingsPage() {
 void CrxInstaller::ConfirmReEnable() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  ExtensionService* service = service_weak_.get();
-  if (!service || service->browser_terminating())
+  if (!profile_ || browser_terminating_) {
     return;
+  }
 
   if (!update_from_settings_page_)
     return;
 
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(service->profile());
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_);
   if (!prefs->DidExtensionEscalatePermissions(extension()->id()))
     return;
 
   if (client_) {
     AddRef();  // Balanced in OnInstallPromptDone().
     ExtensionInstallPrompt::PromptType type =
-        ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(
-            service->profile(), extension());
+        ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(profile_,
+                                                                  extension());
     client_->ShowDialog(
         base::BindOnce(&CrxInstaller::OnInstallPromptDone, this), extension(),
         nullptr, std::make_unique<ExtensionInstallPrompt::Prompt>(type),
@@ -1230,6 +1241,10 @@ void CrxInstaller::RunInstallerCallbacks(
 void CrxInstaller::set_expectations_verified_callback(
     ExpectationsVerifiedCallback callback) {
   expectations_verified_callback_ = std::move(callback);
+}
+
+void CrxInstaller::OnBrowserTerminating() {
+  browser_terminating_ = true;
 }
 
 }  // namespace extensions

@@ -6,7 +6,7 @@
  * @fileoverview Javascript test harness.
  */
 
-import {TaskTimer} from '//ios/web/annotations/resources/text_tasks.js';
+import type {TaskTimer} from '//ios/web/annotations/resources/text_tasks.js';
 
 // TODO(crbug.com/40936184): move to general ts utilities.
 
@@ -119,7 +119,7 @@ class TestSuite {
         this.results.push({
           name: phase,
           result: 'FAILED',
-          error: '' + error + '\n' + (error as Error).stack
+          error: '' + error + '\n' + (error as Error).stack,
         });
       }
     };
@@ -195,4 +195,4 @@ export {
   fail,
   load,
   loadHead,
-}
+};

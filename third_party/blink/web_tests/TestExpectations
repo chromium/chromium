@@ -117,9 +117,6 @@ crbug.com/887140 virtual/hdr/color-jpeg-with-color-profile.html [ Failure ]
 crbug.com/887140 virtual/hdr/color-profile-video.html [ Failure ]
 crbug.com/887140 virtual/hdr/video-canvas-alpha.html [ Failure ]
 
-# Tested by paint/background/root-element-background-transparency.html for now.
-external/wpt/css/compositing/root-element-background-transparency.html [ Failure ]
-
 # ====== Synchronous, budgeted HTML parser tests from here ========================
 # See crbug.com/1254921 for details.
 # These tests either started failing outright, or became flaky, when the new HTML
@@ -132,9 +129,6 @@ crbug.com/1254932 http/tests/preload/meta-csp.html [ Failure ]
 crbug.com/1254933 [ Linux ] css3/filters/filterRegions.html [ Failure Pass ]
 crbug.com/1254933 [ Win ] css3/filters/filterRegions.html [ Failure Pass ]
 crbug.com/1405377 [ Mac ] css3/filters/filterRegions.html [ Failure Pass ]
-
-# Script preloaded: No
-crbug.com/1254940 http/tests/security/contentSecurityPolicy/nonces/scriptnonce-redirect.html [ Failure ]
 
 crbug.com/1459010 fast/events/hit-test-counts.html [ Failure ]
 
@@ -2642,6 +2636,9 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/398077415 external/wpt/scroll-animations/css/view-timeline-pseudo-on-scroller.html [ Failure Pass ]
+crbug.com/398049418 [ Mac14 ] external/wpt/custom-elements/revamped-scoped-registry/Construct.tentative.html [ Failure Timeout ]
+crbug.com/398049418 [ Win11 ] external/wpt/custom-elements/revamped-scoped-registry/Construct.tentative.html [ Failure Timeout ]
 crbug.com/397500917 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?5-6 [ Crash ]
 [ Mac12-arm64 ] external/wpt/notifications/tag.https.html [ Crash Failure ]
 [ Mac11-arm64 ] external/wpt/notifications/tag.https.html [ Crash Failure ]
@@ -2995,7 +2992,6 @@ crbug.com/378701431 [ Win11-arm64 ] external/wpt/acid/acid2/reftest.html [ Failu
 crbug.com/378701410 [ Mac15 ] external/wpt/webrtc/protocol/rtp-payloadtypes.html [ Timeout ]
 crbug.com/378701432 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-contain-video.html [ Failure ]
 crbug.com/378634699 [ Mac13 ] external/wpt/mst-content-hint/RTCRtpSendParameters-degradationPreference.html [ Timeout ]
-crbug.com/378158976 external/wpt/css/css-contain/content-visibility/content-visibility-auto-svg-text.html [ Failure ]
 crbug.com/378408473 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-restartIce-onnegotiationneeded.https.html [ Timeout ]
 crbug.com/377971732 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-negative-bounds.html [ Failure ]
 crbug.com/378014590 [ Mac11 ] external/wpt/mediacapture-streams/BrowserCaptureMediaStreamTrack-restrictTo.https.html [ Timeout ]
@@ -3441,6 +3437,7 @@ crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-float-0
 crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-float-005.html [ Failure ]
 crbug.com/397737220 [ Mac ] external/wpt/css/compositing/root-element-background-image-transparency-002.html [ Failure ]
 crbug.com/397737220 [ Mac ] external/wpt/css/compositing/root-element-background-image-transparency-004.html [ Failure ]
+crbug.com/397737220 [ Linux ] external/wpt/css/compositing/root-element-background-image-transparency-004.html [ Failure ]
 crbug.com/626703 [ Win11 ] external/wpt/fetch/orb/tentative/known-mime-type.sub.any.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/background-fetch/fetch.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-shadow-parts/animation-part.html [ Failure ]
@@ -5360,6 +5357,14 @@ crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.fil
 crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.strokeStyle.colorObject.html [ Failure ]
 crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.strokeStyle.colorObject.transparency.html [ Failure ]
 
+# Windows subpixel anti-aliasing is inconsistently applied on windows
+crbug.com/396344375 [ Win ] external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.colorInterpolationMethod.html [ Failure ]
+crbug.com/396344375 [ Win ] external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.hueInterpolationMethod.html [ Failure ]
+crbug.com/396344375 [ Win ] external/wpt/html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.colorInterpolationMethod.html [ Failure ]
+crbug.com/396344375 [ Win ] external/wpt/html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.hueInterpolationMethod.html [ Failure ]
+crbug.com/396344375 [ Win ] external/wpt/html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.colorInterpolationMethod.w.html [ Failure ]
+crbug.com/396344375 [ Win ] external/wpt/html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.hueInterpolationMethod.w.html [ Failure ]
+
 # Sheriff 2021-03-19
 crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints.js [ Failure Pass Timeout ]
 crbug.com/1190176 [ Linux ] fast/peerconnection/RTCPeerConnection-addMultipleTransceivers.html [ Crash Failure Pass ]
@@ -6411,7 +6416,7 @@ crbug.com/1354433 [ Mac ] external/wpt/html/browsers/the-window-object/window-pr
 
 # Failures with FractionalScrollOffsets disabled for web tests by default.
 crbug.com/1358383 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-root-scrollbar-thumb.html [ Failure ]
-crbug.com/326122314 external/wpt/css/css-viewport/zoom/scroll-top-test-with-zoom.html [ Failure ]
+crbug.com/326122314 external/wpt/css/css-viewport/zoom/scroll-top-test-with-zoom.html [ Failure Pass ]
 
 # Sheriff 2022-08-30
 
@@ -8838,8 +8843,9 @@ crbug.com/374978346 [ Linux ] virtual/document-isolation-policy/external/wpt/htm
 # Platform specific failure expectations were previosly added after a wpt roll for crbug.com/367497041
 crbug.com/374856213 external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
 
-# Gardener 2024-10-29
+# Gardener 2024-10-29, 2025-01-08, 2025-02-20
 crbug.com/376320405 [ Win10.20h2 ] external/wpt/css/css-sizing/keyword-sizes-for-intrinsic-contributions.tentative.html [ Failure Pass ]
+crbug.com/376320405 [ Debug Linux ] external/wpt/css/css-sizing/keyword-sizes-for-intrinsic-contributions.tentative.html [ Failure Pass ]
 
 # Fail or Crash after enable swiftshader on headless shell
 crbug.com/339041663 external/wpt/css/geometry/DOMMatrix2DInit-validate-fixup.html [ Failure Pass ]
@@ -9009,9 +9015,6 @@ crbug.com/385571958 virtual/gpu-rasterization/external/wpt/css/css-images/object
 # Gardener 2024-12-27
 crbug.com/386349197 external/wpt/css/css-masking/clip-path/clip-path-inline-005.html [ Failure Pass ]
 
-# Gardener 2025-01-08
-crbug.com/376320405 [ Debug Linux ] external/wpt/css/css-sizing/keyword-sizes-for-intrinsic-contributions.tentative.html [ Failure ]
-
 # Gardener 2025-01-10
 crbug.com/389012014 [ Mac13 ] fast/peerconnection/RTCRtpSender-getParameters.html [ Pass Timeout ]
 
@@ -9107,6 +9110,9 @@ crbug.com/41378979 [ Mac ] external/wpt/client-hints/viewport-size/viewport-size
 
 #Gardener 2025-02-19
 crbug.com/396687592 [ Mac ] external/wpt/workers/interfaces/WorkerUtils/importScripts/report-error-same-origin.sub.any.worker.html [ Failure Pass ]
+
+# Gardener 2025-02-20
+crbug.com/397870172 [ Linux ] external/wpt/css/css-scroll-snap/selection-target.html [ Failure ]
 
 #Gardener 2025-02-21
 crbug.com/398165466 [ Debug Mac14 ] http/tests/inspector-protocol/tracing/screenshots.js [ Failure Pass Timeout ]

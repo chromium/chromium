@@ -82,13 +82,7 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       return gfx::Insets::VH(insets.height(), horizontal_padding);
     }
     case INSETS_RECENT_ACTIVITY_IMAGE_MARGIN:
-      return gfx::Insets::TLBR(0, 0, 0, 16);
-    case INSETS_RECENT_ACTIVITY_ROW_MARGIN:
-      return gfx::Insets(12);
-    case INSETS_RECENT_ACTIVITY_TAB_CONTAINER_MARGIN:
-      return gfx::Insets::TLBR(10, 0, 10, 0);
-    case INSETS_RECENT_ACTIVITY_GROUP_CONTAINER_MARGIN:
-      return gfx::Insets::TLBR(10, 0, 0, 0);
+      return gfx::Insets::TLBR(0, 12, 0, 16);
     case INSETS_TASK_MANAGER:
       return gfx::Insets::TLBR(4, 20, 20, 20);
     case INSETS_PAGE_INFO_FOOTER_BUTTON:
@@ -225,6 +219,12 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 2;
     case DISTANCE_RECENT_ACTIVITY_CONTAINER_RADIUS:
       return 8;
+    case DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_MARGIN:
+      return 10;
+    case DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_PADDING:
+      return 6;
+    case DISTANCE_RECENT_ACTIVITY_ROW_VERTICAL_PADDING:
+      return 6;
     case DISTANCE_ACCOUNT_INFO_ROW_AVATAR_EMAIL:
       return 8;
   }

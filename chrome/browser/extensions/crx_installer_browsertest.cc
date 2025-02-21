@@ -1147,6 +1147,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, UpdateWithFileAccess) {
   }
 }
 
+#if !defined(LEAK_SANITIZER)
+// This test intentionally leaks a CrxInstaller object at shutdown.
+IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, InstallDuringShutdown) {
+  scoped_refptr<CrxInstaller> installer(
+      CrxInstaller::CreateSilent(extension_service()));
+  installer->set_allow_silent_install(true);
+  base::FilePath crx_path = test_data_dir_.AppendASCII("crx_installer/v1.crx");
+  installer->InstallCrx(crx_path);
+
+  // Simulate a task holding the installer object alive.
+  installer->AddRef();
+
+  // Exit the test while the installer is still running. No crash.
+}
+#endif  // !defined(LEAK_SANITIZER)
+
 class ExtensionCrxInstallerTestWithWithholdingUI
     : public ExtensionCrxInstallerTest,
       public testing::WithParamInterface<bool> {

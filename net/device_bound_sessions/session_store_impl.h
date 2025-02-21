@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/sqlite_proto/key_value_data.h"
 #include "components/sqlite_proto/key_value_table.h"
 #include "components/sqlite_proto/proto_table_manager.h"
@@ -79,7 +80,9 @@ class NET_EXPORT SessionStoreImpl : public SessionStore {
   FRIEND_TEST_ALL_PREFIXES(SessionStoreImplTest,
                            PruneLoadedEntryWithSessionMissingWrappedKey);
 
-  void OnDatabaseLoaded(LoadSessionsCallback callback, DBStatus status);
+  void OnDatabaseLoaded(LoadSessionsCallback callback,
+                        base::ElapsedTimer timer,
+                        DBStatus status);
 
   // Helper function called by `OnDatabaseLoaded` to prune out any invalid
   // entries found in the data loaded from disk. Returns a map of valid

@@ -3581,6 +3581,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     <variant name="External"/>
     <variant name="ExternalChromeOS"/>
     <variant name="Internal"/>
+    <variant name="InternalSplitModifier"/>
   </token>
 </histogram>
 
@@ -3639,6 +3640,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     <variant name="Control"/>
     <variant name="Escape"/>
     <variant name="Meta"/>
+    <variant name="QuickInsert"/>
   </token>
 </histogram>
 
@@ -3664,6 +3666,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     <variant name="Control"/>
     <variant name="Escape"/>
     <variant name="Meta"/>
+    <variant name="QuickInsert"/>
   </token>
 </histogram>
 

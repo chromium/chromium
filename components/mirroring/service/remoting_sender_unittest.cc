@@ -115,9 +115,8 @@ class MojoSenderWrapper {
     is_frame_in_flight_ = true;
 
     data_pipe_writer_.Write(
-        buffer->data(), buffer->size(),
-        base::BindOnce(&MojoSenderWrapper::OnPipeWriteComplete,
-                       weak_factory_.GetWeakPtr()));
+        *buffer, base::BindOnce(&MojoSenderWrapper::OnPipeWriteComplete,
+                                weak_factory_.GetWeakPtr()));
     stream_sender_->SendFrame(
         media::mojom::DecoderBuffer::From(*buffer),
         base::BindOnce(&MojoSenderWrapper::OnFrameReadComplete,

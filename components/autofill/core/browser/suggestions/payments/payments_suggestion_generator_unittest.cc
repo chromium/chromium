@@ -3155,7 +3155,7 @@ TEST_P(SuggestionIphBubbleTest,
 #if BUILDFLAG(IS_ANDROID)
   std::u16string expected_description =
       u"You can autofill this card because your PayPay account is linked to "
-      u"Google Pay.";
+      u"Google Pay";
   EXPECT_EQ(
       card_info_retrieval_enrollment_state() ==
           CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled,
@@ -3187,7 +3187,7 @@ TEST_P(SuggestionIphBubbleTest,
 #if BUILDFLAG(IS_ANDROID)
   std::u16string expected_description =
       u"You can autofill this card because your account is linked to "
-      u"Google Pay.";
+      u"Google Pay";
   EXPECT_EQ(
       card_info_retrieval_enrollment_state() ==
           CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled,

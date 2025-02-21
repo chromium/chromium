@@ -1037,6 +1037,67 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.RequestDeferralCount"
+    units="deferrals" expires_after="2026-02-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records how many times a request was deferred due to a Device Bound
+    Session (https://github.com/w3c/webappsec-dbsc/blob/main/README.md). This is
+    logged once for every network request.
+  </summary>
+</histogram>
+
+<histogram name="Net.DeviceBoundSessions.RequestDeferredDuration" units="ms"
+    expires_after="2026-02-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records the duration of each time a request is deferred due to a Device
+    Bound Session (https://github.com/w3c/webappsec-dbsc/blob/main/README.md).
+    This is logged every time a network request is deferred. Under normal
+    operations, a small fraction of network requests are deferred at most once.
+    See also Net.DeviceBoundSessions.TotalRequestDeferredDuration.
+  </summary>
+</histogram>
+
+<histogram name="Net.DeviceBoundSessions.SessionStoreLoadDuration" units="ms"
+    expires_after="2026-02-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records how long it took to load Device Bound Sessions
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) persisted to
+    disk. It is logged once at startup, when sessions are loaded.
+  </summary>
+</histogram>
+
+<histogram name="Net.DeviceBoundSessions.SessionStoreLoadSuccess"
+    enum="BooleanLoaded" expires_after="2026-02-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records whether loading existing Device Bound Sessions
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) that were
+    persisted to disk succeeded. It is logged once at startup, when sessions are
+    loaded.
+  </summary>
+</histogram>
+
+<histogram name="Net.DeviceBoundSessions.TotalRequestDeferredDuration"
+    units="ms" expires_after="2026-02-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records the total amount of time a request spent deferred due to a
+    Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md). This is logged
+    once for every network request that is deferred, totalling the delay due to
+    all deferrals. Under normal operations, this is a small fraction of network
+    requests.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.DnsConfig.AdditionalDnsQueryTypesEnabled"
     enum="BooleanEnabled" expires_after="2025-02-10">
   <owner>horo@chromium.org</owner>

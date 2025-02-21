@@ -140,10 +140,12 @@ class PdfInkModule {
   // stroke state with non-empty `drawing_stroke_state().inputs`.
   void Draw(SkCanvas& canvas);
 
-  // Draws `strokes_` for `page_index` into `canvas`. Here, `canvas` only covers
-  // the region for the page at `page_index`, so this only draws strokes for
-  // that page, regardless of page visibility.
-  bool DrawThumbnail(SkCanvas& canvas, int page_index);
+  // Generates a thumbnail of `thumbnail_size` for the page at `page_index`
+  // using DrawThumbnail(). Sends the result to the WebUI if successful.
+  // Otherwise, do not send anything to the WebUI.
+  // `thumbnail_size` must be non-empty.
+  void GenerateAndSendInkThumbnail(int page_index,
+                                   const gfx::Size& thumbnail_size);
 
   // Gets an iterator for the visible strokes across all pages.
   // Modifying the set of visible strokes while using the iterator is not
@@ -317,9 +319,8 @@ class PdfInkModule {
   bool FinishEraseStroke(const gfx::PointF& position,
                          ink::StrokeInput::ToolType tool_type);
 
-  // Shared code for the Erase methods above. Returns if something got erased or
-  // not.
-  bool EraseHelper(const gfx::PointF& position, int page_index);
+  // Shared code for the Erase methods above.
+  void EraseHelper(const gfx::PointF& position, int page_index);
 
   // Sets `using_stylus_instead_of_touch_` to true if `tool_type` is
   // `ink::StrokeInput::ToolType::kStylus`. Otherwise do nothing.
@@ -391,6 +392,16 @@ class PdfInkModule {
   void MaybeSetCursor();
 
   void MaybeSetDrawingBrushAndCursor();
+
+  // Helper that calls GenerateAndSendInkThumbnail() without needing to specify
+  // the thumbnail size. This helper determines the size by asking
+  // PdfInkModuleClient.
+  void GenerateAndSendInkThumbnailInternal(int page_index);
+
+  // Draws `strokes_` for `page_index` into `canvas`. Here, `canvas` only covers
+  // the region for the page at `page_index`, so this only draws strokes for
+  // that page, regardless of page visibility.
+  bool DrawThumbnail(SkCanvas& canvas, int page_index);
 
   const raw_ref<PdfInkModuleClient> client_;
 

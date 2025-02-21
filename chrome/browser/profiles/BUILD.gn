@@ -226,6 +226,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser:font_pref",
     "//chrome/browser/ai",
     "//chrome/browser/autofill",
+    "//chrome/browser/background:background",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/commerce",

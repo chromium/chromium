@@ -174,9 +174,16 @@ class WebContentsViewMac : public WebContentsView,
                           const GURL& download_url,
                           const url::Origin& source_origin,
                           base::FilePath* out_file_path) override;
-  void EndDrag(uint32_t drag_opeation,
+  void EndDrag(uint32_t drag_operation,
                const gfx::PointF& local_point,
                const gfx::PointF& screen_point) override;
+
+  // Helper used by `EndDrag` to pass a callback to `drag_dest_`. This can be
+  // called either synchronously or asynchronously depending on if `drag_dest_`
+  // delays firing "dragend" or not.
+  void PerformEndDrag(uint32_t drag_operation,
+                      const gfx::PointF& local_point,
+                      const gfx::PointF& screen_point);
 
   // remote_cocoa::mojom::WebContentsNSViewHost, synchronous methods:
   void DraggingEntered(remote_cocoa::mojom::DraggingInfoPtr dragging_info,

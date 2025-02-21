@@ -158,6 +158,15 @@ class TaskManagerTableModel : public TaskManagerObserver,
   // group of tasks.
   bool IsTaskFirstInGroup(size_t row_index) const;
 
+  // Retrieves task types for `child_task_id`. If it has a parent, its parent
+  // task types are retrieved instead.
+  //
+  // Returns true if the `out_*` parameters were populated successfully, and
+  // false if types could not be retrieved from the root or `child_task_id`.
+  bool FetchTaskTypes(TaskId child_task_id,
+                      Task::Type& out_type,
+                      Task::SubType& out_subtype) const;
+
   // Checks whether the task falls in `Tabs`, `Extensions` or `Systems`
   // category.
   bool ShouldKeepTaskForSupportedType(TaskId task_id) const;

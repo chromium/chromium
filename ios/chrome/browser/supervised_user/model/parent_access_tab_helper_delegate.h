@@ -15,7 +15,12 @@
 
 // Hides the PACP bottom sheet and records the relevant metrics.
 - (void)hideParentAccessBottomSheetWithResult:
-    (supervised_user::LocalApprovalResult)result;
+            (supervised_user::LocalApprovalResult)result
+                                    errorType:
+                                        (std::optional<
+                                            supervised_user::
+                                                LocalWebApprovalErrorType>)
+                                            errorType;
 
 @end
 

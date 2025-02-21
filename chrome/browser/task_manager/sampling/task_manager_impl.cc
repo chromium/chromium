@@ -485,6 +485,10 @@ TaskId TaskManagerImpl::GetTaskIdForWebContents(
   return task->task_id();
 }
 
+bool TaskManagerImpl::IsTaskValid(TaskId task_id) const {
+  return task_groups_by_task_id_.contains(task_id);
+}
+
 void TaskManagerImpl::TaskAdded(Task* task) {
   DCHECK(task);
 

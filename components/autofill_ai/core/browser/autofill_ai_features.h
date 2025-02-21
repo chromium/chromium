@@ -27,11 +27,10 @@ inline constexpr base::FeatureParam<bool> kSendTitleURL{
     /*name=*/"send_title_url",
     /*default_value=*/false};
 
-// Indicates whether Autofill Prediction Improvements are available (but not
-// necessary enabled). This considers the AutofillPredictionSettings policy.
-// If this function returns false, no AutofillAiClient
-// should be instantiated.
-bool IsAutofillAiSupported(const PrefService* prefs);
+// Indicates whether the current platform and the enterprise policy allows
+// Autofill with Ai. This considers the AutofillPredictionSettings policy.
+// If this function returns false, no AutofillAiClient should be instantiated.
+bool AutofillAiIsPlatformAndEnterprisePolicyEligible(const PrefService* prefs);
 
 }  // namespace autofill_ai
 

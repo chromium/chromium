@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -50,6 +51,7 @@ public class StatusBarColorControllerUnitTest {
 
     @Test
     @Features.EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
+    @Config(sdk = 30) // Min version needed for e2e everywhere
     public void testSetStatusBarColor_EdgeToEdgeEnabled() {
         StatusBarColorController.setStatusBarColor(mSystemBarColorHelper, mWindow, Color.BLUE);
         verify(mSystemBarColorHelper).setStatusBarColor(Color.BLUE);

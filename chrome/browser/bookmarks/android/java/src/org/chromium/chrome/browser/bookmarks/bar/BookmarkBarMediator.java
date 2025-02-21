@@ -17,9 +17,9 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
-import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -55,6 +55,7 @@ class BookmarkBarMediator
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver;
     private final @NonNull BookmarkOpener mBookmarkOpener;
+    private final @NonNull ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
 
     private @Nullable BookmarkImageFetcher mImageFetcher;
     private @Nullable BookmarkBarItemsProvider mItemsProvider;
@@ -81,7 +82,8 @@ class BookmarkBarMediator
             @NonNull ObservableSupplier<Boolean> itemsOverflowSupplier,
             @NonNull PropertyModel model,
             @NonNull ObservableSupplier<Profile> profileSupplier,
-            @NonNull BookmarkOpener bookmarkOpener) {
+            @NonNull BookmarkOpener bookmarkOpener,
+            @NonNull ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier) {
         mActivity = activity;
 
         mAllBookmarksButtonModel = allBookmarksButtonModel;
@@ -124,6 +126,7 @@ class BookmarkBarMediator
         mProfileSupplier.addObserver(mProfileSupplierObserver);
 
         mBookmarkOpener = bookmarkOpener;
+        mBookmarkManagerOpenerSupplier = bookmarkManagerOpenerSupplier;
 
         updateTopMargin();
         updateVisibility();
@@ -241,8 +244,12 @@ class BookmarkBarMediator
         // opening the manager for the wrong profile/model.
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (profileAfterLoading, modelAfterLoading) -> {
-                    BookmarkUtils.showBookmarkManager(
-                            mActivity, modelAfterLoading.getRootFolderId(), profileAfterLoading);
+                    mBookmarkManagerOpenerSupplier
+                            .get()
+                            .showBookmarkManager(
+                                    mActivity,
+                                    profileAfterLoading,
+                                    modelAfterLoading.getRootFolderId());
                 });
     }
 
@@ -252,7 +259,9 @@ class BookmarkBarMediator
 
         // TODO(crbug.com/394614779): Open in popup window instead of bookmark manager.
         if (item.isFolder()) {
-            BookmarkUtils.showBookmarkManager(mActivity, item.getId(), profile);
+            mBookmarkManagerOpenerSupplier
+                    .get()
+                    .showBookmarkManager(mActivity, profile, item.getId());
             return;
         }
 
@@ -279,11 +288,14 @@ class BookmarkBarMediator
         // opening the manager for the wrong profile/model.
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (profileAfterLoading, modelAfterLoading) -> {
-                    BookmarkUtils.showBookmarkManager(
-                            mActivity,
-                            Optional.ofNullable(modelAfterLoading.getAccountDesktopFolderId())
-                                    .orElseGet(modelAfterLoading::getDesktopFolderId),
-                            profileAfterLoading);
+                    mBookmarkManagerOpenerSupplier
+                            .get()
+                            .showBookmarkManager(
+                                    mActivity,
+                                    profileAfterLoading,
+                                    Optional.ofNullable(
+                                                    modelAfterLoading.getAccountDesktopFolderId())
+                                            .orElseGet(modelAfterLoading::getDesktopFolderId));
                 });
     }
 

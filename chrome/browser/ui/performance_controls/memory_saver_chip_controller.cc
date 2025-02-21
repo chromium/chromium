@@ -6,6 +6,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -29,6 +30,8 @@ void MemorySaverChipController::ShowIcon() {
   page_action_controller_->Show(kActionShowMemorySaverChip);
   page_action_controller_->HideSuggestionChip(kActionShowMemorySaverChip);
   CancelChipTimer();
+
+  RecordMemorySaverChipState(MemorySaverChipState::kCollapsed);
 }
 
 void MemorySaverChipController::ShowEducationChip() {
@@ -38,6 +41,8 @@ void MemorySaverChipController::ShowEducationChip() {
       kActionShowMemorySaverChip,
       l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_CHIP_LABEL));
   StartChipTimer();
+
+  RecordMemorySaverChipState(MemorySaverChipState::kExpandedEducation);
 }
 
 void MemorySaverChipController::ShowMemorySavedChip(int64_t bytes_saved) {
@@ -49,6 +54,8 @@ void MemorySaverChipController::ShowMemorySavedChip(int64_t bytes_saved) {
       IDS_MEMORY_SAVER_CHIP_SAVINGS_LABEL, {savings_string});
   page_action_controller_->OverrideText(kActionShowMemorySaverChip, chip_text);
   StartChipTimer();
+
+  RecordMemorySaverChipState(MemorySaverChipState::kExpandedWithSavings);
 }
 
 void MemorySaverChipController::Hide() {

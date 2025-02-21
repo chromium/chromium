@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(GlicControllerUiTest, Toggle) {
                    GlicWindowController::State::kOpen),
       Do([this]() { glic_controller().Toggle(InvocationSource::kOsButton); }),
       WaitForState(test::internal::kGlicWindowControllerState,
-                   GlicWindowController::State::kClosed), );
+                   GlicWindowController::State::kClosed));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicControllerUiTest, Show) {

@@ -7,15 +7,15 @@
  */
 
 import { getFrameId } from '//ios/web/public/js_messaging/resources/frame_id.js';
-import { sendWebKitMessage } from '//ios/web/public/js_messaging/resources/utils.js'
+import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * Reads the viewport configuration and reports it back to the browser.
  */
 function reportViewportConfiguration() {
-  let viewportMeta = window.document.querySelector('meta[name = "viewport"]');
+  const viewportMeta = window.document.querySelector('meta[name = "viewport"]');
   if (viewportMeta) {
-    let coverValue =
+    const coverValue =
         viewportMeta.getAttribute('content')?.includes('viewport-fit=cover');
     sendWebKitMessage('FullscreenViewportHandler', {
       'frame_id': getFrameId(),

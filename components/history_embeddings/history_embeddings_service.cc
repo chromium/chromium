@@ -33,7 +33,6 @@
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
-#include "components/passage_embeddings/passage_embeddings_service_controller.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 #include "url/gurl.h"
 
@@ -228,15 +227,15 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
     page_content_annotations::PageContentAnnotationsService*
         page_content_annotations_service,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-    passage_embeddings::PassageEmbeddingsServiceController* service_controller,
-    std::unique_ptr<passage_embeddings::Embedder> embedder,
+    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
+    passage_embeddings::Embedder* embedder,
     std::unique_ptr<Answerer> answerer,
     std::unique_ptr<IntentClassifier> intent_classifier)
     : os_crypt_async_(os_crypt_async),
       history_service_(history_service),
       page_content_annotations_service_(page_content_annotations_service),
       optimization_guide_decider_(optimization_guide_decider),
-      embedder_(std::move(embedder)),
+      embedder_(embedder),
       answerer_(std::move(answerer)),
       intent_classifier_(std::move(intent_classifier)),
       query_id_weak_ptr_factory_(&query_id_),
@@ -267,8 +266,8 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
 
   // Observation needs to be set up after the `storage_` construction since the
   // update notification could be invoked immediately.
-  if (service_controller) {
-    embedder_metadata_observation_.Observe(service_controller);
+  if (embedder_metadata_provider) {
+    embedder_metadata_observation_.Observe(embedder_metadata_provider);
   }
 }
 
@@ -595,7 +594,7 @@ void HistoryEmbeddingsService::EmbedderMetadataUpdated(
     return;
   }
   embedder_metadata_ = metadata;
-  subscription_ = os_crypt_async_->GetInstance(
+  os_crypt_async_subscription_ = os_crypt_async_->GetInstance(
       base::BindOnce(&HistoryEmbeddingsService::OnOsCryptAsyncReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }

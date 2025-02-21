@@ -1091,7 +1091,16 @@ void TabGroupSyncServiceImpl::NotifyTabGroupAdded(const base::Uuid& guid,
     // Simulate tab group update after the transition to notify observers which
     // don't handle the migration case (e.g. because they don't store their
     // GUIDs).
-    NotifyTabGroupUpdated(saved_tab_group->saved_guid(), source);
+
+    if (!WasTabGroupClosedLocally(guid) &&
+        !saved_tab_group->local_group_id().has_value()) {
+      for (TabGroupSyncService::Observer& observer : observers_) {
+        observer.OnTabGroupAdded(*saved_tab_group, source);
+      }
+    } else {
+      NotifyTabGroupUpdated(saved_tab_group->saved_guid(), source);
+    }
+
     return;
   }
 

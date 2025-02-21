@@ -9,7 +9,7 @@
 namespace extensions {
 
 FakeCrxInstaller::FakeCrxInstaller(ExtensionService* frontend)
-    : CrxInstaller(frontend->AsExtensionServiceWeakPtr(), nullptr, nullptr) {}
+    : CrxInstaller(frontend, nullptr, nullptr) {}
 
 FakeCrxInstaller::~FakeCrxInstaller() = default;
 

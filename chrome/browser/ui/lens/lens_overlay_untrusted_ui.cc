@@ -208,6 +208,8 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddInteger(
       "recentLanguagesAmount",
       lens::features::GetLensOverlayTranslateRecentLanguagesAmount());
+  html_source->AddBoolean("simplifiedSelectionEnabled",
+                          lens::features::IsSimplifiedSelectionEnabled());
 
   LensOverlayController& controller = GetLensOverlayController();
   html_source->AddDouble("invocationTime",

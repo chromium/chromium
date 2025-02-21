@@ -174,7 +174,7 @@ export class MockPdfPluginElement extends HTMLEmbedElement {
   private messages_: any[] = [];
   // <if expr="enable_pdf_ink2">
   private messageReply_: Object|null = null;
-  private replyType_: string;
+  private replyType_: string = '';
   // </if>
 
   get messages(): any[] {
@@ -564,7 +564,7 @@ export function getSizeButtons(selector: InkSizeSelectorElement):
 export function assertSelectedSize(
     sizeButtons: NodeListOf<HTMLElement>, buttonIndex: number) {
   for (let i = 0; i < sizeButtons.length; ++i) {
-    const buttonSelected = sizeButtons[i].dataset['selected'];
+    const buttonSelected = sizeButtons[i]!.dataset['selected'];
     chrome.test.assertEq(i === buttonIndex ? 'true' : 'false', buttonSelected);
   }
 }
@@ -591,7 +591,7 @@ export function assertSelectedColor(
     colorButtons: NodeListOf<HTMLElement>, buttonIndex: number) {
   for (let i = 0; i < colorButtons.length; ++i) {
     chrome.test.assertEq(
-        i === buttonIndex, colorButtons[i].hasAttribute('checked'));
+        i === buttonIndex, colorButtons[i]!.hasAttribute('checked'));
   }
 }
 

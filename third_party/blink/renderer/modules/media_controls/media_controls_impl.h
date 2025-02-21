@@ -27,9 +27,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_IMPL_H_
 
+#include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
+#include "third_party/blink/renderer/modules/media_controls/elements/media_control_track_selector_list_element.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
@@ -66,6 +68,7 @@ class MediaControlScrubbingMessageElement;
 class MediaControlTextTrackListElement;
 class MediaControlsTextTrackManager;
 class MediaControlTimelineElement;
+class MediaControlTrackSelectorMenuButtonElement;
 class MediaControlToggleClosedCaptionsButtonElement;
 class MediaControlVolumeControlContainerElement;
 class MediaControlVolumeSliderElement;
@@ -136,6 +139,9 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   // Methods related to the playback speed menu.
   void TogglePlaybackSpeedList();
   bool PlaybackSpeedListIsWanted();
+
+  // Methods related to the track selection menu.
+  void ToggleTrackSelectionList(WebMediaPlayer::TrackType);
 
   // Methods related to the overflow menu.
   void OpenOverflowMenu();
@@ -381,6 +387,13 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   Member<MediaControlToggleClosedCaptionsButtonElement>
       toggle_closed_captions_button_;
   Member<MediaControlTextTrackListElement> text_track_list_;
+  Member<MediaControlTrackSelectorMenuButtonElement>
+      audio_track_selector_button_;
+  Member<MediaControlTrackSelectorMenuButtonElement>
+      video_track_selector_button_;
+  Member<MediaControlTrackSelectorListElement> video_track_selector_list_;
+  Member<MediaControlTrackSelectorListElement> audio_track_selector_list_;
+
   Member<MediaControlPlaybackSpeedButtonElement> playback_speed_button_;
   Member<MediaControlPlaybackSpeedListElement> playback_speed_list_;
   Member<MediaControlOverflowMenuButtonElement> overflow_menu_;

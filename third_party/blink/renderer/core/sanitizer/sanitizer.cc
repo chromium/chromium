@@ -18,8 +18,12 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_builtins.h"
+#include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -329,15 +333,67 @@ void Sanitizer::SanitizeElement(Element* element) const {
       element->removeAttribute(name);
     }
   }
+}
 
+void RemoveAttributeIfProtocolIsJavaScript(Element* element,
+                                           const QualifiedName& attribute) {
+  const AtomicString& value = element->getAttribute(attribute);
+  if (value && KURL(value.GetString()).ProtocolIsJavaScript()) {
+    element->removeAttribute(attribute);
+  }
+}
+
+void RemoveAttributeIfValueIsHref(Element* element,
+                                  const QualifiedName& attribute) {
+  const AtomicString& value = element->getAttribute(attribute);
+  if (value == "href" or value == "xlink:href") {
+    element->removeAttribute(attribute);
+  }
+}
+
+void Sanitizer::SanitizeJavascriptNavigationAttributes(Element* element,
+                                                       bool safe) const {
+  // Special treatment of javascript: URLs when used for navigation.
+  // https://wicg.github.io/sanitizer-api/#sanitize-core, Steps 2.4.6.*
+
+  if (!safe) {
+    return;
+  }
+
+  // Attributes that trigger navigation:
+  const QualifiedName& qname = element->TagQName();
+  if (qname == html_names::kATag || qname == html_names::kAreaTag ||
+      qname == html_names::kBaseTag) {
+    RemoveAttributeIfProtocolIsJavaScript(element, html_names::kHrefAttr);
+  } else if (qname == svg_names::kATag ||
+             element->namespaceURI() == mathml_names::kNamespaceURI) {
+    RemoveAttributeIfProtocolIsJavaScript(element, html_names::kHrefAttr);
+    RemoveAttributeIfProtocolIsJavaScript(element, xlink_names::kHrefAttr);
+  } else if (qname == html_names::kButtonTag ||
+             qname == html_names::kInputTag) {
+    RemoveAttributeIfProtocolIsJavaScript(element, html_names::kFormactionAttr);
+  } else if (qname == html_names::kFormTag) {
+    RemoveAttributeIfProtocolIsJavaScript(element, html_names::kActionAttr);
+  } else if (qname == html_names::kIFrameTag) {
+    RemoveAttributeIfProtocolIsJavaScript(element, html_names::kSrcAttr);
+
+    // SVG animations of navigating attributes:
+  } else if (qname == svg_names::kAnimateTag ||
+             qname == svg_names::kAnimateMotionTag ||
+             qname == svg_names::kAnimateTransformTag ||
+             qname == svg_names::kSetTag) {
+    RemoveAttributeIfValueIsHref(element, svg_names::kAttributeNameAttr);
+  }
+}
+
+void Sanitizer::SanitizeTemplate(Node* node, bool safe) const {
   // Recurse into template and (later) shadow root content.
   // TODO(vogelheim): Also implement shadow root support, once that's settled
   // down.
-  // TODO(vogelheim): Merge this code with the case in SanitizeUnsafe.
-  if (IsA<HTMLTemplateElement>(element)) {
-    Node* content = To<HTMLTemplateElement>(element)->content();
+  if (IsA<HTMLTemplateElement>(node)) {
+    Node* content = To<HTMLTemplateElement>(node)->content();
     if (content) {
-      SanitizeUnsafe(content);
+      Sanitize(content, safe);
     }
   }
 }
@@ -349,19 +405,15 @@ void Sanitizer::SanitizeSafe(Node* root) const {
   Sanitizer* safe = MakeGarbageCollected<Sanitizer>();
   safe->setFrom(*this);
   safe->removeUnsafe();
-  safe->SanitizeUnsafe(root);
+  safe->Sanitize(root, /*safe*/ true);
 }
 
 void Sanitizer::SanitizeUnsafe(Node* root) const {
-  // Recurse into template and (later) shadow root content.
-  // TODO(vogelheim): Also implement shadow root support, once that's settled
-  // down.
-  if (IsA<HTMLTemplateElement>(root)) {
-    Node* content = To<HTMLTemplateElement>(root)->content();
-    if (content) {
-      SanitizeUnsafe(content);
-    }
-  }
+  Sanitize(root, /*safe*/ false);
+}
+
+void Sanitizer::Sanitize(Node* root, bool safe) const {
+  SanitizeTemplate(root, safe);
 
   enum { kKeep, kKeepElement, kDrop, kReplaceWithChildren } action = kKeep;
   Node* node = NodeTraversal::Next(*root);
@@ -396,6 +448,8 @@ void Sanitizer::SanitizeUnsafe(Node* root) const {
       case kKeepElement: {
         CHECK_EQ(node->getNodeType(), Node::NodeType::kElementNode);
         SanitizeElement(To<Element>(node));
+        SanitizeJavascriptNavigationAttributes(To<Element>(node), safe);
+        SanitizeTemplate(node, safe);
         node = NodeTraversal::Next(*node);
         break;
       }

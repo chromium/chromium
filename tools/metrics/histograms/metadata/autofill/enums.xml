@@ -5842,12 +5842,12 @@ Called by update_autofill_enums.py.-->
   <int value="51" label="Devtools test address by country entry"/>
   <int value="52" label="Create new plus address inline"/>
   <int value="53" label="(Obsolete) Retrieve Autofill AI suggestions"/>
-  <int value="54" label="Autofill AI loading state"/>
+  <int value="54" label="(Obsolete) Autofill AI loading state"/>
   <int value="55" label="Autofill AI filling suggestion"/>
   <int value="56" label="(Obsolete) Autofill AI feedback"/>
   <int value="57" label="Plus address error"/>
   <int value="58" label="(Obsolete) Autofill AI details"/>
-  <int value="59" label="Autofill AI error"/>
+  <int value="59" label="(Obsolete) Autofill AI error"/>
   <int value="60" label="(Obsolete) Edit Autofill AI information"/>
   <int value="61" label="Bnpl entry"/>
   <int value="62" label="Save and fill credit card entry"/>

@@ -752,25 +752,28 @@ LayoutObject* PreviousLayoutObjectTextOnLine(
 
 }  // namespace
 
-#define DEBUG_STRING_CASE(ReasonName)                   \
-  case AXObjectCacheImpl::TreeUpdateReason::ReasonName: \
+#define DEBUG_STRING_CASE(ReasonName) \
+  case TreeUpdateReason::ReasonName:  \
     return #ReasonName
 
 static std::string TreeUpdateReasonAsDebugString(
-    const AXObjectCacheImpl::TreeUpdateReason& reason) {
+    const TreeUpdateReason& reason) {
   switch (reason) {
     DEBUG_STRING_CASE(kActiveDescendantChanged);
     DEBUG_STRING_CASE(kAriaExpandedChanged);
     DEBUG_STRING_CASE(kAriaOwnsChanged);
     DEBUG_STRING_CASE(kAriaPressedChanged);
     DEBUG_STRING_CASE(kAriaSelectedChanged);
+    DEBUG_STRING_CASE(kChildInserted);
     DEBUG_STRING_CASE(kCSSAnchorChanged);
     DEBUG_STRING_CASE(kDelayEventFromPostNotification);
     DEBUG_STRING_CASE(kDidShowMenuListPopup);
     DEBUG_STRING_CASE(kEditableTextContentChanged);
     DEBUG_STRING_CASE(kFocusableChanged);
     DEBUG_STRING_CASE(kIdChanged);
+    DEBUG_STRING_CASE(kMarkDocumentDirty);
     DEBUG_STRING_CASE(kMaybeDisallowImplicitSelection);
+    DEBUG_STRING_CASE(kNewRelationTargetDirty);
     DEBUG_STRING_CASE(kNodeIsAttached);
     DEBUG_STRING_CASE(kNodeGainedFocus);
     DEBUG_STRING_CASE(kNodeLostFocus);
@@ -1624,6 +1627,9 @@ void AXObjectCacheImpl::Remove(AXID ax_id, bool notify_parent) {
     }
     active_aria_modal_dialog_ = nullptr;
   }
+#if AX_FAIL_FAST_BUILD()
+  DCHECK(!nodes_requiring_cache_update_.Contains(ax_id));
+#endif
 }
 
 void AXObjectCacheImpl::Remove(LayoutObject* layout_object,
@@ -2026,10 +2032,9 @@ bool AXObjectCacheImpl::PauseTreeUpdatesIfQueueFull() {
   return false;
 }
 
-void AXObjectCacheImpl::DeferTreeUpdate(
-    AXObjectCacheImpl::TreeUpdateReason update_reason,
-    Node* node,
-    ax::mojom::blink::Event event) {
+void AXObjectCacheImpl::DeferTreeUpdate(TreeUpdateReason update_reason,
+                                        Node* node,
+                                        ax::mojom::blink::Event event) {
   CHECK(node);
   CHECK(lifecycle_.StateAllowsDeferTreeUpdates()) << *this;
 
@@ -2052,7 +2057,7 @@ void AXObjectCacheImpl::DeferTreeUpdate(
   queue.push_back(tree_update);
 
   if (AXObject* obj = Get(node)) {
-    obj->InvalidateCachedValues();
+    obj->InvalidateCachedValues(update_reason);
   }
 
   // These events are fired during RunPostLifecycleTasks(),
@@ -2067,11 +2072,10 @@ void AXObjectCacheImpl::DeferTreeUpdate(
     ScheduleAXUpdate();
   }
 }
-void AXObjectCacheImpl::DeferTreeUpdate(
-    AXObjectCacheImpl::TreeUpdateReason update_reason,
-    AXObject* obj,
-    ax::mojom::blink::Event event,
-    bool invalidate_cached_values) {
+void AXObjectCacheImpl::DeferTreeUpdate(TreeUpdateReason update_reason,
+                                        AXObject* obj,
+                                        ax::mojom::blink::Event event,
+                                        bool invalidate_cached_values) {
   // Called for updates that do not have a DOM node, e.g. a children or text
   // changed event that occurs on an anonymous layout block flow.
   CHECK(obj);
@@ -2101,7 +2105,7 @@ void AXObjectCacheImpl::DeferTreeUpdate(
       ActiveEventIntents(), update_reason, event));
 
   if (invalidate_cached_values) {
-    obj->InvalidateCachedValues();
+    obj->InvalidateCachedValues(update_reason);
   }
 
   // These events are fired during RunPostLifecycleTasks(),
@@ -3226,6 +3230,21 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
         CHECK(tree_update_callback_queue_main_.empty());
         CHECK(tree_update_callback_queue_popup_.empty());
         CHECK(nodes_with_pending_children_changed_.empty());
+
+#if AX_FAIL_FAST_BUILD()
+        if (!nodes_requiring_cache_update_.empty()) {
+          std::ostringstream msg;
+          msg << "We shouldn't have any objects requiring cache update after "
+                 "the tree is finalized. The following objects do not meet "
+                 "this expectation:";
+          for (auto entry : nodes_requiring_cache_update_) {
+            msg << "\n*AXObject: " << ObjectFromAXID(entry.key)
+                << "\nUpdate Reason: "
+                << TreeUpdateReasonAsDebugString(entry.value);
+          }
+          DUMP_WILL_BE_CHECK(false) << msg.str();
+        }
+#endif
 
         // Updating the tree did not add dirty objects.
         DUMP_WILL_BE_CHECK(!IsDirty())
@@ -4834,11 +4853,14 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequired(
       return true;
 
     case TreeUpdateReason::kAriaOwnsChanged:
+    case TreeUpdateReason::kChildInserted:
     case TreeUpdateReason::kCSSAnchorChanged:
     case TreeUpdateReason::kDelayEventFromPostNotification:
     case TreeUpdateReason::kFocusableChanged:
     case TreeUpdateReason::kIdChanged:
+    case TreeUpdateReason::kMarkDocumentDirty:
     case TreeUpdateReason::kMaybeDisallowImplicitSelection:
+    case TreeUpdateReason::kNewRelationTargetDirty:
     case TreeUpdateReason::kNodeIsAttached:
     case TreeUpdateReason::kPostNotificationFromHandleLoadStart:
     case TreeUpdateReason::kPostNotificationFromHandleScrolledToAnchor:
@@ -5123,7 +5145,7 @@ void AXObjectCacheImpl::MarkDocumentDirtyWithCleanLayout() {
   for (auto& entry : objects_) {
     AXObject* object = entry.value;
     DCHECK(!object->IsDetached());
-    object->InvalidateCachedValues();
+    object->InvalidateCachedValues(TreeUpdateReason::kMarkDocumentDirty);
   }
 
   // Don't keep previous parent-child relationships.
@@ -6425,6 +6447,27 @@ void AXObjectCacheImpl::ClearCachedNodesOnLine() {
   previous_on_line_map_.clear();
   processed_blocks_.clear();
 }
+
+#if AX_FAIL_FAST_BUILD()
+void AXObjectCacheImpl::AddNodeRequiringCacheUpdate(AXID ax_id,
+                                                    TreeUpdateReason reason) {
+  CHECK(ax_id);
+  nodes_requiring_cache_update_.Set(ax_id, reason);
+}
+
+void AXObjectCacheImpl::RemoveNodeRequiringCacheUpdate(AXID ax_id) {
+  // `nodes_requiring_cache_update_` may be empty when we try to remove an
+  // AXID because by default, nodes require cache update, but we don't add them
+  // to `nodes_requiring_cache_update_` in this case. On initialization, the
+  // cached attributes will be updated, which will attempt to remove the
+  // corresponding `ax_id` from `nodes_requiring_cache_update_`. As such, return
+  // early if the cache is empty.
+  if (!ax_id || nodes_requiring_cache_update_.empty()) {
+    return;
+  }
+  nodes_requiring_cache_update_.erase(ax_id);
+}
+#endif
 
 std::ostream& operator<<(std::ostream& stream, const AXObjectCacheImpl& cache) {
   return stream << "AXObjectCache: " << cache.lifecycle().ToString();

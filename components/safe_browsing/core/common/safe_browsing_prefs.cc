@@ -90,6 +90,9 @@ void EnableSafeBrowsingSettingSetLocallyPref(PrefService* prefs) {
   if (base::FeatureList::IsEnabled(safe_browsing::kEsbAsASyncedSetting)) {
     prefs->SetBoolean(prefs::kSafeBrowsingSyncedEnhancedProtectionSetLocally,
                       true);
+    // Update the pref value whenever the Safe Browsing setting is changed.
+    prefs->SetTime(prefs::kSafeBrowsingSyncedEnhancedProtectionUpdateTimestamp,
+                   base::Time());
   }
 }
 

@@ -16,6 +16,9 @@ BASE_DECLARE_FEATURE(kStopRegisterFcmEnabled);
 // is received for content scans.
 BASE_DECLARE_FEATURE(kEnableAsyncUploadAfterVerdict);
 
+// Controls whether resumable upload is enabled on consumer scans.
+BASE_DECLARE_FEATURE(kEnableResumableUploadOnConsumerScan);
+
 // Returns true if stop register fcm token is enabled.
 bool IsStopRegisterFcmEnabled();
 

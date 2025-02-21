@@ -154,15 +154,11 @@ class FormControlsBrowserTest : public ContentBrowserTest {
 };
 
 // Checkbox renders differently on Android x86. crbug.com/1238283
-// Checkbox renders differently on Windows. See: crbug.com/377986468
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
-#define MAYBE_Checkbox DISABLED_Checkbox
-#elif BUILDFLAG(IS_WIN)
 #define MAYBE_Checkbox DISABLED_Checkbox
 #else
 #define MAYBE_Checkbox Checkbox
 #endif
-
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Checkbox) {
   if (SkipTestForOldAndroidVersions())
     return;
@@ -244,10 +240,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Input) {
           /* screenshot_height */ 330);
 }
 
-// Renders differently on Windows. See: crbug.com/377986468
 #if (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
-#define MAYBE_Textarea DISABLED_Textarea
-#elif BUILDFLAG(IS_WIN)
 #define MAYBE_Textarea DISABLED_Textarea
 #else
 #define MAYBE_Textarea Textarea
@@ -299,10 +292,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Button) {
 // TODO(crbug.com/1160104/#25) This test creates large average_error_rate on
 // Android FYI SkiaRenderer Vulkan. Disable it until a resolution for is
 // found.
-// Also renders differently on Windows. See: crbug.com/377986468
 #if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ColorInput DISABLED_ColorInput
-#elif BUILDFLAG(IS_WIN)
 #define MAYBE_ColorInput DISABLED_ColorInput
 #else
 #define MAYBE_ColorInput ColorInput
@@ -349,7 +339,9 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Select) {
           /* screenshot_height */ 200);
 }
 
-// Renders differently on Windows. See: crbug.com/377986468
+// TODO(crbug.com/377986468) : Flaky on Windows. Seems to lose focus of top
+// <select> in some runs which causes the results to be different from
+// expectations.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_MultiSelect DISABLED_MultiSelect
 #else

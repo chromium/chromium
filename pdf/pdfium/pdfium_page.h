@@ -464,11 +464,6 @@ class PDFiumPage {
   void GenerateAndSendThumbnail(float device_pixel_ratio,
                                 SendThumbnailCallback send_callback);
 
-  // Creates a `Thumbnail` for a given `device_pixel_ratio` using this page's
-  // size. The caller is responsible for rendering the page content into the
-  // thumbnail.
-  Thumbnail CreateThumbnail(float device_pixel_ratio);
-
   raw_ptr<PDFiumEngine> engine_;
   ScopedFPDFPage page_;
   ScopedFPDFTextPage text_page_;

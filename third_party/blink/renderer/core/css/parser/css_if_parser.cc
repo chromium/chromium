@@ -4,10 +4,17 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_if_parser.h"
 
-#include "third_party/blink/renderer/core/css/if_test.h"
+#include "third_party/blink/renderer/core/css/if_condition.h"
+#include "third_party/blink/renderer/core/css/kleene_value.h"
+#include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+using css_parsing_utils::AtIdent;
+using css_parsing_utils::ConsumeIfIdent;
 
 CSSIfParser::CSSIfParser(const CSSParserContext& context)
     : container_query_parser_(ContainerQueryParser(context)),
@@ -17,7 +24,7 @@ CSSIfParser::CSSIfParser(const CSSParserContext& context)
                           MediaQueryParser::SyntaxLevel::kLevel4) {}
 
 // <if-test> = media( <media-query> ) | style( <style-query> )
-std::optional<IfTest> CSSIfParser::ConsumeIfTest(CSSParserTokenStream& stream) {
+const IfCondition* CSSIfParser::ConsumeIfTest(CSSParserTokenStream& stream) {
   if (stream.Peek().GetType() == kFunctionToken &&
       stream.Peek().FunctionId() == CSSValueID::kStyle) {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
@@ -27,7 +34,8 @@ std::optional<IfTest> CSSIfParser::ConsumeIfTest(CSSParserTokenStream& stream) {
                 stream, ContainerQueryParser::StyleFeatureSet())) {
       guard.Release();
       stream.ConsumeWhitespace();
-      return IfTest(MediaQueryExpNode::Function(query, AtomicString("style")));
+      return MakeGarbageCollected<IfTestStyle>(
+          MediaQueryExpNode::Function(query, AtomicString("style")));
     }
   }
   if (stream.Peek().GetType() == kFunctionToken &&
@@ -37,10 +45,81 @@ std::optional<IfTest> CSSIfParser::ConsumeIfTest(CSSParserTokenStream& stream) {
     if (const MediaQuery* query = media_query_parser_.ConsumeQuery(stream)) {
       guard.Release();
       stream.ConsumeWhitespace();
-      return IfTest(query);
+      return MakeGarbageCollected<IfTestMedia>(query);
     }
   }
-  return std::nullopt;
+  return nullptr;
+}
+
+// <boolean-expr-group> = <if-test> | ( <boolean-expr[ <if-test> ]> ) |
+// <general-enclosed>
+// https://drafts.csswg.org/css-values-5/#typedef-boolean-expr
+const IfCondition* CSSIfParser::ConsumeBooleanExprGroup(
+    CSSParserTokenStream& stream) {
+  // <if-test> = media( <media-query> ) | style( <style-query> )
+  const IfCondition* result = ConsumeIfTest(stream);
+  if (result) {
+    return result;
+  }
+
+  // ( <boolean-expr[ <test> ]> )
+  if (stream.Peek().GetType() == kLeftParenthesisToken) {
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    result = ConsumeBooleanExpr(stream);
+    if (result && stream.AtEnd()) {
+      guard.Release();
+      stream.ConsumeWhitespace();
+      return result;
+    }
+  }
+
+  // <general-enclosed>
+  if (const MediaQueryExpNode* general_enclosed =
+          media_query_parser_.ConsumeGeneralEnclosed(stream)) {
+    return MakeGarbageCollected<IfConditionUnknown>(
+        To<MediaQueryUnknownExpNode>(general_enclosed)->ToString());
+  }
+
+  return nullptr;
+}
+
+// <boolean-expr[ <if-test> ]> = not <boolean-expr-group> | <boolean-expr-group>
+//                            [ [ and <boolean-expr-group> ]*
+//                            | [ or <boolean-expr-group> ]* ]
+// https://drafts.csswg.org/css-values-5/#typedef-boolean-expr
+const IfCondition* CSSIfParser::ConsumeBooleanExpr(
+    CSSParserTokenStream& stream) {
+  if (ConsumeIfIdent(stream, "not")) {
+    return IfCondition::Not(ConsumeBooleanExprGroup(stream));
+  }
+
+  const IfCondition* result = ConsumeBooleanExprGroup(stream);
+
+  if (AtIdent(stream.Peek(), "and")) {
+    while (ConsumeIfIdent(stream, "and")) {
+      result = IfCondition::And(result, ConsumeBooleanExprGroup(stream));
+    }
+  } else if (AtIdent(stream.Peek(), "or")) {
+    while (ConsumeIfIdent(stream, "or")) {
+      result = IfCondition::Or(result, ConsumeBooleanExprGroup(stream));
+    }
+  }
+
+  return result;
+}
+
+// <if-condition> = <boolean-expr[ <if-test> ]> | else
+// https://drafts.csswg.org/css-values-5/#if-notation
+const IfCondition* CSSIfParser::ConsumeIfCondition(
+    CSSParserTokenStream& stream) {
+  // else
+  if (stream.Peek().Id() == CSSValueID::kElse) {
+    stream.ConsumeIncludingWhitespace();
+    return MakeGarbageCollected<IfConditionElse>();
+  }
+  // <boolean-expr[ <if-test> ]>
+  return ConsumeBooleanExpr(stream);
 }
 
 }  // namespace blink

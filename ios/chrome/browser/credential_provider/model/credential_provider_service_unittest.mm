@@ -160,6 +160,8 @@ class CredentialProviderServiceTest : public PlatformTest {
         password_manager::prefs::kCredentialsEnableService, true);
     testing_pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kCredentialsEnablePasskeys, true);
+    testing_pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kAutomaticPasskeyUpgrades, true);
   }
 
   void TearDown() override {
@@ -861,6 +863,72 @@ TEST_F(CredentialProviderServiceTest, UpdatePasskey) {
               @"new_passkey_display_name");
   ASSERT_EQ(credential_store_.credentials[0].lastUsedTime,
             timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
+}
+
+TEST_F(CredentialProviderServiceTest,
+       AutomaticPasskeyUpgradeDisabledsWithSavingPasswordsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kCredentialProviderAutomaticPasskeyUpgrade);
+  CreateCredentialProviderService();
+
+  // The test is initialized with the passkey preferences as true.
+  EXPECT_TRUE([[app_group::GetGroupUserDefaults()
+      objectForKey:
+          AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled()]
+      boolValue]);
+
+  // Change the pref value to false and verify the NSUserDefaults value.
+  testing_pref_service_.SetBoolean(
+      password_manager::prefs::kCredentialsEnableService, false);
+  EXPECT_FALSE([[app_group::GetGroupUserDefaults()
+      objectForKey:
+          AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled()]
+      boolValue]);
+}
+
+TEST_F(CredentialProviderServiceTest,
+       AutomaticPasskeyUpgradesDisabledWithSavingPasskeysDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kCredentialProviderAutomaticPasskeyUpgrade);
+  CreateCredentialProviderService();
+
+  // The test is initialized with the passkey preferences as true.
+  EXPECT_TRUE([[app_group::GetGroupUserDefaults()
+      objectForKey:
+          AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled()]
+      boolValue]);
+
+  // Change the pref value to false and verify the NSUserDefaults value.
+  testing_pref_service_.SetBoolean(
+      password_manager::prefs::kCredentialsEnablePasskeys, false);
+  EXPECT_FALSE([[app_group::GetGroupUserDefaults()
+      objectForKey:
+          AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled()]
+      boolValue]);
+}
+
+TEST_F(CredentialProviderServiceTest,
+       AutomaticPasskeyUpgradesPreferenceDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kCredentialProviderAutomaticPasskeyUpgrade);
+  CreateCredentialProviderService();
+
+  // The test is initialized with the passkey preferences as true.
+  EXPECT_TRUE([[app_group::GetGroupUserDefaults()
+      objectForKey:
+          AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled()]
+      boolValue]);
+
+  // Change the pref value to false and verify the NSUserDefaults value.
+  testing_pref_service_.SetBoolean(
+      password_manager::prefs::kAutomaticPasskeyUpgrades, false);
+  EXPECT_FALSE([[app_group::GetGroupUserDefaults()
+      objectForKey:
+          AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled()]
+      boolValue]);
 }
 
 }  // namespace

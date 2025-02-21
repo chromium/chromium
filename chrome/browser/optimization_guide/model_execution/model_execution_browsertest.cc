@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledOnDeviceDisabledBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     ModelExecutionEnabledOnDeviceDisabledBrowserTest,
     GetOnDeviceModelEligibilityExecutionDisabledNullDebugReason) {
-  EXPECT_NE(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose, ),
+  EXPECT_NE(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
             OnDeviceModelEligibilityReason::kSuccess);
 }
 

@@ -316,7 +316,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // modification count.
   // To instead invalidate on all objects in a subtree, call
   // AXObjectCacheImpl::InvalidateCachedValuesOnSubtree().
-  void InvalidateCachedValues();
+  void InvalidateCachedValues(TreeUpdateReason reason);
   bool NeedsToUpdateCachedValues() const { return cached_values_need_update_; }
   bool ChildrenNeedToUpdateCachedValues() const {
     return child_cached_values_need_update_;
@@ -1592,6 +1592,13 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
     return child_tree_id_;
   }
 
+  void SetCachedValuesNeedUpdate(
+      bool cached_values_need_update,
+      std::optional<TreeUpdateReason> reason = std::nullopt);
+  void SetAXObjectCacheForTest(AXObjectCacheImpl& ax_object_cache) {
+    ax_object_cache_ = &ax_object_cache;
+  }
+
  private:
   bool ComputeCanSetFocusAttribute();
   String KeyboardShortcut() const;
@@ -1691,6 +1698,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   std::optional<ui::AXTreeID> child_tree_id_;
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, GetParentNodeForComputeParent);
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, NodesRequiringCacheUpdate);
 };
 
 MODULES_EXPORT bool operator==(const AXObject& first, const AXObject& second);

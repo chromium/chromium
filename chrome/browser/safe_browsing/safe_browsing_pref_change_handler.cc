@@ -30,7 +30,23 @@
 
 namespace safe_browsing {
 
-SafeBrowsingPrefChangeHandler::SafeBrowsingPrefChangeHandler() = default;
+SafeBrowsingPrefChangeHandler::SafeBrowsingPrefChangeHandler(Profile* profile)
+    : profile_(profile) {
+  DCHECK(profile);
+#if BUILDFLAG(IS_ANDROID)
+  retry_handler_ = std::make_unique<MessageRetryHandler>(
+      profile_, prefs::kSafeBrowsingSyncedEnhancedProtectionRetryState,
+      prefs::kSafeBrowsingSyncedEnhancedProtectionNextRetryTimestamp,
+      kRetryAttemptStartupDelay, kRetryNextAttemptDelay, kWaitingPeriodInterval,
+      base::BindOnce(&SafeBrowsingPrefChangeHandler::RetryStateCallback,
+                     weak_ptr_factory_.GetWeakPtr()),
+      "SafeBrowsing.EnhancedProtection.ShouldRetryOutcome",
+      prefs::kSafeBrowsingSyncedEnhancedProtectionUpdateTimestamp,
+      prefs::kEnhancedProtectionEnabledViaTailoredSecurity);
+  retry_handler_->StartRetryTimer();
+#endif
+}
+
 SafeBrowsingPrefChangeHandler::~SafeBrowsingPrefChangeHandler() {
 #if BUILDFLAG(IS_ANDROID)
   RemoveTabModelListObserver();
@@ -41,14 +57,14 @@ SafeBrowsingPrefChangeHandler::~SafeBrowsingPrefChangeHandler() {
 // TODO(crbug.com/378888301): Add tests for Chrome Toast and Android modal
 // logic.
 void SafeBrowsingPrefChangeHandler::
-    MaybeShowEnhancedProtectionSettingChangeNotification(Profile* profile) {
+    MaybeShowEnhancedProtectionSettingChangeNotification() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_MAC)
-  if (!base::FeatureList::IsEnabled(safe_browsing::kEsbAsASyncedSetting) ||
-      !profile) {
+  if (!profile_ ||
+      !base::FeatureList::IsEnabled(safe_browsing::kEsbAsASyncedSetting)) {
     return;
   }
-  Browser* const browser = chrome::FindBrowserWithProfile(profile);
+  Browser* const browser = chrome::FindBrowserWithProfile(profile_);
   if (!browser) {
     return;
   }
@@ -71,7 +87,7 @@ void SafeBrowsingPrefChangeHandler::
                    : false;
 
   // Extract the enhanced protection pref value.
-  bool is_enhanced_enabled = IsEnhancedProtectionEnabled(*profile->GetPrefs());
+  bool is_enhanced_enabled = IsEnhancedProtectionEnabled(*profile_->GetPrefs());
 
   // The enhanced protection setting has been updated. To reflect this
   // change, we will show toasts to the user, taking into account both the
@@ -93,14 +109,15 @@ void SafeBrowsingPrefChangeHandler::
   }
 #endif
 
+// TODO(crbug.com/397966486): Add tests in the android test file.
 #if BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(safe_browsing::kEsbAsASyncedSetting) ||
-      !profile) {
+      !profile_) {
     return;
   }
   content::WebContents* web_contents = nullptr;
   for (const TabModel* tab_model : TabModelList::models()) {
-    if (tab_model->GetProfile() != profile) {
+    if (tab_model->GetProfile() != profile_) {
       continue;
     }
     int tab_count = tab_model->GetTabCount();
@@ -114,45 +131,54 @@ void SafeBrowsingPrefChangeHandler::
 
   if (!web_contents) {
     // Instantiate the retry handler here, if it hasn't been already
+    profile_->GetPrefs()->SetInteger(
+        prefs::kSafeBrowsingSyncedEnhancedProtectionRetryState,
+        static_cast<int>(MessageRetryHandler::RetryState::RETRY_NEEDED));
     if (!retry_handler_) {
       retry_handler_ = std::make_unique<MessageRetryHandler>(
-          profile, prefs::kSafeBrowsingSyncedEnhancedProtectionRetryState,
+          profile_, prefs::kSafeBrowsingSyncedEnhancedProtectionRetryState,
           prefs::kSafeBrowsingSyncedEnhancedProtectionNextRetryTimestamp,
           kRetryAttemptStartupDelay, kRetryNextAttemptDelay,
           kWaitingPeriodInterval,
           base::BindOnce(&SafeBrowsingPrefChangeHandler::RetryStateCallback,
-                         weak_ptr_factory_.GetWeakPtr(), profile),
+                         weak_ptr_factory_.GetWeakPtr()),
           "SafeBrowsing.EnhancedProtection.ShouldRetryOutcome",
           prefs::kSafeBrowsingSyncedEnhancedProtectionUpdateTimestamp,
           prefs::kEnhancedProtectionEnabledViaTailoredSecurity);
       retry_handler_->StartRetryTimer();
     }
-    RegisterObserver(profile);
+    RegisterObserver();
   } else {
     // Do not show the notification modal if the user set the setting locally on
     // this device.
-    if (profile->GetPrefs()->GetBoolean(
+    if (profile_->GetPrefs()->GetBoolean(
             prefs::kSafeBrowsingSyncedEnhancedProtectionSetLocally)) {
+      retry_handler_->SaveRetryState(
+          MessageRetryHandler::RetryState::NO_RETRY_NEEDED);
       return;
     }
     // Extract the enhanced protection pref value.
     bool is_enhanced_enabled =
-        IsEnhancedProtectionEnabled(*profile->GetPrefs());
+        IsEnhancedProtectionEnabled(*profile_->GetPrefs());
     message_ = std::make_unique<TailoredSecurityConsentedModalAndroid>(
         web_contents, is_enhanced_enabled,
         base::BindOnce(
             &SafeBrowsingPrefChangeHandler::ConsentedMessageDismissed,
             weak_ptr_factory_.GetWeakPtr()));
+    if (retry_handler_) {
+      retry_handler_->SaveRetryState(
+          MessageRetryHandler::RetryState::NO_RETRY_NEEDED);
+    }
   }
 #endif
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void SafeBrowsingPrefChangeHandler::RetryStateCallback(Profile* profile) {
-  profile->GetPrefs()->SetInteger(
+void SafeBrowsingPrefChangeHandler::RetryStateCallback() {
+  profile_->GetPrefs()->SetInteger(
       prefs::kSafeBrowsingSyncedEnhancedProtectionRetryState,
       static_cast<int>(MessageRetryHandler::RetryState::RETRY_NEEDED));
-  MaybeShowEnhancedProtectionSettingChangeNotification(profile);
+  MaybeShowEnhancedProtectionSettingChangeNotification();
 }
 
 void SafeBrowsingPrefChangeHandler::SetTabModelForTesting(TabModel* tab_model) {
@@ -175,9 +201,7 @@ void SafeBrowsingPrefChangeHandler::DidAddTab(TabAndroid* tab,
   if (!tab || !tab->web_contents()) {
     return;
   }
-  Profile* profile =
-      Profile::FromBrowserContext(tab->web_contents()->GetBrowserContext());
-  RetryStateCallback(profile);
+  RetryStateCallback();
 }
 
 void SafeBrowsingPrefChangeHandler::OnTabModelAdded() {
@@ -187,16 +211,16 @@ void SafeBrowsingPrefChangeHandler::OnTabModelAdded() {
   if (TabModelList::models().empty()) {
     return;
   }
-  AddTabModelObserver(observed_tab_model_->GetProfile());
+  AddTabModelObserver();
 }
 
 void SafeBrowsingPrefChangeHandler::OnTabModelRemoved() {
   RemoveTabModelObserver();
 }
 
-void SafeBrowsingPrefChangeHandler::RegisterObserver(Profile* profile) {
+void SafeBrowsingPrefChangeHandler::RegisterObserver() {
   AddTabModelListObserver();
-  AddTabModelObserver(profile);
+  AddTabModelObserver();
 }
 
 void SafeBrowsingPrefChangeHandler::AddTabModelListObserver() {
@@ -207,12 +231,12 @@ void SafeBrowsingPrefChangeHandler::AddTabModelListObserver() {
   observing_tab_model_list_ = true;
 }
 
-void SafeBrowsingPrefChangeHandler::AddTabModelObserver(Profile* profile) {
+void SafeBrowsingPrefChangeHandler::AddTabModelObserver() {
   if (observed_tab_model_) {
     return;
   }
   for (TabModel* tab_model : TabModelList::models()) {
-    if (tab_model->GetProfile() != profile) {
+    if (tab_model->GetProfile() != profile_) {
       continue;
     }
     tab_model->AddObserver(this);

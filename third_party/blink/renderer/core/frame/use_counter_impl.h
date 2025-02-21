@@ -93,6 +93,8 @@ class CORE_EXPORT UseCounterImpl final {
     kHeader,     // Feature used in either Permissions-Policy or Feature-Policy
                  // HTTP header.
     kIframeAttribute,  // Feature used in 'allow' attribute on iframe element.
+    kEnabledPrivacySensitive,  // Feature enabled, but labeled privacy
+                               // sensitive.
   };
 
   explicit UseCounterImpl(Context = kDefaultContext, CommitState = kPreCommit);

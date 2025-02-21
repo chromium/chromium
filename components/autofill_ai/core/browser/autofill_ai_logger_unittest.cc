@@ -266,12 +266,6 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
   }
   manager().OnFormSeen(*form);
 
-  if (user_triggered_manual_fallbacks()) {
-    manager().OnSuggestionsShown(
-        {autofill::SuggestionType::kAutofillAiLoadingState}, form->ToFormData(),
-        autofill::FormFieldData(),
-        /*update_suggestions_callback=*/{});
-  }
   if (user_saw_filling_suggestions()) {
     manager().OnSuggestionsShown({autofill::SuggestionType::kFillAutofillAi},
                                  form->ToFormData(), autofill::FormFieldData(),

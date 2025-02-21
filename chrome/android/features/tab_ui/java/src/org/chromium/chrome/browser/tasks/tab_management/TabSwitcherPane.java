@@ -223,7 +223,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
         }
 
         boolean isNotVisibleOrSelected =
-                !getIsVisibleSupplier().get() || !filter.isCurrentlySelectedFilter();
+                !getIsVisibleSupplier().get() || !filter.getTabModel().isActiveModel();
 
         if (isNotVisibleOrSelected) {
             cancelWaitForTabStateInitializedTimer();
@@ -295,7 +295,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
                     TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
                     @Nullable
                     TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
-                    if (filter.isCurrentlySelectedFilter()
+                    if (filter.getTabModel().isActiveModel()
                             && filter.isTabModelRestored()
                             && coordinator != null) {
                         coordinator.resetWithTabList(filter);

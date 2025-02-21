@@ -21,7 +21,7 @@ class ParserTest(unittest.TestCase):
         """
     expected = ast.Mojom(ast.Module(ast.Identifier('my_module'), None),
                          ast.ImportList(), [])
-    self.assertEquals(parser.Parse(source, "my_file.mojom"), expected)
+    self.assertEqual(parser.Parse(source, "my_file.mojom"), expected)
 
   def testSourceWithCrLfs(self):
     """Tests a .mojom source with CR-LFs instead of LFs."""
@@ -29,7 +29,7 @@ class ParserTest(unittest.TestCase):
     source = "// This is a comment.\r\n\r\nmodule my_module;\r\n"
     expected = ast.Mojom(ast.Module(ast.Identifier('my_module'), None),
                          ast.ImportList(), [])
-    self.assertEquals(parser.Parse(source, "my_file.mojom"), expected)
+    self.assertEqual(parser.Parse(source, "my_file.mojom"), expected)
 
   def testUnexpectedEOF(self):
     """Tests a "truncated" .mojom source."""
@@ -39,7 +39,7 @@ class ParserTest(unittest.TestCase):
 
         module my_module
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom: Error: Unexpected end of file$"):
       parser.Parse(source, "my_file.mojom")
 
@@ -53,7 +53,7 @@ class ParserTest(unittest.TestCase):
         // Foo.
         asdf1
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError,
         r"^my_file\.mojom:4: Error: Unexpected 'asdf1':\n *asdf1$"):
       parser.Parse(source1, "my_file.mojom")
@@ -70,7 +70,7 @@ class ParserTest(unittest.TestCase):
 
         asdf2
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError,
         r"^my_file\.mojom:10: Error: Unexpected 'asdf2':\n *asdf2$"):
       parser.Parse(source2, "my_file.mojom")
@@ -82,7 +82,7 @@ class ParserTest(unittest.TestCase):
         /* Baz. */
         asdf3
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError,
         r"^my_file\.mojom:5: Error: Unexpected 'asdf3':\n *asdf3$"):
       parser.Parse(source3, "my_file.mojom")
@@ -99,7 +99,7 @@ class ParserTest(unittest.TestCase):
            Quux. */
         asdf4
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError,
         r"^my_file\.mojom:10: Error: Unexpected 'asdf4':\n *asdf4$"):
       parser.Parse(source4, "my_file.mojom")
@@ -129,7 +129,7 @@ class ParserTest(unittest.TestCase):
                                    ast.Typename(ast.Identifier('double')), None)
                            ]))
                    ])
-    self.assertEquals(parser.Parse(source, "my_file.mojom"), expected)
+    self.assertEqual(parser.Parse(source, "my_file.mojom"), expected)
 
   def testSimpleStructWithoutModule(self):
     """Tests a simple struct without an explict module statement."""
@@ -150,7 +150,7 @@ class ParserTest(unittest.TestCase):
                                 ast.Typename(ast.Identifier('double')), None)
             ]))
     ])
-    self.assertEquals(parser.Parse(source, "my_file.mojom"), expected)
+    self.assertEqual(parser.Parse(source, "my_file.mojom"), expected)
 
   def testValidStructDefinitions(self):
     """Tests all types of definitions that can occur in a struct."""
@@ -181,7 +181,7 @@ class ParserTest(unittest.TestCase):
                                 None)
             ]))
     ])
-    self.assertEquals(parser.Parse(source, "my_file.mojom"), expected)
+    self.assertEqual(parser.Parse(source, "my_file.mojom"), expected)
 
   def testInvalidStructDefinitions(self):
     """Tests that definitions that aren't allowed in a struct are correctly
@@ -192,7 +192,7 @@ class ParserTest(unittest.TestCase):
           MyMethod(int32 a);
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected '\(':\n"
         r" *MyMethod\(int32 a\);$"):
       parser.Parse(source1, "my_file.mojom")
@@ -204,7 +204,7 @@ class ParserTest(unittest.TestCase):
           };
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected 'struct':\n"
         r" *struct MyInnerStruct {$"):
       parser.Parse(source2, "my_file.mojom")
@@ -216,7 +216,7 @@ class ParserTest(unittest.TestCase):
           };
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError,
         r"^my_file\.mojom:2: Error: Unexpected 'interface':\n"
         r" *interface MyInterface {$"):
@@ -232,7 +232,7 @@ class ParserTest(unittest.TestCase):
           int32 a;
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError,
         r"^my_file\.mojom:2: Error: Unexpected ';':\n *module ;$"):
       parser.Parse(source1, "my_file.mojom")
@@ -247,7 +247,7 @@ class ParserTest(unittest.TestCase):
           int32 a;
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:4: Error: Unexpected 'struct':\n"
         r" *struct MyStruct {$"):
       parser.Parse(source2, "my_file.mojom")
@@ -259,7 +259,7 @@ class ParserTest(unittest.TestCase):
         module foo;
         module bar;
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError,
         r"^my_file\.mojom:2: Error: Multiple \"module\" statements not "
         r"allowed:\n *module bar;$"):
@@ -272,7 +272,7 @@ class ParserTest(unittest.TestCase):
         import "foo.mojom";
         module foo;
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError,
         r"^my_file\.mojom:2: Error: \"module\" statements must precede imports "
         r"and definitions:\n *module foo;$"):
@@ -287,7 +287,7 @@ class ParserTest(unittest.TestCase):
         };
         module foo;
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError,
         r"^my_file\.mojom:4: Error: \"module\" statements must precede imports "
         r"and definitions:\n *module foo;$"):
@@ -302,7 +302,7 @@ class ParserTest(unittest.TestCase):
         };
         import "foo.mojom";
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError,
         r"^my_file\.mojom:4: Error: \"import\" statements must precede "
         r"definitions:\n *import \"foo.mojom\";$"):
@@ -350,21 +350,21 @@ class ParserTest(unittest.TestCase):
                     ast.EnumValue(ast.Name('VALUE7'), None, None)
                 ]))
         ])
-    self.assertEquals(parser.Parse(source, "my_file.mojom"), expected)
+    self.assertEqual(parser.Parse(source, "my_file.mojom"), expected)
 
   def testInvalidEnumInitializers(self):
     """Tests that invalid enum initializers are correctly detected."""
 
     # Floating point value.
     source2 = "enum MyEnum { VALUE = 0.123 };"
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:1: Error: Unexpected '0\.123':\n"
         r"enum MyEnum { VALUE = 0\.123 };$"):
       parser.Parse(source2, "my_file.mojom")
 
     # Boolean value.
     source2 = "enum MyEnum { VALUE = true };"
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:1: Error: Unexpected 'true':\n"
         r"enum MyEnum { VALUE = true };$"):
       parser.Parse(source2, "my_file.mojom")
@@ -393,7 +393,7 @@ class ParserTest(unittest.TestCase):
                                     ast.Identifier('kNumber'))
                 ]))
         ])
-    self.assertEquals(parser.Parse(source, "my_file.mojom"), expected)
+    self.assertEqual(parser.Parse(source, "my_file.mojom"), expected)
 
   def testNoConditionals(self):
     """Tests that ?: is not allowed."""
@@ -405,7 +405,7 @@ class ParserTest(unittest.TestCase):
           MY_ENUM_1 = 1 ? 2 : 3
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:4: Error: Unexpected '\?':\n"
         r" *MY_ENUM_1 = 1 \? 2 : 3$"):
       parser.Parse(source, "my_file.mojom")
@@ -460,7 +460,7 @@ class ParserTest(unittest.TestCase):
                                     ast.Typename(ast.Identifier('int32')), None)
                 ]))
         ])
-    self.assertEquals(parser.Parse(source, "my_file.mojom"), expected)
+    self.assertEqual(parser.Parse(source, "my_file.mojom"), expected)
 
   def testInvalidOrdinals(self):
     """Tests that (lexically) invalid ordinals are correctly detected."""
@@ -472,7 +472,7 @@ class ParserTest(unittest.TestCase):
           int32 a_missing@;
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         lexer.LexError, r"^my_file\.mojom:4: Error: Missing ordinal value$"):
       parser.Parse(source1, "my_file.mojom")
 
@@ -483,7 +483,7 @@ class ParserTest(unittest.TestCase):
           int32 a_octal@01;
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         lexer.LexError, r"^my_file\.mojom:4: Error: "
         r"Octal and hexadecimal ordinal values not allowed$"):
       parser.Parse(source2, "my_file.mojom")
@@ -491,19 +491,19 @@ class ParserTest(unittest.TestCase):
     source3 = """\
         module my_module; struct MyStruct { int32 a_invalid_octal@08; };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         lexer.LexError, r"^my_file\.mojom:1: Error: "
         r"Octal and hexadecimal ordinal values not allowed$"):
       parser.Parse(source3, "my_file.mojom")
 
     source4 = "module my_module; struct MyStruct { int32 a_hex@0x1aB9; };"
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         lexer.LexError, r"^my_file\.mojom:1: Error: "
         r"Octal and hexadecimal ordinal values not allowed$"):
       parser.Parse(source4, "my_file.mojom")
 
     source5 = "module my_module; struct MyStruct { int32 a_hex@0X0; };"
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         lexer.LexError, r"^my_file\.mojom:1: Error: "
         r"Octal and hexadecimal ordinal values not allowed$"):
       parser.Parse(source5, "my_file.mojom")
@@ -513,7 +513,7 @@ class ParserTest(unittest.TestCase):
           int32 a_too_big@999999999999;
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:2: Error: "
         r"Ordinal value 999999999999 too large:\n"
         r" *int32 a_too_big@999999999999;$"):
@@ -538,7 +538,7 @@ class ParserTest(unittest.TestCase):
                                     ast.Typename(ast.Identifier('int32')),
                                     None)))
         ])
-    self.assertEquals(parser.Parse(source, "my_file.mojom"), expected)
+    self.assertEqual(parser.Parse(source, "my_file.mojom"), expected)
 
   def testValidHandleTypes(self):
     """Tests (valid) handle types."""
@@ -584,7 +584,7 @@ class ParserTest(unittest.TestCase):
                     ast.Typename(ast.Identifier('handle<platform>')), None)
             ]))
     ])
-    self.assertEquals(parser.Parse(source, "my_file.mojom"), expected)
+    self.assertEqual(parser.Parse(source, "my_file.mojom"), expected)
 
   def testInvalidHandleType(self):
     """Tests an invalid (unknown) handle type."""
@@ -594,7 +594,7 @@ class ParserTest(unittest.TestCase):
           handle<wtf_is_this> foo;
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:2: Error: "
         r"Invalid handle type 'wtf_is_this':\n"
         r" *handle<wtf_is_this> foo;$"):
@@ -705,7 +705,7 @@ class ParserTest(unittest.TestCase):
                                 ast.Literal('float', '+.123E10'))
             ]))
     ])
-    self.assertEquals(parser.Parse(source, "my_file.mojom"), expected)
+    self.assertEqual(parser.Parse(source, "my_file.mojom"), expected)
 
   def testValidFixedSizeArray(self):
     """Tests parsing a fixed size array."""
@@ -749,7 +749,7 @@ class ParserTest(unittest.TestCase):
                                   fixed_size=2)), None)
             ]))
     ])
-    self.assertEquals(parser.Parse(source, "my_file.mojom"), expected)
+    self.assertEqual(parser.Parse(source, "my_file.mojom"), expected)
 
   def testValidNestedArray(self):
     """Tests parsing a nested array."""
@@ -767,7 +767,7 @@ class ParserTest(unittest.TestCase):
                                 ast.Array(ast.Typename(
                                     ast.Identifier('int32')))))), None)))
     ])
-    self.assertEquals(parser.Parse(source, "my_file.mojom"), expected)
+    self.assertEqual(parser.Parse(source, "my_file.mojom"), expected)
 
   def testInvalidFixedArraySize(self):
     """Tests that invalid fixed array bounds are correctly detected."""
@@ -777,7 +777,7 @@ class ParserTest(unittest.TestCase):
           array<int32, 0> zero_size_array;
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError,
         r"^my_file\.mojom:2: Error: Fixed array size 0 invalid:\n"
         r" *array<int32, 0> zero_size_array;$"):
@@ -788,7 +788,7 @@ class ParserTest(unittest.TestCase):
           array<int32, 999999999999> too_big_array;
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError,
         r"^my_file\.mojom:2: Error: Fixed array size 999999999999 invalid:\n"
         r" *array<int32, 999999999999> too_big_array;$"):
@@ -799,7 +799,7 @@ class ParserTest(unittest.TestCase):
           array<int32, abcdefg> not_a_number;
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected 'abcdefg':\n"
         r" *array<int32, abcdefg> not_a_number;"):
       parser.Parse(source3, "my_file.mojom")
@@ -819,7 +819,7 @@ class ParserTest(unittest.TestCase):
                                 ast.Typename(ast.Identifier('uint8')))), None)
             ]))
     ])
-    self.assertEquals(parser.Parse(source1, "my_file.mojom"), expected1)
+    self.assertEqual(parser.Parse(source1, "my_file.mojom"), expected1)
 
     source2 = "interface MyInterface { MyMethod(map<string, uint8> a); };"
     expected2 = ast.Mojom(None, ast.ImportList(), [
@@ -837,7 +837,7 @@ class ParserTest(unittest.TestCase):
                                             ast.Identifier('uint8')))))),
                     None)))
     ])
-    self.assertEquals(parser.Parse(source2, "my_file.mojom"), expected2)
+    self.assertEqual(parser.Parse(source2, "my_file.mojom"), expected2)
 
     source3 = "struct MyStruct { map<string, array<uint8>> data; };"
     expected3 = ast.Mojom(None, ast.ImportList(), [
@@ -854,7 +854,7 @@ class ParserTest(unittest.TestCase):
                                     ast.Identifier('uint8')))))), None)
             ]))
     ])
-    self.assertEquals(parser.Parse(source3, "my_file.mojom"), expected3)
+    self.assertEqual(parser.Parse(source3, "my_file.mojom"), expected3)
 
   def testValidMethod(self):
     """Tests parsing method declarations."""
@@ -871,7 +871,7 @@ class ParserTest(unittest.TestCase):
                                       ast.Typename(ast.Identifier('int32')))),
                     None)))
     ])
-    self.assertEquals(parser.Parse(source1, "my_file.mojom"), expected1)
+    self.assertEqual(parser.Parse(source1, "my_file.mojom"), expected1)
 
     source2 = """\
         interface MyInterface {
@@ -895,7 +895,7 @@ class ParserTest(unittest.TestCase):
                            ast.ParameterList(), ast.ParameterList())
             ]))
     ])
-    self.assertEquals(parser.Parse(source2, "my_file.mojom"), expected2)
+    self.assertEqual(parser.Parse(source2, "my_file.mojom"), expected2)
 
     source3 = """\
         interface MyInterface {
@@ -918,7 +918,33 @@ class ParserTest(unittest.TestCase):
                                       ast.Typename(ast.Identifier('bool')))
                     ]))))
     ])
-    self.assertEquals(parser.Parse(source3, "my_file.mojom"), expected3)
+    self.assertEqual(parser.Parse(source3, "my_file.mojom"), expected3)
+
+    source4 = """
+        interface MyInterface {
+          MyMethod(string a) => result<bool, bool>;
+        };
+        """
+    expected4 = ast.Mojom(
+        None,
+        ast.ImportList(),
+        [
+            ast.Interface(
+                ast.Name('MyInterface'),
+                None,
+                ast.InterfaceBody(
+                    ast.Method(
+                        ast.Name('MyMethod'),
+                        None,
+                        None,
+                        ast.ParameterList(
+                            ast.Parameter(
+                                ast.Name('a'), None, None,
+                                ast.Typename(ast.Identifier('string')))),
+                        # TODO(crbug.com/40841428): put in an actual return.
+                        None)))
+        ])
+    self.assertEqual(parser.Parse(source4, "my_file.mojom"), expected4)
 
   def testInvalidMethods(self):
     """Tests that invalid method declarations are correctly detected."""
@@ -929,7 +955,7 @@ class ParserTest(unittest.TestCase):
           MyMethod(string a,);
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected '\)':\n"
         r" *MyMethod\(string a,\);$"):
       parser.Parse(source1, "my_file.mojom")
@@ -940,7 +966,7 @@ class ParserTest(unittest.TestCase):
           MyMethod(, string a);
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected ',':\n"
         r" *MyMethod\(, string a\);$"):
       parser.Parse(source2, "my_file.mojom")
@@ -976,7 +1002,7 @@ class ParserTest(unittest.TestCase):
                                       ast.Typename(ast.Identifier('MyEnum')))))
             ]))
     ])
-    self.assertEquals(parser.Parse(source, "my_file.mojom"), expected)
+    self.assertEqual(parser.Parse(source, "my_file.mojom"), expected)
 
   def testInvalidInterfaceDefinitions(self):
     """Tests that definitions that aren't allowed in an interface are correctly
@@ -989,7 +1015,7 @@ class ParserTest(unittest.TestCase):
           };
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected 'struct':\n"
         r" *struct MyStruct {$"):
       parser.Parse(source1, "my_file.mojom")
@@ -1001,7 +1027,7 @@ class ParserTest(unittest.TestCase):
           };
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError,
         r"^my_file\.mojom:2: Error: Unexpected 'interface':\n"
         r" *interface MyInnerInterface {$"):
@@ -1014,7 +1040,7 @@ class ParserTest(unittest.TestCase):
         """
     # The parser thinks that "int32" is a plausible name for a method, so it's
     # "my_field" that gives it away.
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected 'my_field':\n"
         r" *int32 my_field;$"):
       parser.Parse(source3, "my_file.mojom")
@@ -1029,7 +1055,7 @@ class ParserTest(unittest.TestCase):
     expected1 = ast.Mojom(None, ast.ImportList(), [
         ast.Struct(ast.Name('MyStruct'), ast.AttributeList(), ast.StructBody())
     ])
-    self.assertEquals(parser.Parse(source1, "my_file.mojom"), expected1)
+    self.assertEqual(parser.Parse(source1, "my_file.mojom"), expected1)
 
     # One-element attribute list, with name value.
     source2 = "[MyAttribute=MyName] struct MyStruct {};"
@@ -1040,7 +1066,7 @@ class ParserTest(unittest.TestCase):
                 ast.Attribute(ast.Name("MyAttribute"), ast.Name("MyName"))),
             ast.StructBody())
     ])
-    self.assertEquals(parser.Parse(source2, "my_file.mojom"), expected2)
+    self.assertEqual(parser.Parse(source2, "my_file.mojom"), expected2)
 
     # Two-element attribute list, with one string value and one integer value.
     source3 = "[MyAttribute1 = \"hello\", MyAttribute2 = 5] struct MyStruct {};"
@@ -1052,7 +1078,7 @@ class ParserTest(unittest.TestCase):
                 ast.Attribute(ast.Name("MyAttribute2"), 5)
             ]), ast.StructBody())
     ])
-    self.assertEquals(parser.Parse(source3, "my_file.mojom"), expected3)
+    self.assertEqual(parser.Parse(source3, "my_file.mojom"), expected3)
 
     # Various places that attribute list is allowed.
     source4 = """\
@@ -1132,7 +1158,7 @@ class ParserTest(unittest.TestCase):
                       ast.Typename(ast.Identifier('double')),
                       ast.Literal('float', '1.23'))
         ])
-    self.assertEquals(parser.Parse(source4, "my_file.mojom"), expected4)
+    self.assertEqual(parser.Parse(source4, "my_file.mojom"), expected4)
 
     # TODO(vtl): Boolean attributes don't work yet. (In fact, we just |eval()|
     # literal (non-name) values, which is extremely dubious.)
@@ -1143,21 +1169,21 @@ class ParserTest(unittest.TestCase):
 
     # Trailing commas not allowed.
     source1 = "[MyAttribute=MyName,] struct MyStruct {};"
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:1: Error: Unexpected '\]':\n"
         r"\[MyAttribute=MyName,\] struct MyStruct {};$"):
       parser.Parse(source1, "my_file.mojom")
 
     # Missing value.
     source2 = "[MyAttribute=] struct MyStruct {};"
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:1: Error: Unexpected '\]':\n"
         r"\[MyAttribute=\] struct MyStruct {};$"):
       parser.Parse(source2, "my_file.mojom")
 
     # Missing key.
     source3 = "[=MyName] struct MyStruct {};"
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:1: Error: Unexpected '=':\n"
         r"\[=MyName\] struct MyStruct {};$"):
       parser.Parse(source3, "my_file.mojom")
@@ -1170,7 +1196,7 @@ class ParserTest(unittest.TestCase):
     expected1 = ast.Mojom(None,
                           ast.ImportList(ast.Import(None, "somedir/my.mojom")),
                           [])
-    self.assertEquals(parser.Parse(source1, "my_file.mojom"), expected1)
+    self.assertEqual(parser.Parse(source1, "my_file.mojom"), expected1)
 
     # Two imports (no module statement).
     source2 = """\
@@ -1183,7 +1209,7 @@ class ParserTest(unittest.TestCase):
             ast.Import(None, "somedir/my1.mojom"),
             ast.Import(None, "somedir/my2.mojom")
         ]), [])
-    self.assertEquals(parser.Parse(source2, "my_file.mojom"), expected2)
+    self.assertEqual(parser.Parse(source2, "my_file.mojom"), expected2)
 
     # Imports with module statement.
     source3 = """\
@@ -1197,7 +1223,7 @@ class ParserTest(unittest.TestCase):
             ast.Import(None, "somedir/my1.mojom"),
             ast.Import(None, "somedir/my2.mojom")
         ]), [])
-    self.assertEquals(parser.Parse(source3, "my_file.mojom"), expected3)
+    self.assertEqual(parser.Parse(source3, "my_file.mojom"), expected3)
 
   def testInvalidImports(self):
     """Tests that invalid import statements are correctly detected."""
@@ -1206,7 +1232,7 @@ class ParserTest(unittest.TestCase):
         // Make the error occur on line 2.
         import invalid
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected 'invalid':\n"
         r" *import invalid$"):
       parser.Parse(source1, "my_file.mojom")
@@ -1217,7 +1243,7 @@ class ParserTest(unittest.TestCase):
           int32 a;
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected 'struct':\n"
         r" *struct MyStruct {$"):
       parser.Parse(source2, "my_file.mojom")
@@ -1228,7 +1254,7 @@ class ParserTest(unittest.TestCase):
           int32 a;
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected 'struct':\n"
         r" *struct MyStruct {$"):
       parser.Parse(source3, "my_file.mojom")
@@ -1329,7 +1355,7 @@ class ParserTest(unittest.TestCase):
                                  nullable=True), None)
             ]))
     ])
-    self.assertEquals(parser.Parse(source, "my_file.mojom"), expected)
+    self.assertEqual(parser.Parse(source, "my_file.mojom"), expected)
 
   def testInvalidNullableTypes(self):
     """Tests that invalid nullable types are correctly detected."""
@@ -1338,7 +1364,7 @@ class ParserTest(unittest.TestCase):
           string?? a;
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected '\?':\n"
         r" *string\?\? a;$"):
       parser.Parse(source1, "my_file.mojom")
@@ -1348,7 +1374,7 @@ class ParserTest(unittest.TestCase):
           handle?<data_pipe_consumer> a;
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected '<':\n"
         r" *handle\?<data_pipe_consumer> a;$"):
       parser.Parse(source2, "my_file.mojom")
@@ -1375,7 +1401,7 @@ class ParserTest(unittest.TestCase):
                 ]))
         ])
     actual = parser.Parse(source, "my_file.mojom")
-    self.assertEquals(actual, expected)
+    self.assertEqual(actual, expected)
 
   def testUnionWithOrdinals(self):
     """Test that ordinals are assigned to fields."""
@@ -1399,7 +1425,7 @@ class ParserTest(unittest.TestCase):
                 ]))
         ])
     actual = parser.Parse(source, "my_file.mojom")
-    self.assertEquals(actual, expected)
+    self.assertEqual(actual, expected)
 
   def testUnionWithStructMembers(self):
     """Test that struct members are accepted."""
@@ -1420,7 +1446,7 @@ class ParserTest(unittest.TestCase):
                 ]))
         ])
     actual = parser.Parse(source, "my_file.mojom")
-    self.assertEquals(actual, expected)
+    self.assertEqual(actual, expected)
 
   def testUnionWithArrayMember(self):
     """Test that array members are accepted."""
@@ -1443,7 +1469,7 @@ class ParserTest(unittest.TestCase):
                 ]))
         ])
     actual = parser.Parse(source, "my_file.mojom")
-    self.assertEquals(actual, expected)
+    self.assertEqual(actual, expected)
 
   def testUnionWithMapMember(self):
     """Test that map members are accepted."""
@@ -1467,7 +1493,7 @@ class ParserTest(unittest.TestCase):
                 ]))
         ])
     actual = parser.Parse(source, "my_file.mojom")
-    self.assertEquals(actual, expected)
+    self.assertEqual(actual, expected)
 
   def testUnionDisallowNestedStruct(self):
     """Tests that structs cannot be nested in unions."""
@@ -1480,7 +1506,7 @@ class ParserTest(unittest.TestCase):
           };
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:4: Error: Unexpected 'struct':\n"
         r" *struct MyStruct {$"):
       parser.Parse(source, "my_file.mojom")
@@ -1496,7 +1522,7 @@ class ParserTest(unittest.TestCase):
           };
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError,
         r"^my_file\.mojom:4: Error: Unexpected 'interface':\n"
         r" *interface MyInterface {$"):
@@ -1513,7 +1539,7 @@ class ParserTest(unittest.TestCase):
           };
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:4: Error: Unexpected 'union':\n"
         r" *union MyOtherUnion {$"):
       parser.Parse(source, "my_file.mojom")
@@ -1529,7 +1555,7 @@ class ParserTest(unittest.TestCase):
           };
         };
         """
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         parser.ParseError, r"^my_file\.mojom:4: Error: Unexpected 'enum':\n"
         r" *enum MyEnum {$"):
       parser.Parse(source, "my_file.mojom")
@@ -1568,7 +1594,7 @@ class ParserTest(unittest.TestCase):
                                  nullable=True), None)
             ]))
     ])
-    self.assertEquals(parser.Parse(source1, "my_file.mojom"), expected1)
+    self.assertEqual(parser.Parse(source1, "my_file.mojom"), expected1)
 
     source2 = """\
         interface MyInterface {
@@ -1591,30 +1617,30 @@ class ParserTest(unittest.TestCase):
                                 ast.Receiver(ast.Identifier('B'),
                                              associated=True)))))))
     ])
-    self.assertEquals(parser.Parse(source2, "my_file.mojom"), expected2)
+    self.assertEqual(parser.Parse(source2, "my_file.mojom"), expected2)
 
   def testLexState(self):
     """Tests that the lex state of tokens is attached to AST nodes."""
     source1 = """struct MyStruct {\n  string foo = "hi";\n};"""
     actual = parser.Parse(source1, "my_file.mojom")
-    self.assertEquals(1, len(actual.definition_list))
+    self.assertEqual(1, len(actual.definition_list))
     struct = actual.definition_list[0]
     self.assertIsInstance(struct, ast.Struct)
-    self.assertEquals(ast.Location(1, 0), struct.start)
-    self.assertEquals(ast.Location(3, 41), struct.end)
-    self.assertEquals(ast.Name('MyStruct'), struct.mojom_name)
-    self.assertEquals(ast.Location(1, 7), struct.mojom_name.start)
-    self.assertEquals(ast.Location(1, 15), struct.mojom_name.end)
-    self.assertEquals(1, len(struct.body.items))
+    self.assertEqual(ast.Location(1, 0), struct.start)
+    self.assertEqual(ast.Location(3, 41), struct.end)
+    self.assertEqual(ast.Name('MyStruct'), struct.mojom_name)
+    self.assertEqual(ast.Location(1, 7), struct.mojom_name.start)
+    self.assertEqual(ast.Location(1, 15), struct.mojom_name.end)
+    self.assertEqual(1, len(struct.body.items))
     field = struct.body.items[0]
-    self.assertEquals(ast.Location(2, 20), field.start)
-    self.assertEquals(ast.Location(2, 38), field.end)
-    self.assertEquals(ast.Location(2, 20), field.typename.start)
-    self.assertEquals(ast.Location(2, 26), field.typename.end)
-    self.assertEquals(ast.Location(2, 27), field.mojom_name.start)
-    self.assertEquals(ast.Location(2, 30), field.mojom_name.end)
-    self.assertEquals(ast.Location(2, 33), field.default_value.start)
-    self.assertEquals(ast.Location(2, 37), field.default_value.end)
+    self.assertEqual(ast.Location(2, 20), field.start)
+    self.assertEqual(ast.Location(2, 38), field.end)
+    self.assertEqual(ast.Location(2, 20), field.typename.start)
+    self.assertEqual(ast.Location(2, 26), field.typename.end)
+    self.assertEqual(ast.Location(2, 27), field.mojom_name.start)
+    self.assertEqual(ast.Location(2, 30), field.mojom_name.end)
+    self.assertEqual(ast.Location(2, 33), field.default_value.start)
+    self.assertEqual(ast.Location(2, 37), field.default_value.end)
 
   def testCommentAttachment(self):
     source1 = """\
@@ -1638,37 +1664,37 @@ class ParserTest(unittest.TestCase):
         """
     tree = parser.Parse(source1, "my_file.mojom", with_comments=True)
 
-    self.assertEquals(1, len(tree.import_list.items))
-    self.assertEquals(2, len(tree.import_list.items[0].comments_before))
+    self.assertEqual(1, len(tree.import_list.items))
+    self.assertEqual(2, len(tree.import_list.items[0].comments_before))
     self.assertIn('// Before import 1.\n',
                   tree.import_list.items[0].comments_before[0].value)
     self.assertIn('// Can span two lines.',
                   tree.import_list.items[0].comments_before[0].value)
-    self.assertEquals('// Before import 2.',
-                      tree.import_list.items[0].comments_before[1].value)
+    self.assertEqual('// Before import 2.',
+                     tree.import_list.items[0].comments_before[1].value)
 
-    self.assertEquals(1, len(tree.definition_list))
+    self.assertEqual(1, len(tree.definition_list))
     struct = tree.definition_list[0]
-    self.assertEquals(1, len(struct.comments_before))
-    self.assertEquals('// Before struct.', struct.comments_before[0].value)
-    self.assertEquals(1, len(struct.comments_after))
-    self.assertEquals('// End of struct.', struct.comments_after[0].value)
-    self.assertEquals(1, len(struct.body.items))
+    self.assertEqual(1, len(struct.comments_before))
+    self.assertEqual('// Before struct.', struct.comments_before[0].value)
+    self.assertEqual(1, len(struct.comments_after))
+    self.assertEqual('// End of struct.', struct.comments_after[0].value)
+    self.assertEqual(1, len(struct.body.items))
 
     field = struct.body.items[0]
-    self.assertEquals(1, len(field.comments_before))
-    self.assertEquals('// Before field.', field.comments_before[0].value)
-    self.assertEquals(1, len(field.comments_suffix))
-    self.assertEquals('// End-of-field.', field.comments_suffix[0].value)
+    self.assertEqual(1, len(field.comments_before))
+    self.assertEqual('// Before field.', field.comments_before[0].value)
+    self.assertEqual(1, len(field.comments_suffix))
+    self.assertEqual('// End-of-field.', field.comments_suffix[0].value)
 
-    self.assertEquals(2, len(tree.comments_after))
-    self.assertEquals('// End-of-file 1.', tree.comments_after[0].value)
-    self.assertEquals('// End-of-file 2.', tree.comments_after[1].value)
+    self.assertEqual(2, len(tree.comments_after))
+    self.assertEqual('// End-of-file 1.', tree.comments_after[0].value)
+    self.assertEqual('// End-of-file 2.', tree.comments_after[1].value)
 
     source2 = "// Comment only.\n// Comment two.\n"
     tree = parser.Parse(source2, "my_file.mojom", with_comments=True)
-    self.assertEquals(1, len(tree.comments_after))
-    self.assertEquals(source2.strip(), tree.comments_after[0].value)
+    self.assertEqual(1, len(tree.comments_after))
+    self.assertEqual(source2.strip(), tree.comments_after[0].value)
 
     source3 = """\
         // Before interface.
@@ -1692,33 +1718,31 @@ class ParserTest(unittest.TestCase):
         """
     tree = parser.Parse(source3, "my_file.mojom", with_comments=True)
     interface = tree.definition_list[0]
-    self.assertEquals(2, len(interface.comments_before))
-    self.assertEquals('// Before interface.',
-                      interface.comments_before[0].value)
+    self.assertEqual(2, len(interface.comments_before))
+    self.assertEqual('// Before interface.', interface.comments_before[0].value)
     # This is an odd place to attach the comment, but it is also an odd
     # place to leave a comment.
-    self.assertEquals('// End of interface.',
-                      interface.comments_before[1].value)
-    self.assertEquals(2, interface.start.line)
+    self.assertEqual('// End of interface.', interface.comments_before[1].value)
+    self.assertEqual(2, interface.start.line)
 
     meth = interface.body.items[1]
-    self.assertEquals(3, len(meth.comments_before))
-    self.assertEquals('// Interface 1.', meth.comments_before[0].value)
-    self.assertEquals('// Interface 2.', meth.comments_before[1].value)
-    self.assertEquals('// Interface 3.', meth.comments_before[2].value)
-    self.assertEquals(1, len(meth.parameter_list.items[0].comments_suffix))
-    self.assertEquals('// End param a.',
-                      meth.parameter_list.items[0].comments_suffix[0].value)
-    self.assertEquals(1, len(meth.parameter_list.items[1].comments_suffix))
-    self.assertEquals('// End param b.',
-                      meth.parameter_list.items[1].comments_suffix[0].value)
+    self.assertEqual(3, len(meth.comments_before))
+    self.assertEqual('// Interface 1.', meth.comments_before[0].value)
+    self.assertEqual('// Interface 2.', meth.comments_before[1].value)
+    self.assertEqual('// Interface 3.', meth.comments_before[2].value)
+    self.assertEqual(1, len(meth.parameter_list.items[0].comments_suffix))
+    self.assertEqual('// End param a.',
+                     meth.parameter_list.items[0].comments_suffix[0].value)
+    self.assertEqual(1, len(meth.parameter_list.items[1].comments_suffix))
+    self.assertEqual('// End param b.',
+                     meth.parameter_list.items[1].comments_suffix[0].value)
 
-    self.assertEquals(3, len(interface.comments_after))
+    self.assertEqual(3, len(interface.comments_after))
     self.assertIn('// Interface 4.\n', interface.comments_after[0].value)
     self.assertIn('// Continuation of 4.', interface.comments_after[0].value)
-    self.assertEquals('// Interface 5.', interface.comments_after[1].value)
-    self.assertEquals('// Trailing interface.',
-                      interface.comments_after[2].value)
+    self.assertEqual('// Interface 5.', interface.comments_after[1].value)
+    self.assertEqual('// Trailing interface.',
+                     interface.comments_after[2].value)
 
 if __name__ == "__main__":
   unittest.main()

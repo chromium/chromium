@@ -43,6 +43,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
@@ -1538,6 +1539,13 @@ WebGLRenderingContextBase::~WebGLRenderingContextBase() {
   // Now that this context is destroyed, see if there's a
   // previously-evicted one that should be restored.
   RestoreEvictedContext(this);
+}
+
+HTMLCanvasElement* WebGLRenderingContextBase::canvas() const {
+  if (Host()->IsOffscreenCanvas()) {
+    return nullptr;
+  }
+  return static_cast<HTMLCanvasElement*>(Host());
 }
 
 void WebGLRenderingContextBase::DestroyContext() {

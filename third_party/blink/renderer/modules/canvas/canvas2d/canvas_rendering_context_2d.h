@@ -162,6 +162,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void StyleDidChange(const ComputedStyle* old_style,
                       const ComputedStyle& new_style) override;
+  void LangAttributeChanged() override;
 
   // SVGResourceClient implementation
   void ResourceContentChanged(SVGResource*) override;

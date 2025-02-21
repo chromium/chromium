@@ -12,12 +12,14 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill_ai/autofill_ai_util.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,8 +29,10 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
@@ -73,6 +77,9 @@ namespace autofill_private = extensions::api::autofill_private;
 namespace addressinput = i18n::addressinput;
 
 using autofill::AddressDataManager;
+using autofill::AutofillEntityDataManagerFactory;
+using autofill::EntityDataManager;
+using autofill::EntityInstance;
 using autofill::PaymentsDataManager;
 using autofill::autofill_metrics::LogMandatoryReauthOptInOrOutUpdateEvent;
 using autofill::autofill_metrics::LogMandatoryReauthSettingsPageEditCardEvent;
@@ -1076,6 +1083,7 @@ void AutofillPrivateHasUserAnnotationsEntriesFunction::OnEntriesRetrieved(
 ////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateIsUserEligibleForAutofillImprovementsFunction
 
+// TODO(crbug.com/393318914): Remove function.
 ExtensionFunction::ResponseAction
 AutofillPrivateIsUserEligibleForAutofillImprovementsFunction::Run() {
   Profile* profile =
@@ -1124,6 +1132,77 @@ AutofillPrivatePredictionImprovementsIphFeatureUsedFunction::Run() {
   client->NotifyIphFeatureUsed(
       autofill::AutofillClient::IphFeature::kAutofillAi);
   return RespondNow(NoArguments());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateAddOrUpdateEntityInstanceFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
+  std::optional<autofill_private::AddOrUpdateEntityInstance::Params>
+      parameters =
+          autofill_private::AddOrUpdateEntityInstance::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  const autofill_private::EntityInstance& private_api_entity_instance =
+      parameters->entity_instance;
+  EntityInstance entity_instance =
+      autofill_util::PrivateApiEntityInstanceToEntityInstance(
+          private_api_entity_instance);
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  EntityDataManager* entity_data_manager =
+      profile ? AutofillEntityDataManagerFactory::GetForProfile(profile)
+              : nullptr;
+
+  if (!entity_data_manager) {
+    return RespondNow(Error(kErrorAutofillAIUnavailable));
+  }
+  entity_data_manager->AddOrUpdateEntityInstance(entity_instance);
+  return RespondNow(NoArguments());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateRemoveEntityInstanceFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateRemoveEntityInstanceFunction::Run() {
+  std::optional<autofill_private::RemoveEntityInstance::Params> parameters =
+      autofill_private::RemoveEntityInstance::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  base::Uuid guid = base::Uuid::ParseLowercase(parameters->guid);
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  EntityDataManager* entity_data_manager =
+      profile ? AutofillEntityDataManagerFactory::GetForProfile(profile)
+              : nullptr;
+
+  if (!entity_data_manager) {
+    return RespondNow(Error(kErrorAutofillAIUnavailable));
+  }
+  entity_data_manager->RemoveEntityInstance(guid);
+  return RespondNow(NoArguments());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateLoadEntityInstancesFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateLoadEntityInstancesFunction::Run() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  EntityDataManager* entity_data_manager =
+      profile ? AutofillEntityDataManagerFactory::GetForProfile(profile)
+              : nullptr;
+
+  if (!entity_data_manager) {
+    return RespondNow(Error(kErrorAutofillAIUnavailable));
+  }
+  std::vector<autofill_private::EntityInstance> result =
+      base::ToVector(entity_data_manager->GetEntityInstances(),
+                     &autofill_util::EntityInstanceToPrivateApiEntityInstance);
+  return RespondNow(ArgumentList(
+      autofill_private::LoadEntityInstances::Results::Create(result)));
 }
 
 }  // namespace extensions

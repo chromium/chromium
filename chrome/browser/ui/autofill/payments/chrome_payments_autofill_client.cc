@@ -369,22 +369,19 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
     bridge->Hide();
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-    if (card_saved) {
-      if (on_confirmation_closed_callback) {
-        client_->GetAutofillSnackbarController()->ShowWithDurationAndCallback(
-            AutofillSnackbarType::kSaveCardSuccess,
-            kSaveCardConfirmationSnackbarDuration, base::DoNothing(),
-            std::move(on_confirmation_closed_callback));
-      } else {
-        client_->GetAutofillSnackbarController()->Show(
-            AutofillSnackbarType::kSaveCardSuccess, base::DoNothing());
-      }
-    } else if (result != PaymentsRpcResult::kClientSideTimeout) {
-      GetAutofillMessageController().Show(
-          AutofillMessageModel::CreateForSaveCardFailure());
+  if (card_saved) {
+    if (on_confirmation_closed_callback) {
+      client_->GetAutofillSnackbarController()->ShowWithDurationAndCallback(
+          AutofillSnackbarType::kSaveCardSuccess,
+          kSaveCardConfirmationSnackbarDuration, base::DoNothing(),
+          std::move(on_confirmation_closed_callback));
+    } else {
+      client_->GetAutofillSnackbarController()->Show(
+          AutofillSnackbarType::kSaveCardSuccess, base::DoNothing());
     }
+  } else if (result != PaymentsRpcResult::kClientSideTimeout) {
+    GetAutofillMessageController().Show(
+        AutofillMessageModel::CreateForSaveCardFailure());
   }
 #else  // !BUILDFLAG(IS_ANDROID)
   if (result == PaymentsRpcResult::kClientSideTimeout) {

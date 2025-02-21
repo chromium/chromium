@@ -705,22 +705,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "autofill-enable-save-card-loading-and-confirmation",
-    "owners": [
-      "darwinyang@chromium.org",
-      "chrome-payments-team@google.com"
-    ],
-    "expiry_milestone": 132
-  },
-  {
-    "name": "autofill-enable-save-card-local-save-fallback",
-    "owners": [
-      "darwinyang@chromium.org",
-      "chrome-payments-team@google.com"
-    ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "autofill-enable-syncing-of-pix-bank-accounts",
     "owners": ["siashah@chromium.org", "chrome-payments-team@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 140
@@ -729,15 +713,6 @@
     "name": "autofill-enable-vcn-3ds-authentication",
     "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145
-  },
-  {
-    "name": "autofill-enable-vcn-enroll-loading-and-confirmation",
-    "owners": [
-      "kavitasoni@chromium.org",
-      "darwinyang@chromium.org",
-      "chrome-payments-team@google.com"
-    ],
-    "expiry_milestone": 132
   },
   {
     "name": "autofill-enable-vcn-gray-out-for-merchant-opt-out",
@@ -2319,6 +2294,15 @@
       "mfoltz@chromium.org"
     ],
     "expiry_milestone": 140
+  },
+  {
+    "name": "element-capture-cross-tab",
+    "owners": [
+      "eladalon@chromium.org",
+      "jophba@chromium.org",
+      "mfoltz@chromium.org"
+    ],
+    "expiry_milestone": 160
   },
   {
     "name": "enable-accessibility-accelerator",
@@ -4054,7 +4038,7 @@
   {
     "name": "enable-unsafe-webgpu",
     "owners": [ "//third_party/blink/renderer/modules/webgpu/OWNERS" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "enable-user-link-capturing-scope-extensions-pwa",
@@ -7583,6 +7567,15 @@
     "name": "refresh-feed-on-start",
     "owners": ["//chrome/android/feed/OWNERS", "jianli@chromium.org"],
     "expiry_milestone": 140
+  },
+  {
+    "name": "region-capture-cross-tab",
+    "owners": [
+      "eladalon@chromium.org",
+      "jophba@chromium.org",
+      "mfoltz@chromium.org"
+    ],
+    "expiry_milestone": 160
   },
   {
     "name": "related-searches-all-language",

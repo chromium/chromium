@@ -1798,8 +1798,8 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     including contributions dropped due to the contribution limit. (To avoid
     unbounded memory usage, we don't track more than 10k dropped contributions.)
     Counts contributions as if they were merged, i.e. counts the number of merge
-    keys. Only records if the contribution merging feature is enabled. Recorded
-    for every PrivateAggregationHost mojo pipe {ApiAndDelay}.
+    keys. Only records if the aggregate error reporting feature is disabled.
+    Recorded for every PrivateAggregationHost mojo pipe {ApiAndDelay}.
   </summary>
   <token key="ApiAndDelay">
     <variant name="" summary="regardless of the calling API"/>
@@ -1844,6 +1844,10 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     that, even if successfully forwarded, the report may still be rejected by
     the budgeter, manager or in the aggregation_service layer. Recorded for
     every mojo pipe on disconnection.
+
+    If the aggregate error reporting feature is enabled, report success is
+    recorded, even if truncation occurs (as it occurs later in the pipeline).
+    See PrivacySandbox.PrivateAggregation.TruncationResult.
   </summary>
 </histogram>
 
@@ -1897,6 +1901,89 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     measurement-api-dev+alerts@google.com. Please make sure future versions of
     this histogram are properly set up for alerting, but prefer not to version
     the histogram if possible.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.PrivateAggregation.NumContributionMergeKeys{ApiAndDelay}"
+    units="contributions if merged" expires_after="2025-06-21">
+  <owner>alexmt@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Records the number of contributions processed by one pending contributions
+    object (i.e. corresponding to a single mojo pipe of the host), including
+    contributions dropped due to the contribution limit. (To avoid unbounded
+    memory usage, we don't track more than 10k dropped contributions.) Includes
+    both unconditional and triggered conditional contributions; does not include
+    contributions that are denied in the provisional budget check. Counts
+    contributions as if they were merged, i.e. counts the number of merge keys.
+    Only records if the aggregate error reporting feature is enabled. Recorded
+    for every PrivateAggregationPendingContributions corresponding to a mojo
+    pipe {ApiAndDelay}.
+  </summary>
+  <token key="ApiAndDelay">
+    <variant name="" summary="regardless of the calling API"/>
+    <variant name=".ProtectedAudience"
+        summary="with Protected Audience specified as the API"/>
+    <variant name=".SharedStorage"
+        summary="with Shared Storage specified as the API"/>
+    <variant name=".SharedStorage.FullDelay"
+        summary="with Shared Storage specified as the API and with *no*
+                 timeout set (causing the report to be sent after a longer,
+                 randomized delay"/>
+    <variant name=".SharedStorage.ReducedDelay"
+        summary="with Shared Storage specified as the API and with a timeout
+                 set (causing the report to be sent after only a short delay)"/>
+  </token>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.PrivateAggregation.NumFinalUnmergedContributions{ApiAndDelay}"
+    units="unmerged contributions" expires_after="2025-06-21">
+  <owner>alexmt@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Records the number of contributions processed by one pending contributions
+    object (i.e. corresponding to a single mojo pipe of the host). This does not
+    include contributions dropped due to the contribution limit. (To avoid
+    unbounded memory usage, we don't allow more than 10k contributions.)
+    Includes both unconditional and triggered conditional contributions; does
+    not include contributions that are denied in the provisional budget check.
+    Counts contributions individually, i.e. without considering if they can be
+    merged. Only records if the aggregate error reporting feature is enabled.
+    Recorded for every PrivateAggregationPendingContributions corresponding to a
+    mojo pipe {ApiAndDelay}.
+  </summary>
+  <token key="ApiAndDelay">
+    <variant name="" summary="regardless of the calling API"/>
+    <variant name=".ProtectedAudience"
+        summary="with Protected Audience specified as the API"/>
+    <variant name=".SharedStorage"
+        summary="with Shared Storage specified as the API"/>
+    <variant name=".SharedStorage.FullDelay"
+        summary="with Shared Storage specified as the API and with *no*
+                 timeout set (causing the report to be sent after a longer,
+                 randomized delay"/>
+    <variant name=".SharedStorage.ReducedDelay"
+        summary="with Shared Storage specified as the API and with a timeout
+                 set (causing the report to be sent after only a short delay)"/>
+  </token>
+</histogram>
+
+<histogram name="PrivacySandbox.PrivateAggregation.TruncationResult"
+    enum="PrivacySandboxPrivateAggregationTruncationResult"
+    expires_after="2025-06-21">
+  <owner>alexmt@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Record whether truncation was applied to the contributions processed by one
+    pending contributions object (i.e. corresponding to a single mojo pipe of
+    the host). If truncation was applied, this metric distinguishes between
+    cases where the truncation was necessary even when considering only the
+    unconditional contributions, or if those alone weren't sufficient (but it
+    was required with the triggered conditional contributions as well). Recorded
+    for every PrivateAggregationPendingContributions. Only records if the
+    aggregate error reporting feature is enabled.
   </summary>
 </histogram>
 

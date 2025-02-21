@@ -121,12 +121,6 @@ void IOSChromePaymentsAutofillClient::CreditCardUploadCompleted(
     std::optional<OnConfirmationClosedCallback>
         on_confirmation_closed_callback) {
   const bool card_saved = result == PaymentsRpcResult::kSuccess;
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-    autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(
-        /*is_shown=*/false, card_saved);
-    return;
-  }
   if (client_->GetAutofillSaveCardInfoBarDelegateIOS()) {
     client_->GetAutofillSaveCardInfoBarDelegateIOS()->CreditCardUploadCompleted(
         card_saved, std::move(on_confirmation_closed_callback));
@@ -183,10 +177,7 @@ void IOSChromePaymentsAutofillClient::ShowVirtualCardEnrollDialog(
   std::unique_ptr<VirtualCardEnrollUiModel> model =
       std::make_unique<VirtualCardEnrollUiModel>(
           virtual_card_enrollment_fields);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-    virtual_card_enroll_ui_model_ = model->GetWeakPtr();
-  }
+  virtual_card_enroll_ui_model_ = model->GetWeakPtr();
   bottom_sheet_tab_helper->ShowVirtualCardEnrollmentBottomSheet(
       std::move(model),
       VirtualCardEnrollmentCallbacks(std::move(accept_virtual_card_callback),
@@ -195,10 +186,6 @@ void IOSChromePaymentsAutofillClient::ShowVirtualCardEnrollDialog(
 
 void IOSChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
     PaymentsRpcResult result) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-    return;
-  }
   if (virtual_card_enroll_ui_model_) {
     virtual_card_enroll_ui_model_->SetEnrollmentProgress(
         result == PaymentsRpcResult::kSuccess

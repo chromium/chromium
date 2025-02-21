@@ -18,7 +18,7 @@ namespace autofill_ai {
 // predicted.
 BASE_FEATURE(kAutofillAi, "AutofillAi", base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsAutofillAiSupported(const PrefService* prefs) {
+bool AutofillAiIsPlatformAndEnterprisePolicyEligible(const PrefService* prefs) {
   constexpr bool is_supported_platform = BUILDFLAG(IS_CHROMEOS) ||
                                          BUILDFLAG(IS_LINUX) ||
                                          BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN);
@@ -35,6 +35,8 @@ bool IsAutofillAiSupported(const PrefService* prefs) {
              optimization_guide::prefs::
                  kAutofillPredictionImprovementsEnterprisePolicyAllowed) !=
              kAutofillPredictionSettingsDisabled &&
+         // TODO(crbug.com/395050867): Investigate whether checking that
+         // autofill is enabled still makes sense.
          prefs->GetBoolean(autofill::prefs::kAutofillProfileEnabled);
 }
 

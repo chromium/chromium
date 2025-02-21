@@ -371,8 +371,10 @@
     <region-selection id="regionSelectionLayer" theme="[[theme]]"
         screenshot-data-uri="[[screenshotDataUri]]"
         selection-overlay-rect="[[selectionOverlayRect]]"></region-selection>
-    <lens-text-layer id="textSelectionLayer"
-        selection-overlay-rect="[[selectionOverlayRect]]"></lens-text-layer>
+    <template is="dom-if" if="[[!simplifiedSelectionEnabled]]">
+      <lens-text-layer id="textSelectionLayer"
+          selection-overlay-rect="[[selectionOverlayRect]]"></lens-text-layer>
+    </template>
   </div>
   <div id="initialFlashScrim"></div>
   <div id="contextMenuOverlay">
@@ -396,7 +398,8 @@
                                       selectedRegionContextMenuY)]]"
         on-pointerenter="handlePointerEnterContextMenu"
         on-pointerleave="handlePointerLeaveContextMenu">
-      <div class="context-menu-item detected-text-context-menu-option"
+      <div id="selectTextContextMenuItem"
+          class="context-menu-item detected-text-context-menu-option"
           role="menuitem" on-pointerup="handleSelectText">
         <span class="menu-item-icon text"></span>
         <span class="menu-item-label">$i18n{selectText}</span>

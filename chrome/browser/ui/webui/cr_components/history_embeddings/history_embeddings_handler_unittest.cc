@@ -28,6 +28,7 @@
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
+#include "components/passage_embeddings/passage_embeddings_test_util.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/test_web_ui.h"
@@ -63,10 +64,13 @@ class MockPage : public history_embeddings::mojom::Page {
 }  // namespace
 
 std::unique_ptr<KeyedService> BuildTestHistoryEmbeddingsService(
+    passage_embeddings::TestEnvironment* passage_embeddings_test_env,
     content::BrowserContext* browser_context) {
   return HistoryEmbeddingsServiceFactory::
       BuildServiceInstanceForBrowserContextForTesting(
           browser_context,
+          passage_embeddings_test_env->embedder_metadata_provider(),
+          passage_embeddings_test_env->embedder(),
           /*answerer=*/nullptr,
           /*intent_classifier=*/nullptr);
 }
@@ -118,7 +122,8 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
                 HistoryServiceFactory::GetDefaultFactory()},
             TestingProfile::TestingFactory{
                 HistoryEmbeddingsServiceFactory::GetInstance(),
-                base::BindRepeating(&BuildTestHistoryEmbeddingsService)},
+                base::BindRepeating(&BuildTestHistoryEmbeddingsService,
+                                    &passage_embeddings_test_env_)},
             TestingProfile::TestingFactory{
                 PageContentAnnotationsServiceFactory::GetInstance(),
                 base::BindRepeating(&BuildTestPageContentAnnotationsService)},
@@ -168,6 +173,7 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content::WebContents> web_contents_;
   content::TestWebUI web_ui_;
+  passage_embeddings::TestEnvironment passage_embeddings_test_env_;
   std::unique_ptr<HistoryEmbeddingsHandler> handler_;
   testing::NiceMock<MockPage> page_;
   raw_ptr<MockHatsService> mock_hats_service_;

@@ -108,7 +108,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
             // Collected for metrics to avoid additional JNI calls.
             items.add(item);
         }
-        // On the off chance no BookmarkItems were actual collected, bail early.
+        // On the off chance no BookmarkItems were actually collected, bail early.
         if (firstItem == null) return false;
         recordMetricsForOpenBookmarksInNewTabs(items);
 

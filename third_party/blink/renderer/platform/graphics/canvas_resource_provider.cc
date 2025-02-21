@@ -797,7 +797,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
                                           reinterpret_cast<uintptr_t>(this));
 
-    resource()->OnMemoryDump(pmd, path, GetSkImageInfo().bytesPerPixel());
+    resource()->OnMemoryDump(pmd, path);
 
     std::string cached_path = path + "/cached";
     for (const auto& canvas_resource : CanvasResources()) {
@@ -808,8 +808,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       if (resource_pointer == resource()) {
         continue;
       }
-      resource_pointer->OnMemoryDump(pmd, cached_path,
-                                     GetSkImageInfo().bytesPerPixel());
+      resource_pointer->OnMemoryDump(pmd, cached_path);
     }
   }
 

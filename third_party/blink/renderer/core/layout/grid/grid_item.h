@@ -172,7 +172,7 @@ struct CORE_EXPORT GridItemData {
                : must_consider_grid_items_for_row_sizing;
   }
 
-  bool IsOutOfFlow() const { return node.IsOutOfFlowPositioned(); }
+  bool IsOutOfFlow() const { return node && node.IsOutOfFlowPositioned(); }
 
   const TrackSpanProperties& GetTrackSpanProperties(
       GridTrackSizingDirection track_direction) const {

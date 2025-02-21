@@ -84,12 +84,12 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private final ObservableSupplierImpl<Integer> mBackgroundColorSupplier =
             new ObservableSupplierImpl<>(Color.TRANSPARENT);
 
-    private PropertyModelChangeProcessor mModelChangeProcessor;
-    private TabGridDialogCoordinator mTabGridDialogCoordinator;
-    private LazyOneshotSupplier<TabGridDialogMediator.DialogController>
+    private @Nullable PropertyModelChangeProcessor mModelChangeProcessor;
+    private @Nullable TabGridDialogCoordinator mTabGridDialogCoordinator;
+    private @Nullable LazyOneshotSupplier<TabGridDialogMediator.DialogController>
             mTabGridDialogControllerSupplier;
-    private TabListCoordinator mTabStripCoordinator;
-    private TabGroupUiMediator mMediator;
+    private @Nullable TabListCoordinator mTabStripCoordinator;
+    private @Nullable TabGroupUiMediator mMediator;
     private @Nullable TabBubbler mTabBubbler;
 
     /** Creates a new {@link TabGroupUiCoordinator} */
@@ -336,24 +336,22 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         return mHandleBackPressChangedSupplier;
     }
 
-    /** Destroy any members that needs clean up. */
     @Override
     public void destroy() {
-        // TODO(crbug.com/40766050): Add tests for destroy conditions.
-        // Early return if the component hasn't initialized yet.
-        if (mActivity == null) return;
-
-        mTabStripCoordinator.onDestroy();
+        if (mTabStripCoordinator != null) {
+            mTabStripCoordinator.onDestroy();
+        }
         if (mTabGridDialogCoordinator != null) {
             mTabGridDialogCoordinator.destroy();
         }
-        mModelChangeProcessor.destroy();
+        if (mModelChangeProcessor != null) {
+            mModelChangeProcessor.destroy();
+        }
         if (mMediator != null) {
             mMediator.destroy();
         }
         if (mTabBubbler != null) {
             mTabBubbler.destroy();
-            mTabBubbler = null;
         }
     }
 }

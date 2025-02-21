@@ -429,12 +429,6 @@ extern const char kAutofillEnableRankingFormulaCreditCardsDescription[];
 extern const char kAutofillEnableSaveAndFillName[];
 extern const char kAutofillEnableSaveAndFillDescription[];
 
-extern const char kAutofillEnableSaveCardLoadingAndConfirmationName[];
-extern const char kAutofillEnableSaveCardLoadingAndConfirmationDescription[];
-
-extern const char kAutofillEnableSaveCardLocalSaveFallbackName[];
-extern const char kAutofillEnableSaveCardLocalSaveFallbackDescription[];
-
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAutofillEnableSyncingOfPixBankAccountsName[];
 extern const char kAutofillEnableSyncingOfPixBankAccountsDescription[];
@@ -445,9 +439,6 @@ extern const char kAutofillEnableVcn3dsAuthenticationDescription[];
 
 extern const char kAutofillEnableVcnGrayOutForMerchantOptOutName[];
 extern const char kAutofillEnableVcnGrayOutForMerchantOptOutDescription[];
-
-extern const char kAutofillEnableVcnEnrollLoadingAndConfirmationName[];
-extern const char kAutofillEnableVcnEnrollLoadingAndConfirmationDescription[];
 
 extern const char kAutofillEnableVerveCardSupportName[];
 extern const char kAutofillEnableVerveCardSupportDescription[];
@@ -570,8 +561,16 @@ extern const char kCanvasHibernationDescription[];
 extern const char kCanvasOopRasterizationName[];
 extern const char kCanvasOopRasterizationDescription[];
 
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kCapturedSurfaceControlName[];
 extern const char kCapturedSurfaceControlDescription[];
+
+extern const char kCrossTabElementCaptureName[];
+extern const char kCrossTabElementCaptureDescription[];
+
+extern const char kCrossTabRegionCaptureName[];
+extern const char kCrossTabRegionCaptureDescription[];
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 extern const char kContextualCueingName[];

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.ACTION_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.BOTTOM_MARGIN_OVERRIDE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.DESCRIPTION_TEXT;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION;
@@ -331,6 +332,7 @@ public class TabGroupListMediator {
                             .with(IS_ICON_VISIBLE, false)
                             .with(CARD_TYPE, MESSAGE)
                             .with(MESSAGING_BACKEND_SERVICE_ID, messageId)
+                            .with(ACTION_BUTTON_VISIBLE, false)
                             .with(LEFT_MARGIN_OVERRIDE, 0)
                             .with(RIGHT_MARGIN_OVERRIDE, 0)
                             .with(BOTTOM_MARGIN_OVERRIDE, 0)

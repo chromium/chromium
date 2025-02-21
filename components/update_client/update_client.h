@@ -304,6 +304,9 @@ struct CrxComponent {
   // flavor, branding, or provenance of the software.
   std::string brand;
 
+  // Optional. `lang` is the display language for the app.
+  std::string lang;
+
   // If populated, the `install_data_index` is sent to the update server as part
   // of the `data` element. The server will provide corresponding installer data
   // in the update response. This data is then provided to the installer when

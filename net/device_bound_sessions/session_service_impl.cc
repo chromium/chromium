@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/schemeful_site.h"
@@ -238,9 +239,10 @@ void SessionServiceImpl::DeferRequestForRefresh(
                        request->device_bound_session_access_callback(),
                        std::move(site), session_id);
     RegistrationFetcher::StartFetchWithExistingKey(
-        RegistrationRequestParam::Create(*session), key_service_.get(),
-        context_.get(), request->isolation_info(), net_log_source_for_refresh,
-        request->initiator(), std::move(callback), *key_id);
+        RegistrationRequestParam::CreateForRefresh(*session),
+        key_service_.get(), context_.get(), request->isolation_info(),
+        net_log_source_for_refresh, request->initiator(), std::move(callback),
+        *key_id);
   }
 }
 
@@ -319,6 +321,9 @@ void SessionServiceImpl::UnblockDeferredRequests(const Session::Id& session_id,
   deferred_requests_.erase(it);
 
   for (auto& request : requests) {
+    base::UmaHistogramTimes("Net.DeviceBoundSessions.RequestDeferredDuration",
+                            request.timer.Elapsed());
+
     if (is_cookie_refreshed) {
       std::move(request.restart_callback).Run();
     } else {

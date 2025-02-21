@@ -46,6 +46,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
@@ -81,6 +82,7 @@ public class BookmarkBarCoordinatorTest {
     @Mock private ImageServiceBridgeJni mImageServiceBridgeJni;
     @Mock private Profile mProfile;
     @Mock private BookmarkOpener mBookmarkOpener;
+    @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
 
     private BookmarkBarCoordinator mCoordinator;
     private BookmarkId mDesktopFolderId;
@@ -141,7 +143,8 @@ public class BookmarkBarCoordinatorTest {
                         mHeightChangeCallback,
                         mProfileSupplier,
                         viewStub,
-                        mBookmarkOpener);
+                        mBookmarkOpener,
+                        new ObservableSupplierImpl<>(mBookmarkManagerOpener));
         assertNotNull("Verify view stub inflation during construction.", mView);
 
         mItemsContainer = mView.findViewById(R.id.bookmark_bar_items_container);

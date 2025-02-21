@@ -40,6 +40,8 @@ bool UseCounterFeature::IsValid() const {
     case mojom::UseCounterFeatureType::kPermissionsPolicyViolationEnforce:
     case mojom::UseCounterFeatureType::kPermissionsPolicyHeader:
     case mojom::UseCounterFeatureType::kPermissionsPolicyIframeAttribute:
+    case mojom::UseCounterFeatureType::
+        kPermissionsPolicyEnabledPrivacySensitive:
       return value_ <= static_cast<UseCounterFeature::EnumValue>(
                            network::mojom::PermissionsPolicyFeature::kMaxValue);
   }

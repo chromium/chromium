@@ -287,5 +287,18 @@ suite('ComparisonTableListItemTest', () => {
       assertEquals(TABLE_UUID, event.detail.uuid);
       assertFalse(event.detail.checked);
     });
+
+    test(
+        'rename menu item is disabled when the checkbox is visible',
+        async () => {
+          itemElement.$.item.dispatchEvent(new MouseEvent('contextmenu'));
+          await microtasksFinished();
+
+          const menu = itemElement.$.menu.getIfExists();
+          assertTrue(!!menu);
+          const renameButton = menu.querySelector<HTMLButtonElement>('#rename');
+          assertTrue(!!renameButton);
+          assertTrue(renameButton.disabled);
+        });
   });
 });

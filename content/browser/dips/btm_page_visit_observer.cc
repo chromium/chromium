@@ -148,6 +148,16 @@ void BtmPageVisitObserver::ReportVisit() {
   pending_visits_.pop_front();
 }
 
+void BtmPageVisitObserver::NotifyStorageAccessed(
+    RenderFrameHost* render_frame_host,
+    blink::mojom::StorageTypeAccessed storage_type,
+    bool blocked) {
+  if (!render_frame_host->GetPage().IsPrimary() || blocked) {
+    return;
+  }
+  current_page_.had_qualifying_storage_access = true;
+}
+
 void BtmPageVisitObserver::OnCookiesAccessed(
     RenderFrameHost* render_frame_host,
     const CookieAccessDetails& details) {

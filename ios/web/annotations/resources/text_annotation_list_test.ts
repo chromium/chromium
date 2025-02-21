@@ -6,7 +6,8 @@
  * @fileoverview Tests for text_annotation_list.ts.
  */
 
-import {TextAnnotationList, TextViewportAnnotation} from '//ios/web/annotations/resources/text_annotation_list.js';
+import type {TextViewportAnnotation} from '//ios/web/annotations/resources/text_annotation_list.js';
+import {TextAnnotationList} from '//ios/web/annotations/resources/text_annotation_list.js';
 import {expectEq, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
 class TestTextAnnotationList extends TestSuite {
@@ -96,4 +97,4 @@ class TestTextAnnotationList extends TestSuite {
   }
 }
 
-export {TestTextAnnotationList}
+export {TestTextAnnotationList};
