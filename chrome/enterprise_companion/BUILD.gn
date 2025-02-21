@@ -447,48 +447,6 @@ group("all") {
   }
 }
 
-if (is_mac && !is_component_build && enable_dsyms) {
-  action("syms") {
-    script = "//build/redirect_stdout.py"
-    sources = [ "$root_out_dir/$enterprise_companion_product_full_name.app/Contents/MacOS/$enterprise_companion_product_full_name" ]
-    _dump_syms =
-        "//third_party/breakpad:dump_syms($host_system_allocator_toolchain)"
-    public_deps = [
-      "//chrome/enterprise_companion/mac:enterprise_companion_bundle",
-      _dump_syms,
-    ]
-    outputs = [ "$root_out_dir/$enterprise_companion_product_full_name-$chrome_version_full.breakpad" ]
-
-    args = rebase_path(outputs, root_build_dir) + [
-             rebase_path(get_label_info(_dump_syms, "root_out_dir") + "/" +
-                             get_label_info(_dump_syms, "name"),
-                         root_build_dir),
-             "-m",
-             "-d",
-             "-g",
-             rebase_path(
-                 "$root_out_dir/$enterprise_companion_product_full_name.dSYM/Contents/Resources/DWARF/$enterprise_companion_product_full_name",
-                 root_build_dir),
-             rebase_path(
-                 "$root_out_dir/$enterprise_companion_product_full_name.app/Contents/MacOS/$enterprise_companion_product_full_name",
-                 root_build_dir),
-           ]
-  }
-
-  action("syms_archive") {
-    script = "//chrome/tools/build/mac/archive_symbols.py"
-    sources = [ "$root_out_dir/$enterprise_companion_product_full_name.app/Contents/MacOS/$enterprise_companion_product_full_name" ]
-    deps = [ ":syms" ]
-    _output =
-        "$root_out_dir/$enterprise_companion_product_full_name.dSYM.tar.bz2"
-    outputs = [ _output ]
-    args = [ rebase_path(_output, root_out_dir) ] +
-           rebase_path(
-               [ "$root_out_dir/$enterprise_companion_product_full_name.dSYM" ],
-               root_out_dir)
-  }
-}
-
 # The contents of this zip are uploaded by archivers (//infra/archive_config).
 artifact_zip("enterprise_companion_zip") {
   output = "$root_build_dir/enterprise_companion.zip"
@@ -508,14 +466,6 @@ artifact_zip("enterprise_companion_zip") {
       "//chrome/enterprise_companion/mac:copy_signing",
       "//chrome/enterprise_companion/mac:enterprise_companion_bundle",
     ]
-    if (!is_component_build && enable_dsyms) {
-      inputs +=
-          get_target_outputs(":syms_archive") + get_target_outputs(":syms")
-      deps += [
-        ":syms",
-        ":syms_archive",
-      ]
-    }
   } else if (is_win) {
     inputs = [ "$root_build_dir/enterprise_companion.exe" ]
     deps = [ ":enterprise_companion" ]
