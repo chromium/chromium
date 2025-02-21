@@ -860,15 +860,16 @@ class _VariantGrid:
                 else f'{output_files.offscreen}-expected.html'),
         }
         for canvas_type, params in self._canvas_type_params.items():
-            params['reference_file'] = pathlib.Path(
+            # Generate reference file.
+            if canvas_type != _CanvasType.WORKER or needs_worker_reference:
+                _render(jinja_env, ref_templates[self.template_type], params,
+                        ref_output_paths[canvas_type])
+
+            # Generate test file, with a link to the reference file.
+            params['reference_file_link'] = pathlib.Path(
                 ref_output_paths[canvas_type]).name
             _render(jinja_env, test_templates[canvas_type], params,
                     test_output_paths[canvas_type])
-
-            if canvas_type != _CanvasType.WORKER or needs_worker_reference:
-                params['is_test_reference'] = True
-                _render(jinja_env, ref_templates[self.template_type], params,
-                        ref_output_paths[canvas_type])
 
     def _write_testharness_test(self, jinja_env: jinja2.Environment,
                                 output_files: _OutputPaths):
