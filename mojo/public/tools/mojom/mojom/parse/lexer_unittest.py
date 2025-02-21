@@ -60,113 +60,104 @@ class LexerTest(unittest.TestCase):
 
   def testValidKeywords(self):
     """Tests valid keywords."""
-    self.assertEquals(
-        self._SingleTokenForInput("handle"), _MakeLexTokenForKeyword("handle"))
-    self.assertEquals(
-        self._SingleTokenForInput("import"), _MakeLexTokenForKeyword("import"))
-    self.assertEquals(
-        self._SingleTokenForInput("module"), _MakeLexTokenForKeyword("module"))
-    self.assertEquals(
-        self._SingleTokenForInput("struct"), _MakeLexTokenForKeyword("struct"))
-    self.assertEquals(
-        self._SingleTokenForInput("union"), _MakeLexTokenForKeyword("union"))
-    self.assertEquals(
-        self._SingleTokenForInput("interface"),
-        _MakeLexTokenForKeyword("interface"))
-    self.assertEquals(
-        self._SingleTokenForInput("enum"), _MakeLexTokenForKeyword("enum"))
-    self.assertEquals(
-        self._SingleTokenForInput("const"), _MakeLexTokenForKeyword("const"))
-    self.assertEquals(
-        self._SingleTokenForInput("true"), _MakeLexTokenForKeyword("true"))
-    self.assertEquals(
-        self._SingleTokenForInput("false"), _MakeLexTokenForKeyword("false"))
-    self.assertEquals(
-        self._SingleTokenForInput("default"),
-        _MakeLexTokenForKeyword("default"))
-    self.assertEquals(
-        self._SingleTokenForInput("array"), _MakeLexTokenForKeyword("array"))
-    self.assertEquals(
-        self._SingleTokenForInput("map"), _MakeLexTokenForKeyword("map"))
+    self.assertEqual(self._SingleTokenForInput("handle"),
+                     _MakeLexTokenForKeyword("handle"))
+    self.assertEqual(self._SingleTokenForInput("import"),
+                     _MakeLexTokenForKeyword("import"))
+    self.assertEqual(self._SingleTokenForInput("module"),
+                     _MakeLexTokenForKeyword("module"))
+    self.assertEqual(self._SingleTokenForInput("struct"),
+                     _MakeLexTokenForKeyword("struct"))
+    self.assertEqual(self._SingleTokenForInput("union"),
+                     _MakeLexTokenForKeyword("union"))
+    self.assertEqual(self._SingleTokenForInput("interface"),
+                     _MakeLexTokenForKeyword("interface"))
+    self.assertEqual(self._SingleTokenForInput("enum"),
+                     _MakeLexTokenForKeyword("enum"))
+    self.assertEqual(self._SingleTokenForInput("const"),
+                     _MakeLexTokenForKeyword("const"))
+    self.assertEqual(self._SingleTokenForInput("true"),
+                     _MakeLexTokenForKeyword("true"))
+    self.assertEqual(self._SingleTokenForInput("false"),
+                     _MakeLexTokenForKeyword("false"))
+    self.assertEqual(self._SingleTokenForInput("default"),
+                     _MakeLexTokenForKeyword("default"))
+    self.assertEqual(self._SingleTokenForInput("array"),
+                     _MakeLexTokenForKeyword("array"))
+    self.assertEqual(self._SingleTokenForInput("map"),
+                     _MakeLexTokenForKeyword("map"))
 
   def testValidIdentifiers(self):
     """Tests identifiers."""
-    self.assertEquals(
-        self._SingleTokenForInput("abcd"), _MakeLexToken("NAME", "abcd"))
-    self.assertEquals(
-        self._SingleTokenForInput("AbC_d012_"),
-        _MakeLexToken("NAME", "AbC_d012_"))
-    self.assertEquals(
-        self._SingleTokenForInput("_0123"), _MakeLexToken("NAME", "_0123"))
+    self.assertEqual(self._SingleTokenForInput("abcd"),
+                     _MakeLexToken("NAME", "abcd"))
+    self.assertEqual(self._SingleTokenForInput("AbC_d012_"),
+                     _MakeLexToken("NAME", "AbC_d012_"))
+    self.assertEqual(self._SingleTokenForInput("_0123"),
+                     _MakeLexToken("NAME", "_0123"))
 
   def testInvalidIdentifiers(self):
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         mojom.parse.lexer.LexError,
         r"^my_file\.mojom:1: Error: Illegal character '\$'$"):
       self._TokensForInput("$abc")
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         mojom.parse.lexer.LexError,
         r"^my_file\.mojom:1: Error: Illegal character '\$'$"):
       self._TokensForInput("a$bc")
 
   def testDecimalIntegerConstants(self):
-    self.assertEquals(
-        self._SingleTokenForInput("0"), _MakeLexToken("INT_CONST_DEC", "0"))
-    self.assertEquals(
-        self._SingleTokenForInput("1"), _MakeLexToken("INT_CONST_DEC", "1"))
-    self.assertEquals(
-        self._SingleTokenForInput("123"), _MakeLexToken("INT_CONST_DEC", "123"))
-    self.assertEquals(
-        self._SingleTokenForInput("10"), _MakeLexToken("INT_CONST_DEC", "10"))
+    self.assertEqual(self._SingleTokenForInput("0"),
+                     _MakeLexToken("INT_CONST_DEC", "0"))
+    self.assertEqual(self._SingleTokenForInput("1"),
+                     _MakeLexToken("INT_CONST_DEC", "1"))
+    self.assertEqual(self._SingleTokenForInput("123"),
+                     _MakeLexToken("INT_CONST_DEC", "123"))
+    self.assertEqual(self._SingleTokenForInput("10"),
+                     _MakeLexToken("INT_CONST_DEC", "10"))
 
   def testValidTokens(self):
     """Tests valid tokens (which aren't tested elsewhere)."""
     # Keywords tested in |testValidKeywords|.
     # NAME tested in |testValidIdentifiers|.
-    self.assertEquals(
-        self._SingleTokenForInput("@123"), _MakeLexToken("ORDINAL", "@123"))
-    self.assertEquals(
-        self._SingleTokenForInput("456"), _MakeLexToken("INT_CONST_DEC", "456"))
-    self.assertEquals(
-        self._SingleTokenForInput("0x01aB2eF3"),
-        _MakeLexToken("INT_CONST_HEX", "0x01aB2eF3"))
-    self.assertEquals(
-        self._SingleTokenForInput("123.456"),
-        _MakeLexToken("FLOAT_CONST", "123.456"))
-    self.assertEquals(
-        self._SingleTokenForInput("\"hello\""),
-        _MakeLexToken("STRING_LITERAL", "\"hello\""))
-    self.assertEquals(
-        self._SingleTokenForInput("+"), _MakeLexToken("PLUS", "+"))
-    self.assertEquals(
-        self._SingleTokenForInput("-"), _MakeLexToken("MINUS", "-"))
-    self.assertEquals(
-        self._SingleTokenForInput("?"), _MakeLexToken("QSTN", "?"))
-    self.assertEquals(
-        self._SingleTokenForInput("="), _MakeLexToken("EQUALS", "="))
-    self.assertEquals(
-        self._SingleTokenForInput("=>"), _MakeLexToken("RESPONSE", "=>"))
-    self.assertEquals(
-        self._SingleTokenForInput("("), _MakeLexToken("LPAREN", "("))
-    self.assertEquals(
-        self._SingleTokenForInput(")"), _MakeLexToken("RPAREN", ")"))
-    self.assertEquals(
-        self._SingleTokenForInput("["), _MakeLexToken("LBRACKET", "["))
-    self.assertEquals(
-        self._SingleTokenForInput("]"), _MakeLexToken("RBRACKET", "]"))
-    self.assertEquals(
-        self._SingleTokenForInput("{"), _MakeLexToken("LBRACE", "{"))
-    self.assertEquals(
-        self._SingleTokenForInput("}"), _MakeLexToken("RBRACE", "}"))
-    self.assertEquals(
-        self._SingleTokenForInput("<"), _MakeLexToken("LANGLE", "<"))
-    self.assertEquals(
-        self._SingleTokenForInput(">"), _MakeLexToken("RANGLE", ">"))
-    self.assertEquals(
-        self._SingleTokenForInput(";"), _MakeLexToken("SEMI", ";"))
-    self.assertEquals(
-        self._SingleTokenForInput(","), _MakeLexToken("COMMA", ","))
-    self.assertEquals(self._SingleTokenForInput("."), _MakeLexToken("DOT", "."))
+    self.assertEqual(self._SingleTokenForInput("@123"),
+                     _MakeLexToken("ORDINAL", "@123"))
+    self.assertEqual(self._SingleTokenForInput("456"),
+                     _MakeLexToken("INT_CONST_DEC", "456"))
+    self.assertEqual(self._SingleTokenForInput("0x01aB2eF3"),
+                     _MakeLexToken("INT_CONST_HEX", "0x01aB2eF3"))
+    self.assertEqual(self._SingleTokenForInput("123.456"),
+                     _MakeLexToken("FLOAT_CONST", "123.456"))
+    self.assertEqual(self._SingleTokenForInput("\"hello\""),
+                     _MakeLexToken("STRING_LITERAL", "\"hello\""))
+    self.assertEqual(self._SingleTokenForInput("+"), _MakeLexToken("PLUS", "+"))
+    self.assertEqual(self._SingleTokenForInput("-"),
+                     _MakeLexToken("MINUS", "-"))
+    self.assertEqual(self._SingleTokenForInput("?"), _MakeLexToken("QSTN", "?"))
+    self.assertEqual(self._SingleTokenForInput("="),
+                     _MakeLexToken("EQUALS", "="))
+    self.assertEqual(self._SingleTokenForInput("=>"),
+                     _MakeLexToken("RESPONSE", "=>"))
+    self.assertEqual(self._SingleTokenForInput("("),
+                     _MakeLexToken("LPAREN", "("))
+    self.assertEqual(self._SingleTokenForInput(")"),
+                     _MakeLexToken("RPAREN", ")"))
+    self.assertEqual(self._SingleTokenForInput("["),
+                     _MakeLexToken("LBRACKET", "["))
+    self.assertEqual(self._SingleTokenForInput("]"),
+                     _MakeLexToken("RBRACKET", "]"))
+    self.assertEqual(self._SingleTokenForInput("{"),
+                     _MakeLexToken("LBRACE", "{"))
+    self.assertEqual(self._SingleTokenForInput("}"),
+                     _MakeLexToken("RBRACE", "}"))
+    self.assertEqual(self._SingleTokenForInput("<"),
+                     _MakeLexToken("LANGLE", "<"))
+    self.assertEqual(self._SingleTokenForInput(">"),
+                     _MakeLexToken("RANGLE", ">"))
+    self.assertEqual(self._SingleTokenForInput(";"), _MakeLexToken("SEMI", ";"))
+    self.assertEqual(self._SingleTokenForInput(","),
+                     _MakeLexToken("COMMA", ","))
+    self.assertEqual(self._SingleTokenForInput("."), _MakeLexToken("DOT", "."))
 
   def _TokensForInput(self, input_string):
     """Gets a list of tokens for the given input string."""

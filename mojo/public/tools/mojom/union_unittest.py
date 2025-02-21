@@ -12,7 +12,7 @@ class UnionTest(MojomParserTestCase):
     """Verifies that extensible unions must have a default field."""
     mojom = 'foo.mojom'
     self.WriteFile(mojom, 'module foo; [Extensible] union U { bool x; };')
-    with self.assertRaisesRegexp(Exception, 'must specify a \[Default\]'):
+    with self.assertRaisesRegex(Exception, 'must specify a \[Default\]'):
       self.ParseMojoms([mojom])
 
   def testExtensibleSingleDefault(self):
@@ -26,7 +26,7 @@ class UnionTest(MojomParserTestCase):
                  [Default] bool y;
                };
                """)
-    with self.assertRaisesRegexp(Exception, 'Multiple \[Default\] fields'):
+    with self.assertRaisesRegex(Exception, 'Multiple \[Default\] fields'):
       self.ParseMojoms([mojom])
 
   def testExtensibleDefaultTypeValid(self):
@@ -40,5 +40,5 @@ class UnionTest(MojomParserTestCase):
                  [Default] handle<message_pipe> p;
                };
                """)
-    with self.assertRaisesRegexp(Exception, 'must be nullable or integral'):
+    with self.assertRaisesRegex(Exception, 'must be nullable or integral'):
       self.ParseMojoms([mojom])
