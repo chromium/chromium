@@ -89,6 +89,11 @@ bool IsPlusAddressesManuallyTriggered(
 // TODO(crbug.com/339543182): Cleanup after launching on iOS.
 bool IsAddressFieldSwappingEnabled();
 
+// Returns whether the feature `kAutofillPaymentsFieldSwapping` is enabled
+// or not.
+// TODO(crbug.com/354175563): Remove when launched on all platforms.
+bool IsPaymentsFieldSwappingEnabled();
+
 // Extracts comma-separated strings from a ButtonTitleList.
 std::u16string GetButtonTitlesString(const ButtonTitleList& titles_list);
 

@@ -1986,26 +1986,6 @@
             ]
         }
     ],
-    "AutofillEnablePaymentsFieldSwapping": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnablePaymentsFieldSwapping"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableSupportForParsingWithSharedLabels": [
         {
             "platforms": [
@@ -2517,6 +2497,25 @@
                     },
                     "enable_features": [
                         "AutofillPasswordUserPerceptionSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillPaymentsFieldSwapping": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillPaymentsFieldSwapping"
                     ]
                 }
             ]

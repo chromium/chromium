@@ -178,6 +178,14 @@ bool IsAddressFieldSwappingEnabled() {
 #endif
 }
 
+bool IsPaymentsFieldSwappingEnabled() {
+#if BUILDFLAG(IS_IOS)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(features::kAutofillPaymentsFieldSwapping);
+#endif
+}
+
 std::u16string GetButtonTitlesString(const ButtonTitleList& titles_list) {
   std::vector<std::u16string> titles = base::ToVector(
       titles_list, [](const auto& list_item) { return list_item.first; });

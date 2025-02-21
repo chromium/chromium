@@ -575,12 +575,13 @@ TEST_F(FormFillerTest, FillCreditCardForm_StripCardNumber) {
   EXPECT_THAT(filled_fields[0], AutofilledWith(u"4234567890123456"));
 }
 
+#if !BUILDFLAG(IS_IOS)
 // Tests that when payment form fields are autofilled and payment swapping is
 // enabled, the autofilled values can be replaced with empty values.
 TEST_F(FormFillerTest, PaymentsSwappingWithPartiallyEmptyData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnablePaymentsFieldSwapping);
+      features::kAutofillPaymentsFieldSwapping);
 
   FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
                                                      /*use_month_type=*/false);
@@ -615,6 +616,7 @@ TEST_F(FormFillerTest, PaymentsSwappingWithPartiallyEmptyData) {
   EXPECT_EQ(filled_fields[3].value(), u"");
   EXPECT_FALSE(filled_fields[3].is_autofilled());
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 struct PartialCreditCardDateParams {
   const char* cc_month = "";

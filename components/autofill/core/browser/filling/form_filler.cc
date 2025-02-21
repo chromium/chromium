@@ -218,9 +218,7 @@ bool AllowPaymentSwapping(const AutofillField& trigger_field,
              FieldTypeGroup::kCreditCard &&
          GroupTypeOfFieldType(field.Type().GetStorableType()) ==
              FieldTypeGroup::kCreditCard &&
-         !is_refill &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillEnablePaymentsFieldSwapping);
+         !is_refill && IsPaymentsFieldSwappingEnabled();
 }
 
 // Returns whether a filling action for `filling_product` should be included in
@@ -304,7 +302,7 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
 
   // Don't fill previously autofilled fields except the initiating field or
   // when it's a refill or for credit card fields, when
-  // `kAutofillEnablePaymentsFieldSwapping` is enabled.
+  // `kAutofillPaymentsFieldSwapping` is enabled.
   add_if(field.is_autofilled() && !is_trigger_field && !is_refill &&
              !AllowPaymentSwapping(trigger_field, autofill_field, is_refill),
          FieldFillingSkipReason::kAlreadyAutofilled);
