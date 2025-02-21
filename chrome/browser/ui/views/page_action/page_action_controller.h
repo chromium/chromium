@@ -24,6 +24,10 @@ namespace base {
 class CallbackListSubscription;
 }
 
+namespace ui {
+class ImageModel;
+}
+
 namespace page_actions {
 
 class PageActionModelFactory;
@@ -63,6 +67,22 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
   void OverrideText(actions::ActionId action_id,
                     const std::u16string& override_text);
   void ClearOverrideText(actions::ActionId action_id);
+
+  // By default, the page action will have an image which can be shared in the
+  // other places that rely on the same action item. However, features can
+  // provide a custom image to use for the page action for a specific context
+  // (tab).
+  void OverrideImage(actions::ActionId action_id,
+                     const ui::ImageModel& override_image);
+  void ClearOverrideImage(actions::ActionId action_id);
+
+  // By default, the page action will have an tooltip which can be shared in the
+  // other places that rely on the same action item. However, features can
+  // provide a custom tooltip to use for the page action for a specific context
+  // (tab).
+  void OverrideTooltip(actions::ActionId action_id,
+                       const std::u16string& override_tooltip);
+  void ClearOverrideTooltip(actions::ActionId action_id);
 
   // Manages observers for the page action's underlying `PageActionModel`.
   void AddObserver(

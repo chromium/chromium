@@ -33,7 +33,7 @@ using ::testing::Return;
 using ::testing::ReturnRef;
 
 constexpr int kDefaultIconSize = 16;
-constexpr char16_t kTestText[] = u"Test text";
+const std::u16string kTestText = u"Test text";
 
 class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
  public:
@@ -162,8 +162,9 @@ class PageActionViewWithMockModelTest : public ChromeViewsTestBase {
 
     ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
     ON_CALL(mock_model_, GetShowSuggestionChip()).WillByDefault(Return(false));
-    ON_CALL(mock_model_, GetText()).WillByDefault(Return(mock_string_));
-    ON_CALL(mock_model_, GetTooltipText()).WillByDefault(Return(mock_string_));
+    ON_CALL(mock_model_, GetText()).WillByDefault(ReturnRef(mock_string_));
+    ON_CALL(mock_model_, GetTooltipText())
+        .WillByDefault(ReturnRef(mock_string_));
     ON_CALL(mock_model_, GetImage()).WillByDefault(ReturnRef(mock_image_));
 
     page_action_view_->SetModel(model());
@@ -263,7 +264,7 @@ TEST_F(PageActionViewWithMockModelTest, LabelVisibility) {
 
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*model(), GetText()).WillRepeatedly(Return(kTestText));
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_TRUE(page_action_view()->GetVisible());
   EXPECT_TRUE(page_action_view()->ShouldShowLabel());
@@ -294,13 +295,13 @@ TEST_F(PageActionViewWithMockModelTest,
 }
 
 TEST_F(PageActionViewWithMockModelTest, SuggestionText) {
-  EXPECT_CALL(*model(), GetText()).WillRepeatedly(Return(kTestText));
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_EQ(page_action_view()->GetText(), kTestText);
 }
 
 TEST_F(PageActionViewWithMockModelTest, TooltipText) {
-  EXPECT_CALL(*model(), GetTooltipText()).WillRepeatedly(Return(kTestText));
+  EXPECT_CALL(*model(), GetTooltipText()).WillRepeatedly(ReturnRef(kTestText));
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_EQ(page_action_view()->GetTooltipText(), kTestText);
 }
@@ -332,7 +333,7 @@ TEST_F(PageActionViewWithMockModelTest, OnThemeChangedUpdatesIconImage) {
 // Test that UpdateBorder adjusts the insets based on label visibility.
 TEST_F(PageActionViewWithMockModelTest, UpdateBorderAdjustsInsets) {
   EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*model(), GetText()).WillRepeatedly(Return(kTestText));
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
   page_action_view()->OnPageActionModelChanged(*model());
   const gfx::Insets initial_insets = page_action_view()->GetInsets();
 
