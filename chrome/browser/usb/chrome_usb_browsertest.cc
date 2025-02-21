@@ -794,8 +794,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
               testing::EndsWith("permissions policy."));
 }
 
+// TODO(crbug.com/398292721): Flaky on Mac and Linux builds.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_PermissionsPolicy_Iframe_Src DISABLED_PermissionsPolicy_Iframe_Src
+#else
+#define MAYBE_PermissionsPolicy_Iframe_Src PermissionsPolicy_Iframe_Src
+#endif
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
-                       PermissionsPolicy_Iframe_Src) {
+                       MAYBE_PermissionsPolicy_Iframe_Src) {
   // Install an Isolated Web App that has usb turned on for all origins in its
   // manifest. Create a cross-origin iframe on the page that specifies an allow
   // attribute allowing usb for 'src', and expect that usb is accessible on the
