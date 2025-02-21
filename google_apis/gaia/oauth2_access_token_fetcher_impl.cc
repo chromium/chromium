@@ -95,6 +95,10 @@ OAuth2ResponseErrorToOAuth2Response(const std::string& error) {
     return OAuth2AccessTokenFetcherImpl::kAdminPolicyEnforced;
   }
 
+  if (error == "access_denied") {
+    return OAuth2AccessTokenFetcherImpl::kAccessDenied;
+  }
+
   return OAuth2AccessTokenFetcherImpl::kUnknownError;
 }
 
@@ -255,6 +259,7 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
 
     case kRateLimitExceeded:
     case kInternalFailure:
+    case kAccessDenied:
       // Transient error.
       error = GoogleServiceAuthError::FromServiceUnavailable(response_str);
       break;
