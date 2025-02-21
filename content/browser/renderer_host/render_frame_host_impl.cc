@@ -3798,7 +3798,7 @@ void RenderFrameHostImpl::AccessibilityHitTest(
 }
 
 gfx::NativeWindow RenderFrameHostImpl::GetTopLevelNativeWindow() {
-  return delegate_ ? delegate_->GetOwnerNativeWindow() : nullptr;
+  return delegate_ ? delegate_->GetOwnerNativeWindow() : gfx::NativeWindow();
 }
 
 bool RenderFrameHostImpl::CanFireAccessibilityEvents() const {

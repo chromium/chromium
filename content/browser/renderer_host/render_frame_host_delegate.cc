@@ -226,7 +226,7 @@ WebContents* RenderFrameHostDelegate::GetOpenedPartitionedPopin() const {
 }
 
 gfx::NativeWindow RenderFrameHostDelegate::GetOwnerNativeWindow() {
-  return nullptr;
+  return gfx::NativeWindow();
 }
 
 }  // namespace content
