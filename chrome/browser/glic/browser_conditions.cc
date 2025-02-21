@@ -62,13 +62,6 @@ bool IsBrowserInForeground(Browser* browser) {
   return in_foreground;
 }
 
-bool IsAnyBrowserInForeground() {
-  Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
-  return last_active_browser && last_active_browser->is_type_normal()
-             ? IsBrowserInForeground(last_active_browser)
-             : false;
-}
-
 class BrowserAttachObservationImpl : public BrowserAttachObservation,
                                      public BrowserListObserver,
                                      public views::WidgetObserver {
