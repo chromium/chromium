@@ -2627,6 +2627,45 @@ TEST_F(SunfishTest, ActionButtonsCaptureButtonNoOverlap) {
   }
 }
 
+// Tests that opening the search results panel while a settings menu is open and
+// observed by the focus cycler does not result in a crash.
+TEST_F(SunfishTest, PanelCreationWithMenuObserved) {
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+
+  // Start a regular capture session and select a region.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 100, 100),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+
+  // Shift-Tab two times to focus on the settings button.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN, /*count=*/2);
+  EXPECT_EQ(FocusGroup::kSettingsClose,
+            session_test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, session_test_api.GetCurrentFocusIndex());
+
+  // Press the enter key to open the settings menu. The current focus group
+  // should be `kPendingSettings`.
+  SendKey(ui::VKEY_RETURN, event_generator);
+  ASSERT_TRUE(session_test_api.GetCaptureModeSettingsView());
+  EXPECT_EQ(FocusGroup::kPendingSettings,
+            session_test_api.GetCurrentFocusGroup());
+
+  // Tab once to enter focus into the settings menu.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE);
+  ASSERT_EQ(FocusGroup::kSettingsMenu, session_test_api.GetCurrentFocusGroup());
+
+  // Click on the search button with the menu open to end the session and open
+  // the search results panel.
+  auto* search_button = session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kSearchButton);
+  ASSERT_TRUE(search_button);
+  LeftClickOn(search_button);
+}
+
 using SunfishDisplayMetricsTest = SunfishTest;
 
 // TODO(crbug.com/388564694): Enable after resolving flakiness.

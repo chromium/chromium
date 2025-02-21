@@ -459,15 +459,11 @@ CaptureModeSessionFocusCycler::CaptureModeSessionFocusCycler(
                              FocusGroup::kSettingsMenu,
                              FocusGroup::kSettingsClose},
       groups_for_region_{
-          FocusGroup::kNone,
-          FocusGroup::kTypeSource,
-          FocusGroup::kSelection,
-          FocusGroup::kCameraPreview,
-          FocusGroup::kCaptureButton,
-          FocusGroup::kActionButtons,
-          FocusGroup::kRecordingTypeMenu,
-          FocusGroup::kSettingsMenu,
-          FocusGroup::kSettingsClose,
+          FocusGroup::kNone,          FocusGroup::kSearchResultsPanel,
+          FocusGroup::kTypeSource,    FocusGroup::kSelection,
+          FocusGroup::kCameraPreview, FocusGroup::kCaptureButton,
+          FocusGroup::kActionButtons, FocusGroup::kRecordingTypeMenu,
+          FocusGroup::kSettingsMenu,  FocusGroup::kSettingsClose,
       },
       groups_for_window_{FocusGroup::kNone, FocusGroup::kTypeSource,
                          FocusGroup::kCaptureWindow, FocusGroup::kSettingsMenu,
@@ -476,8 +472,8 @@ CaptureModeSessionFocusCycler::CaptureModeSessionFocusCycler(
           FocusGroup::kNone, FocusGroup::kStartRecordingButton,
           FocusGroup::kCameraPreview, FocusGroup::kSettingsMenu,
           FocusGroup::kSettingsClose},
-      groups_for_sunfish_{FocusGroup::kNone, FocusGroup::kSelection,
-                          FocusGroup::kActionButtons,
+      groups_for_sunfish_{FocusGroup::kNone, FocusGroup::kSearchResultsPanel,
+                          FocusGroup::kSelection, FocusGroup::kActionButtons,
                           FocusGroup::kSettingsClose},
       session_(session),
       scoped_a11y_overrider_(
@@ -650,14 +646,17 @@ void CaptureModeSessionFocusCycler::OnCaptureLabelWidgetUpdated() {
 void CaptureModeSessionFocusCycler::OnMenuOpened(views::Widget* widget,
                                                  FocusGroup focus_group,
                                                  bool by_key_event) {
-  DCHECK(!menu_widget_observeration_.IsObserving());
-
-  menu_widget_observeration_.Observe(widget);
+  session_widget_observeration_.AddObservation(widget);
   ClearCurrentVisibleFocus();
   current_focus_group_ = focus_group;
   menu_opened_with_keyboard_nav_ = by_key_event;
   focus_index_ = 0u;
   UpdateA11yAnnotation();
+}
+
+void CaptureModeSessionFocusCycler::OnSearchResultsPanelCreated(
+    views::Widget* panel_widget) {
+  session_widget_observeration_.AddObservation(panel_widget);
 }
 
 void CaptureModeSessionFocusCycler::OnWidgetClosing(views::Widget* widget) {
@@ -676,23 +675,26 @@ void CaptureModeSessionFocusCycler::OnWidgetDestroying(views::Widget* widget) {
   //   `CloseNow()`. See https://crbug.com/1350743.
   // Implementing both let's us handle the closing synchronously via
   // `OnWidgetClosing()`, and avoid any crashes or UAFs if it was never called.
-  if (!menu_widget_observeration_.IsObserving()) {
+  if (!session_widget_observeration_.IsObservingSource(widget)) {
     return;
   }
 
   menu_opened_with_keyboard_nav_ = false;
-  menu_widget_observeration_.Reset();
+  session_widget_observeration_.RemoveObservation(widget);
 
   // Return immediately if the widget is closing by the closing of `session_`.
   if (session_->is_shutting_down())
     return;
 
-  // Remove focus if one of the menu-related groups is currently focused.
+  // Remove focus if one of the menu-related groups or the search results panel
+  // are currently focused.
   bool should_update_focus = false;
   if (current_focus_group_ == FocusGroup::kPendingSettings ||
-      current_focus_group_ == FocusGroup::kSettingsMenu) {
-    // If the settings menu is closed while focus is in or about to be in it,
-    // we manually put the focus back on the settings button.
+      current_focus_group_ == FocusGroup::kSettingsMenu ||
+      current_focus_group_ == FocusGroup::kSearchResultsPanel) {
+    // If the settings menu or or search results panel are closed while focus is
+    // in or about to be in it, we manually put the focus back on the settings
+    // button.
     current_focus_group_ = FocusGroup::kSettingsClose;
     focus_index_ = 0u;
     should_update_focus = true;
@@ -712,7 +714,17 @@ void CaptureModeSessionFocusCycler::OnWidgetDestroying(views::Widget* widget) {
 
   if (should_update_focus) {
     const auto highlightable_views = GetGroupItems(current_focus_group_);
-    DCHECK_EQ(highlightable_views.size(), 2u);
+
+    // In a Sunfish session, we update the focus back to the settings button,
+    // and `FocusGroup::kSettingsClose` should only contain one highlightable
+    // view.
+    if (session_->active_behavior()->behavior_type() ==
+        BehaviorType::kSunfish) {
+      DCHECK_EQ(highlightable_views.size(), 1u);
+    } else {
+      DCHECK_EQ(highlightable_views.size(), 2u);
+    }
+
     scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
         GetA11yOverrideWindow());
     highlightable_views[focus_index_]->PseudoFocus();
@@ -827,6 +839,10 @@ bool CaptureModeSessionFocusCycler::IsGroupAvailable(FocusGroup group) const {
       return session_->action_container_view_ &&
              !session_->action_container_view_->GetFocusableViews().empty();
     }
+    case FocusGroup::kSearchResultsPanel:
+      // TODO: crbug.com/380887729 - Update this behavior so the search results
+      // panel views can be properly focused.
+      return false;
   }
 }
 
@@ -941,6 +957,10 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       }
       break;
     }
+    case FocusGroup::kSearchResultsPanel:
+      // TODO: crbug.com/380887729 - Update this behavior so the search results
+      // panel views can be properly focused.
+      break;
   }
   return items;
 }
@@ -975,6 +995,10 @@ aura::Window* CaptureModeSessionFocusCycler::GetA11yOverrideWindow() const {
       return GetRecordingTypeMenuWidget()->GetNativeWindow();
     case FocusGroup::kActionButtons:
       return session_->action_container_widget()->GetNativeWindow();
+    case FocusGroup::kSearchResultsPanel:
+      return CaptureModeController::Get()
+          ->search_results_panel_widget()
+          ->GetNativeWindow();
   }
 }
 
