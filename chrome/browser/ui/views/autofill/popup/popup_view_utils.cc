@@ -455,7 +455,6 @@ bool IsExpandableSuggestionType(SuggestionType type) {
   switch (type) {
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAddressFieldByFieldFilling:
-    case SuggestionType::kAutofillAiError:
     case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kDevtoolsTestAddresses:
@@ -466,7 +465,6 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kAutocompleteEntry:
-    case SuggestionType::kAutofillAiLoadingState:
     case SuggestionType::kBnplEntry:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:

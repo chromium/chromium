@@ -239,8 +239,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kAutocompleteEntry:
-    case SuggestionType::kAutofillAiError:
-    case SuggestionType::kAutofillAiLoadingState:
     case SuggestionType::kBnplEntry:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
@@ -688,7 +686,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddresses:
-    case SuggestionType::kAutofillAiError:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageAutofillAi:
@@ -697,7 +694,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kManagePlusAddress:
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kPlusAddressError:
-    case SuggestionType::kAutofillAiLoadingState:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
@@ -899,8 +895,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:
-    case SuggestionType::kAutofillAiLoadingState:
-    case SuggestionType::kAutofillAiError:
       NOTREACHED();  // Should be handled elsewhere.
   }
   // Note that some suggestion types return early.
@@ -1020,9 +1014,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:
-    case SuggestionType::kAutofillAiLoadingState:
     case SuggestionType::kFillAutofillAi:
-    case SuggestionType::kAutofillAiError:
       return false;
   }
 }

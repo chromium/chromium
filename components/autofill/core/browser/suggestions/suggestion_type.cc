@@ -102,12 +102,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kDevtoolsTestAddressByCountry";
     case SuggestionType::kDevtoolsTestAddressEntry:
       return "kDevtoolsTestAddressEntry";
-    case SuggestionType::kAutofillAiLoadingState:
-      return "kAutofillAiLoadingState";
     case SuggestionType::kFillAutofillAi:
       return "kFillAutofillAi";
-    case SuggestionType::kAutofillAiError:
-      return "kAutofillAiError";
   }
   NOTREACHED();
 }
