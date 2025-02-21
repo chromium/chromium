@@ -36,6 +36,7 @@
 #include "components/history_embeddings/mock_intent_classifier.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/passage_embeddings/passage_embeddings_test_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -69,10 +70,13 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
 
     HistoryEmbeddingsServiceFactory::GetInstance()->SetTestingFactory(
         browser()->profile(),
-        base::BindLambdaForTesting([](content::BrowserContext* context) {
+        base::BindLambdaForTesting([this](content::BrowserContext* context) {
           return HistoryEmbeddingsServiceFactory::
               BuildServiceInstanceForBrowserContextForTesting(
-                  context, std::make_unique<history_embeddings::MockAnswerer>(),
+                  context,
+                  passage_embeddings_test_env_.embedder_metadata_provider(),
+                  passage_embeddings_test_env_.embedder(),
+                  std::make_unique<history_embeddings::MockAnswerer>(),
                   std::make_unique<history_embeddings::MockIntentClassifier>());
         }));
   }
@@ -117,6 +121,7 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
 
  private:
   autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
+  passage_embeddings::TestEnvironment passage_embeddings_test_env_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_ =
       std::make_unique<net::EmbeddedTestServer>(
           net::EmbeddedTestServer::TYPE_HTTPS);

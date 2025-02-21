@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/passage_embeddings/scheduling_embedder.h"
+#include "components/passage_embeddings/internal/scheduling_embedder.h"
 
-#include <atomic>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -90,14 +89,19 @@ void SchedulingEmbedder::Job::Finish(ComputeEmbeddingsStatus status) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-SchedulingEmbedder::SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
-                                       size_t max_jobs,
-                                       size_t max_batch_size,
-                                       bool use_performance_scenario)
-    : embedder_(std::move(embedder)),
+SchedulingEmbedder::SchedulingEmbedder(
+    EmbedderMetadataProvider* embedder_metadata_provider,
+    GetEmbeddingsCallback get_embeddings_callback,
+    size_t max_jobs,
+    size_t max_batch_size,
+    bool use_performance_scenario)
+    : get_embeddings_callback_(get_embeddings_callback),
       max_jobs_(max_jobs),
       max_batch_size_(max_batch_size),
       use_performance_scenario_(use_performance_scenario) {
+  if (embedder_metadata_provider) {
+    embedder_metadata_observation_.Observe(embedder_metadata_provider);
+  }
   if (use_performance_scenario_) {
     performance_scenario_observation_.Observe(
         performance_scenarios::PerformanceScenarioObserverList::GetForScope(
@@ -201,8 +205,8 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
   }
 
   work_submitted_ = true;
-  embedder_->ComputePassagesEmbeddings(
-      priority, std::move(passages),
+  get_embeddings_callback_.Run(
+      std::move(passages), priority,
       base::BindOnce(&SchedulingEmbedder::OnEmbeddingsComputed,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -270,10 +274,17 @@ void SchedulingEmbedder::OnInputScenarioChanged(ScenarioScope scope,
   SubmitWorkToEmbedder();
 }
 
-void SchedulingEmbedder::OnEmbeddingsComputed(std::vector<std::string> passages,
-                                              std::vector<Embedding> embeddings,
-                                              TaskId task_id,
-                                              ComputeEmbeddingsStatus status) {
+void SchedulingEmbedder::OnEmbeddingsComputed(
+    std::vector<mojom::PassageEmbeddingsResultPtr> results,
+    ComputeEmbeddingsStatus status) {
+  std::vector<std::string> passages;
+  std::vector<Embedding> embeddings;
+  for (auto& result : results) {
+    passages.push_back(result->passage);
+    embeddings.emplace_back(result->embeddings);
+    embeddings.back().Normalize();
+  }
+
   VLOG(3) << embeddings.size() << " embeddings computed for " << passages.size()
           << " passages with status " << static_cast<int>(status);
   CHECK_EQ(passages.size(), embeddings.size());
@@ -313,26 +324,6 @@ void SchedulingEmbedder::OnEmbeddingsComputed(std::vector<std::string> passages,
   // immediately/synchronously, depending on the embedder.
   work_submitted_ = false;
   SubmitWorkToEmbedder();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-SchedulingClientEmbedder::SchedulingClientEmbedder(
-    SchedulingEmbedder* scheduling_embedder)
-    : scheduling_embedder_(scheduling_embedder) {}
-
-SchedulingClientEmbedder::~SchedulingClientEmbedder() = default;
-
-Embedder::TaskId SchedulingClientEmbedder::ComputePassagesEmbeddings(
-    passage_embeddings::PassagePriority priority,
-    std::vector<std::string> passages,
-    ComputePassagesEmbeddingsCallback callback) {
-  return scheduling_embedder_->ComputePassagesEmbeddings(
-      priority, std::move(passages), std::move(callback));
-}
-
-bool SchedulingClientEmbedder::TryCancel(TaskId task_id) {
-  return scheduling_embedder_->TryCancel(task_id);
 }
 
 }  // namespace passage_embeddings

@@ -25,7 +25,6 @@
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "url/gurl.h"
 
@@ -56,9 +55,7 @@ void OnGotEmbeddings(base::ElapsedTimer embeddings_computation_timer,
 }  // namespace
 
 EmbedderTabObserver::EmbedderTabObserver(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      embedder_(
-          ChromePassageEmbeddingsServiceController::Get()->MakeEmbedder()) {}
+    : content::WebContentsObserver(web_contents) {}
 
 EmbedderTabObserver::~EmbedderTabObserver() = default;
 
@@ -160,10 +157,12 @@ void EmbedderTabObserver::OnGotPassages(
           << total_text_size;
 
   base::ElapsedTimer embeddings_computation_timer;
-  embedder_->ComputePassagesEmbeddings(
-      PassagePriority::kPassive, std::move(passages),
-      base::BindOnce(&OnGotEmbeddings,
-                     std::move(embeddings_computation_timer)));
+  ChromePassageEmbeddingsServiceController::Get()
+      ->GetEmbedder()
+      ->ComputePassagesEmbeddings(
+          PassagePriority::kPassive, std::move(passages),
+          base::BindOnce(&OnGotEmbeddings,
+                         std::move(embeddings_computation_timer)));
 }
 
 Profile* EmbedderTabObserver::GetProfile() {

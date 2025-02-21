@@ -91,6 +91,7 @@ source_set("unit_tests") {
     "//components/os_crypt/async/browser:test_support",
     "//components/page_content_annotations/core:test_support",
     "//components/passage_embeddings",
+    "//components/passage_embeddings:test_support",
     "//mojo/public/cpp/bindings",
     "//services/passage_embeddings/public/mojom",
     "//testing/gtest",

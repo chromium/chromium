@@ -2,21 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/passage_embeddings/scheduling_embedder.h"
+#include "components/passage_embeddings/internal/scheduling_embedder.h"
 
 #include <memory>
 #include <tuple>
 
+#include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/passage_embeddings/embedder.h"
-#include "components/passage_embeddings/mock_embedder.h"
+#include "components/passage_embeddings/passage_embeddings_service_controller.h"
+#include "components/passage_embeddings/passage_embeddings_test_util.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace passage_embeddings {
+
+namespace {
 
 using ComputePassagesEmbeddingsFuture =
     base::test::TestFuture<std::vector<std::string>,
@@ -24,55 +29,81 @@ using ComputePassagesEmbeddingsFuture =
                            SchedulingEmbedder::TaskId,
                            ComputeEmbeddingsStatus>;
 
-class MockEmbedderWithDelay : public MockEmbedder {
+void GetEmbeddings(std::vector<std::string> passages,
+                   PassagePriority priority,
+                   SchedulingEmbedder::GetEmbeddingsResultCallback callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](std::vector<std::string> passages,
+             SchedulingEmbedder::GetEmbeddingsResultCallback callback) {
+            std::vector<mojom::PassageEmbeddingsResultPtr> results;
+            for (const std::string& passage : passages) {
+              results.push_back(mojom::PassageEmbeddingsResult::New());
+              results.back()->embeddings =
+                  std::vector<float>(kEmbeddingsModelOutputSize, 1.0);
+              results.back()->passage = passage;
+            }
+            std::move(callback).Run(std::move(results),
+                                    ComputeEmbeddingsStatus::kSuccess);
+          },
+          std::move(passages), std::move(callback)),
+      base::Seconds(1));
+}
+
+}  // namespace
+
+class SchedulingEmbedderPublic : public SchedulingEmbedder {
  public:
-  static constexpr base::TimeDelta kTimeout = base::Seconds(1);
+  SchedulingEmbedderPublic(EmbedderMetadataProvider* embedder_metadata_provider,
+                           GetEmbeddingsCallback get_embeddings_callback,
+                           size_t max_jobs,
+                           size_t scheduled_max_batch_size,
+                           bool use_performance_scenario)
+      : SchedulingEmbedder(embedder_metadata_provider,
+                           get_embeddings_callback,
+                           max_jobs,
+                           scheduled_max_batch_size,
+                           use_performance_scenario) {}
 
-  MockEmbedderWithDelay() = default;
-  ~MockEmbedderWithDelay() override = default;
-
-  // Embedder:
-  TaskId ComputePassagesEmbeddings(
-      PassagePriority priority,
-      std::vector<std::string> passages,
-      ComputePassagesEmbeddingsCallback callback) override {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(passages),
-                       ComputeEmbeddingsForPassages(passages), kInvalidTaskId,
-                       ComputeEmbeddingsStatus::kSuccess),
-        kTimeout);
-    return kInvalidTaskId;
-  }
+  using SchedulingEmbedder::embedder_metadata_;
+  using SchedulingEmbedder::GetEmbeddingsCallback;
+  using SchedulingEmbedder::GetEmbeddingsResultCallback;
 };
 
 class SchedulingEmbedderTest : public testing::Test {
- protected:
-  std::unique_ptr<SchedulingEmbedder> MakeEmbedder() {
-    auto embedder = std::make_unique<SchedulingEmbedder>(
-        std::make_unique<MockEmbedderWithDelay>(), 4u, 1u, false);
-    embedder->EmbedderMetadataUpdated(EmbedderMetadata{1, 768});
-    return embedder;
+ public:
+  void SetUp() override {
+    embedder_metadata_provider_ =
+        std::make_unique<TestEmbedderMetadataProvider>();
+    embedder_ = std::make_unique<SchedulingEmbedderPublic>(
+        /*embedder_metadata_provider=*/embedder_metadata_provider_.get(),
+        /*get_embeddings_callback=*/base::BindRepeating(&GetEmbeddings),
+        /*max_jobs=*/4u,
+        /*max_batch_size=*/1u,
+        /*use_performance_scenario=*/false);
+    ASSERT_TRUE(embedder_->embedder_metadata_.IsValid());
   }
 
+ protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
+  std::unique_ptr<EmbedderMetadataProvider> embedder_metadata_provider_;
+  std::unique_ptr<SchedulingEmbedderPublic> embedder_;
 };
 
 TEST_F(SchedulingEmbedderTest, UserInitiatedJobTakesPriority) {
-  auto embedder = MakeEmbedder();
-
   // Submit a passive priority task.
   ComputePassagesEmbeddingsFuture future_1;
-  auto expected_task_id_1 = embedder->ComputePassagesEmbeddings(
+  auto expected_task_id_1 = embedder_->ComputePassagesEmbeddings(
       PassagePriority::kPassive, {"test passage 1", "test passage 2"},
       future_1.GetCallback());
 
   // Submit a user-initiated priority task. This will suspend the partially
   // completed passive priority task.
   ComputePassagesEmbeddingsFuture future_2;
-  auto expected_task_id_2 = embedder->ComputePassagesEmbeddings(
+  auto expected_task_id_2 = embedder_->ComputePassagesEmbeddings(
       PassagePriority::kUserInitiated, {"query"}, future_2.GetCallback());
 
   // The user-initiated priority task finishes first.
@@ -96,19 +127,17 @@ TEST_F(SchedulingEmbedderTest, UserInitiatedJobTakesPriority) {
 }
 
 TEST_F(SchedulingEmbedderTest, RecordsHistograms) {
-  auto embedder = MakeEmbedder();
-
   ComputePassagesEmbeddingsFuture future1;
   ComputePassagesEmbeddingsFuture future2;
   ComputePassagesEmbeddingsFuture future3;
-  embedder->ComputePassagesEmbeddings(
+  embedder_->ComputePassagesEmbeddings(
       PassagePriority::kPassive, {"test passage 1"}, future1.GetCallback());
-  auto task_id = embedder->ComputePassagesEmbeddings(
+  auto task_id = embedder_->ComputePassagesEmbeddings(
       PassagePriority::kUserInitiated, {"test passage 2a", "test passage 2b"},
       future2.GetCallback());
-  embedder->ComputePassagesEmbeddings(
+  embedder_->ComputePassagesEmbeddings(
       PassagePriority::kPassive, {"test passage 3"}, future3.GetCallback());
-  embedder->TryCancel(task_id);
+  embedder_->TryCancel(task_id);
   EXPECT_TRUE(future1.Wait());
   EXPECT_TRUE(future2.Wait());
   EXPECT_TRUE(future3.Wait());
@@ -156,22 +185,21 @@ TEST_F(SchedulingEmbedderTest, RecordsHistograms) {
 }
 
 TEST_F(SchedulingEmbedderTest, LimitsJobCount) {
-  auto embedder = MakeEmbedder();
   ComputePassagesEmbeddingsFuture future1;
   ComputePassagesEmbeddingsFuture future2;
   ComputePassagesEmbeddingsFuture future3;
   ComputePassagesEmbeddingsFuture future4;
   ComputePassagesEmbeddingsFuture future5;
 
-  embedder->ComputePassagesEmbeddings(
+  embedder_->ComputePassagesEmbeddings(
       PassagePriority::kPassive, {"test passage 1"}, future1.GetCallback());
-  embedder->ComputePassagesEmbeddings(
+  embedder_->ComputePassagesEmbeddings(
       PassagePriority::kPassive, {"test passage 2"}, future2.GetCallback());
-  embedder->ComputePassagesEmbeddings(
+  embedder_->ComputePassagesEmbeddings(
       PassagePriority::kPassive, {"test passage 3"}, future3.GetCallback());
-  embedder->ComputePassagesEmbeddings(
+  embedder_->ComputePassagesEmbeddings(
       PassagePriority::kPassive, {"test passage 4"}, future4.GetCallback());
-  embedder->ComputePassagesEmbeddings(
+  embedder_->ComputePassagesEmbeddings(
       PassagePriority::kPassive, {"test passage 5"}, future5.GetCallback());
 
   // Final job interrupts the job at back of line when limit (4) is reached.

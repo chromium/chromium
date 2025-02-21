@@ -2337,7 +2337,6 @@ if (!is_android) {
       "//components/optimization_guide/core:bloomfilter",
       "//components/optimization_guide/core:prediction",
       "//components/optimization_guide/core:test_support",
-      "//components/optimization_guide/core:test_support",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/origin_trials:browser",
       "//components/origin_trials/test",
@@ -2351,6 +2350,8 @@ if (!is_android) {
       "//components/page_load_metrics/common",
       "//components/page_load_metrics/common:test_support",
       "//components/page_load_metrics/google/browser",
+      "//components/passage_embeddings",
+      "//components/passage_embeddings:test_support",
       "//components/password_manager/content/browser",
       "//components/password_manager/content/common",
       "//components/password_manager/core/browser/features:password_features",
@@ -7901,6 +7902,8 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/signin:unit_tests",
       "//components/autofill_ai/core/browser:browser",
       "//components/data_sharing:test_support",
+      "//components/passage_embeddings",
+      "//components/passage_embeddings:test_support",
     ]
 
     if (is_chrome_branded) {
@@ -10880,6 +10883,8 @@ if (!is_android && !is_chromeos_device) {
       "//components/media_router/browser:test_support",
       "//components/metrics:content",
       "//components/os_crypt/sync:test_support",
+      "//components/passage_embeddings",
+      "//components/passage_embeddings:test_support",
       "//components/password_manager/content/browser",
       "//components/plus_addresses",
       "//components/plus_addresses:test_support",

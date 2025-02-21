@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_SCHEDULING_EMBEDDER_H_
-#define COMPONENTS_PASSAGE_EMBEDDINGS_SCHEDULING_EMBEDDER_H_
+#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_INTERNAL_SCHEDULING_EMBEDDER_H_
+#define COMPONENTS_PASSAGE_EMBEDDINGS_INTERNAL_SCHEDULING_EMBEDDER_H_
 
 #include <memory>
 #include <optional>
@@ -16,70 +16,52 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "build/build_config.h"
-#include "components/passage_embeddings/embedder.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
+#include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 
 namespace passage_embeddings {
 
-// The SchedulingEmbedder wraps a primary embedder and adds scheduling control
-// with batching and priorities so that high priority queries can be computed as
-// soon as possible. Scheduling is also needed to avoid clogging the pipes for a
-// slow remote embedder. Even single pages can take a while, and when the model
-// changes, all existing passages need their embeddings recomputed, which can
-// take a very long time and should be done at lower priority.
+// The SchedulingEmbedder adds scheduling control with batching and priorities
+// so that high priority queries can be computed as soon as possible. Scheduling
+// is also needed to avoid clogging the pipes for a slow remote embedder. Even
+// single pages can take a while, and when the model changes, all existing
+// passages need their embeddings recomputed, which can take a very long time
+// and should be done at lower priority.
 class SchedulingEmbedder
     : public Embedder,
       public EmbedderMetadataObserver,
       public performance_scenarios::PerformanceScenarioObserver {
  public:
-  SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
+  using GetEmbeddingsResultCallback = base::OnceCallback<void(
+      std::vector<mojom::PassageEmbeddingsResultPtr> results,
+      ComputeEmbeddingsStatus status)>;
+  using GetEmbeddingsCallback =
+      base::RepeatingCallback<void(std::vector<std::string> passages,
+                                   PassagePriority priority,
+                                   GetEmbeddingsResultCallback callback)>;
+  SchedulingEmbedder(EmbedderMetadataProvider* embedder_metadata_provider,
+                     GetEmbeddingsCallback get_embeddings_callback,
                      size_t max_jobs,
                      size_t scheduled_max_batch_size,
                      bool use_performance_scenario);
   ~SchedulingEmbedder() override;
 
-  // Returns latest metadata; may be zero/invalid if embedder is not yet ready.
-  EmbedderMetadata GetEmbedderMetadata() const { return embedder_metadata_; }
-
   // Embedder:
-  // Computes embeddings for each entry in `passages`. Will invoke callback on
-  // done. If successful, it is guaranteed that the number of passages in
-  // `passages` will match the number of entries in the embeddings vector and in
-  // the same order. If unsuccessful, the callback will still return the
-  // original passages but with an empty embeddings vector and an appropriate
-  // status.
   TaskId ComputePassagesEmbeddings(
       PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;
-
-  // Cancels computation of embeddings iff none of the passages given to
-  // `ComputePassagesEmbeddings()` has been submitted to the embedder yet.
-  // If successful, the callback for the canceled task will be invoked with
-  // `ComputeEmbeddingsStatus::kCanceled` status.
   bool TryCancel(TaskId task_id) override;
 
-  // EmbedderMetadataObserver:
-  void EmbedderMetadataUpdated(EmbedderMetadata metadata) override;
-
-  // PerformanceScenarioObserver:
-  void OnLoadingScenarioChanged(
-      performance_scenarios::ScenarioScope scope,
-      performance_scenarios::LoadingScenario old_scenario,
-      performance_scenarios::LoadingScenario new_scenario) override;
-  void OnInputScenarioChanged(
-      performance_scenarios::ScenarioScope scope,
-      performance_scenarios::InputScenario old_scenario,
-      performance_scenarios::InputScenario new_scenario) override;
-
  private:
+  friend class SchedulingEmbedderPublic;
+
   // A job consists of multiple passages, and each passage must have its
   // embedding computed. When all are finished, the job is done and its
   // callback will be invoked. Multiple jobs may be batched together when
-  // when submitting work to the `embedder_`, and jobs can also be broken
+  // submitting work to the `embedder_remote_proxy`, and jobs can also be broken
   // down so that partial progress is made across multiple work submissions.
   struct Job {
     Job(PassagePriority priority,
@@ -109,12 +91,24 @@ class SchedulingEmbedder
     base::ElapsedTimer timer;
   };
 
+  // EmbedderMetadataObserver:
+  void EmbedderMetadataUpdated(EmbedderMetadata metadata) override;
+
+  // PerformanceScenarioObserver:
+  void OnLoadingScenarioChanged(
+      performance_scenarios::ScenarioScope scope,
+      performance_scenarios::LoadingScenario old_scenario,
+      performance_scenarios::LoadingScenario new_scenario) override;
+  void OnInputScenarioChanged(
+      performance_scenarios::ScenarioScope scope,
+      performance_scenarios::InputScenario old_scenario,
+      performance_scenarios::InputScenario new_scenario) override;
+
   // Invoked after the embedding for the current job has been computed.
   // Continues processing next job if one is pending.
-  void OnEmbeddingsComputed(std::vector<std::string> passages,
-                            std::vector<Embedding> embedding,
-                            TaskId task_id,
-                            ComputeEmbeddingsStatus status);
+  void OnEmbeddingsComputed(
+      std::vector<mojom::PassageEmbeddingsResultPtr> results,
+      ComputeEmbeddingsStatus status);
 
   // Stable-sort jobs by priority and submit a batch of work to embedder.
   // This will only submit new work if the embedder is not already working.
@@ -142,11 +136,12 @@ class SchedulingEmbedder
   // embedder work submissions may be required to complete a job.
   bool work_submitted_ = false;
 
-  // The primary embedder that does the actual embedding computations.
-  // This may be slow, and we await results before sending the next request.
-  std::unique_ptr<Embedder> embedder_;
+  // The callback that does the actual embeddings computations.
+  // May be slow; await results before sending the next request.
+  GetEmbeddingsCallback get_embeddings_callback_;
 
-  // Starts empty; set when valid metadata is received from `embedder_`.
+  // Metadata about the embedder; Set when valid metadata is received from
+  // `embedder_metadata_provider`.
   EmbedderMetadata embedder_metadata_{0, 0};
 
   // The maximum number of jobs to hold at once. Exceeding the cap
@@ -164,31 +159,15 @@ class SchedulingEmbedder
 
   base::ScopedObservation<
       performance_scenarios::PerformanceScenarioObserverList,
-      SchedulingEmbedder>
+      performance_scenarios::PerformanceScenarioObserver>
       performance_scenario_observation_{this};
+
+  base::ScopedObservation<EmbedderMetadataProvider, EmbedderMetadataObserver>
+      embedder_metadata_observation_{this};
 
   base::WeakPtrFactory<SchedulingEmbedder> weak_ptr_factory_{this};
 };
 
-// This is a common use embedder type that simply routes its requests to
-// a non-owned SchedulingEmbedder.
-class SchedulingClientEmbedder : public Embedder {
- public:
-  explicit SchedulingClientEmbedder(SchedulingEmbedder* embedder);
-  ~SchedulingClientEmbedder() override;
-
-  // Embedder:
-  TaskId ComputePassagesEmbeddings(
-      PassagePriority priority,
-      std::vector<std::string> passages,
-      ComputePassagesEmbeddingsCallback callback) override;
-
-  bool TryCancel(TaskId task_id) override;
-
- private:
-  raw_ptr<SchedulingEmbedder> scheduling_embedder_;
-};
-
 }  // namespace passage_embeddings
 
-#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_SCHEDULING_EMBEDDER_H_
+#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_INTERNAL_SCHEDULING_EMBEDDER_H_

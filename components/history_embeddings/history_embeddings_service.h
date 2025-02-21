@@ -33,8 +33,6 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "components/passage_embeddings/embedder.h"
-#include "components/passage_embeddings/passage_embeddings_service_controller.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 
 namespace optimization_guide {
@@ -164,9 +162,8 @@ class HistoryEmbeddingsService
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-      passage_embeddings::PassageEmbeddingsServiceController*
-          service_controller,
-      std::unique_ptr<passage_embeddings::Embedder> embedder,
+      passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
+      passage_embeddings::Embedder* embedder,
       std::unique_ptr<Answerer> answerer,
       std::unique_ptr<IntentClassifier> intent_classifier);
   HistoryEmbeddingsService(const HistoryEmbeddingsService&) = delete;
@@ -226,12 +223,6 @@ class HistoryEmbeddingsService
   // history::HistoryServiceObserver:
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
-
-  // EmbedderMetadataObserver:
-  // Called when the embedder metadata is available. Passes the metadata to
-  // the internal storage.
-  void EmbedderMetadataUpdated(
-      passage_embeddings::EmbedderMetadata metadata) override;
 
   // This can be overridden to gate answer generation for some accounts.
   virtual bool IsAnswererUseAllowed() const;
@@ -317,6 +308,11 @@ class HistoryEmbeddingsService
     // The underlying SQL database for persistent storage.
     SqlDatabase sql_database;
   };
+
+  // passage_embeddings::EmbedderMetadataObserver:
+  // Passes the metadata to the internal storage.
+  void EmbedderMetadataUpdated(
+      passage_embeddings::EmbedderMetadata metadata) override;
 
   void OnOsCryptAsyncReady(os_crypt_async::Encryptor encryptor, bool success);
 
@@ -428,8 +424,8 @@ class HistoryEmbeddingsService
                           history::HistoryServiceObserver>
       history_service_observation_{this};
 
-  // The embedder used to compute embeddings.
-  std::unique_ptr<passage_embeddings::Embedder> embedder_;
+  // The embedder used to compute embeddings. Outlives this.
+  raw_ptr<passage_embeddings::Embedder> embedder_;
 
   // The answerer used to answer queries with context. May be nullptr if
   // the kHistoryEmbeddingsAnswers feature is disabled.
@@ -438,7 +434,8 @@ class HistoryEmbeddingsService
   // The intent classifier used to determine query intent and answerability.
   std::unique_ptr<IntentClassifier> intent_classifier_;
 
-  // Metadata about the embedder.
+  // Metadata about the embedder; Set when valid metadata is received from
+  // `embedder_metadata_provider`.
   passage_embeddings::EmbedderMetadata embedder_metadata_{0, 0};
 
   // Storage is bound to a separate sequence.
@@ -462,11 +459,12 @@ class HistoryEmbeddingsService
   passage_embeddings::Embedder::TaskId query_embedding_task_id_ =
       passage_embeddings::Embedder::kInvalidTaskId;
 
-  base::CallbackListSubscription subscription_;
+  // Callback subscription for receiving OsCryptAsync ready event.
+  base::CallbackListSubscription os_crypt_async_subscription_;
 
-  base::ScopedObservation<
-      passage_embeddings::PassageEmbeddingsServiceController,
-      passage_embeddings::EmbedderMetadataObserver>
+  // Scoped observation for when the embedder metadata is available.
+  base::ScopedObservation<passage_embeddings::EmbedderMetadataProvider,
+                          passage_embeddings::EmbedderMetadataObserver>
       embedder_metadata_observation_{this};
 
   base::WeakPtrFactory<std::atomic<size_t>> query_id_weak_ptr_factory_;

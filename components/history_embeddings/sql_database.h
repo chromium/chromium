@@ -17,7 +17,6 @@
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "components/passage_embeddings/embedder.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
