@@ -1485,7 +1485,6 @@ crbug.com/394756111 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.any.wo
 
 # Gardener 2025-02-12
 crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/sources/debugger-step/debugger-step-over-inlined-scripts.js [ Slow ]
-crbug.com/393175977 [ Debug Mac14 ] http/tests/inspector-protocol/tracing/screenshots.js [ Slow ]
 
 # Gardener 2025-02-18
 crbug.com/391006701 [ Debug ] images/yuv-decode-eligible/color-profile-image-profile-match.html [ Slow ]
