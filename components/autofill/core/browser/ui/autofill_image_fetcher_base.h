@@ -8,6 +8,9 @@
 #include <vector>
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
 
 class GURL;
 
@@ -62,6 +65,13 @@ class AutofillImageFetcherBase {
   // Fetches images for the `image_urls`, treats them according to Pix image
   // specifications, and caches them in memory.
   virtual void FetchPixAccountImages(base::span<const GURL> image_urls) = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Return the owned AutofillImageFetcher Java object. It is created if it
+  // doesn't already exist.
+  virtual base::android::ScopedJavaLocalRef<jobject>
+  GetOrCreateJavaImageFetcher() = 0;
+#endif
 };
 
 }  // namespace autofill

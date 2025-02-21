@@ -69,6 +69,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#include "base/android/scoped_java_ref.h"
 #endif
 
 namespace autofill {
@@ -271,6 +272,12 @@ class MockAutofillImageFetcher : public AutofillImageFetcherBase {
               FetchPixAccountImages,
               (base::span<const GURL> card_art_urls),
               (override));
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(base::android::ScopedJavaLocalRef<jobject>,
+              GetOrCreateJavaImageFetcher,
+              (),
+              (override));
+#endif
 };
 class PaymentsDataManagerTest : public PaymentsDataManagerHelper,
                                 public testing::Test {
