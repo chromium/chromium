@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
       NameSubmenuChild(AppMenuModel::kBookmarksMenuItem, kANodeMenuId, 9u),
       CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"),
       NameSubmenuChild(AppMenuModel::kBookmarksMenuItem, kBNodeMenuId, 8u),
-      CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"), );
+      CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"));
 }
 
 IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
       NameSubmenuChild(AppMenuModel::kBookmarksMenuItem, kANodeMenuId, 8u),
       CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"),
       NameSubmenuChild(kANodeMenuId, kBNodeMenuId, 0u),
-      CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"), );
+      CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"));
 }
 
 IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,

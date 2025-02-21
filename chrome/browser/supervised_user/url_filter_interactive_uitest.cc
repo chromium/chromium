@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, DesktopLocalWebApprovalGranted) {
         histogram_tester.ExpectTotalCount(
             "FamilyLinkUser.LocalWebApprovalResult", 1);
       }),
-      Log("Then the approval metrics are recorded"), )));
+      Log("Then the approval metrics are recorded"))));
 }
 
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
