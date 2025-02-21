@@ -2906,19 +2906,23 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-      // Make the {WebAuthenticationRemoteProxiedRequestsAllowed or
-      // WebAuthenticationRemoteDesktopAllowedOrigins} policy enable the
-      // experimental WebAuthenticationRemoteDesktopSupport Blink runtime
+      // Make the WebAuthenticationRemoteProxiedRequestsAllowed policy enable
+      // the experimental WebAuthenticationRemoteDesktopSupport Blink runtime
       // feature.
       if (prefs->GetBoolean(
-              webauthn::pref_names::kRemoteProxiedRequestsAllowed) ||
-          (base::FeatureList::IsEnabled(
-               device::kWebAuthnRemoteDesktopAllowedOriginsPolicy) &&
-           !prefs->GetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins)
-                .empty())) {
+              webauthn::pref_names::kRemoteProxiedRequestsAllowed)) {
         command_line->AppendSwitch(switches::kWebAuthRemoteDesktopSupport);
       }
 #endif
+      // Make the WebAuthenticationRemoteDesktopAllowedOrigins policy enable the
+      // experimental WebAuthenticationRemoteDesktopSupport Blink runtime
+      // feature.
+      if (base::FeatureList::IsEnabled(
+              device::kWebAuthnRemoteDesktopAllowedOriginsPolicy) &&
+          !prefs->GetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins)
+               .empty()) {
+        command_line->AppendSwitch(switches::kWebAuthRemoteDesktopSupport);
+      }
     }
 
     MaybeAppendBlinkSettingsSwitchForFieldTrial(browser_command_line,

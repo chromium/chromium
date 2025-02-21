@@ -2210,12 +2210,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(prefs::kLensDesktopNTPSearchEnabled, true);
 #endif
 
+  registry->RegisterListPref(
+      webauthn::pref_names::kRemoteDesktopAllowedOrigins);
+
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(
       webauthn::pref_names::kRemoteProxiedRequestsAllowed, false);
-
-  registry->RegisterListPref(
-      webauthn::pref_names::kRemoteDesktopAllowedOrigins);
 
   registry->RegisterStringPref(
       webauthn::pref_names::kLastUsedPairingFromSyncPublicKey, "");
