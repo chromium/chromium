@@ -594,7 +594,6 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kMagicBoostEnabled, true);
 
   registry->RegisterBooleanPref(prefs::kHmrEnabled, true);
-  registry->RegisterBooleanPref(prefs::kHmrFeedbackAllowed, true);
   registry->RegisterIntegerPref(prefs::kHmrManagedSettings, 0);
 
   registry->RegisterIntegerPref(
