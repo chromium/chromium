@@ -63,6 +63,18 @@ using ::blink::mojom::CapturedSurfaceControlResult;
 BASE_FEATURE(kRegionCaptureOfOtherTabs,
              "RegionCaptureOfOtherTabs",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When a Web application is video-capturing a tab, it can use the Element
+// Capture API to restrict the resulting video.
+// - If `kElementCaptureOfOtherTabs` is disabled, the Web application can only
+// restrict self-capture tracks. (That is, restrictping is only possible when
+// the application is capturing its own tab.)
+// - If `kElementCaptureOfOtherTabs` is enabled, the Web application  can
+// restrict video-captures of any tab (so long as that other tab collaborates by
+// sending a RestrictionTarget).
+BASE_FEATURE(kElementCaptureOfOtherTabs,
+             "ElementCaptureOfOtherTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 void BindMediaStreamDeviceObserverReceiver(
@@ -118,9 +130,19 @@ bool MayApplySubCaptureTarget(GlobalRenderFrameHostId capturing_id,
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(kRegionCaptureOfOtherTabs) &&
-      capturing_wc != captured_wc) {
-    return false;
+  if (capturing_wc != captured_wc) {
+    switch (type) {
+      case media::mojom::SubCaptureTargetType::kCropTarget:
+        if (!base::FeatureList::IsEnabled(kRegionCaptureOfOtherTabs)) {
+          return false;
+        }
+        break;
+      case media::mojom::SubCaptureTargetType::kRestrictionTarget:
+        if (!base::FeatureList::IsEnabled(kElementCaptureOfOtherTabs)) {
+          return false;
+        }
+        break;
+    }
   }
 
   SubCaptureTargetIdWebContentsHelper* const helper =
