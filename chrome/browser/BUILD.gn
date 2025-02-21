@@ -9111,6 +9111,7 @@ static_library("test_support") {
     deps += [
       "//components/crx_file",
       "//extensions/browser",
+      "//extensions/browser/api/content_settings",
       "//extensions/common:mojom",
     ]
   }

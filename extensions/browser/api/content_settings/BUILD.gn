@@ -12,6 +12,8 @@ source_set("content_settings") {
     "content_settings_custom_extension_provider.h",
     "content_settings_helpers.cc",
     "content_settings_helpers.h",
+    "content_settings_service.cc",
+    "content_settings_service.h",
     "content_settings_store.cc",
     "content_settings_store.h",
   ]
@@ -22,6 +24,7 @@ source_set("content_settings") {
     "//base",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//extensions/browser:browser_sources",
     "//extensions/common",
     "//extensions/common/api",
   ]
