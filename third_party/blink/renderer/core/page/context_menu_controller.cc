@@ -375,8 +375,9 @@ static int ComputeEditFlags(Document& selected_document, Editor& editor) {
   if (IsA<HTMLDocument>(selected_document) ||
       selected_document.IsXHTMLDocument()) {
     edit_flags |= ContextMenuDataEditFlags::kCanTranslate;
-    if (selected_document.queryCommandEnabled("selectAll", ASSERT_NO_EXCEPTION))
+    if (editor.IsCommandEnabled("selectAll")) {
       edit_flags |= ContextMenuDataEditFlags::kCanSelectAll;
+    }
   }
   return edit_flags;
 }
