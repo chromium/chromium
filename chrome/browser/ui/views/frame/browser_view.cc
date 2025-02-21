@@ -342,6 +342,9 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_border_view.h"
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "ui/views/layout/box_layout_view.h"
 #endif
@@ -2767,6 +2770,21 @@ void BrowserView::FocusBookmarksToolbar() {
 }
 
 void BrowserView::FocusInactivePopupForAccessibility() {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic::GlicEnabling::IsEnabledByFlags()) {
+    glic::GlicKeyedService* service =
+        glic::GlicKeyedServiceFactory::GetGlicKeyedService(GetProfile());
+    if (service) {
+      glic::GlicWindowController& window_controller =
+          service->window_controller();
+      if (window_controller.attached_browser() == browser_.get()) {
+        window_controller.GetGlicWidget()->Activate();
+        return;
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
   if (ActivateFirstInactiveBubbleForAccessibility()) {
     return;
   }
@@ -2820,9 +2838,9 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
     return true;
   }
 
-  // TODO: this fixes crbug.com/1042010 and crbug.com/1052676, but a more
-  // general solution should be desirable to find any bubbles anchored in the
-  // views hierarchy.
+  // TODO: this fixes https://crbug.com/40668249 and https://crbug.com/40674460,
+  // but a more general solution should be desirable to find any bubbles
+  // anchored in the views hierarchy.
   if (toolbar_) {
     views::DialogDelegate* bubble = nullptr;
     for (auto* view : std::initializer_list<views::View*>{
@@ -2843,7 +2861,8 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
       View* focusable = bubble->GetInitiallyFocusedView();
 
       // A PermissionPromptBubbleView will explicitly return nullptr due to
-      // crbug.com/619429. In that case, we explicitly focus the cancel button.
+      // https://crbug.com/40084558. In that case, we explicitly focus the
+      // cancel button.
       if (!focusable) {
         focusable = bubble->GetCancelButton();
       }
@@ -2851,7 +2870,7 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
       if (focusable) {
         focusable->RequestFocus();
 #if BUILDFLAG(IS_MAC)
-        // TODO(crbug.com/40486728): When a view requests focus on other
+        // TODO(https://crbug.com/40486728): When a view requests focus on other
         // platforms, its widget is activated. When doing so in FocusManager on
         // MacOS a lot of interactive tests fail when the widget is destroyed.
         // Activating the widget here should be safe as this happens only

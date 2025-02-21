@@ -258,6 +258,27 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       CheckControllerWidgetMode(GlicWindowMode::kDetached));
 }
 
+#if !BUILDFLAG(IS_LINUX)
+// Widget activation doesn't work on Linux; see
+// InteractionTestUtilSimulatorViews::ActivateWidget.
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       CanFocusGlicWindowWithFocusDialogHotkey) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kAttached),
+      ActivateSurface(kBrowserViewElementId),
+      // Activating the browser actually focuses the omnibox.
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true),
+      // Trigger the popup focusing code.
+      Do([&]() {
+        browser()->GetBrowserView().FocusInactivePopupForAccessibility();
+      }),
+      // That should have moved the focus back to the Glic web view.
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, false),
+      InAnyContext(CheckViewProperty(GlicView::kWebViewElementIdForTesting,
+                                     &views::View::HasFocus, true)));
+}
+#endif  // !BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        HotkeyOpensDetachedWithOccludedBrowser) {
