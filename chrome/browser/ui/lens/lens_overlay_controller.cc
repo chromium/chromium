@@ -559,6 +559,8 @@ void LensOverlayController::ShowUI(
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&LensOverlayController::HandleInteractionURLResponse,
                           weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&LensOverlayController::HandleInteractionResponse,
+                          weak_factory_.GetWeakPtr()),
       base::BindRepeating(&LensOverlayController::HandleSuggestInputsResponse,
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&LensOverlayController::HandleThumbnailCreated,
@@ -1450,6 +1452,7 @@ std::unique_ptr<lens::LensOverlayQueryController>
 LensOverlayController::CreateLensQueryController(
     lens::LensOverlayFullImageResponseCallback full_image_callback,
     lens::LensOverlayUrlResponseCallback url_callback,
+    lens::LensOverlayInteractionResponseCallback interaction_callback,
     lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
     lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
     variations::VariationsClient* variations_client,
@@ -1460,9 +1463,10 @@ LensOverlayController::CreateLensQueryController(
     lens::LensOverlayGen204Controller* gen204_controller) {
   return std::make_unique<lens::LensOverlayQueryController>(
       std::move(full_image_callback), std::move(url_callback),
-      std::move(suggest_inputs_callback), std::move(thumbnail_created_callback),
-      variations_client, identity_manager, profile, invocation_source,
-      use_dark_mode, gen204_controller);
+      std::move(interaction_callback), std::move(suggest_inputs_callback),
+      std::move(thumbnail_created_callback), variations_client,
+      identity_manager, profile, invocation_source, use_dark_mode,
+      gen204_controller);
 }
 
 LensOverlayController::OverlayInitializationData::OverlayInitializationData(
@@ -3161,6 +3165,11 @@ void LensOverlayController::HandleStartQueryResponse(
 void LensOverlayController::HandleInteractionURLResponse(
     lens::proto::LensOverlayUrlResponse response) {
   LoadURLInResultsFrame(GURL(response.url()));
+}
+
+void LensOverlayController::HandleInteractionResponse(
+    lens::mojom::TextPtr text) {
+  SendText(std::move(text));
 }
 
 void LensOverlayController::HandleSuggestInputsResponse(

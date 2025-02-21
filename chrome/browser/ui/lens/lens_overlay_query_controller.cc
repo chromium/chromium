@@ -374,6 +374,7 @@ lens::Payload CreatePageContentPayload(base::span<const uint8_t> content_bytes,
 LensOverlayQueryController::LensOverlayQueryController(
     LensOverlayFullImageResponseCallback full_image_callback,
     LensOverlayUrlResponseCallback url_callback,
+    LensOverlayInteractionResponseCallback interaction_response_callback,
     LensOverlaySuggestInputsCallback suggest_inputs_callback,
     LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
     variations::VariationsClient* variations_client,
@@ -383,6 +384,7 @@ LensOverlayQueryController::LensOverlayQueryController(
     bool use_dark_mode,
     lens::LensOverlayGen204Controller* gen204_controller)
     : full_image_callback_(std::move(full_image_callback)),
+      interaction_response_callback_(std::move(interaction_response_callback)),
       suggest_inputs_callback_(std::move(suggest_inputs_callback)),
       thumbnail_created_callback_(std::move(thumbnail_created_callback)),
       request_id_generator_(
@@ -1656,6 +1658,13 @@ void LensOverlayQueryController::InteractionFetchResponseHandler(
     suggest_inputs_.set_encoded_image_signals(
         server_response.interaction_response().encoded_response());
   }
+
+  if (lens::features::IsSimplifiedSelectionEnabled() &&
+      server_response.interaction_response().has_text()) {
+    interaction_response_callback_.Run(CreateTextMojomFromInteractionResponse(
+        server_response.interaction_response(), resized_bitmap_size_));
+  }
+
   RunSuggestInputsCallback();
 }
 

@@ -98,6 +98,7 @@ class LensOverlayControllerFake : public LensOverlayController {
   std::unique_ptr<lens::LensOverlayQueryController> CreateLensQueryController(
       lens::LensOverlayFullImageResponseCallback full_image_callback,
       lens::LensOverlayUrlResponseCallback url_callback,
+      lens::LensOverlayInteractionResponseCallback interaction_callback,
       lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
@@ -108,9 +109,10 @@ class LensOverlayControllerFake : public LensOverlayController {
       lens::LensOverlayGen204Controller* gen204_controller) override {
     auto fake_query_controller =
         std::make_unique<lens::TestLensOverlayQueryController>(
-            full_image_callback, url_callback, suggest_inputs_callback,
-            thumbnail_created_callback, variations_client, identity_manager,
-            profile, invocation_source, use_dark_mode, gen204_controller);
+            full_image_callback, url_callback, interaction_callback,
+            suggest_inputs_callback, thumbnail_created_callback,
+            variations_client, identity_manager, profile, invocation_source,
+            use_dark_mode, gen204_controller);
 
     // Set up the fake responses for the query controller.
     lens::LensOverlayServerClusterInfoResponse cluster_info_response;

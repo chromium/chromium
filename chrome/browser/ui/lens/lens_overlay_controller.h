@@ -22,6 +22,7 @@
 #include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/page_content_type.mojom.h"
+#include "chrome/browser/lens/core/mojom/text.mojom-forward.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -565,6 +566,7 @@ class LensOverlayController : public LensSearchboxClient,
   CreateLensQueryController(
       lens::LensOverlayFullImageResponseCallback full_image_callback,
       lens::LensOverlayUrlResponseCallback url_callback,
+      lens::LensOverlayInteractionResponseCallback interaction_callback,
       lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
@@ -988,6 +990,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Handles the URL response to the Lens interaction request.
   void HandleInteractionURLResponse(
       lens::proto::LensOverlayUrlResponse response);
+
+  // Handles the text response to the Lens interaction request.
+  void HandleInteractionResponse(lens::mojom::TextPtr text);
 
   // Handles an update to the suggest inputs. This will be called whenever
   // any part of the suggest inputs changes, such as when a new objects

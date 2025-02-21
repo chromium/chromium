@@ -46,6 +46,7 @@ void FakeEndpointFetcher::PerformRequest(
 TestLensOverlayQueryController::TestLensOverlayQueryController(
     LensOverlayFullImageResponseCallback full_image_callback,
     LensOverlayUrlResponseCallback url_callback,
+    LensOverlayInteractionResponseCallback interaction_callback,
     LensOverlaySuggestInputsCallback interaction_data_callback,
     LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
     variations::VariationsClient* variations_client,
@@ -56,6 +57,7 @@ TestLensOverlayQueryController::TestLensOverlayQueryController(
     lens::LensOverlayGen204Controller* gen204_controller)
     : LensOverlayQueryController(full_image_callback,
                                  url_callback,
+                                 interaction_callback,
                                  interaction_data_callback,
                                  thumbnail_created_callback,
                                  variations_client,

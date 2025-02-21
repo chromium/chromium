@@ -29,6 +29,7 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   explicit TestLensOverlayQueryController(
       LensOverlayFullImageResponseCallback full_image_callback,
       LensOverlayUrlResponseCallback url_callback,
+      LensOverlayInteractionResponseCallback interaction_callback,
       LensOverlaySuggestInputsCallback interaction_data_callback,
       LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,

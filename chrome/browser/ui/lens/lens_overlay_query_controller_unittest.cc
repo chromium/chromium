@@ -6,6 +6,7 @@
 
 #include "base/base64url.h"
 #include "base/containers/span.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -42,6 +43,7 @@
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_text.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
 #include "third_party/zstd/src/lib/zstd.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -396,7 +398,7 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       full_image_response_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
-      GetSuggestInputsCallback(), base::NullCallback(),
+      base::NullCallback(), GetSuggestInputsCallback(), base::NullCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
@@ -465,7 +467,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
-      GetSuggestInputsCallback(), base::NullCallback(),
+      base::NullCallback(), GetSuggestInputsCallback(), base::NullCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
@@ -536,7 +538,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(), identity_test_env.identity_manager(),
       profile(), lens::LensOverlayInvocationSource::kAppMenu,
@@ -615,7 +618,7 @@ TEST_F(LensOverlayQueryControllerTest,
       full_image_response_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
-      GetSuggestInputsCallback(), base::NullCallback(),
+      base::NullCallback(), GetSuggestInputsCallback(), base::NullCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
@@ -659,7 +662,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -720,7 +724,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -852,7 +857,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -918,7 +924,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -1044,7 +1051,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -1167,7 +1175,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -1229,7 +1238,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -1363,7 +1373,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -1496,7 +1507,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -1629,7 +1641,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -1692,7 +1705,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -1759,7 +1773,8 @@ TEST_F(
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -1814,7 +1829,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -1873,7 +1889,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -1995,6 +2012,7 @@ TEST_F(LensOverlayQueryControllerTest,
   TestLensOverlayQueryController query_controller(
       /**full_image_callback=*/base::DoNothing(),
       /**url_callback=*/base::DoNothing(),
+      /**interaction_callback=*/base::NullCallback(),
       /**suggest_inputs_callback=*/base::DoNothing(),
       /**thumbnail_created_callback=*/base::DoNothing(),
       fake_variations_client_.get(),
@@ -2092,7 +2110,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -2153,7 +2172,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -2312,7 +2332,8 @@ TEST_F(LensOverlayQueryControllerTest, GetVsridForNewTab) {
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -2394,7 +2415,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -2459,7 +2481,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -2525,7 +2548,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -2589,7 +2613,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -2644,7 +2669,8 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
@@ -2695,6 +2721,66 @@ TEST_F(LensOverlayQueryControllerTest,
             lens::Payload::ZSTD);
 }
 
+TEST_F(LensOverlayQueryControllerTest,
+       FetchInteraction_SimplifiedSelectionWithDetectedText) {
+  // Enable simplified selection.
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeature(
+      lens::features::kLensOverlaySimplifiedSelection);
+
+  base::test::TestFuture<lens::mojom::TextPtr> interaction_response_future;
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(),
+      interaction_response_future.GetRepeatingCallback(),
+      GetSuggestInputsCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+  lens::LensOverlayInteractionResponse fake_interaction_response;
+  // Set up fake detected text.
+  fake_interaction_response.mutable_text()->set_content_language("und");
+  query_controller.set_fake_interaction_response(fake_interaction_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(30, 40, 50, 60);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kImage;
+
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0,
+      base::TimeTicks::Now());
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
+                                    additional_search_query_params,
+                                    std::nullopt);
+  ASSERT_TRUE(url_response_future.Wait());
+  query_controller.EndQuery();
+
+  ASSERT_TRUE(interaction_response_future.Wait());
+  EXPECT_EQ(interaction_response_future.Take()->content_language, "und");
+}
+
 class LensOverlayQueryControllerMockTimeTest
     : public LensOverlayQueryControllerTest {
  public:
@@ -2717,7 +2803,8 @@ TEST_F(LensOverlayQueryControllerMockTimeTest,
   base::test::TestFuture<const std::string&> thumbnail_created_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
-      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),

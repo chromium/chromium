@@ -55,6 +55,9 @@ using LensOverlayFullImageResponseCallback =
 // Callback type alias for the lens overlay url response.
 using LensOverlayUrlResponseCallback =
     base::RepeatingCallback<void(lens::proto::LensOverlayUrlResponse)>;
+// Callback type alias for the lens overlay interaction response.
+using LensOverlayInteractionResponseCallback =
+    base::RepeatingCallback<void(lens::mojom::TextPtr)>;
 // Callback type alias for the lens overlay suggest inputs response.
 using LensOverlaySuggestInputsCallback =
     base::RepeatingCallback<void(lens::proto::LensOverlaySuggestInputs)>;
@@ -73,6 +76,7 @@ class LensOverlayQueryController {
   LensOverlayQueryController(
       LensOverlayFullImageResponseCallback full_image_callback,
       LensOverlayUrlResponseCallback url_callback,
+      LensOverlayInteractionResponseCallback interaction_callback,
       LensOverlaySuggestInputsCallback suggest_inputs_callback,
       LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
@@ -223,6 +227,9 @@ class LensOverlayQueryController {
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
   LensOverlayFullImageResponseCallback full_image_callback_;
+
+  // The callback for interaction requests, including text received.
+  LensOverlayInteractionResponseCallback interaction_response_callback_;
 
   // Suggest inputs callback, used for sending Lens suggest data to the
   // search box.
@@ -529,6 +536,10 @@ class LensOverlayQueryController {
   // response, then runs the callback. The request id in the suggest inputs will
   // if the parameter is not null.
   void RunSuggestInputsCallback();
+
+  // Callback for when the interaction response returned text that should be
+  // passed to the overlay.
+  void RunInteractionResponseTextReceivedCallback(lens::mojom::TextPtr text);
 
   // Callback for when the full image endpoint fetcher is created.
   void OnFullImageEndpointFetcherCreated(
