@@ -520,7 +520,7 @@ void SafeBrowsingServiceImpl::OnProfileAdded(Profile* profile) {
 
   // Create pref change handler for each profile.
   pref_change_handlers_map_[profile] =
-      std::make_unique<SafeBrowsingPrefChangeHandler>();
+      std::make_unique<SafeBrowsingPrefChangeHandler>(profile);
 
   SafeBrowsingMetricsCollectorFactory::GetForProfile(profile)->StartLogging();
 
@@ -566,7 +566,7 @@ void SafeBrowsingServiceImpl::EnhancedProtectionPrefChange(Profile* profile) {
   // Get the handler for this profile.
   auto it = pref_change_handlers_map_.find(profile);
   if (it != pref_change_handlers_map_.end()) {
-    it->second->MaybeShowEnhancedProtectionSettingChangeNotification(profile);
+    it->second->MaybeShowEnhancedProtectionSettingChangeNotification();
   }
 }
 

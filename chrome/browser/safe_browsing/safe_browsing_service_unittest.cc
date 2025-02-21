@@ -47,11 +47,14 @@ const char kTestDownloadUrl[] = "https://example.com";
 }
 
 // Mock SafeBrowsingPrefChangeHandler.
-class MockSafeBrowsingPrefChangeHandler : public SafeBrowsingPrefChangeHandler {
+class MockSafeBrowsingPrefChangeHandler
+    : public safe_browsing::SafeBrowsingPrefChangeHandler {
  public:
+  explicit MockSafeBrowsingPrefChangeHandler(Profile* profile)
+      : SafeBrowsingPrefChangeHandler(profile) {}
   MOCK_METHOD(void,
               MaybeShowEnhancedProtectionSettingChangeNotification,
-              (Profile * profile),
+              (),
               (override));
 };
 
@@ -80,6 +83,7 @@ class SafeBrowsingServiceTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     profile_ = std::make_unique<TestingProfile>();
+    profile2_ = std::make_unique<TestingProfile>();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Local state is needed to construct ProxyConfigService, which is a
     // dependency of PingManager on ChromeOS.
@@ -214,6 +218,7 @@ class SafeBrowsingServiceTest : public testing::Test {
   scoped_refptr<SafeBrowsingService> sb_service_;
   TestingProfile::Builder profile_builder_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<TestingProfile> profile2_;
   raw_ptr<TestingProfile> otr_profile_;
 
   ::testing::NiceMock<download::MockDownloadItem> download_item_;
@@ -544,12 +549,13 @@ TEST_F(SafeBrowsingServiceTest, EnhancedProtectionPrefChange_SingleProfile) {
   Profile* profile1 = profile();
 
   // 2. Create a mock SafeBrowsingPrefChangeHandler.
-  auto mock_handler1 = std::make_unique<
-      ::testing::NiceMock<MockSafeBrowsingPrefChangeHandler>>();
+  auto mock_handler1 =
+      std::make_unique<::testing::NiceMock<MockSafeBrowsingPrefChangeHandler>>(
+          profile1);
 
-  // 3. Set the expectation: The mock should be called once with the profile.
+  // 3. Set the expectation: The mock should be called once.
   EXPECT_CALL(*mock_handler1,
-              MaybeShowEnhancedProtectionSettingChangeNotification(profile1));
+              MaybeShowEnhancedProtectionSettingChangeNotification());
 
   // 4. Add the mock handler to the map.
   sb_service_->pref_change_handlers_map_[profile1] = std::move(mock_handler1);
@@ -562,22 +568,21 @@ TEST_F(SafeBrowsingServiceTest,
        EnhancedProtectionPrefChange_SupportsMultipleProfiles) {
   // 1. Create multiple profiles.
   Profile* profile1 = profile();
-  auto profile2 = std::make_unique<TestingProfile>();
-  Profile* profile2_ptr = profile2.get();  // Store the pointer before moving
+  Profile* profile2_ptr = profile2_.get();  // Store the pointer before moving
 
   // 2. Create mock SafeBrowsingPrefChangeHandlers for each profile.
-  auto mock_handler1 = std::make_unique<
-      ::testing::NiceMock<MockSafeBrowsingPrefChangeHandler>>();
-  auto mock_handler2 = std::make_unique<
-      ::testing::NiceMock<MockSafeBrowsingPrefChangeHandler>>();
+  auto mock_handler1 =
+      std::make_unique<::testing::NiceMock<MockSafeBrowsingPrefChangeHandler>>(
+          profile1);
+  auto mock_handler2 =
+      std::make_unique<::testing::NiceMock<MockSafeBrowsingPrefChangeHandler>>(
+          profile2_ptr);
 
-  // 3. Set expectations: Each mock should be called once with its corresponding
-  // profile.
+  // 3. Set expectations: Each mock should be called once.
   EXPECT_CALL(*mock_handler1.get(),
-              MaybeShowEnhancedProtectionSettingChangeNotification(profile1));
-  EXPECT_CALL(
-      *mock_handler2.get(),
-      MaybeShowEnhancedProtectionSettingChangeNotification(profile2_ptr));
+              MaybeShowEnhancedProtectionSettingChangeNotification());
+  EXPECT_CALL(*mock_handler2.get(),
+              MaybeShowEnhancedProtectionSettingChangeNotification());
 
   // 4. Add the mock handlers to the map, associating them with their profiles.
   sb_service_->pref_change_handlers_map_[profile1] = std::move(mock_handler1);

@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/tailored_security/chrome_tailored_security_service.h"
@@ -31,7 +32,7 @@ class SafeBrowsingPrefChangeHandler : public TabModelObserver,
 class SafeBrowsingPrefChangeHandler {
 #endif
  public:
-  SafeBrowsingPrefChangeHandler();
+  explicit SafeBrowsingPrefChangeHandler(Profile* profile);
 #if BUILDFLAG(IS_ANDROID)
   ~SafeBrowsingPrefChangeHandler() override;
 #else
@@ -54,10 +55,11 @@ class SafeBrowsingPrefChangeHandler {
   // Handles notifying the user when necessary. The type of notification shown
   // depends on the platform and whether the user is currently on the security
   // settings page. Virtual for tests.
-  virtual void MaybeShowEnhancedProtectionSettingChangeNotification(
-      Profile* profile);
+  virtual void MaybeShowEnhancedProtectionSettingChangeNotification();
 
  private:
+  // Member variable to store the Profile*.
+  raw_ptr<Profile> profile_;
 #if BUILDFLAG(IS_ANDROID)
   // Called when the consented modal is dismissed.
   void ConsentedMessageDismissed();
@@ -89,13 +91,13 @@ class SafeBrowsingPrefChangeHandler {
   bool IsObservingTabModelForTesting() const;
 
   // Updates the retry state and tris to show notification when needed.
-  void RetryStateCallback(Profile* profile);
+  void RetryStateCallback();
 
   // Registers this as an observer on the TabModelList and, if possible, on a
   // TabModel.
-  void RegisterObserver(Profile* profile);
+  void RegisterObserver();
   void AddTabModelListObserver();
-  void AddTabModelObserver(Profile* profile);
+  void AddTabModelObserver();
   void RemoveTabModelListObserver();
   void RemoveTabModelObserver();
 

@@ -24,10 +24,12 @@ class SafeBrowsingPrefChangeHandlerAndroidTest : public testing::Test {
   SafeBrowsingPrefChangeHandlerAndroidTest() = default;
 
   void SetUp() override {
-    pref_change_handler_ = std::make_unique<SafeBrowsingPrefChangeHandler>();
-    rvh_test_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
     TestingProfile::Builder profile_builder;
     profile_ = profile_builder.Build();
+    // Pass the profile to the constructor.
+    pref_change_handler_ =
+        std::make_unique<SafeBrowsingPrefChangeHandler>(profile_.get());
+    rvh_test_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
   }
 
   void TearDown() override { pref_change_handler_.reset(); }
@@ -60,7 +62,7 @@ TEST_F(SafeBrowsingPrefChangeHandlerAndroidTest, AddAndRemoveTabModelObserver) {
   EXPECT_FALSE(pref_change_handler_->IsObservingTabModelForTesting());
   // Set tab model for testing after initial check
   pref_change_handler_->SetTabModelForTesting(&tab_model);
-  pref_change_handler_->AddTabModelObserver(profile());
+  pref_change_handler_->AddTabModelObserver();
   EXPECT_TRUE(pref_change_handler_->IsObservingTabModelForTesting());
 
   pref_change_handler_->RemoveTabModelObserver();
@@ -72,12 +74,12 @@ TEST_F(SafeBrowsingPrefChangeHandlerAndroidTest, AddAndRemoveTabModelObserver) {
 TEST_F(SafeBrowsingPrefChangeHandlerAndroidTest,
        AddTabModelObserver_NoMatchingProfile) {
   // Create a different profile.
-  TestingProfile other_profile;
-  TestTabModel tab_model(&other_profile);
+  TestingProfile::Builder other_profile_builder;
+  std::unique_ptr<TestingProfile> other_profile = other_profile_builder.Build();
+  TestTabModel tab_model(other_profile.get());
   TabModelList::AddTabModel(&tab_model);
 
-  pref_change_handler_->AddTabModelObserver(
-      profile());  // Try to add for the original profile.
+  pref_change_handler_->AddTabModelObserver();
   EXPECT_FALSE(
       pref_change_handler_
           ->IsObservingTabModelForTesting());  // Should not be observing any
@@ -89,9 +91,8 @@ TEST_F(SafeBrowsingPrefChangeHandlerAndroidTest, RegisterObserver) {
   // Create a test tab model.
   TestTabModel tab_model(profile());
   TabModelList::AddTabModel(&tab_model);
-  pref_change_handler_->SetTabModelForTesting(&tab_model);
 
-  pref_change_handler_->RegisterObserver(profile());
+  pref_change_handler_->RegisterObserver();
   EXPECT_TRUE(pref_change_handler_->IsObservingTabModelListForTesting());
   EXPECT_TRUE(pref_change_handler_->IsObservingTabModelForTesting());
 
@@ -110,7 +111,7 @@ TEST_F(SafeBrowsingPrefChangeHandlerAndroidTest, DidAddTab) {
   tab_model.SetWebContentsList({web_contents.get()});
   TabAndroid* tab = tab_model.GetTabAt(0);
 
-  pref_change_handler_->AddTabModelObserver(profile());
+  pref_change_handler_->AddTabModelObserver();
   pref_change_handler_->AddTabModelListObserver();
   // Simulate adding a tab.
   pref_change_handler_->DidAddTab(tab, TabModel::TabLaunchType::FROM_LINK);
