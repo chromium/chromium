@@ -92,7 +92,7 @@ TEST_F(OptionListTest, Optgroup) {
           "<option id=g11></option>");
   OptionList list2 = Select().GetOptionList();
   OptionList::Iterator iter2 = list2.begin();
-  EXPECT_EQ("gg11", Id(*iter2)) << "Nested OPTGROUP should be included.";
+  EXPECT_EQ("g11", Id(*iter2)) << "Nested OPTGROUP should not be included.";
 }
 
 TEST_F(OptionListTest, RetreatBeforeBeginning) {

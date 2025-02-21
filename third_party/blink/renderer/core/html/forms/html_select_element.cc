@@ -2362,4 +2362,37 @@ void HTMLSelectElement::UpdateAllSelectedcontents(
   }
 }
 
+// static
+HTMLSelectElement* HTMLSelectElement::NearestAncestorSelectNoNesting(
+    const Element& element,
+    ContainerNode* insertion_point,
+    bool* passed_insertion_point) {
+  CHECK(HTMLSelectElement::SelectParserRelaxationEnabled(&element));
+  unsigned num_ancestor_optgroups = 0;
+  for (Node& ancestor : NodeTraversal::AncestorsOf(element)) {
+    if (passed_insertion_point && insertion_point &&
+        ancestor == insertion_point) {
+      *passed_insertion_point = true;
+    }
+    if (IsA<HTMLOptionElement>(ancestor)) {
+      // Elements nested inside of an <option> are not associated with the
+      // <select>.
+      return nullptr;
+    } else if (IsA<HTMLOptGroupElement>(ancestor)) {
+      if (num_ancestor_optgroups || IsA<HTMLOptGroupElement>(element)) {
+        // Doubly-nested <optgroup>s and their descendants are not <select>
+        // associated.
+        return nullptr;
+      }
+      num_ancestor_optgroups++;
+    } else if (IsA<HTMLHRElement>(ancestor)) {
+      // Descendants of <hr> elements are not <select> associated.
+      return nullptr;
+    } else if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
+      return select;
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace blink
