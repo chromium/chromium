@@ -202,7 +202,8 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
         active_ids.find(app_id) != active_ids.end()
             ? metadata->GetInstallId(app_id)
             : "",
-        config_->GetLang(), metadata->GetInstallDate(app_id), install_source,
+        crx_component->lang.empty() ? config_->GetLang() : crx_component->lang,
+        metadata->GetInstallDate(app_id), install_source,
         crx_component->install_location, crx_component->fingerprint,
         crx_component->installer_attributes, metadata->GetCohort(app_id),
         metadata->GetCohortHint(app_id), metadata->GetCohortName(app_id),
