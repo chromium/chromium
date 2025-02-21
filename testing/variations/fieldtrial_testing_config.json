@@ -19934,9 +19934,9 @@
             ],
             "experiments": [
                 {
-                    "name": "RustyPngExperimentForTests",
+                    "name": "Disabled",
                     "enable_features": [
-                        "RustyPng"
+                        "RustPng"
                     ]
                 }
             ]
