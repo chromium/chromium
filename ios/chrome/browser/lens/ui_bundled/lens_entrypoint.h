@@ -6,9 +6,7 @@
 #define IOS_CHROME_BROWSER_LENS_UI_BUNDLED_LENS_ENTRYPOINT_H_
 
 // Enum representing the possible Lens entrypoints on iOS.
-// Current values should not be renumbered.
 enum class LensEntrypoint {
-  // LINT.IfChange(IOSLensEntrypoint)
   ContextMenu = 0,
   HomeScreenWidget = 1,
   NewTabPage = 2,
@@ -26,8 +24,9 @@ enum class LensEntrypoint {
   LensOverlayLocationBar = 14,
   LensOverlayOverflowMenu = 15,
   LensOverlayLvfEscapeHatch = 16,
-  kMaxValue = LensOverlayLvfEscapeHatch,
-  //  LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:AmbientSearchEntryPoint)
+  LensOverlayLvfShutterButton = 17,
+  LensOverlayLvfGallery = 18,
+  kMaxValue = LensOverlayLvfGallery,
 };
 
 extern const char kIOSLensEntrypoint[];
