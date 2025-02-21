@@ -74,7 +74,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                     TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
                     if (!getIsVisibleSupplier().get()
                             || coordinator == null
-                            || !incognitoTabGroupModelFilter.isCurrentlySelectedFilter()) {
+                            || !incognitoTabGroupModelFilter.getTabModel().isActiveModel()) {
                         return;
                     }
 
@@ -241,7 +241,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         }
 
         boolean isNotVisibleOrSelected =
-                !getIsVisibleSupplier().get() || !filter.isCurrentlySelectedFilter();
+                !getIsVisibleSupplier().get() || !filter.getTabModel().isActiveModel();
         boolean incognitoReauthShowing =
                 mIncognitoReauthController != null
                         && mIncognitoReauthController.isIncognitoReauthPending();

@@ -326,7 +326,7 @@ public class TabSwitcherPaneUnitTest {
 
     @Test
     public void testLoadHintColdHotWarm() {
-        when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        mTabModel.setActive(true);
 
         mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -352,7 +352,7 @@ public class TabSwitcherPaneUnitTest {
 
     @Test
     public void testLoadHintColdHot_TabStateNotInitialized() {
-        when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        mTabModel.setActive(true);
         when(mTabGroupModelFilter.isTabModelRestored()).thenReturn(false);
 
         mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
@@ -378,7 +378,7 @@ public class TabSwitcherPaneUnitTest {
 
     @Test
     public void testLoadHintColdWarmHotCold() {
-        when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        mTabModel.setActive(true);
 
         mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -552,7 +552,7 @@ public class TabSwitcherPaneUnitTest {
         mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         assertNotNull(mTabSwitcherPane.getTabSwitcherPaneCoordinator());
         mTabSwitcherPane.destroyTabSwitcherPaneCoordinator();
-        when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        mTabModel.setActive(true);
         when(mTabGroupModelFilter.isTabModelRestored()).thenReturn(true);
 
         OnSharedPreferenceChangeListener listener = mPriceAnnotationsPrefListenerCaptor.getValue();
@@ -574,7 +574,7 @@ public class TabSwitcherPaneUnitTest {
         verify(coordinator).resetWithTabList(mTabGroupModelFilter);
         when(mTabGroupModelFilter.isTabModelRestored()).thenReturn(true);
 
-        when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(false);
+        mTabModel.setActive(false);
         listener.onSharedPreferenceChanged(
                 mSharedPreferences, PriceTrackingUtilities.TRACK_PRICES_ON_TABS);
         verify(coordinator).resetWithTabList(mTabGroupModelFilter);
@@ -671,15 +671,15 @@ public class TabSwitcherPaneUnitTest {
         assertTrue(mTabSwitcherPane.resetWithTabList(null, false));
         verify(coordinator).resetWithTabList(null);
 
-        when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        mTabModel.setActive(true);
         mTabSwitcherPane.showAllTabs();
         verify(coordinator, times(2)).resetWithTabList(null);
-        when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(false);
+        mTabModel.setActive(false);
 
         mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         verify(coordinator, times(3)).resetWithTabList(null);
 
-        when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        mTabModel.setActive(true);
         mTabSwitcherPane.showAllTabs();
         verify(coordinator).resetWithTabList(mTabGroupModelFilter);
     }

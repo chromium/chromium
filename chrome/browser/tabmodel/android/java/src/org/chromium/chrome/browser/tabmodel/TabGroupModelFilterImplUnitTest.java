@@ -503,7 +503,7 @@ public class TabGroupModelFilterImplUnitTest {
 
         assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
         assertThat(mTabGroupModelFilter.getCount(), equalTo(5));
-        assertThat(mTabGroupModelFilter.getTotalTabCount(), equalTo(7));
+        assertThat(mTabGroupModelFilter.getTabModel().getCount(), equalTo(7));
 
         assertThat(mTabGroupModelFilter.indexOf(mTab1), equalTo(0));
         assertThat(mTabGroupModelFilter.indexOf(newTab), equalTo(1));
@@ -2045,11 +2045,13 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
-    public void testGetTotalTabCount() {
+    public void testTabCount() {
         assertThat("Should have 4 group tabs", mTabGroupModelFilter.getCount(), equalTo(4));
 
-        int totalTabCount = mTabGroupModelFilter.getTotalTabCount();
-        assertThat("Should have 6 total tabs", totalTabCount, equalTo(6));
+        assertThat(
+                "Should have 6 total tabs",
+                mTabGroupModelFilter.getTabModel().getCount(),
+                equalTo(6));
     }
 
     @Test

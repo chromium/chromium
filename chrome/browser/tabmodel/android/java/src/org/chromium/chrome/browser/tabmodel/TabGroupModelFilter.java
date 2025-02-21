@@ -46,15 +46,9 @@ public interface TabGroupModelFilter extends TabList {
      */
     void removeTabGroupObserver(TabGroupModelFilterObserver observer);
 
-    /** Whether this is filter for the currently active {@link TabModel}. */
-    boolean isCurrentlySelectedFilter();
-
     /** Returns the {@link TabModel} that the filter is acting on. */
     @NonNull
     TabModel getTabModel();
-
-    /** Returns the total tab count in the underlying {@link TabModel}. */
-    int getTotalTabCount();
 
     /** Returns the number of tab groups. */
     int getTabGroupCount();
