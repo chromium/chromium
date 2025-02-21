@@ -116,6 +116,16 @@ std::string ServerTypesToString(const AutofillField* field) {
   return "[" + buffer.str() + "]";
 }
 
+HeuristicSource GetAvailableRegexHeuristicSource() {
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+  return GetActiveRegexFeatures().empty()
+             ? HeuristicSource::kDefaultRegexes
+             : HeuristicSource::kExperimentalRegexes;
+#else
+  return HeuristicSource::kLegacyRegexes;
+#endif
+}
+
 }  // namespace
 
 FormStructure::FormStructure(const FormData& form)
@@ -995,7 +1005,19 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
     buffer << "\n  Name: " << field->parseable_name();
 
     auto type = field->Type().ToStringView();
-    auto heuristic_type = FieldTypeToStringView(field->heuristic_type());
+    auto regex_heuristic_type = FieldTypeToStringView(
+        field->heuristic_type(GetAvailableRegexHeuristicSource()));
+    std::string ml_heuristic_part;
+    if (features::kAutofillModelPredictionsAreActive.Get()) {
+      auto ml_heuristic_type = FieldTypeToStringView(
+          field->heuristic_type(HeuristicSource::kAutofillMachineLearning));
+      ml_heuristic_part = base::StrCat({", ML heuristic: ", ml_heuristic_type});
+      if (ml_heuristic_type != regex_heuristic_type) {
+        ml_heuristic_part =
+            base::StrCat({ml_heuristic_part, ", overall heuristic: ",
+                          FieldTypeToStringView(field->heuristic_type())});
+      }
+    }
     std::string server_type = ServerTypesToString(field);
     const char* is_override =
         field->server_type_prediction_is_override() ? " (manual override)" : "";
@@ -1010,9 +1032,9 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
     }
 
     buffer << "\n  Type: "
-           << base::StrCat({type, " (heuristic: ", heuristic_type,
-                            ", server: ", server_type, is_override,
-                            html_type_description, ")"});
+           << base::StrCat({type, " (regex heuristic: ", regex_heuristic_type,
+                            ml_heuristic_part, ", server: ", server_type,
+                            is_override, html_type_description, ")"});
     buffer << "\n  Section: " << field->section();
 
     constexpr size_t kMaxLabelSize = 100;
@@ -1078,10 +1100,23 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "Placeholder:" << field->placeholder();
 
     auto type = field->Type().ToStringView();
-    auto heuristic_type = FieldTypeToStringView(field->heuristic_type());
+    auto regex_heuristic_type = FieldTypeToStringView(
+        field->heuristic_type(GetAvailableRegexHeuristicSource()));
+    std::string ml_heuristic_part;
+    if (features::kAutofillModelPredictionsAreActive.Get()) {
+      auto ml_heuristic_type = FieldTypeToStringView(
+          field->heuristic_type(HeuristicSource::kAutofillMachineLearning));
+      ml_heuristic_part = base::StrCat({", ML heuristic: ", ml_heuristic_type});
+      if (ml_heuristic_type != regex_heuristic_type) {
+        ml_heuristic_part =
+            base::StrCat({ml_heuristic_part, ", overall heuristic: ",
+                          FieldTypeToStringView(field->heuristic_type())});
+      }
+    }
     std::string server_type = ServerTypesToString(field);
-    if (field->server_type_prediction_is_override())
+    if (field->server_type_prediction_is_override()) {
       server_type += " (manual override)";
+    }
     auto html_type_description =
         field->html_type() != HtmlFieldType::kUnspecified
             ? base::StrCat(
@@ -1093,7 +1128,8 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     }
 
     buffer << Tr{} << "Type:"
-           << base::StrCat({type, " (heuristic: ", heuristic_type, ", server: ",
+           << base::StrCat({type, " (regex heuristic: ", regex_heuristic_type,
+                            ml_heuristic_part, ", server: ",
                             server_type, html_type_description, ")"});
     buffer << Tr{} << "Section:" << field->section();
 
