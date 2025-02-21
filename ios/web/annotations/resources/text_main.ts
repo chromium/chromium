@@ -7,13 +7,16 @@
  * and pass it on to the annotations manager.
  */
 
-import {TextAnnotationList, TextViewportAnnotation} from '//ios/web/annotations/resources/text_annotation_list.js';
+import type {TextViewportAnnotation} from '//ios/web/annotations/resources/text_annotation_list.js';
+import {TextAnnotationList} from '//ios/web/annotations/resources/text_annotation_list.js';
 import {TextClick} from '//ios/web/annotations/resources/text_click.js';
 import {annotationExternalData, annotationFullText} from '//ios/web/annotations/resources/text_decoration.js';
 import {TextDecorator} from '//ios/web/annotations/resources/text_decorator.js';
 import {TextDOMObserver} from '//ios/web/annotations/resources/text_dom_observer.js';
-import {getMetaContentByHttpEquiv, hasNoIntentDetection, HTMLElementWithSymbolIndex, NodeWithSymbolIndex, noFormatDetectionTypes, rectFromElement} from '//ios/web/annotations/resources/text_dom_utils.js';
-import {TextChunk, TextExtractor} from '//ios/web/annotations/resources/text_extractor.js';
+import type {HTMLElementWithSymbolIndex, NodeWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
+import {getMetaContentByHttpEquiv, hasNoIntentDetection, noFormatDetectionTypes, rectFromElement} from '//ios/web/annotations/resources/text_dom_utils.js';
+import type {TextChunk} from '//ios/web/annotations/resources/text_extractor.js';
+import {TextExtractor} from '//ios/web/annotations/resources/text_extractor.js';
 import {TextIntersectionObserver} from '//ios/web/annotations/resources/text_intersection_observer.js';
 import {TextStyler} from '//ios/web/annotations/resources/text_styler.js';
 import {IdleTaskTracker} from '//ios/web/annotations/resources/text_tasks.js';
@@ -41,7 +44,7 @@ function textChunkConsumer(chunk: TextChunk): void {
   if (chunksInFlight.size === 1) {
     idleTaskTracker?.startActivityListeners();
   }
-  let disabledTypes = noFormatDetectionTypes();
+  const disabledTypes = noFormatDetectionTypes();
   sendWebKitMessage('annotations', {
     command: 'annotations.extractedText',
     text: chunk.text,

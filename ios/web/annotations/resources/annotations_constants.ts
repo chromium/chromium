@@ -37,7 +37,8 @@ const NON_TEXT_NODE_NAMES = new Set([
 
 // Tags that should not be decorated.
 const NO_DECORATION_NODE_NAMES = new Set([
-  'A', 'LABEL'
+  'A',
+  'LABEL',
 ]);
 
 // Milliseconds delay between tap bubbling to top and checking for more DOM
@@ -45,5 +46,7 @@ const NO_DECORATION_NODE_NAMES = new Set([
 const MS_DELAY_BEFORE_TRIGGER = 300;
 
 export {
-  MS_DELAY_BEFORE_TRIGGER, NON_TEXT_NODE_NAMES, NO_DECORATION_NODE_NAMES,
-}
+  MS_DELAY_BEFORE_TRIGGER,
+  NON_TEXT_NODE_NAMES,
+  NO_DECORATION_NODE_NAMES,
+};

@@ -62,17 +62,20 @@ function getMetaContentByHttpEquiv(httpEquiv: string): string {
 // assigned 'no'.
 function noFormatDetectionTypes(): Set<string> {
   const metas = document.getElementsByTagName('meta');
-  let types = new Set<string>();
+  const types = new Set<string>();
   for (const meta of metas) {
-    if (meta.getAttribute('name') !== 'format-detection')
+    if (meta.getAttribute('name') !== 'format-detection') {
       continue;
-    let content = meta.getAttribute('content');
-    if (!content)
+    }
+    const content = meta.getAttribute('content');
+    if (!content) {
       continue;
-    let matches = content.toLowerCase().matchAll(/([a-z]+)\s*=\s*([a-z]+)/gi);
-    if (!matches)
+    }
+    const matches = content.toLowerCase().matchAll(/([a-z]+)\s*=\s*([a-z]+)/gi);
+    if (!matches) {
       continue;
-    for (let match of matches) {
+    }
+    for (const match of matches) {
       if (match && match[2] === 'no' && match[1]) {
         types.add(match[1]);
       }
@@ -95,7 +98,7 @@ function hasNoIntentDetection(): boolean {
 }
 
 // Returns whether an annotation of type `annotationType` can be across element.
-function annotationCanBeCrossElement(annotationType: String) {
+function annotationCanBeCrossElement(annotationType: string) {
   return ['address', 'email'].includes(annotationType.toLowerCase());
 }
 
@@ -111,7 +114,7 @@ function rectFromElement(element: Element): Rect {
     x: domRect.x,
     y: domRect.y,
     width: domRect.width,
-    height: domRect.height
+    height: domRect.height,
   };
 }
 
@@ -190,4 +193,4 @@ export {
   isValidNode,
   previousLeaf,
   nextLeaf,
-}
+};

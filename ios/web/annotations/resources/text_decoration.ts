@@ -6,7 +6,7 @@
  * @fileoverview Handles one node decoration on the web page.
  */
 
-import {HTMLElementWithSymbolIndex, NodeWithSymbolIndex, TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
+import type {HTMLElementWithSymbolIndex, NodeWithSymbolIndex, TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
 
 // Tags for on an `Element` part of an applied `TextDecoration`.
 const originalNodeDecorationId = Symbol('originalNodeDecorationId');
@@ -205,4 +205,4 @@ export {
   createSpace,
   isDecorationNode,
   TextDecoration,
-}
+};

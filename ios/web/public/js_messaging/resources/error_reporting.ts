@@ -15,8 +15,8 @@ function catchAndReportErrors(functionName: string,
   try {
     return closure.apply(null, closureArgs);
   } catch (error) {
-    var errorMessage = '';
-    var errorStack = '';
+    let errorMessage = '';
+    let errorStack = '';
     if (error && error instanceof Error) {
       errorMessage = error.message;
       if (error.stack) {
@@ -32,6 +32,6 @@ function catchAndReportErrors(functionName: string,
         {'message': errorMessage, 'stack': errorStack});
   }
   return undefined;
-};
+}
 
-export {catchAndReportErrors}
+export {catchAndReportErrors};

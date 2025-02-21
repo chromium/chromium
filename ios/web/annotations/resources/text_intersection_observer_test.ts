@@ -6,16 +6,17 @@
  * @fileoverview Tests for text_intersection_observer.ts.
  */
 
-import {HTMLElementWithSymbolIndex, NodeWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
-import {InternalIntersectionObserver, observedNode, observedTextNodeCount, TextIntersectionObserver, TextNodeVisitor, visibleDescendantCount, visibleElement} from '//ios/web/annotations/resources/text_intersection_observer.js';
+import type {HTMLElementWithSymbolIndex, NodeWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
+import type {InternalIntersectionObserver, TextNodeVisitor} from '//ios/web/annotations/resources/text_intersection_observer.js';
+import {observedNode, observedTextNodeCount, TextIntersectionObserver, visibleDescendantCount, visibleElement} from '//ios/web/annotations/resources/text_intersection_observer.js';
 import {IdleTaskTracker} from '//ios/web/annotations/resources/text_tasks.js';
 import {expectEq, expectNeq, FakeTaskTimer, load, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
 let currentObserver: FakeIntersectionObserver|null = null;
 
 class FakeIntersectionObserver implements InternalIntersectionObserver {
-  public connected = false;
-  public observed = new Set<Element>();
+  connected = false;
+  observed = new Set<Element>();
 
   constructor(
       public callback: IntersectionObserverCallback,
@@ -35,9 +36,9 @@ class FakeIntersectionObserver implements InternalIntersectionObserver {
   }
 
   // Simulates viewport intersection hits on given `items`.
-  hits(items: {target: Element, isIntersecting: boolean}[]): void {
+  hits(items: Array<{target: Element, isIntersecting: boolean}>): void {
     const entries: IntersectionObserverEntry[] = [];
-    for (let item of items) {
+    for (const item of items) {
       entries.push({
         boundingClientRect: {},
         intersectionRatio: item.isIntersecting ? 1 : 0,
@@ -45,7 +46,7 @@ class FakeIntersectionObserver implements InternalIntersectionObserver {
         isIntersecting: item.isIntersecting,
         rootBounds: null,
         target: item.target,
-        time: 0
+        time: 0,
       } as unknown as IntersectionObserverEntry);
     }
     this.callback(entries, null as unknown as IntersectionObserver);
@@ -229,4 +230,4 @@ class TestTextIntersectionObserver extends TestSuite implements
   }
 }
 
-export {TestTextIntersectionObserver}
+export {TestTextIntersectionObserver};

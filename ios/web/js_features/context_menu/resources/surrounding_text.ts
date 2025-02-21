@@ -15,7 +15,7 @@ const INVALID_TEXT_ELEMENTS = new Set([
   'APPLET',   'AREA',     'AUDIO',    'BUTTON', 'CANVAS',   'EMBED',
   'FRAME',    'FRAMESET', 'IFRAME',   'IMG',    'INPUT',    'KEYGEN',
   'LABEL',    'MAP',      'NOSCRIPT', 'OBJECT', 'OPTGROUP', 'OPTION',
-  'PROGRESS', 'SCRIPT',   'SELECT',   'STYLE',  'TEXTAREA', 'VIDEO'
+  'PROGRESS', 'SCRIPT',   'SELECT',   'STYLE',  'TEXTAREA', 'VIDEO',
 ]);
 
 /**
@@ -49,8 +49,9 @@ function getLastValid(node: Node): Node {
   const childrenCount = node.childNodes.length;
   for (let i = childrenCount - 1; i >= 0; i--) {
     const child = node.childNodes[i];
-    if (!child)
+    if (!child) {
       continue;
+    }
     if (child instanceof Element && isValidElement(child)) {
       return getLastValid(child);
     }
@@ -139,7 +140,7 @@ function getNextTextNode(node: Node|null): Node|null {
  * Returns the previous valid text node.
  */
 function getPrevTextNode(node: Node|null): Node|null {
-  var n = getPrevNode(node);
+  let n = getPrevNode(node);
   while (n != null && n.nodeType != n.TEXT_NODE) {
     n = getPrevNode(n);
   }
@@ -185,6 +186,6 @@ function getSurroundingText(range: Range): SurroundingText {
   const middleText = textContent.substring(range.startOffset, range.endOffset);
   return new SurroundingText(
       leftText.length, leftText + middleText + rightText);
-};
+}
 
-export {getSurroundingText, SurroundingText}
+export {getSurroundingText, SurroundingText};

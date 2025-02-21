@@ -7,9 +7,10 @@
  * the annotations manager.
  */
 
-import {CountedIntersectionObserver} from '//ios/web/annotations/resources/text_dom_observer.js';
-import {ElementWithSymbolIndex, HTMLElementWithSymbolIndex, isValidNode, NodeWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
-import {IdleTaskTracker} from '//ios/web/annotations/resources/text_tasks.js';
+import type {CountedIntersectionObserver} from '//ios/web/annotations/resources/text_dom_observer.js';
+import type {ElementWithSymbolIndex, HTMLElementWithSymbolIndex, NodeWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
+import {isValidNode} from '//ios/web/annotations/resources/text_dom_utils.js';
+import type {IdleTaskTracker} from '//ios/web/annotations/resources/text_tasks.js';
 
 // Delay before starting text extraction.
 const EXTRACTION_TIMEOUT_MS = 300;
@@ -257,7 +258,7 @@ class TextIntersectionObserver implements CountedIntersectionObserver {
 
     node[observedNode] = true;
 
-    let count = element[observedTextNodeCount] ?? 0;
+    const count = element[observedTextNodeCount] ?? 0;
     if (count === 0) {
       this.observer?.observe(element);
     }
@@ -276,7 +277,7 @@ class TextIntersectionObserver implements CountedIntersectionObserver {
     if (!element || !isValidNode(element)) {
       return;
     }
-    let count = element[observedTextNodeCount] ?? 0;
+    const count = element[observedTextNodeCount] ?? 0;
     if (count === 1) {
       this.observer?.unobserve(element);
       delete element[observedTextNodeCount];
@@ -310,5 +311,5 @@ export {
   TextIntersectionObserver,
   TextNodeVisitor,
   InternalIntersectionObserver,
-  LiveIntersectionObserver
-}
+  LiveIntersectionObserver,
+};

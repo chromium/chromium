@@ -69,7 +69,7 @@ export function removeQueryAndReferenceFromURL(url: string): string {
   // (not the type) so URL.protocol is used instead.
   return (parsed.origin !== 'null' ? parsed.origin : parsed.protocol) +
       parsed.pathname;
-};
+}
 
 /**
  * Posts `message` to the webkit message handler specified by `handlerName`.
@@ -82,14 +82,14 @@ export function sendWebKitMessage(handlerName: string, message: object|string) {
     // A web page can override `window.webkit` with any value. Deleting the
     // object ensures that original and working implementation of
     // window.webkit is restored.
-    var oldWebkit = window.webkit;
+    const oldWebkit = window.webkit;
     delete window['webkit'];
     window.webkit.messageHandlers[handlerName].postMessage(message);
     window.webkit = oldWebkit;
   } catch (err) {
     // TODO(crbug.com/40269960): Report this fatal error
   }
-};
+}
 
 /**
  * Trims any whitespace from the start and end of a string.
@@ -104,4 +104,4 @@ export function trim(str: string): string {
     return '';
   }
   return str.replace(/^\s+|\s+$/g, '');
-};
+}

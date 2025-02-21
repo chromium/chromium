@@ -138,4 +138,4 @@ class TextAnnotationList {
 export {
   TextViewportAnnotation,
   TextAnnotationList,
-}
+};

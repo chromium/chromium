@@ -17,16 +17,16 @@ function createRegex(findText: string): RegExp {
   const escapedText = findText.replace(REGEX_ESCAPER, '\\$1');
   const regexString = '(' + escapedText + ')';
   return new RegExp(regexString, 'ig');
-};
+}
 
 /**
  * @param {string} text Text to escape.
  * @return {string} escaped text.
  */
 function escapeHTML(text: string): string {
-  let unusedDiv = document.createElement('div');
+  const unusedDiv = document.createElement('div');
   unusedDiv.innerText = text;
   return unusedDiv.innerHTML;
-};
+}
 
-export {createRegex, escapeHTML}
+export {createRegex, escapeHTML};

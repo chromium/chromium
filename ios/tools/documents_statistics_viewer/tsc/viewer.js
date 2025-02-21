@@ -33,8 +33,23 @@ const AUDIO_FORMATS = new Set(['AAC', 'AIFF', 'ALAC', 'DSD', 'FLAC', 'MP3', 'OGG
 const IMAGE_FORMATS = new Set(['BMP', 'GIF', 'JPEG', 'JPG', 'PNG', 'TIF', 'TIFF']);
 // A set of common video file extensions.
 const VIDEO_FORMATS = new Set([
-    'AVCHD', 'AVI', 'FLV', 'M4P', 'M4V', 'MOV', 'MP2', 'MP4', 'MPE', 'MPEG',
-    'MPG', 'MPV', 'OGG', 'QT', 'SWF', 'WEBM', 'WMV'
+    'AVCHD',
+    'AVI',
+    'FLV',
+    'M4P',
+    'M4V',
+    'MOV',
+    'MP2',
+    'MP4',
+    'MPE',
+    'MPEG',
+    'MPG',
+    'MPV',
+    'OGG',
+    'QT',
+    'SWF',
+    'WEBM',
+    'WMV',
 ]);
 // Returns an icon (as a single emoji item) based on the given `filename`'s
 // extension.
@@ -119,7 +134,7 @@ function sortItems(items, sorting) {
     });
     return sortedItems;
 }
-let collapsedDirectoryPaths = new Set();
+const collapsedDirectoryPaths = new Set();
 // Updates the expanded/collapsed state of directory contents and updates
 // directory icons to be in the correct open/closed state.
 function refreshExpandedState() {

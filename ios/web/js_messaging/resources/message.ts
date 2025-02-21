@@ -33,9 +33,9 @@ function getExistingFrames() {
 
     frame.postMessage({type: 'org.chromium.registerForFrameMessaging'}, '*');
   }
-};
+}
 
 gCrWeb.message = {
   getFrameId,
-  getExistingFrames
+  getExistingFrames,
 };

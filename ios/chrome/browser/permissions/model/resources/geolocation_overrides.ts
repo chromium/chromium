@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js'
+import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 if (typeof navigator === 'object' && 'geolocation' in navigator) {
   if ('getCurrentPosition' in navigator.geolocation) {
@@ -11,7 +11,7 @@ if (typeof navigator === 'object' && 'geolocation' in navigator) {
       sendWebKitMessage(
           'GeolocationAPIAccessedHandler', {'api': 'getCurrentPosition'});
       return originalFunc.apply(this, args);
-    }
+    };
   }
   if ('watchPosition' in navigator.geolocation) {
     const originalFunc = navigator.geolocation.watchPosition;
@@ -19,13 +19,13 @@ if (typeof navigator === 'object' && 'geolocation' in navigator) {
       sendWebKitMessage(
           'GeolocationAPIAccessedHandler', {'api': 'watchPosition'});
       return originalFunc.apply(this, args);
-    }
+    };
   }
   if ('clearWatch' in navigator.geolocation) {
     const originalFunc = navigator.geolocation.clearWatch;
     navigator.geolocation.clearWatch = function(...args) {
       sendWebKitMessage('GeolocationAPIAccessedHandler', {'api': 'clearWatch'});
       return originalFunc.apply(this, args);
-    }
+    };
   }
 }

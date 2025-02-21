@@ -7,7 +7,7 @@
  */
 
 import {createChromeAnnotation, isDecorationNode, originalNodeDecorationId, replacementNodeDecorationId, TextDecoration} from '//ios/web/annotations/resources/text_decoration.js';
-import {HTMLElementWithSymbolIndex, TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
+import type {HTMLElementWithSymbolIndex, TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
 import {expectEq, load, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
 class TestTextDecoration extends TestSuite {
@@ -113,7 +113,10 @@ class TestTextDecoration extends TestSuite {
         createChromeAnnotation(2, 'orld', '@ORLD', 'orld', 'external-key');
 
     const decoration = new TextDecoration(1, originalTextNode, [
-      replacementTextNode1, replacement2, replacementTextNode3, replacement4
+      replacementTextNode1,
+      replacement2,
+      replacementTextNode3,
+      replacement4,
     ]);
     decoration.apply();
     expectEq(decoratedHTML, body.innerHTML);
@@ -151,7 +154,10 @@ class TestTextDecoration extends TestSuite {
         createChromeAnnotation(2, 'orld', '@ORLD', 'orld', 'external-key');
 
     const decoration = new TextDecoration(1, originalTextNode, [
-      replacementTextNode1, replacement2, replacementTextNode3, replacement4
+      replacementTextNode1,
+      replacement2,
+      replacementTextNode3,
+      replacement4,
     ]);
 
     // Before live.
@@ -191,7 +197,10 @@ class TestTextDecoration extends TestSuite {
         createChromeAnnotation(2, 'orld', '@ORLD', 'orld', 'external-key');
 
     const decoration = new TextDecoration(1, originalTextNode, [
-      replacementTextNode1, replacement2, replacementTextNode3, replacement4
+      replacementTextNode1,
+      replacement2,
+      replacementTextNode3,
+      replacement4,
     ]);
     decoration.apply();
 
@@ -203,4 +212,4 @@ class TestTextDecoration extends TestSuite {
   }
 }
 
-export {TestTextDecoration}
+export {TestTextDecoration};

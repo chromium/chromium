@@ -25,17 +25,17 @@ function getSelectedText() {
  */
 function getSelectedTextWithOffset(offsetX: number, offsetY: number) {
   const selection = window.getSelection();
-  let selectionRect = {x: 0, y: 0, width: 0, height: 0};
+  const selectionRect = {x: 0, y: 0, width: 0, height: 0};
 
   if (!selection || !selection.rangeCount) {
     const iframes = document.getElementsByTagName('iframe');
-    for (var iframe of iframes) {
+    for (const iframe of iframes) {
       const domRect = iframe.getBoundingClientRect();
       iframe.contentWindow?.postMessage(
           {
             type: 'org.chromium.getSelection',
             'offsetX': domRect.x,
-            'offsetY': domRect.y
+            'offsetY': domRect.y,
           },
           '*');
     }

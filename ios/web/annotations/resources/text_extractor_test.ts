@@ -6,7 +6,8 @@
  * @fileoverview Tests for text_extractor.ts.
  */
 
-import {TextChunk, TextChunkConsumer, TextExtractor} from '//ios/web/annotations/resources/text_extractor.js';
+import type {TextChunk, TextChunkConsumer} from '//ios/web/annotations/resources/text_extractor.js';
+import {TextExtractor} from '//ios/web/annotations/resources/text_extractor.js';
 import {expectEq, expectNeq, load, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
 class TestTextExtractor extends TestSuite {
@@ -107,4 +108,4 @@ class TestTextExtractor extends TestSuite {
   }
 }
 
-export {TestTextExtractor}
+export {TestTextExtractor};

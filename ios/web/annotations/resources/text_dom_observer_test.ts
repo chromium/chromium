@@ -7,8 +7,9 @@
  */
 
 import {replacementNodeDecorationId} from '//ios/web/annotations/resources/text_decoration.js';
-import {CountedIntersectionObserver, TextDOMObserver} from '//ios/web/annotations/resources/text_dom_observer.js';
-import {HTMLElementWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
+import type {CountedIntersectionObserver} from '//ios/web/annotations/resources/text_dom_observer.js';
+import {TextDOMObserver} from '//ios/web/annotations/resources/text_dom_observer.js';
+import type {HTMLElementWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
 import {expectEq, load, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
 class TestTextDOMObserver extends TestSuite implements
@@ -110,7 +111,7 @@ class TestTextDOMObserver extends TestSuite implements
     expectEq(this.observed.size, 2);
 
     // Make annotation 'decorated'.
-    let annotation =
+    const annotation =
         document.querySelector('#d2') as HTMLElementWithSymbolIndex;
     annotation[replacementNodeDecorationId] = 'd2';
 
@@ -124,4 +125,4 @@ class TestTextDOMObserver extends TestSuite implements
   }
 }
 
-export {TestTextDOMObserver}
+export {TestTextDOMObserver};

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {removeQueryAndReferenceFromURL, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js'
+import {removeQueryAndReferenceFromURL, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 gCrWeb.utils_tests = {
   removeQueryAndReferenceFromURL,

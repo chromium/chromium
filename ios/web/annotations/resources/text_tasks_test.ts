@@ -127,4 +127,4 @@ class TestTextTasks extends TestSuite {
   }
 }
 
-export {TestTextTasks}
+export {TestTextTasks};
