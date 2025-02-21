@@ -7448,28 +7448,29 @@ TEST_F(BrowserAutofillManagerTest, OnSingleFieldSuggestionSelected) {
   EXPECT_CALL(single_field_fill_router(),
               OnSingleFieldSuggestionSelected(autocomplete_suggestion));
 
-  manager().OnSingleFieldSuggestionSelected(autocomplete_suggestion, form,
-                                            field);
+  manager().OnSingleFieldSuggestionSelected(
+      autocomplete_suggestion, form.global_id(), field.global_id());
 
   EXPECT_CALL(single_field_fill_router(),
               OnSingleFieldSuggestionSelected(autocomplete_suggestion));
 
-  manager().OnSingleFieldSuggestionSelected(autocomplete_suggestion, form,
-                                            field);
+  manager().OnSingleFieldSuggestionSelected(
+      autocomplete_suggestion, form.global_id(), field.global_id());
 
   Suggestion iban_suggestion(test_value, SuggestionType::kIbanEntry);
   EXPECT_CALL(single_field_fill_router(),
               OnSingleFieldSuggestionSelected(iban_suggestion));
 
-  manager().OnSingleFieldSuggestionSelected(iban_suggestion, form, field);
+  manager().OnSingleFieldSuggestionSelected(iban_suggestion, form.global_id(),
+                                            field.global_id());
 
   Suggestion merchant_promo_suggestion(test_value,
                                        SuggestionType::kMerchantPromoCodeEntry);
   EXPECT_CALL(single_field_fill_router(),
               OnSingleFieldSuggestionSelected(merchant_promo_suggestion));
 
-  manager().OnSingleFieldSuggestionSelected(merchant_promo_suggestion, form,
-                                            field);
+  manager().OnSingleFieldSuggestionSelected(
+      merchant_promo_suggestion, form.global_id(), field.global_id());
 }
 
 // Test that we correctly fill an address form and update the used profile.

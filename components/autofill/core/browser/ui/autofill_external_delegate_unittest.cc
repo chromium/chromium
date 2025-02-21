@@ -250,7 +250,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
 
   bool ShouldShowCardsFromAccountOption(
       const FormData& form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source) const override {
     return should_show_cards_from_account_option_;
   }

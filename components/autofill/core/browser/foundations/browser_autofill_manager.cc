@@ -687,7 +687,7 @@ bool BrowserAutofillManager::ShouldShowScanCreditCard(
 
 bool BrowserAutofillManager::ShouldShowCardsFromAccountOption(
     const FormData& form,
-    const FormFieldData& field,
+    const FieldGlobalId& field_id,
     AutofillSuggestionTriggerSource trigger_source) const {
   // If `trigger_source` is equal to `kShowCardsFromAccount`, that means that
   // the user accepted "Show cards from account" suggestions and it should not
@@ -697,8 +697,7 @@ bool BrowserAutofillManager::ShouldShowCardsFromAccountOption(
     return false;
   }
   // Check whether we are dealing with a credit card field.
-  AutofillField* autofill_field =
-      GetAutofillField(form.global_id(), field.global_id());
+  AutofillField* autofill_field = GetAutofillField(form.global_id(), field_id);
   if (!autofill_field ||
       autofill_field->Type().group() != FieldTypeGroup::kCreditCard ||
       // Exclude CVC and card type fields, because these will not have
@@ -2071,13 +2070,12 @@ void BrowserAutofillManager::OnHidePopupImpl() {
 
 void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
     const Suggestion& suggestion,
-    const FormData& form,
-    const FormFieldData& field) {
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id) {
   client().GetSingleFieldFillRouter().OnSingleFieldSuggestionSelected(
       suggestion);
 
-  AutofillField* autofill_trigger_field =
-      GetAutofillField(form.global_id(), field.global_id());
+  AutofillField* autofill_trigger_field = GetAutofillField(form_id, field_id);
   if (!autofill_trigger_field) {
     return;
   }
@@ -2696,7 +2694,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
           FormStructure::CreditCardFormCompleteness::
               kCompleteCreditCardFormIncludingCvcAndName),
       ShouldShowScanCreditCard(form, trigger_field),
-      ShouldShowCardsFromAccountOption(form, trigger_field, trigger_source),
+      ShouldShowCardsFromAccountOption(form, trigger_field.global_id(),
+                                       trigger_source),
       four_digit_combinations_in_dom_,
       /*autofilled_last_four_digits_in_form_for_filtering=*/
       is_card_number_autofilled && card_number_field_value.size() >= 4
