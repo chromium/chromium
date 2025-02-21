@@ -379,7 +379,7 @@ void InProcessBrowserTest::Initialize() {
   create_services_subscription_ =
       BrowserContextDependencyManager::GetInstance()
           ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-              &InProcessBrowserTest::SetupProtocolHandlerTestFactories,
+              &InProcessBrowserTest::OnWillCreateBrowserContextKeyedServices,
               base::Unretained(this)));
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -936,7 +936,13 @@ void InProcessBrowserTest::QuitBrowsers() {
 #endif
 }
 
-void InProcessBrowserTest::SetupProtocolHandlerTestFactories(
+void InProcessBrowserTest::OnWillCreateBrowserContextKeyedServices(
+    content::BrowserContext* context) {
+  SetUpProtocolHandlerTestFactories(context);
+  SetUpBrowserContextKeyedServices(context);
+}
+
+void InProcessBrowserTest::SetUpProtocolHandlerTestFactories(
     content::BrowserContext* context) {
   // Use TestProtocolHandlerRegistryDelegate to prevent OS integration during
   // the protocol registration process.

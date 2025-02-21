@@ -244,6 +244,13 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // successful. To set initial prefs, see SetUpLocalStatePrefService.
   [[nodiscard]] virtual bool SetUpUserDataDirectory();
 
+  // Called just before BrowserContextKeyedService creation is started
+  // for each Profile creation.
+  // Test fixtures inheriting InProcessBrowserTest can inject some fake/test
+  // BrowserContextKeyedService as necessary for testing.
+  virtual void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) {}
+
   // Initializes the display::Screen instance.
   virtual void SetScreenInstance();
 
@@ -379,11 +386,16 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Quits all open browsers and waits until there are no more browsers.
   void QuitBrowsers();
 
+  // Called on BrowserContextKeyedServices are being created for each
+  // Profile.
+  void OnWillCreateBrowserContextKeyedServices(
+      content::BrowserContext* context);
+
   // This is called to set up the test factories for each browser context.
   // It ensures that ProtocolHandlerRegistry instances use
   // TestProtocolHandlerRegistryDelegate, which prevents browser tests
   // from changing the OS integration of protocols.
-  void SetupProtocolHandlerTestFactories(content::BrowserContext* context);
+  void SetUpProtocolHandlerTestFactories(content::BrowserContext* context);
 
   static SetUpBrowserFunction* global_browser_set_up_function_;
 
