@@ -55,7 +55,7 @@ std::optional<std::string> GetLabelFromBottom(const ProductCategory& category,
 }
 
 std::string FindTitleForSimilarProducts(
-    const std::vector<std::pair<GURL, const ProductInfo>>& product_infos) {
+    const std::map<GURL, std::optional<ProductInfo>>& product_infos) {
   // Calculate for each label (both bottom and second-to-bottom level), how
   // many products contain this label.
   //
@@ -67,10 +67,10 @@ std::string FindTitleForSimilarProducts(
   base::flat_set<std::string> bottom_labels;
   std::map<std::string, int> label_count;
 
-  for (auto pair : product_infos) {
+  for (auto entry : product_infos) {
     base::flat_set<std::string> counted_labels;
     for (const auto& product_category :
-         pair.second.category_data.product_categories()) {
+         entry.second->category_data.product_categories()) {
       std::optional<std::string> bottom_label =
           GetLabelFromBottom(product_category, 0);
       if (bottom_label) {
@@ -183,39 +183,6 @@ bool IsProductSimilarToGroup(
   return false;
 }
 
-void OnGetCategoryDataDone(
-    base::OnceCallback<void(const CategoryData&)> callback,
-    const GURL& url,
-    const std::optional<const ProductInfo>& product_info) {
-  std::move(callback).Run(product_info ? product_info->category_data
-                                       : CategoryData());
-}
-
-void GetCategoryData(
-    const GURL& url,
-    const ClusterManager::GetProductInfoCallback& get_product_info_cb,
-    base::OnceCallback<void(const CategoryData&)> callback) {
-  get_product_info_cb.Run(
-      url, base::BindOnce(&OnGetCategoryDataDone, std::move(callback)));
-}
-
-void OnGetProductInfoDone(
-    base::OnceCallback<void(std::pair<GURL, const ProductInfo>)> callback,
-    const GURL& url,
-    const std::optional<const ProductInfo>& product_info) {
-  std::pair<GURL, const ProductInfo> pair(
-      url, product_info.has_value() ? product_info.value() : ProductInfo());
-  std::move(callback).Run(std::move(pair));
-}
-
-void GetProductInfo(
-    const GURL& url,
-    const ClusterManager::GetProductInfoCallback& get_product_info_cb,
-    base::OnceCallback<void(std::pair<GURL, const ProductInfo>)> callback) {
-  get_product_info_cb.Run(
-      url, base::BindOnce(&OnGetProductInfoDone, std::move(callback)));
-}
-
 bool IsCandidateProductInProductGroup(
     const GURL& candidate_product_url,
     const std::map<base::Uuid, std::unique_ptr<ProductGroup>>&
@@ -235,9 +202,11 @@ ClusterManager::ClusterManager(
     ProductSpecificationsService* product_specification_service,
     std::unique_ptr<ClusterServerProxy> cluster_server_proxy,
     const GetProductInfoCallback& get_product_info_cb,
+    const GetProductInfoBatchCallback& get_product_info_batch_cb,
     const GetOpenUrlInfosCallback& get_open_url_infos_cb)
     : cluster_server_proxy_(std::move(cluster_server_proxy)),
       get_product_info_cb_(get_product_info_cb),
+      get_product_info_batch_cb_(get_product_info_batch_cb),
       get_open_url_infos_cb_(get_open_url_infos_cb) {
   product_specification_service->GetAllProductSpecifications(
       base::BindOnce(&ClusterManager::OnGetAllProductSpecificationsSets,
@@ -273,14 +242,29 @@ void ClusterManager::OnProductSpecificationsSetAdded(
                                      product_specifications_set.urls(),
                                      product_specifications_set.update_time());
   const std::set<GURL>& urls = product_group_map_[uuid]->member_products;
-
-  auto barrier_callback = base::BarrierCallback<const CategoryData&>(
-      urls.size(), base::BindOnce(&ClusterManager::OnAllCategoryDataRetrieved,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  product_specifications_set.uuid(), urls));
-  for (const auto& url : urls) {
-    GetCategoryData(url, get_product_info_cb_, barrier_callback);
+  std::vector<GURL> url_list;
+  for (const GURL& url : urls) {
+    url_list.push_back(url);
   }
+  get_product_info_batch_cb_.Run(
+      url_list,
+      base::BindOnce(
+          [](base::WeakPtr<ClusterManager> manager, const base::Uuid& uuid,
+             const std::set<GURL>& urls,
+             std::map<GURL, std::optional<ProductInfo>> info_map) {
+            if (!manager) {
+              return;
+            }
+            std::vector<CategoryData> category_data;
+            for (const auto& it : info_map) {
+              category_data.push_back(it.second.has_value()
+                                          ? it.second->category_data
+                                          : CategoryData());
+            }
+            manager->OnAllCategoryDataRetrieved(uuid, urls, category_data);
+          },
+          weak_ptr_factory_.GetWeakPtr(), product_specifications_set.uuid(),
+          urls));
 }
 
 void ClusterManager::OnProductSpecificationsSetUpdate(
@@ -490,14 +474,14 @@ void ClusterManager::GetEntryPointInfoForNavigation(
 
   similar_urls.insert(url);
 
-  auto barrier_callback =
-      base::BarrierCallback<std::pair<GURL, const ProductInfo>>(
-          similar_urls.size(),
-          base::BindOnce(&ClusterManager::OnProductInfoFetchedForSimilarUrls,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  for (const auto& similar_url : similar_urls) {
-    GetProductInfo(similar_url, get_product_info_cb_, barrier_callback);
+  std::vector<GURL> url_list;
+  for (const GURL& similar_url : similar_urls) {
+    url_list.push_back(similar_url);
   }
+  get_product_info_batch_cb_.Run(
+      url_list, base::BindOnce(base::BindOnce(
+                    &ClusterManager::OnProductInfoFetchedForSimilarUrls,
+                    weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
 
 void ClusterManager::GetEntryPointInfoForSelection(
@@ -523,23 +507,23 @@ void ClusterManager::GetEntryPointInfoForSelection(
   }
   similar_urls.merge(similar_urls_new);
 
-  auto barrier_callback =
-      base::BarrierCallback<std::pair<GURL, const ProductInfo>>(
-          similar_urls.size(),
-          base::BindOnce(&ClusterManager::OnProductInfoFetchedForSimilarUrls,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  for (const auto& similar_url : similar_urls) {
-    GetProductInfo(similar_url, get_product_info_cb_, barrier_callback);
+  std::vector<GURL> url_list;
+  for (const GURL& similar_url : similar_urls) {
+    url_list.push_back(similar_url);
   }
+  get_product_info_batch_cb_.Run(
+      url_list, base::BindOnce(base::BindOnce(
+                    &ClusterManager::OnProductInfoFetchedForSimilarUrls,
+                    weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
 
 void ClusterManager::OnProductInfoFetchedForSimilarUrls(
     GetEntryPointInfoCallback callback,
-    const std::vector<std::pair<GURL, const ProductInfo>>& product_infos) {
+    const std::map<GURL, std::optional<ProductInfo>> product_infos) {
   std::map<GURL, uint64_t> map;
-  for (auto pair : product_infos) {
-    if (pair.second.product_cluster_id.has_value()) {
-      map[pair.first] = pair.second.product_cluster_id.value();
+  for (auto entry : product_infos) {
+    if (entry.second->product_cluster_id.has_value()) {
+      map[entry.first] = entry.second->product_cluster_id.value();
     }
   }
   std::move(callback).Run(std::make_optional<EntryPointInfo>(
