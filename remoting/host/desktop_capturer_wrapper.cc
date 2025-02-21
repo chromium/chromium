@@ -4,14 +4,24 @@
 
 #include "remoting/host/desktop_capturer_wrapper.h"
 
+#include <cstdint>
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
+#include "base/threading/thread_checker.h"
 #include "build/build_config.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
+#include "third_party/webrtc/modules/desktop_capture/shared_memory.h"
+
+#if defined(WEBRTC_USE_GIO)
+#include "base/notreached.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
+#endif
 
 namespace remoting {
 
@@ -24,15 +34,12 @@ DesktopCapturerWrapper::~DesktopCapturerWrapper() {
 }
 
 void DesktopCapturerWrapper::CreateCapturer(
-    const webrtc::DesktopCaptureOptions& options,
-    SourceId id) {
+    base::OnceCallback<std::unique_ptr<webrtc::DesktopCapturer>()> creator) {
   DCHECK(!capturer_);
 
-  capturer_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
+  capturer_ = std::move(creator).Run();
 
-  if (capturer_) {
-    capturer_->SelectSource(id);
-  } else {
+  if (!capturer_) {
     LOG(ERROR) << "Failed to initialize screen capturer.";
   }
 }
@@ -96,7 +103,7 @@ void DesktopCapturerWrapper::OnCaptureResult(
   callback_->OnCaptureResult(result, std::move(frame));
 }
 
-void DesktopCapturerWrapper::SetMaxFrameRate(uint32_t max_frame_rate) {
+void DesktopCapturerWrapper::SetMaxFrameRate(std::uint32_t max_frame_rate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (capturer_) {

@@ -4,13 +4,18 @@
 
 #include "remoting/host/desktop_display_info_monitor.h"
 
+#include <memory>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "remoting/base/logging.h"
-#include "remoting/proto/control.pb.h"
+#include "remoting/host/desktop_display_info.h"
+#include "remoting/host/desktop_display_info_loader.h"
 
 namespace remoting {
 
@@ -26,9 +31,10 @@ constexpr base::TimeDelta kPollingInterval = base::Milliseconds(100);
 }  // namespace
 
 DesktopDisplayInfoMonitor::DesktopDisplayInfoMonitor(
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    std::unique_ptr<DesktopDisplayInfoLoader> info_loader)
     : ui_task_runner_(ui_task_runner),
-      desktop_display_info_loader_(DesktopDisplayInfoLoader::Create()) {
+      desktop_display_info_loader_(std::move(info_loader)) {
   // The loader must be initialized and used on the UI thread (though it can be
   // created on any thread).
   ui_task_runner_->PostTask(
