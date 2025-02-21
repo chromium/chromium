@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
 #import "ios/chrome/browser/history/model/top_sites_factory.h"
 #import "ios/chrome/browser/omnibox/eg_tests/test_fake_suggestions_service.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -169,6 +170,12 @@ const base::FilePath& GetTestDataDir() {
             base::apple::ObjCCastStrict<OmniboxTextFieldIOS>(element);
         return textField.hasAutocompleteText == shouldHaveAutocompleteText;
       }];
+}
+
++ (BOOL)isOmniboxFocusedOnMainBrowser {
+  return OmniboxPositionBrowserAgent::FromBrowser(
+             chrome_test_util::GetMainBrowser())
+      ->IsOmniboxFocused();
 }
 
 @end

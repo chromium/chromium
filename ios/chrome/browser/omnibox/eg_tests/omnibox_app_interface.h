@@ -46,6 +46,9 @@
 + (id<GREYAssertion>)displaysInlineAutocompleteText:
     (BOOL)shouldHaveAutocompleteText;
 
+/// Returns whether the omnibox is focused using the browser agent.
++ (BOOL)isOmniboxFocusedOnMainBrowser;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_OMNIBOX_APP_INTERFACE_H_
