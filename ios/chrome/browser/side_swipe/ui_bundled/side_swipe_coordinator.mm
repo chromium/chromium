@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_consumer.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller_delegate.h"
@@ -50,10 +51,12 @@
 
   _sideSwipeUIController = [[SideSwipeUIController alloc] init];
 
+  _sideSwipeUIController.fullscreenController = _fullscreenController;
   _sideSwipeUIController.mutator = _sideSwipeMediator;
   _sideSwipeUIController.navigationDelegate = _sideSwipeMediator;
   [_sideSwipeUIController
       setSideSwipeUIControllerDelegate:_sideSwipeUIControllerDelegate];
+  _sideSwipeMediator.consumer = _sideSwipeUIController;
 
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
@@ -74,10 +77,12 @@
 
 - (void)addHorizontalGesturesToView:(UIView*)view {
   [_sideSwipeMediator addHorizontalGesturesToView:view];
+  [_sideSwipeUIController addHorizontalGesturesToView:view];
 }
 
 - (void)setEnabled:(BOOL)enabled {
   [_sideSwipeMediator setEnabled:enabled];
+  [_sideSwipeUIController setEnabled:enabled];
 }
 
 - (BOOL)swipeInProgress {
@@ -122,12 +127,12 @@
 
 - (void)prepareForSlideInDirection:(UISwipeGestureRecognizerDirection)direction
                      snapshotImage:(UIImage*)snapshotImage {
-  [_sideSwipeMediator prepareForSlideInDirection:direction
-                                   snapshotImage:snapshotImage];
+  [_sideSwipeUIController prepareForSlideInDirection:direction
+                                       snapshotImage:snapshotImage];
 }
 
 - (void)slideToCenterAnimated {
-  [_sideSwipeMediator slideToCenterAnimated];
+  [_sideSwipeUIController slideToCenterAnimated];
 }
 
 #pragma mark - Private

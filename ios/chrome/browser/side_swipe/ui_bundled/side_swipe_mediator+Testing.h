@@ -13,18 +13,7 @@ class WebState;
 // for tests.
 @interface SideSwipeMediator (Testing)
 
-// Whether to allow navigating from the leading edge.
-@property(nonatomic, assign) BOOL leadingEdgeNavigationEnabled;
-
-// Whether to allow navigating from the trailing edge.
-@property(nonatomic, assign) BOOL trailingEdgeNavigationEnabled;
-
 - (void)updateNavigationEdgeSwipeForWebState:(web::WebState*)webState;
-
-// Determines whether edge navigation is enabled for the specified swipe
-// direction.
-- (BOOL)edgeNavigationIsEnabledForDirection:
-    (UISwipeGestureRecognizerDirection)direction;
 
 @end
 

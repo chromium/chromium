@@ -18,6 +18,7 @@ class FullscreenController;
 @protocol SideSwipeToolbarSnapshotProviding;
 @protocol TabStripHighlighting;
 @protocol LensOverlayCommands;
+@protocol SideSwipeConsumer;
 
 class WebStateList;
 
@@ -88,6 +89,9 @@ class Tracker;
 // Handler for in-product help tips.
 @property(nonatomic, weak) id<HelpCommands> helpHandler;
 
+// The side swipe consumer. It will mainly receive webstate updates.
+@property(nonatomic, weak) id<SideSwipeConsumer> consumer;
+
 // Initializer.
 - (instancetype)initWithFullscreenController:
                     (FullscreenController*)fullscreenController
@@ -108,27 +112,6 @@ class Tracker;
 // Resets the swipeDelegate's contentView frame origin x position to zero if
 // there is an active swipe.
 - (void)resetContentView;
-
-// Prepares the view for a slide-in overlay navigation transition in the
-// specified direction.
-//
-// This method sets up for an overlay navigation transition where the entire
-// screen is initially positioned offscreen. A snapshot of the screen is passed
-// as an argument and used to replace the current fullscreen view, creating a
-// seamless slide-in effect when `slideToCenterAnimated` is called.
-//
-// Important: After calling this method, you must call `slideToCenterAnimated`
-// to restore the fullscreen view to its original position and complete the
-// transition.
-- (void)prepareForSlideInDirection:(UISwipeGestureRecognizerDirection)direction
-                     snapshotImage:(UIImage*)snapshotImage;
-
-// Restores the fullscreen view to its original position with an animation.
-//
-// This method animates the fullscreen view back to its original onscreen
-// position after it has been moved offscreen using
-// `prepareForSlideInDirection:`.
-- (void)slideToCenterAnimated;
 
 @end
 

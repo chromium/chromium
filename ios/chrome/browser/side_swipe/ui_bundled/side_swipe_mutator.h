@@ -17,14 +17,8 @@
 // Whether or not a side swipe is currently being performed.
 @property(nonatomic, assign) BOOL inSwipe;
 
-// Handles the completion of a side swipe gesture that met the navigation
-// threshold.
-- (void)handleOverThresholdCompletion:
-    (UISwipeGestureRecognizerDirection)direction;
-
-// Handles the completion of a side swipe gesture that did not meet the
-// navigation threshold.
-- (void)handleUnderThresholdCompletion;
+// Performs navigation in the specified direction.
+- (void)navigateInDirection:(NavigationDirection)direction;
 
 @end
 
