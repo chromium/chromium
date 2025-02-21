@@ -192,6 +192,58 @@ public class AwPrefetchTest extends AwParameterizedTest {
     }
 
     @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testPrefetchRequestDuplicate() throws Throwable {
+        // Prepare PrefetchParameters
+        AwNoVarySearchData expectedNoVarySearch =
+                new AwNoVarySearchData(false, false, new String[] {"ts", "uid"}, null);
+        AwPrefetchParameters prefetchParameters =
+                new AwPrefetchParameters(null, expectedNoVarySearch, true);
+
+        // Do the prefetch request.
+        TestAwPrefetchCallback callback = startPrefetchingAndWait(mPrefetchUrl, prefetchParameters);
+
+        // wait then do the checks
+        callback.mOnStatusUpdatedHelper.waitForNext();
+        Assert.assertEquals(1, callback.getOnStatusUpdatedHelper().getCallCount());
+        Assert.assertEquals(
+                AwPrefetchCallback.StatusCode.PREFETCH_RESPONSE_COMPLETED,
+                callback.getOnStatusUpdatedHelper().getStatusCode());
+        Assert.assertNull(callback.getOnStatusUpdatedHelper().getExtras());
+        Assert.assertNull(callback.getOnErrorHelper().mError);
+
+        // Do another prefetch request but add the ignored query parameters.
+        String prefetchUrlWithQueryParams = mPrefetchUrl + "?ts=1000&uid=007";
+        TestAwPrefetchCallback callback2 =
+                startPrefetchingAndWait(prefetchUrlWithQueryParams, prefetchParameters);
+
+        // wait then do the checks
+        callback2.mOnStatusUpdatedHelper.waitForNext();
+        Assert.assertEquals(1, callback2.getOnStatusUpdatedHelper().getCallCount());
+        Assert.assertEquals(
+                AwPrefetchCallback.StatusCode.PREFETCH_START_FAILED_DUPLICATE,
+                callback2.getOnStatusUpdatedHelper().getStatusCode());
+        Assert.assertNull(callback2.getOnStatusUpdatedHelper().getExtras());
+        Assert.assertNull(callback2.getOnErrorHelper().mError);
+
+        // Finally, do a third request with an unexpected query parameter.
+        String prefetchUrlWithUnexpectedQueryParam = prefetchUrlWithQueryParams + "&q=help";
+        TestAwPrefetchCallback callback3 =
+                startPrefetchingAndWait(prefetchUrlWithUnexpectedQueryParam, prefetchParameters);
+
+        // wait then do the checks
+        callback3.mOnStatusUpdatedHelper.waitForNext();
+        Assert.assertEquals(1, callback3.getOnStatusUpdatedHelper().getCallCount());
+        Assert.assertNotEquals(
+                AwPrefetchCallback.StatusCode.PREFETCH_START_FAILED_DUPLICATE,
+                callback3.getOnStatusUpdatedHelper().getStatusCode());
+        Assert.assertNull(callback3.getOnStatusUpdatedHelper().getExtras());
+        Assert.assertNull(callback3.getOnErrorHelper().mError);
+    }
+
+    @Test
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSettingConfigsWithInValidValues() {

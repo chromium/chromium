@@ -29,7 +29,6 @@ public class PrefetchOperationResult {
         this.httpResponseStatusCode = httpResponseStatusCode;
     }
 
-    @Nullable
     public static PrefetchOperationResult fromPrefetchStatusCode(
             @StatusCode int statusCode, @Nullable Bundle extras) {
         // TODO(crbug.com/372915075) : Implement tests.
@@ -47,6 +46,8 @@ public class PrefetchOperationResult {
                             extras.getInt(AwPrefetchCallback.EXTRA_HTTP_RESPONSE_CODE));
                 }
                 return new PrefetchOperationResult(PrefetchOperationStatusCode.SERVER_FAILURE);
+            case StatusCode.PREFETCH_START_FAILED_DUPLICATE:
+                return new PrefetchOperationResult(PrefetchOperationStatusCode.DUPLICATE_REQUEST);
             default:
                 throw new IllegalArgumentException(
                         "Unhandled or invalid prefetch status code - status_code=" + statusCode);

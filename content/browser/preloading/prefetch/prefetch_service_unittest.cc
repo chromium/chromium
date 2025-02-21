@@ -261,8 +261,12 @@ class ProbePrefetchRequestStatusListener
  public:
   ~ProbePrefetchRequestStatusListener() override = default;
 
-  void OnPrefetchStartFailed() override {
+  void OnPrefetchStartFailedGeneric() override {
     prefetch_start_failed_called_ = true;
+  }
+
+  void OnPrefetchStartFailedDuplicate() override {
+    prefetch_start_failed_duplicate_called_ = true;
   }
 
   void OnPrefetchResponseCompleted() override {
@@ -298,6 +302,7 @@ class ProbePrefetchRequestStatusListener
 
  private:
   bool prefetch_start_failed_called_ = false;
+  bool prefetch_start_failed_duplicate_called_ = false;
   bool prefetch_response_completed_called_ = false;
   bool prefetch_response_error_called_ = false;
   bool prefetch_response_server_error_called_ = false;
@@ -323,8 +328,12 @@ class TestablePrefetchRequestStatusListener
 
   ~TestablePrefetchRequestStatusListener() override = default;
 
-  void OnPrefetchStartFailed() override {
-    probe_listener_->OnPrefetchStartFailed();
+  void OnPrefetchStartFailedGeneric() override {
+    probe_listener_->OnPrefetchStartFailedGeneric();
+  }
+
+  void OnPrefetchStartFailedDuplicate() override {
+    probe_listener_->OnPrefetchStartFailedDuplicate();
   }
 
   void OnPrefetchResponseCompleted() override {
@@ -6798,6 +6807,45 @@ TEST_P(PrefetchServiceTest,
   // `PrefetchContainer::UpdateServingPageMetrics()`.
 }
 
+TEST_P(PrefetchServiceTest,
+       DISABLED_CHROMEOS(IsPrefetchDuplicateSameNoVarySearchHint)) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPrefetchBrowserInitiatedTriggers);
+  base::HistogramTester histogram_tester;
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/std::nullopt));
+
+  std::unique_ptr<ProbePrefetchRequestStatusListener> probe_listener =
+      std::make_unique<ProbePrefetchRequestStatusListener>();
+
+  std::unique_ptr<content::PrefetchRequestStatusListener>
+      request_status_listener =
+          std::make_unique<TestablePrefetchRequestStatusListener>(
+              probe_listener->GetWeakPtr());
+
+  std::vector<std::string> no_vary_params = {"ts"};
+  net::HttpNoVarySearchData nvs_hint =
+      net::HttpNoVarySearchData::CreateFromNoVaryParams(no_vary_params, false);
+  GURL pf_one_url("https://example.com/search?q=ai&ts=1000");
+  std::unique_ptr<content::PrefetchHandle> handle =
+      MakePrefetchFromBrowserContext(pf_one_url, nvs_hint, {},
+                                     std::move(request_status_listener));
+  task_environment()->RunUntilIdle();
+
+  // Test with the "no-vary" param value changed.
+  GURL pf_two_url("https://example.com/search?q=ai&ts=1001");
+  EXPECT_TRUE(browser_context()->IsPrefetchDuplicate(pf_two_url, nvs_hint));
+
+  // Test with an additional query parameter.
+  GURL pf_three_url("https://example.com/search?q=ai&ts=1000&qsubts=1000");
+  EXPECT_FALSE(browser_context()->IsPrefetchDuplicate(pf_three_url, nvs_hint));
+
+  // Test with the same params with different values.
+  GURL pf_four_url("https://example.com/search?q=dogs&ts=1002");
+  EXPECT_FALSE(browser_context()->IsPrefetchDuplicate(pf_four_url, nvs_hint));
+}
+
 // These tests check the behavior of
 // `PrefetchService::AddPrefetchContainerWithoutStartingPrefetch()` if an old
 // prefetch is registered and yet another new prefetch for the same key is
@@ -7012,6 +7060,5 @@ TEST_F(PrefetchServiceAddPrefetchContainerTest,
     ASSERT_EQ(attempt1.get(), prefetch_container->preloading_attempt().get());
   }
 }
-
 }  // namespace
 }  // namespace content

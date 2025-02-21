@@ -4,7 +4,6 @@
 
 package com.android.webview.chromium;
 
-import android.os.Bundle;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ServiceWorkerController;
@@ -15,8 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
 import org.chromium.android_webview.AwBrowserContext;
-import org.chromium.android_webview.AwPrefetchCallback;
-import org.chromium.android_webview.AwPrefetchParameters;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -103,51 +100,13 @@ public class Profile {
             if (resultCallback == null) {
                 throw new IllegalArgumentException("Callback cannot be null for prefetch.");
             }
-
-            AwPrefetchParameters awPrefetchParameters =
-                    params == null ? null : params.toAwPrefetchParams();
-            AwPrefetchCallback awCallback =
-                    new AwPrefetchCallback() {
-                        @Override
-                        public void onStatusUpdated(
-                                @StatusCode int statusCode, @Nullable Bundle extras) {
-                            PrefetchOperationResult operationResult =
-                                    PrefetchOperationResult.fromPrefetchStatusCode(
-                                            statusCode, extras);
-                            if (operationResult != null) {
-                                switch (operationResult.statusCode) {
-                                    case PrefetchOperationStatusCode.SUCCESS:
-                                        resultCallback.onSuccess();
-                                        break;
-                                    case PrefetchOperationStatusCode.FAILURE:
-                                        resultCallback.onError(
-                                                new PrefetchException(
-                                                        "Prefetch Request has failed"));
-                                        break;
-                                    case PrefetchOperationStatusCode.SERVER_FAILURE:
-                                        resultCallback.onError(
-                                                new PrefetchNetworkException(
-                                                        "Server error",
-                                                        operationResult.httpResponseStatusCode));
-                                        break;
-                                    default:
-                                        resultCallback.onError(
-                                                new PrefetchException(
-                                                        "Unexpected error occurred."));
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            // TODO: Correct this based on the type of error.
-                            resultCallback.onError(new PrefetchException(e));
-                        }
-                    };
-
             mBrowserContext
                     .getPrefetchManager()
-                    .startPrefetchRequest(url, awPrefetchParameters, awCallback, callbackExecutor);
+                    .startPrefetchRequest(
+                            url,
+                            params == null ? null : params.toAwPrefetchParams(),
+                            new ProfileWebViewPrefetchCallback(callbackExecutor, resultCallback),
+                            callbackExecutor);
         }
     }
 

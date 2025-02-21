@@ -30,9 +30,16 @@ class AwPrefetchRequestStatusListener
         prefetch_java_callback_executor_(callback_executor) {}
   ~AwPrefetchRequestStatusListener() override = default;
 
-  void OnPrefetchStartFailed() override {
+  void OnPrefetchStartFailedGeneric() override {
     JNIEnv* env = base::android::AttachCurrentThread();
-    Java_AwPrefetchManager_onPrefetchStartFailed(
+    Java_AwPrefetchManager_onPrefetchStartFailedGeneric(
+        env, prefetch_manager_java_object_, prefetch_java_callback_,
+        prefetch_java_callback_executor_);
+  }
+
+  void OnPrefetchStartFailedDuplicate() override {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_AwPrefetchManager_onPrefetchStartFailedDuplicate(
         env, prefetch_manager_java_object_, prefetch_java_callback_,
         prefetch_java_callback_executor_);
   }
@@ -87,21 +94,31 @@ void AwPrefetchManager::StartPrefetchRequest(
       request_status_listener =
           std::make_unique<AwPrefetchRequestStatusListener>(java_obj_, callback,
                                                             callback_executor);
-  // Check if we are trying to exceed the limit.
-  if (all_prefetches_.size() >= static_cast<uint>(max_prefetches_)) {
-    // Now remove the oldest prefetch, making it out of scope should trigger
-    // the destructor which handles the reset needed.
-    all_prefetches_.pop_front();
-  }
-  std::unique_ptr<content::PrefetchHandle> prefetch_handle =
-      browser_context_->StartBrowserPrefetchRequest(
-          pf_url,
-          GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
-          expected_no_vary_search, additional_headers,
-          std::move(request_status_listener), base::Seconds(ttl_in_sec_));
 
-  if (prefetch_handle) {
-    all_prefetches_.push_back(std::move(prefetch_handle));
+  // For WebView we will check if there is already a duplicate
+  // prefetch request based on the URL and the No-Vary-Search hint. This is for
+  // the purpose of deduping prefetch requests on the application's behalf.
+  // TODO(crbug.com/393344309): Apply deduping to all prefetch requests (not
+  // just WebView).
+  if (!browser_context_->IsPrefetchDuplicate(pf_url, expected_no_vary_search)) {
+    std::unique_ptr<content::PrefetchHandle> prefetch_handle =
+        browser_context_->StartBrowserPrefetchRequest(
+            pf_url,
+            GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
+            expected_no_vary_search, additional_headers,
+            std::move(request_status_listener), base::Seconds(ttl_in_sec_));
+
+    if (prefetch_handle) {
+      // Check if we are trying to exceed the limit.
+      if (all_prefetches_.size() >= static_cast<uint>(max_prefetches_)) {
+        // Now remove the oldest prefetch, making it out of scope should trigger
+        // the destructor which handles the reset needed.
+        all_prefetches_.pop_front();
+      }
+      all_prefetches_.push_back(std::move(prefetch_handle));
+    }
+  } else {
+    request_status_listener->OnPrefetchStartFailedDuplicate();
   }
 }
 

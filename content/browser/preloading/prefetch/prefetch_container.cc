@@ -2035,7 +2035,7 @@ void PrefetchContainer::OnInitialPrefetchFailedIneligible(
   CHECK(redirect_chain_.size() == 1);
   CHECK_NE(eligibility, PreloadingEligibility::kEligible);
   if (request_status_listener_) {
-    request_status_listener_->OnPrefetchStartFailed();
+    request_status_listener_->OnPrefetchStartFailedGeneric();
   }
 }
 

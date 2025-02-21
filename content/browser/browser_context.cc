@@ -206,7 +206,7 @@ BrowserContext::StartBrowserPrefetchRequest(
       BrowserContextImpl::From(this)->GetPrefetchService();
   if (!prefetch_service) {
     if (request_status_listener) {
-      request_status_listener->OnPrefetchStartFailed();
+      request_status_listener->OnPrefetchStartFailedGeneric();
     }
     return nullptr;
   }
@@ -230,6 +230,17 @@ void BrowserContext::UpdatePrefetchServiceDelegateAcceptLanguageHeader(
   }
   prefetch_service->GetPrefetchServiceDelegate()->SetAcceptLanguageHeader(
       accept_language_header);
+}
+
+bool BrowserContext::IsPrefetchDuplicate(
+    GURL& url,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_hint) {
+  PrefetchService* prefetch_service =
+      BrowserContextImpl::From(this)->GetPrefetchService();
+  // `CHECK` is used here because this method should not be called unless there
+  // is a `prefetch_service` created for `this` browser context.
+  CHECK(prefetch_service);
+  return prefetch_service->IsPrefetchDuplicate(url, no_vary_search_hint);
 }
 
 void BrowserContext::CreateMemoryBackedBlob(base::span<const uint8_t> data,
