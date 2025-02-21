@@ -460,7 +460,7 @@ void ChromePasswordProtectionService::ShowModalWarning(
 
 #if BUILDFLAG(IS_ANDROID)
   (new PasswordReuseControllerAndroid(
-       web_contents, this, password_type,
+       web_contents, this, profile_->GetPrefs(), password_type,
        base::BindOnce(&ChromePasswordProtectionService::OnUserAction,
                       base::Unretained(this), web_contents, password_type,
                       outcome, verdict_type, verdict_token,
