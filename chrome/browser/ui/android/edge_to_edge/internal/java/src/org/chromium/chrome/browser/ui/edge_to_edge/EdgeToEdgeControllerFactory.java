@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.hasTappableBottomBar;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.hasTappableNavigationBar;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled;
 
 import android.app.Activity;
@@ -154,6 +155,15 @@ public class EdgeToEdgeControllerFactory {
             return false;
         }
 
+        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
+            return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
+                    && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
+                    && !BuildInfo.getInstance().isAutomotive
+                    // TODO(https://crbug.com/325356134) use UiUtils#isGestureNavigationMode
+                    // instead.
+                    && !hasTappableNavigationBar(activity.getWindow())
+                    && !sHas3ButtonNavBarForTesting;
+        }
         return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
                 && !BuildInfo.getInstance().isAutomotive

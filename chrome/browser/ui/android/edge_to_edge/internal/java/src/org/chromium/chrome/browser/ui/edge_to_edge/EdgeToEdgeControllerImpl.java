@@ -390,6 +390,13 @@ public class EdgeToEdgeControllerImpl
      */
     @VisibleForTesting
     void drawToEdge(boolean pageOptedIntoEdgeToEdge, boolean changedWindowState) {
+        // Exit early if there is a tappable navbar (3-button) as the controller should not function
+        // when 3-button nav is enabled.
+        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
+                && EdgeToEdgeUtils.hasTappableNavigationBar(mActivity.getWindow())) {
+            return;
+        }
+
         @LayoutType
         int currentLayoutType =
                 mLayoutManager != null ? mLayoutManager.getActiveLayoutType() : LayoutType.NONE;
@@ -441,6 +448,13 @@ public class EdgeToEdgeControllerImpl
     @NonNull
     @VisibleForTesting
     WindowInsetsCompat handleWindowInsets(View rootView, @NonNull WindowInsetsCompat windowInsets) {
+        // Exit early if there is a tappable navbar (3-button) as the controller should not function
+        // when 3-button nav is enabled.
+        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
+                && EdgeToEdgeUtils.hasTappableNavigationBar(mActivity.getWindow())) {
+            return windowInsets;
+        }
+
         Insets newInsets = getSystemInsets(windowInsets);
         Insets newKeyboardInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
 
