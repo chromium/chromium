@@ -146,6 +146,9 @@ class BleV2MediumTest : public testing::Test {
         {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
 
     base::ScopedAllowBaseSyncPrimitivesForTesting allow_sync_primitives;
+
+    // GATT server advertisements are expected to be connectable; this behavior
+    // aligns with the Nearby SDK implementation.
     EXPECT_EQ(expected_success,
               ble_v2_medium_->StartAdvertising(
                   advertising_data,
@@ -899,16 +902,19 @@ TEST_F(BleV2MediumTest, AdvertisementsAreNonConnectable_FastAdvertisement) {
   advertising_data.is_extended_advertisement = false;
   advertising_data.service_data.insert(
       {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+
+  // Fast Advertisements are expected to be non-connectable; this behavior
+  // aligns with the Nearby SDK implementation.
   EXPECT_TRUE(ble_v2_medium_->StartAdvertising(
       advertising_data, {.tx_power_level = api::ble_v2::TxPowerLevel::kLow,
-                         .is_connectable = true}));
+                         .is_connectable = false}));
   EXPECT_FALSE(
       fake_adapter_
           ->GetRegisteredAdvertisementConnectable(kService1BluetoothUuid)
           .value());
 }
 
-TEST_F(BleV2MediumTest, AdvertisementsAreNonConnectable_ExtendedAdvertisement) {
+TEST_F(BleV2MediumTest, AdvertisementsAreConnectable_ExtendedAdvertisement) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{::features::kEnableNearbyBleV2,
@@ -921,16 +927,19 @@ TEST_F(BleV2MediumTest, AdvertisementsAreNonConnectable_ExtendedAdvertisement) {
   advertising_data.is_extended_advertisement = true;
   advertising_data.service_data.insert(
       {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+
+  // Extended advertisements are expected to be connectable; this behavior
+  // aligns with the Nearby SDK implementation.
   EXPECT_TRUE(ble_v2_medium_->StartAdvertising(
       advertising_data, {.tx_power_level = api::ble_v2::TxPowerLevel::kHigh,
                          .is_connectable = true}));
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       fake_adapter_
           ->GetRegisteredAdvertisementConnectable(kService1BluetoothUuid)
           .value());
 }
 
-TEST_F(BleV2MediumTest, AdvertisementsAreNonConnectable_GattAdvertisement) {
+TEST_F(BleV2MediumTest, AdvertisementsAreConnectable_GattAdvertisement) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{::features::kEnableNearbyBleV2,
@@ -948,7 +957,7 @@ TEST_F(BleV2MediumTest, AdvertisementsAreNonConnectable_GattAdvertisement) {
           run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       fake_adapter_
           ->GetRegisteredAdvertisementConnectable(kService1BluetoothUuid)
           .value());
