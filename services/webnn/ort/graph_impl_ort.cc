@@ -24,6 +24,7 @@
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_switches.h"
+#include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_session_options_config_keys.h"
 
 namespace webnn::ort {
 
@@ -196,6 +197,13 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     // tensors created with `CreateTensorWithDataAsOrtValue()` or
     // `CreateTensorWithDataAndDeleterAsOrtValue()` when ORT Model Builder API
     // supports it.
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtDisableCpuFallback)) {
+    CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
+        session_options, /*config_key=*/kOrtSessionOptionsDisableCPUEPFallback,
+        /*config_value=*/"1"));
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(

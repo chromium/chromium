@@ -38,6 +38,10 @@ inline constexpr char kWebNNOrtDumpModel[] = "webnn-ort-dump-model";
 // Use OpenVINO EP of ONNX Runtime, WebNN device type will map OpenVINO device
 // type.
 inline constexpr char kWebNNOrtUseOpenvino[] = "webnn-ort-use-openvino";
+
+// Disable CPU fallback for OpenVINO EP.
+inline constexpr char kWebNNOrtDisableCpuFallback[] =
+    "webnn-ort-disable-cpu-fallback";
 #endif  // BUILDFLAG(WEBNN_USE_ORT)
 
 }  // namespace switches
