@@ -5,9 +5,9 @@
 #include "base/android/jni_callback.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_jni/JniCallbackUtils_jni.h"
-#include "base/base_jni/JniOnceCallback_jni.h"
-#include "base/base_jni/JniRepeatingCallback_jni.h"
+#include "base/base_minimal_jni/JniCallbackUtils_jni.h"
+#include "base/base_minimal_jni/JniOnceCallback_jni.h"
+#include "base/base_minimal_jni/JniRepeatingCallback_jni.h"
 
 namespace base::android {
 
@@ -110,3 +110,7 @@ void JNI_JniCallbackUtils_Destroy(JNIEnv* env,
 }
 
 }  // namespace base::android
+
+DEFINE_JNI_FOR_JniCallbackUtils()
+DEFINE_JNI_FOR_JniOnceCallback()
+DEFINE_JNI_FOR_JniRepeatingCallback()
