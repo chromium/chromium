@@ -11,10 +11,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -73,10 +73,8 @@ class PreloadCheckGroup;
 // installer->set_bar();
 // installer->InstallCrx(...);
 //
-// Installation is aborted if the extension service learns that Chrome is
-// terminating during the install. We can't listen for the app termination
-// notification here in this class because it can be destroyed on any thread
-// and won't safely be able to clean up UI thread notification listeners.
+// Installation is aborted if the CrxInstaller object learns that Chrome is
+// terminating during the install.
 class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
  public:
   // A callback to be executed when the install finishes.
@@ -245,6 +243,9 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   void set_bypassed_safebrowsing_friction_for_testing(bool val) {
     set_install_flag(kInstallFlagBypassedSafeBrowsingFriction, val);
   }
+  void set_browser_terminating_for_test(bool val) {
+    browser_terminating_ = val;
+  }
 
   // Callback to be invoked when the crx file has passed the expectations check
   // after unpack success and the ownership of the crx file lies with the
@@ -274,7 +275,7 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   friend class FakeCrxInstaller;
   friend class MockCrxInstaller;
 
-  CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
+  CrxInstaller(ExtensionService* service,
                std::unique_ptr<ExtensionInstallPrompt> client,
                const InstallApproval* approval);
   ~CrxInstaller() override;
@@ -382,6 +383,9 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   // Returns |unpacker_task_runner_|. Initializes it if it's still nullptr.
   base::SequencedTaskRunner* GetUnpackerTaskRunner();
 
+  // Called when the browser is terminating.
+  void OnBrowserTerminating();
+
   // The Profile the extension is being installed in.
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
@@ -473,7 +477,7 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   base::FilePath temp_dir_;
 
   // The frontend we will report results back to.
-  base::WeakPtr<ExtensionService> service_weak_;
+  raw_ptr<ExtensionService> service_ = nullptr;
 
   // The client we will work with to do the installation. This can be NULL, in
   // which case the install is silent.
@@ -560,6 +564,12 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   // Invoked when the expectations from CRXFileInfo match with the crx file
   // after unpack success.
   ExpectationsVerifiedCallback expectations_verified_callback_;
+
+  // Subscription to browser termination.
+  base::CallbackListSubscription on_browser_terminating_subscription_;
+
+  // True if the browser is terminating.
+  bool browser_terminating_ = false;
 };
 
 }  // namespace extensions
