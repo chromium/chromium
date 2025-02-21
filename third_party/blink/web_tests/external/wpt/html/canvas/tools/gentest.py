@@ -441,6 +441,11 @@ class _OutputPaths:
 
 
 def _validate_test(test: _TestParams):
+    for param in ['name', 'code']:
+        if test.get(param) is None:
+            raise InvalidTestDefinitionError(
+                f'Test parameter "{param}" must be specified.')
+
     if test.get('expected', '') == 'green' and re.search(
             r'@assert pixel .* 0,0,0,0;', test['code']):
         print(f'Probable incorrect pixel test in {test["name"]}')
