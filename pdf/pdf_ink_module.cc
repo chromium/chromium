@@ -683,9 +683,7 @@ bool PdfInkModule::StartEraseStroke(const gfx::PointF& position,
   CHECK(discards.has_value());
   ApplyUndoRedoDiscards(discards.value());
 
-  if (EraseHelper(position, page_index)) {
-    state.page_indices_with_erasures.insert(page_index);
-  }
+  EraseHelper(position, page_index);
 
   // Remember this position to possibly compensate for missed input events.
   CHECK(!state.input_last_event_position.has_value());
@@ -715,9 +713,7 @@ bool PdfInkModule::ContinueEraseStroke(const gfx::PointF& position,
     return true;
   }
 
-  if (EraseHelper(position, page_index)) {
-    state.page_indices_with_erasures.insert(page_index);
-  }
+  EraseHelper(position, page_index);
 
   // Remember this position for possible use in the next event.
   state.input_last_event_position = position;
@@ -758,7 +754,7 @@ bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position,
   return true;
 }
 
-bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
+void PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
   CHECK_GE(page_index, 0);
 
   const gfx::PointF canonical_position =
@@ -816,14 +812,16 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
   }
 
   if (invalidate_envelope.IsEmpty()) {
-    return false;
+    return;
   }
 
   // If `invalidate_envelope` isn't empty, then something got erased.
   client_->Invalidate(CanonicalInkEnvelopeToInvalidationScreenRect(
       invalidate_envelope, client_->GetOrientation(),
       client_->GetPageContentsRect(page_index), client_->GetZoom()));
-  return true;
+
+  EraserState& state = erasing_stroke_state();
+  state.page_indices_with_erasures.insert(page_index);
 }
 
 void PdfInkModule::MaybeRecordPenInput(ink::StrokeInput::ToolType tool_type) {

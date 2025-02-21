@@ -319,9 +319,8 @@ class PdfInkModule {
   bool FinishEraseStroke(const gfx::PointF& position,
                          ink::StrokeInput::ToolType tool_type);
 
-  // Shared code for the Erase methods above. Returns if something got erased or
-  // not.
-  bool EraseHelper(const gfx::PointF& position, int page_index);
+  // Shared code for the Erase methods above.
+  void EraseHelper(const gfx::PointF& position, int page_index);
 
   // Sets `using_stylus_instead_of_touch_` to true if `tool_type` is
   // `ink::StrokeInput::ToolType::kStylus`. Otherwise do nothing.
