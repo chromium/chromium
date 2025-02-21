@@ -670,6 +670,7 @@ CGFloat const kContentOptimalWidth = 327;
 
 #pragma mark - UITextViewDelegate
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
@@ -677,6 +678,16 @@ CGFloat const kContentOptimalWidth = 327;
   [self didTapActionButton];
   // Return NO as the app is handling the opening of the settings page.
   return NO;
+}
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf didTapActionButton];
+  }];
 }
 
 #pragma mark - Private
