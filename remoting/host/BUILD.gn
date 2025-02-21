@@ -350,8 +350,6 @@ static_library("common") {
     "desktop_and_cursor_composer_notifier.cc",
     "desktop_and_cursor_composer_notifier.h",
     "desktop_and_cursor_conditional_composer.cc",
-    "desktop_capturer_checker.cc",
-    "desktop_capturer_checker.h",
     "desktop_capturer_proxy.cc",
     "desktop_capturer_proxy.h",
     "desktop_capturer_wrapper.cc",

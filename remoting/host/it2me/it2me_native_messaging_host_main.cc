@@ -41,7 +41,6 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/scoped_nsautorelease_pool.h"
-#include "remoting/host/desktop_capturer_checker.h"
 #include "remoting/host/mac/permission_utils.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
@@ -219,12 +218,14 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
     return mac::CanInjectInput() ? EXIT_SUCCESS : EXIT_FAILURE;
   }
   if (cmd_line->HasSwitch(kCheckScreenRecordingPermissionSwitchName)) {
-    // Trigger screen-capture, even if CanRecordScreen() returns true. It uses a
-    // heuristic that might not be 100% reliable, but it is critically
-    // important to add the host bundle to the list of apps under
-    // Security & Privacy -> Screen Recording.
-    DesktopCapturerChecker().TriggerSingleCapture();
-    return mac::CanRecordScreen() ? EXIT_SUCCESS : EXIT_FAILURE;
+    if (mac::CanRecordScreen()) {
+      return EXIT_SUCCESS;
+    }
+    // This adds the host bundle to the list of apps under Security & Privacy
+    // -> Screen Recording. This may also show a system prompt (if the bundle
+    // was not previously in the list).
+    mac::RequestScreenCapturePermission();
+    return EXIT_FAILURE;
   }
 #endif  // BUILDFLAG(IS_APPLE)
 
