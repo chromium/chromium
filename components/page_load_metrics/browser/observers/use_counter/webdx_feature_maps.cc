@@ -347,6 +347,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kScrollButtons},
           {WebFeature::kScrollMarkerPseudoElement,
            WebDXFeature::kScrollMarkers},
+          {WebFeature::kPopoverTypeHint, WebDXFeature::kDRAFT_PopoverHint},
       }};
 
   return *kMap;

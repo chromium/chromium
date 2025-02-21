@@ -7849,6 +7849,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="293" label="Interactivity"/>
   <int value="294" label="ScrollButtons"/>
   <int value="295" label="ScrollMarkers"/>
+  <int value="296" label="DRAFT_PopoverHint"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
