@@ -9,6 +9,7 @@ import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js
 import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import {UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
+import type {TextLayerElement} from 'chrome-untrusted://lens-overlay/text_layer.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
@@ -79,6 +80,10 @@ suite('TextSelection', function() {
     await addWords();
   });
 
+  function getTextSelectionLayer(): TextLayerElement {
+    return selectionOverlayElement.getTextSelectionLayerForTesting()!;
+  }
+
   // Normalizes the given values to the size of selection overlay.
   function normalizedBox(box: RectF): RectF {
     const boundingRect = selectionOverlayElement.getBoundingClientRect();
@@ -133,13 +138,11 @@ suite('TextSelection', function() {
   }
 
   function getRenderedWords(): NodeListOf<Element> {
-    return selectionOverlayElement.$.textSelectionLayer
-        .getWordNodesForTesting();
+    return getTextSelectionLayer().getWordNodesForTesting();
   }
 
   function getHighlightedLines(): NodeListOf<Element> {
-    return selectionOverlayElement.$.textSelectionLayer
-        .getHighlightedNodesForTesting();
+    return getTextSelectionLayer().getHighlightedNodesForTesting();
   }
 
   test('verify that text renders on the page', () => {
