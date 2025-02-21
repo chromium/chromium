@@ -2336,6 +2336,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.ExtensibleEnterpriseSSO.Supported.Result"
+    enum="Boolean" expires_after="2025-08-01">
+  <owner>ydago@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    The success or failure of trying to authenticate a navigation request using
+    Extensible Enterprise SSO for a url that can be authenticated by the OS.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ExtensibleEnterpriseSSO.{Status}.Duration"
+    units="ms" expires_after="2025-08-01">
+  <owner>ydago@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    The duration of the interception for ExtensibleEnterpriseSSO for a url that
+    {Status}.
+  </summary>
+  <token key="Status">
+    <variant name="NotSuppported" summary="is not supported by the OS"/>
+    <variant name="Supported.Failure" summary="was unsuccessful"/>
+    <variant name="Supported.Success" summary="was successful"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.FileDownloadObfuscation.Result"
     enum="EnterpriseObfuscationError" expires_after="2026-01-01">
   <owner>haihan@google.com</owner>
