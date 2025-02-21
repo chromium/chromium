@@ -5989,7 +5989,7 @@ void AXNodeObject::AddChildrenImpl() {
 
   auto* select = DynamicTo<HTMLSelectElement>(GetNode());
   if (RuntimeEnabledFeatures::CustomizableSelectEnabled() && select &&
-      select->UsesMenuList() && !select->IsMultiple()) {
+      select->UsesMenuList()) {
     AddMenuListChildren();
   } else if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
              RoleValue() == ax::mojom::blink::Role::kMenuListPopup) {
