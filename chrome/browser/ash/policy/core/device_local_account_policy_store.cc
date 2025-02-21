@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
+#include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/value_validation/onc_user_policy_value_validator.h"
 #include "chromeos/ash/components/dbus/session_manager/policy_descriptor.h"
@@ -115,6 +116,7 @@ void DeviceLocalAccountPolicyStore::ValidateLoadedPolicyBlob(
     std::unique_ptr<em::PolicyFetchResponse> policy(
         new em::PolicyFetchResponse());
     if (policy->ParseFromString(policy_blob)) {
+      SYSLOG(INFO) << "Loaded policy parsed, account_id: " << account_id_;
       CheckKeyAndValidate(
           false, std::move(policy), validate_in_background,
           base::BindOnce(&DeviceLocalAccountPolicyStore::UpdatePolicy,
@@ -129,9 +131,11 @@ void DeviceLocalAccountPolicyStore::ValidateLoadedPolicyBlob(
 void DeviceLocalAccountPolicyStore::UpdatePolicy(
     const std::string& signature_validation_public_key,
     UserCloudPolicyValidator* validator) {
+  SYSLOG(INFO) << "Update policy for account: " << account_id_;
   // Validator is not created when device ownership is not set up yet. Do not
   // propagate the error in such case since it is recoverable.
   if (!validator) {
+    LOG(ERROR) << "Validator is not created";
     status_ = CloudPolicyStore::STATUS_BAD_STATE;
     NotifyStoreLoaded();
     return;
@@ -199,6 +203,11 @@ void DeviceLocalAccountPolicyStore::CheckKeyAndValidate(
     bool validate_in_background,
     ValidateCompletionCallback callback) {
   if (validate_in_background) {
+    // TODO(b/336629900): Remove the log when the root cause is identified.
+    SYSLOG(INFO)
+        << "Is ownership unknown: "
+        << (device_settings_service_->GetOwnershipStatus() ==
+            ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown);
     device_settings_service_->GetOwnershipStatusAsync(base::BindOnce(
         &DeviceLocalAccountPolicyStore::Validate, weak_factory_.GetWeakPtr(),
         valid_timestamp_required, std::move(policy), std::move(callback),
@@ -262,6 +271,8 @@ void DeviceLocalAccountPolicyStore::Validate(
   validator->ValidateSignature(key->as_string());
 
   if (validate_in_background) {
+    // TODO(b/336629900): Remove the log when the root cause is identified.
+    SYSLOG(INFO) << "Start validation for account: " << account_id_;
     UserCloudPolicyValidator::StartValidation(
         std::move(validator),
         base::BindOnce(std::move(callback), key->as_string()));
