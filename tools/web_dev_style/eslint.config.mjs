@@ -16,12 +16,6 @@ export default [
       'chrome/browser/resources/gaia_auth_host/authenticator.js',
       'chrome/browser/resources/gaia_auth_host/password_change_authenticator.js',
 
-      // Ignore generated checked-in JS file.
-      'ios/tools/documents_statistics_viewer/tsc/viewer.js',
-
-      // TODO(crbug.com/397907153): Fix violations and remove from ignore list.
-      'ios/**/*.ts',
-
       // No point linting auto-generated files.
       'tools/typescript/definitions/**/*',
 
