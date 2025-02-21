@@ -103,6 +103,14 @@ bool MenuPreTargetHandlerAura::ShouldCancelMenuForEvent(
         return true;
       }
       break;
+    case ui::VKEY_LEFT:
+    case ui::VKEY_RIGHT:
+      // Exit the menu when Left/Right key is pressed and Shift+Command is down
+      // as it is supposed to move window.
+      if (event.IsCommandDown() && event.IsShiftDown()) {
+        return true;
+      }
+      break;
     default:
       break;
   }
