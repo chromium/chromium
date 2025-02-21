@@ -6588,6 +6588,7 @@ test("unit_tests") {
     "//components/invalidation",
     "//components/invalidation/impl",
     "//components/invalidation/impl:test_support",
+    "//components/ip_protection/common:masked_domain_list_manager",
     "//components/language/core/browser",
     "//components/language_detection/core",
     "//components/lens",
