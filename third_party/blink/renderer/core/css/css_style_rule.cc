@@ -112,7 +112,9 @@ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
     position_hint_ = parent_contents->ReplaceRuleIfExists(
         style_rule_, new_style_rule, position_hint_);
   }
-  style_rule_ = new_style_rule;
+
+  // Updates style_rule_, as well as any inner CSSOM wrappers.
+  Reattach(new_style_rule);
 
   if (HasCachedSelectorText()) {
     GetSelectorTextCache().erase(this);
