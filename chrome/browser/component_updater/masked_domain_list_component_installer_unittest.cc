@@ -44,9 +44,9 @@ constexpr char kDiskUsageHistogram[] =
 
 }  // namespace
 
-class MaskedDomainListComponentInstallerPolicyTest : public ::testing::Test {
+class MaskedDomainListComponentInstallerTest : public ::testing::Test {
  public:
-  MaskedDomainListComponentInstallerPolicyTest() {
+  MaskedDomainListComponentInstallerTest() {
     content::GetNetworkService();  // Initializes Network Service.
   }
 
@@ -74,7 +74,7 @@ class MaskedDomainListComponentInstallerPolicyTest : public ::testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(MaskedDomainListComponentInstallerPolicyTest, FeatureDisabled) {
+TEST_F(MaskedDomainListComponentInstallerTest, FeatureDisabled) {
   scoped_feature_list_.InitAndDisableFeature(
       network::features::kMaskedDomainList);
   auto service =
@@ -85,8 +85,7 @@ TEST_F(MaskedDomainListComponentInstallerPolicyTest, FeatureDisabled) {
   env_.RunUntilIdle();
 }
 
-TEST_F(MaskedDomainListComponentInstallerPolicyTest,
-       FeatureEnabled_NoFileExists) {
+TEST_F(MaskedDomainListComponentInstallerTest, FeatureEnabled_NoFileExists) {
   scoped_feature_list_.InitWithFeatures(
       {network::features::kMaskedDomainList,
        net::features::kEnableIpProtectionProxy},
@@ -104,8 +103,7 @@ TEST_F(MaskedDomainListComponentInstallerPolicyTest,
                    ->IsPopulated());
 }
 
-TEST_F(MaskedDomainListComponentInstallerPolicyTest,
-       OnMaskedDomainListReadyProto) {
+TEST_F(MaskedDomainListComponentInstallerTest, OnMaskedDomainListReadyProto) {
   scoped_feature_list_.InitWithFeatures(
       {network::features::kMaskedDomainList},
       {network::features::kMaskedDomainListFlatbufferImpl});
@@ -123,7 +121,7 @@ TEST_F(MaskedDomainListComponentInstallerPolicyTest,
   histogram_tester_.ExpectTotalCount(kDiskUsageHistogram, 0);
 }
 
-TEST_F(MaskedDomainListComponentInstallerPolicyTest,
+TEST_F(MaskedDomainListComponentInstallerTest,
        OnMaskedDomainListReadyFlatbuffer) {
   scoped_feature_list_.InitWithFeatures(
       {network::features::kMaskedDomainList,
