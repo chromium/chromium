@@ -38,23 +38,29 @@ class PasskeyUpgradeRequestController
   using EnclaveRequestCallback = base::RepeatingCallback<void(
       std::unique_ptr<device::enclave::CredentialRequest>)>;
 
+  // The Delegate interface lets the owner of the request track its outcome.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual void PasskeyUpgradeSucceeded() = 0;
+    virtual void PasskeyUpgradeFailed() = 0;
+  };
+
   explicit PasskeyUpgradeRequestController(
       content::RenderFrameHost* rfh,
       EnclaveRequestCallback enclave_request_callback);
+
   ~PasskeyUpgradeRequestController() override;
 
   // Attempts to create a passkey for the given WebAuthn RP ID and user name, if
-  // a matching password exists.
+  // a matching password exists. `delegate` must be non-null and outlive `this`.
   void TryUpgradePasswordToPasskey(std::string rp_id,
-                                   const std::string& user_name,
-                                   Callback callback);
+                                   const std::string& username,
+                                   Delegate* delegate);
 
  private:
-  enum class EnclaveState {
-    kUnknown,
-    kNotReady,
-    kReady,
-  };
+  enum class RequestError;
+  enum class EnclaveState;
 
   // password_manager::PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
@@ -74,16 +80,17 @@ class PasskeyUpgradeRequestController
 
   void OnEnclaveLoaded();
   void ContinuePendingUpgradeRequest();
+  void SignalRequestFailure(RequestError error);
 
   const content::GlobalRenderFrameHostId frame_host_id_;
 
-  raw_ptr<EnclaveManager> enclave_manager_;
-  EnclaveState enclave_state_ = EnclaveState::kUnknown;
-  bool pending_upgrade_request_ = false;
+  const raw_ptr<EnclaveManager> enclave_manager_;
+  EnclaveState enclave_state_;
+  bool pending_request_ = false;
 
   std::string rp_id_;
-  std::u16string user_name_;
-  Callback pending_callback_;
+  std::u16string username_;
+  raw_ptr<Delegate> delegate_;
 
   EnclaveRequestCallback enclave_request_callback_;
 

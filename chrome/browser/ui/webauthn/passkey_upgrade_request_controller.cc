@@ -47,6 +47,19 @@
 
 using RenderFrameHost = content::RenderFrameHost;
 
+enum class PasskeyUpgradeRequestController::RequestError {
+  kEnclaveNotInitialized,
+  kPasswordStoreError,
+  kNotEligible,
+  kEnclaveError,
+};
+
+enum class PasskeyUpgradeRequestController::EnclaveState {
+  kUnknown,
+  kReady,
+  kError,
+};
+
 PasskeyUpgradeRequestController::PasskeyUpgradeRequestController(
     RenderFrameHost* rfh,
     EnclaveRequestCallback enclave_request_callback)
@@ -67,38 +80,35 @@ PasskeyUpgradeRequestController::~PasskeyUpgradeRequestController() = default;
 
 void PasskeyUpgradeRequestController::TryUpgradePasswordToPasskey(
     std::string rp_id,
-    const std::string& user_name,
-    base::OnceCallback<void(bool success)> callback) {
+    const std::string& username,
+    Delegate* delegate) {
   FIDO_LOG(EVENT) << "Passkey upgrade request started";
-  CHECK(enclave_request_callback_);
-  CHECK(!pending_callback_);
-  pending_callback_ = std::move(callback);
+  CHECK(enclave_request_callback_)
+      << "InitializeEnclaveRequestCallback() must be called first";
+  CHECK(!pending_request_);
+  CHECK(delegate);
+  CHECK(!delegate_);
+
+  pending_request_ = true;
+  delegate_ = delegate;
   rp_id_ = std::move(rp_id);
-  user_name_ = base::UTF8ToUTF16(user_name);
+  username_ = base::UTF8ToUTF16(username);
 
   switch (enclave_state_) {
     case EnclaveState::kUnknown:
       // EnclaveLoaded() will invoke ContinuePendingUpgradeRequest().
-      pending_upgrade_request_ = true;
       break;
-    case EnclaveState::kNotReady:
-      FIDO_LOG(EVENT) << "Passkey upgrade request failed because the enclave "
-                         "isn't initialized.";
-      std::move(pending_callback_).Run(false);
+    case EnclaveState::kError:
+      SignalRequestFailure(RequestError::kEnclaveNotInitialized);
       break;
     case EnclaveState::kReady:
-      pending_upgrade_request_ = true;
       ContinuePendingUpgradeRequest();
       break;
   }
 }
 
 void PasskeyUpgradeRequestController::ContinuePendingUpgradeRequest() {
-  CHECK_EQ(enclave_state_, EnclaveState::kReady);
-  CHECK(pending_upgrade_request_);
-  CHECK(pending_callback_);
-
-  pending_upgrade_request_ = false;
+  CHECK(pending_request_);
 
   // When looking for passwords that might be eligible to be upgraded, only
   // consider passwords stored in GPM.
@@ -120,7 +130,7 @@ void PasskeyUpgradeRequestController::ContinuePendingUpgradeRequest() {
   if (!password_store) {
     FIDO_LOG(EVENT)
         << "Passkey upgrade failed without available password store";
-    std::move(pending_callback_).Run(false);
+    SignalRequestFailure(RequestError::kPasswordStoreError);
     return;
   }
 
@@ -137,8 +147,9 @@ void PasskeyUpgradeRequestController::OnGetPasswordStoreResultsOrErrorFrom(
   if (absl::holds_alternative<password_manager::PasswordStoreBackendError>(
           results_or_error)) {
     FIDO_LOG(EVENT) << "Passkey upgrade failed due to password store error";
+    SignalRequestFailure(RequestError::kPasswordStoreError);
+    return;
   }
-  CHECK(pending_callback_);
   password_manager::LoginsResult result =
       password_manager::GetLoginsOrEmptyListOnFailure(results_or_error);
   bool upgrade_eligible = false;
@@ -148,7 +159,7 @@ void PasskeyUpgradeRequestController::OnGetPasswordStoreResultsOrErrorFrom(
   base::TimeDelta kLastUsedThreshold = base::Minutes(5);
   const auto min_last_used = base::Time::Now() - kLastUsedThreshold;
   for (const password_manager::PasswordForm& password_form : result) {
-    if (password_form.username_value != user_name_) {
+    if (password_form.username_value != username_) {
       continue;
     }
     if (password_form.date_last_used < min_last_used) {
@@ -166,7 +177,7 @@ void PasskeyUpgradeRequestController::OnGetPasswordStoreResultsOrErrorFrom(
     } else {
       FIDO_LOG(EVENT) << "Passkey upgrade request failed, no matching password";
     }
-    std::move(pending_callback_).Run(false);
+    SignalRequestFailure(RequestError::kNotEligible);
     return;
   }
 
@@ -182,11 +193,8 @@ void PasskeyUpgradeRequestController::OnGetPasswordStoreResultsOrErrorFrom(
 }
 
 void PasskeyUpgradeRequestController::HandleEnclaveTransactionError() {
-  if (!pending_callback_) {
-    return;
-  }
   FIDO_LOG(ERROR) << "Passkey upgrade failed on enclave error";
-  std::move(pending_callback_).Run(false);
+  SignalRequestFailure(RequestError::kEnclaveError);
 }
 
 void PasskeyUpgradeRequestController::BuildUVKeyOptions(
@@ -207,12 +215,10 @@ void PasskeyUpgradeRequestController::OnPasskeyCreated(
       PasswordsClientUIDelegateFromWebContents(
           content::WebContents::FromRenderFrameHost(&render_frame_host()));
   FIDO_LOG(EVENT) << "Passkey upgrade request succeeded";
+  delegate_->PasskeyUpgradeSucceeded();
   if (manage_passwords_ui_controller) {
     manage_passwords_ui_controller->OnPasskeyUpgrade(rp_id_);
   }
-
-  CHECK(pending_callback_);
-  std::move(pending_callback_).Run(true);
 }
 
 content::RenderFrameHost& PasskeyUpgradeRequestController::render_frame_host()
@@ -228,10 +234,20 @@ Profile* PasskeyUpgradeRequestController::profile() const {
 
 void PasskeyUpgradeRequestController::OnEnclaveLoaded() {
   CHECK(enclave_manager_->is_loaded());
-  CHECK_EQ(enclave_state_, EnclaveState::kUnknown);
   enclave_state_ = enclave_manager_->is_ready() ? EnclaveState::kReady
-                                                : EnclaveState::kNotReady;
-  if (pending_upgrade_request_) {
-    ContinuePendingUpgradeRequest();
+                                                : EnclaveState::kError;
+  if (!pending_request_) {
+    return;
   }
+  if (enclave_state_ == EnclaveState::kReady) {
+    ContinuePendingUpgradeRequest();
+  } else {
+    SignalRequestFailure(RequestError::kEnclaveNotInitialized);
+  }
+}
+
+void PasskeyUpgradeRequestController::SignalRequestFailure(RequestError error) {
+  FIDO_LOG(EVENT) << "Passkey upgrade request failed: "
+                  << static_cast<int>(error);
+  delegate_->PasskeyUpgradeFailed();
 }

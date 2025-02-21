@@ -633,6 +633,18 @@ void AuthenticatorRequestDialogController::OnPasskeyModelShuttingDown() {
 void AuthenticatorRequestDialogController::OnPasskeyModelIsReady(
     bool is_ready) {}
 
+void AuthenticatorRequestDialogController::PasskeyUpgradeSucceeded() {
+  // Nothing to do. The WebAuthn request will be resolved automatically via the
+  // request handler success callback. The PasskeyUpgradeRequestController shows
+  // its own UI.
+  CHECK_EQ(model_->step(), Step::kPasskeyUpgrade);
+}
+
+void AuthenticatorRequestDialogController::PasskeyUpgradeFailed() {
+  CHECK_EQ(model_->step(), Step::kPasskeyUpgrade);
+  CancelAuthenticatorRequest();
+}
+
 void AuthenticatorRequestDialogController::HideDialog() {
   SetCurrentStep(Step::kNotStarted);
 }
@@ -2573,27 +2585,12 @@ AuthenticatorRequestDialogController::GetRenderFrameHost() const {
 
 void AuthenticatorRequestDialogController::StartPasskeyUpgradeRequest() {
   CHECK(enclave_request_callback_);
-  if (!model_->user_entity.name) {
-    FIDO_LOG(ERROR) << "Ignoring passkey upgrade request: empty username";
-    return;
-  }
   passkey_upgrade_request_controller_ =
       std::make_unique<PasskeyUpgradeRequestController>(
           GetRenderFrameHost(), std::move(enclave_request_callback_));
   passkey_upgrade_request_controller_->TryUpgradePasswordToPasskey(
-      model_->relying_party_id, *model_->user_entity.name,
-      base::BindOnce(
-          [](base::WeakPtr<AuthenticatorRequestDialogController> controller,
-             bool success) {
-            if (!controller) {
-              return;
-            }
-            // The pending request callback is resolved through the
-            // MakeCredentialRequestHandler.
-            FIDO_LOG(EVENT)
-                << "Passkey upgrade request complete success=" << success;
-          },
-          weak_factory_.GetWeakPtr()));
+      model_->relying_party_id, model_->user_entity.name.value_or(""),
+      /*delegate=*/this);
   SetCurrentStep(Step::kPasskeyUpgrade);
 }
 
