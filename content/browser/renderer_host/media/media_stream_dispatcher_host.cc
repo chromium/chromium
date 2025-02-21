@@ -51,6 +51,20 @@ namespace {
 
 using ::blink::mojom::CapturedSurfaceControlResult;
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// When a Web application is video-capturing a tab, it can use the Region
+// Capture API to crop the resulting video.
+// - If `kRegionCaptureOfOtherTabs` is disabled, the Web application can only
+// crop self-capture tracks. (That is, cropping is only possible when the
+// application is capturing its own tab.)
+// - If `kRegionCaptureOfOtherTabs` is enabled, the Web application  can crop
+// video-captures of any tab (so long as that other tab collaborates by sending
+// a CropTarget).
+BASE_FEATURE(kRegionCaptureOfOtherTabs,
+             "RegionCaptureOfOtherTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 void BindMediaStreamDeviceObserverReceiver(
     GlobalRenderFrameHostId render_frame_host_id,
     mojo::PendingReceiver<blink::mojom::MediaStreamDeviceObserver> receiver) {
@@ -99,7 +113,13 @@ bool MayApplySubCaptureTarget(GlobalRenderFrameHostId capturing_id,
 
   WebContents* const captured_wc =
       SubCaptureTargetIdWebContentsHelper::GetRelevantWebContents(captured_id);
-  if (capturing_wc != captured_wc) {  // Null or not-same-tab.
+  if (!captured_wc) {
+    // Not a tab-capture or the captured tab has been asynchronously closed.
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(kRegionCaptureOfOtherTabs) &&
+      capturing_wc != captured_wc) {
     return false;
   }
 
