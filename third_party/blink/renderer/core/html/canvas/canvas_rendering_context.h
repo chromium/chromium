@@ -267,6 +267,7 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void SetShouldAntialias(bool) {}
   virtual void StyleDidChange(const ComputedStyle* old_style,
                               const ComputedStyle& new_style) {}
+  virtual void LangAttributeChanged() {}
   virtual String GetIdFromControl(const Element* element) { return String(); }
   virtual void ResetUsageTracking() {}
   virtual int LayerCount() const { return 0; }

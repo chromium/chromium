@@ -174,6 +174,7 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState()
       has_complex_clip_(false),
       letter_spacing_is_set_(false),
       word_spacing_is_set_(false),
+      lang_is_dirty_(false),
       line_dash_dirty_(false),
       image_smoothing_quality_(cc::PaintFlags::FilterQuality::kLow) {
   fill_flags_.setStyle(cc::PaintFlags::kFill_Style);
@@ -239,6 +240,7 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState(
       has_complex_clip_(other.has_complex_clip_),
       letter_spacing_is_set_(other.letter_spacing_is_set_),
       word_spacing_is_set_(other.word_spacing_is_set_),
+      lang_is_dirty_(other.lang_is_dirty_),
       line_dash_dirty_(other.line_dash_dirty_),
       image_smoothing_enabled_(other.image_smoothing_enabled_),
       image_smoothing_quality_(other.image_smoothing_quality_),
@@ -351,6 +353,11 @@ void CanvasRenderingContext2DState::ClipPath(
     has_complex_clip_ = true;
 }
 
+void CanvasRenderingContext2DState::SetLang(const String& lang) {
+  lang_ = lang;
+  lang_is_dirty_ = true;
+}
+
 void CanvasRenderingContext2DState::SetFont(
     const FontDescription& passed_font_description,
     FontSelector* selector) {
@@ -413,6 +420,7 @@ void CanvasRenderingContext2DState::SetFontInternal(
 
   font_ = MakeGarbageCollected<Font>(font_description, selector);
   realized_font_ = true;
+  lang_is_dirty_ = false;  // The font has been created with the current lang.
   if (selector)
     selector->RegisterForInvalidationCallbacks(this);
 }
@@ -854,8 +862,7 @@ const cc::PaintFlags* CanvasRenderingContext2DState::GetFlags(
 void CanvasRenderingContext2DState::SetLetterSpacing(
     const String& letter_spacing) {
   DCHECK(realized_font_);
-  if (!letter_spacing_is_set_)
-    letter_spacing_is_set_ = true;
+  letter_spacing_is_set_ = true;
   if (parsed_letter_spacing_ == letter_spacing)
     return;
   float num_spacing;
@@ -891,8 +898,7 @@ void CanvasRenderingContext2DState::SetLetterSpacing(
 
 void CanvasRenderingContext2DState::SetWordSpacing(const String& word_spacing) {
   DCHECK(realized_font_);
-  if (!word_spacing_is_set_)
-    word_spacing_is_set_ = true;
+  word_spacing_is_set_ = true;
   if (parsed_word_spacing_ == word_spacing)
     return;
   float num_spacing;

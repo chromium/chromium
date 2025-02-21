@@ -171,6 +171,7 @@ class CORE_EXPORT HTMLCanvasElement final
   void DiscardResourceProvider() override;
 
   TextDirection GetTextDirection(const ComputedStyle*) override;
+  const LayoutLocale* GetLocale() const override;
 
   FontSelector* GetFontSelector() override;
 
@@ -263,6 +264,7 @@ class CORE_EXPORT HTMLCanvasElement final
   void StyleDidChange(const ComputedStyle* old_style,
                       const ComputedStyle& new_style);
   void LayoutObjectDestroyed();
+  void LangAttributeChanged() override;
 
   void NotifyListenersCanvasChanged();
 

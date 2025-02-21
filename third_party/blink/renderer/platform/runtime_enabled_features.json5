@@ -732,6 +732,11 @@
       status: "experimental",
     },
     {
+      // https://chromestatus.com/feature/5066778773028864
+      name: "CanvasTextLang",
+      status: "experimental",
+    },
+    {
       // crbug.com/389726691.
       name: "CanvasTextNg",
     },

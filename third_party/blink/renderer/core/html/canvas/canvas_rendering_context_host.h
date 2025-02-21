@@ -29,6 +29,7 @@ class CanvasResourceDispatcher;
 class ComputedStyle;
 class FontSelector;
 class KURL;
+class LayoutLocale;
 class StaticBitmapImage;
 
 class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
@@ -76,6 +77,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   // computed style for the host. If nullptr is passed, the style will be
   // computed within the method.
   virtual TextDirection GetTextDirection(const ComputedStyle*) = 0;
+  virtual const LayoutLocale* GetLocale() const = 0;
   virtual FontSelector* GetFontSelector() = 0;
 
   virtual bool ShouldAccelerate2dContext() const = 0;

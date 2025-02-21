@@ -692,6 +692,24 @@ TextDirection OffscreenCanvas::GetTextDirection(const ComputedStyle*) {
   return text_direction_.value_or(TextDirection::kLtr);
 }
 
+void OffscreenCanvas::SetLocale(scoped_refptr<const LayoutLocale> locale) {
+  locale_ = std::move(locale);
+}
+
+const LayoutLocale* OffscreenCanvas::GetLocale() const {
+  if (locale_) {
+    return locale_.get();
+  }
+  if (const auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
+    const Element* document_element = window->document()->documentElement();
+    if (document_element) {
+      return &LayoutLocale::ValueOrDefault(
+          LayoutLocale::Get(document_element->ComputeInheritedLanguage()));
+    }
+  }
+  return &LayoutLocale::GetDefault();
+}
+
 FontSelector* OffscreenCanvas::GetFontSelector() {
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
     return window->document()->GetStyleEngine().GetFontSelector();

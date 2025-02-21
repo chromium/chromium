@@ -134,6 +134,24 @@
     ctx.font = 'italic 300 12px serif';
     @assert ctx.font === 'italic 300 12px serif';
 
+- name: 2d.text.lang.default.tentative
+  code: |
+    @assert ctx.lang === 'inherit';
+
+- name: 2d.text.lang.valid.tentative
+  code: |
+    ctx.lang = '';
+    @assert ctx.lang === '';
+
+    ctx.lang = 'inherit';
+    @assert ctx.lang === 'inherit';
+
+    ctx.lang = 'en-US';
+    @assert ctx.lang === 'en-US';
+
+    ctx.lang = 'not-a-real-lang';
+    @assert ctx.lang === 'not-a-real-lang';
+
 - name: 2d.text.align.valid
   code: |
     ctx.textAlign = 'start';

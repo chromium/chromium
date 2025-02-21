@@ -48,7 +48,7 @@ class OffscreenFontCache {
     }
   }
 
-  void AddFont(String name, blink::FontDescription font) {
+  void AddFont(String name, blink::FontDescription& font) {
     fonts_resolved_.insert(name, font);
     auto add_result = font_lru_list_.PrependOrMoveToFirst(name);
     DCHECK(add_result.is_new_entry);
@@ -378,7 +378,13 @@ bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
   OffscreenFontCache& font_cache = GetOffscreenFontCache();
   FontDescription* cached_font = font_cache.GetFont(new_font);
   CanvasRenderingContextHost* const host = Host();
+  bool use_locale = RuntimeEnabledFeatures::CanvasTextLangEnabled();
+  const LayoutLocale* locale = use_locale ? LocaleFromLang() : nullptr;
+
   if (cached_font) {
+    if (use_locale && locale != cached_font->Locale()) {
+      cached_font->SetLocale(locale);
+    }
     GetState().SetFont(*cached_font, host->GetFontSelector());
   } else {
     auto* style =
@@ -388,7 +394,9 @@ bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
     }
     FontDescription desc =
         FontStyleResolver::ComputeFont(*style, host->GetFontSelector());
-
+    if (use_locale) {
+      desc.SetLocale(locale);
+    }
     font_cache.AddFont(new_font, desc);
     GetState().SetFont(desc, host->GetFontSelector());
   }
