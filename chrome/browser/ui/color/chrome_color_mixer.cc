@@ -461,7 +461,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorFrameActive, color_utils::kMinimumVisibleContrastRatio);
 
   mixer[kColorSharingRecentActivityDialogActivityContainer] = {
-      ui::kColorSysSurface5};
+      ui::kColorSysSurface3};
   mixer[kColorSharingRecentActivityDialogFaviconContainer] = {
       ui::kColorSysSurface};
 

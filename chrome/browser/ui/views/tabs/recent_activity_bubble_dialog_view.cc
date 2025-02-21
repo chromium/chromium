@@ -462,6 +462,7 @@ RecentActivityRowView::RecentActivityRowView(
   metadata_label->SetText(metadata_text_);
   metadata_label->SetTextStyle(views::style::TextStyle::STYLE_BODY_5);
   metadata_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  metadata_label->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);
 
   // Set a preferred height so the HoverButton will not cut off the row's
   // contents. Set height based on image size and vertical row padding.
