@@ -70,7 +70,33 @@ GridItems MasonryLayoutAlgorithm::VirtualMasonryItems(
   return virtual_items;
 }
 
-GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks() const {
+namespace {
+
+LayoutUnit ContributionSizeForVirtualItem(
+    GridItemContributionType contribution_type,
+    GridItemData* virtual_item) {
+  DCHECK(virtual_item);
+  DCHECK(virtual_item->contribution_sizes);
+
+  switch (contribution_type) {
+    case GridItemContributionType::kForContentBasedMinimums:
+    case GridItemContributionType::kForIntrinsicMaximums:
+    case GridItemContributionType::kForIntrinsicMinimums:
+      return virtual_item->contribution_sizes->min_size;
+    case GridItemContributionType::kForMaxContentMaximums:
+    case GridItemContributionType::kForMaxContentMinimums:
+      return virtual_item->contribution_sizes->max_size;
+    case GridItemContributionType::kForFreeSpace:
+      NOTREACHED() << "`kForFreeSpace` should only be used to distribute extra "
+                      "space in maximize tracks and stretch auto tracks steps.";
+  }
+}
+
+}  // namespace
+
+GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
+    const GridLineResolver& line_resolver,
+    wtf_size_t* start_offset) const {
   const auto& style = Style();
   const auto& available_size = ChildAvailableSize();
   const auto grid_direction = style.MasonryTrackSizingDirection();
@@ -82,6 +108,16 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks() const {
   GridSizingTrackCollection track_collection(range_builder.FinalizeRanges(),
                                              grid_direction);
   track_collection.BuildSets(style, available_size);
+
+  if (track_collection.HasNonDefiniteTrack()) {
+    auto virtual_items = VirtualMasonryItems(line_resolver, start_offset);
+    GridTrackSizingAlgorithm::CacheGridItemsProperties(track_collection,
+                                                       &virtual_items);
+
+    const GridTrackSizingAlgorithm track_sizing_algorithm;
+    track_sizing_algorithm.ComputeUsedTrackSizes(
+        ContributionSizeForVirtualItem, &track_collection, &virtual_items);
+  }
 
   auto first_set_geometry = GridTrackSizingAlgorithm::ComputeFirstSetGeometry(
       track_collection, style, available_size, BorderScrollbarPadding());

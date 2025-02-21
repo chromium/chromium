@@ -279,6 +279,27 @@ GridTrackSizingAlgorithm::ComputeFirstSetGeometry(
   }
 }
 
+void GridTrackSizingAlgorithm::ComputeUsedTrackSizes(
+    const ContributionSizeFunctionRef& contribution_size,
+    GridSizingTrackCollection* track_collection,
+    GridItems* grid_items) const {
+  DCHECK(track_collection);
+  DCHECK(grid_items);
+
+  // 1. Initialize each track's base size and growth limit.
+  // This step is done in `GridSizingTrackCollection::InitializeSets`, which
+  // should have already been called to generate the track collection sets.
+
+  // 2. Resolve intrinsic track sizing functions to absolute lengths.
+  if (track_collection->HasIntrinsicTrack()) {
+    ResolveIntrinsicTrackSizes(contribution_size, track_collection, grid_items);
+  }
+
+  // If any track still has an infinite growth limit (i.e. it had no items
+  // placed in it), set its growth limit to its base size before maximizing.
+  track_collection->SetIndefiniteGrowthLimitsToBaseSize();
+}
+
 // Helpers for the track sizing algorithm.
 namespace {
 

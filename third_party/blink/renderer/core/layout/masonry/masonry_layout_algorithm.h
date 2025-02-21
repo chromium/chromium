@@ -28,7 +28,9 @@ class CORE_EXPORT MasonryLayoutAlgorithm
  private:
   friend class MasonryLayoutAlgorithmTest;
 
-  GridSizingTrackCollection BuildGridAxisTracks() const;
+  GridSizingTrackCollection BuildGridAxisTracks(
+      const GridLineResolver& line_resolver,
+      wtf_size_t* start_offset) const;
 
   wtf_size_t ComputeAutomaticRepetitions() const;
 
