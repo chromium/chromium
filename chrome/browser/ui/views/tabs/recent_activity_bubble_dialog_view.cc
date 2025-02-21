@@ -99,13 +99,51 @@ std::optional<data_sharing::GroupMember> GetRelevantUserForActivity(
   return user;
 }
 
+// TODO(crbug.com/392150086): Refactor this into utilities.
+bool UnwrapTriggeringUserGivenName(const ActivityLogItem& item,
+                                   std::u16string& given_name) {
+  auto triggering_user = item.activity_metadata.triggering_user;
+  if (!triggering_user) {
+    return false;
+  }
+  given_name = base::UTF8ToUTF16(triggering_user->given_name);
+  return true;
+}
+
 // Get the string for the title line to describe the action.
 std::u16string GetTitleText(const ActivityLogItem& item, bool is_current_tab) {
-  if (is_current_tab) {
-    // TODO(crbug.com/396122264): This string should be updated to read
-    // "this tab" instead of "a tab".
+  using collaboration::messaging::CollaborationEvent;
+
+  if (!is_current_tab) {
+    return item.title_text;
   }
-  return item.title_text;
+
+  // Return early if not a tab event.
+  //
+  // TAB_REMOVED is not included here because the tab no longer exists,
+  // therefore RecentActivity cannot be shown in the context of that tab.
+  bool is_tab_event_type =
+      item.collaboration_event == CollaborationEvent::TAB_ADDED ||
+      item.collaboration_event == CollaborationEvent::TAB_UPDATED;
+  if (!is_tab_event_type) {
+    return item.title_text;
+  }
+
+  std::u16string given_name;
+  if (!UnwrapTriggeringUserGivenName(item, given_name)) {
+    return item.title_text;
+  }
+
+  switch (item.collaboration_event) {
+    case CollaborationEvent::TAB_ADDED:
+      return l10n_util::GetStringFUTF16(
+          IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB, given_name);
+    case CollaborationEvent::TAB_UPDATED:
+      return l10n_util::GetStringFUTF16(
+          IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB, given_name);
+    default:
+      NOTREACHED();
+  }
 }
 
 // Gets the string for the metadata line to describe an event.
