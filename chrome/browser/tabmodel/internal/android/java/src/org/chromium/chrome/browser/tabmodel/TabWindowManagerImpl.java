@@ -36,6 +36,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -440,6 +441,20 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
         }
 
         return null;
+    }
+
+    @Override
+    public List<Tab> getGroupedTabsByWindow(int windowIndex, int rootId, boolean isIncognito) {
+        TabModelSelector tabModelSelector = getTabModelSelectorById(windowIndex);
+        if (tabModelSelector == null) return null;
+
+        TabGroupModelFilter tabGroupModelFilter =
+                tabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(isIncognito);
+        if (tabGroupModelFilter == null) return null;
+
+        return tabGroupModelFilter.getRelatedTabListForRootId(rootId);
     }
 
     @Override
