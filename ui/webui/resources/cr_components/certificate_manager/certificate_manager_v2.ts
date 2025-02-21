@@ -438,11 +438,12 @@ export class CertificateManagerV2Element extends
 
   private getSelectedTopLevelHref_(): string {
     switch (this.selectedPage_) {
-      case Page.ADMIN_CERTS:
       // <if expr="not is_chromeos">
       case Page.PLATFORM_CERTS:
-        return this.generateHrefForPage_(Page.LOCAL_CERTS);
       // </if>
+      case Page.ADMIN_CERTS:
+      case Page.USER_CERTS:
+        return this.generateHrefForPage_(Page.LOCAL_CERTS);
       case Page.PLATFORM_CLIENT_CERTS:
         return this.generateHrefForPage_(Page.CLIENT_CERTS);
       default:
