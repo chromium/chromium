@@ -301,7 +301,10 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
                                     .getString(R.string.bottom_bar_screen_position));
         }
 
-        ViewCompat.setAccessibilityPaneTitle(mMessageView, accessibilityText);
+        // This post call is required to ensure the pane title change results in a
+        // reliable announcement to the user. See https://crbug.com/395925721
+        mMessageView.post(
+                () -> ViewCompat.setAccessibilityPaneTitle(mMessageView, accessibilityText));
     }
 
     /**
