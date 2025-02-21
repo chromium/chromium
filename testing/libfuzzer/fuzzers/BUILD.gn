@@ -478,3 +478,15 @@ test("paint_vector_icon_fuzztest") {
     "//ui/gfx:gfx",
   ]
 }
+
+test("chrome_tint_wgsl_fuzzer") {
+  sources = [ "tint_wgsl_fuzzer.cc" ]
+  fuzztests = [ "ChromiumTintWgslTest.CanParseWithoutCrashing" ]
+
+  deps = [
+    "//base",
+    "//third_party/dawn/src/tint/cmd/fuzz/wgsl:fuzz",
+    "//third_party/dawn/src/tint/lang/wgsl/reader:reader",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+}
