@@ -80,3 +80,5 @@ virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-i
 virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-onerror.https.html
 virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-onstart-onend.https.html
 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/window-resize-aborts-transition-before-ready.html
+# TODO(crbug.com/393152490): Pending Web Bluetooth Permission API integration for running in headless shell.
+virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/*

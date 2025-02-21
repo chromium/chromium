@@ -1,4 +1,4 @@
-// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver.js?feature=bidi
 // META: script=/resources/testdriver-vendor.js
 // META: script=/bluetooth/resources/bluetooth-test.js
 // META: script=/bluetooth/resources/bluetooth-fake-devices.js
@@ -7,14 +7,10 @@ const test_desc =
     'acceptAllDevices is true.';
 const name = 'LE Device';
 
-bluetooth_test(async () => {
-  let { device } = await setUpPreconnectedFakeDevice({
-    fakeDeviceOptions: {
-      name: name
-    },
-    requestDeviceOptions: {
-      acceptAllDevices: true
-    }
+bluetooth_bidi_test(async () => {
+  let {device} = await setUpPreconnectedFakeDevice({
+    fakeDeviceOptions: {name: name},
+    requestDeviceOptions: {acceptAllDevices: true}
   });
   assert_equals(device.name, name);
 }, test_desc);
