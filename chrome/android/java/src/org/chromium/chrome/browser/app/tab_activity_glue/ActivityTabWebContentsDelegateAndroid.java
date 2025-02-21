@@ -65,6 +65,7 @@ import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * {@link WebContentsDelegateAndroid} that interacts with {@link Activity} and those of the lifetime
@@ -218,7 +219,6 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
         Tab sourceTab = fromWebContents(sourceWebContents);
         if (sourceTab == null
-                || sourceTab.getTabGroupId() == null
                 || !ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_NEW_TAB_WITH_PARENT)) {
             return true;
         }
@@ -229,14 +229,30 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         }
 
         Tab newTab = fromWebContents(webContents);
+        if (newTab == null || newTab.getParentId() != sourceTab.getId()) {
+            return true;
+        }
+
         // If the new tab is in a different TabModel from the parent tab, don't group them.
         if (TabWindowManagerSingleton.getInstance().getTabModelForTab(sourceTab)
                 == TabWindowManagerSingleton.getInstance().getTabModelForTab(newTab)) {
             TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter(sourceTab);
             // Set notify to false so snackbar to undo the grouping will not be shown.
-            if (tabGroupModelFilter != null) {
+            if (tabGroupModelFilter != null
+                    && tabGroupModelFilter.isTabInTabGroup(sourceTab)
+                    && tabGroupModelFilter.isTabModelRestored()) {
                 tabGroupModelFilter.mergeListOfTabsToGroup(
                         Arrays.asList(newTab), sourceTab, /* notify= */ false);
+                if (mChromeActivityNativeDelegate != null) {
+                    assert newTab.getRootId() == sourceTab.getRootId();
+                    assert Objects.equals(newTab.getTabGroupId(), sourceTab.getTabGroupId());
+                    assert tabGroupModelFilter
+                            .getRelatedTabListForRootId(newTab.getRootId())
+                            .contains(sourceTab);
+                    assert tabGroupModelFilter
+                            .getRelatedTabListForRootId(sourceTab.getRootId())
+                            .contains(newTab);
+                }
             }
         }
 
