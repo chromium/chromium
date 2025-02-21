@@ -218,7 +218,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterBooleanPref(prefs::kOrcaEnabled, true);
     registry->RegisterBooleanPref(prefs::kOrcaFeedbackEnabled, true);
     registry->RegisterBooleanPref(prefs::kLobsterEnabled, true);
-    registry->RegisterBooleanPref(
+    registry->RegisterIntegerPref(
         prefs::kLobsterEnterprisePolicySettings,
         base::to_underlying(
             ash::LobsterEnterprisePolicyValue::kAllowedWithModelImprovement));
