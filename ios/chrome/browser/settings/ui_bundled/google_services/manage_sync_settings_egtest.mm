@@ -5,7 +5,7 @@
 #import "base/i18n/message_formatter.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/policy_constants.h"
-#import "components/search_engines/search_engines_switches.h"
+#import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"

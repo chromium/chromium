@@ -332,6 +332,7 @@ source_set("unit_tests") {
     "//components/metrics:test_support",
     "//components/ntp_tiles",
     "//components/prefs",
+    "//components/regional_capabilities",
     "//components/search_engines",
     "//components/signin/public/identity_manager",
     "//components/variations",

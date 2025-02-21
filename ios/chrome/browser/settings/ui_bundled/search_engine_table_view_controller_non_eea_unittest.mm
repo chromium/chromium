@@ -4,7 +4,7 @@
 
 #import "base/command_line.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/search_engines/search_engines_switches.h"
+#import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/template_url_data_util.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "ios/chrome/browser/settings/ui_bundled/search_engine_table_view_controller.h"
