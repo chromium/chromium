@@ -53,6 +53,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -510,7 +511,7 @@ bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
   // https://w3c.github.io/manifest/#navigation-scope
   // If url is same origin as scope and url path starts with scope path, return
   // true. Otherwise, return false.
-  if (app_scope.DeprecatedGetOriginAsURL() != url.DeprecatedGetOriginAsURL()) {
+  if (!url::IsSameOriginWith(app_scope, url)) {
     // We allow an upgrade from http |app_scope| to https |url|.
     if (app_scope.scheme() != url::kHttpScheme) {
       return false;
@@ -519,12 +520,22 @@ bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
     GURL::Replacements rep;
     rep.SetSchemeStr(url::kHttpsScheme);
     GURL secure_app_scope = app_scope.ReplaceComponents(rep);
-    if (secure_app_scope.DeprecatedGetOriginAsURL() !=
-        url.DeprecatedGetOriginAsURL()) {
+    if (!url::IsSameOriginWith(secure_app_scope, url)) {
       return false;
     }
   }
+  // Past here, the url and scope must be same-origin.
 
+  // For scopes without paths, return 'true' early (allowing blobs to be in
+  // scope).
+  if (!app_scope.has_path() || app_scope.path() == "/") {
+    return true;
+  }
+  if (url.scheme() == url::kBlobScheme) {
+    // Blobs can only be in-scope in the above case where the app scope doesn't
+    // have a path.
+    return false;
+  }
   std::string scope_path = app_scope.path();
   std::string url_path = url.path();
   return base::StartsWith(url_path, scope_path, base::CompareCase::SENSITIVE);

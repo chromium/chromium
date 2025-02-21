@@ -1893,12 +1893,13 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
           browser_context, site)) {
-    CHECK(site.SchemeIs(chrome::kIsolatedAppScheme));
+    CHECK(url::Origin::Create(site).scheme() == chrome::kIsolatedAppScheme);
     ASSIGN_OR_RETURN(const auto iwa_url_info,
                      web_app::IsolatedWebAppUrlInfo::Create(site), [&](auto) {
                        LOG(ERROR) << "Invalid isolated-app URL: " << site;
                        return default_storage_partition_config;
                      });
+
     return iwa_url_info.storage_partition_config(browser_context);
   }
 #endif
