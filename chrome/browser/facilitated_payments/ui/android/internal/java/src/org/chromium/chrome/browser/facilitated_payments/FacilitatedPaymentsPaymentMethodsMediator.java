@@ -44,6 +44,7 @@ import android.graphics.Bitmap;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsComponent.Delegate;
@@ -334,7 +335,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 .with(ON_BANK_ACCOUNT_CLICK_ACTION, () -> this.onBankAccountSelected(bankAccount))
                 .with(
                         BANK_ACCOUNT_ICON,
-                        PersonalDataManagerFactory.getForProfile(mProfile)
+                        AutofillImageFetcherFactory.getForProfile(mProfile)
                                 .getPixAccountIcon(context, bankAccount.getDisplayIconUrl()))
                 .build();
     }

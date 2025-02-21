@@ -4,16 +4,23 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Provides access to {@link AutofillImageFetcher} singleton associated with a {@link Profile}. */
 @JNINamespace("autofill")
 public class AutofillImageFetcherFactory {
+    @Nullable private static AutofillImageFetcher sAutofillImageFetcherForTesting;
+
+    private AutofillImageFetcherFactory() {}
+
     /**
      * Retrieves or creates the {@link AutofillImageFetcher} associated with `profile`.
      *
@@ -24,6 +31,9 @@ public class AutofillImageFetcherFactory {
      */
     public static AutofillImageFetcher getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
+
+        if (sAutofillImageFetcherForTesting != null) return sAutofillImageFetcherForTesting;
+
         if (profile == null) {
             throw new IllegalArgumentException(
                     "Attempting to access AutofillImageFetcher with a null profile");
@@ -31,6 +41,12 @@ public class AutofillImageFetcherFactory {
         // Throw an exception if the native pointer isn't initialized yet.
         profile.ensureNativeInitialized();
         return AutofillImageFetcherFactoryJni.get().getForProfile(profile);
+    }
+
+    /** Overrides the initialization for tests. */
+    public static void setInstanceForTesting(AutofillImageFetcher autofillImageFetcher) {
+        sAutofillImageFetcherForTesting = autofillImageFetcher;
+        ResettersForTesting.register(() -> sAutofillImageFetcherForTesting = null);
     }
 
     @NativeMethods

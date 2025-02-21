@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.autofill;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -969,15 +968,6 @@ public class PersonalDataManager implements Destroyable {
         PersonalDataManagerJni.get().recordAndLogCreditCardUse(mPersonalDataManagerAndroid, guid);
     }
 
-    protected void clearImageDataForTesting() {
-        if (mImageFetcher == null) {
-            return;
-        }
-
-        ThreadUtils.assertOnUiThread();
-        mImageFetcher.clearCachedImagesForTesting();
-    }
-
     /**
      * Determines whether the logged in user (if any) is eligible to store Autofill address profiles
      * to their account.
@@ -1172,25 +1162,6 @@ public class PersonalDataManager implements Destroyable {
     public Optional<Bitmap> getCustomImageForAutofillSuggestionIfAvailable(
             GURL customImageUrl, AutofillUiUtils.CardIconSpecs cardIconSpecs) {
         return mImageFetcher.getImageIfAvailable(customImageUrl, cardIconSpecs);
-    }
-
-    /**
-     * Requests the Pix account icon from image fetcher.
-     *
-     * @param context {@link Context} to get the resources.
-     * @param url URL for the image.
-     * @return {@link Drawable} for the Pix bank account.
-     */
-    public Drawable getPixAccountIcon(Context context, GURL url) {
-        return mImageFetcher.getPixAccountIcon(context, url);
-    }
-
-    /**
-     * Returns the {@link AutofillImageFetcher} that is used to download and cache icons for payment
-     * methods.
-     */
-    public AutofillImageFetcher getImageFetcherForTesting() {
-        return mImageFetcher;
     }
 
     public void setImageFetcherForTesting(ImageFetcher imageFetcher) {

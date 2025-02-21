@@ -162,10 +162,7 @@ public class AutofillImageFetcherTest {
     @SmallTest
     public void testPrefetchPixAccountImages_imageInCache_imageNotFetched() {
         GURL validUrl = new GURL("https://www.google.com/valid-image-url");
-        @Px
-        int logoSize = AutofillImageFetcherUtils.getPixelSize(R.dimen.square_card_icon_side_length);
-        GURL cachedValidUrl =
-                AutofillUiUtils.getCreditCardIconUrlWithParams(validUrl, logoSize, logoSize);
+        GURL cachedValidUrl = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(validUrl);
         mImageFetcher.addImageToCacheForTesting(cachedValidUrl, TEST_CARD_ART_IMAGE);
         // No histogram should be logged since no image fetching is done.
         HistogramWatcher expectedHistogram =
@@ -227,8 +224,9 @@ public class AutofillImageFetcherTest {
     @SmallTest
     public void testGetPixAccountIcon_imageInCache() {
         GURL validUrl = new GURL("https://www.google.com/valid-image-url");
-        GURL cachedValidUrl = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(validUrl);
-        mImageFetcher.addImageToCacheForTesting(cachedValidUrl, TEST_CARD_ART_IMAGE);
+        mImageFetcher.addImageToCacheForTesting(
+                AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(validUrl),
+                TEST_CARD_ART_IMAGE);
 
         Drawable pixAccountIcon =
                 mImageFetcher.getPixAccountIcon(ContextUtils.getApplicationContext(), validUrl);

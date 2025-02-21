@@ -95,7 +95,7 @@ public class AutofillImageFetcher {
      * @param url The URL for the image.
      * @return {@link Drawable} to be displayed for the Pix account.
      */
-    Drawable getPixAccountIcon(Context context, @Nullable GURL url) {
+    public Drawable getPixAccountIcon(Context context, @Nullable GURL url) {
         GURL cachedUrl = new GURL("");
         if (url != null && url.isValid()) {
             cachedUrl = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(url);

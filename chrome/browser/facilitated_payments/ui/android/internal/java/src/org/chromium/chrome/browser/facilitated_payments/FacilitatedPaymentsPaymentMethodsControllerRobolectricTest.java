@@ -64,8 +64,8 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FooterProperties;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -173,7 +173,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private FacilitatedPaymentsPaymentMethodsComponent.Delegate mDelegateMock;
-    @Mock private PersonalDataManager mPersonalDataManager;
+    @Mock private AutofillImageFetcher mAutofillImageFetcher;
     @Mock private Profile mProfile;
 
     private final Context mContext;
@@ -193,7 +193,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                                 any(BottomSheetContent.class), anyBoolean()))
                 .thenReturn(true);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
+        AutofillImageFetcherFactory.setInstanceForTesting(mAutofillImageFetcher);
         mCoordinator.initialize(mContext, mBottomSheetController, mDelegateMock, mProfile);
         mFacilitatedPaymentsPaymentMethodsModel = mCoordinator.getModelForTesting();
         mCoordinator

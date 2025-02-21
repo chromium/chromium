@@ -19,6 +19,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.PersonalDataManagerObserver;
@@ -183,8 +184,8 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
                                 bankAccount.getAccountNumberSuffix()));
         bankAccountPref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
         bankAccountPref.setIcon(
-                mPersonalDataManager.getPixAccountIcon(
-                        getStyledContext(), bankAccount.getDisplayIconUrl()));
+                AutofillImageFetcherFactory.getForProfile(getProfile())
+                        .getPixAccountIcon(getStyledContext(), bankAccount.getDisplayIconUrl()));
         bankAccountPref.setOnPreferenceClickListener(
                 preference -> {
                     mFinancialAccountManageLinkOpenerCallback.onResult(
