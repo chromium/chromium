@@ -71,7 +71,7 @@ const char kBundleUrl[] = "https://host.test/bundle";
 
 const int kRenderProcessId = 123;
 
-// The AuctionUrlLoaerFactoryProxy doesn't care which URL is used; its users are
+// The AuctionUrlLoaderFactoryProxy doesn't care which URL is used; its users are
 // responsible for setting the correct URLs for the correct proxy.
 const char kSubresourceUrl1[] = "https://host.test/signals?fakeSuffix1";
 const char kSubresourceUrl2[] = "https://host.test/signals?fakeSuffix2";
