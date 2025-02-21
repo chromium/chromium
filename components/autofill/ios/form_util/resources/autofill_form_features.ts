@@ -40,6 +40,15 @@ modal dialog that was triggered from the KA (e.g. filling a suggestion).
 let autofillFixPaymentSheetSpam: boolean = false;
 // LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_fix_post_filling_payment_sheet)
 
+
+// LINT.IfChange(autofill_correct_user_edited_bit_in_parsed_field)
+/**
+Enables correctly setting the is_user_edited bit in the parsed form fields
+instead of using true by default.
+ */
+let autofillCorrectUserEditedBitInParsedField: boolean = false;
+// LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_correct_user_edited_bit_in_parsed_field)
+
 /**
  * @see autofillAcrossIframes
  */
@@ -96,6 +105,20 @@ function isAutofillFixPaymentSheetSpamEnabled(): boolean {
   return autofillFixPaymentSheetSpam;
 }
 
+/**
+ * @see autofillCorrectUserEditedBitInParsedField
+ */
+function setAutofillCorrectUserEditedBitInParsedField(enabled: boolean): void {
+  autofillCorrectUserEditedBitInParsedField = enabled;
+}
+
+/**
+ * @see autofillCorrectUserEditedBitInParsedField
+ */
+function isAutofillCorrectUserEditedBitInParsedField(): boolean {
+  return autofillCorrectUserEditedBitInParsedField;
+}
+
 // Expose globally via `gCrWeb` instead of `export` to ensure state (feature
 // on/off) is maintained across imports.
 gCrWeb.autofill_form_features = {
@@ -107,4 +130,6 @@ gCrWeb.autofill_form_features = {
   isAutofillIsolatedContentWorldEnabled,
   setAutofillFixPaymentSheetSpam,
   isAutofillFixPaymentSheetSpamEnabled,
+  setAutofillCorrectUserEditedBitInParsedField,
+  isAutofillCorrectUserEditedBitInParsedField,
 };

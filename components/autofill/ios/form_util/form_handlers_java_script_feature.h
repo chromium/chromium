@@ -32,10 +32,6 @@ class FormHandlersJavaScriptFeature : public web::JavaScriptFeature {
   // true.
   void TrackFormMutations(web::WebFrame* frame, int mutation_tracking_delay);
 
-  // Toggles tracking the source of the input events in the frame.
-  void ToggleTrackingUserEditedFields(web::WebFrame* frame,
-                                      bool track_user_edited_fields);
-
  private:
   friend class base::NoDestructor<FormHandlersJavaScriptFeature>;
   // TODO(crbug.com/359538514): Remove friend once isolated world for Autofill

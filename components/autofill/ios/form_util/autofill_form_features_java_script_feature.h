@@ -39,6 +39,11 @@ class AutofillFormFeaturesJavaScriptFeature : public web::JavaScriptFeature {
   // suggestion).
   void SetAutofillFixPaymentSheetSpam(web::WebFrame* frame, bool enabled);
 
+  // Enables/disables correctly setting the is_user_edited bit in the parsed
+  // form fields instead of using true by default.
+  void SetAutofillCorrectUserEditedBitInParsedField(web::WebFrame* frame,
+                                                    bool enabled);
+
  private:
   friend class base::NoDestructor<AutofillFormFeaturesJavaScriptFeature>;
 

@@ -53,6 +53,11 @@ void SetAutofillFormFeatureFlags(WebFrame* web_frame) {
       ->SetAutofillFixPaymentSheetSpam(
           web_frame,
           base::FeatureList::IsEnabled(kAutofillFixPaymentSheetSpam));
+
+  AutofillFormFeaturesJavaScriptFeature::GetInstance()
+      ->SetAutofillCorrectUserEditedBitInParsedField(
+          web_frame, base::FeatureList::IsEnabled(
+                         kAutofillCorrectUserEditedBitInParsedField));
 }
 
 AutofillFormFeaturesInjector::~AutofillFormFeaturesInjector() = default;

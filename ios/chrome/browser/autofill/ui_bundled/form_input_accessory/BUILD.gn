@@ -118,6 +118,7 @@ source_set("eg2_tests") {
   deps = [
     ":eg_test_support+eg2",
     "//components/autofill/core/browser:test_support",
+    "//components/autofill/ios/common",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//components/sync/service",
