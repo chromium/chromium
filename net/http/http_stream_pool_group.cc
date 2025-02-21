@@ -196,7 +196,7 @@ void HttpStreamPool::Group::ReleaseStreamSocket(
                               : kClosedConnectionReturnedToPool;
   } else if (generation != generation_) {
     not_reusable_reason = kSocketGenerationOutOfDate;
-  } else if (ReachedMaxStreamLimit()) {
+  } else if (ReachedMaxStreamLimit() || pool_->ReachedMaxStreamLimit()) {
     not_reusable_reason = kExceededSocketLimits;
   } else {
     reusable = true;
