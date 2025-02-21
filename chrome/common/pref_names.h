@@ -3500,6 +3500,11 @@ inline constexpr char kCryptAuthInstanceIdToken[] =
 inline constexpr char kRecoveryComponentNeedsElevation[] =
     "recovery_component.needs_elevation";
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+// Policy that indicates how to handle animated images.
+inline constexpr char kAnimationPolicy[] = "settings.a11y.animation_policy";
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Boolean that indicates whether Chrome enterprise extension request is enabled
 // or not.
@@ -3511,9 +3516,6 @@ inline constexpr char kCloudExtensionRequestEnabled[] =
 // denied.
 inline constexpr char kCloudExtensionRequestIds[] =
     "enterprise_reporting.extension_request.ids";
-
-// Policy that indicates how to handle animated images.
-inline constexpr char kAnimationPolicy[] = "settings.a11y.animation_policy";
 
 // A list of URLs (for U2F) or domains (for webauthn) that automatically permit
 // direct attestation of a Security Key.

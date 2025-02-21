@@ -5783,7 +5783,7 @@ are declared in tools/grit/grit_args.gni.
       </if>
 
       <!-- Extension installed bubble -->
-      <if expr="enable_extensions">
+      <if expr="enable_extensions_core">
         <if expr="is_macosx">
           <message name="IDS_EXTENSION_INSTALLED_APP_INFO" desc="Text displayed inside a link when an app is installed. Clicking this link opens up the New Tab Page to show the app's icon.">
             Show me
