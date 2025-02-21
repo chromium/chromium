@@ -80,6 +80,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -324,12 +325,12 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
   trigger_data.aggregation_coordinator_origin =
       SuitableOrigin::Deserialize("https://coordinator.test");
 
-  EXPECT_CALL(
-      mock_manager_,
-      HandleTrigger(
-          AttributionTrigger(reporting_origin, trigger_data, destination_origin,
-                             /*is_within_fenced_frame=*/false),
-          kFrameId))
+  EXPECT_CALL(mock_manager_,
+              HandleTrigger(AttributionTrigger(reporting_origin, trigger_data,
+                                               destination_origin,
+                                               /*is_within_fenced_frame=*/false,
+                                               ukm::kInvalidSourceId),
+                            kFrameId))
       .Times(2);
 
   mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote;

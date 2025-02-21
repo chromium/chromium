@@ -6,6 +6,7 @@
 
 #include <unordered_map>
 
+#include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
@@ -165,6 +166,40 @@ void TabGroupChangeNotifierImpl::OnTabGroupAdded(
   }
 }
 
+void TabGroupChangeNotifierImpl::BeforeTabGroupUpdateFromRemote(
+    const base::Uuid& sync_group_id) {
+  auto group_it = last_known_tab_groups_.find(sync_group_id);
+  if (group_it == last_known_tab_groups_.end()) {
+    return;
+  }
+
+  // This is an open group that we are aware of, and we have a copy of it in
+  // `last_known_tab_groups_`. Let's update the title and focus info for the
+  // respective tabs from the local tab model since SavedTabGroupTab doesn't
+  // contain this info.
+  tab_groups::SavedTabGroup last_known_group = group_it->second;
+  for (auto& tab : last_known_group.saved_tabs()) {
+    if (!tab.local_tab_id()) {
+      continue;
+    }
+
+    auto tab_title =
+        tab_group_sync_service_->GetTabTitle(tab.local_tab_id().value());
+    tab.SetTitle(tab_title);
+  }
+
+  last_known_tab_groups_.insert_or_assign(sync_group_id, last_known_group);
+
+  last_selected_tabs_ = tab_group_sync_service_->GetSelectedTabs();
+
+  // Disable listening to tab selection change events because they interfere
+  // with the computation of selected tab while sync update is being applied,
+  // e.g. a selected tab removal will be perceived as a non-selected tab removal
+  // since the tab removal and selection of adjacent tab both happen in the next
+  // step. Moreover, this happens in different order on different platforms.
+  ignore_tab_selection_events_ = true;
+}
+
 void TabGroupChangeNotifierImpl::OnTabGroupUpdated(
     const tab_groups::SavedTabGroup& group,
     tab_groups::TriggerSource source) {
@@ -173,14 +208,24 @@ void TabGroupChangeNotifierImpl::OnTabGroupUpdated(
     return;
   }
 
-  // When an incoming sync update is received, it hasn't been processed by tab
-  // model UI yet. Delay to post task to make sure tabs are updated with local
-  // ID before notifying observers.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&TabGroupChangeNotifierImpl::OnTabGroupUpdatedAfterPosted,
-                     weak_ptr_factory_.GetWeakPtr(), group.saved_guid(),
-                     source));
+  // We only use this path for local updates. The remote updates are handled in
+  // AfterTabGroupUpdateFromRemote.
+  if (source != tab_groups::TriggerSource::LOCAL) {
+    return;
+  }
+
+  last_selected_tabs_ = tab_group_sync_service_->GetSelectedTabs();
+  OnTabGroupUpdatedInner(group.saved_guid(), source);
+}
+
+void TabGroupChangeNotifierImpl::AfterTabGroupUpdateFromRemote(
+    const base::Uuid& sync_group_id) {
+  if (!is_initialized_ || sync_bridge_update_type_ !=
+                              tab_groups::SyncBridgeUpdateType::kDefaultState) {
+    return;
+  }
+
+  OnTabGroupUpdatedInner(sync_group_id, tab_groups::TriggerSource::REMOTE);
 }
 
 void TabGroupChangeNotifierImpl::OnTabGroupRemoved(
@@ -206,20 +251,36 @@ void TabGroupChangeNotifierImpl::OnTabGroupRemoved(
 }
 
 void TabGroupChangeNotifierImpl::OnTabSelected(
-    const tab_groups::SelectedTabInfo& selected_tab_info) {
-  if (!is_initialized_) {
+    const std::set<tab_groups::LocalTabID>& selected_tabs) {
+  if (!is_initialized_ || ignore_tab_selection_events_) {
     return;
   }
 
-  std::optional<tab_groups::SavedTabGroupTab> selected_saved_tab =
-      GetSelectedSharedTabForPublishing(selected_tab_info.tab_group_id,
-                                        selected_tab_info.tab_id);
-  if (selected_saved_tab) {
-    selected_saved_tab->SetTitle(selected_tab_info.tab_title.value_or(u""));
+  std::set<tab_groups::LocalTabID> selection_removed;
+  std::set<tab_groups::LocalTabID> selection_added;
+  for (const auto& tab : last_selected_tabs_) {
+    if (!base::Contains(selected_tabs, tab)) {
+      selection_removed.insert(tab);
+    }
+  }
+  for (const auto& tab : selected_tabs) {
+    if (!base::Contains(last_selected_tabs_, tab)) {
+      selection_added.insert(tab);
+    }
   }
 
-  for (auto& observer : observers_) {
-    observer.OnTabSelected(selected_saved_tab);
+  last_selected_tabs_ = selected_tabs;
+
+  for (const auto& tab : selection_removed) {
+    for (auto& observer : observers_) {
+      observer.OnTabSelectionChanged(tab, /*is_selected=*/false);
+    }
+  }
+
+  for (const auto& tab : selection_added) {
+    for (auto& observer : observers_) {
+      observer.OnTabSelectionChanged(tab, /*is_selected=*/true);
+    }
   }
 }
 
@@ -307,7 +368,7 @@ void TabGroupChangeNotifierImpl::ProcessChangesSinceStartup() {
   }
 }
 
-void TabGroupChangeNotifierImpl::OnTabGroupUpdatedAfterPosted(
+void TabGroupChangeNotifierImpl::OnTabGroupUpdatedInner(
     const base::Uuid& sync_tab_group_id,
     tab_groups::TriggerSource source) {
   std::optional<tab_groups::SavedTabGroup> group =
@@ -315,6 +376,7 @@ void TabGroupChangeNotifierImpl::OnTabGroupUpdatedAfterPosted(
   if (!group || !group->is_shared_tab_group()) {
     return;
   }
+
   auto group_it = last_known_tab_groups_.find(group->saved_guid());
   if (group_it == last_known_tab_groups_.end()) {
     // We do not know what changed in the case where we got an update for
@@ -333,6 +395,11 @@ void TabGroupChangeNotifierImpl::OnTabGroupUpdatedAfterPosted(
   last_known_tab_groups_.insert_or_assign(group->saved_guid(), *group);
 
   ProcessTabGroupUpdates(last_known_group, *group, source);
+
+  // Reenable listening to tab selection change events. Also notify the
+  // observers if the selection was changed in the meawhile.
+  ignore_tab_selection_events_ = false;
+  OnTabSelected(tab_group_sync_service_->GetSelectedTabs());
 }
 
 void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
@@ -365,7 +432,12 @@ void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
   if (removed_tabs.size() > 0) {
     for (auto& observer : observers_) {
       for (auto& tab : removed_tabs) {
-        observer.OnTabRemoved(tab, source);
+        bool is_selected = tab.local_tab_id()
+                               ? base::Contains(last_selected_tabs_,
+                                                tab.local_tab_id().value())
+                               : false;
+
+        observer.OnTabRemoved(tab, source, is_selected);
       }
     }
   }
@@ -375,52 +447,14 @@ void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
   if (updated_tabs.size() > 0) {
     for (auto& observer : observers_) {
       for (auto& tab : updated_tabs) {
-        observer.OnTabUpdated(tab, source);
+        bool is_selected = tab.local_tab_id()
+                               ? base::Contains(last_selected_tabs_,
+                                                tab.local_tab_id().value())
+                               : false;
+        observer.OnTabUpdated(tab, source, is_selected);
       }
     }
   }
-}
-
-std::optional<tab_groups::SavedTabGroupTab>
-TabGroupChangeNotifierImpl::GetSelectedSharedTabForPublishing(
-    const std::optional<base::Uuid>& sync_tab_group_id,
-    const std::optional<base::Uuid>& sync_tab_id) {
-  if (!sync_tab_group_id || !sync_tab_id) {
-    // A tab outside saved / shared tab groups was selected.
-    return std::nullopt;
-  }
-  auto group_it = last_known_tab_groups_.find(sync_tab_group_id.value());
-  if (group_it == last_known_tab_groups_.end()) {
-    // A tab in a saved (not shared) tab group was selected.
-    return std::nullopt;
-  }
-
-  // Try to look up live data first, since we are not always updated, e.g. if a
-  // local tab ID changes for a particular tab.
-  std::optional<tab_groups::SavedTabGroup> tab_group;
-  if (sync_tab_group_id) {
-    tab_group = tab_group_sync_service_->GetGroup(*sync_tab_group_id);
-  }
-  if (tab_group) {
-    const tab_groups::SavedTabGroupTab* tab = tab_group->GetTab(*sync_tab_id);
-    if (tab) {
-      return *tab;
-    }
-  }
-
-  // The tab is in a shared tab group.
-  const tab_groups::SavedTabGroup& group = group_it->second;
-  const tab_groups::SavedTabGroupTab* tab = group.GetTab(*sync_tab_id);
-
-  if (!tab) {
-    // If we are unable to find the tab within our shared tab group, we are
-    // unable to tell our observers about which tab was selected, so we would
-    // publish std::nullopt in that case.
-    return std::nullopt;
-  }
-
-  // A tab within a shared tab group was selected.
-  return *tab;
 }
 
 std::unordered_map<base::Uuid, tab_groups::SavedTabGroup, base::UuidHash>

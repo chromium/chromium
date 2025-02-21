@@ -11,6 +11,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/data/grit/webui_test_resources.h"
 #include "chrome/test/data/grit/webui_test_resources_map.h"
@@ -21,7 +22,7 @@
 #include "ui/webui/resources/grit/webui_resources.h"
 #include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/common/trusted_types_util.h"
 #endif
 
@@ -29,7 +30,7 @@ namespace {
 
 void SetupTestDataSource(content::WebUIDataSource* source,
                          const std::string& scheme) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::EnableTrustedTypesCSP(source);
   // Add lit-html-desktop policy so that Desktop UI components used by
   // cross-platform UIs (e.g. chrome://print, chrome://history) can be tested

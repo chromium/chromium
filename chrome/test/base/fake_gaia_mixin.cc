@@ -5,7 +5,7 @@
 #include "chrome/test/base/fake_gaia_mixin.h"
 
 #include "base/command_line.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/test/supervised_user/child_account_test_utils.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -118,8 +118,7 @@ void FakeGaiaMixin::SetupFakeGaiaForChildUser(const std::string& user_email,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
+#if BUILDFLAG(IS_CHROMEOS)
 void FakeGaiaMixin::SetupFakeGaiaForLoginManager() {
   FakeGaia::AccessTokenInfo token_info;
   token_info.scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
@@ -135,8 +134,7 @@ void FakeGaiaMixin::SetupFakeGaiaForLoginManager() {
   token_info.email = kEnterpriseUser2;
   fake_gaia_->IssueOAuthToken(kTestRefreshToken2, token_info);
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 GURL FakeGaiaMixin::GetFakeGaiaURL(const std::string& relative_url) {
   return gaia_server_.GetURL(kGAIAHost, relative_url);

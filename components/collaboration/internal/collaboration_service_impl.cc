@@ -246,8 +246,13 @@ SyncStatus CollaborationServiceImpl::GetSyncStatus() {
 SigninStatus CollaborationServiceImpl::GetSigninStatus() {
   SigninStatus status = SigninStatus::kNotSignedIn;
 
-  if (identity_manager_->HasPrimaryAccountWithRefreshToken(
-          signin::ConsentLevel::kSignin)) {
+  bool has_valid_primary_account =
+      identity_manager_->HasPrimaryAccountWithRefreshToken(
+          signin::ConsentLevel::kSignin) &&
+      !identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+          identity_manager_->GetPrimaryAccountId(
+              signin::ConsentLevel::kSignin));
+  if (has_valid_primary_account) {
     status = SigninStatus::kSignedIn;
   } else if (identity_manager_->HasPrimaryAccount(
                  signin::ConsentLevel::kSignin)) {

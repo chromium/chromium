@@ -75,15 +75,37 @@
     <iron-collapse opened="[[prefs.settings.magic_boost_enabled.value]]"
         id="magicBoostCollapse">
       <div class="sub-item">
-        <settings-toggle-button id="helpMeReadToggle"
-            class="hr"
-            icon="os-settings:help-me-read"
-            pref="{{prefs.settings.mahi_enabled}}"
-            label="$i18n{enableHelpMeRead}"
-            sub-label="$i18n{enableHelpMeReadDesc}"
-            deep-link-focus-id$="[[Setting.kMahiOnOff]]"
-            learn-more-url="$i18n{helpMeReadWriteLearnMoreUrl}">
-        </settings-toggle-button>
+        <!-- \`restamp\` is needed to ensure that deep links work correctly if
+         \`isHmrAllowedByEnterprisePolicy_\` changes. -->
+        <template is="dom-if" restamp if="[[!isHmrAllowedByEnterprisePolicy_]]">
+          <!-- As the enterprise policy is under a different pref, use that one
+               here to make this toggle appear as managed. The toggle needs to
+               be explicitly disabled in case the policy is recommended. -->
+          <settings-toggle-button
+              id="helpMeReadEnterpriseToggle"
+              class="hr"
+              icon="os-settings:help-me-read"
+              pref="{{prefs.settings.managed.help_me_read}}"
+              numeric-unchecked-values="[[enterprisePolicyToggleUncheckedValues_]]"
+              disabled
+              no-set-pref
+              label="$i18n{enableHelpMeRead}"
+              sub-label="$i18n{enableHelpMeReadDesc}"
+              deep-link-focus-id$="[[Setting.kMahiOnOff]]"
+              learn-more-url="$i18n{helpMeReadWriteLearnMoreUrl}">
+          </settings-toggle-button>
+        </template>
+        <template is="dom-if" restamp if="[[isHmrAllowedByEnterprisePolicy_]]">
+          <settings-toggle-button id="helpMeReadToggle"
+              class="hr"
+              icon="os-settings:help-me-read"
+              pref="{{prefs.settings.mahi_enabled}}"
+              label="$i18n{enableHelpMeRead}"
+              sub-label="$i18n{enableHelpMeReadDesc}"
+              deep-link-focus-id$="[[Setting.kMahiOnOff]]"
+              learn-more-url="$i18n{helpMeReadWriteLearnMoreUrl}">
+          </settings-toggle-button>
+        </template>
       </div>
       <div class="sub-item">
         <settings-toggle-button id="helpMeWriteToggle"

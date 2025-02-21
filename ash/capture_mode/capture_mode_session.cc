@@ -3939,4 +3939,9 @@ gfx::Rect CaptureModeSession::GetFeedbackWidgetScreenBounds() const {
              : gfx::Rect();
 }
 
+void CaptureModeSession::OnSearchResultsPanelCreated(
+    views::Widget* panel_widget) {
+  focus_cycler_->OnSearchResultsPanelCreated(panel_widget);
+}
+
 }  // namespace ash

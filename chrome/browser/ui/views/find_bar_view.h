@@ -86,6 +86,12 @@ class FindBarView : public views::BoxLayoutView,
   // Claims focus for the text field and selects its contents.
   void FocusAndSelectAll();
 
+  // Check whether the find bar currently contains focus. This function is used
+  // to determine if the find bar is actively holding focus, which is necessary
+  // to ensure that focus is restored to the last focused element when find bar
+  // don't have focus.
+  bool ContainsFocus() const;
+
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   gfx::Size CalculatePreferredSize(

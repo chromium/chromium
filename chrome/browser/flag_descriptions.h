@@ -891,8 +891,10 @@ extern const char kEnableGamepadMultitouchName[];
 extern const char kEnableGamepadMultitouchDescription[];
 
 #if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
 extern const char kEnableIsolatedWebAppsName[];
 extern const char kEnableIsolatedWebAppsDescription[];
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 extern const char kDirectSocketsInServiceWorkersName[];
 extern const char kDirectSocketsInServiceWorkersDescription[];
@@ -1452,6 +1454,11 @@ extern const char kWebNNCoreMLDescription[];
 
 extern const char kWebNNDirectMLName[];
 extern const char kWebNNDirectMLDescription[];
+
+#if BUILDFLAG(IS_ANDROID)
+extern const char kNewEtc1EncoderName[];
+extern const char kNewEtc1EncoderDescription[];
+#endif
 
 extern const char kNotificationSchedulerName[];
 extern const char kNotificationSchedulerDescription[];

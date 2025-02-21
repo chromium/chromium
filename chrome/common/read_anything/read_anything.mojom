@@ -260,11 +260,11 @@ interface UntrustedPage {
   SetLanguageCode(string code);
 
   // Notifies that the device has been locked. Only called by ChromeOS.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   OnDeviceLocked();
 
   // Notifies that the TTS engine for Google natural voices has been installed.
-  [EnableIfNot=is_chromeos_ash]
+  [EnableIfNot=is_chromeos]
   OnTtsEngineInstalled();
 
   // Sets the default language code to be available in the WebUI in the event

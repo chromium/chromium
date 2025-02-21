@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/types/event_type.h"
@@ -22,6 +23,14 @@ MultiContentsView::MultiContentsView(
     : inactive_view_pressed_callback_(inactive_view_pressed_callback) {
   start_contents_view_ =
       AddChildView(std::make_unique<ContentsWebView>(browser_context));
+
+  resize_area_ = AddChildView(std::make_unique<MultiContentsResizeArea>(this));
+  resize_area_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kPreferred));
+  resize_area_->SetVisible(false);
+
   end_contents_view_ =
       AddChildView(std::make_unique<ContentsWebView>(browser_context));
   end_contents_view_->SetVisible(false);
@@ -51,6 +60,12 @@ void MultiContentsView::SetWebContents(content::WebContents* web_contents,
       active ? GetActiveContentsView() : GetInactiveContentsView();
   contents_view->SetWebContents(web_contents);
   contents_view->SetVisible(web_contents != nullptr);
+
+  if (start_contents_view_->GetVisible() && end_contents_view_->GetVisible()) {
+    resize_area_->SetVisible(true);
+  } else {
+    resize_area_->SetVisible(false);
+  }
 }
 
 ContentsWebView* MultiContentsView::SetActivePosition(int position) {
@@ -77,6 +92,10 @@ bool MultiContentsView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
   // Always allow the event to propagate to the WebContents, regardless of
   // whether it was also handled above.
   return false;
+}
+
+void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
+  // TODO(crbug.com/393450761): Implement this.
 }
 
 BEGIN_METADATA(MultiContentsView)

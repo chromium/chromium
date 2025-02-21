@@ -247,6 +247,7 @@ void WorkerFetchContext::PopulateResourceRequestBeforeCacheAccess(
   if (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled()) {
     ModifyRequestForMixedContentUpgrade(request);
   }
+  request.SetTopFrameOrigin(GetTopFrameOrigin());
 }
 
 void WorkerFetchContext::WillSendRequest(ResourceRequest& request) {
@@ -262,11 +263,10 @@ void WorkerFetchContext::UpgradeResourceRequestForLoader(
     const std::optional<float> resource_width,
     ResourceRequest& out_request,
     const ResourceLoaderOptions& options) {
-  if (!GetResourceFetcherProperties().IsDetached())
+  if (!GetResourceFetcherProperties().IsDetached()) {
     probe::SetDevToolsIds(Probe(), out_request, options.initiator_info);
+  }
   SetFirstPartyCookie(out_request);
-  if (!out_request.TopFrameOrigin())
-    out_request.SetTopFrameOrigin(GetTopFrameOrigin());
 }
 
 const FeatureContext* WorkerFetchContext::GetFeatureContext() const {

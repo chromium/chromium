@@ -72,6 +72,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -458,6 +459,10 @@ class AttributionDataHostManagerImpl::RegistrationContext {
     return suitable_context_.is_context_google_amp_viewer();
   }
 
+  ukm::SourceId ukm_source_id() const {
+    return suitable_context_.ukm_source_id();
+  }
+
   RegistrationMethod GetRegistrationMethod(
       bool was_fetched_via_service_worker) const {
     switch (method_) {
@@ -654,6 +659,8 @@ class AttributionDataHostManagerImpl::Registrations {
   bool is_within_fenced_frame() const {
     return context_.is_within_fenced_frame();
   }
+
+  ukm::SourceId ukm_source_id() const { return context_.ukm_source_id(); }
 
   bool IsReadyToProcess() const {
     if (waiting_on_navigation_) {
@@ -1761,7 +1768,8 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   attribution_manager_->HandleSource(
       StorableSource(std::move(reporting_origin), std::move(data),
                      /*source_origin=*/context->context_origin(), source_type,
-                     context->is_within_fenced_frame()),
+                     context->is_within_fenced_frame(),
+                     context->ukm_source_id()),
       context->render_frame_id());
 }
 
@@ -1795,7 +1803,8 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   attribution_manager_->HandleTrigger(
       AttributionTrigger(std::move(reporting_origin), std::move(data),
                          /*destination_origin=*/context->context_origin(),
-                         context->is_within_fenced_frame()),
+                         context->is_within_fenced_frame(),
+                         context->ukm_source_id()),
       context->render_frame_id());
 }
 
@@ -1989,7 +1998,8 @@ AttributionDataHostManagerImpl::HandleParsedWebSource(
   attribution_manager_->HandleSource(
       StorableSource(std::move(pending_decode.reporting_origin),
                      std::move(registration), registrations.context_origin(),
-                     source_type, registrations.is_within_fenced_frame()),
+                     source_type, registrations.is_within_fenced_frame(),
+                     registrations.ukm_source_id()),
       registrations.render_frame_id());
 
   return base::ok();
@@ -2012,7 +2022,8 @@ AttributionDataHostManagerImpl::HandleParsedWebTrigger(
       AttributionTrigger(std::move(pending_decode.reporting_origin),
                          std::move(registration),
                          /*destination_origin=*/registrations.context_origin(),
-                         registrations.is_within_fenced_frame()),
+                         registrations.is_within_fenced_frame(),
+                         registrations.ukm_source_id()),
       registrations.render_frame_id());
 
   return base::ok();

@@ -64,6 +64,11 @@ chromium-metrics-reviews@google.com.
     The page was eligible for the nudge, but the user was currently being
     presented the IPH.
   </int>
+  <int value="10"
+      label="The nudge was not shown as the user already has the feature
+             window open.">
+    The page was eligible for the nudge, but the user was currently
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:NudgeDecision) -->

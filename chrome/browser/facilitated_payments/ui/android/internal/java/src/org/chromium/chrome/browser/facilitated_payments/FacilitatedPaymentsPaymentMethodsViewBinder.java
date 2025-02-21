@@ -5,8 +5,7 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_DRAWABLE_ID;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_ICON_BITMAP;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_ICON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_SUMMARY;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_TRANSACTION_LIMIT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
@@ -236,8 +235,7 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
         } else if (propertyKey == BANK_NAME
                 || propertyKey == BANK_ACCOUNT_SUMMARY
                 || propertyKey == BANK_ACCOUNT_TRANSACTION_LIMIT
-                || propertyKey == BANK_ACCOUNT_DRAWABLE_ID
-                || propertyKey == BANK_ACCOUNT_ICON_BITMAP
+                || propertyKey == BANK_ACCOUNT_ICON
                 || propertyKey == ACCOUNT_DISPLAY_NAME
                 || propertyKey == EWALLET_ICON_BITMAP
                 || propertyKey == EWALLET_NAME

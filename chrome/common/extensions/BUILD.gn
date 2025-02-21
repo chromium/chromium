@@ -55,7 +55,6 @@ source_set("extensions") {
 
   public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/common:buildflags",
     "//chrome/common/extensions/api",
     "//components/services/app_service/public/cpp:app_types",

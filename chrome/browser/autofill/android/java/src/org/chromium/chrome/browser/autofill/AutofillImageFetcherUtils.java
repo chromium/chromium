@@ -20,7 +20,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.url.GURL;
 
 /** Helper methods to treat Autofill images. */
-final class AutofillImageFetcherUtils {
+public final class AutofillImageFetcherUtils {
     private AutofillImageFetcherUtils() {}
 
     /**
@@ -121,7 +121,7 @@ final class AutofillImageFetcherUtils {
      * @param url A FIFE URL to fetch the image.
      * @return {@link GURL} formatted with the required image size.
      */
-    static GURL getPixAccountImageUrlWithParams(GURL url) {
+    public static GURL getPixAccountImageUrlWithParams(GURL url) {
         @Px int logoSize = getPixelSize(R.dimen.square_card_icon_side_length);
         StringBuilder output = new StringBuilder(url.getSpec());
         output.append("=w").append(logoSize).append("-h").append(logoSize);

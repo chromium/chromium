@@ -32,7 +32,7 @@
 #include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
 #include "ui/aura/window.h"
 #endif
@@ -65,7 +65,7 @@ class BrowserWidgetFocusSupplier
 
  protected:
   views::Widget::Widgets GetAllWidgets() const override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // On Ash, this call is required to include shell/desktop widgets in
     // addition to other widgets - see documentation in widget_test_aura.cc.
     views::Widget::Widgets result;

@@ -218,7 +218,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
     [_contentView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
   ]];
 
-  [CWVWebView setUserAgentProduct:@"Dummy/1.0"];
+  CWVGlobalState.sharedInstance.userAgentProduct = @"Dummy/1.0";
   CWVWebView.chromeContextMenuEnabled = YES;
 
   CWVWebView.webInspectorEnabled = YES;

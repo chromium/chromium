@@ -55,7 +55,7 @@ CRYPTO_EXPORT void Hash(HashKind kind,
 
 // A streaming hasher interface. Calling Finish() resets the hash context to the
 // initial state after computing the digest.
-class Hasher {
+class CRYPTO_EXPORT Hasher {
  public:
   explicit Hasher(HashKind kind);
   Hasher(const Hasher& other);

@@ -968,15 +968,6 @@ public class PersonalDataManager implements Destroyable {
         PersonalDataManagerJni.get().recordAndLogCreditCardUse(mPersonalDataManagerAndroid, guid);
     }
 
-    protected void clearImageDataForTesting() {
-        if (mImageFetcher == null) {
-            return;
-        }
-
-        ThreadUtils.assertOnUiThread();
-        mImageFetcher.clearCachedImagesForTesting();
-    }
-
     /**
      * Determines whether the logged in user (if any) is eligible to store Autofill address profiles
      * to their account.
@@ -1171,24 +1162,6 @@ public class PersonalDataManager implements Destroyable {
     public Optional<Bitmap> getCustomImageForAutofillSuggestionIfAvailable(
             GURL customImageUrl, AutofillUiUtils.CardIconSpecs cardIconSpecs) {
         return mImageFetcher.getImageIfAvailable(customImageUrl, cardIconSpecs);
-    }
-
-    /**
-     * Requests the Pix account image for the given URL from image fetcher.
-     *
-     * @param url URL for the image.
-     * @return Bitmap image if found in the local cache, else return an empty object.
-     */
-    public Optional<Bitmap> getPixAccountImageIfAvailable(GURL url) {
-        return mImageFetcher.getPixAccountImageIfAvailable(url);
-    }
-
-    /**
-     * Returns the {@link AutofillImageFetcher} that is used to download and cache icons for payment
-     * methods.
-     */
-    public AutofillImageFetcher getImageFetcherForTesting() {
-        return mImageFetcher;
     }
 
     public void setImageFetcherForTesting(ImageFetcher imageFetcher) {

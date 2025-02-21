@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/threading/thread.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"  // nogncheck
 #include "content/browser/presentation/presentation_service_impl.h"  // nogncheck
@@ -215,6 +216,8 @@ void PresentationServiceTestcase::NextAction() {
 }
 
 void PresentationServiceTestcase::SetUp() {
+  base::test::AllowCheckIsTestForTesting();
+
   RenderViewHostTestHarness::SetUp();
 
   base::RunLoop run_loop;

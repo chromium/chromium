@@ -23,10 +23,6 @@ bool IsBrowserGlicCompatible(Profile* profile, Browser* browser);
 // state and on windows includes a occlusion check.
 bool IsBrowserInForeground(Browser* browser);
 
-// Returns whether any normal browser is in the foreground. Uses the same
-// semantics for determining foreground.
-bool IsAnyBrowserInForeground();
-
 // Observes changes to what value FindBrowserForAttachment() would return.
 class BrowserAttachObserver {
  public:

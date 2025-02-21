@@ -6,7 +6,7 @@
   const {session, dp} = await testRunner.startBlank('Tests screen work area.');
 
   const HttpInterceptor =
-      await testRunner.loadScript('../helpers/http-interceptor.js');
+      await testRunner.loadScriptAbsolute('../resources/http-interceptor.js');
   const httpInterceptor = await (new HttpInterceptor(testRunner, dp)).init();
 
   httpInterceptor.setDisableRequestedUrlsLogging(true);

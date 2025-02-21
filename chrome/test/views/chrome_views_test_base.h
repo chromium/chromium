@@ -5,8 +5,6 @@
 #ifndef CHROME_TEST_VIEWS_CHROME_VIEWS_TEST_BASE_H_
 #define CHROME_TEST_VIEWS_CHROME_VIEWS_TEST_BASE_H_
 
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/views/test/views_test_base.h"
 
 // A base class for Chrome views unit tests. Changes the dependencies when they

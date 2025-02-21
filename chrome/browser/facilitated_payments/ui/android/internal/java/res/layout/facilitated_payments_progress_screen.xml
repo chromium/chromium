@@ -14,6 +14,7 @@ found in the LICENSE file.
     android:layout_marginTop="@dimen/facilitated_payments_progress_screen_margin_top">
 
     <ImageView
+        android:id="@+id/gpay_icon"
         android:layout_width="@dimen/facilitated_payments_gpay_icon_width"
         android:layout_height="@dimen/facilitated_payments_gpay_icon_height"
         android:layout_centerHorizontal="true"
@@ -23,7 +24,6 @@ found in the LICENSE file.
         android:contentDescription="@string/facilitated_payments_google_pay"
         android:focusable="true" />
 
-    <!-- TODO: b/348142430 - Make the track for the progress spinner visible. -->
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
@@ -51,5 +51,6 @@ found in the LICENSE file.
         android:textAlignment="center"
         android:text="@string/pix_payment_progress_screen_message"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-        android:focusable="true" />
+        android:focusable="true"
+        android:accessibilityTraversalBefore="@id/gpay_icon" />
 </RelativeLayout>

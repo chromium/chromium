@@ -4,17 +4,22 @@
 
 #include "chrome/updater/update_usage_stats_task.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
 #include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 
@@ -22,7 +27,8 @@ namespace updater {
 
 namespace {
 
-bool AppUsageStatsAllowed(UpdaterScope scope, const std::wstring& app_id) {
+bool AppAllowsUsageStats(UpdaterScope scope, const std::string& id) {
+  const std::wstring& app_id = base::UTF8ToWide(id);
   DWORD usagestats = 0;
   if (IsSystemInstall(scope) &&
       base::win::RegKey(UpdaterScopeToHKeyRoot(scope),
@@ -41,52 +47,65 @@ bool AppUsageStatsAllowed(UpdaterScope scope, const std::wstring& app_id) {
   return false;
 }
 
-}  // namespace
+bool AppInVectorAllowsUsageStats(UpdaterScope scope,
+                                 const std::vector<std::string>& app_ids) {
+  return std::ranges::any_of(app_ids, [&scope](const std::string& app_id) {
+    return AppAllowsUsageStats(scope, app_id);
+  });
+}
 
-bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
-                               UpdaterScope scope) {
-  for (auto app_id : app_ids) {
-    if (IsUpdaterOrCompanionApp(app_id)) {
-      continue;
-    }
+// Returns all app ids which are not the Updater or CECA.
+std::vector<std::string> FilterOtherAppIds(std::vector<std::string> app_ids) {
+  app_ids.erase(std::remove_if(app_ids.begin(), app_ids.end(),
+                               [](const std::string& app_id) {
+                                 return IsUpdaterOrCompanionApp(app_id);
+                               }),
+                app_ids.end());
+  return app_ids;
+}
 
-    if (AppUsageStatsAllowed(scope, base::UTF8ToWide(app_id))) {
-      VLOG(2) << "usagestats enabled by app " << app_id;
-      return true;
+std::vector<std::string> GetAppIdsForScope(UpdaterScope scope) {
+  const HKEY root = UpdaterScopeToHKeyRoot(scope);
+  std::vector<std::wstring> subkeys;
+  if (IsSystemInstall(scope)) {
+    subkeys.push_back(CLIENT_STATE_MEDIUM_KEY);
+  }
+  subkeys.push_back(CLIENT_STATE_KEY);
+
+  std::vector<std::string> app_ids;
+  for (const auto& subkey : subkeys) {
+    for (base::win::RegistryKeyIterator it(root, subkey.c_str(),
+                                           KEY_WOW64_32KEY);
+         it.Valid(); ++it) {
+      app_ids.push_back(base::WideToUTF8(it.Name()));
     }
   }
 
-  VLOG(2) << "No app enables usagestats.";
-  return false;
+  return app_ids;
 }
 
-bool AreRawUsageStatsEnabled(
-    UpdaterScope scope,
-    const std::vector<std::string>& include_only_these_app_ids) {
-  return OtherAppUsageStatsAllowed(
-      [&] {
-        const HKEY root = UpdaterScopeToHKeyRoot(scope);
-        std::vector<std::wstring> subkeys;
-        if (IsSystemInstall(scope)) {
-          subkeys.push_back(CLIENT_STATE_MEDIUM_KEY);
-        }
-        subkeys.push_back(CLIENT_STATE_KEY);
-        std::vector<std::string> app_ids;
-        for (const auto& subkey : subkeys) {
-          for (base::win::RegistryKeyIterator it(root, subkey.c_str(),
-                                                 KEY_WOW64_32KEY);
-               it.Valid(); ++it) {
-            const std::string app_id = base::WideToUTF8(it.Name());
-            if (include_only_these_app_ids.empty() ||
-                base::Contains(include_only_these_app_ids, app_id)) {
-              app_ids.push_back(app_id);
-            }
-          }
-        }
+}  // namespace
 
-        return app_ids;
-      }(),
-      scope);
+// Check the registry to see if an app besides the Updater and Companion app
+// support usage stat reporting.
+bool AnyAppUsageStatsAllowed(UpdaterScope scope) {
+  bool allowed = AppInVectorAllowsUsageStats(
+      scope, FilterOtherAppIds(GetAppIdsForScope(scope)));
+  VLOG(2) << (allowed ? "usagestats enabled by another app"
+                      : "no app enables usagestats");
+  return allowed;
+}
+
+void UpdateUsageStatsTask::Run(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&AppInVectorAllowsUsageStats, scope_,
+                     FilterOtherAppIds(persisted_data_->GetAppIds())),
+      base::BindOnce(&UpdateUsageStatsTask::SetUsageStatsEnabled, this,
+                     persisted_data_)
+          .Then(std::move(callback)));
 }
 
 }  // namespace updater

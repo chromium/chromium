@@ -4,6 +4,8 @@
 
 #include "ash/system/mahi/mahi_utils.h"
 
+#include <cstddef>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -66,7 +68,12 @@ bool ShouldShowFeedbackButton() {
 
   // PrefService might be null in tests. In that case the feedback buttons
   // should be shown by default.
-  return prefs ? prefs->GetBoolean(prefs::kHmrFeedbackAllowed) : true;
+  if (prefs == nullptr) {
+    return true;
+  }
+
+  return prefs->GetInteger(prefs::kHmrManagedSettings) ==
+         static_cast<int>(HmrEnterprisePolicy::kAllowedWithModelImprovement);
 }
 
 SkPath GetCutoutClipPath(const gfx::Size& contents_size) {

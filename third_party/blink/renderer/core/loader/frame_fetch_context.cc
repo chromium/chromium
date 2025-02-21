@@ -170,30 +170,35 @@ const AtomicString SerializeBoolHeader(const bool value) {
 }
 
 mojom::FetchCacheMode DetermineFrameCacheMode(Frame* frame) {
-  if (!frame)
+  if (!frame) {
     return mojom::FetchCacheMode::kDefault;
+  }
   auto* local_frame = DynamicTo<LocalFrame>(frame);
-  if (!local_frame)
+  if (!local_frame) {
     return DetermineFrameCacheMode(frame->Tree().Parent());
+  }
 
   // Does not propagate cache policy for subresources after the load event.
   // TODO(toyoshim): We should be able to remove following parents' policy check
   // if each frame has a relevant WebFrameLoadType for reload and history
   // navigations.
-  if (local_frame->GetDocument()->LoadEventFinished())
+  if (local_frame->GetDocument()->LoadEventFinished()) {
     return mojom::FetchCacheMode::kDefault;
+  }
 
   // Respects BypassingCache rather than parent's policy.
   WebFrameLoadType load_type =
       local_frame->Loader().GetDocumentLoader()->LoadType();
-  if (load_type == WebFrameLoadType::kReloadBypassingCache)
+  if (load_type == WebFrameLoadType::kReloadBypassingCache) {
     return mojom::FetchCacheMode::kBypassCache;
+  }
 
   // Respects parent's policy if it has a special one.
   mojom::FetchCacheMode parent_cache_mode =
       DetermineFrameCacheMode(frame->Tree().Parent());
-  if (parent_cache_mode != mojom::FetchCacheMode::kDefault)
+  if (parent_cache_mode != mojom::FetchCacheMode::kDefault) {
     return parent_cache_mode;
+  }
 
   // Otherwise, follows WebFrameLoadType.
   switch (load_type) {
@@ -320,15 +325,17 @@ FrameFetchContext::FrameFetchContext(
       document_(document) {}
 
 net::SiteForCookies FrameFetchContext::GetSiteForCookies() const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return frozen_state_->site_for_cookies;
+  }
   return document_->SiteForCookies();
 }
 
 scoped_refptr<const SecurityOrigin> FrameFetchContext::GetTopFrameOrigin()
     const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return frozen_state_->top_frame_origin;
+  }
   return document_->TopFrameOrigin();
 }
 
@@ -350,8 +357,9 @@ void FrameFetchContext::AddLcpPredictedCallback(base::OnceClosure callback) {
 }
 
 SubresourceFilter* FrameFetchContext::GetSubresourceFilter() const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return nullptr;
+  }
   return document_loader_->GetSubresourceFilter();
 }
 
@@ -371,8 +379,9 @@ mojom::FetchCacheMode FrameFetchContext::ResourceRequestCachePolicy(
     const ResourceRequest& request,
     ResourceType type,
     FetchParameters::DeferOption defer) const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return mojom::FetchCacheMode::kDefault;
+  }
 
   DCHECK(GetFrame());
   const auto cache_mode = DetermineFrameCacheMode(GetFrame());
@@ -395,19 +404,11 @@ void FrameFetchContext::PrepareRequest(
   // this is called during redirect.
   const bool for_redirect = request.GetRedirectInfo().has_value();
 
-  if (request.GetRequestContext() ==
-      mojom::blink::RequestContextType::SERVICE_WORKER) {
-    // The top frame origin is defined to be null for service worker main
-    // resource requests.
-    DCHECK(!request.TopFrameOrigin());
-  } else {
-    request.SetTopFrameOrigin(GetTopFrameOrigin());
-  }
-
   request.SetHTTPUserAgent(AtomicString(GetUserAgent()));
 
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return;
+  }
 
   request.SetUkmSourceId(document_->UkmSourceID());
   request.SetStorageAccessApiStatus(
@@ -455,8 +456,9 @@ void FrameFetchContext::AddResourceTiming(
     const AtomicString& initiator_type) {
   // Normally, |document_| is cleared on Document shutdown. In that case,
   // early return, as there is nothing to report the resource timing to.
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return;
+  }
 
   // Timing for main resource is handled in DocumentLoader.
   // All other resources are reported to the corresponding Document.
@@ -465,8 +467,9 @@ void FrameFetchContext::AddResourceTiming(
 }
 
 bool FrameFetchContext::AllowImage() const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return true;
+  }
 
   bool images_enabled = GetFrame()->ImagesEnabled();
   if (!images_enabled) {
@@ -479,8 +482,9 @@ bool FrameFetchContext::AllowImage() const {
 
 void FrameFetchContext::ModifyRequestForMixedContentUpgrade(
     ResourceRequest& resource_request) {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return;
+  }
 
   GetFrame()->Loader().ModifyRequestForCSP(
       resource_request,
@@ -497,8 +501,9 @@ void FrameFetchContext::AddClientHintsIfNecessary(
 
   // If the feature is enabled, then client hints are allowed only on secure
   // URLs.
-  if (!ClientHintsPreferences::IsClientHintsAllowed(request.Url()))
+  if (!ClientHintsPreferences::IsClientHintsAllowed(request.Url())) {
     return;
+  }
 
   // Check if |url| is allowed to run JavaScript. If not, client hints are not
   // attached to the requests that initiate on the render side.
@@ -782,8 +787,9 @@ void FrameFetchContext::AddReducedAcceptLanguageIfNecessary(
     return;
   }
 
-  if (!request.Url().ProtocolIsInHTTPFamily())
+  if (!request.Url().ProtocolIsInHTTPFamily()) {
     return;
+  }
 
   const String& reduced_accept_language = GetReducedAcceptLanguage();
   if (!reduced_accept_language.empty() &&
@@ -839,6 +845,14 @@ void FrameFetchContext::PopulateResourceRequestBeforeCacheAccess(
           GetFrame()->GetAttributionSrcLoader()) {
     request.SetAttributionReportingSupport(
         attribution_src_loader->GetSupport());
+  }
+  if (request.GetRequestContext() ==
+      mojom::blink::RequestContextType::SERVICE_WORKER) {
+    // The top frame origin is defined to be null for service worker main
+    // resource requests.
+    CHECK(!request.TopFrameOrigin());
+  } else {
+    request.SetTopFrameOrigin(GetTopFrameOrigin());
   }
 }
 
@@ -903,8 +917,9 @@ bool FrameFetchContext::StartSpeculativeImageDecode(
 }
 
 bool FrameFetchContext::IsPrerendering() const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return frozen_state_->is_prerendering;
+  }
   return document_->IsPrerendering();
 }
 
@@ -936,8 +951,9 @@ void FrameFetchContext::SetFirstPartyCookie(ResourceRequest& request) {
   // Set the first party for cookies url if it has not been set yet (new
   // requests). This value will be updated during redirects, consistent with
   // https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site-00#section-2.1.1?
-  if (!request.SiteForCookiesSet())
+  if (!request.SiteForCookiesSet()) {
     request.SetSiteForCookies(GetSiteForCookies());
+  }
 }
 
 bool FrameFetchContext::AllowScript() const {
@@ -953,8 +969,9 @@ bool FrameFetchContext::AllowScript() const {
 
 bool FrameFetchContext::IsFirstPartyOrigin(
     const SecurityOrigin* resource_origin) const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return false;
+  }
 
   return GetFrame()
       ->Tree()
@@ -965,8 +982,9 @@ bool FrameFetchContext::IsFirstPartyOrigin(
 }
 
 bool FrameFetchContext::ShouldBlockRequestByInspector(const KURL& url) const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return false;
+  }
   bool should_block_request = false;
   probe::ShouldBlockRequest(Probe(), url, &should_block_request);
   return should_block_request;
@@ -977,37 +995,42 @@ void FrameFetchContext::DispatchDidBlockRequest(
     const ResourceLoaderOptions& options,
     ResourceRequestBlockedReason blocked_reason,
     ResourceType resource_type) const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return;
+  }
   probe::DidBlockRequest(Probe(), resource_request, document_loader_, Url(),
                          options, blocked_reason, resource_type);
 }
 
 ContentSecurityPolicy* FrameFetchContext::GetContentSecurityPolicyForWorld(
     const DOMWrapperWorld* world) const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return frozen_state_->content_security_policy.Get();
+  }
 
   return document_->GetExecutionContext()->GetContentSecurityPolicyForWorld(
       world);
 }
 
 bool FrameFetchContext::IsIsolatedSVGChromeClient() const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return frozen_state_->is_isolated_svg_chrome_client;
+  }
 
   return GetFrame()->GetChromeClient().IsIsolatedSVGChromeClient();
 }
 
 void FrameFetchContext::CountUsage(WebFeature feature) const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return;
+  }
   document_loader_->GetUseCounter().Count(feature, GetFrame());
 }
 
 void FrameFetchContext::CountDeprecation(WebFeature feature) const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return;
+  }
   Deprecation::CountDeprecation(document_->domWindow(), feature);
 }
 
@@ -1026,8 +1049,9 @@ FrameFetchContext::CreateWebSocketHandshakeThrottle() {
     // TODO(yhirano): Implement the detached case.
     return nullptr;
   }
-  if (!GetFrame())
+  if (!GetFrame()) {
     return nullptr;
+  }
   return WebFrame::FromCoreFrame(GetFrame())
       ->ToWebLocalFrame()
       ->Client()
@@ -1060,8 +1084,9 @@ bool FrameFetchContext::ShouldBlockFetchAsCredentialedSubresource(
     const ResourceRequest& resource_request,
     const KURL& url) const {
   // URLs with no embedded credentials should load correctly.
-  if (url.User().empty() && url.Pass().empty())
+  if (url.User().empty() && url.Pass().empty()) {
     return false;
+  }
 
   if (resource_request.GetRequestContext() ==
       mojom::blink::RequestContextType::XML_HTTP_REQUEST) {
@@ -1086,40 +1111,46 @@ bool FrameFetchContext::ShouldBlockFetchAsCredentialedSubresource(
 }
 
 const KURL& FrameFetchContext::Url() const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return frozen_state_->url;
+  }
   return document_->Url();
 }
 
 ContentSecurityPolicy* FrameFetchContext::GetContentSecurityPolicy() const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return frozen_state_->content_security_policy.Get();
+  }
   return document_->domWindow()->GetContentSecurityPolicy();
 }
 
 WebContentSettingsClient* FrameFetchContext::GetContentSettingsClient() const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return nullptr;
+  }
   return GetFrame()->GetContentSettingsClient();
 }
 
 Settings* FrameFetchContext::GetSettings() const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return nullptr;
+  }
   DCHECK(GetFrame());
   return GetFrame()->GetSettings();
 }
 
 String FrameFetchContext::GetUserAgent() const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return frozen_state_->user_agent;
+  }
   return GetFrame()->Loader().UserAgent();
 }
 
 std::optional<UserAgentMetadata> FrameFetchContext::GetUserAgentMetadata()
     const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return frozen_state_->user_agent_metadata;
+  }
   return GetLocalFrameClient()->UserAgentMetadata();
 }
 
@@ -1149,16 +1180,18 @@ void FrameFetchContext::AddCSPHashReport(
 
 const ClientHintsPreferences FrameFetchContext::GetClientHintsPreferences()
     const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return frozen_state_->client_hints_preferences;
+  }
   LocalFrame* frame = document_->GetFrame();
   DCHECK(frame);
   return frame->GetClientHintsPreferences();
 }
 
 String FrameFetchContext::GetReducedAcceptLanguage() const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return frozen_state_->reduced_accept_language;
+  }
   LocalFrame* frame = document_->GetFrame();
   DCHECK(frame);
   // If accept language override from inspector emulation, set Accept-Language
@@ -1174,14 +1207,16 @@ String FrameFetchContext::GetReducedAcceptLanguage() const {
 }
 
 float FrameFetchContext::GetDevicePixelRatio() const {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return frozen_state_->device_pixel_ratio;
+  }
   return document_->DevicePixelRatio();
 }
 
 FetchContext* FrameFetchContext::Detach() {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return this;
+  }
 
   // As we completed the reduction in the user-agent, the reduced User-Agent
   // string returns from GetUserAgent() should also be set on the User-Agent
@@ -1228,15 +1263,17 @@ bool FrameFetchContext::CalculateIfAdSubresource(
 
 void FrameFetchContext::DidObserveLoadingBehavior(
     LoadingBehaviorFlag behavior) {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return;
+  }
   GetFrame()->Loader().GetDocumentLoader()->DidObserveLoadingBehavior(behavior);
 }
 
 std::unique_ptr<ResourceLoadInfoNotifierWrapper>
 FrameFetchContext::CreateResourceLoadInfoNotifierWrapper() {
-  if (GetResourceFetcherProperties().IsDetached())
+  if (GetResourceFetcherProperties().IsDetached()) {
     return nullptr;
+  }
   return GetLocalFrameClient()->CreateResourceLoadInfoNotifierWrapper();
 }
 

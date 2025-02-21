@@ -361,7 +361,6 @@ source_set("lib") {
     ":automation_client_lib",
     "//base",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//chrome/common:constants",
     "//chrome/common:version_header",
     "//chrome/test/chromedriver/constants:version_header",
@@ -443,7 +442,6 @@ if (is_linux) {
     deps = [
       ":automation_client_lib",
       ":lib",
-      "//build:chromeos_buildflags",
       "//build/win:default_exe_manifest",
       "//mojo/core/embedder",
       "//net",
@@ -623,7 +621,6 @@ test("chromedriver_unittests") {
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chrome/common",
     "//mojo/core/embedder",
     "//net",

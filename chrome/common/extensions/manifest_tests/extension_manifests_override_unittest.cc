@@ -4,7 +4,7 @@
 
 #include <algorithm>
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "extensions/common/manifest_constants.h"
@@ -39,7 +39,7 @@ TEST_F(URLOverridesManifestTest, Override) {
 
   // "keyboard" property is only available on ChromeOS Ash.
   extension = LoadAndExpectSuccess("override_keyboard_page.json");
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(extension->url().spec() + "a_page.html",
             extensions::URLOverrides::GetChromeURLOverrides(extension.get())
                 .find("keyboard")

@@ -512,8 +512,11 @@ class WaitingForSyncAndDataSharingGroup
   WaitingForSyncAndDataSharingGroup(StateId id,
                                     CollaborationController* controller)
       : ControllerState(id, controller) {
-    // TODO(crbug.com/373403973): Add timeout waiting for sync and data sharing
-    // service.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&WaitingForSyncAndDataSharingGroup::HandleError,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::Seconds(10));
     tab_group_sync_observer_.Observe(controller->tab_group_sync_service());
     data_sharing_observer_.Observe(controller->data_sharing_service());
   }

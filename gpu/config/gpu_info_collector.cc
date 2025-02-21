@@ -309,7 +309,6 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
   adapter_options.backendType = wgpu::BackendType::Vulkan;
 #endif
 
-  bool supports_shader_f16 = false;
   for (dawn::native::Adapter& nativeAdapter :
        instance->EnumerateAdapters(&adapter_options)) {
     nativeAdapter.SetUseTieredLimits(false);
@@ -349,9 +348,6 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
       adapter_type = info.adapterType;
     }
 #endif  // WGPU_BREAKING_CHANGE_FLATTEN_LIMITS
-
-    supports_shader_f16 |=
-        wgpu::Adapter(adapter.Get()).HasFeature(wgpu::FeatureName::ShaderF16);
   }
 
   bool has_gpu_adapter = adapter_type != wgpu::AdapterType::Unknown;
@@ -366,9 +362,6 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
     base::UmaHistogramCounts100000(
         "GPU.WebGPU.MaxTextureDimension2D." + adapter_string,
         max_limits.maxTextureDimension2D);
-
-    base::UmaHistogramBoolean("GPU.WebGPU.Support.ShaderF16",
-                              supports_shader_f16);
   }
 }
 

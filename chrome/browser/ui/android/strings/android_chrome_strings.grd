@@ -1039,6 +1039,11 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Notifications
       </message>
 
+      <!-- Appearance settings -->
+      <message name="IDS_APPEARANCE_SETTINGS" desc="Title for Appearance settings.">
+        Appearance
+      </message>
+
       <!-- Themes settings -->
       <message name="IDS_THEME_SETTINGS" desc="Title for the Theme settings. [CHAR_LIMIT=32]">
         Theme

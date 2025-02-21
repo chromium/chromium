@@ -47,6 +47,10 @@ std::vector<LocalTabID> EmptyTabGroupSyncDelegate::GetLocalTabIdsForTabGroup(
   return std::vector<LocalTabID>();
 }
 
+std::set<LocalTabID> EmptyTabGroupSyncDelegate::GetSelectedTabs() {
+  return std::set<LocalTabID>();
+}
+
 std::u16string EmptyTabGroupSyncDelegate::GetTabTitle(
     const LocalTabID& local_tab_id) {
   return std::u16string();

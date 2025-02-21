@@ -24,6 +24,7 @@
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
+#include "media/gpu/chromeos/default_video_frame_converter.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/frame_registry.h"
 #include "media/gpu/chromeos/image_processor.h"
@@ -133,45 +134,6 @@ int GetMaxNumDecoderInstances(const gpu::GpuDriverBugWorkarounds& workarounds) {
   return kDefaultMaxNumDecoderInstances;
 }
 
-// DefaultFrameConverter uses the FrameResource built-in converters to handle
-// conversion to VideoFrame objects. It is used by VideoDecoderPipeline when a
-// client doesn't specify a FrameConverter.
-class DefaultFrameConverter : public FrameResourceConverter {
- public:
-  static std::unique_ptr<FrameResourceConverter> Create() {
-    return base::WrapUnique<FrameResourceConverter>(
-        new DefaultFrameConverter());
-  }
-
-  DefaultFrameConverter(const DefaultFrameConverter&) = delete;
-  DefaultFrameConverter& operator=(const DefaultFrameConverter&) = delete;
-
- private:
-  DefaultFrameConverter() = default;
-  ~DefaultFrameConverter() override = default;
-
-  // FrameConverter overrides.
-  void ConvertFrameImpl(scoped_refptr<FrameResource> frame) override {
-    DVLOGF(4);
-
-    if (!frame) {
-      return OnError(FROM_HERE, "Invalid frame.");
-    }
-    LOG_ASSERT(frame->AsVideoFrameResource() ||
-               frame->AsNativePixmapFrameResource())
-        << "|frame| is expected to be a VideoFrameResource or "
-           "NativePixmapFrameResource";
-    scoped_refptr<VideoFrame> video_frame =
-        frame->AsVideoFrameResource()
-            ? frame->AsVideoFrameResource()->GetMutableVideoFrame()
-            : frame->AsNativePixmapFrameResource()->CreateVideoFrame();
-    if (!video_frame) {
-      return OnError(FROM_HERE,
-                     "Failed to convert FrameResource to VideoFrame.");
-    }
-    Output(std::move(video_frame));
-  }
-};
 }  //  namespace
 
 VideoDecoderMixin::VideoDecoderMixin(

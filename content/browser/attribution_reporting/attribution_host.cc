@@ -235,6 +235,16 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
     if (navigation_handle->HasCommitted()) {
       primary_main_frame_data_ = PrimaryMainFrameData();
+
+      // Note that we cache the UKM source ID of the most recently navigated
+      // primary page as a workaround for prerendered pages.
+      // `RenderFrameHost::GetPageUkmSourceId()` would return the UKM source ID
+      // for the prerendering navigation even after the page is activated which
+      // is not associated with any URL for privacy reasons. See
+      // //content/browser/preloading/prerender/README.md#ukm-source-ids for
+      // more details.
+      primary_main_frame_data_->ukm_source_id =
+          navigation_handle->GetNextPageUkmSourceId();
     }
   }
 

@@ -2800,6 +2800,80 @@ Called by update_net_error_codes.py.-->
   <int value="40" label="Open in new window"/>
 </enum>
 
+<!-- LINT.IfChange(ConversionCreateAggregatableReportStatus) -->
+
+<enum name="ConversionCreateAggregatableReportStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Internal error"/>
+  <int value="2" label="No capacity for conversion destination"/>
+  <int value="3" label="No matching impressions"/>
+  <int value="4" label="Excessive attributions"/>
+  <int value="5" label="Excessive reporting origins"/>
+  <int value="6" label="No histograms created"/>
+  <int value="7" label="Insufficient aggregatable budget"/>
+  <int value="8" label="No matching source filter data"/>
+  <int value="9" label="Not registered"/>
+  <int value="10" label="Prohibited by browser policy"/>
+  <int value="11" label="Deduplicated"/>
+  <int value="12" label="Report window has passed"/>
+  <int value="13" label="Excessive reports"/>
+  <int value="14" label="Insufficient aggregatable named budget"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/aggregatable_result.mojom:AggregatableResult) -->
+
+<!-- LINT.IfChange(ConversionStorageCreateReportStatus) -->
+
+<enum name="ConversionStorageCreateReportStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Success, but dropped lower-priority report"/>
+  <int value="2" label="Internal error"/>
+  <int value="3" label="No capacity for conversion destination"/>
+  <int value="4" label="No matching impressions"/>
+  <int value="5" label="Deduplicated against existing report"/>
+  <int value="6" label="Excessive attributions"/>
+  <int value="7" label="Priority lower than existing reports"/>
+  <int value="8" label="Source never attributed (noised)"/>
+  <int value="9" label="Excessive reporting origins"/>
+  <int value="10" label="No matching source filter data"/>
+  <int value="11" label="Prohibited by browser policy"/>
+  <int value="12" label="No matching configurations"/>
+  <int value="13" label="Excessive reports"/>
+  <int value="14" label="Falsely attributed source"/>
+  <int value="15" label="Report window has passed"/>
+  <int value="16" label="Not registered"/>
+  <int value="17" label="Report window has not started"/>
+  <int value="18" label="No matching trigger data"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/event_level_result.mojom:EventLevelResult) -->
+
+<!-- LINT.IfChange(ConversionStorageSourceStatus) -->
+
+<enum name="ConversionStorageSourceStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Internal error"/>
+  <int value="2" label="No capacity for source site"/>
+  <int value="3" label="Excessive unique destination sites"/>
+  <int value="4" label="Excessive reporting orgins"/>
+  <int value="5" label="Prohibited by browser policy"/>
+  <int value="6" label="Success but noise applied"/>
+  <int value="7" label="Excessive destinations (per-reporting rate-limit)"/>
+  <int value="8" label="Excessive destinations (global rate-limit)"/>
+  <int value="9" label="Excessive destinations (both rate-limits)"/>
+  <int value="10" label="Excessive reporting origins per site limit"/>
+  <int value="11" label="Excessive channel capacity"/>
+  <int value="12"
+      label="(Obsolete) Event Report Windows start time is invalid. Removed
+             in 2023/10."/>
+  <int value="13" label="Excessive trigger state cardinality"/>
+  <int value="14" label="Excessive destinations (per reporting site per day)"/>
+  <int value="15" label="Excessive scopes channel capacity"/>
+  <int value="16" label="Excessive trigger event states"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/store_source_result.mojom:StoreSourceResult) -->
+
 <enum name="CookieAccessType">
   <int value="-1" label="Unknown cookie access"/>
   <int value="0" label="Did not read or write any cookies"/>
@@ -10054,6 +10128,7 @@ from previous Chrome versions.
   <int value="-1615376061"
       label="ShowRelatedWebsiteSetsPermissionGrants:disabled"/>
   <int value="-1614912400" label="enable-link-disambiguation-popup"/>
+  <int value="-1614343801" label="UseNewEtc1Encoder:enabled"/>
   <int value="-1613863020" label="MlUrlScoreCaching:enabled"/>
   <int value="-1613833640" label="ClipboardHistoryWebContentsPaste:disabled"/>
   <int value="-1613583483" label="UseNewAcceptLanguageHeader:enabled"/>
@@ -19221,6 +19296,7 @@ from previous Chrome versions.
   <int value="1968199744" label="PrintJobManagementApp:disabled"/>
   <int value="1969604362" label="enable-pinch-virtual-viewport"/>
   <int value="1969860311" label="DynamicColorGamut:enabled"/>
+  <int value="1970371579" label="UseNewEtc1Encoder:disabled"/>
   <int value="1971436110" label="PasswordsInCredMan:enabled"/>
   <int value="1971472561" label="CrostiniImeSupport:disabled"/>
   <int value="1971964569" label="NewEncodeCpuLoadEstimator:disabled"/>
@@ -20798,6 +20874,7 @@ Called by update_net_error_codes.py.-->
   <int value="192" label="OnTask content removed from bundle"/>
   <int value="193" label="Scanner action executing"/>
   <int value="194" label="Chrome App deprecation"/>
+  <int value="196" label="Spotlight session start countdown"/>
 </enum>
 
 <enum name="NQEObservationSource">
@@ -25536,6 +25613,8 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Last session did not end (obsolete)"/>
 </enum>
 
+<!-- LINT.IfChange(TriggerHelpUIResult) -->
+
 <enum name="TriggerHelpUIResult">
   <int value="0" label="SUCCESS"/>
   <int value="1" label="FAILURE"/>
@@ -25551,7 +25630,10 @@ Called by update_net_error_codes.py.-->
   <int value="11" label="FAILURE_AVAILABILITY_PRECONDITION_UNMET"/>
   <int value="12" label="SUCCESS_TRACKING_ONLY"/>
   <int value="13" label="FAILURE_DISPLAY_LOCK"/>
+  <int value="14" label="FAILURE_GROUPS_PRECONDITION_UNMET"/>
 </enum>
+
+<!--LINT.ThenChange(//components/feature_engagement/internal/stats.h:TriggerHelpUIResult) -->
 
 <enum name="TrustedWebActivityQualityEnforcementViolationType">
   <int value="0" label="Error 404"/>

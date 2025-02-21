@@ -47516,6 +47516,12 @@ should be able to be added at any place in this file.
   <suffix name="DataSaverMilestonePromo"
       label="For DataSaverMilestonePromo feature."/>
   <suffix name="DataSaverPreview" label="For DataSaverPreview feature."/>
+  <suffix name="DefaultBrowserPromoMagicStack"
+      label="For Default browser promo in Magic Stack."/>
+  <suffix name="DefaultBrowserPromoMessages"
+      label="For Default browser promo with messages on omnibox paste."/>
+  <suffix name="DefaultBrowserPromoSettingCard"
+      label="For Default browser promo in Chrome settings."/>
   <suffix name="DefaultSiteView" label="For DefaultSiteView feature."/>
   <suffix name="DesktopCustomizeChrome" label="For Customize Chrome feature."/>
   <suffix name="DesktopCustomizeChromeRefresh"
@@ -47632,6 +47638,8 @@ should be able to be added at any place in this file.
       label="For iOSContextualPanelSampleModel feature"/>
   <suffix name="iOSDefaultBrowserBadgeEligibility"
       label="For iOSDefaultBrowserBadgeEligibility feature"/>
+  <suffix name="iOSDefaultBrowserBannerPromoFeature"
+      label="For iOS Default browser banner promo."/>
   <suffix name="iOSDefaultBrowserOverflowMenuBadge"
       label="For iOSDefaultBrowserOverflowMenuBadge feature"/>
   <suffix name="iOSDefaultBrowserSettingsBadge"
@@ -47641,6 +47649,8 @@ should be able to be added at any place in this file.
   <suffix name="iOSDockingPromoFeature" label="For iOSDockingPromo feature"/>
   <suffix name="iOSDockingPromoRemindMeLaterFeature"
       label="For iOSDockingPromoRemindMeLater feature"/>
+  <suffix name="iOSDownloadAutoDeletion"
+      label="For iOS Auto-deletion half-sheet IPH."/>
   <suffix name="iOSHistoryOnOverflowMenuFeature"
       label="For iOSHistoryOnOverflowMenuFeature feature"/>
   <suffix name="iOSInlineEnhancedSafeBrowsingPromoFeature"
@@ -47701,19 +47711,6 @@ should be able to be added at any place in this file.
       label="For iOSSwipeToolbarToChangeTabFeature feature"/>
   <suffix name="iOSTabGridSwipeRightForIncognito"
       label="For iOSTabGridSwipeRightForIncognito feature"/>
-  <suffix name="IPH_AutofillPredictionImprovements"
-      label="For giving users information on how to turn on prediction
-             improvements."/>
-  <suffix name="IPH_DefaultBrowserPromoMagicStack"
-      label="For Default browser promo in Magic Stack."/>
-  <suffix name="IPH_DefaultBrowserPromoMessages"
-      label="For Default browser promo with messages on omnibox paste."/>
-  <suffix name="IPH_DefaultBrowserPromoSettingCard"
-      label="For Default browser promo in Chrome settings."/>
-  <suffix name="IPH_iOSDefaultBrowserBannerPromoFeature"
-      label="For iOS Default browser banner promo."/>
-  <suffix name="IPH_iOSDownloadAutoDeletionFeature"
-      label="For iOS Auto-deletion half-sheet IPH."/>
   <suffix name="KeyboardAccessoryAddressFilling"
       label="For KeyboardAccessoryAddressFilling feature."/>
   <suffix name="KeyboardAccessoryBarSwiping"

@@ -91,6 +91,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void Maximize() override;
   void Minimize() override;
   void Restore() override;
+  void ShowWindowControlsMenu(const gfx::Point& point) override;
   void Activate() override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;

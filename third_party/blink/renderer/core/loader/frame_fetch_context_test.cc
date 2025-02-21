@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_request_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
@@ -166,6 +167,20 @@ class FixedPolicySubresourceFilter : public WebDocumentSubresourceFilter {
  private:
   const LoadPolicy policy_;
   int* filtered_load_counter_;
+};
+
+class TestResourceRequestContext : public ResourceRequestContext {
+  STACK_ALLOCATED();
+
+ public:
+  ~TestResourceRequestContext() override = default;
+
+  // ResourceRequestContext overrides:
+  ResourceLoadPriority ComputeLoadPriority(
+      const FetchParameters& params) override {
+    return ResourceLoadPriority::kMedium;
+  }
+  void RecordTrace() override {}
 };
 
 class FrameFetchContextTest : public testing::Test {
@@ -1599,6 +1614,31 @@ TEST_F(FrameFetchContextTest, TopFrameOriginDetached) {
   dummy_page_holder = nullptr;
 
   EXPECT_EQ(origin, GetTopFrameOrigin());
+}
+
+TEST_F(FrameFetchContextTest, SetTopFrameOriginBeforeCacheAccess) {
+  const KURL document_url("https://www2.example.com/foo/bar");
+  RecreateFetchContext(document_url);
+  const SecurityOrigin* origin = document->domWindow()->GetSecurityOrigin();
+
+  const KURL url("https://www.example.com/hoge/fuga");
+  ResourceRequest request(url);
+  request.SetRequestorOrigin(origin);
+
+  TestResourceRequestContext request_context;
+  FetchParameters fetch_parameters =
+      FetchParameters::CreateForTest(std::move(request));
+
+  std::optional<ResourceRequestBlockedReason> block_reason =
+      PrepareResourceRequestForCacheAccess(
+          ResourceType::kImage,
+          GetFetchContext()
+              ->GetResourceFetcherProperties()
+              .GetFetchClientSettingsObject(),
+          /*bundle_url_for_uuid_resources=*/KURL(), request_context,
+          *GetFetchContext(), fetch_parameters);
+  EXPECT_EQ(std::nullopt, block_reason);
+  EXPECT_EQ(origin, fetch_parameters.GetResourceRequest().TopFrameOrigin());
 }
 
 // Tests that CanRequestCanRequestBasedOnSubresourceFilterOnly will block ads

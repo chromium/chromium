@@ -116,59 +116,8 @@ void TextMetrics::Update(const Font* font,
   text_ = text;
   font_ = font;
   direction_ = direction;
-  runs_with_offset_.clear();
-  if (!RuntimeEnabledFeatures::Canvas2dTextMetricsShapingEnabled()) {
-    // If not enabled, Font::Width is called, which causes a shaping via
-    // CachingWordShaper. Since we still need the ShapeResult objects, these are
-    // lazily created the first time they are required.
-    shaping_needed_ = true;
-  }
 
-  // x direction
-  // Run bidi algorithm on the given text. Step 5 of:
-  // https://html.spec.whatwg.org/multipage/canvas.html#text-preparation-algorithm
-  gfx::RectF glyph_bounds;
-  String text16 = text;
-  text16.Ensure16Bit();
-  BidiParagraph bidi;
-  bidi.SetParagraph(text16, direction);
-  BidiParagraph::Runs runs;
-  bidi.GetVisualRuns(text16, &runs);
-  float xpos = 0;
-  runs_with_offset_.reserve(runs.size());
-  for (const auto& run : runs) {
-    // Measure each run.
-    TextRun text_run(StringView(text, run.start, run.Length()), run.Direction(),
-                     /* directional_override */ false,
-                     /* normalize_space */ true);
-
-    // Save the run for computing additional metrics. Whether we calculate the
-    // ShapeResult objects right away, or lazily when needed, depends on the
-    // Canvas2dTextMetricsShaping feature.
-    RunWithOffset run_with_offset = {
-        .shape_result_ = nullptr,
-        .text_ = text_run.ToStringView().ToString(),
-        .direction_ = run.Direction(),
-        .character_offset_ = run.start,
-        .num_characters_ = run.Length(),
-        .x_position_ = xpos};
-
-    float run_width;
-    gfx::RectF run_glyph_bounds;
-    if (RuntimeEnabledFeatures::Canvas2dTextMetricsShapingEnabled()) {
-      run_with_offset.shape_result_ = ShapeWord(text_run, *font);
-      run_width = run_with_offset.shape_result_->Width();
-      run_glyph_bounds = run_with_offset.shape_result_->ComputeInkBounds();
-    } else {
-      run_width = font->Width(text_run, &run_glyph_bounds);
-    }
-    runs_with_offset_.push_back(run_with_offset);
-
-    // Accumulate the position and the glyph bounding box.
-    run_glyph_bounds.Offset(xpos, 0);
-    glyph_bounds.Union(run_glyph_bounds);
-    xpos += run_width;
-  }
+  auto [xpos, glyph_bounds] = MeasureRuns();
   double real_width = xpos;
   width_ = real_width;
 
@@ -229,6 +178,65 @@ void TextMetrics::Update(const Font* font,
   } else {
     baselines_->setIdeographic(-descent - baseline_y);
   }
+}
+
+std::pair<float, gfx::RectF> TextMetrics::MeasureRuns() {
+  runs_with_offset_.clear();
+
+  if (!RuntimeEnabledFeatures::Canvas2dTextMetricsShapingEnabled()) {
+    // If not enabled, Font::Width is called, which causes a shaping via
+    // CachingWordShaper. Since we still need the ShapeResult objects, these are
+    // lazily created the first time they are required.
+    shaping_needed_ = true;
+  }
+
+  // x direction
+  // Run bidi algorithm on the given text. Step 5 of:
+  // https://html.spec.whatwg.org/multipage/canvas.html#text-preparation-algorithm
+  gfx::RectF glyph_bounds;
+  String text16 = text_;
+  text16.Ensure16Bit();
+  BidiParagraph bidi;
+  bidi.SetParagraph(text16, direction_);
+  BidiParagraph::Runs runs;
+  bidi.GetVisualRuns(text16, &runs);
+  float xpos = 0;
+  runs_with_offset_.reserve(runs.size());
+  for (const auto& run : runs) {
+    // Measure each run.
+    TextRun text_run(StringView(text_, run.start, run.Length()),
+                     run.Direction(),
+                     /* directional_override */ false,
+                     /* normalize_space */ true);
+
+    // Save the run for computing additional metrics. Whether we calculate the
+    // ShapeResult objects right away, or lazily when needed, depends on the
+    // Canvas2dTextMetricsShaping feature.
+    RunWithOffset run_with_offset = {
+        .shape_result_ = nullptr,
+        .text_ = text_run.ToStringView().ToString(),
+        .direction_ = run.Direction(),
+        .character_offset_ = run.start,
+        .num_characters_ = run.Length(),
+        .x_position_ = xpos};
+
+    float run_width;
+    gfx::RectF run_glyph_bounds;
+    if (RuntimeEnabledFeatures::Canvas2dTextMetricsShapingEnabled()) {
+      run_with_offset.shape_result_ = ShapeWord(text_run, *font_);
+      run_width = run_with_offset.shape_result_->Width();
+      run_glyph_bounds = run_with_offset.shape_result_->ComputeInkBounds();
+    } else {
+      run_width = font_->Width(text_run, &run_glyph_bounds);
+    }
+    runs_with_offset_.push_back(run_with_offset);
+
+    // Accumulate the position and the glyph bounding box.
+    run_glyph_bounds.Offset(xpos, 0);
+    glyph_bounds.Union(run_glyph_bounds);
+    xpos += run_width;
+  }
+  return {xpos, glyph_bounds};
 }
 
 void TextMetrics::ShapeTextIfNeeded() {

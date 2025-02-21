@@ -132,21 +132,22 @@ public class BookmarkManagerCoordinator
      * bookmark models and jni bridges.
      *
      * @param context The current {@link Context} used to obtain resources or inflate views.
-     * @param openBookmarkComponentName The component to use when opening a bookmark.
      * @param isDialogUi Whether the main bookmarks UI will be shown in a dialog, not a NativePage.
      * @param snackbarManager The {@link SnackbarManager} used to display snackbars.
      * @param profile The profile which the manager is running in.
      * @param bookmarkUiPrefs Manages prefs for bookmarks ui.
-     * @param bookmarkOpenedCallback Callback that's run when a bookamrk is opened.
+     * @param bookmarkOpener Helper class to open bookmarks.
+     * @param openBookmarkComponentName The component to use when opening a bookmark, can be null on
+     *     tablets.
      */
     public BookmarkManagerCoordinator(
-            Context context,
-            ComponentName openBookmarkComponentName,
+            @NonNull Context context,
             boolean isDialogUi,
-            SnackbarManager snackbarManager,
-            Profile profile,
-            BookmarkUiPrefs bookmarkUiPrefs,
-            @Nullable Runnable bookmarkOpenedCallback) {
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull Profile profile,
+            @NonNull BookmarkUiPrefs bookmarkUiPrefs,
+            @NonNull BookmarkOpener bookmarkOpener,
+            @Nullable ComponentName openBookmarkComponentName) {
         mContext = context;
         mProfile = profile;
         mImageFetcher =
@@ -158,9 +159,7 @@ public class BookmarkManagerCoordinator
 
         mMainView = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.bookmark_main, null);
         mBookmarkModel = BookmarkModel.getForProfile(profile);
-        mBookmarkOpener =
-                new BookmarkOpener(
-                        mBookmarkModel, context, openBookmarkComponentName, bookmarkOpenedCallback);
+        mBookmarkOpener = bookmarkOpener;
         ShoppingService service = ShoppingServiceFactory.getForProfile(profile);
         if (CommerceFeatureUtils.isShoppingListEligible(service)) {
             service.scheduleSavedProductUpdate();

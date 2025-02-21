@@ -40,6 +40,8 @@ class TabGroupSyncCoordinatorImpl : public TabGroupSyncCoordinator {
   void DisconnectLocalTabGroup(const LocalTabGroupID& local_id) override;
   std::unique_ptr<ScopedLocalObservationPauser>
   CreateScopedLocalObserverPauser() override;
+  std::set<LocalTabID> GetSelectedTabs() override;
+  std::u16string GetTabTitle(const LocalTabID& local_tab_id) override;
 
   // TabGroupSyncService::Observer methods.
   void OnInitialized() override;

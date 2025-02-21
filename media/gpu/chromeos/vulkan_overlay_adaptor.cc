@@ -1044,8 +1044,8 @@ void VulkanOverlayAdaptor::Process(gpu::VulkanImage& in_image,
         out_image.format() == VK_FORMAT_A2R10G10B10_UNORM_PACK32);
   // This is plausible enough under normal circumstances so we don't want to
   // crash with CHECK, but greater than 4K overlays are currently unsupported.
-  if (static_cast<int>(display_rect.width()) >= out_image.size().width() ||
-      static_cast<int>(display_rect.height()) >= out_image.size().width()) {
+  if (static_cast<int>(display_rect.width()) > out_image.size().width() ||
+      static_cast<int>(display_rect.height()) > out_image.size().height()) {
     LOG(ERROR) << "Unsupported protected content overlay size: "
                << display_rect.ToString();
     return;

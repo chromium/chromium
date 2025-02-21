@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 // A base class providing construction of javascript testing assets.

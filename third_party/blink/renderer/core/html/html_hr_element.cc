@@ -132,6 +132,11 @@ void HTMLHRElement::CollectStyleForPresentationAttribute(
 }
 
 HTMLSelectElement* HTMLHRElement::OwnerSelectElement() const {
+  if (HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
+    DCHECK_EQ(owner_select_,
+              HTMLSelectElement::NearestAncestorSelectNoNesting(*this));
+    return owner_select_;
+  }
   if (!parentNode())
     return nullptr;
   if (auto* select = DynamicTo<HTMLSelectElement>(*parentNode()))
@@ -144,26 +149,53 @@ HTMLSelectElement* HTMLHRElement::OwnerSelectElement() const {
 Node::InsertionNotificationRequest HTMLHRElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
-  if (HTMLSelectElement* select = OwnerSelectElement()) {
-    if (&insertion_point == select ||
-        (IsA<HTMLOptGroupElement>(insertion_point) &&
-         insertion_point.parentNode() == select))
-      select->HrInsertedOrRemoved(*this);
+  if (HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
+    owner_select_ = HTMLSelectElement::NearestAncestorSelectNoNesting(*this);
+    if (owner_select_) {
+      owner_select_->HrInsertedOrRemoved(*this);
+    }
+  } else {
+    if (HTMLSelectElement* select = OwnerSelectElement()) {
+      if (&insertion_point == select ||
+          (IsA<HTMLOptGroupElement>(insertion_point) &&
+           insertion_point.parentNode() == select)) {
+        select->HrInsertedOrRemoved(*this);
+      }
+    }
   }
   return kInsertionDone;
 }
 
 void HTMLHRElement::RemovedFrom(ContainerNode& insertion_point) {
-  if (auto* select = DynamicTo<HTMLSelectElement>(insertion_point)) {
-    if (!parentNode() || IsA<HTMLOptGroupElement>(*parentNode()))
-      select->HrInsertedOrRemoved(*this);
-  } else if (IsA<HTMLOptGroupElement>(insertion_point)) {
-    Node* parent = insertion_point.parentNode();
-    select = DynamicTo<HTMLSelectElement>(parent);
-    if (select)
-      select->HrInsertedOrRemoved(*this);
-  }
   HTMLElement::RemovedFrom(insertion_point);
+  if (HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
+    HTMLSelectElement* new_ancestor_select =
+        HTMLSelectElement::NearestAncestorSelectNoNesting(*this);
+    if (owner_select_ != new_ancestor_select) {
+      // When removing, we can only lose an associated <select>
+      CHECK(owner_select_);
+      CHECK(!new_ancestor_select);
+      owner_select_->HrInsertedOrRemoved(*this);
+      owner_select_ = new_ancestor_select;
+    }
+  } else {
+    if (auto* select = DynamicTo<HTMLSelectElement>(insertion_point)) {
+      if (!parentNode() || IsA<HTMLOptGroupElement>(*parentNode())) {
+        select->HrInsertedOrRemoved(*this);
+      }
+    } else if (IsA<HTMLOptGroupElement>(insertion_point)) {
+      Node* parent = insertion_point.parentNode();
+      select = DynamicTo<HTMLSelectElement>(parent);
+      if (select) {
+        select->HrInsertedOrRemoved(*this);
+      }
+    }
+  }
+}
+
+void HTMLHRElement::Trace(Visitor* visitor) const {
+  HTMLElement::Trace(visitor);
+  visitor->Trace(owner_select_);
 }
 
 }  // namespace blink

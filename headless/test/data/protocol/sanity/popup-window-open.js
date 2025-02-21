@@ -10,8 +10,8 @@
       (await testRunner.browserP().Target.attachToBrowserTarget({})).result;
   const bp = (new TestRunner.Session(testRunner, sessionId)).protocol;
 
-  const HttpInterceptor = await testRunner.loadScript(
-    '../helpers/http-interceptor.js');
+  const HttpInterceptor =
+      await testRunner.loadScriptAbsolute('../resources/http-interceptor.js');
   const httpInterceptor = await (new HttpInterceptor(testRunner, bp)).init();
 
   httpInterceptor.setDisableRequestedUrlsLogging(true);

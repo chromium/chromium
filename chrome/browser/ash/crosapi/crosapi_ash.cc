@@ -69,9 +69,7 @@
 #include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
 #include "chrome/browser/ash/crosapi/suggestion_service_ash.h"
-#include "chrome/browser/ash/crosapi/time_zone_service_ash.h"
 #include "chrome/browser/ash/crosapi/virtual_keyboard_ash.h"
-#include "chrome/browser/ash/crosapi/volume_manager_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_kiosk_service_ash.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -236,11 +234,9 @@ CrosapiAsh::CrosapiAsh()
       structured_metrics_service_ash_(
           std::make_unique<StructuredMetricsServiceAsh>()),
       suggestion_service_ash_(std::make_unique<SuggestionServiceAsh>()),
-      time_zone_service_ash_(std::make_unique<TimeZoneServiceAsh>()),
       video_conference_manager_ash_(
           std::make_unique<ash::VideoConferenceManagerAsh>()),
       virtual_keyboard_ash_(std::make_unique<VirtualKeyboardAsh>()),
-      volume_manager_ash_(std::make_unique<VolumeManagerAsh>()),
       vpn_service_ash_(std::make_unique<VpnServiceAsh>()),
       web_kiosk_service_ash_(std::make_unique<WebKioskServiceAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
@@ -689,11 +685,6 @@ void CrosapiAsh::BindTelemetryProbeService(
   probe_service_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindTimeZoneService(
-    mojo::PendingReceiver<mojom::TimeZoneService> receiver) {
-  time_zone_service_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindVideoCaptureDeviceFactory(
     mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver) {
   content::GetVideoCaptureService().BindVideoCaptureDeviceFactory(
@@ -703,16 +694,6 @@ void CrosapiAsh::BindVideoCaptureDeviceFactory(
 void CrosapiAsh::BindVirtualKeyboard(
     mojo::PendingReceiver<mojom::VirtualKeyboard> receiver) {
   virtual_keyboard_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindVolumeManager(
-    mojo::PendingReceiver<crosapi::mojom::VolumeManager> receiver) {
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  Profile* profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
-  volume_manager_ash_->SetProfile(profile);
-  volume_manager_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindVpnService(

@@ -436,8 +436,6 @@ class DeviceAPIServiceIwaTest : public DeviceAPIServiceWebAppTest {
   std::unique_ptr<ScopedNaClBrowserDelegate> nacl_browser_delegate_;
 #endif  // BUILDFLAG(ENABLE_NACL)
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kIsolatedWebApps};
   std::optional<web_app::IsolatedWebAppUrlInfo> url_info_;
 };
 

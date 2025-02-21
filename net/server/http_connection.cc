@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/server/http_connection.h"
 
+#include <ranges>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -34,7 +30,7 @@ int HttpConnection::ReadIOBuffer::GetCapacity() const {
 }
 
 void HttpConnection::ReadIOBuffer::SetCapacity(int capacity) {
-  DCHECK_LE(GetSize(), capacity);
+  CHECK_LE(base_->offset(), capacity);
   // Clear current span to avoid warning about dangling pointer, as
   // SetCapacity() may destroy the old buffer.
   ClearSpan();
@@ -46,7 +42,7 @@ bool HttpConnection::ReadIOBuffer::IncreaseCapacity() {
   if (GetCapacity() >= max_buffer_size_) {
     LOG(ERROR) << "Too large read data is pending: capacity=" << GetCapacity()
                << ", max_buffer_size=" << max_buffer_size_
-               << ", read=" << GetSize();
+               << ", read=" << base_->offset();
     return false;
   }
 
@@ -57,12 +53,8 @@ bool HttpConnection::ReadIOBuffer::IncreaseCapacity() {
   return true;
 }
 
-char* HttpConnection::ReadIOBuffer::StartOfBuffer() const {
-  return base::as_writable_chars(base_->everything()).data();
-}
-
-int HttpConnection::ReadIOBuffer::GetSize() const {
-  return base_->offset();
+base::span<const uint8_t> HttpConnection::ReadIOBuffer::readable_bytes() const {
+  return base_->span_before_offset();
 }
 
 void HttpConnection::ReadIOBuffer::DidRead(int bytes) {
@@ -76,12 +68,16 @@ int HttpConnection::ReadIOBuffer::RemainingCapacity() const {
 }
 
 void HttpConnection::ReadIOBuffer::DidConsume(int bytes) {
-  int previous_size = GetSize();
+  int previous_size = base_->offset();
   int unconsumed_size = previous_size - bytes;
   DCHECK_LE(0, unconsumed_size);
   if (unconsumed_size > 0) {
-    // Move unconsumed data to the start of buffer.
-    memmove(StartOfBuffer(), StartOfBuffer() + bytes, unconsumed_size);
+    // Move unconsumed data to the start of buffer. readable_bytes() returns a
+    // read-only buffer, so need to call the non-constant overload in the base
+    // class instead, to get a writeable span.
+    base::span<uint8_t> buffer = base_->span_before_offset();
+    std::ranges::copy(buffer.subspan(base::checked_cast<size_t>(bytes)),
+                      buffer.begin());
   }
   base_->set_offset(unconsumed_size);
   SetSpan(base_->span());

@@ -5,13 +5,15 @@
 #include "chromeos/ash/components/boca/on_task/notification_constants.h"
 
 #include "base/containers/flat_set.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_notification_constants.h"
 
 namespace ash::boca {
 
 base::flat_set<std::string> GetAllowlistedNotificationIdsForLockedMode() {
   return {kOnTaskEnterLockedModeNotificationId, kOnTaskSessionEndNotificationId,
           kOnTaskBundleContentAddedNotificationId,
-          kOnTaskBundleContentRemovedNotificationId};
+          kOnTaskBundleContentRemovedNotificationId,
+          kSpotlightStartedNotificationId};
 }
 
 }  // namespace ash::boca

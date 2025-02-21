@@ -27,6 +27,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.settings.MainSettings.PREF_APPEARANCE;
+import static org.chromium.chrome.browser.settings.MainSettings.PREF_TOOLBAR_SHORTCUT;
+import static org.chromium.chrome.browser.settings.MainSettings.PREF_UI_THEME;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
@@ -72,6 +76,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
+import org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragment;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
@@ -107,6 +112,7 @@ import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
+import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
@@ -302,13 +308,6 @@ public class MainSettingsFragmentTest {
                     mMainSettings.findPreference(MainSettings.PREF_NOTIFICATIONS));
         }
         assertSettingsExists(MainSettings.PREF_HOMEPAGE, HomepageSettings.class);
-
-        Preference themePref =
-                assertSettingsExists(MainSettings.PREF_UI_THEME, ThemeSettingsFragment.class);
-        Assert.assertEquals(
-                "ThemeSettingsEntry is missing.",
-                ThemeSettingsEntry.SETTINGS,
-                themePref.getExtras().getInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY));
 
         // Verification for summary for the search engine and the homepage
         Assert.assertEquals(
@@ -1051,6 +1050,29 @@ public class MainSettingsFragmentTest {
         Assert.assertNotNull(
                 "Settings promo preference exist when feature flag is enabled", preference);
         Assert.assertTrue("Settings promo card is not showing", preference.isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_APPEARANCE_SETTINGS)
+    public void testAppearanceSettingsEnabled() {
+        startSettings();
+        assertSettingsExists(PREF_APPEARANCE, AppearanceSettingsFragment.class);
+        Assert.assertNull(mMainSettings.findPreference(PREF_TOOLBAR_SHORTCUT));
+        Assert.assertNull(mMainSettings.findPreference(PREF_UI_THEME));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_APPEARANCE_SETTINGS)
+    public void testAppearanceSettingsDisabled() {
+        startSettings();
+        Assert.assertNull(mMainSettings.findPreference(PREF_APPEARANCE));
+        assertSettingsExists(PREF_TOOLBAR_SHORTCUT, AdaptiveToolbarSettingsFragment.class);
+        final var themePref = assertSettingsExists(PREF_UI_THEME, ThemeSettingsFragment.class);
+        Assert.assertEquals(
+                ThemeSettingsEntry.SETTINGS,
+                themePref.getExtras().getInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY));
     }
 
     private void startSettings() {

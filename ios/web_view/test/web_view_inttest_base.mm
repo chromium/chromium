@@ -103,10 +103,13 @@ std::unique_ptr<net::test_server::HttpResponse> TestRequestHandler(
 
 namespace ios_web_view {
 
-WebViewInttestBase::WebViewInttestBase()
-    : web_view_(test::CreateWebView()),
-      test_server_(std::make_unique<net::EmbeddedTestServer>(
-          net::test_server::EmbeddedTestServer::TYPE_HTTP)) {
+WebViewInttestBase::WebViewInttestBase() {
+  // Explicitly start global state machinery before accessing any CWV APIs.
+  [[CWVGlobalState sharedInstance] start];
+
+  web_view_ = test::CreateWebView();
+  test_server_ = std::make_unique<net::EmbeddedTestServer>(
+      net::test_server::EmbeddedTestServer::TYPE_HTTP);
   // The WKWebView must be present in the view hierarchy in order to prevent
   // WebKit optimizations which may pause internal parts of the web view
   // without notice. Work around this by adding the view directly.

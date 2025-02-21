@@ -230,9 +230,8 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProvider,
     TRACE_EVENT0("blink",
                  "CanvasResourceProviderSharedBitmap::CreateSkSurface");
 
-    const auto info = GetSkImageInfo().makeAlphaType(kPremul_SkAlphaType);
     const auto props = GetSkSurfaceProps();
-    return SkSurfaces::Raster(info, &props);
+    return SkSurfaces::Raster(GetSkImageInfo(), &props);
   }
   ~CanvasResourceProviderSharedBitmap() override {
     if (shared_image_interface_provider_) {

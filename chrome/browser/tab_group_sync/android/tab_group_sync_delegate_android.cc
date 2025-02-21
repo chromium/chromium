@@ -66,6 +66,17 @@ std::vector<LocalTabID> TabGroupSyncDelegateAndroid::GetLocalTabIdsForTabGroup(
   return std::vector<LocalTabID>();
 }
 
+std::set<LocalTabID> TabGroupSyncDelegateAndroid::GetSelectedTabs() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto j_selected_tabs_array =
+      Java_TabGroupSyncDelegate_getSelectedTabs(env, java_obj_);
+  std::vector<int> selected_tabs_vector;
+  base::android::JavaIntArrayToIntVector(env, j_selected_tabs_array,
+                                         &selected_tabs_vector);
+  return std::set<LocalTabID>(selected_tabs_vector.begin(),
+                              selected_tabs_vector.end());
+}
+
 std::u16string TabGroupSyncDelegateAndroid::GetTabTitle(
     const LocalTabID& local_tab_id) {
   JNIEnv* env = base::android::AttachCurrentThread();

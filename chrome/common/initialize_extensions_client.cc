@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/common/extensions/chrome_extensions_client.h"
 #include "chrome/common/extensions/webstore_override.h"
 #include "extensions/buildflags/buildflags.h"

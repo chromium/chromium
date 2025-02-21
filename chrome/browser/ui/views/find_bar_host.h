@@ -95,6 +95,7 @@ class FindBarHost : public FindBar,
   bool HasGlobalFindPasteboard() const override;
   void UpdateFindBarForChangedWebContents() override;
   const FindBarTesting* GetFindBarTesting() const override;
+  bool HasFocus() const override;
 
   // Overridden from ui::AcceleratorTarget
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

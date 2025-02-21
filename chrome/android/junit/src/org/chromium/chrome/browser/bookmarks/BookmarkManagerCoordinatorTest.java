@@ -80,6 +80,7 @@ public class BookmarkManagerCoordinatorTest {
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private ShoppingService mShoppingService;
     @Mock private ReauthenticatorBridge mReauthenticatorMock;
+    @Mock private BookmarkOpener mBookmarkOpener;
 
     private Activity mActivity;
     private BookmarkManagerCoordinator mCoordinator;
@@ -113,13 +114,13 @@ public class BookmarkManagerCoordinatorTest {
                             mCoordinator =
                                     new BookmarkManagerCoordinator(
                                             mActivity,
-                                            /* openBookmarkComponentName= */ null,
                                             /* isDialogUi= */ !DeviceFormFactor
                                                     .isNonMultiDisplayContextOnTablet(mActivity),
                                             mSnackbarManager,
                                             mProfile,
                                             mBookmarkUiPrefs,
-                                            /* bookmarkOpenedCallback= */ null);
+                                            mBookmarkOpener,
+                                            /* openBookmarkComponentName= */ null);
                             mActivity.setContentView(mCoordinator.getView());
                         });
     }

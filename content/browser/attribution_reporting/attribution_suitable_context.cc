@@ -24,7 +24,9 @@
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace content {
@@ -33,12 +35,26 @@ namespace {
 
 using attribution_reporting::SuitableOrigin;
 
+bool UkmSourceIdAllowed(RenderFrameHostImpl* rfh) {
+  return rfh->GetLifecycleState() !=
+         RenderFrameHost::LifecycleState::kPrerendering;
+}
+
 }  // namespace
 
 // static
 std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
-    GlobalRenderFrameHostId initiator_frame_id) {
-  return Create(RenderFrameHostImpl::FromID(initiator_frame_id));
+    NavigationHandle* navigation_handle) {
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
+      navigation_handle->GetRenderFrameHost());
+  std::optional<AttributionSuitableContext> context = Create(rfh);
+  // Override the UKM source ID from the associated ongoing navigation handle as
+  // `AttributionHost::GetPageUkmSourceId()` is not updated until the navigation
+  // finishes.
+  if (context && UkmSourceIdAllowed(rfh)) {
+    context->ukm_source_id_ = navigation_handle->GetNextPageUkmSourceId();
+  }
+  return context;
 }
 
 // static
@@ -104,6 +120,9 @@ std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
       !url_matcher::util::GetGoogleAmpViewerEmbeddedURL(
            initiator_root_frame->GetLastCommittedURL())
            .is_empty(),
+      UkmSourceIdAllowed(initiator_root_frame)
+          ? attribution_host->GetPageUkmSourceId()
+          : ukm::kInvalidSourceId,
       data_host_manager->AsWeakPtr());
 }
 
@@ -116,11 +135,12 @@ AttributionSuitableContext AttributionSuitableContext::CreateForTesting(
     AttributionInputEvent last_input_event,
     ContentBrowserClient::AttributionReportingOsRegistrars os_registrars,
     AttributionDataHostManager* attribution_data_host_manager,
-    bool is_context_google_amp_viewer) {
+    bool is_context_google_amp_viewer,
+    ukm::SourceId ukm_source_id) {
   return AttributionSuitableContext(
       std::move(context_origin), is_nested_within_fenced_frame,
       root_render_frame_id, last_navigation_id, last_input_event, os_registrars,
-      is_context_google_amp_viewer,
+      is_context_google_amp_viewer, ukm_source_id,
       attribution_data_host_manager ? attribution_data_host_manager->AsWeakPtr()
                                     : nullptr);
 }
@@ -147,6 +167,7 @@ AttributionSuitableContext::AttributionSuitableContext(
     AttributionInputEvent last_input_event,
     ContentBrowserClient::AttributionReportingOsRegistrars os_registrars,
     bool is_context_google_amp_viewer,
+    ukm::SourceId ukm_source_id,
     base::WeakPtr<AttributionDataHostManager> attribution_data_host_manager)
     : context_origin_(std::move(context_origin)),
       is_nested_within_fenced_frame_(is_nested_within_fenced_frame),
@@ -155,6 +176,7 @@ AttributionSuitableContext::AttributionSuitableContext(
       last_input_event_(std::move(last_input_event)),
       os_registrars_(os_registrars),
       is_context_google_amp_viewer_(is_context_google_amp_viewer),
+      ukm_source_id_(ukm_source_id),
       attribution_data_host_manager_(attribution_data_host_manager) {}
 
 AttributionSuitableContext::AttributionSuitableContext(

@@ -276,7 +276,7 @@ uint64_t FetchLaterUtil::GetAvailableDeferredFetchQuota(Frame* frame,
   // 1. Let controlDocument be document’s deferred-fetch control document.
   // 2. Let navigable be controlDocument’s node navigable.
   // NOTE: The wording "controlDocument" means `control_frame->GetDocument()`.
-  auto* control_frame = FetchLaterUtil::GetDeferredFetchControlFrame(frame);
+  Frame* control_frame = FetchLaterUtil::GetDeferredFetchControlFrame(frame);
 
   uint64_t quota = GetReservedDeferredFetchQuota(control_frame);
 
@@ -286,7 +286,7 @@ uint64_t FetchLaterUtil::GetAvailableDeferredFetchQuota(Frame* frame,
 
   // 8. For each navigable in controlDocument’s node navigable’s inclusive
   // descendant navigables
-  for (auto* navigable = control_frame; navigable;
+  for (Frame* navigable = control_frame; navigable;
        navigable = navigable->Tree().TraverseNext(control_frame)) {
     // whose active document’s deferred-fetch control document is
     // controlDocument:
@@ -311,8 +311,14 @@ uint64_t FetchLaterUtil::GetAvailableDeferredFetchQuota(Frame* frame,
 
     // 8-2. For each deferred fetch record deferredRecord of controlDocument’s
     // fetch group’s deferred fetch records:
-    auto* scoped_fetcher = GlobalFetch::ScopedFetcher::From(
-        *DynamicTo<LocalDOMWindow>(navigable->DomWindow()));
+    auto* dom_window = DynamicTo<LocalDOMWindow>(navigable->DomWindow());
+    if (!dom_window || !dom_window->GetExecutionContext()) {
+      continue;
+    }
+    auto* scoped_fetcher = GlobalFetch::ScopedFetcher::From(*dom_window);
+    if (!scoped_fetcher) {
+      continue;
+    }
     scoped_fetcher->UpdateDeferredBytesQuota(url, quota_for_request_origin,
                                              quota);
   }

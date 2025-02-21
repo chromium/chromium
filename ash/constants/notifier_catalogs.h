@@ -212,7 +212,8 @@ enum class NotificationCatalogName {
   kScannerAction = 193,
   kChromeAppDeprecation = 194,
   kDownloadImageFromLobster = 195,
-  kMaxValue = kDownloadImageFromLobster
+  kBocaSpotlightStarted = 196,
+  kMaxValue = kBocaSpotlightStarted
 };
 
 // A living catalog that registers system nudges.

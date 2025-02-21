@@ -7,7 +7,6 @@
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
@@ -57,12 +56,8 @@ enum {
                      // to set policies for chrome. This directory
                      // contains subdirectories.
 #endif
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_CHROMEOS_ASH) ||                              \
-    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-     BUILDFLAG(CHROMIUM_BRANDING)) ||                          \
-    BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || \
+    (BUILDFLAG(IS_LINUX) && BUILDFLAG(CHROMIUM_BRANDING)) || BUILDFLAG(IS_MAC)
   DIR_USER_EXTERNAL_EXTENSIONS,  // Directory for per-user external extensions
                                  // on Chrome Mac and Chromium Linux.
                                  // On Chrome OS, this path is used for OEM
@@ -104,7 +99,7 @@ enum {
   FILE_DEV_UI_RESOURCES_PACK,  // Full path to the .pak file containing
                                // binary data for internal pages (e.g., html
                                // files and images).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   DIR_CHROMEOS_WALLPAPERS,            // Directory where downloaded chromeos
                                       // wallpapers reside.
   DIR_CHROMEOS_WALLPAPER_THUMBNAILS,  // Directory where downloaded chromeos
@@ -132,7 +127,7 @@ enum {
   DIR_GEN_TEST_DATA,  // Directory where generated test data resides.
   DIR_TEST_DATA,      // Directory where unit test data resides.
   DIR_TEST_TOOLS,     // Directory where unit test tools reside.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // File containing the location of the updated TPM firmware binary in the file
   // system.
   FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_LOCATION,
@@ -146,7 +141,7 @@ enum {
   // Base directory where user cryptohome mount point (named as hash of
   // username) resides.
   DIR_CHROMEOS_HOMEDIR_MOUNT,
-#endif                                       // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif                                       // BUILDFLAG(IS_CHROMEOS)
   DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,  // Directory where verified models
                                              // downloaded by the Optimization
                                              // Guide are stored.

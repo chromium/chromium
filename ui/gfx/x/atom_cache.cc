@@ -105,6 +105,7 @@ constexpr auto kAtomsToCache = std::to_array<const char* const>({
     "_CHROMIUM_DRAG_RECEIVER",
     "_GTK_FRAME_EXTENTS",
     "_GTK_HIDE_TITLEBAR_WHEN_MAXIMIZED",
+    "_GTK_SHOW_WINDOW_MENU",
     "_GTK_THEME_VARIANT",
     "_ICC_PROFILE",
     "_MOTIF_WM_HINTS",

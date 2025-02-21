@@ -335,10 +335,9 @@ InteractiveBrowserTestApi::WaitForWebContentsNavigation(
 }
 
 // There is a bug that causes WebContents::CompletedFirstVisuallyNonEmptyPaint()
-// to occasionally fail to ever become true. This mostly manifests when running
-// Lacros tests on Linux, and sometimes on Mac builders. In order to prevent
-// tests from hanging when trying to ensure a non-empty paint, then, a
-// workaround is required.
+// to occasionally fail to ever become true. This sometimes manifests when
+// running tests on Mac builders. In order to prevent tests from hanging when
+// trying to ensure a non-empty paint, then, a workaround is required.
 //
 // See b/332895669 and b/334747109 for more information.
 
@@ -348,19 +347,18 @@ namespace {
 // flakes after this step due to the bug.
 constexpr char kPaintWorkaroundWarning[] =
     "\n\nIMPORTANT NOTE FOR TESTERS AND CHROMIUM GARDENERS:\n\n"
-    "There is a known issue (crbug.com/332895669, crbug.com/334747109) on both "
-    "Mac and Lacros-on-Linux where sometimes "
-    "WebContents::CompletedFirstVisuallyNonEmptyPaint() can return  false even "
-    "for a WebContents that is visible and painted, especially in secondary UI."
-    "\n\n"
+    "There is a known issue (crbug.com/332895669, crbug.com/334747109) on Mac "
+    "where sometimes WebContents::CompletedFirstVisuallyNonEmptyPaint() can "
+    "return false even for a WebContents that is visible and painted, "
+    "especially in secondary UI.\n\n"
     "Unfortunately, this has happened. In order to prevent this test from "
     "timing out, we will be ensuring that the page is visible and renders at "
     "least one frame and then continuing the test.\n\n"
     "In most cases, this will only result in a slight delay. However, in a "
     "handful of cases the test may hang or fail because some other code relies "
     "on the page reporting as painted, which we have no direct control over. "
-    "If this happens, you may need to disable the test for linux-lacros bots "
-    "until the lower-level bug is fixed.\n";
+    "If this happens, you may need to disable the test until the lower-level "
+    "bug is fixed.\n";
 
 // CheckJsResult() can handle promises, so queue a promise that only succeeds
 // after the contents have been rendered.
@@ -404,9 +402,6 @@ InteractiveBrowserTestApi::WaitForWebContentsPainted(
 
 #if BUILDFLAG(IS_MAC)
   const bool requires_workaround = true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  const bool requires_workaround =
-      views::test::InteractionTestUtilSimulatorViews::IsWayland();
 #else
   const bool requires_workaround = false;
 #endif

@@ -18,7 +18,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/mojo/media_router_desktop.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -44,9 +43,9 @@
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::WebContents;
 using testing::Optional;
@@ -88,14 +87,13 @@ MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest(
   feature_list_.InitWithFeatures(
       {
           media::kGlobalMediaControls,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
           // Without this flag, SodaInstaller::GetInstance() fails a DCHECK
           // on Chrome OS. The call to SodaInstaller::GetInstance() is in
           // MediaDialogView::AddedToWidget(), which is called indirectly
           // from MediaDialogView::ShowDialogForPresentationRequest().
           ash::features::kOnDeviceSpeechRecognition,
-#endif
-#if !BUILDFLAG(IS_CHROMEOS)
+#else
           media::kGlobalMediaControlsUpdatedUI,
 #endif
       },

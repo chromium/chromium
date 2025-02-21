@@ -29,6 +29,7 @@ static_library("on_task") {
     "//ash/resources/vector_icons",
     "//base",
     "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca:spotlight_notification_constants",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/strings:strings_grit",
     "//components/google/core/common",

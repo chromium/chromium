@@ -23,7 +23,7 @@ void DocumentPartRoot::Trace(Visitor* visitor) const {
   PartRoot::Trace(visitor);
 }
 
-PartRootUnion* DocumentPartRoot::clone(ExceptionState&) {
+PartRootUnion* DocumentPartRoot::clone(ExceptionState& exception_state) {
   NodeCloningData data{CloneOption::kIncludeDescendants,
                        RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()
                            ? CloneOption::kPreserveDOMPartsMinimalAPI
@@ -31,8 +31,10 @@ PartRootUnion* DocumentPartRoot::clone(ExceptionState&) {
 
   Node* clone = rootContainer()->Clone(rootContainer()->GetDocument(), data,
                                        /*append_to*/ nullptr);
-  // http://crbug.com/1467847: clone may be null and can be hit by clusterfuzz.
   if (!clone) {
+    // Note we MUST throw if we can't return a non-null value.
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
+                                      "Failed to clone a DOMPart");
     return nullptr;
   }
   DocumentPartRoot* new_part_root =

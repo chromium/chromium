@@ -372,29 +372,12 @@ HTMLDataListElement* HTMLOptionElement::OwnerDataListElement() const {
   return Traversal<HTMLDataListElement>::FirstAncestor(*this);
 }
 
-namespace {
-HTMLSelectElement* NearestAncestorSelectNoNesting(
-    const HTMLOptionElement& option) {
-  for (Node& ancestor : NodeTraversal::AncestorsOf(option)) {
-    if (IsA<HTMLOptionElement>(ancestor)) {
-      // Don't associate nested <option>s with <select>s. This matches the
-      // traversals in OptionList and HTMLOptionElement::InsertedInto.
-      return nullptr;
-    }
-    if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
-      return select;
-    }
-  }
-  return nullptr;
-}
-}  // namespace
-
 HTMLSelectElement* HTMLOptionElement::OwnerSelectElement(
     bool skip_check) const {
   if (HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
     if (!skip_check) {
       DCHECK_EQ(nearest_ancestor_select_,
-                NearestAncestorSelectNoNesting(*this));
+                HTMLSelectElement::NearestAncestorSelectNoNesting(*this));
     }
     return nearest_ancestor_select_;
   } else {
@@ -413,7 +396,7 @@ HTMLSelectElement* HTMLOptionElement::OwnerSelectElement(
 
 void HTMLOptionElement::SetOwnerSelectElement(HTMLSelectElement* select) {
   CHECK(HTMLSelectElement::SelectParserRelaxationEnabled(this));
-  DCHECK_EQ(select, NearestAncestorSelectNoNesting(*this));
+  DCHECK_EQ(select, HTMLSelectElement::NearestAncestorSelectNoNesting(*this));
   nearest_ancestor_select_ = select;
 }
 
@@ -536,22 +519,12 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
   // OptionInserted. Otherwise, if this option is being inserted into a <select>
   // ancestor, then we must call OptionInserted on it.
   bool passed_insertion_point = false;
-  for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
-    if (IsA<HTMLOptionElement>(ancestor)) {
-      // Don't call OptionInserted() on nested <option>s. This matches the
-      // traversals in OptionList and OwnerSelectElement.
-      break;
-    }
-    if (&ancestor == &insertion_point) {
-      passed_insertion_point = true;
-    }
-    if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
-      SetOwnerSelectElement(select);
-      if (passed_insertion_point) {
-        select->OptionInserted(*this, Selected());
-      }
-      break;
-    }
+  HTMLSelectElement* new_ancestor_select =
+      HTMLSelectElement::NearestAncestorSelectNoNesting(
+          *this, &insertion_point, &passed_insertion_point);
+  SetOwnerSelectElement(new_ancestor_select);
+  if (new_ancestor_select && passed_insertion_point) {
+    new_ancestor_select->OptionInserted(*this, Selected());
   }
 
   return return_value;
@@ -594,31 +567,20 @@ void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
     // Don't call select->OptionRemoved() in this case because
     // HTMLSelectElement::ChildrenChanged or
     // HTMLOptGroupElement::ChildrenChanged will call it for us.
+    // TODO(crbug.com/1511354): When the SelectParserRelaxation flag is removed,
+    // we can remove this and the code in HTMLSelectElement::ChildrenChanged and
+    // HTMLOptGroupElement::ChildrenChanged.
     return;
   }
 
-  for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
-    // If this option is still associated with a <select> inside the detached
-    // subtree, then we should not call OptionRemoved() because we don't call
-    // OptionInserted() in the corresponding attachment case. Also, APIs like
-    // select.options should still work when the <select> is detached.
-    // Nested options should not be associated with selects.
-    if (IsA<HTMLSelectElement>(ancestor) || IsA<HTMLOptionElement>(ancestor)) {
-      return;
-    }
-  }
-
-  SetOwnerSelectElement(nullptr);
-
-  for (Node& ancestor : NodeTraversal::InclusiveAncestorsOf(insertion_point)) {
-    if (IsA<HTMLOptionElement>(ancestor)) {
-      // Nested options should not be associated with selects.
-      return;
-    }
-    if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
-      select->OptionRemoved(*this);
-      break;
-    }
+  HTMLSelectElement* new_ancestor_select =
+      HTMLSelectElement::NearestAncestorSelectNoNesting(*this);
+  if (new_ancestor_select != nearest_ancestor_select_) {
+    // We should only get here if we are being removed from a <select>
+    CHECK(!new_ancestor_select);
+    CHECK(nearest_ancestor_select_);
+    nearest_ancestor_select_->OptionRemoved(*this);
+    SetOwnerSelectElement(new_ancestor_select);
   }
 }
 

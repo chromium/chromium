@@ -8,7 +8,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "build/config/coverage/buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,7 +32,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -62,7 +61,7 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
     embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
     ASSERT_TRUE(embedded_test_server()->Start());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Wait for the OOBE WebUI to be shown.
     ash::OobeScreenWaiter(ash::WelcomeView::kScreenId).Wait();
 #else
@@ -73,7 +72,7 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
     WebUIMochaBrowserTest::SetUpOnMainThread();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* GetProfileForSetup() override {
     return Profile::FromBrowserContext(
         GetWebContentsForTesting()->GetBrowserContext());
@@ -91,7 +90,7 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
     return embedded_test_server()->base_url().Resolve(path);
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   GURL GetWebViewEnabledWebUIURL() const {
     return GURL(signin::GetEmbeddedPromoURL(
         signin_metrics::AccessPoint::kStartPage,
@@ -100,7 +99,7 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
 #endif
 
   content::WebContents* GetWebContentsForTesting() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return ash::LoginDisplayHost::default_host()
         ->GetOobeUI()
         ->web_ui()
@@ -161,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MediaRequestAllowOnSignIn) {
 #endif
 
 // TODO(crbug.com/41400417) Flaky on CrOS trybots.
-#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
 #define MAYBE_ExecuteScriptCode DISABLED_ExecuteScriptCode
 #else
 #define MAYBE_ExecuteScriptCode ExecuteScriptCode
@@ -194,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(
       GetTestUrl("empty.html").spec()));
 }
 
-#if (BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG)) || \
+#if (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)) || \
     BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
 // TODO(crbug.com/40583245) Fails on CrOS dbg with --enable-features=Mash.
 // TODO(crbug.com/41496635): Webviews don't work properly with JS coverage.
@@ -229,8 +228,7 @@ class WebUIWebViewCoverageDisabledBrowserTest : public WebUIWebViewBrowserTest {
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && \
-    (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_CHROMEOS) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
 // TODO(crbug.com/40583245) Fails on CrOS dbg with --enable-features=Mash.
 // TODO(crbug.com/41419648) Flaky on CrOS ASan LSan
 #define MAYBE_AddContentScriptsWithNewWindowAPI \
@@ -264,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(
 // TODO(crbug.com/41284814) Flaky on CrOS trybots.
 // TODO(crbug.com/40937256): Fails due to reattaching webview, need to fix on JS
 // coverage builders.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
 #define MAYBE_ContentScriptExistsAsLongAsWebViewTagExists \
   DISABLED_ContentScriptExistsAsLongAsWebViewTagExists
 #else
@@ -286,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, AddContentScriptWithCode) {
 IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, ContextMenuInspectElement) {
   content::ContextMenuParams params;
   content::WebContents* web_contents =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       // OOBE WebUI.
       ash::LoginDisplayHost::default_host()->GetOobeWebContents();
 #else

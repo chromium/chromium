@@ -248,10 +248,10 @@ public class NativePageFactory {
 
         protected NativePage buildBookmarksPage(Tab tab) {
             return new BookmarkPage(
-                    mActivity.getComponentName(),
                     mSnackbarManagerSupplier.get(),
                     tab.getProfile(),
-                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector));
+                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
+                    mActivity.getComponentName());
         }
 
         protected NativePage buildDownloadsPage(Tab tab) {

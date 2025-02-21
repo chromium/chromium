@@ -51,6 +51,10 @@ class AttributionSuitableContextTest : public RenderViewHostTestHarness {
     return static_cast<TestWebContents*>(web_contents());
   }
 
+  RenderFrameHostImpl* main_rfh_impl() {
+    return static_cast<RenderFrameHostImpl*>(main_rfh());
+  }
+
   base::test::ScopedFeatureList& scoped_feature_list() {
     return scoped_feature_list_;
   }
@@ -77,17 +81,15 @@ TEST_F(AttributionSuitableContextTest,
 
   test_web_contents()->NavigateAndCommit(context_url);
 
-  GlobalRenderFrameHostId id =
-      test_web_contents()->GetPrimaryMainFrame()->GetGlobalId();
-  auto context = AttributionSuitableContext::Create(id);
+  auto context = AttributionSuitableContext::Create(main_rfh_impl());
   ASSERT_TRUE(context.has_value());
 
   EXPECT_FALSE(context->is_nested_within_fenced_frame());
-  EXPECT_EQ(context->root_render_frame_id(), id);
+  EXPECT_EQ(context->root_render_frame_id(), main_rfh()->GetGlobalId());
   EXPECT_EQ(context->context_origin(), *SuitableOrigin::Create(context_url));
-  EXPECT_EQ(context->last_navigation_id(),
-            test_web_contents()->GetPrimaryMainFrame()->navigation_id());
+  EXPECT_EQ(context->last_navigation_id(), main_rfh_impl()->navigation_id());
   EXPECT_FALSE(context->is_context_google_amp_viewer());
+  EXPECT_EQ(context->ukm_source_id(), main_rfh()->GetPageUkmSourceId());
 }
 
 TEST_F(AttributionSuitableContextTest,
@@ -103,12 +105,9 @@ TEST_F(AttributionSuitableContextTest,
       subframe_url, subframe);
   CHECK(subframe);
 
-  auto context = AttributionSuitableContext::Create(subframe->GetGlobalId());
+  auto context = AttributionSuitableContext::Create(
+      static_cast<RenderFrameHostImpl*>(subframe));
   ASSERT_TRUE(context.has_value());
-  // Can also be created by passing the pointer directly instead of the id.
-  ASSERT_TRUE(AttributionSuitableContext::Create(
-                  static_cast<RenderFrameHostImpl*>(subframe))
-                  .has_value());
 
   EXPECT_FALSE(context->is_nested_within_fenced_frame());
   EXPECT_EQ(context->root_render_frame_id(),
@@ -116,6 +115,7 @@ TEST_F(AttributionSuitableContextTest,
   EXPECT_EQ(context->context_origin(), *SuitableOrigin::Create(context_url));
   EXPECT_EQ(context->last_navigation_id(),
             static_cast<RenderFrameHostImpl*>(subframe)->navigation_id());
+  EXPECT_EQ(context->ukm_source_id(), main_rfh()->GetPageUkmSourceId());
 }
 
 TEST_F(AttributionSuitableContextTest,
@@ -125,24 +125,15 @@ TEST_F(AttributionSuitableContextTest,
 
   test_web_contents()->NavigateAndCommit(GURL("https://top.example"));
 
-  GlobalRenderFrameHostId id =
-      test_web_contents()->GetPrimaryMainFrame()->GetGlobalId();
-  auto context = AttributionSuitableContext::Create(id);
+  auto context = AttributionSuitableContext::Create(main_rfh_impl());
   ASSERT_FALSE(context.has_value());
 
   // Validates that it would create with the feature enabled.
   scoped_feature_list().Reset();
   scoped_feature_list().InitWithFeatures(
       {attribution_reporting::features::kConversionMeasurement}, {});
-  auto context_ok = AttributionSuitableContext::Create(id);
+  auto context_ok = AttributionSuitableContext::Create(main_rfh_impl());
   ASSERT_TRUE(context_ok.has_value());
-}
-
-TEST_F(AttributionSuitableContextTest,
-       UnableToFindRenderFrameHost_NonSuitable) {
-  auto context =
-      AttributionSuitableContext::Create(GlobalRenderFrameHostId(10, 15));
-  ASSERT_FALSE(context.has_value());
 }
 
 TEST_F(AttributionSuitableContextTest, MissingPolicy_NonSuitable) {
@@ -159,26 +150,26 @@ TEST_F(AttributionSuitableContextTest, MissingPolicy_NonSuitable) {
       subframe_url, subframe);
   CHECK(subframe);
 
-  auto context = AttributionSuitableContext::Create(subframe->GetGlobalId());
+  auto context = AttributionSuitableContext::Create(
+      static_cast<RenderFrameHostImpl*>(subframe));
   ASSERT_FALSE(context.has_value());
 
   // Validates that it would create with a matching policy
   subframe = NavigationSimulatorImpl::NavigateAndCommitFromDocument(context_url,
                                                                     subframe);
-  auto context_ok = AttributionSuitableContext::Create(subframe->GetGlobalId());
+  auto context_ok = AttributionSuitableContext::Create(
+      static_cast<RenderFrameHostImpl*>(subframe));
   ASSERT_TRUE(context_ok.has_value());
 }
 
 TEST_F(AttributionSuitableContextTest, InsecureContextOrigin_NonSuitable) {
   test_web_contents()->NavigateAndCommit(GURL("http://top.example"));
-  auto context = AttributionSuitableContext::Create(
-      test_web_contents()->GetPrimaryMainFrame()->GetGlobalId());
+  auto context = AttributionSuitableContext::Create(main_rfh_impl());
   ASSERT_FALSE(context.has_value());
 
   // Validates that it would create with a suitable context origin.
   test_web_contents()->NavigateAndCommit(GURL("https://top.example"));
-  auto context_ok = AttributionSuitableContext::Create(
-      test_web_contents()->GetPrimaryMainFrame()->GetGlobalId());
+  auto context_ok = AttributionSuitableContext::Create(main_rfh_impl());
   ASSERT_TRUE(context_ok.has_value());
 }
 
@@ -203,16 +194,13 @@ TEST_F(AttributionSuitableContextTest,
 
   test_web_contents()->NavigateAndCommit(context_url);
 
-  GlobalRenderFrameHostId id =
-      test_web_contents()->GetPrimaryMainFrame()->GetGlobalId();
-  auto context = AttributionSuitableContext::Create(id);
+  auto context = AttributionSuitableContext::Create(main_rfh_impl());
   ASSERT_TRUE(context.has_value());
 
   EXPECT_FALSE(context->is_nested_within_fenced_frame());
-  EXPECT_EQ(context->root_render_frame_id(), id);
+  EXPECT_EQ(context->root_render_frame_id(), main_rfh()->GetGlobalId());
   EXPECT_EQ(context->context_origin(), *SuitableOrigin::Create(context_url));
-  EXPECT_EQ(context->last_navigation_id(),
-            test_web_contents()->GetPrimaryMainFrame()->navigation_id());
+  EXPECT_EQ(context->last_navigation_id(), main_rfh_impl()->navigation_id());
   EXPECT_TRUE(context->is_context_google_amp_viewer());
 }
 

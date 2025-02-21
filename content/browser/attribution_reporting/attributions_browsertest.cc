@@ -2,13 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -20,11 +26,15 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/ukm/content/source_url_recorder.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/event_level_result.mojom.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/store_source_result.mojom.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_observer.h"
 #include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
@@ -86,12 +96,51 @@ using ::testing::Return;
 constexpr char kBaseDataDir[] = "content/test/data/";
 
 using attribution_reporting::kAttributionReportingRegisterSourceHeader;
+using attribution_reporting::mojom::EventLevelResult;
+
+using StoreSourceStatus = attribution_reporting::mojom::StoreSourceResult;
 
 void ExpectRegisterResultAndRun(blink::ServiceWorkerStatusCode expected,
                                 base::RepeatingClosure continuation,
                                 blink::ServiceWorkerStatusCode actual) {
   EXPECT_EQ(expected, actual);
   continuation.Run();
+}
+
+struct UkmEntry {
+  GURL url;
+  int64_t value;
+};
+
+void VerifyUkmEntries(const ukm::TestAutoSetUkmRecorder& ukm_recorder,
+                      std::string_view entry_name,
+                      std::string_view metric_name,
+                      base::span<const UkmEntry> expected_entries) {
+  std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ukm_entries =
+      ukm_recorder.GetEntries(std::string(entry_name),
+                              {std::string(metric_name)});
+  ASSERT_EQ(ukm_entries.size(), expected_entries.size());
+  for (size_t i = 0; i < ukm_entries.size(); ++i) {
+    EXPECT_EQ(
+        ukm_recorder.GetSourceForSourceId(ukm_entries[i].source_id)->url(),
+        expected_entries[i].url);
+    EXPECT_THAT(ukm_entries[i].metrics,
+                testing::ElementsAre(
+                    testing::Pair(metric_name, expected_entries[i].value)));
+  }
+}
+
+void VerifySourceUkmEntries(const ukm::TestAutoSetUkmRecorder& ukm_recorder,
+                            const std::vector<UkmEntry>& expected_entries) {
+  VerifyUkmEntries(ukm_recorder, "Conversions.SourceRegistration",
+                   "StoreSourceResult", expected_entries);
+}
+
+void VerifyEventLevelResultUkmEntries(
+    const ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    const std::vector<UkmEntry>& expected_entries) {
+  VerifyUkmEntries(ukm_recorder, "Conversions.TriggerRegistration",
+                   "CreateEventLevelReportStatus", expected_entries);
 }
 
 // Observer which waits for a service worker to register in the browser process
@@ -257,6 +306,11 @@ class AttributionsBrowserTestBase : public ContentBrowserTest {
     // Sets up the blink runtime feature for ConversionMeasurement.
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
+  }
+
+  void PreRunTestOnMainThread() override {
+    ContentBrowserTest::PreRunTestOnMainThread();
+    ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
   }
 
   void SetUpOnMainThread() override {
@@ -442,7 +496,9 @@ IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
                        FeatureEnabled_StorageInitWithoutHang) {}
 
 IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
-                       ImpressionNavigationMultipleRedirects_FirstReportSent) {
+                       ImpressionNavigationMultipleRedirects_BothReportsSent) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
           https_server(), "/register_source_redirect");
@@ -505,12 +561,10 @@ IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
       kAttributionReportingRegisterSourceHeader,
       R"({"source_event_id":"2","destination":"https://c.test"})");
 
-  http_response2->AddCustomHeader(
-      "Location",
-      https_server()
-          ->GetURL("c.test",
-                   "/attribution_reporting/page_with_conversion_redirect.html")
-          .spec());
+  GURL conversion_url = https_server()->GetURL(
+      "c.test", "/attribution_reporting/page_with_conversion_redirect.html");
+
+  http_response2->AddCustomHeader("Location", conversion_url.spec());
   register_response2->Send(http_response2->ToResponseString());
   register_response2->Done();
 
@@ -528,10 +582,26 @@ IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
   EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
                                                register_trigger_url2)));
   expected_report2.WaitForReport();
+
+  VerifySourceUkmEntries(
+      ukm_recorder,
+      {UkmEntry(impression_url,
+                static_cast<int64_t>(StoreSourceStatus::kSuccess)),
+       UkmEntry(impression_url,
+                static_cast<int64_t>(StoreSourceStatus::kSuccess))});
+
+  VerifyEventLevelResultUkmEntries(
+      ukm_recorder,
+      {UkmEntry(conversion_url,
+                static_cast<int64_t>(EventLevelResult::kSuccess)),
+       UkmEntry(conversion_url,
+                static_cast<int64_t>(EventLevelResult::kSuccess))});
 }
 
 IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
                        ImpressionsRegisteredOnNavigation_ReportSent) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
       GURL("https://c.test/.well-known/attribution-reporting/"
@@ -570,6 +640,16 @@ IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
   EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
                                                register_trigger_url)));
   expected_report.WaitForReport();
+
+  VerifySourceUkmEntries(
+      ukm_recorder,
+      {UkmEntry(impression_url,
+                static_cast<int64_t>(StoreSourceStatus::kSuccess))});
+
+  VerifyEventLevelResultUkmEntries(
+      ukm_recorder,
+      {UkmEntry(register_source_url,
+                static_cast<int64_t>(EventLevelResult::kSuccess))});
 }
 
 IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
@@ -611,6 +691,8 @@ IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
                        ImpressionFromCrossOriginSubframe_ReportSent) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
@@ -648,6 +730,15 @@ IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
                                                register_trigger_url)));
 
   expected_report.WaitForReport();
+
+  VerifySourceUkmEntries(
+      ukm_recorder,
+      {UkmEntry(page_url, static_cast<int64_t>(StoreSourceStatus::kSuccess))});
+
+  VerifyEventLevelResultUkmEntries(
+      ukm_recorder,
+      {UkmEntry(conversion_url,
+                static_cast<int64_t>(EventLevelResult::kSuccess))});
 }
 
 // Regression test for crbug.com/1366513.
@@ -1088,6 +1179,8 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(ConversionsRegisteredOnActivatedPrerender) {
   ASSERT_TRUE(https_server()->Start());
 
   for (const char* registration_js : kTestCases) {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+
     // Navigate to a starting same origin page with the conversion url.
     const GURL kEmptyUrl = https_server()->GetURL("d.test", "/empty.html");
     {
@@ -1127,6 +1220,12 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(ConversionsRegisteredOnActivatedPrerender) {
     ASSERT_TRUE(host_observer.was_activated());
 
     loop.Run();
+
+    VerifyEventLevelResultUkmEntries(
+        ukm_recorder,
+        {UkmEntry(
+            kConversionUrl,
+            static_cast<int64_t>(EventLevelResult::kNoMatchingImpressions))});
   }
 }
 

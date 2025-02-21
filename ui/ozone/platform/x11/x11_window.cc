@@ -771,6 +771,13 @@ void X11Window::Restore() {
   }
 }
 
+void X11Window::ShowWindowControlsMenu(const gfx::Point& point) {
+  SendClientMessage(xwindow_, x_root_window_,
+                    x11::GetAtom("_GTK_SHOW_WINDOW_MENU"),
+                    {/*device_id=*/0, base::bit_cast<uint32_t>(point.x()),
+                     base::bit_cast<uint32_t>(point.y()), 0, 0});
+}
+
 PlatformWindowState X11Window::GetPlatformWindowState() const {
   return state_;
 }

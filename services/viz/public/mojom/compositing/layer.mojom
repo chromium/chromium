@@ -7,9 +7,43 @@ module viz.mojom;
 import "cc/mojom/element_id.mojom";
 import "cc/mojom/layer_type.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
+import "services/viz/public/mojom/compositing/surface_range.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "services/viz/public/mojom/compositing/copy_output_request.mojom";
 import "ui/gfx/mojom/transform.mojom";
+
+// Extra fields in a cc::SurfaceLayerImpl that has been added to a tree or
+// modified in some interesting way since a prior tree update.
+struct SurfaceLayerExtra {
+  // This represents a range of surfaces the surface layer contains.
+  SurfaceRange surface_range;
+
+  // Number of frames to activation deadline.
+  // If nullopt, use the default lower bound deadline instead.
+  uint32? deadline_in_frames;
+
+  // This flag indicates whether the surface layer stretches content to fill
+  // bounds or not.
+  bool stretch_content_to_fill_bounds;
+
+  // This flag indicates whether the surface layer is hit testable or not.
+  bool surface_hit_testable;
+
+  // This flag indicates whether the surface layer has "pointer-events: none"
+  // or not.
+  bool has_pointer_events_none;
+
+  // This flag indicates whether the surface layer is refelction or not.
+  bool is_reflection;
+
+  // This flag tracks if a visibility reset took place in the associated
+  // SurfaceLayer and is used to update |will_draw_| on that layer accordingly.
+  bool will_draw_needs_reset;
+
+  // This flag indicates whether child paint flags (filter quality and
+  // dynamic range limit) should be overridden or not.
+  bool override_child_paint_flags;
+};
 
 // Details about a cc::LayerImpl that has been added to a tree or modified in
 // some interesting way since a prior tree update.
@@ -64,6 +98,11 @@ struct Layer {
   int32 clip_tree_index;
   int32 effect_tree_index;
   int32 scroll_tree_index;
+
+  // Extra properties that are specific to SurfaceLayerImpl.
+  // TODO(zmo): This really should be a union of all LayerImpl subclasses'
+  // extra fields.
+  SurfaceLayerExtra? surface_layer_extra;
 };
 
 // See blink::AnchorPositionScrollData, from which the fields here are derived.

@@ -16,7 +16,8 @@ namespace {
 
 struct SameSizeAsInlineItem {
   UntracedMember<void*> members[2];
-  unsigned integers[4];
+  unsigned integers[3];
+  uint8_t bytes[1];
   unsigned bit_fields : 32;
 };
 

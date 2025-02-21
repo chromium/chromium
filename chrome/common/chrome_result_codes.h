@@ -5,7 +5,6 @@
 #ifndef CHROME_COMMON_CHROME_RESULT_CODES_H_
 #define CHROME_COMMON_CHROME_RESULT_CODES_H_
 
-#include "build/chromeos_buildflags.h"
 #include "content/public/common/result_codes.h"
 
 // IMPORTANT: This needs to stay in sync with <enum name="CrashExitCodes"> and

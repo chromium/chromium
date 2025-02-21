@@ -11,7 +11,7 @@
   const bp = (new TestRunner.Session(testRunner, sessionId)).protocol;
 
   const HttpInterceptor =
-      await testRunner.loadScript('../helpers/http-interceptor.js');
+      await testRunner.loadScriptAbsolute('../resources/http-interceptor.js');
   const httpInterceptor = await (new HttpInterceptor(testRunner, bp)).init();
   httpInterceptor.setDisableRequestedUrlsLogging(true);
 

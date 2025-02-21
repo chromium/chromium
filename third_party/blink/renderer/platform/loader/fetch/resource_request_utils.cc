@@ -152,6 +152,11 @@ void UpgradeResourceRequestForLoader(
   ResourceRequest& resource_request = params.MutableResourceRequest();
   const ResourceLoaderOptions& options = params.Options();
 
+  // Remember the TopFrameOrigin here to ensure the value is not changed while
+  // upgrading the request for the network access. This intends to ensure the
+  // same value is used for both the cache access and the network access.
+  const SecurityOrigin* top_frame_origin = resource_request.TopFrameOrigin();
+
   resource_request.SetCanChangeUrl(false);
 
   // Note that resource_request.GetRedirectInfo() may be non-null here since
@@ -195,6 +200,9 @@ void UpgradeResourceRequestForLoader(
   DCHECK(params.Url().IsValid());
 
   resource_request.SetCanChangeUrl(true);
+
+  // Ensure that the value wasn't changed during the upgrade in this method.
+  CHECK_EQ(top_frame_origin, resource_request.TopFrameOrigin());
 }
 
 std::optional<ResourceRequestBlockedReason>

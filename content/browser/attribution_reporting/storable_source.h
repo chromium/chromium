@@ -10,6 +10,7 @@
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom.h"
 #include "content/common/content_export.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace attribution_reporting {
 class SuitableOrigin;
@@ -26,7 +27,8 @@ class CONTENT_EXPORT StorableSource {
                  attribution_reporting::SourceRegistration,
                  attribution_reporting::SuitableOrigin source_origin,
                  attribution_reporting::mojom::SourceType,
-                 bool is_within_fenced_frame);
+                 bool is_within_fenced_frame,
+                 ukm::SourceId);
 
   ~StorableSource();
 
@@ -52,6 +54,8 @@ class CONTENT_EXPORT StorableSource {
     common_info_.set_cookie_based_debug_allowed(value);
   }
 
+  ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
+
   friend bool operator==(const StorableSource&,
                          const StorableSource&) = default;
 
@@ -62,6 +66,9 @@ class CONTENT_EXPORT StorableSource {
 
   // Whether the source is registered within a fenced frame tree.
   bool is_within_fenced_frame_;
+
+  // The source ID used to record UKM.
+  ukm::SourceId ukm_source_id_;
 };
 
 }  // namespace content

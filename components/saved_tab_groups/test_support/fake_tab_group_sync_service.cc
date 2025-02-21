@@ -211,10 +211,6 @@ void FakeTabGroupSyncService::OnTabSelected(
   // No op.
 }
 
-SelectedTabInfo FakeTabGroupSyncService::GetCurrentlySelectedTabInfo() {
-  return SelectedTabInfo();
-}
-
 void FakeTabGroupSyncService::MakeTabGroupShared(
     const LocalTabGroupID& local_group_id,
     std::string_view collaboration_id,

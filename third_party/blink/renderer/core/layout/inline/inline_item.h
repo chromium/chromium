@@ -29,7 +29,7 @@ using InlineItems = HeapVector<Member<InlineItem>>;
 // element where possible.
 class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
  public:
-  enum InlineItemType {
+  enum InlineItemType : uint8_t {
     kText,
     kControl,
     kAtomicInline,
@@ -51,7 +51,7 @@ class CORE_EXPORT InlineItem final : public GarbageCollected<InlineItem> {
     kRubyLinePlaceholder
   };
 
-  enum CollapseType {
+  enum CollapseType : uint8_t {
     // No collapsible spaces.
     kNotCollapsible,
     // This item is opaque to whitespace collapsing.

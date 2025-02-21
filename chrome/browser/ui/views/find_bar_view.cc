@@ -386,6 +386,11 @@ void FindBarView::ClearMatchCount() {
   SchedulePaint();
 }
 
+bool FindBarView::ContainsFocus() const {
+  return find_text_->HasFocus() || find_previous_button_->HasFocus() ||
+         find_next_button_->HasFocus() || close_button_->HasFocus();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // FindBarView, views::View overrides:
 

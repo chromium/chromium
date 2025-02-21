@@ -72,6 +72,17 @@ public class AutofillTestHelper {
                                 ProfileManager.getLastUsedRegularProfile()));
     }
 
+    /**
+     * Return the {@link AutofillImageFetcher} associated with {@link
+     * ProfileManager#getLastUsedRegularProfile()}.
+     */
+    public static AutofillImageFetcher getAutofillImageFetcherForLastUsedProfile() {
+        return runOnUiThreadBlocking(
+                () ->
+                        AutofillImageFetcherFactory.getForProfile(
+                                ProfileManager.getLastUsedRegularProfile()));
+    }
+
     void setSyncServiceForTesting() {
         runOnUiThreadBlocking(() -> AutofillTestHelperJni.get().setSyncService());
     }
@@ -341,7 +352,7 @@ public class AutofillTestHelper {
     public void clearAllDataForTesting() throws TimeoutException {
         runOnUiThreadBlocking(() -> AutofillTestHelperJni.get().clearServerData());
         runOnUiThreadBlocking(
-                () -> getPersonalDataManagerForLastUsedProfile().clearImageDataForTesting());
+                () -> getAutofillImageFetcherForLastUsedProfile().clearCachedImagesForTesting());
         // Clear remaining local profiles and cards.
         for (AutofillProfile profile : getProfilesForSettings()) {
             runOnUiThreadBlocking(

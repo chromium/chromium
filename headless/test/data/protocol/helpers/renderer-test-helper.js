@@ -26,8 +26,8 @@
   async init() {
     await this.dp_.Page.enable();
 
-    let HttpInterceptor = await this.testRunner_.loadScript(
-        '../helpers/http-interceptor.js');
+    let HttpInterceptor = await this.testRunner_.loadScriptAbsolute(
+        '../resources/http-interceptor.js');
     let httpInterceptor =
         await (new HttpInterceptor(this.testRunner_, this.dp_))
         .init();

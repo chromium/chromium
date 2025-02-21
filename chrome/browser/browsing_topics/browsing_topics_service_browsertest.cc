@@ -407,12 +407,13 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
     }
   }
 
-  // BrowserTestBase::SetUpInProcessBrowserTestFixture
-  void SetUpInProcessBrowserTestFixture() override {
-    subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &BrowsingTopicsBrowserTest::OnWillCreateBrowserContextServices,
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    browsing_topics::BrowsingTopicsServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            context,
+            base::BindRepeating(
+                &BrowsingTopicsBrowserTest::CreateBrowsingTopicsService,
                 base::Unretained(this)));
   }
 
@@ -499,15 +500,6 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
 
   content::test::PrerenderTestHelper& prerender_helper() {
     return prerender_helper_;
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    browsing_topics::BrowsingTopicsServiceFactory::GetInstance()
-        ->SetTestingFactory(
-            context,
-            base::BindRepeating(
-                &BrowsingTopicsBrowserTest::CreateBrowsingTopicsService,
-                base::Unretained(this)));
   }
 
   void InitializePreexistingState(
@@ -618,8 +610,6 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
   optimization_guide::TestOptimizationGuideModelProvider model_provider_;
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
-
-  base::CallbackListSubscription subscription_;
 };
 
 class BrowsingTopicsSubresourceRequestTest

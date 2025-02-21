@@ -2,11 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//v8/gni/snapshot_toolchain.gni")
 import("//v8/gni/v8.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 # Libraries required to generate the custom test library built with js2gtest.
 # Changing the size or the order of files in this array also requires changing

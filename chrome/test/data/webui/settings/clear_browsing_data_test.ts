@@ -136,7 +136,6 @@ suite('ClearBrowsingDataDesktop', function() {
     assertFalse(!!element.shadowRoot!.querySelector(
         '#clearBrowsingDataDialog [slot=footer]'));
 
-    // The footer is never shown on Lacros.
     // <if expr="not is_chromeos">
     // Syncing: the footer is shown, with the normal sync info.
     webUIListenerCallback('sync-status-changed', {
@@ -189,7 +188,6 @@ suite('ClearBrowsingDataDesktop', function() {
     // </if>
   });
 
-  // The footer is never shown on Lacros.
   // <if expr="not is_chromeos">
   test('ClearBrowsingDataPauseSyncDesktop', function() {
     webUIListenerCallback('sync-status-changed', {

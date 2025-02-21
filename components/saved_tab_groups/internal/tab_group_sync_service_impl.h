@@ -95,7 +95,6 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void OnTabSelected(const std::optional<LocalTabGroupID>& group_id,
                      const LocalTabID& tab_id,
                      const std::u16string& title) override;
-  SelectedTabInfo GetCurrentlySelectedTabInfo() override;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SaveGroup(SavedTabGroup group) override;
@@ -143,6 +142,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   bool WasTabGroupClosedLocally(
       const base::Uuid& sync_tab_group_id) const override;
+
+  std::u16string GetTabTitle(const LocalTabID& local_tab_id) override;
+  std::set<LocalTabID> GetSelectedTabs() override;
 
   void RecordTabGroupEvent(const EventDetails& event_details) override;
   TabGroupSyncMetricsLogger* GetTabGroupSyncMetricsLogger() override;
@@ -353,9 +355,6 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // invoked for the shared tab group.
   std::vector<std::tuple<std::string, base::Uuid, TriggerSource>>
       shared_tab_groups_waiting_for_collaboration_;
-
-  // Currently selected tab info.
-  SelectedTabInfo currently_selected_tab_info_;
 
   // Obsevers of the model.
   base::ObserverList<TabGroupSyncService::Observer> observers_;

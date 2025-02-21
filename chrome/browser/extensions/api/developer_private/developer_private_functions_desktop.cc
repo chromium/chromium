@@ -123,8 +123,6 @@ namespace extensions {
 namespace developer = api::developer_private;
 
 namespace {
-const char kCannotUpdateChildAccountProfileSettingsError[] =
-    "Cannot change settings for a child account profile.";
 const char kNoSuchExtensionError[] = "No such extension.";
 const char kRequiresUserGestureError[] = "This action requires a user gesture.";
 const char kCouldNotShowSelectFileDialogError[] =
@@ -404,21 +402,6 @@ namespace Reload = api::developer_private::Reload;
 
 namespace api {
 
-DeveloperPrivateAPIFunction::~DeveloperPrivateAPIFunction() = default;
-
-const Extension* DeveloperPrivateAPIFunction::GetExtensionById(
-    const ExtensionId& id) {
-  return ExtensionRegistry::Get(browser_context())
-      ->GetExtensionById(id, ExtensionRegistry::EVERYTHING);
-}
-
-const Extension* DeveloperPrivateAPIFunction::GetEnabledExtensionById(
-    const ExtensionId& id) {
-  return ExtensionRegistry::Get(browser_context())
-      ->enabled_extensions()
-      .GetByID(id);
-}
-
 DeveloperPrivateAutoUpdateFunction::~DeveloperPrivateAutoUpdateFunction() =
     default;
 
@@ -553,34 +536,6 @@ DeveloperPrivateGetProfileConfigurationFunction::Run() {
   }
 
   return RespondNow(WithArguments(info->ToValue()));
-}
-
-DeveloperPrivateUpdateProfileConfigurationFunction::
-    ~DeveloperPrivateUpdateProfileConfigurationFunction() = default;
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
-  std::optional<developer::UpdateProfileConfiguration::Params> params =
-      developer::UpdateProfileConfiguration::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  const developer::ProfileConfigurationUpdate& update = params->update;
-
-  if (update.in_developer_mode) {
-    Profile* profile = Profile::FromBrowserContext(browser_context());
-    CHECK(profile);
-    if (supervised_user::AreExtensionsPermissionsEnabled(profile)) {
-      return RespondNow(Error(kCannotUpdateChildAccountProfileSettingsError));
-    }
-    util::SetDeveloperModeForProfile(profile, *update.in_developer_mode);
-  }
-
-  if (update.is_mv2_deprecation_notice_dismissed.value_or(false)) {
-    ManifestV2ExperimentManager::Get(browser_context())
-        ->MarkNoticeAsAcknowledgedGlobally();
-  }
-
-  return RespondNow(NoArguments());
 }
 
 DeveloperPrivateUpdateExtensionConfigurationFunction::

@@ -84,9 +84,6 @@ void InitializeCrashReporting(UpdaterScope updater_scope) {
     VLOG(1) << "Crash reporting is not available.";
     return;
   }
-  if (AreRawUsageStatsEnabled(updater_scope)) {
-    CrashClient::GetInstance()->SetUploadsEnabled(true);
-  }
   crash_reporter::InitializeCrashKeys();
   crash_keys::SetSwitchesFromCommandLine(
       *base::CommandLine::ForCurrentProcess(), nullptr);

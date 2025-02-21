@@ -13,20 +13,8 @@
 
 namespace autofill {
 
-AttributeInstance::Context::Context() = default;
-AttributeInstance::Context::Context(const AttributeInstance::Context&) =
-    default;
-AttributeInstance::Context& AttributeInstance::Context::operator=(
-    const AttributeInstance::Context&) = default;
-AttributeInstance::Context::Context(AttributeInstance::Context&&) = default;
-AttributeInstance::Context& AttributeInstance::Context::operator=(
-    AttributeInstance::Context&&) = default;
-AttributeInstance::Context::~Context() = default;
-
-AttributeInstance::AttributeInstance(AttributeType type,
-                                     std::u16string value,
-                                     Context context)
-    : type_(type), value_(std::move(value)), context_(std::move(context)) {}
+AttributeInstance::AttributeInstance(AttributeType type, std::u16string value)
+    : type_(type), value_(std::move(value)) {}
 
 AttributeInstance::AttributeInstance(const AttributeInstance&) = default;
 AttributeInstance& AttributeInstance::operator=(const AttributeInstance&) =
@@ -70,8 +58,7 @@ FieldTypeSet AttributeInstance::GetSupportedTypes() const {
 }
 
 bool operator==(const AttributeInstance& lhs, const AttributeInstance& rhs) {
-  return lhs.context_ == rhs.context_ && lhs.type_ == rhs.type_ &&
-         lhs.value_ == rhs.value_;
+  return lhs.type_ == rhs.type_ && lhs.value_ == rhs.value_;
 }
 
 std::u16string AttributeInstance::NormalizedValue() const {

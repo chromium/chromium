@@ -31,8 +31,8 @@ InstallerResult RunApplicationInstaller(
   if (!PrepareToRunBundle(app_installer)) {
     VLOG(0) << "Prep failed -- Gatekeeper may prompt for " << app_installer;
   }
-
   VLOG(1) << "Running application install at " << app_installer;
+
   // InstallFromArchive() returns the exit code of the script. 0 is success and
   // anything else should be an error.
   const int exit_code =

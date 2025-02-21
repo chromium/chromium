@@ -5,9 +5,6 @@
 #ifndef CHROME_UPDATER_UPDATE_USAGE_STATS_TASK_H_
 #define CHROME_UPDATER_UPDATE_USAGE_STATS_TASK_H_
 
-#include <string>
-#include <vector>
-
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
@@ -16,16 +13,8 @@
 
 namespace updater {
 
-bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
-                               UpdaterScope scope);
-
-// Reads usage stats for each app from the system instead of persisted data,
-// specifically from the registry for Windows. `include_only_these_app_ids`
-// allows for including only app ids that are both in the registry and in
-// `include_only_these_app_ids`, and is used for unit tests.
-bool AreRawUsageStatsEnabled(
-    UpdaterScope scope,
-    const std::vector<std::string>& include_only_these_app_ids = {});
+// Checks if any app besides Omaha 4 or CECA is allowed to send usage stats.
+bool AnyAppUsageStatsAllowed(UpdaterScope scope);
 
 class PersistedData;
 
@@ -42,6 +31,8 @@ class UpdateUsageStatsTask
   FRIEND_TEST_ALL_PREFIXES(UpdateUsageStatsTaskTest, OneAppEnabled);
   FRIEND_TEST_ALL_PREFIXES(UpdateUsageStatsTaskTest, ZeroAppsEnabled);
   virtual ~UpdateUsageStatsTask();
+  void SetUsageStatsEnabled(scoped_refptr<PersistedData> persisted_data,
+                            bool enabled);
 
   SEQUENCE_CHECKER(sequence_checker_);
   const UpdaterScope scope_;

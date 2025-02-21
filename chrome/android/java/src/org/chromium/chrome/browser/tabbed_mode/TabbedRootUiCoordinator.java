@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
@@ -42,6 +41,8 @@ import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.accessibility.PageZoomIphController;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
+import org.chromium.chrome.browser.bookmarks.BookmarkOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarCoordinator;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
@@ -119,6 +120,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextIphController;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoSharingControllerImpl;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsService;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
@@ -175,6 +177,10 @@ import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.search_engines.SearchEnginesFeatures;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -242,6 +248,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     protected @Nullable InstantMessageDelegateImpl mInstantMessageDelegateImpl;
     private @Nullable BookmarkBarCoordinator mBookmarkBarCoordinator;
     private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
+    private @Nullable BookmarkOpener mBookmarkOpener;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -329,9 +336,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param savedInstanceState The saved bundle for the last recorded state.
      * @param multiInstanceManager Manages multi-instance mode.
      * @param overviewColorSupplier Notifies when the overview color changes.
-     * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
-     *     suggestion list) will position themselves relative to. If null, the content view will be
-     *     used.
      * @param manualFillingComponentSupplier Supplies the {@link ManualFillingComponent} for
      *     interacting with non-popup filling UI.
      * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
@@ -381,7 +385,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Nullable Bundle savedInstanceState,
             @Nullable MultiInstanceManager multiInstanceManager,
             @NonNull ObservableSupplier<Integer> overviewColorSupplier,
-            @Nullable View baseChromeLayout,
             @NonNull ManualFillingComponentSupplier manualFillingComponentSupplier,
             @NonNull EdgeToEdgeManager edgeToEdgeManager) {
         super(
@@ -423,7 +426,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 backPressManager,
                 savedInstanceState,
                 overviewColorSupplier,
-                baseChromeLayout,
                 edgeToEdgeManager);
         mInsetObserver = insetObserver;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;
@@ -460,16 +462,32 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         DataSharingTabGroupsDelegate dataSharingTabGroupsDelegate =
                 createDataSharingTabGroupsDelegate();
 
+        Callback<Callback<Boolean>> startAccountRefreshCallback =
+                (Callback<Boolean> successCallback) -> {
+                    assert getDataSharingTabManager() != null;
+                    IdentityManager identityManager =
+                            IdentityServicesProvider.get()
+                                    .getIdentityManager(getDataSharingTabManager().getProfile());
+                    CoreAccountInfo primaryAccountInfo =
+                            identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+                    AccountManagerFacadeProvider.getInstance()
+                            .updateCredentials(
+                                    CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo),
+                                    mActivity,
+                                    successCallback);
+                };
+
         CollaborationControllerDelegateFactory collaborationControllerDelegateFactory =
-                (type, runnable) -> {
+                (flowType, switchToTabSwitcherCallback) -> {
                     assert getDataSharingTabManager() != null;
                     return new CollaborationControllerDelegateImpl(
                             mActivity,
-                            type,
+                            flowType,
                             getDataSharingTabManager(),
                             SigninAndHistorySyncActivityLauncherImpl.get(),
                             getLoadingFullscreenCoordinator(),
-                            runnable);
+                            switchToTabSwitcherCallback,
+                            startAccountRefreshCallback);
                 };
 
         mDataSharingTabManager =
@@ -592,6 +610,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mBookmarkBarCoordinator != null) {
             mBookmarkBarCoordinator.destroy();
             mBookmarkBarCoordinator = null;
+        }
+
+        if (mBookmarkOpener != null) {
+            mBookmarkOpener.destroy();
+            mBookmarkOpener = null;
         }
 
         if (mLoadingFullscreenCoordinator != null) {
@@ -836,13 +859,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (ChromeFeatureList.sAndroidBookmarkBar.isEnabled()
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+            mBookmarkOpener =
+                    new BookmarkOpenerImpl(
+                            mBookmarkModelSupplier, mActivity, mActivity.getComponentName());
             mBookmarkBarCoordinator =
                     new BookmarkBarCoordinator(
                             mActivity,
                             mBrowserControlsManager,
                             /* heightChangeCallback= */ (height) -> updateTopControlsHeight(),
                             mProfileSupplier,
-                            /* viewStub= */ mActivity.findViewById(R.id.bookmark_bar_stub));
+                            /* viewStub= */ mActivity.findViewById(R.id.bookmark_bar_stub),
+                            mBookmarkOpener);
 
             if (mToolbarManager != null) {
                 mToolbarManager.setBookmarkBarHeightSupplier(

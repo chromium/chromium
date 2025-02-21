@@ -99,10 +99,8 @@ Installer::Installer(
       policy_same_version_update_(policy_same_version_update),
       persisted_data_(persisted_data),
       crx_verifier_format_(crx_verifier_format),
-      usage_stats_enabled_(
-          IsUpdaterOrCompanionApp(app_id)
-              ? persisted_data->GetUsageStatsEnabled()
-              : AreRawUsageStatsEnabled(updater_scope_, {app_id})),
+      usage_stats_enabled_(IsUpdaterOrCompanionApp(app_id) &&
+                           persisted_data->GetUsageStatsEnabled()),
       app_info_(AppInfo(GetUpdaterScope(), app_id, {}, {}, {}, {})) {}
 
 Installer::~Installer() = default;

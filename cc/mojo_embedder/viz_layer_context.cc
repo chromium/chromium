@@ -23,6 +23,7 @@
 #include "cc/animation/keyframe_model.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/picture_layer_impl.h"
+#include "cc/layers/surface_layer_impl.h"
 #include "cc/tiles/picture_layer_tiling.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/property_tree.h"
@@ -429,6 +430,21 @@ void SerializePictureLayerTileUpdates(
   }
 }
 
+void SerializeSurfaceLayerExtra(SurfaceLayerImpl& layer,
+                                viz::mojom::SurfaceLayerExtraPtr& extra) {
+  extra->surface_range = layer.range();
+  if (layer.deadline_in_frames().has_value()) {
+    extra->deadline_in_frames = layer.deadline_in_frames().value();
+  }
+  extra->stretch_content_to_fill_bounds =
+      layer.stretch_content_to_fill_bounds();
+  extra->surface_hit_testable = layer.surface_hit_testable();
+  extra->has_pointer_events_none = layer.has_pointer_events_none();
+  extra->is_reflection = layer.is_reflection();
+  extra->will_draw_needs_reset = layer.will_draw_needs_reset();
+  extra->override_child_paint_flags = layer.override_child_paint_flags();
+}
+
 void SerializeLayer(LayerImpl& layer,
                     viz::ClientResourceProvider& resource_provider,
                     viz::RasterContextProvider& context_provider,
@@ -448,13 +464,24 @@ void SerializeLayer(LayerImpl& layer,
   wire.clip_tree_index = layer.clip_tree_index();
   wire.effect_tree_index = layer.effect_tree_index();
   wire.scroll_tree_index = layer.scroll_tree_index();
-  if (layer.GetLayerType() == mojom::LayerType::kPicture) {
-    PictureLayerImpl& picture_layer = static_cast<PictureLayerImpl&>(layer);
-    if (picture_layer.GetRasterSource()->IsSolidColor()) {
-      wire.solid_color = picture_layer.GetRasterSource()->GetSolidColor();
+  switch (layer.GetLayerType()) {
+    case mojom::LayerType::kSurface:
+      wire.surface_layer_extra = viz::mojom::SurfaceLayerExtra::New();
+      SerializeSurfaceLayerExtra(static_cast<SurfaceLayerImpl&>(layer),
+                                 wire.surface_layer_extra);
+      break;
+    case mojom::LayerType::kPicture: {
+      PictureLayerImpl& picture_layer = static_cast<PictureLayerImpl&>(layer);
+      if (picture_layer.GetRasterSource()->IsSolidColor()) {
+        wire.solid_color = picture_layer.GetRasterSource()->GetSolidColor();
+      }
+      SerializePictureLayerTileUpdates(picture_layer, resource_provider,
+                                       context_provider, update.tilings);
+      break;
     }
-    SerializePictureLayerTileUpdates(picture_layer, resource_provider,
-                                     context_provider, update.tilings);
+    default:
+      // TODO(zmo): handle other types of LayerImpl.
+      break;
   }
 }
 
@@ -766,6 +793,15 @@ void VizLayerContext::UpdateDisplayTreeFrom(
       old_trees.transform_tree(), property_trees.transform_tree());
 
   last_committed_property_trees_ = property_trees;
+
+  if (tree.needs_surface_ranges_sync()) {
+    update->surface_ranges.emplace();
+    update->surface_ranges->reserve(tree.SurfaceRanges().size());
+    for (const auto& surface_range : tree.SurfaceRanges()) {
+      update->surface_ranges->push_back(surface_range);
+    }
+    tree.set_needs_surface_ranges_sync(false);
+  }
 
   if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
     SerializeAnimationUpdates(tree, *update);

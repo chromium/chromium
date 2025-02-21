@@ -2326,7 +2326,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 getSavedInstanceState(),
                 mMultiInstanceManager,
                 initHubOverviewColorSupplier(),
-                getBaseChromeLayout(),
                 mManualFillingComponentSupplier,
                 getEdgeToEdgeManager());
     }

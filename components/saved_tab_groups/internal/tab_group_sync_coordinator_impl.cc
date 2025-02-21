@@ -80,6 +80,15 @@ TabGroupSyncCoordinatorImpl::CreateScopedLocalObserverPauser() {
   return platform_delegate_->CreateScopedLocalObserverPauser();
 }
 
+std::set<LocalTabID> TabGroupSyncCoordinatorImpl::GetSelectedTabs() {
+  return platform_delegate_->GetSelectedTabs();
+}
+
+std::u16string TabGroupSyncCoordinatorImpl::GetTabTitle(
+    const LocalTabID& local_tab_id) {
+  return platform_delegate_->GetTabTitle(local_tab_id);
+}
+
 void TabGroupSyncCoordinatorImpl::DisconnectLocalTabGroup(
     const LocalTabGroupID& local_id) {
   platform_delegate_->DisconnectLocalTabGroup(local_id);

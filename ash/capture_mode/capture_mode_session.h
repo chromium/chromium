@@ -200,6 +200,7 @@ class ASH_EXPORT CaptureModeSession
       ScannerSession::FetchActionsResponse actions_response) override;
   void ShowActionContainerError(const std::u16string& error_message) override;
   gfx::Rect GetFeedbackWidgetScreenBounds() const override;
+  void OnSearchResultsPanelCreated(views::Widget* panel_widget) override;
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;

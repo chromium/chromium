@@ -26,6 +26,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
+#include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -115,6 +116,8 @@ tab_groups::SavedTabGroup CreateSharedTabGroup(
                                     tab_group_sync_id, std::nullopt);
   tab_groups::SavedTabGroupTab tab2(GURL("https://www.example2.com/"), u"Tab 2",
                                     tab_group_sync_id, std::nullopt);
+  tab1.SetLocalTabID(tab_groups::test::GenerateRandomTabID());
+  tab2.SetLocalTabID(tab_groups::test::GenerateRandomTabID());
   tabs.emplace_back(tab1);
   tabs.emplace_back(tab2);
 
@@ -894,7 +897,8 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
                   expected_message_dot_tab_group)))
       .Times(1)
       .WillOnce(SaveArg<0>(&last_persistent_message_dot_tab_group));
-  tg_notifier_observer_->OnTabUpdated(*tab2, tab_groups::TriggerSource::REMOTE);
+  tg_notifier_observer_->OnTabUpdated(*tab2, tab_groups::TriggerSource::REMOTE,
+                                      false);
   message = GetLastMessageFromDB();
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_UPDATED,
@@ -951,7 +955,8 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
                   expected_message_dot_tab_group)))
       .Times(1)
       .WillOnce(SaveArg<0>(&last_persistent_message_dot_tab_group));
-  tg_notifier_observer_->OnTabRemoved(tab3, tab_groups::TriggerSource::REMOTE);
+  tg_notifier_observer_->OnTabRemoved(tab3, tab_groups::TriggerSource::REMOTE,
+                                      false);
   message = GetLastMessageFromDB();
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_REMOVED,
@@ -1061,7 +1066,8 @@ TEST_F(MessagingBackendServiceImplTest, TestOnTabUpdatedFromLocal) {
 
   EXPECT_TRUE(GetDirtyMessageForTab(collaboration_group_id, tab2_sync_id,
                                     DirtyType::kDot));
-  tg_notifier_observer_->OnTabUpdated(*tab2, tab_groups::TriggerSource::LOCAL);
+  tg_notifier_observer_->OnTabUpdated(*tab2, tab_groups::TriggerSource::LOCAL,
+                                      false);
   EXPECT_FALSE(GetDirtyMessageForTab(collaboration_group_id, tab2_sync_id,
                                      DirtyType::kDot));
 
@@ -1098,7 +1104,8 @@ TEST_F(MessagingBackendServiceImplTest, TestOnTabRemovedFromLocal) {
   EXPECT_CALL(mock_persistent_message_observer_, HidePersistentMessage)
       .Times(3);
   EXPECT_FALSE(HasLastMessageFromDB());
-  tg_notifier_observer_->OnTabRemoved(tab3, tab_groups::TriggerSource::LOCAL);
+  tg_notifier_observer_->OnTabRemoved(tab3, tab_groups::TriggerSource::LOCAL,
+                                      false);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
@@ -1512,7 +1519,8 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsUpdated) {
   base::Uuid tab1_sync_id = tab_group.saved_tabs().at(0).saved_tab_guid();
   tab_groups::SavedTabGroupTab* tab1 = tab_group.GetTab(tab1_sync_id);
 
-  tg_notifier_observer_->OnTabSelected(*tab1);
+  tg_notifier_observer_->OnTabSelectionChanged(tab1->local_tab_id().value(),
+                                               true);
 
   // Save the last invocation of calls to the InstantMessageDelegate.
   InstantMessage message;
@@ -1530,7 +1538,8 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsUpdated) {
       .WillOnce(SaveArg<0>(&last_persistent_message));
 
   // Updating the currently selected tab should inform the delegate.
-  tg_notifier_observer_->OnTabUpdated(*tab1, tab_groups::TriggerSource::REMOTE);
+  tg_notifier_observer_->OnTabUpdated(*tab1, tab_groups::TriggerSource::REMOTE,
+                                      true);
 
   // We should have received a stored message about the updated tab.
   auto db_message = GetLastMessageFromDB();
@@ -1572,7 +1581,8 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsRemoved) {
   base::Uuid tab1_sync_id = tab_group.saved_tabs().at(0).saved_tab_guid();
   tab_groups::SavedTabGroupTab* tab1 = tab_group.GetTab(tab1_sync_id);
 
-  tg_notifier_observer_->OnTabSelected(*tab1);
+  tg_notifier_observer_->OnTabSelectionChanged(tab1->local_tab_id().value(),
+                                               true);
 
   // Save the last invocation of calls to the InstantMessageDelegate.
   InstantMessage message;
@@ -1584,7 +1594,8 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsRemoved) {
           DoAll(SaveArg<0>(&message), MoveArg<1>(&success_callback)));
 
   // Removing the currently selected tab should inform the delegate.
-  tg_notifier_observer_->OnTabRemoved(*tab1, tab_groups::TriggerSource::REMOTE);
+  tg_notifier_observer_->OnTabRemoved(*tab1, tab_groups::TriggerSource::REMOTE,
+                                      true);
 
   // We should have received a stored message about the removed tab.
   auto db_message = GetLastMessageFromDB();
@@ -1616,13 +1627,6 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabAtStartupGetsRemoved) {
   base::Uuid tab1_sync_id = tab_group.saved_tabs().at(0).saved_tab_guid();
   tab_groups::SavedTabGroupTab* tab1 = tab_group.GetTab(tab1_sync_id);
 
-  // This will make tab1 be selected at startup.
-  tab_groups::SelectedTabInfo selected_tab_info;
-  selected_tab_info.tab_group_id = tab_group.saved_guid();
-  selected_tab_info.tab_id = tab1_sync_id;
-  EXPECT_CALL(*mock_tab_group_sync_service_, GetCurrentlySelectedTabInfo())
-      .WillOnce(Return(selected_tab_info));
-
   InitializeService();
   SetupInstantMessageDelegate();
 
@@ -1633,7 +1637,8 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabAtStartupGetsRemoved) {
               DisplayInstantaneousMessage(_, _))
       .WillRepeatedly(
           DoAll(SaveArg<0>(&message), MoveArg<1>(&success_callback)));
-  tg_notifier_observer_->OnTabRemoved(*tab1, tab_groups::TriggerSource::REMOTE);
+  tg_notifier_observer_->OnTabRemoved(*tab1, tab_groups::TriggerSource::REMOTE,
+                                      true);
 
   EXPECT_EQ(CollaborationEvent::TAB_REMOVED, message.collaboration_event);
   EXPECT_EQ(InstantNotificationType::CONFLICT_TAB_REMOVED, message.type);
@@ -1656,7 +1661,8 @@ TEST_F(MessagingBackendServiceImplTest, TestUnselectedTabGetsRemoved) {
   base::Uuid tab1_sync_id = tab_group.saved_tabs().at(0).saved_tab_guid();
   tab_groups::SavedTabGroupTab* tab1 = tab_group.GetTab(tab1_sync_id);
 
-  tg_notifier_observer_->OnTabSelected(*tab1);
+  tg_notifier_observer_->OnTabSelectionChanged(tab1->local_tab_id().value(),
+                                               true);
 
   // Removing tab 2 should not invoke the delegate.
   base::Uuid tab2_sync_id = tab_group.saved_tabs().at(1).saved_tab_guid();
@@ -1664,7 +1670,8 @@ TEST_F(MessagingBackendServiceImplTest, TestUnselectedTabGetsRemoved) {
   EXPECT_CALL(*mock_instant_message_delegate_,
               DisplayInstantaneousMessage(_, _))
       .Times(0);
-  tg_notifier_observer_->OnTabRemoved(*tab2, tab_groups::TriggerSource::REMOTE);
+  tg_notifier_observer_->OnTabRemoved(*tab2, tab_groups::TriggerSource::REMOTE,
+                                      false);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
@@ -1939,7 +1946,8 @@ TEST_F(MessagingBackendServiceImplTest, TestTabSelectionClearsChipByDefault) {
                                     DirtyType::kDotAndChip)
                   .has_value());
 
-  tg_notifier_observer_->OnTabSelected(*tab1);
+  tg_notifier_observer_->OnTabSelectionChanged(tab1->local_tab_id().value(),
+                                               true);
 
   EXPECT_FALSE(GetDirtyMessageForTab(collaboration_group_id, tab1_sync_id,
                                      DirtyType::kDotAndChip)
@@ -1964,7 +1972,8 @@ TEST_F(MessagingBackendServiceImplTest, TestTabSelectionClearsChipByDefault) {
                                     DirtyType::kDotAndChip)
                   .has_value());
 
-  tg_notifier_observer_->OnTabSelected(*tab2);
+  tg_notifier_observer_->OnTabSelectionChanged(tab2->local_tab_id().value(),
+                                               true);
 
   EXPECT_FALSE(GetDirtyMessageForTab(collaboration_group_id, tab2_sync_id,
                                      DirtyType::kDotAndChip)
@@ -1975,7 +1984,8 @@ TEST_F(MessagingBackendServiceImplTest, TestTabSelectionClearsChipByDefault) {
             last_persistent_message_dot.attribution.tab_metadata->sync_tab_id);
 
   // Selecting a tab outside a tab group should not do anything.
-  tg_notifier_observer_->OnTabSelected(std::nullopt);
+  tg_notifier_observer_->OnTabSelectionChanged(
+      tab_groups::test::GenerateRandomTabID(), true);
 }
 
 TEST_F(MessagingBackendServiceImplTest,
@@ -2046,7 +2056,8 @@ TEST_F(MessagingBackendServiceImplTest,
   EXPECT_TRUE(GetDirtyMessageForTab(collaboration_group_id, tab1_sync_id,
                                     DirtyType::kChip)
                   .has_value());
-  tg_notifier_observer_->OnTabSelected(*tab1);
+  tg_notifier_observer_->OnTabSelectionChanged(tab1->local_tab_id().value(),
+                                               true);
   EXPECT_FALSE(GetDirtyMessageForTab(collaboration_group_id, tab1_sync_id,
                                      DirtyType::kDot)
                    .has_value());
@@ -2056,7 +2067,8 @@ TEST_F(MessagingBackendServiceImplTest,
   EXPECT_EQ(tab1_sync_id,
             last_persistent_message_dot.attribution.tab_metadata->sync_tab_id);
 
-  // Select tab 2, it should clear the chip for tab 1 and the dot for tab 2.
+  // Select tab 2 and unselect tab 1, it should clear the chip for tab 1 and the
+  // dot for tab 2.
   EXPECT_CALL(mock_persistent_message_observer_,
               HidePersistentMessage(
                   PersistentMessageTypeAndEventEq(expected_message_chip)))
@@ -2073,7 +2085,11 @@ TEST_F(MessagingBackendServiceImplTest,
   EXPECT_TRUE(GetDirtyMessageForTab(collaboration_group_id, tab2_sync_id,
                                     DirtyType::kChip)
                   .has_value());
-  tg_notifier_observer_->OnTabSelected(*tab2);
+
+  tg_notifier_observer_->OnTabSelectionChanged(tab1->local_tab_id().value(),
+                                               false);
+  tg_notifier_observer_->OnTabSelectionChanged(tab2->local_tab_id().value(),
+                                               true);
   EXPECT_FALSE(GetDirtyMessageForTab(collaboration_group_id, tab1_sync_id,
                                      DirtyType::kChip)
                    .has_value());
@@ -2095,7 +2111,10 @@ TEST_F(MessagingBackendServiceImplTest,
                   PersistentMessageTypeAndEventEq(expected_message_chip)))
       .Times(1)
       .WillOnce(SaveArg<0>(&last_persistent_message_chip));
-  tg_notifier_observer_->OnTabSelected(std::nullopt);
+  tg_notifier_observer_->OnTabSelectionChanged(tab2->local_tab_id().value(),
+                                               false);
+  tg_notifier_observer_->OnTabSelectionChanged(
+      tab_groups::test::GenerateRandomTabID(), true);
   EXPECT_FALSE(GetDirtyMessageForTab(collaboration_group_id, tab2_sync_id,
                                      DirtyType::kChip)
                    .has_value());

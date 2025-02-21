@@ -377,6 +377,11 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // https://html.spec.whatwg.org/multipage/webappapis.html#concept-environment-execution-ready-flag
   void SetExecutionReady();
 
+  // Sets test url loader factory. When set, |url_loader_factory| will be
+  // returned when CreateNetworkURLLoaderFactory is called.
+  void SetNetworkURLLoaderFactoryForTesting(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
   base::WeakPtr<ServiceWorkerClient> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -549,6 +554,11 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // If CountFeature() is called before |container_| gets ready, features are
   // kept here, and flushed in SetContainerReady().
   std::set<blink::mojom::WebFeature> buffered_used_features_;
+
+  // Test url loader factory used for testing. When set, it is returned from
+  // CreateNetworkURLLoaderFactory instead of a real one.
+  scoped_refptr<network::SharedURLLoaderFactory>
+      network_url_loader_factory_override_for_testing_;
 
   // For worker clients only ---------------------------------------------------
 

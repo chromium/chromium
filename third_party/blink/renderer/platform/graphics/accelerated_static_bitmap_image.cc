@@ -333,10 +333,9 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   texture_info.fID = shared_context_texture_id;
   texture_info.fFormat =
       context_provider_wrapper->ContextProvider().GetGrGLTextureFormat(
-          viz::SkColorTypeToSinglePlaneSharedImageFormat(
-              sk_image_info_.colorType()));
+          GetSharedImageFormat());
   auto backend_texture =
-      GrBackendTextures::MakeGL(sk_image_info_.width(), sk_image_info_.height(),
+      GrBackendTextures::MakeGL(GetSize().width(), GetSize().height(),
                                 skgpu::Mipmapped::kNo, texture_info);
 
   GrSurfaceOrigin origin = IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin

@@ -939,6 +939,7 @@ class CONTENT_EXPORT WebContentsImpl
   void DraggableRegionsChanged(
       const std::vector<blink::mojom::DraggableRegionPtr>& regions) override;
   void OnFirstContentfulPaintInPrimaryMainFrame() override;
+  gfx::NativeWindow GetOwnerNativeWindow() override;
 
   // RenderViewHostDelegate ----------------------------------------------------
   RenderViewHostDelegateView* GetDelegateView() override;

@@ -5783,7 +5783,7 @@ are declared in tools/grit/grit_args.gni.
       </if>
 
       <!-- Extension installed bubble -->
-      <if expr="enable_extensions">
+      <if expr="enable_extensions_core">
         <if expr="is_macosx">
           <message name="IDS_EXTENSION_INSTALLED_APP_INFO" desc="Text displayed inside a link when an app is installed. Clicking this link opens up the New Tab Page to show the app's icon.">
             Show me
@@ -11377,6 +11377,11 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           </message>
         </if>
       </if>
+
+      <!-- Side By Side -->
+      <message name="IDS_ACCNAME_SIDE_BY_SIDE_RESIZE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side by side resize handle is focused.">
+        Side By Side Resize Handle
+      </message>
 
       <!-- Tab Search -->
       <message name="IDS_TAB_SEARCH_PROMO" desc="Promo UI shown next to the tab search button to encourage it's use.">

@@ -43,9 +43,8 @@ class MockWebAppUiManager : public web_app::FakeWebAppUiManager {
 class InstallIsolatedWebAppVirtualTaskTest : public testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppUnmanagedInstall},
-        {});
+    feature_list_.InitWithFeatures({features::kIsolatedWebAppUnmanagedInstall},
+                                   {});
 
     auto ui_manager = std::make_unique<MockWebAppUiManager>();
     ui_manager_ = ui_manager.get();
@@ -116,13 +115,6 @@ TEST_F(InstallIsolatedWebAppVirtualTaskTest, DoesNotMatchMultipleExtensions) {
       Matches({GURL("file:///bundle.swbn"), GURL("file:///bundle.wbn")}));
 }
 
-TEST_F(InstallIsolatedWebAppVirtualTaskTest, DoesNotMatchIfIwasDisabled) {
-  base::test::ScopedFeatureList disable_feature;
-  disable_feature.InitAndDisableFeature(features::kIsolatedWebApps);
-
-  EXPECT_FALSE(Matches({GURL("file:///bundle.swbn")}));
-}
-
 TEST_F(InstallIsolatedWebAppVirtualTaskTest,
        DoesNotMatchIfUnmanagedInstallDisabled) {
   base::test::ScopedFeatureList disable_feature;
@@ -130,13 +122,6 @@ TEST_F(InstallIsolatedWebAppVirtualTaskTest,
       features::kIsolatedWebAppUnmanagedInstall);
 
   EXPECT_FALSE(Matches({GURL("file:///bundle.swbn")}));
-}
-
-TEST_F(InstallIsolatedWebAppVirtualTaskTest, TaskNotRunWhenFeatureDisabled) {
-  base::test::ScopedFeatureList disable_feature;
-  disable_feature.InitAndDisableFeature(features::kIsolatedWebApps);
-
-  EXPECT_FALSE(ExecuteTask({GURL("file:///bundle.swbn")}));
 }
 
 TEST_F(InstallIsolatedWebAppVirtualTaskTest, TaskNotRunIfNoFiles) {

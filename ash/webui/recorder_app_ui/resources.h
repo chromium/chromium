@@ -109,6 +109,8 @@ const webui::LocalizedString kLocalizedStrings[] = {
      IDS_RECORDER_MIC_SELECTION_MENU_BUTTON_TOOLTIP},
     {"micSelectionMenuChromebookAudioOption",
      IDS_RECORDER_MIC_SELECTION_MENU_CHROMEBOOK_AUDIO_OPTION},
+    {"micSelectionMenuMicConnectionErrorDescription",
+     IDS_RECORDER_MIC_SELECTION_MENU_MIC_CONNECTION_ERROR_DESCRIPTION},
     {"onboardingDialogLanguageSelectionCancelButton",
      IDS_RECORDER_ONBOARDING_DIALOG_LANGUAGE_SELECTION_CANCEL_BUTTON},
     {"onboardingDialogLanguageSelectionDescription",

@@ -6146,6 +6146,15 @@
     "expiry_milestone": 133
   },
   {
+    "name": "new-etc1-encoder",
+    "owners": [
+      "cros-virt-devices-guests@google.com",
+      "uekawa@google.com",
+      "ishitatsuyuki@google.com"
+    ],
+    "expiry_milestone": 138
+  },
+  {
     "name": "new-ntp-omnibox-layout",
     "owners": [ "hujasonx@chromium.org", "schechter@chromium.org" ],
     "expiry_milestone": 116

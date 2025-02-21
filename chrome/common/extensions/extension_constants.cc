@@ -5,7 +5,6 @@
 #include "chrome/common/extensions/extension_constants.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "extensions/common/constants.h"
 
 namespace extension_misc {
@@ -30,8 +29,6 @@ const char* const kBuiltInFirstPartyExtensionIds[] = {
     kInAppPaymentsSupportAppId,
 #if BUILDFLAG(IS_CHROMEOS)
     kAssessmentAssistantExtensionId,
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     kAccessibilityCommonExtensionId,
     kSelectToSpeakExtensionId,
     kSwitchAccessExtensionId,
@@ -39,13 +36,8 @@ const char* const kBuiltInFirstPartyExtensionIds[] = {
     kFirstRunDialogId,
     kEspeakSpeechSynthesisExtensionId,
     kGoogleSpeechSynthesisExtensionId,
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    kEmbeddedA11yHelperExtensionId,
-    kChromeVoxHelperExtensionId,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     kReadingModeGDocsHelperExtensionId,
-#endif        // !BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     kTTSEngineExtensionId,
     kComponentUpdaterTTSEngineExtensionId,

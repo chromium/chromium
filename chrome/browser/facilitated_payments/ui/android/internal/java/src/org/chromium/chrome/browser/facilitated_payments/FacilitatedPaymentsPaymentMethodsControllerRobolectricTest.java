@@ -64,8 +64,11 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FooterProperties;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
@@ -168,18 +171,19 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
-    private FacilitatedPaymentsPaymentMethodsCoordinator mCoordinator;
-    private PropertyModel mFacilitatedPaymentsPaymentMethodsModel;
-    private FakeClock mClock = new FakeClock();
-    Context mContext;
-
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private FacilitatedPaymentsPaymentMethodsComponent.Delegate mDelegateMock;
+    @Mock private AutofillImageFetcher mAutofillImageFetcher;
     @Mock private Profile mProfile;
 
+    private final Context mContext;
+    private final FacilitatedPaymentsPaymentMethodsCoordinator mCoordinator;
+    private final FakeClock mClock = new FakeClock();
+    private PropertyModel mFacilitatedPaymentsPaymentMethodsModel;
+
     public FacilitatedPaymentsPaymentMethodsControllerRobolectricTest() {
-        mCoordinator = new FacilitatedPaymentsPaymentMethodsCoordinator();
         mContext = Robolectric.buildActivity(Activity.class).get();
+        mCoordinator = new FacilitatedPaymentsPaymentMethodsCoordinator();
     }
 
     @Before
@@ -188,6 +192,8 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                         mBottomSheetController.requestShowContent(
                                 any(BottomSheetContent.class), anyBoolean()))
                 .thenReturn(true);
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
+        AutofillImageFetcherFactory.setInstanceForTesting(mAutofillImageFetcher);
         mCoordinator.initialize(mContext, mBottomSheetController, mDelegateMock, mProfile);
         mFacilitatedPaymentsPaymentMethodsModel = mCoordinator.getModelForTesting();
         mCoordinator

@@ -210,6 +210,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   virtual bool IsMaximized() const = 0;
   virtual bool IsMinimized() const = 0;
   virtual void Restore() = 0;
+  virtual void ShowWindowControlsMenu(const gfx::Point& point);
   virtual void SetFullscreen(bool fullscreen, int64_t target_display_id) = 0;
   virtual bool IsFullscreen() const = 0;
   virtual void SetCanAppearInExistingFullscreenSpaces(

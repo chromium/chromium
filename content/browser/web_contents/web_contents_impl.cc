@@ -7179,6 +7179,10 @@ void WebContentsImpl::OnFirstContentfulPaintInPrimaryMainFrame() {
       &WebContentsObserver::OnFirstContentfulPaintInPrimaryMainFrame);
 }
 
+gfx::NativeWindow WebContentsImpl::GetOwnerNativeWindow() {
+  return GetTopLevelNativeWindow();
+}
+
 void WebContentsImpl::NotifyChangedNavigationState(
     InvalidateTypes changed_flags) {
   NotifyNavigationStateChanged(changed_flags);

@@ -163,6 +163,20 @@ class CORE_EXPORT HTMLSelectElement final
   // We prefer |optionList()| to |listItems()|.
   const ListItems& GetListItems() const;
 
+  // NearestAncestorSelectNoNesting is called with <hr>, <option>, and
+  // <optgroup> elements to determine if they have an ancestor <select> which
+  // they are associated with. An ancestor <select> will not be returned in some
+  // cases, such as nested <option>s, in order to match the logic in
+  // RecalcListItems and OptionList.
+  // `insertion_point` and `passed_insertion_point` are optional parameters used
+  // by HTMLOptionElement::InsertedInto. If `insertion_point` is encountered
+  // during the ancestor traversal, then `passed_insertion_point` will be set to
+  // true.
+  static HTMLSelectElement* NearestAncestorSelectNoNesting(
+      const Element& element,
+      ContainerNode* insertion_point = nullptr,
+      bool* passed_insertion_point = nullptr);
+
   void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
   void SelectOptionByAccessKey(HTMLOptionElement*);
 

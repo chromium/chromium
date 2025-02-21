@@ -269,7 +269,7 @@ public class RootUiCoordinator
     private final ObservableSupplierImpl<MerchantTrustSignalsCoordinator>
             mMerchantTrustSignalsCoordinatorSupplier = new ObservableSupplierImpl<>();
     protected final ObservableSupplier<Profile> mProfileSupplier;
-    private final ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
+    protected final ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
     private BottomSheetObserver mBottomSheetObserver;
@@ -326,7 +326,6 @@ public class RootUiCoordinator
     private @Nullable EdgeToEdgeController mEdgeToEdgeController;
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
     private @Nullable BoardingPassController mBoardingPassController;
-    private final @Nullable View mBaseChromeLayout;
     private final @NonNull EdgeToEdgeManager mEdgeToEdgeManager;
     private CommerceBottomSheetContentCoordinator mCommerceBottomSheetContentCoordinator;
     private AutomotiveBackButtonToolbarCoordinator mAutomotiveBackButtonToolbarCoordinator;
@@ -373,9 +372,6 @@ public class RootUiCoordinator
      * @param backPressManager The {@link BackPressManager} handling back press.
      * @param savedInstanceState The saved bundle for the last recorded state.
      * @param overviewColorSupplier Notifies when the overview color changes.
-     * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
-     *     suggestion list) will position themselves relative to. If null, the content view will be
-     *     used.
      * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
      */
     public RootUiCoordinator(
@@ -417,7 +413,6 @@ public class RootUiCoordinator
             @Nullable BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState,
             @NonNull ObservableSupplier<Integer> overviewColorSupplier,
-            @Nullable View baseChromeLayout,
             @NonNull EdgeToEdgeManager edgeToEdgeManager) {
         mCallbackController = new CallbackController();
         mActivity = activity;
@@ -543,7 +538,6 @@ public class RootUiCoordinator
         mExpandedBottomSheetHelper =
                 new ExpandedSheetHelperImpl(mModalDialogManagerSupplier, getTabObscuringHandler());
         mOverviewColorSupplier = overviewColorSupplier;
-        mBaseChromeLayout = baseChromeLayout;
         mEdgeToEdgeManager = edgeToEdgeManager;
         mBottomControlsStacker =
                 new BottomControlsStacker(mBrowserControlsManager, mActivity, mWindowAndroid);
@@ -1490,7 +1484,6 @@ public class RootUiCoordinator
                             mInitializeUiWithIncognitoColors,
                             mBackPressManager,
                             mOverviewColorSupplier,
-                            mBaseChromeLayout,
                             mReadAloudControllerSupplier,
                             getDesktopWindowStateManager());
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {

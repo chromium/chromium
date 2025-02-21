@@ -72,7 +72,6 @@ import "chromeos/crosapi/mojom/suggestion_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_event_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_management_service.mojom";
-import "chromeos/crosapi/mojom/timezone.mojom";
 import "chromeos/crosapi/mojom/vpn_service.mojom";
 import "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
@@ -80,7 +79,6 @@ import "chromeos/crosapi/mojom/video_capture.mojom";
 import "chromeos/crosapi/mojom/video_conference.mojom";
 import "chromeos/crosapi/mojom/kiosk_session_service.mojom";
 import "chromeos/crosapi/mojom/virtual_keyboard.mojom";
-import "chromeos/crosapi/mojom/volume_manager.mojom";
 import "chromeos/crosapi/mojom/web_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/media_ui.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
@@ -551,12 +549,7 @@ interface Crosapi {
       pending_receiver<crosapi.mojom.TelemetryProbeService> receiver);
 
   // BindTestController@14 was removed.
-
-  // Binds the TimeZoneService which notifies system timezone change.
-  // Added in M99.
-  [MinVersion=61] BindTimeZoneService@65(
-      pending_receiver<TimeZoneService> receiver);
-
+  // BindTimeZoneService@65 was removed.
   // BindTts@58 was removed.
   // BindUrlHandler@18 was removed.
 
@@ -595,10 +588,7 @@ interface Crosapi {
   [MinVersion=96] BindDeviceLocalAccountExtensionService@100(
       pending_receiver<DeviceLocalAccountExtensionService> receiver);
 
-  // Binds the VolumeManager interface for accessing volume list, etc.
-  // Added in M106.
-  [MinVersion=90]
-  BindVolumeManager@94(pending_receiver<VolumeManager> receiver);
+  // BindVolumeManager@94 was removed.
 
   // Binds the vpn service. This service is used to facilirate
   // communication between chrome.vpnProvider extension in lacros and the

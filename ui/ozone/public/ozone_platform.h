@@ -171,8 +171,12 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // via overlays. If overlays are not supported the promotion and validation
     // logic can be skipped.
     bool supports_overlays = false;
+
     // Indicates whether the platform supports server-side window decorations.
     bool supports_server_side_window_decorations = true;
+
+    // Indicates whether the platform supports window controls menus.
+    bool supports_server_window_menus = false;
 
     // For platforms that have optional support for server-side decorations,
     // this parameter allows setting the desired state in tests.  The platform

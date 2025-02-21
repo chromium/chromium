@@ -60,14 +60,15 @@ class TabGroupChangeNotifier
     // A tab was removed from the given tab group. The last known information
     // about the tab is provided.
     virtual void OnTabRemoved(tab_groups::SavedTabGroupTab removed_tab,
-                              tab_groups::TriggerSource source) = 0;
+                              tab_groups::TriggerSource source,
+                              bool is_selected) = 0;
     // A tab has been updated.
     virtual void OnTabUpdated(const tab_groups::SavedTabGroupTab& updated_tab,
-                              tab_groups::TriggerSource source) = 0;
-    // A tab has been selected. The parameter is empty if the selected tab could
-    // not be found, i.e. it is not part of a shared tab group.
-    virtual void OnTabSelected(
-        std::optional<tab_groups::SavedTabGroupTab> selected_tab) = 0;
+                              tab_groups::TriggerSource source,
+                              bool is_selected) = 0;
+    // A tab was selected or deselected.
+    virtual void OnTabSelectionChanged(const tab_groups::LocalTabID& tab_id,
+                                       bool is_selected) = 0;
   };
 
   ~TabGroupChangeNotifier() override;

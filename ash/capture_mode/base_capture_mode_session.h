@@ -216,6 +216,10 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   virtual void ShowActionContainerError(
       const std::u16string& error_message) = 0;
 
+  // Called when the search results panel is created, as it may need to be
+  // observed by the session focus cycler.
+  virtual void OnSearchResultsPanelCreated(views::Widget* panel_widget) = 0;
+
   // ShellObserver:
   void OnRootWindowWillShutdown(aura::Window* root_window) override;
 

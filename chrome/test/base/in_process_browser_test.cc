@@ -29,7 +29,6 @@
 #include "base/test/test_switches.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
@@ -128,7 +127,7 @@
 #include "components/storage_monitor/test_storage_monitor.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
@@ -142,7 +141,7 @@
 #include "components/user_manager/user_names.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/test/event_generator.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/views/test/test_desktop_screen_ozone.h"
@@ -159,7 +158,7 @@
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class FakeDeviceSyncImplFactory
     : public ash::device_sync::DeviceSyncImpl::Factory {
  public:
@@ -186,7 +185,7 @@ FakeDeviceSyncImplFactory* GetFakeDeviceSyncImplFactory() {
   static base::NoDestructor<FakeDeviceSyncImplFactory> factory;
   return factory.get();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 class ChromeBrowserMainExtraPartsBrowserProcessInjection
@@ -294,7 +293,7 @@ InProcessBrowserTest::InProcessBrowserTest(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void InProcessBrowserTest::set_launch_browser_for_testing(
     std::unique_ptr<ash::full_restore::ScopedLaunchBrowserForTesting>
         launch_browser_for_testing) {
@@ -306,7 +305,7 @@ void InProcessBrowserTest::RunScheduledLayouts() {
 #if defined(TOOLKIT_VIEWS)
   views::Widget::Widgets widgets_to_layout;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // WidgetTest::GetAllWidgets() doesn't work for ChromeOS in a production
   // environment. We must get the Widgets ourself.
   for (aura::Window* root_window : ash::Shell::GetAllRootWindows()) {
@@ -314,7 +313,7 @@ void InProcessBrowserTest::RunScheduledLayouts() {
   }
 #else
   widgets_to_layout = views::test::WidgetTest::GetAllWidgets();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   for (views::Widget* widget : widgets_to_layout) {
     widget->LayoutRootViewIfNecessary();
@@ -380,10 +379,10 @@ void InProcessBrowserTest::Initialize() {
   create_services_subscription_ =
       BrowserContextDependencyManager::GetInstance()
           ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-              &InProcessBrowserTest::SetupProtocolHandlerTestFactories,
+              &InProcessBrowserTest::OnWillCreateBrowserContextKeyedServices,
               base::Unretained(this)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   launch_browser_for_testing_ =
       std::make_unique<ash::full_restore::ScopedLaunchBrowserForTesting>();
 #endif
@@ -441,7 +440,7 @@ void InProcessBrowserTest::SetUp() {
   ASSERT_TRUE(SetUpUserDataDirectory())
       << "Could not set up user data directory.";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // No need to redirect log for test.
   command_line->AppendSwitch(switches::kDisableLoggingRedirect);
 
@@ -507,10 +506,8 @@ void InProcessBrowserTest::SetUp() {
   // access to all files here since browser_tests and interactive_ui_tests
   // rely on the ability to open any files via file: scheme.
   ChromeNetworkDelegate::EnableAccessToAllFilesForTesting(true);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Device sync (for multidevice "Better Together") is ash specific.
+  // Device sync (for multidevice "Better Together") is ChromeOS specific.
   ash::device_sync::DeviceSyncImpl::Factory::SetCustomFactory(
       GetFakeDeviceSyncImplFactory());
 
@@ -521,7 +518,7 @@ void InProcessBrowserTest::SetUp() {
   // Disable the notification delay timer used to prevent non system
   // notifications from showing up right after login.
   ash::ShellTestApi::SetUseLoginNotificationDelayForTest(false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Redirect the default download directory to a temporary directory.
   ASSERT_TRUE(default_download_dir_.CreateUniqueTempDir());
@@ -586,7 +583,7 @@ void InProcessBrowserTest::TearDown() {
     ASSERT_TRUE(embedded_https_test_server().ShutdownAndWaitUntilComplete());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::device_sync::DeviceSyncImpl::Factory::SetCustomFactory(nullptr);
   launch_browser_for_testing_ = nullptr;
 #endif
@@ -784,7 +781,7 @@ Browser* InProcessBrowserTest::CreateBrowserForApp(const std::string& app_name,
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 Browser* InProcessBrowserTest::CreateGuestBrowser() {
   // Get Guest profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -801,7 +798,7 @@ Browser* InProcessBrowserTest::CreateGuestBrowser() {
   AddBlankTabAndShow(browser);
   return browser;
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 void InProcessBrowserTest::AddBlankTabAndShow(Browser* browser) {
   content::WebContents* blank_tab = chrome::AddSelectedTabWithURL(
@@ -939,7 +936,13 @@ void InProcessBrowserTest::QuitBrowsers() {
 #endif
 }
 
-void InProcessBrowserTest::SetupProtocolHandlerTestFactories(
+void InProcessBrowserTest::OnWillCreateBrowserContextKeyedServices(
+    content::BrowserContext* context) {
+  SetUpProtocolHandlerTestFactories(context);
+  SetUpBrowserContextKeyedServices(context);
+}
+
+void InProcessBrowserTest::SetUpProtocolHandlerTestFactories(
     content::BrowserContext* context) {
   // Use TestProtocolHandlerRegistryDelegate to prevent OS integration during
   // the protocol registration process.

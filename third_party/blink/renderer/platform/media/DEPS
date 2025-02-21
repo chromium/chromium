@@ -12,6 +12,7 @@ include_rules = [
   "+base/strings/utf_string_conversions.h",
   "+base/task/task_runner.h",
   "+base/threading/thread.h",
+  "+cc/base",
   "+cc/layers",
   "+components/viz/common",
   "+media/audio/null_audio_sink.h",

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/html_hr_element.h"
 
 namespace blink {
 
@@ -42,8 +43,19 @@ void OptionListIterator::Advance(HTMLOptionElement* previous) {
       return;
     }
     if (HTMLSelectElement::SelectParserRelaxationEnabled(&select_)) {
-      if (IsA<HTMLSelectElement>(current)) {
+      if (IsA<HTMLSelectElement>(current) || IsA<HTMLHRElement>(current)) {
         current = ElementTraversal::NextSkippingChildren(*current, &select_);
+      } else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(current)) {
+        // optgroup->OwnerSelectElement() might be null because this method may
+        // be called before InsertedInto is called on the optgroup.
+        if (optgroup->OwnerSelectElement() == select_ ||
+            HTMLSelectElement::NearestAncestorSelectNoNesting(*optgroup) ==
+                select_) {
+          current = ElementTraversal::Next(*current, &select_);
+        } else {
+          // Don't track elements inside nested <optgroup>s.
+          current = ElementTraversal::NextSkippingChildren(*current, &select_);
+        }
       } else {
         current = ElementTraversal::Next(*current, &select_);
       }
@@ -84,8 +96,20 @@ void OptionListIterator::Retreat(HTMLOptionElement* next) {
     if (HTMLSelectElement::SelectParserRelaxationEnabled(&select_)) {
       if (current == select_) {
         current = nullptr;
-      } else if (IsA<HTMLSelectElement>(current)) {
+      } else if (IsA<HTMLSelectElement>(current) ||
+                 IsA<HTMLHRElement>(current)) {
         current = ElementTraversal::PreviousAbsoluteSibling(*next, &select_);
+      } else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(current)) {
+        // optgroup->OwnerSelectElement() might be null because this method may
+        // be called before InsertedInto is called on the optgroup.
+        if (optgroup->OwnerSelectElement() == select_ ||
+            HTMLSelectElement::NearestAncestorSelectNoNesting(*optgroup) ==
+                select_) {
+          current = ElementTraversal::Previous(*current, &select_);
+        } else {
+          // Don't track elements inside nested <optgroup>s.
+          current = ElementTraversal::PreviousAbsoluteSibling(*next, &select_);
+        }
       } else {
         current = ElementTraversal::Previous(*current, &select_);
       }

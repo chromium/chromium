@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_FADE_DURATION_MS;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -29,6 +30,7 @@ import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -57,6 +59,8 @@ public class BookmarkPane implements Pane {
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
     private BookmarkManagerCoordinator mBookmarkManager;
+    private BookmarkOpener mBookmarkOpener;
+    private BookmarkOpener.Observer mBookmarkOpenerObserver;
     private PaneHubController mPaneHubController;
 
     /**
@@ -124,15 +128,24 @@ public class BookmarkPane implements Pane {
     @Override
     public void notifyLoadHint(@LoadHint int loadHint) {
         if (loadHint == LoadHint.HOT && mBookmarkManager == null) {
+            ComponentName componentName = mActivity.getComponentName();
+            Profile originalProfile = mProfileProviderSupplier.get().getOriginalProfile();
+            mBookmarkOpener =
+                    new BookmarkOpenerImpl(
+                            () -> BookmarkModel.getForProfile(originalProfile),
+                            mActivity,
+                            componentName);
+            mBookmarkOpenerObserver = this::onBookmarkOpened;
+            mBookmarkOpener.addObserver(mBookmarkOpenerObserver);
             mBookmarkManager =
                     new BookmarkManagerCoordinator(
                             mActivity,
-                            mActivity.getComponentName(),
-                            false,
+                            /* isDialogUi= */ false,
                             mSnackbarManager,
-                            mProfileProviderSupplier.get().getOriginalProfile(),
+                            originalProfile,
                             new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
-                            this::onBookmarkOpened);
+                            mBookmarkOpener,
+                            componentName);
             mBookmarkManager.updateForUrl(UrlConstants.BOOKMARKS_URL);
             mRootView.addView(mBookmarkManager.getView());
         } else if (loadHint == LoadHint.COLD) {
@@ -186,6 +199,10 @@ public class BookmarkPane implements Pane {
 
     private void destroyManagerAndRemoveView() {
         if (mBookmarkManager != null) {
+            mBookmarkOpener.removeObserver(mBookmarkOpenerObserver);
+            mBookmarkOpener.destroy();
+            mBookmarkOpener = null;
+
             mBookmarkManager.onDestroyed();
             mBookmarkManager = null;
         }

@@ -60,6 +60,8 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   void SetIsReflection(bool is_reflection);
   bool is_reflection() const { return is_reflection_; }
 
+  bool will_draw_needs_reset() const { return will_draw_needs_reset_; }
+
   void SetOverrideChildPaintFlags(bool override_child_paint_flags);
   bool override_child_paint_flags() const {
     return override_child_paint_flags_;

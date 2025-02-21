@@ -40,7 +40,8 @@ class RenderFrameHost;
 // the `Step` enumeration.
 class AuthenticatorRequestDialogController
     : public AuthenticatorRequestDialogModel::Observer,
-      public webauthn::PasskeyModel::Observer {
+      public webauthn::PasskeyModel::Observer,
+      public PasskeyUpgradeRequestController::Delegate {
  public:
   using RequestCallback = device::FidoRequestHandlerBase::RequestCallback;
   using BlePermissionCallback = base::RepeatingCallback<void(
@@ -86,6 +87,10 @@ class AuthenticatorRequestDialogController
       const std::vector<webauthn::PasskeyModelChange>& changes) override;
   void OnPasskeyModelShuttingDown() override;
   void OnPasskeyModelIsReady(bool is_ready) override;
+
+  // PasskeyUpgradeRequestController::Delegate:
+  void PasskeyUpgradeSucceeded() override;
+  void PasskeyUpgradeFailed() override;
 
   // Hides the dialog. A subsequent call to SetCurrentStep() will unhide it.
   void HideDialog();
