@@ -17,6 +17,7 @@ build_webui("build") {
 
   non_web_component_files = [
     "browser_proxy.ts",
+    "glic_api_impl/conversions.ts",
     "glic_api_impl/glic_api_client.ts",
     "glic_api_impl/glic_api_host.ts",
     "glic_api_impl/glic_api_injected_client.ts",

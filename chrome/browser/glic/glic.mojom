@@ -143,10 +143,15 @@ union CaptureScreenshotResult {
 struct UserProfileInfo {
   // Profile avatar image bitmap.
   skia.mojom.BitmapN32? avatar_icon;
-  // The user's name for display purposes.
+  // The user's full name for display purposes.
   string display_name;
   // The user's email.
   string email;
+  // The user's given name.
+  string given_name;
+  // Whether the profile or browser is managed.
+  // See `policy::ManagementService::IsManaged()`.
+  bool is_managed;
 };
 
 // The result of `WebClientCreated()`. Contains information that needs to be

@@ -803,10 +803,14 @@ export declare interface UserProfileInfo {
    * image.
    */
   avatarIcon(): Promise<Blob|undefined>;
-  /** The name displayed for this profile. */
+  /** The full name displayed for this profile. */
   displayName: string;
+  /** The given name for this profile. */
+  givenName?: string;
   /** The profile email. */
   email: string;
+  /** Whether the profile or the browser is managed. */
+  isManaged?: boolean;
 }
 
 /** Chrome version data broken down into its numeric components. */
