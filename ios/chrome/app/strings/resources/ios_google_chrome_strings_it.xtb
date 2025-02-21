@@ -136,7 +136,6 @@ Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verr
 <translation id="4830799082179398588">Vuoi impostare Chrome come browser predefinito?</translation>
 <translation id="484033449593719797">Non supportata su Chrome beta</translation>
 <translation id="4840404732697892756">Gestore delle password di Google può controllare le tue password quando accedi con il tuo Account Google.</translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{Chrome può aiutarti a monitorare questo pacchetto nella pagina Nuova scheda.}other{Chrome può aiutarti a monitorare questi pacchetti nella pagina Nuova scheda.}}</translation>
 <translation id="4903674399067644695">In questa scheda vengono mostrati suggerimenti su come utilizzare al meglio Chrome.</translation>
 <translation id="49200511069271369">La tua organizzazione, <ph name="DOMAIN" />, gestisce l'account a cui stai accedendo e la modalità di utilizzo di Chrome. L'amministratore può configurare o limitare determinate funzionalità.</translation>
 <translation id="4925322001044117929">Usa Chrome sull'iPad per impostazione predefinita</translation>
@@ -158,7 +157,6 @@ Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verr
 <translation id="5439191312780166229">Ricevi un avviso in caso di siti pericolosi, inclusi quelli di cui Google non era a conoscenza, analizzando più dati provenienti dai siti rispetto al livello Protezione standard. Puoi scegliere di ignorare gli avvisi di Chrome.</translation>
 <translation id="5442013002200339429">Se nascondi "<ph name="MODULE_NAME" />", Chrome non traccerà più automaticamente i tuoi futuri pacchetti ed eliminerà tutti i dati di tracciamento delle spedizioni precedenti.</translation>
 <translation id="5460571915754665838">4. Seleziona Chrome</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{Chrome ti aiuterà a monitorare questo pacchetto nella pagina Nuova scheda.}other{Chrome ti aiuterà a monitorare questi pacchetti nella pagina Nuova scheda.}}</translation>
 <translation id="5492504007368565877">Gestore delle password di Google non può controllare le tue password.</translation>
 <translation id="5525095647255982834">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su quel dispositivo.</translation>
 <translation id="5527026824954593399">Tocca l'opzione "Visualizza con Google Maps su Chrome".</translation>

@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Passen opslaan...</translation>
 <translation id="1060136083665017312">Gamesystemen en gameconsoles</translation>
 <translation id="1060320201901229167">Envelop Kaku 5</translation>
-<translation id="10614374240317010">Nooit opgeslagen</translation>
 <translation id="1062407476771304334">Vervangen</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Informatie over de zoekmachine</translation>
@@ -263,7 +262,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1432187715652018471">De pagina wil een servicehandler installeren.</translation>
 <translation id="1432581352905426595">Zoekmachines beheren</translation>
 <translation id="1433225466058025572">Probeer je bestanden opnieuw te verplaatsen</translation>
-<translation id="1435940442311036198">Een toegangscode gebruiken op een ander apparaat</translation>
 <translation id="1436185428532214179">Kan vragen of deze site bestanden en mappen op je apparaat mag bewerken</translation>
 <translation id="1442386063175183758">Gatefold rechts</translation>
 <translation id="1442987760062738829">Perforeren</translation>
@@ -357,7 +355,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="159274626729231974">Filmfestivals</translation>
 <translation id="1593359183944365958">270 graden</translation>
 <translation id="1594030484168838125">Kiezen</translation>
-<translation id="1598816256585174656">Toegangssleutel uit Windows Hello</translation>
 <translation id="1599199147673445968">Nieuwe pas? <ph name="BEGIN_LINK" />Kaartgegevens invullen<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Beauty en fitness</translation>
 <translation id="160851722280695521">Speel de Dino Run-game in Chrome</translation>
@@ -469,7 +466,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Web-apps installeren?</translation>
 <translation id="1791415068765905273">Alle vergelijkingstabellen tonen</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om je gegevens, privacy en beveiliging te beheren in je Google-account</translation>
 <translation id="1793473605302304726">Gespreid betalen</translation>
 <translation id="1793631236004319016">Laatst gebruikt: <ph name="NUM_HOURS_MINUTES_SECONDS" /> geleden</translation>
@@ -2121,7 +2117,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4754461935447132332">Niet toegestaan voor niet-beveiligde sites</translation>
 <translation id="4756388243121344051">Gesc&amp;hiedenis</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Toegangssleutel uit je Chrome-profiel</translation>
 <translation id="4757993714154412917">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chromium raadt je aan je opgeslagen wachtwoorden te checken om je accounts te beveiligen.</translation>
 <translation id="4758311279753947758">Contactgegevens toevoegen</translation>
 <translation id="4761326898079498987">Meer informatie</translation>
@@ -2694,7 +2689,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5764920692828389743">Naar <ph name="EMAIL_ADDRESS" /> sturen</translation>
 <translation id="5765072501007116331">Selecteer een adres om bezorgingsmethoden en vereisten te bekijken</translation>
 <translation id="57689295674415555">Virtueel kaartnummer niet ingevuld?</translation>
-<translation id="5772086939108830423">Een toegangscode gebruiken op een ander apparaat</translation>
 <translation id="5776313857861697733">Priority</translation>
 <translation id="577804500166306874">Resultaat laden</translation>
 <translation id="5781136890105823427">Experiment staat aan</translation>
@@ -2825,7 +2819,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (gesynchroniseerd)</translation>
 <translation id="6028591542479806248">Mobiele en e-mailmeldingen beheren</translation>
 <translation id="6028833024483927901">Wereldkeuken</translation>
-<translation id="6030251660719692307">Toegangssleutel van Google Wachtwoordmanager</translation>
 <translation id="603068602130820122">Twee nietjes rechts</translation>
 <translation id="6032524144326295339">Mailbox 2</translation>
 <translation id="6032955021262906325">Links inbinden</translation>
@@ -3432,7 +3425,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7096937462164235847">De identiteit van deze website is niet geverifieerd.</translation>
 <translation id="7102554173784142865">Chrome Dino-game spelen</translation>
 <translation id="7102760431686146931">Kookgerei en servies</translation>
-<translation id="7105998430540165694">Toegangssleutel uit iCloud Sleutelhanger</translation>
 <translation id="7106762743910369165">Je browser wordt beheerd door je organisatie</translation>
 <translation id="7107249414147762907">Deze pdf is niet toegankelijk. Geen tekst geëxtraheerd.</translation>
 <translation id="7107427078069498123">SHA-256-vingerafdrukken</translation>
@@ -4522,7 +4514,6 @@ Aanvullende informatie:
 <translation id="9040341831873780534">Bekijk hier de voorwaarden</translation>
 <translation id="9042617223719777575">Hoge capaciteit</translation>
 <translation id="9042827002460091668">Check de internetverbinding en probeer het opnieuw</translation>
-<translation id="9044359186343685026">Touch ID gebruiken</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Microfoons (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Voor deze acties moet het beleid <ph name="POLICY_NAME" /> zijn ingesteld op <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

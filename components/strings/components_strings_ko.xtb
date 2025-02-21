@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">카드 저장 중...</translation>
 <translation id="1060136083665017312">게임 시스템 및 콘솔</translation>
 <translation id="1060320201901229167">봉투 Kaku 5</translation>
-<translation id="10614374240317010">저장하지 않음</translation>
 <translation id="1062407476771304334">바꾸기</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">검색엔진 세부정보</translation>
@@ -263,7 +262,6 @@
 <translation id="1432187715652018471">페이지에서 서비스 핸들러를 설치하려고 합니다.</translation>
 <translation id="1432581352905426595">검색엔진 관리</translation>
 <translation id="1433225466058025572">파일을 다시 이동해 보세요.</translation>
-<translation id="1435940442311036198">다른 기기의 패스키 사용</translation>
 <translation id="1436185428532214179">기기의 파일 및 폴더 수정을 요청할 수 있음</translation>
 <translation id="1442386063175183758">오른쪽 게이트 폴드</translation>
 <translation id="1442987760062738829">펀칭</translation>
@@ -357,7 +355,6 @@
 <translation id="159274626729231974">영화제</translation>
 <translation id="1593359183944365958">270도</translation>
 <translation id="1594030484168838125">선택</translation>
-<translation id="1598816256585174656">Windows Hello의 패스키</translation>
 <translation id="1599199147673445968">새 카드인가요? <ph name="BEGIN_LINK" />카드 세부정보 입력<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">미용 및 건강</translation>
 <translation id="160851722280695521">Chrome 공룡 달리기 게임 플레이</translation>
@@ -469,7 +466,6 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">웹 앱을 설치하시겠습니까?</translation>
 <translation id="1791415068765905273">모든 비교 표 표시</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google 계정에서 정보, 개인 정보 보호 및 보안 설정 관리</translation>
 <translation id="1793473605302304726">할부 결제</translation>
 <translation id="1793631236004319016">마지막 사용: <ph name="NUM_HOURS_MINUTES_SECONDS" /> 전</translation>
@@ -2127,7 +2123,6 @@
 <translation id="4754461935447132332">안전하지 않은 사이트에서 허용되지 않음</translation>
 <translation id="4756388243121344051">방문 기록(&amp;H)</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Chrome 프로필의 패스키</translation>
 <translation id="4757993714154412917">사기성 사이트에 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
 <translation id="4758311279753947758">연락처 정보 추가</translation>
 <translation id="4761326898079498987">추가 세부정보를 검토하세요</translation>
@@ -2700,7 +2695,6 @@
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" />(으)로 보내기</translation>
 <translation id="5765072501007116331">배달 방법과 요구사항을 확인하려면 주소를 선택하세요.</translation>
 <translation id="57689295674415555">가상 카드 번호가 자동 완성되지 않았나요?</translation>
-<translation id="5772086939108830423">다른 기기의 패스키 사용</translation>
 <translation id="5776313857861697733">우선순위</translation>
 <translation id="577804500166306874">결과 로드 중</translation>
 <translation id="5781136890105823427">실험 기능 사용 설정됨</translation>
@@ -2831,7 +2825,6 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" />(동기화됨)</translation>
 <translation id="6028591542479806248">모바일 및 이메일 알림 관리</translation>
 <translation id="6028833024483927901">세계 음식</translation>
-<translation id="6030251660719692307">Google 비밀번호 관리자의 패스키</translation>
 <translation id="603068602130820122">오른쪽 듀얼 스테이플</translation>
 <translation id="6032524144326295339">메일박스 2</translation>
 <translation id="6032955021262906325">왼쪽 바인드</translation>
@@ -3439,7 +3432,6 @@
 <translation id="7096937462164235847">인증된 웹사이트가 아닙니다.</translation>
 <translation id="7102554173784142865">Chrome 공룡 게임 플레이</translation>
 <translation id="7102760431686146931">조리기구 및 식기</translation>
-<translation id="7105998430540165694">iCloud 키체인의 패스키</translation>
 <translation id="7106762743910369165">조직에서 관리하는 브라우저입니다.</translation>
 <translation id="7107249414147762907">이 PDF에 액세스할 수 없습니다. 추출된 텍스트가 없습니다</translation>
 <translation id="7107427078069498123">SHA-256 지문</translation>
@@ -4528,7 +4520,6 @@
 <translation id="9040341831873780534">여기에서 약관 보기</translation>
 <translation id="9042617223719777575">대용량</translation>
 <translation id="9042827002460091668">인터넷 연결 상태를 확인하고 다시 시도해 주세요.</translation>
-<translation id="9044359186343685026">Touch ID 사용</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">마이크(<ph name="MICS_COUNT" />개)</translation>
 <translation id="9048035366624198823">이 작업을 수행하려면 <ph name="POLICY_NAME" /> 정책을 <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />(으)로 설정해야 합니다.</translation>

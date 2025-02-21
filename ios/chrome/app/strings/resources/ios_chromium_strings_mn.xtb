@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">Chromium-н өгөгдлөө синк хийх</translation>
 <translation id="2592940277904433508">Chromium-г үргэлжлүүлэн ашиглах</translation>
 <translation id="2607609479243848905">Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл <ph name="BEGIN_LINK" />бүртгэлийнхээ Chromium-н өгөгдлийг устгана уу<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium энэ илгээмжийг Шинэ таб хуудсанд хянахад тусална.}other{Chromium эдгээр илгээмжийг Шинэ таб хуудсанд хянахад тусална.}}</translation>
 <translation id="2650312721222849884">Та Chromium-г хаанаас ч ашигласан бай табуудаа харахын тулд синк хийхийг асаана уу</translation>
 <translation id="2684230048001240293">Та өөрийн бүх төхөөрөмж дээрх табууд, нууц үгнүүд болон төлбөрийн мэдээллээ синк хийхийн тулд Chromium-г өгөгдмөлөөр тохируулна уу</translation>
 <translation id="2730884209570016437">Таны камерыг өөр апп-д ашиглаж байгаа тул үүнийг Chromium ашиглах боломжгүй</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">Chromium-г шинэчилсэн байна</translation>
 <translation id="3044857325852340337">Chromium-н өгөгдлийг устгалаа</translation>
 <translation id="3054480780637153380">iOS-т Chromium-н тохиргоог нээгээд, дараа нь "Өгөгдмөл хөтчийн апп"-ыг товшоод, Chromium-г сонгоно уу.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium танд энэ илгээмжийг Шинэ таб хуудсанд хянахад туслах боломжтой.}other{Chromium танд эдгээр илгээмжийг Шинэ таб хуудсанд хянахад туслах боломжтой.}}</translation>
 <translation id="3102849287235003384">Бүх вебсайт дээр Google Бүртгэлээсээ гарахын тулд <ph name="BEGIN_LINK" />Chromium-с гарна уу<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium-г таны өгөгдмөл хөтөч болгох уу?</translation>
 <translation id="3242612358525156339">Төхөөрөмжийнхөө тохиргооноос "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />"-г нээж, "Chromium"-г сонгоно уу</translation>

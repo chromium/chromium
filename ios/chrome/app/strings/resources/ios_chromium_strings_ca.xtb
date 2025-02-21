@@ -74,7 +74,6 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="2517624234762908348">Sincronitza les dades de Chromium</translation>
 <translation id="2592940277904433508">Continua utilitzant Chromium</translation>
 <translation id="2607609479243848905">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chromium del compte<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium t'ajudarà a fer un seguiment d'aquest paquet a la pàgina Pestanya nova.}other{Chromium t'ajudarà a fer un seguiment d'aquests paquets a la pàgina Pestanya nova.}}</translation>
 <translation id="2650312721222849884">Per veure les pestanyes des de tots els llocs on facis servir Chromium, activa la sincronització</translation>
 <translation id="2684230048001240293">Configura Chromium com a navegador predeterminat per sincronitzar les pestanyes, les contrasenyes i la informació de pagament de tots els dispositius</translation>
 <translation id="2730884209570016437">Chromium no pot utilitzar la càmera perquè l'està utilitzant una altra aplicació</translation>
@@ -89,7 +88,6 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="2977470724722393594">Chromium està actualitzat</translation>
 <translation id="3044857325852340337">S'han suprimit les dades de Chromium</translation>
 <translation id="3054480780637153380">Obre la configuració de Chromium a iOS, toca Aplicació de navegador predeterminada i selecciona Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium et pot ajudar a fer un seguiment d'aquest paquet a la pàgina Pestanya nova.}other{Chromium et pot ajudar a fer un seguiment d'aquests paquets a la pàgina Pestanya nova.}}</translation>
 <translation id="3102849287235003384">Per tancar la sessió del teu Compte de Google en tots els llocs web, <ph name="BEGIN_LINK" />tanca la sessió de Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Vols establir Chromium com a navegador predeterminat?</translation>
 <translation id="3242612358525156339">Des de la configuració del dispositiu, obre <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> i selecciona Chromium</translation>

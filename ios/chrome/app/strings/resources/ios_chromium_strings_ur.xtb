@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">‏اپنا Chromium ڈیٹا مطابقت پذیر بنائیں</translation>
 <translation id="2592940277904433508">‏Chromium کا استعمال جاری رکھیں</translation>
 <translation id="2607609479243848905">‏اگر آپ اپنا پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chromium ڈیٹا کو حذف کریں<ph name="END_LINK" />۔</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{‏Chromium نئے ٹیب صفحہ پر اس پیکیج کو ٹریک کرنے میں مدد کرے گا۔}other{‏Chromium نئے ٹیب صفحہ پر ان پیکیجز کو ٹریک کرنے میں مدد کرے گا۔}}</translation>
 <translation id="2650312721222849884">‏اپنے ٹیبز کو دیکھنے کے لئے جہاں بھی آپ Chromium استعمال کرتے ہیں، سِنک کو آن کریں</translation>
 <translation id="2684230048001240293">‏اپنے ٹیبز، پاس ورڈز اور ادائیگی کی معلومات کو اپنے تمام آلات پر سنک کرنے کیلئے Chromium کو بطور ڈیفالٹ براؤزر سیٹ کریں</translation>
 <translation id="2730884209570016437">‏Chromium آپ کا کیمرا استعمال نہیں کر سکتا ہے کیونکہ یہ کسی دوسری ایپلیکیشن کے زیر استعمال ہے</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">‏Chromium اپ ٹو ڈیٹ ہے</translation>
 <translation id="3044857325852340337">‏Chromium کے ڈیٹا کو حذف کر دیا گیا ہے</translation>
 <translation id="3054480780637153380">‏‫iOS میں Chromium کی ترتیبات کھولیں، پھر "ڈیفالٹ براؤزر ایپ" پر تھپتھپائیں اور Chromium کو منتخب کریں۔</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{‏Chromium نئے ٹیب صفحہ پر اس پیکیج کو ٹریک کرنے میں آپ کی مدد کر سکتا ہے۔}other{‏Chromium نئے ٹیب صفحہ پر ان پیکیجز کو ٹریک کرنے میں آپ کی مدد کر سکتا ہے۔}}</translation>
 <translation id="3102849287235003384">‏سبھی ویب سائٹس پر اپنے Google اکاؤنٹ سے سائن آؤٹ کرنے کے لیے <ph name="BEGIN_LINK" />Chromium سے سائن آؤٹ کریں<ph name="END_LINK" />۔</translation>
 <translation id="3115956258722352278">‏Chromium کو اپنا ڈیفالٹ براؤزر بنائیں؟</translation>
 <translation id="3242612358525156339">‏اپنے آلے کی ترتیبات سے، "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" کھولیں اور "Chromium" کو منتخب کریں</translation>

@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">同步處理你的 Chromium 資料</translation>
 <translation id="2592940277904433508">繼續使用 Chromium</translation>
 <translation id="2607609479243848905">如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium 會在新分頁上追蹤這個包裹。}other{Chromium 會在新分頁上追蹤這些包裹。}}</translation>
 <translation id="2650312721222849884">開啟同步功能後，不論從何處使用 Chromium 都能查看你的分頁</translation>
 <translation id="2684230048001240293">將 Chromium 設為預設瀏覽器，即可在你的所有裝置上同步處理分頁、密碼和付款資訊</translation>
 <translation id="2730884209570016437">另一個應用程式正在使用你的相機，因此 Chromium 無法使用</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">Chromium 目前是最新版本</translation>
 <translation id="3044857325852340337">已刪除 Chromium 資料</translation>
 <translation id="3054480780637153380">在 iOS 設定中開啟 Chromium，然後依序輕觸「預設瀏覽器 App」和「Chromium」。</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium 可以在新分頁上追蹤這個包裹。}other{Chromium 可以在新分頁上追蹤這些包裹。}}</translation>
 <translation id="3102849287235003384">如要從所有網站中登出 Google 帳戶，請<ph name="BEGIN_LINK" />登出 Chromium<ph name="END_LINK" />。</translation>
 <translation id="3115956258722352278">要將 Chromium 設為預設瀏覽器嗎？</translation>
 <translation id="3242612358525156339">在裝置的「設定」中開啟「<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />」並選取「Chromium」</translation>

@@ -74,7 +74,6 @@ Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegeve
 <translation id="2517624234762908348">Je Chromium-gegevens synchroniseren</translation>
 <translation id="2592940277904433508">Chromium blijven gebruiken</translation>
 <translation id="2607609479243848905">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Chromium-gegevens in je account<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium helpt je om dit pakket te volgen op de pagina Nieuw tabblad.}other{Chromium helpt je om deze pakketten te volgen op de pagina Nieuw tabblad.}}</translation>
 <translation id="2650312721222849884">Zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chromium gebruikt</translation>
 <translation id="2684230048001240293">Stel Chromium in als je standaardbrowser om je tabbladen, wachtwoorden en betalingsgegevens op al je apparaten te synchroniseren</translation>
 <translation id="2730884209570016437">Chromium kan je camera niet gebruiken omdat deze wordt gebruikt door een andere app</translation>
@@ -89,7 +88,6 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="2977470724722393594">Chromium is up-to-date</translation>
 <translation id="3044857325852340337">Chromium-gegevens verwijderd</translation>
 <translation id="3054480780637153380">Open de Chromium-instellingen in iOS, tik op Standaard browser-app en selecteer Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium kan je helpen om dit pakket te volgen op de pagina Nieuw tabblad.}other{Chromium kan je helpen om deze pakketten te volgen op de pagina Nieuw tabblad.}}</translation>
 <translation id="3102849287235003384">Als je op alle websites wilt uitloggen van je Google-account, <ph name="BEGIN_LINK" />log je uit bij Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium instellen als je standaardbrowser?</translation>
 <translation id="3242612358525156339">Open <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> in de instellingen van je apparaat en selecteer Chromium</translation>

@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">ຊິ້ງຂໍ້ມູນ Chromium ຂອງທ່ານ</translation>
 <translation id="2592940277904433508">ສືບຕໍ່ນຳໃຊ້ Chromium</translation>
 <translation id="2607609479243848905">ຫາກທ່ານລືມລະຫັດຜ່ານຂອງທ່ານ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, ໃຫ້ <ph name="BEGIN_LINK" />ລຶບຂໍ້ມູນ Chromium ໃນບັນຊີຂອງທ່ານ<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium ຈະຊ່ວຍຕິດຕາມພັດສະດຸນີ້ໃນໜ້າແຖບໃໝ່.}other{Chromium ຈະຊ່ວຍຕິດຕາມພັດສະດຸເຫຼົ່ານີ້ໃນໜ້າແຖບໃໝ່.}}</translation>
 <translation id="2650312721222849884">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chromium, ກະລຸນາເປີດການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="2684230048001240293">ຕັ້ງ Chromium ເປັນຄ່າເລີ່ມຕົ້ນເພື່ອຊິ້ງຂໍ້ມູນແຖບ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນການຈ່າຍເງິນຂອງທ່ານຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
 <translation id="2730884209570016437">Chromium ບໍ່ສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໄດ້ ເພາະວ່າກ້ອງຖືກໃຊ້ໂດຍແອັບພລິເຄຊັນອື່ນ</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">Chromium ແມ່ນເວີຊັນໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
 <translation id="3044857325852340337">ລຶບຂໍ້ມູນ Chromium ແລ້ວ</translation>
 <translation id="3054480780637153380">ເປີດການຕັ້ງຄ່າ Chromium ໃນ iOS, ຈາກນັ້ນແຕະ "ແອັບໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ" ແລ້ວເລືອກ Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium ສາມາດຊ່ວຍທ່ານຕິດຕາມພັດສະດຸນີ້ໃນໜ້າແຖບໃໝ່ໄດ້.}other{Chromium ສາມາດຊ່ວຍທ່ານຕິດຕາມພັດສະດຸເຫຼົ່ານີ້ໃນໜ້າແຖບໃໝ່ໄດ້.}}</translation>
 <translation id="3102849287235003384">ເພື່ອອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານຢູ່ເວັບໄຊທ໌ທັງໝົດ, ກະລຸນາ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">ເຮັດໃຫ້ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານບໍ?</translation>
 <translation id="3242612358525156339">ຈາກການຕັ້ງຄ່າຂອງອຸປະກອນຂອງທ່ານ, ໃຫ້ເປີດ "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ແລ້ວເລືອກ "Chromium"</translation>

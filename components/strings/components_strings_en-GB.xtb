@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Saving cards...</translation>
 <translation id="1060136083665017312">Game Systems and Consoles</translation>
 <translation id="1060320201901229167">Envelope Kaku 5</translation>
-<translation id="10614374240317010">Never saved</translation>
 <translation id="1062407476771304334">Replace</translation>
 <translation id="1064054731605354900">A3 x 5</translation>
 <translation id="1067029985695494416">Search engine details</translation>
@@ -263,7 +262,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1432187715652018471">page wants to install a service handler.</translation>
 <translation id="1432581352905426595">Manage search engines</translation>
 <translation id="1433225466058025572">Try moving your files again</translation>
-<translation id="1435940442311036198">Use a passkey on a different device</translation>
 <translation id="1436185428532214179">Can ask to edit files and folders on your device</translation>
 <translation id="1442386063175183758">Right gate fold</translation>
 <translation id="1442987760062738829">Punch</translation>
@@ -357,7 +355,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="159274626729231974">Film Festivals</translation>
 <translation id="1593359183944365958">270 degrees</translation>
 <translation id="1594030484168838125">Choose</translation>
-<translation id="1598816256585174656">Passkey from Windows Hello</translation>
 <translation id="1599199147673445968">New card? <ph name="BEGIN_LINK" />Enter card details<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Beauty and fitness</translation>
 <translation id="160851722280695521">Play the Dino Run game in Chrome</translation>
@@ -469,7 +466,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Install web apps?</translation>
 <translation id="1791415068765905273">Show all comparison tables</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to manage your info, privacy and security in your Google Account</translation>
 <translation id="1793473605302304726">Pay over time</translation>
 <translation id="1793631236004319016">Last used <ph name="NUM_HOURS_MINUTES_SECONDS" /> ago</translation>
@@ -2127,7 +2123,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4754461935447132332">Not allowed for non-secure sites</translation>
 <translation id="4756388243121344051">&amp;History</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Passkey from your Chrome profile</translation>
 <translation id="4757993714154412917">You just entered your password on a deceptive site. To secure your accounts, Chromium recommends checking your saved passwords.</translation>
 <translation id="4758311279753947758">Add contact info</translation>
 <translation id="4761326898079498987">Review for further details</translation>
@@ -2700,7 +2695,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5764920692828389743">Send to <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">To see delivery methods and requirements, select an address</translation>
 <translation id="57689295674415555">Virtual card number not filled in?</translation>
-<translation id="5772086939108830423">Use a passkey on a different device</translation>
 <translation id="5776313857861697733">Priority</translation>
 <translation id="577804500166306874">Result loading</translation>
 <translation id="5781136890105823427">Experiment enabled</translation>
@@ -2831,7 +2825,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synced)</translation>
 <translation id="6028591542479806248">Manage mobile and email notifications</translation>
 <translation id="6028833024483927901">World cuisine</translation>
-<translation id="6030251660719692307">Passkey from Google Password Manager</translation>
 <translation id="603068602130820122">Dual staple right</translation>
 <translation id="6032524144326295339">Mailbox 2</translation>
 <translation id="6032955021262906325">Bind left</translation>
@@ -3439,7 +3432,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7096937462164235847">The identity of this website hasn't been verified.</translation>
 <translation id="7102554173784142865">Play Chrome Dino game</translation>
 <translation id="7102760431686146931">Cookware and Tableware</translation>
-<translation id="7105998430540165694">Passkey from iCloud Keychain</translation>
 <translation id="7106762743910369165">Your browser is managed by your organisation</translation>
 <translation id="7107249414147762907">This PDF is inaccessible. No text extracted</translation>
 <translation id="7107427078069498123">SHA-256 Fingerprints</translation>
@@ -4529,7 +4521,6 @@ Additional details:
 <translation id="9040341831873780534">See terms here</translation>
 <translation id="9042617223719777575">Large capacity</translation>
 <translation id="9042827002460091668">Please check your Internet connection and try again</translation>
-<translation id="9044359186343685026">Use Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Microphones (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">These actions require the <ph name="POLICY_NAME" /> policy to be set to <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

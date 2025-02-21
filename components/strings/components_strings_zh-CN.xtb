@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">正在保存银行卡…</translation>
 <translation id="1060136083665017312">游戏系统和游戏机</translation>
 <translation id="1060320201901229167">Kaku 5 信封</translation>
-<translation id="10614374240317010">一律不保存</translation>
 <translation id="1062407476771304334">替换</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">搜索引擎详细信息</translation>
@@ -263,7 +262,6 @@
 <translation id="1432187715652018471">此页面想安装一款服务处理程序。</translation>
 <translation id="1432581352905426595">管理搜索引擎</translation>
 <translation id="1433225466058025572">尝试重新移动文件</translation>
-<translation id="1435940442311036198">使用另一部设备上的通行密钥</translation>
 <translation id="1436185428532214179">可以请求修改您设备上的文件和文件夹</translation>
 <translation id="1442386063175183758">关门折（右侧）</translation>
 <translation id="1442987760062738829">打孔</translation>
@@ -357,7 +355,6 @@
 <translation id="159274626729231974">电影节</translation>
 <translation id="1593359183944365958">270 度</translation>
 <translation id="1594030484168838125">选择</translation>
-<translation id="1598816256585174656">Windows Hello 中的通行密钥</translation>
 <translation id="1599199147673445968">想使用新卡？<ph name="BEGIN_LINK" />输入信用卡详情<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">美容与健身</translation>
 <translation id="160851722280695521">在 Chrome 中玩《Dino Run》游戏</translation>
@@ -469,7 +466,6 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">要安装 Web 应用吗？</translation>
 <translation id="1791415068765905273">显示所有比较表格</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在您的 Google 账号中管理自己的信息、隐私和安全</translation>
 <translation id="1793473605302304726">分期付款</translation>
 <translation id="1793631236004319016">上次使用时间：<ph name="NUM_HOURS_MINUTES_SECONDS" />前</translation>
@@ -2123,7 +2119,6 @@
 <translation id="4754461935447132332">不安全的网站不得使用</translation>
 <translation id="4756388243121344051">历史记录(&amp;H)</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">您的 Chrome 个人资料中的通行密钥</translation>
 <translation id="4757993714154412917">您刚刚在一个诈骗网站中输入了密码。为保护您的账号安全，Chromium 建议检查您已保存的密码。</translation>
 <translation id="4758311279753947758">添加联系信息</translation>
 <translation id="4761326898079498987">查看更多详情</translation>
@@ -2696,7 +2691,6 @@
 <translation id="5764920692828389743">发送至 <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">要查看递送方式和要求，请选择相应地址</translation>
 <translation id="57689295674415555">未填充虚拟卡号？</translation>
-<translation id="5772086939108830423">使用另一部设备上的通行密钥</translation>
 <translation id="5776313857861697733">优先级</translation>
 <translation id="577804500166306874">正在加载结果</translation>
 <translation id="5781136890105823427">已启用实验</translation>
@@ -2827,7 +2821,6 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" />（已同步）</translation>
 <translation id="6028591542479806248">管理移动应用和电子邮件通知</translation>
 <translation id="6028833024483927901">全球美食</translation>
-<translation id="6030251660719692307">来自 Google 密码管理工具的通行密钥</translation>
 <translation id="603068602130820122">双钉（右侧）</translation>
 <translation id="6032524144326295339">信箱 2</translation>
 <translation id="6032955021262906325">装订（左侧）</translation>
@@ -3434,7 +3427,6 @@
 <translation id="7096937462164235847">此网站的身份未经验证。</translation>
 <translation id="7102554173784142865">玩 Chrome 恐龙游戏</translation>
 <translation id="7102760431686146931">炊具与餐具</translation>
-<translation id="7105998430540165694">iCloud 钥匙串中的通行密钥</translation>
 <translation id="7106762743910369165">您的浏览器由贵单位管理</translation>
 <translation id="7107249414147762907">无法访问此 PDF 文件。未提取任何文本</translation>
 <translation id="7107427078069498123">SHA-256 指纹</translation>
@@ -4525,7 +4517,6 @@
 <translation id="9040341831873780534">点击此处查看条款</translation>
 <translation id="9042617223719777575">大容量</translation>
 <translation id="9042827002460091668">请检查互联网连接，然后重试</translation>
-<translation id="9044359186343685026">使用触控 ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">麦克风（<ph name="MICS_COUNT" /> 个）</translation>
 <translation id="9048035366624198823">以下操作需要将 <ph name="POLICY_NAME" /> 政策设置为 <ph name="POLICY_VALUE" />：<ph name="ACTION_LIST" />。</translation>

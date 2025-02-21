@@ -153,7 +153,6 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 адреса}one{# адреса}other{# адреси}}</translation>
 <translation id="1605405588277479165">Исклучено - Не се препорачува</translation>
 <translation id="1605658421715042784">Копирај ја сликата</translation>
-<translation id="1612642630650745968">Следењето на пакетот е сопрено</translation>
 <translation id="1612754831519568745">„Безбедното прелистување“ е исклучено во моментов. Заштитете се од опасни сајтови, преземања и екстензии.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">Изберете „Додај во „Календар“ на Google“ или „Додај во „Календар“ на Apple“.</translation>
@@ -1387,7 +1386,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6930162026494574854">Ресетирај ги поставките за „Преведи“</translation>
 <translation id="6930799952781667037">Допрете за да се промени на овој јазик.</translation>
 <translation id="693761253105515415">Поставете код за најавување</translation>
-<translation id="6943681254152031826">{COUNT,plural, =1{Да се следи пакетов?}one{Да се следат {COUNT} пакет?}other{Да се следат {COUNT} пакети?}}</translation>
 <translation id="6945221475159498467">Избери</translation>
 <translation id="6950522403736391608">Скриено</translation>
 <translation id="6964300328304469089">Тековно избрана: <ph name="NAME" />, <ph name="EMAIL" />. Изберете сметка.</translation>
@@ -1589,7 +1587,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7859988229622350291">Никогаш не преведувај</translation>
 <translation id="7863211248337747225">Преземете ја апликацијата</translation>
 <translation id="7865127013871431856">Опции за „Преведи“</translation>
-<translation id="7866501058614003444">Следењето на пакетов е успешно сопрено.</translation>
 <translation id="7866872729285243843">За да го добиете „Списокот за читање“ на сите ваши уреди, вклучете „Список за читање“ во „Поставки“.</translation>
 <translation id="7874107544081154809">Пополни го формуларот автоматски со <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Имате повторно употребени лозинки.</translation>

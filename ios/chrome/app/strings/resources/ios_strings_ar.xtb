@@ -153,7 +153,6 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{عنوان واحد}zero{‫# عنوان}two{عنوانان}few{‫# عناوين}many{‫# عنوانًا}other{‫# عنوان}}</translation>
 <translation id="1605405588277479165">غير مفعّل - (غير مستحسَن)</translation>
 <translation id="1605658421715042784">نسخ الصورة</translation>
-<translation id="1612642630650745968">تمّ إيقاف تتبُّع الطرد</translation>
 <translation id="1612754831519568745">ميزة "التصفّح الآمن" غير مفعَّلة حاليًا. يمكنك حماية متصفّحك من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة.</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1622717322707146952">‏اختَر "الإضافة إلى تقويم Google" أو "الإضافة إلى تقويم Apple".</translation>
@@ -1385,7 +1384,6 @@
 <translation id="6930162026494574854">إعادة ضبط إعدادات "الترجمة"</translation>
 <translation id="6930799952781667037">انقر للتغيير إلى هذه اللغة.</translation>
 <translation id="693761253105515415">يُرجى ضبط رمز مرور</translation>
-<translation id="6943681254152031826">{COUNT,plural, =1{هل تريد تتبُّع هذا الطرد؟}zero{هل تريد تتبُّع {COUNT} طرد؟}two{هل تريد تتبُّع طردَين ({COUNT})؟}few{هل تريد تتبُّع {COUNT} طرود؟}many{هل تريد تتبُّع {COUNT} طردًا؟}other{هل تريد تتبُّع {COUNT} طرد؟}}</translation>
 <translation id="6945221475159498467">تحديد</translation>
 <translation id="6950522403736391608">مخفي</translation>
 <translation id="6964300328304469089">الحساب الذي تم اختياره حاليًا هو "<ph name="NAME" />" ‏(<ph name="EMAIL" />). اختَر حسابًا.</translation>
@@ -1587,7 +1585,6 @@
 <translation id="7859988229622350291">لغات لا أريد ترجمتها مطلقًا</translation>
 <translation id="7863211248337747225">تنزيل التطبيق</translation>
 <translation id="7865127013871431856">خيارات الترجمة</translation>
-<translation id="7866501058614003444">تم إيقاف تتبُّع هذه الحزمة بنجاح.</translation>
 <translation id="7866872729285243843">يجب تفعيل ميزة "قائمة القراءة" من خلال الإعدادات لعرض هذه القائمة على جميع أجهزتك.</translation>
 <translation id="7874107544081154809">الملء التلقائي للنموذج باستخدام <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">لديك كلمات مرور مستخدَمة لحساب آخر.</translation>

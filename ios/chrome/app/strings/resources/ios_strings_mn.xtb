@@ -153,7 +153,6 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 хаяг}other{# хаяг}}</translation>
 <translation id="1605405588277479165">Унтраалттай - Санал болгохгүй</translation>
 <translation id="1605658421715042784">Зураг хуулах</translation>
-<translation id="1612642630650745968">Илгээмжийг мөшгөхөө больсон</translation>
 <translation id="1612754831519568745">Таны Аюулгүй хөтөч одоогоор унтраалттай байна. Аюултай сайт, татаж авсан файл, өргөтгөлүүдээс хамгаалах хамгаалалтыг аваарай.</translation>
 <translation id="1620510694547887537">Камер</translation>
 <translation id="1622717322707146952">“Google Календарьт нэмэх“ эсвэл “Apple Calendar-т нэмэх“-ийг сонгоно уу.</translation>
@@ -1387,7 +1386,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6930162026494574854">Орчуулгын тохиргоог шинэчлэх</translation>
 <translation id="6930799952781667037">Энэ хэл рүү өөрчлөхийн тулд товшино уу.</translation>
 <translation id="693761253105515415">Нууц код тохируулна уу</translation>
-<translation id="6943681254152031826">{COUNT,plural, =1{Энэ илгээмжийг хянах уу?}other{{COUNT} илгээмжийг хянах уу?}}</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="6950522403736391608">Нуусан</translation>
 <translation id="6964300328304469089">Одоогоор <ph name="NAME" />, <ph name="EMAIL" />-г сонгосон. Бүртгэл сонгоно уу.</translation>
@@ -1589,7 +1587,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7859988229622350291">Хэзээ ч бүү орчуул</translation>
 <translation id="7863211248337747225">Аппыг авах</translation>
 <translation id="7865127013871431856">Орчуулах сонголт</translation>
-<translation id="7866501058614003444">Энэ илгээмжийг амжилттай хянахаа больсон.</translation>
 <translation id="7866872729285243843">Унших жагсаалтаа бүх төхөөрөмждөө авахын тулд тохиргоонд “Унших жагсаалт”-ыг асаана уу.</translation>
 <translation id="7874107544081154809">Маягтыг <ph name="CELL_ACCESSIBILITY_LABEL" />-р автоматаар бөглөх</translation>
 <translation id="7883882164760409935">Танд дахин ашигласан нууц үгнүүд байна.</translation>

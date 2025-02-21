@@ -74,7 +74,6 @@ Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka n
 <translation id="2517624234762908348">I-sync ang iyong data ng Chromium</translation>
 <translation id="2592940277904433508">Ipagpatuloy ang paggamit ng Chromium</translation>
 <translation id="2607609479243848905">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Tutulong ang Chromium na subaybayan ang package na ito sa Page ng Bagong Tab.}one{Tutulong ang Chromium na subaybayan ang mga package na ito sa Page ng Bagong Tab.}other{Tutulong ang Chromium na subaybayan ang mga package na ito sa Page ng Bagong Tab.}}</translation>
 <translation id="2650312721222849884">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chromium, i-on ang pag-sync</translation>
 <translation id="2684230048001240293">Itakda ang Chromium bilang default para ma-sync ang iyong mga tab, password, at impormasyon sa pagbabayad sa lahat ng device mo</translation>
 <translation id="2730884209570016437">Hindi magamit ng Chromium ang iyong camera ngayon dahil ginagamit ito sa isa pang application</translation>
@@ -89,7 +88,6 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="2977470724722393594">Napapanahon ang Chromium</translation>
 <translation id="3044857325852340337">Na-delete na ang data sa Chromium</translation>
 <translation id="3054480780637153380">Buksan ang mga setting ng Chromium sa iOS, pagkatapos ay i-tap ang "Default Browser App" at piliin ang Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Matutulungan ka ng Chromium na subaybayan ang package na ito sa Page ng Bagong Tab.}one{Matutulungan ka ng Chromium na subaybayan ang mga package na ito sa Page ng Bagong Tab.}other{Matutulungan ka ng Chromium na subaybayan ang mga package na ito sa Page ng Bagong Tab.}}</translation>
 <translation id="3102849287235003384">Para mag-sign out sa iyong Google Account sa lahat ng website, <ph name="BEGIN_LINK" />mag-sign out sa Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Gawing default na browser mo ang Chromium?</translation>
 <translation id="3242612358525156339">Sa mga setting ng iyong device, buksan ang "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" at piliin ang "Chromium"</translation>

@@ -74,7 +74,6 @@ Odczekaj kilka minut, zanim się wylogujesz. Jeśli wylogujesz się teraz, te da
 <translation id="2517624234762908348">Synchronizuj dane Chromium</translation>
 <translation id="2592940277904433508">Nadal korzystaj z Chromium</translation>
 <translation id="2607609479243848905">Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium pomoże Ci śledzić tę przesyłkę na stronie nowej karty.}few{Chromium pomoże Ci śledzić te przesyłki na stronie nowej karty.}many{Chromium pomoże Ci śledzić te przesyłki na stronie nowej karty.}other{Chromium pomoże Ci śledzić te przesyłki na stronie nowej karty.}}</translation>
 <translation id="2650312721222849884">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chromium, włącz synchronizację</translation>
 <translation id="2684230048001240293">Ustaw Chromium jako przeglądarkę domyślną, aby synchronizować karty, hasła i dane kart płatniczych na wszystkich urządzeniach</translation>
 <translation id="2730884209570016437">Chromium nie może użyć aparatu, bo używa go już inna aplikacja</translation>
@@ -89,7 +88,6 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="2977470724722393594">Masz aktualną wersję Chromium</translation>
 <translation id="3044857325852340337">Dane Chromium zostały usunięte</translation>
 <translation id="3054480780637153380">Otwórz ustawienia Chromium na urządzeniu z iOS, kliknij „Domyślna przeglądarka” i wybierz Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium może pomóc Ci śledzić tę przesyłkę na stronie nowej karty.}few{Chromium może pomóc Ci śledzić te przesyłki na stronie nowej karty.}many{Chromium może pomóc Ci śledzić te przesyłki na stronie nowej karty.}other{Chromium może pomóc Ci śledzić te przesyłki na stronie nowej karty.}}</translation>
 <translation id="3102849287235003384">Aby wylogować się z konta Google na wszystkich stronach, <ph name="BEGIN_LINK" />wyloguj się z Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Ustawić Chromium jako przeglądarkę domyślną?</translation>
 <translation id="3242612358525156339">W ustawieniach urządzenia otwórz „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” i wybierz „Chromium”</translation>

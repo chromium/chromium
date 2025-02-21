@@ -73,7 +73,6 @@ Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi
 <translation id="2517624234762908348">Chromium maʼlumotlaringizni sinxronlash</translation>
 <translation id="2592940277904433508">Chromium yopilmasin</translation>
 <translation id="2607609479243848905">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chromium maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium bu paketni Yangi varaqda kuzatishda yordam beradi.}other{Chromium bu paketlarni Yangi varaqda kuzatishda yordam beradi.}}</translation>
 <translation id="2650312721222849884">Boshqa qurilmalardagi Chromium varaqlarini koʻrish uchun sinxronizatsiyani yoqing</translation>
 <translation id="2684230048001240293">Chromium brauzerini varaqlar, parollar va toʻlov axborotlarini barcha qurilmalarga sinxronlovchi asosiy ilova sifatida belgilash</translation>
 <translation id="2730884209570016437">Chromium kamerangizdan foydalana olmaydi, chunki boshqa ilova allaqachon kamerani ishlatmoqda.</translation>
@@ -88,7 +87,6 @@ Chromiumni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <p
 <translation id="2977470724722393594">Siz Chromium brauzerining eng oxirgi versiyasidan foydalanyapsiz.</translation>
 <translation id="3044857325852340337">Chromium maʼlumotlari oʻchirildi</translation>
 <translation id="3054480780637153380">iOSda Chromium sozlamalarini ochib, keyin “Birlamchi brauzer ilovasi” ustiga bosib, Chromiumni tanlang.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium bu paketni Yangi varaqda kuzatishingizda yordam beradi.}other{Chromium bu paketlarni Yangi varaqda kuzatishingizda yordam beradi.}}</translation>
 <translation id="3102849287235003384">Barcha saytlarda Google hisobingizdan chiqish uchun <ph name="BEGIN_LINK" />Chromium brauzerida hisobdan chiqing<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium asosiy brauzer qilib belgilansinmi?</translation>
 <translation id="3242612358525156339">Qurilma Sozlamalaridan "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" sahifasini oching va "Chromium" bandini tanlang</translation>

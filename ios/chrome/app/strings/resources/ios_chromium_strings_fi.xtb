@@ -74,7 +74,6 @@ Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä d
 <translation id="2517624234762908348">Synkronoi Chromium-data</translation>
 <translation id="2592940277904433508">Jatka Chromiumin käyttöä</translation>
 <translation id="2607609479243848905">Jos unohdit tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />poista tilin Chromium-data<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium auttaa paketin seuraamisessa Uusi välilehti ‑sivulla.}other{Chromium auttaa pakettien seuraamisessa Uusi välilehti ‑sivulla.}}</translation>
 <translation id="2650312721222849884">Laita synkronointi päälle, niin voit nähdä Chromium-välilehtesi missä tahansa</translation>
 <translation id="2684230048001240293">Aseta Chromium oletusselaimeksi, niin voit synkronoida välilehdet, salasanat ja maksutiedot kaikilla laitteillasi</translation>
 <translation id="2730884209570016437">Chromium ei voi käyttää kameraa, koska se on toisen sovelluksen käytössä.</translation>
@@ -89,7 +88,6 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, niin n
 <translation id="2977470724722393594">Chromium on ajan tasalla.</translation>
 <translation id="3044857325852340337">Chromium-data poistettu</translation>
 <translation id="3054480780637153380">Avaa Chromiumin asetukset iOS:lla, napauta sitten Oletusselainsovellus ja valitse Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium voi auttaa paketin seuraamisessa Uusi välilehti ‐sivulla.}other{Chromium voi auttaa pakettien seuraamisessa Uusi välilehti ‐sivulla.}}</translation>
 <translation id="3102849287235003384">Jos haluat kirjautua ulos Google-tililtäsi kaikilla sivustoilla, <ph name="BEGIN_LINK" />kirjaudu ulos Chromiumista<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Tehdäänkö Chromiumista oletusselain?</translation>
 <translation id="3242612358525156339">Avaa laitteen asetuksista <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> ja valitse Chromium.</translation>

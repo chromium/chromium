@@ -153,7 +153,6 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adreça}other{# adreces}}</translation>
 <translation id="1605405588277479165">Desactivada (opció no recomanada)</translation>
 <translation id="1605658421715042784">Copia la imatge</translation>
-<translation id="1612642630650745968">S'ha deixat de fer el seguiment del paquet</translation>
 <translation id="1612754831519568745">La funció Navegació segura està desactivada en aquest moment. Obtén protecció contra baixades, extensions i llocs web perillosos.</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1622717322707146952">Selecciona Afegeix a Google Calendar o Afegeix a Calendari d'Apple.</translation>
@@ -1387,7 +1386,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6930162026494574854">Restableix la configuració del Traductor</translation>
 <translation id="6930799952781667037">Toca per canviar a aquest idioma.</translation>
 <translation id="693761253105515415">Estableix una contrasenya</translation>
-<translation id="6943681254152031826">{COUNT,plural, =1{Vols fer el seguiment d'aquest paquet?}other{Vols fer el seguiment de {COUNT} paquets?}}</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="6950522403736391608">Amagades</translation>
 <translation id="6964300328304469089">Selecció actual: <ph name="NAME" />, <ph name="EMAIL" />. Tria un compte.</translation>
@@ -1589,7 +1587,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7859988229622350291">No tradueixis mai</translation>
 <translation id="7863211248337747225">Baixa l'aplicació</translation>
 <translation id="7865127013871431856">Opcions del Traductor</translation>
-<translation id="7866501058614003444">S'ha deixat de fer el seguiment d'aquest paquet correctament.</translation>
 <translation id="7866872729285243843">Per accedir a la llista de lectura des de tots els dispositius, activa l'opció Llista de lectura a la configuració.</translation>
 <translation id="7874107544081154809">Emplena automàticament el formulari amb <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Tens contrasenyes reutilitzades.</translation>

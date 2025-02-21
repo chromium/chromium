@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Notiek karšu datu saglabāšana...</translation>
 <translation id="1060136083665017312">Spēļu sistēmas un konsoles</translation>
 <translation id="1060320201901229167">Aploksne Kaku 5</translation>
-<translation id="10614374240317010">Netiek saglabātas</translation>
 <translation id="1062407476771304334">Aizstāt</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Detalizēta informācija par meklētājprogrammu</translation>
@@ -263,7 +262,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1432187715652018471">lapa vēlas instalēt pakalpojumu apdarinātāju.</translation>
 <translation id="1432581352905426595">Pārvaldīt meklējumprogrammas</translation>
 <translation id="1433225466058025572">Mēģiniet vēlreiz pārvietot savus failus.</translation>
-<translation id="1435940442311036198">Izmantot piekļuves atslēgu citā ierīcē</translation>
 <translation id="1436185428532214179">Var pieprasīt atļauju rediģēt failus un mapes jūsu ierīcē</translation>
 <translation id="1442386063175183758">Abpusējs locījums pa labi</translation>
 <translation id="1442987760062738829">Caurums</translation>
@@ -357,7 +355,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="159274626729231974">Filmu festivāli</translation>
 <translation id="1593359183944365958">Par 270 grādiem</translation>
 <translation id="1594030484168838125">Izvēlēties</translation>
-<translation id="1598816256585174656">Piekļuves atslēga no Windows Hello</translation>
 <translation id="1599199147673445968">Vai jums ir jauna karte? <ph name="BEGIN_LINK" />Ievadīt kartes datus<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Skaistums un fitness</translation>
 <translation id="160851722280695521">Spēlēt dinozaura skriešanas spēli pārlūkā Chrome</translation>
@@ -469,7 +466,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Vai instalēt tīmekļa lietotnes?</translation>
 <translation id="1791415068765905273">Rādīt visas salīdzinājuma tabulas</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pārvaldītu savu informāciju, konfidencialitāti un drošību savā Google kontā, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="1793473605302304726">Maksāt pa daļām</translation>
 <translation id="1793631236004319016">Pēdējoreiz lietota pirms: <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -2125,7 +2121,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4754461935447132332">Nav atļauts nedrošām vietnēm</translation>
 <translation id="4756388243121344051">Vēsture</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Piekļuves atslēga no Chrome profila</translation>
 <translation id="4757993714154412917">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chromium ieteikums jūsu kontu aizsardzībai: pārbaudiet saglabātās paroles.</translation>
 <translation id="4758311279753947758">Pievienot kontaktinformāciju</translation>
 <translation id="4761326898079498987">Skatiet plašāku informāciju</translation>
@@ -2698,7 +2693,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5764920692828389743">Sūtīt uz e-pasta adresi <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Lai skatītu piegādes veidus un prasības, atlasiet adresi.</translation>
 <translation id="57689295674415555">Vai nav ievadīts virtuālās kartes numurs?</translation>
-<translation id="5772086939108830423">Izmantot piekļuves atslēgu citā ierīcē</translation>
 <translation id="5776313857861697733">Prioritārs</translation>
 <translation id="577804500166306874">Notiek rezultāta ielāde</translation>
 <translation id="5781136890105823427">Eksperiments iespējots</translation>
@@ -2829,7 +2823,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (veikta sinhronizācija)</translation>
 <translation id="6028591542479806248">Pārvaldīt paziņojumus mobilajā ierīcē un e-pasta paziņojumus</translation>
 <translation id="6028833024483927901">Dažādu valstu virtuves</translation>
-<translation id="6030251660719692307">Piekļuves atslēga no Google paroļu pārvaldnieka</translation>
 <translation id="603068602130820122">Divkāršs skavojums labajā pusē</translation>
 <translation id="6032524144326295339">2. pastkaste</translation>
 <translation id="6032955021262906325">Iesējums kreisajā pusē</translation>
@@ -3437,7 +3430,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="7096937462164235847">Šīs vietnes identitāte nav verificēta.</translation>
 <translation id="7102554173784142865">Spēlēt Chrome dinozaura spēli</translation>
 <translation id="7102760431686146931">Virtuves un galda piederumi</translation>
-<translation id="7105998430540165694">Piekļuves atslēga no iCloud Keychain</translation>
 <translation id="7106762743910369165">Pārlūku pārvalda jūsu organizācija</translation>
 <translation id="7107249414147762907">Šis PDF fails nav pieejams. Teksts netika iegūts.</translation>
 <translation id="7107427078069498123">SHA-256 ciparnospiedumi</translation>
@@ -4528,7 +4520,6 @@ Papildu informācija:
 <translation id="9040341831873780534">Skatīt noteikumus šeit</translation>
 <translation id="9042617223719777575">Liela ietilpība</translation>
 <translation id="9042827002460091668">Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
-<translation id="9044359186343685026">Izmantot Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> — <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Mikrofoni (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Lai varētu veikt šīs darbības, politikai <ph name="POLICY_NAME" /> ir jāiestata vērtība <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

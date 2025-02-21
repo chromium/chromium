@@ -153,7 +153,6 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{Eitt heimilisfang}one{# heimilisfang}other{# heimilisföng}}</translation>
 <translation id="1605405588277479165">Slökkt – Ekki mælt með</translation>
 <translation id="1605658421715042784">Afrita mynd</translation>
-<translation id="1612642630650745968">Ekki er verið að rekja pakka</translation>
 <translation id="1612754831519568745">Slökkt er á öruggri vefnotkun. Fáðu vernd gagnvart hættulegum vefsvæðum, niðurhali og viðbótum.</translation>
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="1622717322707146952">Veldu „Bæta við Google-dagatal“ eða „Bæta við Apple Calendar“.</translation>
@@ -1387,7 +1386,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="6930162026494574854">Endurstilla þýðingarstillingar</translation>
 <translation id="6930799952781667037">Ýttu til að skipta yfir í þetta tungumál.</translation>
 <translation id="693761253105515415">Veldu aðgangskóða</translation>
-<translation id="6943681254152031826">{COUNT,plural, =1{Rekja þennan pakka?}one{Rekja {COUNT} pakka?}other{Rekja {COUNT} pakka?}}</translation>
 <translation id="6945221475159498467">Velja</translation>
 <translation id="6950522403736391608">Falið</translation>
 <translation id="6964300328304469089">Núverandi val: <ph name="NAME" />, <ph name="EMAIL" /> Veldu reikning.</translation>
@@ -1589,7 +1587,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7859988229622350291">Þýða aldrei</translation>
 <translation id="7863211248337747225">Sækja forritið</translation>
 <translation id="7865127013871431856">Valkostir þýðinga</translation>
-<translation id="7866501058614003444">Hætt var að rekja þennan pakka.</translation>
 <translation id="7866872729285243843">Kveiktu á „Leslisti“ í stillingunum til að fá aðgang að leslistanum þínum í öllum tækjum.</translation>
 <translation id="7874107544081154809">Fylla eyðublað sjálfkrafa út með <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Þú ert með endurnýtt aðgangsorð.</translation>

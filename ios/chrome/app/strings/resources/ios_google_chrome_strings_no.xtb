@@ -136,7 +136,6 @@ Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir di
 <translation id="4830799082179398588">Vil du gjøre Chrome til standardnettleseren din?</translation>
 <translation id="484033449593719797">Støttes ikke i Chrome Beta</translation>
 <translation id="4840404732697892756">Google Passordlagring kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{Chrome kan hjelpe deg med å spore denne pakken på Ny fane-siden.}other{Chrome kan hjelpe deg med å spore disse pakkene på Ny fane-siden.}}</translation>
 <translation id="4903674399067644695">På dette kortet ser du forslag til hvordan du får mest mulig ut av Chrome.</translation>
 <translation id="49200511069271369">Organisasjonen din, <ph name="DOMAIN" />, administrerer kontoen du logger på, og hvordan Chrome kan brukes. Administratoren kan konfigurere eller begrense visse funksjoner.</translation>
 <translation id="4925322001044117929">Bruk Chrome på iPad som standard</translation>
@@ -158,7 +157,6 @@ Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir di
 <translation id="5439191312780166229">Advarer deg om farlige nettsteder, også nettsteder som Google ikke kjenner til fra før, ved å analysere mer data fra nettsteder enn ved standardbeskyttelse. Du kan velge å hoppe over Chrome-advarsler.</translation>
 <translation id="5442013002200339429">Hvis du skjuler «<ph name="MODULE_NAME" />», slutter Chrome å spore fremtidige pakker automatisk, og alle tidligere pakkesporingsdata slettes.</translation>
 <translation id="5460571915754665838">4. Velg Chrome</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{Chrome hjelper deg med å spore denne pakken på Ny fane-siden.}other{Chrome hjelper deg med å spore disse pakkene på Ny fane-siden.}}</translation>
 <translation id="5492504007368565877">Google Passordlagring kan ikke sjekke passordene dine.</translation>
 <translation id="5525095647255982834">For å sende denne fanen til en annen enhet, logg på Chrome der.</translation>
 <translation id="5527026824954593399">Trykk på «Se med Google Maps i Chrome».</translation>

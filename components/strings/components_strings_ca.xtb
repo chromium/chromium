@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">S'estan desant les targetes...</translation>
 <translation id="1060136083665017312">Consoles i sistemes de jocs</translation>
 <translation id="1060320201901229167">Sobre Kaku 5</translation>
-<translation id="10614374240317010">Contrasenyes que no es desen mai</translation>
 <translation id="1062407476771304334">Substitueix</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Detalls del motor de cerca</translation>
@@ -263,7 +262,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1432187715652018471">La pàgina vol instal·lar un gestor de serveis</translation>
 <translation id="1432581352905426595">Gestiona els motors de cerca</translation>
 <translation id="1433225466058025572">Prova de tornar a moure els fitxers</translation>
-<translation id="1435940442311036198">Utilitza una clau d'accés en un altre dispositiu</translation>
 <translation id="1436185428532214179">Pot demanar permís per editar fitxers i carpetes del dispositiu</translation>
 <translation id="1442386063175183758">Plegat amb finestra a la dreta</translation>
 <translation id="1442987760062738829">Encunyació</translation>
@@ -357,7 +355,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="159274626729231974">Festivals de cinema</translation>
 <translation id="1593359183944365958">270 graus</translation>
 <translation id="1594030484168838125">Tria</translation>
-<translation id="1598816256585174656">Clau d'accés de Windows Hello</translation>
 <translation id="1599199147673445968">És una targeta nova? <ph name="BEGIN_LINK" />Introdueix els detalls de la targeta<ph name="END_LINK" />.</translation>
 <translation id="1604192142734009334">Bellesa i fitnes</translation>
 <translation id="160851722280695521">Juga al joc del dinosaure de Chrome</translation>
@@ -469,7 +466,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Vols instal·lar aplicacions web?</translation>
 <translation id="1791415068765905273">Mostra totes les taules de comparació</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per gestionar la teva informació, privadesa i seguretat al teu Compte de Google</translation>
 <translation id="1793473605302304726">Paga a terminis</translation>
 <translation id="1793631236004319016">Utilitzada per última vegada fa <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -2127,7 +2123,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4754461935447132332">No s'admet en llocs web no segurs</translation>
 <translation id="4756388243121344051">&amp;Historial</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Clau d'accés del teu perfil de Chrome</translation>
 <translation id="4757993714154412917">Acabes d'introduir la contrasenya en un lloc web enganyós. Per protegir els teus comptes, Chromium et recomana que comprovis les contrasenyes desades.</translation>
 <translation id="4758311279753947758">Afegiu informació de contacte</translation>
 <translation id="4761326898079498987">Revisa per obtenir més informació</translation>
@@ -2700,7 +2695,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5764920692828389743">Envia a <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Per veure els mètodes i els requisits d'entrega, selecciona una adreça</translation>
 <translation id="57689295674415555">No s'ha emplenat el número de la targeta virtual?</translation>
-<translation id="5772086939108830423">Utilitza una clau d'accés en un altre dispositiu</translation>
 <translation id="5776313857861697733">Prioritat</translation>
 <translation id="577804500166306874">S'estan carregant els resultats</translation>
 <translation id="5781136890105823427">Experiment activat</translation>
@@ -2831,7 +2825,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (informació sincronitzada)</translation>
 <translation id="6028591542479806248">Gestiona les notificacions al mòbil i per correu electrònic</translation>
 <translation id="6028833024483927901">Cuina del món</translation>
-<translation id="6030251660719692307">Clau d'accés del gestor de contrasenyes de Google</translation>
 <translation id="603068602130820122">Grapat doble a la dreta</translation>
 <translation id="6032524144326295339">Bústia de correu 2</translation>
 <translation id="6032955021262906325">Enquadernació a l'esquerra</translation>
@@ -3439,7 +3432,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7096937462164235847">La identitat d'aquest lloc web no s'ha verificat.</translation>
 <translation id="7102554173784142865">Juga al joc del dinosaure de Chrome</translation>
 <translation id="7102760431686146931">Estris de cuina</translation>
-<translation id="7105998430540165694">Clau d'accés d'iCloud Keychain</translation>
 <translation id="7106762743910369165">La teva organització gestiona el navegador</translation>
 <translation id="7107249414147762907">Aquest PDF és inaccessible. No s'ha extret text.</translation>
 <translation id="7107427078069498123">Empremtes digitals SHA-256</translation>
@@ -4529,7 +4521,6 @@ Detalls addicionals:
 <translation id="9040341831873780534">Consulta'n les condicions aquí</translation>
 <translation id="9042617223719777575">Gran capacitat</translation>
 <translation id="9042827002460091668">Comprova la connexió a Internet i torna-ho a provar</translation>
-<translation id="9044359186343685026">Utilitza Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />, <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Micròfons (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Aquestes accions requereixen que la política <ph name="POLICY_NAME" /> s'estableixi en <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

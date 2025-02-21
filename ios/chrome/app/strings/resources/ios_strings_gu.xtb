@@ -153,7 +153,6 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 સરનામું}one{# સરનામું}other{# સરનામું}}</translation>
 <translation id="1605405588277479165">બંધ - આનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="1605658421715042784">છબી કૉપિ કરો</translation>
-<translation id="1612642630650745968">પૅકેજને ટ્રૅક કરવાનું બંધ કર્યું</translation>
 <translation id="1612754831519568745">તમારું Safe Browsing હાલમાં બંધ છે. જોખમી સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શનથી રક્ષણ મેળવો.</translation>
 <translation id="1620510694547887537">કૅમેરા</translation>
 <translation id="1622717322707146952">“Google Calendarમાં ઉમેરો“ અથવા “Apple Calendar પર ઉમેરો“ પસંદ કરો.</translation>
@@ -1387,7 +1386,6 @@
 <translation id="6930162026494574854">અનુવાદ સેટિંગ રીસેટ કરો</translation>
 <translation id="6930799952781667037">આ ભાષા પર બદલવા માટે ટૅપ કરો.</translation>
 <translation id="693761253105515415">કોઈ પાસકોડ સેટ કરો</translation>
-<translation id="6943681254152031826">{COUNT,plural, =1{શું આ પૅકેજને ટ્રૅક કરીએ?}one{શું {COUNT} પૅકેજને ટ્રૅક કરીએ?}other{શું {COUNT} પૅકેજને ટ્રૅક કરીએ?}}</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>
 <translation id="6950522403736391608">છુપાવેલા</translation>
 <translation id="6964300328304469089">હાલમાં <ph name="NAME" />, <ph name="EMAIL" /> પસંદ કર્યું છે. એકાઉન્ટ પસંદ કરો.</translation>
@@ -1589,7 +1587,6 @@
 <translation id="7859988229622350291">ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="7863211248337747225">ઍપ મેળવો</translation>
 <translation id="7865127013871431856">Google Translateના વિકલ્પો</translation>
-<translation id="7866501058614003444">આ પૅકેજને ટ્રૅક કરવાનું સફળતાપૂર્વક બંધ કરવામાં આવ્યું.</translation>
 <translation id="7866872729285243843">તમારા બધા ડિવાઇસ પર તમારી વાંચન સૂચિ મેળવવા માટે, સેટિંગમાં "વાંચન સૂચિ" ચાલુ કરો.</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" /> વડે ફોર્મને ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="7883882164760409935">તમારી પાસે એવા પાસવર્ડ છે જેનો તમે વારંવાર ઉપયોગ કરો છો.</translation>

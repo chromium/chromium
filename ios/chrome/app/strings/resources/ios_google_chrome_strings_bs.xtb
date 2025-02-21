@@ -136,7 +136,6 @@ Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ovi podaci će s
 <translation id="4830799082179398588">Postaviti Chrome kao zadani preglednik?</translation>
 <translation id="484033449593719797">Nije podržano u Beta verziji Chromea</translation>
 <translation id="4840404732697892756">Google upravitelj lozinki može provjeriti vaše lozinke kada se prijavite s Google računom.</translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{Chrome vam može pomoći da pratite ovaj paket na stranici na novoj kartici.}one{Chrome vam može pomoći da pratite ove pakete na stranici na novoj kartici.}few{Chrome vam može pomoći da pratite ove pakete na stranici na novoj kartici.}other{Chrome vam može pomoći da pratite ove pakete na stranici na novoj kartici.}}</translation>
 <translation id="4903674399067644695">Kartica prikazuje prijedloge o tome kako iskoristiti sve prednosti Chromea.</translation>
 <translation id="49200511069271369">Vaša organizacija, <ph name="DOMAIN" />, upravlja računom na koji se prijavljujete i načinom na koji se Chrome može koristiti. Vaš administrator može postaviti ili ograničiti određene funkcije.</translation>
 <translation id="4925322001044117929">Koristite Chrome na iPadu prema zadanim postavkama</translation>
@@ -158,7 +157,6 @@ Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ovi podaci će s
 <translation id="5439191312780166229">Upozorava vas o opasnim web lokacijama, čak i onim za koje Google nije ranije znao, analizirajući više podataka s web lokacija nego što se analizira standardnom zaštitom. Možete odabrati preskakanje Chromeovih upozorenja.</translation>
 <translation id="5442013002200339429">Ako sakrijete modul "<ph name="MODULE_NAME" />", Chrome više neće automatski pratiti vaše buduće pakete i izbrisat će sve prethodne podatke o praćenju paketa.</translation>
 <translation id="5460571915754665838">4. Odaberite Chrome</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{Chrome će vam pomoći da pratite ovaj paket na stranici na novoj kartici.}one{Chrome će vam pomoći da pratite ove pakete na stranici na novoj kartici.}few{Chrome će vam pomoći da pratite ove pakete na stranici na novoj kartici.}other{Chrome će vam pomoći da pratite ove pakete na stranici na novoj kartici.}}</translation>
 <translation id="5492504007368565877">Google upravitelj lozinki ne može provjeriti vaše lozinke.</translation>
 <translation id="5525095647255982834">Da pošaljete ovu karticu na drugi uređaj, na njemu se prijavite u Chrome.</translation>
 <translation id="5527026824954593399">Dodirnite "Pregledajte putem Google Mapa u Chromeu".</translation>

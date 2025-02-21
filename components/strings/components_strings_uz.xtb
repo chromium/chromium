@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Kartalar saqlanmoqda...</translation>
 <translation id="1060136083665017312">Oʻyin tizimlar va konsollari</translation>
 <translation id="1060320201901229167">Envelope Kaku 5</translation>
-<translation id="10614374240317010">Parollar saqlanmaydigan saytlar</translation>
 <translation id="1062407476771304334">Almashtirish</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Qidiruv tizimi tafsilotlari</translation>
@@ -263,7 +262,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1432187715652018471">sahifa xizmatga ishlov beruvchi vosita oʻrnatishga urinmoqda.</translation>
 <translation id="1432581352905426595">Qidiruv tizimlarini boshqarish</translation>
 <translation id="1433225466058025572">Fayllarni qaytadan koʻchiring</translation>
-<translation id="1435940442311036198">Kodni boshqa qurilmada ishlating</translation>
 <translation id="1436185428532214179">Qurilmangizdagi fayl yoki jildlarni tahrirlash uchun ruxsat soʻrashi mumkin</translation>
 <translation id="1442386063175183758">Oʻng tomonni darvozasimon taxlash</translation>
 <translation id="1442987760062738829">Teshik ochish</translation>
@@ -356,7 +354,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="159274626729231974">Film festivallari</translation>
 <translation id="1593359183944365958">270 daraja</translation>
 <translation id="1594030484168838125">Tanlang</translation>
-<translation id="1598816256585174656">Windows Hello kirish kaliti</translation>
 <translation id="1599199147673445968">Karta yangimi? <ph name="BEGIN_LINK" />Karta ma’lumotlarini kiriting<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Goʻzallik va fitnes</translation>
 <translation id="160851722280695521">Chromeda Dino oʻyinini boshlash</translation>
@@ -468,7 +465,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Veb ilovalar oʻrnatilsinmi?</translation>
 <translation id="1791415068765905273">Barcha qiyosiy jadvallarni ochish</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google hisobingizdagi axborot, maxfiylik va xavfsizlik sozlamalarini boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="1793473605302304726">Keyinroq toʻlash</translation>
 <translation id="1793631236004319016">Oxirgi marta <ph name="NUM_HOURS_MINUTES_SECONDS" /> oldin foydalanilgan.</translation>
@@ -2122,7 +2118,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4754461935447132332">Himoyalanmagan saytlarda ruxsat etilmaydi</translation>
 <translation id="4756388243121344051">&amp;Tarix</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Chrome profili kirish kaliti</translation>
 <translation id="4757993714154412917">Hozirgina shubhali saytda parol kiritdingiz. Hisoblar himoyasi uchun Chromium saqlangan parollaringizni tekshirishni tavsiya qiladi.</translation>
 <translation id="4758311279753947758">Aloqa ma’lumotini qo‘shish</translation>
 <translation id="4761326898079498987">Batafsil maʼlumot uchun koʻrib chiqing</translation>
@@ -2695,7 +2690,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5764920692828389743">Kimga: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Yetkazib berish usuli va talablari bilan tanishish uchun manzilni tanlang</translation>
 <translation id="57689295674415555">Virtual karta raqami kiritilmadimi?</translation>
-<translation id="5772086939108830423">Kodni boshqa qurilmada ishlating</translation>
 <translation id="5776313857861697733">Muhimligi</translation>
 <translation id="577804500166306874">Natija yuklanmoqda</translation>
 <translation id="5781136890105823427">Tajribaviy funksiya yoqildi</translation>
@@ -2826,7 +2820,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sinxronlandi)</translation>
 <translation id="6028591542479806248">Mobil va email orqali bildirishnomalarini boshqarish</translation>
 <translation id="6028833024483927901">Jahon oshxonasi</translation>
-<translation id="6030251660719692307">Google Parollar menejeridagi kirish kaliti</translation>
 <translation id="603068602130820122">Oʻngdan ikki marta steplerlash</translation>
 <translation id="6032524144326295339">Pochta qutisi 2</translation>
 <translation id="6032955021262906325">Chap chekkasini belgilash</translation>
@@ -3433,7 +3426,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7096937462164235847">Bu saytning identifikatsiya maʼlumotlari tekshirilmadi.</translation>
 <translation id="7102554173784142865">Chrome Dino oʻyinini boshlash</translation>
 <translation id="7102760431686146931">Pishirish va oshxona idishlari</translation>
-<translation id="7105998430540165694">iCloud Keychain kirish kaliti</translation>
 <translation id="7106762743910369165">Brauzeringiz tashkilotingiz boshqaruvida</translation>
 <translation id="7107249414147762907">Bu PDF fayl ochilmaydi. Hech qanday matn chiqarilmagan</translation>
 <translation id="7107427078069498123">SHA-256 barmoq izlari</translation>
@@ -4522,7 +4514,6 @@ Batafsil axborot:
 <translation id="9040341831873780534">Shartlar shu yerda chiqadi</translation>
 <translation id="9042617223719777575">Koʻp sigʻimli</translation>
 <translation id="9042827002460091668">Internet aloqasini tekshiring va qayta urining</translation>
-<translation id="9044359186343685026">Touch ID ishlatish</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Mikrofonlar (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Amallarni (<ph name="ACTION_LIST" />) bajarish uchun <ph name="POLICY_NAME" /> siyosati uchun <ph name="POLICY_VALUE" /> qiymatini belgilang.</translation>

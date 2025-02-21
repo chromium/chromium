@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">同步您的 Chromium 数据</translation>
 <translation id="2592940277904433508">继续使用 Chromium</translation>
 <translation id="2607609479243848905">如果您忘记了口令或想更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium 将帮助您在“新标签页”页面中跟踪此包裹。}other{Chromium 将帮助您在“新标签页”页面中跟踪这些包裹。}}</translation>
 <translation id="2650312721222849884">要查看您在其他设备上用 Chromium 打开的标签页，请开启同步功能</translation>
 <translation id="2684230048001240293">将 Chromium 设为默认同步您所有设备上的标签页、密码和付款信息</translation>
 <translation id="2730884209570016437">由于另一个应用正在使用您的相机，因此 Chromium 无法使用。</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
 <translation id="3044857325852340337">已删除 Chromium 数据</translation>
 <translation id="3054480780637153380">在 iOS 中打开 Chromium 设置，然后点按“默认浏览器应用”并选择“Chromium”。</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium 可以帮助您在“新标签页”页面中跟踪此包裹。}other{Chromium 可以帮助您在“新标签页”页面中跟踪这些包裹。}}</translation>
 <translation id="3102849287235003384">若要在所有网站上退出您的 Google 账号，请<ph name="BEGIN_LINK" />退出 Chromium<ph name="END_LINK" />。</translation>
 <translation id="3115956258722352278">将 Chromium 设为默认浏览器？</translation>
 <translation id="3242612358525156339">从设备的设置中打开“<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />”，然后选择“Chromium”</translation>

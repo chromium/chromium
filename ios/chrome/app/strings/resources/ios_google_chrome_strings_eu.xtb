@@ -136,7 +136,6 @@ Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datua
 <translation id="4830799082179398588">Chrome arakatzaile lehenetsi bihurtu nahi duzu?</translation>
 <translation id="484033449593719797">Ez da bateragarria Chrome Beta-rekin</translation>
 <translation id="4840404732697892756">Saioa Google-ko kontu batekin hasten baduzu, pasahitzak egiaztatzeko gai izango da Google-ren Pasahitz-kudeatzailea.</translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{Chrome-k Fitxa berria orrian pakete honen jarraipena egiten lagundu ahal dizu.}other{Chrome-k Fitxa berria orrian pakete hauen jarraipena egiten lagundu ahal dizu.}}</translation>
 <translation id="4903674399067644695">Txartel horretan, Chrome-ri ahalik eta etekin handiena ateratzeko iradokizunak agertzen dira.</translation>
 <translation id="49200511069271369"><ph name="DOMAIN" /> erakundeak kudeatzen du saioa hasteko erabiltzen ari zaren kontua eta Chrome erabiltzeko modua. Administratzaileak eginbide batzuk konfiguratu edo muga ditzake.</translation>
 <translation id="4925322001044117929">Erabili Chrome iPad-ean modu lehenetsian</translation>
@@ -158,7 +157,6 @@ Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, datua
 <translation id="5439191312780166229">Webgune arriskutsuen berri ematen dizu, Google-k ezagutzen ez zituenak barne, webguneetan babes estandarrak baino datu gehiago aztertuz. Chrome-ren abisuak saltatzea aukera dezakezu.</translation>
 <translation id="5442013002200339429">"<ph name="MODULE_NAME" />" ezkutatzen baduzu, Chrome-k ezin izango du jarraitu etorkizuneko paketeen jarraipena automatikoki egiten, eta iraganeko paketeen jarraipenari buruzko datu guztiak ezabatuko ditu.</translation>
 <translation id="5460571915754665838">4. Hautatu Chrome.</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{Chrome-k Fitxa berria orrian pakete honen jarraipena egiten lagunduko dizu.}other{Chrome-k Fitxa berria orrian pakete hauen jarraipena egiten lagunduko dizu.}}</translation>
 <translation id="5492504007368565877">Google-ren Pasahitz-kudeatzailea aplikazioak ezin ditu egiaztatu pasahitzak.</translation>
 <translation id="5525095647255982834">Fitxa beste gailu batera bidaltzeko, hasi saioa Chrome-n bertan.</translation>
 <translation id="5527026824954593399">Sakatu "Ikusi Google Maps-ekin Chrome-n".</translation>

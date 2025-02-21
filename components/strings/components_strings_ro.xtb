@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Se salvează cardurile…</translation>
 <translation id="1060136083665017312">Sisteme și console pentru jocuri</translation>
 <translation id="1060320201901229167">Plic Kaku 5</translation>
-<translation id="10614374240317010">Nu se salvează niciodată</translation>
 <translation id="1062407476771304334">Înlocuiți</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Detalii privind motorul de căutare</translation>
@@ -263,7 +262,6 @@
 <translation id="1432187715652018471">Pagina dorește să instaleze un handler de serviciu.</translation>
 <translation id="1432581352905426595">Gestionați motoarele de căutare</translation>
 <translation id="1433225466058025572">Încearcă să muți din nou fișierele</translation>
-<translation id="1435940442311036198">Folosește o cheie de acces pe alt dispozitiv</translation>
 <translation id="1436185428532214179">Poate solicita permisiunea de a modifica fișiere și dosare de pe dispozitiv</translation>
 <translation id="1442386063175183758">Îndoire tip fereastră spre dreapta</translation>
 <translation id="1442987760062738829">Perforare</translation>
@@ -357,7 +355,6 @@
 <translation id="159274626729231974">Festivaluri de film</translation>
 <translation id="1593359183944365958">270 de grade</translation>
 <translation id="1594030484168838125">Alegeți</translation>
-<translation id="1598816256585174656">Cheia de acces din Windows Hello</translation>
 <translation id="1599199147673445968">Card nou? <ph name="BEGIN_LINK" />Introdu detaliile cardului<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Frumusețe și fitness</translation>
 <translation id="160851722280695521">Joacă jocul Dino Run în Chrome</translation>
@@ -469,7 +466,6 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Instalezi aplicații web?</translation>
 <translation id="1791415068765905273">Afișează toate tabelele de comparație</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona informațiile, confidențialitatea și securitatea Contului Google</translation>
 <translation id="1793473605302304726">Plătește în rate</translation>
 <translation id="1793631236004319016">Ultima utilizare: acum <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -2127,7 +2123,6 @@
 <translation id="4754461935447132332">Nu sunt permise pentru site-uri nesecurizate</translation>
 <translation id="4756388243121344051">&amp;Istoric</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Cheia de acces din profilul Chrome</translation>
 <translation id="4757993714154412917">Ai introdus parola pe un site înșelător. Pentru a-ți proteja conturile, Chromium recomandă să verifici parolele salvate.</translation>
 <translation id="4758311279753947758">Adaugă informații de contact</translation>
 <translation id="4761326898079498987">Consultă pentru mai multe detalii</translation>
@@ -2700,7 +2695,6 @@
 <translation id="5764920692828389743">Trimite la <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Pentru a vedea metodele de livrare și cerințele, selectează o adresă</translation>
 <translation id="57689295674415555">Numărul de card virtual nu este completat?</translation>
-<translation id="5772086939108830423">Folosește o cheie de acces pe alt dispozitiv</translation>
 <translation id="5776313857861697733">Prioritară</translation>
 <translation id="577804500166306874">Se încarcă rezultatul</translation>
 <translation id="5781136890105823427">Experimentul a fost activat</translation>
@@ -2831,7 +2825,6 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sincronizate)</translation>
 <translation id="6028591542479806248">Gestionează notificările pe dispozitivul mobil și prin e-mail</translation>
 <translation id="6028833024483927901">Bucătărie internațională</translation>
-<translation id="6030251660719692307">Cheia de acces din Managerul de parole Google</translation>
 <translation id="603068602130820122">Capsare dublă în dreapta</translation>
 <translation id="6032524144326295339">Căsuța de e-mail 2</translation>
 <translation id="6032955021262906325">Legare în stânga</translation>
@@ -3439,7 +3432,6 @@
 <translation id="7096937462164235847">Identitatea site-ului nu este confirmată.</translation>
 <translation id="7102554173784142865">Joacă jocul cu dinozauri din Chrome</translation>
 <translation id="7102760431686146931">Vase pentru gătit și masă</translation>
-<translation id="7105998430540165694">Cheia de acces din iCloud Keychain</translation>
 <translation id="7106762743910369165">Browserul este gestionat de organizația ta</translation>
 <translation id="7107249414147762907">Acest PDF nu se poate accesa. Nu s-a extras niciun text</translation>
 <translation id="7107427078069498123">Amprentele digitale SHA-256</translation>
@@ -4530,7 +4522,6 @@ Detalii suplimentare:
 <translation id="9040341831873780534">Vezi condițiile aici</translation>
 <translation id="9042617223719777575">Capacitate mare</translation>
 <translation id="9042827002460091668">Verifică-ți conexiunea la internet și încearcă din nou</translation>
-<translation id="9044359186343685026">Folosește Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Microfoane (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Aceste acțiuni necesită ca politica <ph name="POLICY_NAME" /> să fie setată la <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

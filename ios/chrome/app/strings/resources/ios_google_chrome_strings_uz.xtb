@@ -137,7 +137,6 @@ Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi
 <translation id="4830799082179398588">Chrome asosiy brauzer qilib belgilansinmi?</translation>
 <translation id="484033449593719797">Chrome Beta nashrida ishlamaydi</translation>
 <translation id="4840404732697892756">Google Parollar menejeri parollarni Google hisobiga kirish vaqtida tekshirishi mumkin.</translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{Chrome bu paketni Yangi varaqda kuzatishingizda yordam beradi.}other{Chrome bu paketlarni Yangi varaqda kuzatishingizda yordam beradi.}}</translation>
 <translation id="4903674399067644695">Bu bildirgi Chromening barcha imkoniyatlaridan foydalanish yuzasidan takliflar chiqaradi.</translation>
 <translation id="49200511069271369">Siz kirayotgan hisob va Chrome profilingiz qanday ishlatilishi tashkilotingiz (<ph name="DOMAIN" />) boshqaruvida. Administrator ayrim funksiyalarni sozlashi va cheklashi mumkin.</translation>
 <translation id="4925322001044117929">iPadda Chrome birlamchi brauzer boʻlsin</translation>
@@ -159,7 +158,6 @@ Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi
 <translation id="5439191312780166229">Standart himoyadan koʻra koʻproq saytlardan olingan maʼlumotlarni tahlil qilish orqali sizni xavfli saytlar, hatto Google ilgari bilmagan saytlar haqida ogohlantiradi. Chrome ogohlantirishlarini eʼtiborsiz qoldirishni tanlashingiz mumkin.</translation>
 <translation id="5442013002200339429">Agar “<ph name="MODULE_NAME" />”ni berkitsangiz, Chrome kelgusidagi paketlaringizni avtomatik kuzatmaydi va barcha avvalgi joʻnatmani kuzatish raqamlari oʻchiriladi.</translation>
 <translation id="5460571915754665838">4. Chrome brauzerini tanlang</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{Chrome bu paketni Yangi varaqda kuzatishda yordam beradi.}other{Chrome bu paketlarni Yangi varaqda kuzatishda yordam beradi.}}</translation>
 <translation id="5492504007368565877">Google Parollar menejeri parollaringizni tekshira olmaydi.</translation>
 <translation id="5525095647255982834">Bu varaqni boshqa qurilmaga yuborish uchun narigi qurilmada Chrome hisobiga kiring.</translation>
 <translation id="5527026824954593399">“Chromeda Google Xaritalar bilan ochish” ustiga bosing.</translation>

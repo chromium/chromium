@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Enregistrement des cartes…</translation>
 <translation id="1060136083665017312">Consoles de jeux</translation>
 <translation id="1060320201901229167">Enveloppe Kaku 5</translation>
-<translation id="10614374240317010">Jamais enregistrés</translation>
 <translation id="1062407476771304334">Remplacer</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Détails du moteur de recherche</translation>
@@ -263,7 +262,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1432187715652018471">Cette page veut installer un gestionnaire de services.</translation>
 <translation id="1432581352905426595">Gérer les moteurs de recherche</translation>
 <translation id="1433225466058025572">Réessayez de déplacer vos fichiers</translation>
-<translation id="1435940442311036198">Utiliser une clé d'accès sur un autre appareil</translation>
 <translation id="1436185428532214179">Peut demander à modifier des fichiers et des dossiers sur votre appareil</translation>
 <translation id="1442386063175183758">Pli du volet droit</translation>
 <translation id="1442987760062738829">Perforer</translation>
@@ -357,7 +355,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="159274626729231974">Festivals de cinéma</translation>
 <translation id="1593359183944365958">270 degrés</translation>
 <translation id="1594030484168838125">Sélectionner</translation>
-<translation id="1598816256585174656">Clé d'accès de Windows Hello</translation>
 <translation id="1599199147673445968">Nouvelle carte ? <ph name="BEGIN_LINK" />Saisir les informations relatives à la carte<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Beauté et remise en forme</translation>
 <translation id="160851722280695521">Jouer au jeu du dino dans Chrome</translation>
@@ -469,7 +466,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Installer des applis Web ?</translation>
 <translation id="1791415068765905273">Afficher tous les tableaux comparatifs</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer vos infos, votre vie privée et votre sécurité dans votre compte Google</translation>
 <translation id="1793473605302304726">Paiement échelonné</translation>
 <translation id="1793631236004319016">Dernière utilisation il y a <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -2127,7 +2123,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4754461935447132332">Non autorisées sur les sites non sécurisés</translation>
 <translation id="4756388243121344051">&amp;Historique</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Clé d'accès de votre profil Chrome</translation>
 <translation id="4757993714154412917">Vous venez de saisir votre mot de passe sur un site trompeur. Pour sécuriser vos comptes, Chromium vous recommande de vérifier vos mots de passe enregistrés.</translation>
 <translation id="4758311279753947758">Ajouter des coordonnées</translation>
 <translation id="4761326898079498987">Consulter les détails</translation>
@@ -2700,7 +2695,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5764920692828389743">Envoyer à <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Sélectionnez une adresse pour consulter les modes et conditions de livraison disponibles</translation>
 <translation id="57689295674415555">Le numéro de carte virtuelle n'est pas renseigné ?</translation>
-<translation id="5772086939108830423">Utiliser une clé d'accès sur un autre appareil</translation>
 <translation id="5776313857861697733">Priorité</translation>
 <translation id="577804500166306874">Chargement du résultat en cours</translation>
 <translation id="5781136890105823427">Test activé</translation>
@@ -2831,7 +2825,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synchronisés)</translation>
 <translation id="6028591542479806248">Gérer les notifications mobiles et par e-mail</translation>
 <translation id="6028833024483927901">Cuisine du monde</translation>
-<translation id="6030251660719692307">Clé d'accès du Gestionnaire de mots de passe de Google</translation>
 <translation id="603068602130820122">Double agrafe en haut</translation>
 <translation id="6032524144326295339">Boîte aux lettres 2</translation>
 <translation id="6032955021262906325">Reliure à gauche</translation>
@@ -3439,7 +3432,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7096937462164235847">L'identité de ce site Web n'a pas été validée.</translation>
 <translation id="7102554173784142865">Jouer au jeu du dino de Chrome</translation>
 <translation id="7102760431686146931">Vaisselle et ustensiles de cuisine</translation>
-<translation id="7105998430540165694">Clé d'accès du trousseau iCloud</translation>
 <translation id="7106762743910369165">Votre navigateur est géré par votre organisation</translation>
 <translation id="7107249414147762907">Impossible d'accéder à ce PDF. Aucun texte extrait.</translation>
 <translation id="7107427078069498123">Empreintes SHA-256</translation>
@@ -4530,7 +4522,6 @@ Informations supplémentaires :
 <translation id="9040341831873780534">Voir les conditions ici</translation>
 <translation id="9042617223719777575">Grande capacité</translation>
 <translation id="9042827002460091668">Vérifiez votre connexion Internet, puis réessayez</translation>
-<translation id="9044359186343685026">Utiliser Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Micros (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Ces actions nécessitent que la règle <ph name="POLICY_NAME" /> soit définie sur <ph name="POLICY_VALUE" /> : <ph name="ACTION_LIST" />.</translation>

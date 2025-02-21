@@ -73,7 +73,6 @@
 <translation id="2517624234762908348">የChromium ውሂብዎን ያሳምሩ</translation>
 <translation id="2592940277904433508">Chromiumን መጠቀምዎን ይቀጥሉ</translation>
 <translation id="2607609479243848905">የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChromium ውሂብ ይሰርዙ<ph name="END_LINK" />።</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium ይህን ጥቅል በአዲስ ትር ገፅ ላይ ለመከታተል ያግዛል።}one{Chromium ይህን ጥቅል በአዲስ ትር ገፅ ላይ ለመከታተል ያግዛል።}other{Chromium እነዚህን ጥቅሎች በአዲስ ትር ገፅ ላይ ለመከታተል ያግዛል።}}</translation>
 <translation id="2650312721222849884">Chromiumን ከሚጠቀሙበት የትኛዉም ቦታ ትሮችን ለማየት ስምረትን ያብሩ</translation>
 <translation id="2684230048001240293">በሁሉም መሣሪያዎችዎ ላይ ትሮችዎን፣ የይለፍ ቃላትዎን እና የክፍያ መረጃዎን ለማስመር Chromiumን እንደ ነባሪ ያዘጋጁ</translation>
 <translation id="2730884209570016437">ሌላ መተግበሪያ ካሜራዎን እየተጠቀመበት ስለሆነ Chromium ካሜራዎን መጠቀም አይችልም</translation>
@@ -88,7 +87,6 @@
 <translation id="2977470724722393594">Chromium የተዘመነ ነው</translation>
 <translation id="3044857325852340337">የተሰረዘ Chromium ውሂብ</translation>
 <translation id="3054480780637153380">በiOS ውስጥ የChromium ቅንብሮችን ይክፈቱ ከዚያ «ነባሪ አሳሽ መተግበሪያ» ላይ መታ ያድርጉ እና Chromium ይምረጡ።</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium ይህን ጥቅል በአዲስ ትር ገፅ ላይ እንዲከታተሉ ሊያግዝዎት ይችላል።}one{Chromium ይህን ጥቅል በአዲስ ትር ገፅ ላይ እንዲከታተሉ ሊያግዝዎት ይችላል።}other{Chromium እነዚህን ጥቅሎች በአዲስ ትር ገፅ ላይ እንዲከታተሉ ሊያግዝዎት ይችላል።}}</translation>
 <translation id="3102849287235003384">በሁሉም ድር ጣቢያዎች ላይ የእርስዎን የGoogle መለያ ዘግተው ለመውጣት <ph name="BEGIN_LINK" />ከChromium ዘግተው ይውጡ<ph name="END_LINK" />።</translation>
 <translation id="3115956258722352278">Chromium የእርስዎ ነባሪ አሳሽ ይደረግ?</translation>
 <translation id="3242612358525156339">ከመሣሪያዎ ቅንብሮች ላይ ሆነው «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />»ን ይክፈቱ እና «Chromium»ን ይምረጡ</translation>

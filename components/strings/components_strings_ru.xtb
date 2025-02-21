@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Сохранение карт…</translation>
 <translation id="1060136083665017312">Игровые системы и консоли</translation>
 <translation id="1060320201901229167">Конверт Kaku 5</translation>
-<translation id="10614374240317010">Сайты, пароли для которых не сохраняются</translation>
 <translation id="1062407476771304334">Заменить</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Сведения о поисковой системе</translation>
@@ -263,7 +262,6 @@
 <translation id="1432187715652018471">Страница пытается установить обработчик службы</translation>
 <translation id="1432581352905426595">Управление поисковыми системами</translation>
 <translation id="1433225466058025572">Попробуйте перенести файлы ещё раз.</translation>
-<translation id="1435940442311036198">Использовать ключ доступа на другом устройстве</translation>
 <translation id="1436185428532214179">Может запрашивать разрешение на редактирование файлов и папок на устройстве</translation>
 <translation id="1442386063175183758">Фальцовка правой четверти</translation>
 <translation id="1442987760062738829">Отверстие</translation>
@@ -357,7 +355,6 @@
 <translation id="159274626729231974">Кинофестивали</translation>
 <translation id="1593359183944365958">270 градусов</translation>
 <translation id="1594030484168838125">Выбрать</translation>
-<translation id="1598816256585174656">Ключ доступа из Windows Hello</translation>
 <translation id="1599199147673445968">Новая карта? <ph name="BEGIN_LINK" />Введите реквизиты<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Красота и фитнес</translation>
 <translation id="160851722280695521">Играть в игру Dino Run в Chrome</translation>
@@ -469,7 +466,6 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Установить веб-приложения?</translation>
 <translation id="1791415068765905273">Показать все сравнительные таблицы</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы управлять своими данными, конфиденциальностью и безопасностью в аккаунте Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="1793473605302304726">Рассрочка</translation>
 <translation id="1793631236004319016">Разрешение использовалось <ph name="NUM_HOURS_MINUTES_SECONDS" /> назад</translation>
@@ -2126,7 +2122,6 @@
 <translation id="4754461935447132332">Запрещено для незащищенных сайтов</translation>
 <translation id="4756388243121344051">&amp;История</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Ключ доступа из профиля Chrome</translation>
 <translation id="4757993714154412917">Вы только что ввели пароль на поддельном сайте. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в браузере Chromium.</translation>
 <translation id="4758311279753947758">Добавить контактные данные</translation>
 <translation id="4761326898079498987">Подробнее</translation>
@@ -2699,7 +2694,6 @@
 <translation id="5764920692828389743">Отправлять на адрес <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Выберите адрес, чтобы посмотреть способы и условия доставки.</translation>
 <translation id="57689295674415555">Номер виртуальной карты не указан?</translation>
-<translation id="5772086939108830423">Использовать ключ доступа на другом устройстве</translation>
 <translation id="5776313857861697733">Приоритет</translation>
 <translation id="577804500166306874">Загрузка результата</translation>
 <translation id="5781136890105823427">Эксперимент включен</translation>
@@ -2830,7 +2824,6 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (данные синхронизируются)</translation>
 <translation id="6028591542479806248">Управление уведомлениями по электронной почте и на мобильном устройстве</translation>
 <translation id="6028833024483927901">Кухни мира</translation>
-<translation id="6030251660719692307">Ключ доступа из Google Менеджера паролей</translation>
 <translation id="603068602130820122">Две скобы справа</translation>
 <translation id="6032524144326295339">Почтовый ящик 2</translation>
 <translation id="6032955021262906325">Скрепление слева</translation>
@@ -3438,7 +3431,6 @@
 <translation id="7096937462164235847">Подлинность этого сайта не подтверждена.</translation>
 <translation id="7102554173784142865">Играть в Chrome Dino</translation>
 <translation id="7102760431686146931">Кухонная и столовая посуда</translation>
-<translation id="7105998430540165694">Ключ доступа из сервиса "Связка ключей iCloud"</translation>
 <translation id="7106762743910369165">Этим браузером управляет ваша организация.</translation>
 <translation id="7107249414147762907">Этот файл PDF недоступен. Нет извлеченного текста.</translation>
 <translation id="7107427078069498123">Цифровые отпечатки сертификата с подписью SHA-256</translation>
@@ -4528,7 +4520,6 @@
 <translation id="9040341831873780534">узнать условия</translation>
 <translation id="9042617223719777575">Большая емкость</translation>
 <translation id="9042827002460091668">Проверьте подключение к интернету и повторите попытку.</translation>
-<translation id="9044359186343685026">Использовать Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Микрофоны (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Чтобы выполнить действия (<ph name="ACTION_LIST" />), установите для правила <ph name="POLICY_NAME" /> значение <ph name="POLICY_VALUE" />.</translation>

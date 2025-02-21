@@ -136,7 +136,6 @@
 <translation id="4830799082179398588">将 Chrome 设为默认浏览器？</translation>
 <translation id="484033449593719797">在 Chrome Beta 版中不受支持</translation>
 <translation id="4840404732697892756">您需要先登录 Google 账号，然后才能使用 Google 密码管理工具的密码检查功能。</translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{Chrome 可以帮助您在“新标签页”页面中跟踪此包裹。}other{Chrome 可以帮助您在“新标签页”页面中跟踪这些包裹。}}</translation>
 <translation id="4903674399067644695">此卡片会为您提供一些建议，帮助您充分利用 Chrome。</translation>
 <translation id="49200511069271369">您的组织 (<ph name="DOMAIN" />) 负责管理您登录的账号和 Chrome 的使用方式。您的管理员可以设置或限制某些功能。</translation>
 <translation id="4925322001044117929">默认在 iPad 上使用 Chrome</translation>
@@ -158,7 +157,6 @@
 <translation id="5439191312780166229">基于比“标准保护”更全面的网站数据进行分析，针对危险网站（甚至是 Google 之前未知的网站）向您发出警告。您可以选择忽略 Chrome 警告。</translation>
 <translation id="5442013002200339429">如果您隐藏“<ph name="MODULE_NAME" />”，Chrome 将不再自动跟踪您的未来包裹，而是会删除您的所有过往包裹跟踪数据。</translation>
 <translation id="5460571915754665838">4. 选择“Chrome”</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{Chrome 将帮助您在“新标签页”页面中跟踪此包裹。}other{Chrome 将帮助您在“新标签页”页面中跟踪这些包裹。}}</translation>
 <translation id="5492504007368565877">Google 密码管理工具无法检查您的密码。</translation>
 <translation id="5525095647255982834">若要将此标签页发送到另一设备，请在该设备上登录 Chrome。</translation>
 <translation id="5527026824954593399">点按“在 Chrome 上通过 Google 地图查看”。</translation>

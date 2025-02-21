@@ -153,7 +153,6 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 enderezo}other{# enderezos}}</translation>
 <translation id="1605405588277479165">Desactivada (non se recomenda)</translation>
 <translation id="1605658421715042784">Copiar imaxe</translation>
-<translation id="1612642630650745968">Paquete sen seguimento</translation>
 <translation id="1612754831519568745">A navegación segura está desactivada actualmente. Protéxete contra descargas, extensións e sitios perigosos.</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1622717322707146952">Selecciona Engadir a Google Calendar ou Engadir a Apple Calendar.</translation>
@@ -1387,7 +1386,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6930162026494574854">Restaurar config. tradución</translation>
 <translation id="6930799952781667037">Toca para cambiar a este idioma.</translation>
 <translation id="693761253105515415">Define un contrasinal</translation>
-<translation id="6943681254152031826">{COUNT,plural, =1{Queres facer un seguimento deste paquete?}other{Queres facer un seguimento de {COUNT} paquetes?}}</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6950522403736391608">Ocultos</translation>
 <translation id="6964300328304469089">Selección actual: <ph name="NAME" />, <ph name="EMAIL" /> Escolle unha conta.</translation>
@@ -1589,7 +1587,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7859988229622350291">Non traducir nunca</translation>
 <translation id="7863211248337747225">Descargar aplicación</translation>
 <translation id="7865127013871431856">Opcións do Tradutor</translation>
-<translation id="7866501058614003444">Quitouse o seguimento deste paquete.</translation>
 <translation id="7866872729285243843">Para desfrutar da lista de lectura en todos os teus dispositivos, activa Lista de lectura na configuración.</translation>
 <translation id="7874107544081154809">Autocompletar formulario con <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Tes contrasinais reutilizados.</translation>

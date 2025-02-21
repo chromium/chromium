@@ -74,7 +74,6 @@ Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão ex
 <translation id="2517624234762908348">Sincronizar seus dados do Chromium</translation>
 <translation id="2592940277904433508">Continuar usando o Chromium</translation>
 <translation id="2607609479243848905">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{O Chromium ajudará a rastrear o pacote na página "Nova guia".}one{O Chromium ajudará a rastrear o pacote na página "Nova guia".}other{O Chromium ajudará a rastrear os pacotes na página "Nova guia".}}</translation>
 <translation id="2650312721222849884">Para acessar suas guias em qualquer lugar onde você usar o Chromium, ative a sincronização</translation>
 <translation id="2684230048001240293">Defina o Chromium como padrão para sincronizar guias, senhas e informações de pagamento em todos os seus dispositivos</translation>
 <translation id="2730884209570016437">O Chromium não pode usar a câmera porque ela está sendo usada por outro app</translation>
@@ -89,7 +88,6 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="2977470724722393594">O Chromium está atualizado</translation>
 <translation id="3044857325852340337">Dados do Chromium excluídos</translation>
 <translation id="3054480780637153380">Abra as configurações do Chromium no iOS, toque em "App de navegador padrão" e selecione o Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{O Chromium pode ajudar você a rastrear o pacote na página "Nova guia".}one{O Chromium pode ajudar você a rastrear o pacote na página "Nova guia".}other{O Chromium pode ajudar você a rastrear os pacotes na página "Nova guia".}}</translation>
 <translation id="3102849287235003384">Para sair da sua Conta do Google em todos os sites, <ph name="BEGIN_LINK" />saia do Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Definir o Chromium como o navegador padrão?</translation>
 <translation id="3242612358525156339">Nas configurações do dispositivo, abra "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" e selecione "Chromium"</translation>

@@ -136,7 +136,6 @@ Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, ši
 <translation id="4830799082179398588">Vai iestatīt Chrome kā noklusējuma pārlūku?</translation>
 <translation id="484033449593719797">Netiek atbalstīta pārlūkā Chrome Beta.</translation>
 <translation id="4840404732697892756">Google paroļu pārvaldnieks var pārbaudīt jūsu paroles, ja esat pierakstījies savā Google kontā.</translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{Chrome var palīdzēt jums izsekot šo sūtījumu jaunas cilnes lapā.}zero{Chrome var palīdzēt jums izsekot šos sūtījumus jaunas cilnes lapā.}one{Chrome var palīdzēt jums izsekot šos sūtījumus jaunas cilnes lapā.}other{Chrome var palīdzēt jums izsekot šos sūtījumus jaunas cilnes lapā.}}</translation>
 <translation id="4903674399067644695">Šajā kartītē tiek rādīti ieteikumi par to, kā pilnvērtīgi izmantot pārlūku Chrome.</translation>
 <translation id="49200511069271369">Jūsu organizācija <ph name="DOMAIN" /> pārvalda kontu, kurā pašlaik pierakstāties, un pārlūka Chrome lietošanas iespējas. Administrators var iestatīt vai ierobežot noteiktas funkcijas.</translation>
 <translation id="4925322001044117929">Pēc noklusējuma iPad ierīcē izmantot Chrome</translation>
@@ -158,7 +157,6 @@ Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, ši
 <translation id="5439191312780166229">Tiek rādīts brīdinājums par bīstamām vietnēm (pat ja Google par tām iepriekš nezināja), analizējot vairāk datu no vietnēm, nekā analizē standarta aizsardzība. Varat izlaist Chrome brīdinājumus.</translation>
 <translation id="5442013002200339429">Ja paslēpsiet moduli “<ph name="MODULE_NAME" />”, Chrome turpmāk vairs automātiski neizsekos sūtījumus un visi iepriekšējie sūtījumu izsekošanas dati tiks dzēsti.</translation>
 <translation id="5460571915754665838">4. Atlasiet Chrome</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{Chrome palīdzēs izsekot šo sūtījumu jaunas cilnes lapā.}zero{Chrome palīdzēs izsekot šos sūtījumus jaunas cilnes lapā.}one{Chrome palīdzēs izsekot šos sūtījumus jaunas cilnes lapā.}other{Chrome palīdzēs izsekot šos sūtījumus jaunas cilnes lapā.}}</translation>
 <translation id="5492504007368565877">Google paroļu pārvaldnieks nevar pārbaudīt jūsu paroles.</translation>
 <translation id="5525095647255982834">Lai nosūtītu šo cilni uz citu ierīci, otrā ierīcē pierakstieties pārlūkā Chrome.</translation>
 <translation id="5527026824954593399">Pieskarieties vienumam “Skatīt ar Google Maps pārlūkā Chrome”.</translation>

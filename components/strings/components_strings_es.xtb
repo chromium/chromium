@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Guardando tarjetas…</translation>
 <translation id="1060136083665017312">Consolas y accesorios de videojuegos</translation>
 <translation id="1060320201901229167">Sobre Kaku 5</translation>
-<translation id="10614374240317010">Contraseñas que nunca se guardan</translation>
 <translation id="1062407476771304334">Reemplazar</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Detalles del buscador</translation>
@@ -263,7 +262,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1432187715652018471">página quiere instalar un controlador de servicios.</translation>
 <translation id="1432581352905426595">Gestionar buscadores</translation>
 <translation id="1433225466058025572">Prueba a mover tus archivos de nuevo</translation>
-<translation id="1435940442311036198">Usar una llave de acceso en otro dispositivo</translation>
 <translation id="1436185428532214179">Puede solicitar permiso para editar archivos y carpetas de tu dispositivo</translation>
 <translation id="1442386063175183758">Plegado en ventana a la derecha</translation>
 <translation id="1442987760062738829">Perforar</translation>
@@ -357,7 +355,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="159274626729231974">Festivales de cine</translation>
 <translation id="1593359183944365958">270 grados</translation>
 <translation id="1594030484168838125">Seleccionar</translation>
-<translation id="1598816256585174656">Llave de acceso de Windows Hello</translation>
 <translation id="1599199147673445968">¿Tarjeta nueva? <ph name="BEGIN_LINK" />Introducir información de la tarjeta<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Belleza y ejercicio físico</translation>
 <translation id="160851722280695521">Juega al juego del dinosaurio de Chrome</translation>
@@ -469,7 +466,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">¿Instalar aplicaciones web?</translation>
 <translation id="1791415068765905273">Mostrar todas las tablas comparativas</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para gestionar la información, la privacidad y la seguridad de tu cuenta de Google</translation>
 <translation id="1793473605302304726">Pagar a plazos</translation>
 <translation id="1793631236004319016">Último uso: hace <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -2127,7 +2123,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4754461935447132332">No permitido en sitios no seguros</translation>
 <translation id="4756388243121344051">&amp;Historial</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Llave de acceso de tu perfil de Chrome</translation>
 <translation id="4757993714154412917">Acabas de escribir tu contraseña en un sitio engañoso. Para proteger tus cuentas, Chromium recomienda que compruebes las contraseñas que tengas guardadas.</translation>
 <translation id="4758311279753947758">Añadir información de contacto</translation>
 <translation id="4761326898079498987">Consultar más información</translation>
@@ -2700,7 +2695,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5764920692828389743">Enviar a <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Selecciona una dirección para ver los métodos de entrega y los requisitos</translation>
 <translation id="57689295674415555">¿No se ha introducido el número de tarjeta virtual?</translation>
-<translation id="5772086939108830423">Usar una llave de acceso en otro dispositivo</translation>
 <translation id="5776313857861697733">Prioridad</translation>
 <translation id="577804500166306874">Cargando resultado</translation>
 <translation id="5781136890105823427">Experimento habilitado</translation>
@@ -2831,7 +2825,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sincronizados)</translation>
 <translation id="6028591542479806248">Gestiona las notificaciones móviles y por correo electrónico</translation>
 <translation id="6028833024483927901">Cocina del mundo</translation>
-<translation id="6030251660719692307">Llave de acceso del Gestor de contraseñas de Google</translation>
 <translation id="603068602130820122">Grapado doble en la parte derecha</translation>
 <translation id="6032524144326295339">Buzón de correo 2</translation>
 <translation id="6032955021262906325">Encuadernar por la izquierda</translation>
@@ -3439,7 +3432,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7096937462164235847">La identidad de este sitio web no se ha verificado.</translation>
 <translation id="7102554173784142865">Jugar a El dinosaurio de Chrome</translation>
 <translation id="7102760431686146931">Utensilios de cocina y vajilla</translation>
-<translation id="7105998430540165694">Llave de acceso del llavero de iCloud</translation>
 <translation id="7106762743910369165">Tu organización es la encargada de gestionar tu navegador</translation>
 <translation id="7107249414147762907">No se puede acceder a este PDF. No se ha extraído texto.</translation>
 <translation id="7107427078069498123">Huellas digitales SHA-256</translation>
@@ -4529,7 +4521,6 @@ Más información:
 <translation id="9040341831873780534">Consulta los términos aquí</translation>
 <translation id="9042617223719777575">Gran capacidad</translation>
 <translation id="9042827002460091668">Comprueba tu conexión a Internet y vuelve a intentarlo</translation>
-<translation id="9044359186343685026">Usar Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />: <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Micrófonos (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Es necesario asignar el valor <ph name="POLICY_VALUE" /> a la política <ph name="POLICY_NAME" /> para realizar estas acciones: <ph name="ACTION_LIST" />.</translation>

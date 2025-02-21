@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">Chromium datasını sinxronizasiya edin</translation>
 <translation id="2592940277904433508">Chromium istifadəsinə davam edin</translation>
 <translation id="2607609479243848905">Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />hesabda Chromium datasını silin<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium yeni tab səhifəsində bu paketi izləməyə kömək edəcək.}other{Chromium yeni tab səhifəsində bu paketləri izləməyə kömək edəcək.}}</translation>
 <translation id="2650312721222849884">Chromium istifadə etdiyiniz hər yerdən tabları görmək üçün sinxronizasiyanı aktiv edin</translation>
 <translation id="2684230048001240293">Tablar, parollar və ödəniş məlumatlarınızı bütün cihazlarınızda sinxronlaşdırmaq üçün defolt olaraq Chromium'u ayarlayın</translation>
 <translation id="2730884209570016437">Digər tətbiq tərəfindən istifadə olunduğu üçün Chromium kameranı istifadə edə bilməz</translation>
@@ -89,7 +88,6 @@ Chromium təcrübənizi təkmilləşdirmək məqsədilə data istifadə edən di
 <translation id="2977470724722393594">Chromium güncəldir</translation>
 <translation id="3044857325852340337">Chromium datası silindi</translation>
 <translation id="3054480780637153380">iOS-da Chromium ayarlarını açın, "Defolt brauzer tətbiqi" üzərinə toxunun və Chromium seçin.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium yeni tab səhifəsində bu paketi izləməyə kömək edə bilər.}other{Chromium yeni tab səhifəsində bu paketləri izləməyə kömək edə bilər.}}</translation>
 <translation id="3102849287235003384">Bütün vebsaytlarda Google Hesabınızdan çıxmaq üçün <ph name="BEGIN_LINK" />Chromium'dan çıxın<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium defolt brauzer edilsin?</translation>
 <translation id="3242612358525156339">Cihaz ayarlarında "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" seçimini açın və "Chromium" seçin</translation>

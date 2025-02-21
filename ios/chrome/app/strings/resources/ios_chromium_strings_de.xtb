@@ -73,7 +73,6 @@ Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, wer
 <translation id="2517624234762908348">Chromium-Daten synchronisieren</translation>
 <translation id="2592940277904433508">Chromium weiterhin verwenden</translation>
 <translation id="2607609479243848905">Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chromium-Daten in deinem Konto<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium hilft dabei, dieses Paket auf der Seite „Neuer Tab“ zu verfolgen.}other{Chromium hilft dabei, diese Pakete auf der Seite „Neuer Tab“ zu verfolgen.}}</translation>
 <translation id="2650312721222849884">Aktiviere die Synchronisierung, um deine Tabs überall dort aufzurufen, wo du Chromium verwendest</translation>
 <translation id="2684230048001240293">Du kannst Chromium als Standardbrowser festlegen, um Tabs, Passwörter und Zahlungsinformationen auf allen deinen Geräten zu synchronisieren</translation>
 <translation id="2730884209570016437">Chromium kann nicht auf die Kamera zugreifen, da diese gerade von einer anderen App verwendet wird</translation>
@@ -88,7 +87,6 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chromium verwendet w
 <translation id="2977470724722393594">Chromium ist auf dem neuesten Stand</translation>
 <translation id="3044857325852340337">Chromium-Daten gelöscht</translation>
 <translation id="3054480780637153380">Öffne unter iOS die Chromium-Einstellungen, tippe auf „Standard-Browser-App“ und wähle „Chromium“ aus.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium kann dir dabei helfen, dieses Paket auf der Seite „Neuer Tab“ zu verfolgen.}other{Chromium kann dir dabei helfen, diese Pakete auf der Seite „Neuer Tab“ zu verfolgen.}}</translation>
 <translation id="3102849287235003384">Du kannst dich auf allen Websites aus deinem Google-Konto abmelden, indem du dich <ph name="BEGIN_LINK" />von Chromium abmeldest<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium als Standardbrowser festlegen?</translation>
 <translation id="3242612358525156339">Rufe in den Einstellungen deines Geräts „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ auf und wähle „Chromium“ aus</translation>

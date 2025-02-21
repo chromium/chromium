@@ -153,7 +153,6 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{১টি ঠিকানা}one{#টি ঠিকানা}other{#টি ঠিকানা}}</translation>
 <translation id="1605405588277479165">বন্ধ আছে - সাজেস্ট করা হয়নি</translation>
 <translation id="1605658421715042784">ছবি কপি করুন</translation>
-<translation id="1612642630650745968">প্যাকেজ আর ট্র্যাক করা হচ্ছে না</translation>
 <translation id="1612754831519568745">আপনার Safe Browsing এখন বন্ধ করা আছে। বিপজ্জনক সাইট, ডাউনলোড ও এক্সটেনশন থেকে সুরক্ষিত থাকুন।</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1622717322707146952">“Google Calendar-এ যোগ করুন“ বা “Apple Calendar-এ যোগ করুন“ বিকল্প বেছে নিন।</translation>
@@ -1389,7 +1388,6 @@
 <translation id="6930162026494574854">অনুবাদের সেটিংস রিসেট করুন</translation>
 <translation id="6930799952781667037">এই ভাষায় পরিবর্তন করতে ট্যাপ করুন।</translation>
 <translation id="693761253105515415">একটি পাসকোড সেট করুন</translation>
-<translation id="6943681254152031826">{COUNT,plural, =1{এই প্যাকেজ ট্র্যাক করবেন?}one{{COUNT}টি প্যাকেজ ট্র্যাক করবেন?}other{{COUNT}টি প্যাকেজ ট্র্যাক করবেন?}}</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
 <translation id="6950522403736391608">লুকানো আছে</translation>
 <translation id="6964300328304469089">বর্তমানে, <ph name="NAME" />, <ph name="EMAIL" /> আইডি বেছে নেওয়া হয়েছে। একটি অ্যাকাউন্ট বেছে নিন।</translation>
@@ -1591,7 +1589,6 @@
 <translation id="7859988229622350291">কখনও অনুবাদ করবেন না</translation>
 <translation id="7863211248337747225">অ্যাপ ইনস্টল করুন</translation>
 <translation id="7865127013871431856">অনুবাদের বিকল্প</translation>
-<translation id="7866501058614003444">এই প্যাকেজটি আর ট্র্যাক করা হচ্ছে না।</translation>
 <translation id="7866872729285243843">আপনার সব ডিভাইসে নিজের পড়ার তালিকা পেতে সেটিংসে গিয়ে “পড়ার তালিকা” চালু করুন।</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" />-এর সাহায্যে ফর্ম অটোফিল করুন</translation>
 <translation id="7883882164760409935">আপনার কাছে একই পাসওয়ার্ড আছে যা আবার ব্যবহার করা হয়েছে।</translation>

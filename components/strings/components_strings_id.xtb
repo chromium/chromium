@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Menyimpan kartu...</translation>
 <translation id="1060136083665017312">Sistem &amp; Konsol Game</translation>
 <translation id="1060320201901229167">Envelope Kaku 5</translation>
-<translation id="10614374240317010">Jangan pernah disimpan</translation>
 <translation id="1062407476771304334">Ganti</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Detail mesin telusur</translation>
@@ -263,7 +262,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1432187715652018471">Halaman ingin menginstal pengendali layanan.</translation>
 <translation id="1432581352905426595">Kelola mesin telusur</translation>
 <translation id="1433225466058025572">Coba pindahkan file lagi</translation>
-<translation id="1435940442311036198">Gunakan kunci sandi di perangkat lain</translation>
 <translation id="1436185428532214179">Dapat meminta untuk mengedit file dan folder di perangkat Anda</translation>
 <translation id="1442386063175183758">Lipatan format gate di kanan</translation>
 <translation id="1442987760062738829">Lubang</translation>
@@ -357,7 +355,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="159274626729231974">Festival Film</translation>
 <translation id="1593359183944365958">270 derajat</translation>
 <translation id="1594030484168838125">Pilih</translation>
-<translation id="1598816256585174656">Kunci sandi dari Windows Hello</translation>
 <translation id="1599199147673445968">Kartu baru? <ph name="BEGIN_LINK" />Masukkan Detail Kartu<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Kecantikan &amp; Kebugaran</translation>
 <translation id="160851722280695521">Mainkan game Dino Run di Chrome</translation>
@@ -470,7 +467,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Instal aplikasi web?</translation>
 <translation id="1791415068765905273">Tampilkan Semua Tabel Perbandingan</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola info, privasi, dan keamanan di Akun Google Anda</translation>
 <translation id="1793473605302304726">Bayar dengan cicilan</translation>
 <translation id="1793631236004319016">Terakhir digunakan <ph name="NUM_HOURS_MINUTES_SECONDS" /> lalu</translation>
@@ -2127,7 +2123,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4754461935447132332">Tidak diizinkan untuk situs yang tidak aman</translation>
 <translation id="4756388243121344051">&amp;Riwayat</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Kunci sandi dari Profil Chrome Anda</translation>
 <translation id="4757993714154412917">Anda baru saja memasukkan sandi ke situs penipuan. Untuk mengamankan akun Anda, Chromium merekomendasikan pemeriksaan sandi tersimpan Anda.</translation>
 <translation id="4758311279753947758">Tambahkan info kontak</translation>
 <translation id="4761326898079498987">Tinjau untuk mengetahui detail lebih lanjut</translation>
@@ -2700,7 +2695,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5764920692828389743">Kirim ke <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Untuk melihat persyaratan dan metode pengiriman, pilih alamat</translation>
 <translation id="57689295674415555">Nomor kartu virtual tidak diisi?</translation>
-<translation id="5772086939108830423">Gunakan Passkey di Perangkat Lain</translation>
 <translation id="5776313857861697733">Prioritas</translation>
 <translation id="577804500166306874">Memuat hasil</translation>
 <translation id="5781136890105823427">Eksperimen diaktifkan</translation>
@@ -2831,7 +2825,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (disinkronkan)</translation>
 <translation id="6028591542479806248">Kelola notifikasi seluler dan email</translation>
 <translation id="6028833024483927901">Masakan Dunia</translation>
-<translation id="6030251660719692307">Kunci sandi dari Pengelola Sandi Google</translation>
 <translation id="603068602130820122">Dua jepretan di kanan</translation>
 <translation id="6032524144326295339">Kotak surat 2</translation>
 <translation id="6032955021262906325">Jilid di kiri</translation>
@@ -3439,7 +3432,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7096937462164235847">Identitas situs ini tidak terverifikasi.</translation>
 <translation id="7102554173784142865">Mainkan game Chrome Dino</translation>
 <translation id="7102760431686146931">Peralatan Masak &amp; Makan</translation>
-<translation id="7105998430540165694">Kunci sandi dari Rantai Kunci iCloud</translation>
 <translation id="7106762743910369165">Browser dikelola oleh organisasi Anda</translation>
 <translation id="7107249414147762907">PDF ini tidak dapat diakses. Tidak ada teks yang diekstrak</translation>
 <translation id="7107427078069498123">Sidik Jari SHA-256</translation>
@@ -4525,7 +4517,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="9040341831873780534">Lihat persyaratan di sini</translation>
 <translation id="9042617223719777575">Kapasitas Besar</translation>
 <translation id="9042827002460091668">Periksa koneksi internet Anda, lalu coba lagi</translation>
-<translation id="9044359186343685026">Gunakan Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Mikrofon (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Tindakan ini mengharuskan kebijakan <ph name="POLICY_NAME" /> disetel ke <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

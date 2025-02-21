@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Kartlar yadda saxlanılır...</translation>
 <translation id="1060136083665017312">Oyun sistemləri və konsollar</translation>
 <translation id="1060320201901229167">Zərf Kaku 5</translation>
-<translation id="10614374240317010">Heç vaxt saxlanılmır</translation>
 <translation id="1062407476771304334">Əvəz edin</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Axtarış mexanizmi detalları</translation>
@@ -263,7 +262,6 @@
 <translation id="1432187715652018471">səhifə xidmət işləyici quraşdırmaq istəyir.</translation>
 <translation id="1432581352905426595">Axtarış sistemlərini idarə edin</translation>
 <translation id="1433225466058025572">Faylları yenidən köçürün</translation>
-<translation id="1435940442311036198">Fərqli cihazda şifrə istifadə edin</translation>
 <translation id="1436185428532214179">Saytlar cihazınızdakı faylları və qovluqları redaktə etmək üçün icazə istəyə bilər</translation>
 <translation id="1442386063175183758">Sağ küncə qatlayın</translation>
 <translation id="1442987760062738829">Deşik açın</translation>
@@ -357,7 +355,6 @@
 <translation id="159274626729231974">Film festivalları</translation>
 <translation id="1593359183944365958">270 dərəcə</translation>
 <translation id="1594030484168838125">Seçin</translation>
-<translation id="1598816256585174656">Windows Hello-dan giriş açarı</translation>
 <translation id="1599199147673445968">Yeni kart? <ph name="BEGIN_LINK" />Kart Detallarını daxil edin<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Gözəllik və Fitnes</translation>
 <translation id="160851722280695521">Chrome'da Dinozavr Qaçış oyununu oynayın</translation>
@@ -469,7 +466,6 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Veb-tətbiqlər quraşdırılsın?</translation>
 <translation id="1791415068765905273">Bütün müqayisə cədvəllərini göstərin</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Google Hesabınızda məlumat, məxfilik və təhlükəsizliyinizi idarə edin</translation>
 <translation id="1793473605302304726">Hissə-hissə ödəyin</translation>
 <translation id="1793631236004319016">Son istifadə: <ph name="NUM_HOURS_MINUTES_SECONDS" /> əvvəl</translation>
@@ -2123,7 +2119,6 @@
 <translation id="4754461935447132332">Güvənsiz saytlar üçün icazə verilmir</translation>
 <translation id="4756388243121344051">&amp;Tarixçə</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Chrome profilindən giriş açarı</translation>
 <translation id="4757993714154412917">İndicə parolunuzu aldadıcı sayt içində yazdınız. Hesablarınızı qorumaq üçün Chromium yadda saxladığınız parolları yoxlamağı tövsiyə edir.</translation>
 <translation id="4758311279753947758">Kontakt məlumatı əlavə edin</translation>
 <translation id="4761326898079498987">Əlavə detallar üçün nəzərdən keçirin</translation>
@@ -2696,7 +2691,6 @@
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> ünvanına göndərin</translation>
 <translation id="5765072501007116331">Çatdırılma üsulları və tələblərinə baxın, ünvan seçin</translation>
 <translation id="57689295674415555">Virtual kart nömrəsi daxil edilməyib?</translation>
-<translation id="5772086939108830423">Fərqli Cihazda Giriş Açarı İstifadə edin</translation>
 <translation id="5776313857861697733">Prioritet</translation>
 <translation id="577804500166306874">Nəticə yüklənir</translation>
 <translation id="5781136890105823427">Sınaq aktiv edildi</translation>
@@ -2827,7 +2821,6 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sinxronlaşdırıldı)</translation>
 <translation id="6028591542479806248">Mobil və e-poçt bildirişlərini idarə edin</translation>
 <translation id="6028833024483927901">Dünya mətbəxi</translation>
-<translation id="6030251660719692307">Google Parol Menecerindən giriş açarı</translation>
 <translation id="603068602130820122">Sağdan qoşa ştapel vurun</translation>
 <translation id="6032524144326295339">Poçt qutusu 2</translation>
 <translation id="6032955021262906325">Soldan uclarını qovuşdurun</translation>
@@ -3435,7 +3428,6 @@
 <translation id="7096937462164235847">Bu veb saytın kimliyi doğrulanmayıb.</translation>
 <translation id="7102554173784142865">Chrome Dinozavr oyununu oynayın</translation>
 <translation id="7102760431686146931">Qab-qacaq və yemək əşyaları</translation>
-<translation id="7105998430540165694">iCloud Keychain-dən giriş açarı</translation>
 <translation id="7106762743910369165">Təşkilatınız brauzerinizi idarə edir</translation>
 <translation id="7107249414147762907">Bu PDF-ə daxil olmaq olmur. Mətn çıxarılmadı</translation>
 <translation id="7107427078069498123">SHA-256 barmaq izləri</translation>
@@ -4524,7 +4516,6 @@
 <translation id="9040341831873780534">Burada şərtlərə baxın</translation>
 <translation id="9042617223719777575">Geniş Tutum</translation>
 <translation id="9042827002460091668">İnternet bağlantınızı yoxlayın və yenidən sınayın</translation>
-<translation id="9044359186343685026">Toxunuş ID-dən istifadə edin</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Mikrofonlar (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Bu əməliyyatlar üçün <ph name="POLICY_NAME" /> <ph name="POLICY_VALUE" /> olaraq ayarlanmalıdır: <ph name="ACTION_LIST" />.</translation>

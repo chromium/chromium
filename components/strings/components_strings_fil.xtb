@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Sine-save ang mga card...</translation>
 <translation id="1060136083665017312">Mga Game System at Console</translation>
 <translation id="1060320201901229167">Envelope Kaku 5</translation>
-<translation id="10614374240317010">Hindi kailanman nag-save</translation>
 <translation id="1062407476771304334">Palitan</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Mga detalye ng search engine</translation>
@@ -263,7 +262,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1432187715652018471">Gusto ng page na mag-install ng tagapangasiwa ng serbisyo.</translation>
 <translation id="1432581352905426595">Pamahalaan ang mga search engine</translation>
 <translation id="1433225466058025572">Subukang ilipat ulit ang iyong mga file</translation>
-<translation id="1435940442311036198">Gumamit ng passkey sa ibang device</translation>
 <translation id="1436185428532214179">Puwedeng hilinging mag-edit ng mga file at folder sa iyong device</translation>
 <translation id="1442386063175183758">Right gate fold</translation>
 <translation id="1442987760062738829">Punch</translation>
@@ -357,7 +355,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="159274626729231974">Mga Film Festival</translation>
 <translation id="1593359183944365958">270 degrees</translation>
 <translation id="1594030484168838125">Pumili</translation>
-<translation id="1598816256585174656">Passkey mula sa Windows Hello</translation>
 <translation id="1599199147673445968">Bagong card? <ph name="BEGIN_LINK" />Ilagay ang Mga Detalye ng Card<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Pagpapaganda at Fitness</translation>
 <translation id="160851722280695521">Laruin ang Dino Run sa Chrome</translation>
@@ -469,7 +466,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Mag-install ng mga web app?</translation>
 <translation id="1791415068765905273">Ipakita ang Lahat ng Talahanayan sa Paghahambing</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para pamahalaan ang iyong impormasyon, privacy, at seguridad sa iyong Google Account</translation>
 <translation id="1793473605302304726">Pagbabayad sa paglipas ng panahon</translation>
 <translation id="1793631236004319016">Huling ginamit <ph name="NUM_HOURS_MINUTES_SECONDS" /> ang nakalipas</translation>
@@ -2127,7 +2123,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4754461935447132332">Hindi pinapayagan para sa mga hindi secure na site</translation>
 <translation id="4756388243121344051">&amp;History</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Passkey mula sa iyong Profile sa Chrome</translation>
 <translation id="4757993714154412917">Kakalagay mo lang ng iyong password sa isang mapanlinang na site. Para ma-secure ang iyong mga account, inirerekomenda ng Chromium na suriin mo ang iyong mga na-save na password.</translation>
 <translation id="4758311279753947758">Magdagdag ng impormasyon sa pakikipag-ugnayan</translation>
 <translation id="4761326898079498987">Suriin para sa higit pang detalye</translation>
@@ -2700,7 +2695,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5764920692828389743">Ipadala sa <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Upang makita ang mga pamamaraan at kinakailangan sa paghahatid, pumili ng address</translation>
 <translation id="57689295674415555">Hindi napunan ang numero ng virtual card?</translation>
-<translation id="5772086939108830423">Gumamit ng Passkey sa Ibang Device</translation>
 <translation id="5776313857861697733">Priyoridad</translation>
 <translation id="577804500166306874">Naglo-load ang resulta</translation>
 <translation id="5781136890105823427">Naka-enable ang eksperimento</translation>
@@ -2831,7 +2825,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (naka-sync)</translation>
 <translation id="6028591542479806248">Pamahalaan ang mga notification sa mobile at email</translation>
 <translation id="6028833024483927901">Mga Pagkain sa Buong Mundo</translation>
-<translation id="6030251660719692307">Passkey mula sa Google Password Manager</translation>
 <translation id="603068602130820122">Dual staple right</translation>
 <translation id="6032524144326295339">Mailbox 2</translation>
 <translation id="6032955021262906325">Bind left</translation>
@@ -3439,7 +3432,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="7096937462164235847">Hindi na-verify ang pagkakakilanlan ng website na ito.</translation>
 <translation id="7102554173784142865">Laruin ang Chrome Dino</translation>
 <translation id="7102760431686146931">Mga Gamit sa Pagluluto at Pagkain</translation>
-<translation id="7105998430540165694">Passkey mula sa iCloud Keychain</translation>
 <translation id="7106762743910369165">Pinapamahalaan ng iyong organisasyon ang browser mo</translation>
 <translation id="7107249414147762907">Hindi accessible ang PDF na ito. Walang na-extract na text</translation>
 <translation id="7107427078069498123">Mga SHA-256 Fingerprint</translation>
@@ -4529,7 +4521,6 @@ Mga karagdagang detalye:
 <translation id="9040341831873780534">Tingnan ang mga tuntunin dito</translation>
 <translation id="9042617223719777575">Malaking Kapasidad</translation>
 <translation id="9042827002460091668">Tingnan ang iyong koneksyon sa internet at subukan ulit</translation>
-<translation id="9044359186343685026">Gamitin ang Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Mga Mikropono (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Nire-require sa mga pagkilos na ito na nakatakda ang patakarang <ph name="POLICY_NAME" /> sa <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

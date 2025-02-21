@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">तुमचा Chromium डेटा सिंक करा</translation>
 <translation id="2592940277904433508">Chromium वापरणे पुढे सुरू ठेवा</translation>
 <translation id="2607609479243848905">तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलायचे असल्यास, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chromium डेटा हटवणे<ph name="END_LINK" /> हे करा.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{Chromium नवीन टॅब पेज यावर या पॅकेजचा माग ठेवण्यात मदत करेल.}other{Chromium नवीन टॅब पेज यावर या पॅकेजचा माग ठेवण्यात मदत करेल.}}</translation>
 <translation id="2650312721222849884">तुम्ही जेथून Chromium वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, सिंक सुरू करा</translation>
 <translation id="2684230048001240293">तुमच्या सर्व डिव्हाइसवर तुमचे टॅब, पासवर्ड आणि पेमेंटशी संबंधित माहिती सिंक करण्यासाठी Chromium डीफॉल्ट म्हणून सेट करा</translation>
 <translation id="2730884209570016437">Chromium तुमचा कॅमेरा वापरू शकत नाही कारण दुसरा ॲप्स तो वापरत आहे</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">Chromium अद्ययावत आहे</translation>
 <translation id="3044857325852340337">Chromium डेटा हटवला</translation>
 <translation id="3054480780637153380">iOS मध्ये Chromium सेटिंग्ज उघडा, त्यानंतर "डीफॉल्ट ब्राउझर ॲप" यावर टॅप करा आणि Chromium निवडा.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{Chromium तुम्हाला नवीन टॅब पेज यावर या पॅकेजचा माग ठेवण्यात मदत करू शकते.}other{Chromium तुम्हाला नवीन टॅब पेज यावर या पॅकेजचा माग ठेवण्यात मदत करू शकते.}}</translation>
 <translation id="3102849287235003384">सर्व वेबसाइटवरील तुमच्या Google खाते मधून साइन आउट करण्यासाठी, <ph name="BEGIN_LINK" />Chromium मधून साइन आउट करणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="3115956258722352278">Chromium ला तुमचा डीफॉल्‍ट ब्राउझर बनवायचे आहे का?</translation>
 <translation id="3242612358525156339">तुमच्या डिव्हाइसच्या सेटिंग्जमधून, "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" उघडा आणि "Chromium" निवडा</translation>

@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">ಕಾರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1060136083665017312">ಗೇಮ್ ಸಿಸ್ಟಂಗಳು ಮತ್ತು ಕನ್ಸೋಲ್‌ಗಳು</translation>
 <translation id="1060320201901229167">ಎನ್ವಲಪ್ ಕಾಕು 5</translation>
-<translation id="10614374240317010">ಉಳಿಸಿಯೇ ಇಲ್ಲ</translation>
 <translation id="1062407476771304334">ಸ್ಥಾನಾಂತರಿಸು</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">ಸರ್ಚ್ ಎಂಜಿನ್ ವಿವರಗಳು</translation>
@@ -263,7 +262,6 @@
 <translation id="1432187715652018471">ಈ ಪುಟ ಸೇವೆಯ ನಿರ್ವಾಹಕವನ್ನು ಸೇರಿಸಲು ಬಯಸುತ್ತಿದೆ.</translation>
 <translation id="1432581352905426595">ಹುಡುಕಾಟದ ಇಂಜಿನ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1433225466058025572">ಪುನಃ ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಸರಿಸಲು ಪ್ರಯತ್ನಿಸಿ</translation>
-<translation id="1435940442311036198">ಬೇರೆ ಸಾಧನದಲ್ಲಿ ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="1436185428532214179">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿನ ಫೈಲ್‌ಗಳು ಮತ್ತು ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
 <translation id="1442386063175183758">ಬಲಭಾಗದ ಗೇಟ್ ಅನ್ನು ಮಡಿಸಿ</translation>
 <translation id="1442987760062738829">ತೂತು ಮಾಡಿ</translation>
@@ -356,7 +354,6 @@
 <translation id="159274626729231974">ಚಲನಚಿತ್ರೋತ್ಸವಗಳು</translation>
 <translation id="1593359183944365958">270 ಡಿಗ್ರಿಗಳು</translation>
 <translation id="1594030484168838125">ಆರಿಸಿ</translation>
-<translation id="1598816256585174656">Windows Hello ನಲ್ಲಿರುವ ಪಾಸ್‌ಕೀ</translation>
 <translation id="1599199147673445968">ಹೊಸ ಕಾರ್ಡ್? <ph name="BEGIN_LINK" />ಕಾರ್ಡ್ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">ಸೌಂದರ್ಯ ಮತ್ತು ಫಿಟ್‌ನೆಸ್</translation>
 <translation id="160851722280695521">Chrome ನಲ್ಲಿ Dino Run ಆಟವನ್ನು ಆಡಿ</translation>
@@ -468,7 +465,6 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">ವೆಬ್ ಆ್ಯಪ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="1791415068765905273">ಎಲ್ಲಾ ಹೋಲಿಕೆಯ ಟೇಬಲ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನಿಮ್ಮ ಮಾಹಿತಿ, ಗೌಪ್ಯತೆ ಮತ್ತು ಸುರಕ್ಷತೆಯನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="1793473605302304726">ಕಾಲಾನಂತರದಲ್ಲಿ ಪಾವತಿಸಿ</translation>
 <translation id="1793631236004319016">ಕೊನೆಯದಾಗಿ <ph name="NUM_HOURS_MINUTES_SECONDS" /> ಹಿಂದೆ ಬಳಸಲಾಗಿದೆ</translation>
@@ -2124,7 +2120,6 @@
 <translation id="4754461935447132332">ಸುರಕ್ಷಿತವಲ್ಲದ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="4756388243121344051">&amp;ಇತಿಹಾಸ</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">ನಿಮ್ಮ Chrome ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿರುವ ಪಾಸ್‌ಕೀ</translation>
 <translation id="4757993714154412917">ನೀವು ಈಗಷ್ಟೇ ವಂಚನೆ ಮಾಡುವ ಸೈಟ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿದ್ದೀರಿ. ನಿಮ್ಮ ಖಾತೆಗಳನ್ನು ಭದ್ರಪಡಿಸಲು, ನಿಮ್ಮ ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು Chromium ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="4758311279753947758">ಸಂಪರ್ಕ ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="4761326898079498987">ಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ ಪರಿಶೀಲಿಸಿ</translation>
@@ -2697,7 +2692,6 @@
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> ಗೆ ಕಳುಹಿಸಿ</translation>
 <translation id="5765072501007116331">ವಿತರಣೆಯ ವಿಧಾನಗಳು ಹಾಗೂ ಆವಶ್ಯಕತೆಗಳನ್ನು ನೋಡಲು, ಒಂದು ವಿಳಾಸವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="57689295674415555">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯನ್ನು ಭರ್ತಿ ಮಾಡಿಲ್ಲವೇ?</translation>
-<translation id="5772086939108830423">ಬೇರೆ ಸಾಧನದಲ್ಲಿ ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="5776313857861697733">ಆದ್ಯತೆ</translation>
 <translation id="577804500166306874">ಫಲಿತಾಂಶ ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="5781136890105823427">ಪ್ರಾಯೋಗಿಕವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -2828,7 +2822,6 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (ಸಿಂಕ್‌ ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="6028591542479806248">ಮೊಬೈಲ್ ಮತ್ತು ಇಮೇಲ್ ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6028833024483927901">ಜಾಗತಿಕ ಆಹಾರ</translation>
-<translation id="6030251660719692307">Google Password Manager ನಿಂದ ಪಾಸ್‌ಕೀ</translation>
 <translation id="603068602130820122">ಬಲಭಾಗದಲ್ಲಿ ಎರಡು ಸ್ಟೇಪಲ್ ಹಾಕಿ</translation>
 <translation id="6032524144326295339">ಮೇಲ್‌ಬಾಕ್ಸ್ 2</translation>
 <translation id="6032955021262906325">ಎಡಗಡೆ ಬೈಂಡ್ ಮಾಡಿ</translation>
@@ -3436,7 +3429,6 @@
 <translation id="7096937462164235847">ಈ ವೆಬ್‌ಸೈಟ್‌ನ ಗುರುತನ್ನು ದೃಢೀಕರಿಸಿಲ್ಲ.</translation>
 <translation id="7102554173784142865">Chrome Dino ಆಟವನ್ನು ಆಡಿ</translation>
 <translation id="7102760431686146931">ಅಡಿಗೆ ಮತ್ತು ಭೋಜನ ಪಾತ್ರೆಗಳು</translation>
-<translation id="7105998430540165694">iCloud Keychain ನಲ್ಲಿರುವ ಪಾಸ್‌ಕೀ</translation>
 <translation id="7106762743910369165">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತಿದೆ</translation>
 <translation id="7107249414147762907">ಈ PDF ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಯಾವುದೇ ಪಠ್ಯವನ್ನು ಹೊರತೆಗೆಯಲಾಗಿಲ್ಲ</translation>
 <translation id="7107427078069498123">SHA-256 ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ಗಳು</translation>
@@ -4526,7 +4518,6 @@
 <translation id="9040341831873780534">ನಿಯಮಗಳನ್ನು ಇಲ್ಲಿ ನೋಡಿ</translation>
 <translation id="9042617223719777575">ಅಧಿಕ ಸಾಮರ್ಥ್ಯ</translation>
 <translation id="9042827002460091668">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
-<translation id="9044359186343685026">ಸ್ಪರ್ಶ ಐಡಿ ಬಳಸಿ</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">ಮೈಕ್ರೊಫೋನ್‌ಗಳು (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">ಈ ಕ್ರಿಯೆಗಳಿಗೆ <ph name="POLICY_NAME" /> ನೀತಿಯನ್ನು <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" /> ಗೆ ಸೆಟ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ.</translation>

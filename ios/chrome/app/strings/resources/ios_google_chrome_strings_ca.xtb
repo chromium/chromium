@@ -136,7 +136,6 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="4830799082179398588">Vols establir Chrome com a navegador predeterminat?</translation>
 <translation id="484033449593719797">No s'admeten a la versió beta de Chrome</translation>
 <translation id="4840404732697892756">El gestor de contrasenyes de Google pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google.</translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{Chrome et pot ajudar a fer un seguiment d'aquest paquet a la pàgina Pestanya nova.}other{Chrome et pot ajudar a fer un seguiment d'aquests paquets a la pàgina Pestanya nova.}}</translation>
 <translation id="4903674399067644695">Aquesta targeta mostra suggeriments sobre com pots treure el màxim profit de Chrome.</translation>
 <translation id="49200511069271369">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què estàs iniciant la sessió i com es pot utilitzar Chrome. L'administrador pot configurar o restringir determinades funcions.</translation>
 <translation id="4925322001044117929">Utilitza Chrome a l'iPad de manera predeterminada</translation>
@@ -158,7 +157,6 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="5439191312780166229">T'avisa de llocs web perillosos, fins i tot dels que Google no coneixia abans, ja que analitza més dades dels llocs web que la protecció estàndard. Pots optar per ometre els advertiments de Chrome.</translation>
 <translation id="5442013002200339429">Si amagues "<ph name="MODULE_NAME" />", Chrome deixarà de fer un seguiment automàtic dels paquets futurs i suprimirà totes les teves dades anteriors de seguiment d'enviaments.</translation>
 <translation id="5460571915754665838">4. Selecciona Chrome.</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{Chrome t'ajudarà a fer un seguiment d'aquest paquet a la pàgina Pestanya nova.}other{Chrome t'ajudarà a fer un seguiment d'aquests paquets a la pàgina Pestanya nova.}}</translation>
 <translation id="5492504007368565877">El gestor de contrasenyes de Google no pot comprovar les teves contrasenyes.</translation>
 <translation id="5525095647255982834">Per enviar aquesta pestanya a un altre dispositiu, inicia la sessió a Chrome en el dispositiu en qüestió.</translation>
 <translation id="5527026824954593399">Toca Mostra amb Google Maps a Chrome.</translation>

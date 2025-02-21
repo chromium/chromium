@@ -136,7 +136,6 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="4830799082179398588">A Chrome beállítása alapértelmezett böngészőként?</translation>
 <translation id="484033449593719797">A Chrome bétaverziója nem támogatja</translation>
 <translation id="4840404732697892756">A Google Jelszókezelő ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{A Chrome segíthet a csomag nyomon követésében az Új lap oldalon.}other{A Chrome segíthet a csomagok nyomon követésében az Új lap oldalon.}}</translation>
 <translation id="4903674399067644695">Ez a kártya javaslatokat ad arra, hogy miként hozhatja ki a legtöbbet a Chrome-ból.</translation>
 <translation id="49200511069271369">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe bejelentkezik, valamint azt is, hogy miként használhatja a Chrome-ot. A rendszergazda beállíthat, illetve korlátozhat bizonyos funkciókat.</translation>
 <translation id="4925322001044117929">A Chrome használata iPaden alapértelmezés szerint</translation>
@@ -158,7 +157,6 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="5439191312780166229">Figyelmezteti Önt a veszélyes webhelyekre (még azokra is, amelyekről a Google korábban nem tudott), azáltal hogy több, webhelyekről származó adatot elemez, mint a normál védelem. Beállíthatja a Chrome figyelmeztetéseinek kihagyását.</translation>
 <translation id="5442013002200339429">Ha elrejti a(z) „<ph name="MODULE_NAME" />” modult, a Chrome a továbbiakban nem követi automatikusan a jövőbeli csomagjait, és törli az Ön összes korábbi csomagkövetési adatát.</translation>
 <translation id="5460571915754665838">4. Válassza ki a Chrome böngészőt.</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{A Chrome segít a csomag nyomon követésében az Új lap oldalon.}other{A Chrome segít a csomagok nyomon követésében az Új lap oldalon.}}</translation>
 <translation id="5492504007368565877">A Google Jelszókezelő nem tudja ellenőrizni az Ön jelszavait.</translation>
 <translation id="5525095647255982834">Ha szeretné elküldeni ezt a lapot másik eszközre, jelentkezzen be a Chrome-ba az adott eszközön.</translation>
 <translation id="5527026824954593399">Koppintson a „Megtekintés a Google Térképpel a Chrome-ban” lehetőségre.</translation>

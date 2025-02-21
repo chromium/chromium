@@ -74,7 +74,6 @@
 <translation id="2517624234762908348">‏סנכרון הנתונים מ-Chromium</translation>
 <translation id="2592940277904433508">‏המשך השימוש ב-Chromium</translation>
 <translation id="2607609479243848905">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך למחוק את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
-<translation id="2618757400690011108">{COUNT,plural, =1{‏Chromium יעזור לעקוב אחרי החבילה הזו בדף 'כרטיסייה חדשה'.}one{‏Chromium יעזור לעקוב אחרי החבילות האלה בדף 'כרטיסייה חדשה'.}two{‏Chromium יעזור לעקוב אחרי החבילות האלה בדף 'כרטיסייה חדשה'.}other{‏Chromium יעזור לעקוב אחרי החבילות האלה בדף 'כרטיסייה חדשה'.}}</translation>
 <translation id="2650312721222849884">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chromium יש להפעיל את הסנכרון</translation>
 <translation id="2684230048001240293">‏כדאי להגדיר את Chromium כדפדפן ברירת המחדל כדי לסנכרן את הכרטיסיות, הסיסמאות ופרטי התשלומים שלך בכל המכשירים שלך</translation>
 <translation id="2730884209570016437">‏Chromium לא יכול להשתמש במצלמה כי אפליקציה אחרת משתמשת בה</translation>
@@ -89,7 +88,6 @@
 <translation id="2977470724722393594">‏Chromium‏ מעודכן</translation>
 <translation id="3044857325852340337">‏הנתונים של Chromium נמחקו</translation>
 <translation id="3054480780637153380">‏פותחים את הגדרות Chromium ב-iOS, לוחצים על 'אפליקציית ברירת המחדל לדפדפן' ובוחרים ב-Chromium.</translation>
-<translation id="3078941082359356771">{COUNT,plural, =1{‏Chromium יכול לעזור לך לעקוב אחר החבילה הזו בדף 'כרטיסייה חדשה'.}one{‏Chromium יכול לעזור לך לעקוב אחר החבילות האלה בדף 'כרטיסייה חדשה'.}two{‏Chromium יכול לעזור לך לעקוב אחר החבילות האלה בדף 'כרטיסייה חדשה'.}other{‏Chromium יכול לעזור לך לעקוב אחר החבילות האלה בדף 'כרטיסייה חדשה'.}}</translation>
 <translation id="3102849287235003384">‏כדי לצאת מחשבון Google שלך בכל האתרים, עליך <ph name="BEGIN_LINK" />לצאת מ-Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">‏להגדיר את Chromium כדפדפן ברירת המחדל?</translation>
 <translation id="3242612358525156339">‏בהגדרות המכשיר, פותחים את '<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />' ובוחרים ב-Chromium</translation>

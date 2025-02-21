@@ -34,7 +34,6 @@
 <translation id="1058479211578257048">Се зачувуваат картички…</translation>
 <translation id="1060136083665017312">Системи и конзоли за играње</translation>
 <translation id="1060320201901229167">Плик Kaku 5</translation>
-<translation id="10614374240317010">Никогаш не е зачувано</translation>
 <translation id="1062407476771304334">Замени</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1067029985695494416">Детали за пребарувачот</translation>
@@ -263,7 +262,6 @@
 <translation id="1432187715652018471">страница сака да инсталира ракувач на услуги.</translation>
 <translation id="1432581352905426595">Управувајте со пребарувачи</translation>
 <translation id="1433225466058025572">Обидете се да ги преместите датотеките повторно</translation>
-<translation id="1435940442311036198">Користете криптографски клуч на друг уред</translation>
 <translation id="1436185428532214179">Може да прашува за да изменува датотеки и папки на уредот</translation>
 <translation id="1442386063175183758">Десно превиткување како брошура</translation>
 <translation id="1442987760062738829">Дупки</translation>
@@ -357,7 +355,6 @@
 <translation id="159274626729231974">Филмски фестивали</translation>
 <translation id="1593359183944365958">270 степени</translation>
 <translation id="1594030484168838125">Избери</translation>
-<translation id="1598816256585174656">Криптографски клуч од Windows Hello</translation>
 <translation id="1599199147673445968">Нова картичка? <ph name="BEGIN_LINK" />Внесете податоци за картичката<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Убавина и физичка подготвеност</translation>
 <translation id="160851722280695521">Играјте ја играта „Трчање на диносаурусот“ во Chrome</translation>
@@ -469,7 +466,6 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Да се инсталираат апликации за прелистувач?</translation>
 <translation id="1791415068765905273">Прикажи ги сите табели за споредба</translation>
-<translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да управувате со податоците, приватноста и безбедноста на вашата сметка на Google</translation>
 <translation id="1793473605302304726">Плаќање на рати</translation>
 <translation id="1793631236004319016">Последно користење: пред <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -2127,7 +2123,6 @@
 <translation id="4754461935447132332">Не е дозволено за небезбедни сајтови</translation>
 <translation id="4756388243121344051">&amp;Историја</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Криптографски клуч од профилот на Chrome</translation>
 <translation id="4757993714154412917">Тукушто ја внесовте својата лозинка на измамнички сајт. За да ги заштитите сметките, Chromium ви препорачува да ги проверите зачуваните лозинки.</translation>
 <translation id="4758311279753947758">Додај информации за контакт</translation>
 <translation id="4761326898079498987">Прегледајте за повеќе детали</translation>
@@ -2700,7 +2695,6 @@
 <translation id="5764920692828389743">Испрати на <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">За да ги видите методите и условите за доставување, изберете адреса</translation>
 <translation id="57689295674415555">Не е пополнет бројот на виртуелна картичка?</translation>
-<translation id="5772086939108830423">Користете криптографски клуч на друг уред</translation>
 <translation id="5776313857861697733">Приоритет</translation>
 <translation id="577804500166306874">Резултатот се вчитува</translation>
 <translation id="5781136890105823427">Експериментот е овозможен</translation>
@@ -2831,7 +2825,6 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /> (синхронизирани)</translation>
 <translation id="6028591542479806248">Управувајте со мобилните и известувањата по е-пошта</translation>
 <translation id="6028833024483927901">Светска кујна</translation>
-<translation id="6030251660719692307">Криптографски клуч од Google Password Manager</translation>
 <translation id="603068602130820122">Двојно спојување десно</translation>
 <translation id="6032524144326295339">Поштенско сандаче 2</translation>
 <translation id="6032955021262906325">Врзување лево</translation>
@@ -3439,7 +3432,6 @@
 <translation id="7096937462164235847">Идентитетот на веб-страницава не е потврден.</translation>
 <translation id="7102554173784142865">Пушти ја играта „Диносаурус на Chrome“</translation>
 <translation id="7102760431686146931">Садови за готвење и прибор за јадење</translation>
-<translation id="7105998430540165694">Криптографски клуч од iCloud Keychain</translation>
 <translation id="7106762743910369165">Вашата организација управува со прелистувачот</translation>
 <translation id="7107249414147762907">Не може да се пристапи до оваа PDF-датотека. Не е извлечен текст</translation>
 <translation id="7107427078069498123">Отпечатоци SHA-256</translation>
@@ -4528,7 +4520,6 @@
 <translation id="9040341831873780534">Погледнете ги условите тука</translation>
 <translation id="9042617223719777575">Голем капацитет</translation>
 <translation id="9042827002460091668">Проверете ја интернет-врската и обидете се повторно</translation>
-<translation id="9044359186343685026">Користи Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046864189129893978">Микрофони (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Правилото <ph name="POLICY_NAME" /> за дејствава треба да се постави на <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>

@@ -153,7 +153,6 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 پتہ}other{# پتے}}</translation>
 <translation id="1605405588277479165">آف ہے - تجویز کردہ نہیں ہے</translation>
 <translation id="1605658421715042784">تصویر کاپی کریں</translation>
-<translation id="1612642630650745968">پیکج کی ٹریکنگ ختم کر دی گئی</translation>
 <translation id="1612754831519568745">آپ کا محفوظ براؤزنگ فی الحال آف ہے۔ خطرناک سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے تحفظ حاصل کریں۔</translation>
 <translation id="1620510694547887537">کیمرا</translation>
 <translation id="1622717322707146952">‏"Google کیلنڈر میں شامل کریں" یا "Apple کیلنڈر میں شامل کریں" کو منتخب کریں۔</translation>
@@ -1387,7 +1386,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6930162026494574854">ترجمہ کی ترتیبات کو ری سیٹ کریں</translation>
 <translation id="6930799952781667037">اس زبان میں تبدیل کرنے کے لیے تھپتھپائیں۔</translation>
 <translation id="693761253105515415">ایک پاس کوڈ سیٹ کریں</translation>
-<translation id="6943681254152031826">{COUNT,plural, =1{اس پیکیج کو ٹریک کریں؟}other{‫{COUNT} پیکیجز کو ٹریک کریں؟}}</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
 <translation id="6950522403736391608">پوشیدہ</translation>
 <translation id="6964300328304469089"><ph name="NAME" />، <ph name="EMAIL" /> فی الحال منتخب کردہ ہے۔ ایک اکاؤنٹ منتخب کریں۔</translation>
@@ -1589,7 +1587,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7859988229622350291">کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="7863211248337747225">ایپ حاصل کریں</translation>
 <translation id="7865127013871431856">ترجمہ کے اختیارات</translation>
-<translation id="7866501058614003444">اس پیکیج سے ٹریک کو کامیابی سے ہٹا دیا گیا ہے۔</translation>
 <translation id="7866872729285243843">اپنے تمام آلات پر اپنی پڑھنے کی فہرست حاصل کرنے کے لیے، ترتیبات میں "پڑھنے کی فہرست" کو آن کریں۔</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" /> کے ساتھ فارم آٹو فل کریں</translation>
 <translation id="7883882164760409935">آپ کے پاس دوبارہ استعمال کردہ پاس ورڈز ہیں۔</translation>

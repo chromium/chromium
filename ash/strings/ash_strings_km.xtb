@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">តុទី 2</translation>
 <translation id="1546930421365146760">សូមស្នើឱ្យអ្នកគ្រប់គ្រងរបស់អ្នករៀបចំឧបករណ៍នេះនៅក្នុងកុងសូល Google Admin</translation>
 <translation id="1549512626801247439">ការគ្រប់គ្រងទំហំផ្ទុក</translation>
+<translation id="1549721333775633305">បង្ហាញ​ការកំណត់ Quick Share។ បាន​បិទ Quick Share</translation>
 <translation id="1550406609415860283">អាចប្រើឧបករណ៍​បាន</translation>
 <translation id="1550523713251050646">ចុចសម្រាប់ជម្រើសជាច្រើនទៀត</translation>
 <translation id="1555130319947370107">ខៀវ</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> មិនត្រូវបានបើកដំណើរការទេ។</translation>
 <translation id="5860033963881614850">បិទ</translation>
 <translation id="5860491529813859533">បើក</translation>
+<translation id="5864691701242730005">បង្ហាញ​ការកំណត់ Quick Share។ បាន​ជ្រើសរើស​លទ្ធភាព​មើលឃើញ <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071">ថ្ម <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">កំពុងប្រមូល​ព័ត៌មានបណ្ដាញ</translation>
 <translation id="5867606971598166637">អ្នក​គ្រប់គ្រង​ប្រព័ន្ធ​របស់​អ្នក​កំពុង​ឃ្លាំមើល​​អេក្រង់​របស់​អ្នក</translation>
@@ -2261,6 +2263,7 @@
 <translation id="851660987304951246">ប្រើ "ជួយខ្ញុំក្នុងការអាន" ដើម្បីសង្ខេបខ្លឹមសារ ឬសួរសំណួរបានរហ័ស</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> របស់អ្នកអាចនឹងមិនសាកថ្មទេនៅពេលបើក។</translation>
 <translation id="8535393432370007982">ត្រឡប់លំដាប់នៃការតម្រៀបតាមពណ៌វិញ</translation>
+<translation id="8536886494750559755">បង្ហាញ​ការកំណត់ Quick Share។ អ្នកគ្រប់គ្នា​អាច​មើលឃើញ​រយៈពេល <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">បានចម្លង​អក្សរទៅ​ឃ្លីបបត</translation>
 <translation id="8541078764854166027">ការរក្សាឱ្យនៅក្នុងកាមេរ៉ា​</translation>
 <translation id="8542053257095774575">មិន​មាន​តុ ឬ​ទម្រង់គំរូ​ដែលបាន​រក្សាទុក​ទេ</translation>
