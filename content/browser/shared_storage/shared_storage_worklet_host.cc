@@ -489,6 +489,24 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
             elapsed_time_since_creation);
   }
 
+  // Initialize to zero. This represents the scenario where the worklet didn't
+  // execute any operations due to early validation failure, ensuring
+  // consistency with the scope of the `UsefulResourceDuration` metric.
+  base::TimeDelta useful_resource_duration;
+  if (pending_operations_count_ > 0) {
+    // Worklet is still processing, so the useful duration is its total
+    // lifetime.
+    useful_resource_duration = elapsed_time_since_creation;
+  } else if (!last_operation_finished_time_.is_null()) {
+    // Worklet finished at least one operation. Useful duration is until the
+    // last operation.
+    useful_resource_duration = last_operation_finished_time_ - creation_time_;
+  }
+
+  base::UmaHistogramTimes(
+      "Storage.SharedStorage.Worklet.Timing.AbsoluteUsefulResourceDuration",
+      useful_resource_duration);
+
   if (!page_) {
     return;
   }
