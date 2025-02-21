@@ -161,25 +161,24 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
   // Enable the Passkeys M2 feature.
   base::test::ScopedFeatureList feature_list(kIOSPasskeysM2);
 
-  int final_learn_more_action_count;
-  int final_go_to_settings_action_count;
-  // TODO(crbug.com/392652904): Add final expected count for new actions when
-  // added.
+  int final_learn_more_action_count = 1;
+  int final_turn_on_autofill_action_count = 0;
+  int final_go_to_settings_action_count = 1;
   if (@available(iOS 18.0, *)) {
     final_learn_more_action_count = 0;
+    final_turn_on_autofill_action_count = 1;
     final_go_to_settings_action_count = 0;
-  } else if (@available(iOS 17.0, *)) {
-    final_learn_more_action_count = 1;
-    final_go_to_settings_action_count = 0;
-  } else {
-    final_learn_more_action_count = 1;
-    final_go_to_settings_action_count = 1;
   }
 
   // Make sure bucket counts are all initially zero.
   histogram_tester_->ExpectBucketCount(
       kIOSCredentialProviderPromoOnAutofillUsedHistogram,
       credential_provider_promo::IOSCredentialProviderPromoAction::kLearnMore,
+      0);
+  histogram_tester_->ExpectBucketCount(
+      kIOSCredentialProviderPromoOnAutofillUsedHistogram,
+      credential_provider_promo::IOSCredentialProviderPromoAction::
+          kTurnOnAutofill,
       0);
   histogram_tester_->ExpectBucketCount(
       kIOSCredentialProviderPromoOnAutofillUsedHistogram,
@@ -205,6 +204,11 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
       kIOSCredentialProviderPromoOnAutofillUsedHistogram,
       credential_provider_promo::IOSCredentialProviderPromoAction::kLearnMore,
       final_learn_more_action_count);
+  histogram_tester_->ExpectBucketCount(
+      kIOSCredentialProviderPromoOnAutofillUsedHistogram,
+      credential_provider_promo::IOSCredentialProviderPromoAction::
+          kTurnOnAutofill,
+      final_turn_on_autofill_action_count);
 
   if (@available(iOS 18.0, *)) {
     // There's no other button to tap in this case.

@@ -203,12 +203,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Password Suggested and Manually Changed"/>
 </enum>
 
+<!-- LINT.IfChange(IOSCredentialProviderPromoAction) -->
+
 <enum name="IOSCredentialProviderPromoAction">
   <int value="0" label="Learn More"/>
   <int value="1" label="Go To Settings"/>
   <int value="2" label="Remind me later"/>
   <int value="3" label="No"/>
+  <int value="4" label="Turn on autofill"/>
 </enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_metrics.h:IOSCredentialProviderPromoAction) -->
 
 <enum name="IOSCredentialProviderPromoSource">
   <int value="0" label="Unknown"/>
