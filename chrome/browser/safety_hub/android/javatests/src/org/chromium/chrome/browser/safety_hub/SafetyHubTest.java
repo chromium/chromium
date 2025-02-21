@@ -913,6 +913,7 @@ public final class SafetyHubTest {
         addCredentialToProfileStore();
         setLocalCompromisedPasswordsCount(0);
         setLocalWeakPasswordsCount(0);
+        setLocalReusedPasswordsCount(0);
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
@@ -971,6 +972,7 @@ public final class SafetyHubTest {
         int compromisedPasswordsCount = 5;
         setLocalCompromisedPasswordsCount(compromisedPasswordsCount);
         setLocalWeakPasswordsCount(2);
+        setLocalReusedPasswordsCount(1);
         addCredentialToProfileStore();
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
@@ -1005,10 +1007,45 @@ public final class SafetyHubTest {
         ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
     })
+    public void testLocalPasswordModule_HasReusedAndWeakPasswords() {
+        // Set the local passwords module to the info state.
+        setLocalCompromisedPasswordsCount(0);
+        setLocalWeakPasswordsCount(2);
+        setLocalReusedPasswordsCount(1);
+        addCredentialToProfileStore();
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that local passwords module which is in the info state is expanded by
+        // default.
+        String weakAndReusedPasswordsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_reused_weak_local_passwords_title);
+        scrollToExpandedPreference(weakAndReusedPasswordsTitle);
+        verifyButtonsNextToTextVisibility(weakAndReusedPasswordsTitle, true);
+
+        // Verify the other information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        clearLocalCompromisedPasswordsCount();
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
+    })
     public void testLocalPasswordModule_HasWeakPasswords() {
         // Set the local passwords module to the info state.
         setLocalCompromisedPasswordsCount(0);
-        setLocalWeakPasswordsCount(5);
+        setLocalWeakPasswordsCount(2);
+        setLocalReusedPasswordsCount(0);
         addCredentialToProfileStore();
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
@@ -1588,6 +1625,13 @@ public final class SafetyHubTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(mProfile).setInteger(Pref.LOCAL_WEAK_CREDENTIALS_COUNT, count);
+                });
+    }
+
+    private void setLocalReusedPasswordsCount(int count) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(mProfile).setInteger(Pref.LOCAL_REUSED_CREDENTIALS_COUNT, count);
                 });
     }
 

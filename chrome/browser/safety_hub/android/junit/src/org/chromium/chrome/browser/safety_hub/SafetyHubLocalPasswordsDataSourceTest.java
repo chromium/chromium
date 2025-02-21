@@ -137,9 +137,19 @@ public class SafetyHubLocalPasswordsDataSourceTest {
     }
 
     @Test
+    public void hasWeakAndReusedPasswords() {
+        mockTotalPasswordsCount(5);
+        mockPasswordCounts(0, /* weak= */ 2, /* reused= */ 1);
+
+        mDataSource.updateState();
+
+        assertEquals(ModuleType.HAS_REUSED_PASSWORDS, mObserver.getModuleType());
+    }
+
+    @Test
     public void hasWeakPasswords() {
         mockTotalPasswordsCount(5);
-        mockPasswordCounts(0, /* weak= */ 2, 0);
+        mockPasswordCounts(0, /* weak= */ 1, /* reused= */ 0);
 
         mDataSource.updateState();
 

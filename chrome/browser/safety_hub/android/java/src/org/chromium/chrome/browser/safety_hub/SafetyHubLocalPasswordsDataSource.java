@@ -32,7 +32,8 @@ public class SafetyHubLocalPasswordsDataSource
         ModuleType.UNAVAILABLE_PASSWORDS,
         ModuleType.NO_SAVED_PASSWORDS,
         ModuleType.HAS_COMPROMISED_PASSWORDS,
-        ModuleType.HAS_WEAK_PASSWORDS
+        ModuleType.HAS_WEAK_PASSWORDS,
+        ModuleType.HAS_REUSED_PASSWORDS
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ModuleType {
@@ -40,6 +41,7 @@ public class SafetyHubLocalPasswordsDataSource
         int NO_SAVED_PASSWORDS = 1;
         int HAS_COMPROMISED_PASSWORDS = 2;
         int HAS_WEAK_PASSWORDS = 3;
+        int HAS_REUSED_PASSWORDS = 4;
     };
 
     @NonNull private final SafetyHubModuleDelegate mModuleDelegate;
@@ -50,6 +52,7 @@ public class SafetyHubLocalPasswordsDataSource
     private Observer mObserver;
 
     private int mCompromisedPasswordCount;
+    private int mReusedPasswordCount;
     private int mWeakPasswordCount;
 
     SafetyHubLocalPasswordsDataSource(
@@ -81,6 +84,7 @@ public class SafetyHubLocalPasswordsDataSource
     public void updateState() {
         // TODO(crbug.com/388788969): Update password counts.
         updateCompromisedPasswordCount();
+        updateReusedPasswordCount();
         updateWeakPasswordCount();
 
         if (mObserver != null) {
@@ -103,6 +107,10 @@ public class SafetyHubLocalPasswordsDataSource
         }
         // TODO(crbug.com/388788969): Test when weak and reuse feature is disabled.
         if (ChromeFeatureList.sSafetyHubWeakAndReusedPasswords.isEnabled()) {
+            // Reused passwords take priority over the weak passwords count.
+            if (mReusedPasswordCount > 0) {
+                return ModuleType.HAS_REUSED_PASSWORDS;
+            }
             if (mWeakPasswordCount > 0) {
                 return ModuleType.HAS_WEAK_PASSWORDS;
             }
@@ -118,6 +126,16 @@ public class SafetyHubLocalPasswordsDataSource
         assert mPrefService != null
                 : "A null PrefService was detected in SafetyHubLocalPasswordsDataSource";
         mCompromisedPasswordCount = mPrefService.getInteger(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT);
+    }
+
+    public int getReusedPasswordCount() {
+        return mReusedPasswordCount;
+    }
+
+    private void updateReusedPasswordCount() {
+        assert mPrefService != null
+                : "A null PrefService was detected in SafetyHubLocalPasswordsDataSource";
+        mReusedPasswordCount = mPrefService.getInteger(Pref.LOCAL_REUSED_CREDENTIALS_COUNT);
     }
 
     public int getWeakPasswordCount() {
