@@ -1878,9 +1878,9 @@ Thumbnail PDFiumPage::CreateThumbnail(float device_pixel_ratio) {
   CHECK(available());
 
   FPDF_PAGE page = GetPage();
-  gfx::Size page_size(base::saturated_cast<int>(FPDF_GetPageWidthF(page)),
-                      base::saturated_cast<int>(FPDF_GetPageHeightF(page)));
-  return Thumbnail(page_size, device_pixel_ratio);
+  return Thumbnail(
+      gfx::SizeF(FPDF_GetPageWidthF(page), FPDF_GetPageHeightF(page)),
+      device_pixel_ratio);
 }
 
 void PDFiumPage::MarkAvailable() {

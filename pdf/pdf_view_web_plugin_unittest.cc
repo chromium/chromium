@@ -2622,7 +2622,7 @@ class PdfViewWebPluginInkTest : public PdfViewWebPluginTest {
         blink::WebInputEventResult::kHandledApplication);
   }
 
-  void SendThumbnail(std::string_view message_id, const gfx::Size& page_size) {
+  void SendThumbnail(std::string_view message_id, const gfx::SizeF& page_size) {
     base::Value::Dict reply;
     reply.Set("type", "getThumbnailReply");
     reply.Set("messageId", message_id);

@@ -9,6 +9,10 @@
 #include "base/values.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace gfx {
+class SizeF;
+}
+
 namespace chrome_pdf {
 
 class Thumbnail;
@@ -17,7 +21,8 @@ using SendThumbnailCallback = base::OnceCallback<void(Thumbnail)>;
 
 class Thumbnail final {
  public:
-  Thumbnail(const gfx::Size& page_size, float device_pixel_ratio);
+  // `page_size` is in points.
+  Thumbnail(const gfx::SizeF& page_size, float device_pixel_ratio);
   Thumbnail(Thumbnail&& other) noexcept;
   Thumbnail& operator=(Thumbnail&& other) noexcept;
   ~Thumbnail();
