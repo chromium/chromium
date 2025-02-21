@@ -38,6 +38,7 @@ export declare interface HostRequestTypes {
       chromeVersion: ChromeVersion,
       canAttach: boolean,
       scrollToEnabled: boolean,
+      panelIsActive: boolean,
     },
   };
   // This message is sent after the client returns successfully from
@@ -240,6 +241,12 @@ export declare interface WebClientRequestTypes {
   glicWebClientNotifyFocusedTabChanged: {
     request: {
       focusedTabDataPrivate: FocusedTabDataPrivate,
+    },
+    response: void,
+  };
+  glicWebClientNotifyPanelActiveChanged: {
+    request: {
+      panelActive: boolean,
     },
     response: void,
   };

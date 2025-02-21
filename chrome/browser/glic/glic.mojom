@@ -166,6 +166,8 @@ struct WebClientInitialState {
   mojo_base.mojom.Version chrome_version;
   // Whether the glic panel can currently be attached to a browser window.
   bool can_attach;
+  // Whether the panel is active. See `NotifyPanelActiveChange`.
+  bool panel_is_active;
 };
 
 // Options for getting tab context.
@@ -418,6 +420,11 @@ interface WebClient {
 
   // Informs the client that the state of the glic panel has changed.
   NotifyPanelStateChange(PanelState panel_state);
+
+  // Informs the client that the panel active state has changed. The panel is
+  // inactive if it's attached to a browser window, and that browser window is
+  // not the active window.
+  NotifyPanelActiveChange(bool panel_active);
 
   // Informs the client that whether the panel can be attached right now.
   NotifyPanelCanAttachChange(bool can_attach);

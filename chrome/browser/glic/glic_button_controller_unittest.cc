@@ -145,11 +145,11 @@ TEST_F(GlicButtonControllerTest, GlicDetachedOverridesSettings) {
 
   mojom::PanelState panel_state;
   panel_state.kind = mojom::PanelState_Kind::kAttached;
-  controller()->PanelStateChanged(panel_state);
+  controller()->PanelStateChanged(panel_state, nullptr);
   ASSERT_FALSE(controller_delegate()->show_state());
 
   panel_state.kind = mojom::PanelState_Kind::kDetached;
-  controller()->PanelStateChanged(panel_state);
+  controller()->PanelStateChanged(panel_state, nullptr);
   EXPECT_TRUE(controller_delegate()->show_state());
 }
 
@@ -161,21 +161,21 @@ TEST_F(GlicButtonControllerTest, GlicWindowPanelState) {
   panel_state.kind = mojom::PanelState_Kind::kHidden;
   const auto& hidden_icon =
       GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON);
-  controller()->PanelStateChanged(panel_state);
+  controller()->PanelStateChanged(panel_state, nullptr);
   EXPECT_EQ(controller_delegate()->icon()->reps.data(),
             hidden_icon.reps.data());
 
   const auto& attach_icon =
       GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON);
   panel_state.kind = mojom::PanelState_Kind::kAttached;
-  controller()->PanelStateChanged(panel_state);
+  controller()->PanelStateChanged(panel_state, nullptr);
   EXPECT_EQ(controller_delegate()->icon()->reps.data(),
             attach_icon.reps.data());
 
   const auto& detach_icon =
       GlicVectorIconManager::GetVectorIcon(IDR_GLIC_ATTACH_BUTTON_VECTOR_ICON);
   panel_state.kind = mojom::PanelState_Kind::kDetached;
-  controller()->PanelStateChanged(panel_state);
+  controller()->PanelStateChanged(panel_state, nullptr);
   EXPECT_EQ(controller_delegate()->icon()->reps.data(),
             detach_icon.reps.data());
 }

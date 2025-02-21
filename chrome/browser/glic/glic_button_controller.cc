@@ -27,7 +27,8 @@ GlicButtonController::GlicButtonController(
   CHECK(glic_keyed_service_);
 
   // Initialize default values
-  PanelStateChanged(glic_keyed_service_->window_controller().GetPanelState());
+  PanelStateChanged(glic_keyed_service_->window_controller().GetPanelState(),
+                    nullptr);
 
   // Observe for changes in preferences and panel state events
   pref_registrar_.Init(profile_->GetPrefs());
@@ -47,7 +48,8 @@ GlicButtonController::~GlicButtonController() {
 }
 
 void GlicButtonController::PanelStateChanged(
-    const mojom::PanelState& panel_state) {
+    const mojom::PanelState& panel_state,
+    Browser*) {
   bool detached = panel_state.kind == mojom::PanelState_Kind::kDetached;
   if (detached) {
     glic_controller_delegate_->SetIcon(GlicVectorIconManager::GetVectorIcon(

@@ -8,7 +8,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -27,6 +32,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -35,8 +41,124 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace glic {
+
+namespace {
+
+// Monitors the panel state and the browser widget state. Emits an event any
+// time the active state changes.
+// inactive = (panel hidden) || (panel attached) && (window not active)
+class ActiveStateCalculator : public views::WidgetObserver,
+                              public GlicWindowController::StateObserver {
+ public:
+  // Observes changes to active state.
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void ActiveStateChanged(bool is_active) = 0;
+  };
+
+  explicit ActiveStateCalculator(GlicWindowController* window_controller)
+      : window_controller_(window_controller), widget_observation_(this) {
+    window_controller_->AddStateObserver(this);
+    PanelStateChanged(window_controller_->GetPanelState(),
+                      window_controller_->attached_browser());
+  }
+  ~ActiveStateCalculator() override {
+    window_controller_->RemoveStateObserver(this);
+  }
+
+  bool IsActive() const { return is_active_; }
+  void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
+  void RemoveObserver(Observer* observer) {
+    observers_.RemoveObserver(observer);
+  }
+
+  // views::WidgetObserver implementation.
+  void OnWidgetDestroyed(views::Widget* widget) override {
+    SetAttachedBrowser(nullptr);
+    PostRecalcAndNotify();
+  }
+
+  // GlicWindowController::StateObserver implementation.
+  void PanelStateChanged(const glic::mojom::PanelState& panel_state,
+                         Browser* attached_browser) override {
+    panel_state_kind_ = panel_state.kind;
+    SetAttachedBrowser(attached_browser);
+    PostRecalcAndNotify();
+  }
+
+ private:
+  // Calls RecalculateAndNotify after a short delay. This is required to prevent
+  // transient states from being emitted.
+  void PostRecalcAndNotify() {
+    calc_timer_.Start(
+        FROM_HERE, base::Milliseconds(10),
+        base::BindRepeating(&ActiveStateCalculator::RecalculateAndNotify,
+                            base::Unretained(this)));
+  }
+
+  void RecalculateAndNotify() {
+    if (Calculate() != is_active_) {
+      is_active_ = !is_active_;
+      observers_.Notify(&Observer::ActiveStateChanged, is_active_);
+    }
+  }
+
+  bool SetAttachedBrowser(Browser* attached_browser) {
+    if (attached_browser_ == attached_browser) {
+      return false;
+    }
+    widget_observation_.Reset();
+    paint_as_active_changed_subscription_ = {};
+    attached_browser_ = attached_browser;
+    if (attached_browser_ && !attached_browser_->IsBrowserClosing()) {
+      paint_as_active_changed_subscription_ =
+          attached_browser_->GetBrowserView()
+              .GetWidget()
+              ->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+                  &ActiveStateCalculator::PostRecalcAndNotify,
+                  base::Unretained(this)));
+      widget_observation_.Observe(
+          attached_browser_->GetBrowserView().GetWidget());
+    }
+    return true;
+  }
+
+  bool Calculate() {
+    if (panel_state_kind_ == glic::mojom::PanelState::Kind::kHidden) {
+      return false;
+    }
+    if (!attached_browser_) {
+      return true;
+    }
+    if (attached_browser_->IsBrowserClosing()) {
+      return false;
+    }
+
+    // TODO(harringtond): This is a temporary solution. There are some known
+    // issues where this provides both false-positive and false-negative signals
+    // compared to the ideal behavior.
+    return attached_browser_->GetBrowserView()
+        .GetWidget()
+        ->ShouldPaintAsActive();
+  }
+
+  base::OneShotTimer calc_timer_;
+  base::CallbackListSubscription paint_as_active_changed_subscription_;
+
+  raw_ptr<GlicWindowController> window_controller_;
+  base::ObserverList<Observer> observers_;
+  glic::mojom::PanelState::Kind panel_state_kind_;
+  bool is_active_ = false;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_;
+  raw_ptr<Browser> attached_browser_ = nullptr;
+};
+
+}  // namespace
 
 // WARNING: One instance of this class is created per WebUI navigated to
 // chrome://glic. The design and implementation of this class, which plumbs
@@ -46,7 +168,8 @@ namespace glic {
 class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                              public GlicWindowController::StateObserver,
                              public GlicWebClientAccess,
-                             public BrowserAttachObserver {
+                             public BrowserAttachObserver,
+                             public ActiveStateCalculator::Observer {
  public:
   explicit GlicWebClientHandler(
       GlicPageHandler* page_handler,
@@ -57,9 +180,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         glic_service_(
             GlicKeyedServiceFactory::GetGlicKeyedService(browser_context)),
         pref_service_(profile_->GetPrefs()),
-        receiver_(this, std::move(receiver)) {}
+        active_state_calculator_(&glic_service_->window_controller()),
+        receiver_(this, std::move(receiver)) {
+    active_state_calculator_.AddObserver(this);
+  }
 
   ~GlicWebClientHandler() override {
+    active_state_calculator_.RemoveObserver(this);
     if (web_client_) {
       Uninstall();
     }
@@ -110,6 +237,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->focused_tab_data =
         CreateFocusedTabData(glic_service_->GetFocusedTabData());
     state->can_attach = browser_attach_observation_->CanAttachToBrowser();
+    state->panel_is_active = active_state_calculator_.IsActive();
 
     std::move(callback).Run(std::move(state));
     glic_service_->WebClientCreated();
@@ -280,7 +408,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   // GlicWindowController::StateObserver implementation.
-  void PanelStateChanged(const glic::mojom::PanelState& panel_state) override {
+  void PanelStateChanged(const glic::mojom::PanelState& panel_state,
+                         Browser* attached_browser) override {
     web_client_->NotifyPanelStateChange(panel_state.Clone());
   }
 
@@ -307,6 +436,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   // BrowserAttachmentObserver implementation.
   void CanAttachToBrowserChanged(bool can_attach) override {
     web_client_->NotifyPanelCanAttachChange(can_attach);
+  }
+  // ActiveStateCalculator implementation.
+  void ActiveStateChanged(bool is_active) override {
+    if (web_client_) {
+      web_client_->NotifyPanelActiveChange(is_active);
+    }
   }
 
  private:
@@ -346,6 +481,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   raw_ptr<GlicPageHandler> page_handler_;
   raw_ptr<GlicKeyedService> glic_service_;
   raw_ptr<PrefService> pref_service_;
+  ActiveStateCalculator active_state_calculator_;
   base::CallbackListSubscription focus_changed_subscription_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;

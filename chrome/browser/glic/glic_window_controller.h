@@ -64,7 +64,8 @@ class GlicWindowController : public views::WidgetObserver {
   // Observes the state of the glic window.
   class StateObserver : public base::CheckedObserver {
    public:
-    virtual void PanelStateChanged(const mojom::PanelState& panel_state) = 0;
+    virtual void PanelStateChanged(const mojom::PanelState& panel_state,
+                                   Browser* attached_browser) = 0;
   };
 
   // Observes the state of the WebUI hosted in the glic window.

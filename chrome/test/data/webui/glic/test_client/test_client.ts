@@ -13,6 +13,7 @@ interface PageElementTypes {
   focusedFavicon: HTMLImageElement;
   focusedUrl: HTMLInputElement;
   contextAccessIndicator: HTMLInputElement;
+  panelActiveCheckbox: HTMLInputElement;
   focusedTabLogs: HTMLSpanElement;
   focusedFaviconV2: HTMLImageElement;
   focusedUrlV2: HTMLInputElement;
@@ -111,6 +112,9 @@ class WebClient implements GlicWebClient {
     }
     browser.canAttachPanel?.().subscribe((canAttach) => {
       $.canAttachCheckbox.checked = canAttach;
+    });
+    browser.panelActive?.().subscribe((active) => {
+      $.panelActiveCheckbox.checked = active;
     });
   }
 
