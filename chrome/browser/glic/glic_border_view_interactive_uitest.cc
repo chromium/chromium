@@ -343,7 +343,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
   EXPECT_FALSE(border->compositor_for_testing());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedWindowChange) {
+// Disabled due to brittleness; see https://crrev.com/c/6289227.
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedWindowChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   base::TimeTicks timestamp = base::TimeTicks::Now();

@@ -12,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_tab_data.h"
+#include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -29,14 +30,13 @@ class Widget;
 class BrowserWindowInterface;
 
 namespace glic {
-class GlicWindowController;
-
 // Responsible for managing which tab is considered "focused" and for accessing
 // its WebContents. This is an implementation detail of GlicKeyedService and
 // others should rely on the interface that GlicKeyedService exposes for
 // observing state changes.
 class GlicFocusedTabManager : public BrowserListObserver,
                               public content::WebContentsObserver,
+                              public GlicWindowController::StateObserver,
                               public views::WidgetObserver {
  public:
   explicit GlicFocusedTabManager(Profile* profile,
@@ -57,6 +57,9 @@ class GlicFocusedTabManager : public BrowserListObserver,
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
+
+  // GlicWindowController::StateObserver
+  void PanelStateChanged(const glic::mojom::PanelState& panel_state) override;
 
   // Callback for changes to focused tab. If no tab is in focus an error reason
   // is returned indicating why and maybe a tab candidate with details as to

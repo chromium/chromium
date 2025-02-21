@@ -37,11 +37,13 @@ GlicFocusedTabManager::GlicFocusedTabManager(
       window_controller.AddWindowActivationChangedCallback(base::BindRepeating(
           &GlicFocusedTabManager::OnGlicWindowActivationChanged,
           base::Unretained(this)));
+  window_controller.AddStateObserver(this);
 }
 
 GlicFocusedTabManager::~GlicFocusedTabManager() {
   widget_observation_.Reset();
   BrowserList::GetInstance()->RemoveObserver(this);
+  window_controller_->RemoveStateObserver(this);
 }
 
 base::CallbackListSubscription
@@ -108,6 +110,11 @@ void GlicFocusedTabManager::PrimaryPageChanged(content::Page& page) {
   MaybeUpdateFocusedTab(/*force_notify=*/true);
 }
 
+void GlicFocusedTabManager::PanelStateChanged(
+    const glic::mojom::PanelState& panel_state) {
+  MaybeUpdateFocusedTab();
+}
+
 void GlicFocusedTabManager::MaybeUpdateFocusedTab(bool force_notify) {
   // Cache any calls with force_notify set to true so they don't get swallowed
   // by subsequent calls without it. Otherwise necessary updates might get
@@ -139,6 +146,18 @@ void GlicFocusedTabManager::PerformMaybeUpdateFocusedTab(bool force_notify) {
 }
 
 FocusedTabData GlicFocusedTabManager::ComputeFocusedTabData() {
+  if (window_controller_->IsAttached()) {
+    // When attached, we only allow focus if attached window is active.
+    Browser* const attached_browser = window_controller_->attached_browser();
+    if (attached_browser &&
+        (attached_browser->IsActive() || window_controller_->IsActive())) {
+      return ComputeFocusableTabDataForBrowser(attached_browser);
+    }
+
+    return FocusedTabData(nullptr, std::nullopt,
+                          glic::mojom::NoCandidateTabError::kNoFocusableTabs);
+  }
+
   if (window_controller_->IsActive()) {
     Browser* const profile_last_active =
         chrome::FindLastActiveWithProfile(profile_);
