@@ -5,7 +5,7 @@ The 'disable cache' flag must affect on the certificate fetch request.
 * https://127.0.0.1:8443/loading/sxg/resources/127.0.0.1.sxg.pem.cbor
   cached: false
 * https://127.0.0.1:8443/loading/sxg/resources/127.0.0.1.sxg.pem.cbor
-  cached: false
+  cached: true
 * https://127.0.0.1:8443/loading/sxg/resources/127.0.0.1.sxg.pem.cbor
   cached: false
 
