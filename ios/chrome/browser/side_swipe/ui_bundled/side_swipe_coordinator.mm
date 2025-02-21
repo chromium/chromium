@@ -19,6 +19,8 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller_delegate.h"
 
 @interface SideSwipeCoordinator () <PageSideSwipeCommands>
 
@@ -26,6 +28,7 @@
 
 @implementation SideSwipeCoordinator {
   SideSwipeMediator* _sideSwipeMediator;
+  SideSwipeUIController* _sideSwipeUIController;
   raw_ptr<FullscreenController> _fullscreenController;
 }
 
@@ -44,6 +47,13 @@
   _sideSwipeMediator.engagementTracker = engagementTracker;
   _sideSwipeMediator.helpHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
+
+  _sideSwipeUIController = [[SideSwipeUIController alloc] init];
+
+  _sideSwipeUIController.mutator = _sideSwipeMediator;
+  _sideSwipeUIController.navigationDelegate = _sideSwipeMediator;
+  [_sideSwipeUIController
+      setSideSwipeUIControllerDelegate:_sideSwipeUIControllerDelegate];
 
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
@@ -83,10 +93,17 @@
   _swipeDelegate = swipeDelegate;
 }
 
+- (void)setSideSwipeUIControllerDelegate:
+    (id<SideSwipeUIControllerDelegate>)sideSwipeUIControllerDelegate {
+  [_sideSwipeUIController
+      setSideSwipeUIControllerDelegate:sideSwipeUIControllerDelegate];
+  _sideSwipeUIControllerDelegate = sideSwipeUIControllerDelegate;
+}
+
 - (void)animatePageSideSwipeInDirection:
     (UISwipeGestureRecognizerDirection)direction {
-  [_sideSwipeMediator animateSwipe:SwipeType::CHANGE_PAGE
-                       inDirection:direction];
+  [_sideSwipeUIController animateSwipe:SwipeType::CHANGE_PAGE
+                           inDirection:direction];
 }
 
 #pragma mark - PageSideSwipeCommands

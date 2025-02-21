@@ -194,21 +194,6 @@ const CGFloat kIpadTabSwipeDistance = 100;
   [view addGestureRecognizer:_panGestureRecognizer];
 }
 
-- (void)animateSwipe:(SwipeType)swipeType
-         inDirection:(UISwipeGestureRecognizerDirection)direction {
-  if (_inSwipe || [_swipeDelegate preventSideSwipe]) {
-    return;
-  }
-  switch (swipeType) {
-    case SwipeType::NONE:
-    case SwipeType::CHANGE_TAB:
-      NOTREACHED();
-    case SwipeType::CHANGE_PAGE:
-      [self animatePageNavigationInDirection:direction];
-      break;
-  }
-}
-
 - (void)prepareForSlideInDirection:(UISwipeGestureRecognizerDirection)direction
                      snapshotImage:(UIImage*)snapshotImage {
   if (_inSwipe || [_swipeDelegate preventSideSwipe] || !snapshotImage) {
@@ -448,90 +433,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
       }];
 }
 
-// Animate page navigation.
-- (void)animatePageNavigationInDirection:
-    (UISwipeGestureRecognizerDirection)direction {
-  _inSwipe = YES;
-  [_swipeDelegate updateAccessoryViewsForSideSwipeWithVisibility:NO];
-
-  UIView* navigatingView = [_swipeDelegate sideSwipeContentView].superview;
-  CGRect navigatingBounds = navigatingView.bounds;
-  CGFloat headerHeight = [_swipeDelegate headerHeightForSideSwipe];
-  CGRect navigationFrame =
-      CGRectMake(CGRectGetMinX(navigatingBounds),
-                 CGRectGetMinY(navigatingBounds) + headerHeight,
-                 CGRectGetWidth(navigatingBounds),
-                 CGRectGetHeight(navigatingBounds) - headerHeight);
-
-  BOOL canNavigate = [self canNavigate:IsSwipingBack(direction)];
-
-  if ([self swipingFullScreenContent:direction]) {
-    _pageSideSwipeView = [self
-        fullscreenSnapshotSideSwipeView:direction
-                          snapshotImage:SwipeNavigationSnapshot(
-                                            direction, self.activeWebState)];
-    UIView* fullscreenView = [_swipeDelegate sideSwipeFullscreenView];
-    [_pageSideSwipeView setTargetView:fullscreenView];
-    if (_pageSideSwipeView) {
-      [fullscreenView.superview insertSubview:_pageSideSwipeView
-                                 belowSubview:fullscreenView];
-    }
-  } else {
-    _pageSideSwipeView = [self webContentSideSwipeView:navigationFrame
-                                             direction:direction
-                                           canNavigate:canNavigate];
-    [_pageSideSwipeView setTargetView:[_swipeDelegate sideSwipeContentView]];
-    [navigatingView insertSubview:_pageSideSwipeView
-                     belowSubview:[_swipeDelegate topToolbarView]];
-  }
-
-  __weak SideSwipeMediator* weakSelf = self;
-  [_pageSideSwipeView
-      animateHorizontalPanWithDirection:direction
-                      completionHandler:^{
-                        if (canNavigate) {
-                          [weakSelf handleOverThresholdCompletion:direction];
-                        } else {
-                          [weakSelf handleUnderThresholdCompletion];
-                        }
-                      }];
-}
-
-- (void)handleOverThresholdCompletion:
-    (UISwipeGestureRecognizerDirection)direction {
-  web::WebState* webState = self.activeWebState;
-  BOOL wantsBack = IsSwipingBack(direction);
-  if (webState) {
-    if (wantsBack) {
-      web_navigation_util::GoBack(webState);
-    } else {
-      web_navigation_util::GoForward(webState);
-    }
-    CHECK(self.engagementTracker);
-    self.engagementTracker->NotifyEvent(
-        feature_engagement::events::kIOSSwipeBackForwardUsed);
-  }
-  __weak SideSwipeMediator* weakSelf = self;
-  // Checking -IsLoading() is likely incorrect, but to narrow the scope of
-  // fixes for slim navigation manager, only ignore this state when
-  // slim is disabled.  With slim navigation enabled, this false when
-  // pages can be served from WKWebView's page cache.
-  if (webState) {
-    [self addCurtainWithCompletionHandler:^{
-      [weakSelf handleCurtainCompletion];
-    }];
-  } else {
-    _inSwipe = NO;
-  }
-  [_swipeDelegate updateAccessoryViewsForSideSwipeWithVisibility:YES];
-}
-
 - (void)handleCurtainCompletion {
-  _inSwipe = NO;
-}
-
-- (void)handleUnderThresholdCompletion {
-  [_swipeDelegate updateAccessoryViewsForSideSwipeWithVisibility:YES];
   _inSwipe = NO;
 }
 
@@ -662,6 +564,72 @@ const CGFloat kIpadTabSwipeDistance = 100;
   if (forwardItems.size() > 0 && UseNativeSwipe(forwardItems[0])) {
     self.trailingEdgeNavigationEnabled = YES;
   }
+}
+
+#pragma mark - SideSwipeNavigationDelegate
+
+- (BOOL)canNavigateInDirection:(NavigationDirection)direction {
+  if (!self.activeWebState) {
+    return NO;
+  }
+
+  BOOL goingBack = direction == NavigationDirectionBack;
+
+  if (goingBack && self.activeWebState->GetNavigationManager()->CanGoBack()) {
+    return YES;
+  }
+
+  if (!goingBack &&
+      self.activeWebState->GetNavigationManager()->CanGoForward()) {
+    return YES;
+  }
+  return NO;
+}
+
+- (UIImage*)swipeNavigationSnapshotForDirection:
+    (UISwipeGestureRecognizerDirection)direction {
+  return SwipeNavigationSnapshot(direction, self.activeWebState);
+}
+
+- (BOOL)isSwipingToAnOverlay:(UISwipeGestureRecognizerDirection)direction {
+  return IsSwipingToAnOverlay(direction, self.activeWebState);
+}
+
+#pragma mark - SideSwipeMutator
+
+- (void)handleOverThresholdCompletion:
+    (UISwipeGestureRecognizerDirection)direction {
+  web::WebState* webState = self.activeWebState;
+  BOOL wantsBack = IsSwipingBack(direction);
+  if (webState) {
+    if (wantsBack) {
+      web_navigation_util::GoBack(webState);
+    } else {
+      web_navigation_util::GoForward(webState);
+    }
+    CHECK(self.engagementTracker);
+    self.engagementTracker->NotifyEvent(
+        feature_engagement::events::kIOSSwipeBackForwardUsed);
+  }
+  __weak SideSwipeMediator* weakSelf = self;
+  // Checking -IsLoading() is likely incorrect, but to narrow the scope of
+  // fixes for slim navigation manager, only ignore this state when
+  // slim is disabled.  With slim navigation enabled, this false when
+  // pages can be served from WKWebView's page cache.
+  if (webState) {
+    [self addCurtainWithCompletionHandler:^{
+      [weakSelf handleCurtainCompletion];
+    }];
+  } else {
+    _inSwipe = NO;
+  }
+
+  [_swipeDelegate updateAccessoryViewsForSideSwipeWithVisibility:YES];
+}
+
+- (void)handleUnderThresholdCompletion {
+  [_swipeDelegate updateAccessoryViewsForSideSwipeWithVisibility:YES];
+  _inSwipe = NO;
 }
 
 #pragma mark - CRWWebStateObserver Methods

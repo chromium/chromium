@@ -7,20 +7,23 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mutator.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_navigation_delegate.h"
+
 class FullscreenController;
 @class LayoutGuideCenter;
 @protocol HelpCommands;
+@protocol SideSwipeNavigationDelegate;
 @protocol SideSwipeToolbarInteracting;
 @protocol SideSwipeToolbarSnapshotProviding;
 @protocol TabStripHighlighting;
 @protocol LensOverlayCommands;
+
 class WebStateList;
 
 namespace feature_engagement {
 class Tracker;
 }  // namespace feature_engagement
-
-enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
 
 @protocol SideSwipeMediatorDelegate
 @required
@@ -62,7 +65,9 @@ enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
 // across the screen. For page changes the SideSwipeMediatorDelegate
 // `contentView` is moved across the screen and a SideSwipeNavigationView is
 // shown in the remaining space.
-@interface SideSwipeMediator : NSObject <UIGestureRecognizerDelegate>
+@interface SideSwipeMediator : NSObject <SideSwipeMutator,
+                                         SideSwipeNavigationDelegate,
+                                         UIGestureRecognizerDelegate>
 
 @property(nonatomic, assign) BOOL inSwipe;
 @property(nonatomic, weak) id<SideSwipeMediatorDelegate> swipeDelegate;
@@ -103,10 +108,6 @@ enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
 // Resets the swipeDelegate's contentView frame origin x position to zero if
 // there is an active swipe.
 - (void)resetContentView;
-
-// Performs an animation that simulates a swipe with `swipeType` in `direction`.
-- (void)animateSwipe:(SwipeType)swipeType
-         inDirection:(UISwipeGestureRecognizerDirection)direction;
 
 // Prepares the view for a slide-in overlay navigation transition in the
 // specified direction.

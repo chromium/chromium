@@ -9,12 +9,17 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 
 @protocol SideSwipeToolbarInteracting;
+@protocol SideSwipeUIControllerDelegate;
 
 // The side swipe coordinator.
 @interface SideSwipeCoordinator : ChromeCoordinator
 
 // The side swipe mediator delegate.
 @property(nonatomic, weak) id<SideSwipeMediatorDelegate> swipeDelegate;
+
+// The side swipe view controller delegate.
+@property(nonatomic, weak) id<SideSwipeUIControllerDelegate>
+    sideSwipeUIControllerDelegate;
 
 // Whether or not a side swipe is currently being performed.
 @property(nonatomic, assign) BOOL swipeInProgress;
