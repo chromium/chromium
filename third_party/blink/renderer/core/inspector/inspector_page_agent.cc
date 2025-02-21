@@ -530,6 +530,8 @@ InspectorPageAgent::InspectorPageAgent(
           resource_content_loader->CreateClientId()),
       intercept_file_chooser_(&agent_state_, false),
       enabled_(&agent_state_, /*default_value=*/false),
+      enable_file_chooser_opened_event_(&agent_state_,
+                                        /*default_value=*/false),
       screencast_enabled_(&agent_state_, /*default_value=*/false),
       lifecycle_events_enabled_(&agent_state_, /*default_value=*/false),
       bypass_csp_enabled_(&agent_state_, /*default_value=*/false),
@@ -547,7 +549,7 @@ InspectorPageAgent::InspectorPageAgent(
 
 void InspectorPageAgent::Restore() {
   if (enabled_.Get()) {
-    enable();
+    enable(enable_file_chooser_opened_event_.Get());
   }
   if (bypass_csp_enabled_.Get()) {
     setBypassCSP(true);
@@ -577,8 +579,11 @@ void InspectorPageAgent::Restore() {
   }
 }
 
-protocol::Response InspectorPageAgent::enable() {
+protocol::Response InspectorPageAgent::enable(
+    std::optional<bool> enable_file_chooser_opened_event) {
   enabled_.Set(true);
+  enable_file_chooser_opened_event_.Set(
+      enable_file_chooser_opened_event.value_or(false));
   instrumenting_agents_->AddInspectorPageAgent(this);
   return protocol::Response::Success();
 }
@@ -1997,14 +2002,15 @@ void InspectorPageAgent::FileChooserOpened(LocalFrame* frame,
                                            bool multiple,
                                            bool* intercepted) {
   *intercepted |= intercept_file_chooser_.Get();
-  if (!intercept_file_chooser_.Get()) {
-    return;
+  if (intercept_file_chooser_.Get() ||
+      enable_file_chooser_opened_event_.Get()) {
+    // Emit event if interception or only event is enabled.
+    GetFrontend()->fileChooserOpened(
+        IdentifiersFactory::FrameId(frame),
+        multiple ? protocol::Page::FileChooserOpened::ModeEnum::SelectMultiple
+                 : protocol::Page::FileChooserOpened::ModeEnum::SelectSingle,
+        element ? std::optional<int>(element->GetDomNodeId()) : std::nullopt);
   }
-  GetFrontend()->fileChooserOpened(
-      IdentifiersFactory::FrameId(frame),
-      multiple ? protocol::Page::FileChooserOpened::ModeEnum::SelectMultiple
-               : protocol::Page::FileChooserOpened::ModeEnum::SelectSingle,
-      element ? std::optional<int>(element->GetDomNodeId()) : std::nullopt);
 }
 
 protocol::Response InspectorPageAgent::produceCompilationCache(

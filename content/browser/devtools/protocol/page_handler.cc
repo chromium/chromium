@@ -611,7 +611,8 @@ void PageHandler::DidCloseJavaScriptDialog(bool success,
   frontend_->JavascriptDialogClosed(success, base::UTF16ToUTF8(user_input));
 }
 
-Response PageHandler::Enable() {
+Response PageHandler::Enable(
+    std::optional<bool> enable_file_chooser_opened_event) {
   enabled_ = true;
   return Response::FallThrough();
 }

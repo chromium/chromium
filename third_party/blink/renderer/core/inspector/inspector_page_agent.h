@@ -131,7 +131,8 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorPageAgent& operator=(const InspectorPageAgent&) = delete;
 
   // Page API for frontend
-  protocol::Response enable() override;
+  protocol::Response enable(
+      std::optional<bool> enable_file_chooser_opened_event) override;
   protocol::Response disable() override;
   protocol::Response addScriptToEvaluateOnLoad(const String& script_source,
                                                String* identifier) override;
@@ -344,6 +345,7 @@ class CORE_EXPORT InspectorPageAgent final
   int resource_content_loader_client_id_;
   InspectorAgentState::Boolean intercept_file_chooser_;
   InspectorAgentState::Boolean enabled_;
+  InspectorAgentState::Boolean enable_file_chooser_opened_event_;
   InspectorAgentState::Boolean screencast_enabled_;
   InspectorAgentState::Boolean lifecycle_events_enabled_;
   InspectorAgentState::Boolean bypass_csp_enabled_;

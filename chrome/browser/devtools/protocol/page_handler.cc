@@ -58,7 +58,8 @@ void PageHandler::ToggleAdBlocking(bool enabled) {
       ->ToggleForceActivation(enabled);
 }
 
-protocol::Response PageHandler::Enable() {
+protocol::Response PageHandler::Enable(
+    std::optional<bool> enable_file_chooser_opened_event) {
   enabled_ = true;
   // Do not mark the command as handled. Let it fall through instead, so that
   // the handler in content gets a chance to process the command.
