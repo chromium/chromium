@@ -9,6 +9,7 @@
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_test.h"
+#import "ios/web_view/internal/cwv_global_state_internal.h"
 #import "ios/web_view/internal/cwv_web_view_internal.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -35,21 +36,22 @@ class WebViewWebClientTest : public web::WebTest {
 
   void SetUp() override {
     web::WebTest::SetUp();
-    CWVWebView.customUserAgent = nil;
+    CWVGlobalState.sharedInstance.customUserAgent = nil;
   }
 
   void TearDown() override {
     web::WebTest::TearDown();
-    CWVWebView.customUserAgent = nil;
+    CWVGlobalState.sharedInstance.customUserAgent = nil;
   }
 };
 
-// Tests that WebViewWebClientTest's GetUserAgent is configured by CWVWebView.
+// Tests that WebViewWebClientTest's GetUserAgent is configured by
+// CWVGlobalState.
 TEST_F(WebViewWebClientTest, GetUserAgent) {
   web::WebClient* web_client = GetWebClient();
 
-  // Test user agent when neither nor CWVWebView.userAgentProduct
-  // CWVWebView.customUserAgent have been set.
+  // Test user agent when neither nor CWVGlobalState.userAgentProduct
+  // CWVGlobalState.customUserAgent have been set.
   std::string user_agent_with_empty_product = web::BuildMobileUserAgent("");
   EXPECT_EQ(user_agent_with_empty_product,
             web_client->GetUserAgent(web::UserAgentType::NONE));
@@ -60,8 +62,8 @@ TEST_F(WebViewWebClientTest, GetUserAgent) {
   EXPECT_EQ(user_agent_with_empty_product,
             web_client->GetUserAgent(web::UserAgentType::DESKTOP));
 
-  // Test user agent when only CWVWebView.userAgentProduct is set.
-  [CWVWebView setUserAgentProduct:@"FooProduct"];
+  // Test user agent when only CWVGlobalState.userAgentProduct is set.
+  CWVGlobalState.sharedInstance.userAgentProduct = @"FooProduct";
   std::string user_agent_with_product = web::BuildMobileUserAgent("FooProduct");
   EXPECT_EQ(user_agent_with_product,
             web_client->GetUserAgent(web::UserAgentType::NONE));
@@ -72,9 +74,9 @@ TEST_F(WebViewWebClientTest, GetUserAgent) {
   EXPECT_EQ(user_agent_with_product,
             web_client->GetUserAgent(web::UserAgentType::DESKTOP));
 
-  // Test user agent when both CWVWebView.customUserAgent and
-  // CWVWebView.userAgentProduct are set.
-  CWVWebView.customUserAgent = @"FooCustomUserAgent";
+  // Test user agent when both CWVGlobalState.customUserAgent and
+  // CWVGlobalState.userAgentProduct are set.
+  CWVGlobalState.sharedInstance.customUserAgent = @"FooCustomUserAgent";
   EXPECT_EQ("FooCustomUserAgent",
             web_client->GetUserAgent(web::UserAgentType::NONE));
   EXPECT_EQ("FooCustomUserAgent",

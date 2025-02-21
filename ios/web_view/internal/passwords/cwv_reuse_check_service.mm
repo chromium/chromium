@@ -16,7 +16,6 @@
 #import "ios/web_view/internal/affiliations/web_view_affiliation_service_factory.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/internal/passwords/cwv_reuse_check_service_internal.h"
-#import "ios/web_view/internal/web_view_global_state_util.h"
 
 @implementation CWVReuseCheckService {
   affiliations::AffiliationService* _affiliation_service;
