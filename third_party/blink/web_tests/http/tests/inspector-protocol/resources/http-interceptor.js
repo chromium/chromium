@@ -27,16 +27,14 @@
    * @return {!object} HttpInterceptor reference.
    */
   async init() {
-    await this.dp_.Fetch.enable({
-      patterns: [{ urlPattern: '*' }]
-    });
+    await this.dp_.Fetch.enable({patterns: [{urlPattern: '*'}]});
 
     this.dp_.Fetch.onRequestPaused(event => {
       const method = event.params.request.method;
       this.requestedMethods_.push(method);
 
-      const url = event.params.request.url
-          + (event.params.request.urlFragment || '');
+      const url =
+          event.params.request.url + (event.params.request.urlFragment || '');
       this.requestedUrls_.push(url);
 
       var response = this.responses_.get(url);
@@ -82,7 +80,7 @@
    */
   addResponse(url, body, headers) {
     let responseCode = 200;
-    let responsePhrase = "OK"
+    let responsePhrase = 'OK'
 
     if (headers) {
       const statusLine = headers[0];

@@ -9,7 +9,7 @@
   const {windowId} = (await dp.Browser.getWindowForTarget()).result;
 
   const HttpInterceptor =
-      await testRunner.loadScript('../helpers/http-interceptor.js');
+      await testRunner.loadScriptAbsolute('../resources/http-interceptor.js');
   const httpInterceptor = await (new HttpInterceptor(testRunner, dp)).init();
   httpInterceptor.setDisableRequestedUrlsLogging(true);
 
