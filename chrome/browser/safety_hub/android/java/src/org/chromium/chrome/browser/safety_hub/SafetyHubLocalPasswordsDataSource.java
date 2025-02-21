@@ -27,21 +27,29 @@ public class SafetyHubLocalPasswordsDataSource
         void stateChanged(@ModuleType int moduleType);
     }
 
+    /**
+     * This should match the default value for {@link
+     * org.chromium.chrome.browser.preferences.Pref.LOCAL_BREACHED_CREDENTIALS_COUNT}.
+     */
+    private static final int INVALID_BREACHED_CREDENTIALS_COUNT = -1;
+
     // Represents the type of local password module.
     @IntDef({
         ModuleType.UNAVAILABLE_PASSWORDS,
         ModuleType.NO_SAVED_PASSWORDS,
         ModuleType.HAS_COMPROMISED_PASSWORDS,
+        ModuleType.NO_COMPROMISED_PASSWORDS,
         ModuleType.HAS_WEAK_PASSWORDS,
-        ModuleType.HAS_REUSED_PASSWORDS
+        ModuleType.HAS_REUSED_PASSWORDS,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ModuleType {
         int UNAVAILABLE_PASSWORDS = 0;
         int NO_SAVED_PASSWORDS = 1;
         int HAS_COMPROMISED_PASSWORDS = 2;
-        int HAS_WEAK_PASSWORDS = 3;
-        int HAS_REUSED_PASSWORDS = 4;
+        int NO_COMPROMISED_PASSWORDS = 3;
+        int HAS_WEAK_PASSWORDS = 4;
+        int HAS_REUSED_PASSWORDS = 5;
     };
 
     @NonNull private final SafetyHubModuleDelegate mModuleDelegate;
@@ -82,7 +90,6 @@ public class SafetyHubLocalPasswordsDataSource
     }
 
     public void updateState() {
-        // TODO(crbug.com/388788969): Update password counts.
         updateCompromisedPasswordCount();
         updateReusedPasswordCount();
         updateWeakPasswordCount();
@@ -98,9 +105,11 @@ public class SafetyHubLocalPasswordsDataSource
 
     // Returns the password module type according to the application state.
     private @ModuleType int getModuleType() {
-        // TODO(crbug.com/388788969): Add more module types.
         if (getTotalPasswordCount() == 0) {
             return ModuleType.NO_SAVED_PASSWORDS;
+        }
+        if (mCompromisedPasswordCount == INVALID_BREACHED_CREDENTIALS_COUNT) {
+            return ModuleType.UNAVAILABLE_PASSWORDS;
         }
         if (mCompromisedPasswordCount > 0) {
             return ModuleType.HAS_COMPROMISED_PASSWORDS;
@@ -115,7 +124,10 @@ public class SafetyHubLocalPasswordsDataSource
                 return ModuleType.HAS_WEAK_PASSWORDS;
             }
         }
-        return ModuleType.UNAVAILABLE_PASSWORDS;
+
+        // If both reused passwords and weak passwords counts are invalid, ignore them in favour
+        // of showing the compromised passwords count.
+        return ModuleType.NO_COMPROMISED_PASSWORDS;
     }
 
     public int getCompromisedPasswordCount() {

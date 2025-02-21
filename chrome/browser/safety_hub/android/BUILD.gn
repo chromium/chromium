@@ -49,6 +49,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubLocalPasswordsHasReusedPasswordsModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubLocalPasswordsHasWeakPasswordsModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubLocalPasswordsModuleMediator.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubLocalPasswordsNoCompromisedPasswordsModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubLocalPasswordsNoPasswordsModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubLocalPasswordsUnavailableAllPasswordsModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackBuilder.java",

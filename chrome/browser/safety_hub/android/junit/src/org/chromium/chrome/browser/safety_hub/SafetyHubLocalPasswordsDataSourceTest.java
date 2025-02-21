@@ -106,9 +106,8 @@ public class SafetyHubLocalPasswordsDataSourceTest {
 
     @Test
     public void countsUnavailable() {
-        // TODO(crbug.com/388788969): After adding logic to the local password module, set
-        // appropriate counts for the unavailable state.
         mockTotalPasswordsCount(1);
+        mockPasswordCounts(/* compromised= */ -1, /* weak= */ -1, /* reused= */ -1);
 
         assertTrue(mDataSource.maybeTriggerPasswordCheckup());
         verify(mSafetyHubFetchServiceMock, times(1)).runLocalPasswordCheckup();
@@ -154,5 +153,15 @@ public class SafetyHubLocalPasswordsDataSourceTest {
         mDataSource.updateState();
 
         assertEquals(ModuleType.HAS_WEAK_PASSWORDS, mObserver.getModuleType());
+    }
+
+    @Test
+    public void noCompromisedPasswords() {
+        mockTotalPasswordsCount(5);
+        mockPasswordCounts(0, 0, 0);
+
+        mDataSource.updateState();
+
+        assertEquals(ModuleType.NO_COMPROMISED_PASSWORDS, mObserver.getModuleType());
     }
 }

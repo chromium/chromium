@@ -74,7 +74,6 @@ public class SafetyHubLocalPasswordsModuleMediator
     private SafetyHubModuleHelper getModuleHelper(@ModuleType int moduleType) {
         Context context = mPreference.getContext();
 
-        // TODO(crbug.com/388788969): Add module helpers for all `moduleType`s.
         switch (moduleType) {
             case ModuleType.UNAVAILABLE_PASSWORDS:
                 return new SafetyHubLocalPasswordsUnavailableAllPasswordsModuleHelper(
@@ -86,6 +85,9 @@ public class SafetyHubLocalPasswordsModuleMediator
                         context,
                         mModuleDelegate,
                         mLocalPasswordsDataSource.getCompromisedPasswordCount());
+            case ModuleType.NO_COMPROMISED_PASSWORDS:
+                return new SafetyHubLocalPasswordsNoCompromisedPasswordsModuleHelper(
+                        context, mModuleDelegate);
             case ModuleType.HAS_WEAK_PASSWORDS:
                 return new SafetyHubLocalPasswordsHasWeakPasswordsModuleHelper(
                         context, mModuleDelegate, mLocalPasswordsDataSource.getWeakPasswordCount());
