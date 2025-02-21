@@ -249,6 +249,15 @@ class ChromiumDepGraph {
                     resolveVersion: '1.7.2'),
             org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm: new PropertyOverride(
                     resolveVersion: '1.7.3'),
+            io_reactivex_rxjava3_rxjava: new PropertyOverride(
+                    exclude: true),  // An unnecessary dep of androidx.xr.runtime.
+            org_jetbrains_kotlinx_kotlinx_coroutines_reactive: new PropertyOverride(
+                    exclude: true),  // An unnecessary dep of androidx.xr.runtime.
+            org_jetbrains_kotlinx_kotlinx_coroutines_rx3: new PropertyOverride(
+                    exclude: true),  // An unnecessary dep of androidx.xr.runtime.
+            org_reactivestreams_reactive_streams: new PropertyOverride(
+                    exclude: true),  // An unnecessary dep of androidx.xr.runtime.
+
     ]
 
     // Local text versions of HTML licenses. This cannot replace PROPERTY_OVERRIDES because some libraries refer to
