@@ -15,6 +15,7 @@ import android.webkit.WebStorage;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.webview.chromium.PrefetchDuplicateException;
 import com.android.webview.chromium.PrefetchException;
 import com.android.webview.chromium.PrefetchNetworkException;
 import com.android.webview.chromium.PrefetchOperationCallback;
@@ -22,6 +23,7 @@ import com.android.webview.chromium.Profile;
 import com.android.webview.chromium.SpeculativeLoadingConfig;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.support_lib_boundary.PrefetchExceptionBoundaryInterface;
 import org.chromium.support_lib_boundary.PrefetchOperationCallbackBoundaryInterface;
 import org.chromium.support_lib_boundary.ProfileBoundaryInterface;
 import org.chromium.support_lib_boundary.SpeculativeLoadingConfigBoundaryInterface;
@@ -159,11 +161,19 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
             public void onError(PrefetchException prefetchException) {
                 operationCallback.onFailure(
                         BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                prefetchException instanceof PrefetchNetworkException
-                                        ? new SupportLibPrefetchNetworkException(
-                                                (PrefetchNetworkException) prefetchException)
-                                        : new SupportLibPrefetchException(prefetchException)));
+                                mapPrefetchException(prefetchException)));
             }
         };
+    }
+
+    private PrefetchExceptionBoundaryInterface mapPrefetchException(
+            PrefetchException preMappedException) {
+        if (preMappedException instanceof PrefetchNetworkException networkException) {
+            return new SupportLibPrefetchNetworkException(networkException);
+        } else if (preMappedException instanceof PrefetchDuplicateException duplicateException) {
+            return new SupportLibPrefetchDuplicateException(duplicateException);
+        } else {
+            return new SupportLibPrefetchException(preMappedException);
+        }
     }
 }

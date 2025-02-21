@@ -12,6 +12,7 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/IsomorphicObjectBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/JsReplyProxyBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/NoVarySearchDataBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/PrefetchDuplicateExceptionBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/PrefetchExceptionBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/PrefetchNetworkExceptionBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/PrefetchOperationCallbackBoundaryInterface.java",
