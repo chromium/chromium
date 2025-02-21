@@ -14,6 +14,7 @@ import os
 import random
 import shutil
 import subprocess
+import sys
 import re
 from datetime import datetime
 
@@ -26,11 +27,13 @@ from datetime import datetime
 #   google-auth-httplib2 \
 #   google-auth-oauthlib
 # ```
+
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaFileUpload
 
 def run(command, error_message=None, exit_on_error=True):
     """
@@ -40,19 +43,27 @@ def run(command, error_message=None, exit_on_error=True):
         output = subprocess.run(command, shell=True, check=True, text=True)
 
     except subprocess.CalledProcessError as e:
-        print(error_message if error_message else "Failed to run command.")
+
+        print(error_message if error_message else "Failed to run command: `" +
+              command + "`",
+              file=sys.stderr)
         if exit_on_error:
             raise e
         return False
 
     return True
 
-def getSpreadsheet():
+
+def getGoogleCreds():
     """
-    Returns a Google spreadsheet object to interact with the Autospan tracker.
+    Returns creds to both google spreadsheet and drive, potentially asking for
+    it to be allowed.
     """
     creds = None
-    SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+    SCOPES = [
+        'https://www.googleapis.com/auth/spreadsheets',
+        'https://www.googleapis.com/auth/drive'
+    ]
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
         # If there are no (valid) credentials available, let the user log in.
@@ -65,6 +76,14 @@ def getSpreadsheet():
         creds = flow.run_local_server(port=1234)
     with open('token.json', 'w') as token:
         token.write(creds.to_json())
+
+    return creds
+
+
+def getSpreadsheet(creds):
+    """
+    Returns a Google spreadsheet object to interact with the Autospan tracker.
+    """
 
     spreadsheet = (build('sheets', 'v4',
                          credentials=creds).spreadsheets().values())
@@ -96,12 +115,56 @@ def appendRow(spreadsheet, values):
         ).execute()
 
     except HttpError as err:
-        print(err)
+        print(f"appendRow failed: {err}", file=sys.stderr)
+
+
+def uploadZIPToDriveFolder(creds, zip_file):
+    """
+    uploads the provided zip_file to the autospan folder for easy storage and
+    inspection of patches as needed.
+
+    This folder can be found at:
+
+    https://drive.google.com/drive/folders/18llw_ypcxrguyipghdxta6h2tc4wpgej
+    """
+    try:
+        service = build("drive", "v3", credentials=creds)
+        name = os.path.basename(zip_file)
+        file_metadata = {
+            "name": name,
+            "parents": ["18lLW_YPCXRGUYiPghDXTA6h2TC4WpGeJ"]
+        }
+        media = MediaFileUpload(zip_file, mimetype="application/zip")
+        #pylint: disable=maybe-no-member
+        file = (service.files().create(body=file_metadata,
+                                       media_body=media,
+                                       fields="id").execute())
+        print("uploaded " + zip_file + " as " + name +
+              " to file: https://drive.google.com/file/d/" + file.get("id"))
+    except HttpError as error:
+        print(f"Uploading to drive errored: {error}", file=sys.stderr)
+
+
+def uploadScratch(creds, file_name, scratch_dir):
+    """
+    Uploads a new file to the provided google drive folder.
+    """
+    try:
+        # Since we've reduced the size of stdout we can include everything in
+        # the scratch directory.
+        output_zip = f"{scratch_dir}/{file_name}"
+        run(f"zip -q {output_zip} {scratch_dir}/*")
+        uploadZIPToDriveFolder(creds, f"{scratch_dir}/{file_name}")
+    except Exception as e:
+        print(f"Failed to upload scratch: {e}", file=sys.stderr)
 
 
 today = datetime.now().strftime("%Y/%m/%d")
+today_underscore = today.replace("/", "_")
 scratch_dir = os.path.expanduser("~/scratch")
-spreadsheet = getSpreadsheet()
+creds = getGoogleCreds()
+spreadsheet = getSpreadsheet(creds)
+
 
 print("Running evaluate_patches.py...")
 
@@ -132,6 +195,7 @@ run("./tools/clang/spanify/rewrite-multiple-platforms.sh", exit_on_error=False)
 
 run("git reset --hard origin/main")  # Restore source code.
 run("gclient sync -fD", exit_on_error=False)  # Restore compiler.
+run("git rev-parse origin/main > ~/scratch/git_revision.txt")  # Save commit.
 
 patches = [
     name for name in os.listdir(scratch_dir)
@@ -159,87 +223,96 @@ with open(scratch_dir + "/evaluation.csv", "w+") as f:
 run("autoninja -C out/linux", "Failed to build the project.")
 
 # Create and evaluate patches
-patch_limit = 100
-for patch in patches:
-    # Limit the number of patches to evaluate. We don't want to spent too many
-    # resources on this.
-    if patch_limit == 0:
-        break
-    patch_limit -= 1
+try:
+    patch_limit = 100
+    for patch in patches:
+        # Limit the number of patches to evaluate. We don't want to spent too
+        # many resources on this.
+        if patch_limit == 0:
+            break
+        patch_limit -= 1
 
-    # Extract the patch index from the patch name string: patch_{index}.txt
-    index = int(patch.split("_")[1].split(".")[0])
+        # Extract the patch index from the patch name string: patch_{index}.txt
+        index = int(patch.split("_")[1].split(".")[0])
 
-    print(f"Producing patch {index}/{len(patches)}: {patch}")
+        print(f"Producing patch {index}/{len(patches)}: {patch}")
 
-    # Apply edits
-    run(f"git branch -D spanification_rewrite_evaluate_{index}",
-        exit_on_error=False)
-    run(f"git new-branch spanification_rewrite_evaluate_{index}")
-    run(f"cat ~/scratch/{patch} " +
-        " | tools/clang/scripts/apply_edits.py -p ./out/linux/")
+        # Apply edits
+        run(f"git branch -D spanification_rewrite_evaluate_{index}",
+            exit_on_error=False)
+        run(f"git new-branch spanification_rewrite_evaluate_{index}")
+        run(f"cat ~/scratch/{patch} " +
+            " | tools/clang/scripts/apply_edits.py -p ./out/linux/")
 
-    # Commit changes
-    run("git add -u", "Failed to add changes.")
+        # Commit changes
+        run("git add -u", "Failed to add changes.")
 
-    with open("commit_message.txt", "w+") as f:
-        f.write(f"""spanification patch {index} applied.\n\nPatch: {index}""")
-    run("git commit -F commit_message.txt")
+        with open("commit_message.txt", "w+") as f:
+            f.write(
+                f"""spanification patch {index} applied.\n\nPatch: {index}""")
+        run("git commit -F commit_message.txt")
 
-    # Serialize changes
-    run(f"git diff HEAD~...HEAD > ~/scratch/patch_{index}.diff")
-    diff = open(scratch_dir + f"/patch_{index}.diff").read()
+        # Serialize changes
+        run(f"git diff HEAD~...HEAD > ~/scratch/patch_{index}.diff")
+        diff = open(scratch_dir + f"/patch_{index}.diff").read()
 
-    # Build and evaluate
-    print(f"Evaluating patch {index}/{len(patches)}")
-    print("Building...")
+        # Build and evaluate
+        print(f"Evaluating patch {index}/{len(patches)}")
+        print("Building...")
 
-    result = subprocess.run("time autoninja -C out/linux",
-                            shell=True,
-                            capture_output=True,
-                            text=True)
-    print(result.stdout)
-    print(result.stderr)
+        result = subprocess.run("time autoninja -C out/linux",
+                                shell=True,
+                                capture_output=True,
+                                text=True)
+        print(result.stdout)
+        print(result.stderr)
 
-    with open(scratch_dir + f"/patch_{index}.out", "w+") as f:
-        f.write(result.stderr)
-        f.write(result.stdout)
+        with open(scratch_dir + f"/patch_{index}.out", "w+") as f:
+            f.write(result.stderr)
+            f.write(result.stdout)
 
-    if "build failed" in result.stdout.lower():
-        error_msg = ""
-        # Errors format:
-        # <file>:<line>:<column>: error: <error_msg>
-        error_regex = re.compile(r"^(.*):(\d+):(\d+): error: (.*)$")
-        for line in result.stdout.split("\n") + result.stderr.split("\n"):
-            match = error_regex.match(line)
-            if match:
-                error_msg = match.group(4)
-                break
+        if "build failed" in result.stdout.lower():
+            error_msg = ""
+            # Errors format:
+            # <file>:<line>:<column>: error: <error_msg>
+            error_regex = re.compile(r"^(.*):(\d+):(\d+): error: (.*)$")
+            for line in result.stdout.split("\n") + result.stderr.split("\n"):
+                match = error_regex.match(line)
+                if match:
+                    error_msg = match.group(4)
+                    break
 
-        with open(scratch_dir + "/evaluation.csv", "a") as f:
-            f.write(f"{index}, fail, {error_msg}\n")
+            with open(scratch_dir + "/evaluation.csv", "a") as f:
+                f.write(f"{index}, fail, {error_msg}\n")
 
-        appendRow(spreadsheet, [
-            today,
-            index,
-            len(patches),
-            "fail",
-            error_msg,
-            diff,
-        ])
+            appendRow(spreadsheet, [
+                today,
+                index,
+                len(patches),
+                "fail",
+                error_msg,
+                diff,
+            ])
 
-        shutil.copy(scratch_dir + f"/patch_{index}.out",
-                    scratch_dir + f"/patch_{index}.fail")
-    else:
-        with open(scratch_dir + "/evaluation.csv", "a") as f:
-            f.write(f"{index}, pass, \"\"\n")
-        appendRow(spreadsheet, [
-            today,
-            index,
-            len(patches),
-            "pass",
-            "",
-            diff,
-        ])
-        shutil.copy(scratch_dir + f"/patch_{index}.out",
-                    scratch_dir + f"/patch_{index}.pass")
+            shutil.copy(scratch_dir + f"/patch_{index}.out",
+                        scratch_dir + f"/patch_{index}.fail")
+        else:
+            with open(scratch_dir + "/evaluation.csv", "a") as f:
+                f.write(f"{index}, pass, \"\"\n")
+            appendRow(spreadsheet, [
+                today,
+                index,
+                len(patches),
+                "pass",
+                "",
+                diff,
+            ])
+            shutil.copy(scratch_dir + f"/patch_{index}.out",
+                        scratch_dir + f"/patch_{index}.pass")
+finally:
+    # Regardless of success or failure we want to upload the scratch directory
+    # to the shared google drive for easy debugging of either compile errors or
+    # the evaluate_patches tool itself.
+    unique_id = random.randint(1, 10000)
+    file_name = f"{today_underscore}_evaluate_patches_{unique_id}.zip"
+    uploadScratch(creds, file_name, scratch_dir)
