@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//printing/buildflags/buildflags.gni")
 if (is_chromeos) {
   import("//printing/backend/tools/code_generator.gni")
@@ -47,7 +46,6 @@ source_set("printing") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/crash/core/common",
     "//components/printing/common",
     "//components/strings:components_strings_grit",
@@ -102,7 +100,6 @@ source_set("unit_tests") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/common/printing",
     "//content/test:test_support",
     "//printing:test_support",

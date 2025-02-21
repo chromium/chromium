@@ -107,14 +107,14 @@ namespace enterprise.reportingPrivate {
 
   // Captures the type of event so it can be associated with user or device in
   // Chrome for reporting purposes
-  [platforms = ("chromeos", "lacros")]
+  [platforms = ("chromeos")]
   enum EventType { DEVICE, USER };
 
   // Composite object that captures the information we need to report events.
   // Some fields like the record and priority are serialized to avoid any
   // dependency on proto definitions here, given the fact that they will likely
   // change in the future. These will be deserialized and validated in Chrome.
-  [platforms = ("chromeos", "lacros")]
+  [platforms = ("chromeos")]
   dictionary EnqueueRecordRequest {
     // Serialized record data binary based on the proto definition in
     // //components/reporting/proto/synced/record.proto.
@@ -389,7 +389,7 @@ namespace enterprise.reportingPrivate {
     // |request|: Composite object that captures everything
     // we need for uploading records.
     // |callback|: Callback that is triggered upon completion
-    [platforms = ("chromeos", "lacros")]
+    [platforms = ("chromeos")]
     static void enqueueRecord(
         EnqueueRecordRequest request,
         optional DoneCallback callback);

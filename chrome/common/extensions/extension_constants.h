@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "url/gurl.h"
 
@@ -184,8 +183,6 @@ inline constexpr char kODFSExtensionId[] = "gnnndjlaomemikopnjhhnoombakkkkdg";
 // The extension id of Perfetto UI extension.
 inline constexpr char kPerfettoUIExtensionId[] =
     "lfmkphfpdbjijhpomgecfikhfohaoine";
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // The extension id of the Accessibility Common extension.
 inline constexpr char kAccessibilityCommonExtensionId[] =
     "egfdjlfmgnehecnclamagfafdccgfndp";
@@ -301,25 +298,7 @@ inline constexpr char kEspeakSpeechSynthesisOptionsPath[] = "/options.html";
 // The extension id of official HelpApp extension.
 inline constexpr char kHelpAppExtensionId[] =
     "honijodknafkokifofgiaalefdiedpko";
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-// The extension id of the Lacros accessibility helper extension.
-inline constexpr char kEmbeddedA11yHelperExtensionId[] =
-    "kgonammgkackdilhodbgbmodpepjocdp";
-// The path to the Lacros accessibility helper extension.
-inline constexpr char kEmbeddedA11yHelperExtensionPath[] = "accessibility";
-// The name of the manifest file for the Lacros accessibility helper extension.
-inline constexpr char kEmbeddedA11yHelperManifestFilename[] =
-    "embedded_a11y_helper_manifest.json";
-// The extension id of the Lacros ChromeVox helper extension.
-inline constexpr char kChromeVoxHelperExtensionId[] =
-    "mlkejohendkgipaomdopolhpbihbhfnf";
-// The path to the Lacros ChromeVox helper extension.
-inline constexpr char kChromeVoxHelperExtensionPath[] = "accessibility";
-// The name of the manifest file for the Lacros ChromeVox helper extension.
-inline constexpr char kChromeVoxHelperManifestFilename[] =
-    "chromevox_helper_manifest.json";
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 // The extension id of the helper extension for Reading Mode to work on Google
 // Docs.
 inline constexpr char kReadingModeGDocsHelperExtensionId[] =
@@ -331,7 +310,6 @@ inline constexpr char kReadingModeGDocsHelperExtensionPath[] = "accessibility";
 inline constexpr base::FilePath::CharType
     kReadingModeGDocsHelperManifestFilename[] =
         FILE_PATH_LITERAL("reading_mode_gdocs_helper_manifest.json");
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 // The extension id of the google tts engine extension to use on-device natural
 // Google voices.

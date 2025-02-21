@@ -5,7 +5,6 @@
 #include "chrome/common/chrome_switches.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 
@@ -358,14 +357,6 @@ const char kHomePage[] = "homepage";
 // Causes the initial browser opened to be in incognito mode. Further browsers
 // may or may not be in incognito mode; see `IncognitoModePrefs`.
 const char kIncognito[] = "incognito";
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Manually sets the initial preferences file. This is required to change the
-// initial preferences when the default file is read-only (eg. on lacros).
-// Passing this flag will reset the preferences regardless of whether this is
-// the first run.
-const char kInitialPreferencesFile[] = "initial-preferences-file";
-#endif
 
 // Specifies that the main-thread Isolate should initialize in foreground mode.
 // If not specified, the the Isolate will start in background mode for extension
@@ -733,7 +724,7 @@ const char kMarketUrlForTesting[] = "market-url-for-testing";
 const char kRequestDesktopSites[] = "request-desktop-sites";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Custom crosh command.
 const char kCroshCommand[] = "crosh-command";
 
@@ -752,9 +743,9 @@ const char kShortMergeSessionTimeoutForTest[] =
 // saving as HTML with a directory of sub-resources. (Webpage, Complete).
 // See http://crbug.com/40179885 for how to remove this switch.
 const char kSavePageAsMHTML[] = "save-page-as-mhtml";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
 // These flags show the man page on Linux. They are equivalent to each
 // other.
 const char kHelp[] = "help";
@@ -920,12 +911,12 @@ const char kProfileBaseName[] = "profile-base-name";
 const char kProfileManagementAttributes[] = "profile-management-attributes";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Custom WebAPK server URL for the sake of testing.
 const char kWebApkServerUrl[] = "webapk-server-url";
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 // Uses the system default printer as the initially selected destination in
 // print preview, instead of the most recently used destination.
 const char kUseSystemDefaultPrinter[] = "use-system-default-printer";

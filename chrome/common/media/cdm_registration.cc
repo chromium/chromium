@@ -17,7 +17,6 @@
 #include "base/path_service.h"
 #include "base/version.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/common/cdm_info.h"
 #include "media/base/cdm_capability.h"
 #include "media/base/media_switches.h"

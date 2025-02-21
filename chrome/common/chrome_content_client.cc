@@ -25,7 +25,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -289,7 +288,7 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->csp_bypassing_schemes.push_back(extensions::kExtensionScheme);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   schemes->predefined_handler_schemes.emplace_back(
       url::kMailToScheme, chrome::kChromeOSDefaultMailtoHandler);
   schemes->predefined_handler_schemes.emplace_back(
@@ -301,7 +300,7 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->service_worker_schemes.push_back(chrome::kIsolatedAppScheme);
   url::AddWebStorageScheme(chrome::kIsolatedAppScheme);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   schemes->local_schemes.push_back(content::kExternalFileScheme);
 #endif
 

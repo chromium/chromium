@@ -20,7 +20,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/printing/printing_buildflags.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "components/device_event_log/device_event_log.h"

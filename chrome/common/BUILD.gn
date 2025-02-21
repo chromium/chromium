@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/util/process_version.gni")
 import("//chrome/browser/downgrade/buildflags.gni")
 import("//chrome/common/features.gni")
@@ -76,10 +75,7 @@ source_set("channel_info") {
     "channel_info.h",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  deps = [
-    "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ "//build:branding_buildflags" ]
   public_deps = [
     "//base",
     "//components/version_info",
@@ -93,7 +89,7 @@ source_set("channel_info") {
   } else if (is_android) {
     sources += [ "channel_info_android.cc" ]
     public_deps += [ "//components/version_info/android:channel_getter" ]
-  } else if (is_chromeos_ash) {
+  } else if (is_chromeos) {
     sources += [ "channel_info_chromeos.cc" ]
     deps += [ "//chromeos/ash/components/channel" ]
   } else if (is_posix) {
@@ -263,7 +259,6 @@ static_library("common_lib") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/crash/core/app",
     "//components/google/core/common",
     "//components/heap_profiling/in_process",
@@ -331,14 +326,13 @@ static_library("common_lib") {
     public_deps += [ ":app_mode_app_support" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     assert(enable_extensions)
     public_deps += [ "//ash/keyboard/ui" ]
-    deps += [ "//ash/constants" ]
-  }
-
-  if (is_chromeos) {
-    deps += [ "//chrome/common/chromeos/extensions" ]
+    deps += [
+      "//ash/constants",
+      "//chrome/common/chromeos/extensions",
+    ]
   }
 
   if (enable_nacl) {
@@ -484,7 +478,6 @@ static_library("non_code_constants") {
     ":buildflags",
     ":version_header",
     "//base",
-    "//build:chromeos_buildflags",
     "//ppapi/buildflags",
   ]
 
@@ -512,7 +505,6 @@ component("chrome_features") {
     ":buildflags",
     ":non_code_constants",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/offline_pages/buildflags",
     "//device/vr/buildflags",
     "//extensions/buildflags",

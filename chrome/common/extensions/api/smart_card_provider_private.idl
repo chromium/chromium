@@ -11,7 +11,7 @@
 // [3] https://github.com/WICG/web-smart-card/blob/main/README.md#web-idl
 //
 // TODO(crbug.com/40247152): Add API for the remaining SCard* functions.
-[platforms=("chromeos", "lacros"),
+[platforms=("chromeos"),
  implemented_in="chrome/browser/chromeos/extensions/smart_card_provider_private/smart_card_provider_private_api.h"]
 namespace smartCardProviderPrivate {
 

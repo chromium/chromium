@@ -45,7 +45,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -56,12 +55,9 @@
 #include "ipc/ipc_logging.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
 #include "base/i18n/time_formatting.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -98,9 +94,9 @@ bool chrome_logging_redirected_ = false;
 // The directory on which we do rotation of log files instead of switching
 // with symlink. Because this directory doesn't support symlinks and the logic
 // doesn't work correctly.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kChronosHomeDir[] = "/home/chronos/user/";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 // {7FE69228-633E-4f06-80C1-527FEA23E3A7}
@@ -278,9 +274,7 @@ bool RotateLogFile(const base::FilePath& target_path) {
 
   return true;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 base::FilePath SetUpSymlinkIfNeeded(const base::FilePath& symlink_path,
                                     bool new_log) {
   DCHECK(!symlink_path.empty());
@@ -366,11 +360,8 @@ base::FilePath GetSessionLogFile(const base::CommandLine& command_line) {
   return GetSessionLogDir(command_line)
       .Append(GetLogFileName(command_line).BaseName());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
 base::FilePath SetUpLogFile(const base::FilePath& target_path, bool new_log) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool supports_symlinks =
       !(target_path.IsAbsolute() &&
         base::StartsWith(target_path.value(), kChronosHomeDir));
@@ -381,7 +372,6 @@ base::FilePath SetUpLogFile(const base::FilePath& target_path, bool new_log) {
     // which supports symlinks.
     return SetUpSymlinkIfNeeded(target_path, new_log);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Chrome OS doesn't support symlinks on this file system, so that it uses
   // the rotation logic which doesn't use symlinks.
@@ -416,7 +406,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
       LoggingDestFromCommandLine(command_line, filename_is_handle);
   LogLockingState log_locking_state = LOCK_LOG_FILE;
   base::FilePath log_path;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::FilePath target_path;
 #endif
 #if BUILDFLAG(IS_WIN)
@@ -438,7 +428,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
     } else {
       log_path = GetLogFileName(command_line);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       // For BWSI (Incognito) logins, we want to put the logs in the user
       // profile directory that is created for the temporary session instead
       // of in the system log directory, for privacy reasons.
@@ -456,7 +446,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
       // the link, it shouldn't remove the old file in the logging code,
       // since that will remove the newly created link instead.
       delete_old_log_file = APPEND_TO_OLD_LOG_FILE;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     }
   } else {
     log_locking_state = DONT_LOCK_LOG_FILE;
@@ -478,7 +468,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
   settings.delete_old = delete_old_log_file;
   bool success = InitLogging(settings);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!success) {
     DPLOG(ERROR) << "Unable to initialize logging to " << log_path.value()
                  << " (which should be a link to " << target_path.value()
@@ -487,13 +477,13 @@ void InitChromeLogging(const base::CommandLine& command_line,
     chrome_logging_failed_ = true;
     return;
   }
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
   if (!success) {
     DPLOG(ERROR) << "Unable to initialize logging to " << log_path.value();
     chrome_logging_failed_ = true;
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // We call running in unattended mode "headless", and allow headless mode to
   // be configured either by the Environment Variable or by the Command Line

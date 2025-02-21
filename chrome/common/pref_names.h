@@ -11,7 +11,6 @@
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_font_webkit_names.h"
 #include "components/compose/buildflags.h"
@@ -47,8 +46,6 @@ inline constexpr char kDisableScreenshots[] = "disable_screenshots";
 // A boolean specifying whether the partial download bubble (which shows up
 // automatically when downloads are complete) should be enabled. True (partial
 // bubble will show automatically) by default.
-// The following two prefs are ignored on ChromeOS Lacros if SysUI integration
-// is enabled.
 // TODO(chlily): Clean them up once SysUI integration is enabled by default.
 inline constexpr char kDownloadBubblePartialViewEnabled[] =
     "download_bubble.partial_view_enabled";
@@ -166,7 +163,7 @@ inline constexpr char kUserFeedbackAllowed[] = "feedback_allowed";
 inline constexpr char kRlzPingDelaySeconds[] = "rlz_ping_delay";
 #endif  // BUILDFLAG(ENABLE_RLZ)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Locale preference of device' owner.  ChromeOS device appears in this locale
 // after startup/wakeup/signout.
 inline constexpr char kOwnerLocale[] = "intl.owner_locale";
@@ -490,9 +487,6 @@ inline constexpr char kInsightsExtensionEnabled[] =
 // Boolean controlling whether showing Sync Consent during sign-in is enabled.
 // Controlled by policy.
 inline constexpr char kEnableSyncConsent[] = "sync_consent.enabled";
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // A boolean pref set to true if time should be displayed in 24-hour clock.
 inline constexpr char kUse24HourClock[] = "settings.clock.use_24hour_clock";
@@ -1273,9 +1267,7 @@ inline constexpr char kRemoteAdminWasPresent[] = "remote_admin_was_present";
 // depending on the value of the DownloadDirectory policy.
 inline constexpr char kFilesAppDefaultLocation[] =
     "filebrowser.default_location";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
 // List pref containing blocked domains of cookies that will not be moved when a
 // user switches between ChromeOS devices, when the Floating SSO Service is
 // enabled.
@@ -1336,15 +1328,7 @@ inline constexpr char kGeminiSettings[] = "browser.gemini_settings";
 inline constexpr char kAllowedDomainsForApps[] =
     "settings.allowed_domains_for_apps";
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// A boolean pref that controls whether proxy settings from Ash-Chrome are
-// applied or ignored. Always true for the primary profile.
-inline constexpr char kUseAshProxy[] = "lacros.proxy.use_ash_proxy";
-#endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
-
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 // Linux specific preference on whether we should match the system theme.
 inline constexpr char kSystemTheme[] = "extensions.theme.system_theme";
 #endif
@@ -1470,7 +1454,7 @@ inline constexpr char kAccessibilityImageLabelsOnlyOnWifi[] =
     "settings.a11y.enable_accessibility_image_labels_only_on_wifi";
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // A boolean pref which determines whether focus highlighting is enabled.
 inline constexpr char kAccessibilityFocusHighlightEnabled[] =
     "settings.a11y.focus_highlight";
@@ -1696,7 +1680,7 @@ inline constexpr char kPrintPostScriptMode[] = "printing.postscript_mode";
 inline constexpr char kPrintRasterizationMode[] = "printing.rasterization_mode";
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 // A pref that sets the default destination in Print Preview to always be the
 // OS default printer instead of the most recently used destination.
 inline constexpr char kPrintPreviewUseSystemDefaultPrinter[] =
@@ -1710,7 +1694,7 @@ inline constexpr char kUserDataSnapshotRetentionLimit[] =
     "downgrade.snapshot_retention_limit";
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // List of print servers ids that are allowed in the user policy. List of
 // strings. Note that this used to be `kExternalPrintServersWhitelist`, hence
 // the difference between the variable name and the string value.
@@ -1786,7 +1770,7 @@ inline constexpr char kPrintJobHistoryExpirationPeriod[] =
 // deleted.
 inline constexpr char kDeletePrintJobHistoryAllowed[] =
     "printing.delete_print_job_history_allowed";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // List pref containing the users supervised by this user.
 inline constexpr char kSupervisedUsers[] = "profile.managed_users";
@@ -1875,7 +1859,7 @@ inline constexpr char kWebRtcLocalIpsAllowedUrls[] =
 inline constexpr char kWebRtcTextLogCollectionAllowed[] =
     "webrtc.text_log_collection_allowed";
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Boolean that indicates that the first run experience has been finished (or
 // skipped by some policy) for this browser install.
 inline constexpr char kFirstRunFinished[] = "browser.first_run_finished";
@@ -2000,7 +1984,7 @@ inline constexpr char kNetworkAnnotationBlocklist[] =
 inline constexpr char kReportingEndpoints[] =
     "enterprise_reporting.reporting_endpoints";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // The state of the SkyVault migration of local files to the cloud.
 inline constexpr char kSkyVaultMigrationState[] = "skyvault.migration_state";
 
@@ -2011,7 +1995,7 @@ inline constexpr char kSkyVaultMigrationRetryCount[] =
 // The time at which the SkyVault local files upload started.
 inline constexpr char kSkyVaultMigrationStartTime[] =
     "skyvault.migration_start_time";
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
@@ -2189,7 +2173,7 @@ inline constexpr char kDefaultTasksByMimeType[] =
 inline constexpr char kDefaultTasksBySuffix[] =
     "filebrowser.tasks.default_by_suffix";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Maps file extensions to handlers according to the
 // DefaultHandlersForFileExtensions policy.
 inline constexpr char kDefaultHandlersForFileExtensions[] =
@@ -2272,9 +2256,7 @@ inline constexpr char kAllowUserToRemoveODFS[] = "allow_user_to_remove_odfs";
 // Whether M365 has been already been set as default to open supported links.
 inline constexpr char kM365SupportedLinkDefaultSet[] =
     "filebrowser.m365_supported_link_default_set";
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Pref that contains the value of the MicrosoftOneDriveMount policy.
 inline constexpr char kMicrosoftOneDriveMount[] =
     "filebrowser.office.microsoft_one_drive_mount";
@@ -2291,7 +2273,7 @@ inline constexpr char kMicrosoftOfficeCloudUpload[] =
 // Pref that contains the value of the GoogleWorkspaceCloudUpload policy.
 inline constexpr char kGoogleWorkspaceCloudUpload[] =
     "filebrowser.office.google_workspace_cloud_upload";
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Extensions which should be opened upon completion.
 inline constexpr char kDownloadExtensionsToOpen[] =
@@ -2330,13 +2312,13 @@ inline constexpr char kRestartLastSessionOnShutdown[] =
     "restart.last.session.on.shutdown";
 
 #if !BUILDFLAG(IS_ANDROID)
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Boolean that specifies whether or not to show security warnings for some
 // potentially bad command-line flags. True by default. Controlled by the
 // CommandLineFlagSecurityWarningsEnabled policy setting.
 inline constexpr char kCommandLineFlagSecurityWarningsEnabled[] =
     "browser.command_line_flag_security_warnings_enabled";
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Pref name for controlling presentation of promotions, including full-tab
 // promotional and/or educational content.
@@ -2924,7 +2906,7 @@ inline constexpr char kTabCaptureAllowedByOrigins[] =
 inline constexpr char kSameOriginTabCaptureAllowedByOrigins[] =
     "hardware.same_origin_tab_capture_allowed_by_origins";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Dictionary for transient storage of settings that should go into device
 // settings storage before owner has been assigned.
 inline constexpr char kDeviceSettingsCache[] = "signed_settings_cache";
@@ -3115,7 +3097,7 @@ inline constexpr char
 // set for child users only, and kept on the known user storage.
 inline constexpr char kKnownUserParentAccessCodeConfig[] =
     "child_user.parent_access_code.config";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // String which specifies where to store the disk cache.
 inline constexpr char kDiskCacheDir[] = "browser.disk_cache_dir";
@@ -3146,7 +3128,7 @@ inline constexpr char kDebuggingFeaturesRequested[] =
 inline constexpr char kEnableAdbSideloadingRequested[] =
     "EnableAdbSideloadingRequested";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // This setting controls initial device timezone that is used before user
 // session started. It is controlled by device owner.
 inline constexpr char kSigninScreenTimezone[] =
@@ -3163,7 +3145,7 @@ inline constexpr char kResolveDeviceTimezoneByGeolocationMethod[] =
 // SystemTimezoneAutomaticDetectionProto_AutomaticTimezoneDetectionType;
 inline constexpr char kSystemTimezoneAutomaticDetectionPolicy[] =
     "settings.resolve_device_timezone_by_geolocation_policy";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Pref name for the policy controlling whether to enable Media Router.
 inline constexpr char kEnableMediaRouter[] = "media_router.enable_media_router";
@@ -3188,13 +3170,13 @@ inline constexpr char kRelaunchNotificationPeriod[] =
 inline constexpr char kRelaunchWindow[] = "browser.relaunch_window";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Pref name for the policy controlling the time period between the first user
 // notification about need to relaunch and the end of the
 // RelaunchNotificationPeriod. Values are in milliseconds.
 inline constexpr char kRelaunchHeadsUpPeriod[] =
     "browser.relaunch_heads_up_period";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 // Counts how many times prominent call-to-actions have occurred as part of the
@@ -3370,7 +3352,7 @@ inline constexpr char kMediaGalleriesRememberedGalleries[] =
     "media_galleries.remembered_galleries";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 inline constexpr char kPolicyPinnedLauncherApps[] =
     "policy_pinned_launcher_apps";
 // Keeps names of rolled default pin layouts for shelf in order not to apply
@@ -3389,7 +3371,7 @@ inline constexpr char kShelfGeminiAppPinRolls[] =
 // to prevent applying the default pin twice (after the user unpins the app).
 inline constexpr char kShelfMallAppPinRolls[] =
     "shelf_mall_app_pin_layout_rolls";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 // Counts how many more times the 'profile on a network share' warning should be
@@ -3407,7 +3389,7 @@ inline constexpr char kShortcutMigrationVersion[] =
     "browser.shortcut_migration_version";
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // The RLZ brand code, if enabled.
 inline constexpr char kRLZBrand[] = "rlz.brand";
 // Whether RLZ pings are disabled.
@@ -3557,72 +3539,6 @@ inline constexpr char kCWSInfoFetchErrorTimestamp[] =
 // A bool value for running GarbageCollectStoragePartitionCommand.
 inline constexpr char kShouldGarbageCollectStoragePartitions[] =
     "storage_partitions.should_garbage_collect";
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// In Lacros, these prefs store the expected value of the equivalent ash pref
-// used by extensions. The values are sent to ash.
-
-// A boolean pref which determines whether focus highlighting is enabled.
-inline constexpr char kLacrosAccessibilityFocusHighlightEnabled[] =
-    "lacros.settings.a11y.focus_highlight";
-
-// A boolean pref storing the enabled status of the Docked Magnifier feature.
-inline constexpr char kLacrosDockedMagnifierEnabled[] =
-    "lacros.docked_magnifier.enabled";
-
-// A boolean pref which determines whether autoclick is enabled.
-inline constexpr char kLacrosAccessibilityAutoclickEnabled[] =
-    "lacros.settings.a11y.autoclick";
-
-// A boolean pref which determines whether caret highlighting is enabled.
-inline constexpr char kLacrosAccessibilityCaretHighlightEnabled[] =
-    "lacros.settings.a11y.caret_highlight";
-
-// A boolean pref which determines whether cursor highlighting is enabled.
-inline constexpr char kLacrosAccessibilityCursorHighlightEnabled[] =
-    "lacros.settings.a11y.cursor_highlight";
-
-// A boolean pref which determines whether dictation is enabled.
-inline constexpr char kLacrosAccessibilityDictationEnabled[] =
-    "lacros.settings.a11y.dictation";
-
-// A boolean pref which determines whether high contrast is enabled.
-inline constexpr char kLacrosAccessibilityHighContrastEnabled[] =
-    "lacros.settings.a11y.high_contrast_enabled";
-
-// A boolean pref which determines whether the large cursor feature is enabled.
-inline constexpr char kLacrosAccessibilityLargeCursorEnabled[] =
-    "lacros.settings.a11y.large_cursor_enabled";
-
-// A boolean pref which determines whether screen magnifier is enabled.
-// NOTE: We previously had prefs named settings.a11y.screen_magnifier_type and
-// settings.a11y.screen_magnifier_type2, but we only shipped one type (full).
-// See http://crbug.com/170850 for history.
-inline constexpr char kLacrosAccessibilityScreenMagnifierEnabled[] =
-    "lacros.settings.a11y.screen_magnifier";
-
-// A boolean pref which determines whether select-to-speak is enabled.
-inline constexpr char kLacrosAccessibilitySelectToSpeakEnabled[] =
-    "lacros.settings.a11y.select_to_speak";
-
-// A boolean pref which determines whether spoken feedback is enabled.
-inline constexpr char kLacrosAccessibilitySpokenFeedbackEnabled[] =
-    "lacros.settings.accessibility";
-
-// A boolean pref which determines whether the sticky keys feature is enabled.
-inline constexpr char kLacrosAccessibilityStickyKeysEnabled[] =
-    "lacros.settings.a11y.sticky_keys_enabled";
-
-// A boolean pref which determines whether Switch Access is enabled.
-inline constexpr char kLacrosAccessibilitySwitchAccessEnabled[] =
-    "lacros.settings.a11y.switch_access.enabled";
-
-// A boolean pref which determines whether the virtual keyboard is enabled for
-// accessibility.  This feature is separate from displaying an onscreen keyboard
-// due to lack of a physical keyboard.
-inline constexpr char kLacrosAccessibilityVirtualKeyboardEnabled[] =
-    "lacros.settings.a11y.virtual_keyboard";
 #endif
 
 inline constexpr char kAllowDinosaurEasterEgg[] = "allow_dinosaur_easter_egg";
@@ -3929,7 +3845,7 @@ inline constexpr char kKnownInterceptionDisclosureInfobarLastShown[] =
     "known_interception_disclosure_infobar_last_shown";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 inline constexpr char kRequiredClientCertificateForUser[] =
     "required_client_certificate_for_user";
 inline constexpr char kRequiredClientCertificateForDevice[] =
@@ -3946,7 +3862,7 @@ inline constexpr char kCertificateProvisioningStateForDevice[] =
 inline constexpr char kPromptOnMultipleMatchingCertificates[] =
     "prompt_on_multiple_matching_certificates";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Boolean pref indicating whether the notification informing the user that
 // adb sideloading had been disabled by their admin was shown.
 inline constexpr char kAdbSideloadingDisallowedNotificationShown[] =
@@ -3976,7 +3892,7 @@ inline constexpr char kShowCaretBrowsingDialog[] =
     "settings.a11y.caretbrowsing.show_dialog";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // String enum pref determining what should happen when a user who authenticates
 // via a security token is removing this token. "IGNORE" - nothing happens
 // (default). "LOGOUT" - The user is logged out. "LOCK" - The session is locked.
@@ -3993,7 +3909,7 @@ inline constexpr char kSecurityTokenSessionNotificationSeconds[] =
 // who was logged out, to be used as part of the notification message.
 inline constexpr char kSecurityTokenSessionNotificationScheduledDomain[] =
     "security_token_session_notification_scheduled";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 // Boolean pref controlling whether immersive AR sessions are enabled
@@ -4007,13 +3923,11 @@ inline constexpr char kFetchKeepaliveDurationOnShutdown[] =
     "fetch_keepalive_duration_on_shutdown";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Boolean pref to control whether to enable annotation mode in the PDF viewer
 // or not.
 inline constexpr char kPdfAnnotationsEnabled[] = "pdf.enable_annotations";
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Boolean pref to control whether to enable Lens integration with media app
 inline constexpr char kMediaAppLensEnabled[] = "media_app.enable_lens";
 #endif
@@ -4088,7 +4002,7 @@ inline constexpr char kOriginAgentClusterDefaultEnabled[] =
 inline constexpr char kSCTAuditingHashdanceReportCount[] =
     "sct_auditing.hashdance_report_count";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 inline constexpr char kConsumerAutoUpdateToggle[] =
     "settings.consumer_auto_update_toggle";
 #endif
@@ -4138,7 +4052,7 @@ inline constexpr char
     kAccessControlAllowMethodsInCORSPreflightSpecConformant[] =
         "access_control_allow_methods_in_cors_preflight_spec_conformant";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // A dictionary that keeps client_ids assigned by Authorization Servers indexed
 // by URLs of these servers. It does not contain empty strings.
 inline constexpr char kPrintingOAuth2AuthorizationServers[] =

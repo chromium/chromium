@@ -13,7 +13,6 @@
 #include "base/path_service.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,12 +43,7 @@ TEST(ChromePaths, UserCacheDir) {
   // Note: we assume XDG_CACHE_HOME/XDG_CONFIG_HOME are at their
   // default settings.
   test_profile_dir = homedir.Append(".config/foobar");
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Chrome OS doesn't allow special cache overrides like desktop Linux.
-  expected_cache_dir = homedir.Append(".config/foobar");
-#else
   expected_cache_dir = homedir.Append(".cache/foobar");
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #else
 #error Unsupported platform
 #endif  // BUILDFLAG(IS_WIN)
@@ -76,8 +70,7 @@ TEST(ChromePaths, UserCacheDir) {
 }
 
 // Chrome OS doesn't use any of the desktop linux configuration.
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX)
 TEST(ChromePaths, DefaultUserDataDir) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   std::string orig_chrome_config_home;
@@ -118,7 +111,7 @@ TEST(ChromePaths, DefaultUserDataDir) {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST(ChromePaths, UserMediaDirectories) {
   base::FilePath path;
   // Chrome OS does not support custom media directories.
