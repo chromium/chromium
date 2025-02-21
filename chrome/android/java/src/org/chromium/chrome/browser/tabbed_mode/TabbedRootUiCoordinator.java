@@ -143,7 +143,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.FaviconResolver;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListFaviconResolverFactory;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -1437,7 +1437,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 R.dimen.default_favicon_corner_radius,
                                 TabFavicon::getBitmap);
                 FaviconResolver faviconResolver =
-                        TabGroupListCoordinator.buildFaviconResolver(
+                        TabGroupListFaviconResolverFactory.build(
                                 mActivity, profile, tabListFaviconProvider);
 
                 Callback<Bitmap> cleanUpAndContinue =

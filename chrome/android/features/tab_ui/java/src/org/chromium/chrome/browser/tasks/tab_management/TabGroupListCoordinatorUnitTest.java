@@ -88,7 +88,7 @@ public class TabGroupListCoordinatorUnitTest {
     @SmallTest
     public void testForeignFavicon() {
         FaviconResolver resolver =
-                TabGroupListCoordinator.buildFaviconResolver(
+                TabGroupListFaviconResolverFactory.build(
                         mActivity, mProfile, mTabListFaviconProvider);
         resolver.resolve(JUnitTestGURLs.URL_1, mCallback);
         verify(mFaviconHelperJniMock)
@@ -103,7 +103,7 @@ public class TabGroupListCoordinatorUnitTest {
     @SmallTest
     public void testFallbackFavicon() {
         FaviconResolver resolver =
-                TabGroupListCoordinator.buildFaviconResolver(
+                TabGroupListFaviconResolverFactory.build(
                         mActivity, mProfile, mTabListFaviconProvider);
         resolver.resolve(JUnitTestGURLs.URL_1, mCallback);
         verify(mFaviconHelperJniMock)
@@ -118,7 +118,7 @@ public class TabGroupListCoordinatorUnitTest {
     @SmallTest
     public void testInternalFavicon() {
         FaviconResolver resolver =
-                TabGroupListCoordinator.buildFaviconResolver(
+                TabGroupListFaviconResolverFactory.build(
                         mActivity, mProfile, mTabListFaviconProvider);
         resolver.resolve(JUnitTestGURLs.NTP_NATIVE_URL, mCallback);
         verify(mCallback).onResult(notNull());
