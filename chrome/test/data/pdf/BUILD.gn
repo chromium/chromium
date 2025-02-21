@@ -10,7 +10,6 @@ assert(enable_pdf, "enable_pdf check failed")
 build_webui_tests("build") {
   resource_path_prefix = "pdf"
 
-  ts_tsconfig_base = "../../../../tools/typescript/tsconfig_base_polymer.json"
   ts_path_mappings =
       [ "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/pdf/tsc/*",
