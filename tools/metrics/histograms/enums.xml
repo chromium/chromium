@@ -10054,6 +10054,7 @@ from previous Chrome versions.
   <int value="-1615376061"
       label="ShowRelatedWebsiteSetsPermissionGrants:disabled"/>
   <int value="-1614912400" label="enable-link-disambiguation-popup"/>
+  <int value="-1614343801" label="UseNewEtc1Encoder:enabled"/>
   <int value="-1613863020" label="MlUrlScoreCaching:enabled"/>
   <int value="-1613833640" label="ClipboardHistoryWebContentsPaste:disabled"/>
   <int value="-1613583483" label="UseNewAcceptLanguageHeader:enabled"/>
@@ -19221,6 +19222,7 @@ from previous Chrome versions.
   <int value="1968199744" label="PrintJobManagementApp:disabled"/>
   <int value="1969604362" label="enable-pinch-virtual-viewport"/>
   <int value="1969860311" label="DynamicColorGamut:enabled"/>
+  <int value="1970371579" label="UseNewEtc1Encoder:disabled"/>
   <int value="1971436110" label="PasswordsInCredMan:enabled"/>
   <int value="1971472561" label="CrostiniImeSupport:disabled"/>
   <int value="1971964569" label="NewEncodeCpuLoadEstimator:disabled"/>

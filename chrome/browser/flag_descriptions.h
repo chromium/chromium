@@ -1455,6 +1455,11 @@ extern const char kWebNNCoreMLDescription[];
 extern const char kWebNNDirectMLName[];
 extern const char kWebNNDirectMLDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kNewEtc1EncoderName[];
+extern const char kNewEtc1EncoderDescription[];
+#endif
+
 extern const char kNotificationSchedulerName[];
 extern const char kNotificationSchedulerDescription[];
 

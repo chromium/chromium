@@ -2550,6 +2550,13 @@ const char kSystemShortcutBehaviorDescription[] =
     "This flag controls the default behavior of ChromeOS system shortcuts "
     "(Launcher key shortcuts).";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kNewEtc1EncoderName[] = "Enable new ETC1 encoder";
+const char kNewEtc1EncoderDescription[] =
+    "Enables the new ETC1 encoder implementation for tab and back/forward "
+    "thumbnails.";
+#endif
+
 const char kNotificationSchedulerName[] = "Notification scheduler";
 const char kNotificationSchedulerDescription[] =
     "Enable notification scheduler feature.";
