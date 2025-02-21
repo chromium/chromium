@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "base/check_is_test.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
@@ -1170,6 +1171,12 @@ void ServiceWorkerClient::FlushFeatures() {
   }
 }
 
+void ServiceWorkerClient::SetNetworkURLLoaderFactoryForTesting(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  CHECK_IS_TEST();
+  network_url_loader_factory_override_for_testing_ = url_loader_factory;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerClient::CreateNetworkURLLoaderFactory(
     CreateNetworkURLLoaderFactoryType type,
@@ -1177,6 +1184,11 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
     const network::ResourceRequest& resource_request) {
   CHECK(!is_response_committed());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (network_url_loader_factory_override_for_testing_) {
+    CHECK_IS_TEST();
+    return network_url_loader_factory_override_for_testing_;
+  }
 
   switch (type) {
     case CreateNetworkURLLoaderFactoryType::kNavigationPreload:
