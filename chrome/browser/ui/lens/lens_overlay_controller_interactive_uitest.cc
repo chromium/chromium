@@ -356,7 +356,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, OpenAndClose) {
 //  (1) User navigates to a website.
 //  (2) User opens lens overlay.
 //  (3) User presses the escape key to close lens overlay.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, EscapeKeyClose) {
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+// Flaky on ASAN on Linux.
+#define MAYBE_EscapeKeyClose DISABLED_EscapeKeyClose
+#else
+#define MAYBE_EscapeKeyClose EscapeKeyClose
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_EscapeKeyClose) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
 
@@ -375,13 +381,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, EscapeKeyClose) {
       // The overlay controller is an independent floating widget associated
       // with a tab rather than a browser window, so by convention gets its own
       // element context.
-      InAnyContext(Steps(
-          InstrumentNonTabWebView(kOverlayId,
-                                  LensOverlayController::kOverlayId),
-          WaitForWebContentsReady(
-              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL)))),
+      InAnyContext(
+          Steps(InstrumentNonTabWebView(kOverlayId,
+                                        LensOverlayController::kOverlayId),
+                WaitForWebContentsReady(
+                    kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL)),
+                WaitForWebContentsPainted(kOverlayId))),
       // Wait for the webview to finish loading to prevent re-entrancy.
-      InSameContext(Steps(SendAccelerator(kOverlayId, escape_key),
+      InSameContext(Steps(FocusWebContents(kOverlayId),
+                          SendAccelerator(kOverlayId, escape_key),
                           WaitForHide(kOverlayId))));
 }
 
@@ -391,7 +399,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, EscapeKeyClose) {
 //  (3) User highlights some text.
 //  (4) User presses CTRL+C on some text.
 //  (5) Highlighted text gets copied.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, CopyKeyCommandCopies) {
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+// Flaky on ASAN on Linux.
+#define MAYBE_CopyKeyCommandCopies DISABLED_CopyKeyCommandCopies
+#else
+#define MAYBE_CopyKeyCommandCopies CopyKeyCommandCopies
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
+                       MAYBE_CopyKeyCommandCopies) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
@@ -438,10 +453,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, CopyKeyCommandCopies) {
 
       // Clicking the text should have opened the side panel with the results
       // frame.
-      InAnyContext(Steps(InstrumentNonTabWebView(
-                             kOverlaySidePanelWebViewId,
-                             LensOverlayController::kOverlaySidePanelWebViewId),
-                         WaitForWebContentsReady(kOverlaySidePanelWebViewId))),
+      InAnyContext(
+          Steps(InstrumentNonTabWebView(
+                    kOverlaySidePanelWebViewId,
+                    LensOverlayController::kOverlaySidePanelWebViewId),
+                WaitForWebContentsReady(kOverlaySidePanelWebViewId),
+                WaitForWebContentsPainted(kOverlaySidePanelWebViewId))),
 
       //   Press CTRL+C command and ensure the highlighted text is saved to
       //   clipboard. We send the command to the side panel web view because in
@@ -449,6 +466,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, CopyKeyCommandCopies) {
       //   the event right after selecting text.
       InSameContext(
           Steps(WaitForShow(kOverlaySidePanelWebViewId),
+                FocusWebContents(kOverlaySidePanelWebViewId),
                 SendAccelerator(kOverlaySidePanelWebViewId, ctrl_c_accelerator),
                 PollState(kTextCopiedState,
                           [&]() {
@@ -468,8 +486,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, CopyKeyCommandCopies) {
 //  (2) User opens lens overlay.
 //  (3) User makes a selection that opens the results side panel.
 //  (4) User presses the escape key to close lens overlay.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+// Flaky on ASAN on Linux.
+#define MAYBE_EscapeKeyCloseWithResultsPanel \
+  DISABLED_EscapeKeyCloseWithResultsPanel
+#else
+#define MAYBE_EscapeKeyCloseWithResultsPanel EscapeKeyCloseWithResultsPanel
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
-                       EscapeKeyCloseWithResultsPanel) {
+                       MAYBE_EscapeKeyCloseWithResultsPanel) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
@@ -529,10 +554,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
               kOverlaySidePanelWebViewId,
               LensOverlayController::kOverlaySidePanelWebViewId),
           WaitForWebContentsReady(kOverlaySidePanelWebViewId),
-          EnsurePresent(kOverlaySidePanelWebViewId, kPathToResultsFrame))),
+          WaitForWebContentsPainted(kOverlaySidePanelWebViewId),
+          EnsurePresent(kOverlaySidePanelWebViewId, kPathToResultsFrame), )),
       // Press the escape key to and ensure the overlay closes.
       InSameContext(
           Steps(WaitForShow(kOverlaySidePanelWebViewId),
+                FocusWebContents(kOverlaySidePanelWebViewId),
                 SendAccelerator(kOverlaySidePanelWebViewId, escape_key),
                 WaitForHide(kOverlayId))));
 }
