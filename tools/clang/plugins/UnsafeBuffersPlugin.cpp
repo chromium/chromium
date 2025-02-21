@@ -161,6 +161,12 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
         (is_libc_diagnostic && disposition == kSkipLibc)) {
       return;
     }
+
+    // More selectively filter the libc calls we enforce.
+    if (is_libc_diagnostic && IsIgnoredLibcFunction(diag)) {
+      return;
+    }
+
     // Elevate the Remark to a Warning, and pass along its Notes without
     // changing them. Otherwise, do nothing, and the Remark (and its notes)
     // will not be displayed.
@@ -268,6 +274,21 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
     }
     g_checked_files_cache.insert({filename, should_check});
     return should_check;
+  }
+
+  bool IsIgnoredLibcFunction(const clang::Diagnostic& diag) const {
+    // The unsafe libc calls warning is a wee bit overzealous about
+    // functions which might result in a OOB read only.
+    if (diag.getNumArgs() < 1) {
+      return false;
+    }
+    if (diag.getArgKind(0) !=
+        clang::DiagnosticsEngine::ArgumentKind::ak_nameddecl) {
+      return false;
+    }
+    auto* decl = reinterpret_cast<clang::NamedDecl*>(diag.getRawArg(0));
+    llvm::StringRef name = decl->getName();
+    return name == "strlen" || name == "atoi" || name == "atof";
   }
 
   // Used to prevent recursing into HandleDiagnostic() when we're emitting a
