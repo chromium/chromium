@@ -168,6 +168,7 @@ group("gn_all") {
         "//tools/polymer:polymer_tools_python_unittests",
         "//tools/privacy_budget:privacy_budget_tools",
         "//ui/accessibility/extensions:extensions",
+        "//ui/webui/resources/tools:webui_resources_tools_python_unittests",
       ]
     }
 

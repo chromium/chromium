@@ -2072,6 +2072,10 @@ targets.tests.isolated_script_test(
     name = "polymer_tools_python_unittests",
 )
 
+targets.tests.isolated_script_test(
+    name = "webui_resources_tools_python_unittests",
+)
+
 targets.tests.gtest_test(
     name = "power_sampler_unittests",
 )
