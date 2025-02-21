@@ -1463,27 +1463,8 @@ std::string MetricsService::RecordCurrentEnvironmentHelper(
     MetricsLog* log,
     PrefService* local_state,
     DelegatingProvider* delegating_provider) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // Record to prefs (and global persistent system profile upstream) the `log`'s
-  // system profile, but with an empty `fg_bg_id`. This is to prevent
-  // independent logs and initial stability logs from having this field set,
-  // since there are many edge cases that would result in an incorrect value.
-  // Otherwise, for example, if the user foregrounds, backgrounds, and closes
-  // the application all before the first log can be closed, `fg_bg_id` should
-  // be unset, but an independent log generated from that session would have a
-  // value set. Or, if the user backgrounds the application, and very shortly
-  // after kills the application, an independent log generated from the leftover
-  // background metrics from that session would have its `fg_bg_id` set to the
-  // value of when the application was still in the foreground (since that's the
-  // last complete system profile written to the PMA file).
-  // TODO(crbug.com/383881315): Improve this.
-  SystemProfileProto system_profile =
-      log->RecordEnvironment(delegating_provider);
-  system_profile.clear_fg_bg_id();
-#else
   const SystemProfileProto& system_profile =
       log->RecordEnvironment(delegating_provider);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EnvironmentRecorder recorder(local_state);
   return recorder.SerializeAndRecordEnvironmentToPrefs(system_profile);
 }
