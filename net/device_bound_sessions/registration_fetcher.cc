@@ -16,6 +16,7 @@
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
 #include "net/device_bound_sessions/session_json_utils.h"
+#include "net/log/net_log_event_type.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -248,13 +249,12 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
       }
     }
 
-    // Start a request to get a challenge with the session identifier.
-    // `RegistrationRequestParam::Create` guarantees `session_identifier_` is
-    // set when `challenge_` is missing.
-    if (session_identifier_.has_value()) {
-      request_ = CreateBaseRequest();
-      request_->Start();
-    }
+    // Start a request to get a challenge with the session identifier. The
+    // `RegistrationRequestParam` constructors guarantee `session_identifier_`
+    // is set when `challenge_` is missing.
+    CHECK(IsForRefreshRequest());
+    request_ = CreateBaseRequest();
+    request_->Start();
   }
 
  private:
@@ -308,7 +308,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
     request->set_initiator(original_request_initiator_);
     request->set_isolation_info(isolation_info_);
 
-    if (session_identifier_.has_value()) {
+    if (IsForRefreshRequest()) {
       request->SetExtraRequestHeaderByName(
           kSessionIdHeaderName, *session_identifier_, /*overwrite*/ true);
     }
@@ -359,12 +359,15 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
     if (!request_) {
       return;
     }
-    request_->net_log().AddEvent(NetLogEventType::DBSC_REFRESH_RESULT, [&]() {
+    NetLogEventType result_event_type =
+        IsForRefreshRequest() ? NetLogEventType::DBSC_REFRESH_RESULT
+                              : NetLogEventType::DBSC_REGISTRATION_RESULT;
+    request_->net_log().AddEvent(result_event_type, [&]() {
       std::string result;
       if (!params) {
         result = "failed_continue";
       } else if (std::holds_alternative<SessionParams>(params->params)) {
-        result = "refreshed";
+        result = IsForRefreshRequest() ? "refreshed" : "registered";
       } else if (std::holds_alternative<SessionTerminationParams>(
                      params->params)) {
         result = "session_ended";
@@ -376,10 +379,15 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
     });
   }
 
+  // Returns true if we're fetching for a refresh request. False means this is
+  // for a registration request.
+  bool IsForRefreshRequest() { return session_identifier_.has_value(); }
+
   //// This section of fields is state passed into the constructor. ////
   // Refers to the endpoint this class will use when triggering a registration
   // or refresh request.
   GURL fetcher_endpoint_;
+  // Populated iff this is a refresh request (not a registration request).
   std::optional<std::string> session_identifier_;
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   unexportable_keys::UnexportableKeyId key_id_;
@@ -439,8 +447,8 @@ void RegistrationFetcher::StartCreateTokenAndFetch(
   }
 
   const auto supported_algos = registration_params.supported_algos();
-  auto request_params =
-      RegistrationRequestParam::Create(std::move(registration_params));
+  auto request_params = RegistrationRequestParam::CreateForRegistration(
+      std::move(registration_params));
   // `key_service` is created along with `SessionService` and will be valid
   // until the browser ends, hence `std::ref` is safe here.
   key_service.GenerateSigningKeySlowlyAsync(

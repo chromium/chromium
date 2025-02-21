@@ -239,9 +239,10 @@ void SessionServiceImpl::DeferRequestForRefresh(
                        request->device_bound_session_access_callback(),
                        std::move(site), session_id);
     RegistrationFetcher::StartFetchWithExistingKey(
-        RegistrationRequestParam::Create(*session), key_service_.get(),
-        context_.get(), request->isolation_info(), net_log_source_for_refresh,
-        request->initiator(), std::move(callback), *key_id);
+        RegistrationRequestParam::CreateForRefresh(*session),
+        key_service_.get(), context_.get(), request->isolation_info(),
+        net_log_source_for_refresh, request->initiator(), std::move(callback),
+        *key_id);
   }
 }
 

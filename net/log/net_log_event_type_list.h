@@ -4931,3 +4931,10 @@ EVENT_TYPE(DBSC_REGISTRATION_REQUEST)
 //     "status": <string>,
 //   }
 EVENT_TYPE(DBSC_REFRESH_RESULT)
+
+// This event is logged when a device bound session registration request
+// completes. It contains the following parameters:
+//   {
+//     "status": <string>,
+//   }
+EVENT_TYPE(DBSC_REGISTRATION_RESULT)
