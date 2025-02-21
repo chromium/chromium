@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
@@ -573,39 +574,12 @@ void MessagingBackendServiceImpl::OnDataSharingChangeNotifierInitialized() {
 }
 
 void MessagingBackendServiceImpl::OnTabGroupChangeNotifierInitialized() {
-  SetCurrentlySelectedTabOnStartup();
   initialized_ = true;
   for (auto& observer : persistent_message_observers_) {
     observer.OnMessagingBackendServiceInitialized();
   }
   CHECK(data_sharing_flush_callback_);
   std::move(data_sharing_flush_callback_).Run();
-}
-
-void MessagingBackendServiceImpl::SetCurrentlySelectedTabOnStartup() {
-  auto selected_tab = tab_group_sync_service_->GetCurrentlySelectedTabInfo();
-  if (!selected_tab.tab_group_id || !selected_tab.tab_id) {
-    // We are missing tab group ID or tab ID, so we will be unable to find the
-    // tab.
-    return;
-  }
-  std::optional<tab_groups::SavedTabGroup> tab_group =
-      tab_group_sync_service_->GetGroup(*selected_tab.tab_group_id);
-  if (!tab_group) {
-    // This should not happen, but since the API returns an std::optional, we
-    // should still do this check to ensure we do not crash when dereferencing
-    // `tab_group`.
-    return;
-  }
-  tab_groups::SavedTabGroupTab* tab = tab_group->GetTab(*selected_tab.tab_id);
-  if (!tab) {
-    // Just as with the `tab_group`, this is not expected to happen, but in case
-    // there is an invariant we are not currently aware of we return early here.
-    return;
-  }
-
-  last_selected_tab_ = *tab;
-  last_selected_tab_->SetTitle(selected_tab.tab_title.value_or(u""));
 }
 
 void MessagingBackendServiceImpl::OnTabGroupAdded(
@@ -757,7 +731,8 @@ void MessagingBackendServiceImpl::OnTabAdded(
 
 void MessagingBackendServiceImpl::OnTabRemoved(
     tab_groups::SavedTabGroupTab removed_tab,
-    tab_groups::TriggerSource source) {
+    tab_groups::TriggerSource source,
+    bool is_selected) {
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GetCollaborationGroupIdForTab(removed_tab);
   if (!collaboration_group_id) {
@@ -791,11 +766,10 @@ void MessagingBackendServiceImpl::OnTabRemoved(
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            removed_tab.saved_group_guid());
 
-  if (source == tab_groups::TriggerSource::REMOTE && last_selected_tab_ &&
-      last_selected_tab_->saved_tab_guid() == removed_tab.saved_tab_guid() &&
+  if (source == tab_groups::TriggerSource::REMOTE && is_selected &&
       instant_message_delegate_) {
-    InstantMessage instant_message = CreateInstantMessage(
-        message, /*tab_group=*/std::nullopt, *last_selected_tab_);
+    InstantMessage instant_message =
+        CreateInstantMessage(message, /*tab_group=*/std::nullopt, removed_tab);
     instant_message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
 
     // TODO(crbug.com/390794240): Remove the id argument to
@@ -808,7 +782,8 @@ void MessagingBackendServiceImpl::OnTabRemoved(
 
 void MessagingBackendServiceImpl::OnTabUpdated(
     const tab_groups::SavedTabGroupTab& updated_tab,
-    tab_groups::TriggerSource source) {
+    tab_groups::TriggerSource source,
+    bool is_selected) {
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GetCollaborationGroupIdForTab(updated_tab);
   if (!collaboration_group_id) {
@@ -816,11 +791,8 @@ void MessagingBackendServiceImpl::OnTabUpdated(
     return;
   }
 
-  bool is_active_tab =
-      last_selected_tab_ &&
-      last_selected_tab_->saved_tab_guid() == updated_tab.saved_tab_guid();
   DirtyType dirty_type =
-      is_active_tab ? DirtyType::kChip : DirtyType::kDotAndChip;
+      is_selected ? DirtyType::kChip : DirtyType::kDotAndChip;
 
   collaboration_pb::Message message =
       CreateTabMessage(*collaboration_group_id, updated_tab,
@@ -840,7 +812,7 @@ void MessagingBackendServiceImpl::OnTabUpdated(
   } else {
     std::vector<PersistentNotificationType> persistent_notification_types(
         {PersistentNotificationType::CHIP});
-    if (!is_active_tab) {
+    if (!is_selected) {
       persistent_notification_types.emplace_back(
           PersistentNotificationType::DIRTY_TAB);
     }
@@ -853,11 +825,11 @@ void MessagingBackendServiceImpl::OnTabUpdated(
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            updated_tab.saved_group_guid());
 
-  if (source == tab_groups::TriggerSource::REMOTE && is_active_tab &&
+  if (source == tab_groups::TriggerSource::REMOTE && is_selected &&
       instant_message_delegate_) {
     InstantMessage instant_message_base;
     instant_message_base.attribution = CreateMessageAttributionForTabUpdates(
-        message, std::nullopt, *last_selected_tab_);
+        message, std::nullopt, updated_tab);
     instant_message_base.collaboration_event = CollaborationEvent::TAB_UPDATED;
     // TODO(crbug.com/391941212): CONFLICT_TAB_REMOVED and UNDEFINED don't seem
     // to be used. In that case, remove them.
@@ -869,56 +841,55 @@ void MessagingBackendServiceImpl::OnTabUpdated(
   }
 }
 
-void MessagingBackendServiceImpl::OnTabSelected(
-    std::optional<tab_groups::SavedTabGroupTab> selected_tab) {
-  if (!configuration_.clear_chip_on_tab_selection && last_selected_tab_) {
-    // When we do not clear the chip on selection, we instead clear the chip
-    // when a user selects a different tab after having selected one.
-    std::optional<data_sharing::GroupId> last_selected_collaboration_group_id =
-        GetCollaborationGroupIdForTab(last_selected_tab_.value());
-    if (last_selected_collaboration_group_id) {
-      store_->ClearDirtyMessageForTab(*last_selected_collaboration_group_id,
-                                      last_selected_tab_->saved_tab_guid(),
-                                      DirtyType::kChip);
-
-      // Specialized handling of creating a PersistentMessage, since we do not
-      // have a stored collaboration_pb::Message available.
-      PersistentMessage persistent_message =
-          CreatePersistentMessageFromTabGroupAndTab(
-              *last_selected_collaboration_group_id, *last_selected_tab_,
-              CollaborationEvent::UNDEFINED);
-
-      NotifyHidePersistentMessagesForTypes(persistent_message,
-                                           {PersistentNotificationType::CHIP});
+void MessagingBackendServiceImpl::OnTabSelectionChanged(
+    const tab_groups::LocalTabID& tab_id,
+    bool is_selected) {
+  std::optional<tab_groups::SavedTabGroupTab> tab;
+  std::optional<data_sharing::GroupId> collaboration_group_id;
+  for (const auto& group : tab_group_sync_service_->GetAllGroups()) {
+    if (group.is_shared_tab_group() && group.GetTab(tab_id)) {
+      tab = *(group.GetTab(tab_id));
+      collaboration_group_id =
+          data_sharing::GroupId(group.collaboration_id().value().value());
+      break;
     }
   }
-  last_selected_tab_ = selected_tab;
-  if (!selected_tab) {
-    // A tab outside shared tab groups was selected.
+
+  if (!tab) {
     return;
   }
 
-  std::optional<data_sharing::GroupId> collaboration_group_id =
-      GetCollaborationGroupIdForTab(selected_tab.value());
+  if (!is_selected && !configuration_.clear_chip_on_tab_selection) {
+    CHECK(collaboration_group_id);
+    // When we do not clear the chip on selection, we instead clear the chip
+    // when a user selects a different tab after having selected one.
+    store_->ClearDirtyMessageForTab(*collaboration_group_id,
+                                    tab->saved_tab_guid(), DirtyType::kChip);
 
-  if (!collaboration_group_id) {
-    // Unable to find the collaboration, so nothing to clear.
+    // Specialized handling of creating a PersistentMessage, since we do not
+    // have a stored collaboration_pb::Message available.
+    PersistentMessage persistent_message =
+        CreatePersistentMessageFromTabGroupAndTab(
+            *collaboration_group_id, *tab, CollaborationEvent::UNDEFINED);
+
+    NotifyHidePersistentMessagesForTypes(persistent_message,
+                                         {PersistentNotificationType::CHIP});
+  }
+
+  if (!is_selected) {
     return;
   }
 
   if (configuration_.clear_chip_on_tab_selection) {
-    store_->ClearDirtyMessageForTab(*collaboration_group_id,
-                                    selected_tab->saved_tab_guid(),
-                                    DirtyType::kDotAndChip);
+    store_->ClearDirtyMessageForTab(
+        *collaboration_group_id, tab->saved_tab_guid(), DirtyType::kDotAndChip);
   } else {
     store_->ClearDirtyMessageForTab(*collaboration_group_id,
-                                    selected_tab->saved_tab_guid(),
-                                    DirtyType::kDot);
+                                    tab->saved_tab_guid(), DirtyType::kDot);
   }
 
   PersistentMessage persistent_message =
-      CreatePersistentMessageFromTabGroupAndTab(*collaboration_group_id,
-                                                *selected_tab,
+      CreatePersistentMessageFromTabGroupAndTab(*collaboration_group_id, *tab,
                                                 CollaborationEvent::UNDEFINED);
 
   if (configuration_.clear_chip_on_tab_selection) {
@@ -931,7 +902,7 @@ void MessagingBackendServiceImpl::OnTabSelected(
   }
 
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
-                                           selected_tab->saved_group_guid());
+                                           tab->saved_group_guid());
 }
 
 void MessagingBackendServiceImpl::OnTabGroupOpened(
@@ -1677,8 +1648,7 @@ MessagingBackendServiceImpl::CreatePersistentMessageFromTabGroupAndTab(
     persistent_message.attribution.tab_group_metadata =
         CreateTabGroupMessageMetadata(*tab_group);
   }
-  persistent_message.attribution.tab_metadata =
-      CreateTabMessageMetadata(*last_selected_tab_);
+  persistent_message.attribution.tab_metadata = CreateTabMessageMetadata(tab);
   return persistent_message;
 }
 

@@ -69,7 +69,6 @@ class TabGroupSyncServiceProxy : public TabGroupSyncService,
   void OnTabSelected(const std::optional<LocalTabGroupID>& group_id,
                      const LocalTabID& tab_id,
                      const std::u16string& tab_title) override;
-  SelectedTabInfo GetCurrentlySelectedTabInfo() override;
   void SaveGroup(SavedTabGroup group) override;
   void UnsaveGroup(const LocalTabGroupID& local_id) override;
 
@@ -129,6 +128,7 @@ class TabGroupSyncServiceProxy : public TabGroupSyncService,
   void RemoveObserver(Observer* observer) override;
 
   void SetIsInitializedForTesting(bool initialized) override;
+  std::u16string GetTabTitle(const LocalTabID& local_tab_id) override;
 
   SavedTabGroupModel* GetModelForTesting();
 

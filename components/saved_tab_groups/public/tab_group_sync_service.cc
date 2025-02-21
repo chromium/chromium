@@ -28,4 +28,13 @@ CollaborationFinder* TabGroupSyncService::GetCollaborationFinderForTesting() {
   return nullptr;
 }
 
+std::set<LocalTabID> TabGroupSyncService::GetSelectedTabs() {
+  return std::set<LocalTabID>();
+}
+
+std::u16string TabGroupSyncService::GetTabTitle(
+    const LocalTabID& local_tab_id) {
+  return std::u16string();
+}
+
 }  // namespace tab_groups

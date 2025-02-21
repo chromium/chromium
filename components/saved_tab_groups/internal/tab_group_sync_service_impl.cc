@@ -512,46 +512,46 @@ void TabGroupSyncServiceImpl::OnTabSelected(
     const std::optional<LocalTabGroupID>& group_id,
     const LocalTabID& tab_id,
     const std::u16string& title) {
-  if (!group_id) {
-    currently_selected_tab_info_ = SelectedTabInfo();
+  // Notify observers of tab selection event regardless of whether the tab is in
+  // a tab group or not. This is important mainly for messaging backend service
+  // which computes diff between previous and currently selected tabs and
+  // accordingly turns on/off messages.
+  NotifyTabSelected();
 
-    NotifyTabSelected();
+  // Update metrics and attributions.
+  if (!group_id) {
     return;
   }
 
   const SavedTabGroup* group = model_->Get(*group_id);
   if (!group) {
-    currently_selected_tab_info_ = SelectedTabInfo();
-    NotifyTabSelected();
     return;
   }
 
   const SavedTabGroupTab* tab = group->GetTab(tab_id);
   if (!tab) {
-    currently_selected_tab_info_ = SelectedTabInfo();
-    NotifyTabSelected();
     return;
   }
 
   UpdateAttributions(*group_id);
   model_->UpdateLastUserInteractionTimeLocally(*group_id);
   LogEvent(TabGroupEvent::kTabSelected, *group_id, tab_id);
-
-  currently_selected_tab_info_.tab_group_id = group->saved_guid();
-  currently_selected_tab_info_.tab_id = tab->saved_tab_guid();
-  currently_selected_tab_info_.tab_title = title;
-
-  NotifyTabSelected();
-}
-
-SelectedTabInfo TabGroupSyncServiceImpl::GetCurrentlySelectedTabInfo() {
-  return currently_selected_tab_info_;
 }
 
 void TabGroupSyncServiceImpl::NotifyTabSelected() {
+  auto selected_tabs = coordinator_->GetSelectedTabs();
   for (auto& observer : observers_) {
-    observer.OnTabSelected(currently_selected_tab_info_);
+    observer.OnTabSelected(selected_tabs);
   }
+}
+
+std::u16string TabGroupSyncServiceImpl::GetTabTitle(
+    const LocalTabID& local_tab_id) {
+  return coordinator_->GetTabTitle(local_tab_id);
+}
+
+std::set<LocalTabID> TabGroupSyncServiceImpl::GetSelectedTabs() {
+  return coordinator_->GetSelectedTabs();
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -1109,8 +1109,20 @@ void TabGroupSyncServiceImpl::NotifyTabGroupUpdated(const base::Uuid& guid,
     return;
   }
 
+  if (source == TriggerSource::REMOTE) {
+    for (auto& observer : observers_) {
+      observer.BeforeTabGroupUpdateFromRemote(guid);
+    }
+  }
+
   for (auto& observer : observers_) {
     observer.OnTabGroupUpdated(*saved_tab_group, source);
+  }
+
+  if (source == TriggerSource::REMOTE) {
+    for (auto& observer : observers_) {
+      observer.AfterTabGroupUpdateFromRemote(guid);
+    }
   }
 }
 

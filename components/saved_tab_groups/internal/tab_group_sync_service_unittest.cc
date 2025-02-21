@@ -108,9 +108,11 @@ class MockTabGroupSyncServiceObserver : public TabGroupSyncService::Observer {
   MOCK_METHOD(void, OnInitialized, ());
   MOCK_METHOD(void, OnTabGroupAdded, (const SavedTabGroup&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupUpdated, (const SavedTabGroup&, TriggerSource));
+  MOCK_METHOD(void, BeforeTabGroupUpdateFromRemote, (const base::Uuid&));
+  MOCK_METHOD(void, AfterTabGroupUpdateFromRemote, (const base::Uuid&));
   MOCK_METHOD(void, OnTabGroupRemoved, (const LocalTabGroupID&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupRemoved, (const base::Uuid&, TriggerSource));
-  MOCK_METHOD(void, OnTabSelected, (const SelectedTabInfo&));
+  MOCK_METHOD(void, OnTabSelected, (const std::set<LocalTabID>&));
   MOCK_METHOD(void,
               OnTabGroupMigrated,
               (const SavedTabGroup&, const base::Uuid&, TriggerSource));
@@ -136,6 +138,9 @@ class MockTabGroupSyncCoordinator : public TabGroupSyncCoordinator {
   MOCK_METHOD(std::unique_ptr<ScopedLocalObservationPauser>,
               CreateScopedLocalObserverPauser,
               ());
+  MOCK_METHOD(std::set<LocalTabID>, GetSelectedTabs, ());
+  MOCK_METHOD(std::u16string, GetTabTitle, (const LocalTabID&));
+
   MOCK_METHOD(void, OnInitialized, ());
   MOCK_METHOD(void, OnTabGroupAdded, (const SavedTabGroup&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupUpdated, (const SavedTabGroup&, TriggerSource));
@@ -1254,14 +1259,13 @@ TEST_F(TabGroupSyncServiceTest, OnTabSelected) {
   tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id_2,
                                   tab_title_2, GURL("www.google.com"),
                                   std::nullopt);
-  auto group = tab_group_sync_service_->GetGroup(local_group_id_1_);
-  auto* tab = group->GetTab(local_tab_id_2);
 
   EXPECT_CALL(*observer_,
-              OnTabSelected(Eq(SelectedTabInfo(
-                  group->saved_guid(), tab->saved_tab_guid(), tab_title_2))));
+              OnTabSelected(Eq(std::set<LocalTabID>({local_tab_id_2}))));
 
   // Select tab.
+  EXPECT_CALL(*coordinator_, GetSelectedTabs())
+      .WillRepeatedly(Return(std::set<LocalTabID>({local_tab_id_2})));
   tab_group_sync_service_->OnTabSelected(local_group_id_1_, local_tab_id_2,
                                          tab_title_2);
   histogram_tester.ExpectTotalCount(
@@ -1274,9 +1278,14 @@ TEST_F(TabGroupSyncServiceTest, OnTabSelectedForNonExistingTab) {
   auto group = tab_group_sync_service_->GetGroup(local_group_id_1_);
   std::u16string tab_title_2 = u"random tab title";
 
-  EXPECT_CALL(*observer_, OnTabSelected(Eq(SelectedTabInfo()))).Times(3);
+  EXPECT_CALL(*observer_,
+              OnTabSelected(Eq(std::set<LocalTabID>({local_tab_id_2}))))
+      .Times(3);
 
   // Select tab.
+  EXPECT_CALL(*coordinator_, GetSelectedTabs())
+      .WillRepeatedly(Return(std::set<LocalTabID>({local_tab_id_2})));
+
   tab_group_sync_service_->OnTabSelected(local_group_id_1_, local_tab_id_2,
                                          tab_title_2);
   tab_group_sync_service_->OnTabSelected(local_tab_group_id_2, local_tab_id_2,
@@ -1451,9 +1460,17 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromRemoteSource) {
 
   // Verify that the observers are posted instead of directly notifying.
   model_->UpdatedVisualDataFromSync(group_1_.saved_guid(), &visual_data);
+
+  Sequence s;
+  EXPECT_CALL(*observer_,
+              BeforeTabGroupUpdateFromRemote(Eq(group_1_.saved_guid())))
+      .InSequence(s);
   EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
                                             Eq(TriggerSource::REMOTE)))
-      .Times(1);
+      .InSequence(s);
+  EXPECT_CALL(*observer_,
+              AfterTabGroupUpdateFromRemote(Eq(group_1_.saved_guid())))
+      .InSequence(s);
   WaitForPostedTasks();
 }
 
@@ -1469,6 +1486,8 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromLocalSource) {
   EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
                                             Eq(TriggerSource::LOCAL)))
       .Times(1);
+  EXPECT_CALL(*observer_, BeforeTabGroupUpdateFromRemote).Times(0);
+  EXPECT_CALL(*observer_, AfterTabGroupUpdateFromRemote).Times(0);
   WaitForPostedTasks();
 }
 
