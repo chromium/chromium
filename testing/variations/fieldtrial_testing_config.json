@@ -26848,23 +26848,5 @@
                 }
             ]
         }
-    ],
-    "kUserEducationExperienceVersion2Point5": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "kUserEducationExperienceVersion2Point5"
-                    ]
-                }
-            ]
-        }
     ]
 }

@@ -51,7 +51,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -455,6 +454,14 @@ class FirstRunParameterizedInteractiveUiTest
   }
 
  protected:
+  bool SupervisedProfilePromoHasBeenShown(Browser* browser) {
+    return feature_engagement::TrackerFactory::GetForBrowserContext(
+               browser->profile())
+        ->HasEverTriggered(
+            feature_engagement::kIPHSupervisedUserProfileSigninFeature,
+            /*from_window=*/false);
+  }
+
   void SimulateSignIn(const std::string& account_email,
                       const std::string& account_given_name) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
@@ -733,12 +740,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 
-  RunTestSequence(
-      If([]() { return WithSupervisedUser(); },
-         Then(WaitForPromo(
-             feature_engagement::kIPHSupervisedUserProfileSigninFeature)),
-         Else(EnsureNotPresent(
-             user_education::HelpBubbleView::kHelpBubbleElementIdForTesting))));
+  EXPECT_EQ(WithSupervisedUser(),
+            SupervisedProfilePromoHasBeenShown(browser()));
 }
 
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
@@ -821,12 +824,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 
-  RunTestSequence(
-      If([]() { return WithSupervisedUser(); },
-         Then(WaitForPromo(
-             feature_engagement::kIPHSupervisedUserProfileSigninFeature)),
-         Else(EnsureNotPresent(
-             user_education::HelpBubbleView::kHelpBubbleElementIdForTesting))));
+  EXPECT_EQ(WithSupervisedUser(),
+            SupervisedProfilePromoHasBeenShown(browser()));
 }
 
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
