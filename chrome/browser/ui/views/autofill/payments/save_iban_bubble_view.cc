@@ -272,9 +272,7 @@ void SaveIbanBubbleView::Init() {
 
   if (controller_ &&
       (controller_->GetBubbleType() == IbanBubbleType::kUploadSave ||
-       controller_->GetBubbleType() == IbanBubbleType::kUploadInProgress) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+       controller_->GetBubbleType() == IbanBubbleType::kUploadInProgress)) {
     loading_row_ = AddChildView(CreateLoadingRow());
     if (controller_->GetBubbleType() == IbanBubbleType::kUploadInProgress) {
       ShowThrobber();
@@ -283,11 +281,8 @@ void SaveIbanBubbleView::Init() {
 }
 
 bool SaveIbanBubbleView::Accept() {
-  bool show_throbber =
-      controller_ &&
-      controller_->GetBubbleType() == IbanBubbleType::kUploadSave &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableSaveCardLoadingAndConfirmation);
+  bool show_throbber = controller_ && controller_->GetBubbleType() ==
+                                          IbanBubbleType::kUploadSave;
 
   if (show_throbber) {
     ShowThrobber();

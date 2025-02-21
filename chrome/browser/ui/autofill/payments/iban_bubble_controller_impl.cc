@@ -252,10 +252,7 @@ void IbanBubbleControllerImpl::OnAcceptButton(std::u16string_view nickname) {
       autofill_metrics::LogSaveIbanPromptResultSavedWithNicknameMetric(
           !nickname.empty(), /*is_upload_save=*/true);
       iban_.set_nickname(std::u16string(nickname));
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-        current_bubble_type_ = IbanBubbleType::kUploadInProgress;
-      }
+      current_bubble_type_ = IbanBubbleType::kUploadInProgress;
       std::move(save_iban_prompt_callback_)
           .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
                    kAccepted,

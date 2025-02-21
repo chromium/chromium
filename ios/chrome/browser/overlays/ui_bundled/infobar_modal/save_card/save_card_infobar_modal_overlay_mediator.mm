@@ -157,9 +157,7 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
         autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kModal);
   }
 
-  if (delegate->is_for_upload() && infobar->accepted() &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+  if (delegate->is_for_upload() && infobar->accepted()) {
     // If the infobar has been accepted and the card upload is in progress or
     // complete, display the appropriate progress state (loading or
     // confirmation).
@@ -171,27 +169,23 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
 #pragma mark - Public
 
 - (void)creditCardUploadCompleted:(BOOL)card_saved {
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-    if (!_loadingDismissedByUser) {
-      autofill::autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
-          autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted);
-    }
-    if (card_saved) {
-      autofill::autofill_metrics::
-          LogCreditCardUploadConfirmationViewShownMetric(
-              /*is_shown=*/true, /*is_card_uploaded=*/true);
+  if (!_loadingDismissedByUser) {
+    autofill::autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
+        autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted);
+  }
+  if (card_saved) {
+    autofill::autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(
+        /*is_shown=*/true, /*is_card_uploaded=*/true);
 
-      _creditCardUploadCompleted = YES;
-      [self.consumer showProgressWithUploadCompleted:YES];
+    _creditCardUploadCompleted = YES;
+    [self.consumer showProgressWithUploadCompleted:YES];
 
-      // Auto close modal after showing successful card save confirmation.
-      [self closeModalAfterDelay];
-    } else {
-      // On card save failure, this modal is dimissed and user is shown an error
-      // dialog triggered from IOSChromePaymentsAutofillClient.
-      [self dismissOverlay];
-    }
+    // Auto close modal after showing successful card save confirmation.
+    [self closeModalAfterDelay];
+  } else {
+    // On card save failure, this modal is dimissed and user is shown an error
+    // dialog triggered from IOSChromePaymentsAutofillClient.
+    [self dismissOverlay];
   }
 }
 
@@ -227,14 +221,6 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
       base::SysNSStringToUTF16(cardholderName), base::SysNSStringToUTF16(month),
       base::SysNSStringToUTF16(year)));
 
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-    autofill::autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
-        /*is_shown=*/false);
-    [self dismissOverlay];
-    return;
-  }
-
   if (delegate->is_for_upload()) {
     autofill::autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
         /*is_shown=*/true);
@@ -268,9 +254,7 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
   // completed, modal would be showing a success confirmation and value of
   // `_creditCardUploadCompleted` would be `YES`. Modal getting closed from here
   // means user dismissed it using the close button.
-  if (_creditCardUploadCompleted.has_value() &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+  if (_creditCardUploadCompleted.has_value()) {
     if (_creditCardUploadCompleted.value()) {
       [self onConfirmationClosedWithAutoClose:NO];
     } else {

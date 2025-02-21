@@ -429,9 +429,6 @@ extern const char kAutofillEnableRankingFormulaCreditCardsDescription[];
 extern const char kAutofillEnableSaveAndFillName[];
 extern const char kAutofillEnableSaveAndFillDescription[];
 
-extern const char kAutofillEnableSaveCardLoadingAndConfirmationName[];
-extern const char kAutofillEnableSaveCardLoadingAndConfirmationDescription[];
-
 extern const char kAutofillEnableSaveCardLocalSaveFallbackName[];
 extern const char kAutofillEnableSaveCardLocalSaveFallbackDescription[];
 

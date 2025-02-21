@@ -121,12 +121,6 @@ void IOSChromePaymentsAutofillClient::CreditCardUploadCompleted(
     std::optional<OnConfirmationClosedCallback>
         on_confirmation_closed_callback) {
   const bool card_saved = result == PaymentsRpcResult::kSuccess;
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-    autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(
-        /*is_shown=*/false, card_saved);
-    return;
-  }
   if (client_->GetAutofillSaveCardInfoBarDelegateIOS()) {
     client_->GetAutofillSaveCardInfoBarDelegateIOS()->CreditCardUploadCompleted(
         card_saved, std::move(on_confirmation_closed_callback));

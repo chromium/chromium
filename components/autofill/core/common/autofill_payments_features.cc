@@ -173,13 +173,6 @@ BASE_FEATURE(kAutofillEnableSaveAndFill,
              "AutofillEnableSaveAndFill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the save card screen will present a loading spinner when
-// uploading the card to the server and present a confirmation screen with the
-// result when completed.
-BASE_FEATURE(kAutofillEnableSaveCardLoadingAndConfirmation,
-             "AutofillEnableSaveCardLoadingAndConfirmation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, save card will fallback to a local save if the server upload of
 // a card encounters a failure.
 BASE_FEATURE(kAutofillEnableSaveCardLocalSaveFallback,
