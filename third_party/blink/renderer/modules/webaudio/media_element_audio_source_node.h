@@ -68,6 +68,7 @@ class MediaElementAudioSourceNode final
       GetMediaElementAudioSourceHandler().GetProcessLock());
   void unlock() override
       UNLOCK_FUNCTION(GetMediaElementAudioSourceHandler().GetProcessLock());
+  void OnCurrentSrcChanged(const KURL& current_src) override {}
 
   // InspectorHelperMixin
   void ReportDidCreate() final;

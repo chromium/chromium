@@ -45,6 +45,7 @@ class AudioSourceProvider {
   AudioSourceProvider() = default;
   AudioSourceProvider(const AudioSourceProvider&) = delete;
   AudioSourceProvider& operator=(const AudioSourceProvider&) = delete;
+  virtual ~AudioSourceProvider() = default;
 
   // provideInput() gets called repeatedly to render time-slices of a continuous
   // audio stream.
@@ -52,9 +53,7 @@ class AudioSourceProvider {
 
   // If a client is set, we call it back when the audio format is available or
   // changes.
-  virtual void SetClient(AudioSourceProviderClient*) {}
-
-  virtual ~AudioSourceProvider() = default;
+  virtual void SetClient(AudioSourceProviderClient*) = 0;
 };
 
 }  // namespace blink
