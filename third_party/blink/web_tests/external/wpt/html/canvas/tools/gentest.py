@@ -225,13 +225,14 @@ class _TemplateType(str, enum.Enum):
     REFERENCE = 'reference'
     HTML_REFERENCE = 'html_reference'
     CAIRO_REFERENCE = 'cairo_reference'
+    IMG_REFERENCE = 'img_reference'
     TESTHARNESS = 'testharness'
 
 
 _REFERENCE_TEMPLATES = (_TemplateType.REFERENCE,
                         _TemplateType.HTML_REFERENCE,
-                        _TemplateType.CAIRO_REFERENCE)
-
+                        _TemplateType.CAIRO_REFERENCE,
+                        _TemplateType.IMG_REFERENCE)
 
 class MutableDictLoader(jinja2.BaseLoader):
     """Loads Jinja templates from a `dict` that can be updated.
@@ -836,7 +837,8 @@ class _VariantGrid:
         ref_templates = {
             _TemplateType.REFERENCE: f'reftest_element{grid}.html',
             _TemplateType.HTML_REFERENCE: f'reftest{grid}.html',
-            _TemplateType.CAIRO_REFERENCE: f'reftest_img{grid}.html'
+            _TemplateType.CAIRO_REFERENCE: f'reftest_img{grid}.html',
+            _TemplateType.IMG_REFERENCE: f'reftest_img{grid}.html',
         }
         test_output_paths = {
             _CanvasType.HTML_CANVAS: f'{output_files.element}.html',
@@ -938,7 +940,8 @@ class _VariantGrid:
         img_filename = f'{self.file_name}.png'
         output_dir = output_dirs.path_for_canvas_type(canvas_type)
         _write_cairo_images(cairo_code, output_dir / img_filename)
-        self._canvas_type_params[canvas_type]['img_reference'] = img_filename
+        for v in self._variants:
+            v.canvas_type_params[canvas_type]['img_reference'] = img_filename
 
     def _generate_cairo_images(self, output_dirs: _OutputPaths) -> None:
         """Generates the pycairo images found in the YAML test definition."""
