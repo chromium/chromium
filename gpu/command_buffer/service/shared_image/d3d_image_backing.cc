@@ -1239,7 +1239,7 @@ void D3DImageBacking::BeginDCompTextureAccess() {
   CHECK(dcomp_texture_);
   num_dcomp_texture_readers_++;
 
-  if (num_dcomp_texture_readers_ > 0) {
+  if (num_dcomp_texture_readers_ > 1) {
     // If the DComp texture is already in a visual tree, the available fence is
     // invalid and should not be stored.
     CHECK(!dcomp_texture_available_fence_);
