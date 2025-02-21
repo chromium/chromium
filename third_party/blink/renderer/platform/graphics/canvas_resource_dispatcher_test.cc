@@ -56,12 +56,13 @@ class MockCanvasResourceDispatcherClient
 
 class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
  public:
-  MockCanvasResourceDispatcher()
+  explicit MockCanvasResourceDispatcher(
+      scoped_refptr<base::SingleThreadTaskRunner>
+          agent_group_scheduler_compositor_task_runner)
       : CanvasResourceDispatcher(
             &client_,
             /*task_runner=*/scheduler::GetSingleThreadTaskRunnerForTesting(),
-            /*agent_group_scheduler_compositor_task_runner=*/
-            scheduler::GetSingleThreadTaskRunnerForTesting(),
+            agent_group_scheduler_compositor_task_runner,
             kClientId,
             kSinkId,
             /*placeholder_canvas_id=*/0,
@@ -118,11 +119,15 @@ class CanvasResourceDispatcherTest
  protected:
   CanvasResourceDispatcherTest() = default;
 
-  void CreateCanvasResourceDispatcher() {
+  void CreateCanvasResourceDispatcher(
+      scoped_refptr<base::SingleThreadTaskRunner>
+          agent_group_scheduler_compositor_task_runner =
+              scheduler::GetSingleThreadTaskRunnerForTesting()) {
     test_web_shared_image_interface_provider_ =
         TestWebGraphicsSharedImageInterfaceProvider::Create();
 
-    dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>();
+    dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>(
+        agent_group_scheduler_compositor_task_runner);
     resource_provider_ = CanvasResourceProvider::CreateSharedBitmapProvider(
         gfx::Size(kWidth, kHeight), GetN32FormatForCanvas(),
         kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
@@ -188,6 +193,17 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderRunsNormally) {
   // Reclaim third frame
   reclaim_resource_id = NextId(reclaim_resource_id);
   Dispatcher()->ReclaimResource(reclaim_resource_id, std::move(frame3));
+  EXPECT_EQ(0u, GetNumUnreclaimedFramesPosted());
+}
+
+TEST_F(CanvasResourceDispatcherTest,
+       AgentGroupSchedulerCompositorTaskRunnerIsNull) {
+  CreateCanvasResourceDispatcher(nullptr);
+
+  // When agent_group_scheduler_compositor_task_runner is null,
+  // PostImageToPlaceholder should not be called.
+  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, _)).Times(0);
+  auto frame1 = DispatchOneFrame();
   EXPECT_EQ(0u, GetNumUnreclaimedFramesPosted());
 }
 
