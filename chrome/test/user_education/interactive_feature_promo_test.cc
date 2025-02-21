@@ -29,6 +29,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -48,6 +49,11 @@ InteractiveFeaturePromoTestApi::InteractiveFeaturePromoTestApi(
               initial_session_state)) {}
 
 InteractiveFeaturePromoTestApi::~InteractiveFeaturePromoTestApi() = default;
+
+void InteractiveFeaturePromoTestApi::SetControllerMode(
+    ControllerMode controller_mode) {
+  test_impl().SetControllerMode(controller_mode);
+}
 
 InteractiveFeaturePromoTestApi::MockTracker*
 InteractiveFeaturePromoTestApi::GetMockTrackerFor(Browser* browser) {
@@ -166,8 +172,26 @@ InteractiveFeaturePromoTestApi::MaybeShowPromo(
                 browser_view->MaybeShowFeaturePromo(std::move(params));
 
                 // If the promo showed, expect it to be dismissed at some point.
-                if (expected_result && tracker) {
-                  EXPECT_CALL(*tracker, Dismissed(testing::Ref(iph_feature)));
+                if (expected_result) {
+                  if (tracker) {
+                    EXPECT_CALL(*tracker, Dismissed(testing::Ref(iph_feature)));
+                  }
+                } else if (user_education::features::IsUserEducationV25()) {
+                  switch (test_impl().clock_mode()) {
+                    case ClockMode::kUseTestClock:
+                      test_impl().AdvanceTime(
+                          user_education::features::GetLowPriorityTimeout() +
+                          base::Seconds(1));
+                      break;
+                    case ClockMode::kUseDefaultClock:
+                      CHECK(test_impl()
+                                .use_shortened_timeouts_for_internal_testing())
+                          << "Tests that verify an IPH has not been shown that "
+                             "also use a live (default) clock must use "
+                             "set_use_shortened_timeouts_for_internal_testing()"
+                             " to prevent tests from failing or flaking due to "
+                             "test timeout.";
+                  }
                 }
               })
               .SetDescription("Try to show promo")),

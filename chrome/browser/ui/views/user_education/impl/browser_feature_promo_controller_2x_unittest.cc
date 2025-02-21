@@ -188,6 +188,9 @@ class BrowserFeaturePromoController2xTestBase
     if (GetParam()) {
       enabled_features.emplace_back(
           user_education::features::kUserEducationExperienceVersion2Point5);
+    } else {
+      disabled_features.emplace_back(
+          user_education::features::kUserEducationExperienceVersion2Point5);
     }
 
     // Disable all registered IPH. These tests use only test features.
