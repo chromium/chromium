@@ -21,9 +21,10 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
-import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -41,6 +42,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class BookmarkTestRule implements TestRule {
     private ChromeActivity mHostActivity;
+    private BookmarkManagerOpener mBookmarkManagerOpener;
     @Nullable private BookmarkActivity mBookmarkActivity;
     private BookmarkManagerCoordinator mCoordinator;
     private BookmarkDelegate mDelegate;
@@ -158,13 +160,12 @@ public class BookmarkTestRule implements TestRule {
 
     private void showBookmarkManagerInternal(ChromeActivity chromeActivity) {
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        BookmarkUtils.showBookmarkManager(
-                                chromeActivity,
-                                chromeActivity
-                                        .getProfileProviderSupplier()
-                                        .get()
-                                        .getOriginalProfile()));
+                () -> {
+                    mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();
+                    mBookmarkManagerOpener.showBookmarkManager(
+                            chromeActivity,
+                            chromeActivity.getProfileProviderSupplier().get().getOriginalProfile());
+                });
     }
 
     /**

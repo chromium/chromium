@@ -5,18 +5,14 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.LocaleList;
 import android.os.Looper;
-import android.provider.Browser;
-import android.text.TextUtils;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -26,21 +22,16 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityUtils;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
-import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -66,7 +57,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.text.DateFormat;
@@ -543,104 +533,6 @@ public class BookmarkUtils {
     }
 
     /**
-     * Shows bookmark main UI.
-     *
-     * @param activity An activity to start the manager with.
-     * @param profile The profile associated with the bookmarks.
-     */
-    public static void showBookmarkManager(Activity activity, Profile profile) {
-        showBookmarkManager(activity, null, profile);
-    }
-
-    /**
-     * Shows bookmark main UI.
-     *
-     * @param activity An activity to start the manager with. If null, the bookmark manager will be
-     *     started as a new task.
-     * @param folderId The bookmark folder to open. If null, the bookmark manager will open the most
-     *     recent folder.
-     * @param profile The profile associated with the bookmarks.
-     */
-    public static void showBookmarkManager(
-            @Nullable Activity activity, @Nullable BookmarkId folderId, Profile profile) {
-        ThreadUtils.assertOnUiThread();
-        Context context = activity == null ? ContextUtils.getApplicationContext() : activity;
-        String url = getFirstUrlToLoad(folderId);
-
-        if (ChromeSharedPreferences.getInstance()
-                .contains(ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL)) {
-            RecordUserAction.record("MobileBookmarkManagerReopenBookmarksInSameSession");
-        }
-
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            showBookmarkManagerOnTablet(
-                    context,
-                    activity == null ? null : activity.getComponentName(),
-                    url,
-                    profile.isOffTheRecord());
-        } else {
-            showBookmarkManagerOnPhone(activity, url, profile);
-        }
-    }
-
-    private static void showBookmarkManagerOnPhone(Activity activity, String url, Profile profile) {
-        Intent intent =
-                new Intent(
-                        activity == null ? ContextUtils.getApplicationContext() : activity,
-                        BookmarkActivity.class);
-        ProfileIntentUtils.addProfileToIntent(profile, intent);
-        intent.setData(Uri.parse(url));
-        if (activity != null) {
-            // Start from an existing activity.
-            intent.putExtra(IntentHandler.EXTRA_PARENT_COMPONENT, activity.getComponentName());
-            activity.startActivity(intent);
-        } else {
-            // Start a new task.
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            IntentHandler.startActivityForTrustedIntent(intent);
-        }
-    }
-
-    private static void showBookmarkManagerOnTablet(
-            Context context,
-            @Nullable ComponentName componentName,
-            String url,
-            boolean isIncognito) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        intent.putExtra(IntentHandler.EXTRA_INCOGNITO_MODE, isIncognito);
-        intent.putExtra(
-                Browser.EXTRA_APPLICATION_ID, context.getApplicationContext().getPackageName());
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        if (componentName != null) {
-            ActivityUtils.setNonAliasedComponentForMainBrowsingActivity(intent, componentName);
-        } else {
-            // If the bookmark manager is shown in a tab on a phone (rather than in a separate
-            // activity) the component name may be null. Send the intent through
-            // ChromeLauncherActivity instead to avoid crashing. See crbug.com/615012.
-            intent.setClass(context.getApplicationContext(), ChromeLauncherActivity.class);
-        }
-
-        IntentHandler.startActivityForTrustedIntent(intent);
-    }
-
-    /**
-     * @return the bookmark folder URL to open.
-     */
-    private static String getFirstUrlToLoad(@Nullable BookmarkId folderId) {
-        String url;
-        if (folderId == null) {
-            // Load most recently visited bookmark folder.
-            url = getLastUsedUrl();
-        } else {
-            // Load a specific folder.
-            url = BookmarkUiState.createFolderUrl(folderId).toString();
-        }
-
-        return TextUtils.isEmpty(url) ? UrlConstants.BOOKMARKS_URL : url;
-    }
-
-    /**
      * Saves the last used url to preference. The saved url will be later queried by {@link
      * #getLastUsedUrl()}.
      */
@@ -648,14 +540,6 @@ public class BookmarkUtils {
     public static void setLastUsedUrl(String url) {
         ChromeSharedPreferences.getInstance()
                 .writeString(ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL, url);
-    }
-
-    /** Fetches url representing the user's state last time they close the bookmark manager. */
-    @VisibleForTesting
-    public static String getLastUsedUrl() {
-        return ChromeSharedPreferences.getInstance()
-                .readString(
-                        ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL, UrlConstants.BOOKMARKS_URL);
     }
 
     /** Save the last used {@link BookmarkId} as a folder to put new bookmarks to. */
@@ -938,16 +822,6 @@ public class BookmarkUtils {
         // This should match ReadingListModel::IsUrlSupported(), having a separate function since
         // the UI may not load native library.
         return UrlUtilities.isHttpOrHttps(url);
-    }
-
-    /**
-     * Opens the Reading list folder in the bookmark manager.
-     *
-     * @param profile The profile associated with the bookmark manager.
-     */
-    public static void showReadingList(Profile profile) {
-        BookmarkUtils.showBookmarkManager(
-                null, new BookmarkId(0, BookmarkType.READING_LIST), profile);
     }
 
     private static int getDisplayTextSize(Resources resources) {

@@ -45,6 +45,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerProperties.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerViewBinder.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkListEntry.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerOpener.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkMetrics.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkModel.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkModelObserver.java",

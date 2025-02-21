@@ -2327,7 +2327,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 mMultiInstanceManager,
                 initHubOverviewColorSupplier(),
                 mManualFillingComponentSupplier,
-                getEdgeToEdgeManager());
+                getEdgeToEdgeManager(),
+                mBookmarkManagerOpenerSupplier);
     }
 
     @Override
@@ -3012,9 +3013,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     .get()
                     .hideKeyboard(
                             () -> {
-                                BookmarkUtils.showBookmarkManager(
-                                        ChromeTabbedActivity.this,
-                                        getCurrentTabModel().getProfile());
+                                mBookmarkManagerOpenerSupplier
+                                        .get()
+                                        .showBookmarkManager(
+                                                ChromeTabbedActivity.this,
+                                                getCurrentTabModel().getProfile());
                             });
             if (currentTabIsNtp) {
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_BOOKMARKS_MANAGER);
@@ -3222,7 +3225,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
     private void initializeBackPressHandlers() {
         // Initialize some back press handlers early to reduce code duplication.
         mReadingListBackPressHandler =
-                new ReadingListBackPressHandler(getActivityTabProvider(), mBookmarkModelSupplier);
+                new ReadingListBackPressHandler(
+                        /* activity= */ this,
+                        getActivityTabProvider(),
+                        mBookmarkModelSupplier,
+                        mBookmarkManagerOpenerSupplier);
 
         mBackPressManager.setHasSystemBackArm(true);
         if (!isTablet()) {
