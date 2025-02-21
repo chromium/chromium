@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_RECENT_ACTIVITY_BUBBLE_DIALOG_VIEW_H_
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/collaboration/public/messaging/activity_log.h"
 #include "components/favicon_base/favicon_types.h"
@@ -80,18 +81,18 @@ class RecentActivityBubbleDialogView : public LocationBarBubbleDelegateView {
 
 // View containing a single ActivityLogItem. Each row shows activity
 // text, metadata text, and an avatar/favicon view.
-class RecentActivityRowView : public views::View {
+class RecentActivityRowView : public HoverButton {
   METADATA_HEADER(RecentActivityRowView, View)
 
  public:
   RecentActivityRowView(ActivityLogItem item,
-                        bool is_current_tab,
+                        const bool is_current_tab,
                         Profile* profile,
                         base::OnceCallback<void()> close_callback);
   ~RecentActivityRowView() override;
 
-  // views::Views
-  bool OnMousePressed(const ui::MouseEvent& event) override;
+  // HoverButton
+  void ButtonPressed();
 
   RecentActivityRowImageView* image_view() const { return image_view_; }
   const std::u16string& activity_text() const { return activity_text_; }
@@ -111,6 +112,7 @@ class RecentActivityRowView : public views::View {
   std::u16string activity_text_;
   std::u16string metadata_text_;
   raw_ptr<RecentActivityRowImageView> image_view_ = nullptr;
+  const bool is_current_tab_;
   ActivityLogItem item_;
   const raw_ptr<Profile> profile_ = nullptr;
   base::OnceCallback<void()> close_callback_;

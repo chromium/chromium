@@ -23,12 +23,6 @@ enum ChromeInsetsMetric {
   INSETS_PAGE_INFO_HOVER_BUTTON,
   // Margins for the avatars in the Recent Activity dialog.
   INSETS_RECENT_ACTIVITY_IMAGE_MARGIN,
-  // Margins for rows within the Recent Activity dialog.
-  INSETS_RECENT_ACTIVITY_ROW_MARGIN,
-  // Margins for tab activity container within the Recent Activity dialog.
-  INSETS_RECENT_ACTIVITY_TAB_CONTAINER_MARGIN,
-  // Margins for group activity container within the Recent Activity dialog.
-  INSETS_RECENT_ACTIVITY_GROUP_CONTAINER_MARGIN,
   // Margins for the contents inside in the Task Manager.
   INSETS_TASK_MANAGER,
   // Padding used in the page info footer button.
@@ -178,6 +172,13 @@ enum ChromeDistanceMetric {
   // Size to use for the radius of activity containers in the Recent
   // Activity dialog.
   DISTANCE_RECENT_ACTIVITY_CONTAINER_RADIUS,
+  // Size to use for the margin between Recent Activity containers.
+  DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_MARGIN,
+  // Additional margin for leading and trailing rows within the Recent
+  // Activity dialog.
+  DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_PADDING,
+  // Vertical padding for rows within the Recent Activity dialog.
+  DISTANCE_RECENT_ACTIVITY_ROW_VERTICAL_PADDING,
   // Distance between the avatar icon and the email in the account info row.
   DISTANCE_ACCOUNT_INFO_ROW_AVATAR_EMAIL,
 };
