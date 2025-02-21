@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -244,7 +245,8 @@ void DiagnosticsWriter::OnAllTestsDone(DiagnosticsModel* model) {
 
 void DiagnosticsWriter::OnRecoveryFinished(int index, DiagnosticsModel* model) {
   const DiagnosticsModel::TestInfo& test_info = model->GetTest(index);
-  WriteInfoLine("Finished Recovery for: " + test_info.GetTitle());
+  WriteInfoLine(
+      base::StringPrintf("Finished Recovery for: %s", test_info.GetTitle()));
 }
 
 void DiagnosticsWriter::OnAllRecoveryDone(DiagnosticsModel* model) {
@@ -252,8 +254,8 @@ void DiagnosticsWriter::OnAllRecoveryDone(DiagnosticsModel* model) {
 }
 
 bool DiagnosticsWriter::WriteResult(bool success,
-                                    const std::string& id,
-                                    const std::string& name,
+                                    std::string_view id,
+                                    std::string_view name,
                                     int outcome_code,
                                     const std::string& extra) {
   std::string result;
@@ -274,19 +276,16 @@ bool DiagnosticsWriter::WriteResult(bool success,
       console_->Write(base::ASCIIToUTF16(result));
     }
     if (format_ == MACHINE) {
-      return WriteInfoLine(base::StringPrintf(
-          "%03d %s (%s)", outcome_code, id.c_str(), extra.c_str()));
+      return WriteInfoLine(
+          base::StringPrintf("%03d %s (%s)", outcome_code, id, extra.c_str()));
     } else {
-      return WriteInfoLine(name + "\n       " + extra + "\n");
+      return WriteInfoLine(base::StringPrintf("%s\n       %s\n", name, extra));
     }
   } else {
     if (!success) {
       // For log output, we only care about the tests that failed.
-      return WriteInfoLine(base::StringPrintf("%s%03d %s (%s)",
-                                              result.c_str(),
-                                              outcome_code,
-                                              id.c_str(),
-                                              extra.c_str()));
+      return WriteInfoLine(base::StringPrintf("%s%03d %s (%s)", result.c_str(),
+                                              outcome_code, id, extra.c_str()));
     }
   }
   return true;
