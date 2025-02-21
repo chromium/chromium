@@ -186,30 +186,17 @@ TEST_F(PrefetchCookieListenerTest, ChangedDomainCookiesForSubomain) {
   EXPECT_FALSE(cookie_listener->HaveCookiesChanged());
 }
 
-TEST_F(PrefetchCookieListenerTest, TerminateListening) {
+TEST_F(PrefetchCookieListenerTest, StopListening) {
   std::unique_ptr<PrefetchCookieListener> cookie_listener =
       MakeCookieListener(GURL("https://www.example.com/"));
 
-  cookie_listener->TerminateListening();
+  cookie_listener->StopListening();
 
   ASSERT_TRUE(SetHostCookie(GURL("https://www.example.com"), "test-cookie"));
 
   // Since the cookies were changed after |StopListening| was called, the
   // listener shouldn't update.
   EXPECT_FALSE(cookie_listener->HaveCookiesChanged());
-}
-
-TEST_F(PrefetchCookieListenerTest, PauseAndResumeListening) {
-  std::unique_ptr<PrefetchCookieListener> cookie_listener =
-      MakeCookieListener(GURL("https://www.example.com/"));
-
-  cookie_listener->PauseListening();
-  ASSERT_TRUE(SetHostCookie(GURL("https://www.example.com"), "test2"));
-  EXPECT_FALSE(cookie_listener->HaveCookiesChanged());
-
-  cookie_listener->ResumeListening();
-  ASSERT_TRUE(SetHostCookie(GURL("https://www.example.com"), "test3"));
-  EXPECT_TRUE(cookie_listener->HaveCookiesChanged());
 }
 
 }  // namespace
