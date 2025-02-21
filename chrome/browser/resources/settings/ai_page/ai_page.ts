@@ -9,7 +9,7 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {UserAnnotationsManagerProxyImpl} from '../autofill_page/user_annotations_manager_proxy.js';
+import {EntityDataManagerProxyImpl} from '../autofill_page/entity_data_manager_proxy.js';
 import {BaseMixin} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
@@ -167,14 +167,19 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       return;
     }
 
-    if (!loadTimeData.getBoolean('autofillAiEnabled')) {
+    if (!loadTimeData.getBoolean('autofillAiFeatureEnabled')) {
       this.showAutofillAIControl_ = false;
       return;
     }
 
+    // Display the Autofill Ai row only if the user is eligible or if they have
+    // data saved.
+    // TODO(crbug.com/393318914): Allow the Ai page to be shown if autofill Ai
+    // is the only entry on the page.
     this.showAutofillAIControl_ =
-        await UserAnnotationsManagerProxyImpl.getInstance().isUserEligible() ||
-        await UserAnnotationsManagerProxyImpl.getInstance().hasEntries();
+        loadTimeData.getBoolean('userEligibleForAutofillAi') ||
+        (await EntityDataManagerProxyImpl.getInstance().loadEntityInstances())
+                .length > 0;
   }
 
   private onHistorySearchRowClick_() {

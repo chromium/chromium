@@ -241,7 +241,7 @@ function createRoutes(): SettingsRoutes {
     r.PAYMENTS = r.AUTOFILL.createChild('/payments');
     r.ADDRESSES = r.AUTOFILL.createChild('/addresses');
 
-    if (loadTimeData.getBoolean('autofillAiEnabled')) {
+    if (loadTimeData.getBoolean('autofillAiFeatureEnabled')) {
       r.AUTOFILL_AI = r.AUTOFILL.createChild('/autofillAi');
     }
 

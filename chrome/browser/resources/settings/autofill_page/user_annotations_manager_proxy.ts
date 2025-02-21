@@ -8,6 +8,7 @@ type UserAnnotationsEntry = chrome.autofillPrivate.UserAnnotationsEntry;
  * This interface defines the autofill API wrapper that combines user
  * annotations related methods.
  */
+// TODO(crbug.com/393318914): Remove this and the entire user annotations logic.
 export interface UserAnnotationsManagerProxy {
   /**
    * Returns user annotations entries.

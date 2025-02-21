@@ -125,6 +125,7 @@ export {AutofillManagerImpl, AutofillManagerProxy, PersonalDataChangedListener} 
 export {SettingsAutofillSectionElement} from './autofill_page/autofill_section.js';
 export {SettingsCreditCardEditDialogElement} from './autofill_page/credit_card_edit_dialog.js';
 export {SettingsCreditCardListEntryElement} from './autofill_page/credit_card_list_entry.js';
+export {EntityDataManagerProxy, EntityDataManagerProxyImpl} from './autofill_page/entity_data_manager_proxy.js';
 export {SettingsIbanEditDialogElement} from './autofill_page/iban_edit_dialog.js';
 export {SettingsIbanListEntryElement} from './autofill_page/iban_list_entry.js';
 // <if expr="is_win or is_macosx">

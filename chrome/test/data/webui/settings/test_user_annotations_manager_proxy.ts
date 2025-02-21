@@ -5,6 +5,7 @@
 import type {UserAnnotationsManagerProxy} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
+// TODO(crbug.com/393318914): Remove this and the entire user annotations logic.
 export class TestUserAnnotationsManagerProxyImpl extends TestBrowserProxy
     implements UserAnnotationsManagerProxy {
   private entries_: chrome.autofillPrivate.UserAnnotationsEntry[] = [];

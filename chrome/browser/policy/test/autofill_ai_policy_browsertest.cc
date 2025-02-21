@@ -128,9 +128,10 @@ IN_PROC_BROWSER_TEST_P(AutofillAiPolicyTest, SettingsDisabledByPolicy) {
   EXPECT_EQ(autofill_ai::AutofillAiIsPlatformAndEnterprisePolicyEligible(
                 browser()->profile()->GetPrefs()),
             !disabled_by_policy());
-  EXPECT_EQ(GetWebContents()->GetURL().path(),
-            base::StrCat(
-                {"/", disabled_by_policy() ? "" : chrome::kAutofillAiSubPage}));
+  EXPECT_EQ(
+      GetWebContents()->GetURL().path(),
+      base::StrCat({"/", disabled_by_policy() ? chrome::kAutofillSubPage
+                                              : chrome::kAutofillAiSubPage}));
 }
 
 // Tests that `AutofillAiDelegate` exists iff it is allowed by the policy.

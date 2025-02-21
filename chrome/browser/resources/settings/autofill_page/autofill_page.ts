@@ -33,8 +33,8 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './autofill_page.html.js';
+import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 import {PasswordManagerImpl, PasswordManagerPage} from './password_manager_proxy.js';
-import {UserAnnotationsManagerProxyImpl} from './user_annotations_manager_proxy.js';
 
 const SettingsAutofillPageElementBase =
     PrefsMixin(I18nMixin(BaseMixin(PolymerElement)));
@@ -88,9 +88,10 @@ export class SettingsAutofillPageElement extends
 
       userEligibleForAutofillAi_: {
         type: Boolean,
-        value: false,
+        value() {
+          return loadTimeData.getBoolean('userEligibleForAutofillAi');
+        },
       },
-
 
       userHasAutofillAiEntries_: {
         type: Boolean,
@@ -113,24 +114,21 @@ export class SettingsAutofillPageElement extends
 
   override connectedCallback() {
     super.connectedCallback();
-    // TODO(crbug.com/368565649): Consider updating on sign-in state changes.
-    UserAnnotationsManagerProxyImpl.getInstance().isUserEligible().then(
-        eligible => {
-          this.userEligibleForAutofillAi_ = eligible;
+    EntityDataManagerProxyImpl.getInstance().loadEntityInstances().then(
+        entities => {
+          this.userHasAutofillAiEntries_ = entities.length > 0;
         });
-    UserAnnotationsManagerProxyImpl.getInstance().hasEntries().then(value => {
-      this.userHasAutofillAiEntries_ = value;
-    });
   }
 
   /**
    * Computes `autofillAiAvailable_`.
    */
   private computeAutofillAiAvailable_(): boolean {
-    return loadTimeData.getBoolean('autofillAiEnabled') &&
+    // Users who are not eligible but have data saved are able to access the
+    // Autofill Ai settings page, so that they can update or delete their data.
+    return loadTimeData.getBoolean('autofillAiFeatureEnabled') &&
         (this.userEligibleForAutofillAi_ || this.userHasAutofillAiEntries_);
   }
-
 
   /**
    * Shows the manage addresses sub page.

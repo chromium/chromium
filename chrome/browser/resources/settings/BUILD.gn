@@ -270,6 +270,7 @@ build_webui("build") {
     "appearance_page/appearance_browser_proxy.ts",
     "autofill_page/address_edit_dialog_components.ts",
     "autofill_page/autofill_manager_proxy.ts",
+    "autofill_page/entity_data_manager_proxy.ts",
     "autofill_page/password_manager_proxy.ts",
     "autofill_page/payments_manager_proxy.ts",
     "autofill_page/user_annotations_manager_proxy.ts",

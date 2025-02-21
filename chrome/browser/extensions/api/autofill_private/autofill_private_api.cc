@@ -1083,6 +1083,7 @@ void AutofillPrivateHasUserAnnotationsEntriesFunction::OnEntriesRetrieved(
 ////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateIsUserEligibleForAutofillImprovementsFunction
 
+// TODO(crbug.com/393318914): Remove function.
 ExtensionFunction::ResponseAction
 AutofillPrivateIsUserEligibleForAutofillImprovementsFunction::Run() {
   Profile* profile =
