@@ -74,9 +74,7 @@ bool IsAllowedKeyedNotice(const base::Feature& promo_feature) {
 
 bool IsAllowedRotatingPromo(const base::Feature& promo_feature) {
   // Add the text names of allowlisted keyed notices here:
-  static const char* const kAllowedPromoNames[] = {
-      "IPH_DesktopReEngagement",
-  };
+  static const char* const kAllowedPromoNames[] = {};
   for (const auto* promo_name : kAllowedPromoNames) {
     if (!strcmp(promo_feature.name, promo_name)) {
       return true;
@@ -118,9 +116,7 @@ bool IsAllowedToastWithoutScreenreaderText(const base::Feature& promo_feature) {
   //
   // TODO(dfried): Merge legacy promos into this category, eliminating the entry
   // point and promo type entirely.
-  static const char* const kAllowedPromoNames[] = {
-      "IPH_DesktopReEngagement",
-  };
+  static const char* const kAllowedPromoNames[] = {};
 
   const std::string name = promo_feature.name;
   for (const auto* promo_name : kAllowedPromoNames) {

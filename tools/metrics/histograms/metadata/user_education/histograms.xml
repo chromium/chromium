@@ -192,14 +192,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.MessageNotShown.DesktopReEngagement.NoBrowser"
-    units="tries" expires_after="2025-04-30">
+    units="tries" expires_after="2025-02-21">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
-    Records when the re-engagement promo is not shown because there is no
-    eligible browser. This is recorded on a new User Education session. The
-    value is the number of times the promo had attempted to show; typical values
-    are low (1-2) as the number of retries is limited.
+    Deprecated. Records when the re-engagement promo is not shown because there
+    is no eligible browser. This is recorded on a new User Education session.
+    The value is the number of times the promo had attempted to show; typical
+    values are low (1-2) as the number of retries is limited.
   </summary>
 </histogram>
 

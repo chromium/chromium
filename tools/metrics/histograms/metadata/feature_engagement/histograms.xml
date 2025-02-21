@@ -162,8 +162,6 @@ chromium-metrics-reviews@google.com.
       summary="PWA launch due to link capturing being enabled"/>
   <variant name="IPH_DesktopPWAsLinkCapturingLaunchAppInTab"
       summary="PWA launch due to link capturing being enabled"/>
-  <variant name="IPH_DesktopReEngagement"
-      summary="extra help for low-engagement users"/>
   <variant name="IPH_DesktopSharedHighlighting"
       summary="Sharing links with highlighted text"/>
   <variant name="IPH_DiscardRing" summary="Discard ring for tabs"/>

@@ -3284,7 +3284,6 @@ if (!is_android) {
       "../browser/ui/toolbar/toolbar_actions_model_browsertest.cc",
       "../browser/ui/unload_controller_browsertest.cc",
       "../browser/ui/update_chrome_dialog_browsertest.cc",
-      "../browser/ui/user_education/low_usage_help_controller_browsertest.cc",
       "../browser/ui/user_education/show_promo_in_page_browsertest.cc",
       "../browser/ui/user_education/start_tutorial_in_page_browsertest.cc",
       "../browser/ui/user_education/user_education_configuration_provider_browsertest.cc",
@@ -3509,12 +3508,6 @@ if (!is_android) {
 
     if (enable_nacl) {
       sources += [ "../browser/chrome_browser_main_extra_parts_nacl_deprecation_browsertest.cc" ]
-    }
-
-    if (is_chrome_branded && !is_android) {
-      sources += [
-        "../browser/ui/views/user_education/low_usage_promo_browsertest.cc",
-      ]
     }
 
     if (build_with_tflite_lib) {

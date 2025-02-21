@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/user_education/low_usage_help_controller.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -95,7 +94,6 @@
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/ui/views/user_education/low_usage_promo.h"
 #include "components/plus_addresses/resources/vector_icons.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -498,14 +496,6 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(122, "romanarora@chromium.org",
                        "Triggered when there is atleast one "
                        "new module on the NTP page.")));
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // kIPHDesktopReEngagementFeature:
-  registry.RegisterFeature(
-      std::move(CreateLowUsagePromoSpecification(profile).SetMetadata(
-          126, "dfried@google.com",
-          "Helpful messages for low-usage users; runs on new session.")));
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // kIPHExperimentalAIPromoFeature:
   registry.RegisterFeature(std::move(
@@ -1766,8 +1756,6 @@ CreateUserEducationResources(BrowserView* browser_view) {
 
   MaybeRegisterChromeNewBadges(*user_education_service->new_badge_registry());
   user_education_service->new_badge_controller()->InitData();
-
-  LowUsageHelpController::MaybeCreateForProfile(browser_view->GetProfile());
 
   if (user_education::features::IsUserEducationV25()) {
     auto result = std::make_unique<BrowserFeaturePromoController25>(
