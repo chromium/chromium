@@ -329,6 +329,7 @@ group("browser_tests") {
     "//chrome/browser/ash/policy/status_collector:browser_tests",
     "//chrome/browser/ash/preferences:browser_tests",
     "//chrome/browser/ash/printing/print_management:browser_tests",
+    "//chrome/browser/ash/privacy_hub:browser_tests",
     "//chrome/browser/ash/remote_apps:browser_tests",
     "//chrome/browser/ash/scalable_iph:browser_tests",
     "//chrome/browser/ash/smb_client:browser_tests",

@@ -22,3 +22,10 @@ include_rules = [
   "+chrome/common/chrome_features.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "privacy_hub_geolocation_browsertest\.cc": [
+    "+chrome/browser",
+    "+chrome/browser/ash/login",
+  ],
+}

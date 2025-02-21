@@ -1274,27 +1274,28 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   if (reason == REASON_INITIALIZATION ||
       (pref_name == ash::prefs::kUserGeolocationAccessLevel &&
        reason == REASON_PREF_CHANGED)) {
-    const auto user_geolocation_access_level =
+    GeolocationAccessLevel geo_access_level =
         static_cast<GeolocationAccessLevel>(
-            prefs_->GetInteger(ash::prefs::kUserGeolocationAccessLevel));
+            prefs_->GetInteger(prefs::kUserGeolocationAccessLevel));
 
-    // Notify `SimpleGeolocationProvider` of the user geolocation permission
-    // change.
-    SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
-        user_geolocation_access_level);
+    // System Geolocation setting is controlled by the primary user only.
+    if (user_is_primary_) {
+      SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+          geo_access_level);
+    }
 
     // Log-in screen follows the owner's geolocation setting.
     if (user_is_owner) {
-      GeolocationAccessLevel access_level;
+      GeolocationAccessLevel login_geo_access_level;
       if (SimpleGeolocationProvider::GetInstance()
               ->IsGeolocationUsageAllowedForSystem()) {
-        access_level = GeolocationAccessLevel::kAllowed;
+        login_geo_access_level = GeolocationAccessLevel::kAllowed;
       } else {
-        access_level = GeolocationAccessLevel::kDisallowed;
+        login_geo_access_level = GeolocationAccessLevel::kDisallowed;
       }
       g_browser_process->local_state()->SetInteger(
           ash::prefs::kDeviceGeolocationAllowed,
-          static_cast<int>(access_level));
+          static_cast<int>(login_geo_access_level));
     }
   }
 

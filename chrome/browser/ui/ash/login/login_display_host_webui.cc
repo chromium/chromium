@@ -61,6 +61,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login/input_events_blocker.h"
+#include "chrome/browser/ui/ash/login/login_display_host_common.h"
 #include "chrome/browser/ui/ash/login/login_display_host_mojo.h"
 #include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
@@ -290,9 +291,13 @@ void ShowLoginWizardFinish(
     // Tests may have already allocated an instance for us to use.
     display_host = LoginDisplayHost::default_host();
   } else if (ShouldShowSigninScreen(first_screen)) {
-    display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
+    display_host =
+        new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN,
+                                 /*update_geolocation_usage_allowed=*/true);
   } else if (first_screen == ArcVmDataMigrationScreenView::kScreenId) {
-    display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
+    display_host =
+        new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN,
+                                 /*update_geolocation_usage_allowed=*/true);
     DCHECK(session_manager::SessionManager::Get());
     session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
   } else {
@@ -487,7 +492,8 @@ class LoginDisplayHostWebUI::KeyboardDrivenOobeKeyHandler
 // LoginDisplayHostWebUI, public
 
 LoginDisplayHostWebUI::LoginDisplayHostWebUI()
-    : oobe_startup_sound_played_(StartupUtils::IsOobeCompleted()) {
+    : LoginDisplayHostCommon(/*update_geolocation_usage_allowed=*/true),
+      oobe_startup_sound_played_(StartupUtils::IsOobeCompleted()) {
   SessionManagerClient::Get()->AddObserver(this);
   CrasAudioHandler::Get()->AddAudioObserver(this);
 
