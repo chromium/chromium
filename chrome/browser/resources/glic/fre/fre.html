@@ -11,12 +11,22 @@
       border-radius: 12px;
       overflow: hidden;
     }
+    .container {
+      height: 100%;
+      width: 100%;
+      background-color: var(--cr-fallback-color-surface);
+    }
   </style>
+  <script type="module"
+    src="chrome://resources/cr_elements/cr_shared_vars.css.js">
+  </script>
   <script type="module" src="main.js"></script>
 </head>
 
 <body>
-  <webview id="fre-guest-frame" partition="glicfrepart">
-  </webview>
+  <div class="container">
+    <webview id="fre-guest-frame" partition="glicfrepart">
+    </webview>
+  </div>
 </body>
 </html>
