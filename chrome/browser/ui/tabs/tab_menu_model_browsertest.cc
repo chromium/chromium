@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 
+#include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -11,15 +13,18 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/menu_model_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/mock_account_checker.h"
@@ -27,21 +32,35 @@
 #include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/test_utils.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/testing_pref_service.h"
-#include "content/public/test/web_contents_tester.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 
-class TabMenuModelTest : public MenuModelTest,
-                         public BrowserWithTestWindowTest {
+class TabMenuModelBrowserTest : public MenuModelTest,
+                                public InProcessBrowserTest {
+ public:
+  TabMenuModelBrowserTest() {
+    // Enable tab organization before KeyedServices are instantiated, otherwise
+    // TabOrganizationServiceFactory::GetForProfile() will return nullptr.
+    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
+    TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
+  }
+
+  Profile* profile() { return browser()->profile(); }
+
+ private:
   tabs::PreventTabFeatureInitialization prevent_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(TabMenuModelTest, Basics) {
+IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, Basics) {
   chrome::NewTab(browser());
   TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
                      browser()->tab_strip_model(), 0);
@@ -57,11 +76,7 @@ TEST_F(TabMenuModelTest, Basics) {
   EXPECT_EQ(item_count, delegate_.enable_count_);
 }
 
-TEST_F(TabMenuModelTest, OrganizeTabs) {
-  TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kTabOrganization}, {});
-
+IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, OrganizeTabs) {
   chrome::NewTab(browser());
   TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
                      browser()->tab_strip_model(), 0);
@@ -71,7 +86,7 @@ TEST_F(TabMenuModelTest, OrganizeTabs) {
                   .has_value());
 }
 
-TEST_F(TabMenuModelTest, MoveToNewWindow) {
+IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, MoveToNewWindow) {
   chrome::NewTab(browser());
   TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
                      browser()->tab_strip_model(), 0);
@@ -82,7 +97,13 @@ TEST_F(TabMenuModelTest, MoveToNewWindow) {
           .has_value());
 }
 
-TEST_F(TabMenuModelTest, AddToExistingGroupSubmenu) {
+IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, AddToExistingGroupSubmenu) {
+  // Prevents flakes by ensuring the TabGroupSyncService is initialized before
+  // creating any tab groups.
+  tab_groups::TabGroupSyncService* service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile());
+  service->SetIsInitializedForTesting(true);
+
   chrome::NewTab(browser());
   chrome::NewTab(browser());
   chrome::NewTab(browser());
@@ -115,7 +136,14 @@ TEST_F(TabMenuModelTest, AddToExistingGroupSubmenu) {
             ExistingBaseSubMenuModel::kMinExistingTabGroupCommandId + 3);
 }
 
-TEST_F(TabMenuModelTest, AddToExistingGroupSubmenu_DoesNotIncludeCurrentGroup) {
+IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest,
+                       AddToExistingGroupSubmenu_DoesNotIncludeCurrentGroup) {
+  // Prevents flakes by ensuring the TabGroupSyncService is initialized before
+  // creating any tab groups.
+  tab_groups::TabGroupSyncService* service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile());
+  service->SetIsInitializedForTesting(true);
+
   chrome::NewTab(browser());
   chrome::NewTab(browser());
   chrome::NewTab(browser());
@@ -151,7 +179,14 @@ TEST_F(TabMenuModelTest, AddToExistingGroupSubmenu_DoesNotIncludeCurrentGroup) {
 // the menu goes away, ensure we handle this gracefully.
 //
 // Regression test for crbug.com/1197875
-TEST_F(TabMenuModelTest, AddToExistingGroupAfterGroupDestroyed) {
+IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest,
+                       AddToExistingGroupAfterGroupDestroyed) {
+  // Prevents flakes by ensuring the TabGroupSyncService is initialized before
+  // creating any tab groups.
+  tab_groups::TabGroupSyncService* service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile());
+  service->SetIsInitializedForTesting(true);
+
   chrome::NewTab(browser());
   chrome::NewTab(browser());
 
@@ -185,16 +220,18 @@ class TabMenuModelTestTabStripModelDelegate : public TestTabStripModelDelegate {
   bool SupportsReadLater() override { return false; }
 };
 
-TEST_F(TabMenuModelTest, TabbedWebApp) {
+IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, TabbedWebApp) {
   // Create a tabbed web app window without home tab
   TabMenuModelTestTabStripModelDelegate delegate;
-  TabStripModel strip(&delegate, profile());
-  strip.AppendWebContents(
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr),
+  TabStripModel tab_strip_model(&delegate, profile());
+
+  tab_strip_model.AppendWebContents(
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile())),
       true);
 
-  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(), &strip,
-                     0);
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     &tab_strip_model, 0);
 
   // When adding/removing a menu item, either update this count and add it to
   // the list below or disable it for tabbed web apps.
@@ -218,17 +255,21 @@ TEST_F(TabMenuModelTest, TabbedWebApp) {
                   .has_value());
 }
 
-TEST_F(TabMenuModelTest, TabbedWebAppHomeTab) {
+IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, TabbedWebAppHomeTab) {
   TabMenuModelTestTabStripModelDelegate delegate;
-  TabStripModel strip(&delegate, profile());
-  strip.AppendWebContents(
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr),
+  TabStripModel tab_strip_model(&delegate, profile());
+  tab_strip_model.AppendWebContents(
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile())),
       true);
+
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     browser()->tab_strip_model(), 0);
   // Pin the first tab so we get the pinned home tab menu.
-  strip.SetTabPinned(0, true);
+  tab_strip_model.SetTabPinned(0, true);
 
   TabMenuModel home_tab_model(&delegate_, browser()->tab_menu_model_delegate(),
-                              &strip, 0);
+                              &tab_strip_model, 0);
 
   // When adding/removing a menu item, either update this count and add it to
   // the list below or disable it for tabbed web apps.
@@ -247,15 +288,16 @@ TEST_F(TabMenuModelTest, TabbedWebAppHomeTab) {
       home_tab_model.GetIndexOfCommandId(TabStripModel::CommandCloseAllTabs)
           .has_value());
 
-  strip.AppendWebContents(
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr),
+  tab_strip_model.AppendWebContents(
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile())),
       true);
-  EXPECT_EQ(strip.count(), 2);
-  EXPECT_FALSE(strip.IsTabSelected(0));
-  EXPECT_TRUE(strip.IsTabSelected(1));
+  EXPECT_EQ(tab_strip_model.count(), 2);
+  EXPECT_FALSE(tab_strip_model.IsTabSelected(0));
+  EXPECT_TRUE(tab_strip_model.IsTabSelected(1));
 
   TabMenuModel regular_tab_model(
-      &delegate_, browser()->tab_menu_model_delegate(), &strip, 1);
+      &delegate_, browser()->tab_menu_model_delegate(), &tab_strip_model, 1);
 
   // When adding/removing a menu item, either update this count and add it to
   // the list below or disable it for tabbed web apps.
@@ -288,14 +330,22 @@ TEST_F(TabMenuModelTest, TabbedWebAppHomeTab) {
           .has_value());
 }
 
-class TabMenuModelCommerceProductSpecsTest : public TabMenuModelTest {
+class TabMenuModelCommerceProductSpecsTest : public TabMenuModelBrowserTest {
  public:
   TabMenuModelCommerceProductSpecsTest()
       : account_checker_(std::make_unique<commerce::MockAccountChecker>()),
-        prefs_(std::make_unique<TestingPrefServiceSimple>()) {}
+        prefs_(std::make_unique<TestingPrefServiceSimple>()) {
+    feature_list_.InitWithFeatures({commerce::kProductSpecifications}, {});
 
-  void SetUp() override {
-    TabMenuModelTest::SetUp();
+    dependency_manager_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &TabMenuModelCommerceProductSpecsTest::SetTestingFactory,
+                base::Unretained(this)));
+  }
+
+  void SetUpOnMainThread() override {
+    TabMenuModelBrowserTest::SetUpOnMainThread();
     commerce::MockAccountChecker::RegisterCommercePrefs(prefs_->registry());
     account_checker_->SetPrefs(prefs_.get());
     auto* shopping_service = static_cast<commerce::MockShoppingService*>(
@@ -307,38 +357,42 @@ class TabMenuModelCommerceProductSpecsTest : public TabMenuModelTest {
                                                    prefs_.get());
   }
 
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return IdentityTestEnvironmentProfileAdaptor::
-        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
-            {TestingProfile::TestingFactory{
-                commerce::ShoppingServiceFactory::GetInstance(),
-                base::BindRepeating([](content::BrowserContext* context) {
-                  return commerce::MockShoppingService::Build();
-                })}});
+  void SetTestingFactory(content::BrowserContext* context) {
+    commerce::ShoppingServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return commerce::MockShoppingService::Build();
+        }));
   }
 
  protected:
   std::unique_ptr<commerce::MockAccountChecker> account_checker_;
 
  private:
+  base::CallbackListSubscription dependency_manager_subscription_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(TabMenuModelCommerceProductSpecsTest, MenuShowForNormalWindow) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+IN_PROC_BROWSER_TEST_F(TabMenuModelCommerceProductSpecsTest,
+                       MenuShowForNormalWindow) {
   ASSERT_TRUE(
       commerce::CanFetchProductSpecificationsData(account_checker_.get()));
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://example.com"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://example2.com"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Close about:blank tab since we don't need it.
+  browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                   TabCloseTypes::CLOSE_NONE);
+
   TabStripModel* tab_strip = browser()->tab_strip_model();
-
-  std::unique_ptr<content::WebContents> https_web_content =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-  content::WebContentsTester::For(https_web_content.get())
-      ->NavigateAndCommit(GURL("https://www.example.com"));
-
-  tab_strip->AppendWebContents(std::move(https_web_content), true);
-  chrome::NewTab(browser());
-
   tab_strip->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
@@ -352,23 +406,25 @@ TEST_F(TabMenuModelCommerceProductSpecsTest, MenuShowForNormalWindow) {
                   .has_value());
 }
 
-TEST_F(TabMenuModelCommerceProductSpecsTest, MenuNotShowForIncognitoWindow) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+IN_PROC_BROWSER_TEST_F(TabMenuModelCommerceProductSpecsTest,
+                       MenuNotShowForIncognitoWindow) {
   ASSERT_TRUE(
       commerce::CanFetchProductSpecificationsData(account_checker_.get()));
 
-  TestingProfile::Builder incognito_profile_builder;
-  auto* incognito_profile = incognito_profile_builder.BuildIncognito(profile());
+  Browser* incognito_browser = CreateIncognitoBrowser(profile());
 
-  Browser::CreateParams native_params(incognito_profile, true);
-  native_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
-  std::unique_ptr<Browser> browser =
-      CreateBrowserWithTestWindowForParams(native_params);
-  Browser* incognito_browser = browser.get();
+  ui_test_utils::NavigateToURLWithDisposition(
+      incognito_browser, GURL("https://example.com"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ui_test_utils::NavigateToURLWithDisposition(
+      incognito_browser, GURL("https://example2.com"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  AddTab(incognito_browser, GURL("https://example.com"));
-  AddTab(incognito_browser, GURL("https://example2.com"));
+  // Close about:blank tab since we don't need it.
+  incognito_browser->tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_NONE);
 
   TabStripModel* tab_strip = incognito_browser->tab_strip_model();
   tab_strip->ActivateTabAt(
@@ -387,21 +443,24 @@ TEST_F(TabMenuModelCommerceProductSpecsTest, MenuNotShowForIncognitoWindow) {
   incognito_browser->tab_strip_model()->CloseAllTabs();
 }
 
-TEST_F(TabMenuModelCommerceProductSpecsTest, MenuNotShowForInvalidScheme) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+IN_PROC_BROWSER_TEST_F(TabMenuModelCommerceProductSpecsTest,
+                       MenuNotShowForInvalidScheme) {
   ASSERT_TRUE(
       commerce::CanFetchProductSpecificationsData(account_checker_.get()));
   TabStripModel* tab_strip = browser()->tab_strip_model();
 
-  std::unique_ptr<content::WebContents> chrome_web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("chrome://bookmarks"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("chrome://history"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  content::WebContentsTester::For(chrome_web_contents.get())
-      ->NavigateAndCommit(GURL("chrome://bookmarks"));
-
-  tab_strip->AppendWebContents(std::move(chrome_web_contents), true);
-  chrome::NewTab(browser());
+  // Close about:blank tab since we don't need it.
+  browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                   TabCloseTypes::CLOSE_NONE);
 
   tab_strip->ActivateTabAt(
       0, TabStripUserGestureDetails(
@@ -416,20 +475,23 @@ TEST_F(TabMenuModelCommerceProductSpecsTest, MenuNotShowForInvalidScheme) {
                    .has_value());
 }
 
-TEST_F(TabMenuModelCommerceProductSpecsTest, MenuShowForHttp) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+IN_PROC_BROWSER_TEST_F(TabMenuModelCommerceProductSpecsTest, MenuShowForHttp) {
   ASSERT_TRUE(
       commerce::CanFetchProductSpecificationsData(account_checker_.get()));
   TabStripModel* tab_strip = browser()->tab_strip_model();
 
-  std::unique_ptr<content::WebContents> http_web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-  content::WebContentsTester::For(http_web_contents.get())
-      ->NavigateAndCommit(GURL("http://example.com"));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("http://example.com"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("http://example2.com"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  tab_strip->AppendWebContents(std::move(http_web_contents), true);
-  chrome::NewTab(browser());
+  // Close about:blank tab since we don't need it.
+  browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                   TabCloseTypes::CLOSE_NONE);
 
   tab_strip->ActivateTabAt(
       0, TabStripUserGestureDetails(
@@ -445,13 +507,22 @@ TEST_F(TabMenuModelCommerceProductSpecsTest, MenuShowForHttp) {
                   .has_value());
 }
 
-TEST_F(TabMenuModelCommerceProductSpecsTest, MenuNotShowForFeatureDisable) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {commerce::kProductSpecifications});
+class TabMenuModelCommerceProductSpecsDisabledTest
+    : public TabMenuModelCommerceProductSpecsTest {
+ public:
+  TabMenuModelCommerceProductSpecsDisabledTest() {
+    feature_list_.InitWithFeatures({}, {commerce::kProductSpecifications});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabMenuModelCommerceProductSpecsDisabledTest,
+                       MenuNotShowForFeatureDisable) {
   ASSERT_FALSE(
       commerce::CanFetchProductSpecificationsData(account_checker_.get()));
   TabStripModel* tab_strip = browser()->tab_strip_model();
-  chrome::NewTab(browser());
   chrome::NewTab(browser());
 
   tab_strip->AddSelectionFromAnchorTo(1);
@@ -464,9 +535,8 @@ TEST_F(TabMenuModelCommerceProductSpecsTest, MenuNotShowForFeatureDisable) {
                    .has_value());
 }
 
-TEST_F(TabMenuModelCommerceProductSpecsTest, MenuNotShowForFetchDisable) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+IN_PROC_BROWSER_TEST_F(TabMenuModelCommerceProductSpecsTest,
+                       MenuNotShowForFetchDisable) {
   // Update account checker to disable product specifications data fetch.
   account_checker_->SetIsSubjectToParentalControls(true);
   ASSERT_FALSE(
@@ -476,6 +546,10 @@ TEST_F(TabMenuModelCommerceProductSpecsTest, MenuNotShowForFetchDisable) {
   chrome::NewTab(browser());
   chrome::NewTab(browser());
 
+  // Close about:blank tab since we don't need it.
+  browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                   TabCloseTypes::CLOSE_NONE);
+
   tab_strip->AddSelectionFromAnchorTo(1);
   TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
                      browser()->tab_strip_model(), 0);
@@ -486,14 +560,16 @@ TEST_F(TabMenuModelCommerceProductSpecsTest, MenuNotShowForFetchDisable) {
                    .has_value());
 }
 
-TEST_F(TabMenuModelCommerceProductSpecsTest,
-       MenuNotShowForInsuffcientSelection) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+IN_PROC_BROWSER_TEST_F(TabMenuModelCommerceProductSpecsTest,
+                       MenuNotShowForInsuffcientSelection) {
   ASSERT_TRUE(
       commerce::CanFetchProductSpecificationsData(account_checker_.get()));
   chrome::NewTab(browser());
   chrome::NewTab(browser());
+
+  // Close about:blank tab since we don't need it.
+  browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                   TabCloseTypes::CLOSE_NONE);
 
   TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
                      browser()->tab_strip_model(), 0);
@@ -504,32 +580,40 @@ TEST_F(TabMenuModelCommerceProductSpecsTest,
                    .has_value());
 }
 
-class TabMenuModelComparisonTableTest : public TabMenuModelTest {
+class TabMenuModelComparisonTableTest : public TabMenuModelBrowserTest {
  public:
-  void SetUp() override {
-    TabMenuModelTest::SetUp();
+  TabMenuModelComparisonTableTest() {
+    dependency_manager_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &TabMenuModelComparisonTableTest::SetTestingFactory,
+                base::Unretained(this)));
 
-    feature_list.InitWithFeatures({commerce::kProductSpecifications,
-                                   commerce::kCompareManagementInterface},
-                                  {});
+    feature_list_.InitWithFeatures({commerce::kProductSpecifications,
+                                    commerce::kCompareManagementInterface},
+                                   {});
   }
 
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return IdentityTestEnvironmentProfileAdaptor::
-        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
-            {TestingProfile::TestingFactory{
-                commerce::ProductSpecificationsServiceFactory::GetInstance(),
-                base::BindRepeating([](content::BrowserContext* context) {
-                  return commerce::MockProductSpecificationsService::Build();
-                })}});
+  void SetTestingFactory(content::BrowserContext* context) {
+    commerce::ProductSpecificationsServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            context, base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+              return commerce::MockProductSpecificationsService::Build();
+            }));
   }
 
  protected:
   TabStripModel* tab_strip() { return browser()->tab_strip_model(); }
 
   void AddAndSelectTab(Browser* browser, const GURL& url) {
-    AddTab(browser, url);
-    browser->tab_strip_model()->ToggleSelectionAt(0);
+    // ASSERT_TRUE(
+    // AddTabAtIndex(0, url, ui::PageTransition::PAGE_TRANSITION_TYPED));
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser, url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    browser->tab_strip_model()->ToggleSelectionAt(
+        browser->tab_strip_model()->count() - 1);
   }
 
   void SelectAllTabs() {
@@ -546,14 +630,24 @@ class TabMenuModelComparisonTableTest : public TabMenuModelTest {
         .WillByDefault(testing::Return(sets));
   }
 
-  base::test::ScopedFeatureList feature_list;
+  base::CallbackListSubscription dependency_manager_subscription_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(TabMenuModelComparisonTableTest, MenuNotShownWhenFeatureDisabled) {
-  feature_list.Reset();
-  feature_list.InitWithFeatures({}, {commerce::kProductSpecifications,
-                                     commerce::kCompareManagementInterface});
+class TabMenuModelComparisonTableDisabledTest
+    : public TabMenuModelComparisonTableTest {
+ public:
+  TabMenuModelComparisonTableDisabledTest() {
+    feature_list_.InitWithFeatures({}, {commerce::kProductSpecifications,
+                                        commerce::kCompareManagementInterface});
+  }
 
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabMenuModelComparisonTableDisabledTest,
+                       MenuNotShownWhenFeatureDisabled) {
   AddAndSelectTab(browser(), GURL("https://example.com"));
 
   TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
@@ -567,9 +661,8 @@ TEST_F(TabMenuModelComparisonTableTest, MenuNotShownWhenFeatureDisabled) {
                    .has_value());
 }
 
-TEST_F(TabMenuModelComparisonTableTest, MenuShownForNormalWindow) {
-  AddAndSelectTab(browser(), GURL("https://example.com"));
-
+IN_PROC_BROWSER_TEST_F(TabMenuModelComparisonTableTest,
+                       MenuShownForNormalWindow) {
   TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
                      tab_strip(), 0);
 
@@ -577,7 +670,7 @@ TEST_F(TabMenuModelComparisonTableTest, MenuShownForNormalWindow) {
   // visible.
   auto index =
       model.GetIndexOfCommandId(TabStripModel::CommandAddToNewComparisonTable);
-  EXPECT_TRUE(index.has_value());
+  ASSERT_TRUE(index.has_value());
   EXPECT_TRUE(model.IsEnabledAt(index.value()));
   EXPECT_FALSE(model
                    .GetIndexOfCommandId(
@@ -585,15 +678,9 @@ TEST_F(TabMenuModelComparisonTableTest, MenuShownForNormalWindow) {
                    .has_value());
 }
 
-TEST_F(TabMenuModelComparisonTableTest, MenuNotShownForIncognitoWindow) {
-  TestingProfile::Builder incognito_profile_builder;
-  auto* incognito_profile = incognito_profile_builder.BuildIncognito(profile());
-
-  Browser::CreateParams native_params(incognito_profile, true);
-  native_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
-  std::unique_ptr<Browser> browser =
-      CreateBrowserWithTestWindowForParams(native_params);
-  Browser* incognito_browser = browser.get();
+IN_PROC_BROWSER_TEST_F(TabMenuModelComparisonTableTest,
+                       MenuNotShownForIncognitoWindow) {
+  Browser* incognito_browser = CreateIncognitoBrowser(profile());
 
   AddAndSelectTab(incognito_browser, GURL("https://example.com"));
 
@@ -611,9 +698,15 @@ TEST_F(TabMenuModelComparisonTableTest, MenuNotShownForIncognitoWindow) {
   incognito_browser->tab_strip_model()->CloseAllTabs();
 }
 
-TEST_F(TabMenuModelComparisonTableTest, MenuNotShownWhenMultipleTabsSelected) {
-  AddTab(browser(), GURL("https://example.com"));
-  AddTab(browser(), GURL("https://sample.com"));
+IN_PROC_BROWSER_TEST_F(TabMenuModelComparisonTableTest,
+                       MenuNotShownWhenMultipleTabsSelected) {
+  AddAndSelectTab(browser(), GURL("https://example.com"));
+  AddAndSelectTab(browser(), GURL("https://sample.com"));
+
+  // Close about:blank tab since we don't need it.
+  browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                   TabCloseTypes::CLOSE_NONE);
+
   SelectAllTabs();
 
   TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
@@ -628,8 +721,8 @@ TEST_F(TabMenuModelComparisonTableTest, MenuNotShownWhenMultipleTabsSelected) {
                    .has_value());
 }
 
-TEST_F(TabMenuModelComparisonTableTest,
-       MenuShownForExistingTables_SetsDoNotContainUrl) {
+IN_PROC_BROWSER_TEST_F(TabMenuModelComparisonTableTest,
+                       MenuShownForExistingTables_SetsDoNotContainUrl) {
   const std::vector<commerce::ProductSpecificationsSet> sets = {
       commerce::ProductSpecificationsSet(
           base::Uuid::GenerateRandomV4().AsLowercaseString(), 0, 0,
@@ -646,6 +739,9 @@ TEST_F(TabMenuModelComparisonTableTest,
   SetProductSpecs(sets);
 
   AddAndSelectTab(browser(), GURL("https://example.com"));
+  // Close about:blank tab since we don't need it.
+  browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                   TabCloseTypes::CLOSE_NONE);
 
   TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
                      tab_strip(), 0);
@@ -661,8 +757,8 @@ TEST_F(TabMenuModelComparisonTableTest,
   EXPECT_TRUE(model.IsEnabledAt(index.value()));
 }
 
-TEST_F(TabMenuModelComparisonTableTest,
-       MenuShownForExistingTables_SetsContainUrl) {
+IN_PROC_BROWSER_TEST_F(TabMenuModelComparisonTableTest,
+                       MenuShownForExistingTables_SetsContainUrl) {
   const std::vector<commerce::ProductSpecificationsSet> sets = {
       commerce::ProductSpecificationsSet(
           base::Uuid::GenerateRandomV4().AsLowercaseString(), 0, 0,
@@ -679,6 +775,9 @@ TEST_F(TabMenuModelComparisonTableTest,
   SetProductSpecs(sets);
 
   AddAndSelectTab(browser(), GURL("https://example.com"));
+  // Close about:blank tab since we don't need it.
+  browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                   TabCloseTypes::CLOSE_NONE);
 
   TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
                      tab_strip(), 0);
