@@ -86,6 +86,9 @@ public class SafetyHubLocalPasswordsModuleMediator
                         context,
                         mModuleDelegate,
                         mLocalPasswordsDataSource.getCompromisedPasswordCount());
+            case ModuleType.HAS_WEAK_PASSWORDS:
+                return new SafetyHubLocalPasswordsHasWeakPasswordsModuleHelper(
+                        context, mModuleDelegate, mLocalPasswordsDataSource.getWeakPasswordCount());
             default:
                 throw new IllegalArgumentException();
         }

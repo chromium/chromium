@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -30,13 +31,15 @@ public class SafetyHubLocalPasswordsDataSource
     @IntDef({
         ModuleType.UNAVAILABLE_PASSWORDS,
         ModuleType.NO_SAVED_PASSWORDS,
-        ModuleType.HAS_COMPROMISED_PASSWORDS
+        ModuleType.HAS_COMPROMISED_PASSWORDS,
+        ModuleType.HAS_WEAK_PASSWORDS
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ModuleType {
         int UNAVAILABLE_PASSWORDS = 0;
         int NO_SAVED_PASSWORDS = 1;
         int HAS_COMPROMISED_PASSWORDS = 2;
+        int HAS_WEAK_PASSWORDS = 3;
     };
 
     @NonNull private final SafetyHubModuleDelegate mModuleDelegate;
@@ -47,6 +50,7 @@ public class SafetyHubLocalPasswordsDataSource
     private Observer mObserver;
 
     private int mCompromisedPasswordCount;
+    private int mWeakPasswordCount;
 
     SafetyHubLocalPasswordsDataSource(
             @NonNull SafetyHubModuleDelegate moduleDelegate,
@@ -77,6 +81,7 @@ public class SafetyHubLocalPasswordsDataSource
     public void updateState() {
         // TODO(crbug.com/388788969): Update password counts.
         updateCompromisedPasswordCount();
+        updateWeakPasswordCount();
 
         if (mObserver != null) {
             mObserver.stateChanged(getModuleType());
@@ -96,6 +101,12 @@ public class SafetyHubLocalPasswordsDataSource
         if (mCompromisedPasswordCount > 0) {
             return ModuleType.HAS_COMPROMISED_PASSWORDS;
         }
+        // TODO(crbug.com/388788969): Test when weak and reuse feature is disabled.
+        if (ChromeFeatureList.sSafetyHubWeakAndReusedPasswords.isEnabled()) {
+            if (mWeakPasswordCount > 0) {
+                return ModuleType.HAS_WEAK_PASSWORDS;
+            }
+        }
         return ModuleType.UNAVAILABLE_PASSWORDS;
     }
 
@@ -107,6 +118,16 @@ public class SafetyHubLocalPasswordsDataSource
         assert mPrefService != null
                 : "A null PrefService was detected in SafetyHubLocalPasswordsDataSource";
         mCompromisedPasswordCount = mPrefService.getInteger(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT);
+    }
+
+    public int getWeakPasswordCount() {
+        return mWeakPasswordCount;
+    }
+
+    private void updateWeakPasswordCount() {
+        assert mPrefService != null
+                : "A null PrefService was detected in SafetyHubLocalPasswordsDataSource";
+        mWeakPasswordCount = mPrefService.getInteger(Pref.LOCAL_WEAK_CREDENTIALS_COUNT);
     }
 
     private int getTotalPasswordCount() {

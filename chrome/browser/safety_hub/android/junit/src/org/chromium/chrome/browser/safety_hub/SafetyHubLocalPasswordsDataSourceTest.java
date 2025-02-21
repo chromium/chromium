@@ -135,4 +135,14 @@ public class SafetyHubLocalPasswordsDataSourceTest {
 
         assertEquals(ModuleType.HAS_COMPROMISED_PASSWORDS, mObserver.getModuleType());
     }
+
+    @Test
+    public void hasWeakPasswords() {
+        mockTotalPasswordsCount(5);
+        mockPasswordCounts(0, /* weak= */ 2, 0);
+
+        mDataSource.updateState();
+
+        assertEquals(ModuleType.HAS_WEAK_PASSWORDS, mObserver.getModuleType());
+    }
 }
