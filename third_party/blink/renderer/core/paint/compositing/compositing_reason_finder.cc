@@ -136,10 +136,11 @@ CompositingReasons CompositingReasonsFor3DTransform(
       }
     }
 
-    if (RuntimeEnabledFeatures::RenderSurfaceForScaleTransformEnabled() &&
-        matrix.IsScale2d()) {
+    if (has_scale) {
       // TODO(chrishtr): make this "2d scale with composited descendants"
-      // somehow.
+      // somehow. Currently it triggers for all elements with
+      // the scale CSS property (*not* transform--just scale, which is
+      // a shorthand for scale transforms).
       reasons |= CompositingReason::k2DScaleTransformWithCompositedDescendants;
     }
   }
