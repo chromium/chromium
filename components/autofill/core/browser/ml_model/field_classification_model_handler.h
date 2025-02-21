@@ -45,6 +45,10 @@ class FieldClassificationModelHandler
   // sequence and returns the `form_structure`. If `form_structure` has more
   // than `maximum_number_of_fields` (see model metadata) fields, it sets
   // predictions for the first `maximum_number_of_fields` fields in the form.
+  //
+  // NO_SERVER_DATA means the model couldn't determine the field type
+  // (execution failure/low confidence). UNKNOWN_TYPE means the model is sure
+  // that the field is unsupported.
   void GetModelPredictionsForForm(
       std::unique_ptr<FormStructure> form_structure,
       base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback);
@@ -62,6 +66,10 @@ class FieldClassificationModelHandler
       optimization_guide::proto::OptimizationTarget optimization_target,
       base::optional_ref<const optimization_guide::ModelInfo> model_info)
       override;
+
+#if defined(UNIT_TEST)
+  const FieldTypeSet& get_supported_types() const { return supported_types_; }
+#endif
 
  private:
   // Computes the `GetMostLikelyType()` from every element of `outputs` and
@@ -92,6 +100,9 @@ class FieldClassificationModelHandler
 
   // Specifies the model to load and execute.
   const optimization_guide::proto::OptimizationTarget optimization_target_;
+
+  // Types which the model is able to output.
+  FieldTypeSet supported_types_;
 
   base::WeakPtrFactory<FieldClassificationModelHandler> weak_ptr_factory_{this};
 };

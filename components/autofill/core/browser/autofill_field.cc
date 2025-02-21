@@ -19,6 +19,8 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/heuristic_source.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -228,6 +230,33 @@ FieldType AutofillField::heuristic_type() const {
 }
 
 FieldType AutofillField::heuristic_type(HeuristicSource s) const {
+  // Special handling for ML model predictions.
+  if (s == HeuristicSource::kAutofillMachineLearning) {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+    HeuristicSource regex_heuristic_source = HeuristicSource::kLegacyRegexes;
+#else
+    HeuristicSource regex_heuristic_source = HeuristicSource::kDefaultRegexes;
+#endif
+    FieldType regex_type =
+        local_type_predictions_[static_cast<size_t>(regex_heuristic_source)];
+    if (regex_type == FieldType::NO_SERVER_DATA) {
+      regex_type = FieldType::UNKNOWN_TYPE;
+    }
+    FieldType model_type = local_type_predictions_[static_cast<size_t>(
+        HeuristicSource::kAutofillMachineLearning)];
+    // We fall back to regex heuristics in the following cases:
+    // - The regex heuristics detected a type that the model does not support
+    //   (e.g. IBAN).
+    // - The model returned NO_SERVER_DATA, indicating that execution failed
+    //   or that a confidence threshold was not reached.
+    bool model_supports_regex_type =
+        ml_supported_types_ && ml_supported_types_->contains(regex_type);
+    if (!model_supports_regex_type || model_type == FieldType::NO_SERVER_DATA) {
+      return regex_type;
+    }
+    return model_type;
+  }
+
   FieldType type = local_type_predictions_[static_cast<size_t>(s)];
   // `NO_SERVER_DATA` would mean that there is no heuristic type. Client code
   // presumes there is a prediction, therefore we coalesce to `UNKNOWN_TYPE`.
@@ -313,9 +342,10 @@ void AutofillField::set_server_predictions(
     }
   }
 
-  if (server_predictions_.empty())
+  if (server_predictions_.empty()) {
     // Equivalent to a `NO_SERVER_DATA` prediction from `SOURCE_UNSPECIFIED`.
     server_predictions_.emplace_back();
+  }
 
   LOG_IF(ERROR, server_predictions_.size() > 2)
       << "Expected up to 2 default predictions from the Autofill server. "
@@ -441,8 +471,9 @@ AutofillType AutofillField::ComputedType() const {
           base::FeatureList::IsEnabled(
               features::kAutofillGivePrecedenceToEmailOverUsername));
 
-    if (believe_server)
+    if (believe_server) {
       return AutofillType(server_type_local);
+    }
   }
 
   return AutofillType(heuristic_type_local);

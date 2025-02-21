@@ -4,9 +4,12 @@
 
 #include "components/autofill/core/browser/autofill_field.h"
 
+#include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/heuristic_source.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/field_prediction_test_matchers.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -19,6 +22,17 @@ namespace {
 using ::autofill::test::CreateFieldPrediction;
 using ::autofill::test::EqualsPrediction;
 using ::testing::ElementsAre;
+
+constexpr FieldTypeSet kMLSupportedTypesForTesting = {
+    UNKNOWN_TYPE,
+    NAME_FIRST,
+    NAME_LAST,
+    EMAIL_ADDRESS,
+    NAME_FULL,
+    PHONE_HOME_NUMBER,
+    ADDRESS_HOME_LINE1,
+    ADDRESS_HOME_STREET_ADDRESS,
+    ADDRESS_HOME_CITY};
 
 class AutofillFieldTest : public testing::Test {
  public:
@@ -136,6 +150,57 @@ TEST_F(AutofillFieldTest, IsFieldFillable) {
   // prediction, it is still considered a fillable field.
   field.set_should_autocomplete(false);
   EXPECT_TRUE(field.IsFieldFillable());
+}
+
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+constexpr HeuristicSource kRegexSource = HeuristicSource::kLegacyRegexes;
+#else
+constexpr HeuristicSource kRegexSource = HeuristicSource::kDefaultRegexes;
+#endif
+constexpr HeuristicSource kMlSource = HeuristicSource::kAutofillMachineLearning;
+
+class AutofillFieldTest_MLPredictions : public AutofillFieldTest {
+ public:
+  void SetUp() override {
+    AutofillFieldTest::SetUp();
+    base::FieldTrialParams feature_params;
+    feature_params["model_active"] = "true";
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAutofillModelPredictions, feature_params);
+    field().set_ml_supported_types(kMLSupportedTypesForTesting);
+  }
+
+  AutofillField& field() { return field_; }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  AutofillField field_;
+};
+
+// Test that the model prediction is used if set as the active heuristic source.
+TEST_F(AutofillFieldTest_MLPredictions, PredictionsUsed) {
+  field().set_heuristic_type(kMlSource, ADDRESS_HOME_STREET_ADDRESS);
+  field().set_heuristic_type(kRegexSource, ADDRESS_HOME_LINE1);
+  EXPECT_EQ(ADDRESS_HOME_STREET_ADDRESS, field().heuristic_type());
+}
+
+// Test that the regex prediction is used if the model returned NO_SERVER_DATA.
+TEST_F(AutofillFieldTest_MLPredictions, FallbackToRegex_OnNoServerData) {
+  field().set_heuristic_type(kMlSource, NO_SERVER_DATA);
+  field().set_heuristic_type(kRegexSource, ADDRESS_HOME_LINE1);
+  EXPECT_EQ(ADDRESS_HOME_LINE1, field().heuristic_type());
+}
+
+// Test that the regex prediction is used if the regex prediction is a type
+// unsupported by the model.
+TEST_F(AutofillFieldTest_MLPredictions, FallbackToRegex_OnUnsupportedType) {
+  field().set_heuristic_type(kMlSource, NAME_FIRST);
+  field().set_heuristic_type(kRegexSource, IBAN_VALUE);
+  EXPECT_EQ(IBAN_VALUE, field().heuristic_type());
+
+  field().set_heuristic_type(kMlSource, NAME_FIRST);
+  field().set_heuristic_type(kRegexSource, PASSPORT_NUMBER);
+  EXPECT_EQ(PASSPORT_NUMBER, field().heuristic_type());
 }
 
 class AutofillFieldWithAutofillAiTest : public base::test::WithFeatureOverride,
