@@ -1355,8 +1355,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       // TODO(crbug.com/393318914): Rename string.
       {"autofillAiUserAnnotationsNone",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_NONE},
+      // TODO(crbug.com/393318914): Rename string.
       {"autofillAiDeleteEntryDialogTitle",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TITLE},
+      // TODO(crbug.com/393318914): Rename string.
       {"autofillAiDeleteEntryDialogText",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TEXT},
       // TODO(crbug.com/393318914): Remove string.

@@ -8,7 +8,7 @@ import 'chrome://settings/settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertTrue, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import type { SettingsToggleButtonElement } from 'chrome://settings/settings.js';
-import type {SettingsAutofillAiSectionElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsSimpleConfirmationDialogElement, SettingsAutofillAiSectionElement} from 'chrome://settings/lazy_load.js';
 import { EntityDataManagerProxyImpl } from 'chrome://settings/lazy_load.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -74,7 +74,7 @@ suite('AutofillAiSectionUiEligbilityTest', function() {
 
 suite('AutofillAiSectionUiTest', function() {
   let section: SettingsAutofillAiSectionElement;
-  let entities: HTMLElement;
+  let entitiesListElement: HTMLElement;
   let entityDataManager: TestEntityDataManagerProxy;
 
   setup(async function() {
@@ -122,17 +122,87 @@ suite('AutofillAiSectionUiTest', function() {
     const entitiesQueried =
         section.shadowRoot!.querySelector<HTMLElement>('#entries');
     assertTrue(!!entitiesQueried);
-    entities = entitiesQueried;
+    entitiesListElement = entitiesQueried;
 
     assertTrue(!!section.shadowRoot!.querySelector('#entriesHeader'));
   });
 
   test('testEntitiesLoaded', async function() {
     await entityDataManager.whenCalled('loadEntityInstances');
-    const listItems = entities.querySelectorAll<HTMLElement>('.list-item');
+    const listItems =
+        entitiesListElement.querySelectorAll<HTMLElement>('.list-item');
 
     assertEquals(
         3, listItems.length, '2 entities and a hidden element were loaded.');
+    assertTrue(listItems[0]!.textContent!.includes('The Discount'));
+    assertTrue(listItems[1]!.textContent!.includes('John Doe'));
+    assertTrue(listItems[2]!.hidden);
+  });
+
+  test('testRemoveEntityConfirmed', async function() {
+    const actionMenuButton =
+        entitiesListElement.querySelector<HTMLElement>('#moreButton');
+    assertTrue(!!actionMenuButton);
+    actionMenuButton.click();
+    await flushTasks();
+
+    const deleteButton =
+        section.shadowRoot!.querySelector<HTMLElement>('#menuRemoveEntity');
+
+    assertTrue(!!deleteButton);
+    deleteButton.click();
+    await flushTasks();
+
+    const removeEntityDialog =
+        section.shadowRoot!
+            .querySelector<SettingsSimpleConfirmationDialogElement>(
+                '#removeEntityDialog');
+    assertTrue(!!removeEntityDialog);
+
+    removeEntityDialog.$.confirm.click();
+    const guid = await entityDataManager.whenCalled('removeEntityInstance');
+    await flushTasks();
+
+    assertEquals(1, entityDataManager.getCallCount('removeEntityInstance'));
+    assertEquals('e4bbe384-ee63-45a4-8df3-713a58fdc181', guid);
+
+    const listItems =
+        entitiesListElement.querySelectorAll<HTMLElement>('.list-item');
+    assertEquals(
+        2, listItems.length,
+        'only one entity and a hidden element should be present.');
+    assertTrue(listItems[0]!.textContent!.includes('John Doe'));
+    assertTrue(listItems[1]!.hidden);
+  });
+
+  test('testRemoveEntityCancelled', async function() {
+    const actionMenuButton =
+        entitiesListElement.querySelector<HTMLElement>('#moreButton');
+    assertTrue(!!actionMenuButton);
+    actionMenuButton.click();
+    await flushTasks();
+
+    const deleteButton =
+        section.shadowRoot!.querySelector<HTMLElement>('#menuRemoveEntity');
+    assertTrue(!!deleteButton);
+    deleteButton.click();
+    await flushTasks();
+
+    const removeEntityDialog =
+        section.shadowRoot!
+            .querySelector<SettingsSimpleConfirmationDialogElement>(
+                '#removeEntityDialog');
+    assertTrue(!!removeEntityDialog);
+    removeEntityDialog.$.cancel.click();
+    await flushTasks();
+
+    assertEquals(0, entityDataManager.getCallCount('removeEntityInstance'));
+
+    const listItems =
+        entitiesListElement.querySelectorAll<HTMLElement>('.list-item');
+    assertEquals(
+        3, listItems.length,
+        '2 entities and a hidden element should still be present.');
     assertTrue(listItems[0]!.textContent!.includes('The Discount'));
     assertTrue(listItems[1]!.textContent!.includes('John Doe'));
     assertTrue(listItems[2]!.hidden);

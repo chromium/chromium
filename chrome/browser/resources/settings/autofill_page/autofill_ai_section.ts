@@ -19,6 +19,7 @@ import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../settings_columned_section.css.js';
 import '../settings_shared.css.js';
+import '../simple_confirmation_dialog.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -32,6 +33,7 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
+import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
 import {getTemplate} from './autofill_ai_section.html.js';
 import type {EntityDataManagerProxy} from './entity_data_manager_proxy.js';
@@ -150,6 +152,16 @@ export class SettingsAutofillAiSectionElement extends
   }
 
   /**
+   * Returns the text to be used in the "Delete" entity dialog.
+   */
+  private getRemoveEntityText_(entity: EntityInstance): string {
+    // TODO(crbug.com/393319296): Make the string more suggestive.
+    return this.i18n(
+        'autofillAiDeleteEntryDialogText', this.getEntityLabel_(entity),
+        this.getEntityLabel_(entity));
+  }
+
+  /**
    * Open the action menu.
    */
   private onMoreButtonClick_(e: DomRepeatEvent<EntityInstance>) {
@@ -184,6 +196,22 @@ export class SettingsAutofillAiSectionElement extends
     e.preventDefault();
     this.showRemoveEntityDialog_ = true;
     this.$.actionMenu.get().close();
+  }
+
+  private onRemoveEntityDialogClose_() {
+    const wasDeletionConfirmed =
+        this.shadowRoot!
+            .querySelector<SettingsSimpleConfirmationDialogElement>(
+                '#removeEntityDialog')!.wasConfirmed();
+    if (wasDeletionConfirmed) {
+      this.entityDataManager_.removeEntityInstance(this.activeEntity_!.guid);
+      // Speculatively update local list to avoid potential stale data issues.
+      const deletedEntityIndex = this.entityInstances_.findIndex(
+          entityInstance => entityInstance.guid === this.activeEntity_!.guid);
+      this.splice('entityInstances_', deletedEntityIndex, 1);
+    }
+
+    this.showRemoveEntityDialog_ = false;
   }
 }
 

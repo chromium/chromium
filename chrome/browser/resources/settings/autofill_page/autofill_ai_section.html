@@ -126,5 +126,13 @@
   </template>
 </cr-lazy-render>
 
-<!-- TODO(crbug.com/393319296): Add dialogs for adding, editing and deleting
-entities. -->
+<template is="dom-if" if="[[showRemoveEntityDialog_]]" restamp>
+  <settings-simple-confirmation-dialog id="removeEntityDialog"
+      title-text="$i18n{autofillAiDeleteEntryDialogTitle}"
+      body-text="[[getRemoveEntityText_(activeEntity_)]]"
+      confirm-text="$i18n{delete}"
+      on-close="onRemoveEntityDialogClose_">
+  </settings-simple-confirmation-dialog>
+</template>
+
+<!-- TODO(crbug.com/393319296): Add dialog for adding and editing entities. -->
