@@ -2278,9 +2278,9 @@ IN_PROC_BROWSER_TEST_F(TaskManagerDesktopRefreshBrowserTest,
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyExtension()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyUtility()));
 
-  // Load an extension which should not be shown in the default
-  // `Tabs & Extensions` tab of the task manager. Current the task list is like
-  // below. The utility processes might be different for different systems.
+  // Load an extension which should be shown in the default `Tabs & Extensions`
+  // tab of the task manager. Current the task list is like below. The utility
+  // processes might be different for different systems.
   // Utility: Network Service
   // Utility: Video Capture
   // Utility: Storage Service
