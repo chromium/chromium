@@ -7,19 +7,24 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/functional/callback_forward.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_crd_manager.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_notification_constants.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_notification_handler.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_service.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 using ::testing::_;
 using ::testing::Invoke;
@@ -39,6 +44,10 @@ constexpr char kSessionId[] = "session-id";
 constexpr char kSpotlightConnectionCode[] = "456";
 constexpr char kUserEmail[] = "cat@gmail.com";
 constexpr char kTestBaseUrl[] = "https://test";
+// Length of the notification duration and one extra interval for the
+// notification to start.
+constexpr base::TimeDelta kTestNotificationDuration =
+    kSpotlightNotificationDuration + kSpotlightNotificationCountdownInterval;
 
 class MockBocaAppClient : public BocaAppClient {
  public:
@@ -95,6 +104,18 @@ class MockSpotlightCrdManager : public SpotlightCrdManager {
               (override));
 };
 
+class FakeSpotlightNotificationHandlerDelegate
+    : public SpotlightNotificationHandler::Delegate {
+ public:
+  FakeSpotlightNotificationHandlerDelegate() = default;
+  ~FakeSpotlightNotificationHandlerDelegate() override = default;
+
+  // SpotlightNotificationHandler::Delegate
+  void ShowNotification(
+      std::unique_ptr<message_center::Notification> notification) override {}
+  void ClearNotification(const std::string& id) override {}
+};
+
 class SpotlightSessionManagerTest : public testing::Test {
  public:
   SpotlightSessionManagerTest() = default;
@@ -126,11 +147,14 @@ class SpotlightSessionManagerTest : public testing::Test {
     spotlight_service_ = spotlight_service.get();
 
     spotlight_session_manager_ = std::make_unique<SpotlightSessionManager>(
+        std::make_unique<SpotlightNotificationHandler>(
+            std::make_unique<FakeSpotlightNotificationHandlerDelegate>()),
         std::move(spotlight_crd_manager), std::move(spotlight_service));
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockSessionManager* session_manager() { return session_manager_.get(); }
   MockSpotlightService* spotlight_service() { return spotlight_service_; }
   MockSpotlightCrdManager* spotlight_crd_manager() {
@@ -183,6 +207,7 @@ TEST_F(SpotlightSessionManagerTest, OnConsumerActivityUpdated) {
   producer.set_email(kUserEmail);
   spotlight_session_manager_->OnSessionStarted(kSessionId, producer);
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
+  task_environment_.FastForwardBy(kTestNotificationDuration);
 }
 
 TEST_F(SpotlightSessionManagerTest,
@@ -266,6 +291,7 @@ TEST_F(SpotlightSessionManagerTest,
   producer.set_email(kUserEmail);
   spotlight_session_manager_->OnSessionStarted(kSessionId, producer);
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
+  task_environment_.FastForwardBy(kTestNotificationDuration);
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
 
   EXPECT_CALL(*spotlight_service(),
@@ -274,6 +300,7 @@ TEST_F(SpotlightSessionManagerTest,
   spotlight_session_manager_->OnSessionEnded(kSessionId);
   spotlight_session_manager_->OnSessionStarted(kSessionId, producer);
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
+  task_environment_.FastForwardBy(kTestNotificationDuration);
 }
 
 }  // namespace

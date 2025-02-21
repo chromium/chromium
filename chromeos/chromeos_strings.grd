@@ -7025,14 +7025,17 @@
       <message name="IDS_BOCA_CONNECTED_TO_CLASS_NOTIFICATION_MESSAGE" desc="Message of the notification telling users that they're currently connected to a school tools session.">
         School Tools is connected to students
       </message>
-            <message name="IDS_BOCA_CONNECTED_TO_CLASS_BUTTON_TEXT" desc="Text for the button to open school tools app.">
+      <message name="IDS_BOCA_CONNECTED_TO_CLASS_BUTTON_TEXT" desc="Text for the button to open school tools app.">
         Open app
       </message>
       <message name="IDS_BOCA_MICROPHONE_IN_USE_NOTIFICATION_MESSAGE" desc="Message of the notification telling users that school tools is currently using their microphone.">
         School Tools is using your microphone
       </message>
-       <message name="IDS_BOCA_NOTIFICATION_TITLE" desc="Title of the school tools notification">
+      <message name="IDS_BOCA_NOTIFICATION_TITLE" desc="Title of the school tools notification">
         School Tools
+      </message>
+      <message name="IDS_BOCA_SPOTLIGHT_NOTIFICATION_MESSAGE" desc="Message signaling the countdown before the start of a Spotlight session in the Boca app.">
+        Your teacher will view your screen in <ph name="NUM_SECONDS">$1<ex>3</ex></ph> seconds
       </message>
     </messages>
   </release>
