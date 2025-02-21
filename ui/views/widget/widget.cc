@@ -1137,6 +1137,12 @@ void Widget::Restore() {
   }
 }
 
+void Widget::ShowWindowControlsMenu(const gfx::Point& point) {
+  if (native_widget_) {
+    native_widget_->ShowWindowControlsMenu(point);
+  }
+}
+
 bool Widget::IsMaximized() const {
   return native_widget_ ? native_widget_->IsMaximized() : false;
 }

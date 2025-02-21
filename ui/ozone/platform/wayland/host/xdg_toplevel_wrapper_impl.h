@@ -42,6 +42,8 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void SetMinSize(int32_t width, int32_t height) override;
   void SetMaxSize(int32_t width, int32_t height) override;
   void SetAppId(const std::string& app_id) override;
+  void ShowWindowMenu(WaylandConnection* connection,
+                      const gfx::Point& point) override;
   void SetDecoration(DecorationMode decoration) override;
   void SetSystemModal(bool modal) override;
   void SetIcon(const gfx::ImageSkia& icon) override;

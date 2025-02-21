@@ -1056,6 +1056,12 @@ void DesktopNativeWidgetAura::Restore() {
   }
 }
 
+void DesktopNativeWidgetAura::ShowWindowControlsMenu(const gfx::Point& point) {
+  if (desktop_window_tree_host_) {
+    desktop_window_tree_host_->ShowWindowControlsMenu(point);
+  }
+}
+
 void DesktopNativeWidgetAura::SetFullscreen(bool fullscreen,
                                             int64_t target_display_id) {
   if (desktop_window_tree_host_) {

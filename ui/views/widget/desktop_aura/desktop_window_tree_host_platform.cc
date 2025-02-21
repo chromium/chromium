@@ -629,6 +629,11 @@ void DesktopWindowTreeHostPlatform::Restore() {
   Show(ui::mojom::WindowShowState::kNormal, gfx::Rect());
 }
 
+void DesktopWindowTreeHostPlatform::ShowWindowControlsMenu(
+    const gfx::Point& point) {
+  platform_window()->ShowWindowControlsMenu(point);
+}
+
 bool DesktopWindowTreeHostPlatform::IsMaximized() const {
   return platform_window()->GetPlatformWindowState() ==
          ui::PlatformWindowState::kMaximized;

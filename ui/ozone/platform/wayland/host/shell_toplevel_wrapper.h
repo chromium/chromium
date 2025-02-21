@@ -106,6 +106,10 @@ class ShellToplevelWrapper {
   // .desktop file and use the icon set there.
   virtual void SetAppId(const std::string& app_id) = 0;
 
+  // Requests the compositor to show a menu with window controls.
+  virtual void ShowWindowMenu(WaylandConnection* connection,
+                              const gfx::Point& point) = 0;
+
   // In case of kClientSide or kServerSide, this function sends a request to the
   // wayland compositor to update the decoration mode for a surface associated
   // with this top level window.

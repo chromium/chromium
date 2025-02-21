@@ -383,6 +383,7 @@ class OzonePlatformWayland : public OzonePlatform,
           (connection_->xdg_decoration_manager_v1() != nullptr &&
            override_supports_ssd_for_test == SupportsForTest::kNotSet) ||
           override_supports_ssd_for_test == SupportsForTest::kYes;
+      properties.supports_server_window_menus = connection_->shell();
       properties.supports_overlays =
           connection_->ShouldUseOverlayDelegation() &&
           connection_->viewporter();

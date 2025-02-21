@@ -19,6 +19,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/linux/linux_ui.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #include "ui/views/widget/native_widget_aura.h"
@@ -60,7 +61,7 @@ bool WindowEventFilterLinux::HandleMouseEventWithHitTest(
     int hit_test,
     ui::MouseEvent* event) {
   int previous_click_component = HTNOWHERE;
-  if (event->IsLeftMouseButton()) {
+  if (event->changed_button_flags() & ui::EF_LEFT_MOUSE_BUTTON) {
     previous_click_component = click_component_;
     click_component_ = hit_test;
   }
@@ -70,9 +71,22 @@ bool WindowEventFilterLinux::HandleMouseEventWithHitTest(
     return true;
   }
 
-  if (hit_test == HTMAXBUTTON) {
-    OnClickedMaximizeButton(event);
-    return true;
+  if (event->changed_button_flags() & ui::EF_RIGHT_MOUSE_BUTTON) {
+    switch (hit_test) {
+      case HTMINBUTTON:
+      case HTMAXBUTTON:
+      case HTCLOSE:
+        if (ui::OzonePlatform::GetInstance()
+                ->GetPlatformRuntimeProperties()
+                .supports_server_window_menus) {
+          desktop_window_tree_host_->ShowWindowControlsMenu(
+              display::Screen::GetScreen()->GetCursorScreenPoint());
+          return true;
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   return false;
@@ -83,13 +97,13 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
   ui::LinuxUi::WindowFrameActionSource action_type;
   ui::LinuxUi::WindowFrameAction default_action;
 
-  if (event->IsRightMouseButton()) {
+  if (event->changed_button_flags() & ui::EF_RIGHT_MOUSE_BUTTON) {
     action_type = ui::LinuxUi::WindowFrameActionSource::kRightClick;
     default_action = ui::LinuxUi::WindowFrameAction::kMenu;
-  } else if (event->IsMiddleMouseButton()) {
+  } else if (event->changed_button_flags() & ui::EF_MIDDLE_MOUSE_BUTTON) {
     action_type = ui::LinuxUi::WindowFrameActionSource::kMiddleClick;
     default_action = ui::LinuxUi::WindowFrameAction::kNone;
-  } else if (event->IsLeftMouseButton() &&
+  } else if (event->changed_button_flags() & ui::EF_LEFT_MOUSE_BUTTON &&
              event->flags() & ui::EF_IS_DOUBLE_CLICK) {
     click_component_ = HTNOWHERE;
     if (previous_click_component == HTCAPTION) {
@@ -144,30 +158,6 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
                             ui::mojom::MenuSourceType::kMouse);
       event->SetHandled();
       break;
-  }
-}
-
-void WindowEventFilterLinux::OnClickedMaximizeButton(ui::MouseEvent* event) {
-  auto* content_window = desktop_window_tree_host_->GetContentWindow();
-  views::Widget* widget = views::Widget::GetWidgetForNativeView(content_window);
-  if (!widget) {
-    return;
-  }
-
-  gfx::Rect display_work_area = display::Screen::GetScreen()
-                                    ->GetDisplayNearestWindow(content_window)
-                                    .work_area();
-  gfx::Rect bounds = widget->GetWindowBoundsInScreen();
-  if (event->IsMiddleMouseButton()) {
-    bounds.set_y(display_work_area.y());
-    bounds.set_height(display_work_area.height());
-    widget->SetBounds(bounds);
-    event->StopPropagation();
-  } else if (event->IsRightMouseButton()) {
-    bounds.set_x(display_work_area.x());
-    bounds.set_width(display_work_area.width());
-    widget->SetBounds(bounds);
-    event->StopPropagation();
   }
 }
 

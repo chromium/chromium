@@ -139,6 +139,7 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual void Maximize() = 0;
   virtual void Minimize() = 0;
   virtual void Restore() = 0;
+  virtual void ShowWindowControlsMenu(const gfx::Point& point);
   virtual bool IsMaximized() const = 0;
   virtual bool IsMinimized() const = 0;
 

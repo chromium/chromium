@@ -45,9 +45,6 @@ class VIEWS_EXPORT WindowEventFilterLinux : public ui::EventHandler {
   // Called when the user clicked the caption area.
   void OnClickedCaption(ui::MouseEvent* event, int previous_click_component);
 
-  // Called when the user clicked the maximize button.
-  void OnClickedMaximizeButton(ui::MouseEvent* event);
-
   void MaybeToggleMaximizedState(aura::Window* window);
 
   // Dispatches a message to the window manager to tell it to act as if a border

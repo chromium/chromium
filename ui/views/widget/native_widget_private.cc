@@ -28,6 +28,8 @@ gfx::Rect NativeWidgetPrivate::ConstrainBoundsToDisplayWorkArea(
 
 void NativeWidgetPrivate::PaintAsActiveChanged() {}
 
+void NativeWidgetPrivate::ShowWindowControlsMenu(const gfx::Point& point) {}
+
 void NativeWidgetPrivate::ShowEmojiPanel() {
   ui::ShowEmojiPanel();
 }

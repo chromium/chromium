@@ -928,6 +928,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void Minimize();
   void Restore();
 
+  // Shows a menu with controls beyond minimize/maximize/restore. Only
+  // implemented on Linux.
+  void ShowWindowControlsMenu(const gfx::Point& point);
+
   // Whether or not the window is maximized or minimized.
   virtual bool IsMaximized() const;
   bool IsMinimized() const;

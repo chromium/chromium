@@ -268,6 +268,14 @@ void WaylandToplevelWindow::Restore() {
   SetWindowState(PlatformWindowState::kNormal, display::kInvalidDisplayId);
 }
 
+void WaylandToplevelWindow::ShowWindowControlsMenu(const gfx::Point& point) {
+  if (shell_toplevel_) {
+    shell_toplevel_->ShowWindowMenu(
+        connection(),
+        gfx::ScaleToRoundedPoint(point, applied_state().ui_scale));
+  }
+}
+
 void WaylandToplevelWindow::ActivateWithToken(std::string token) {
   DCHECK(connection()->xdg_activation());
   // xdg-activation implementation doesn't seem to interact well with dnd in
