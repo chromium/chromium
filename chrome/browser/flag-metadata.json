@@ -4038,7 +4038,7 @@
   {
     "name": "enable-unsafe-webgpu",
     "owners": [ "//third_party/blink/renderer/modules/webgpu/OWNERS" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "enable-user-link-capturing-scope-extensions-pwa",
