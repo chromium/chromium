@@ -13,9 +13,9 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/extensions/api/omnibox.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_builder.h"
@@ -30,7 +30,7 @@ class ExtensionInstalledBubbleModelTest
  public:
   ExtensionInstalledBubbleModelTest() {
     scoped_feature_list_.InitAndDisableFeature(
-        syncer::kSyncEnableExtensionsInTransportMode);
+        switches::kEnableExtensionsExplicitBrowserSignin);
   }
 
   ~ExtensionInstalledBubbleModelTest() override = default;
@@ -230,7 +230,7 @@ class ExtensionInstalledBubbleModelTransportModeTest
  public:
   ExtensionInstalledBubbleModelTransportModeTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        syncer::kSyncEnableExtensionsInTransportMode);
+        switches::kEnableExtensionsExplicitBrowserSignin);
   }
 
  private:

@@ -52,7 +52,6 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/common/features.h"
-#include "components/sync/base/features.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -1234,7 +1233,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, IsPinnedToToolbar) {
 TEST_F(ExtensionInfoGeneratorUnitTest, UploadAsAccountExtension_FullSync) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      syncer::kSyncEnableExtensionsInTransportMode);
+      switches::kEnableExtensionsExplicitBrowserSignin);
 
   // Create two extensions: one syncable and one non-syncable.
   const scoped_refptr<const Extension> syncable_extension = CreateExtension(
@@ -1275,8 +1274,9 @@ TEST_F(ExtensionInfoGeneratorUnitTest, UploadAsAccountExtension_FullSync) {
 TEST_F(ExtensionInfoGeneratorUnitTest, UploadAsAccountExtension_TransportMode) {
   // Allow extensions to sync in transport mode.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({syncer::kSyncEnableExtensionsInTransportMode},
-                                /*disabled_features=*/{});
+  feature_list.InitWithFeatures(
+      {switches::kEnableExtensionsExplicitBrowserSignin},
+      /*disabled_features=*/{});
 
   // Sign the user in without full sync.
   auto identity_test_env_profile_adaptor =

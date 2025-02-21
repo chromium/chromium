@@ -158,10 +158,6 @@ BASE_FEATURE(kWebApkBackupAndRestoreBackend,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kSyncEnableExtensionsInTransportMode,
-             "SyncEnableExtensionsInTransportMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSyncEnablePasswordsSyncErrorMessageAlternative,
              "SyncEnablePasswordsSyncErrorMessageAlternative",

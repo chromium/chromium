@@ -12,9 +12,9 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 
@@ -94,7 +94,7 @@ TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeTransportMode) {
   // Enable extension syncing in transport mode.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      syncer::kSyncEnableExtensionsInTransportMode);
+      switches::kEnableExtensionsExplicitBrowserSignin);
 
   // Use a test identity environment to mimic signing a user in with sync
   // disabled (transport mode).
@@ -146,7 +146,7 @@ TEST_F(AccountExtensionTrackerUnitTest,
   // Enable extension syncing in transport mode.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      syncer::kSyncEnableExtensionsInTransportMode);
+      switches::kEnableExtensionsExplicitBrowserSignin);
 
   // Use a test identity environment to mimic signing a user in with sync
   // disabled (transport mode).

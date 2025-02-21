@@ -12,7 +12,6 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
@@ -69,7 +68,7 @@ bool IsExtensionsExplicitSigninEnabled() {
   // Explicit sign ins for extensions are enabled if extensions can be synced if
   // the user signs into transport mode.
   return base::FeatureList::IsEnabled(
-      syncer::kSyncEnableExtensionsInTransportMode);
+      switches::kEnableExtensionsExplicitBrowserSignin);
 }
 
 }  // namespace extensions::sync_util

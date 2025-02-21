@@ -11,9 +11,9 @@
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_browsertest.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
@@ -47,7 +47,7 @@ class UploadExtensionToAccountDialogBrowserTest
  public:
   UploadExtensionToAccountDialogBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        syncer::kSyncEnableExtensionsInTransportMode);
+        switches::kEnableExtensionsExplicitBrowserSignin);
   }
   ~UploadExtensionToAccountDialogBrowserTest() override = default;
   UploadExtensionToAccountDialogBrowserTest(
