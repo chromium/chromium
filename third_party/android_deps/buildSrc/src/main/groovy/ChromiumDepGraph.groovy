@@ -93,6 +93,7 @@ class ChromiumDepGraph {
                     url: 'https://github.com/google/guava',
                     licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
                     licenseName: 'Apache 2.0',
+                    supportsAndroid: false,
                     // Both -jre and -android versions are listed. Filter to only the -jre ones.
                     versionFilter: '-jre'),
             com_google_guava_guava_android: new PropertyOverride(
@@ -388,6 +389,9 @@ class ChromiumDepGraph {
                 // resolved instead of in customizeDep, since otherwise it gets overwritten.
                 if (overrides.isShipped != null) {
                     dep.isShipped = overrides.isShipped
+                }
+                if (overrides.supportsAndroid != null) {
+                    dep.supportsAndroid = overrides.supportsAndroid
                 }
                 // If overrideLatest is true, set it recursively on the dep and all its children. This is convenient
                 // since you do not have to set it on a whole set of old deps.
@@ -804,6 +808,7 @@ class ChromiumDepGraph {
         String cpePrefix
         String resolveVersion
         Boolean isShipped
+        Boolean supportsAndroid
         // Set to true if this dependency is not needed.
         Boolean exclude
         // Set to false to skip creation of BUILD.gn target.
