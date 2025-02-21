@@ -115,6 +115,9 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
               V8CanvasTextBaseline::Enum baseline,
               V8CanvasTextAlign::Enum align,
               const String&);
+  // A helper for Update().  This function updates `runs_with_offset_`, and
+  // returns a pair of the total width and the glyph bounding rectangle.
+  std::pair<float, gfx::RectF> MeasureRuns();
 
   void ShapeTextIfNeeded();
   unsigned CorrectForMixedBidi(HeapVector<RunWithOffset>::reverse_iterator&,
