@@ -50,6 +50,8 @@ const char* GetUseCounterHistogramName(
       return "Blink.UseCounter.PermissionsPolicy.Header2";
     case FeatureType::kPermissionsPolicyIframeAttribute:
       return "Blink.UseCounter.PermissionsPolicy.Allow2";
+    case FeatureType::kPermissionsPolicyEnabledPrivacySensitive:
+      return "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled";
   }
 }
 

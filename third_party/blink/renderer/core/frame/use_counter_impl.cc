@@ -67,6 +67,9 @@ mojom::blink::UseCounterFeatureType ToFeatureType(
     case UseCounterImpl::PermissionsPolicyUsageType::kIframeAttribute:
       return mojom::blink::UseCounterFeatureType::
           kPermissionsPolicyIframeAttribute;
+    case UseCounterImpl::PermissionsPolicyUsageType::kEnabledPrivacySensitive:
+      return mojom::blink::UseCounterFeatureType::
+          kPermissionsPolicyEnabledPrivacySensitive;
   }
 }
 }  // namespace
@@ -331,6 +334,8 @@ void UseCounterImpl::TraceMeasurement(const UseCounterFeature& feature) {
         kPermissionsPolicyViolationEnforce:
     case mojom::blink::UseCounterFeatureType::kPermissionsPolicyHeader:
     case mojom::blink::UseCounterFeatureType::kPermissionsPolicyIframeAttribute:
+    case mojom::blink::UseCounterFeatureType::
+        kPermissionsPolicyEnabledPrivacySensitive:
       // TODO(crbug.com/1206004): Add trace event for permissions policy metrics
       // gathering.
       return;

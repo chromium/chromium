@@ -5176,6 +5176,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled"
+    enum="FeaturePolicyFeature" expires_after="2026-02-19">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-team@chromium.org</owner>
+  <summary>
+    Counts the use of a specific permissions policy that is enabled by the API
+    but is marked as sensitive and advertising script is in the stack when the
+    feature policy is checked. Each policy is counted only once per page load.
+
+    Not recorded if the page is prerendered and cancelled.
+  </summary>
+</histogram>
+
 <histogram name="Blink.UseCounter.PermissionsPolicy.Violation.Enforce"
     enum="FeaturePolicyFeature" expires_after="2026-03-09">
   <owner>iclelland@chromium.org</owner>

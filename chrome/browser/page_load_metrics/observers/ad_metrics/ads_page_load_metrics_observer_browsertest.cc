@@ -41,6 +41,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -55,6 +56,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/gfx/geometry/size.h"
@@ -1523,6 +1525,9 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
     command_line->AppendSwitchASCII(
         switches::kAutoplayPolicy,
         switches::autoplay::kNoUserGestureRequiredPolicy);
+    // Required for web bluetooth.
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
   }
 
   // This function loads a |large_resource| and if |will_block| is set, then
@@ -1643,6 +1648,97 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
   waiter->Wait();
 }
 
+// Verify that privacy sensitive permissions policy use counters are recorded
+// correctly when ad script is in the stack.
+IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
+                       ReceivedPrivacyPermissionsUseCounters) {
+  SetRulesetWithRules(
+      {subresource_filter::testing::CreateSuffixRule("ad_script.js")});
+  base::HistogramTester histogram_tester;
+
+  auto main_html_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          embedded_test_server(), "/mock_page.html",
+          true /*relative_url_is_prefix*/);
+  auto ad_script_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          embedded_test_server(), "/ad_script.js",
+          true /*relative_url_is_prefix*/);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto waiter = CreateAdsPageLoadMetricsTestWaiter();
+
+  browser()->OpenURL(
+      content::OpenURLParams(embedded_test_server()->GetURL("/mock_page.html"),
+                             content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PAGE_TRANSITION_TYPED, false),
+      /*navigation_handle_callback=*/{});
+
+  main_html_response->WaitForRequest();
+  main_html_response->Send(page_load_metrics::kHttpOkResponseHeader);
+  main_html_response->Send(
+      "<html><body></body><script src=\"ad_script.js\"></script></html>");
+  main_html_response->Send(std::string(1024, ' '));
+  main_html_response->Done();
+
+  ad_script_response->WaitForRequest();
+  ad_script_response->Send(page_load_metrics::kHttpOkResponseHeader);
+  // Get ad script to use a bunch of privacy sensitive features.
+  ad_script_response->Send(R"(
+        navigator.bluetooth.requestDevice().catch(e => {});
+        navigator.geolocation.getCurrentPosition(() => {});
+        navigator.mediaDevices.getUserMedia({video: true});
+        navigator.clipboard.readText().catch(() => {});
+        navigator.clipboard.writeText("foo").catch(() => {});
+        navigator.mediaDevices.getDisplayMedia().catch(() => {});
+        navigator.mediaDevices.getUserMedia({audio: true});
+        navigator.serial.requestPort().catch(() => {});
+        navigator.usb.requestDevice({ filters: [] }).catch(() => {});
+  )");
+  ad_script_response->Send(std::string(5000, ' '));
+  ad_script_response->Done();
+
+  waiter->AddMinimumNetworkBytesExpectation(5000);
+  waiter->Wait();
+
+  // Close all tabs instead of navigating as the embedded_test_server will
+  // hang waiting for loads to finish when we have an unfinished
+  // ControllableHttpResponse.
+  browser()->tab_strip_model()->CloseAllTabs();
+
+  histogram_tester.ExpectTotalCount(
+      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled", 9);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
+      network::mojom::PermissionsPolicyFeature::kBluetooth, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
+      network::mojom::PermissionsPolicyFeature::kCamera, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
+      network::mojom::PermissionsPolicyFeature::kClipboardRead, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
+      network::mojom::PermissionsPolicyFeature::kClipboardWrite, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
+      network::mojom::PermissionsPolicyFeature::kDisplayCapture, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
+      network::mojom::PermissionsPolicyFeature::kGeolocation, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
+      network::mojom::PermissionsPolicyFeature::kMicrophone, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
+      network::mojom::PermissionsPolicyFeature::kSerial, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
+      network::mojom::PermissionsPolicyFeature::kUsb, 1);
+}
+
 // Verify that per-resource metrics are recorded correctly.
 IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
                        ReceivedAdResourceMetrics) {
@@ -1686,10 +1782,11 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 
   ad_script_response->WaitForRequest();
   ad_script_response->Send(page_load_metrics::kHttpOkResponseHeader);
-  ad_script_response->Send(
-      "var iframe = document.createElement(\"iframe\");"
-      "iframe.src =\"ad.html\";"
-      "document.body.appendChild(iframe);");
+  ad_script_response->Send(R"(
+      var iframe = document.createElement("iframe");
+      iframe.src ="ad.html";
+      document.body.appendChild(iframe);
+  )");
   ad_script_response->Send(std::string(1000, ' '));
   ad_script_response->Done();
 

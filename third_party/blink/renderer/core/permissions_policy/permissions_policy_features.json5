@@ -63,6 +63,20 @@
         "All",
         "IsolatedContext"
       ]
+    },
+
+    // "privacy_sensitive" should be true if the feature might expose personal
+    // information about the user beyond the browsing environment they run
+    // within. This should have a relatively high bar. A feature should not
+    // be deemed sensitive simply because it could aid in identifying a user
+    // via fingerprinting. It should be deemed sensitive if the feature
+    // provides significant information about the user, e.g., name, address,
+    // location, pictures, files, etc. and may be used by a third-party
+    // present on the page if available. Features only available in an
+    // IsolatedContext are not considered privacy sensitive.
+    privacy_sensitive: {
+      default: false,
+      valid_type: "bool",
     }
   },
 
@@ -96,6 +110,7 @@
       name: "Bluetooth",
       permissions_policy_name: "bluetooth",
       depends_on: ["WebBluetooth"],
+      privacy_sensitive: true,
     },
     {
       name: "BrowsingTopics",
@@ -112,6 +127,7 @@
     {
       name: "Camera",
       permissions_policy_name: "camera",
+      privacy_sensitive: true,
     },
     {
       name: "CapturedSurfaceControl",
@@ -224,10 +240,12 @@
     {
       name: "ClipboardRead",
       permissions_policy_name: "clipboard-read",
+      privacy_sensitive: true,
     },
     {
       name: "ClipboardWrite",
       permissions_policy_name: "clipboard-write",
+      privacy_sensitive: true,
     },
     {
       name: "ComputePressure",
@@ -276,6 +294,7 @@
     {
       name: "DisplayCapture",
       permissions_policy_name: "display-capture",
+      privacy_sensitive: true,
     },
     {
       name: "EncryptedMedia",
@@ -322,6 +341,7 @@
     {
       name: "Geolocation",
       permissions_policy_name: "geolocation",
+      privacy_sensitive: true,
     },
     {
       name: "Gyroscope",
@@ -371,6 +391,7 @@
     {
       name: "Microphone",
       permissions_policy_name: "microphone",
+      privacy_sensitive: true,
     },
     {
       name: "MidiFeature",
@@ -435,6 +456,7 @@
       name: "Serial",
       permissions_policy_name: "serial",
       depends_on: ["Serial"],
+      privacy_sensitive: true,
     },
     {
       name: "SharedAutofill",
@@ -490,6 +512,7 @@
       name: "Usb",
       permissions_policy_name: "usb",
       depends_on: ["WebUSB"],
+      privacy_sensitive: true,
     },
     {
       name: "UsbUnrestricted",

@@ -37,8 +37,12 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/ad_tracker.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -174,6 +178,21 @@ SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
   bool report_only_permissions_policy_result =
       !report_only_permissions_policy_ ||
       report_only_permissions_policy_->IsFeatureEnabled(feature);
+
+  if (permissions_policy_result && IsPrivacySensitiveFeature(feature)) {
+    if (LocalDOMWindow* window =
+            DynamicTo<LocalDOMWindow>(execution_context_.Get())) {
+      if (LocalFrame* frame = window->GetFrame()) {
+        AdTracker* ad_tracker = frame->GetAdTracker();
+        if (ad_tracker && ad_tracker->IsAdScriptInStack(
+                              AdTracker::StackType::kBottomAndTop)) {
+          window->CountPermissionsPolicyUsage(
+              feature, UseCounterImpl::PermissionsPolicyUsageType::
+                           kEnabledPrivacySensitive);
+        }
+      }
+    }
+  }
 
   bool should_report =
       !permissions_policy_result || !report_only_permissions_policy_result;
