@@ -4103,6 +4103,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
                                       bool is_same_document_navigation,
                                       NavigationRequest* navigation_request);
 
+  void UpdateOrDisableCompositorMetricRecorder() const;
+
   // Verifies that browser-calculated and renderer-calculated values for some
   // params in DidCommitProvisionalLoadParams match, to ensure we can completely
   // remove the dependence on the renderer-calculated values. Logs crash keys

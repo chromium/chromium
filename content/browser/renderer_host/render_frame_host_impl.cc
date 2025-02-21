@@ -15758,6 +15758,24 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
       std::move(body));
 }
 
+void RenderFrameHostImpl::UpdateOrDisableCompositorMetricRecorder() const {
+  if (RenderWidgetHostImpl* rwh = GetLocalRenderWidgetHost()) {
+    if (rwh->compositor_metric_recorder()) {
+      if (lifecycle_state() == LifecycleStateImpl::kPendingCommit) {
+        // The navigation commits in a new RenderFrameHost with a new
+        // RenderWidgetHost. Log the time when the commit happens to record
+        // compositor-related metrics.
+        rwh->compositor_metric_recorder()->DidStartNavigationCommit();
+      } else {
+        // The navigation commits in a pre-existing RenderFrameHost. Make sure
+        // that it won't record compositor-related metrics, since it's intended
+        // to be recorded for navigations with a new RenderFrameHost.
+        rwh->DisableCompositorMetricRecording();
+      }
+    }
+  }
+}
+
 void RenderFrameHostImpl::SendCommitNavigation(
     mojom::NavigationClient* navigation_client,
     NavigationRequest* navigation_request,
@@ -15783,21 +15801,8 @@ void RenderFrameHostImpl::SendCommitNavigation(
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token) {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::SendCommitNavigation");
-  if (RenderWidgetHostImpl* rwh = GetLocalRenderWidgetHost()) {
-    if (rwh->compositor_metric_recorder()) {
-      if (lifecycle_state() == LifecycleStateImpl::kPendingCommit) {
-        // The navigation commits in a new RenderFrameHost with a new
-        // RenderWidgetHost. Log the time when the commit happens to record
-        // compositor-related metrics.
-        rwh->compositor_metric_recorder()->DidStartNavigationCommit();
-      } else {
-        // The navigation commits in a pre-existing RenderFrameHost. Make sure
-        // that it won't record compositor-related metrics, since it's intended
-        // to be recorded for navigations with a new RenderFrameHost.
-        rwh->DisableCompositorMetricRecording();
-      }
-    }
-  }
+  UpdateOrDisableCompositorMetricRecorder();
+
   base::ElapsedTimer timer;
   DCHECK_EQ(net::OK, navigation_request->GetNetErrorCode());
   if (commit_params->origin_to_commit) {
@@ -15992,6 +15997,8 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
   DCHECK(navigation_client && navigation_request);
   DCHECK_NE(GURL(), common_params->url);
   DCHECK_NE(net::OK, error_code);
+
+  UpdateOrDisableCompositorMetricRecorder();
   IncreaseCommitNavigationCounter();
 
   // If this commit is for a main frame in another browsing context group, warn
