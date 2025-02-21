@@ -144,7 +144,7 @@ source_set("impl") {
     "//components/autofill/content/browser:risk_proto",
     "//components/compose/core/browser",
     "//components/compose/core/browser:features",
-    "//components/embedder_support:browser_util",
+    "//components/embedder_support:user_agent",
     "//components/feature_engagement/public",
     "//components/infobars/content",
     "//components/infobars/core",

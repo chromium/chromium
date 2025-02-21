@@ -39,6 +39,7 @@ source_set("app_shell_lib") {
     "//apps",
     "//base",
     "//build:chromeos_buildflags",
+    "//components/embedder_support:user_agent",
     "//components/feedback",
     "//components/feedback/content:factory",
     "//components/guest_view/browser",

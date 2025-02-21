@@ -877,7 +877,7 @@ source_set("extensions") {
       "//components/download/content/public",
       "//components/download/public/common:public",
       "//components/drive",
-      "//components/embedder_support:browser_util",
+      "//components/embedder_support:user_agent",
       "//components/enterprise",
       "//components/enterprise/buildflags",
       "//components/enterprise/connectors/core",

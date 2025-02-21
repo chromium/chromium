@@ -166,7 +166,7 @@ source_set("profile_util_impl") {
     "//chrome/common:constants",
     "//components/account_id",
     "//components/browsing_data/core",
-    "//components/embedder_support:browser_util",
+    "//components/embedder_support:user_agent",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/keyed_service/content",
     "//components/policy/core/browser",

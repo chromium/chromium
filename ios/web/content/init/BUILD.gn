@@ -27,7 +27,7 @@ source_set("init") {
 
   deps = [
     "//build:blink_buildflags",
-    "//components/embedder_support:browser_util",
+    "//components/embedder_support:user_agent",
     "//components/embedder_support/origin_trials:origin_trials",
     "//components/js_injection/renderer",
     "//components/performance_manager:performance_manager",
