@@ -926,7 +926,7 @@ class
         /*disabled_features=*/{});
   }
 
-  size_t GetTotalSampleCount(const std::string& histogram_name) {
+  size_t GetTotalSampleCount(std::string_view histogram_name) {
     auto buckets = histogram_tester_.GetAllSamples(histogram_name);
     size_t count = 0;
     for (const auto& bucket : buckets) {
@@ -949,7 +949,7 @@ class
     auto histogram_observer = std::make_unique<
         base::StatisticsRecorder::ScopedHistogramSampleObserver>(
         histogram_name,
-        base::BindLambdaForTesting([&](const char* histogram_name,
+        base::BindLambdaForTesting([&](std::string_view histogram_name,
                                        uint64_t name_hash,
                                        base::HistogramBase::Sample32 sample) {
           if (GetTotalSampleCount(histogram_name) >= expected_sample_count) {

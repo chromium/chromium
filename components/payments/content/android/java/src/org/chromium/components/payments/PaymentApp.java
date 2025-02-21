@@ -6,10 +6,10 @@ package org.chromium.components.payments;
 
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** The base class for a single payment app, e.g., a payment handler. */
+@NullMarked
 public abstract class PaymentApp extends EditableOption {
     /** Arbitrarily chosen maximum length of a payment app name. */
     private static final int APP_NAME_ELIDE_LENGTH = 64;
@@ -183,7 +184,7 @@ public abstract class PaymentApp extends EditableOption {
             String merchantName,
             String origin,
             String iframeOrigin,
-            @Nullable byte[][] certificateChain,
+            byte @Nullable [][] certificateChain,
             Map<String, PaymentMethodData> methodDataMap,
             PaymentItem total,
             List<PaymentItem> displayItems,
@@ -238,8 +239,7 @@ public abstract class PaymentApp extends EditableOption {
      * @return The identifier for another payment app that should be hidden when this payment app is
      * present.
      */
-    @Nullable
-    public String getApplicationIdentifierToHide() {
+    public @Nullable String getApplicationIdentifierToHide() {
         return null;
     }
 
@@ -247,8 +247,7 @@ public abstract class PaymentApp extends EditableOption {
      * @return The set of identifier of other apps that would cause this app to be hidden, if any of
      * them are present, e.g., ["com.bobpay.production", "com.bobpay.beta"].
      */
-    @Nullable
-    public Set<String> getApplicationIdentifiersThatHideThisApp() {
+    public @Nullable Set<String> getApplicationIdentifiersThatHideThisApp() {
         return null;
     }
 

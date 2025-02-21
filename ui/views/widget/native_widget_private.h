@@ -66,10 +66,8 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   static NativeWidgetPrivate* GetTopLevelNativeWidget(
       gfx::NativeView native_view);
 
-  static void GetAllChildWidgets(gfx::NativeView native_view,
-                                 Widget::Widgets* children);
-  static void GetAllOwnedWidgets(gfx::NativeView native_view,
-                                 Widget::Widgets* owned);
+  static Widget::Widgets GetAllChildWidgets(gfx::NativeView native_view);
+  static Widget::Widgets GetAllOwnedWidgets(gfx::NativeView native_view);
   static void ReparentNativeView(gfx::NativeView native_view,
                                  gfx::NativeView new_parent);
 

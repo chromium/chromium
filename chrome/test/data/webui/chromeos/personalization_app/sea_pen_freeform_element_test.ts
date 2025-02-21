@@ -306,4 +306,48 @@ suite('SeaPenFreeformElementTest', function() {
         'true', resultsTabButton?.ariaSelected,
         'The results tab should still be selected');
   });
+
+  test(
+      'selecting sample prompts tab moves focus to first sample prompt',
+      async () => {
+        personalizationStore.data.wallpaper.seaPen.currentSeaPenQuery =
+            seaPenProvider.seaPenFreeformQuery;
+        freeformElement = initElement(SeaPenFreeformElement);
+        await waitAfterNextRender(freeformElement);
+        const tabContainer =
+            freeformElement.shadowRoot!.querySelector<HTMLElement>(
+                '#tabContainer:not([hidden])');
+        const samplePromptsTabButton =
+            tabContainer!.querySelector<CrButtonElement>('#samplePromptsTab');
+        const resultsTabButton =
+            tabContainer!.querySelector<CrButtonElement>('#resultsTab');
+        resultsTabButton?.focus();
+
+        dispatchKeydown(tabContainer!, 'ArrowLeft');
+
+        assertEquals(
+            samplePromptsTabButton, getActiveElement(freeformElement),
+            'sample prompts tab should be focused');
+        assertEquals(
+            'true', resultsTabButton?.ariaSelected,
+            'The results tab should still be selected');
+
+        samplePromptsTabButton!.click();
+        await waitAfterNextRender(freeformElement);
+
+        assertEquals(
+            'true', samplePromptsTabButton?.ariaSelected,
+            'sample prompts tab is now selected');
+
+        const seaPenSamplesElement =
+            freeformElement.shadowRoot!.querySelector(SeaPenSamplesElement.is);
+        const firstSamplePrompt =
+            seaPenSamplesElement!.shadowRoot!
+                .querySelector<WallpaperGridItemElement>(
+                    `${WallpaperGridItemElement.is}:not([hidden])`);
+        assertTrue(!!firstSamplePrompt, 'first sample prompt displays');
+        assertEquals(
+            firstSamplePrompt, getActiveElement(seaPenSamplesElement!),
+            'first sample prompt should be focused');
+      });
 });

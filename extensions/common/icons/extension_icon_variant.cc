@@ -87,8 +87,7 @@ void ExtensionIconVariant::MaybeAddSizeEntry(
 }
 
 std::unique_ptr<ExtensionIconVariant> ExtensionIconVariant::Parse(
-    const base::Value& value,
-    std::string* issue) {
+    const base::Value& value) {
   if (!value.is_dict()) {
     return nullptr;
   }

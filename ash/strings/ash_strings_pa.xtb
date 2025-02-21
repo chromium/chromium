@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">ਡੈਸਕ 2</translation>
 <translation id="1546930421365146760">ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ Google ਪ੍ਰਸ਼ਾਸਕ ਕੰਸੋਲ ਵਿੱਚ ਇਸ ਡੀਵਾਈਸ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ ਕਹੋ</translation>
 <translation id="1549512626801247439">ਸਟੋਰੇਜ ਪ੍ਰਬੰਧਨ</translation>
+<translation id="1549721333775633305">ਕਵਿੱਕ ਸ਼ੇਅਰ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। ਕਵਿੱਕ ਸ਼ੇਅਰ ਬੰਦ ਹੈ</translation>
 <translation id="1550406609415860283">ਉਪਲਬਧ ਡੀਵਾਈਸ</translation>
 <translation id="1550523713251050646">ਹੋਰ ਵਿਕਲਪਾਂ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="1555130319947370107">ਨੀਲਾ</translation>
@@ -1475,6 +1476,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="5860033963881614850">ਬੰਦ ਕਰੋ</translation>
 <translation id="5860491529813859533">ਚਾਲੂ ਕਰੋ</translation>
+<translation id="5864691701242730005">ਕਵਿੱਕ ਸ਼ੇਅਰ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। <ph name="VISIBILITY" /> ਦਿਖਣਯੋਗਤਾ ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="5864748620896638071">ਬੈਟਰੀ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">ਨੈੱਟਵਰਕ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਇਕੱਠੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="5867606971598166637">ਤੁਹਾਡਾ ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਡੀਆਂ ਸਕ੍ਰੀਨਾਂ ਦੀ ਨਿਗਰਾਨੀ ਕਰ ਰਿਹਾ ਹੈ</translation>
@@ -2263,6 +2265,7 @@
 <translation id="851660987304951246">ਤੇਜ਼ੀ ਨਾਲ ਸਮੱਗਰੀ ਦਾ ਸਾਰਾਂਸ਼ ਦੇਣ ਲਈ 'ਪੜ੍ਹਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਸੁਵਿਧਾ ਦੀ ਵਰਤੋਂ ਕਰੋ ਜਾਂ ਸਵਾਲ ਪੁੱਛੋ</translation>
 <translation id="8517041960877371778">ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> ਚਾਲੂ ਹੋਣ ਵੇਲੇ ਚਾਰਜ ਨਹੀਂ ਹੋ ਸਕਦੀ।</translation>
 <translation id="8535393432370007982">ਰੰਗ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰਨ ਦੇ ਕ੍ਰਮ ਨੂੰ ਅਣਕੀਤਾ ਕਰੋ</translation>
+<translation id="8536886494750559755">ਕਵਿੱਕ ਸ਼ੇਅਰ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। <ph name="TIME_REMAINING" /> ਲਈ ਹਰੇਕ ਨੂੰ ਦਿਖਣਯੋਗ</translation>
 <translation id="8539803091108018926">ਲਿਖਤ ਨੂੰ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8541078764854166027">ਕੈਮਰਾ ਫ੍ਰੇਮਿੰਗ</translation>
 <translation id="8542053257095774575">ਕੋਈ ਰੱਖਿਅਤ ਕੀਤੀ ਡਿਸਕ ਜਾਂ ਟੈਮਪਲੇਟ ਨਹੀਂ</translation>

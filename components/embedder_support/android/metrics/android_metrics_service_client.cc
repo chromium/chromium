@@ -366,6 +366,9 @@ void AndroidMetricsServiceClient::CreateUkmService() {
   ukm_service_->RegisterMetricsProvider(
       ukm::CreateFieldTrialsProviderForUkm(synthetic_trial_registry_.get()));
 
+  ukm_service_->RegisterMetricsProvider(
+      std::make_unique<metrics::EntropyStateProvider>(pref_service_));
+
   UpdateUkmService();
 }
 

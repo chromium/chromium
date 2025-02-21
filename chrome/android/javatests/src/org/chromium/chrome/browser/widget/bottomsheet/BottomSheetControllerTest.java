@@ -184,6 +184,7 @@ public class BottomSheetControllerTest {
     @Test
     @SmallTest
     @Feature({"BottomSheetController"})
+    @DisabledTest(message = "Flaky, http://crbug.com/397476647")
     public void testShowWithBottomInset() {
         requestContentInSheet(mLowPriorityContent, true);
         View bottomSheet = mActivity.findViewById(R.id.bottom_sheet);

@@ -9,11 +9,11 @@
 
 #include <array>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
 #include "base/atomicops.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
 #include "base/metrics/bucket_ranges.h"
@@ -30,16 +30,6 @@
 namespace base {
 
 namespace {
-
-char const* GetPermanentName(const std::string& name) {
-  // A set of histogram names that provides the "permanent" lifetime required
-  // by histogram objects for those strings that are not already code constants
-  // or held in persistent memory.
-  static base::NoDestructor<std::set<std::string>> permanent_names;
-
-  auto result = permanent_names->insert(name);
-  return result.first->c_str();
-}
 
 size_t GetBucketIndex(HistogramBase::Sample32 value, const BucketRanges* ranges) {
   size_t bucket_count = ranges->bucket_count();
@@ -235,15 +225,15 @@ class HistogramThreadsafeTest : public testing::Test {
     // during the test.
     std::string local_heap_histogram_name =
         StringPrintf("LocalHeapNumericHistogram%zu", suffix);
-    auto& local_heap_histogram = histograms_.emplace_back(
-        new Histogram(GetPermanentName(local_heap_histogram_name),
-                      numeric_histogram->bucket_ranges()));
+    auto& local_heap_histogram = histograms_.emplace_back(new Histogram(
+        HistogramBase::GetPermanentName(local_heap_histogram_name),
+        numeric_histogram->bucket_ranges()));
     histograms.push_back(local_heap_histogram.get());
     std::string local_heap_sparse_histogram_name =
         StringPrintf("LocalHeapSparseHistogram%zu", suffix);
     auto& local_heap_sparse_histogram =
         histograms_.emplace_back(new SparseHistogram(
-            GetPermanentName(local_heap_sparse_histogram_name)));
+            HistogramBase::GetPermanentName(local_heap_sparse_histogram_name)));
     histograms.push_back(local_heap_sparse_histogram.get());
 
     // Furthermore, create two additional *different* histogram objects that
@@ -446,7 +436,7 @@ TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
       // a normal histogram, once as a simulation of a subprocess histogram, and
       // once as a duplicate histogram created from the same allocator.
       size_t expected_logged_samples_count = kNumThreads * kNumEmissions;
-      if (!strstr(histogram->histogram_name(), "LocalHeap")) {
+      if (!Contains(histogram->histogram_name(), "LocalHeap")) {
         expected_logged_samples_count *= 3;
       }
       ASSERT_EQ(static_cast<size_t>(logged_samples->TotalCount()),

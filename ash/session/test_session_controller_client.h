@@ -171,8 +171,8 @@ class TestSessionControllerClient final : public SessionControllerClient {
     existing_users_count_ = existing_users_count;
   }
 
-  void set_provide_pref_service(bool provide_pref_service) {
-    provide_pref_service_ = provide_pref_service;
+  void set_pref_service_must_exist(bool pref_service_must_exist) {
+    pref_service_must_exist_ = pref_service_must_exist;
   }
 
   int NumberOfLoggedInUsers() const;
@@ -194,9 +194,8 @@ class TestSessionControllerClient final : public SessionControllerClient {
   SessionInfo session_info_;
   bool first_session_ready_fired_ = false;
 
-  // Whether to auto create user prefs for `AddSession` if `pref_service` is not
-  // specified.
-  bool provide_pref_service_ = true;
+  // If true, pref service must exist when adding a session, or fail with CHECK.
+  bool pref_service_must_exist_ = false;
 
   bool use_lower_case_user_id_ = true;
   int request_hide_lock_screen_count_ = 0;

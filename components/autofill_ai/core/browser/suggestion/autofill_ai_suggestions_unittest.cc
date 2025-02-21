@@ -31,6 +31,13 @@ using autofill::SuggestionType;
 using ::testing::Ge;
 using ::testing::SizeIs;
 
+autofill::EntityInstance MakePassportWithRandomGuid(
+    autofill::test::PassportEntityOptions options = {}) {
+  base::Uuid guid = base::Uuid::GenerateRandomV4();
+  options.guid = guid.AsLowercaseString();
+  return autofill::test::GetPassportEntityInstance(options);
+}
+
 class AutofillAiSuggestionsTest : public testing::Test {
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -49,16 +56,25 @@ std::u16string GetEntityInstanceValueForFieldType(
       ->value();
 }
 
-bool AutofillAiPayloadContainsField(
+std::optional<std::u16string> GetFillValueForField(
+    base::span<const autofill::EntityInstance> entities,
     const Suggestion::AutofillAiPayload& payload,
     const autofill::AutofillField& field) {
-  return payload.values_to_fill.contains(field.global_id());
-}
-
-std::u16string AutofillAiPayloadValueForField(
-    const Suggestion::AutofillAiPayload& payload,
-    const autofill::AutofillField& field) {
-  return payload.values_to_fill.at(field.global_id());
+  auto entity_it = std::ranges::find(entities, payload.guid,
+                                     &autofill::EntityInstance::guid);
+  if (entity_it == entities.end()) {
+    return std::nullopt;
+  }
+  auto attribute_it = std::ranges::find_if(
+      entity_it->attributes(),
+      [&field](const autofill::AttributeInstance& attribute) {
+        return attribute.type().field_type() ==
+               field.GetAutofillAiServerTypePredictions();
+      });
+  if (attribute_it == entity_it->attributes().end()) {
+    return std::nullopt;
+  }
+  return attribute_it->value();
 }
 
 std::unique_ptr<autofill::FormStructure> CreateFormStructure(
@@ -80,8 +96,7 @@ std::unique_ptr<autofill::FormStructure> CreateFormStructure(
 }
 
 TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PassportEntity) {
-  autofill::EntityInstance passport_entity =
-      autofill::test::GetPassportEntityInstance();
+  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
   std::vector<autofill::EntityInstance> entities = {passport_entity};
 
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
@@ -106,31 +121,24 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PassportEntity) {
   EXPECT_EQ(suggestions[0].icon, autofill::Suggestion::Icon::kIdCard);
 
   // The triggering/first field is of AutofillAi Type.
-  EXPECT_TRUE(AutofillAiPayloadContainsField(*payload, *form->fields()[0]));
-  EXPECT_EQ(AutofillAiPayloadValueForField(*payload, *form->fields()[0]),
+  EXPECT_EQ(GetFillValueForField(entities, *payload, *form->fields()[0]),
             GetEntityInstanceValueForFieldType(passport_entity,
                                                triggering_field_type));
   // The second field in the form is also of AutofillAi.
-  EXPECT_TRUE(AutofillAiPayloadContainsField(*payload, *form->fields()[1]));
-  EXPECT_EQ(AutofillAiPayloadValueForField(*payload, *form->fields()[1]),
+  EXPECT_EQ(GetFillValueForField(entities, *payload, *form->fields()[1]),
             GetEntityInstanceValueForFieldType(passport_entity,
                                                autofill::PASSPORT_NUMBER));
   // The third field is not of AutofillAi type.
-  EXPECT_FALSE(AutofillAiPayloadContainsField(*payload, *form->fields()[2]));
+  EXPECT_EQ(GetFillValueForField(entities, *payload, *form->fields()[2]),
+            std::nullopt);
 }
 
 TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PrefixMatching) {
-  autofill::test::PassportEntityOptions passport_prefix_matches_options;
-  passport_prefix_matches_options.name = u"Jon Doe";
   autofill::EntityInstance passport_prefix_matches =
-      autofill::test::GetPassportEntityInstance(
-          passport_prefix_matches_options);
+      MakePassportWithRandomGuid({.name = u"Jon Doe"});
 
-  autofill::test::PassportEntityOptions passport_prefix_does_not_match_options;
-  passport_prefix_does_not_match_options.name = u"Harry Potter";
   autofill::EntityInstance passport_prefix_does_not_match =
-      autofill::test::GetPassportEntityInstance(
-          passport_prefix_does_not_match_options);
+      MakePassportWithRandomGuid({.name = u"Harry Potter"});
 
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<autofill::FormStructure> form =
@@ -178,23 +186,21 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_LoyaltyCardEntity) {
   EXPECT_EQ(suggestions[0].icon, autofill::Suggestion::Icon::kLoyalty);
 
   // The triggering/first field is of AutofillAi Type.
-  EXPECT_TRUE(AutofillAiPayloadContainsField(*payload, *form->fields()[0]));
-  EXPECT_EQ(AutofillAiPayloadValueForField(*payload, *form->fields()[0]),
+  EXPECT_EQ(GetFillValueForField(entities, *payload, *form->fields()[0]),
             GetEntityInstanceValueForFieldType(loyalty_card_entity,
                                                triggering_field_type));
   // The second field in the form is also of AutofillAi.
-  EXPECT_TRUE(AutofillAiPayloadContainsField(*payload, *form->fields()[1]));
-  EXPECT_EQ(AutofillAiPayloadValueForField(*payload, *form->fields()[1]),
+  EXPECT_EQ(GetFillValueForField(entities, *payload, *form->fields()[1]),
             GetEntityInstanceValueForFieldType(
                 loyalty_card_entity, autofill::LOYALTY_MEMBERSHIP_PROVIDER));
   // The third field is not of AutofillAi type.
-  EXPECT_FALSE(AutofillAiPayloadContainsField(*payload, *form->fields()[2]));
+  EXPECT_EQ(GetFillValueForField(entities, *payload, *form->fields()[2]),
+            std::nullopt);
 }
 
 TEST_F(AutofillAiSuggestionsTest,
        GetFillingSuggestion_SkipFieldsThatDoNotMatchTheTriggeringFieldSection) {
-  autofill::EntityInstance passport_entity =
-      autofill::test::GetPassportEntityInstance();
+  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
   std::vector<autofill::EntityInstance> entities = {passport_entity};
 
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
@@ -221,13 +227,9 @@ TEST_F(AutofillAiSuggestionsTest,
       absl::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
   ASSERT_TRUE(payload);
   // The triggering/first field is of AutofillAi Type.
-  EXPECT_TRUE(AutofillAiPayloadContainsField(*payload, *form->fields()[0]));
-  EXPECT_EQ(AutofillAiPayloadValueForField(*payload, *form->fields()[0]),
+  EXPECT_EQ(GetFillValueForField(entities, *payload, *form->fields()[0]),
             GetEntityInstanceValueForFieldType(passport_entity,
                                                triggering_field_type));
-  // The second field in the form is of a different section, which means only
-  // the first field generated a value to fill.
-  EXPECT_EQ((*payload).values_to_fill.size(), 1u);
 }
 
 TEST_F(AutofillAiSuggestionsTest, NonMatchingEntity_DoNoReturnSuggestions) {
@@ -247,24 +249,21 @@ TEST_F(AutofillAiSuggestionsTest, NonMatchingEntity_DoNoReturnSuggestions) {
 }
 
 TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
-  autofill::EntityInstance passport_entity =
-      autofill::test::GetPassportEntityInstance();
-  autofill::test::PassportEntityOptions passport_a_with_different_expiry_date;
-  passport_a_with_different_expiry_date.expiry_date = u"01/12/2001";
-  autofill::test::PassportEntityOptions passport_a_without_an_expiry_date;
-  passport_a_with_different_expiry_date.expiry_date = nullptr;
-  autofill::test::PassportEntityOptions another_persons_passport_options;
-  another_persons_passport_options.name = u"Jon doe";
-  another_persons_passport_options.number = u"927908CYGAS1";
+  autofill::EntityInstance passport = MakePassportWithRandomGuid();
+
+  autofill::EntityInstance passport_a_with_different_expiry_date =
+      MakePassportWithRandomGuid({.expiry_date = u"01/12/2001"});
+
+  autofill::EntityInstance passport_a_without_an_expiry_date =
+      MakePassportWithRandomGuid({.expiry_date = nullptr});
+
   autofill::EntityInstance another_persons_passport =
-      autofill::test::GetPassportEntityInstance(
-          another_persons_passport_options);
+      MakePassportWithRandomGuid(
+          {.name = u"Jon doe", .number = u"927908CYGAS1"});
+
   std::vector<autofill::EntityInstance> entities = {
-      passport_entity, another_persons_passport,
-      autofill::test::GetPassportEntityInstance(
-          passport_a_with_different_expiry_date),
-      autofill::test::GetPassportEntityInstance(
-          passport_a_without_an_expiry_date)};
+      passport, another_persons_passport, passport_a_with_different_expiry_date,
+      passport_a_without_an_expiry_date};
 
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<autofill::FormStructure> form =
@@ -276,13 +275,13 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
   // The passport with passport_a_with_different_expiry_date should be
   // deduped because while it has an unique attribute (expiry date), the form
   // does not contain a field with autofill::PASSPORT_ISSUE_DATE_TAG, which
-  // makes it identical to `passport_entity`. The passport with
+  // makes it identical to `passport`. The passport with
   // passport_a_without_an_expiry_date should be deduped because it is a
-  // proper subset of `passport_entity`.
+  // proper subset of `passport`.
   EXPECT_THAT(suggestions, SizeIs(Ge(2)));
-  EXPECT_EQ(suggestions[0].main_text.value,
-            GetEntityInstanceValueForFieldType(passport_entity,
-                                               triggering_field_type));
+  EXPECT_EQ(
+      suggestions[0].main_text.value,
+      GetEntityInstanceValueForFieldType(passport, triggering_field_type));
   EXPECT_EQ(suggestions[1].main_text.value,
             GetEntityInstanceValueForFieldType(another_persons_passport,
                                                triggering_field_type));
@@ -291,8 +290,7 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
 // Tests that an "Undo Autofill" suggestion is appended if the trigger field
 // is autofilled.
 TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestions_Undo) {
-  autofill::EntityInstance passport_entity =
-      autofill::test::GetPassportEntityInstance();
+  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
 
   std::unique_ptr<autofill::FormStructure> form =
       CreateFormStructure({autofill::PASSPORT_NUMBER});
@@ -313,8 +311,7 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestions_Undo) {
 
 TEST_F(AutofillAiSuggestionsTest,
        LabelGeneration_SingleSuggestion_OneFieldFilled) {
-  autofill::EntityInstance passport_entity =
-      autofill::test::GetPassportEntityInstance();
+  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
 
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<autofill::FormStructure> form =
@@ -330,8 +327,7 @@ TEST_F(AutofillAiSuggestionsTest,
 
 TEST_F(AutofillAiSuggestionsTest,
        LabelGeneration_SingleSuggestion_TwoFieldsFilled) {
-  autofill::EntityInstance passport_entity =
-      autofill::test::GetPassportEntityInstance();
+  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
 
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<autofill::FormStructure> form =
@@ -350,8 +346,7 @@ TEST_F(AutofillAiSuggestionsTest,
 // appears before expiry date in the disambiguation order for passport entities.
 TEST_F(AutofillAiSuggestionsTest,
        LabelGeneration_SingleSuggestion_TwoFieldsFilled_UseFieldPriorityOrder) {
-  autofill::EntityInstance passport_entity =
-      autofill::test::GetPassportEntityInstance();
+  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
 
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
@@ -369,12 +364,9 @@ TEST_F(AutofillAiSuggestionsTest,
 TEST_F(
     AutofillAiSuggestionsTest,
     LabelGeneration_TwoSuggestions_PassportsWithDifferentCountries_AddDifferentiatingLabel) {
-  autofill::EntityInstance passport_entity =
-      autofill::test::GetPassportEntityInstance();
-  autofill::test::PassportEntityOptions passport_entity_b_options;
-  passport_entity_b_options.country = u"Brazil";
+  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
   autofill::EntityInstance passport_entity_b =
-      autofill::test::GetPassportEntityInstance(passport_entity_b_options);
+      MakePassportWithRandomGuid({.country = u"Brazil"});
 
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
@@ -396,16 +388,11 @@ TEST_F(
 
 TEST_F(AutofillAiSuggestionsTest,
        LabelGeneration_ThreeSuggestions_AddDifferentiatingLabel) {
-  autofill::EntityInstance passport_entity =
-      autofill::test::GetPassportEntityInstance();
-  autofill::test::PassportEntityOptions passport_entity_b_options;
-  passport_entity_b_options.country = u"Brazil";
+  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
   autofill::EntityInstance passport_entity_b =
-      autofill::test::GetPassportEntityInstance(passport_entity_b_options);
-  autofill::test::PassportEntityOptions passport_entity_c_options;
-  passport_entity_c_options.expiry_date = u"12/2018";
+      MakePassportWithRandomGuid({.country = u"Brazil"});
   autofill::EntityInstance passport_entity_c =
-      autofill::test::GetPassportEntityInstance(passport_entity_c_options);
+      MakePassportWithRandomGuid({.expiry_date = u"12/2018"});
 
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   // Note that `autofill::PASSPORT_ISSUING_COUNTRY_TAG` appears twice in the
@@ -435,21 +422,15 @@ TEST_F(AutofillAiSuggestionsTest,
 TEST_F(
     AutofillAiSuggestionsTest,
     LabelGeneration_ThreeSuggestions_WithMissingValues_AddDifferentiatingLabel) {
-  autofill::test::PassportEntityOptions passport_entity_a_options;
-  passport_entity_a_options.country = u"Brazil";
   autofill::EntityInstance passport_entity_a =
-      autofill::test::GetPassportEntityInstance(passport_entity_a_options);
+      MakePassportWithRandomGuid({.country = u"Brazil"});
 
-  autofill::test::PassportEntityOptions passport_entity_b_options;
   // Note that passport b can only fill the triggering name field and has no
   // country data label to add.
-  passport_entity_b_options.name = u"Jack Sparrow";
-  passport_entity_b_options.country = nullptr;
   autofill::EntityInstance passport_entity_b =
-      autofill::test::GetPassportEntityInstance(passport_entity_b_options);
+      MakePassportWithRandomGuid({.name = u"Jack Sparrow", .country = nullptr});
 
-  autofill::EntityInstance passport_entity_c =
-      autofill::test::GetPassportEntityInstance();
+  autofill::EntityInstance passport_entity_c = MakePassportWithRandomGuid();
 
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
@@ -477,12 +458,9 @@ TEST_F(
 TEST_F(
     AutofillAiSuggestionsTest,
     LabelGeneration_TwoSuggestions_PassportsWithDifferentExpiryDates_AddDifferentiatingLabel) {
-  autofill::EntityInstance passport_entity =
-      autofill::test::GetPassportEntityInstance();
-  autofill::test::PassportEntityOptions passport_entity_b_options;
-  passport_entity_b_options.expiry_date = u"12/2018";
+  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
   autofill::EntityInstance passport_entity_b =
-      autofill::test::GetPassportEntityInstance(passport_entity_b_options);
+      MakePassportWithRandomGuid({.expiry_date = u"12/2018"});
 
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
@@ -505,12 +483,9 @@ TEST_F(
 TEST_F(
     AutofillAiSuggestionsTest,
     LabelGeneration_TwoSuggestions_DifferentMainText_NoDifferentiatingLabel) {
-  autofill::EntityInstance passport_entity =
-      autofill::test::GetPassportEntityInstance();
-  autofill::test::PassportEntityOptions passport_entity_b_options;
-  passport_entity_b_options.name = u"Lebowski";
+  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
   autofill::EntityInstance passport_entity_b =
-      autofill::test::GetPassportEntityInstance(passport_entity_b_options);
+      MakePassportWithRandomGuid({.name = u"Lebowski"});
 
   autofill::FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
   std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(

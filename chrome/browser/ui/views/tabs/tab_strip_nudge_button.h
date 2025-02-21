@@ -35,6 +35,12 @@ class TabStripNudgeButton : public TabStripControlButton {
       const views::SizeBounds& available_size) const override;
   views::LabelButton* close_button_for_testing() { return close_button_; }
 
+  float GetWidthFactor() const { return width_factor_; }
+
+  void SetIsShowingNudge(bool is_showing);
+
+  bool GetIsShowingNudge() { return is_showing_nudge_; }
+
  protected:
   // TabStripControlButton:
   int GetCornerRadius() const override;
@@ -42,9 +48,11 @@ class TabStripNudgeButton : public TabStripControlButton {
 
  private:
   void SetCloseButton(PressedCallback callback);
+  float width_factor_ = 0;
+
+  bool is_showing_nudge_ = false;
 
   // Preferred width multiplier, between 0-1. Used to animate button size.
-  float width_factor_ = 0;
   raw_ptr<views::LabelButton> close_button_;
 };
 

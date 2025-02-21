@@ -209,6 +209,13 @@
   [_tabOrganizationRequestWrapper populateRequestFieldsAsync];
 }
 
+- (void)executeEnhancedCalendarQueryWithPrompt:(NSString*)prompt {
+  // TODO(crbug.com/390621435): Execute the query through a mojo interface, and
+  // remove the below placeholder.
+  [self.consumer updateQueryResult:base::SysUTF8ToNSString("Hello world!")
+                        forFeature:AIPrototypingFeature::kEnhancedCalendar];
+}
+
 #pragma mark - Private
 
 // All async work from the PageContext wrapper has been completed.

@@ -17,6 +17,18 @@
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace glic {
+
+void OpenGlicSettingsPage(Profile* profile) {
+  NavigateParams params(profile,
+                        chrome::GetSettingsUrl(chrome::kChromeUIGlicHost),
+                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+}
+
+}  // namespace glic
+
 namespace {
 
 void OpenGlicSettingsPageWithPromo(Profile* profile,
@@ -36,21 +48,13 @@ void OpenGlicSettingsPageWithPromo(Profile* profile,
     promo_params.target_url = chrome::GetSettingsUrl(chrome::kChromeUIGlicHost);
     ShowPromoInPage::Start(browser, std::move(promo_params));
   } else {
-    chrome::ShowSettingsSubPage(browser, chrome::kChromeUIGlicHost);
+    glic::OpenGlicSettingsPage(profile);
   }
 }
 
 }  // namespace
 
 namespace glic {
-
-void OpenGlicSettingsPage(Profile* profile) {
-  NavigateParams params(profile,
-                        chrome::GetSettingsUrl(chrome::kChromeUIGlicHost),
-                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
-}
 
 void OpenGlicOsToggleSetting(Profile* profile) {
   ShowPromoInPage::Params params;

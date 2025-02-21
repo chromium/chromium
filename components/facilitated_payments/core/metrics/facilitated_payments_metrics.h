@@ -144,8 +144,9 @@ void LogEwalletFopSelectorResultUkm(bool accepted,
                                     ukm::SourceId ukm_source_id,
                                     PaymentLinkValidator::Scheme scheme);
 
-// Log when user selects a Pix FOP to pay with.
-void LogPixFopSelected();
+// Logs that the user has selected a Pix FOP to pay with. Also logs the time
+// taken by the user to select the Pix account after the FOP selector is shown.
+void LogPixFopSelectedAndLatency(base::TimeDelta duration);
 
 // Log when user selects an eWallet FOP to pay with.
 void LogEwalletFopSelected(AvailableEwalletsConfiguration type);

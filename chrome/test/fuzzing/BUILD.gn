@@ -13,6 +13,7 @@ import("//testing/libfuzzer/research/domatolpm/domatolpm.gni")
 group("test") {
   testonly = true
   deps = [
+    "mojo_js_fuzzing:test",
     "renderer_fuzzing:test",
     "webidl_fuzzing:test",
   ]

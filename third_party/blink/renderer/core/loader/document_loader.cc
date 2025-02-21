@@ -3558,6 +3558,10 @@ void DocumentLoader::RecordUseCountersForCommit() {
     CountUse(WebFeature::kWindowOpenedAsPopupOnMobile);
   }
 #endif
+
+  if (response_.HttpHeaderField(http_names::kSecSessionRegistration)) {
+    CountUse(WebFeature::kDeviceBoundSessionRegistered);
+  }
 }
 
 void DocumentLoader::RecordConsoleMessagesForCommit() {

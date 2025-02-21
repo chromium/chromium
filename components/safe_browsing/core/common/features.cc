@@ -245,7 +245,7 @@ constexpr base::FeatureParam<bool> kMaliciousApkDownloadCheckTelemetryOnly{
 
 BASE_FEATURE(kOnDeviceNotificationContentDetectionModel,
              "OnDeviceNotificationContentDetectionModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int>
     kOnDeviceNotificationContentDetectionModelAllowlistSamplingRate{
@@ -303,6 +303,25 @@ BASE_FEATURE(kSafeBrowsingSyncCheckerCheckAllowlist,
 BASE_FEATURE(kSafetyHubAbusiveNotificationRevocation,
              "SafetyHubAbusiveNotificationRevocation",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSafetyHubDisruptiveNotificationRevocation,
+             "SafetyHubDisruptiveNotificationRevocation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<bool>
+    kSafetyHubDisruptiveNotificationRevocationShadowRun{
+        &kSafetyHubDisruptiveNotificationRevocation,
+        /*name=*/"shadow_run", /*default_value=*/true};
+
+constexpr base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationMinNotificationCount{
+        &kSafetyHubDisruptiveNotificationRevocation,
+        /*name=*/"min_notification_count", /*default_value=*/3};
+
+constexpr base::FeatureParam<double>
+    kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore{
+        &kSafetyHubDisruptiveNotificationRevocation,
+        /*name=*/"max_engagement_score", /*default_value=*/0.0};
 
 BASE_FEATURE(kSavePasswordHashFromProfilePicker,
              "SavePasswordHashFromProfilePicker",

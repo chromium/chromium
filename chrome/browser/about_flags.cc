@@ -3034,23 +3034,6 @@ const FeatureEntry::FeatureVariation kLensOverlayVariations[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kContextualSearchboxWithPageContent[] = {
-    {"use-pdfs-as-context", "true"},
-    {"use-inner-text-as-context", "true"},
-};
-const FeatureEntry::FeatureParam kContextualSearchboxWithPdfPageContent[] = {
-    {"use-pdfs-as-context", "true"},
-};
-
-const FeatureEntry::FeatureVariation kContextualSearchboxVariations[] = {
-    {"with page content", kContextualSearchboxWithPageContent,
-     std::size(kContextualSearchboxWithPageContent), nullptr},
-    {"with pdf page content", kContextualSearchboxWithPdfPageContent,
-     std::size(kContextualSearchboxWithPdfPageContent), nullptr},
-};
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kLensOverlayImageContextMenuActionsCopy[] = {
     {"enable-copy-as-image", "true"},
     {"enable-save-as-image", "false"},
@@ -10574,11 +10557,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-standard-device-bound-session-credentials",
      flag_descriptions::kEnableStandardBoundSessionCredentialsName,
      flag_descriptions::kEnableStandardBoundSessionCredentialsDescription,
-     kOsWin, FEATURE_VALUE_TYPE(net::features::kDeviceBoundSessions)},
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(net::features::kDeviceBoundSessions)},
     {"enable-standard-device-bound-session-persistence",
      flag_descriptions::kEnableStandardBoundSessionPersistenceName,
      flag_descriptions::kEnableStandardBoundSessionPersistenceDescription,
-     kOsWin, FEATURE_VALUE_TYPE(net::features::kPersistDeviceBoundSessions)},
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(net::features::kPersistDeviceBoundSessions)},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"cros-soul-gd", flag_descriptions::kCrosSoulGravediggerName,
@@ -11095,16 +11080,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"enable-lens-overlay-contextual-search-box",
-     flag_descriptions::kLensOverlayContextualSearchboxName,
-     flag_descriptions::kLensOverlayContextualSearchboxDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         lens::features::kLensOverlayContextualSearchbox,
-         kContextualSearchboxVariations,
-         "LensOverlayContextualSearchbox")},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
     {"enable-lens-overlay-latency-optimizations",
      flag_descriptions::kLensOverlayLatencyOptimizationsName,
      flag_descriptions::kLensOverlayLatencyOptimizationsDescription, kOsDesktop,
@@ -11448,6 +11423,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     "AutofillImprovedLabels")},
 
 #if BUILDFLAG(IS_ANDROID)
+    {"android-appearance-settings",
+     flag_descriptions::kAndroidAppearanceSettingsName,
+     flag_descriptions::kAndroidAppearanceSettingsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidAppearanceSettings)},
+
     {"android-bookmark-bar", flag_descriptions::kAndroidBookmarkBarName,
      flag_descriptions::kAndroidBookmarkBarDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidBookmarkBar)},
@@ -11746,6 +11726,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidMinimalUiLargeScreenDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(webapps::features::kAndroidMinimalUiLargeScreen)},
 #endif  // BUILDFLAG(IS_ANDROID)
+
+    {"web-authentication-align-error-type-for-payment-credential-create",
+     flag_descriptions::
+         kWebAuthenticationAlignErrorTypeForPaymentCredentialCreateName,
+     flag_descriptions::
+         kWebAuthenticationAlignErrorTypeForPaymentCredentialCreateDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         blink::features::
+             kWebAuthenticationAlignErrorTypeForPaymentCredentialCreate)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

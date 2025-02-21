@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.bookmarks.bar;
 
 import static android.view.KeyEvent.KEYCODE_ENTER;
-import static android.view.KeyEvent.KEYCODE_W;
 import static android.view.KeyEvent.META_ALT_ON;
 import static android.view.KeyEvent.META_CTRL_ON;
 import static android.view.KeyEvent.META_SHIFT_ON;
@@ -187,8 +186,13 @@ public class BookmarkBarTest {
         };
     }
 
-    private @Nullable Tab getActivityTab() {
+    private @Nullable Tab getCurrentTab() {
         return sActivityTestRule.getActivity().getActivityTab();
+    }
+
+    private @Nullable Tab getLastTab() {
+        final var tabModel = sActivityTestRule.getActivity().getCurrentTabModel();
+        return tabModel.getTabAt(tabModel.getCount() - 1);
     }
 
     private @NonNull GURL getTestServerUrl(@NonNull String relativeUrl) {
@@ -239,14 +243,14 @@ public class BookmarkBarTest {
     @Test
     @MediumTest
     public void testOnBookmarkItemClick() throws ExecutionException {
-        final Tab originalTab = getActivityTab();
+        final Tab originalTab = getCurrentTab();
         final String title = "Google";
         final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
         mItemIds = List.of(addBookmark(/* index= */ 0, title, url));
         onViewWaiting(bookmarkBarItemWithText(title)).perform(click());
         CriteriaHelper.pollUiThread(
                 () -> {
-                    final Tab currentTab = getActivityTab();
+                    final Tab currentTab = getCurrentTab();
                     Criteria.checkThat(currentTab, is(originalTab));
                     Criteria.checkThat(currentTab, notNullValue());
                     Criteria.checkThat(currentTab.getUrl(), notNullValue());
@@ -264,36 +268,32 @@ public class BookmarkBarTest {
 
         {
             // Case: perform control-click via touch.
-            final Tab originalTab = getActivityTab();
+            final Tab originalTab = getCurrentTab();
+            final GURL originalUrl = originalTab.getUrl();
             onViewWaiting(bookmarkBarItemWithText(title)).perform(clickWith(META_CTRL_ON));
             CriteriaHelper.pollUiThread(
                     () -> {
-                        final Tab currentTab = getActivityTab();
-                        Criteria.checkThat(currentTab, is(not(originalTab)));
+                        final Tab currentTab = getCurrentTab();
+                        Criteria.checkThat(currentTab, is(originalTab));
                         Criteria.checkThat(currentTab, notNullValue());
                         Criteria.checkThat(currentTab.getUrl(), notNullValue());
-                        Criteria.checkThat(currentTab.getUrl(), is(url));
-                    });
-        }
+                        Criteria.checkThat(currentTab.getUrl(), is(originalUrl));
 
-        {
-            // Close previously opened tab to prepare for the next test case.
-            final Tab originalTab = getActivityTab();
-            onViewWaiting(withId(android.R.id.content)).perform(pressKey(KEYCODE_W, META_CTRL_ON));
-            CriteriaHelper.pollUiThread(
-                    () -> {
-                        final Tab currentTab = getActivityTab();
-                        Criteria.checkThat(currentTab, is(not(originalTab)));
+                        final Tab lastTab = getLastTab();
+                        Criteria.checkThat(lastTab, is(not(currentTab)));
+                        Criteria.checkThat(lastTab, notNullValue());
+                        Criteria.checkThat(lastTab.getUrl(), notNullValue());
+                        Criteria.checkThat(lastTab.getUrl(), is(url));
                     });
         }
 
         {
             // Case: perform ENTER-click to ensure control-click via touch is not sticky.
-            final Tab originalTab = getActivityTab();
+            final Tab originalTab = getCurrentTab();
             onViewWaiting(bookmarkBarItemWithText(title)).perform(focus(), pressKey(KEYCODE_ENTER));
             CriteriaHelper.pollUiThread(
                     () -> {
-                        final Tab currentTab = getActivityTab();
+                        final Tab currentTab = getCurrentTab();
                         Criteria.checkThat(currentTab, is(originalTab));
                         Criteria.checkThat(currentTab, notNullValue());
                         Criteria.checkThat(currentTab.getUrl(), notNullValue());

@@ -20,6 +20,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "net/base/io_buffer.h"
+#include "net/filter/source_stream_type.h"
 
 namespace content {
 
@@ -47,7 +48,8 @@ MerkleIntegritySourceStream::MerkleIntegritySourceStream(
     std::string_view digest_header_value,
     std::unique_ptr<SourceStream> upstream)
     // TODO(ksakamoto): Use appropriate SourceType.
-    : net::FilterSourceStream(SourceStream::TYPE_NONE, std::move(upstream)) {
+    : net::FilterSourceStream(net::SourceStreamType::kNone,
+                              std::move(upstream)) {
   std::string next_proof;
   if (!base::StartsWith(digest_header_value, kMiSha256Header) ||
       !base::Base64Decode(digest_header_value.substr(kMiSha256HeaderLength),

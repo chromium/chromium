@@ -45,4 +45,8 @@ public abstract class TabGroupOverflowMenuCoordinator extends TabOverflowMenuCoo
     protected @Nullable String getCollaborationIdOrNull(Token tabGroupId) {
         return TabShareUtils.getCollaborationIdOrNull(tabGroupId, mTabGroupSyncService);
     }
+
+    public void setTabGroupSyncServiceForTesting(TabGroupSyncService tabGroupSyncService) {
+        mTabGroupSyncService = tabGroupSyncService;
+    }
 }

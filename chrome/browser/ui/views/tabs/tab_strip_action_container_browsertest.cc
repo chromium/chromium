@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -35,7 +36,6 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_test_util.h"
-#include "chrome/browser/ui/views/tabs/glic_button.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
@@ -87,8 +87,8 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
     return tab_strip_action_container()->auto_tab_group_button();
   }
 
-  TabStripNudgeButton* GlicNudgeButton() {
-    return tab_strip_action_container()->glic_nudge_button();
+  glic::GlicButton* GlicNudgeButton() {
+    return tab_strip_action_container()->GetGlicButton();
   }
 
   void ShowTabStripNudgeButton(TabStripNudgeButton* button) {
@@ -112,7 +112,11 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
     } else if (button == AutoTabGroupButton()) {
       tab_strip_action_container()->OnAutoTabGroupButtonClicked();
     } else if (button == GlicNudgeButton()) {
-      tab_strip_action_container()->OnGlicNudgeButtonClicked();
+#if BUILDFLAG(ENABLE_GLIC)
+      tab_strip_action_container()->OnGlicButtonClicked();
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_GLIC)
     }
   }
   void OnButtonDismissed(TabStripNudgeButton* button) {
@@ -121,7 +125,11 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
     } else if (button == AutoTabGroupButton()) {
       tab_strip_action_container()->OnAutoTabGroupButtonDismissed();
     } else if (button == GlicNudgeButton()) {
-      tab_strip_action_container()->OnGlicNudgeButtonDismissed();
+#if BUILDFLAG(ENABLE_GLIC)
+      tab_strip_action_container()->OnGlicButtonDismissed();
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_GLIC)
     }
   }
 
@@ -382,19 +390,24 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        ShowAndHideGlicButtonWhenGlicNudgeButtonShows) {
   ShowTabStripNudgeButton(GlicNudgeButton());
+
   tab_strip_action_container()
       ->animation_session_for_testing()
       ->ResetAnimationForTesting(1);
   tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
-  EXPECT_FALSE(tab_strip_action_container()->GetGlicButton()->GetVisible());
+  EXPECT_EQ(1, tab_strip_action_container()
+                   ->GetGlicButton()
+                   ->width_factor_for_testing());
   SetLockedExpansionMode(LockedExpansionMode::kWillHide, GlicNudgeButton());
 
   OnButtonDismissed(GlicNudgeButton());
 
   tab_strip_action_container()
       ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
-  EXPECT_TRUE(tab_strip_action_container()->GetGlicButton()->GetVisible());
+      ->ResetAnimationForTesting(0);
+  EXPECT_EQ(0, tab_strip_action_container()
+                   ->GetGlicButton()
+                   ->width_factor_for_testing());
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)

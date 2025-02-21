@@ -1490,6 +1490,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   if (![ChromeEarlGrey isWebChannelsEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"Only applicable with Web Channels enabled.");
   }
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.features_disabled.push_back(kDeprecateFeedHeader);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Sign in to enable Following.
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
@@ -1518,6 +1521,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   if (![ChromeEarlGrey isWebChannelsEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"Only applicable with Web Channels enabled.");
   }
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.features_disabled.push_back(kDeprecateFeedHeader);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Check that regular feed header is visible when signed out, and not
   // Following header.

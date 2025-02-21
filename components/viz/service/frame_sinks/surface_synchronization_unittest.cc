@@ -6,6 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/quads/frame_deadline.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -47,12 +48,15 @@ std::vector<SurfaceRange> empty_surface_ranges() {
   return std::vector<SurfaceRange>();
 }
 
+// TODO(crbug.com/358957649) audit these tests to ensure we have sufficient
+// coverage of `is_handlin_interaction` while maintaining coverage for
+// `activation_dependencies` for non-interactions.
 CompositorFrame MakeCompositorFrame(
     std::vector<SurfaceId> activation_dependencies,
     std::vector<SurfaceRange> referenced_surfaces,
     std::vector<TransferableResource> resource_list,
     const FrameDeadline& deadline = FrameDeadline(),
-    bool is_handling_interaction = true) {
+    bool is_handling_interaction = false) {
   return CompositorFrameBuilder()
       .AddDefaultRenderPass()
       .SetActivationDependencies(std::move(activation_dependencies))
@@ -3378,7 +3382,6 @@ TEST_F(SurfaceSynchronizationTest,
           .AddDefaultRenderPass()
           .SetActivationDependencies({child2_id1})
           .SetReferencedSurfaces({SurfaceRange(std::nullopt, child2_id1)})
-          .SetIsHandlingInteraction(true)
           .Build();
   child_support1().SubmitCompositorFrame(child1_id1.local_surface_id(),
                                          std::move(child1_frame));
@@ -3391,12 +3394,10 @@ TEST_F(SurfaceSynchronizationTest,
           .SetActivationDependencies({child1_id1, child1_id2})
           .SetReferencedSurfaces({SurfaceRange(std::nullopt, child1_id1),
                                   SurfaceRange(std::nullopt, child1_id2)})
-          .SetIsHandlingInteraction(true)
           .Build();
   // This shouldn't crash.
   parent_support().SubmitCompositorFrame(parent_id.local_surface_id(),
                                          std::move(parent_frame));
-
   // When multiple dependencies have the same embed token, only the first one
   // should be taken into account.
   EXPECT_EQ(1u, parent_surface()->activation_dependencies().size());
@@ -3588,7 +3589,8 @@ TEST_F(SurfaceSynchronizationTestDrawImmediatelyWithActivationAck,
   // the default for frames created by `MakeCompositorFrame` as defined above).
   auto frame1 =
       MakeCompositorFrame({child_id}, {SurfaceRange(std::nullopt, child_id)},
-                          std::vector<TransferableResource>());
+                          std::vector<TransferableResource>(), FrameDeadline(),
+                          /*is_handling_interaction=*/true);
   frame1.metadata.begin_frame_ack.frame_id.sequence_number =
       interactive_frame_number;
 

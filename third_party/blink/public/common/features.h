@@ -548,6 +548,16 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kFledgeMaxGroupLifetimeForMetadata);
 
+// Decide whether to enable forDebuggingOnly report sampling based on user's
+// third party cookie setting.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kFledgeEnableSampleDebugReportOnCookieSetting);
+
+// Run sampling of forDebuggingOnly reports and let generateBid() and scoreAd()
+// know fDO's lockout/cooldown status through their browser signals, to allow
+// ad techs experimenting with and adapting to the algorithm.
+// But whether sending all or only sampled forDebuggingOnly reports depends on
+// flag kFledgeEnableFilteringDebugReportStartingFrom.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeSampleDebugReports);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,

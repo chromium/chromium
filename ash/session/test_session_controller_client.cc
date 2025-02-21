@@ -139,12 +139,12 @@ void TestSessionControllerClient::AddUserSession(
   // account.
   bool is_ephemeral = user_type == user_manager::UserType::kGuest ||
                       user_type == user_manager::UserType::kPublicAccount;
-
-  if (pref_service) {
+  if (pref_service_must_exist_) {
+    CHECK(!pref_service);
+    CHECK(GetUserPrefService(account_id));
+  } else if (pref_service) {
     CHECK(!controller_->GetUserPrefServiceForUser(account_id));
     prefs_provider_->SetUserPrefs(account_id, std::move(pref_service));
-  } else if (!provide_pref_service_) {
-    CHECK(GetUserPrefService(account_id));
   } else if (!GetUserPrefService(account_id)) {
     prefs_provider_->SetUserPrefs(
         account_id, TestPrefServiceProvider::CreateUserPrefServiceSimple());

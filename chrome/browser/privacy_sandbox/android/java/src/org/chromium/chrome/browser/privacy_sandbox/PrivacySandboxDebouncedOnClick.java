@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 public abstract class PrivacySandboxDebouncedOnClick implements View.OnClickListener {
     private long mLastClickRecordedTimestamp;
     // Value based on initial hunch for how long we want to ignore click actions.
-    private static final int DEFAULT_MIN_ACTION_DISTANCE_MS = 100;
+    private static final int DEFAULT_MIN_ACTION_DISTANCE_MS = 200;
     private static final int MIN_ACTION_DISTANCE_MS =
             ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                     ChromeFeatureList.PRIVACY_SANDBOX_NOTICE_ACTION_DEBOUNCING_ANDROID,

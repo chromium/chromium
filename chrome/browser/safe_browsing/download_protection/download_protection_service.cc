@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -57,6 +58,7 @@
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
+#include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
 #include "net/cert/x509_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -75,6 +77,9 @@ inline constexpr int kDownloadAttributionUserGestureLimitForExtendedReporting =
 const int64_t kDownloadRequestTimeoutMs = 7000;
 // We sample 1% of allowlisted downloads to still send out download pings.
 const double kAllowlistDownloadSampleRate = 0.01;
+
+const char kDownloadRequestUrl[] =
+    "https://sb-ssl.google.com/safebrowsing/clientreport/download";
 
 bool IsDownloadSecuritySensitive(safe_browsing::DownloadCheckResult result) {
   using Result = safe_browsing::DownloadCheckResult;
@@ -604,6 +609,18 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
         base::HexEncode(raw_digest_sha256), item->GetMimeType(), /*scan_id*/ "",
         item->GetDangerType(), item->GetTotalBytes());
   }
+}
+
+// static
+GURL DownloadProtectionService::GetDownloadRequestUrl() {
+  GURL url(kDownloadRequestUrl);
+  std::string api_key = google_apis::GetAPIKey();
+  if (!api_key.empty()) {
+    url = url.Resolve("?key=" +
+                      base::EscapeQueryParamValue(api_key, /*use_plus=*/true));
+  }
+  CHECK(url.is_valid());
+  return url;
 }
 
 base::TimeDelta DownloadProtectionService::GetDownloadRequestTimeout() const {

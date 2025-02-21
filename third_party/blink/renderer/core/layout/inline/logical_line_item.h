@@ -55,14 +55,16 @@ struct LogicalLineItem {
         children_count(children_count),
         bidi_level(bidi_level) {}
   // Create an in-flow text fragment.
-  LogicalLineItem(const InlineItemResult& item_result,
+  LogicalLineItem(const InlineItem& inline_item,
+                  InlineItemResult& item_result,
+                  const TextOffsetRange& text_offset,
                   LayoutUnit block_offset,
                   LayoutUnit inline_size,
                   LayoutUnit text_height,
                   UBiDiLevel bidi_level)
-      : inline_item(item_result.item),
+      : inline_item(&inline_item),
         shape_result(item_result.shape_result),
-        text_offset(item_result.TextOffset()),
+        text_offset(text_offset),
         rect(LayoutUnit(), block_offset, LayoutUnit(), text_height),
         inline_size(inline_size),
         bidi_level(bidi_level),
@@ -228,7 +230,8 @@ struct LogicalLineItem {
 
   // Data to create a text fragment from.
   // |inline_item| is null only for ellipsis items.
-  Member<const InlineItem> inline_item;
+  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
+  const InlineItem* inline_item = nullptr;
   Member<const ShapeResultView> shape_result;
   TextOffsetRange text_offset;
 

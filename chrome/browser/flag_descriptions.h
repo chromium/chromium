@@ -89,6 +89,11 @@ extern const char kAndroidAppIntegrationV2Description[];
 extern const char kAndroidAppIntegrationWithFaviconName[];
 extern const char kAndroidAppIntegrationWithFaviconDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAndroidAppearanceSettingsName[];
+extern const char kAndroidAppearanceSettingsDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kAndroidBcivBottomControlsName[];
 extern const char kAndroidBcivBottomControlsDescription[];
 
@@ -1369,9 +1374,6 @@ extern const char kLegacyTechReportTopLevelUrlDescription[];
 extern const char kLensOverlayName[];
 extern const char kLensOverlayDescription[];
 
-extern const char kLensOverlayContextualSearchboxName[];
-extern const char kLensOverlayContextualSearchboxDescription[];
-
 extern const char kLensOverlayImageContextMenuActionsName[];
 extern const char kLensOverlayImageContextMenuActionsDescription[];
 
@@ -2274,6 +2276,11 @@ extern const char kWallpaperGooglePhotosSharedAlbumsDescription[];
 
 extern const char kWallpaperSearchSettingsVisibilityName[];
 extern const char kWallpaperSearchSettingsVisibilityDescription[];
+
+extern const char
+    kWebAuthenticationAlignErrorTypeForPaymentCredentialCreateName[];
+extern const char
+    kWebAuthenticationAlignErrorTypeForPaymentCredentialCreateDescription[];
 
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuName[];

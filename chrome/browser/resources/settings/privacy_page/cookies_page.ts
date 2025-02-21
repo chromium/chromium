@@ -151,6 +151,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private is3pcdRedesignEnabled_: boolean;
   private isIpProtectionAvailable_: boolean;
   private isFingerprintingProtectionAvailable_: boolean;
+  private isAlwaysBlock3pcsIncognitoEnabled_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -296,6 +297,14 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         this.enableFirstPartySetsUI_ ?
             'cookiePageBlockThirdIncognitoBulTwoRws' :
             'thirdPartyCookiesPageBlockIncognitoBulTwo');
+  }
+
+  private getThirdPartyCookiesPageDescription_():
+      string {
+    return this.i18n(
+        this.isAlwaysBlock3pcsIncognitoEnabled_ ?
+            'thirdPartyCookiesPageDescription' :
+            'thirdPartyCookiesAlignedPageDescription');
   }
 }
 

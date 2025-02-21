@@ -68,13 +68,6 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
     virtual void OnPendingTasksChanged(bool has_tasks) = 0;
   };
 
-  enum class IdlePeriodState {
-    kNotInIdlePeriod,
-    kInShortIdlePeriod,
-    kInLongIdlePeriod,
-    kInLongIdlePeriodPaused,
-  };
-
   // The minimum duration of an idle period.
   static constexpr base::TimeDelta kMinimumIdlePeriodDuration =
       base::Milliseconds(1);
@@ -131,8 +124,8 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
   // EnableLongIdlePeriod.
   void EndIdlePeriod();
 
-  // Returns the deadline for the current idle task.
-  base::TimeTicks CurrentIdleTaskDeadline() const;
+  bool IsInIdlePeriod() const;
+  bool IsInLongIdlePeriod() const;
 
   // SingleThreadIdleTaskRunner::Delegate implementation:
   void OnIdleTaskPosted() override;
@@ -145,50 +138,20 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
                        bool was_blocked_or_low_priority) override;
   void DidProcessTask(const base::PendingTask& pending_task) override;
 
-  IdlePeriodState SchedulerIdlePeriodState() const;
-  static const char* IdlePeriodStateToString(IdlePeriodState state);
+  const char* IdlePeriodStateForTracing() const;
+
+  // Returns the deadline for the current idle task.
+  base::TimeTicks CurrentIdleTaskDeadlineForTesting() const;
 
  private:
   friend class idle_helper_unittest::BaseIdleHelperTest;
   friend class idle_helper_unittest::IdleHelperTest;
 
-  class State {
-   public:
-    State(SchedulerHelper* helper,
-          Delegate* delegate,
-          const char* idle_period_tracing_name);
-    State(const State&) = delete;
-    State& operator=(const State&) = delete;
-    virtual ~State();
-
-    void UpdateState(IdlePeriodState new_state,
-                     base::TimeTicks new_deadline,
-                     base::TimeTicks optional_now);
-    bool IsIdlePeriodPaused() const;
-
-    IdlePeriodState idle_period_state() const;
-    base::TimeTicks idle_period_deadline() const;
-
-    void TraceIdleIdleTaskStart();
-    void TraceIdleIdleTaskEnd();
-
-   private:
-    void TraceEventIdlePeriodStateChange(IdlePeriodState new_state,
-                                         bool new_running_idle_task,
-                                         base::TimeTicks new_deadline,
-                                         base::TimeTicks optional_now);
-
-    raw_ptr<SchedulerHelper> helper_;  // NOT OWNED
-    raw_ptr<Delegate> delegate_;       // NOT OWNED
-
-    IdlePeriodState idle_period_state_;
-    base::TimeTicks idle_period_deadline_;
-
-    base::TimeTicks last_idle_task_trace_time_;
-    bool idle_period_trace_event_started_;
-    bool running_idle_task_for_tracing_;
-    const char* idle_period_tracing_name_;
-    const char* last_sub_trace_event_name_ = nullptr;
+  enum class IdlePeriodState {
+    kNotInIdlePeriod,
+    kInShortIdlePeriod,
+    kInLongIdlePeriod,
+    kInLongIdlePeriodPaused,
   };
 
   // Start an idle period with a given idle period deadline.
@@ -211,10 +174,14 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
                           base::TimeTicks new_deadline,
                           base::TimeTicks optional_now);
 
-  // Returns true if |state| represents being within an idle period state.
-  static bool IsInIdlePeriod(IdlePeriodState state);
-  // Returns true if |state| represents being within a long idle period state.
-  static bool IsInLongIdlePeriod(IdlePeriodState state);
+  void TraceIdleIdleTaskStart();
+  void TraceIdleIdleTaskEnd();
+  void TraceEventIdlePeriodStateChange(IdlePeriodState new_state,
+                                       bool new_running_idle_task,
+                                       base::TimeTicks new_deadline,
+                                       base::TimeTicks optional_now);
+
+  static const char* IdlePeriodStateToString(IdlePeriodState state);
 
   raw_ptr<SchedulerHelper> helper_;  // NOT OWNED
   raw_ptr<Delegate> delegate_;       // NOT OWNED
@@ -225,7 +192,14 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
   CancelableClosureHolder enable_next_long_idle_period_closure_;
   CancelableClosureHolder on_idle_task_posted_closure_;
 
-  State state_;
+  IdlePeriodState idle_period_state_ = IdlePeriodState::kNotInIdlePeriod;
+  base::TimeTicks idle_period_deadline_;
+  base::TimeTicks last_idle_task_trace_time_;
+  bool idle_period_trace_event_started_ = false;
+  bool running_idle_task_for_tracing_ = false;
+  const char* idle_period_tracing_name_;
+  const char* last_sub_trace_event_name_ = nullptr;
+
   base::TimeDelta required_quiescence_duration_before_long_idle_period_;
   bool is_shutdown_ = false;
   base::WeakPtrFactory<IdleHelper> weak_factory_{this};

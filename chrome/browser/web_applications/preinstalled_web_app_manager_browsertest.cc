@@ -1693,7 +1693,10 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppNavigationCapturing,
             proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION
 #endif
   );
+
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(ShouldCaptureLinks(), registrar().CapturesLinksInScope(app_id));
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(

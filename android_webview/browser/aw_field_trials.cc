@@ -315,4 +315,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // a kill switch. https://crbug.com/393606977
   aw_feature_overrides.DisableFeature(
       internal::kFileSystemAccessDirectoryIterationBlocklistCheck);
+
+  // Viz has no internal differentiation for WebView. We will roll out these
+  // combined features separately.
+  aw_feature_overrides.DisableFeature(
+      ::features::kDrawImmediatelyWhenInteractive);
+  aw_feature_overrides.DisableFeature(
+      ::features::kAckOnSurfaceActivationWhenInteractive);
 }

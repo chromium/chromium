@@ -591,7 +591,7 @@
 <translation id="2027465737841872819">ప్లాస్టిక్</translation>
 <translation id="2027707238798802149">కార్డ్ అందుబాటులో లేదు</translation>
 <translation id="2029735183873159415">సంతతి &amp; వంశ పరిణామ క్రమం</translation>
-<translation id="2032962459168915086"><ph name="BEGIN_LINK" />ప్రాక్సీ మరియు ఫైర్‌వాల్‌ను చెక్ చేయడం<ph name="END_LINK" /></translation>
+<translation id="2032962459168915086"><ph name="BEGIN_LINK" />ప్రాక్సీని, ఫైర్‌వాల్‌ను చెక్ చేయడం<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">షార్ట్‌కట్ అనేది <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ద్వారా నిర్వచించబడిన ఆటోమేటిక్ సెర్చ్ ప్రొవైడర్ కీవర్డ్ లాగా ఉండకూడదు: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">ఏదేమైనా సేవ్ చేయండి</translation>
 <translation id="2036514476578229158">మీరు ఈ సైట్‌ను సందర్శించడానికి అనుమతి కోరారు. మీ తల్లిదండ్రులు Family Linkలో రిప్లయి ఇవ్వవచ్చు.</translation>
@@ -1779,7 +1779,7 @@
 <translation id="4127317221386336246">వస్త్రాలకు సంబంధించిన ఉపకరణాలు</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{మరో 1}other{మరో #}}</translation>
 <translation id="4129992181550680635">విద్యా సంబంధిత రిసోర్స్‌లు</translation>
-<translation id="4130226655945681476">నెట్‌వర్క్ కేబు‌ల్‌లు, మోడెమ్ మరియు రూటర్‌ను చెక్ చేయడం</translation>
+<translation id="4130226655945681476">నెట్‌వర్క్ కేబు‌ల్స్, మోడెమ్, ఇంకా రూటర్‌ను చెక్ చేయడం</translation>
 <translation id="4132448310531350254">"<ph name="POLICY_IDS_LIST" />" యాప్‌ల ద్వారా రెఫర్ చేయబడిన file_extension "<ph name="FILE_EXTENSION" />"కు డూప్లికేట్ హ్యాండ్లర్‌లు ఉన్నాయి.</translation>
 <translation id="4134123981501319574">డాక్‌ను క్రియేట్ చేయండి</translation>
 <translation id="413544239732274901">మరింత తెలుసుకోండి</translation>
@@ -2255,6 +2255,7 @@
 <translation id="4989809363548539747">ఈ ప్లగ్ఇన్‌‌కు మద్దతు లేదు</translation>
 <translation id="4990241977441916452">ఎన్వలప్ A2</translation>
 <translation id="4992066212339426712">అన్‌మ్యూట్ చేయి</translation>
+<translation id="4994095017621319069">1 ట్యాబ్ గ్రూప్ ఇకపై అందుబాటులో ఉండదు</translation>
 <translation id="4994348767896109801">మీరు చూసే యాడ్ వ్యక్తిగతీకరించబడిందా లేదా అనేది ఈ సెట్టింగ్, <ph name="BEGIN_LINK_1" />యాడ్ టాపిక్‌లు<ph name="END_LINK_1" />, మీ <ph name="BEGIN_LINK_2" />కుక్కీ సెట్టింగ్‌లు<ph name="END_LINK_2" />, అలాగే మీరు చూస్తున్న సైట్ యాడ్‌లను వ్యక్తిగతీకరిస్తే వంటి అనేక విషయాలపై ఆధారపడి ఉంటుంది. <ph name="BEGIN_LINK_3" />మీ యాడ్‌ల విషయంలో గోప్యతను మేనేజ్ చేయడం<ph name="END_LINK_3" /> గురించి మరింత తెలుసుకోండి.</translation>
 <translation id="4995474875135717171">ఎడిట్ చేసిన సమయం:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌ను, సైట్ సెర్చ్‌ను మేనేజ్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
@@ -3472,6 +3473,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">లావెండర్ రంగు</translation>
 <translation id="7156870133441232244">సర్వర్‌ను TLS 1.2 లేదా ఆపై వెర్షన్‌లకు అప్‌గ్రేడ్ చేయాలి.</translation>
+<translation id="7156885531105222428">మీరు రిక్వెస్ట్ చేసిన పేజీ అప్లికేషన్‌లో దొరకలేదు</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" />‌ను ఉపయోగించి ఈ ఫైల్‌ను పంపడానికి, మీ పరికరంలో స్పేస్‌ను (<ph name="DISK_SPACE_SIZE" />) ఖాళీ చేయండి}other{<ph name="FEATURE_NAME" />‌ను ఉపయోగించి ఈ ఫైల్స్‌ను పంపడానికి, మీ పరికరంలో స్పేస్‌ను (<ph name="DISK_SPACE_SIZE" />) ఖాళీ చేయండి}}</translation>
 <translation id="7160999678034985039">దయచేసి మీరు చేసిన పనిని సేవ్ చేసుకొని, సిద్ధంగా ఉన్నప్పుడు అప్‌డేట్ చేయడాన్ని ప్రారంభించండి.</translation>
 <translation id="7162277662076933695">స్మార్ట్ కార్డ్ రీడర్</translation>
@@ -4259,6 +4261,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">బ్లాక్ చేయబడి ఉన్న URLల లిస్ట్‌ను, మీ సిస్టమ్ అడ్మినిస్ట్రేటర్ ద్వారా అమలు చేయబడిన ఇతర పాలసీలను చూడటానికి &lt;strong&gt;chrome://policy&lt;/strong&gt;ని సందర్శించండి.</translation>
 <translation id="8536234749087605613">ఎన్వలప్ (విండో)</translation>
+<translation id="8538228968820006247">మీ ట్యాబ్ గ్రూప్ నిండిపోయింది, కొత్త మెంబర్‌లు లింక్‌తో చేరలేరు</translation>
 <translation id="8539500321752640291">2 అనుమతులను ఇవ్వాలా?</translation>
 <translation id="8541158209346794904">బ్లూటూత్ పరికరం</translation>
 <translation id="8541410041357371550">మీకు మరింత సందర్భోచితమైన యాడ్‌లను చూపడానికి ఈ సైట్ మీ యాడ్ టాపిక్‌లను Chrome నుండి పొందుతుంది</translation>

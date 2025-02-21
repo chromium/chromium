@@ -35,7 +35,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "net/cookies/site_for_cookies.h"
-#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
@@ -458,14 +458,13 @@ class PLATFORM_EXPORT ResourceRequestHead {
   }
 
   const scoped_refptr<
-      base::RefCountedData<base::flat_set<net::SourceStream::SourceType>>>&
+      base::RefCountedData<base::flat_set<net::SourceStreamType>>>&
   GetDevToolsAcceptedStreamTypes() const {
     return devtools_accepted_stream_types_;
   }
   void SetDevToolsAcceptedStreamTypes(
       const scoped_refptr<
-          base::RefCountedData<base::flat_set<net::SourceStream::SourceType>>>&
-          types) {
+          base::RefCountedData<base::flat_set<net::SourceStreamType>>>& types) {
     devtools_accepted_stream_types_ = types;
   }
 
@@ -793,8 +792,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // Instead of using std::optional, we use scoped_refptr to reduce
   // blink memory footprint because the attribute is only used by DevTools
   // and we should keep the footprint minimal when DevTools is closed.
-  scoped_refptr<
-      base::RefCountedData<base::flat_set<net::SourceStream::SourceType>>>
+  scoped_refptr<base::RefCountedData<base::flat_set<net::SourceStreamType>>>
       devtools_accepted_stream_types_;
 
   net::StorageAccessApiStatus storage_access_api_status_ =

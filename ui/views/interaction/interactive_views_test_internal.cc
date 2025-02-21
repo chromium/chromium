@@ -74,7 +74,7 @@ class NativeViewWidgetFocusSupplier : public WidgetFocusSupplier,
     Widget::Widgets result;
     if (aura::test::AuraTestHelper* const aura_test_helper =
             aura::test::AuraTestHelper::GetInstance()) {
-      Widget::GetAllChildWidgets(aura_test_helper->GetContext(), &result);
+      result.merge(Widget::GetAllChildWidgets(aura_test_helper->GetContext()));
     }
     return result;
 #else

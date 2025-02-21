@@ -1661,11 +1661,13 @@ TEST_P(CompositorFrameSinkSupportTest, OnFrameTokenUpdate) {
   LocalSurfaceId child_local_surface_id(1, kAnotherArbitraryToken);
   SurfaceId child_id(kAnotherArbitraryFrameSinkId, child_local_surface_id);
 
+  // TODO(crbug.com/358957649) audit these tests to ensure we have sufficient
+  // coverage of `SetIsHandlingInteraction` while maintaining coverage for
+  // `SetActivationDependencies` for non-interactions.
   auto frame = CompositorFrameBuilder()
                    .AddDefaultRenderPass()
                    .SetSendFrameTokenToEmbedder(true)
                    .SetActivationDependencies({child_id})
-                   .SetIsHandlingInteraction(true)
                    .Build();
   uint32_t frame_token = frame.metadata.frame_token;
   ASSERT_NE(frame_token, 0u);

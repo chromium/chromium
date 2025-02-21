@@ -424,6 +424,8 @@ void VRServiceImpl::OnImmersiveSessionCreated(
           GetSessionMetricsHelper()->StartImmersiveSession(
               request.runtime_id, *(request.options), enabled_features);
 
+  render_frame_host_->GetProcess()->OnImmersiveXrSessionStarted();
+
   // If the session specified a FrameSinkId that means that it is handling its
   // own compositing in a way that we should notify the WebContents about.
   if (session_result->frame_sink_id) {
@@ -922,6 +924,7 @@ void VRServiceImpl::OnExitPresent() {
   static_cast<WebContentsImpl*>(GetWebContents())
       ->OnXrHasRenderTarget(default_frame_sink_id);
 
+  render_frame_host_->GetProcess()->OnImmersiveXrSessionStopped();
   GetSessionMetricsHelper()->StopAndRecordImmersiveSession();
 
   if (on_exit_present_) {

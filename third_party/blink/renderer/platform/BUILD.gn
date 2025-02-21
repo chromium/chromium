@@ -1317,6 +1317,7 @@ component("platform") {
     "mojo/heap_mojo_unique_receiver_set.h",
     "mojo/heap_mojo_wrapper_mode.h",
     "mojo/kurl_mojom_traits.h",
+    "mojo/mojo_binding_context.cc",
     "mojo/mojo_binding_context.h",
     "mojo/security_origin_mojom_traits.h",
     "mojo/string16_mojom_traits.cc",

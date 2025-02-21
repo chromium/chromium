@@ -17,6 +17,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/mock_extension_system.h"
@@ -93,6 +94,9 @@ class ShellExtensionLoaderTest : public ExtensionsTest {
   void SetUp() override {
     // Register factory so it's created with the BrowserContext.
     apps::AppLifetimeMonitorFactory::GetInstance();
+
+    // Ensure ExtensionRegistrarFactory instance is created.
+    ExtensionRegistrarFactory::GetInstance();
 
     ExtensionsTest::SetUp();
     extensions_browser_client()->set_extension_system_factory(&factory_);

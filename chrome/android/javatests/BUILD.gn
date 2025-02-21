@@ -281,6 +281,7 @@ chrome_test_java_helper_deps = [
   "//components/password_manager/core/browser:password_manager_java_enums",
   "//components/payments/content/android:java",
   "//components/payments/content/android:service_java",
+  "//components/payments/content/android:test_support_java",
   "//components/payments/content/android/ui:java",
   "//components/payments/content/android/ui:payments_java_test_support",
   "//components/payments/mojom:mojom_java",
@@ -976,7 +977,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.payments") {
     "src/org/chromium/chrome/browser/payments/AndroidPaymentAppFinderUnitTest.java",
     "src/org/chromium/chrome/browser/payments/ExpandablePaymentHandlerTest.java",
     "src/org/chromium/chrome/browser/payments/IsReadyToPayServiceHelperTest.java",
-    "src/org/chromium/chrome/browser/payments/MockPackageManagerDelegate.java",
     "src/org/chromium/chrome/browser/payments/MockPaymentApp.java",
     "src/org/chromium/chrome/browser/payments/PaymentDetailsUpdateServiceHelperTest.java",
     "src/org/chromium/chrome/browser/payments/PaymentManifestDownloaderTest.java",
@@ -1203,6 +1203,15 @@ android_library("chrome_test_java_org.chromium.chrome.browser.suggestions") {
   ]
 
   deps = chrome_test_java_deps
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.swiperefresh") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [ "src/org/chromium/chrome/browser/SwipeRefreshHandlerTest.java" ]
+
+  deps = chrome_test_java_deps +
+         [ "//third_party/android_swipe_refresh:android_swipe_refresh_java" ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.sync") {

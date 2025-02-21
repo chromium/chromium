@@ -268,7 +268,7 @@ class HistogramRule : public BackgroundTracingRule,
   void OnHistogramChangedCallback(
       base::Histogram::Sample32 reference_lower_value,
       base::Histogram::Sample32 reference_upper_value,
-      const char* histogram_name,
+      std::string_view histogram_name,
       uint64_t name_hash,
       base::Histogram::Sample32 actual_value) {
     DCHECK_EQ(histogram_name, histogram_name_);

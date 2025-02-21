@@ -1026,6 +1026,9 @@ void ChromeMetricsServiceClient::RegisterUKMProviders() {
       std::make_unique<metrics::ComponentMetricsProvider>(
           std::make_unique<ChromeComponentMetricsProviderDelegate>(
               g_browser_process->component_updater())));
+
+  ukm_service_->RegisterMetricsProvider(
+      std::make_unique<metrics::EntropyStateProvider>(local_state));
 }
 
 void ChromeMetricsServiceClient::NotifyApplicationNotIdle() {

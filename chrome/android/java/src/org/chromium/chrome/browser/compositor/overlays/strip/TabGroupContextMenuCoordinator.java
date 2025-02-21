@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -286,11 +287,12 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     }
 
     @Override
-    protected void buildMenuActionItems(
-            ModelList itemList,
-            boolean isIncognito,
-            boolean shouldShowDeleteGroup,
-            boolean hasCollaborationData) {
+    protected void buildMenuActionItems(ModelList itemList, Token id) {
+        boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
+        @Nullable String collaborationId = getCollaborationIdOrNull(id);
+        boolean hasCollaborationData =
+                TabShareUtils.isCollaborationIdValid(collaborationId)
+                        && mCollaborationService.getServiceStatus().isAllowedToJoin();
         itemList.add(getDivider());
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
@@ -337,7 +339,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         /* enabled= */ true));
 
         // Delete does not make sense for incognito since the tab group is not saved to sync.
-        if (shouldShowDeleteGroup && !isIncognito && !hasCollaborationData) {
+        if ((mTabGroupSyncService != null) && !isIncognito && !hasCollaborationData) {
             itemList.add(getDivider());
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItem(

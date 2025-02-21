@@ -145,8 +145,9 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
           tab_strip_->controller(), this,
           browser->GetFeatures().tab_declutter_controller(),
           browser->GetFeatures().glic_nudge_controller());
+
       tab_strip_action_container->SetProperty(views::kCrossAxisAlignmentKey,
-                                              views::LayoutAlignment::kCenter);
+                                              views::LayoutAlignment::kStart);
     } else if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
       product_specifications_button =
           std::make_unique<ProductSpecificationsButton>(
@@ -256,7 +257,6 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
         views::kMarginsKey,
         gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
   }
-
   if (tab_strip_action_container) {
     tab_strip_action_container_ =
         AddChildView(std::move(tab_strip_action_container));

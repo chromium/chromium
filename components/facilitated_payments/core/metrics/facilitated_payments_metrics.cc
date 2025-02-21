@@ -125,12 +125,15 @@ void LogEwalletFopSelectorResultUkm(bool accepted,
       .Record(ukm::UkmRecorder::Get());
 }
 
-void LogPixFopSelected() {
+void LogPixFopSelectedAndLatency(base::TimeDelta duration) {
   // The histogram name should be in sync with
   // `FacilitatedPaymentsPaymentMethodsMediator.PIX_FOP_SELECTOR_USER_ACTION_HISTOGRAM`.
   base::UmaHistogramEnumeration(
       "FacilitatedPayments.Pix.FopSelector.UserAction",
       FopSelectorAction::kFopSelected);
+
+  base::UmaHistogramLongTimes("FacilitatedPayments.Pix.FopSelected.Latency",
+                              duration);
 }
 
 void LogEwalletFopSelected(AvailableEwalletsConfiguration type) {

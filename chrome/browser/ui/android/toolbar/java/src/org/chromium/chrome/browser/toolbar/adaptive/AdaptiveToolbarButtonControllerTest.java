@@ -235,6 +235,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         mActivityLifecycleDispatcher,
                         mProfileSupplier,
                         menuCoordinator,
+                        /* toolbarBehavior= */ null,
                         mAndroidPermissionDelegate);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);
@@ -284,6 +285,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         mActivityLifecycleDispatcher,
                         mProfileSupplier,
                         menuCoordinator,
+                        /* toolbarBehavior= */ null,
                         mAndroidPermissionDelegate);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.PRICE_TRACKING, mPriceTrackingButtonController);
@@ -444,6 +446,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         mActivityLifecycleDispatcher,
                         mProfileSupplier,
                         mock(AdaptiveButtonActionMenuCoordinator.class),
+                        /* toolbarBehavior= */ null,
                         mAndroidPermissionDelegate);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);

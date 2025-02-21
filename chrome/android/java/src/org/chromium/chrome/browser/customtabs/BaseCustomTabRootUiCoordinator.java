@@ -84,6 +84,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
@@ -420,12 +421,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
-    protected void initializeAdaptiveToolbarButton(Supplier<Tracker> trackerSupplier) {
-        if (!ChromeFeatureList.sCctAdaptiveButton.isEnabled()) return;
-
-        super.initializeAdaptiveToolbarButton(trackerSupplier);
-        // TODO(crbug/391931152): Instantiate CCT-specific ButtonControllers based on
-        //     the feature flag configuration.
+    protected AdaptiveToolbarBehavior createAdaptiveToolbarBehavior(
+            Supplier<Tracker> trackerSupplier) {
+        return new CustomTabAdaptiveToolbarBehavior(
+                () -> addVoiceSearchAdaptiveButton(trackerSupplier));
     }
 
     @Override

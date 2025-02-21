@@ -344,10 +344,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         if (bankAccount.getDisplayIconUrl() != null && bankAccount.getDisplayIconUrl().isValid()) {
             bankIconOptional =
                     PersonalDataManagerFactory.getForProfile(mProfile)
-                            .getCustomImageForAutofillSuggestionIfAvailable(
-                                    bankAccount.getDisplayIconUrl(),
-                                    AutofillUiUtils.CardIconSpecs.create(
-                                            context, ImageSize.SQUARE));
+                            .getPixAccountImageIfAvailable(bankAccount.getDisplayIconUrl());
         }
         if (bankIconOptional.isPresent()) {
             bankAccountModelBuilder.with(BANK_ACCOUNT_ICON_BITMAP, bankIconOptional.get());

@@ -5,11 +5,15 @@
 #ifndef CHROME_BROWSER_GLIC_LAUNCHER_GLIC_BACKGROUND_MODE_MANAGER_H_
 #define CHROME_BROWSER_GLIC_LAUNCHER_GLIC_BACKGROUND_MODE_MANAGER_H_
 
+#include <map>
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
 class ScopedKeepAlive;
@@ -31,7 +35,8 @@ class GlicStatusIcon;
 class GlicBackgroundModeManager
     : public GlicLauncherConfiguration::Observer,
       public ui::GlobalAcceleratorListener::Observer,
-      public ProfileManagerObserver {
+      public ProfileManagerObserver,
+      public ProfileObserver {
  public:
   explicit GlicBackgroundModeManager(StatusTray* status_tray);
   ~GlicBackgroundModeManager() override;
@@ -49,10 +54,9 @@ class GlicBackgroundModeManager
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
-  void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
 
-  // Called when the enterprise policy-linked pref has changed for any profile.
-  void OnPolicyChanged();
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
   void Shutdown();
 
@@ -73,6 +77,10 @@ class GlicBackgroundModeManager
   void RegisterHotkey(ui::Accelerator updated_hotkey);
   void UnregisterHotkey();
   void UpdateState();
+
+  void OnProfileEnableChanged();
+
+  bool IsEnabledInAnyLoadedProfile();
 
   // A helper class for observing pref changes.
   std::unique_ptr<GlicLauncherConfiguration> configuration_;
@@ -102,6 +110,12 @@ class GlicBackgroundModeManager
   // accelerator.
   ui::Accelerator expected_registered_hotkey_;
   ui::Accelerator actual_registered_hotkey_;
+
+  // Listens to changes to IsEnabled() for profiles.
+  std::map<Profile*, base::CallbackListSubscription> profile_subscriptions_;
+  using ScopedProfileObserver =
+      base::ScopedObservation<Profile, ProfileObserver>;
+  std::map<Profile*, ScopedProfileObserver> profile_observers_;
 };
 }  // namespace glic
 

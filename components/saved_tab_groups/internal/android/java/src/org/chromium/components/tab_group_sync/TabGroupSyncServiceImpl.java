@@ -225,6 +225,13 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
+    public boolean wasTabGroupClosedLocally(String syncTabGroupId) {
+        if (mNativePtr == 0) return false;
+        return TabGroupSyncServiceImplJni.get()
+                .wasTabGroupClosedLocally(mNativePtr, this, syncTabGroupId);
+    }
+
+    @Override
     public void recordTabGroupEvent(EventDetails eventDetails) {
         if (mNativePtr == 0) return;
         TabGroupSyncServiceImplJni.get()
@@ -407,6 +414,11 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 long nativeTabGroupSyncServiceAndroid,
                 TabGroupSyncServiceImpl caller,
                 String syncCacheGuid);
+
+        boolean wasTabGroupClosedLocally(
+                long nativeTabGroupSyncServiceAndroid,
+                TabGroupSyncServiceImpl caller,
+                String syncTabGroupId);
 
         void recordTabGroupEvent(
                 long nativeTabGroupSyncServiceAndroid,

@@ -590,16 +590,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Returns all Widgets in |native_view|'s hierarchy, including itself if
   // it is one.
-  // TODO(tluk): This API should be updated to return Widgets rather than take
-  // an out param.
-  static void GetAllChildWidgets(gfx::NativeView native_view,
-                                 Widgets* children);
+  static Widgets GetAllChildWidgets(gfx::NativeView native_view);
 
   // Returns all Widgets owned by |native_view| (including child widgets, but
   // not including itself).
-  // TODO(tluk): This API should be updated to return Widgets rather than take
-  // an out param.
-  static void GetAllOwnedWidgets(gfx::NativeView native_view, Widgets* owned);
+  static Widgets GetAllOwnedWidgets(gfx::NativeView native_view);
 
   // https://crbug.com/391414831: This is only used by some views
   // implementation details for content::WebContents glue, and for ChromeOS.

@@ -177,8 +177,8 @@ void CustomEventRecorder::LogHistogram(base::HistogramBase* histogram) {
   }
   base::Pickle pickle;
   samples->Serialize(&pickle);
-  std::string buckets =
-      base::Base64Encode(std::string(pickle.data_as_char(), pickle.size()));
+  std::string buckets = base::Base64Encode(
+      std::string_view(pickle.data_as_char(), pickle.size()));
   TRACE_EVENT_INSTANT2("benchmark,uma", "UMAHistogramSamples",
                        TRACE_EVENT_SCOPE_PROCESS, "name",
                        histogram->histogram_name(), "buckets", buckets);

@@ -18,7 +18,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/request_priority.h"
 #include "net/cookies/site_for_cookies.h"
-#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/socket_tag.h"
@@ -217,7 +217,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // If not null, the network service will not advertise any stream types
   // (via Accept-Encoding) that are not listed. Also, it will not attempt
   // decoding any non-listed stream types.
-  std::optional<std::vector<net::SourceStream::SourceType>>
+  std::optional<std::vector<net::SourceStreamType>>
       devtools_accepted_stream_types;
   std::optional<net::NetLogSource> net_log_create_info;
   std::optional<net::NetLogSource> net_log_reference_info;

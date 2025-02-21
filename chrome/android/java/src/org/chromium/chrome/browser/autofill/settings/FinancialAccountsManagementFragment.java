@@ -191,10 +191,8 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
         Optional<Bitmap> displayIconOptional = Optional.empty();
         if (bankAccount.getDisplayIconUrl() != null && bankAccount.getDisplayIconUrl().isValid()) {
             displayIconOptional =
-                    mPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
-                            bankAccount.getDisplayIconUrl(),
-                            AutofillUiUtils.CardIconSpecs.create(
-                                    getStyledContext(), ImageSize.SQUARE));
+                    mPersonalDataManager.getPixAccountImageIfAvailable(
+                            bankAccount.getDisplayIconUrl());
         }
         Drawable displayIconBitmapDrawable =
                 displayIconOptional.isPresent()

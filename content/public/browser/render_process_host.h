@@ -228,6 +228,13 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void OnBoostForLoadingAdded() = 0;
   virtual void OnBoostForLoadingRemoved() = 0;
 
+  // Called when an Immersive WebXR session is started or stopped. This is used
+  // to prevent a process from being unnecessarily backgrounded when it is
+  // responsible for a WebXR session. Such sessions can take over fullscreen
+  // rendering and may be backgrounded unnecessarily without this call.
+  virtual void OnImmersiveXrSessionStarted() = 0;
+  virtual void OnImmersiveXrSessionStopped() = 0;
+
   // Indicates whether the current RenderProcessHost is exclusively hosting
   // guest RenderFrames. Not all guest RenderFrames are created equal.  A guest,
   // as indicated by BrowserPluginGuest::IsGuest, may coexist with other

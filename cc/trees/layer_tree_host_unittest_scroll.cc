@@ -7,13 +7,12 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "base/memory/raw_ptr.h"
-#include "cc/trees/layer_tree_host.h"
-
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
 #include "cc/base/completion_event.h"
@@ -33,11 +32,13 @@
 #include "cc/test/test_ukm_recorder_factory.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
+#include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/proxy_impl.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/transform_node.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/types/scroll_input_type.h"
@@ -3056,7 +3057,26 @@ SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostScrollTestViewportAbortedCommit);
 class PreventRecreatingTilingDuringScroll : public LayerTreeHostScrollTest {
  public:
   PreventRecreatingTilingDuringScroll()
-      : initial_scale_(2.0f, 1.0f), new_scale_(2.0f, 2.0f) {}
+      : initial_scale_(2.0f, 1.0f), new_scale_(2.0f, 2.0f) {
+    // TODO(crbug.com/358957649) `cc_unittests` have had historical issues with
+    // flakiness due to their threading setup, and in-process usage of Viz. This
+    // test demonstrates flakiness with two Viz features, as the processing of
+    // the frame submission Ack can actually occur before the `Scheduler` has
+    // finished its own processing of having submitted the frame.
+    //
+    // This race does not exist in production. We will disable these feature
+    // here and update the test as a part of the referenced audit.
+    //
+    // The check being hit around `pending_submit_frames` has already had
+    // variances relaxed in `SchedulerStateMachine` for when we disable frame
+    // rates. The checks themselves are not useful anymore.
+    std::vector<base::test::FeatureRef> disabled_features;
+    disabled_features.push_back(features::kDrawImmediatelyWhenInteractive);
+    disabled_features.push_back(
+        features::kAckOnSurfaceActivationWhenInteractive);
+    scoped_feature_list_.InitWithFeatures(std::vector<base::test::FeatureRef>(),
+                                          disabled_features);
+  }
 
   void SetupTree() override {
     LayerTreeHostScrollTest::SetupTree();
@@ -3164,6 +3184,7 @@ class PreventRecreatingTilingDuringScroll : public LayerTreeHostScrollTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<FakePictureLayer> child_layer_;
   int child_layer_id_;
   FakeContentLayerClient client_;

@@ -24,13 +24,13 @@ _ios_conceptually_bad_dependencies = [
 _ios_transient_bad_dependencies = []
 
 # Global list of dependencies that should never be added to extensions.
-ios_extension_assert_no_deps = [
-  "//ios/chrome/browser/*",
-  "//net/*",
-  "//url/*",
-]
+ios_extension_assert_no_deps = [ "//ios/chrome/browser/*" ]
 
 ios_assert_no_deps = _ios_transient_bad_dependencies
 if (!use_blink) {
   ios_assert_no_deps += _ios_conceptually_bad_dependencies
+  ios_extension_assert_no_deps += [
+    "//net/*",
+    "//url/*",
+  ]
 }

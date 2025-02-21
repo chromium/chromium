@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// A helper function for using JsTemplate. See jstemplate_builder.h for more
-// info.
-
 #include "ui/base/webui/jstemplate_builder.h"
 
 #include <string_view>
@@ -39,7 +36,6 @@ void AppendJsonHtml(const base::Value::Dict& json, std::string* output) {
 
 // Appends the source for load_time_data.js in a script tag.
 void AppendLoadTimeData(std::string* output) {
-  // fetch and cache the pointer of the jstemplate resource source text.
   std::string load_time_data_src =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_WEBUI_JS_LOAD_TIME_DATA_DEPRECATED_JS);

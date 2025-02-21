@@ -154,7 +154,8 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
       if (item_result.is_hyphenated) [[unlikely]] {
         DCHECK(item_result.hyphen);
         LayoutUnit hyphen_inline_size = item_result.hyphen.InlineSize();
-        line_box->AddChild(item_result, box->text_top,
+        line_box->AddChild(item, item_result, item_result.TextOffset(),
+                           box->text_top,
                            item_result.inline_size - hyphen_inline_size,
                            box->text_height, item.BidiLevel());
         PlaceHyphen(item_result, hyphen_inline_size, line_box, box);
@@ -164,10 +165,12 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
         const auto one_em = item.Style()->ComputedFontSizeAsFixed();
         const auto text_height = one_em;
         const auto text_top = LayoutUnit();
-        line_box->AddChild(item_result, text_top, item_result.inline_size,
-                           text_height, item.BidiLevel());
+        line_box->AddChild(item, item_result, item_result.TextOffset(),
+                           text_top, item_result.inline_size, text_height,
+                           item.BidiLevel());
       } else {
-        line_box->AddChild(item_result, box->text_top, item_result.inline_size,
+        line_box->AddChild(item, item_result, item_result.TextOffset(),
+                           box->text_top, item_result.inline_size,
                            box->text_height, item.BidiLevel());
       }
 
@@ -204,7 +207,7 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
       // Adds a LogicalLineItem with an InlineItem to check its
       // InlineItemType later.
       line_box->AddChild(
-          item_result,
+          item, item_result, item_result.TextOffset(),
           /* block_offset */ LayoutUnit(),
           item_result.inline_size + start_overhang + end_overhang,
           /* text_height */ LayoutUnit(), item.BidiLevel());
@@ -334,7 +337,7 @@ void LogicalLineBuilder::PlaceControlItem(const InlineItem& item,
     box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_);
   }
 
-  line_box->AddChild(*item_result->item, std::move(item_result->shape_result),
+  line_box->AddChild(item, std::move(item_result->shape_result),
                      item_result->TextOffset(), box->text_top,
                      item_result->inline_size, box->text_height,
                      item.BidiLevel());

@@ -26,11 +26,13 @@ WebAppFilter WebAppFilter::OpensInDedicatedWindow() {
 }
 
 // static
+#if !BUILDFLAG(IS_CHROMEOS)
 WebAppFilter WebAppFilter::CapturesLinksInScope() {
   WebAppFilter filter;
   filter.captures_links_in_scope_ = true;
   return filter;
 }
+#endif
 
 // static
 WebAppFilter WebAppFilter::IsIsolatedApp() {

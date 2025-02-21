@@ -225,11 +225,6 @@ class BaseIdleHelperTest : public testing::Test {
 
   SequenceManager* sequence_manager() const { return sequence_manager_.get(); }
 
-  bool IsInIdlePeriod() const {
-    return idle_helper_->IsInIdlePeriod(
-        idle_helper_->SchedulerIdlePeriodState());
-  }
-
  protected:
   static base::TimeDelta minimum_idle_period_duration() {
     return IdleHelper::kMinimumIdlePeriodDuration;
@@ -243,13 +238,8 @@ class BaseIdleHelperTest : public testing::Test {
     return IdleHelper::kRetryEnableLongIdlePeriodDelay;
   }
 
-  base::TimeTicks CurrentIdleTaskDeadline() {
-    return idle_helper_->CurrentIdleTaskDeadline();
-  }
-
   void CheckIdlePeriodStateIs(const char* expected) {
-    EXPECT_STREQ(expected, IdleHelper::IdlePeriodStateToString(
-                               idle_helper_->SchedulerIdlePeriodState()));
+    EXPECT_STREQ(expected, idle_helper_->IdlePeriodStateForTracing());
   }
 
   const TaskQueue* idle_queue() const { return idle_helper_->idle_queue_; }
@@ -369,9 +359,9 @@ TEST_F(IdleHelperTest, TestEnterAndExitIdlePeriod) {
   idle_helper_->StartShortIdlePeriod(
       test_task_runner_->NowTicks(),
       test_task_runner_->NowTicks() + base::Milliseconds(10));
-  EXPECT_TRUE(IsInIdlePeriod());
+  EXPECT_TRUE(idle_helper_->IsInIdlePeriod());
   idle_helper_->EndIdlePeriod();
-  EXPECT_FALSE(IsInIdlePeriod());
+  EXPECT_FALSE(idle_helper_->IsInIdlePeriod());
 }
 
 TEST_F(IdleHelperTest, TestEnterLongIdlePeriod) {
@@ -394,7 +384,7 @@ TEST_F(IdleHelperTest, TestEnterLongIdlePeriod) {
   test_task_runner_->RunUntilIdle();
   EXPECT_EQ(1, run_count);  // Should have run in a long idle time.
   EXPECT_EQ(expected_deadline, deadline_in_task);
-  EXPECT_TRUE(IsInIdlePeriod());
+  EXPECT_TRUE(idle_helper_->IsInIdlePeriod());
 }
 
 TEST_F(IdleHelperTest, TestLongIdlePeriodWithPendingDelayedTask) {

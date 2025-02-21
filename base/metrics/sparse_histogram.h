@@ -35,7 +35,7 @@ class BASE_EXPORT SparseHistogram : public HistogramBase {
   // live longer than the created sparse histogram.
   static std::unique_ptr<HistogramBase> PersistentCreate(
       PersistentHistogramAllocator* allocator,
-      const char* name,
+      DurableStringView name,
       HistogramSamples::Metadata* meta,
       HistogramSamples::Metadata* logged_meta);
 
@@ -67,10 +67,10 @@ class BASE_EXPORT SparseHistogram : public HistogramBase {
 
  private:
   // Clients should always use FactoryGet to create SparseHistogram.
-  explicit SparseHistogram(const char* name);
+  explicit SparseHistogram(DurableStringView name);
 
   SparseHistogram(PersistentHistogramAllocator* allocator,
-                  const char* name,
+                  DurableStringView name,
                   HistogramSamples::Metadata* meta,
                   HistogramSamples::Metadata* logged_meta);
 

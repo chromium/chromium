@@ -177,9 +177,8 @@ Suggestion::PlusAddressPayload::~PlusAddressPayload() = default;
 
 Suggestion::AutofillAiPayload::AutofillAiPayload() = default;
 
-Suggestion::AutofillAiPayload::AutofillAiPayload(
-    const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill)
-    : values_to_fill(std::move(values_to_fill)) {}
+Suggestion::AutofillAiPayload::AutofillAiPayload(base::Uuid guid)
+    : guid(std::move(guid)) {}
 
 Suggestion::AutofillAiPayload::AutofillAiPayload(const AutofillAiPayload&) =
     default;

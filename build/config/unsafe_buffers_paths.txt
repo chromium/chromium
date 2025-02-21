@@ -10,7 +10,6 @@
 -chrome/chrome_elf/third_party_dlls/
 -chrome/elevation_service/internal/
 -chrome/installer/mac/third_party/
--chromecast/
 -components/optimization_guide/internal/
 -ios/
 -ios_internal/

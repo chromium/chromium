@@ -61,8 +61,8 @@ void TryToCloseAllPrompts(content::WebContents* web_contents) {
   top_level_view = platform_util::GetParent(top_level_view)
                        ? platform_util::GetParent(top_level_view)
                        : top_level_view;
-  views::Widget::Widgets all_widgets;
-  views::Widget::GetAllChildWidgets(top_level_view, &all_widgets);
+  views::Widget::Widgets all_widgets =
+      views::Widget::GetAllChildWidgets(top_level_view);
   for (views::Widget* w : all_widgets) {
     if (w->IsDialogBox())
       w->CloseWithReason(views::Widget::ClosedReason::kUnspecified);

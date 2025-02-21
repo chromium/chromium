@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/modules/encoding/text_encoder.h"
 
+#include "base/feature_list.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_text_encoder_encode_into_result.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/encoding/encoding.h"

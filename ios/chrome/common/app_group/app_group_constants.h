@@ -200,7 +200,6 @@ extern NSString* const kOpenExtensionOutcomes;
 // passed to widgets.
 extern NSString* const kAccountsOnDevice;
 // Names of keys in dictionary saved in kAccountsOnDevice.
-extern NSString* const kHostedDomain;
 extern NSString* const kEmail;
 
 // Supported bundle IDs for opening incognito links in Chrome.

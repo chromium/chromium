@@ -3315,5 +3315,24 @@ TEST_F(AutofillCrowdsourcingEncoding,
   EXPECT_THAT(form.field(5)->experimental_server_predictions(), IsEmpty());
 }
 
+// Tests that the `run_autofill_ai_model` of the `AutofillQueryResponse` proto
+// is parsed properly.
+TEST_F(AutofillCrowdsourcingEncoding, ParseRunAutofillAiModel) {
+  // All fields with autocomplete off and no server data.
+  FormData form = test::GetFormData({.fields = {{.label = u"First Name"}}});
+
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  form_suggestion->set_run_autofill_ai_model(true);
+  std::string response_string = SerializeAndEncode(response);
+
+  FormStructure form_structure(form);
+  EXPECT_FALSE(form_structure.may_run_autofill_ai_model());
+  ParseServerPredictionsQueryResponse(
+      response_string, {&form_structure},
+      test::GetEncodedSignatures({&form_structure}), nullptr);
+  EXPECT_TRUE(form_structure.may_run_autofill_ai_model());
+}
+
 }  // namespace
 }  // namespace autofill

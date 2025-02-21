@@ -27,7 +27,7 @@ NavigationRequestInfo::NavigationRequestInfo(
     const base::UnguessableToken& devtools_frame_token,
     net::HttpRequestHeaders cors_exempt_headers,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    const std::optional<std::vector<net::SourceStream::SourceType>>&
+    const std::optional<std::vector<net::SourceStreamType>>&
         devtools_accepted_stream_types,
     bool is_pdf,
     int initiator_process_id,

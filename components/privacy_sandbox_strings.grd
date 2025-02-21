@@ -747,86 +747,88 @@
       </message>
 
     <!-- Cookies Settings - Settings P1 -->
-    <!-- TODO(b:370008370): Make strings translateable when content is finalized -->
-    <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_BULLET_ONE" desc="" translateable="false" formatter_data="android_java">
-      Sites can use third-party cookies to see your browsing activity across different sites, for example, to personalize ads
+    <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_BULLET_ONE" desc="This text is for a bullet that provides detail about the first setting option. It describes the primary privacy and content impacts of selecting the “Allow third-party cookies” option." translateable="true" formatter_data="android_java">
+      Sites can use third-party cookies to personalize content and ads, and learn about actions you take on other sites
     </message>
-    <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_BULLET_TWO" desc="" translateable="false" formatter_data="android_java">
+    <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_BULLET_TWO" desc="This text is for a bullet that provides detail about the first setting option. It describes the functional consequence of selecting the “Allow third-party cookies” option, especially in contrast to the “Block third-party cookies” option." translateable="true" formatter_data="android_java">
       Site features that rely on third-party cookies should work as expected
     </message>
-    <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_BULLET_THREE" desc="" translateable="false" formatter_data="android_java">
+    <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_BULLET_THREE" desc="This text is for a bullet that provides detail about the first setting option. It describes the key new detail that now applies to this setting option." translateable="true" formatter_data="android_java">
       When you're in Incognito mode, Chrome blocks sites from using third-party cookies
     </message>
-    <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_BLOCK_BULLET_ONE" desc="" translateable="false" formatter_data="android_java">
-      Sites can't use third-party cookies to see your browsing activity across different sites, for example, to personalize ads
+    <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_BLOCK_BULLET_ONE" desc="This text is for a bullet that provides detail about the second setting option. It describes the primary privacy and content impacts of selecting the “Block third-party cookies” option." translateable="true" formatter_data="android_java">
+      Sites can't use third-party cookies to personalize content and ads, and learn about actions you take on other sites, unless you allow related sites to access them
     </message>
-    <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_BLOCK_BULLET_TWO" desc="" translateable="false" formatter_data="android_java">
-      Sites can only use cookies to see browsing activity on their own site
+    <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_BLOCK_BULLET_TWO" desc="This text is for a bullet that provides detail about the second setting option. It describes the extent of how sites can use cookies when the “Block third-party cookies” option is selected." translateable="true" formatter_data="android_java">
+      Sites can still use cookies to see browsing activity on their own site
     </message>
-    <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_BLOCK_BULLET_THREE" desc="" translateable="false" formatter_data="android_java">
+    <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_BLOCK_BULLET_THREE" desc="This text is for a bullet that provides detail about the second setting option. It describes the functional consequence of selecting the “Block third-party cookies” option, especially in contrast to the “Allow third-party cookies” option." translateable="true" formatter_data="android_java">
       Site features that rely on third-party cookies may not work
     </message>
-    <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_BLOCK_SUBLABEL_RWS_ENABLED" desc="" translateable="false" formatter_data="android_java">
+    <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_BLOCK_SUBLABEL_RWS_ENABLED" desc="This text is for the description of the second setting option. It describes the primary point of contrast to the first setting option and features as a preview of details and sub-settings of the “Block third-party cookies” option. This string is dynamic and the text shown here is specific to when the “Allow related sites to see your activity in the group” switch is toggled to the On state." translateable="true" formatter_data="android_java">
       Some features may not work. Related sites can still use third-party cookies.
+    </message>
+    <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_SUBLABEL" desc="This text is for the description of the first setting option. It describes the primary point of contrast to the second setting option and features as a preview of details about the “Allow third-party cookies” option." translateable="true" formatter_data="android_java">
+      Sites that rely on third-party cookies should work as expected
     </message>
 
     <!-- Privacy Guide - Settings P1 -->
-    <!-- TODO(b:370008370): Make strings translateable when content is finalized -->
-    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_WHEN_ON_BULLET_ONE" desc="" translateable="false">
-      Sites can use third-party cookies to offer features like keeping you signed in across sites and showing you more personalized content and ads
+    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_WHEN_ON_BULLET_ONE" desc="This text is for a bullet that provides detail about the first setting option. It describes the primary content and site experience impacts of selecting the “Allow third-party cookies” option." translateable="true">
+      Sites can use third-party cookies to personalize content and ads
     </message>
-    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_WHEN_ON_BULLET_TWO" desc="" translateable="false">
-      Sites should work as expected
+    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_WHEN_ON_BULLET_TWO" desc="This text is for a bullet that provides detail about the first setting option. It describes the functional consequence of selecting the “Allow third-party cookies” option, especially in contrast to the “Block third-party cookies” option." translateable="true">
+      Site features that rely on third-party cookies should work as expected
     </message>
-    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_THINGS_TO_CONSIDER_BULLET_ONE" desc="" translateable="false">
-      Sites can use third-party cookies to see your browsing activity across different sites
+    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_THINGS_TO_CONSIDER_BULLET_ONE" desc="This text is for a bullet that provides key considerations about the first setting option. It describes the primary privacy considerations of selecting the “Allow third-party cookies” option." translateable="true">
+      Sites can use third-party cookies to learn about actions you take on other sites
     </message>
-    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_THINGS_TO_CONSIDER_BULLET_TWO" desc="" translateable="false">
+    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_THINGS_TO_CONSIDER_BULLET_TWO" desc="This text is for a bullet that provides key considerations about the first setting option. It describes the key new detail that now applies to this setting option." translateable="true">
       When you're in Incognito mode, Chrome blocks sites from using third-party cookies
     </message>
-    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_WHEN_ON_BULLET_ONE" desc="" translateable="false">
-      Sites can't use third-party cookies to see your browsing activity across sites
+    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_WHEN_ON_BULLET_ONE" desc="This text is for a bullet that provides detail about the second setting option. It describes the primary privacy impacts of selecting the “Block third-party cookies” option." translateable="true">
+      Sites can't use third-party cookies to personalize content and ads, and learn about actions you take on other sites, unless you give related sites access to them
     </message>
-    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_WHEN_ON_BULLET_TWO" desc="" translateable="false">
+    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_WHEN_ON_BULLET_TWO" desc="This text is for a bullet that provides detail about the second setting option. It describes the functional consequence of selecting the “Block third-party cookies” option, especially in contrast to the “Allow third-party cookies” option." translateable="true">
       Features on some sites may not work
     </message>
-    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_THINGS_TO_CONSIDER_BULLET_ONE" desc="" translateable="false">
+    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_THINGS_TO_CONSIDER_BULLET_ONE" desc="This text is for a bullet that provides key considerations about the second setting option. It informs the user of possible functional impacts and that there are means of addressing it." translateable="true">
       If a site doesn't work as expected, you can try temporarily allowing third-party cookies for a specific site you visit
     </message>
-    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_THINGS_TO_CONSIDER_BULLET_TWO" desc="" translateable="false">
-      You can create exceptions in Settings for certain sites that you want to allow third-party cookies
+    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_THINGS_TO_CONSIDER_BULLET_TWO" desc="This text is for a bullet that provides key considerations about the second setting option. It informs the user of advanced settings they can use to modify the scope of impact of selecting the “Block third-party cookies” option." translateable="true">
+      You can create exceptions in Settings to always allow specific sites to use third-party cookies
     </message>
-    <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_ALLOW_SUBHEADER" desc="" translateable="false" formatter_data="android_java">
+    <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_ALLOW_SUBHEADER" desc="This text is for the label of the first setting option." translateable="true" formatter_data="android_java">
       Allow third-party cookies
     </message>
-    <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_BLOCK_SUBHEADER" desc="" translateable="false" formatter_data="android_java">
+    <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_BLOCK_SUBHEADER" desc="This text is for the label of the second setting option." translateable="true" formatter_data="android_java">
       Block third-party cookies
     </message>
-    <message name="IDS_SETTINGS_PRIVACY_GUIDE_BLOCK_TPC_ALLOW_EXPAND_A11Y_LABEL" desc="" translateable="false">
-      More about allowing third-party cookies
-    </message>
-    <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_ALLOW_SUBLABEL" desc="" translateable="false" formatter_data="android_java">
-      Sites should work as expected
-    </message>
-    <message name="IDS_PRIVACY_GUIDE_COOKIES_HEADER" desc="" translateable="false" formatter_data="android_java">
+    <message name="IDS_PRIVACY_GUIDE_COOKIES_HEADER" desc="This text is for the title header of the third-party cookie step in the Privacy Guide flow. It prompts the user to make a choice according to their privacy and browsing experience priorities." translateable="true" formatter_data="android_java">
       Choose your third-party cookie preferences
     </message>
-    <message name="IDS_PRIVACY_GUIDE_COOKIES_ALLOW_DESCRIPTION" desc="" translateable="false" formatter_data="android_java">
-      Sites can use third-party cookies to see your browsing activity across different sites, for example, to personalize content and ads
+    <message name="IDS_PRIVACY_GUIDE_COOKIES_ALLOW_DESCRIPTION" desc="This text is for the description of the first setting option. It describes the primary site experience and privacy impacts of selecting the “Allow third-party cookies” option." translateable="true" formatter_data="android_java">
+      Sites can use third-party cookies to personalize content and ads, and learn about actions you take on other sites
     </message>
-    <message name="IDS_PRIVACY_GUIDE_COOKIES_BLOCK_DESCRIPTION" desc="" translateable="false" formatter_data="android_java">
-      Sites can't use third-party cookies to see your browsing activity across sites. Some site features may not work as expected.
+    <message name="IDS_PRIVACY_GUIDE_COOKIES_BLOCK_DESCRIPTION" desc="This text is for the description of the second setting option. It describes the primary site experience and privacy impacts of selecting the “Block third-party cookies” option." translateable="true" formatter_data="android_java">
+      Sites can't use third-party cookies to personalize content and ads, and learn about actions you take on other sites, unless you allow related sites to access them. Some site features may not work as expected.
+    </message>
+
+    <!-- A11y Labels - Settings P1 -->
+    <message name="IDS_SETTINGS_ALLOW_THIRD_PARTY_COOKIES_EXPAND_A11Y_LABEL" desc="This text is read by screenreaders and helps users find more info about this choice." translateable="true">
+      More about the Allow third-party cookies option
+    </message>
+    <message name="IDS_SETTINGS_BLOCK_THIRD_PARTY_COOKIES_EXPAND_A11Y_LABEL" desc="This text is read by screenreaders and helps users find more info about this choice." translateable="true">
+      More about the Block third-party cookies option
     </message>
 
     <!-- NTP - Settings P1 -->
-    <!-- TODO(b:370008370): Make strings translateable when content is finalized -->
-    <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_HEADER" desc="" translateable="false" formatter_data="android_java">
+    <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_HEADER" desc="This text is for the header of the emphasized detail, “Third-party cookies are blocked” section." translateable="true" formatter_data="android_java">
       Third-party cookies are blocked
     </message>
-    <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION_DESKTOP" desc="" translateable="false">
+    <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION_DESKTOP" desc="This text is for the body of the “Third-party cookies are blocked” section. It specifies the scope of blocking third-party cookies and informs the user of possible functional impacts, a means of addressing it, and a link to learn how to do so." translateable="true">
       When you're in Incognito mode, sites can't use third-party cookies. If a site that relies on these cookies isn't working, you can <ph name="START_LINK">&lt;a target="_blank" href="$1" aria-description="$2"&gt;</ph>try giving that site temporary access to third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
-    <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION" desc="" translateable="false" formatter_data="android_java">
+    <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION_ANDROID" desc="This text is for the body of the “Third-party cookies are blocked” section. It specifies the scope of blocking third-party cookies and informs the user of possible functional impacts, a means of addressing it, and a link to learn how to do so." translateable="true" formatter_data="android_java">
       When you're in Incognito mode, sites can't use third-party cookies. If a site that relies on these cookies isn't working, you can <ph name="BEGIN_LINK">&lt;link&gt;</ph>try giving that site temporary access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
     </message>
 

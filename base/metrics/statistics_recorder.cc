@@ -34,7 +34,7 @@ namespace {
 
 bool HistogramNameLesser(const base::HistogramBase* a,
                          const base::HistogramBase* b) {
-  return strcmp(a->histogram_name(), b->histogram_name()) < 0;
+  return a->histogram_name() < b->histogram_name();
 }
 
 }  // namespace
@@ -56,7 +56,7 @@ std::atomic<StatisticsRecorder::GlobalSampleCallback>
     StatisticsRecorder::global_sample_callback_{nullptr};
 
 StatisticsRecorder::ScopedHistogramSampleObserver::
-    ScopedHistogramSampleObserver(const std::string& name,
+    ScopedHistogramSampleObserver(std::string_view name,
                                   OnSampleCallback callback)
     : histogram_name_(name), callback_(callback) {
   StatisticsRecorder::AddHistogramSampleObserver(histogram_name_, this);
@@ -68,7 +68,7 @@ StatisticsRecorder::ScopedHistogramSampleObserver::
 }
 
 void StatisticsRecorder::ScopedHistogramSampleObserver::RunCallback(
-    const char* histogram_name,
+    std::string_view histogram_name,
     uint64_t name_hash,
     HistogramBase::Sample32 sample) {
   callback_.Run(histogram_name, name_hash, sample);
@@ -144,8 +144,7 @@ HistogramBase* StatisticsRecorder::RegisterOrDeleteDuplicate(
   // you are unluckily a victim of a hash collision. For now, the best solution
   // is to rename the histogram. Reach out to chrome-metrics-team@google.com if
   // you are unsure!
-  DCHECK_EQ(strcmp(histogram->histogram_name(), registered->histogram_name()),
-            0)
+  DCHECK_EQ(histogram->histogram_name(), registered->histogram_name())
       << "Histogram name hash collision between " << histogram->histogram_name()
       << " and " << registered->histogram_name() << " (hash = " << hash << ")";
 
@@ -385,7 +384,7 @@ void StatisticsRecorder::RemoveHistogramSampleObserver(
 // static
 void StatisticsRecorder::FindAndRunHistogramCallbacks(
     base::PassKey<HistogramBase>,
-    const char* histogram_name,
+    std::string_view histogram_name,
     uint64_t name_hash,
     HistogramBase::Sample32 sample) {
   DCHECK_EQ(name_hash, HashMetricName(histogram_name));
@@ -530,26 +529,26 @@ StatisticsRecorder::Histograms StatisticsRecorder::Sort(Histograms histograms) {
 // static
 StatisticsRecorder::Histograms StatisticsRecorder::WithName(
     Histograms histograms,
-    const std::string& query,
+    std::string_view query,
     bool case_sensitive) {
-  // Need a C-string query for comparisons against C-string histogram name.
-  std::string lowercase_query;
-  const char* query_string;
-  if (case_sensitive) {
-    query_string = query.c_str();
-  } else {
-    lowercase_query = base::ToLowerASCII(query);
-    query_string = lowercase_query.c_str();
-  }
-
-  auto removed = std::ranges::remove_if(
-      histograms, [query_string, case_sensitive](const HistogramBase* const h) {
-        return !strstr(case_sensitive
-                           ? h->histogram_name()
-                           : base::ToLowerASCII(h->histogram_name()).c_str(),
-                       query_string);
-      });
-  histograms.erase(removed.begin(), removed.end());
+  // Char equality comparator which respects the `case_sensitive` setting.
+  auto comparator = [case_sensitive](char a, char b) {
+    return case_sensitive ? a == b : std::toupper(a) == std::toupper(b);
+  };
+  // Filter function that returns true if `h->histogram_name()` does not contain
+  // `query`. Uses `comparator` to compare chars.
+  auto histogram_name_does_not_contain_query =
+      [comparator, query](const HistogramBase* const h) {
+        const auto& name = h->histogram_name();
+        return std::search(name.begin(), name.end(), query.begin(), query.end(),
+                           comparator) == name.end();
+      };
+  // Erase the non-matching histograms. Note that `histograms` was passed by
+  // value so we can efficiently remove the unwanted elements and return the
+  // local instance.
+  histograms.erase(std::remove_if(histograms.begin(), histograms.end(),
+                                  histogram_name_does_not_contain_query),
+                   histograms.end());
   return histograms;
 }
 

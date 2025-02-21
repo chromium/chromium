@@ -91,15 +91,10 @@ class PPAPIDownloadRequest : public content::WebContentsObserver {
   // DownloadProtectionService.
   void Start();
 
-  // Returns the URL that will be used for download requests.
-  static GURL GetDownloadRequestUrl();
-
   // WebContentsObserver implementation
   void WebContentsDestroyed() override;
 
  private:
-  static const char kDownloadRequestUrl[];
-
   friend class DownloadProtectionService;
 
   // Allowlist checking needs to the done on the UI thread.

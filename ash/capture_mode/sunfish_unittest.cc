@@ -123,6 +123,10 @@ constexpr int kRegionFocusCount = 9;
 
 constexpr base::TimeDelta kImageSearchRequestStartDelay = base::Seconds(1);
 
+// The length of an edge for a small capture region where the capture label
+// button cannot fit inside.
+constexpr int kSmallRegionEdgeLength = 20;
+
 void WaitForImageCapturedForSearch(PerformCaptureType expected_capture_type) {
   base::test::TestFuture<void> image_captured_future;
   CaptureModeTestApi().SetOnImageCapturedForSearchCallback(
@@ -2593,6 +2597,34 @@ TEST_F(SunfishTest, DoesNotShowScannerDisclaimer) {
       controller->capture_mode_session());
   views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
   ASSERT_FALSE(disclaimer);
+}
+
+// Tests that the action buttons and the capture label button do not overlap
+// when the capture label button cannot fit inside the region.
+TEST_F(SunfishTest, ActionButtonsCaptureButtonNoOverlap) {
+  UpdateDisplay("2000x1000");
+
+  // Start a regular capture session.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+
+  // Select a small capture region in each corner. The action buttons and the
+  // capture button should not intersect (or overlap).
+  std::vector<std::pair<int, int>> corners = {
+      {0, 0}, {1950, 0}, {0, 950}, {1950, 950}};
+  for (auto corner : corners) {
+    SelectCaptureModeRegion(
+        GetEventGenerator(),
+        gfx::Rect(corner.first, corner.second, kSmallRegionEdgeLength,
+                  kSmallRegionEdgeLength),
+        /*release_mouse=*/true, /*verify_region=*/true);
+    const views::Widget* action_container_widget =
+        session_test_api.GetActionContainerWidget();
+    EXPECT_FALSE(action_container_widget->GetWindowBoundsInScreen().Intersects(
+        session_test_api.GetCaptureLabelWidget()->GetWindowBoundsInScreen()));
+  }
 }
 
 using SunfishDisplayMetricsTest = SunfishTest;

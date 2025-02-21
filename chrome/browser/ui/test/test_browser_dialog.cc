@@ -207,7 +207,7 @@ void TestBrowserDialog::UpdateWidgets() {
   widgets_.clear();
 #if BUILDFLAG(IS_CHROMEOS)
   for (aura::Window* root_window : ash::Shell::GetAllRootWindows()) {
-    views::Widget::GetAllChildWidgets(root_window, &widgets_);
+    widgets_.merge(views::Widget::GetAllChildWidgets(root_window));
   }
 #elif defined(TOOLKIT_VIEWS)
   widgets_ = views::test::WidgetTest::GetAllWidgets();

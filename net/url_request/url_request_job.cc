@@ -27,6 +27,8 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
+#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
@@ -57,7 +59,7 @@ base::Value::Dict SourceStreamSetParams(SourceStream* source_stream) {
 class URLRequestJob::URLRequestJobSourceStream : public SourceStream {
  public:
   explicit URLRequestJobSourceStream(URLRequestJob* job)
-      : SourceStream(SourceStream::TYPE_NONE), job_(job) {
+      : SourceStream(SourceStreamType::kNone), job_(job) {
     DCHECK(job_);
   }
 
@@ -492,7 +494,7 @@ void URLRequestJob::NotifyFinalHeadersReceived() {
       OnDone(ERR_CONTENT_DECODING_INIT_FAILED, true /* notify_done */);
       return;
     }
-    if (source_stream_->type() == SourceStream::TYPE_NONE) {
+    if (source_stream_->type() == SourceStreamType::kNone) {
       // If the subclass didn't set |expected_content_size|, and there are
       // headers, and the response body is not compressed, try to get the
       // expected content size from the headers.
@@ -715,7 +717,7 @@ void URLRequestJob::GatherRawReadStats(int bytes_read) {
 
   if (bytes_read > 0) {
     // If there is a filter, bytes will be logged after the filter is applied.
-    if (source_stream_->type() != SourceStream::TYPE_NONE &&
+    if (source_stream_->type() != SourceStreamType::kNone &&
         request()->net_log().IsCapturing()) {
       request()->net_log().AddByteTransferEvent(
           NetLogEventType::URL_REQUEST_JOB_BYTES_READ, bytes_read,

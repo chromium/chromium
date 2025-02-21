@@ -370,8 +370,12 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   virtual bool ReadLoadedBytes(uint32_t length, void* buffer);
 
-  // Requests for a thumbnail to be sent using a callback when the page is ready
-  // to be rendered. `send_callback` is run with the thumbnail data when ready.
+  // Requests rendering the page at `page_index` as a thumbnail at a given
+  // `device_pixel_ratio`. Runs `send_callback` with the rendered thumbnail.
+  //
+  // - The callback is asynchronous because the request may be delayed if the
+  //   page is not ready to be rendered.
+  // - Modifications made with ApplyStroke() are not included in the thumbnail.
   void RequestThumbnail(int page_index,
                         float device_pixel_ratio,
                         SendThumbnailCallback send_callback);
@@ -993,6 +997,11 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Called if OCR service gets disconnected.
   void OnOcrDisconnected();
+#endif
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  std::vector<FPDF_PAGEOBJECT> GetActiveInkPageObjectsForPage(
+      int page_index) const;
 #endif
 
   const raw_ptr<PDFiumEngineClient> client_;

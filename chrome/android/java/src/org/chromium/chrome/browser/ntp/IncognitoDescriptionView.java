@@ -140,7 +140,9 @@ public class IncognitoDescriptionView extends LinearLayout {
             title.setText(
                     context.getString(R.string.incognito_ntp_block_third_party_cookies_header));
             layout.findViewById(R.id.tracking_protection_description_one).setVisibility(View.GONE);
-            text = context.getString(R.string.incognito_ntp_block_third_party_cookies_description);
+            text =
+                    context.getString(
+                            R.string.incognito_ntp_block_third_party_cookies_description_android);
         }
 
         ChromeClickableSpan span =

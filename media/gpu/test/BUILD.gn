@@ -133,7 +133,9 @@ source_set("frame_validator") {
   deps = [
     ":helpers",
     ":test_helpers",
+    "//gpu:test_support",
     "//media/gpu",
+    "//testing/gmock",
   ]
 }
 
@@ -275,9 +277,11 @@ if (use_vaapi || use_v4l2_codec) {
     ]
     deps = [
       ":helpers",
+      "//gpu:test_support",
       "//media:test_support",
       "//media/gpu",
       "//media/gpu/chromeos",
+      "//testing/gmock",
       "//testing/gtest",
       "//third_party/libyuv",
     ]

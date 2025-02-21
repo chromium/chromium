@@ -74,7 +74,7 @@ class BASE_EXPORT StatisticsRecorder {
   // about a histogram sample. This is used in conjunction with
   // ScopedHistogramSampleObserver to get notified when a sample is collected.
   using OnSampleCallback =
-      base::RepeatingCallback<void(const char* /*=histogram_name*/,
+      base::RepeatingCallback<void(std::string_view /*=histogram_name*/,
                                    uint64_t /*=name_hash*/,
                                    HistogramBase::Sample32)>;
 
@@ -89,7 +89,7 @@ class BASE_EXPORT StatisticsRecorder {
    public:
     // Constructor. Called with the desired histogram name and the callback to
     // be invoked when a sample is recorded.
-    explicit ScopedHistogramSampleObserver(const std::string& histogram_name,
+    explicit ScopedHistogramSampleObserver(std::string_view histogram_name,
                                            OnSampleCallback callback);
     ~ScopedHistogramSampleObserver();
 
@@ -97,7 +97,7 @@ class BASE_EXPORT StatisticsRecorder {
     friend class StatisticsRecorder;
 
     // Runs the callback.
-    void RunCallback(const char* histogram_name,
+    void RunCallback(std::string_view histogram_name,
                      uint64_t name_hash,
                      HistogramBase::Sample32 sample);
 
@@ -216,7 +216,7 @@ class BASE_EXPORT StatisticsRecorder {
   //
   // This method is thread safe.
   static void FindAndRunHistogramCallbacks(base::PassKey<HistogramBase>,
-                                           const char* histogram_name,
+                                           std::string_view histogram_name,
                                            uint64_t name_hash,
                                            HistogramBase::Sample32 sample);
 
@@ -275,10 +275,10 @@ class BASE_EXPORT StatisticsRecorder {
   // |case_sensitive| determines whether the matching should be done in a
   // case sensitive way.
   static Histograms WithName(Histograms histograms,
-                             const std::string& query,
+                             std::string_view query,
                              bool case_sensitive = true);
 
-  using GlobalSampleCallback = void (*)(const char* /*=histogram_name*/,
+  using GlobalSampleCallback = void (*)(std::string_view /*=histogram_name*/,
                                         uint64_t /*=name_hash*/,
                                         HistogramBase::Sample32);
   // Installs a global callback which will be called for every added

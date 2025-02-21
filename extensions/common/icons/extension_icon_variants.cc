@@ -25,7 +25,7 @@ void ExtensionIconVariants::Parse(const base::Value::List* list) {
   for (auto& entry : *list) {
     std::string issue;
     std::unique_ptr<ExtensionIconVariant> icon_variant =
-        ExtensionIconVariant::Parse(entry, &issue);
+        ExtensionIconVariant::Parse(entry);
     if (!icon_variant) {
       diagnostics_.emplace_back(diagnostics::icon_variants::GetDiagnostic(
           diagnostics::icon_variants::Feature::kIconVariants,

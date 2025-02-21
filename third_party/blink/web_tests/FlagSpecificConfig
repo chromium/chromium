@@ -25,6 +25,10 @@
     "args": ["--disable-site-isolation-trials"]
   },
   {
+    "name": "disable-third-party-cookie",
+    "args": ["--test-third-party-cookie-phaseout"]
+  },
+  {
     "name": "enable-blink-heap-concurrent-marking",
     "args": ["--enable-features=BlinkHeapConcurrentMarking"]
   },

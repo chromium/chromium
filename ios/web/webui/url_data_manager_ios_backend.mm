@@ -26,6 +26,7 @@
 #import "net/base/io_buffer.h"
 #import "net/base/net_errors.h"
 #import "net/filter/source_stream.h"
+#import "net/filter/source_stream_type.h"
 #import "net/http/http_response_headers.h"
 #import "net/http/http_status_code.h"
 #import "net/url_request/url_request.h"
@@ -325,7 +326,7 @@ std::unique_ptr<net::SourceStream> URLRequestChromeJob::SetUpSourceStream() {
     // which we keep alive via `source_`, ensuring its lifetime is also bound
     // to the safe URLRequest.
     source_stream = ui::I18nSourceStream::Create(
-        std::move(source_stream), net::SourceStream::TYPE_NONE, replacements);
+        std::move(source_stream), net::SourceStreamType::kNone, replacements);
   }
 
   return source_stream;

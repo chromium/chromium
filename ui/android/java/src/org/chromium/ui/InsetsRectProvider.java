@@ -69,7 +69,7 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
     public InsetsRectProvider(
             InsetObserver insetObserver,
             @InsetsType int insetType,
-            WindowInsetsCompat initialInsets,
+            @Nullable WindowInsetsCompat initialInsets,
             @InsetConsumerSource int insetConsumerSource) {
         mInsetType = insetType;
         mBoundingRects = List.of();

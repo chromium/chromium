@@ -103,9 +103,6 @@ crbug.com/895777 external/wpt/css/css-break/ink-overflow-001-print.html [ Skip T
 
 crbug.com/807686 crbug.com/24182 jquery/manipulation.html [ Pass Timeout ]
 
-# Temporarily disable these tests, due to an API change
-crbug.com/397449611 external/wpt/wasm/jsapi/jspi/* [ Failure Pass ]
-
 # The following tests need to remove the assumption that user activation is
 # available in child/sibling frames.  This assumption doesn't hold with User
 # Activation v2 (UAv2).
@@ -3422,8 +3419,6 @@ crbug.com/626703 external/wpt/html/semantics/forms/the-input-element/input-type-
 crbug.com/626703 external/wpt/html/semantics/selectors/pseudo-classes/input-checkbox-switch.tentative.window.html [ Failure ]
 crbug.com/626703 external/wpt/html/rendering/widgets/input-checkbox-switch-indeterminate.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/html/rendering/widgets/input-checkbox-switch.tentative.html [ Failure ]
-crbug.com/626703 external/wpt/largest-contentful-paint/observe-css-generated-image.html [ Timeout ]
-crbug.com/626703 virtual/scalefactor200/external/wpt/largest-contentful-paint/observe-css-generated-image.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-pseudo/slider/slider-fill-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-pseudo/slider/slider-fill-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-pseudo/slider/slider-fill-003.html [ Failure ]

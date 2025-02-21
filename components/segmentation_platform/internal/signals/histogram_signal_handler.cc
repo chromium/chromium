@@ -63,7 +63,7 @@ void HistogramSignalHandler::EnableMetrics(bool enable_metrics) {
 
 void HistogramSignalHandler::OnHistogramSample(
     proto::SignalType signal_type,
-    const char* histogram_name,
+    std::string_view histogram_name,
     uint64_t name_hash,
     base::HistogramBase::Sample32 sample) {
   if (!metrics_enabled_) {
@@ -91,7 +91,7 @@ void HistogramSignalHandler::RemoveObserver(Observer* observer) {
 }
 
 void HistogramSignalHandler::OnSampleWritten(
-    const std::string& histogram_name,
+    std::string_view histogram_name,
     base::HistogramBase::Sample32 sample,
     bool success) {
   if (!success) {

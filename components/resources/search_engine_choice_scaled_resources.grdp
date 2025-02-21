@@ -40,6 +40,7 @@
   <structure type="chrome_scaled_image" name="IDR_SEZNAM_PNG" file="search_engine_choice/seznam.png" />
   <structure type="chrome_scaled_image" name="IDR_SE_YAHOO_COM_PNG" file="search_engine_choice/yahoo_com.png" />
   <structure type="chrome_scaled_image" name="IDR_SG_YAHOO_COM_PNG" file="search_engine_choice/yahoo_com.png" />
+  <structure type="chrome_scaled_image" name="IDR_STARTPAGE_COM_PNG" file="search_engine_choice/startpage_com.png" />
   <structure type="chrome_scaled_image" name="IDR_TH_YAHOO_COM_PNG" file="search_engine_choice/yahoo_com.png" />
   <structure type="chrome_scaled_image" name="IDR_TR_YAHOO_COM_PNG" file="search_engine_choice/yahoo_com.png" />
   <structure type="chrome_scaled_image" name="IDR_TW_YAHOO_COM_PNG" file="search_engine_choice/yahoo_com.png" />

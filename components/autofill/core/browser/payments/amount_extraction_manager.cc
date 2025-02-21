@@ -12,6 +12,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
@@ -113,15 +114,51 @@ void AmountExtractionManager::TriggerCheckoutAmountExtraction() {
     return;
   }
   search_request_pending_ = true;
+  const AmountExtractionHeuristicRegexes& heuristics =
+      AmountExtractionHeuristicRegexes::GetInstance();
   GetMainFrameDriver()->ExtractLabeledTextNodeValue(
-      base::UTF8ToUTF16(
-          AmountExtractionHeuristicRegexes::GetInstance().amount_pattern()),
-      base::UTF8ToUTF16(
-          AmountExtractionHeuristicRegexes::GetInstance().keyword_pattern()),
-      AmountExtractionHeuristicRegexes::GetInstance()
-          .number_of_ancestor_levels_to_search(),
+      base::UTF8ToUTF16(heuristics.amount_pattern()),
+      base::UTF8ToUTF16(heuristics.keyword_pattern()),
+      heuristics.number_of_ancestor_levels_to_search(),
       base::BindOnce(&AmountExtractionManager::OnCheckoutAmountReceived,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AmountExtractionManager::OnTimeoutReached,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kAmountExtractionWaitTime);
+}
+
+void AmountExtractionManager::SetSearchRequestPendingForTesting(
+    bool search_request_pending) {
+  search_request_pending_ = search_request_pending;
+}
+
+bool AmountExtractionManager::GetSearchRequestPendingForTesting() {
+  return search_request_pending_;
+}
+
+void AmountExtractionManager::OnCheckoutAmountReceived(
+    base::TimeTicks search_request_start_timestamp,
+    const std::string& extracted_amount) {
+  autofill_metrics::LogAmountExtractionLatency(
+      base::TimeTicks::Now() - search_request_start_timestamp,
+      !extracted_amount.empty());
+  autofill_metrics::LogAmountExtractionResult(
+      extracted_amount.empty()
+          ? autofill_metrics::AmountExtractionResult::kAmountNotFound
+          : autofill_metrics::AmountExtractionResult::kSuccessful);
+  // Set `search_request_pending_` to false once the search is done.
+  search_request_pending_ = false;
+  // TODO(crbug.com/378517983): Add BNPL flow action logic here.
+}
+
+void AmountExtractionManager::OnTimeoutReached() {
+  search_request_pending_ = false;
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  // Add timeout metrics here.
+  // TODO(crbug.com/378517983): Add BNPL flow action logic here.
 }
 
 bool AmountExtractionManager::IsUrlEligibleForAmountExtraction() const {
@@ -137,22 +174,6 @@ bool AmountExtractionManager::IsUrlEligibleForAmountExtraction() const {
     }
   }
   return false;
-}
-
-void AmountExtractionManager::SetSearchRequestPendingForTesting(
-    bool search_request_pending) {
-  search_request_pending_ = search_request_pending;
-}
-
-void AmountExtractionManager::OnCheckoutAmountReceived(
-    base::TimeTicks search_request_start_timestamp,
-    const std::string& extracted_amount) {
-  autofill_metrics::LogAmountExtractionLatency(
-      base::TimeTicks::Now() - search_request_start_timestamp,
-      !extracted_amount.empty());
-  // Set `search_request_pending_` to false once the search is done.
-  search_request_pending_ = false;
-  // TODO(crbug.com/378517983): Add BNPL flow action logic here.
 }
 
 AutofillDriver* AmountExtractionManager::GetMainFrameDriver() {

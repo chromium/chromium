@@ -211,12 +211,17 @@ class GlicWindowController::AnchorObserver : public views::ViewObserver,
 GlicWindowController::GlicWindowController(
     Profile* profile,
     signin::IdentityManager* identity_manager,
-    GlicKeyedService* glic_service)
+    GlicKeyedService* glic_service,
+    GlicEnabling* enabling)
     : profile_(profile),
       fre_controller_(
           std::make_unique<GlicFreController>(profile, identity_manager)),
       window_finder_(std::make_unique<WindowFinder>()),
-      glic_service_(glic_service) {}
+      glic_service_(glic_service),
+      enabling_(enabling) {
+  subscriptions_.push_back(enabling_->RegisterEnableChanged(base::BindRepeating(
+      &GlicWindowController::EnableChanged, base::Unretained(this))));
+}
 
 GlicWindowController::~GlicWindowController() = default;
 
@@ -1219,6 +1224,15 @@ bool GlicWindowController::IsBrowserOccludedAtPoint(Browser* browser,
     return true;
   }
   return false;
+}
+
+void GlicWindowController::EnableChanged() {
+  // This is an unusual case. Immediately close everything to avoid implicit
+  // dependencies (e.g. on the position of the glic button in the window, which
+  // itself may also no longer be available).
+  if (!enabling_->IsEnabled()) {
+    CloseFinish(/*reopen_detached=*/false, std::nullopt);
+  }
 }
 
 }  // namespace glic

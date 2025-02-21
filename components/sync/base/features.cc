@@ -168,4 +168,8 @@ BASE_FEATURE(kSyncEnablePasswordsSyncErrorMessageAlternative,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+BASE_FEATURE(kSyncSimulateBookmarksPingPongForTesting,
+             "SyncSimulateBookmarksPingPongForTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace syncer

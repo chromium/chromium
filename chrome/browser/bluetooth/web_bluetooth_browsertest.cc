@@ -347,8 +347,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NavigateWithChooserCrossOrigin) {
   waiter->WaitForChange();
   EXPECT_TRUE(waiter->has_shown());
 
-  EXPECT_TRUE(content::ExecJs(web_contents_.get(),
-                              "document.location.href = 'https://google.com'"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://google.com")));
 
   observer.Wait();
   waiter->WaitForChange();

@@ -289,6 +289,28 @@ BASE_DECLARE_FEATURE(kSafeBrowsingSyncCheckerCheckAllowlist);
 // Automatically revoke abusive notifications in Safety Hub.
 BASE_DECLARE_FEATURE(kSafetyHubAbusiveNotificationRevocation);
 
+// Automatically revoke disruptive notifications in Safety Hub.
+BASE_DECLARE_FEATURE(kSafetyHubDisruptiveNotificationRevocation);
+
+// Whether the disruptive notification revocation will be performed as a shadow
+// run (without actually revoking permissions). Used to collect metrics and
+// evaluate the conditions for autorevocation.
+extern const base::FeatureParam<bool>
+    kSafetyHubDisruptiveNotificationRevocationShadowRun;
+
+// The minimum number of average daily notifications over last 7 days for a
+// website to classify for disruptive notification revocation. Used in a
+// combination with
+// `kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore`.
+extern const base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationMinNotificationCount;
+
+// The maximum site engagement score for a website to classify for disruptive
+// notification revocation. Used in a combination with
+// `kSafetyHubDisruptiveNotificationRevocationMinNotificationCount`,
+extern const base::FeatureParam<double>
+    kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore;
+
 // Enables saving gaia password hash from the Profile Picker sign-in flow.
 BASE_DECLARE_FEATURE(kSavePasswordHashFromProfilePicker);
 

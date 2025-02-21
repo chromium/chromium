@@ -127,5 +127,10 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     }
 
     @Override
+    public boolean wasTabGroupClosedLocally(String syncTabGroupId) {
+        return false;
+    }
+
+    @Override
     public void recordTabGroupEvent(EventDetails eventDetails) {}
 }

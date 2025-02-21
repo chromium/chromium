@@ -914,6 +914,10 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "fledge_max_group_lifetime_for_metadata",
                    base::Days(30));
 
+BASE_FEATURE(kFledgeEnableSampleDebugReportOnCookieSetting,
+             "FledgeEnableSampleDebugReportOnCookieSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kFledgeSampleDebugReports,
              "FledgeSampleDebugReports",
              base::FEATURE_ENABLED_BY_DEFAULT);

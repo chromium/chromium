@@ -42,7 +42,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/public/secure_dns_policy.h"
-#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_raw_request_headers.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -774,17 +774,16 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     return traffic_annotation_;
   }
 
-  const std::optional<base::flat_set<net::SourceStream::SourceType>>&
-  accepted_stream_types() const {
+  const std::optional<base::flat_set<SourceStreamType>>& accepted_stream_types()
+      const {
     return accepted_stream_types_;
   }
 
   void set_accepted_stream_types(
-      const std::optional<base::flat_set<net::SourceStream::SourceType>>&
-          types) {
+      const std::optional<base::flat_set<SourceStreamType>>& types) {
     if (types) {
-      DCHECK(!types->contains(net::SourceStream::SourceType::TYPE_NONE));
-      DCHECK(!types->contains(net::SourceStream::SourceType::TYPE_UNKNOWN));
+      DCHECK(!types->contains(SourceStreamType::kNone));
+      DCHECK(!types->contains(SourceStreamType::kUnknown));
     }
     accepted_stream_types_ = types;
   }
@@ -1149,8 +1148,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // If not null, the network service will not advertise any stream types
   // (via Accept-Encoding) that are not listed. Also, it will not attempt
   // decoding any non-listed stream types.
-  std::optional<base::flat_set<net::SourceStream::SourceType>>
-      accepted_stream_types_;
+  std::optional<base::flat_set<net::SourceStreamType>> accepted_stream_types_;
 
   const NetworkTrafficAnnotationTag traffic_annotation_;
 

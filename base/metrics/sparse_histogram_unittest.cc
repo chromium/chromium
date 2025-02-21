@@ -78,10 +78,12 @@ class SparseHistogramTest : public testing::TestWithParam<bool> {
     GlobalHistogramAllocator::ReleaseForTesting();
   }
 
-  std::unique_ptr<SparseHistogram> NewSparseHistogram(const char* name) {
+  template <size_t N>
+  std::unique_ptr<SparseHistogram> NewSparseHistogram(const char (&name)[N]) {
     // std::make_unique can't access protected ctor so do it manually. This
     // test class is a friend so can access it.
-    return std::unique_ptr<SparseHistogram>(new SparseHistogram(name));
+    return std::unique_ptr<SparseHistogram>(
+        new SparseHistogram(DurableStringView(std::string_view(name, N - 1))));
   }
 
   CountAndBucketData GetCountAndBucketData(SparseHistogram* histogram) {
@@ -268,7 +270,7 @@ TEST_P(SparseHistogramTest, MacroBasicTest) {
   const HistogramBase* const sparse_histogram = histograms[0];
 
   EXPECT_EQ(SPARSE_HISTOGRAM, sparse_histogram->GetHistogramType());
-  EXPECT_STREQ("Sparse", sparse_histogram->histogram_name());
+  EXPECT_EQ("Sparse", sparse_histogram->histogram_name());
   EXPECT_EQ(
       HistogramBase::kUmaTargetedHistogramFlag |
           (use_persistent_histogram_allocator_ ? HistogramBase::kIsPersistent
@@ -292,8 +294,8 @@ TEST_P(SparseHistogramTest, MacroInLoopTest) {
   const StatisticsRecorder::Histograms histograms =
       StatisticsRecorder::Sort(StatisticsRecorder::GetHistograms());
   ASSERT_THAT(histograms, testing::SizeIs(2));
-  EXPECT_STREQ(histograms[0]->histogram_name(), "Sparse0");
-  EXPECT_STREQ(histograms[1]->histogram_name(), "Sparse1");
+  EXPECT_EQ(histograms[0]->histogram_name(), "Sparse0");
+  EXPECT_EQ(histograms[1]->histogram_name(), "Sparse1");
 }
 
 TEST_P(SparseHistogramTest, Serialize) {

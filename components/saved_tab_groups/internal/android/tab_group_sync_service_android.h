@@ -144,6 +144,10 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
                         const JavaParamRef<jobject>& j_group_id,
                         const JavaParamRef<jstring>& j_sync_tab_id,
                         jint j_local_tab_id);
+  bool WasTabGroupClosedLocally(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& j_caller,
+      const JavaParamRef<jstring>& j_sync_tab_group_id);
 
   // Helper methods for attributions.
   bool IsRemoteDevice(JNIEnv* env,

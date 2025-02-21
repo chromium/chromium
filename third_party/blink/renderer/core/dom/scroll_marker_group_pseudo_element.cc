@@ -132,7 +132,8 @@ void ScrollMarkerGroupPseudoElement::ActivatePrevScrollMarker() {
 }
 
 void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
-    ScrollMarkerPseudoElement* scroll_marker) {
+    ScrollMarkerPseudoElement* scroll_marker,
+    bool apply_snap_alignment) {
   if (!scroll_marker || scroll_marker == selected_marker_) {
     return;
   }
@@ -147,7 +148,7 @@ void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
                                   FocusParams(SelectionBehaviorOnFocus::kNone,
                                               mojom::blink::FocusType::kNone,
                                               /*capabilities=*/nullptr));
-  SetSelected(*scroll_marker);
+  SetSelected(*scroll_marker, apply_snap_alignment);
   // - per https://drafts.csswg.org/css-overflow-5/#scroll-target-focus
   // we want to start our search from scroll target of ::scroll-marker,
   // which is ultimate originating element for regular scroll marker
@@ -158,7 +159,8 @@ void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
 }
 
 bool ScrollMarkerGroupPseudoElement::SetSelected(
-    ScrollMarkerPseudoElement& scroll_marker) {
+    ScrollMarkerPseudoElement& scroll_marker,
+    bool apply_snap_alignment) {
   if (selected_marker_ == scroll_marker) {
     return false;
   }
@@ -174,7 +176,7 @@ bool ScrollMarkerGroupPseudoElement::SetSelected(
                                       /*capabilities=*/nullptr));
     }
   }
-  scroll_marker.SetSelected(true);
+  scroll_marker.SetSelected(true, apply_snap_alignment);
   selected_marker_ = scroll_marker;
   pending_selected_marker_.Clear();
   return true;

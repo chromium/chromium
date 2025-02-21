@@ -177,15 +177,12 @@ TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectly) {
             tab_strip_action_container_->children()[0]);
 
   ASSERT_EQ(tab_strip_action_container_->auto_tab_group_button(),
-            tab_strip_action_container_->children()[2]);
+            tab_strip_action_container_->children()[1]);
 
 #if BUILDFLAG(ENABLE_GLIC)
 
-  ASSERT_EQ(tab_strip_action_container_->glic_nudge_button(),
-            tab_strip_action_container_->children()[1]);
-
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
-            tab_strip_action_container_->children()[3]);
+            tab_strip_action_container_->children()[2]);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
@@ -202,18 +199,15 @@ TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectlyWithProduct) {
             tab_strip_action_container_->children()[0]);
 
   ASSERT_EQ(tab_strip_action_container_->auto_tab_group_button(),
-            tab_strip_action_container_->children()[2]);
+            tab_strip_action_container_->children()[1]);
 
   ASSERT_EQ(tab_strip_action_container_->GetProductSpecificationsButton(),
-            tab_strip_action_container_->children()[3]);
+            tab_strip_action_container_->children()[2]);
 
 #if BUILDFLAG(ENABLE_GLIC)
 
-  ASSERT_EQ(tab_strip_action_container_->glic_nudge_button(),
-            tab_strip_action_container_->children()[1]);
-
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
-            tab_strip_action_container_->children()[4]);
+            tab_strip_action_container_->children()[3]);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
@@ -222,7 +216,6 @@ TEST_F(TabStripActionContainerTest, GlicButtonUpdateLabel) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   glic_nudge_controller_->UpdateNudgeLabel(web_contents(), "TEST",
                                            base::NullCallback());
-  ASSERT_EQ(tab_strip_action_container_->glic_nudge_button()->GetText(),
-            u"TEST");
+  ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"TEST");
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)

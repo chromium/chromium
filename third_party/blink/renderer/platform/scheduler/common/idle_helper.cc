@@ -32,7 +32,7 @@ IdleHelper::IdleHelper(
     : helper_(helper),
       delegate_(delegate),
       idle_queue_(idle_queue),
-      state_(helper, delegate, idle_period_tracing_name),
+      idle_period_tracing_name_(idle_period_tracing_name),
       required_quiescence_duration_before_long_idle_period_(
           required_quiescence_duration_before_long_idle_period) {
   enable_next_long_idle_period_closure_.Reset(base::BindRepeating(
@@ -146,7 +146,7 @@ void IdleHelper::EnableLongIdlePeriod() {
   base::TimeDelta next_long_idle_period_delay;
   IdlePeriodState new_idle_period_state =
       ComputeNewLongIdlePeriodState(now, &next_long_idle_period_delay);
-  if (IsInIdlePeriod(new_idle_period_state)) {
+  if (new_idle_period_state != IdlePeriodState::kNotInIdlePeriod) {
     StartIdlePeriod(new_idle_period_state, now,
                     now + next_long_idle_period_delay);
   } else {
@@ -169,7 +169,7 @@ void IdleHelper::StartIdlePeriod(IdlePeriodState new_state,
   DCHECK(!is_shutdown_);
   DCHECK_GT(idle_period_deadline, now);
   helper_->CheckOnValidThread();
-  DCHECK(IsInIdlePeriod(new_state));
+  DCHECK_NE(new_state, IdlePeriodState::kNotInIdlePeriod);
 
   // Allow any ready delayed idle tasks to run.
   idle_task_runner_->EnqueueReadyDelayedIdleTasks();
@@ -185,14 +185,15 @@ void IdleHelper::StartIdlePeriod(IdlePeriodState new_state,
 
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                "StartIdlePeriod");
-  if (!IsInIdlePeriod(state_.idle_period_state()))
+  if (!IsInIdlePeriod()) {
     helper_->AddTaskObserver(this);
+  }
 
   // Use a fence to make sure any idle tasks posted after this point do not run
   // until the next idle period and unblock existing tasks.
   idle_queue_->InsertFence(TaskQueue::InsertFencePosition::kNow);
 
-  state_.UpdateState(new_state, idle_period_deadline, now);
+  SetIdlePeriodState(new_state, idle_period_deadline, now);
 }
 
 void IdleHelper::EndIdlePeriod() {
@@ -207,14 +208,15 @@ void IdleHelper::EndIdlePeriod() {
   on_idle_task_posted_closure_.Cancel();
 
   // If we weren't already within an idle period then early-out.
-  if (!IsInIdlePeriod(state_.idle_period_state()))
+  if (!IsInIdlePeriod()) {
     return;
+  }
 
   helper_->RemoveTaskObserver(this);
 
   // This fence will block any idle tasks from running.
   idle_queue_->InsertFence(TaskQueue::InsertFencePosition::kBeginningOfTime);
-  state_.UpdateState(IdlePeriodState::kNotInIdlePeriod, base::TimeTicks(),
+  SetIdlePeriodState(IdlePeriodState::kNotInIdlePeriod, base::TimeTicks(),
                      base::TimeTicks());
 }
 
@@ -226,17 +228,17 @@ void IdleHelper::WillProcessTask(const base::PendingTask& pending_task,
 void IdleHelper::DidProcessTask(const base::PendingTask& pending_task) {
   helper_->CheckOnValidThread();
   DCHECK(!is_shutdown_);
-  DCHECK(IsInIdlePeriod(state_.idle_period_state()));
+  DCHECK(IsInIdlePeriod());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                "DidProcessTask");
-  if (state_.idle_period_state() != IdlePeriodState::kInLongIdlePeriodPaused &&
-      helper_->NowTicks() >= state_.idle_period_deadline()) {
+  if (idle_period_state_ != IdlePeriodState::kInLongIdlePeriodPaused &&
+      helper_->NowTicks() >= idle_period_deadline_) {
     // If the idle period deadline has now been reached, either end the idle
     // period or trigger a new long-idle period.
-    if (IsInLongIdlePeriod(state_.idle_period_state())) {
+    if (IsInLongIdlePeriod()) {
       EnableLongIdlePeriod();
     } else {
-      DCHECK(IdlePeriodState::kInShortIdlePeriod == state_.idle_period_state());
+      DCHECK_EQ(idle_period_state_, IdlePeriodState::kInShortIdlePeriod);
       EndIdlePeriod();
     }
   }
@@ -245,22 +247,22 @@ void IdleHelper::DidProcessTask(const base::PendingTask& pending_task) {
 void IdleHelper::UpdateLongIdlePeriodStateAfterIdleTask() {
   helper_->CheckOnValidThread();
   DCHECK(!is_shutdown_);
-  DCHECK(IsInLongIdlePeriod(state_.idle_period_state()));
+  DCHECK(IsInLongIdlePeriod());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                "UpdateLongIdlePeriodStateAfterIdleTask");
 
   if (!idle_queue_->HasTaskToRunImmediatelyOrReadyDelayedTask()) {
     // If there are no more idle tasks then pause long idle period ticks until a
     // new idle task is posted.
-    state_.UpdateState(IdlePeriodState::kInLongIdlePeriodPaused,
-                       state_.idle_period_deadline(), base::TimeTicks());
+    SetIdlePeriodState(IdlePeriodState::kInLongIdlePeriodPaused,
+                       idle_period_deadline_, base::TimeTicks());
   } else if (idle_queue_->BlockedByFence()) {
     // If there is still idle work to do then just start the next idle period.
     base::TimeDelta next_long_idle_period_delay;
     // Ensure that we kick the scheduler at the right time to
     // initiate the next idle period.
     next_long_idle_period_delay = std::max(
-        base::TimeDelta(), state_.idle_period_deadline() - helper_->NowTicks());
+        base::TimeDelta(), idle_period_deadline_ - helper_->NowTicks());
     if (next_long_idle_period_delay.is_zero()) {
       EnableLongIdlePeriod();
     } else {
@@ -271,9 +273,9 @@ void IdleHelper::UpdateLongIdlePeriodStateAfterIdleTask() {
   }
 }
 
-base::TimeTicks IdleHelper::CurrentIdleTaskDeadline() const {
+base::TimeTicks IdleHelper::CurrentIdleTaskDeadlineForTesting() const {
   helper_->CheckOnValidThread();
-  return state_.idle_period_deadline();
+  return idle_period_deadline_;
 }
 
 void IdleHelper::OnIdleTaskPosted() {
@@ -295,7 +297,7 @@ void IdleHelper::OnIdleTaskPostedOnMainThread() {
   if (is_shutdown_)
     return;
   delegate_->OnPendingTasksChanged(true);
-  if (state_.idle_period_state() == IdlePeriodState::kInLongIdlePeriodPaused) {
+  if (idle_period_state_ == IdlePeriodState::kInLongIdlePeriodPaused) {
     // Restart long idle period ticks.
     helper_->ControlTaskRunner()->PostTask(
         FROM_HERE, enable_next_long_idle_period_closure_.GetCallback());
@@ -305,16 +307,16 @@ void IdleHelper::OnIdleTaskPostedOnMainThread() {
 base::TimeTicks IdleHelper::WillProcessIdleTask() {
   helper_->CheckOnValidThread();
   DCHECK(!is_shutdown_);
-  state_.TraceIdleIdleTaskStart();
-  return CurrentIdleTaskDeadline();
+  TraceIdleIdleTaskStart();
+  return idle_period_deadline_;
 }
 
 void IdleHelper::DidProcessIdleTask() {
   helper_->CheckOnValidThread();
   if (is_shutdown_)
     return;
-  state_.TraceIdleIdleTaskEnd();
-  if (IsInLongIdlePeriod(state_.idle_period_state())) {
+  TraceIdleIdleTaskEnd();
+  if (IsInLongIdlePeriod()) {
     UpdateLongIdlePeriodStateAfterIdleTask();
   }
   delegate_->OnPendingTasksChanged(idle_queue_->GetNumberOfPendingTasks() > 0);
@@ -324,44 +326,19 @@ base::TimeTicks IdleHelper::NowTicks() {
   return helper_->NowTicks();
 }
 
-// static
-bool IdleHelper::IsInIdlePeriod(IdlePeriodState state) {
-  return state != IdlePeriodState::kNotInIdlePeriod;
-}
-
-// static
-bool IdleHelper::IsInLongIdlePeriod(IdlePeriodState state) {
-  return state == IdlePeriodState::kInLongIdlePeriod ||
-         state == IdlePeriodState::kInLongIdlePeriodPaused;
-}
-
-IdleHelper::IdlePeriodState IdleHelper::SchedulerIdlePeriodState() const {
-  return state_.idle_period_state();
-}
-
-IdleHelper::State::State(SchedulerHelper* helper,
-                         Delegate* delegate,
-                         const char* idle_period_tracing_name)
-    : helper_(helper),
-      delegate_(delegate),
-      idle_period_state_(IdlePeriodState::kNotInIdlePeriod),
-      idle_period_trace_event_started_(false),
-      running_idle_task_for_tracing_(false),
-      idle_period_tracing_name_(idle_period_tracing_name) {}
-
-IdleHelper::State::~State() = default;
-
-IdleHelper::IdlePeriodState IdleHelper::State::idle_period_state() const {
+bool IdleHelper::IsInIdlePeriod() const {
   helper_->CheckOnValidThread();
-  return idle_period_state_;
+  return idle_period_state_ != IdlePeriodState::kNotInIdlePeriod;
 }
 
-base::TimeTicks IdleHelper::State::idle_period_deadline() const {
+bool IdleHelper::IsInLongIdlePeriod() const {
   helper_->CheckOnValidThread();
-  return idle_period_deadline_;
+  return idle_period_state_ == IdleHelper::IdlePeriodState::kInLongIdlePeriod ||
+         idle_period_state_ ==
+             IdleHelper::IdlePeriodState::kInLongIdlePeriodPaused;
 }
 
-void IdleHelper::State::UpdateState(IdlePeriodState new_state,
+void IdleHelper::SetIdlePeriodState(IdlePeriodState new_state,
                                     base::TimeTicks new_deadline,
                                     base::TimeTicks optional_now) {
   helper_->CheckOnValidThread();
@@ -383,7 +360,7 @@ void IdleHelper::State::UpdateState(IdlePeriodState new_state,
   idle_period_deadline_ = new_deadline;
 }
 
-void IdleHelper::State::TraceIdleIdleTaskStart() {
+void IdleHelper::TraceIdleIdleTaskStart() {
   helper_->CheckOnValidThread();
 
   bool is_tracing;
@@ -395,7 +372,7 @@ void IdleHelper::State::TraceIdleIdleTaskStart() {
   }
 }
 
-void IdleHelper::State::TraceIdleIdleTaskEnd() {
+void IdleHelper::TraceIdleIdleTaskEnd() {
   helper_->CheckOnValidThread();
 
   bool is_tracing;
@@ -407,11 +384,10 @@ void IdleHelper::State::TraceIdleIdleTaskEnd() {
   }
 }
 
-void IdleHelper::State::TraceEventIdlePeriodStateChange(
-    IdlePeriodState new_state,
-    bool new_running_idle_task,
-    base::TimeTicks new_deadline,
-    base::TimeTicks now) {
+void IdleHelper::TraceEventIdlePeriodStateChange(IdlePeriodState new_state,
+                                                 bool new_running_idle_task,
+                                                 base::TimeTicks new_deadline,
+                                                 base::TimeTicks now) {
   TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                "SetIdlePeriodState", "old_state",
                IdleHelper::IdlePeriodStateToString(idle_period_state_),
@@ -434,7 +410,7 @@ void IdleHelper::State::TraceEventIdlePeriodStateChange(
     }
   }
 
-  if (IsInIdlePeriod(new_state)) {
+  if (new_state != IdlePeriodState::kNotInIdlePeriod) {
     if (!idle_period_trace_event_started_) {
       idle_period_trace_event_started_ = true;
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
@@ -486,6 +462,11 @@ void IdleHelper::State::TraceEventIdlePeriodStateChange(
         "renderer.scheduler", idle_period_tracing_name_, TRACE_ID_LOCAL(this));
     idle_period_trace_event_started_ = false;
   }
+}
+
+const char* IdleHelper::IdlePeriodStateForTracing() const {
+  helper_->CheckOnValidThread();
+  return IdlePeriodStateToString(idle_period_state_);
 }
 
 // static

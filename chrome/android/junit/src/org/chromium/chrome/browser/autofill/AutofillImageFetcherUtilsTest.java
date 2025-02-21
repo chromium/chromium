@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.url.GURL;
 
 /** Unit tests for {@link AutofillImageFetcherUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -30,6 +31,19 @@ public class AutofillImageFetcherUtilsTest {
     @Before
     public void setUp() {
         mContext = RuntimeEnvironment.application;
+    }
+
+    @Test
+    @SmallTest
+    public void testGetPixAccountImageUrlWithParams() {
+        GURL url = new GURL("https://www.example.com/icon");
+        @Px
+        int logoSize = AutofillImageFetcherUtils.getPixelSize(R.dimen.square_card_icon_side_length);
+        String expectedFormattedUrl = "https://www.example.com/icon=w" + logoSize + "-h" + logoSize;
+
+        GURL formattedUrl = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(url);
+
+        assertEquals(expectedFormattedUrl, formattedUrl.getSpec());
     }
 
     @Test

@@ -28,9 +28,8 @@ class BrowserContext;
 class BrowserContextImpl;
 class PersistentRepeatingTimer;
 
-// When DIPS moves to //content, BtmServiceImpl will *not* be exposed in the
-// Content API. Only other code in //content (such as the DIPS implementation)
-// will be allowed to access it.
+// BtmServiceImpl is intentionally *not* exposed in the Content API — we only
+// want other `//content` code (such as the BTM implementation) to access it.
 class CONTENT_EXPORT BtmServiceImpl : public BtmService {
  public:
   using RecordBounceCallback = base::RepeatingCallback<void(

@@ -31,6 +31,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/version_info/version_info.h"
 
 namespace autofill {
@@ -615,6 +616,21 @@ GetSuggestionsMapFromResponse(
   return fields_suggestions;
 }
 
+base::flat_set<FormSignature> GetFormsForWhichToRunAiModel(
+    const AutofillQueryResponse& response,
+    const std::vector<FormSignature>& queried_form_signatures) {
+  std::vector<FormSignature> forms;
+  const int num_of_forms =
+      std::min(response.form_suggestions_size(),
+               base::checked_cast<int>(queried_form_signatures.size()));
+  for (int i = 0; i < num_of_forms; ++i) {
+    if (response.form_suggestions(i).run_autofill_ai_model()) {
+      forms.push_back(queried_form_signatures[i]);
+    }
+  }
+  return base::MakeFlatSet<FormSignature>(std::move(forms));
+}
+
 }  // namespace
 
 std::vector<AutofillUploadContents> EncodeUploadRequest(
@@ -796,8 +812,14 @@ void ProcessServerPredictionsQueryResponse(
       fields_suggestions =
           GetSuggestionsMapFromResponse(response, queried_form_signatures);
 
+  const base::flat_set<FormSignature> forms_for_which_to_run_ai_model =
+      GetFormsForWhichToRunAiModel(response, queried_form_signatures);
+
   // Copy the field types into the actual form.
   for (FormStructure* form : forms) {
+    form->set_may_run_autofill_ai_model(
+        forms_for_which_to_run_ai_model.contains(form->form_signature()));
+
     // Fields can share the same field signature. This map records for each
     // signature how many fields with the same signature have been observed.
     std::map<FieldSignature, size_t> field_rank_map;

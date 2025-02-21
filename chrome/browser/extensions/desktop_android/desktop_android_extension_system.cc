@@ -231,8 +231,8 @@ void DesktopAndroidExtensionSystem::InitForRegularProfile(
   registrar_delegate_ =
       std::make_unique<DesktopAndroidExtensionRegistrarDelegate>(
           browser_context_);
-  registrar_ = std::make_unique<ExtensionRegistrar>(browser_context_,
-                                                    registrar_delegate_.get());
+  registrar_ = ExtensionRegistrar::Get(browser_context_);
+  registrar_->SetDelegate(registrar_delegate_.get());
 
   service_worker_manager_ =
       std::make_unique<ServiceWorkerManager>(browser_context_);

@@ -138,13 +138,7 @@ class ScopedColorMaskZeroReset {
   explicit ScopedColorMaskZeroReset(gl::GLApi* api,
                                     bool oes_draw_buffers_indexed)
       : api_(api), oes_draw_buffers_indexed_(oes_draw_buffers_indexed) {
-    if (oes_draw_buffers_indexed_) {
-      GLsizei length = 0;
-      api_->glGetBooleani_vRobustANGLEFn(
-          GL_COLOR_WRITEMASK, 0, sizeof(color_mask_), &length, color_mask_);
-    } else {
-      api_->glGetBooleanvFn(GL_COLOR_WRITEMASK, color_mask_);
-    }
+    api_->glGetBooleanvFn(GL_COLOR_WRITEMASK, color_mask_);
   }
   ~ScopedColorMaskZeroReset() {
     if (oes_draw_buffers_indexed_) {

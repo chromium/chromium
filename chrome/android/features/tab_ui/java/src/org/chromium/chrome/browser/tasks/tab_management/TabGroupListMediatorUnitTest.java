@@ -757,7 +757,8 @@ public class TabGroupListMediatorUnitTest {
         assertEquals(1, mModelList.size());
 
         PropertyModel model = mModelList.get(0).model;
-        assertEquals("Shopping tab group no longer available", model.get(DESCRIPTION_TEXT));
+        assertEquals(
+                "The \"Shopping\" tab group is no longer available", model.get(DESCRIPTION_TEXT));
         assertEquals(MESSAGE, model.get(CARD_TYPE));
         assertEquals(
                 MESSAGE_ID1,
@@ -790,14 +791,16 @@ public class TabGroupListMediatorUnitTest {
         assertEquals(4, mModelList.size());
 
         PropertyModel model1 = mModelList.get(0).model;
-        assertEquals("Shopping tab group no longer available", model1.get(DESCRIPTION_TEXT));
+        assertEquals(
+                "The \"Shopping\" tab group is no longer available", model1.get(DESCRIPTION_TEXT));
         assertEquals(MESSAGE, model1.get(CARD_TYPE));
         assertEquals(
                 MESSAGE_ID1,
                 model1.get(TabGroupMessageCardViewProperties.MESSAGING_BACKEND_SERVICE_ID));
 
         PropertyModel model2 = mModelList.get(1).model;
-        assertEquals("Travel tab group no longer available", model2.get(DESCRIPTION_TEXT));
+        assertEquals(
+                "The \"Travel\" tab group is no longer available", model2.get(DESCRIPTION_TEXT));
         assertEquals(MESSAGE, model2.get(CARD_TYPE));
         assertEquals(
                 MESSAGE_ID2,
@@ -845,7 +848,8 @@ public class TabGroupListMediatorUnitTest {
                         MESSAGE_ID2, Optional.of(PersistentNotificationType.TOMBSTONED));
 
         PropertyModel model1 = mModelList.get(0).model;
-        assertEquals("Shopping tab group no longer available", model1.get(DESCRIPTION_TEXT));
+        assertEquals(
+                "The \"Shopping\" tab group is no longer available", model1.get(DESCRIPTION_TEXT));
         assertEquals(MESSAGE, model1.get(CARD_TYPE));
         assertEquals(
                 MESSAGE_ID1,

@@ -4,6 +4,7 @@
 
 #include "content/browser/metrics/histograms_monitor.h"
 
+#include "base/containers/map_util.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 
@@ -17,8 +18,8 @@ void HistogramsMonitor::StartMonitoring() {
   histograms_snapshot_.clear();
   // Save a snapshot of all current histograms that will be used as a baseline.
   for (const auto* histogram : base::StatisticsRecorder::GetHistograms()) {
-    histograms_snapshot_[histogram->histogram_name()] =
-        histogram->SnapshotSamples();
+    base::InsertOrAssign(histograms_snapshot_, histogram->histogram_name(),
+                         histogram->SnapshotSamples());
   }
 }
 

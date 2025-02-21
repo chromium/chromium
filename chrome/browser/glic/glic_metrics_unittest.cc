@@ -36,10 +36,12 @@ namespace {
 class MockWindowController : public GlicWindowController {
  public:
   MockWindowController(Profile* profile,
-                       signin::IdentityManager* identity_manager)
+                       signin::IdentityManager* identity_manager,
+                       GlicEnabling* enabling)
       : GlicWindowController(profile,
                              identity_manager,
-                             /*service=*/nullptr) {}
+                             /*service=*/nullptr,
+                             enabling) {}
   ~MockWindowController() override = default;
 
   bool IsShowing() const override { return showing_; }
@@ -65,10 +67,10 @@ class GlicMetricsTest : public testing::Test {
   GlicMetricsTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   void SetUp() override {
-    controller_ = std::make_unique<MockWindowController>(
-        &profile_, identity_env_.identity_manager());
-    tab_manager_ = std::make_unique<MockTabManager>(&profile_, *controller_);
     enabling_ = std::make_unique<GlicEnabling>(&profile_);
+    controller_ = std::make_unique<MockWindowController>(
+        &profile_, identity_env_.identity_manager(), enabling_.get());
+    tab_manager_ = std::make_unique<MockTabManager>(&profile_, *controller_);
 
     metrics_ = std::make_unique<GlicMetrics>(&profile_, enabling_.get());
     metrics_->SetControllers(controller_.get(), tab_manager_.get());
@@ -86,9 +88,9 @@ class GlicMetricsTest : public testing::Test {
   TestingProfile profile_;
   signin::IdentityTestEnvironment identity_env_;
 
+  std::unique_ptr<GlicEnabling> enabling_;
   std::unique_ptr<MockWindowController> controller_;
   std::unique_ptr<MockTabManager> tab_manager_;
-  std::unique_ptr<GlicEnabling> enabling_;
   std::unique_ptr<GlicMetrics> metrics_;
 };
 

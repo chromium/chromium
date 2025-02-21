@@ -81,6 +81,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private final int mToolbarLayoutHeight;
 
     private View mToolbarHairline;
+    private View mToolbarView;
 
     /**
      * Constructs a new control container.
@@ -192,6 +193,14 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     }
 
     @Override
+    public FrameLayout.LayoutParams mutateToolbarLayoutParams() {
+        FrameLayout.LayoutParams toolbarLayoutParams =
+                (LayoutParams) mToolbarView.getLayoutParams();
+        mToolbarView.setLayoutParams(toolbarLayoutParams);
+        return toolbarLayoutParams;
+    }
+
+    @Override
     public void destroy() {
         ((ToolbarViewResourceAdapter) getToolbarResourceAdapter()).destroy();
         if (mToolbarContainerDragListener != null) {
@@ -300,10 +309,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 fullscreenManager,
                 () -> mMidVisibilityToggle);
 
-        View toolbarView = findViewById(R.id.toolbar);
-        assert toolbarView != null;
+        mToolbarView = findViewById(R.id.toolbar);
+        assert mToolbarView != null;
 
-        if (toolbarView instanceof ToolbarTablet) {
+        if (mToolbarView instanceof ToolbarTablet) {
             // On tablet, draw a fake tab strip and toolbar until the compositor is
             // ready to draw the real tab strip. (On phone, the toolbar is made entirely
             // of Android views, which are already initialized.)

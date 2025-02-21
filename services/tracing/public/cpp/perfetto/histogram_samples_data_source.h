@@ -5,6 +5,7 @@
 #ifndef SERVICES_TRACING_PUBLIC_CPP_PERFETTO_HISTOGRAM_SAMPLES_DATA_SOURCE_H_
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_HISTOGRAM_SAMPLES_DATA_SOURCE_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -45,15 +46,15 @@ class COMPONENT_EXPORT(TRACING_CPP) HistogramSamplesDataSource
   void OnMetricSample(
       std::optional<base::HistogramBase::Sample32> reference_lower_value,
       std::optional<base::HistogramBase::Sample32> reference_upper_value,
-      const char* histogram_name,
+      std::string_view histogram_name,
       uint64_t name_hash,
       base::HistogramBase::Sample32 actual_value);
-  static void OnAnyMetricSample(const char* histogram_name,
+  static void OnAnyMetricSample(std::string_view histogram_name,
                                 uint64_t name_hash,
                                 base::HistogramBase::Sample32 sample);
   // `instance` identifies the instance that registered a callback, or nullopt
   // if this is a global callback.
-  static void OnMetricSampleImpl(const char* histogram_name,
+  static void OnMetricSampleImpl(std::string_view histogram_name,
                                  uint64_t name_hash,
                                  base::HistogramBase::Sample32 sample,
                                  std::optional<uintptr_t> instance);

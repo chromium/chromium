@@ -45,7 +45,7 @@ class CONTENT_EXPORT HistogramsMonitor {
   base::Value::List GetDiffInternal(
       const base::StatisticsRecorder::Histograms& histograms);
 
-  std::map<std::string, std::unique_ptr<base::HistogramSamples>>
+  std::map<std::string, std::unique_ptr<base::HistogramSamples>, std::less<>>
       histograms_snapshot_;
 };
 

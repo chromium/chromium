@@ -230,6 +230,10 @@ void MockRenderProcessHost::OnBoostForLoadingAdded() {}
 
 void MockRenderProcessHost::OnBoostForLoadingRemoved() {}
 
+void MockRenderProcessHost::OnImmersiveXrSessionStarted() {}
+
+void MockRenderProcessHost::OnImmersiveXrSessionStopped() {}
+
 StoragePartition* MockRenderProcessHost::GetStoragePartition() {
   return browser_context_->GetStoragePartition(storage_partition_config_);
 }

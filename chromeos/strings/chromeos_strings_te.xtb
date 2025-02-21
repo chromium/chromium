@@ -472,6 +472,7 @@
 <translation id="3226657629376379887">లేఅవుట్ చర్యల మెనూ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> విలువను <ph name="CONVERSION_RATE" />తో భాగించండి</translation>
 <translation id="3246869037381808805">1 రోజుకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
+<translation id="3248791727258378769">టైప్ చేసిన మాటల ఫైల్ ఏదీ క్రియేట్ చేయబడదు</translation>
 <translation id="324961752321393509">మీ అడ్మినిస్ట్రేటర్ ఈ యాప్‌ను మూసివేయడానికి అనుమతించడం లేదు</translation>
 <translation id="3263941347294171263">అప్‌డేట్ ప్రాసెస్‌ను కొనసాగించడానికి, <ph name="DEVICE_NAME" />‌ను అన్‌ప్లగ్ చేసి, మళ్లీ ప్లగ్ చేయండి</translation>
 <translation id="3268178239013324452">విఫలమైంది - తలుపు తెరుచుకుని ఉంది</translation>
@@ -670,6 +671,7 @@
 <translation id="420283545744377356">స్క్రీన్ సేవర్‌ను ఆఫ్ చేయి</translation>
 <translation id="4210636113897977670">సేవ్ చేసి, ఎగ్జిట్ అవ్వండి</translation>
 <translation id="4210659479607886331">గ్లేసియల్ నది</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> మాటల టైపింగ్ మోడల్ డౌన్‌లోడ్ పూర్తయింది</translation>
 <translation id="42126664696688958">ఎగుమతి చేయండి</translation>
 <translation id="4213104098953699324">USB కీబోర్డ్</translation>
 <translation id="4227825898293920515"><ph name="TIME" />లో పాస్‌వర్డ్‌ గడువు ముగుస్తుంది</translation>
@@ -940,6 +942,7 @@
 <translation id="5431318178759467895">రంగు</translation>
 <translation id="5457599981699367932">గెస్ట్ లాగా బ్రౌజ్ చేయండి</translation>
 <translation id="54609108002486618">నిర్వహించబడింది</translation>
+<translation id="5461608756903394951"><ph name="LANGUAGE_NAME" /> మాటల టైపింగ్ మోడల్ డౌన్‌లోడ్ ప్రోగ్రెస్‌లో ఉంది</translation>
 <translation id="5470776029649730099">బర్లాప్</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ప్రయత్నం మిగిలి ఉంది}other{{0} ప్రయత్నాలు మిగిలి ఉన్నాయి}}</translation>
 <translation id="5488280942828718790">మెజెంటా రంగు</translation>
@@ -1191,6 +1194,7 @@
 <translation id="6595046262780525922">మాటల టైపింగ్‌ను ఆన్ చేసి, మాటల టైపింగ్ మోడల్‌ను డౌన్‌లోడ్ చేయాలా?</translation>
 <translation id="6596816719288285829">IP అడ్రస్‌</translation>
 <translation id="6599673642868607614">మీ ఫీడ్‌బ్యాక్‌ను తెలిపినందుకు ధన్యవాదాలు. మీ ఫీడ్‌బ్యాక్ Chromebook అనుభవాన్ని మెరుగుపరచడంలో మాకు సహాయపడుతుంది, ఇంకా మా టీమ్ ద్వారా రివ్యూ చేయబడుతుంది. పెద్ద సంఖ్యలో రిపోర్ట్‌లు ఉన్నందున మేము రిప్లయిని పంపడం సాధ్యం కాదు.</translation>
+<translation id="6608043585557830684">మాటల టైపింగ్ ఆఫ్‌లో ఉంది. దానిని సెట్టింగ్‌లలో లేదా <ph name="THREE_DOTS_MENU_ICON" /> మెనూలో ఆన్ చేయండి.</translation>
 <translation id="660846213831377756">మౌస్ కీలు</translation>
 <translation id="6618744767048954150">రన్ అవుతున్నాయి</translation>
 <translation id="6620487321149975369">ప్రింట్ టాస్క్‌లను మాన్యువల్‌గా తీసివేసేంత వరకు అవి హిస్టరీలో అలాగే ఉంటాయి</translation>

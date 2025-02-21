@@ -8,6 +8,7 @@
 
 #include <string_view>
 
+#include "base/containers/map_util.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/metrics_hashes.h"
@@ -24,8 +25,8 @@ HistogramTester::HistogramTester() {
   // Record any histogram data that exists when the object is created so it can
   // be subtracted later.
   for (const auto* const histogram : StatisticsRecorder::GetHistograms()) {
-    histograms_snapshot_[histogram->histogram_name()] =
-        histogram->SnapshotSamples();
+    InsertOrAssign(histograms_snapshot_, histogram->histogram_name(),
+                   histogram->SnapshotSamples());
   }
 }
 
@@ -205,7 +206,8 @@ HistogramTester::CountsMap HistogramTester::GetTotalCountsForPrefix(
         GetHistogramSamplesSinceCreation(histogram->histogram_name());
     // Omit unchanged histograms from the result.
     if (new_samples->TotalCount()) {
-      result[histogram->histogram_name()] = new_samples->TotalCount();
+      InsertOrAssign(result, histogram->histogram_name(),
+                     new_samples->TotalCount());
     }
   }
   return result;

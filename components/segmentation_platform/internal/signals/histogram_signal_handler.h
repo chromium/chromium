@@ -35,7 +35,7 @@ class HistogramSignalHandler {
    public:
     // Called when a histogram signal tracked by segmentation platform is
     // updated and written to database.
-    virtual void OnHistogramSignalUpdated(const std::string& histogram_name,
+    virtual void OnHistogramSignalUpdated(std::string_view histogram_name,
                                           base::HistogramBase::Sample32) = 0;
     ~Observer() override = default;
 
@@ -65,11 +65,11 @@ class HistogramSignalHandler {
 
  private:
   void OnHistogramSample(proto::SignalType signal_type,
-                         const char* histogram_name,
+                         std::string_view histogram_name,
                          uint64_t name_hash,
                          base::HistogramBase::Sample32 sample);
 
-  void OnSampleWritten(const std::string& histogram_name,
+  void OnSampleWritten(std::string_view histogram_name,
                        base::HistogramBase::Sample32 sample,
                        bool success);
 

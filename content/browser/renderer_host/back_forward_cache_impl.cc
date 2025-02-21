@@ -201,6 +201,7 @@ WebSchedulerTrackedFeatures GetDisallowedWebSchedulerTrackedFeatures() {
           WebSchedulerTrackedFeature::kSpeechRecognizer,
           WebSchedulerTrackedFeature::kUnloadHandler,
           WebSchedulerTrackedFeature::kWebAuthentication,
+          WebSchedulerTrackedFeature::kWebBluetooth,
           WebSchedulerTrackedFeature::kWebDatabase,
           WebSchedulerTrackedFeature::kWebHID,
           WebSchedulerTrackedFeature::kWebLocks,
@@ -254,8 +255,7 @@ WebSchedulerTrackedFeatures GetAllowedWebSchedulerTrackedFeatures() {
 // affects other scheduling policies (e.g. aggressive throttling).
 WebSchedulerTrackedFeatures
 GetNonBackForwardCacheAffectingWebSchedulerTrackedFeatures() {
-  return {WebSchedulerTrackedFeature::kWebSerial,
-          WebSchedulerTrackedFeature::kWebBluetooth};
+  return {WebSchedulerTrackedFeature::kWebSerial};
 }
 
 // The BackForwardCache feature is controlled via an experiment. This function

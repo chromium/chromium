@@ -55,6 +55,7 @@
 #include "net/base/load_flags.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_request_headers.h"
 #include "net/quic/web_transport_error.h"
 #include "net/ssl/ssl_info.h"
@@ -1310,7 +1311,7 @@ void ApplyNetworkRequestOverrides(
     bool* disable_cache,
     bool* network_instrumentation_enabled,
     bool* skip_service_worker,
-    std::optional<std::vector<net::SourceStream::SourceType>>*
+    std::optional<std::vector<net::SourceStreamType>>*
         devtools_accepted_stream_types,
     bool* devtools_user_agent_overridden,
     bool* devtools_accept_language_overridden) {
@@ -1364,7 +1365,7 @@ void ApplyNetworkRequestOverrides(
     FrameTreeNode* frame_tree_node,
     blink::mojom::BeginNavigationParams* begin_params,
     bool* report_raw_headers,
-    std::optional<std::vector<net::SourceStream::SourceType>>*
+    std::optional<std::vector<net::SourceStreamType>>*
         devtools_accepted_stream_types,
     bool* devtools_user_agent_overridden,
     bool* devtools_accept_language_overridden) {

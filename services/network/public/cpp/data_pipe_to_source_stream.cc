@@ -12,12 +12,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/filter/source_stream_type.h"
 
 namespace network {
 
 DataPipeToSourceStream::DataPipeToSourceStream(
     mojo::ScopedDataPipeConsumerHandle body)
-    : net::SourceStream(net::SourceStream::TYPE_NONE),
+    : net::SourceStream(net::SourceStreamType::kNone),
       body_(std::move(body)),
       handle_watcher_(FROM_HERE,
                       mojo::SimpleWatcher::ArmingPolicy::MANUAL,

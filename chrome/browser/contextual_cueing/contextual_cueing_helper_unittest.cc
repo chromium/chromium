@@ -8,8 +8,6 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -45,12 +43,6 @@ class FakeOptimizationGuideKeyedService
 std::unique_ptr<KeyedService> CreateOptimizationGuideKeyedService(
     content::BrowserContext* context) {
   return std::make_unique<FakeOptimizationGuideKeyedService>();
-}
-
-std::unique_ptr<KeyedService> CreatePageContentExtractionService(
-    content::BrowserContext* context) {
-  return std::make_unique<
-      page_content_annotations::PageContentExtractionService>();
 }
 
 class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
@@ -103,12 +95,8 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {TestingProfile::TestingFactory{
-                OptimizationGuideKeyedServiceFactory::GetInstance(),
-                base::BindRepeating(&CreateOptimizationGuideKeyedService)},
-            TestingProfile::TestingFactory{
-                page_content_annotations::PageContentExtractionServiceFactory::
-                    GetInstance(),
-                base::BindRepeating(&CreatePageContentExtractionService)}};
+        OptimizationGuideKeyedServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateOptimizationGuideKeyedService)}};
   }
 
  private:

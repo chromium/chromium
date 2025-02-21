@@ -2258,6 +2258,9 @@ class InterestGroupAuction::BuyerHelper
       bid_state->handled_direct_from_seller_signals_in_begin_generate_bid =
           true;
     }
+
+    // TODO(crbug.com/391877228): Set its value based on cookie settings.
+    bool browser_signal_for_debugging_only_sampling = false;
     bid_state->worklet_handle->GetBidderWorklet()->BeginGenerateBid(
         auction_worklet::mojom::BidderWorkletNonSharedParams::New(
             interest_group.name,
@@ -2279,6 +2282,7 @@ class InterestGroupAuction::BuyerHelper
                           : std::optional<url::Origin>(),
         (base::Time::Now() - bid_state->bidder->join_time)
             .RoundToMultiple(base::Milliseconds(100)),
+        browser_signal_for_debugging_only_sampling,
         bid_state->bidder->bidding_browser_signals.Clone(),
         auction_->auction_start_time_, auction_->RequestedAdSize(),
         multi_bid_limit_, *bid_state->trace_id, std::move(pending_remote),
@@ -5592,6 +5596,8 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
         cache_handle->compression_group_token(), partition_id);
   }
 
+  // TODO(crbug.com/391877228): Set its value based on cookie settings.
+  bool browser_signal_for_debugging_only_sampling = false;
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
       bid->ad_metadata, bid->bid, bid->bid_currency, config_->non_shared_params,
       std::move(cache_key),
@@ -5613,7 +5619,8 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
       IsOriginInDebugReportCooldownOrLockout(
           config_->seller, debug_report_lockout_and_cooldowns_,
           base::Time::Now()),
-      SellerTimeout(), bid_trace_id, bid->bid_state->bidder->joining_origin,
+      browser_signal_for_debugging_only_sampling, SellerTimeout(), bid_trace_id,
+      bid->bid_state->bidder->joining_origin,
       score_ad_receiver.InitWithNewPipeAndPassRemote());
 
   score_ad_receivers_.Add(

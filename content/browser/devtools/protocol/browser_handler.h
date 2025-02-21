@@ -117,7 +117,7 @@ class BrowserHandler : public DevToolsDomainHandler,
   base::flat_set<raw_ptr<download::DownloadItem, CtnExperimental>>
       pending_downloads_;
   // Stores past histogram snapshots for producing histogram deltas.
-  std::map<std::string, std::unique_ptr<base::HistogramSamples>>
+  std::map<std::string, std::unique_ptr<base::HistogramSamples>, std::less<>>
       histograms_snapshots_;
 };
 

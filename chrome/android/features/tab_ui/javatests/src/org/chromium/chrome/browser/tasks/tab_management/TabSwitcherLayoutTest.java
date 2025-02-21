@@ -466,6 +466,7 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/397901349")
     public void testUndoClosure_AccessibilityMode() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));

@@ -195,9 +195,9 @@ class MetricsScraper {
     std::vector<std::string> histogram_names;
     for (base::HistogramBase* histogram :
          base::StatisticsRecorder::GetHistograms()) {
-      const std::string& name = histogram->histogram_name();
+      const auto& name = histogram->histogram_name();
       if (MatchesRegex(base::UTF8ToUTF16(name), *histogram_regex_)) {
-        histogram_names.push_back(name);
+        histogram_names.emplace_back(name);
       }
     }
     std::ranges::sort(histogram_names);

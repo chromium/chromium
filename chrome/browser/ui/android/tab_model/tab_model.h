@@ -126,6 +126,8 @@ class TabModel {
     FROM_RECENT_TABS_FOREGROUND,
     // Open a new tab to prevent collaborations from having 0 tabs.
     FROM_COLLABORATION_BACKGROUND_IN_GROUP,
+    // Opened from the bookmark bar. Will not be brought to the foreground.
+    FROM_BOOKMARK_BAR_BACKGROUND,
     // Must be last.
     SIZE
   };

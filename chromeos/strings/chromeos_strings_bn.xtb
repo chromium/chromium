@@ -472,6 +472,7 @@
 <translation id="3226657629376379887">লেআউট অ্যাকশন মেনু</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" /> মান দ্বারা <ph name="CATEGORY_TEXT" /> ভাগ করুন</translation>
 <translation id="3246869037381808805">১ দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
+<translation id="3248791727258378769">কোনও ট্রানস্ক্রিপ্ট তৈরি করা হবে না</translation>
 <translation id="324961752321393509">আপনার অ্যাডমিনিস্ট্রেটর এই অ্যাপ বন্ধ করার অনুমতি দেয় না</translation>
 <translation id="3263941347294171263">প্রসেস আপডেট করা চালিয়ে যেতে <ph name="DEVICE_NAME" /> আনপ্লাগ করে প্লাগপয়েন্টে আবার লাগিয়ে দিন</translation>
 <translation id="3268178239013324452">প্রিন্ট করা যায়নি - প্রিন্টারের ঢাকনা ভাল করে বন্ধ করা হয়নি</translation>
@@ -670,6 +671,7 @@
 <translation id="420283545744377356">স্ক্রিন সেভার বন্ধ করুন</translation>
 <translation id="4210636113897977670">সেভ করে বেরিয়ে আসুন</translation>
 <translation id="4210659479607886331">হিমবাহ</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> ট্রান্সক্রিপশন মডেল ডাউনলোড সম্পূর্ণ হয়ে গেছে</translation>
 <translation id="42126664696688958">রপ্তানি</translation>
 <translation id="4213104098953699324">ইউএসবি কীবোর্ড</translation>
 <translation id="4227825898293920515">পাসওয়ার্ডের মেয়াদ <ph name="TIME" />-এ শেষ হবে</translation>
@@ -940,6 +942,7 @@
 <translation id="5431318178759467895">রঙ</translation>
 <translation id="5457599981699367932">অতিথি হিসাবে ব্রাউজ করুন</translation>
 <translation id="54609108002486618">পরিচালিত</translation>
+<translation id="5461608756903394951"><ph name="LANGUAGE_NAME" /> ট্রান্সক্রিপশন মডেল ডাউনলোড হচ্ছে</translation>
 <translation id="5470776029649730099">বারল্যাপ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{আর {0} বার চেষ্টা করতে পারবেন}one{আর {0} বার চেষ্টা করতে পারবেন}other{আর {0} বার চেষ্টা করতে পারবেন}}</translation>
 <translation id="5488280942828718790">ম্যাজেন্টা</translation>
@@ -1191,6 +1194,7 @@
 <translation id="6595046262780525922">ট্রান্সক্রিপশন চালু করে ট্রান্সক্রিপশন মডেল ডাউনলোড করতে চান?</translation>
 <translation id="6596816719288285829">IP অ্যাড্রেস</translation>
 <translation id="6599673642868607614">আপনার প্রতিক্রিয়া আমাদের জানানোর জন্য ধন্যবাদ। আপনার প্রতিক্রিয়া আমাদের Chromebook অভিজ্ঞতা উন্নত করতে সাহায্য করে এবং আমাদের টিম দ্বারা পর্যালোচনা করা হবে। অনেক বেশি সংখ্যক রিপোর্টের কারণে, আমরা উত্তর দিতে পারব না।</translation>
+<translation id="6608043585557830684">ট্রান্সক্রিপশন বন্ধ আছে। সেটিংস থেকে অথবা <ph name="THREE_DOTS_MENU_ICON" /> মেনু থেকে চালু করুন।</translation>
 <translation id="660846213831377756">মাউস কী</translation>
 <translation id="6618744767048954150">চলছে</translation>
 <translation id="6620487321149975369">ম্যানুয়ালি সরিয়ে না দেওয়া পর্যন্ত প্রিন্ট হওয়া কাজগুলি ইতিহাসে দেখা যাবে</translation>

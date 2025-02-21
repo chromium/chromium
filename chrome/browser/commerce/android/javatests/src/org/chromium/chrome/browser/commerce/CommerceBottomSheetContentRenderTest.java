@@ -55,6 +55,7 @@ public class CommerceBottomSheetContentRenderTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock BottomSheetController mBottomSheetController;
+    @Mock CommerceBottomSheetContentProvider mPriceTrackingBottomSheetContentProvider;
 
     private ModelList mModelList;
     private View mContentView;
@@ -93,7 +94,9 @@ public class CommerceBottomSheetContentRenderTest {
 
                     mCoordinator =
                             new CommerceBottomSheetContentCoordinator(
-                                    getActivity(), mBottomSheetController);
+                                    getActivity(),
+                                    mBottomSheetController,
+                                    () -> mPriceTrackingBottomSheetContentProvider);
 
                     mContentView = mCoordinator.getContentViewForTesting();
                     mRecyclerView = mCoordinator.getRecyclerViewForTesting();

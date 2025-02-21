@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/strong_alias.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
@@ -81,8 +82,7 @@ struct Suggestion {
 
   struct AutofillAiPayload final {
     AutofillAiPayload();
-    explicit AutofillAiPayload(
-        const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill);
+    explicit AutofillAiPayload(base::Uuid guid);
     AutofillAiPayload(const AutofillAiPayload&);
     AutofillAiPayload(AutofillAiPayload&&);
     AutofillAiPayload& operator=(const AutofillAiPayload&);
@@ -92,8 +92,7 @@ struct Suggestion {
     friend bool operator==(const AutofillAiPayload&,
                            const AutofillAiPayload&) = default;
 
-    // Values to be filled into fields with corresponding ids.
-    base::flat_map<FieldGlobalId, std::u16string> values_to_fill;
+    base::Uuid guid;
   };
 
   struct PaymentsPayload final {

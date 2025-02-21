@@ -15,7 +15,7 @@ import './sea_pen.css.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SeaPenSamplePrompt} from './constants.js';
 import {logSamplePromptClicked} from './sea_pen_metrics_logger.js';
@@ -55,13 +55,30 @@ export class SeaPenSamplesElement extends SeaPenSamplesElementBase {
 
   static get properties() {
     return {
+      isTabHidden: {
+        type: Boolean,
+      },
+
       samples: {
         type: Array,
       },
     };
   }
 
+  private isTabHidden: boolean;
   private samples: SeaPenSamplePrompt[];
+
+  override connectedCallback() {
+    super.connectedCallback();
+    if (!this.isTabHidden) {
+      // Focus on the first sample prompt when the user switches to Sample
+      // Prompts tab.
+      afterNextRender(this, () => {
+        this.shadowRoot!.querySelector<HTMLElement>('wallpaper-grid-item')
+            ?.focus();
+      });
+    }
+  }
 
   private onClickSample_(e: WallpaperGridItemSelectedEvent&
                          {model: {sample: SeaPenSamplePrompt}}) {

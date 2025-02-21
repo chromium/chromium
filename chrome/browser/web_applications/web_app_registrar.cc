@@ -69,9 +69,13 @@ using InstallStateSet = base::EnumSet<proto::InstallState,
                                       proto::InstallState_MIN,
                                       proto::InstallState_MAX>;
 
+// ChromeOS stores the per-app capturing setting in PreferredAppsImpl, not here.
+#if !BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kDiyAppsDefaultCaptureForcedOff,
              "capture_forced_off_diy_apps",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#endif
 
 struct AppStateForNavigationCapturing {
   bool is_diy_app = false;
@@ -79,6 +83,8 @@ struct AppStateForNavigationCapturing {
   bool client_mode_valid_and_specified = false;
 };
 
+// ChromeOS stores the per-app capturing setting in PreferredAppsImpl, not here.
+#if !BUILDFLAG(IS_CHROMEOS)
 bool IsNavigationCapturingSettingOffByDefault(
     AppStateForNavigationCapturing app_state) {
   // If the app is a DIY app, capture navigations by default unless enforced via
@@ -112,6 +118,7 @@ bool IsNavigationCapturingSettingOffByDefault(
       return !app_state.client_mode_valid_and_specified;
   }
 }
+#endif
 
 bool IsAppCapturingSettingForcedOff(const webapps::AppId& app_id) {
   if (!features::kForcedOffCapturingAppsUserSetting.Get().empty()) {
@@ -824,9 +831,11 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
     return GetAppEffectiveDisplayMode(app_id) != DisplayMode::kBrowser;
   }
 
+#if !BUILDFLAG(IS_CHROMEOS)
   if (filter.captures_links_in_scope_) {
     return CapturesLinksInScope(app_id);
   }
+#endif
 
   if (filter.is_isolated_app_) {
     return IsIsolated(app_id);
@@ -1157,6 +1166,7 @@ bool WebAppRegistrar::CanCaptureLinksInScope(
   return true;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 bool WebAppRegistrar::CapturesLinksInScope(const webapps::AppId& app_id) const {
   if (!CanCaptureLinksInScope(app_id)) {
     return false;
@@ -1351,6 +1361,16 @@ bool WebAppRegistrar::AppScopesMatchForUserLinkCapturing(
   return app_scope1 == app_scope2;
 }
 
+bool WebAppRegistrar::IsPreferredAppForCapturingUrl(
+    const GURL& url,
+    const webapps::AppId& app_id) {
+  const GURL app_scope = GetAppScope(app_id);
+  return base::StartsWith(url.spec(), app_scope.spec(),
+                          base::CompareCase::SENSITIVE) &&
+         CapturesLinksInScope(app_id);
+}
+#endif
+
 base::flat_map<webapps::AppId, std::string>
 WebAppRegistrar::GetAllAppsControllingUrl(const GURL& url) const {
   base::flat_map<webapps::AppId, std::string> all_controlling_apps;
@@ -1372,15 +1392,6 @@ WebAppRegistrar::GetAllAppsControllingUrl(const GURL& url) const {
     }
   }
   return all_controlling_apps;
-}
-
-bool WebAppRegistrar::IsPreferredAppForCapturingUrl(
-    const GURL& url,
-    const webapps::AppId& app_id) {
-  const GURL app_scope = GetAppScope(app_id);
-  return base::StartsWith(url.spec(), app_scope.spec(),
-                          base::CompareCase::SENSITIVE) &&
-         CapturesLinksInScope(app_id);
 }
 
 bool WebAppRegistrar::IsDiyApp(const webapps::AppId& app_id) const {

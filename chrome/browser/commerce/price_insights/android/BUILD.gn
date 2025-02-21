@@ -23,7 +23,6 @@ android_library("java") {
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/android/customtabs/branding:java",
     "//chrome/browser/commerce/android:java",
-    "//chrome/browser/commerce/price_tracking/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",

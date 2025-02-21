@@ -15,11 +15,7 @@ using ToolbarUIBroadcastingUtilTest = PlatformTest;
 // Tests that the ToolbarUIBroadcastingUtil functions successfully start
 // and stop broadcasting toolbar properties.
 TEST_F(ToolbarUIBroadcastingUtilTest, StartStop) {
-  ToolbarUIState* toolbar_ui =
-      [[ToolbarUIState alloc] initWithCollapsedTopToolbarHeight:0.0
-                                       expandedTopToolbarHeight:0.0
-                                    expandedBottomToolbarHeight:0.0
-                                   collapsedBottomToolbarHeight:0.0];
+  ToolbarUIState* toolbar_ui = [[ToolbarUIState alloc] init];
   ChromeBroadcaster* broadcaster = [[ChromeBroadcaster alloc] init];
   VerifyToolbarUIBroadcast(toolbar_ui, broadcaster, false);
   StartBroadcastingToolbarUI(toolbar_ui, broadcaster);

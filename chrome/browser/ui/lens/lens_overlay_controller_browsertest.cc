@@ -7693,11 +7693,10 @@ class LensOverlayControllerOverlaySearchbox
   }
 
   void VerifyContextualSearchQueryParameters(const GURL& url_to_process) {
-    EXPECT_THAT(
-        url_to_process.spec(),
-        testing::MatchesRegex(
-            std::string(kResultsSearchBaseUrl) +
-            ".*source=chrome.cr.menu.*&q=.*&gsc=2&hl=.*&biw=\\d+&bih=\\d+"));
+    EXPECT_THAT(url_to_process.spec(),
+                testing::MatchesRegex(std::string(kResultsSearchBaseUrl) +
+                                      ".*source=chrome.cr.menu.*&vit=.*&gsc=2&"
+                                      "hl=.*&q=.*&biw=\\d+&bih=\\d+"));
   }
 };
 
@@ -7753,6 +7752,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerOverlaySearchbox,
       "hello", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
+
+  // Wait for the side panel to open.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+  EXPECT_EQ(controller->GetPageClassificationForTesting(),
+            metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
 
   // Wait for URL to load in side panel.
   EXPECT_TRUE(content::WaitForLoadStop(

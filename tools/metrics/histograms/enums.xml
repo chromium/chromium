@@ -312,6 +312,11 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="5" label="Empty generic details"/>
 </enum>
 
+<enum name="AmountExtractionResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Amount not found"/>
+</enum>
+
 <enum name="AndroidMultiWindowActivityType">
   <int value="0" label="Enter"/>
   <int value="1" label="Exit"/>
@@ -9839,6 +9844,7 @@ from previous Chrome versions.
   <int value="-1692967465"
       label="ContextMenuPerformanceInfoAndRemoteHintFetching:enabled"/>
   <int value="-1692916427" label="WipeDataOnChildAccountSignin:enabled"/>
+  <int value="-1692639418" label="AndroidAppearanceSettings:disabled"/>
   <int value="-1692384483" label="disambiguate-autofill-server-name-types"/>
   <int value="-1692107333" label="AccessibilityCursorColor:disabled"/>
   <int value="-1691892152" label="SafeSearchUrlReporting:disabled"/>
@@ -10765,6 +10771,7 @@ from previous Chrome versions.
   <int value="-1336110789" label="CastMediaRouteProvider:disabled"/>
   <int value="-1335360580" label="ReduceTransferSizeUpdatedIPC:enabled"/>
   <int value="-1335017208" label="KeyboardLockAPI:enabled"/>
+  <int value="-1334971444" label="AndroidAppearanceSettings:enabled"/>
   <int value="-1334909143" label="NtpModulesDragAndDrop:disabled"/>
   <int value="-1334336593" label="SystemKoreanPhysicalTyping:disabled"/>
   <int value="-1334327410" label="ash-enable-touch-view-testing"/>
@@ -11384,7 +11391,6 @@ from previous Chrome versions.
   <int value="-1096694296" label="UpcomingFollowFeatures:enabled"/>
   <int value="-1096595907" label="disable-new-virtual-keyboard-behavior"/>
   <int value="-1095947169" label="ModalPermissionDialogView:disabled"/>
-  <int value="-1095899172" label="LensOverlayContextualSearchbox:enabled"/>
   <int value="-1095698985" label="ChromeSharePageInfo:enabled"/>
   <int value="-1093225454" label="FedCmIdPregistration:disabled"/>
   <int value="-1093224986" label="ArcUnthrottleOnActiveAudioV2:disabled"/>
@@ -11562,6 +11568,8 @@ from previous Chrome versions.
   <int value="-1024644761" label="OmniboxShortcutBoost:enabled"/>
   <int value="-1024065253" label="EnableWireGuard:disabled"/>
   <int value="-1024018413" label="CrOSLateBootGravedigger:disabled"/>
+  <int value="-1023356765"
+      label="WebAuthenticationAlignErrorTypeForPaymentCredentialCreate:enabled"/>
   <int value="-1023007976" label="SingleCaCertVerificationPhase1:enabled"/>
   <int value="-1022971520" label="enable-search-button-in-omnibox-for-str"/>
   <int value="-1022290134" label="WebApkInstallFailureRetry:disabled"/>
@@ -12833,6 +12841,8 @@ from previous Chrome versions.
   <int value="-516845951" label="enable-embedded-extension-options"/>
   <int value="-516269317" label="HttpsFirstModeV2:enabled"/>
   <int value="-515913489" label="EphemeralTabUsingBottomSheet:disabled"/>
+  <int value="-515066652"
+      label="WebAuthenticationAlignErrorTypeForPaymentCredentialCreate:disabled"/>
   <int value="-514672474"
       label="PolicyProvidedTrustAnchorsAllowedAtLockScreen:enabled"/>
   <int value="-514076866" label="MovablePartialScreenshot:disabled"/>
@@ -19403,7 +19413,6 @@ from previous Chrome versions.
       label="AccessibilitySelectToSpeakContextMenuOption:disabled"/>
   <int value="2044623453" label="DeferredShaping:disabled"/>
   <int value="2046329062" label="ReleaseTrackUi:enabled"/>
-  <int value="2046958942" label="LensOverlayContextualSearchbox:disabled"/>
   <int value="2047503404" label="FilesSWA:enabled"/>
   <int value="2047636405" label="MemorySaverModeAggressiveness:disabled"/>
   <int value="2047695652" label="DelegateOverscrollSwipes:enabled"/>

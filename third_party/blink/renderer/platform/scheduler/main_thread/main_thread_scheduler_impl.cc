@@ -1282,7 +1282,7 @@ bool MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork() {
 
 base::TimeTicks MainThreadSchedulerImpl::CurrentIdleTaskDeadlineForTesting()
     const {
-  return idle_helper_.CurrentIdleTaskDeadline();
+  return idle_helper_.CurrentIdleTaskDeadlineForTesting();
 }
 
 void MainThreadSchedulerImpl::StartIdlePeriodForTesting() {
@@ -1711,8 +1711,7 @@ void MainThreadSchedulerImpl::WriteIntoTraceLocked(
            main_thread_only().compositor_will_send_main_frame_not_expected);
   dict.Add("blocking_input_expected_soon",
            main_thread_only().blocking_input_expected_soon);
-  dict.Add("idle_period_state", IdleHelper::IdlePeriodStateToString(
-                                    idle_helper_.SchedulerIdlePeriodState()));
+  dict.Add("idle_period_state", idle_helper_.IdlePeriodStateForTracing());
   dict.Add("renderer_hidden", main_thread_only().renderer_hidden);
   dict.Add("waiting_for_any_main_frame_contentful_paint",
            any_thread().waiting_for_any_main_frame_contentful_paint);

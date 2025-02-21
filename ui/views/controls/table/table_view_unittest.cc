@@ -22,6 +22,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/text_utils.h"
@@ -163,6 +164,21 @@ class TableViewTestHelper {
   gfx::Rect GetPaintIconDestBounds(const gfx::Rect& cell_bounds,
                                    int text_bounds_x) {
     return table_->GetPaintIconDestBounds(cell_bounds, text_bounds_x);
+  }
+
+  const std::optional<GroupRange>& GetHoveredRows() const {
+    return table_->hovered_rows_;
+  }
+
+  void UpdateHover(std::optional<gfx::Point> view_coordinates) {
+    table_->UpdateHover(view_coordinates);
+  }
+
+  void UpdateHoverAtMouseLocation(gfx::Point mouse_location) {
+    display::Screen::GetScreen()->SetCursorScreenPointForTesting(
+        mouse_location);
+
+    table_->UpdateHoverAtMouseLocation();
   }
 
  private:
@@ -2606,6 +2622,139 @@ class TestTableModel3 : public TestTableModel2 {
  private:
   SkBitmap icon_;
 };
+
+// Tests mouse hovering on TableView.
+class TableViewMouseHoverTest : public ViewsTestBase {
+ public:
+  TableViewMouseHoverTest() = default;
+  TableViewMouseHoverTest(const TableViewMouseHoverTest&) = delete;
+  TableViewMouseHoverTest& operator=(const TableViewMouseHoverTest&) = delete;
+  ~TableViewMouseHoverTest() override = default;
+
+  void SetUp() override {
+    ViewsTestBase::SetUp();
+
+    model_ = std::make_unique<TestTableModel3>();
+    std::vector<ui::TableColumn> columns(2);
+    columns[0].title = u"A";
+    columns[0].sortable = true;
+    columns[1].title = u"B";
+    columns[1].id = 1;
+    columns[1].sortable = true;
+
+    auto table = std::make_unique<TableView>(model_.get(), columns,
+                                             TableType::kIconAndText, false);
+    table_ = table.get();
+    auto scroll_view = TableView::CreateScrollViewWithTable(std::move(table));
+    scroll_view->SetBounds(0, 0, 1000, 1000);
+    helper_ = std::make_unique<TableViewTestHelper>(table_);
+
+    widget_ = std::make_unique<Widget>();
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    params.bounds = gfx::Rect(0, 0, 650, 650);
+    widget_->Init(std::move(params));
+    test::RunScheduledLayout(
+        widget_->GetRootView()->AddChildView(std::move(scroll_view)));
+    widget_->Show();
+
+#if BUILDFLAG(IS_MAC)
+    // Required for macOS
+    table_->SetAlternatingRowColorsEnabledForTesting(false);
+#endif
+    table_->SetMouseHoveringEnabled(true);
+  }
+
+  void TearDown() override {
+    table_ = nullptr;
+    helper_.reset();
+    widget_.reset();
+    ViewsTestBase::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<TestTableModel2> model_;
+  raw_ptr<TableView> table_ = nullptr;
+  std::unique_ptr<TableViewTestHelper> helper_;
+  UniqueWidgetPtr widget_;
+};
+
+TEST_F(TableViewMouseHoverTest, TestMouseHoverKillSwitch) {
+  EXPECT_EQ(4u, model_->RowCount());
+  EXPECT_EQ(2u, helper_->visible_col_count());
+
+  // Test Killswitch
+  table_->SetMouseHoveringEnabled(false);
+  EXPECT_FALSE(table_->IsHoveringEnabled());
+
+  // Test that the hovered rows get reset, even if mouse hovering gets disabled
+  // while hovering a group.
+  table_->SetMouseHoveringEnabled(true);
+  helper_->UpdateHover(
+      std::make_optional<gfx::Point>(10, table_->GetRowHeight() - 10));
+  EXPECT_EQ(helper_->GetHoveredRows(), GroupRange(0, 1));
+  table_->SetMouseHoveringEnabled(false);
+  EXPECT_EQ(helper_->GetHoveredRows(), std::nullopt);
+}
+
+TEST_F(TableViewMouseHoverTest, TestMouseHoverSingleRow) {
+  EXPECT_EQ(4u, model_->RowCount());
+  EXPECT_EQ(2u, helper_->visible_col_count());
+
+  // Hover the first row.
+  // Rows start from y = 0.
+  // Therefore, y = GetRowHeight() - x, (where 0 < x <= GetRowHeight())
+  // should compute a y-coordinate that corresponds with the first row.
+  helper_->UpdateHover(
+      std::make_optional<gfx::Point>(10, table_->GetRowHeight() - 10));
+  EXPECT_EQ(helper_->GetHoveredRows(), GroupRange(0, 1));
+
+  // Explicitly unhover the mouse.
+  helper_->UpdateHover(std::nullopt);
+  EXPECT_EQ(helper_->GetHoveredRows(), std::nullopt);
+
+  // Hover the second row.
+  // Same math, except instead of GetRowHeight() - x, its GetRowHeight() + x.
+  helper_->UpdateHover(
+      std::make_optional<gfx::Point>(10, table_->GetRowHeight() + 10));
+
+  EXPECT_EQ(helper_->GetHoveredRows(), GroupRange(1, 1));
+
+  // Out of bounds hover.
+  helper_->UpdateHover(std::make_optional<gfx::Point>(
+      10, (table_->GetRowCount() * table_->GetRowHeight()) + 10));
+  EXPECT_EQ(helper_->GetHoveredRows(), std::nullopt);
+  helper_->UpdateHover(std::make_optional<gfx::Point>(10, -10));
+  EXPECT_EQ(helper_->GetHoveredRows(), std::nullopt);
+}
+
+TEST_F(TableViewMouseHoverTest, TestMouseHoverMultiRow) {
+  EXPECT_EQ(4u, model_->RowCount());
+  EXPECT_EQ(2u, helper_->visible_col_count());
+
+  const int third_row_y =
+      ((table_->GetRowCount() - 1) * table_->GetRowHeight()) - 10;
+  const int fourth_row_y =
+      (table_->GetRowCount() * table_->GetRowHeight()) - 10;
+
+  // Configure the grouper so that there is one group at the end:
+  // A 1
+  // B 2
+  // C 3
+  //   4
+  TableGrouperImpl grouper;
+  grouper.SetRanges({1, 1, 2});
+  table_->SetGrouper(&grouper);
+
+  // Hover the last row (4), and expect that (3) is also hovered.
+  helper_->UpdateHover(std::make_optional<gfx::Point>(10, fourth_row_y));
+  EXPECT_EQ(helper_->GetHoveredRows(), GroupRange(2, 2));
+
+  // Hover the second to last row (3), and expect that (4) is also hovered.
+  helper_->UpdateHover(std::make_optional<gfx::Point>(10, third_row_y));
+  EXPECT_EQ(helper_->GetHoveredRows(), GroupRange(2, 2));
+}
 
 // The test calculation paint icon bounds.
 class TableViewPaintIconBoundsTest : public ViewsTestBase {

@@ -5,7 +5,7 @@ include_rules = [
   "+net/base/ip_endpoint.h",
   "+net/base/schemeful_site.h",
   "+net/dns/public",
-  "+net/filter/source_stream.h",
+  "+net/filter/source_stream_type.h",
   "+net/http/alternate_protocol_usage.h",
   "+net/ssl/ssl_info.h",
   "+net/storage_access_api/status.h",

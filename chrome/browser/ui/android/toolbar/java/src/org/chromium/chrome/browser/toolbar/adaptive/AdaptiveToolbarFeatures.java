@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.HashMap;
-import java.util.List;
 
 /** A utility class for handling feature flags used by {@link AdaptiveToolbarButtonController}. */
 public class AdaptiveToolbarFeatures {
@@ -190,28 +189,6 @@ public class AdaptiveToolbarFeatures {
 
     public static boolean isDiscountsPageActionEnabled() {
         return ChromeFeatureList.sEnableDiscountInfoApi.isEnabled();
-    }
-
-    /**
-     * Returns top choice from segmentation results based on device form-factor.
-     *
-     * @param context Context to determine form factor.
-     * @param segmentationResults List of rank-ordered results obtained from segmentation.
-     * @return Top result to use for UI flows.
-     */
-    public static @AdaptiveToolbarButtonVariant int getTopSegmentationResult(
-            Context context, List<Integer> segmentationResults) {
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            // Exclude NTB and Bookmarks from segmentation results on tablets since these buttons
-            // are available on top chrome (on tab strip and omnibox).
-            for (int result : segmentationResults) {
-                if (AdaptiveToolbarButtonVariant.NEW_TAB == result
-                        || AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS == result) continue;
-                return result;
-            }
-            return AdaptiveToolbarButtonVariant.UNKNOWN;
-        }
-        return segmentationResults.get(0);
     }
 
     /**

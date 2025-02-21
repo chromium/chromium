@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
@@ -258,10 +259,12 @@ class BookmarkBarMediator
                         mActivity.getComponentName(),
                         /* bookmarkOpenedCallback= */ null);
 
-        // TODO(crbug.com/394614604): Open in new background tab rather than foreground.
         final boolean isCtrlPressed = (metaState & KeyEvent.META_CTRL_ON) != 0;
         if (isCtrlPressed) {
-            opener.openBookmarksInNewTabs(List.of(item.getId()), profile.isOffTheRecord());
+            opener.openBookmarksInNewTabs(
+                    List.of(item.getId()),
+                    profile.isOffTheRecord(),
+                    Optional.of(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
             return;
         }
 

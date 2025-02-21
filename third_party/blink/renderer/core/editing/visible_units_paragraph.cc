@@ -282,6 +282,11 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
     }
   }
 
+  // If start node is non-editable and we have our candidate same as start node
+  // return the last position in start node.
+  if (!start_node_is_editable && candidate_node == start_node) {
+    candidate_type = PositionAnchorType::kAfterAnchor;
+  }
   if (candidate_type == PositionAnchorType::kOffsetInAnchor)
     return PositionTemplate<Strategy>(candidate_node, candidate_offset);
 

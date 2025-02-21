@@ -1260,23 +1260,10 @@ void ProcessMemoryMetricsEmitter::FetchAndEmitProcessMemoryMetrics() {
     }
   }
 
-  // Use a lambda adapter to post the results back to this sequence.
-  GetProcessToPageInfoMapCallback callback2 = base::BindOnce(
-      [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-         scoped_refptr<ProcessMemoryMetricsEmitter> pmme,
-         std::vector<ProcessInfo> process_infos) -> void {
-        task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(&ProcessMemoryMetricsEmitter::ReceivedProcessInfos,
-                           pmme, std::move(process_infos)));
-      },
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      scoped_refptr<ProcessMemoryMetricsEmitter>(this));
-
-  performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(&ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap,
-                     std::move(callback2)));
+  performance_manager::Graph* graph =
+      performance_manager::PerformanceManager::GetGraph();
+  auto process_infos = GetProcessToPageInfoMap(graph);
+  ReceivedProcessInfos(std::move(process_infos));
 }
 
 void ProcessMemoryMetricsEmitter::MarkServiceRequestsInProgress() {
@@ -1670,8 +1657,8 @@ bool HostsMainFrame(const performance_manager::ProcessNode* process,
 
 }  // namespace
 
-void ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
-    GetProcessToPageInfoMapCallback callback,
+std::vector<ProcessMemoryMetricsEmitter::ProcessInfo>
+ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
     performance_manager::Graph* graph) {
   std::vector<ProcessInfo> process_infos;
   // Assign page nodes unique IDs within this lookup only.
@@ -1719,7 +1706,7 @@ void ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
           page_node->GetTimeSinceLastNavigation();
     }
   }
-  std::move(callback).Run(std::move(process_infos));
+  return process_infos;
 }
 
 ProcessMemoryMetricsEmitter::ProcessInfo::ProcessInfo() = default;

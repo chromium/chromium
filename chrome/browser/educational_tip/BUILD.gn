@@ -83,6 +83,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleBuilderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleViewBinderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/QuickDeletePromoCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/TabGroupPromoCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/TabGroupSyncPromoCoordinatorUnitTest.java",

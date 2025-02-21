@@ -31,7 +31,7 @@ const char kBrotli[] = "br";
 class StdinSourceStream : public SourceStream {
  public:
   explicit StdinSourceStream(std::istream* input_stream)
-      : SourceStream(SourceStream::TYPE_NONE), input_stream_(input_stream) {}
+      : SourceStream(SourceStreamType::kNone), input_stream_(input_stream) {}
 
   StdinSourceStream(const StdinSourceStream&) = delete;
   StdinSourceStream& operator=(const StdinSourceStream&) = delete;
@@ -74,11 +74,11 @@ bool ContentDecoderToolProcessInput(std::vector<std::string> content_encodings,
       downstream = CreateBrotliSourceStream(std::move(upstream));
     } else if (base::EqualsCaseInsensitiveASCII(content_encoding, kDeflate)) {
       downstream = GzipSourceStream::Create(std::move(upstream),
-                                            SourceStream::TYPE_DEFLATE);
+                                            SourceStreamType::kDeflate);
     } else if (base::EqualsCaseInsensitiveASCII(content_encoding, kGZip) ||
                base::EqualsCaseInsensitiveASCII(content_encoding, kXGZip)) {
       downstream = GzipSourceStream::Create(std::move(upstream),
-                                            SourceStream::TYPE_GZIP);
+                                            SourceStreamType::kGzip);
     } else {
       LOG(ERROR) << "Unsupported decoder '" << content_encoding << "'.";
       return false;

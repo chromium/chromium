@@ -111,6 +111,7 @@
 #include "net/filter/gzip_header.h"
 #include "net/filter/gzip_source_stream.h"
 #include "net/filter/mock_source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -439,7 +440,7 @@ void AppendGzippedResource(const base::RefCountedMemory& encoded,
   source_stream->AddReadResult(end.data(), end.size(), net::OK,
                                net::MockSourceStream::SYNC);
   std::unique_ptr<net::GzipSourceStream> filter = net::GzipSourceStream::Create(
-      std::move(source_stream), net::SourceStream::TYPE_GZIP);
+      std::move(source_stream), net::SourceStreamType::kGzip);
   scoped_refptr<net::IOBufferWithSize> dest_buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(4096);
   while (true) {

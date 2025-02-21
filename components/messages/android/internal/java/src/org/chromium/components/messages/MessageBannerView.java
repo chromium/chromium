@@ -85,7 +85,8 @@ public class MessageBannerView extends BoundedLinearLayout {
         mainContent.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
         // Elevation does not work on low end device.
         if (SysUtils.isLowEndDevice()) {
-            setBackgroundResource(R.drawable.popup_bg);
+            setBackground(
+                    AppCompatResources.getDrawable(getContext(), R.drawable.dialog_bg_baseline));
         }
         mPrimaryButtonDrawable = mPrimaryButton.getBackground();
     }

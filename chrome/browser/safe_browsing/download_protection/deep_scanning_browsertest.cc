@@ -314,7 +314,7 @@ class DownloadDeepScanningBrowserTestBase
   void ExpectMetadataResponse(const ClientDownloadResponse& response) {
     test_sb_factory_->test_safe_browsing_service()
         ->GetTestUrlLoaderFactory()
-        ->AddResponse(PPAPIDownloadRequest::GetDownloadRequestUrl().spec(),
+        ->AddResponse(DownloadProtectionService::GetDownloadRequestUrl().spec(),
                       response.SerializeAsString());
   }
 
@@ -534,7 +534,7 @@ class DownloadDeepScanningBrowserTestBase
   }
 
   bool MaybeHandleDownloadRequest(const network::ResourceRequest& request) {
-    if (request.url != PPAPIDownloadRequest::GetDownloadRequestUrl()) {
+    if (request.url != DownloadProtectionService::GetDownloadRequestUrl()) {
       return false;
     }
     if (waiting_for_metadata_closure_) {

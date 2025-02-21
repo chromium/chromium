@@ -54,7 +54,7 @@ class BASE_EXPORT DummyHistogram : public HistogramBase {
  private:
   friend class NoDestructor<DummyHistogram>;
 
-  DummyHistogram() : HistogramBase("dummy_histogram") {}
+  DummyHistogram() : HistogramBase(DurableStringView("dummy_histogram")) {}
   ~DummyHistogram() override = default;
 };
 

@@ -153,6 +153,9 @@ class DownloadProtectionService {
 
   bool enabled() const { return enabled_; }
 
+  // Returns the URL that will be contacted for download protection requests.
+  static GURL GetDownloadRequestUrl();
+
   // Returns the timeout that is used by CheckClientDownload().
   base::TimeDelta GetDownloadRequestTimeout() const;
 

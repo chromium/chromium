@@ -215,6 +215,8 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchType.FROM_RECENT_TABS_FOREGROUND;
             case TabLaunchTypeAtCreation.FROM_COLLABORATION_BACKGROUND_IN_GROUP:
                 return TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP;
+            case TabLaunchTypeAtCreation.FROM_BOOKMARK_BAR_BACKGROUND:
+                return TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND;
             case TabLaunchTypeAtCreation.SIZE:
                 return TabLaunchType.SIZE;
             case TabLaunchTypeAtCreation.UNKNOWN:
@@ -281,8 +283,10 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchTypeAtCreation.FROM_SYNC_BACKGROUND;
             case TabLaunchType.FROM_RECENT_TABS_FOREGROUND:
                 return TabLaunchTypeAtCreation.FROM_RECENT_TABS_FOREGROUND;
-            case TabLaunchTypeAtCreation.FROM_COLLABORATION_BACKGROUND_IN_GROUP:
-                return TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP;
+            case TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP:
+                return TabLaunchTypeAtCreation.FROM_COLLABORATION_BACKGROUND_IN_GROUP;
+            case TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND:
+                return TabLaunchTypeAtCreation.FROM_BOOKMARK_BAR_BACKGROUND;
             case TabLaunchType.SIZE:
                 return TabLaunchTypeAtCreation.SIZE;
             default:

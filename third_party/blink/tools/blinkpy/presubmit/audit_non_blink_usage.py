@@ -1485,7 +1485,7 @@ _CONFIG = [
             'base::HexEncode',
             'net::ct::.+',
             'net::IPAddress',
-            'net::SourceStream',
+            'net::SourceStreamType',
             'net::SSL.+',
         ],
     },

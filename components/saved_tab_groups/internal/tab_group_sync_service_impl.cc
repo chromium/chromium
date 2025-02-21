@@ -1426,6 +1426,9 @@ void TabGroupSyncServiceImpl::LogEvent(
 
 bool TabGroupSyncServiceImpl::TransitionSavedToSharedTabGroupIfNeeded(
     const SavedTabGroup& shared_group) {
+  if (!shared_group.is_shared_tab_group()) {
+    return false;
+  }
   return TransitionOriginatingTabGroupToNewGroupIfNeeded(
       shared_group, OpeningSource::kConnectOnGroupShare,
       ClosingSource::kDisconnectOnGroupShared);
@@ -1435,6 +1438,9 @@ bool TabGroupSyncServiceImpl::TransitionSharedToSavedTabGroupIfNeeded(
     const SavedTabGroup& saved_group) {
   // TODO(crbug.com/370746008): After replacing the originating group here,
   // it needs to be deleted.
+  if (saved_group.is_shared_tab_group()) {
+    return false;
+  }
   return TransitionOriginatingTabGroupToNewGroupIfNeeded(
       saved_group, OpeningSource::kConnectOnGroupUnShare,
       ClosingSource::kDisconnectOnGroupUnShared);

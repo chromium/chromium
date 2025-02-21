@@ -37,13 +37,13 @@ std::optional<base::HistogramBase::Sample32> MaybeReferenceValue(
 
 struct HistogramSamplesIncrementalState {
   using InternedHistogramName =
-      perfetto::SmallInternedDataTraits::Index<const char*>;
+      perfetto::SmallInternedDataTraits::Index<std::string_view>;
 
   bool was_cleared = true;
   InternedHistogramName histogram_names_;
 
   size_t GetInternedHistogramName(
-      const char* value,
+      std::string_view value,
       HistogramSamplesDataSource::TraceContext::TracePacketHandle& packet) {
     size_t iid;
     if (histogram_names_.LookUpOrInsert(&iid, value)) {
@@ -52,7 +52,7 @@ struct HistogramSamplesIncrementalState {
     auto* interned_data = packet->set_interned_data();
     auto* msg = interned_data->add_histogram_names();
     msg->set_iid(iid);
-    msg->set_name(value);
+    msg->set_name(value.data(), value.size());
     return iid;
   }
 };
@@ -136,7 +136,7 @@ void HistogramSamplesDataSource::OnStop(const StopArgs&) {
 void HistogramSamplesDataSource::OnMetricSample(
     std::optional<base::HistogramBase::Sample32> reference_lower_value,
     std::optional<base::HistogramBase::Sample32> reference_upper_value,
-    const char* histogram_name,
+    std::string_view histogram_name,
     uint64_t name_hash,
     base::HistogramBase::Sample32 sample) {
   if ((reference_lower_value && sample < reference_lower_value) ||
@@ -148,14 +148,14 @@ void HistogramSamplesDataSource::OnMetricSample(
 }
 
 void HistogramSamplesDataSource::OnAnyMetricSample(
-    const char* histogram_name,
+    std::string_view histogram_name,
     uint64_t name_hash,
     base::HistogramBase::Sample32 sample) {
   OnMetricSampleImpl(histogram_name, name_hash, sample, std::nullopt);
 }
 
 void HistogramSamplesDataSource::OnMetricSampleImpl(
-    const char* histogram_name,
+    std::string_view histogram_name,
     uint64_t name_hash,
     base::HistogramBase::Sample32 sample,
     std::optional<uintptr_t> instance) {

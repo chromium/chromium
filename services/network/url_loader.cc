@@ -896,7 +896,7 @@ void URLLoader::ConfigureRequest(
     bool force_main_frame_for_same_site_cookies,
     net::SecureDnsPolicy secure_dns_policy,
     net::HttpRequestHeaders extra_request_headers,
-    const std::optional<std::vector<net::SourceStream::SourceType>>&
+    const std::optional<std::vector<net::SourceStreamType>>&
         accepted_stream_types,
     const std::optional<url::Origin>& initiator,
     net::RedirectInfo::FirstPartyURLPolicy first_party_url_policy,

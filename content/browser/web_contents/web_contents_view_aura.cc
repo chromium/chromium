@@ -796,6 +796,10 @@ void WebContentsViewAura::PrepareDropData(
 void WebContentsViewAura::EndDrag(
     base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
     DragOperation op) {
+  // `drag_in_progress_` could still be true, if the `PerformDropCallback()`
+  // terminates early and the `end_drag_runner` runs `EndDrag()` before reaching
+  // the CompleteDrop() call.
+  drag_in_progress_ = false;
   drag_security_info_.OnDragEnded();
 
   if (!web_contents_)
@@ -1603,7 +1607,6 @@ void WebContentsViewAura::PerformDropCallback(
     std::unique_ptr<ui::OSExchangeData> data,
     base::WeakPtr<RenderWidgetHostViewBase> target,
     std::optional<gfx::PointF> transformed_pt) {
-  drag_in_progress_ = false;
   base::ScopedClosureRunner end_drag_runner(std::move(end_drag_runner_));
 
   if (!target) {
@@ -1722,6 +1725,7 @@ WebContentsViewAura::GetDropCallback(const ui::DropTargetEvent& event) {
 }
 
 void WebContentsViewAura::CompleteDrop(OnPerformingDropContext drop_context) {
+  drag_in_progress_ = false;
   web_contents_->Focus();
 
   const int key_modifiers =

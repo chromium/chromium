@@ -18,6 +18,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
 #include "net/base/tracing.h"
+#include "net/filter/source_stream_type.h"
 
 namespace net {
 
@@ -33,7 +34,7 @@ const size_t kBufferSize = 32 * 1024;
 
 }  // namespace
 
-FilterSourceStream::FilterSourceStream(SourceType type,
+FilterSourceStream::FilterSourceStream(SourceStreamType type,
                                        std::unique_ptr<SourceStream> upstream)
     : SourceStream(type), upstream_(std::move(upstream)) {
   DCHECK(upstream_);
@@ -79,21 +80,21 @@ bool FilterSourceStream::MayHaveMoreBytes() const {
   return !upstream_end_reached_;
 }
 
-FilterSourceStream::SourceType FilterSourceStream::ParseEncodingType(
+SourceStreamType FilterSourceStream::ParseEncodingType(
     std::string_view encoding) {
   std::string lower_encoding = base::ToLowerASCII(encoding);
   static constexpr auto kEncodingMap =
-      base::MakeFixedFlatMap<std::string_view, SourceType>({
-          {"", TYPE_NONE},
-          {kBrotli, TYPE_BROTLI},
-          {kDeflate, TYPE_DEFLATE},
-          {kGZip, TYPE_GZIP},
-          {kXGZip, TYPE_GZIP},
-          {kZstd, TYPE_ZSTD},
+      base::MakeFixedFlatMap<std::string_view, SourceStreamType>({
+          {"", SourceStreamType::kNone},
+          {kBrotli, SourceStreamType::kBrotli},
+          {kDeflate, SourceStreamType::kDeflate},
+          {kGZip, SourceStreamType::kGzip},
+          {kXGZip, SourceStreamType::kGzip},
+          {kZstd, SourceStreamType::kZstd},
       });
   auto encoding_type = kEncodingMap.find(lower_encoding);
   if (encoding_type == kEncodingMap.end()) {
-    return TYPE_UNKNOWN;
+    return SourceStreamType::kUnknown;
   }
   return encoding_type->second;
 }

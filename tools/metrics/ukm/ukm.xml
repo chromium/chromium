@@ -13093,6 +13093,18 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="NumberOfVideoFrames">
+    <summary>
+      The number of video frames in an encrypted playback.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
 </event>
 
 <event name="Media.EME.CdmSystemCode">

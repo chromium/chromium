@@ -70,8 +70,7 @@ size_t NumberOfWidgetsInAppListContainer(int64_t display_id) {
   aura::Window* root = Shell::GetRootWindowForDisplayId(display_id);
   aura::Window* container =
       Shell::GetContainer(root, kShellWindowId_AppListContainer);
-  std::set<raw_ptr<views::Widget, SetExperimental>> widgets;
-  views::Widget::GetAllChildWidgets(container, &widgets);
+  views::Widget::Widgets widgets = views::Widget::GetAllChildWidgets(container);
   return widgets.size();
 }
 

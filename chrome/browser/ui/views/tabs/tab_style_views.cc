@@ -221,9 +221,6 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
       path_type == TabStyle::PathType::kHighlight ||
       path_type == TabStyle::PathType::kInteriorClip ||
       path_type == TabStyle::PathType::kHitTest) {
-    // TODO (crbug.com/1451400): This constant should be unified with
-    // kCRtabstripRegionViewControlPadding in tab_strip_region_view.
-
     float top_content_corner_radius = content_corner_radius;
     float bottom_content_corner_radius = content_corner_radius;
     float tab_height = GetLayoutConstant(TAB_HEIGHT) * scale;

@@ -20,7 +20,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
-#include "chrome/browser/safe_browsing/download_protection/ppapi_download_request.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
@@ -463,7 +462,7 @@ void CheckClientDownloadRequestBase::SendRequest() {
             deprecated_policies: "SafeBrowsingEnabled"
           })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = PPAPIDownloadRequest::GetDownloadRequestUrl();
+  resource_request->url = DownloadProtectionService::GetDownloadRequestUrl();
   resource_request->method = "POST";
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   resource_request->site_for_cookies =

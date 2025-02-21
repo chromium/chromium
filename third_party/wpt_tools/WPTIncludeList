@@ -312,6 +312,7 @@
 ./tools/webdriver/webdriver/bidi/modules/script.py
 ./tools/webdriver/webdriver/bidi/modules/session.py
 ./tools/webdriver/webdriver/bidi/modules/storage.py
+./tools/webdriver/webdriver/bidi/modules/web_extension.py
 ./tools/webdriver/webdriver/bidi/protocol.py
 ./tools/webdriver/webdriver/bidi/transport.py
 ./tools/webdriver/webdriver/bidi/undefined.py

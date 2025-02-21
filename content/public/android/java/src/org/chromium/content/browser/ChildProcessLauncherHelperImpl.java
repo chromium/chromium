@@ -768,6 +768,7 @@ public final class ChildProcessLauncherHelperImpl {
             int pid,
             boolean visible,
             boolean hasMediaStream,
+            boolean hasImmersiveXrSession,
             boolean hasForegroundServiceWorker,
             long frameDepth,
             boolean intersectsViewport,
@@ -798,7 +799,8 @@ public final class ChildProcessLauncherHelperImpl {
 
         if ((shouldUseMainFrameVisibility && isVisibleMainFrame)
                 || importance == ChildProcessImportance.IMPORTANT
-                || hasMediaStream) {
+                || hasMediaStream
+                || hasImmersiveXrSession) {
             newEffectiveImportance = ChildProcessImportance.IMPORTANT;
         } else if ((visible && frameDepth > 0 && intersectsViewport)
                 || boostForPendingViews

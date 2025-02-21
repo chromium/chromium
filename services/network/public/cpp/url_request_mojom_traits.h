@@ -352,7 +352,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.original_destination;
   }
-  static const std::optional<std::vector<net::SourceStream::SourceType>>&
+  static const std::optional<std::vector<net::SourceStreamType>>&
   devtools_accepted_stream_types(const network::ResourceRequest& request) {
     return request.devtools_accepted_stream_types;
   }

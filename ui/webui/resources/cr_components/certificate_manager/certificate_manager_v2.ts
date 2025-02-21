@@ -185,18 +185,24 @@ export class CertificateManagerV2Element extends
                   'certificateManagerV2TrustedCertsList'),
               certSource: CertificateSource.kUserTrustedCerts,
               showImport: loadTimeData.getBoolean('userCertsImportAllowed'),
+              certMetadataEditable:
+                  loadTimeData.getBoolean('userCertsImportAllowed'),
             },
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2IntermediateCertsList'),
               certSource: CertificateSource.kUserIntermediateCerts,
               showImport: loadTimeData.getBoolean('userCertsImportAllowed'),
+              certMetadataEditable:
+                  loadTimeData.getBoolean('userCertsImportAllowed'),
             },
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2DistrustedCertsList'),
               certSource: CertificateSource.kUserDistrustedCerts,
               showImport: loadTimeData.getBoolean('userCertsImportAllowed'),
+              certMetadataEditable:
+                  loadTimeData.getBoolean('userCertsImportAllowed'),
             },
           ];
         },

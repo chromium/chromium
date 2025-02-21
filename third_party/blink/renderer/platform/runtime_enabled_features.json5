@@ -3492,6 +3492,13 @@
       status: "stable",
     },
     {
+     // crbug.com/323953913
+     // Fix looking for next radio button in the form's scope. This was added
+     // in M135 and can be removed after M138.
+     name: "RadioInputNextButtonInScope",
+     status: "stable",
+    },
+    {
       name: "RasterInducingScroll",
       status: "test",
     },
@@ -4186,6 +4193,13 @@
       status: "experimental",
     },
     {
+      // crbug.com/396607231
+      // Update strong, b elements default to be font-weight: bolder
+      // Enabled by default on M135. Remove flag on or after M138.
+      name: "StrongBolder",
+      status: "stable",
+    },
+    {
       name: "StylusHandwriting",
       base_feature: "none",
     },
@@ -4763,6 +4777,13 @@
     {
       name: "WebAuthAuthenticatorAttachment",
       status: "test",
+    },
+    // Aligns the error thrown by navigator.credentials.create in a
+    // cross-origin iframe with no user activation to be correct to the
+    // webauthn spec whether or not the 'payment' extension is specified. See
+    // https://crbug.com/41484826
+    {
+      name: "WebAuthenticationAlignErrorTypeForPaymentCredentialCreate",
     },
     // Prototyping https://github.com/w3c/webauthn/issues/2144
     {

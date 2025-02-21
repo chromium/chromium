@@ -280,7 +280,7 @@ BASE_FEATURE(kPrivacySandboxNoticeActionDebouncingAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kPrivacySandboxDebouncingDelayMilliseconds{
-    &kPrivacySandboxNoticeActionDebouncingAndroid, "debouncing-delay-ms", 100};
+    &kPrivacySandboxNoticeActionDebouncingAndroid, "debouncing-delay-ms", 200};
 
 #endif  // BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPrivacySandboxAdsApiUxEnhancements,

@@ -139,12 +139,14 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement,
     return focus_group_;
   }
   // Set selected scroll marker. Returns true if the selected marker changed.
-  CORE_EXPORT bool SetSelected(ScrollMarkerPseudoElement& scroll_marker);
+  CORE_EXPORT bool SetSelected(ScrollMarkerPseudoElement& scroll_marker,
+                               bool apply_snap_alignment = true);
   ScrollMarkerPseudoElement* Selected() const { return selected_marker_; }
   void ActivateNextScrollMarker();
   void ActivatePrevScrollMarker();
   CORE_EXPORT void ActivateScrollMarker(
-      ScrollMarkerPseudoElement* scroll_marker);
+      ScrollMarkerPseudoElement* scroll_marker,
+      bool apply_snap_alignment = true);
 
   void DetachLayoutTree(bool performing_reattach) final;
   void Dispose() final;

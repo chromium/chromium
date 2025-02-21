@@ -527,7 +527,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_profile_configuration.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #endif
 
@@ -1872,7 +1872,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   DownloadPrefs::RegisterProfilePrefs(registry);
   fingerprinting_protection_filter::prefs::RegisterProfilePrefs(registry);
 #if BUILDFLAG(ENABLE_GLIC)
-  glic::GlicProfileConfiguration::RegisterProfilePrefs(registry);
+  glic::prefs::RegisterProfilePrefs(registry);
 #endif
   permissions::PermissionHatsTriggerHelper::RegisterProfilePrefs(registry);
   history_clusters::prefs::RegisterProfilePrefs(registry);

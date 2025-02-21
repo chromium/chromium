@@ -28,16 +28,16 @@ GlicButtonController::GlicButtonController(
 
   // Initialize default values
   PanelStateChanged(glic_keyed_service_->window_controller().GetPanelState());
-  UpdateShowState();
 
   // Observe for changes in preferences and panel state events
   pref_registrar_.Init(profile_->GetPrefs());
-  for (std::string_view pref :
-       {glic::prefs::kGlicPinnedToTabstrip, glic::prefs::kGlicSettingsPolicy}) {
-    pref_registrar_.Add(
-        pref, base::BindRepeating(&GlicButtonController::UpdateShowState,
-                                  base::Unretained(this)));
-  }
+  pref_registrar_.Add(glic::prefs::kGlicPinnedToTabstrip,
+                      base::BindRepeating(&GlicButtonController::OnPrefsChanged,
+                                          base::Unretained(this)));
+  subscriptions_.push_back(
+      glic_keyed_service_->enabling()->RegisterEnableChanged(
+          base::BindRepeating(&GlicButtonController::OnPrefsChanged,
+                              base::Unretained(this))));
 
   glic_keyed_service_->window_controller().AddStateObserver(this);
 }
@@ -48,16 +48,31 @@ GlicButtonController::~GlicButtonController() {
 
 void GlicButtonController::PanelStateChanged(
     const mojom::PanelState& panel_state) {
-  if (panel_state.kind == mojom::PanelState_Kind::kDetached) {
+  bool detached = panel_state.kind == mojom::PanelState_Kind::kDetached;
+  if (detached) {
     glic_controller_delegate_->SetIcon(GlicVectorIconManager::GetVectorIcon(
         IDR_GLIC_ATTACH_BUTTON_VECTOR_ICON));
   } else {
     glic_controller_delegate_->SetIcon(
         GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON));
   }
+  UpdateShowState(detached);
 }
 
-void GlicButtonController::UpdateShowState() {
+void GlicButtonController::OnPrefsChanged() {
+  UpdateShowState(
+      glic_keyed_service_->window_controller().GetPanelState().kind ==
+      mojom::PanelState_Kind::kDetached);
+}
+
+void GlicButtonController::UpdateShowState(bool detached) {
+  // If the glic window is detached, we want to show the re-attach icon
+  // regardless of glic enabling/pinned state.
+  if (detached) {
+    glic_controller_delegate_->SetShowState(true);
+    return;
+  }
+
   const bool is_enabled_for_profile =
       GlicEnabling::IsEnabledForProfile(profile_);
   const bool is_pinned_to_tabstrip =

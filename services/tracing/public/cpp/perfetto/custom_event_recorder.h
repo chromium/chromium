@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(TRACING_CPP) CustomEventRecorder
   // For each of the Histogram that we are tracking, cache the snapshot of their
   // HistogramSamples from before tracing began. So that we can calculate the
   // delta when we go to LogHistograms.
-  std::map<std::string, std::unique_ptr<base::HistogramSamples>>
+  std::map<std::string, std::unique_ptr<base::HistogramSamples>, std::less<>>
       startup_histogram_samples_;
   std::vector<std::string> histograms_;
   base::ActionCallback user_action_callback_ =

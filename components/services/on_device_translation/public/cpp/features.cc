@@ -54,7 +54,8 @@ base::FilePath GetTranslateKitBinaryPathFromCommandLine() {
 }
 
 size_t GetInstallablePackageCount(size_t installed_package_count) {
-  if (!kTranslationAPILimitLanguagePackCount.Get()) {
+  if (base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) ||
+      !kTranslationAPILimitLanguagePackCount.Get()) {
     return std::numeric_limits<size_t>::max();
   }
   if (installed_package_count >= kTranslationAPILimitLanguagePackCountMax) {

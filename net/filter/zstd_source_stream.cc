@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "net/base/io_buffer.h"
+#include "net/filter/source_stream_type.h"
 #include "third_party/zstd/src/lib/zstd.h"
 #include "third_party/zstd/src/lib/zstd_errors.h"
 
@@ -35,7 +36,7 @@ class ZstdSourceStream : public FilterSourceStream {
   explicit ZstdSourceStream(std::unique_ptr<SourceStream> upstream,
                             scoped_refptr<IOBuffer> dictionary = nullptr,
                             size_t dictionary_size = 0u)
-      : FilterSourceStream(SourceStream::TYPE_ZSTD, std::move(upstream)),
+      : FilterSourceStream(SourceStreamType::kZstd, std::move(upstream)),
         dictionary_(std::move(dictionary)),
         dictionary_size_(dictionary_size) {
     ZSTD_customMem custom_mem = {&customMalloc, &customFree, this};

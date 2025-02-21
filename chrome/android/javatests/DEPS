@@ -48,6 +48,7 @@ include_rules = [
   "+components/paint_preview/browser/android",
   "+components/paint_preview/player/android",
   "+components/payments/content/android/java/src/org/chromium/components/payments",
+  "+components/payments/content/android/javatests/src/org/chromium/components/payments",
   "+components/payments/content/android/ui/java/src/org/chromium/components/payments/ui",
   "+components/payments/content/android/ui/junit/src/org/chromium/components/payments/ui/test_support",
   "+components/permissions/android/java/src/org/chromium/components/permissions",

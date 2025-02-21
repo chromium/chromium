@@ -490,7 +490,7 @@ class ExtensionService : public ExtensionServiceInterface,
 
 #if defined(UNIT_TEST)
   void FinishInstallationForTest(const Extension* extension) {
-    extension_registrar_.FinishInstallation(extension);
+    extension_registrar_->FinishInstallation(extension);
   }
 
   void UninstallMigratedExtensionsForTest() { UninstallMigratedExtensions(); }
@@ -723,7 +723,7 @@ class ExtensionService : public ExtensionServiceInterface,
       extension_registrar_delegate_;
 
   // Helper to register and unregister extensions.
-  ExtensionRegistrar extension_registrar_;
+  raw_ptr<ExtensionRegistrar> extension_registrar_ = nullptr;
 
   // Tracker of enterprise policy forced installation.
   ForceInstalledTracker force_installed_tracker_;

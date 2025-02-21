@@ -117,6 +117,12 @@ const char kAndroidAppIntegrationMultiDataSourceDescription[] =
     "If enabled, allows Chrome to integrate with the Android App Search with "
     "multiple data sources, e.g. custom Tabs.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kAndroidAppearanceSettingsName[] = "Appearance Settings";
+const char kAndroidAppearanceSettingsDescription[] =
+    "Enables the Appearance Settings preference screen.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kAndroidBcivBottomControlsName[] =
     "Browser controls in viz for bottom controls";
 const char kAndroidBcivBottomControlsDescription[] =
@@ -2415,11 +2421,6 @@ const char kLensOverlayName[] = "Lens overlay";
 const char kLensOverlayDescription[] =
     "Enables Lens search via an overlay on any page.";
 
-const char kLensOverlayContextualSearchboxName[] =
-    "Lens overlay contextual search box";
-const char kLensOverlayContextualSearchboxDescription[] =
-    "Enables contextual search box in the Lens overlay.";
-
 const char kLensOverlayImageContextMenuActionsName[] =
     "Lens overlay image context menu actions";
 const char kLensOverlayImageContextMenuActionsDescription[] =
@@ -3899,6 +3900,15 @@ const char kWallpaperSearchSettingsVisibilityName[] =
     "Wallpaper Search Settings Visibility";
 const char kWallpaperSearchSettingsVisibilityDescription[] =
     "Shows wallpaper search settings in settings UI.";
+
+const char kWebAuthenticationAlignErrorTypeForPaymentCredentialCreateName[] =
+    "Web Authentication Align Error Type for 'payment' credentials";
+
+const char
+    kWebAuthenticationAlignErrorTypeForPaymentCredentialCreateDescription[] =
+        "Throw a 'NotAllowedError' instead of 'SecurityError' when creating "
+        "'payment' credentials in a cross-origin iframe without user "
+        " activation. See https://crbug.com/41484826";
 
 #if !BUILDFLAG(IS_ANDROID)
 const char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuName[] =

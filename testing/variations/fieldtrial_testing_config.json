@@ -2169,6 +2169,28 @@
             ]
         }
     ],
+    "AutofillI18nAddressModelAndRegexesGEITPL": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillUseITAddressModel",
+                        "AutofillUsePLAddressModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillI18nFRAddressModel": [
         {
             "platforms": [
@@ -9025,15 +9047,12 @@
     "EnableImmediateDrawDuringScrollInteraction": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "android_webview",
+                "chromeos"
             ],
             "experiments": [
                 {
-                    "name": "EnabledV4",
+                    "name": "Enabled",
                     "enable_features": [
                         "AckOnSurfaceActivationWhenInteractive",
                         "DrawImmediatelyWhenInteractive"
@@ -9733,6 +9752,42 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FeedLoadingPlaceholder"
+                    ]
+                }
+            ]
+        }
+    ],
+    "FeedMemoryImprovement": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_2GB_20241104",
+                    "params": {
+                        "low_memory_threshold": "2048"
+                    },
+                    "enable_features": [
+                        "FeedLowMemoryImprovement"
+                    ]
+                },
+                {
+                    "name": "Enabled_4GB_20241104",
+                    "params": {
+                        "low_memory_threshold": "4096"
+                    },
+                    "enable_features": [
+                        "FeedLowMemoryImprovement"
+                    ]
+                },
+                {
+                    "name": "Enabled_All_20241104",
+                    "params": {
+                        "low_memory_threshold": "-1"
+                    },
+                    "enable_features": [
+                        "FeedLowMemoryImprovement"
                     ]
                 }
             ]
@@ -11690,6 +11745,24 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IOSEnableDeleteAllSavedCredentials"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSDeprecateFeedHeader": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "form_factors": [
+                "phone"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeprecateFeedHeader"
                     ]
                 }
             ]
@@ -15590,24 +15663,6 @@
             ]
         }
     ],
-    "OnDeviceNotificationContentDetectionModel": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithAllowlistSampling",
-                    "params": {
-                        "OnDeviceNotificationContentDetectionModelAllowlistSamplingRate": "100"
-                    },
-                    "enable_features": [
-                        "OnDeviceNotificationContentDetectionModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "OneCopyLegacyMPVideoFrameUploadViaSI": [
         {
             "platforms": [
@@ -15841,12 +15896,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Default",
-                    "disable_features": [
-                        "OverrideDefaultOzonePlatformHintToAuto"
-                    ]
-                },
-                {
                     "name": "Enabled_Dogfood",
                     "enable_features": [
                         "AcceleratedVideoDecodeLinuxGL",
@@ -15857,6 +15906,12 @@
                         "WaylandPerSurfaceScale",
                         "WaylandTextInputV3",
                         "WaylandUiScale"
+                    ]
+                },
+                {
+                    "name": "Default",
+                    "disable_features": [
+                        "OverrideDefaultOzonePlatformHintToAuto"
                     ]
                 }
             ]
@@ -18127,7 +18182,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "debouncing-time": "100"
+                        "debouncing-delay-ms": "200"
                     },
                     "enable_features": [
                         "PrivacySandboxNoticeActionDebouncingAndroid"
@@ -18876,6 +18931,21 @@
                     },
                     "enable_features": [
                         "QuickDeleteAndroidSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "QuickShareV2": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "QuickShareV2"
                     ]
                 }
             ]
@@ -21905,27 +21975,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ServiceWorkerAvoidMainThreadForInitialization"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ServiceWorkerClientUrlIsCreationUrl": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ServiceWorkerClientUrlIsCreationUrl"
                     ]
                 }
             ]

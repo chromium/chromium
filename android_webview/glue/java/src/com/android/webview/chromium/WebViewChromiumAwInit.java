@@ -295,9 +295,6 @@ public class WebViewChromiumAwInit {
 
             ResourceBundle.setAvailablePakLocales(AwLocaleConfig.getWebViewSupportedPakLocales());
 
-            // We are rewriting Java resources in the background.
-            // NOTE: Any reference to Java resources will cause a crash.
-
             try (ScopedSysTraceEvent e =
                     ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.LibraryLoader")) {
                 LibraryLoader.getInstance().ensureInitialized();
@@ -310,9 +307,9 @@ public class WebViewChromiumAwInit {
             AwContentsStatics.setCheckClearTextPermitted(
                     context.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.O);
 
+            // NOTE: We are rewriting Java resources in the background. Any
+            // reference to Java resources before this point will cause a crash.
             waitUntilSetUpResources();
-
-            // NOTE: Finished writing Java resources. From this point on, it's safe to use them.
 
             // Try to work around the resources problem.
             //

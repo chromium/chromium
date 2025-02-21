@@ -142,7 +142,7 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   if (has_selection_ && was_empty) {
     base::UmaHistogramEnumeration(
         string_constants::kEmptyStateHistogramName,
-        ReadAnythingEmptyState::kSelectionAfterEmptyStateShown);
+        read_anything::ReadAnythingEmptyState::kSelectionAfterEmptyStateShown);
     tree_infos_.at(active_tree_id_)->num_selections++;
   }
 
@@ -708,13 +708,15 @@ void ReadAnythingAppModel::OnScroll(bool on_selection,
     // & vice versa.
     base::UmaHistogramEnumeration(
         string_constants::kScrollEventHistogramName,
-        from_reading_mode ? ReadAnythingScrollEvent::kSelectedMainPanel
-                          : ReadAnythingScrollEvent::kSelectedSidePanel);
+        from_reading_mode
+            ? read_anything::ReadAnythingScrollEvent::kSelectedMainPanel
+            : read_anything::ReadAnythingScrollEvent::kSelectedSidePanel);
   } else {
     base::UmaHistogramEnumeration(
         string_constants::kScrollEventHistogramName,
-        from_reading_mode ? ReadAnythingScrollEvent::kScrolledSidePanel
-                          : ReadAnythingScrollEvent::kScrolledMainPanel);
+        from_reading_mode
+            ? read_anything::ReadAnythingScrollEvent::kScrolledSidePanel
+            : read_anything::ReadAnythingScrollEvent::kScrolledMainPanel);
   }
 }
 

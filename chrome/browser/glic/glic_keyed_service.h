@@ -15,7 +15,6 @@
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_handler.h"
-#include "chrome/browser/glic/glic_profile_configuration.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class BrowserWindowInterface;
@@ -176,7 +175,6 @@ class GlicKeyedService : public KeyedService {
   raw_ptr<Profile> profile_;
 
   std::unique_ptr<GlicEnabling> enabling_;
-  GlicProfileConfiguration configuration_;
   std::unique_ptr<GlicMetrics> metrics_;
   std::unique_ptr<GlicWindowController> window_controller_;
   GlicFocusedTabManager focused_tab_manager_;

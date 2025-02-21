@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_PREF_NAMES_H_
 #define CHROME_BROWSER_GLIC_GLIC_PREF_NAMES_H_
 
+class PrefRegistrySimple;
+
 namespace glic::prefs {
 
 // ************* LOCAL STATE PREFS ***************
@@ -45,6 +47,8 @@ inline constexpr char kGlicTabContextEnabled[] = "glic.tab_context_enabled";
 // Boolean pref that tracks whether the Glic FRE was completed for this user
 // profile.
 inline constexpr char kGlicCompletedFre[] = "glic.completed_fre";
+
+void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace glic::prefs
 

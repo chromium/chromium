@@ -309,14 +309,16 @@ void InProcessBrowserTest::RunScheduledLayouts() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // WidgetTest::GetAllWidgets() doesn't work for ChromeOS in a production
   // environment. We must get the Widgets ourself.
-  for (aura::Window* root_window : ash::Shell::GetAllRootWindows())
-    views::Widget::GetAllChildWidgets(root_window, &widgets_to_layout);
+  for (aura::Window* root_window : ash::Shell::GetAllRootWindows()) {
+    widgets_to_layout.merge(views::Widget::GetAllChildWidgets(root_window));
+  }
 #else
   widgets_to_layout = views::test::WidgetTest::GetAllWidgets();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  for (views::Widget* widget : widgets_to_layout)
+  for (views::Widget* widget : widgets_to_layout) {
     widget->LayoutRootViewIfNecessary();
+  }
 #endif  // defined(TOOLKIT_VIEWS)
 }
 

@@ -168,9 +168,7 @@ FillDataType GetFillDataTypeFromFillingPayload(
       base::Overloaded{
           [](const AutofillProfile*) { return FillDataType::kAutofillProfile; },
           [](const CreditCard*) { return FillDataType::kCreditCard; },
-          [](const AutofillAiFillingPayload&) {
-            return FillDataType::kAutofillAi;
-          }},
+          [](const EntityInstance*) { return FillDataType::kAutofillAi; }},
       filling_payload);
 }
 
@@ -1643,14 +1641,14 @@ void BrowserAutofillManager::FillOrPreviewFormWithAutofillAiData(
     mojom::ActionPersistence action_persistence,
     const FormData& form,
     const FormFieldData& trigger_field,
-    const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill) {
+    const EntityInstance& entity) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_trigger_field = nullptr;
   if (!GetCachedFormAndField(form.global_id(), trigger_field.global_id(),
                              &form_structure, &autofill_trigger_field)) {
     return;
   }
-  form_filler_->FillOrPreviewForm(action_persistence, form, values_to_fill,
+  form_filler_->FillOrPreviewForm(action_persistence, form, &entity,
                                   *form_structure, *autofill_trigger_field,
                                   AutofillTriggerSource::kAutofillAi);
 }
@@ -2322,7 +2320,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
                              filled_field_ids, safe_field_ids, *credit_card,
                              trigger_source, is_refill);
                        },
-                       [&](const AutofillAiFillingPayload&) {
+                       [&](const EntityInstance*) {
                          if (AutofillAiDelegate* delegate =
                                  client().GetAutofillAiDelegate()) {
                            delegate->OnDidFillSuggestion(form.global_id());

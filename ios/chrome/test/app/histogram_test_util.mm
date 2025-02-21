@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/containers/map_util.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/histogram_samples.h"
@@ -32,7 +33,8 @@ HistogramTester::HistogramTester() {
   // Record any histogram data that exists when the object is created so it can
   // be subtracted later.
   for (const auto* const h : base::StatisticsRecorder::GetHistograms()) {
-    histograms_snapshot_[h->histogram_name()] = h->SnapshotSamples();
+    base::InsertOrAssign(histograms_snapshot_, h->histogram_name(),
+                         h->SnapshotSamples());
   }
 }
 

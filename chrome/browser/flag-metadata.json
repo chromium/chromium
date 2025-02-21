@@ -187,6 +187,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-appearance-settings",
+    "owners": [ "dmblack@google.com", "clank-app-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-bookmark-bar",
     "owners": [ "dmblack@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 150
@@ -667,19 +672,17 @@
     "name": "autofill-enable-payment-settings-card-promo-and-scan-card",
     "owners": [
       "darwinyang@chromium.org",
-      "icer@chromium.org",
-      "chrome-payments-team@google.com"
+      "chrome-payments-eng@google.com"
     ],
-    "expiry_milestone": 134
+    "expiry_milestone": 136
   },
   {
     "name": "autofill-enable-payment-settings-server-card-save",
     "owners": [
       "darwinyang@chromium.org",
-      "icer@chromium.org",
-      "chrome-payments-team@google.com"
+      "chrome-payments-eng@google.com"
     ],
-    "expiry_milestone": 134
+    "expiry_milestone": 138
   },
   {
     "name": "autofill-enable-prefetching-risk-data-for-retrieval",
@@ -2131,7 +2134,7 @@
       "meiliang@chromium.org",
       "chrome-shopping-eng@google.com"
     ],
-    "expiry_milestone": 134
+    "expiry_milestone": 136
   },
   {
     "name": "display-alignment-assistance",
@@ -3392,11 +3395,6 @@
     "name": "enable-lens-overlay",
     "owners": [ "stkhapugin@chromium.org", "jdonnelly@chromium.org", "lens-chrome@google.com" ],
     "expiry_milestone": 135
-  },
-  {
-    "name": "enable-lens-overlay-contextual-search-box",
-    "owners": [ "mercerd@google.com", "niharm@google.com", "mahmadi@chromium.org", "lens-chrome@google.com" ],
-    "expiry_milestone": 136
   },
   {
     "name": "enable-lens-overlay-image-context-menu-actions",
@@ -9298,6 +9296,11 @@
     "name": "web-app-user-display-mode-sync-standalone-mitigation",
     "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 132
+  },
+  {
+    "name": "web-authentication-align-error-type-for-payment-credential-create",
+    "owners": ["smcgruer@chromium.org", "chrome-payments-team@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "web-authentication-enclave-authenticator",

@@ -180,7 +180,7 @@ public class EditableOption implements Completable {
      *
      * @param message The new message to use.
      */
-    protected void updatePromoMessage(String message) {
+    protected void updatePromoMessage(@Nullable String message) {
         mPromoMessage = message;
     }
 

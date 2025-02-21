@@ -2261,6 +2261,7 @@
 <translation id="4989809363548539747">এই প্লাগ-ইন সমর্থিত নয়</translation>
 <translation id="4990241977441916452">এনভেলপ A2</translation>
 <translation id="4992066212339426712">সশব্দ করুন</translation>
+<translation id="4994095017621319069">১টি ট্যাব গ্রুপ আর উপলভ্য নেই</translation>
 <translation id="4994348767896109801">আপনাকে পছন্দমতো বিজ্ঞাপন দেখানো হবে কিনা তা এই সেটিংস সহ বিভিন্ন জিনিসের উপরে নির্ভর করে, যেমন <ph name="BEGIN_LINK_1" />বিজ্ঞাপনের বিষয়<ph name="END_LINK_1" />, আপনার <ph name="BEGIN_LINK_2" />কুকি সেটিংস<ph name="END_LINK_2" /> এবং আপনি যে সাইট দেখছেন তা পছন্দমতো বিজ্ঞাপন দেখায় কিনা। <ph name="BEGIN_LINK_3" />আপনার বিজ্ঞাপন সংক্রান্ত গোপনীয়তা ম্যানেজ করা<ph name="END_LINK_3" /> সম্পর্কে আরও জানুন।</translation>
 <translation id="4995474875135717171">সংশোধন করার তারিখ:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, সাইট সার্চ এবং আপনার ডিফল্ট সার্চ ইঞ্জিন ম্যানেজ করতে Tab প্রেস করে Enter প্রেস করুন</translation>
@@ -3477,6 +3478,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}one{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}other{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}}</translation>
 <translation id="7153618581592392745">ল্যাভেণ্ডার</translation>
 <translation id="7156870133441232244">সার্ভারটিকে TLS 1.2 বা এর পরবর্তী যেকোনও ভার্সনে আপগ্রেড করতে হবে।</translation>
+<translation id="7156885531105222428">আপনার অনুরোধ করা পৃষ্ঠা অ্যাপ্লিকেশনে পাওয়া যায়নি</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> ব্যবহার করে এই ফাইল পাঠাতে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) স্পেস খালি করুন}one{<ph name="FEATURE_NAME" /> ব্যবহার করে এই ফাইল পাঠাতে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) স্পেস খালি করুন}other{<ph name="FEATURE_NAME" /> ব্যবহার করে এই ফাইল পাঠাতে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) স্পেস খালি করুন}}</translation>
 <translation id="7160999678034985039">আপনার কাজ সেভ করুন এবং সেভ করা হয়ে গেলে আপডেট শুরু করুন।</translation>
 <translation id="7162277662076933695">স্মার্ট কার্ড রিডার</translation>
@@ -4264,6 +4266,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ব্লক করা ইউআরএলের তালিকা এবং আপনার সিস্টেম অ্যাডমিনিস্ট্রেটরের প্রয়োগ করা অন্যান্য নীতিগুলি দেখার জন্য &lt;strong&gt;chrome://policy&lt;/strong&gt;-এ যান।</translation>
 <translation id="8536234749087605613">এনভেলপ (উইন্ডো)</translation>
+<translation id="8538228968820006247">আপনার ট্যাব গ্রুপে আর জায়গা নেই, নতুন সদস্যরা আর লিঙ্কের সাহায্যে যোগ দিতে পারবেন না</translation>
 <translation id="8539500321752640291">২টি অনুমতি দেবেন?</translation>
 <translation id="8541158209346794904">ব্লুটুথ ডিভাইস</translation>
 <translation id="8541410041357371550">এই সাইটটি আপনাকে আরও প্রাসঙ্গিক বিজ্ঞাপন দেখানোর জন্য Chrome থেকে আপনার বিজ্ঞাপনের বিষয় নেয়</translation>

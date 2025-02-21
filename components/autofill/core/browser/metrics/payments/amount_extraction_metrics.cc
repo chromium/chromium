@@ -23,4 +23,8 @@ void LogAmountExtractionLatency(base::TimeDelta latency, bool is_successful) {
   base::UmaHistogramTimes("Autofill.AmountExtraction.Latency", latency);
 }
 
+void LogAmountExtractionResult(AmountExtractionResult result) {
+  base::UmaHistogramEnumeration("Autofill.AmountExtraction.Result", result);
+}
+
 }  // namespace autofill::autofill_metrics

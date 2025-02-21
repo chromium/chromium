@@ -330,7 +330,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   double speechRate =
       features::IsReadAnythingReadAloudEnabled()
           ? prefs->GetDouble(prefs::kAccessibilityReadAnythingSpeechRate)
-          : kReadAnythingDefaultSpeechRate;
+          : read_anything::kReadAnythingDefaultSpeechRate;
   read_anything::mojom::HighlightGranularity highlightGranularity =
       features::IsReadAnythingReadAloudEnabled()
           ? static_cast<read_anything::mojom::HighlightGranularity>(

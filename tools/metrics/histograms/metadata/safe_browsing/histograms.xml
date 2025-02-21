@@ -560,6 +560,17 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram
+    name="SafeBrowsing.ClientSafeBrowsingReport.PasswordReuse.RepeatVisit"
+    enum="BooleanRepeatVisit" expires_after="2025-12-10">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    After a user has interacted with a PhishGuard UI, record whether the user
+    has visited the page before.
+  </summary>
+</histogram>
+
+<histogram
     name="SafeBrowsing.ClientSafeBrowsingReport.PersistDownloadReportResult"
     enum="ClientReportPersistDownloadReportResult" expires_after="2025-06-22">
   <owner>xinghuilu@chromium.org</owner>

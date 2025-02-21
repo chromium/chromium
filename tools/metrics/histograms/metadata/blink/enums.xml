@@ -5928,6 +5928,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5325" label="V8AITranslatorFactory_Availability_Method"/>
   <int value="5326" label="GeolocationWouldSucceedWhenAdScriptInStack"/>
   <int value="5327" label="AdScriptInStackOnWatchGeoLocation"/>
+  <int value="5328" label="DeviceBoundSessionRegistered"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

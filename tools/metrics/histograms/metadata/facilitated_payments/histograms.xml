@@ -293,6 +293,21 @@ reviewer.
   <token key="Scheme" variants="EwalletScheme"/>
 </histogram>
 
+<histogram name="FacilitatedPayments.Pix.FopSelected.Latency" units="ms"
+    expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for Pix payments, this histogram logs the time
+    taken by the user to select a Pix account to pay with after the FOP selector
+    is shown. [Frequency] Logged once per Pix payflow. Pix payflow is triggered
+    at most once per page load. [Trigger] The histogram is logged when the user
+    selects the Pix account to pay with on the FOP selector.
+  </summary>
+</histogram>
+
 <histogram name="FacilitatedPayments.Pix.FopSelector.UserAction"
     enum="FacilitatedPayments.FopSelectorAction" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>

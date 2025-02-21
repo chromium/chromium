@@ -9,6 +9,16 @@ source_set("cpp") {
     "bluetooth_uuid.cc",
     "bluetooth_uuid.h",
   ]
-
   deps = [ "//base" ]
+  public_deps = [ ":features" ]
+}
+
+component("features") {
+  public = [ "bluetooth_features.h" ]
+  sources = [
+    "bluetooth_features.cc",
+    "bluetooth_features_export.h",
+  ]
+  deps = [ "//base" ]
+  defines = [ "BLUETOOTH_FEATURES_IMPLEMENTATION" ]
 }

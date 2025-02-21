@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
@@ -35,10 +36,8 @@ enum class RefillTriggerReason {
   kMaxValue = kExpirationDateFormatted
 };
 
-using AutofillAiFillingPayload = base::flat_map<FieldGlobalId, std::u16string>;
-using FillingPayload = absl::variant<const AutofillProfile*,
-                                     const CreditCard*,
-                                     AutofillAiFillingPayload>;
+using FillingPayload = absl::
+    variant<const AutofillProfile*, const CreditCard*, const EntityInstance*>;
 
 // Helper class responsible for [re]filling forms and fields.
 //

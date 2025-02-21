@@ -95,14 +95,7 @@ void PerformanceManagerRegistryImpl::SetPageType(
   PerformanceManagerTabHelper* tab_helper =
       PerformanceManagerTabHelper::FromWebContents(web_contents);
   DCHECK(tab_helper);
-
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      // Unretained() is safe because PerformanceManagerTabHelper owns the
-      // PageNodeImpl and deletes it by posting a task to the PerformanceManager
-      // sequence, which will be sequenced after the task posted here.
-      base::BindOnce(&PageNodeImpl::SetType,
-                     base::Unretained(tab_helper->primary_page_node()), type));
+  tab_helper->primary_page_node()->SetType(type);
 }
 
 void PerformanceManagerRegistryImpl::NotifyBrowserContextAdded(

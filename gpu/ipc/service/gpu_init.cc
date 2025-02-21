@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
+#include "components/crash/core/common/crash_key.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_driver_bug_list.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
@@ -876,6 +877,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   }
 
   init_successful_ = true;
+  SetSkiaBackendType();
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
   gpu_feature_info_.supported_buffer_formats_for_allocation_and_texturing =
@@ -926,11 +928,12 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   return true;
 }
 
-#if BUILDFLAG(IS_ANDROID)
 void GpuInit::InitializeInProcess(base::CommandLine* command_line,
                                   const GpuPreferences& gpu_preferences) {
   gpu_preferences_ = gpu_preferences;
   init_successful_ = true;
+
+#if BUILDFLAG(IS_ANDROID)
   DCHECK(!EnableSwiftShaderIfNeeded(
       command_line, gpu_feature_info_,
       gpu_preferences_.disable_software_rasterizer, false));
@@ -953,15 +956,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 
   default_offscreen_surface_ =
       gl::init::CreateOffscreenGLSurface(gl_display, gfx::Size());
-
-  UMA_HISTOGRAM_ENUMERATION("GPU.GLImplementation", gl::GetGLImplementation());
-  InitializeDawnProcs();
-}
 #else
-void GpuInit::InitializeInProcess(base::CommandLine* command_line,
-                                  const GpuPreferences& gpu_preferences) {
-  gpu_preferences_ = gpu_preferences;
-  init_successful_ = true;
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
@@ -972,8 +967,10 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   params.allow_sync_and_real_buffer_page_flip_testing = true;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ui::OzonePlatform::InitializeForGPU(params);
-#endif
+#endif  // BUILDFLAG(IS_OZONE)
+
   bool needs_more_info = true;
+
 #if !BUILDFLAG(IS_CASTOS) && !BUILDFLAG(IS_CAST_ANDROID)
   needs_more_info = false;
   CollectBasicGraphicsInfo(command_line, &gpu_info_);
@@ -981,7 +978,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   gpu_info_.subpixel_font_rendering = false;
 #else
   gpu_info_.subpixel_font_rendering = true;
-#endif
+#endif  // defined(SUBPIXEL_FONT_RENDERING_DISABLED)
   gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
                                             command_line, &needs_more_info);
   if (SwitchableGPUsSupported(gpu_info_, *command_line)) {
@@ -1013,7 +1010,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
     // happen and keeps Chrome and linux-chromeos usable with rr.
     gl_use_swiftshader_ = true;
   }
-#endif
+#endif  // BUILDFLAG(IS_LINUX)
 
   if (!gl_disabled && !gl_use_swiftshader_) {
     CollectContextGraphicsInfo(&gpu_info_);
@@ -1103,13 +1100,14 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
       std::move(supported_buffer_formats_for_texturing);
   gpu_feature_info_.supported_buffer_formats_for_gl_native_pixmap_import =
       std::move(supported_buffer_formats_for_gl_native_pixmap_import);
-#endif
+#endif  // BUILDFLAG(IS_OZONE)
 
   DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   UMA_HISTOGRAM_ENUMERATION("GPU.GLImplementation", gl::GetGLImplementation());
-
   InitializeDawnProcs();
+#if !BUILDFLAG(IS_ANDROID)
   if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn) {
     if (!InitializeDawn()) {
       if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] !=
@@ -1121,8 +1119,10 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
       }
     }
   }
-}
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  SetSkiaBackendType();
+}
 
 void GpuInit::SaveHardwareGpuInfoAndGpuFeatureInfo() {
   gpu_info_for_hardware_gpu_ = gpu_info_;
@@ -1139,6 +1139,60 @@ void GpuInit::AdjustInfoToSwiftShader() {
 
 scoped_refptr<gl::GLSurface> GpuInit::TakeDefaultOffscreenSurface() {
   return std::move(default_offscreen_surface_);
+}
+
+void GpuInit::SetSkiaBackendType() {
+  CHECK(init_successful_);
+  CHECK_EQ(gpu_info_.skia_backend_type, SkiaBackendType::kNone);
+  auto skia_backend_type = SkiaBackendType::kUnknown;
+  switch (gpu_preferences_.gr_context_type) {
+    case gpu::GrContextType::kNone:
+      skia_backend_type = SkiaBackendType::kNone;
+      break;
+    case gpu::GrContextType::kGL:
+      skia_backend_type = SkiaBackendType::kGaneshGL;
+      break;
+    case gpu::GrContextType::kVulkan:
+      skia_backend_type = SkiaBackendType::kGaneshVulkan;
+      break;
+    case gpu::GrContextType::kGraphiteMetal:
+      // Graphite/Metal isn't expected to be used outside tests.
+      skia_backend_type = SkiaBackendType::kUnknown;
+      break;
+    case gpu::GrContextType::kGraphiteDawn: {
+#if BUILDFLAG(SKIA_USE_DAWN)
+      // The caller must ensure `dawn_context_provider_`'s creation, else the
+      // GrContextType must be updated to fallback.
+      CHECK(dawn_context_provider_);
+      switch (dawn_context_provider_->backend_type()) {
+        case wgpu::BackendType::Vulkan:
+          skia_backend_type = SkiaBackendType::kGraphiteDawnVulkan;
+          break;
+        case wgpu::BackendType::D3D11:
+          skia_backend_type = SkiaBackendType::kGraphiteDawnD3D11;
+          break;
+        case wgpu::BackendType::D3D12:
+          skia_backend_type = SkiaBackendType::kGraphiteDawnD3D12;
+          break;
+        case wgpu::BackendType::Metal:
+          skia_backend_type = SkiaBackendType::kGraphiteDawnMetal;
+          break;
+        default:
+          break;
+      }
+      break;
+#else
+      NOTREACHED();
+#endif
+    }
+  }
+
+  gpu_info_.skia_backend_type = skia_backend_type;
+  // Record the Skia backend type on GPU initialization.
+  UMA_HISTOGRAM_ENUMERATION("GPU.SkiaBackendType", skia_backend_type);
+  // Record SkiaBackendType as gr-context-type crash key.
+  static crash_reporter::CrashKeyString<16> crash_key("gr-context-type");
+  crash_key.Set(SkiaBackendTypeToString(skia_backend_type));
 }
 
 bool GpuInit::InitializeDawn() {
@@ -1186,7 +1240,7 @@ bool GpuInit::InitializeDawn() {
   };
 #else
   auto validate_adapter_fn = DawnContextProvider::DefaultValidateAdapterFn;
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
   dawn_context_provider_ = gpu::DawnContextProvider::Create(
       gpu_preferences_, validate_adapter_fn,
@@ -1195,7 +1249,7 @@ bool GpuInit::InitializeDawn() {
   if (dawn_context_provider_) {
     return true;
   }
-#endif
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
 
   LOG(ERROR) << "Failed to create Dawn context provider for Graphite";
   return false;
