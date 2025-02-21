@@ -16,13 +16,14 @@ namespace content {
 
 // A policy that applies mode flags immediately if the WebContents is not
 // hidden. Otherwise, the mode flags are applied the next time the WebContents
-// becomes un-hidden (visible or occluded). The mode flags are cleared when then
-// WebContents is hidden.
+// becomes un-hidden (visible or occluded). If `disable_on_hide` is true, the
+// mode flags are cleared when then WebContents is hidden.
 class CONTENT_EXPORT ProgressiveAccessibilityModePolicy
     : public AccessibilityModePolicy,
       public WebContentsObserver {
  public:
-  explicit ProgressiveAccessibilityModePolicy(WebContentsImpl& web_contents);
+  explicit ProgressiveAccessibilityModePolicy(WebContentsImpl& web_contents,
+                                              bool disable_on_hide);
   ~ProgressiveAccessibilityModePolicy() override;
 
   // AccessibilityModePolicy:
@@ -32,13 +33,13 @@ class CONTENT_EXPORT ProgressiveAccessibilityModePolicy
   void OnVisibilityChanged(Visibility visibility) override;
 
  private:
-  // Returns true if the WebContents or one of its embedder(s) is visible.
-  bool WebContentsOrEmbedderIsVisible();
-
   // Returns the WebContents to which this policy applies.
   WebContentsImpl& web_contents_impl() {
     return reinterpret_cast<WebContentsImpl&>(*web_contents());
   }
+
+  // When true, mode flags are cleared when then WebContents is hidden.
+  const bool disable_on_hide_;
 
   ApplyOrClearMode apply_or_clear_mode_;
 };

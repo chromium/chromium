@@ -18,13 +18,37 @@ BASE_FEATURE(kProgressiveAccessibility,
              "ProgressiveAccessibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+enum class ProgressiveMode {
+  // Application of mode flags is deferred for hidden WebContents, but otherwise
+  // never cleared.
+  kOnlyEnable,
+
+  // Application of mode flags is deferred for hidden WebContents, and mode
+  // flags are cleared when a WebContents is hidden.
+  kDisableOnHide,
+};
+
+constexpr base::FeatureParam<ProgressiveMode>::Option
+    kProgressiveModeOptions[] = {
+        {ProgressiveMode::kOnlyEnable, "only_enable"},
+        {ProgressiveMode::kDisableOnHide, "disable_on_hide"}};
+
+BASE_FEATURE_ENUM_PARAM(ProgressiveMode,
+                        kProgressiveModeParam,
+                        &kProgressiveAccessibility,
+                        "mode",
+                        ProgressiveMode::kOnlyEnable,
+                        &kProgressiveModeOptions);
+
 }  // namespace
 
 // static
 std::unique_ptr<AccessibilityModePolicy> AccessibilityModePolicy::Create(
     WebContentsImpl& web_contents) {
   if (base::FeatureList::IsEnabled(kProgressiveAccessibility)) {
-    return std::make_unique<ProgressiveAccessibilityModePolicy>(web_contents);
+    return std::make_unique<ProgressiveAccessibilityModePolicy>(
+        web_contents,
+        kProgressiveModeParam.Get() == ProgressiveMode::kDisableOnHide);
   }
   return std::make_unique<ImmediateAccessibilityModePolicy>(web_contents);
 }

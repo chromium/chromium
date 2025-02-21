@@ -18410,6 +18410,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "mode": "disable_on_hide"
+                    },
                     "enable_features": [
                         "ProgressiveAccessibility"
                     ]
