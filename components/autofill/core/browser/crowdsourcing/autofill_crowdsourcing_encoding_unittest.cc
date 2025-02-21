@@ -1092,27 +1092,103 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
     const char *id, *name, *label, *placeholder, *aria_label, *aria_description,
         *css_classes, *autocomplete;
     const size_t max_length;
+    const std::vector<SelectOption> options;
   };
 
   static const FieldMetadata kFieldMetadata[] = {
-      {"fname_id", "fname_name", "First Name:", "Please enter your first name",
-       "Type your first name", "You can type your first name here", "blah",
-       "given-name", 0},
-      {"lname_id", "lname_name", "Last Name:", "Please enter your last name",
-       "Type your lat name", "You can type your last name here", "blah",
-       "family-name", 0},
-      {"email_id", "email_name", "Email:", "Please enter your email address",
-       "Type your email address", "You can type your email address here",
-       "blah", "email", 0},
-      {"id_only", "", "", "", "", "", "", "", 0},
-      {"", "name_only", "", "", "", "", "", "",
-       FormFieldData::kDefaultMaxLength},
-      {"date1", "date1", "Year", "", "", "", "", "", 4},
-      {"date2", "date2", "Month", "Month", "", "", "", "", 2},
-  };
+      {"fname_id",
+       "fname_name",
+       "First Name:",
+       "Please enter your first name",
+       "Type your first name",
+       "You can type your first name here",
+       "blah",
+       "given-name",
+       0,
+       {}},
+      {"lname_id",
+       "lname_name",
+       "Last Name:",
+       "Please enter your last name",
+       "Type your lat name",
+       "You can type your last name here",
+       "blah",
+       "family-name",
+       0,
+       {}},
+      {"email_id",
+       "email_name",
+       "Email:",
+       "Please enter your email address",
+       "Type your email address",
+       "You can type your email address here",
+       "blah",
+       "email",
+       0,
+       {}},
+      {"id_only", "", "", "", "", "", "", "", 0, {}},
+      {"",
+       "name_only",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       FormFieldData::kDefaultMaxLength,
+       {}},
+      {"date1", "date1", "Year", "", "", "", "", "", 4, {}},
+      {"date2", "date2", "Month", "Month", "", "", "", "", 2, {}},
+      {"month",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       0,
+       {SelectOption{.value = u"0", .text = u"Select month"},
+        SelectOption{.value = u"1", .text = u"January"},
+        SelectOption{.value = u"2", .text = u"February"},
+        SelectOption{.value = u"12", .text = u"December"}}},
+      {"gender",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       0,
+       {SelectOption{.text = u"male"}, SelectOption{.value = u"female"}}},
+      {"silly-select",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       0,
+       {SelectOption{.text = u"you get no choice"}}},
+      {"silly-select-2",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       0,
+       {SelectOption{.value = u"we are the same",
+                     .text = u"we are the same"}}}};
 
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillIncludeMaxLengthInCrowdsourcing};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillIncludeMaxLengthInCrowdsourcing,
+       features::kAutofillIncludeSelectOptionsInCrowdsourcing},
+      {});
   FormData form;
   form.set_id_attribute(u"form-id");
   form.set_url(GURL("http://www.foo.com/"));
@@ -1133,6 +1209,10 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
     field.set_parsed_autocomplete(ParseAutocompleteAttribute(f.autocomplete));
     field.set_renderer_id(test::MakeFieldRendererId());
     field.set_max_length(f.max_length);
+    field.set_options(f.options);
+    if (!f.options.empty()) {
+      field.set_form_control_type(FormControlType::kSelectOne);
+    }
     test_api(form).Append(field);
   }
   RandomizedEncoder encoder("seed for testing",
@@ -1191,6 +1271,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
             upload.randomized_form_metadata().button_title()[0].type());
 
   for (int i = 0; i < upload.field_data_size(); ++i) {
+    SCOPED_TRACE(testing::Message() << "field with index " << i);
     const auto& metadata = upload.field_data(i).randomized_field_metadata();
     const auto& field = *form_structure.field(i);
     const auto field_signature = field.GetFieldSignature();
@@ -1275,6 +1356,38 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
                     RandomizedEncoder::kFieldMaxLength,
                     base::NumberToString16((field.max_length()))));
     }
+    if (field.options().empty()) {
+      EXPECT_EQ(metadata.select_option_size(), 0);
+    } else {
+      // We never encode more than 3 options.
+      ASSERT_EQ(metadata.select_option_size(),
+                std::min<int>(field.options().size(), 3));
+      auto get_option = [&field](int index) {
+        return index < 2 ? field.options()[index] : field.options().back();
+      };
+      for (int j = 0; j < metadata.select_option_size(); ++j) {
+        SCOPED_TRACE(testing::Message() << "select option with index " << j);
+        if (get_option(j).text.empty()) {
+          EXPECT_FALSE(metadata.select_option(j).has_text());
+        } else {
+          EXPECT_EQ(metadata.select_option(j).text().encoded_bits(),
+                    encoder.EncodeForTesting(
+                        form_signature, field_signature,
+                        RandomizedEncoder::kFieldSelectOptionText,
+                        get_option(j).text));
+        }
+        if (get_option(j).value.empty() ||
+            get_option(j).value == get_option(j).text) {
+          EXPECT_FALSE(metadata.select_option(j).has_value());
+        } else {
+          EXPECT_EQ(metadata.select_option(j).value().encoded_bits(),
+                    encoder.EncodeForTesting(
+                        form_signature, field_signature,
+                        RandomizedEncoder::kFieldSelectOptionValue,
+                        get_option(j).value));
+        }
+      }
+    }
   }
 }
 
@@ -1312,6 +1425,43 @@ TEST_F(AutofillCrowdsourcingEncoding, MaxLengthIsNotSentIfFeatureIsOff) {
   ASSERT_TRUE(upload.field_data(0).has_randomized_field_metadata());
   EXPECT_FALSE(
       upload.field_data(0).randomized_field_metadata().has_max_length());
+}
+
+// Tests that select options are not encoded if
+// `features::kAutofillIncludeSelectOptionsInCrowdsourcing` is disabled.
+TEST_F(AutofillCrowdsourcingEncoding, SelectOptionsAreNotSentIfFeatureIsOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillIncludeSelectOptionsInCrowdsourcing);
+  FormData form;
+  form.set_id_attribute(u"form-id");
+  {
+    FormFieldData field;
+    field.set_id_attribute(u"field-id");
+    field.set_options({SelectOption{.value = u"value", .text = u"some text"}});
+    field.set_form_control_type(FormControlType::kSelectOne);
+    test_api(form).Append(field);
+  }
+  RandomizedEncoder encoder("seed for testing",
+                            AutofillRandomizedValue_EncodingType_ALL_BITS,
+                            /*anonymous_url_collection_is_enabled=*/true);
+
+  FormStructure form_structure(form);
+  form_structure.set_randomized_encoder(
+      std::make_unique<RandomizedEncoder>(encoder));
+  for (auto& field : form_structure) {
+    field->set_host_form_signature(form_structure.form_signature());
+  }
+
+  std::vector<AutofillUploadContents> uploads = EncodeUploadRequest(
+      form_structure, /*available_field_types=*/{{}},
+      /*login_form_signature=*/std::string(), /*observed_submission=*/true);
+  ASSERT_EQ(uploads.size(), 1u);
+  AutofillUploadContents& upload = uploads.front();
+  ASSERT_EQ(upload.field_data_size(), 1);
+  ASSERT_TRUE(upload.field_data(0).has_randomized_field_metadata());
+  EXPECT_EQ(
+      upload.field_data(0).randomized_field_metadata().select_option_size(), 0);
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, Metadata_OnlySendFullUrlWithUserConsent) {

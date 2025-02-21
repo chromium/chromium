@@ -30,6 +30,7 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/version_info/version_info.h"
@@ -261,63 +262,57 @@ void PopulateRandomizedFieldMetadata(
     const FormStructure& form,
     const AutofillField& field,
     AutofillRandomizedFieldMetadata* metadata) {
-  const FormSignature form_signature = form.form_signature();
-  const FieldSignature field_signature = field.GetFieldSignature();
+  // Shorthand for encoding values.
+  auto encode_value = [&, form_signature = form.form_signature(),
+                       field_signature = field.GetFieldSignature()](
+                          std::string_view data_type, auto data_value,
+                          AutofillRandomizedValue* output) {
+    EncodeRandomizedValue(encoder, form_signature, field_signature, data_type,
+                          data_value,
+                          /*include_checksum=*/false, output);
+  };
+
   if (!field.id_attribute().empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::kFieldId, field.id_attribute(),
-                          /*include_checksum=*/false, metadata->mutable_id());
+    encode_value(RandomizedEncoder::kFieldId, field.id_attribute(),
+                 metadata->mutable_id());
   }
   if (!field.name_attribute().empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::kFieldName, field.name_attribute(),
-                          /*include_checksum=*/false, metadata->mutable_name());
+    encode_value(RandomizedEncoder::kFieldName, field.name_attribute(),
+                 metadata->mutable_name());
   }
-  EncodeRandomizedValue(encoder, form_signature, field_signature,
-                        RandomizedEncoder::kFieldControlType,
-                        FormControlTypeToString(field.form_control_type()),
-                        /*include_checksum=*/false, metadata->mutable_type());
+  encode_value(RandomizedEncoder::kFieldControlType,
+               FormControlTypeToString(field.form_control_type()),
+               metadata->mutable_type());
   if (!field.label().empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::kFieldLabel, field.label(),
-                          /*include_checksum=*/false,
-                          metadata->mutable_label());
+    encode_value(RandomizedEncoder::kFieldLabel, field.label(),
+                 metadata->mutable_label());
   }
   if (!field.aria_label().empty()) {
-    EncodeRandomizedValue(
-        encoder, form_signature, field_signature,
-        RandomizedEncoder::kFieldAriaLabel, field.aria_label(),
-        /*include_checksum=*/false, metadata->mutable_aria_label());
+    encode_value(RandomizedEncoder::kFieldAriaLabel, field.aria_label(),
+                 metadata->mutable_aria_label());
   }
   if (!field.aria_description().empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::kFieldAriaDescription,
-                          field.aria_description(), /*include_checksum=*/false,
-                          metadata->mutable_aria_description());
+    encode_value(RandomizedEncoder::kFieldAriaDescription,
+                 field.aria_description(),
+                 metadata->mutable_aria_description());
   }
   if (!field.css_classes().empty()) {
-    EncodeRandomizedValue(
-        encoder, form_signature, field_signature,
-        RandomizedEncoder::kFieldCssClasses, field.css_classes(),
-        /*include_checksum=*/false, metadata->mutable_css_class());
+    encode_value(RandomizedEncoder::kFieldCssClasses, field.css_classes(),
+                 metadata->mutable_css_class());
   }
   if (!field.placeholder().empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::kFieldPlaceholder,
-                          field.placeholder(), /*include_checksum=*/false,
-                          metadata->mutable_placeholder());
+    encode_value(RandomizedEncoder::kFieldPlaceholder, field.placeholder(),
+                 metadata->mutable_placeholder());
   }
   if (!field.autocomplete_attribute().empty()) {
-    EncodeRandomizedValue(
-        encoder, form_signature, field_signature,
-        RandomizedEncoder::kFieldAutocomplete, field.autocomplete_attribute(),
-        /*include_checksum=*/false, metadata->mutable_autocomplete());
+    encode_value(RandomizedEncoder::kFieldAutocomplete,
+                 field.autocomplete_attribute(),
+                 metadata->mutable_autocomplete());
   }
   if (!field.pattern().empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::kFieldPattern, field.pattern(),
-                          /*include_checksum=*/false,
-                          metadata->mutable_pattern());
+    encode_value(RandomizedEncoder::kFieldPattern, field.pattern(),
+
+                 metadata->mutable_pattern());
   }
   // 0 is the default value for fields that do not allow free input, while
   // `kDefaultMaxLength` is the default value for fields that allow free input.
@@ -325,11 +320,36 @@ void PopulateRandomizedFieldMetadata(
       field.max_length() != FormFieldData::kDefaultMaxLength &&
       base::FeatureList::IsEnabled(
           features::kAutofillIncludeMaxLengthInCrowdsourcing)) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::kFieldMaxLength,
-                          base::NumberToString(field.max_length()),
-                          /*include_checksum=*/false,
-                          metadata->mutable_max_length());
+    encode_value(RandomizedEncoder::kFieldMaxLength,
+                 base::NumberToString(field.max_length()),
+                 metadata->mutable_max_length());
+  }
+  if (field.IsSelectElement() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillIncludeSelectOptionsInCrowdsourcing)) {
+    auto add_option = [&](const SelectOption& option) {
+      auto* proto_option = metadata->add_select_option();
+      if (!option.text.empty()) {
+        encode_value(RandomizedEncoder::kFieldSelectOptionText, option.text,
+                     proto_option->mutable_text());
+      }
+      // Only emit `value` if it differs from `text` because both `value` and
+      // `text` have the same value if the <option> has neither an explicit
+      // value nor an explicit label attribute.
+      if (!option.value.empty() && option.value != option.text) {
+        encode_value(RandomizedEncoder::kFieldSelectOptionValue, option.value,
+                     proto_option->mutable_value());
+      }
+    };
+    if (field.options().size() > 0) {
+      add_option(field.options()[0]);
+    }
+    if (field.options().size() > 1) {
+      add_option(field.options()[1]);
+    }
+    if (field.options().size() > 2) {
+      add_option(field.options().back());
+    }
   }
 }
 

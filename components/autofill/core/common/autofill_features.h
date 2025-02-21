@@ -105,6 +105,8 @@ extern const base::FeatureParam<bool>
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillIncludeMaxLengthInCrowdsourcing);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillIncludeSelectOptionsInCrowdsourcing);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillIncludeUrlInCrowdsourcing);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillSupportPhoneticNameForJP);
