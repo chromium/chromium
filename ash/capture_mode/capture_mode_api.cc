@@ -18,16 +18,10 @@
 
 namespace ash {
 
-void CaptureScreenshotsOfAllDisplays() {
-  CaptureModeController::Get()->CaptureScreenshotsOfAllDisplays();
-}
+namespace {
 
-bool IsSunfishSessionAllowed() {
-  if (!features::IsSunfishFeatureEnabled() &&
-      !ScannerController::CanShowUiForShell()) {
-    return false;
-  }
-
+// Extra checks for Sunfish prefs and policy, used in `IsSunfishSessionAllowed`.
+bool IsSunfishSessionAllowedExtraChecks() {
   Shell* shell = Shell::HasInstance() ? Shell::Get() : nullptr;
   if (!shell) {
     return false;
@@ -49,6 +43,18 @@ bool IsSunfishSessionAllowed() {
 
   auto* controller = CaptureModeController::Get();
   return controller && controller->IsSearchAllowedByPolicy();
+}
+
+}  // namespace
+
+void CaptureScreenshotsOfAllDisplays() {
+  CaptureModeController::Get()->CaptureScreenshotsOfAllDisplays();
+}
+
+bool IsSunfishSessionAllowed() {
+  return (features::IsSunfishFeatureEnabled() ||
+          ScannerController::CanShowUiForShell()) &&
+         IsSunfishSessionAllowedExtraChecks();
 }
 
 }  // namespace ash
