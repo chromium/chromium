@@ -432,10 +432,9 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
 
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
-  auto autocomplete_input = input;
-  const auto* starter_pack_engine =
-      AutocompleteInput::AdjustInputForStarterPackEngines(
-          client()->GetTemplateURLService(), &autocomplete_input);
+  const auto [autocomplete_input, starter_pack_engine] =
+      AdjustInputForStarterPackKeyword(input,
+                                       client()->GetTemplateURLService());
 
   // Do some fixup on the user input before matching against it, so we provide
   // good results for local file paths, input with spaces, etc.
