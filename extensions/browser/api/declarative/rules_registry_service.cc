@@ -28,13 +28,8 @@
 
 namespace extensions {
 
-const int RulesRegistryService::kDefaultRulesRegistryID = 0;
-const int RulesRegistryService::kInvalidRulesRegistryID = -1;
-
 RulesRegistryService::RulesRegistryService(content::BrowserContext* context)
-    : current_rules_registry_id_(kDefaultRulesRegistryID),
-      content_rules_registry_(nullptr),
-      browser_context_(context) {
+    : browser_context_(context) {
   if (browser_context_) {
     extension_registry_observation_.Observe(
         ExtensionRegistry::Get(browser_context_));
@@ -64,7 +59,7 @@ void RulesRegistryService::Shutdown() {
   // instance is.
   WebRequestEventRouter::Get(browser_context_)
       ->RegisterRulesRegistry(browser_context_,
-                              RulesRegistryService::kDefaultRulesRegistryID,
+                              rules_registry_ids::kDefaultRulesRegistryID,
                               nullptr);
 }
 
@@ -109,7 +104,8 @@ scoped_refptr<RulesRegistry> RulesRegistryService::GetRulesRegistry(
 
   // We should have attempted creation of the default rule registries at
   // construction.
-  if (!browser_context_ || rules_registry_id == kDefaultRulesRegistryID) {
+  if (!browser_context_ ||
+      rules_registry_id == rules_registry_ids::kDefaultRulesRegistryID) {
     return nullptr;
   }
 
@@ -204,7 +200,7 @@ void RulesRegistryService::EnsureDefaultRulesRegistriesRegistered() {
   DCHECK(!base::Contains(
       rule_registries_,
       RulesRegistryKey(declarative_webrequest_constants::kOnRequest,
-                       kDefaultRulesRegistryID)));
+                       rules_registry_ids::kDefaultRulesRegistryID)));
 
   // Only register the default web request rules registry if the
   // declarativeWebRequest API is enabled. See crbug.com/693243.
@@ -215,7 +211,7 @@ void RulesRegistryService::EnsureDefaultRulesRegistriesRegistered() {
           .is_available();
   if (is_api_enabled) {
     // Persist the cache since it pertains to regular pages (i.e. not webviews).
-    RegisterWebRequestRulesRegistry(kDefaultRulesRegistryID,
+    RegisterWebRequestRulesRegistry(rules_registry_ids::kDefaultRulesRegistryID,
                                     RulesCacheDelegate::Type::kPersistent);
   }
 

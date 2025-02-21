@@ -28,6 +28,7 @@
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/rules_registry_ids.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-message.h"
@@ -71,7 +72,7 @@ class TestWebRequestRulesRegistry : public WebRequestRulesRegistry {
   explicit TestWebRequestRulesRegistry(content::BrowserContext* context)
       : WebRequestRulesRegistry(context,
                                 nullptr /* cache_delegate */,
-                                RulesRegistryService::kDefaultRulesRegistryID),
+                                rules_registry_ids::kDefaultRulesRegistryID),
         num_clear_cache_calls_(0) {}
 
   // Returns how often the in-memory caches of the renderers were instructed

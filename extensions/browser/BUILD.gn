@@ -442,6 +442,7 @@ source_set("browser_sources") {
     "renderer_startup_helper.h",
     "requirements_checker.cc",
     "requirements_checker.h",
+    "rules_registry_ids.h",
     "ruleset_parse_result.cc",
     "ruleset_parse_result.h",
     "sandboxed_unpacker.cc",
