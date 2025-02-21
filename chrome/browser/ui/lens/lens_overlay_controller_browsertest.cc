@@ -3568,8 +3568,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                             first_search_url);
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       PopAndLoadQueryFromHistoryWithMultimodalRequest) {
+// TODO(https://crbug.com/397600510): Disabled due to excessive flakiness.
+IN_PROC_BROWSER_TEST_F(
+    LensOverlayControllerBrowserTest,
+    DISABLED_PopAndLoadQueryFromHistoryWithMultimodalRequest) {
   WaitForPaint();
 
   // State should start in off.
