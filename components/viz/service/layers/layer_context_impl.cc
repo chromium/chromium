@@ -23,6 +23,7 @@
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/solid_color_layer_impl.h"
+#include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/tile_display_layer_impl.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -58,6 +59,10 @@ std::unique_ptr<cc::LayerImpl> CreateLayer(LayerContextImpl& context,
   switch (type) {
     case cc::mojom::LayerType::kLayer:
       return cc::LayerImpl::Create(&tree, id);
+
+    case cc::mojom::LayerType::kSurface:
+      // TODO(394137303): handle |update_submission_state_callback|.
+      return cc::SurfaceLayerImpl::Create(&tree, id, base::NullCallback());
 
     case cc::mojom::LayerType::kPicture:
       return std::make_unique<cc::TileDisplayLayerImpl>(context, tree, id);
@@ -345,6 +350,19 @@ base::expected<void, std::string> UpdateTransformTreeProperties(
   return base::ok();
 }
 
+void UpdateSurfaceLayerExtra(const mojom::SurfaceLayerExtraPtr& extra,
+                             cc::SurfaceLayerImpl& layer) {
+  layer.SetRange(extra->surface_range, extra->deadline_in_frames);
+  layer.SetStretchContentToFillBounds(extra->stretch_content_to_fill_bounds);
+  layer.SetSurfaceHitTestable(extra->surface_hit_testable);
+  layer.SetHasPointerEventsNone(extra->has_pointer_events_none);
+  layer.SetIsReflection(extra->is_reflection);
+  if (extra->will_draw_needs_reset) {
+    layer.ResetStateForUpdateSubmissionStateCallback();
+  }
+  layer.SetOverrideChildPaintFlags(extra->override_child_paint_flags);
+}
+
 base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
                                               cc::LayerImpl& layer) {
   layer.SetBounds(wire.bounds);
@@ -396,6 +414,16 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
   layer.SetClipTreeIndex(wire.clip_tree_index);
   layer.SetEffectTreeIndex(wire.effect_tree_index);
   layer.SetScrollTreeIndex(wire.scroll_tree_index);
+
+  switch (wire.type) {
+    case cc::mojom::LayerType::kSurface:
+      UpdateSurfaceLayerExtra(wire.surface_layer_extra,
+                              static_cast<cc::SurfaceLayerImpl&>(layer));
+      break;
+    default:
+      // TODO(zmo): handle other types of LayerImpl.
+      break;
+  }
   return base::ok();
 }
 
@@ -1111,6 +1139,14 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       property_trees.effect_tree_mutable().AddCopyRequest(
           wire->id, std::move(copy_request));
     }
+  }
+
+  if (update->surface_ranges) {
+    base::flat_set<SurfaceRange> surface_ranges;
+    for (auto& surface_range : *(update->surface_ranges)) {
+      surface_ranges.insert(surface_range);
+    }
+    layers.SetSurfaceRanges(surface_ranges);
   }
 
   RETURN_IF_ERROR(
