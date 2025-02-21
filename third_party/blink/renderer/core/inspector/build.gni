@@ -142,6 +142,7 @@ blink_core_tests_inspector = [
   "agent_registry_test.cc",
   "inspected_frames_test.cc",
   "inspector_contrast_test.cc",
+  "inspector_css_agent_test.cc",
   "inspector_css_parser_observer_test.cc",
   "inspector_diff_test.cc",
   "inspector_emulation_agent_test.cc",

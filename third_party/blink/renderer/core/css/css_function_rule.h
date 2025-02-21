@@ -28,6 +28,10 @@ class CORE_EXPORT CSSFunctionRule final : public CSSGroupingRule {
   String returnType() const;
   String cssText() const override;
 
+  StyleRuleFunction& FunctionRule() const {
+    return To<StyleRuleFunction>(*group_rule_);
+  }
+
  private:
   CSSRule::Type GetType() const override { return CSSRule::kFunctionRule; }
 };

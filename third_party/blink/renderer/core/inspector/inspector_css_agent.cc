@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/css/css_font_face_source.h"
 #include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
+#include "third_party/blink/renderer/core/css/css_function_rule.h"
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
@@ -53,6 +54,7 @@
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_statement_rule.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
+#include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -65,6 +67,7 @@
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
@@ -76,6 +79,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
@@ -90,6 +94,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
+#include "third_party/blink/renderer/core/css/style_rule_function_declarations.h"
 #include "third_party/blink/renderer/core/css/style_sheet.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css/style_sheet_list.h"
@@ -129,6 +134,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
@@ -1638,25 +1644,41 @@ InspectorCSSAgent::PositionTryRulesForElement(
   return css_position_try_rules;
 }
 
+// Find CSSRules of type T. The callback may return 'true' to keep searching,
+// or 'false' to stop.
+template <class T, class CSSRuleCollection, class CallbackFunc>
+static void TraverseCSSRules(CSSRuleCollection* css_rules,
+                             CallbackFunc callback) {
+  if (!css_rules) {
+    return;
+  }
+  for (unsigned j = 0; j < css_rules->length(); ++j) {
+    CSSRule* css_rule = css_rules->item(j);
+    if (auto* typed_css_rule = DynamicTo<T>(css_rule)) {
+      bool keep_searching = callback(*typed_css_rule);
+      if (!keep_searching) {
+        return;
+      }
+    } else if (auto* css_import_rule = DynamicTo<CSSImportRule>(css_rule)) {
+      TraverseCSSRules<T>(css_import_rule->styleSheet(), callback);
+    } else {
+      TraverseCSSRules<T>(css_rule->cssRules(), callback);
+    }
+  }
+}
+
 template <class CSSRuleCollection>
 static CSSPropertyRule* FindPropertyRule(CSSRuleCollection* css_rules,
                                          StyleRuleProperty* property_rule) {
-  if (!css_rules) {
-    return nullptr;
-  }
-
   CSSPropertyRule* result = nullptr;
-  for (unsigned j = 0; j < css_rules->length() && !result; ++j) {
-    CSSRule* css_rule = css_rules->item(j);
-    if (auto* css_style_rule = DynamicTo<CSSPropertyRule>(css_rule)) {
-      if (css_style_rule->Property() == property_rule)
-        result = css_style_rule;
-    } else if (auto* css_import_rule = DynamicTo<CSSImportRule>(css_rule)) {
-      result = FindPropertyRule(css_import_rule->styleSheet(), property_rule);
-    } else {
-      result = FindPropertyRule(css_rule->cssRules(), property_rule);
-    }
-  }
+  TraverseCSSRules<CSSPropertyRule>(
+      css_rules, [&result, property_rule](CSSPropertyRule& css_rule) {
+        if (css_rule.Property() == property_rule) {
+          result = &css_rule;
+          return false;
+        }
+        return true;  // Keep searching.
+      });
   return result;
 }
 
@@ -4072,6 +4094,168 @@ void InspectorCSSAgent::GetBackgroundColors(Element* element,
   auto text_info = contrast.GetTextInfo(element);
   *computed_font_size = text_info.font_size;
   *computed_font_weight = text_info.font_weight;
+}
+
+namespace {
+
+// Collects instances of <dashed-function>, and the functions referenced by
+// them.
+//
+// The process starts from a CSSPropertyValueSet, where all relevant
+// declarations are scanned. Any <dashed-function>s found are
+// then "dereferenced" into StyleRuleFunctions, and *their* bodies
+// are then scanned for further <dashed-function>s.
+class TransitiveFunctionCollector {
+  STACK_ALLOCATED();
+
+ public:
+  // Collect <dashed-function>s within a CSSPropertyValueSet,
+  // typically representing the block of a style rule.
+  //
+  // The TreeScope must be the originating TreeScope for the rule
+  // holding `set`.
+  void CollectFromPropertySet(const TreeScope& tree_scope,
+                              const CSSPropertyValueSet& set) {
+    HashSet<AtomicString> names;
+    for (CSSPropertyValue property_value : set.Properties()) {
+      if (CSSVariableData* data = GetVariableData(property_value.Value());
+          data && data->HasDashedFunctions()) {
+        StringView text = data->OriginalText();
+        CSSParserTokenStream stream(text);
+        CSSVariableParser::CollectDashedFunctions(stream, names);
+      }
+    }
+    for (const AtomicString& name : names) {
+      auto* dashed_function =
+          MakeGarbageCollected<ScopedCSSName>(name, &tree_scope);
+      CollectFromDashedFunction(*dashed_function);
+    }
+  }
+
+  // Once a <dashed-function> has been found, this finds the corresponding
+  // StyleRuleFunction, and adds it to the list. It also continues looking
+  // for <dashed-function>s within the StyleRuleFunction.
+  void CollectFromDashedFunction(const ScopedCSSName& dashed_function) {
+    if (seen_dashed_functions_.Contains(&dashed_function)) {
+      // Already processed.
+      return;
+    }
+    auto [function, tree_scope] = LookupFunction(dashed_function);
+    // Note: This insertion may insert an explicit nullptr.
+    seen_dashed_functions_.insert(&dashed_function, function);
+    if (function) {
+      CollectFromFunctionBody(*tree_scope, *function);
+    }
+  }
+
+  // The TreeScope must be the originating TreeScope for
+  // the function rule.
+  //
+  // The `rule` parameter may be the function rule itself (StyleRuleFunction),
+  // it may be some conditional rule (e.g. StyleRuleMedia, etc),
+  // or it may be StyleRuleFunctionDeclarations, which act as the "leaf nodes"
+  // containing local variables / 'result' descriptors.
+  void CollectFromFunctionBody(const TreeScope& tree_scope,
+                               const StyleRuleBase& rule) {
+    if (auto* function_declarations =
+            DynamicTo<StyleRuleFunctionDeclarations>(rule)) {
+      CollectFromPropertySet(tree_scope, function_declarations->Properties());
+    } else if (auto* group_rule = DynamicTo<StyleRuleGroup>(rule)) {
+      // Note that StyleRuleFunction, StyleRuleMedia, StyleRuleSupports,
+      // and StyleRuleContainer are all subclasses of StyleRuleGroup.
+      for (StyleRuleBase* child : group_rule->ChildRules()) {
+        CollectFromFunctionBody(tree_scope, *child);
+      }
+    }
+  }
+
+  HeapHashMap<Member<const ScopedCSSName>, Member<StyleRuleFunction>>
+  TakeResult() {
+    return std::move(seen_dashed_functions_);
+  }
+
+ private:
+  CSSVariableData* GetVariableData(const CSSValue& value) {
+    // Handles custom properties and longhands.
+    if (auto* unparsed = DynamicTo<CSSUnparsedDeclarationValue>(value)) {
+      return unparsed->VariableDataValue();
+    }
+    // Handles shorthands.
+    if (auto* pending_substitution =
+            DynamicTo<cssvalue::CSSPendingSubstitutionValue>(value)) {
+      return pending_substitution->ShorthandValue()->VariableDataValue();
+    }
+    return nullptr;
+  }
+
+  // For a given <dashed-function>, returns the corresponding StyleRuleFunction
+  // and the TreeScope that StyleRuleFunction was found in. The returned
+  // TreeScope may or may not be the same as the TreeScope of `dashed_function`.
+  std::pair<StyleRuleFunction*, const TreeScope*> LookupFunction(
+      const ScopedCSSName& dashed_function) {
+    // TODO(crbug.com/394111301): Do a proper tree-scoped lookup here.
+    // https://drafts.csswg.org/css-scoping-1/#css-tree-scoped-reference
+    if (ScopedStyleResolver* scoped_resolver =
+            dashed_function.GetTreeScope()->GetScopedStyleResolver()) {
+      StyleRuleFunction* function =
+          scoped_resolver->FunctionForName(dashed_function.GetName());
+      const TreeScope* tree_scope = dashed_function.GetTreeScope();
+      return {function, tree_scope};
+    }
+    return {nullptr, nullptr};
+  }
+
+  // Note that this implicitly uses HashTraits which compares keys by value
+  // (see scoped_css_name.h).
+  HeapHashMap<Member<const ScopedCSSName>, Member<StyleRuleFunction>>
+      seen_dashed_functions_;
+};
+
+}  // namespace
+
+// static
+void InspectorCSSAgent::CollectReferencedFunctionRules(
+    Document& document,
+    const HeapHashSet<Member<CSSStyleSheet>>& document_style_sheets,
+    const RuleIndexList& rule_list,
+    HeapHashMap<Member<const ScopedCSSName>, Member<CSSFunctionRule>>& result) {
+  TransitiveFunctionCollector collector;
+  for (const auto& [rule, index] : rule_list) {
+    // TODO(crbug.com/395798203): This should be the originating TreeScope
+    // for `rule`. We don't yet have this information here.
+    const TreeScope& tree_scope = document;
+    if (const auto* style_rule = DynamicTo<CSSStyleRule>(*rule)) {
+      collector.CollectFromPropertySet(
+          tree_scope, style_rule->GetStyleRule()->Properties());
+    }
+  }
+
+  HeapHashMap<Member<const ScopedCSSName>, Member<StyleRuleFunction>>
+      seen_functions = collector.TakeResult();
+
+  if (seen_functions.empty()) {
+    return;
+  }
+
+  // Build a mapping from StyleRuleFunction to CSSFunctionRule.
+  HeapHashMap<Member<StyleRuleFunction>, Member<CSSFunctionRule>> to_css_rule;
+  for (CSSStyleSheet* style_sheet : document_style_sheets) {
+    TraverseCSSRules<CSSFunctionRule>(
+        style_sheet, [&to_css_rule](CSSFunctionRule& rule) {
+          to_css_rule.insert(&rule.FunctionRule(), &rule);
+          return true;  // Keep traversing.
+        });
+  }
+
+  // Emit the final results, which map ScopedCSSNames to CSSFunctionRules.
+  for (const auto& [scoped_name, style_rule] : seen_functions) {
+    if (!style_rule) {
+      // An explicit nullptr means the function was referenced,
+      // but no corresponding @function rule was found.
+      continue;
+    }
+    result.insert(scoped_name, to_css_rule.at(style_rule));
+  }
 }
 
 void InspectorCSSAgent::SetCoverageEnabled(bool enabled) {
