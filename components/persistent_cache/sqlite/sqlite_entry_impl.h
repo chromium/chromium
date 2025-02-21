@@ -9,9 +9,12 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/types/pass_key.h"
 #include "components/persistent_cache/entry.h"
 
 namespace persistent_cache {
+
+class SqliteBackendImpl;
 
 class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteEntryImpl : public Entry {
  public:
@@ -19,6 +22,14 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteEntryImpl : public Entry {
 
   // Entry:
   [[nodiscard]] base::span<const uint8_t> GetContentSpan() const override;
+
+  // Use to create `unique_ptr`s of this class from `SqliteBackendImpl`.
+  // Protected with `PassKey` so that only `SqliteBackendImpl` can create
+  // instance. This is done allow future implementations to tie entry
+  // implementation to the backend.
+  static std::unique_ptr<SqliteEntryImpl> MakeUnique(
+      base::PassKey<SqliteBackendImpl> passkey,
+      std::string&& content);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SqliteEntryTest, ConstructionTakesOwnershipOfValue);

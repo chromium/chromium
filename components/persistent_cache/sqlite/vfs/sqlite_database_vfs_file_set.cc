@@ -11,8 +11,10 @@
 #include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 
 namespace {
+
 std::atomic<uint64_t> g_file_set_id_generator(0);
 constexpr const char kPathSeperator[] = "_";
+
 }  // namespace
 
 namespace persistent_cache {
