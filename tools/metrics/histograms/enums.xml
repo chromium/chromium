@@ -25613,6 +25613,8 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Last session did not end (obsolete)"/>
 </enum>
 
+<!-- LINT.IfChange(TriggerHelpUIResult) -->
+
 <enum name="TriggerHelpUIResult">
   <int value="0" label="SUCCESS"/>
   <int value="1" label="FAILURE"/>
@@ -25628,7 +25630,10 @@ Called by update_net_error_codes.py.-->
   <int value="11" label="FAILURE_AVAILABILITY_PRECONDITION_UNMET"/>
   <int value="12" label="SUCCESS_TRACKING_ONLY"/>
   <int value="13" label="FAILURE_DISPLAY_LOCK"/>
+  <int value="14" label="FAILURE_GROUPS_PRECONDITION_UNMET"/>
 </enum>
+
+<!--LINT.ThenChange(//components/feature_engagement/internal/stats.h:TriggerHelpUIResult) -->
 
 <enum name="TrustedWebActivityQualityEnforcementViolationType">
   <int value="0" label="Error 404"/>
