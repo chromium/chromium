@@ -48,23 +48,6 @@ class OmniboxViewIOS : public OmniboxView,
     popup_provider_ = provider;
   }
 
-  void OnReceiveClipboardImageForOpenMatch(
-      const AutocompleteMatch& match,
-      WindowOpenDisposition disposition,
-      const GURL& alternate_nav_url,
-      const std::u16string& pasted_text,
-      size_t selected_line,
-      base::TimeTicks match_selection_timestamp,
-      std::optional<gfx::Image> optional_image);
-
-  void OnReceiveImageMatchForOpenMatch(
-      WindowOpenDisposition disposition,
-      const GURL& alternate_nav_url,
-      const std::u16string& pasted_text,
-      size_t selected_line,
-      base::TimeTicks match_selection_timestamp,
-      std::optional<AutocompleteMatch> optional_match);
-
   /// Sets the image used in image search.
   void SetThumbnailImage(UIImage* image);
 
