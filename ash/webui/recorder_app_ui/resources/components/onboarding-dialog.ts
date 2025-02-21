@@ -21,7 +21,7 @@ import {
 import {i18n, NoArgStringName} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {signal} from '../core/reactive/signal.js';
+import {computed, signal} from '../core/reactive/signal.js';
 import {LanguageCode} from '../core/soda/language_info.js';
 import {settings, SpeakerLabelEnableState} from '../core/state/settings.js';
 import {
@@ -96,6 +96,15 @@ export class OnboardingDialog extends ReactiveLitElement {
   private readonly autoFocusItem = createRef<ReactiveLitElement>();
 
   private readonly selectedLanguage = signal<LanguageCode|null>(null);
+
+  private readonly availableLanguages = computed(() => {
+    const languageList = this.platformHandler.getLangPackList();
+    return languageList.filter((langPack) => {
+      const sodaState =
+        this.platformHandler.getSodaState(langPack.languageCode);
+      return sodaState.value.kind !== 'unavailable';
+    });
+  });
 
   override updated(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has('step') || changedProperties.has('open')) {
@@ -249,7 +258,7 @@ export class OnboardingDialog extends ReactiveLitElement {
         const dialogBody = html`
           ${i18n.onboardingDialogLanguageSelectionDescription}
           <language-dropdown
-            .languageList=${this.platformHandler.getLangPackList()}
+            .languageList=${this.availableLanguages.value}
             @dropdown-changed=${onDropdownChange}
             ${ref(this.autoFocusItem)}
           >
