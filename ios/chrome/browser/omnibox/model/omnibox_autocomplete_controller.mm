@@ -151,12 +151,7 @@ using base::UserMetricsAction;
   const auto matchSelectionTimestamp = base::TimeTicks();
   base::RecordAction(UserMetricsAction("MobileOmniboxUse"));
 
-  // OpenMatch() may close the popup, which will clear the result set and, by
-  // extension, `match` and its contents.  So copy the relevant match out to
-  // make sure it stays alive until the call completes.
-  AutocompleteMatch matchCopy = match;
-
-  if (matchCopy.type == AutocompleteMatchType::CLIPBOARD_URL) {
+  if (match.type == AutocompleteMatchType::CLIPBOARD_URL) {
     base::RecordAction(UserMetricsAction("MobileOmniboxClipboardToURL"));
     base::UmaHistogramLongTimes100(
         "MobileOmnibox.PressedClipboardSuggestionAge",
@@ -179,49 +174,18 @@ using base::UserMetricsAction;
     return;
   }
 
-  if (match.destination_url.is_empty()) {
-    __weak __typeof__(self) weakSelf = self;
-    ClipboardRecentContent* clipboardRecentContent =
-        ClipboardRecentContent::GetInstance();
-    if (match.type == AutocompleteMatchType::CLIPBOARD_URL) {
-      clipboardRecentContent->GetRecentURLFromClipboard(base::BindOnce(
-          [](OmniboxAutocompleteController* controller,
-             WindowOpenDisposition disposition, base::TimeTicks timestamp,
-             std::optional<GURL> optionalURL) {
-            [controller openClipboardURL:optionalURL
-                             disposition:disposition
-                               timestamp:timestamp];
-          },
-          weakSelf, disposition, matchSelectionTimestamp));
-      return;
-    } else if (match.type == AutocompleteMatchType::CLIPBOARD_TEXT) {
-      clipboardRecentContent->GetRecentTextFromClipboard(base::BindOnce(
-          [](OmniboxAutocompleteController* controller,
-             WindowOpenDisposition disposition, base::TimeTicks timestamp,
-             std::optional<std::u16string> optionalText) {
-            [controller openClipboardText:optionalText
-                              disposition:disposition
-                                timestamp:timestamp];
-          },
-          weakSelf, disposition, matchSelectionTimestamp));
-      return;
-    } else if (match.type == AutocompleteMatchType::CLIPBOARD_IMAGE) {
-      clipboardRecentContent->GetRecentImageFromClipboard(base::BindOnce(
-          [](OmniboxAutocompleteController* controller,
-             WindowOpenDisposition disposition, base::TimeTicks timestamp,
-             std::optional<gfx::Image> optionalImage) {
-            [controller openClipboardImage:optionalImage
-                               disposition:disposition
-                                 timestamp:timestamp];
-          },
-          weakSelf, disposition, matchSelectionTimestamp));
-      return;
-    }
+  // Clipboard match handling.
+  if (match.destination_url.is_empty() &&
+      AutocompleteMatch::IsClipboardType(match.type)) {
+    [self openClipboardMatch:match
+                 disposition:disposition
+          selectionTimestamp:matchSelectionTimestamp];
+    return;
   }
 
-  if (_omniboxViewIOS) {
-    _omniboxViewIOS->OnSelectedMatchForOpening(matchCopy, disposition, GURL(),
-                                               std::u16string(), row);
+  if (_omniboxEditModel) {
+    _omniboxEditModel->OpenSelection(OmniboxPopupSelection(row),
+                                     matchSelectionTimestamp, disposition);
   }
 }
 
@@ -272,6 +236,9 @@ using base::UserMetricsAction;
   _omniboxEditModel->OpenSelection(selection, timestamp, disposition);
 }
 
+#pragma mark Clipboard match handling
+
+/// Creates a match with the clipboard URL and open it.
 - (void)openClipboardURL:(std::optional<GURL>)optionalURL
              disposition:(WindowOpenDisposition)disposition
                timestamp:(base::TimeTicks)timestamp {
@@ -320,4 +287,57 @@ using base::UserMetricsAction;
           },
           weakSelf, disposition, timestamp));
 }
+
+/// Opens a clipboard match. Fetches the content of the clipboard and creates a
+/// new match with it.
+- (void)openClipboardMatch:(const AutocompleteMatch&)match
+               disposition:(WindowOpenDisposition)disposition
+        selectionTimestamp:(base::TimeTicks)timestamp {
+  __weak __typeof__(self) weakSelf = self;
+  ClipboardRecentContent* clipboardRecentContent =
+      ClipboardRecentContent::GetInstance();
+  CHECK(clipboardRecentContent);
+
+  switch (match.type) {
+    case AutocompleteMatchType::CLIPBOARD_URL: {
+      clipboardRecentContent->GetRecentURLFromClipboard(base::BindOnce(
+          [](OmniboxAutocompleteController* controller,
+             WindowOpenDisposition disposition, base::TimeTicks timestamp,
+             std::optional<GURL> optionalURL) {
+            [controller openClipboardURL:optionalURL
+                             disposition:disposition
+                               timestamp:timestamp];
+          },
+          weakSelf, disposition, timestamp));
+      break;
+    }
+    case AutocompleteMatchType::CLIPBOARD_TEXT: {
+      clipboardRecentContent->GetRecentTextFromClipboard(base::BindOnce(
+          [](OmniboxAutocompleteController* controller,
+             WindowOpenDisposition disposition, base::TimeTicks timestamp,
+             std::optional<std::u16string> optionalText) {
+            [controller openClipboardText:optionalText
+                              disposition:disposition
+                                timestamp:timestamp];
+          },
+          weakSelf, disposition, timestamp));
+      break;
+    }
+    case AutocompleteMatchType::CLIPBOARD_IMAGE: {
+      clipboardRecentContent->GetRecentImageFromClipboard(base::BindOnce(
+          [](OmniboxAutocompleteController* controller,
+             WindowOpenDisposition disposition, base::TimeTicks timestamp,
+             std::optional<gfx::Image> optionalImage) {
+            [controller openClipboardImage:optionalImage
+                               disposition:disposition
+                                 timestamp:timestamp];
+          },
+          weakSelf, disposition, timestamp));
+      break;
+    }
+    default:
+      NOTREACHED() << "Unsupported clipboard match type";
+  }
+}
+
 @end

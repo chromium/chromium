@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 
-#import <optional>
-
 #import "base/functional/callback.h"
 #import "base/run_loop.h"
 #import "base/test/task_environment.h"
