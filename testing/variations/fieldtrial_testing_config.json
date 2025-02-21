@@ -2318,6 +2318,26 @@
             ]
         }
     ],
+    "AutofillIncludeMaxLengthInCrowdsourcing": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "ios",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillIncludeMaxLengthInCrowdsourcing"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillIncludeUrlInCrowdsourcing": [
         {
             "platforms": [

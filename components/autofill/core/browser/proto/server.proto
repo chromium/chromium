@@ -177,6 +177,9 @@ message AutofillRandomizedFieldMetadata {
 
   // Value of the pattern attribute. Example: <input pattern="XXXXX">
   optional AutofillRandomizedValue pattern = 11;
+
+  // Value of the maxlength attribute. Example: <input maxlength=4>
+  optional AutofillRandomizedValue max_length = 12;
 }
 
 // This message contains information about the field types in a single form.

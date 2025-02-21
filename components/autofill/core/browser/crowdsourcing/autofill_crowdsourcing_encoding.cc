@@ -319,6 +319,18 @@ void PopulateRandomizedFieldMetadata(
                           /*include_checksum=*/false,
                           metadata->mutable_pattern());
   }
+  // 0 is the default value for fields that do not allow free input, while
+  // `kDefaultMaxLength` is the default value for fields that allow free input.
+  if (field.max_length() != 0 &&
+      field.max_length() != FormFieldData::kDefaultMaxLength &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillIncludeMaxLengthInCrowdsourcing)) {
+    EncodeRandomizedValue(encoder, form_signature, field_signature,
+                          RandomizedEncoder::kFieldMaxLength,
+                          base::NumberToString(field.max_length()),
+                          /*include_checksum=*/false,
+                          metadata->mutable_max_length());
+  }
 }
 
 // Encodes the fields of `upload_fields` in the in-out parameter `upload`.
