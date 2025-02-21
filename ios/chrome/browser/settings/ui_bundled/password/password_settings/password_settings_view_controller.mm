@@ -149,6 +149,9 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 // If managed, the switch controlling this settings should not be displayed.
 @property(nonatomic, assign) BOOL automaticPasskeyUpgradesManagedByPolicy;
 
+// Whether automatic passkey upgrades are enabled.
+@property(nonatomic, assign) BOOL automaticPasskeyUpgradesEnabled;
+
 // Indicates whether or not "Offer to Save Passwords" is set to enabled.
 @property(nonatomic, assign, getter=isSavePasswordsEnabled)
     BOOL savePasswordsEnabled;
@@ -382,7 +385,7 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
           base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView
                  addTarget:self
-                    action:@selector(automaticPasskeyUpgradesSwitchChanged)
+                    action:@selector(automaticPasskeyUpgradesSwitchChanged:)
           forControlEvents:(UIControlEvents)UIControlEventValueChanged];
     }
   }
@@ -572,6 +575,7 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
       l10n_util::GetNSString(IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES);
   _automaticPasskeyUpgradesSwitchItem.detailText =
       l10n_util::GetNSString(IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES_SUBTITLE);
+  _automaticPasskeyUpgradesSwitchItem.on = self.automaticPasskeyUpgradesEnabled;
   return _automaticPasskeyUpgradesSwitchItem;
 }
 
@@ -705,11 +709,14 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 // The `setCanExportPasswords` method required for the PasswordSettingsConsumer
 // protocol is provided by property synthesis.
 
-- (void)setAutomaticPasskeyUpgradesManagedByPolicy:(BOOL)managed {
-  if (_automaticPasskeyUpgradesManagedByPolicy == managed) {
+- (void)setAutomaticPasskeyUpgradesEnabled:(BOOL)enabled
+                           managedByPolicy:(BOOL)managed {
+  if (_automaticPasskeyUpgradesEnabled == enabled &&
+      _automaticPasskeyUpgradesManagedByPolicy == managed) {
     return;
   }
 
+  _automaticPasskeyUpgradesEnabled = enabled;
   _automaticPasskeyUpgradesManagedByPolicy = managed;
 
   if (self.modelLoadStatus == ModelNotLoaded) {
@@ -891,8 +898,8 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 
 // Called when the user changes the state of the automatic passkey upgrades
 // switch.
-- (void)automaticPasskeyUpgradesSwitchChanged {
-  // TODO(crbug.com/358343061): Handle changing the switch value.
+- (void)automaticPasskeyUpgradesSwitchChanged:(UISwitch*)switchView {
+  [self.delegate automaticPasskeyUpgradesSwitchDidChange:switchView.on];
 }
 
 #pragma mark - Private
@@ -1166,6 +1173,15 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   return [tableViewModel sectionForSectionIdentifier:previousSection] + 1;
 }
 
+- (void)updateAutomaticPasskeyUpgradesSwitchState {
+  if (self.modelLoadStatus != ModelLoadComplete) {
+    return;
+  }
+  self.automaticPasskeyUpgradesSwitchItem.on =
+      self.automaticPasskeyUpgradesEnabled;
+  [self reconfigureCellsForItems:@[ self.automaticPasskeyUpgradesSwitchItem ]];
+}
+
 // Updates the view to by either adding or removing the automatic passkey
 // upgrades switch section based on whether password manager or saving passkeys
 // is controlled by enterprise policy (in those cases there is no point in
@@ -1177,9 +1193,14 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 
   TableViewModel* model = self.tableViewModel;
   BOOL shouldDisplaySwitch = [self shouldDisplayPasskeyUpgradesSwitch];
+  // In this case the whole section doesn't need to be added / removed, just
+  // update the switch state if it should be displayed.
   if ([model hasSectionForSectionIdentifier:
                  SectionIdentifierAutomaticPasskeyUpgradesSwitch] ==
       shouldDisplaySwitch) {
+    if (shouldDisplaySwitch) {
+      [self updateAutomaticPasskeyUpgradesSwitchState];
+    }
     return;
   }
 
