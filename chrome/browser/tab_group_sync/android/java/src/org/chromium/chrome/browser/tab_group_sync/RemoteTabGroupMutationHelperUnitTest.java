@@ -57,6 +57,7 @@ public class RemoteTabGroupMutationHelperUnitTest {
     private MockTabModel mTabModel;
 
     private @Mock TabGroupModelFilter mTabGroupModelFilter;
+    private @Mock LocalTabGroupMutationHelper mLocalTabGroupMutationHelper;
     private TabGroupSyncService mTabGroupSyncService;
     private RemoteTabGroupMutationHelper mRemoteMutationHelper;
     private @Captor ArgumentCaptor<SavedTabGroup> mSavedTabGroupCaptor;
@@ -89,7 +90,8 @@ public class RemoteTabGroupMutationHelperUnitTest {
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         mRemoteMutationHelper =
-                new RemoteTabGroupMutationHelper(mTabGroupModelFilter, mTabGroupSyncService);
+                new RemoteTabGroupMutationHelper(
+                        mTabGroupModelFilter, mTabGroupSyncService, mLocalTabGroupMutationHelper);
     }
 
     @Test
