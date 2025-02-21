@@ -54,6 +54,10 @@ bool TestAccessibilityControllerClient::ToggleDictation() {
 
 void TestAccessibilityControllerClient::SilenceSpokenFeedback() {}
 
+void TestAccessibilityControllerClient::OnTwoFingerTouchStart() {}
+
+void TestAccessibilityControllerClient::OnTwoFingerTouchStop() {}
+
 bool TestAccessibilityControllerClient::ShouldToggleSpokenFeedbackViaTouch()
     const {
   return true;
