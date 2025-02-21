@@ -1822,6 +1822,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NO_PASSWORDS_TITLE" desc="Title for the password check row in the Safety Check page indicating that the user does not have any passwords saved to their Google account.">
         No saved passwords
       </message>
+      <message name="IDS_SAFETY_HUB_NO_LOCAL_PASSWORDS_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the user does not have any local passwords saved.">
+        No saved passwords on this device
+      </message>
       <message name="IDS_SAFETY_HUB_NO_COMPROMISED_PASSWORDS_TITLE" desc="Title for the password check row in the Safety Check page indicating that the checkup did not find any compromised passwords.">
         No compromised passwords
       </message>

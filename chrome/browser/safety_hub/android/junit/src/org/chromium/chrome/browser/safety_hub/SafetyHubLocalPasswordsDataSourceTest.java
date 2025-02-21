@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.safety_hub;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -66,6 +68,7 @@ public class SafetyHubLocalPasswordsDataSourceTest {
     private SafetyHubLocalPasswordsDataSource mDataSource;
     private SafetyHubLocalPasswordsDataSourceObserverTest mObserver;
 
+    @Mock private SafetyHubModuleDelegate mModuleDelegateMock;
     @Mock private PrefService mPrefServiceMock;
     @Mock private SafetyHubFetchService mSafetyHubFetchServiceMock;
     @Mock private SigninManager mSigninManagerMock;
@@ -80,20 +83,37 @@ public class SafetyHubLocalPasswordsDataSourceTest {
         mObserver = new SafetyHubLocalPasswordsDataSourceObserverTest();
         mDataSource =
                 new SafetyHubLocalPasswordsDataSource(
-                        mPrefServiceMock, mSafetyHubFetchServiceMock, mPasswordStoreBridge);
+                        mModuleDelegateMock,
+                        mPrefServiceMock,
+                        mSafetyHubFetchServiceMock,
+                        mPasswordStoreBridge);
         mDataSource.setObserver(mObserver);
         mDataSource.setUp();
+    }
+
+    public void mockTotalPasswordsCount(int totalPasswordsCount) {
+        doReturn(totalPasswordsCount).when(mModuleDelegateMock).getLocalPasswordsCount(any());
     }
 
     @Test
     public void countsUnavailable() {
         // TODO(crbug.com/388788969): After adding logic to the local password module, set
         // appropriate counts for the unavailable state.
+        mockTotalPasswordsCount(1);
 
         assertTrue(mDataSource.maybeTriggerPasswordCheckup());
         verify(mSafetyHubFetchServiceMock, times(1)).runLocalPasswordCheckup();
 
         mDataSource.updateState();
         assertEquals(ModuleType.UNAVAILABLE_PASSWORDS, mObserver.getModuleType());
+    }
+
+    @Test
+    public void noPasswords() {
+        mockTotalPasswordsCount(0);
+
+        mDataSource.updateState();
+
+        assertEquals(ModuleType.NO_SAVED_PASSWORDS, mObserver.getModuleType());
     }
 }
