@@ -56,8 +56,9 @@ export function getHtml(this: ComparisonTableListItemElement) {
             $i18n{menuOpenInNewWindow}
           </button>
           <hr>
+          <!-- Renaming is not available when the checkbox is showing. -->
           <button id="rename" class="dropdown-item" role="menuitem"
-              @click="${this.onRenameClick_}">
+              @click="${this.onRenameClick_}" ?disabled="${this.hasCheckbox}">
             $i18n{menuRename}
           </button>
           <button id="delete" class="dropdown-item" role="menuitem"
