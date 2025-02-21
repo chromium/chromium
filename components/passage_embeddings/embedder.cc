@@ -10,7 +10,7 @@
 namespace passage_embeddings {
 
 // Close enough to be considered near zero.
-constexpr float kEpsilon = 0.01f;
+constexpr float kEpsilon = 0.00001f;
 
 Embedding::Embedding(std::vector<float> data) : data_(std::move(data)) {}
 Embedding::Embedding() = default;
@@ -39,7 +39,7 @@ float Embedding::Magnitude() const {
 
 void Embedding::Normalize() {
   float magnitude = Magnitude();
-  CHECK_GT(magnitude, kEpsilon);
+  CHECK_GT(magnitude, kEpsilon) << data_.size() << " ; " << magnitude;
   for (float& s : data_) {
     s /= magnitude;
   }
