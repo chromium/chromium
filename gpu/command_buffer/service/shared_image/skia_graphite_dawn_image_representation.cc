@@ -38,6 +38,20 @@ bool SupportsMultiplanarCopy(SharedContextState* context_state) {
   return dawn_context_provider->SupportsFeature(
       wgpu::FeatureName::MultiPlanarFormatExtendedUsages);
 }
+
+wgpu::TextureUsage GetSupportedDawnTextureUsage(
+    const scoped_refptr<SharedContextState>& context_state,
+    SharedImageBacking* backing) {
+  const bool is_dcomp_surface =
+      backing->usage().Has(SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE);
+  const bool supports_multiplanar_rendering =
+      SupportsMultiplanarRendering(context_state.get());
+  const bool supports_multiplanar_copy =
+      SupportsMultiplanarCopy(context_state.get());
+  return SupportedDawnTextureUsage(
+      backing->format(), backing->format().is_multi_plane(), is_dcomp_surface,
+      supports_multiplanar_rendering, supports_multiplanar_copy);
+}
 }  // namespace
 
 // static method.
@@ -51,18 +65,9 @@ SkiaGraphiteDawnImageRepresentation::Create(
     MemoryTypeTracker* tracker,
     int array_slice) {
   CHECK(dawn_representation);
-  const bool is_dcomp_surface =
-      backing->usage().Has(SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE);
-  const bool supports_multiplanar_rendering =
-      SupportsMultiplanarRendering(context_state.get());
-  const bool supports_multiplanar_copy =
-      SupportsMultiplanarCopy(context_state.get());
-  wgpu::TextureUsage supported_tex_usages = SupportedDawnTextureUsage(
-      backing->format(), backing->format().is_multi_plane(), is_dcomp_surface,
-      supports_multiplanar_rendering, supports_multiplanar_copy);
   return base::WrapUnique(new SkiaGraphiteDawnImageRepresentation(
       std::move(dawn_representation), recorder, std::move(context_state),
-      manager, backing, tracker, array_slice, supported_tex_usages));
+      manager, backing, tracker, array_slice));
 }
 
 SkiaGraphiteDawnImageRepresentation::SkiaGraphiteDawnImageRepresentation(
@@ -72,14 +77,14 @@ SkiaGraphiteDawnImageRepresentation::SkiaGraphiteDawnImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    int array_slice,
-    wgpu::TextureUsage supported_tex_usages)
+    int array_slice)
     : SkiaGraphiteImageRepresentation(manager, backing, tracker),
       dawn_representation_(std::move(dawn_representation)),
       context_state_(std::move(context_state)),
       recorder_(recorder),
       array_slice_(array_slice),
-      supported_tex_usages_(supported_tex_usages) {
+      supported_tex_usages_(
+          GetSupportedDawnTextureUsage(context_state_, backing)) {
   CHECK(dawn_representation_);
 }
 

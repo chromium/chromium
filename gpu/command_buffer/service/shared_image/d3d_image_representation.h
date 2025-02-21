@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/buildflags.h"
 
@@ -163,6 +164,33 @@ class D3D11VideoImageCopyRepresentation : public VideoImageRepresentation {
   Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const override;
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
+};
+
+class D3DSkiaGraphiteDawnImageRepresentation
+    : public SkiaGraphiteDawnImageRepresentation {
+ public:
+  static std::unique_ptr<D3DSkiaGraphiteDawnImageRepresentation> Create(
+      std::unique_ptr<DawnImageRepresentation> dawn_representation,
+      scoped_refptr<SharedContextState> context_state,
+      skgpu::graphite::Recorder* recorder,
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      int array_slice = 0);
+
+  ~D3DSkiaGraphiteDawnImageRepresentation() override;
+
+  bool NeedGraphiteContextSubmitBeforeEndAccess() override;
+
+ private:
+  D3DSkiaGraphiteDawnImageRepresentation(
+      std::unique_ptr<DawnImageRepresentation> dawn_representation,
+      skgpu::graphite::Recorder* recorder,
+      scoped_refptr<SharedContextState> context_state,
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      int array_slice);
 };
 
 }  // namespace gpu
