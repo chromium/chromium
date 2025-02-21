@@ -49,17 +49,22 @@ const int kMaxBytesPerCopyOperation = 1024 * 1024 * 4;
 OneCopyRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     OneCopyRasterBufferProvider* client,
     const ResourcePool::InUsePoolResource& in_use_resource,
-    ResourcePool::Backing* backing,
     uint64_t previous_content_id)
     : client_(client),
-      backing_(backing),
       resource_size_(in_use_resource.size()),
       format_(in_use_resource.format()),
       color_space_(in_use_resource.color_space()),
-      previous_content_id_(previous_content_id),
-      before_raster_sync_token_(backing->returned_sync_token),
-      shared_image_(backing->shared_image()),
-      mailbox_texture_is_overlay_candidate_(backing->overlay_candidate) {}
+      previous_content_id_(previous_content_id) {
+  if (!in_use_resource.backing()) {
+    auto backing = std::make_unique<ResourcePool::Backing>();
+    backing->overlay_candidate = client_->tile_overlay_candidate_;
+    in_use_resource.set_backing(std::move(backing));
+  }
+  backing_ = in_use_resource.backing();
+  before_raster_sync_token_ = backing_->returned_sync_token;
+  shared_image_ = backing_->shared_image();
+  mailbox_texture_is_overlay_candidate_ = backing_->overlay_candidate;
+}
 
 OneCopyRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() {
   // This SyncToken was created on the worker context after uploading the
@@ -146,15 +151,9 @@ OneCopyRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
-  if (!resource.backing()) {
-    auto backing = std::make_unique<ResourcePool::Backing>();
-    backing->overlay_candidate = tile_overlay_candidate_;
-    resource.set_backing(std::move(backing));
-  }
-  ResourcePool::Backing* backing = resource.backing();
   // TODO(danakj): If resource_content_id != 0, we only need to copy/upload
   // the dirty rect.
-  return std::make_unique<RasterBufferImpl>(this, resource, backing,
+  return std::make_unique<RasterBufferImpl>(this, resource,
                                             previous_content_id);
 }
 
