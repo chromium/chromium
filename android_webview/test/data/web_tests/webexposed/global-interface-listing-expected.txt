@@ -6661,6 +6661,7 @@ interface Observable
     method drop
     method every
     method filter
+    method finally
     method find
     method first
     method flatMap

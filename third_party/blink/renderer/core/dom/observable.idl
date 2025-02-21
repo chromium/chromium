@@ -67,6 +67,7 @@ interface Observable {
   [CallWith=ScriptState, RaisesException] Observable switchMap(Mapper mapper);
   [CallWith=ScriptState] Observable inspect(optional ObservableInspectorUnion inspect_observer = {});
   [CallWith=ScriptState, RaisesException, ImplementedAs=catchImpl] Observable catch(CatchCallback callback);
+  [CallWith=ScriptState] Observable finally(VoidFunction callback);
 
   // Promise-returning operators.
   // See https://wicg.github.io/observable/#promise-returning-operators.

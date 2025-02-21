@@ -867,6 +867,63 @@ class OperatorCatchSubscribeDelegate final
   Member<V8CatchCallback> catch_callback_;
 };
 
+class OperatorFinallySubscribeDelegate final
+    : public Observable::SubscribeDelegate {
+ public:
+  OperatorFinallySubscribeDelegate(Observable* source_observable,
+                                   V8VoidFunction* callback)
+      : source_observable_(source_observable), callback_(callback) {}
+  void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
+    subscriber->addTeardown(callback_);
+    SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
+    options->setSignal(subscriber->signal());
+
+    source_observable_->SubscribeWithNativeObserver(
+        script_state,
+        MakeGarbageCollected<SourceInternalObserver>(subscriber, script_state),
+        options);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(source_observable_);
+    visitor->Trace(callback_);
+
+    Observable::SubscribeDelegate::Trace(visitor);
+  }
+
+ private:
+  class SourceInternalObserver final : public ObservableInternalObserver {
+   public:
+    SourceInternalObserver(Subscriber* subscriber, ScriptState* script_state)
+        : subscriber_(subscriber), script_state_(script_state) {
+      CHECK(subscriber_);
+      CHECK(script_state_);
+    }
+
+    void Next(ScriptValue value) override { subscriber_->next(value); }
+
+    void Error(ScriptState*, ScriptValue error) override {
+      subscriber_->error(script_state_, error);
+    }
+
+    void Complete() override { subscriber_->complete(script_state_); }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(subscriber_);
+      visitor->Trace(script_state_);
+
+      ObservableInternalObserver::Trace(visitor);
+    }
+
+   private:
+    Member<Subscriber> subscriber_;
+    Member<ScriptState> script_state_;
+  };
+  // The `Observable` which `this` will mirror, when `this` is subscribed to.
+  Member<Observable> source_observable_;
+  Member<V8VoidFunction> callback_;
+};
+
 // This is the subscribe delegate for the `inspect()` operator. It allows one to
 // supply a pseudo "Observer" dictionary, specifically an `ObservableInspector`,
 // which can tap into the direct outputs of a source Observable. It mirrors its
@@ -2901,6 +2958,13 @@ Observable* Observable::catchImpl(ScriptState*,
   Observable* return_observable = MakeGarbageCollected<Observable>(
       GetExecutionContext(),
       MakeGarbageCollected<OperatorCatchSubscribeDelegate>(this, callback));
+  return return_observable;
+}
+
+Observable* Observable::finally(ScriptState*, V8VoidFunction* callback) {
+  Observable* return_observable = MakeGarbageCollected<Observable>(
+      GetExecutionContext(),
+      MakeGarbageCollected<OperatorFinallySubscribeDelegate>(this, callback));
   return return_observable;
 }
 

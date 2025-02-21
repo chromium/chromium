@@ -1568,6 +1568,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method drop
 [Worker]     method every
 [Worker]     method filter
+[Worker]     method finally
 [Worker]     method find
 [Worker]     method first
 [Worker]     method flatMap
