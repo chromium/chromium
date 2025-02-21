@@ -6,11 +6,18 @@ package org.chromium.chrome.browser.autofill;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -27,7 +34,6 @@ import org.chromium.components.image_fetcher.test.TestImageFetcher;
 import org.chromium.url.GURL;
 
 import java.util.Map;
-import java.util.Optional;
 
 /** Unit tests for {@link AutofillImageFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -208,25 +214,30 @@ public class AutofillImageFetcherTest {
 
     @Test
     @SmallTest
-    public void testGetPixAccountImageIfAvailable_imageInCache() {
+    public void testGetPixAccountIcon_imageInCache() {
         GURL validUrl = new GURL("https://www.google.com/valid-image-url");
         GURL cachedValidUrl = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(validUrl);
         mImageFetcher.addImageToCacheForTesting(cachedValidUrl, TEST_CARD_ART_IMAGE);
 
-        Optional<Bitmap> pixAccountImage = mImageFetcher.getPixAccountImageIfAvailable(validUrl);
+        Drawable pixAccountIcon =
+                mImageFetcher.getPixAccountIcon(ContextUtils.getApplicationContext(), validUrl);
 
-        assertTrue(pixAccountImage.isPresent());
-        assertTrue(TEST_CARD_ART_IMAGE.sameAs(pixAccountImage.get()));
+        assertTrue(TEST_CARD_ART_IMAGE.sameAs(drawableToBitmap(pixAccountIcon)));
     }
 
     @Test
     @SmallTest
-    public void testGetPixAccountImageIfAvailable_imageNotInCache() {
+    public void testGetPixAccountIcon_imageNotInCache() {
         GURL validUrl = new GURL("https://www.google.com/valid-image-url");
+        Context context = ContextUtils.getApplicationContext();
 
-        Optional<Bitmap> pixAccountImage = mImageFetcher.getPixAccountImageIfAvailable(validUrl);
+        Drawable genericBankAccountIcon =
+                AppCompatResources.getDrawable(context, R.drawable.ic_account_balance);
+        Drawable pixAccountIcon = mImageFetcher.getPixAccountIcon(context, validUrl);
 
-        assertFalse(pixAccountImage.isPresent());
+        assertNotNull(pixAccountIcon);
+        assertTrue(
+                drawableToBitmap(genericBankAccountIcon).sameAs(drawableToBitmap(pixAccountIcon)));
     }
 
     @Test
@@ -250,5 +261,26 @@ public class AutofillImageFetcherTest {
                         .getImageIfAvailable(cardArtUrl, cardIconSpecs)
                         .get()
                         .sameAs(treatedImage));
+    }
+
+    private @Nullable Bitmap drawableToBitmap(Drawable drawable) {
+        if (drawable == null) {
+            return null;
+        }
+
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        // Create a copy of the drawable in bitmap format.
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(),
+                        Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 }

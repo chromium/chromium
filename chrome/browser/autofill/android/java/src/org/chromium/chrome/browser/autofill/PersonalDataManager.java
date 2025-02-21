@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -1174,13 +1175,14 @@ public class PersonalDataManager implements Destroyable {
     }
 
     /**
-     * Requests the Pix account image for the given URL from image fetcher.
+     * Requests the Pix account icon from image fetcher.
      *
+     * @param context {@link Context} to get the resources.
      * @param url URL for the image.
-     * @return Bitmap image if found in the local cache, else return an empty object.
+     * @return {@link Drawable} for the Pix bank account.
      */
-    public Optional<Bitmap> getPixAccountImageIfAvailable(GURL url) {
-        return mImageFetcher.getPixAccountImageIfAvailable(url);
+    public Drawable getPixAccountIcon(Context context, GURL url) {
+        return mImageFetcher.getPixAccountIcon(context, url);
     }
 
     /**

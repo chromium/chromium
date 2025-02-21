@@ -32,7 +32,10 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
@@ -98,18 +101,20 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private WebContents mWebContents;
-    @Mock private ManagedBottomSheetController mBottomSheetController;
     @Mock private FacilitatedPaymentsPaymentMethodsComponent.Delegate mDelegateMock;
+    @Mock private ManagedBottomSheetController mBottomSheetController;
+    @Mock private PersonalDataManager mPersonalDataManager;
     @Mock private Profile mProfile;
+    @Mock private WebContents mWebContents;
 
     private Context mApplicationContext;
-
     private FacilitatedPaymentsPaymentMethodsViewBridge mViewBridge;
     private WindowAndroid mWindow;
 
     @Before
     public void setUp() {
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
+        PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         mApplicationContext = ApplicationProvider.getApplicationContext();
         mWindow = new WindowAndroid(mApplicationContext, /* trackOcclusion= */ false);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);

@@ -6,6 +6,11 @@ package org.chromium.chrome.browser.autofill;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
@@ -78,19 +83,20 @@ public class AutofillImageFetcher {
     }
 
     /**
-     * Returns the Pix bank account image if it exists in the image cache.
+     * Returns the Pix bank account icon. Prefers Pix account specific image if it exists in cache,
+     * else a generic bank icon is returned.
      *
+     * @param context {@link Context} to get the resources.
      * @param url The URL for the image.
-     * @return Bitmap image for the passed in URL if it exists in cache, an empty object otherwise.
+     * @return {@link Drawable} to be displayed for the Pix account.
      */
-    Optional<Bitmap> getPixAccountImageIfAvailable(GURL url) {
-        GURL cachedUrl = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(url);
-        // Check if the image is available in the cache.
-        if (mImagesCache.containsKey(cachedUrl.getSpec())) {
-            return Optional.of(mImagesCache.get(cachedUrl.getSpec()));
+    Drawable getPixAccountIcon(Context context, @Nullable GURL url) {
+        GURL cachedUrl = new GURL("");
+        if (url != null && url.isValid()) {
+            cachedUrl = AutofillImageFetcherUtils.getPixAccountImageUrlWithParams(url);
         }
 
-        return Optional.empty();
+        return getIcon(context, cachedUrl, R.drawable.ic_account_balance);
     }
 
     /**
@@ -192,6 +198,26 @@ public class AutofillImageFetcher {
 
         mImagesCache.put(
                 urlToCache.getSpec(), AutofillImageFetcherUtils.treatPixAccountImage(bitmap));
+    }
+
+    /**
+     * Returns a custom image cached with `cachedUrl` as key if it exists. Else returns resource
+     * corresponding to `defaultIconId`.
+     *
+     * @param context {@link Context} to get the resources.
+     * @param cachedUrl The key for the cached custom image.
+     * @param defaultIconId Resource id of the default fallback icon.
+     * @return {@link Drawable} which is either the custom icon corresponding to `cachedUrl` from
+     *     cache or the fallback icon corresponding to `defaultIconId` from resources. Prefers
+     *     former over latter.
+     */
+    private Drawable getIcon(Context context, GURL cachedUrl, int defaultIconId) {
+        if (cachedUrl.isValid() && mImagesCache.containsKey(cachedUrl.getSpec())) {
+            return new BitmapDrawable(
+                    context.getResources(), mImagesCache.get(cachedUrl.getSpec()));
+        }
+
+        return AppCompatResources.getDrawable(context, defaultIconId);
     }
 
     /**

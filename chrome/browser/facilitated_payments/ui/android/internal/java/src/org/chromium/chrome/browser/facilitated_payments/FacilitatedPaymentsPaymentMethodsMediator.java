@@ -5,8 +5,7 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_DRAWABLE_ID;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_ICON_BITMAP;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_ICON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_SUMMARY;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_TRANSACTION_LIMIT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
@@ -328,30 +327,16 @@ class FacilitatedPaymentsPaymentMethodsMediator {
 
     @VisibleForTesting
     PropertyModel createBankAccountModel(Context context, BankAccount bankAccount) {
-        PropertyModel.Builder bankAccountModelBuilder =
-                new PropertyModel.Builder(BankAccountProperties.NON_TRANSFORMING_KEYS)
-                        .with(BANK_NAME, bankAccount.getBankName())
-                        .with(
-                                BANK_ACCOUNT_SUMMARY,
-                                getBankAccountSummaryString(context, bankAccount))
-                        .with(
-                                BANK_ACCOUNT_TRANSACTION_LIMIT,
-                                getBankAccountTransactionLimit(context))
-                        .with(
-                                ON_BANK_ACCOUNT_CLICK_ACTION,
-                                () -> this.onBankAccountSelected(bankAccount));
-        Optional<Bitmap> bankIconOptional = Optional.empty();
-        if (bankAccount.getDisplayIconUrl() != null && bankAccount.getDisplayIconUrl().isValid()) {
-            bankIconOptional =
-                    PersonalDataManagerFactory.getForProfile(mProfile)
-                            .getPixAccountImageIfAvailable(bankAccount.getDisplayIconUrl());
-        }
-        if (bankIconOptional.isPresent()) {
-            bankAccountModelBuilder.with(BANK_ACCOUNT_ICON_BITMAP, bankIconOptional.get());
-        } else {
-            bankAccountModelBuilder.with(BANK_ACCOUNT_DRAWABLE_ID, R.drawable.ic_account_balance);
-        }
-        return bankAccountModelBuilder.build();
+        return new PropertyModel.Builder(BankAccountProperties.NON_TRANSFORMING_KEYS)
+                .with(BANK_NAME, bankAccount.getBankName())
+                .with(BANK_ACCOUNT_SUMMARY, getBankAccountSummaryString(context, bankAccount))
+                .with(BANK_ACCOUNT_TRANSACTION_LIMIT, getBankAccountTransactionLimit(context))
+                .with(ON_BANK_ACCOUNT_CLICK_ACTION, () -> this.onBankAccountSelected(bankAccount))
+                .with(
+                        BANK_ACCOUNT_ICON,
+                        PersonalDataManagerFactory.getForProfile(mProfile)
+                                .getPixAccountIcon(context, bankAccount.getDisplayIconUrl()))
+                .build();
     }
 
     @VisibleForTesting
