@@ -171,6 +171,38 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
   }
 }
 
+void PdfInkModule::GenerateAndSendInkThumbnail(
+    int page_index,
+    const gfx::Size& thumbnail_size) {
+  CHECK(!thumbnail_size.IsEmpty());
+
+  auto info = SkImageInfo::Make(thumbnail_size.width(), thumbnail_size.height(),
+                                kRGBA_8888_SkColorType, kUnpremul_SkAlphaType);
+  const size_t alloc_size = info.computeMinByteSize();
+  CHECK(!SkImageInfo::ByteSizeOverflowed(alloc_size));
+  std::vector<uint8_t> image_data(alloc_size);
+
+  SkBitmap sk_bitmap;
+  sk_bitmap.installPixels(info, image_data.data(), info.minRowBytes());
+  SkCanvas canvas(sk_bitmap);
+  if (!DrawThumbnail(canvas, page_index)) {
+    return;
+  }
+
+  base::Value::Dict message;
+  message.Set("type", "updateInk2Thumbnail");
+  message.Set("pageNumber", page_index + 1);
+  message.Set("imageData", std::move(image_data));
+  message.Set("width", thumbnail_size.width());
+  message.Set("height", thumbnail_size.height());
+  client_->PostMessage(std::move(message));
+}
+
+void PdfInkModule::GenerateAndSendInkThumbnailInternal(int page_index) {
+  return GenerateAndSendInkThumbnail(page_index,
+                                     client_->GetThumbnailSize(page_index));
+}
+
 bool PdfInkModule::DrawThumbnail(SkCanvas& canvas, int page_index) {
   auto it = strokes_.find(page_index);
   if (it == strokes_.end() || it->second.empty()) {
@@ -615,7 +647,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   }
 
   client_->StrokeFinished();
-  client_->UpdateThumbnail(state.page_index);
+  GenerateAndSendInkThumbnailInternal(state.page_index);
 
   bool undo_redo_success = undo_redo_model_.FinishDraw();
   CHECK(undo_redo_success);
@@ -709,7 +741,7 @@ bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position,
   if (!state.page_indices_with_erasures.empty()) {
     client_->StrokeFinished();
     for (int page_index : state.page_indices_with_erasures) {
-      client_->UpdateThumbnail(page_index);
+      GenerateAndSendInkThumbnailInternal(page_index);
     }
 
     ReportEraseStroke(eraser_size_, tool_type);
@@ -1174,7 +1206,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
   }
 
   for (int page_index : page_indices_with_thumbnail_updates) {
-    client_->UpdateThumbnail(page_index);
+    GenerateAndSendInkThumbnailInternal(page_index);
   }
 }
 
