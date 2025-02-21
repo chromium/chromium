@@ -271,8 +271,18 @@ std::vector<LocalTabID> TabGroupSyncDelegateDesktop::GetLocalTabIdsForTabGroup(
 }
 
 std::set<LocalTabID> TabGroupSyncDelegateDesktop::GetSelectedTabs() {
-  // TODO(crbug.com/396530700): Implement.
-  return std::set<LocalTabID>();
+  std::set<LocalTabID> selected_tab_ids;
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->tab_strip_model()) {
+      tabs::TabInterface* active_tab =
+          browser->tab_strip_model()->GetActiveTab();
+      if (active_tab) {
+        selected_tab_ids.insert(active_tab->GetHandle().raw_value());
+      }
+    }
+  }
+
+  return selected_tab_ids;
 }
 
 std::u16string TabGroupSyncDelegateDesktop::GetTabTitle(
