@@ -815,6 +815,9 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('\n')
                 sb.append('  # Rules are unnecessary.\n')
                 sb.append('  ignore_proguard_configs = true\n')
+                sb.append('\n')
+                sb.append('  # Chrome does not use the APIs that require the native library.\n')
+                sb.append('  ignore_native_libraries = true\n')
                 break
             case 'net_sf_kxml_kxml2':
                 sb.append('  # Target needs to exclude *xmlpull* files as already included in Android SDK.\n')

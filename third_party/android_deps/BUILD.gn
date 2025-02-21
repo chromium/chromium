@@ -674,6 +674,21 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  android_aar_prebuilt("com_google_ar_impress_java") {
+    aar_path = "cipd/libs/com_google_ar_impress/impress-0.0.2.aar"
+    info_path = "libs/com_google_ar_impress/com_google_ar_impress.info"
+    enable_bytecode_checks = false
+    deps =
+        [ "//third_party/androidx:androidx_concurrent_concurrent_futures_java" ]
+
+    # Rules are unnecessary.
+    ignore_proguard_configs = true
+
+    # Chrome does not use the APIs that require the native library.
+    ignore_native_libraries = true
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (!defined(dagger_java_target)) {
     java_prebuilt("com_google_dagger_dagger_java") {
       jar_path = "cipd/libs/com_google_dagger_dagger/dagger-2.52.jar"
