@@ -65,12 +65,10 @@ class Subscriber::ConsumerAbortSubscriptionAlgorithm final
 };
 
 Subscriber::Subscriber(base::PassKey<Observable>,
-                       Observable* owning_observable,
                        ScriptState* script_state,
                        ObservableInternalObserver* internal_observer,
                        SubscribeOptions* options)
     : ExecutionContextClient(ExecutionContext::From(script_state)),
-      owning_observable_(owning_observable),
       subscription_controller_(AbortController::Create(script_state)) {
   internal_observers_.push_back(internal_observer);
 
@@ -220,8 +218,6 @@ void Subscriber::CloseSubscription(ScriptState* script_state,
   //     any more values to downstream `Observer`-provided callbacks.
   active_ = false;
 
-  owning_observable_->ClearSubscriber(PassKey());
-
   // 2. Abort `subscription_controller_`. This actually does two things:
   //    (a) Immediately aborts any "upstream" subscriptions, i.e., any
   //        observables that the observable associated with `this` had
@@ -276,7 +272,6 @@ void Subscriber::Trace(Visitor* visitor) const {
   visitor->Trace(subscription_controller_);
   visitor->Trace(consumer_abort_algorithms_);
   visitor->Trace(teardown_callbacks_);
-  visitor->Trace(owning_observable_);
   visitor->Trace(internal_observers_);
 
   ScriptWrappable::Trace(visitor);

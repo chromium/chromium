@@ -111,10 +111,6 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
 
   void Trace(Visitor*) const override;
 
-  void ClearSubscriber(base::PassKey<Subscriber>) {
-    active_subscriber_ = nullptr;
-  }
-
   // The `subscribe()` API is used when web content subscribes to an Observable
   // with a `V8UnionObserverOrObserverCallback`, whereas this API is used when
   // native code subscribes to an `Observable` with a native internal observer.
@@ -150,11 +146,12 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
   const Member<V8SubscribeCallback> subscribe_callback_;
   const Member<SubscribeDelegate> subscribe_delegate_;
 
-  // The active subscriber associated with `this`. It is set in
+  // The most recent `Subscriber` associated with `this`. It is set in
   // `SubscribeInternal`, and used to register all subsequent subscriptions
-  // until it becomes inactive. Once inactive, `this` clears this pointer until
-  // the next invocation of `SubscribeInternal()`.
-  Member<Subscriber> active_subscriber_;
+  // until it becomes inactive or garbage collected. Once inactive or garbage
+  // collected, `this` no longer has an "active" subscription, and this member
+  // will be set anew in subsequent invocations of `SubscribeInternal()`.
+  WeakMember<Subscriber> weak_subscriber_;
 };
 
 }  // namespace blink

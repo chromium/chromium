@@ -29,7 +29,6 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
 
  public:
   Subscriber(base::PassKey<Observable>,
-             Observable*,
              ScriptState*,
              ObservableInternalObserver*,
              SubscribeOptions*);
@@ -77,13 +76,6 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   //      upstream signals.
   void CloseSubscription(ScriptState* script_state,
                          std::optional<ScriptValue> abort_reason);
-
-  // The `Observable` that owns `this`. We need this back reference so that when
-  // the subscription to `this` ends (i.e., when `active_` becomes false),
-  // `this` can tell `owning_observable_` to clear its reference to `this`. That
-  // way future subscriptions to `owning_observable_` spin up a new `Subscriber`
-  // altogether.
-  Member<Observable> owning_observable_;
 
   // The list of `ObservableInternalObserver`s which encapsulate algorithms to
   // call when `this` produces values or actions that need to be pushed to the

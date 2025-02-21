@@ -2608,15 +2608,15 @@ void Observable::SubscribeInternal(
   }
 
   CHECK(observer);
-  if (active_subscriber_) {
-    active_subscriber_->RegisterNewObserver(script_state, observer, options);
+  if (weak_subscriber_ && weak_subscriber_->active()) {
+    weak_subscriber_->RegisterNewObserver(script_state, observer, options);
     return;
   }
 
-  // Construct `active_subscriber_` for the first subscription. This will take
+  // Construct `weak_subscriber_` for the first subscription. This will take
   // care of registering `observer` as the first observer.
-  active_subscriber_ = MakeGarbageCollected<Subscriber>(
-      PassKey(), this, script_state, observer, options);
+  weak_subscriber_ = MakeGarbageCollected<Subscriber>(PassKey(), script_state,
+                                                      observer, options);
 
   // Exactly one of `subscribe_callback_` or `subscribe_delegate_` is non-null.
   // Use whichever is provided.
@@ -2624,7 +2624,7 @@ void Observable::SubscribeInternal(
       << "Exactly one of subscribe_callback_ or subscribe_delegate_ should be "
          "non-null";
   if (subscribe_delegate_) {
-    subscribe_delegate_->OnSubscribe(active_subscriber_, script_state);
+    subscribe_delegate_->OnSubscribe(weak_subscriber_, script_state);
     return;
   }
 
@@ -2646,19 +2646,23 @@ void Observable::SubscribeInternal(
 
   ScriptState::Scope scope(script_state);
   v8::TryCatch try_catch(script_state->GetIsolate());
-  std::ignore = subscribe_callback_->Invoke(nullptr, active_subscriber_);
+  std::ignore = subscribe_callback_->Invoke(nullptr, weak_subscriber_);
   if (try_catch.HasCaught()) {
-    // If the above `subscribe_callback_` closes the subscription,
-    // `active_subscriber_` will be cleared to null. In the case where closing
-    // the subscription also throws an error (i.e., an exception-throwing
-    // `complete()` handler), then `try_catch.HasCaught()` will be true even
-    // though `active_subscriber_` is null; so we must report the exception to
-    // the global instead.
-    if (active_subscriber_) {
-      active_subscriber_->error(
+    // There are two cases where we might have a JS exception on the stack here:
+    //   1. The `subscribe_callback_` immediately started pushing values to the
+    //      observer, and somewhere along the way an exception was thrown. In
+    //      this case, `weak_subscriber_` is non-null, and still active. Report
+    //      the exception to it.
+    if (weak_subscriber_->active()) {
+      weak_subscriber_->error(
           script_state,
           ScriptValue(script_state->GetIsolate(), try_catch.Exception()));
     } else {
+      // 2. The `subscriber_callback_` immediately closed the subscription, and
+      //    during this, an error was thrown (an exception-throwing `complete()`
+      //    handler for example). In that case, `weak_subscriber_` is non-null
+      //    but inactive. Report the exception to the global instead of the
+      //    subscriber.
       if (!script_state->ContextIsValid()) {
         CHECK(!GetExecutionContext());
         return;
@@ -3228,7 +3232,7 @@ ScriptPromise<IDLAny> Observable::ReduceInternal(
 void Observable::Trace(Visitor* visitor) const {
   visitor->Trace(subscribe_callback_);
   visitor->Trace(subscribe_delegate_);
-  visitor->Trace(active_subscriber_);
+  visitor->Trace(weak_subscriber_);
 
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
