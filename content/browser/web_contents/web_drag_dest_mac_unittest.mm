@@ -39,6 +39,38 @@ TEST_F(WebDragDestTest, Init) {
   EXPECT_TRUE(drag_dest_);
 }
 
+TEST_F(WebDragDestTest, EndDragSync) {
+  // When there is no pending drop operation, calling `endDrag` should just
+  // synchronously call any passed callback. If it didn't, the test would fail
+  // from `run_loop` timing out.
+  base::RunLoop run_loop;
+  [drag_dest_ endDrag:run_loop.QuitClosure()];
+  run_loop.Run();
+}
+
+TEST_F(WebDragDestTest, EndDragAsync) {
+  // When there is a pending drop operation, calling `endDrag` should store the
+  // passed callback and call it after `completeDropAsync` resolves.
+  [drag_dest_ setDropInProgressForTesting];
+
+  base::RunLoop run_loop;
+  [drag_dest_ endDrag:run_loop.QuitClosure()];
+
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
+  EXPECT_TRUE([drag_dest_ dropInProgressForTesting]);
+
+  [drag_dest_
+      completeDropAsync:std::nullopt
+            withContext:content::DropContext(content::DropData(), gfx::PointF(),
+                                             gfx::PointF(), 0,
+                                             main_test_rfh()
+                                                 ->GetRenderWidgetHost()
+                                                 ->GetWeakPtr())];
+
+  run_loop.Run();
+  EXPECT_FALSE([drag_dest_ dropInProgressForTesting]);
+}
+
 TEST_F(WebDragDestTest, Data) {
   scoped_refptr<ui::UniquePasteboard> pboard = new ui::UniquePasteboard;
   NSString* html_string = @"<html><body><b>hi there</b></body></html>";

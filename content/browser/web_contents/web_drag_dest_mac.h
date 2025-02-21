@@ -34,7 +34,7 @@ class WebContentsViewDelegate;
 // A structure used to keep drop context for asynchronously finishing a drop
 // operation. This is required because some drop event data can change before
 // completeDropAsync is called.
-struct DropContext {
+struct CONTENT_EXPORT DropContext {
   DropContext(const DropData drop_data,
               const gfx::PointF client_pt,
               const gfx::PointF screen_pt,
@@ -106,8 +106,16 @@ CONTENT_EXPORT
                                 dropData:(const content::DropData&)dropData;
 
 // Called to indicate that, if the owning WebContents has initiated a drag, that
-// drag has ended.
-- (void)endDrag;
+// drag has ended. The closure will be called synchronously if the "dragend"
+// event can be fired, or asynchronously if a "drop" event is still pending
+// since it should be fired first.
+- (void)endDrag:(base::OnceClosure)closure;
+
+// Resets internal members for a pending drop.
+- (void)resetDragDropState;
+
+- (bool)dropInProgressForTesting;
+- (void)setDropInProgressForTesting;
 
 @end
 
