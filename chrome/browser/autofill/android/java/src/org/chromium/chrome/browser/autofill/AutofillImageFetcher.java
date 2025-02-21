@@ -78,8 +78,7 @@ public class AutofillImageFetcher {
     }
 
     /**
-     * Returns the Pix bank account image if it exists in the image cache. If not, fetches it from
-     * the server and caches it for the next time.
+     * Returns the Pix bank account image if it exists in the image cache.
      *
      * @param url The URL for the image.
      * @return Bitmap image for the passed in URL if it exists in cache, an empty object otherwise.
@@ -91,8 +90,6 @@ public class AutofillImageFetcher {
             return Optional.of(mImagesCache.get(cachedUrl.getSpec()));
         }
 
-        // If not, fetch the image from the server, and cache for next time. Return empty object.
-        fetchImage(cachedUrl, bitmap -> treatAndCachePixAccountImage(bitmap, cachedUrl));
         return Optional.empty();
     }
 
