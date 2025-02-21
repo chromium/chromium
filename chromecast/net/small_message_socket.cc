@@ -42,9 +42,9 @@ constexpr size_t kMax2ByteSize = std::numeric_limits<uint16_t>::max();
 
 SmallMessageSocket::BufferWrapper::BufferWrapper() = default;
 SmallMessageSocket::BufferWrapper::~BufferWrapper() {
-  // The `data_` pointer in the base class is pointing into the buffer in the
-  // `buffer_` field. Stop pointing into the field before its buffer is freed.
-  data_ = nullptr;
+  // The base class has a reference to the buffer in the `buffer_` field. Stop
+  // pointing into the field before its buffer is freed.
+  ClearSpan();
 }
 
 void SmallMessageSocket::BufferWrapper::SetUnderlyingBuffer(
@@ -55,9 +55,7 @@ void SmallMessageSocket::BufferWrapper::SetUnderlyingBuffer(
   buffer_ = std::move(buffer);
   used_ = 0;
   capacity_ = capacity;
-
-  size_ = capacity_;
-  data_ = buffer_->data();
+  SetSpan(buffer_->span().first(capacity_));
 }
 
 scoped_refptr<net::IOBuffer>
@@ -66,18 +64,17 @@ SmallMessageSocket::BufferWrapper::TakeUnderlyingBuffer() {
 }
 
 void SmallMessageSocket::BufferWrapper::ClearUnderlyingBuffer() {
-  data_ = nullptr;
+  ClearSpan();
   buffer_.reset();
 }
 
 void SmallMessageSocket::BufferWrapper::DidConsume(size_t bytes) {
   CHECK(buffer_);
-  CHECK_LE(bytes, static_cast<size_t>(size_));
+  CHECK_LE(bytes, static_cast<size_t>(size()));
 
-  size_ -= bytes;
+  SetSpan(span().subspan(bytes));
   used_ += bytes;
-  data_ += bytes;
-  CHECK_EQ(data_, buffer_->data() + used_);
+  CHECK_EQ(data(), buffer_->data() + used_);
 }
 
 char* SmallMessageSocket::BufferWrapper::StartOfBuffer() const {
@@ -87,7 +84,7 @@ char* SmallMessageSocket::BufferWrapper::StartOfBuffer() const {
 
 base::span<const uint8_t> SmallMessageSocket::BufferWrapper::used_span() const {
   CHECK(buffer_);
-  return base::span(buffer_->bytes(), used_);
+  return buffer_->span().first(used_);
 }
 
 SmallMessageSocket::SmallMessageSocket(Delegate* delegate,
