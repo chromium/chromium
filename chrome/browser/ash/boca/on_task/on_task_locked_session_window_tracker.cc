@@ -9,6 +9,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/boca/on_task/on_task_pod_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -19,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chrome/browser/ash/boca/on_task/on_task_pod_controller_impl.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -96,6 +99,10 @@ void LockedSessionWindowTracker::InitializeBrowserInfoForTracking(
   }
   browser_ = browser;
   browser_->tab_strip_model()->AddObserver(this);
+  if (ash::features::IsBocaOnTaskPodEnabled()) {
+    on_task_pod_controller_ =
+        std::make_unique<ash::OnTaskPodControllerImpl>(browser_);
+  }
 }
 
 void LockedSessionWindowTracker::RefreshUrlBlocklist() {
@@ -208,6 +215,7 @@ void LockedSessionWindowTracker::CleanupWindowTracker() {
   if (on_task_blocklist_) {
     on_task_blocklist_->CleanupBlocklist();
   }
+  on_task_pod_controller_.reset();
   browser_ = nullptr;
   can_open_new_popup_ = true;
   oauth_in_progress_ = false;
@@ -255,6 +263,14 @@ void LockedSessionWindowTracker::SetNotificationManagerForTesting(
     std::unique_ptr<ash::boca::OnTaskNotificationsManager>
         notifications_manager) {
   notifications_manager_ = std::move(notifications_manager);
+}
+
+ash::OnTaskPodController*
+LockedSessionWindowTracker::GetOnTaskPodControllerForTesting() {
+  if (!on_task_pod_controller_) {
+    return nullptr;
+  }
+  return on_task_pod_controller_.get();
 }
 
 void LockedSessionWindowTracker::OnTabStripModelChanged(

@@ -30,6 +30,7 @@ include_rules = [
   "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h",
   "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser_command_controller.h",
   "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_list_observer.h",
@@ -37,6 +38,7 @@ include_rules = [
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/exclusive_access/exclusive_access_manager.h",
   "+chrome/browser/ui/exclusive_access/fullscreen_controller.h",
+  "+chrome/browser/ui/views/frame/browser_view.h",
   "+chrome/browser/ui/tabs/tab_enums.h",
   "+chrome/browser/ui/tabs/tab_strip_model_delegate.h",
   "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
@@ -57,7 +59,6 @@ specific_include_rules = {
       "+chrome/browser/content_settings/host_content_settings_map_factory.h",
   ],
   "on_task_locked_session_navigation_throttle_interactive_ui_test.cc": [
-      "+chrome/browser/ui/browser_commands.h",
       "+chrome/browser/ui/browser_navigator_params.h",
       "+chrome/browser/ui/test/test_browser_closed_waiter.h",
       "+chrome/test/base/interactive_test_utils.h",
@@ -68,6 +69,9 @@ specific_include_rules = {
       "+chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h",
       "+chrome/common/chrome_paths.h",
       "+chrome/test/base/ui_test_utils.h"
+  ],
+  "on_task_pod_controller_impl_browsertest.cc": [
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
   ],
   "on_task_session_manager_browsertest.cc": [
       "+chrome/browser/ui/browser_commands.h",
