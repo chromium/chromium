@@ -754,15 +754,16 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot, {}},
          {features::kBackForwardCache, {}},
          {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
+         {blink::features::kFledgeDeprecatedRenderURLReplacements, {}},
+         {blink::features::kFledgeMultiBid, {}},
+         {blink::features::kFledgeReportingTimeout, {}},
          {blink::features::kFledgeSampleDebugReports, {}},
+         {blink::features::kFledgeEnableSampleDebugReportOnCookieSetting, {}},
          // These are in field trial config, but we want this consistent among
          // bots.
-         {blink::features::kFledgeMultiBid, {}},
          {blink::features::kFledgeCustomMaxAuctionAdComponents,
           {{"FledgeAdComponentLimit", "40"}}},
-         {blink::features::kFledgeReportingTimeout, {}},
          {blink::features::kFledgeAuctionDealSupport, {}},
-         {blink::features::kFledgeDeprecatedRenderURLReplacements, {}},
          // TODO(crrev.com/c/6096602): Remove once implementation is removed.
          {blink::features::kFledgeDirectFromSellerSignalsWebBundles, {}},
          {blink::features::kFledgeTrustedSignalsKVv2Support, {}},
