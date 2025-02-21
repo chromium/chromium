@@ -24,7 +24,6 @@ found in the LICENSE file.
         android:contentDescription="@string/facilitated_payments_google_pay"
         android:focusable="true" />
 
-    <!-- TODO: b/348142430 - Make the track for the progress spinner visible. -->
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
