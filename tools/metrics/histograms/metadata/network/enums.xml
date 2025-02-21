@@ -674,75 +674,73 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="IpProtectionTokenBatchRequestError">
-  <int value="11349147"
-      label="GetInitialDataRequest failed with code: CANCELLED"/>
-  <int value="38566357" label="AuthAndSign failed with code: UNIMPLEMENTED"/>
   <int value="58877100" label="Failed to read timestamp"/>
-  <int value="228126305"
-      label="GetInitialDataRequest failed with code: DATA_LOSS"/>
+  <int value="98098191" label="AuthAndSign failed with code: ALREADY_EXISTS"/>
+  <int value="159430335"
+      label="GetInitialDataRequest failed with code: CANCELLED"/>
   <int value="354921842" label="At least one extension is required"/>
-  <int value="367143356" label="AuthAndSign failed with code: UNKNOWN"/>
-  <int value="436759288"
-      label="GetInitialDataRequest failed with code: UNKNOWN"/>
-  <int value="657947416" label="AuthAndSign failed with code: INTERNAL"/>
-  <int value="719675360" label="AuthAndSign failed with code: OUT_OF_RANGE"/>
-  <int value="1138810147"
+  <int value="774920404"
+      label="GetInitialDataRequest failed with code: INTERNAL"/>
+  <int value="788650824"
+      label="GetInitialDataRequest failed with code: ABORTED"/>
+  <int value="882579398"
       label="AuthAndSign failed with code: DEADLINE_EXCEEDED"/>
   <int value="1218093704" label="Failed to read extensions"/>
-  <int value="1398621408"
-      label="GetInitialDataRequest failed with code: UNIMPLEMENTED"/>
+  <int value="1324062375"
+      label="AuthAndSign failed with code: PERMISSION_DENIED"/>
+  <int value="1359797045" label="AuthAndSign failed with code: OUT_OF_RANGE"/>
+  <int value="1392994811"
+      label="GetInitialDataRequest failed with code: FAILED_PRECONDITION"/>
+  <int value="1443500571"
+      label="GetInitialDataRequest failed with code: DATA_LOSS"/>
+  <int value="1531246641" label="AuthAndSign failed with code: DATA_LOSS"/>
   <int value="1560305329"
       label="GetInitialDataRequest failed: invalid response"/>
-  <int value="1695862735" label="AuthAndSign failed with code: ABORTED"/>
-  <int value="1782033339" label="AuthAndSign failed: invalid response"/>
-  <int value="2140081080"
+  <int value="1570178381"
       label="GetInitialDataRequest failed with code: RESOURCE_EXHAUSTED"/>
-  <int value="2141269466" label="Failed to validate extensions"/>
-  <int value="2288098416" label="AuthAndSign failed with code: OK"/>
-  <int value="2336461300"
+  <int value="1632191523"
+      label="GetInitialDataRequest failed with code: UNKNOWN"/>
+  <int value="1632242186"
+      label="AuthAndSign failed with code: RESOURCE_EXHAUSTED"/>
+  <int value="1637757426"
       label="GetInitialDataRequest failed with code: UNAUTHENTICATED"/>
-  <int value="2408268044" label="AuthAndSign failed"/>
-  <int value="2408936797"
-      label="GetInitialDataRequest failed with code: OUT_OF_RANGE"/>
-  <int value="2499012166"
-      label="GetInitialDataRequest failed with code: INVALID_ARGUMENT"/>
-  <int value="2505471972"
-      label="GetInitialDataRequest failed with code: FAILED_PRECONDITION"/>
-  <int value="2528366448" label="Failed to parse GetInitialDataResponse"/>
-  <int value="2567182032"
+  <int value="1741288262" label="AuthAndSign failed with code: CANCELLED"/>
+  <int value="1782033339" label="AuthAndSign failed: invalid response"/>
+  <int value="1916829389"
+      label="GetInitialDataRequest failed with code: NOT_FOUND"/>
+  <int value="2040698924" label="AuthAndSign failed with code: NOT_FOUND"/>
+  <int value="2073947853"
       label="AuthAndSign failed with code: UNAUTHENTICATED"/>
-  <int value="2743627810" label="AuthAndSign failed with code: DATA_LOSS"/>
-  <int value="2867080750" label="Failed to read timestamp_precision"/>
-  <int value="3039663854"
-      label="AuthAndSign failed with code: INVALID_ARGUMENT"/>
-  <int value="3234094142" label="AuthAndSign failed with code: NOT_FOUND"/>
-  <int value="3262918400"
+  <int value="2141269466" label="Failed to validate extensions"/>
+  <int value="2339897637"
+      label="GetInitialDataRequest failed with code: UNAVAILABLE"/>
+  <int value="2408268044" label="AuthAndSign failed"/>
+  <int value="2528366448" label="Failed to parse GetInitialDataResponse"/>
+  <int value="2528411010"
+      label="GetInitialDataRequest failed with code: OUT_OF_RANGE"/>
+  <int value="2594877687"
       label="GetInitialDataRequest failed with code: DEADLINE_EXCEEDED"/>
+  <int value="2766613933" label="AuthAndSign failed with code: UNAVAILABLE"/>
+  <int value="2867080750" label="Failed to read timestamp_precision"/>
+  <int value="2906092890"
+      label="GetInitialDataRequest failed with code: UNIMPLEMENTED"/>
+  <int value="3024523150" label="AuthAndSign failed with code: INTERNAL"/>
+  <int value="3118017018" label="AuthAndSign failed with code: UNIMPLEMENTED"/>
+  <int value="3172166369" label="AuthAndSign failed with code: UNKNOWN"/>
   <int value="3336018440"
       label="Non-Privacy Pass tokens are no longer supported"/>
-  <int value="3371071844"
-      label="GetInitialDataRequest failed with code: NOT_FOUND"/>
-  <int value="3470137965"
-      label="AuthAndSign failed with code: RESOURCE_EXHAUSTED"/>
-  <int value="3561947979" label="AuthAndSign failed with code: UNAVAILABLE"/>
-  <int value="3750535720"
-      label="AuthAndSign failed with code: PERMISSION_DENIED"/>
-  <int value="3907896672" label="AuthAndSign failed with code: ALREADY_EXISTS"/>
-  <int value="4006585292"
+  <int value="3359657202"
+      label="GetInitialDataRequest failed with code: INVALID_ARGUMENT"/>
+  <int value="3506031840"
+      label="AuthAndSign failed with code: INVALID_ARGUMENT"/>
+  <int value="3831429430" label="AuthAndSign failed with code: ABORTED"/>
+  <int value="3988797128"
       label="GetInitialDataRequest failed with code: ALREADY_EXISTS"/>
-  <int value="4030954707"
-      label="GetInitialDataRequest failed with code: INTERNAL"/>
-  <int value="4032956462"
-      label="GetInitialDataRequest failed with code: PERMISSION_DENIED"/>
   <int value="4053847635" label="GetInitialDataRequest failed"/>
-  <int value="4166079587"
-      label="GetInitialDataRequest failed with code: UNAVAILABLE"/>
-  <int value="4176671260"
-      label="GetInitialDataRequest failed with code: ABORTED"/>
-  <int value="4207573475"
+  <int value="4107556447"
       label="AuthAndSign failed with code: FAILED_PRECONDITION"/>
-  <int value="4218472407" label="AuthAndSign failed with code: CANCELLED"/>
-  <int value="4254977524" label="GetInitialDataRequest failed with code: OK"/>
+  <int value="4198175771"
+      label="GetInitialDataRequest failed with code: PERMISSION_DENIED"/>
 </enum>
 
 <enum name="IpProtectionTokenBatchRequestResult">
