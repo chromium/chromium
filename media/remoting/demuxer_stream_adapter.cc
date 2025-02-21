@@ -348,9 +348,8 @@ void DemuxerStreamAdapter::WriteFrame() {
 
   if (!pending_frame_->end_of_stream()) {
     data_pipe_writer_.Write(
-        pending_frame_->data(), pending_frame_->size(),
-        base::BindOnce(&DemuxerStreamAdapter::OnFrameWritten,
-                       base::Unretained(this)));
+        *pending_frame_, base::BindOnce(&DemuxerStreamAdapter::OnFrameWritten,
+                                        base::Unretained(this)));
   } else {
     DemuxerStreamAdapter::OnFrameWritten(true);
   }
