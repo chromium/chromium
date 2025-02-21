@@ -931,6 +931,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[ash::kRevenEnableDeviceHWDataUsage] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kHmrEnabled] = settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kHmrManagedSettings] =
+      settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kMagicBoostEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kLobsterEnabled] =

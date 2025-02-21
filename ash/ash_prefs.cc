@@ -65,6 +65,7 @@
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 #include "ash/system/mahi/mahi_nudge_controller.h"
+#include "ash/system/mahi/mahi_utils.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/network/cellular_setup_notifier.h"
 #include "ash/system/network/vpn_detailed_view.h"
@@ -211,6 +212,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterBooleanPref(prefs::kMagicBoostEnabled, true);
     registry->RegisterBooleanPref(prefs::kHmrEnabled, true);
     registry->RegisterBooleanPref(prefs::kHmrFeedbackAllowed, true);
+    registry->RegisterIntegerPref(
+        prefs::kHmrManagedSettings,
+        static_cast<int>(
+            mahi_utils::HmrEnterprisePolicy::kAllowedWithModelImprovement));
     registry->RegisterBooleanPref(prefs::kOrcaEnabled, true);
     registry->RegisterBooleanPref(prefs::kOrcaFeedbackEnabled, true);
     registry->RegisterBooleanPref(prefs::kLobsterEnabled, true);

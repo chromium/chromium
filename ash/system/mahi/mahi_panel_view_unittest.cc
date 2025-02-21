@@ -2031,7 +2031,10 @@ TEST_F(MahiPanelViewTest, FeedbackButtonsAllowed) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
 
-  prefs->SetBoolean(prefs::kHmrFeedbackAllowed, false);
+  prefs->SetInteger(
+      prefs::kHmrManagedSettings,
+      static_cast<int>(
+          mahi_utils::HmrEnterprisePolicy::kAllowedWithoutModelImprovement));
   CreatePanelWidget();
   EXPECT_FALSE(
       panel_view()
@@ -2045,7 +2048,10 @@ TEST_F(MahiPanelViewTest, FeedbackButtonsAllowed) {
           panel_view()->GetViewByID(mahi_constants::ViewId::kFooterLabel))
           ->GetText());
 
-  prefs->SetBoolean(prefs::kHmrFeedbackAllowed, true);
+  prefs->SetInteger(
+      prefs::kHmrManagedSettings,
+      static_cast<int>(
+          mahi_utils::HmrEnterprisePolicy::kAllowedWithModelImprovement));
   CreatePanelWidget();
   EXPECT_TRUE(
       panel_view()

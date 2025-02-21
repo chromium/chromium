@@ -104,6 +104,12 @@ export class SearchAndAssistantSettingsCardElement extends
             'prefs.ash.scanner.enterprise_policy_allowed.value)',
       },
 
+      isHmrAllowedByEnterprisePolicy_: {
+        type: Boolean,
+        computed: 'isEnterprisePolicyAllowed_(' +
+            'prefs.settings.managed.help_me_read.value)',
+      },
+
       enterprisePolicyToggleUncheckedValues_: {
         type: Array,
         readOnly: true,

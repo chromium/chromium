@@ -24,6 +24,12 @@ interface SubpageTriggerData {
 suite('<search-and-assistant-settings-card>', () => {
   const defaultRoute = routes.SYSTEM_PREFERENCES;
 
+  const ALLOWED_ENTERPRISE_POLICIES = [
+    {desc: 'allowed with model improvement', value: 0},
+    {desc: 'allowed without model improvement', value: 1},
+    {desc: 'an invalid value', value: 3},
+  ] as const satisfies ReadonlyArray<{desc: string, value: number}>;
+
   let searchAndAssistantSettingsCard: SearchAndAssistantSettingsCardElement;
 
   function createSearchAndAssistantCard() {
@@ -190,6 +196,203 @@ suite('<search-and-assistant-settings-card>', () => {
       }
     });
 
+    suite('Hmr enterprise policy', () => {
+      setup(() => {
+        loadTimeData.overrideValues({
+          isMagicBoostFeatureEnabled: true,
+        });
+      });
+
+      for (const {desc, value} of ALLOWED_ENTERPRISE_POLICIES) {
+        suite(`is ${desc}`, () => {
+          let hmrToggle: SettingsToggleButtonElement;
+
+          setup(() => {
+            createSearchAndAssistantCard();
+            searchAndAssistantSettingsCard.prefs = {
+              settings: {
+                magic_boost_enabled: {
+                  value: true,
+                  type: chrome.settingsPrivate.PrefType.BOOLEAN,
+                },
+                mahi_enabled: {
+                  value: true,
+                  type: chrome.settingsPrivate.PrefType.BOOLEAN,
+                },
+                managed: {
+                  help_me_read: {
+                    value,
+                    type: chrome.settingsPrivate.PrefType.NUMBER,
+                  },
+                },
+              },
+            };
+            flush();
+
+            const nullableHmrToggle =
+                searchAndAssistantSettingsCard.shadowRoot!
+                    .querySelector<SettingsToggleButtonElement>(
+                        '#helpMeReadToggle');
+            assertTrue(nullableHmrToggle !== null);
+            hmrToggle = nullableHmrToggle;
+          });
+
+          test('Hmr toggle should appear', () => {
+            assertTrue(isVisible(hmrToggle));
+          });
+
+          test('Hmr enterprise toggle should not appear', () => {
+            const hmrEnterpriseToggle =
+                searchAndAssistantSettingsCard.shadowRoot!
+                    .querySelector<SettingsToggleButtonElement>(
+                        '#helpMeReadEnterpriseToggle');
+            assertFalse(isVisible(hmrEnterpriseToggle));
+          });
+
+          test('Hmr toggle reflects pref value', () => {
+            assertTrue(isVisible(hmrToggle));
+            assertTrue(hmrToggle.checked);
+            assertTrue(searchAndAssistantSettingsCard.get(
+                'prefs.settings.mahi_enabled.value'));
+
+            hmrToggle.click();
+            assertFalse(hmrToggle.checked);
+            assertFalse(searchAndAssistantSettingsCard.get(
+                'prefs.settings.mahi_enabled.value'));
+          });
+
+          test(
+              'then changes to disallowed, ' +
+                  'Hmr enterprise toggle is deep-linkable',
+              async () => {
+                searchAndAssistantSettingsCard.set(
+                    'prefs.settings.managed.help_me_read.value', 2);
+                flush();
+
+                const hmrEnterpriseToggle =
+                    searchAndAssistantSettingsCard.shadowRoot!
+                        .querySelector<SettingsToggleButtonElement>(
+                            '#helpMeReadEnterpriseToggle');
+                assertTrue(hmrEnterpriseToggle !== null);
+
+                const setting = settingMojom.Setting.kMahiOnOff;
+                const params = new URLSearchParams();
+                params.append('settingId', setting.toString());
+                Router.getInstance().navigateTo(defaultRoute, params);
+
+                await waitAfterNextRender(hmrEnterpriseToggle);
+                assertEquals(
+                    hmrEnterpriseToggle,
+                    searchAndAssistantSettingsCard.shadowRoot!.activeElement,
+                    `Element should be focused for settingId=${setting}.'`);
+              });
+        });
+      }
+
+      suite('is disallowed', () => {
+        let hmrEnterpriseToggle: SettingsToggleButtonElement;
+
+        setup(() => {
+          createSearchAndAssistantCard();
+          searchAndAssistantSettingsCard.prefs = {
+            settings: {
+              magic_boost_enabled: {
+                value: true,
+                type: chrome.settingsPrivate.PrefType.BOOLEAN,
+              },
+              mahi_enabled: {
+                value: true,
+                type: chrome.settingsPrivate.PrefType.BOOLEAN,
+              },
+              managed: {
+                help_me_read: {
+                  value: 2,
+                  type: chrome.settingsPrivate.PrefType.NUMBER,
+                },
+              },
+            },
+          };
+          flush();
+
+          const nullableHmrEnterpriseToggle =
+              searchAndAssistantSettingsCard.shadowRoot!
+                  .querySelector<SettingsToggleButtonElement>(
+                      '#helpMeReadEnterpriseToggle');
+          assertTrue(nullableHmrEnterpriseToggle !== null);
+          hmrEnterpriseToggle = nullableHmrEnterpriseToggle;
+        });
+
+        test('Hmr enterprise toggle should appear', () => {
+          assertTrue(isVisible(hmrEnterpriseToggle));
+        });
+
+        test('Hmr toggle should not appear', () => {
+          const hmrToggle = searchAndAssistantSettingsCard.shadowRoot!
+                                .querySelector<SettingsToggleButtonElement>(
+                                    '#helpMeReadToggle');
+          assertFalse(isVisible(hmrToggle));
+        });
+
+        test('Hmr enterprise toggle appears unchecked', () => {
+          assertTrue(isVisible(hmrEnterpriseToggle));
+          assertFalse(hmrEnterpriseToggle.checked);
+        });
+
+        test('Hmr enterprise toggle does not respond to clicks', () => {
+          assertTrue(isVisible(hmrEnterpriseToggle));
+          hmrEnterpriseToggle.click();
+
+          assertFalse(hmrEnterpriseToggle.checked);
+          assertTrue(searchAndAssistantSettingsCard.get(
+              'prefs.settings.mahi_enabled.value'));
+          assertEquals(
+              2,
+              searchAndAssistantSettingsCard.get(
+                  'prefs.settings.managed.help_me_read.value'));
+        });
+
+        test('Hmr enterprise toggle is deep-linkable', async () => {
+          const setting = settingMojom.Setting.kMahiOnOff;
+          const params = new URLSearchParams();
+          params.append('settingId', setting.toString());
+          Router.getInstance().navigateTo(defaultRoute, params);
+
+          await waitAfterNextRender(hmrEnterpriseToggle);
+          assertEquals(
+              hmrEnterpriseToggle,
+              searchAndAssistantSettingsCard.shadowRoot!.activeElement,
+              `Element should be focused for settingId=${setting}.'`);
+        });
+
+        for (const {desc, value} of ALLOWED_ENTERPRISE_POLICIES) {
+          test(
+              `then changes to ${desc}, Hmr toggle is deep-linkable`,
+              async () => {
+                searchAndAssistantSettingsCard.set(
+                    'prefs.settings.managed.help_me_read.value', value);
+                flush();
+
+                const hmrToggle =
+                    searchAndAssistantSettingsCard.shadowRoot!
+                        .querySelector<SettingsToggleButtonElement>(
+                            '#helpMeReadToggle');
+                assertTrue(hmrToggle !== null);
+
+                const setting = settingMojom.Setting.kMahiOnOff;
+                const params = new URLSearchParams();
+                params.append('settingId', setting.toString());
+                Router.getInstance().navigateTo(defaultRoute, params);
+
+                await waitAfterNextRender(hmrToggle);
+                assertEquals(
+                    hmrToggle,
+                    searchAndAssistantSettingsCard.shadowRoot!.activeElement,
+                    `Element should be focused for settingId=${setting}.'`);
+              });
+        }
+      });
+    });
+
     suite('Lobster setting toggle', () => {
       [{
         isMagicBoostFeatureEnabled: false,
@@ -351,12 +554,6 @@ suite('<search-and-assistant-settings-card>', () => {
         isScannerSettingsToggleVisible: true,
       });
     });
-
-    const ALLOWED_ENTERPRISE_POLICIES = [
-      {desc: 'allowed with model improvement', value: 0},
-      {desc: 'allowed without model improvement', value: 1},
-      {desc: 'an invalid value', value: 3},
-    ] as const satisfies ReadonlyArray<{desc: string, value: number}>;
 
     for (const {desc, value} of ALLOWED_ENTERPRISE_POLICIES) {
       suite(`and enterprise policy is ${desc}`, () => {

@@ -20,6 +20,18 @@ class SkPath;
 
 namespace ash::mahi_utils {
 
+// The `HelpMeReadSettings` policy value is mapped to pref
+// `ash::prefs::kHmrManagedSettings`, and the pref value is cast to this enum to
+// control the availability of feature and feedback.
+// Any integer value outside of this range should be treated equivalently to
+// `kAllowedWithoutModelImprovement` (the default for managed users), as
+// invalid values can only be achieved if an administrator mistakenly sets it.
+enum class HmrEnterprisePolicy {
+  kAllowedWithModelImprovement = 0,
+  kAllowedWithoutModelImprovement = 1,
+  kDisallowed = 2,
+};
+
 // Returns the retry link's target visible for `error`.
 // NOTE: This function should be called only if the `error` should be presented
 // on `MahiErrorStatusView`.

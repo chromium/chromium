@@ -12,6 +12,7 @@
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_panel_view.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
+#include "ash/system/mahi/mahi_utils.h"
 #include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
@@ -161,8 +162,10 @@ TEST_F(MahiPanelViewPixelTest, SummaryView) {
 }
 
 TEST_F(MahiPanelViewPixelTest, PanelWithoutFeedbackButtons) {
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kHmrFeedbackAllowed, false);
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kHmrManagedSettings,
+      static_cast<int>(
+          mahi_utils::HmrEnterprisePolicy::kAllowedWithoutModelImprovement));
   ON_CALL(mock_mahi_manager(), GetSummary)
       .WillByDefault([](chromeos::MahiManager::MahiSummaryCallback callback) {
         std::move(callback).Run(
