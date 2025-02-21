@@ -195,6 +195,21 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         return filter.isTabInTabGroup(tab);
     }
 
+    /**
+     * Returns the count of non-custom tabs that have a {@link
+     * Tab#getLastNavigationCommittedTimestampMillis()} within the time range [beginTimeMs,
+     * endTimeMs).
+     */
+    @CalledByNative
+    protected abstract int getTabCountNavigatedInTimeWindow(long beginTimeMs, long endTimeMs);
+
+    /**
+     * Closes non-custom tabs that have a {@link Tab#getLastNavigationCommittedTimestampMillis()}
+     * within the time range [beginTimeMs, endTimeMs).
+     */
+    @CalledByNative
+    protected abstract void closeTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs);
+
     @Override
     @CalledByNative
     public abstract int getCount();
@@ -213,14 +228,6 @@ public abstract class TabModelJniBridge implements TabModelInternal {
 
     @Override
     public abstract void setActive(boolean active);
-
-    @Override
-    @CalledByNative
-    public abstract int getTabCountNavigatedInTimeWindow(long beginTimeMs, long endTimeMs);
-
-    @Override
-    @CalledByNative
-    public abstract void closeTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs);
 
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

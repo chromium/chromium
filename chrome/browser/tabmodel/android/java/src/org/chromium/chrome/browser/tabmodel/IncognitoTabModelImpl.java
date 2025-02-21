@@ -313,17 +313,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public int getTabCountNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
-        assert false : "Not reached.";
-        return 0;
-    }
-
-    @Override
-    public void closeTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
-        assert false : "Not reached.";
-    }
-
-    @Override
     public void addIncognitoObserver(IncognitoTabModelObserver observer) {
         mIncognitoObservers.addObserver(observer);
     }
