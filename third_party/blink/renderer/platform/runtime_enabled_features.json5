@@ -4988,11 +4988,6 @@
       implied_by: ["WebGPUExperimentalFeatures"],
     },
     {
-      // Launch feature flag for 1-component GPUVertexFormat and unorm8x4-bgra
-      name: "WebGPUOneComponentVertexFormats",
-      status: "stable",
-    },
-    {
       // Using subgroup related features in WebGPU.
       // https://chromestatus.com/feature/5126409856221184
       name: "WebGPUSubgroupsFeatures",
