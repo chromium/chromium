@@ -6,10 +6,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/base64.h"
 #import "base/strings/stringprintf.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
-#import "components/supervised_user/core/browser/web_content_handler.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/supervised_user/test_support/parent_access_test_utils.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -51,11 +51,15 @@
 }
 
 - (void)hideParentAccessBottomSheetWithResult:
-    (supervised_user::LocalApprovalResult)result {
+            (supervised_user::LocalApprovalResult)result
+                                    errorType:
+                                        (std::optional<
+                                            supervised_user::
+                                                LocalWebApprovalErrorType>)
+                                            errorType {
   _isBottomSheetHidden = true;
   CHECK(_completion);
-  // TODO(crbug.com/384891227): Consider testing with the potential error type.
-  std::move(_completion).Run(result, std::nullopt);
+  std::move(_completion).Run(result, errorType);
 }
 
 @end
@@ -142,16 +146,15 @@ TEST_F(ParentAccessTabHelperTest, InvalidURL) {
   EXPECT_TRUE(policy_decision->ShouldAllowNavigation());
 
   histogram_tester_.ExpectTotalCount(
-      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(), 0);
-
+      supervised_user::kLocalWebApprovalResultHistogramName, 0);
   histogram_tester_.ExpectTotalCount(
-      supervised_user::WebContentHandler::
-          GetLocalApprovalDurationMillisecondsHistogram(),
-      0);
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::kLocalWebApprovalDurationMillisecondsHistogramName, 0);
 }
 
 // Verifies that a valid URL that has an empty result closes the bottom sheet
-// and reports the error metric.
+// and reports error metrics.
 TEST_F(ParentAccessTabHelperTest, ValidUrlWithoutResult) {
   NSURLRequest* request = [NSURLRequest
       requestWithURL:[NSURL
@@ -174,20 +177,22 @@ TEST_F(ParentAccessTabHelperTest, ValidUrlWithoutResult) {
   EXPECT_TRUE(policy_decision->ShouldAllowNavigation());
 
   histogram_tester_.ExpectBucketCount(
-      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
+      supervised_user::kLocalWebApprovalResultHistogramName,
       supervised_user::LocalApprovalResult::kError, 1);
   histogram_tester_.ExpectTotalCount(
-      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(), 1);
-
+      supervised_user::kLocalWebApprovalResultHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName,
+      supervised_user::LocalWebApprovalErrorType::kPacpEmptyResponse, 1);
   histogram_tester_.ExpectTotalCount(
-      supervised_user::WebContentHandler::
-          GetLocalApprovalDurationMillisecondsHistogram(),
-      0);
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName, 1);
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::kLocalWebApprovalDurationMillisecondsHistogramName, 0);
 }
 
-// Verifies that a valid URL with a malformed message closes the bottom sheet
-// and reports the error metric.
-TEST_F(ParentAccessTabHelperTest, ValidUrlWithError) {
+// Verifies that a valid URL with an incorrectly encoded message closes the
+// bottom sheet and reports error metrics.
+TEST_F(ParentAccessTabHelperTest, ValidUrlWithDecodingError) {
   GURL result_url(
       base::StringPrintf("http://families.google.com/?result=malformed"));
   NSURLRequest* request =
@@ -210,19 +215,61 @@ TEST_F(ParentAccessTabHelperTest, ValidUrlWithError) {
   EXPECT_TRUE(policy_decision->ShouldAllowNavigation());
 
   histogram_tester_.ExpectBucketCount(
-      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
+      supervised_user::kLocalWebApprovalResultHistogramName,
       supervised_user::LocalApprovalResult::kError, 1);
   histogram_tester_.ExpectTotalCount(
-      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(), 1);
-
+      supervised_user::kLocalWebApprovalResultHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName,
+      supervised_user::LocalWebApprovalErrorType::kFailureToDecodePacpResponse,
+      1);
   histogram_tester_.ExpectTotalCount(
-      supervised_user::WebContentHandler::
-          GetLocalApprovalDurationMillisecondsHistogram(),
-      0);
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName, 1);
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::kLocalWebApprovalDurationMillisecondsHistogramName, 0);
+}
+
+// Verifies that a valid URL with a malformed message closes the bottom sheet
+// and reports the error metrics.
+TEST_F(ParentAccessTabHelperTest, ValidUrlWithParsingError) {
+  GURL result_url(base::StringPrintf("http://families.google.com/?result=%s",
+                                     base::Base64Encode("invalid_response")));
+  NSURLRequest* request =
+      [NSURLRequest requestWithURL:net::NSURLWithGURL(result_url)];
+  const web::WebStatePolicyDecider::RequestInfo request_info(
+      ui::PageTransition::PAGE_TRANSITION_LINK, /*target_frame_is_main=*/true,
+      /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
+      /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
+
+  __block std::optional<web::WebStatePolicyDecider::PolicyDecision>
+      policy_decision = std::nullopt;
+  tab_helper()->ShouldAllowRequest(
+      request, request_info,
+      base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
+        policy_decision = decision;
+      }));
+
+  EXPECT_TRUE(delegate_.isBottomSheetHidden);
+  EXPECT_TRUE(policy_decision->ShouldAllowNavigation());
+
+  histogram_tester_.ExpectBucketCount(
+      supervised_user::kLocalWebApprovalResultHistogramName,
+      supervised_user::LocalApprovalResult::kError, 1);
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::kLocalWebApprovalResultHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName,
+      supervised_user::LocalWebApprovalErrorType::kFailureToParsePacpResponse,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName, 1);
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::kLocalWebApprovalDurationMillisecondsHistogramName, 0);
 }
 
 // Verifies that a valid URL with an unexpected result closes the bottom sheet
-// and reports an error.
+// and reports error metrics.
 TEST_F(ParentAccessTabHelperTest, ValidUrlWithUnexpectedResult) {
   GURL result_url(
       base::StringPrintf("http://families.google.com/?result=%s",
@@ -247,15 +294,17 @@ TEST_F(ParentAccessTabHelperTest, ValidUrlWithUnexpectedResult) {
   EXPECT_TRUE(policy_decision->ShouldAllowNavigation());
 
   histogram_tester_.ExpectBucketCount(
-      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
+      supervised_user::kLocalWebApprovalResultHistogramName,
       supervised_user::LocalApprovalResult::kError, 1);
   histogram_tester_.ExpectTotalCount(
-      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(), 1);
-
+      supervised_user::kLocalWebApprovalResultHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName,
+      supervised_user::LocalWebApprovalErrorType::kUnexpectedPacpResponse, 1);
   histogram_tester_.ExpectTotalCount(
-      supervised_user::WebContentHandler::
-          GetLocalApprovalDurationMillisecondsHistogram(),
-      0);
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName, 1);
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::kLocalWebApprovalDurationMillisecondsHistogramName, 0);
 }
 
 // Verifies that a valid URL with a valid result closes the bottom sheet and
@@ -284,13 +333,15 @@ TEST_F(ParentAccessTabHelperTest, ValidUrlWithApprovalResult) {
   EXPECT_TRUE(policy_decision->ShouldAllowNavigation());
 
   histogram_tester_.ExpectBucketCount(
-      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
+      supervised_user::kLocalWebApprovalResultHistogramName,
       supervised_user::LocalApprovalResult::kApproved, 1);
   histogram_tester_.ExpectTotalCount(
-      supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(), 1);
-
+      supervised_user::kLocalWebApprovalResultHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName,
+      supervised_user::LocalWebApprovalErrorType::kPacpTimeoutExceeded, 0);
   histogram_tester_.ExpectTotalCount(
-      supervised_user::WebContentHandler::
-          GetLocalApprovalDurationMillisecondsHistogram(),
-      1);
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(
+      supervised_user::kLocalWebApprovalDurationMillisecondsHistogramName, 1);
 }

@@ -11,13 +11,11 @@
 
 namespace {
 
-constexpr char kLocalWebApprovalDurationHistogramName[] =
-    "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration";
-
 // Records the duration of a complete local web approval flow.
 void RecordTimeToApprovalDurationMetric(base::TimeDelta durationMs) {
-  base::UmaHistogramLongTimes(kLocalWebApprovalDurationHistogramName,
-                              durationMs);
+  base::UmaHistogramLongTimes(
+      supervised_user::kLocalWebApprovalDurationMillisecondsHistogramName,
+      durationMs);
 }
 
 std::string LocalApprovalResultToString(
@@ -86,7 +84,7 @@ void WebContentHandler::OnLocalApprovalRequestCompleted(
 
 // static
 const char* WebContentHandler::GetLocalApprovalDurationMillisecondsHistogram() {
-  return kLocalWebApprovalDurationHistogramName;
+  return kLocalWebApprovalDurationMillisecondsHistogramName;
 }
 
 // static

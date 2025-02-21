@@ -737,7 +737,7 @@ static const char* kInterstitialDetails = "Details";
           expectUniqueSampleWithCount:1
                             forBucket:static_cast<int>(
                                           supervised_user::LocalApprovalResult::
-                                              kDeclined)
+                                              kCanceled)
                          forHistogram:@"FamilyLinkUser.LocalWebApprovalResult"],
       @"Unexpected value for local web approval result histogram.");
   GREYAssertNil(
@@ -747,7 +747,12 @@ static const char* kInterstitialDetails = "Details";
       @"Unexpected total count for local web approval result histogram.");
   GREYAssertNil(
       [MetricsAppInterface
-          expectTotalCount:1
+          expectTotalCount:0
+              forHistogram:@"FamilyLinkUser.LocalWebApprovalErrorType"],
+      @"Unexpected total count for local web approval error histogram.");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
               forHistogram:@"FamilyLinkUser."
                            @"LocalWebApprovalCompleteRequestTotalDuration"],
       @"Unexpected total count for local web approval duration histogram.");
