@@ -1903,20 +1903,15 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // Test search and delete all passwords and blocked items.
-// TODO(crbug.com/40910165): Flaky.
-- (void)DISABLED_testSearchAndDeleteAllPasswords {
+- (void)testSearchAndDeleteAllPasswords {
   SaveExamplePasswordForms();
   SaveExampleBlockedFormsToProfileStore();
 
   OpenPasswordManager();
 
-  // TODO(crbug.com/40609735): Comment out because currently activating the
-  // search bar will hide the "Edit" button in the top toolbar. Recover this
-  // when the "Edit" button is moved to the bottom toolbar in the new Settings
-  // UI.
-  //  [[EarlGrey selectElementWithMatcher:SearchTextField()]
-  //      performAction:grey_replaceText(@"u")];
-  //  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+  [[EarlGrey selectElementWithMatcher:SearchTextField()]
+      performAction:grey_replaceText(@"ex")];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
@@ -1976,33 +1971,25 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   SaveExamplePasswordForms();
   OpenPasswordManager();
 
-  // TODO(crbug.com/40609735): Comment out because currently activating the
-  // search bar will hide the "Edit" button in the top toolbar. Recover this
-  // when the "Edit" button is moved to the bottom toolbar in the new Settings
-  // UI.
-  //  [[EarlGrey selectElementWithMatcher:SearchTextField()]
-  //      performAction:grey_replaceText(@"2")];
+  [[EarlGrey selectElementWithMatcher:SearchTextField()]
+      performAction:grey_replaceText(@"2")];
 
   TapNavigationBarEditButton();
 
   // Select password entry to be edited.
   [GetInteractionForPasswordEntry(@"example12.com") performAction:grey_tap()];
 
-  // Delete it
+  // Delete it.
   [[EarlGrey selectElementWithMatcher:DeleteButtonAtBottom()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:BatchDeleteConfirmationButton()]
       performAction:grey_tap()];
 
   // Filter results in nothing.
-  // TODO(crbug.com/40609735): Comment out because currently activating the
-  // search bar will hide the "Edit" button in the top toolbar. Recover this
-  // when the "Edit" button is moved to the bottom toolbar in the new Settings
-  // UI.
-  //  [GetInteractionForPasswordEntry(@"example11.com, user1")
-  //      assertWithMatcher:grey_nil()];
-  //  [GetInteractionForPasswordEntry(@"example12.com, user2")
-  //      assertWithMatcher:grey_nil()];
+  [GetInteractionForPasswordEntry(@"example11.com, user1")
+      assertWithMatcher:grey_nil()];
+  [GetInteractionForPasswordEntry(@"example12.com, user2")
+      assertWithMatcher:grey_nil()];
 
   // Get out of edit mode.
   [[EarlGrey selectElementWithMatcher:EditDoneButton()]
