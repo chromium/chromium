@@ -101,6 +101,15 @@ void TestInterestGroupPrivateAggregationManager::ContributeToHistogram(
   }
 }
 
+void TestInterestGroupPrivateAggregationManager::ContributeToHistogramOnEvent(
+    blink::mojom::PrivateAggregationErrorEvent error_event,
+    std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+        contribution_ptrs) {
+  // TODO(crbug.com/381788013): Add tests once Protected Audience supports
+  // aggregate error reporting.
+  NOTREACHED();
+}
+
 void TestInterestGroupPrivateAggregationManager::EnableDebugMode(
     blink::mojom::DebugKeyPtr debug_key) {
   const mojo::ReceiverId receiver_id = receiver_set_.current_receiver();

@@ -1844,6 +1844,10 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     that, even if successfully forwarded, the report may still be rejected by
     the budgeter, manager or in the aggregation_service layer. Recorded for
     every mojo pipe on disconnection.
+
+    If the aggregate error reporting feature is enabled, report success is
+    recorded, even if truncation occurs (as it occurs later in the pipeline).
+    See PrivacySandbox.PrivateAggregation.TruncationResult.
   </summary>
 </histogram>
 

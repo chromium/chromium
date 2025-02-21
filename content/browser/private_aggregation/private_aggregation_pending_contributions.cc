@@ -54,6 +54,14 @@ bool PrivateAggregationPendingContributions::IsEmpty() const {
          conditional_contributions_.empty();
 }
 
+const std::map<
+    blink::mojom::PrivateAggregationErrorEvent,
+    std::vector<blink::mojom::AggregatableReportHistogramContribution>>&
+PrivateAggregationPendingContributions::GetConditionalContributionsForTesting()
+    const {
+  return conditional_contributions_;
+}
+
 void PrivateAggregationPendingContributions::AddUnconditionalContributions(
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions) {

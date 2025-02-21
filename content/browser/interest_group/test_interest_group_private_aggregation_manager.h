@@ -63,6 +63,10 @@ class TestInterestGroupPrivateAggregationManager
   void ContributeToHistogram(
       std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
           contribution_ptrs) override;
+  void ContributeToHistogramOnEvent(
+      blink::mojom::PrivateAggregationErrorEvent error_event,
+      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+          contribution_ptrs) override;
   void EnableDebugMode(blink::mojom::DebugKeyPtr debug_key) override;
 
   // Returns a logging callback and saves all requests passed to it. These can

@@ -82,10 +82,11 @@ interface PrivateAggregationHost {
 
   // Adds `contributions` to the list of contributions to be embedded in the
   // report if the `error_event` is triggered.
-  // TODO(crbug.com/381788013): Expose the following once implemented.
-  // ContributeToHistogramOnEvent(
-  //     PrivateAggregationErrorEvent error_event,
-  //     array<AggregatableReportHistogramContribution> contributions);
+  // Only valid to call if the `kPrivateAggregationApiErrorReporting` feature is
+  // enabled.
+  ContributeToHistogramOnEvent(
+      PrivateAggregationErrorEvent error_event,
+      array<AggregatableReportHistogramContribution> contributions);
 
   // If a non-null report is sent from this mojo pipe, enables debug mode for
   // that report. If `debug_key` is non-null, the provided debug key will also

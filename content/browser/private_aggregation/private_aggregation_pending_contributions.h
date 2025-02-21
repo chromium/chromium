@@ -127,9 +127,18 @@ class CONTENT_EXPORT PrivateAggregationPendingContributions {
     return unconditional_contributions_;
   }
 
+  bool are_contributions_finalized() const {
+    return are_contributions_finalized_;
+  }
+
   // Returns false if this object has any unconditional or conditional
   // contributions.
   bool IsEmpty() const;
+
+  const std::map<
+      blink::mojom::PrivateAggregationErrorEvent,
+      std::vector<blink::mojom::AggregatableReportHistogramContribution>>&
+  GetConditionalContributionsForTesting() const;
 
   // Tracks contributions not conditional on any error event (i.e. passed via
   // `ContributeToHistogram()`). Drops contributions with value 0.

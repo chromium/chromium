@@ -58,7 +58,8 @@ class CONTENT_EXPORT PrivateAggregationHost
     kEnableDebugModeCalledMultipleTimes = 4,
     kNegativeValue = 5,
     kFilteringIdInvalid = 6,
-    kMaxValue = kFilteringIdInvalid,
+    kNecessaryFeatureNotEnabled = 7,
+    kMaxValue = kNecessaryFeatureNotEnabled,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -157,6 +158,10 @@ class CONTENT_EXPORT PrivateAggregationHost
   void ContributeToHistogram(
       std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
           contribution_ptrs) override;
+  void ContributeToHistogramOnEvent(
+      blink::mojom::PrivateAggregationErrorEvent error_event,
+      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+          contribution_ptrs) override;
   void EnableDebugMode(blink::mojom::DebugKeyPtr debug_key) override;
 
   void FlushReceiverSetForTesting() { receiver_set_.FlushForTesting(); }
@@ -187,8 +192,18 @@ class CONTENT_EXPORT PrivateAggregationHost
 
   void OnReceiverDisconnected();
 
-  void SendReportOnTimeoutOrDisconnect(ReceiverContext& current_context,
-                                       base::TimeDelta remaining_timeout);
+  void SendReportOnTimeoutOrDisconnect(
+      ReceiverContext& current_context,
+      base::TimeDelta remaining_timeout,
+      PrivateAggregationPendingContributions::TimeoutOrDisconnect
+          timeout_or_disconnect);
+
+  // Performs shared validation for `ContributeToHistogram()` and
+  // `ContributeToHistogramOnEvent()` calls.
+  bool ValidateContributeCall(
+      const std::vector<
+          blink::mojom::AggregatableReportHistogramContributionPtr>&
+          contribution_ptrs);
 
   // Set iff the private aggregation developer mode is set.
   bool should_not_delay_reports_;
