@@ -55,6 +55,10 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
     @VisibleForTesting
     static final String HISTOGRAM_REFERRER = "Autofill.Settings.AutofillOptionsReferrerAndroid";
 
+    @VisibleForTesting
+    static final String HISTOGRAM_RESTART_ACCEPTED =
+            "Autofill.Settings.AutofillOptionsRestartAccepted";
+
     private final Profile mProfile;
     private final Runnable mRestartRunnable;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
@@ -78,13 +82,11 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
     public void onClick(PropertyModel restartConfirmationModel, int buttonType) {
         switch (buttonType) {
             case ModalDialogProperties.ButtonType.POSITIVE:
-                // TODO: crbug.com/308551195 - Add a metric to record acceptance like
-                // recordBooleanHistogram(HISTOGRAM_RESTARTED_FOR_3P, true);
+                RecordHistogram.recordBooleanHistogram(HISTOGRAM_RESTART_ACCEPTED, true);
                 onConfirmWithRestart();
                 return;
             case ModalDialogProperties.ButtonType.NEGATIVE:
-                // TODO: crbug.com/308551195 - Add a metric to record acceptance like
-                // recordBooleanHistogram(HISTOGRAM_RESTARTED_FOR_3P, false);
+                RecordHistogram.recordBooleanHistogram(HISTOGRAM_RESTART_ACCEPTED, false);
                 mModalDialogManagerSupplier
                         .get()
                         .dismissDialog(
