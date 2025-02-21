@@ -4327,6 +4327,11 @@ const FeatureEntry::FeatureVariation kMaliciousApkDownloadCheckChoices[] = {
      std::size(kMaliciousApkDownloadCheckTelemetryOnlyParams), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+constexpr char kDisableFacilitatedPaymentsMerchantAllowlistInternalName[] =
+    "disable-facilitated-payments-merchant-allowlist";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -11687,7 +11692,7 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"disable-facilitated-payments-merchant-allowlist",
+    {kDisableFacilitatedPaymentsMerchantAllowlistInternalName,
      flag_descriptions::kDisableFacilitatedPaymentsMerchantAllowlistName,
      flag_descriptions::kDisableFacilitatedPaymentsMerchantAllowlistDescription,
      kOsAndroid,
@@ -11948,6 +11953,19 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
            chrome_channel != version_info::Channel::UNKNOWN;
   }
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // Only show the payments test flag to disable merchant allowlists if channel
+  // is one of Beta/Dev/Canary/ Unknown.
+  version_info::Channel channel = chrome::GetChannel();
+  if (!strcmp(kDisableFacilitatedPaymentsMerchantAllowlistInternalName,
+              entry.internal_name)) {
+    return channel != version_info::Channel::BETA &&
+           channel != version_info::Channel::DEV &&
+           channel != version_info::Channel::CANARY &&
+           channel != version_info::Channel::UNKNOWN;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   if (flags::IsFlagExpired(storage, entry.internal_name)) {
     return true;
   }
