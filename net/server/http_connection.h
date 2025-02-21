@@ -44,14 +44,13 @@ class NET_EXPORT HttpConnection {
     // Increases capacity and returns true if capacity is not beyond the limit.
     bool IncreaseCapacity();
 
-    // Start of read data.
-    char* StartOfBuffer() const;
-    // Returns the number of read bytes available, which start at
-    // StartOfBuffer(). span() starts at StartOfBuffer() + GetSize().
-    int GetSize() const;
-    // More read data was appended.
+    // Returns a span containing bytes that have been written to, and thus are
+    // available to be read from.
+    base::span<const uint8_t> readable_bytes() const;
+    // More read data was appended. Increases the size of span_before_offset().
     void DidRead(int bytes);
-    // Capacity for which more read data can be appended.
+    // Capacity for which more read data can be appended. Decreases size of
+    // span_before_offset().
     int RemainingCapacity() const;
 
     // Removes consumed data and moves unconsumed data to the start of buffer.

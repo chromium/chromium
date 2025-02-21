@@ -330,17 +330,19 @@ class PipeReaderASCIIZ : public PipeReaderBase {
         break;
       read_buffer_->DidRead(bytes_read);
 
-      // Go over the last read chunk, look for \0, extract messages.
-      int offset = 0;
-      for (int i = read_buffer_->GetSize() - bytes_read;
-           i < read_buffer_->GetSize(); ++i) {
-        if (read_buffer_->StartOfBuffer()[i] == '\0') {
-          HandleMessage(
-              std::vector<uint8_t>(read_buffer_->StartOfBuffer() + offset,
-                                   read_buffer_->StartOfBuffer() + i));
-          offset = i + 1;
+      // Go over the last read chunk, look for null byte, extract messages.
+      base::span<const uint8_t> readable_bytes = read_buffer_->readable_bytes();
+      auto next_message_start = readable_bytes.begin();
+      // Bytes from the previous read have already been checked again null byte,
+      // so no need to look at them again.
+      for (auto it = read_buffer_->readable_bytes().end() - bytes_read;
+           it != read_buffer_->readable_bytes().end(); ++it) {
+        if (*it == 0u) {
+          HandleMessage(std::vector<uint8_t>(next_message_start, it));
+          next_message_start = it + 1;
         }
       }
+      int offset = next_message_start - readable_bytes.begin();
       if (offset)
         read_buffer_->DidConsume(offset);
     }

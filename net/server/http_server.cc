@@ -253,7 +253,7 @@ int HttpServer::HandleReadResult(HttpConnection* connection, int rv) {
   read_buf->DidRead(rv);
 
   // Handles http requests or websocket messages.
-  while (read_buf->GetSize() > 0) {
+  while (!read_buf->readable_bytes().empty()) {
     if (connection->web_socket()) {
       std::string message;
       WebSocketParseResult result = connection->web_socket()->Read(&message);
@@ -279,8 +279,9 @@ int HttpServer::HandleReadResult(HttpConnection* connection, int rv) {
     // request body.
     HttpServerRequestInfo request;
     size_t pos = 0;
-    if (!ParseHeaders(read_buf->StartOfBuffer(), read_buf->GetSize(),
-                      &request, &pos)) {
+    if (!ParseHeaders(
+            reinterpret_cast<const char*>(read_buf->readable_bytes().data()),
+            read_buf->readable_bytes().size(), &request, &pos)) {
       // An error has occured. Close the connection.
       Close(connection->id());
       return ERR_CONNECTION_CLOSED;
@@ -319,9 +320,11 @@ int HttpServer::HandleReadResult(HttpConnection* connection, int rv) {
         return ERR_CONNECTION_CLOSED;
       }
 
-      if (read_buf->GetSize() - pos < content_length)
+      if (read_buf->readable_bytes().size() - pos < content_length) {
         break;  // Not enough data was received yet.
-      request.data.assign(read_buf->StartOfBuffer() + pos, content_length);
+      }
+      request.data = base::as_string_view(
+          read_buf->readable_bytes().subspan(pos, content_length));
       pos += content_length;
     }
 
