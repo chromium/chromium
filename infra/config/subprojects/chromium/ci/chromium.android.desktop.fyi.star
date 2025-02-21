@@ -77,10 +77,16 @@ ci.builder(
             "emulator-8-cores",
         ],
         per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.android_browsertests.filter",
+                ],
+            ),
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.chrome_public_test_apk.filter",
                 ],
+                ci_only = True,
             ),
         },
     ),
