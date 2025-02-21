@@ -38,15 +38,11 @@ void BindRenderProcessCoordinationUnit(
   RenderProcessUserData* user_data =
       RenderProcessUserData::GetForRenderProcessHost(render_process_host);
 
-  DCHECK(PerformanceManagerImpl::IsAvailable());
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&ProcessNodeImpl::BindRenderProcessCoordinationUnit,
-                     base::Unretained(user_data->process_node()),
-                     std::move(receiver)));
+  user_data->process_node()->BindRenderProcessCoordinationUnit(
+      std::move(receiver));
 }
 
-void BindChildProcessCoordinationUnitOnPMSequence(
+void BindChildProcessCoordinationUnit(
     base::WeakPtr<ProcessNode> process_node,
     mojo::PendingReceiver<mojom::ChildProcessCoordinationUnit> receiver) {
   if (process_node) {
@@ -58,27 +54,18 @@ void BindChildProcessCoordinationUnitOnPMSequence(
 void BindChildProcessCoordinationUnitForRenderProcessHost(
     content::ChildProcessId render_process_host_id,
     mojo::PendingReceiver<mojom::ChildProcessCoordinationUnit> receiver) {
-  DCHECK(PerformanceManagerImpl::IsAvailable());
-  PerformanceManagerImpl::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          &BindChildProcessCoordinationUnitOnPMSequence,
-          PerformanceManagerImpl::GetProcessNodeForRenderProcessHostId(
-              render_process_host_id),
-          std::move(receiver)));
+  BindChildProcessCoordinationUnit(
+      PerformanceManagerImpl::GetProcessNodeForRenderProcessHostId(
+          render_process_host_id),
+      std::move(receiver));
 }
 
 void BindChildProcessCoordinationUnitForBrowserChildProcessHost(
     content::BrowserChildProcessHost* host,
     mojo::PendingReceiver<mojom::ChildProcessCoordinationUnit> receiver) {
-  DCHECK(PerformanceManagerImpl::IsAvailable());
-  PerformanceManagerImpl::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          &BindChildProcessCoordinationUnitOnPMSequence,
-          PerformanceManagerImpl::GetProcessNodeForBrowserChildProcessHost(
-              host),
-          std::move(receiver)));
+  BindChildProcessCoordinationUnit(
+      PerformanceManagerImpl::GetProcessNodeForBrowserChildProcessHost(host),
+      std::move(receiver));
 }
 
 void BindDocumentCoordinationUnit(
