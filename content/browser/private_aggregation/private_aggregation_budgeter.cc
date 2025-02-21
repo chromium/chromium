@@ -19,11 +19,13 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
@@ -31,10 +33,10 @@
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/proto/private_aggregation_budgets.pb.h"
 #include "content/public/browser/private_aggregation_data_model.h"
+#include "content/public/browser/storage_partition.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/protobuf/src/google/protobuf/repeated_field.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -209,13 +211,11 @@ PrivateAggregationBudgeter::RequestResult TestBudgetUsageAgainstLimits(
 PrivateAggregationBudgeter::PrivateAggregationBudgeter(
     scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner,
     bool exclusively_run_in_memory,
-    const base::FilePath& path_to_db_dir)
-    : db_task_runner_(std::move(db_task_runner)) {
+    base::FilePath path_to_db_dir)
+    : db_task_runner_(std::move(db_task_runner)),
+      exclusively_run_in_memory_(exclusively_run_in_memory),
+      path_to_db_dir_(std::move(path_to_db_dir)) {
   CHECK(db_task_runner_);
-
-  initialize_storage_ = base::BindOnce(
-      &PrivateAggregationBudgeter::InitializeStorage,
-      weak_factory_.GetWeakPtr(), exclusively_run_in_memory, path_to_db_dir);
 }
 
 PrivateAggregationBudgeter::PrivateAggregationBudgeter() = default;
@@ -231,24 +231,18 @@ PrivateAggregationBudgeter::~PrivateAggregationBudgeter() {
 }
 
 void PrivateAggregationBudgeter::EnsureStorageInitializationBegun() {
-  if (storage_status_ == StorageStatus::kPendingInitialization) {
-    CHECK(initialize_storage_);
-    std::move(initialize_storage_).Run();
+  if (storage_status_ != StorageStatus::kPendingInitialization) {
+    return;
   }
-}
-
-void PrivateAggregationBudgeter::InitializeStorage(
-    bool exclusively_run_in_memory,
-    base::FilePath path_to_db_dir) {
-  CHECK_EQ(storage_status_, StorageStatus::kPendingInitialization);
-
   storage_status_ = StorageStatus::kInitializing;
+
   shutdown_initializing_storage_ = PrivateAggregationBudgetStorage::CreateAsync(
-      db_task_runner_, exclusively_run_in_memory, std::move(path_to_db_dir),
+      db_task_runner_, exclusively_run_in_memory_,
+      // This move is safe because storage will only be initialized once.
+      std::move(path_to_db_dir_),
       /*on_done_initializing=*/
       base::BindOnce(&PrivateAggregationBudgeter::OnStorageDoneInitializing,
                      weak_factory_.GetWeakPtr()));
-  CHECK(initialize_storage_.is_null());
 }
 
 void PrivateAggregationBudgeter::ConsumeBudget(
@@ -749,7 +743,7 @@ void PrivateAggregationBudgeter::CleanUpStaleData() {
   }
 }
 
-bool PrivateAggregationBudgeter::DidStorageInitializationSucceed() {
+bool PrivateAggregationBudgeter::DidStorageInitializationSucceed() const {
   switch (storage_status_) {
     case StorageStatus::kPendingInitialization:
     case StorageStatus::kInitializing:
