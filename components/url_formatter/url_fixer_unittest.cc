@@ -14,6 +14,7 @@
 
 #include <array>
 #include <string>
+#include <string_view>
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
@@ -27,9 +28,11 @@
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 
+namespace url_formatter {
+
 struct SegmentCase {
-  const std::string input;
-  const std::string result;
+  std::string_view input;
+  std::string_view result;
   const url::Component scheme;
   const url::Component username;
   const url::Component password;
@@ -40,234 +43,262 @@ struct SegmentCase {
   const url::Component ref;
 };
 
-const auto segment_cases = std::to_array<SegmentCase>({
+constexpr auto kSegmentCases = std::to_array<SegmentCase>({
     {
-        "http://www.google.com/", "http", url::Component(0, 4),  // scheme
-        url::Component(),                                        // username
-        url::Component(),                                        // password
-        url::Component(7, 14),                                   // host
-        url::Component(),                                        // port
-        url::Component(21, 1),                                   // path
-        url::Component(),                                        // query
-        url::Component(),                                        // ref
+        .input = "http://www.google.com/",
+        .result = "http",
+        .scheme = url::Component(0, 4),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(7, 14),
+        .port = url::Component(),
+        .path = url::Component(21, 1),
+        .query = url::Component(),
+        .ref = url::Component(),
     },
     {
-        "aBoUt:vErSiOn", "about", url::Component(0, 5),  // scheme
-        url::Component(),                                // username
-        url::Component(),                                // password
-        url::Component(6, 7),                            // host
-        url::Component(),                                // port
-        url::Component(),                                // path
-        url::Component(),                                // query
-        url::Component(),                                // ref
+        .input = "aBoUt:vErSiOn",
+        .result = "about",
+        .scheme = url::Component(0, 5),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(6, 7),
+        .port = url::Component(),
+        .path = url::Component(),
+        .query = url::Component(),
+        .ref = url::Component(),
     },
     {
-        "about:host/path?query#ref", "about", url::Component(0, 5),  // scheme
-        url::Component(),                                            // username
-        url::Component(),                                            // password
-        url::Component(6, 4),                                        // host
-        url::Component(),                                            // port
-        url::Component(10, 5),                                       // path
-        url::Component(16, 5),                                       // query
-        url::Component(22, 3),                                       // ref
+        .input = "about:host/path?query#ref",
+        .result = "about",
+        .scheme = url::Component(0, 5),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(6, 4),
+        .port = url::Component(),
+        .path = url::Component(10, 5),
+        .query = url::Component(16, 5),
+        .ref = url::Component(22, 3),
     },
     {
-        "about://host/path?query#ref", "about", url::Component(0, 5),  // scheme
-        url::Component(),       // username
-        url::Component(),       // password
-        url::Component(8, 4),   // host
-        url::Component(),       // port
-        url::Component(12, 5),  // path
-        url::Component(18, 5),  // query
-        url::Component(24, 3),  // ref
+        .input = "about://host/path?query#ref",
+        .result = "about",
+        .scheme = url::Component(0, 5),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(8, 4),
+        .port = url::Component(),
+        .path = url::Component(12, 5),
+        .query = url::Component(18, 5),
+        .ref = url::Component(24, 3),
     },
     {
-        "chrome:host/path?query#ref", "chrome", url::Component(0, 6),  // scheme
-        url::Component(),       // username
-        url::Component(),       // password
-        url::Component(7, 4),   // host
-        url::Component(),       // port
-        url::Component(11, 5),  // path
-        url::Component(17, 5),  // query
-        url::Component(23, 3),  // ref
+        .input = "chrome:host/path?query#ref",
+        .result = "chrome",
+        .scheme = url::Component(0, 6),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(7, 4),
+        .port = url::Component(),
+        .path = url::Component(11, 5),
+        .query = url::Component(17, 5),
+        .ref = url::Component(23, 3),
     },
     {
-        "chrome://host/path?query#ref", "chrome",
-        url::Component(0, 6),   // scheme
-        url::Component(),       // username
-        url::Component(),       // password
-        url::Component(9, 4),   // host
-        url::Component(),       // port
-        url::Component(13, 5),  // path
-        url::Component(19, 5),  // query
-        url::Component(25, 3),  // ref
+        .input = "chrome://host/path?query#ref",
+        .result = "chrome",
+        .scheme = url::Component(0, 6),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(9, 4),
+        .port = url::Component(),
+        .path = url::Component(13, 5),
+        .query = url::Component(19, 5),
+        .ref = url::Component(25, 3),
     },
     {
-        "    www.google.com:124?foo#", "http",
-        url::Component(),       // scheme
-        url::Component(),       // username
-        url::Component(),       // password
-        url::Component(4, 14),  // host
-        url::Component(19, 3),  // port
-        url::Component(),       // path
-        url::Component(23, 3),  // query
-        url::Component(27, 0),  // ref
+        .input = "    www.google.com:124?foo#",
+        .result = "http",
+        .scheme = url::Component(),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(4, 14),
+        .port = url::Component(19, 3),
+        .path = url::Component(),
+        .query = url::Component(23, 3),
+        .ref = url::Component(27, 0),
     },
     {
-        " \u00A0 www.google.com", "http",
-        url::Component(),       // scheme
-        url::Component(),       // username
-        url::Component(),       // password
-        url::Component(4, 14),  // host
-        url::Component(),       // port
-        url::Component(),       // path
-        url::Component(),       // query
-        url::Component(),       // ref
+        .input = " \u00A0 www.google.com",
+        .result = "http",
+        .scheme = url::Component(),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(4, 14),
+        .port = url::Component(),
+        .path = url::Component(),
+        .query = url::Component(),
+        .ref = url::Component(),
     },
     {
-        "user@www.google.com", "http",
-        url::Component(),       // scheme
-        url::Component(0, 4),   // username
-        url::Component(),       // password
-        url::Component(5, 14),  // host
-        url::Component(),       // port
-        url::Component(),       // path
-        url::Component(),       // query
-        url::Component(),       // ref
+        .input = "user@www.google.com",
+        .result = "http",
+        .scheme = url::Component(),
+        .username = url::Component(0, 4),
+        .password = url::Component(),
+        .host = url::Component(5, 14),
+        .port = url::Component(),
+        .path = url::Component(),
+        .query = url::Component(),
+        .ref = url::Component(),
     },
     {
-        "ftp:/user:P:a$$Wd@..ftp.google.com...::23///pub?foo#bar", "ftp",
-        url::Component(0, 3),    // scheme
-        url::Component(5, 4),    // username
-        url::Component(10, 7),   // password
-        url::Component(18, 20),  // host
-        url::Component(39, 2),   // port
-        url::Component(41, 6),   // path
-        url::Component(48, 3),   // query
-        url::Component(52, 3),   // ref
+        .input = "ftp:/user:P:a$$Wd@..ftp.google.com...::23///pub?foo#bar",
+        .result = "ftp",
+        .scheme = url::Component(0, 3),
+        .username = url::Component(5, 4),
+        .password = url::Component(10, 7),
+        .host = url::Component(18, 20),
+        .port = url::Component(39, 2),
+        .path = url::Component(41, 6),
+        .query = url::Component(48, 3),
+        .ref = url::Component(52, 3),
     },
     {
-        "[2001:db8::1]/path", "http",
-        url::Component(),       // scheme
-        url::Component(),       // username
-        url::Component(),       // password
-        url::Component(0, 13),  // host
-        url::Component(),       // port
-        url::Component(13, 5),  // path
-        url::Component(),       // query
-        url::Component(),       // ref
+        .input = "[2001:db8::1]/path",
+        .result = "http",
+        .scheme = url::Component(),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(0, 13),
+        .port = url::Component(),
+        .path = url::Component(13, 5),
+        .query = url::Component(),
+        .ref = url::Component(),
     },
     {
-        "[::1]", "http",
-        url::Component(),      // scheme
-        url::Component(),      // username
-        url::Component(),      // password
-        url::Component(0, 5),  // host
-        url::Component(),      // port
-        url::Component(),      // path
-        url::Component(),      // query
-        url::Component(),      // ref
+        .input = "[::1]",
+        .result = "http",
+        .scheme = url::Component(),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(0, 5),
+        .port = url::Component(),
+        .path = url::Component(),
+        .query = url::Component(),
+        .ref = url::Component(),
     },
     // Incomplete IPv6 addresses (will not canonicalize).
     {
-        "[2001:4860:", "http",
-        url::Component(),       // scheme
-        url::Component(),       // username
-        url::Component(),       // password
-        url::Component(0, 11),  // host
-        url::Component(),       // port
-        url::Component(),       // path
-        url::Component(),       // query
-        url::Component(),       // ref
+        .input = "[2001:4860:",
+        .result = "http",
+        .scheme = url::Component(),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(0, 11),
+        .port = url::Component(),
+        .path = url::Component(),
+        .query = url::Component(),
+        .ref = url::Component(),
     },
     {
-        "[2001:4860:/foo", "http",
-        url::Component(),       // scheme
-        url::Component(),       // username
-        url::Component(),       // password
-        url::Component(0, 11),  // host
-        url::Component(),       // port
-        url::Component(11, 4),  // path
-        url::Component(),       // query
-        url::Component(),       // ref
+        .input = "[2001:4860:/foo",
+        .result = "http",
+        .scheme = url::Component(),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(0, 11),
+        .port = url::Component(),
+        .path = url::Component(11, 4),
+        .query = url::Component(),
+        .ref = url::Component(),
     },
     {
-        "http://:b005::68]", "http", url::Component(0, 4),  // scheme
-        url::Component(),                                   // username
-        url::Component(),                                   // password
-        url::Component(7, 10),                              // host
-        url::Component(),                                   // port
-        url::Component(),                                   // path
-        url::Component(),                                   // query
-        url::Component(),                                   // ref
+        .input = "http://:b005::68]",
+        .result = "http",
+        .scheme = url::Component(0, 4),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(7, 10),
+        .port = url::Component(),
+        .path = url::Component(),
+        .query = url::Component(),
+        .ref = url::Component(),
     },
     {
-        ":b005::68]", "http",
-        url::Component(),      // scheme
-        url::Component(),      // username
-        url::Component(),      // password
-        url::Component(1, 9),  // host
-        url::Component(),      // port
-        url::Component(),      // path
-        url::Component(),      // query
-        url::Component(),      // ref
+        .input = ":b005::68]",
+        .result = "http",
+        .scheme = url::Component(),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(1, 9),
+        .port = url::Component(),
+        .path = url::Component(),
+        .query = url::Component(),
+        .ref = url::Component(),
     },
     {
-        "file://host/path/file#ref", "file", url::Component(0, 4),  // scheme
-        url::Component(),                                           // username
-        url::Component(),                                           // password
-        url::Component(7, 4),                                       // host
-        url::Component(),                                           // port
-        url::Component(11, 10),                                     // path
-        url::Component(),                                           // query
-        url::Component(22, 3),                                      // ref
+        .input = "file://host/path/file#ref",
+        .result = "file",
+        .scheme = url::Component(0, 4),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(7, 4),
+        .port = url::Component(),
+        .path = url::Component(11, 10),
+        .query = url::Component(),
+        .ref = url::Component(22, 3),
     },
     {
-        "file:///notahost/path/file#ref", "file",
-        url::Component(0, 4),   // scheme
-        url::Component(),       // username
-        url::Component(),       // password
-        url::Component(),       // host
-        url::Component(),       // port
-        url::Component(7, 19),  // path
-        url::Component(),       // query
-        url::Component(27, 3),  // ref
+        .input = "file:///notahost/path/file#ref",
+        .result = "file",
+        .scheme = url::Component(0, 4),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(),
+        .port = url::Component(),
+        .path = url::Component(7, 19),
+        .query = url::Component(),
+        .ref = url::Component(27, 3),
     },
 #if BUILDFLAG(IS_WIN)
     {
-        "c:/notahost/path/file#ref", "file",
-        url::Component(),       // scheme
-        url::Component(),       // username
-        url::Component(),       // password
-        url::Component(),       // host
-        url::Component(),       // port
-        url::Component(0, 21),  // path
-        url::Component(),       // query
-        url::Component(22, 3),  // ref
+        .input = "c:/notahost/path/file#ref",
+        .result = "file",
+        .scheme = url::Component(),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(),
+        .port = url::Component(),
+        .path = url::Component(0, 21),
+        .query = url::Component(),
+        .ref = url::Component(22, 3),
     },
 #elif BUILDFLAG(IS_POSIX)
     {
-        "~/notahost/path/file#ref", "file",
-        url::Component(),       // scheme
-        url::Component(),       // username
-        url::Component(),       // password
-        url::Component(),       // host
-        url::Component(),       // port
-        url::Component(0, 20),  // path
-        url::Component(),       // query
-        url::Component(21, 3),  // ref
+        .input = "~/notahost/path/file#ref",
+        .result = "file",
+        .scheme = url::Component(),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(),
+        .port = url::Component(),
+        .path = url::Component(0, 20),
+        .query = url::Component(),
+        .ref = url::Component(21, 3),
     },
 #endif
     {
-        "devtools://bundled/devtools/inspector.html?ws=localhost:9221",
-        "devtools", url::Component(0, 8),  // scheme
-        url::Component(),                  // username
-        url::Component(),                  // password
-        url::Component(11, 7),             // host
-        url::Component(),                  // port
-        url::Component(18, 24),            // path
-        url::Component(43, 17),            // query
-        url::Component(),                  // ref
+        .input = "devtools://bundled/devtools/inspector.html?ws=localhost:9221",
+        .result = "devtools",
+        .scheme = url::Component(0, 8),
+        .username = url::Component(),
+        .password = url::Component(),
+        .host = url::Component(11, 7),
+        .port = url::Component(),
+        .path = url::Component(18, 24),
+        .query = url::Component(43, 17),
+        .ref = url::Component(),
     },
 });
 
@@ -277,11 +308,11 @@ TEST(URLFixerTest, SegmentURL) {
   std::string result;
   url::Parsed parts;
 
-  for (size_t i = 0; i < std::size(segment_cases); ++i) {
-    SegmentCase value = segment_cases[i];
+  for (size_t i = 0; i < std::size(kSegmentCases); ++i) {
+    SegmentCase value = kSegmentCases[i];
     SCOPED_TRACE(testing::Message() << "test #" << i << ": " << value.input);
 
-    result = url_formatter::SegmentURL(value.input, &parts);
+    result = SegmentURL(value.input, &parts);
     EXPECT_EQ(value.result, result);
     EXPECT_EQ(value.scheme, parts.scheme);
     EXPECT_EQ(value.username, parts.username);
@@ -442,7 +473,7 @@ struct FixupCase {
 
 TEST(URLFixerTest, FixupURL) {
   for (const auto& value : fixup_cases) {
-    GURL actual_output = url_formatter::FixupURL(value.input, std::string());
+    GURL actual_output = FixupURL(value.input, std::string());
     EXPECT_EQ(value.output, actual_output.possibly_invalid_spec())
         << "input: " << value.input;
 
@@ -491,9 +522,8 @@ TEST(URLFixerTest, FixupURL) {
        "http://www.somedomainthatwillnotbeagtld.com:123/"},
   };
   for (const auto& value : tld_cases) {
-    EXPECT_EQ(
-        value.output,
-        url_formatter::FixupURL(value.input, "com").possibly_invalid_spec());
+    EXPECT_EQ(value.output,
+              FixupURL(value.input, "com").possibly_invalid_spec());
   }
 }
 
@@ -514,7 +544,7 @@ TEST(URLFixerTest, FixupFile) {
   GURL golden(net::FilePathToFileURL(original));
 
   // c:\foo\bar.txt -> file:///c:/foo/bar.txt (basic)
-  GURL fixedup(url_formatter::FixupURL(original.AsUTF8Unsafe(), std::string()));
+  GURL fixedup(FixupURL(original.AsUTF8Unsafe(), std::string()));
   EXPECT_EQ(golden, fixedup);
 
   // TODO(port): Make some equivalent tests for posix.
@@ -523,7 +553,7 @@ TEST(URLFixerTest, FixupFile) {
   std::string cur(base::WideToUTF8(original.value()));
   EXPECT_EQ(':', cur[1]);
   cur[1] = '|';
-  EXPECT_EQ(golden, url_formatter::FixupURL(cur, std::string()));
+  EXPECT_EQ(golden, FixupURL(cur, std::string()));
 
   FixupCase cases[] = {
       {"c:\\Non-existent%20file.txt", "file:///C:/Non-existent%2520file.txt"},
@@ -560,7 +590,7 @@ TEST(URLFixerTest, FixupFile) {
 #else
 #define HOME "/home/"
 #endif
-  url_formatter::home_directory_override = "/foo";
+  home_directory_override = "/foo";
   FixupCase cases[] = {
       // File URLs go through GURL, which tries to escape intelligently.
       {"/A%20non-existent file.txt", "file:///A%2520non-existent%20file.txt"},
@@ -578,8 +608,8 @@ TEST(URLFixerTest, FixupFile) {
 #endif
 
   for (const auto& value : cases) {
-    EXPECT_EQ(value.output, url_formatter::FixupURL(value.input, std::string())
-                                .possibly_invalid_spec());
+    EXPECT_EQ(value.output,
+              FixupURL(value.input, std::string()).possibly_invalid_spec());
   }
 
   EXPECT_TRUE(base::DeleteFile(original));
@@ -598,17 +628,16 @@ TEST(URLFixerTest, FixupRelativeFile) {
   // make sure we pass through good URLs
   for (const auto& value : fixup_cases) {
     base::FilePath input = base::FilePath::FromUTF8Unsafe(value.input);
-    EXPECT_EQ(value.output,
-              url_formatter::FixupRelativeFile(temp_dir_.GetPath(), input)
-                  .possibly_invalid_spec())
+    EXPECT_EQ(
+        value.output,
+        FixupRelativeFile(temp_dir_.GetPath(), input).possibly_invalid_spec())
         << "input: " << value.input;
   }
 
   // make sure the existing file got fixed-up to a file URL, and that there
   // are no backslashes
   EXPECT_TRUE(IsMatchingFileURL(
-      url_formatter::FixupRelativeFile(temp_dir_.GetPath(), file_part)
-          .possibly_invalid_spec(),
+      FixupRelativeFile(temp_dir_.GetPath(), file_part).possibly_invalid_spec(),
       full_path));
   EXPECT_TRUE(base::DeleteFile(full_path));
 
@@ -616,9 +645,8 @@ TEST(URLFixerTest, FixupRelativeFile) {
   // fixed up to a file URL
   base::FilePath nonexistent_file(
       FILE_PATH_LITERAL("url_fixer_upper_nonexistent_file.txt"));
-  std::string fixedup(
-      url_formatter::FixupRelativeFile(temp_dir_.GetPath(), nonexistent_file)
-          .possibly_invalid_spec());
+  std::string fixedup(FixupRelativeFile(temp_dir_.GetPath(), nonexistent_file)
+                          .possibly_invalid_spec());
   EXPECT_NE(std::string("file:///"), fixedup.substr(0, 8));
   EXPECT_FALSE(IsMatchingFileURL(fixedup, nonexistent_file));
 
@@ -636,10 +664,10 @@ TEST(URLFixerTest, FixupRelativeFile) {
 
   // test file in the subdir
   base::FilePath relative_file = sub_dir.Append(sub_file);
-  EXPECT_TRUE(IsMatchingFileURL(
-      url_formatter::FixupRelativeFile(temp_dir_.GetPath(), relative_file)
-          .possibly_invalid_spec(),
-      full_path));
+  EXPECT_TRUE(
+      IsMatchingFileURL(FixupRelativeFile(temp_dir_.GetPath(), relative_file)
+                            .possibly_invalid_spec(),
+                        full_path));
 
   // test file in the subdir with different slashes and escaping.
   base::FilePath::StringType relative_file_str =
@@ -647,8 +675,7 @@ TEST(URLFixerTest, FixupRelativeFile) {
   base::ReplaceSubstringsAfterOffset(
       &relative_file_str, 0, FILE_PATH_LITERAL(" "), FILE_PATH_LITERAL("%20"));
   EXPECT_TRUE(IsMatchingFileURL(
-      url_formatter::FixupRelativeFile(temp_dir_.GetPath(),
-                                       base::FilePath(relative_file_str))
+      FixupRelativeFile(temp_dir_.GetPath(), base::FilePath(relative_file_str))
           .possibly_invalid_spec(),
       full_path));
 
@@ -658,8 +685,7 @@ TEST(URLFixerTest, FixupRelativeFile) {
                       sub_dir.value() + FILE_PATH_LITERAL("///./") +
                       sub_file.value();
   EXPECT_TRUE(IsMatchingFileURL(
-      url_formatter::FixupRelativeFile(temp_dir_.GetPath(),
-                                       base::FilePath(relative_file_str))
+      FixupRelativeFile(temp_dir_.GetPath(), base::FilePath(relative_file_str))
           .possibly_invalid_spec(),
       full_path));
 
@@ -671,6 +697,7 @@ TEST(URLFixerTest, FixupRelativeFile) {
   // file path (on account of system-specific craziness).
   base::FilePath empty_path;
   base::FilePath http_url_path(FILE_PATH_LITERAL("http://../"));
-  EXPECT_TRUE(url_formatter::FixupRelativeFile(empty_path, http_url_path)
-                  .SchemeIs("http"));
+  EXPECT_TRUE(FixupRelativeFile(empty_path, http_url_path).SchemeIs("http"));
 }
+
+}  // namespace url_formatter
