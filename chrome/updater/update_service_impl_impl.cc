@@ -1323,8 +1323,8 @@ void UpdateServiceImplImpl::RunInstallerImpl(
                     state_update, app_info.app_id));
           },
           app_info, installer_path, install_args, install_data, state_update,
-          config_->GetUpdaterPersistedData()->GetUsageStatsEnabled() ||
-              AreRawUsageStatsEnabled(GetUpdaterScope())),
+          IsUpdaterOrCompanionApp(app_info.app_id) &&
+              config_->GetUpdaterPersistedData()->GetUsageStatsEnabled()),
       base::BindOnce(
           [](scoped_refptr<Configurator> config,
              scoped_refptr<PersistedData> persisted_data,

@@ -6,13 +6,16 @@
 
 #include <memory>
 #include <optional>
-#include <string>
-#include <vector>
+#include <utility>
 
 #include "base/apple/foundation_util.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/task/thread_pool.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/mac_util.h"
@@ -23,7 +26,7 @@ namespace updater {
 
 namespace {
 
-bool OtherAppUsageStatsAllowedInDir(const base::FilePath& base_dir) {
+bool AnyAppUsageStatsAllowedInDir(const base::FilePath& base_dir) {
   base::FileEnumerator files(
       base_dir.Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING)), false,
       base::FileEnumerator::FileType::DIRECTORIES);
@@ -53,13 +56,12 @@ bool OtherAppUsageStatsAllowedInDir(const base::FilePath& base_dir) {
 // Returns whether any crashpad databases in ~/Library/Application
 // Support/<company name>/<app name>/Crashpad have upload enabled. Google
 // Chrome channels all follow this pattern.
-bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
-                               UpdaterScope scope) {
+bool AnyAppUsageStatsAllowed(UpdaterScope scope) {
   if (!IsSystemInstall(scope)) {
     std::optional<base::FilePath> application_support_dir =
         GetApplicationSupportDirectory(UpdaterScope::kUser);
     return application_support_dir &&
-           OtherAppUsageStatsAllowedInDir(*application_support_dir);
+           AnyAppUsageStatsAllowedInDir(*application_support_dir);
   }
   // In the system case, iterate all users. If any user has opted-in to usage
   // stats, the system updater may transmit usage stats.
@@ -70,7 +72,7 @@ bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
   base::FileEnumerator files(user_dir, false,
                              base::FileEnumerator::FileType::DIRECTORIES);
   for (base::FilePath name = files.Next(); !name.empty(); name = files.Next()) {
-    if (OtherAppUsageStatsAllowedInDir(
+    if (AnyAppUsageStatsAllowedInDir(
             name.Append(FILE_PATH_LITERAL("Library"))
                 .Append(FILE_PATH_LITERAL("Application Support")))) {
       return true;
@@ -79,10 +81,15 @@ bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
   return false;
 }
 
-bool AreRawUsageStatsEnabled(
-    UpdaterScope scope,
-    const std::vector<std::string>& include_only_these_app_ids) {
-  return false;
+void UpdateUsageStatsTask::Run(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&AnyAppUsageStatsAllowed, scope_),
+      base::BindOnce(&UpdateUsageStatsTask::SetUsageStatsEnabled, this,
+                     persisted_data_)
+          .Then(std::move(callback)));
 }
 
 }  // namespace updater

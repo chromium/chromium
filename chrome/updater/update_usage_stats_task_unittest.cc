@@ -117,10 +117,7 @@ class UpdateUsageStatsTaskTest : public testing::Test {
 TEST_F(UpdateUsageStatsTaskTest, NoApps) {
   ClearAppUsageStats("app1");
   ClearAppUsageStats("app2");
-  ASSERT_FALSE(
-      OtherAppUsageStatsAllowed({"app1", "app2"}, GetUpdaterScopeForTesting()));
-  ASSERT_FALSE(
-      AreRawUsageStatsEnabled(GetUpdaterScopeForTesting(), {"app1", "app2"}));
+  ASSERT_FALSE(AnyAppUsageStatsAllowed(GetUpdaterScopeForTesting()));
 }
 
 TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
@@ -129,10 +126,7 @@ TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
     ClearAppUsageStats("app2");
     SetAppUsageStats(key_path, "app1", true);
     SetAppUsageStats(key_path, "app2", false);
-    ASSERT_TRUE(OtherAppUsageStatsAllowed({"app1", "app2"},
-                                          GetUpdaterScopeForTesting()));
-    ASSERT_TRUE(
-        AreRawUsageStatsEnabled(GetUpdaterScopeForTesting(), {"app1", "app2"}));
+    ASSERT_TRUE(AnyAppUsageStatsAllowed(GetUpdaterScopeForTesting()));
   }
 }
 
@@ -142,10 +136,7 @@ TEST_F(UpdateUsageStatsTaskTest, ZeroAppsEnabled) {
     ClearAppUsageStats("app2");
     SetAppUsageStats(key_path, "app1", false);
     SetAppUsageStats(key_path, "app2", false);
-    ASSERT_FALSE(OtherAppUsageStatsAllowed({"app1", "app2"},
-                                           GetUpdaterScopeForTesting()));
-    ASSERT_FALSE(
-        AreRawUsageStatsEnabled(GetUpdaterScopeForTesting(), {"app1", "app2"}));
+    ASSERT_FALSE(AnyAppUsageStatsAllowed(GetUpdaterScopeForTesting()));
   }
 }
 
@@ -156,14 +147,13 @@ TEST_F(UpdateUsageStatsTaskTest,
   }
   SetAppUsageStats(CLIENT_STATE_MEDIUM_KEY, "app1", false);
   SetAppUsageStats(CLIENT_STATE_KEY, "app1", true);
-  ASSERT_FALSE(
-      OtherAppUsageStatsAllowed({"app1"}, GetUpdaterScopeForTesting()));
+  ASSERT_FALSE(AnyAppUsageStatsAllowed(GetUpdaterScopeForTesting()));
 
   SetAppUsageStats(CLIENT_STATE_MEDIUM_KEY, "app1", true);
   SetAppUsageStats(CLIENT_STATE_KEY, "app1", false);
-  ASSERT_TRUE(OtherAppUsageStatsAllowed({"app1"}, GetUpdaterScopeForTesting()));
-  ASSERT_TRUE(AreRawUsageStatsEnabled(GetUpdaterScopeForTesting(), {"app1"}));
+  ASSERT_TRUE(AnyAppUsageStatsAllowed(GetUpdaterScopeForTesting()));
 }
+
 #elif !BUILDFLAG(IS_MAC) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Mac Google-branded builds may pick up Chrome or other Google software
 // usagestat opt-ins from outside this test. Disable the test in that
@@ -171,8 +161,7 @@ TEST_F(UpdateUsageStatsTaskTest,
 TEST_F(UpdateUsageStatsTaskTest, NoApps) {
   ClearAppUsageStats("app1");
   ClearAppUsageStats("app2");
-  ASSERT_FALSE(
-      OtherAppUsageStatsAllowed({"app1", "app2"}, GetUpdaterScopeForTesting()));
+  ASSERT_FALSE(AnyAppUsageStatsAllowed(GetUpdaterScopeForTesting()));
 }
 
 // TODO(crbug.com/40821596): Enable tests once the feature is implemented.
@@ -180,16 +169,14 @@ TEST_F(UpdateUsageStatsTaskTest, NoApps) {
 TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
   SetAppUsageStats("app1", true);
   SetAppUsageStats("app2", false);
-  ASSERT_TRUE(
-      OtherAppUsageStatsAllowed({"app1", "app2"}, GetUpdaterScopeForTesting()));
+  ASSERT_TRUE(AnyAppUsageStatsAllowed(GetUpdaterScopeForTesting()));
 }
 #endif  // !BUILDFLAG(IS_LINUX)
 
 TEST_F(UpdateUsageStatsTaskTest, ZeroAppsEnabled) {
   SetAppUsageStats("app1", false);
   SetAppUsageStats("app2", false);
-  ASSERT_FALSE(
-      OtherAppUsageStatsAllowed({"app1", "app2"}, GetUpdaterScopeForTesting()));
+  ASSERT_FALSE(AnyAppUsageStatsAllowed(GetUpdaterScopeForTesting()));
 }
 #endif
 
