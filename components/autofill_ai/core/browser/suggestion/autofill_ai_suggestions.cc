@@ -28,6 +28,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+
 namespace autofill_ai {
 
 namespace {
@@ -41,32 +42,33 @@ using autofill::SuggestionType;
 
 constexpr char16_t kLabelSeparator[] = u" · ";
 
-// A map from an attribute type associated with a form field and the root value
-// stored in the entity instance for such attribute. The value is always based
-// on the "top level type" for the attribute, this means that for both field
-// types such as NAME_FIRST and NAME_LAST, the root value will be NAME_FULL,
-// similarly for date types. This is used to generate labels, where we want to
-// use only complete values.
-using FillingSuggestionMetadata =
-    std::map<autofill::AttributeType, std::u16string>;
-// Represents a list of suggestions and a map which contains metadata about the
-// attributes types and their values stored in the entity used to generate the
-// suggestion. This is a set as a way to guarantee unique label values for a
-// given attribute.
-using SuggestionsWithFillingMetadata =
-    std::vector<std::pair<autofill::Suggestion, FillingSuggestionMetadata>>;
+struct SuggestionWithMetadata {
+  // A suggestion whose payload is of type `Suggestion::AutofillAiPayload`.
+  Suggestion suggestion;
+
+  // The values that would be filled by `suggestion`, indexed by the underlying
+  // attribute's type. The value is always based on the "top level type" for the
+  // attribute, this means that for both field types such as NAME_FIRST and
+  // NAME_LAST, the root value will be NAME_FULL, similarly for date types. This
+  // is used to generate labels, where we want to use only complete values.
+  base::flat_map<AttributeType, std::u16string> attribute_type_to_value;
+
+  // The values that would be filled by `suggestion`, indexed by the underlying
+  // field's ID.
+  base::flat_map<FieldGlobalId, std::u16string> field_to_value;
+};
 
 // For each suggestion in `suggestions`, create its label.
 // `labels_for_all_suggestions` contain for each suggestion all the strings that
 // should be concatenated to generate the final label.
-std::vector<autofill::Suggestion> GetSuggestionsWithLabels(
+std::vector<Suggestion> GetSuggestionsWithLabels(
     std::vector<std::vector<std::u16string>> labels_for_all_suggestions,
-    std::vector<autofill::Suggestion> suggestions) {
+    std::vector<Suggestion> suggestions) {
   CHECK_EQ(labels_for_all_suggestions.size(), suggestions.size());
 
   size_t suggestion_index = 0;
-  for (autofill::Suggestion& suggestion : suggestions) {
-    suggestion.labels.push_back({autofill::Suggestion::Text(base::JoinString(
+  for (Suggestion& suggestion : suggestions) {
+    suggestion.labels.push_back({Suggestion::Text(base::JoinString(
         labels_for_all_suggestions[suggestion_index], kLabelSeparator))});
     suggestion_index++;
   }
@@ -75,45 +77,39 @@ std::vector<autofill::Suggestion> GetSuggestionsWithLabels(
 }
 
 // Generates all labels that it can use to disambiguate a list of suggestions
-// for each suggestion in `suggestions_with_filling_metadata`. The vector
+// for each suggestion in `suggestions_with_metadata`. The vector
 // of labels for each suggestion is sorted from lowest to highest priority. The
 // available labels are generated based on the values a suggestion would fill.
 std::vector<std::vector<std::u16string>> GetAvailableLabelsForSuggestions(
-    autofill::AttributeType triggering_field_attribute,
-    const SuggestionsWithFillingMetadata& suggestions_with_filling_metadata) {
-  CHECK(!suggestions_with_filling_metadata.empty());
-  const size_t n_suggestions = suggestions_with_filling_metadata.size();
+    AttributeType triggering_field_attribute,
+    base::span<const SuggestionWithMetadata> suggestions_with_metadata) {
+  CHECK(!suggestions_with_metadata.empty());
+  const size_t n_suggestions = suggestions_with_metadata.size();
 
   // Stores for all suggestions all attributes associated with the fields it
   // will fill and their respective values.
-  std::vector<std::vector<std::pair<autofill::AttributeType, std::u16string>>>
+  std::vector<std::vector<std::pair<AttributeType, std::u16string>>>
       attribute_types_and_values_available_for_suggestions;
   attribute_types_and_values_available_for_suggestions.reserve(n_suggestions);
 
   // Used to determine whether a certain attribute and value pair repeats across
   // all suggestions. In this case, adding a label for this value is
   // redundant.
-  std::map<std::pair<autofill::AttributeType, std::u16string>, size_t>
+  std::map<std::pair<AttributeType, std::u16string>, size_t>
       attribute_type_and_value_occurrences;
 
   // Go over each suggestion and its filling metadata. Store all attribute
   // types associated with it and their values.
-  for (const auto& [suggestion, filling_metadata] :
-       suggestions_with_filling_metadata) {
-    const autofill::Suggestion::AutofillAiPayload* payload =
-        absl::get_if<autofill::Suggestion::AutofillAiPayload>(
-            &suggestion.payload);
-    CHECK(payload);
-
+  for (const SuggestionWithMetadata& s : suggestions_with_metadata) {
     // For a certain suggestion, initialize a vector containing all attribute
     // types and their respective values.
-    std::vector<std::pair<autofill::AttributeType, std::u16string>>
-        suggestion_attribute_types_and_labels(filling_metadata.begin(),
-                                              filling_metadata.end());
+    std::vector<std::pair<AttributeType, std::u16string>>
+        suggestion_attribute_types_and_labels(s.attribute_type_to_value.begin(),
+                                              s.attribute_type_to_value.end());
     // The triggering field type is never used as a possible label. This is
     // because its value is already used as the suggestion's main text.
     std::erase_if(suggestion_attribute_types_and_labels,
-                  [&](const std::pair<autofill::AttributeType, std::u16string>&
+                  [&](const std::pair<AttributeType, std::u16string>&
                           attribute_and_label) {
                     return attribute_and_label.first ==
                            triggering_field_attribute;
@@ -123,14 +119,13 @@ std::vector<std::vector<std::u16string>> GetAvailableLabelsForSuggestions(
     // will fill, together with their respective values. Note that these are
     // only top level values, such as NAME_FULL (as opposed to NAME_FIRST,
     // NAME_LAST etc).
-    std::ranges::sort(
-        suggestion_attribute_types_and_labels,
-        std::not_fn(AttributeType::DisambiguationOrder),
-        &std::pair<autofill::AttributeType, std::u16string>::first);
+    std::ranges::sort(suggestion_attribute_types_and_labels,
+                      std::not_fn(AttributeType::DisambiguationOrder),
+                      &std::pair<AttributeType, std::u16string>::first);
 
     for (const auto& [attribute_type, entity_value] :
          suggestion_attribute_types_and_labels) {
-      attribute_type_and_value_occurrences[{attribute_type, entity_value}]++;
+      ++attribute_type_and_value_occurrences[{attribute_type, entity_value}];
     }
 
     attribute_types_and_values_available_for_suggestions.push_back(
@@ -139,14 +134,13 @@ std::vector<std::vector<std::u16string>> GetAvailableLabelsForSuggestions(
 
   // The output of this method.
   std::vector<std::vector<std::u16string>> labels_available_for_suggestions;
-  labels_available_for_suggestions.reserve(
-      suggestions_with_filling_metadata.size());
+  labels_available_for_suggestions.reserve(suggestions_with_metadata.size());
 
   // Now remove the redundant values from
   // `attribute_types_and_values_available_for_suggestions` and generate the
   // output. A value is considered redundant if it repeats across all
   // suggestions for the same attribute type.
-  for (std::vector<std::pair<autofill::AttributeType, std::u16string>>&
+  for (std::vector<std::pair<AttributeType, std::u16string>>&
            suggestion_attribute_types_and_value :
        attribute_types_and_values_available_for_suggestions) {
     std::vector<std::u16string> labels_for_suggestion;
@@ -174,24 +168,23 @@ std::vector<std::vector<std::u16string>> GetAvailableLabelsForSuggestions(
   return labels_available_for_suggestions;
 }
 
-// Generate labels for suggestions in `suggestions_with_filling_metadata` given
+// Generate labels for suggestions in `suggestions_with_metadata` given
 // a triggering field of `AttributeType`.
-std::vector<autofill::Suggestion> GenerateFillingSuggestionLabels(
+std::vector<Suggestion> GenerateFillingSuggestionLabels(
     AttributeType triggering_field_attribute,
-    SuggestionsWithFillingMetadata suggestions_with_filling_metadata) {
+    std::vector<SuggestionWithMetadata> suggestions_with_metadata) {
   // Get all label strings each suggestion can concatenate to build the final
   // label. Already sorted based on priority.
   std::vector<std::vector<std::u16string>> labels_available_for_suggestions =
       GetAvailableLabelsForSuggestions(triggering_field_attribute,
-                                       suggestions_with_filling_metadata);
+                                       suggestions_with_metadata);
 
-  const size_t n_suggestions = suggestions_with_filling_metadata.size();
-  // Initialize the output using `suggestions_with_filling_metadata`.
-  std::vector<autofill::Suggestion> suggestions_with_labels;
+  const size_t n_suggestions = suggestions_with_metadata.size();
+  // Initialize the output using `suggestions_with_metadata`.
+  std::vector<Suggestion> suggestions_with_labels;
   suggestions_with_labels.reserve(n_suggestions);
-  for (auto& [suggestion, filling_metadata] :
-       suggestions_with_filling_metadata) {
-    suggestions_with_labels.push_back(std::move(suggestion));
+  for (SuggestionWithMetadata& s : std::move(suggestions_with_metadata)) {
+    suggestions_with_labels.push_back(std::move(s.suggestion));
   }
 
   // The maximum number of labels is defined based on the suggestion with the
@@ -285,81 +278,63 @@ Suggestion CreateUndoSuggestion() {
 
 // Returns suggestions whose set of fields and values to be filled are not
 // subsets of another.
-//
-// `suggestions` must only contain AutofillAiPayload suggestions and
-// `values_to_fill_by_entity` must contain an entry for each of them.
-SuggestionsWithFillingMetadata DedupeFillingSuggestions(
-    SuggestionsWithFillingMetadata suggestions_with_filling_metadata,
-    const std::map<base::Uuid, base::flat_map<FieldGlobalId, std::u16string>>&
-        values_to_fill_by_entity) {
-  // Returns -1 if the filling payload of `suggestion_a` is a proper subset of
-  // the one from `suggestion_b`. Returns 0 if the filling payload of
-  // `suggestion_a` is identical to the one from `suggestion_b`. Returns 1
-  // otherwise.
-  auto check_suggestions_filling_payload_subset_status =
-      [&](const Suggestion& suggestion_a, const Suggestion& suggestion_b) {
-        const base::Uuid& uuid_a =
-            absl::get<Suggestion::AutofillAiPayload>(suggestion_a.payload).guid;
-        const base::Uuid& uuid_b =
-            absl::get<Suggestion::AutofillAiPayload>(suggestion_b.payload).guid;
-
-        const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill_a =
-            values_to_fill_by_entity.find(uuid_a)->second;
-        const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill_b =
-            values_to_fill_by_entity.find(uuid_b)->second;
-
-        for (auto& [field_global_id, value_to_fill] : values_to_fill_a) {
-          if (auto it = values_to_fill_b.find(field_global_id);
-              it == values_to_fill_b.end() || value_to_fill != it->second) {
-            return 1;
-          }
-        }
-
-        return values_to_fill_b.size() > values_to_fill_a.size() ? -1 : 0;
-      };
+std::vector<SuggestionWithMetadata> DedupeFillingSuggestions(
+    std::vector<SuggestionWithMetadata> suggestions_with_metadata) {
+  enum { kSubset, kEqual, kSupersetOrIncomparable };
+  auto fills_subset_of = [&](const SuggestionWithMetadata& a,
+                             const SuggestionWithMetadata& b) {
+    for (auto& [field_global_id, value_to_fill] : a.field_to_value) {
+      if (auto it = b.field_to_value.find(field_global_id);
+          it == b.field_to_value.end() || value_to_fill != it->second) {
+        return kSupersetOrIncomparable;
+      }
+    }
+    return b.field_to_value.size() > a.field_to_value.size() ? kSubset : kEqual;
+  };
 
   // Remove those that are subsets of some other suggestion.
-  SuggestionsWithFillingMetadata deduped_filling_suggestions;
-  std::set<size_t> duplicated_filling_payloads_to_skip;
-  for (size_t i = 0; i < suggestions_with_filling_metadata.size(); i++) {
-    if (duplicated_filling_payloads_to_skip.contains(i)) {
+  std::vector<SuggestionWithMetadata> deduped_suggestions;
+  std::set<size_t> duplicated_payloads_to_skip;
+  for (size_t i = 0; i < suggestions_with_metadata.size(); i++) {
+    if (duplicated_payloads_to_skip.contains(i)) {
       continue;
     }
     bool is_proper_subset_of_another_suggestion = false;
-    for (size_t j = 0; j < suggestions_with_filling_metadata.size(); j++) {
+    for (size_t j = 0; j < suggestions_with_metadata.size(); j++) {
       if (i == j) {
         continue;
       }
-
-      int subset_status = check_suggestions_filling_payload_subset_status(
-          suggestions_with_filling_metadata[i].first,
-          suggestions_with_filling_metadata[j].first);
-      if (subset_status == -1) {
-        is_proper_subset_of_another_suggestion = true;
-      } else if (subset_status == 0) {
-        duplicated_filling_payloads_to_skip.insert(j);
+      switch (fills_subset_of(suggestions_with_metadata[i],
+                              suggestions_with_metadata[j])) {
+        case kSubset:
+          is_proper_subset_of_another_suggestion = true;
+          break;
+        case kEqual:
+          duplicated_payloads_to_skip.insert(j);
+          break;
+        case kSupersetOrIncomparable:
+          break;
       }
     }
     if (!is_proper_subset_of_another_suggestion) {
-      deduped_filling_suggestions.push_back(
-          suggestions_with_filling_metadata[i]);
+      deduped_suggestions.push_back(suggestions_with_metadata[i]);
     }
   }
 
-  return deduped_filling_suggestions;
+  return deduped_suggestions;
 }
 
-autofill::Suggestion::Icon GetSuggestionIcon(
+Suggestion::Icon GetSuggestionIcon(
     autofill::EntityType triggering_field_entity_type) {
   switch (triggering_field_entity_type.name()) {
     case autofill::EntityTypeName::kPassport:
-      return autofill::Suggestion::Icon::kIdCard;
+      return Suggestion::Icon::kIdCard;
     case autofill::EntityTypeName::kLoyaltyCard:
-      return autofill::Suggestion::Icon::kLoyalty;
+      return Suggestion::Icon::kLoyalty;
     case autofill::EntityTypeName::kDriversLicense:
-      return autofill::Suggestion::Icon::kIdCard;
+      return Suggestion::Icon::kIdCard;
     case autofill::EntityTypeName::kVehicle:
-      return autofill::Suggestion::Icon::kVehicle;
+      return Suggestion::Icon::kVehicle;
   }
   NOTREACHED();
 }
@@ -393,9 +368,7 @@ std::vector<Suggestion> CreateFillingSuggestions(
   CHECK(triggering_field_attribute_type);
 
   // Suggestion and their fields to be filled metadata.
-  SuggestionsWithFillingMetadata suggestions_with_filling_metadata;
-  std::map<base::Uuid, base::flat_map<FieldGlobalId, std::u16string>>
-      values_to_fill_by_entity;
+  std::vector<SuggestionWithMetadata> suggestions_with_metadata;
   for (const autofill::EntityInstance& entity : entities) {
     //  Only entities that match the triggering field entity should be used to
     //  generate suggestions.
@@ -414,15 +387,16 @@ std::vector<Suggestion> CreateFillingSuggestions(
     const std::u16string normalized_triggering_field_content =
         autofill::AutofillProfileComparator::NormalizeForComparison(
             autofill_field->value(autofill::ValueSemantics::kCurrent));
-    // TODO(crbug.com/394011769): Do not prefix match data that should be obfuscated.
+    // TODO(crbug.com/394011769): Do not prefix-match data that should be
+    // obfuscated.
     if (!normalized_main_text.starts_with(
             normalized_triggering_field_content)) {
       continue;
     }
-    autofill::Suggestion suggestion(main_text, SuggestionType::kFillAutofillAi);
 
-    std::vector<std::pair<FieldGlobalId, std::u16string>> values_to_fill;
-    FillingSuggestionMetadata filling_suggestion_metadata;
+    std::vector<std::pair<AttributeType, std::u16string>>
+        attribute_type_to_value;
+    std::vector<std::pair<FieldGlobalId, std::u16string>> field_to_value;
     for (const std::unique_ptr<AutofillField>& field : form.fields()) {
       // Only fill fields that match the triggering field section.
       if (field->section() != autofill_field->section()) {
@@ -434,42 +408,42 @@ std::vector<Suggestion> CreateFillingSuggestions(
         continue;
       }
 
-      std::optional<AttributeType> field_attribute_type =
+      std::optional<AttributeType> attribute_type =
           AttributeType::FromFieldType(*field_autofill_ai_prediction);
-      CHECK(field_attribute_type);
       // Only fields that match the triggering field entity should be used to
       // generate suggestions.
-      if (!field_attribute_type ||
-          triggering_field_attribute_type->entity_type() !=
-              field_attribute_type->entity_type()) {
+      if (!attribute_type || triggering_field_attribute_type->entity_type() !=
+                                 attribute_type->entity_type()) {
         continue;
       }
 
       base::optional_ref<const AttributeInstance> attribute =
-          entity.attribute(*field_attribute_type);
+          entity.attribute(*attribute_type);
       if (!attribute || attribute->value().empty()) {
         continue;
       }
 
-      values_to_fill.emplace_back(field->global_id(), attribute->value());
-      filling_suggestion_metadata[*field_attribute_type] = attribute->value();
+      attribute_type_to_value.emplace_back(*attribute_type, attribute->value());
+      field_to_value.emplace_back(field->global_id(), attribute->value());
     }
-    suggestion.payload = Suggestion::AutofillAiPayload(entity.guid());
-    suggestion.icon =
+
+    SuggestionWithMetadata& s = suggestions_with_metadata.emplace_back();
+    s.suggestion = Suggestion(main_text, SuggestionType::kFillAutofillAi);
+    s.suggestion.payload = Suggestion::AutofillAiPayload(entity.guid());
+    s.suggestion.icon =
         GetSuggestionIcon(triggering_field_attribute_type->entity_type());
-    suggestions_with_filling_metadata.emplace_back(
-        std::move(suggestion), std::move(filling_suggestion_metadata));
-    values_to_fill_by_entity.emplace(entity.guid(), std::move(values_to_fill));
+    s.attribute_type_to_value =
+        base::flat_map(std::move(attribute_type_to_value));
+    s.field_to_value = base::flat_map(std::move(field_to_value));
   }
 
-  if (suggestions_with_filling_metadata.empty()) {
+  if (suggestions_with_metadata.empty()) {
     return {};
   }
 
   std::vector<Suggestion> suggestions = GenerateFillingSuggestionLabels(
       *triggering_field_attribute_type,
-      DedupeFillingSuggestions(std::move(suggestions_with_filling_metadata),
-                               values_to_fill_by_entity));
+      DedupeFillingSuggestions(std::move(suggestions_with_metadata)));
 
   // Footer suggestions.
   suggestions.emplace_back(SuggestionType::kSeparator);
