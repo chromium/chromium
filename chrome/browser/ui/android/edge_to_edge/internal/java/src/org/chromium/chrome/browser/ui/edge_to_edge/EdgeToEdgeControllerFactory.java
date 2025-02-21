@@ -144,7 +144,8 @@ public class EdgeToEdgeControllerFactory {
     public static boolean isSupportedConfiguration(Activity activity) {
         // Make sure we test SDK version before checking the Feature so Field Trials only collect
         // from qualifying devices.
-        if (!EdgeToEdgeFieldTrial.getInstance().isEnabledForManufacturerVersion()) return false;
+        if (!EdgeToEdgeFieldTrial.getBottomChinOverrides().isEnabledForManufacturerVersion())
+            return false;
 
         // The root view's window insets is needed to determine if we are in gesture nav mode.
         if (activity == null

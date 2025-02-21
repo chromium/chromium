@@ -93,6 +93,10 @@ public class EdgeToEdgeUtils {
     /** Whether edge-to-edge should be enabled everywhere. */
     @OptIn(markerClass = BuildCompat.PrereleaseSdkCheck.class)
     public static boolean isEdgeToEdgeEverywhereEnabled() {
+        if (!EdgeToEdgeFieldTrial.getEverywhereOverrides().isEnabledForManufacturerVersion()) {
+            return false;
+        }
+
         if (ChromeFeatureList.sEdgeToEdgeEverywhere.isEnabled()) {
             return true;
         }

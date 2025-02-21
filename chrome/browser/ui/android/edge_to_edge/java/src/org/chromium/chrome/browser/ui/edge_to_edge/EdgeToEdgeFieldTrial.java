@@ -39,34 +39,57 @@ import java.util.Map;
 public final class EdgeToEdgeFieldTrial {
     private static final String TAG = "E2E_fieldtrial";
     private static final int DEFAULT_MIN_VERSION = 30; // VERSION_CODES.R;
-    private static EdgeToEdgeFieldTrial sInstance;
+
+    /** Instance for EdgeToEdgeBottomChin. */
+    private static EdgeToEdgeFieldTrial sBottomChinOverrides;
+
+    /** Instance for EdgeToEdgeEverywhere. */
+    private static EdgeToEdgeFieldTrial sEverywhereOverrides;
 
     @UiThread
-    static @NonNull EdgeToEdgeFieldTrial getInstance() {
-        if (sInstance == null) {
-            sInstance = new EdgeToEdgeFieldTrial();
+    static @NonNull EdgeToEdgeFieldTrial getBottomChinOverrides() {
+        if (sBottomChinOverrides == null) {
+            String oemString = ChromeFeatureList.sEdgeToEdgeBottomChinOemList.getValue();
+            String minVersionString =
+                    ChromeFeatureList.sEdgeToEdgeBottomChinOemMinVersions.getValue();
+            sBottomChinOverrides = new EdgeToEdgeFieldTrial(oemString, minVersionString);
         }
-        return sInstance;
+        return sBottomChinOverrides;
+    }
+
+    @UiThread
+    static @NonNull EdgeToEdgeFieldTrial getEverywhereOverrides() {
+        if (sEverywhereOverrides == null) {
+            String oemString = ChromeFeatureList.sEdgeToEdgeEverywhereOemList.getValue();
+            String minVersionString =
+                    ChromeFeatureList.sEdgeToEdgeEverywhereOemMinVersions.getValue();
+            sEverywhereOverrides = new EdgeToEdgeFieldTrial(oemString, minVersionString);
+        }
+        return sEverywhereOverrides;
     }
 
     /** Clear the static instance for testing. */
     public static void clearInstanceForTesting() {
-        var oldInstance = sInstance;
-        sInstance = null;
-        ResettersForTesting.register(() -> sInstance = oldInstance);
+        var oldBottomChinOverrides = sBottomChinOverrides;
+        var oldEverywhereOverrides = sEverywhereOverrides;
+        sBottomChinOverrides = null;
+        sEverywhereOverrides = null;
+        ResettersForTesting.register(
+                () -> {
+                    sBottomChinOverrides = oldBottomChinOverrides;
+                    sEverywhereOverrides = oldEverywhereOverrides;
+                });
     }
 
     private final Map<String, Integer> mOemMinVersionOverrides;
     private Boolean mIsSupported;
 
-    private EdgeToEdgeFieldTrial() {
+    private EdgeToEdgeFieldTrial(String oemString, String minVersionString) {
         mOemMinVersionOverrides = new HashMap<>();
-        initializeOverrides();
+        initializeOverrides(oemString, minVersionString);
     }
 
-    private void initializeOverrides() {
-        String oemString = ChromeFeatureList.sEdgeToEdgeBottomChinOemList.getValue();
-        String minVersionString = ChromeFeatureList.sEdgeToEdgeBottomChinOemMinVersions.getValue();
+    private void initializeOverrides(String oemString, String minVersionString) {
         if (TextUtils.isEmpty(oemString) || TextUtils.isEmpty(minVersionString)) {
             return;
         }

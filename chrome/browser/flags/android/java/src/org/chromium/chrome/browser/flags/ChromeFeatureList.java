@@ -1247,6 +1247,10 @@ public abstract class ChromeFeatureList {
             newStringCachedFeatureParam(
                     EDGE_TO_EDGE_BOTTOM_CHIN, "e2e_field_trial_oem_min_versions", "");
 
+    public static final StringCachedFeatureParam sEdgeToEdgeEverywhereOemMinVersions =
+            newStringCachedFeatureParam(
+                    EDGE_TO_EDGE_EVERYWHERE, "e2e_field_trial_oem_min_versions", "");
+
     /**
      * Param for the OEMs that need an exception for min versions. Its value should be a comma
      * separated list of manufacturer, and its index should match {@link
@@ -1254,6 +1258,9 @@ public abstract class ChromeFeatureList {
      */
     public static final StringCachedFeatureParam sEdgeToEdgeBottomChinOemList =
             newStringCachedFeatureParam(EDGE_TO_EDGE_BOTTOM_CHIN, "e2e_field_trial_oem_list", "");
+
+    public static final StringCachedFeatureParam sEdgeToEdgeEverywhereOemList =
+            newStringCachedFeatureParam(EDGE_TO_EDGE_EVERYWHERE, "e2e_field_trial_oem_list", "");
 
     public static final BooleanCachedFeatureParam sEdgeToEdgeEverywhereIsDebugging =
             newBooleanCachedFeatureParam(EDGE_TO_EDGE_EVERYWHERE, "e2e_everywhere_debug", false);
@@ -1393,6 +1400,8 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeBottomChinOemMinVersions,
                     sEdgeToEdgeBottomChinOemList,
                     sEdgeToEdgeEverywhereIsDebugging,
+                    sEdgeToEdgeEverywhereOemMinVersions,
+                    sEdgeToEdgeEverywhereOemList,
                     sLogoPolishMediumSize,
                     sLogoPolishLargeSize,
                     sMagicStackAndroidShowAllModules,
