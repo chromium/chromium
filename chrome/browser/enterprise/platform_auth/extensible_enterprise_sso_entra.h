@@ -8,7 +8,6 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <Foundation/Foundation.h>
 
-#import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_provider_mac.h"
 #import "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 
 namespace net {
@@ -23,8 +22,6 @@ class HttpRequestHeaders;
 
 - (ASAuthorizationSingleSignOnRequest*)createRequest;
 
-- (void)performRequest;
-
 - (ASAuthorizationController*)createAuthorizationControllerWithRequest:
     (ASAuthorizationSingleSignOnRequest*)request;
 
@@ -35,10 +32,8 @@ class HttpRequestHeaders;
 // with empty headers.
 - (void)getAuthHeaders:(NSURL*)url
           withCallback:
-              (base::OnceCallback<
-                  void(std::unique_ptr<
-                       enterprise_auth::ExtensibleEnterpriseSSOProvider::
-                           DelegateResult>)>)callback;
+              (enterprise_auth::PlatformAuthProviderManager::GetDataCallback)
+                  callback;
 
 - (net::HttpRequestHeaders)getHeadersFromHttpResponse:
     (NSHTTPURLResponse*)response;
