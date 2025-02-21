@@ -920,6 +920,32 @@ class ParserTest(unittest.TestCase):
     ])
     self.assertEqual(parser.Parse(source3, "my_file.mojom"), expected3)
 
+    source4 = """
+        interface MyInterface {
+          MyMethod(string a) => result<bool, bool>;
+        };
+        """
+    expected4 = ast.Mojom(
+        None,
+        ast.ImportList(),
+        [
+            ast.Interface(
+                ast.Name('MyInterface'),
+                None,
+                ast.InterfaceBody(
+                    ast.Method(
+                        ast.Name('MyMethod'),
+                        None,
+                        None,
+                        ast.ParameterList(
+                            ast.Parameter(
+                                ast.Name('a'), None, None,
+                                ast.Typename(ast.Identifier('string')))),
+                        # TODO(crbug.com/40841428): put in an actual return.
+                        None)))
+        ])
+    self.assertEqual(parser.Parse(source4, "my_file.mojom"), expected4)
+
   def testInvalidMethods(self):
     """Tests that invalid method declarations are correctly detected."""
 

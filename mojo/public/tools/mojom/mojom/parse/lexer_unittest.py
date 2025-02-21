@@ -159,9 +159,17 @@ class LexerTest(unittest.TestCase):
                      _MakeLexToken("COMMA", ","))
     self.assertEqual(self._SingleTokenForInput("."), _MakeLexToken("DOT", "."))
 
-  def _TokensForInput(self, input_string):
+  def testConditionalTokens(self):
+    self.assertEqual(self._SingleTokenForInput("result"),
+                     _MakeLexToken("NAME", "result"))
+    self.assertEqual(self._SingleTokenForInput("result", "responsetype"),
+                     _MakeLexToken("RESULT", "result"))
+
+  def _TokensForInput(self, input_string, state=None):
     """Gets a list of tokens for the given input string."""
     lexer = self._zygote_lexer.clone()
+    if state:
+      lexer.begin(state)
     lexer.input(input_string)
     rv = []
     while True:
@@ -170,10 +178,10 @@ class LexerTest(unittest.TestCase):
         return rv
       rv.append(tok)
 
-  def _SingleTokenForInput(self, input_string):
+  def _SingleTokenForInput(self, input_string, state=None):
     """Gets the single token for the given input string. (Raises an exception if
     the input string does not result in exactly one token.)"""
-    toks = self._TokensForInput(input_string)
+    toks = self._TokensForInput(input_string, state)
     assert len(toks) == 1
     return toks[0]
 
