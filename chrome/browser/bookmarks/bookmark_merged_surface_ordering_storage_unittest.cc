@@ -4,12 +4,16 @@
 
 #include "chrome/browser/bookmarks/bookmark_merged_surface_ordering_storage.h"
 
+#include <cstdint>
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -17,6 +21,7 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/sync/base/features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -25,6 +30,10 @@ using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 using bookmarks::TestBookmarkClient;
 using bookmarks::test::AddNodesFromModelString;
+using Loader = BookmarkMergedSurfaceOrderingStorage::Loader;
+using testing::ElementsAre;
+using testing::Pair;
+using testing::UnorderedElementsAre;
 
 base::FilePath GetTestOrderingBookmarksFileNameInNewTempDir() {
   const base::FilePath temp_dir = base::CreateUniqueTempDirectoryScopedToTest();
@@ -284,6 +293,83 @@ TEST_F(BookmarkMergedSurfaceOrderingStorageTest,
   EXPECT_TRUE(base::PathExists(ordering_file_path));
 }
 
+TEST_F(BookmarkMergedSurfaceOrderingStorageTest, StoringOrderingThenLoading) {
+  const base::FilePath ordering_file_path =
+      GetTestOrderingBookmarksFileNameInNewTempDir();
+  ASSERT_FALSE(base::PathExists(ordering_file_path));
+
+  BookmarkMergedSurfaceOrderingStorage storage(&service(), ordering_file_path);
+  model().CreateAccountPermanentFolders();
+  // Populate bookmark bar nodes.
+  const BookmarkNode* bb_1 =
+      CreateURLNode(model().account_bookmark_bar_node(), u"1", 0);
+  const BookmarkNode* bb_2 =
+      model().AddFolder(model().account_bookmark_bar_node(), 1, u"2");
+  CreateURLNode(bb_2, u"3", 0);
+  const BookmarkNode* local_bb_1 =
+      CreateURLNode(model().bookmark_bar_node(), u"a", 0);
+  const BookmarkNode* local_bb_2 =
+      CreateURLNode(model().bookmark_bar_node(), u"b", 1);
+  // Ensure custom order.
+  service().Move(bb_1, BookmarkParentFolder::BookmarkBarFolder(), 4u,
+                 /*browser=*/nullptr);
+  ASSERT_TRUE(service().IsNonDefaultOrderingTracked(
+      BookmarkParentFolder::BookmarkBarFolder()));
+
+  // Populate other nodes.
+  const BookmarkNode* other_1 =
+      CreateURLNode(model().account_other_node(), u"1", 0);
+  const BookmarkNode* other_2 =
+      CreateURLNode(model().account_other_node(), u"2", 1);
+  const BookmarkNode* local_other_1 =
+      CreateURLNode(model().other_node(), u"a", 0);
+  const BookmarkNode* local_other_2 =
+      CreateURLNode(model().other_node(), u"b", 1);
+  // Ensure custom order.
+  service().Move(local_other_2, BookmarkParentFolder::OtherFolder(), 0u,
+                 /*browser=*/nullptr);
+  ASSERT_TRUE(service().IsNonDefaultOrderingTracked(
+      BookmarkParentFolder::OtherFolder()));
+
+  // Populate mobile nodes.
+  const BookmarkNode* mobile_1 =
+      CreateURLNode(model().account_mobile_node(), u"1", 0);
+  const BookmarkNode* mobile_2 =
+      CreateURLNode(model().account_mobile_node(), u"2", 1);
+  const BookmarkNode* local_mobile_1 =
+      CreateURLNode(model().mobile_node(), u"a", 0);
+  const BookmarkNode* local_mobile_2 =
+      CreateURLNode(model().mobile_node(), u"b", 1);
+  // Ensure custom order.
+  service().Move(mobile_2, BookmarkParentFolder::MobileFolder(), 3u,
+                 /*browser=*/nullptr);
+  ASSERT_TRUE(service().IsNonDefaultOrderingTracked(
+      BookmarkParentFolder::MobileFolder()));
+
+  storage.ScheduleSave();
+  task_environment().FastForwardUntilNoTasksRemain();
+
+  ASSERT_TRUE(base::PathExists(ordering_file_path));
+
+  // Test against `BookmarkMergedSurfaceOrderingStorage::Loader`.
+  base::test::TestFuture<Loader::LoadResult> future;
+  std::unique_ptr<Loader> loader =
+      Loader::Create(ordering_file_path, future.GetCallback());
+  Loader::LoadResult result = future.Get();
+  EXPECT_THAT(
+      result,
+      UnorderedElementsAre(
+          Pair(BookmarkParentFolder::PermanentFolderType::kBookmarkBarNode,
+               ElementsAre(bb_2->id(), local_bb_1->id(), local_bb_2->id(),
+                           bb_1->id())),
+          Pair(BookmarkParentFolder::PermanentFolderType::kOtherNode,
+               ElementsAre(local_other_2->id(), other_1->id(), other_2->id(),
+                           local_other_1->id())),
+          Pair(BookmarkParentFolder::PermanentFolderType::kMobileNode,
+               ElementsAre(mobile_1->id(), local_mobile_1->id(), mobile_2->id(),
+                           local_mobile_2->id()))));
+}
+
 TEST(BookmarkMergedSurfaceOrderingStorageShutdownTest,
      ShouldSaveFileDespiteShutdownWhileScheduled) {
   const base::FilePath ordering_file_path =
@@ -307,6 +393,106 @@ TEST(BookmarkMergedSurfaceOrderingStorageShutdownTest,
   std::optional<base::Value::Dict> file_content =
       ReadFileToDict(ordering_file_path);
   EXPECT_TRUE(file_content.has_value());
+}
+
+// Loader tests
+
+TEST(BookmarkMergedSurfaceOrderingStorageLoaderTest, NonExistentFile) {
+  base::test::TaskEnvironment task_environment;
+  base::FilePath path = GetTestOrderingBookmarksFileNameInNewTempDir();
+  base::test::TestFuture<Loader::LoadResult> future;
+
+  std::unique_ptr<Loader> loader = Loader::Create(path, future.GetCallback());
+  Loader::LoadResult result = future.Get();
+  EXPECT_TRUE(result.empty());
+}
+
+TEST(BookmarkMergedSurfaceOrderingStorageLoaderTest, EmptyFile) {
+  base::test::TaskEnvironment task_environment;
+  base::FilePath path = GetTestOrderingBookmarksFileNameInNewTempDir();
+  ASSERT_TRUE(base::WriteFile(path, ""));
+  ASSERT_TRUE(base::PathExists(path));
+
+  base::test::TestFuture<Loader::LoadResult> future;
+  std::unique_ptr<Loader> loader = Loader::Create(path, future.GetCallback());
+  Loader::LoadResult result = future.Get();
+  EXPECT_TRUE(result.empty());
+}
+
+TEST(BookmarkMergedSurfaceOrderingStorageLoaderTest, InvalidFileContent) {
+  base::test::TaskEnvironment task_environment;
+  base::FilePath path = GetTestOrderingBookmarksFileNameInNewTempDir();
+  ASSERT_TRUE(base::WriteFile(path, "{1, 2, 3}"));
+  ASSERT_TRUE(base::PathExists(path));
+
+  base::test::TestFuture<Loader::LoadResult> future;
+  std::unique_ptr<Loader> loader = Loader::Create(path, future.GetCallback());
+  Loader::LoadResult result = future.Get();
+  EXPECT_TRUE(result.empty());
+}
+
+TEST(BookmarkMergedSurfaceOrderingStorageLoaderTest,
+     ValidFileContentEmptyDict) {
+  base::test::TaskEnvironment task_environment;
+  base::FilePath path = GetTestOrderingBookmarksFileNameInNewTempDir();
+  ASSERT_TRUE(base::WriteFile(path, "{}"));
+  ASSERT_TRUE(base::PathExists(path));
+
+  base::test::TestFuture<Loader::LoadResult> future;
+  std::unique_ptr<Loader> loader = Loader::Create(path, future.GetCallback());
+  Loader::LoadResult result = future.Get();
+  EXPECT_TRUE(result.empty());
+}
+
+TEST(BookmarkMergedSurfaceOrderingStorageLoaderTest,
+     ValidFileContentPartialOrdering) {
+  base::test::TaskEnvironment task_environment;
+  const std::string file_content = R"(
+      {
+        "bookmark_bar": [ "1", "2", "4", "100" ]
+      }
+  )";
+
+  base::FilePath path = GetTestOrderingBookmarksFileNameInNewTempDir();
+  ASSERT_TRUE(base::WriteFile(path, file_content));
+  ASSERT_TRUE(base::PathExists(path));
+
+  base::test::TestFuture<Loader::LoadResult> future;
+  std::unique_ptr<Loader> loader = Loader::Create(path, future.GetCallback());
+  Loader::LoadResult result = future.Get();
+  EXPECT_THAT(result,
+              UnorderedElementsAre(Pair(
+                  BookmarkParentFolder::PermanentFolderType::kBookmarkBarNode,
+                  ElementsAre(1, 2, 4, 100))));
+}
+
+TEST(BookmarkMergedSurfaceOrderingStorageLoaderTest, ValidFileContentAll) {
+  base::test::TaskEnvironment task_environment;
+  const std::string file_content = R"(
+    {
+      "bookmark_bar": [ "4", "10", "3", "100" ],
+      "mobile": [ "6", "5", "90", "8" ],
+      "other": [ "7", "12", "2" ]
+    }
+  )";
+
+  base::FilePath path = GetTestOrderingBookmarksFileNameInNewTempDir();
+  ASSERT_TRUE(base::WriteFile(path, file_content));
+  ASSERT_TRUE(base::PathExists(path));
+
+  base::test::TestFuture<Loader::LoadResult> future;
+  std::unique_ptr<Loader> loader = Loader::Create(path, future.GetCallback());
+  Loader::LoadResult result = future.Get();
+  EXPECT_THAT(
+      result,
+      UnorderedElementsAre(
+          Pair(BookmarkParentFolder::PermanentFolderType::kBookmarkBarNode,
+               ElementsAre(4, 10, 3, 100)),
+          Pair(BookmarkParentFolder::PermanentFolderType::kMobileNode,
+               ElementsAre(6, 5, 90, 8)),
+
+          Pair(BookmarkParentFolder::PermanentFolderType::kOtherNode,
+               ElementsAre(7, 12, 2))));
 }
 
 }  // namespace
