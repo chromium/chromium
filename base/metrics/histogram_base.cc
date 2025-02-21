@@ -95,27 +95,20 @@ HistogramBase::HistogramBase(DurableStringView name)
 HistogramBase::~HistogramBase() = default;
 
 void HistogramBase::CheckName(std::string_view name) const {
-  DCHECK_EQ(std::string_view(histogram_name()), name)
+  DCHECK_EQ(histogram_name(), name)
       << "Provided histogram name doesn't match instance name. Are you using a "
          "dynamic string in a macro?";
 }
 
 void HistogramBase::SetFlags(int32_t flags) {
-  DCHECK_GE(flags, 0);
-  DCHECK_LE(flags, static_cast<int32_t>(UINT16_MAX));
-  CHECK_EQ(flags & ~0xFFFF, 0);
   flags_.fetch_or(static_cast<uint16_t>(flags), std::memory_order_relaxed);
 }
 
 void HistogramBase::ClearFlags(int32_t flags) {
-  DCHECK_GE(flags, 0);
-  DCHECK_LE(flags, static_cast<int32_t>(UINT16_MAX));
   flags_.fetch_and(~static_cast<uint16_t>(flags), std::memory_order_relaxed);
 }
 
 bool HistogramBase::HasFlags(int32_t flags) const {
-  DCHECK_GE(flags, 0);
-  DCHECK_LE(flags, static_cast<int32_t>(UINT16_MAX));
   // Check this->flags() is a superset of |flags|, i.e. every flag in |flags| is
   // included.
   return (this->flags() & flags) == flags;
