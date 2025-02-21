@@ -465,7 +465,7 @@ void PointingStickSettings::Apply(
 
 // static
 bool InputDeviceSettings::ForceKeyboardDrivenUINavigation() {
-  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition() ||
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice() ||
       policy::EnrollmentRequisitionManager::IsSharkRequisition()) {
     return true;
   }

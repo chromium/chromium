@@ -301,7 +301,7 @@ void EnrollmentScreen::UpdateFlowType() {
     return;
   }
 
-  const bool cfm = policy::EnrollmentRequisitionManager::IsRemoraRequisition();
+  const bool cfm = policy::EnrollmentRequisitionManager::IsMeetDevice();
   if (cfm) {
     view_->SetFlowType(EnrollmentScreenView::FlowType::kCFM);
     view_->SetGaiaButtonsType(EnrollmentScreenView::GaiaButtonsType::kDefault);
