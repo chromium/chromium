@@ -186,6 +186,8 @@ class GraphBuilderOrt {
       absl::variant<const mojom::ElementWiseBinary*,
                     const mojom::ElementWiseUnary*> operation,
       std::string_view op_type);
+  void AddElementWiseLogicalNotEqualOperation(
+      const mojom::ElementWiseBinary& not_equal);
   void AddArgMinMaxOperation(const mojom::ArgMinMax& arg_min_max);
   void AddCastOperation(const mojom::ElementWiseUnary& cast);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddClampOperation(

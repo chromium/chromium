@@ -634,6 +634,41 @@ void GraphBuilderOrt::AddElementWiseLogicalOperation(
              OperandTypeToONNXTensorElementDataType(output_data_type));
 }
 
+// ONNX doesn't support `notEqual`, emulate it by `logicalNot(equal(a, b))`.
+void GraphBuilderOrt::AddElementWiseLogicalNotEqualOperation(
+    const mojom::ElementWiseBinary& not_equal) {
+  // Step 1: calculate `equal(a, b)`.
+  const std::string equal_node_name =
+      GenerateNextOperationName("inserted_equal_to_emulate_" + not_equal.label);
+  std::string lhs_name = GetOperandNameById(not_equal.lhs_operand_id);
+  std::string rhs_name = GetOperandNameById(not_equal.rhs_operand_id);
+  const std::string equal_output_name = GenerateNextOperandName();
+
+  std::array<const char*, 1> equal_output_names = {equal_output_name.c_str()};
+  std::array<const char*, 2> equal_input_names = {lhs_name.c_str(),
+                                                  rhs_name.c_str()};
+  model_builder_.AddNode(kOpTypeEqual, equal_node_name, equal_input_names,
+                         equal_output_names);
+
+  // Step 2: calculate `logicalNot(equal_output)`
+  const std::string not_output_name = GenerateNextOperandName();
+  std::array<const char*, 1> not_output_names = {not_output_name.c_str()};
+  const std::string not_node_name =
+      GenerateNextOperationName("inserted_not_to_emulate_" + not_equal.label);
+  model_builder_.AddNode(kOpTypeLogicalNot, not_node_name, equal_output_names,
+                         not_output_names);
+
+  // ONNX logical operators only support bool output. To support output with the
+  // WebNN data type, it is necessary to insert a cast operator after a logical
+  // operator.
+  uint64_t output_operand_id = not_equal.output_operand_id;
+  OperandDataType output_data_type =
+      GetOperand(output_operand_id).descriptor.data_type();
+  std::string output_name = GetOperandNameById(output_operand_id);
+  AppendCast(not_output_name, output_name,
+             OperandTypeToONNXTensorElementDataType(output_data_type));
+}
+
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddElementWiseBinaryOperation(
     const mojom::ElementWiseBinary& element_wise_binary) {
@@ -670,10 +705,9 @@ GraphBuilderOrt::AddElementWiseBinaryOperation(
       AddElementWiseLogicalOperation(&element_wise_binary, kOpTypeEqual);
       break;
     }
-    // TODO(https://github.com/shiyi9801/chromium/issues/102): Support NotEqual
     case mojom::ElementWiseBinary::Kind::kNotEqual: {
-      return NewNotSupportedError(
-          "NotEqual operation is not supported in ONNX.");
+      AddElementWiseLogicalNotEqualOperation(element_wise_binary);
+      break;
     }
     case mojom::ElementWiseBinary::Kind::kGreater: {
       AddElementWiseLogicalOperation(&element_wise_binary, kOpTypeGreater);

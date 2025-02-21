@@ -104,7 +104,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*lesser_or_equal_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
-       /*not_equal_input=*/{},
+       /*not_equal_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*logical_and_input=*/
        {DataTypeConstraint::kUint8, kMaxRank},
        /*logical_or_input=*/
