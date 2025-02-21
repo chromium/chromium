@@ -20,14 +20,14 @@ class MenuModelTest {
   // to make sure things are hooked up properly.
   class Delegate : public ui::SimpleMenuModel::Delegate {
    public:
-    Delegate() : execute_count_(0), enable_count_(0) {}
+    Delegate() = default;
 
     bool IsCommandIdChecked(int command_id) const override;
     bool IsCommandIdEnabled(int command_id) const override;
     void ExecuteCommand(int command_id, int event_flags) override;
 
-    int execute_count_;
-    mutable int enable_count_;
+    int execute_count_ = 0;
+    mutable int enable_count_ = 0;
   };
 
   // Recursively checks the enabled state and executes a command on every item
