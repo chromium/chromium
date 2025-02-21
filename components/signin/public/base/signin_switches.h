@@ -165,6 +165,9 @@ BASE_DECLARE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableExtensionsExplicitBrowserSignin);
 
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kDeferWebSigninTrackerCreation);
+
 }  // namespace switches
 
 // TODO(crbug.com/337879458): Move switches below into the switches namespace.

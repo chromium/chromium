@@ -6,6 +6,9 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 
@@ -35,6 +38,10 @@ WebSigninTracker::WebSigninTracker(
   if (info.AreAccountsFresh()) {
     // Check whether the target primary account is already in cookies.
     OnAccountsInCookieUpdated(info, GoogleServiceAuthError::AuthErrorNone());
+  }
+
+  if (base::FeatureList::IsEnabled(switches::kDeferWebSigninTrackerCreation)) {
+    OnStateChanged(account_reconcilor->GetState());
   }
 }
 

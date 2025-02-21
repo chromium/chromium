@@ -97,6 +97,20 @@ TEST_F(WebSigninTrackerTest,
 }
 
 TEST_F(WebSigninTrackerTest,
+       DeferredCreationAndCookiesWithSigninAccountShouldTriggerSuccessResult) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("test@gmail.com");
+  identity_test_env_.SetPrimaryAccount(account.email, GetConsentLevel());
+  CookieParamsForTest cookie_params{account.email, account.gaia};
+  identity_test_env_.SetCookieAccounts({cookie_params});
+
+  base::MockOnceCallback<void(WebSigninTracker::Result)> callback;
+  EXPECT_CALL(callback, Run(WebSigninTracker::Result::kSuccess));
+  std::unique_ptr<WebSigninTracker> web_signin_bridge =
+      CreateWebSigninTracker(account.account_id, callback.Get());
+}
+
+TEST_F(WebSigninTrackerTest,
        CookiesWithoutSigninAccountShouldNotTriggerResult) {
   AccountInfo signin_account =
       identity_test_env_.MakeAccountAvailable("test1@gmail.com");
@@ -114,8 +128,7 @@ TEST_F(WebSigninTrackerTest,
   identity_test_env_.SetCookieAccounts({cookie_params});
 }
 
-TEST_F(WebSigninTrackerTest,
-       ReconcilorErrorWithAuthErrorShouldTriggerAuthErrorResult) {
+TEST_F(WebSigninTrackerTest, ReconcilorAuthErrorShouldTriggerAuthErrorResult) {
   AccountInfo account =
       identity_test_env_.MakeAccountAvailable("test@gmail.com");
   base::MockOnceCallback<void(WebSigninTracker::Result)> callback;
@@ -137,6 +150,24 @@ TEST_F(WebSigninTrackerTest,
 }
 
 TEST_F(WebSigninTrackerTest,
+       DeferredCreationAndReconcilorAuthErrorShouldTriggerAuthErrorResult) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("test@gmail.com");
+  identity_test_env_.SetInvalidRefreshTokenForAccount(account.account_id);
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account.account_id,
+      GoogleServiceAuthError(
+          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+  identity_test_env_.SetCookieAccounts({});
+  identity_test_env_.SetPrimaryAccount(account.email, GetConsentLevel());
+
+  base::MockOnceCallback<void(WebSigninTracker::Result)> callback;
+  EXPECT_CALL(callback, Run(WebSigninTracker::Result::kAuthError));
+  std::unique_ptr<WebSigninTracker> web_signin_bridge =
+      CreateWebSigninTracker(account.account_id, callback.Get());
+}
+
+TEST_F(WebSigninTrackerTest,
        ReconcilorNonAuthErrorShouldTriggerOtherErrorResult) {
   AccountInfo account =
       identity_test_env_.MakeAccountAvailable("test@gmail.com");
@@ -154,6 +185,22 @@ TEST_F(WebSigninTrackerTest,
       GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
 
   run_loop.Run();
+}
+
+TEST_F(WebSigninTrackerTest,
+       DeferredCreationAndReconcilorNonAuthErrorShouldTriggerOtherErrorResult) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("test@gmail.com");
+  identity_test_env_.SetPrimaryAccount(account.email, GetConsentLevel());
+  identity_test_env_.SetCookieAccounts({});
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
+
+  base::MockOnceCallback<void(WebSigninTracker::Result)> callback;
+  EXPECT_CALL(callback, Run(WebSigninTracker::Result::kOtherError));
+  std::unique_ptr<WebSigninTracker> web_signin_bridge =
+      CreateWebSigninTracker(account.account_id, callback.Get());
 }
 
 TEST_F(WebSigninTrackerTest, TimeoutResult) {

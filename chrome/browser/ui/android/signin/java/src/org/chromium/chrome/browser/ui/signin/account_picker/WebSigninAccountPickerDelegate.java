@@ -14,6 +14,8 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.browser.WebSigninTrackerResult;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -79,19 +81,29 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
             destroyWebSigninBridge();
             mSigninManager.signOut(SignoutReason.SIGNIN_RETRIGGERED_FROM_WEB_SIGNIN);
         }
-        mWebSigninBridge =
-                mWebSigninBridgeFactory.create(
-                        mProfile,
-                        accountInfo,
-                        createWebSigninBridgeCallback(mCurrentTab, mContinueUrl, mediator));
+        if (!SigninFeatureMap.isEnabled(SigninFeatures.DEFER_WEB_SIGNIN_TRACKER_CREATION)) {
+            mWebSigninBridge =
+                    mWebSigninBridgeFactory.create(
+                            mProfile,
+                            accountInfo,
+                            createWebSigninBridgeCallback(mCurrentTab, mContinueUrl, mediator));
+        }
         mSigninManager.signin(
                 accountInfo,
                 SigninAccessPoint.WEB_SIGNIN,
                 new SigninManager.SignInCallback() {
                     @Override
                     public void onSignInComplete() {
-                        // After the sign-in is finished in Chrome, we still need to wait for
-                        // WebSigninBridge to be called to redirect to the continue url.
+                        // Create WebSigninBridge and wait for redirect to the continue url.
+                        if (SigninFeatureMap.isEnabled(
+                                SigninFeatures.DEFER_WEB_SIGNIN_TRACKER_CREATION)) {
+                            mWebSigninBridge =
+                                    mWebSigninBridgeFactory.create(
+                                            mProfile,
+                                            accountInfo,
+                                            createWebSigninBridgeCallback(
+                                                    mCurrentTab, mContinueUrl, mediator));
+                        }
                     }
 
                     @Override
