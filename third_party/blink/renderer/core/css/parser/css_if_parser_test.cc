@@ -15,40 +15,21 @@
 
 namespace blink {
 
-enum ParseResult { kParsed, kUnknown, kInvalid };
-
 class CSSIfParserTest : public PageTestBase {
  public:
-  ParseResult ParseQuery(String string) {
+  bool ParseQuery(String string) {
     const auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
     CSSIfParser parser(*context);
     CSSParserTokenStream stream(string);
-    std::optional<IfTest> if_test = parser.ConsumeIfTest(stream);
-    if (!if_test.has_value()) {
-      return ParseResult::kInvalid;
-    }
-
-    if (const MediaQueryExpNode* style_test = if_test->GetStyleTest()) {
-      if (style_test->HasUnknown()) {
-        return ParseResult::kUnknown;
-      }
-      return ParseResult::kParsed;
-    }
-
-    if (const MediaQuery* media_test = if_test->GetMediaTest()) {
-      if (media_test->HasUnknown()) {
-        return ParseResult::kUnknown;
-      }
-      return ParseResult::kParsed;
-    }
-    return ParseResult::kInvalid;
+    const IfCondition* if_test = parser.ConsumeIfCondition(stream);
+    return if_test;
   }
 };
 
 TEST_F(CSSIfParserTest, ConsumeValidCondition) {
   ScopedCSSInlineIfForStyleQueriesForTest scoped_style_feature(true);
   ScopedCSSInlineIfForMediaQueriesForTest scoped_media_feature(true);
-  const char* valid_known_tests[] = {
+  const char* valid_tests[] = {
       // clang-format off
     "style(--x)",
     "style(((--x)))",
@@ -64,27 +45,20 @@ TEST_F(CSSIfParserTest, ConsumeValidCondition) {
     "media((min-width : 500px))",
     "media(not (min-width : -100px))",
     "media(only screen and (color))",
-    "media((min-width: 30em) and (max-width: 50em))"
+    "media((min-width: 30em) and (max-width: 50em))",
+    "not (media(screen))",
+    "(media(screen and (color))) and (style(--x))",
+    "(media(screen and (color)) and style(--x)) or (style(not (--y)))",
+    "style(style(--x))",
+    "style(var(--x))",
+    "style(attr(data-foo))",
+    "style(var(--x): green) and style(var(--x): 3)",
+    "(style(style(--x))) and (media((color)))",
       // clang-format on
   };
 
-  for (const char* test : valid_known_tests) {
-    EXPECT_EQ(ParseQuery(test), ParseResult::kParsed);
-  }
-}
-
-TEST_F(CSSIfParserTest, ConsumeUnknownCondition) {
-  const char* valid_unknown_tests[] = {
-      // clang-format off
-    "style(style(--x))"
-    "style(var(--x))"
-    "style(attr(data-foo))"
-    "style(var(--x): green) and style(var(--x): 3)"
-      // clang-format on
-  };
-
-  for (const char* test : valid_unknown_tests) {
-    EXPECT_EQ(ParseQuery(test), ParseResult::kUnknown);
+  for (const char* test : valid_tests) {
+    EXPECT_TRUE(ParseQuery(test));
   }
 }
 
@@ -93,19 +67,15 @@ TEST_F(CSSIfParserTest, ConsumeInvalidCondition) {
   ScopedCSSInlineIfForMediaQueriesForTest scoped_media_feature(true);
   const char* invalid_parse_time_tests[] = {
       // clang-format off
-    "(min-width: 100px)",
-    "not (width)",
-    "(width) and (height)",
-    "(((style(--x))))",
-    "not style(--x)",
-    "style(width)",
-    "style(invalid)",
-    "(style(--x: 3px) and style(--y: 3)) or (not style(--z: 6px))",
+    "invalid",
+    "style(invalid) and invalid",
+    "media(invalid) or invalid",
+    "invalid or style(invalid)",
       // clang-format on
   };
 
   for (const char* test : invalid_parse_time_tests) {
-    EXPECT_EQ(ParseQuery(test), ParseResult::kInvalid);
+    EXPECT_FALSE(ParseQuery(test));
   }
 }
 

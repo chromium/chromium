@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_syntax_component.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
-#include "third_party/blink/renderer/core/css/if_test.h"
+#include "third_party/blink/renderer/core/css/if_condition.h"
 #include "third_party/blink/renderer/core/css/parser/css_if_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
@@ -227,33 +227,6 @@ static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
   return stream.AtEnd();
 }
 
-// <if-condition> = <boolean-expr[ <if-test> ]> | else
-// <if-test> =
-//   supports( [ <supports-condition> | <ident> : <declaration-value> ] ) |
-//   media( <media-query> ) |
-//   style( <style-query> )
-// https://www.w3.org/TR/css-values-5/#if-notation
-static bool ConsumeIfCondition(CSSParserTokenStream& stream,
-                               const CSSParserContext& context) {
-  if (stream.Peek().Id() == CSSValueID::kElse) {
-    stream.ConsumeIncludingWhitespace();
-    return true;
-  }
-
-  CSSIfParser parser(context);
-
-  std::optional<IfTest> if_test = parser.ConsumeIfTest(stream);
-  if (!if_test.has_value()) {
-    return false;
-  }
-  stream.ConsumeWhitespace();
-
-  if (if_test->GetMediaTest()) {
-    return RuntimeEnabledFeatures::CSSInlineIfForMediaQueriesEnabled();
-  }
-  return true;
-}
-
 // <if()> = if( [ <if-condition> : <declaration-value>? ; ]*
 //              <if-condition> : <declaration-value>? ;? )
 // <if-condition> = <boolean-expr[ <if-test> ]> | else
@@ -270,9 +243,10 @@ static bool ConsumeIfReference(CSSParserTokenStream& stream,
                                bool& has_dashed_functions,
                                const CSSParserContext& context) {
   CSSParserTokenStream::BlockGuard guard(stream);
+  CSSIfParser parser(context);
 
   stream.ConsumeWhitespace();
-  while (ConsumeIfCondition(stream, context)) {
+  while (parser.ConsumeIfCondition(stream)) {
     if (stream.Peek().GetType() != kColonToken) {
       return false;
     }

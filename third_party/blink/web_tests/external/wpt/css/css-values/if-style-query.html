@@ -185,6 +185,14 @@
   test_if(`if(style(--x):a)if(style(--x):b)`,
         [['--x', '3']],
         'a/**/b');
+  test_if(`if(style(--x!): true_value;
+          else: false_value)`,
+        [['--x', '3']],
+        'false_value');
+  test_if(`if(style(color: green): true_value;
+          else: false_value)`,
+        [],
+        'false_value');
 
   // Valid if() with multiple conditions with unregistered custom properties
   test_if(`if(style(--non-existent): value1;
@@ -491,13 +499,13 @@
           else: false_value)`,
         [['--x', '3']],
         '');
-  test_if(`if(style(--x!): true_value;
+  test_if(`if(style(--x) and invalid: true_value;
           else: false_value)`,
         [['--x', '3']],
         '');
-  test_if(`if(style(color: green): true_value;
+  test_if(`if(invalid or style(--x): true_value;
           else: false_value)`,
-        [],
+        [['--x', '3']],
         '');
   test_if(`if(style(not (--x: 5) or (--z: 10px)): true_value;
           else: false_value;)`,

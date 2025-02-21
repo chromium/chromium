@@ -491,6 +491,7 @@ class CORE_EXPORT MediaQueryUnknownExpNode : public MediaQueryExpNode {
   explicit MediaQueryUnknownExpNode(String string) : string_(string) {}
 
   Type GetType() const override { return Type::kUnknown; }
+  String ToString() const { return string_; }
   void SerializeTo(WTF::StringBuilder&) const override;
   void CollectExpressions(HeapVector<MediaQueryExp>&) const override;
   FeatureFlags CollectFeatureFlags() const override;
