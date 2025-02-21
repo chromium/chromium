@@ -177,7 +177,7 @@ void CSSDefaultStyleSheets::VerifyUniversalRuleCount() {
 
   if (media_controls_style_sheet_) {
     default_media_controls_style_->CompactRulesIfNeeded();
-    DCHECK_EQ(default_media_controls_style_->UniversalRules().size(), 4u);
+    DCHECK_EQ(default_media_controls_style_->UniversalRules().size(), 5u);
   }
 
   if (fullscreen_style_sheet_) {
