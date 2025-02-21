@@ -352,6 +352,8 @@ enum WebDXFeature {
   kScrollButtons = 294,
   kScrollMarkers = 295,
   kDRAFT_PopoverHint = 296,
+  kDRAFT_RegExpEscape = 297,
+  kFloat16array = 298,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
