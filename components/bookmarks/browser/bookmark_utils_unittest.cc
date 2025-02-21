@@ -614,14 +614,16 @@ TEST_F(
     GetRecentlyUsedFoldersWithAccountBookmarks_LocalPermanentNodeShownWhenRecentlyModified) {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   model->CreateAccountPermanentFolders();
+  const base::Time account_folders_created_time = base::Time::Now();
+
   const BookmarkNode* const bookmark_in_account_other_node = model->AddURL(
       model->account_other_node(), 0, u"Title", GURL("http://google.com"));
 
   // Make sure a local permanent node is the most recently modified one.
   model->SetDateFolderModified(model->account_other_node(),
-                               base::Time::FromMillisecondsSinceUnixEpoch(1));
+                               account_folders_created_time + base::Seconds(1));
   model->SetDateFolderModified(model->bookmark_bar_node(),
-                               base::Time::FromMillisecondsSinceUnixEpoch(2));
+                               account_folders_created_time + base::Seconds(2));
 
   const bookmarks::BookmarkNodesSplitByAccountAndLocal mru_bookmarks =
       bookmarks::GetMostRecentlyUsedFoldersForDisplay(
@@ -662,6 +664,8 @@ TEST_F(
     GetRecentlyUsedFoldersWithAccountBookmarks_LocalPermanentNodesDisplayedLast) {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   model->CreateAccountPermanentFolders();
+  const base::Time account_folders_created_time = base::Time::Now();
+
   const BookmarkNode* const bookmark_in_account_other_node = model->AddURL(
       model->account_other_node(), 0, u"Title", GURL("http://google.com"));
   const BookmarkNode* const local_bookmark = model->AddURL(
@@ -674,14 +678,13 @@ TEST_F(
       model->AddFolder(model->bookmark_bar_node(), 0, u"Folder2");
 
   // Set the account other node as most recently modified.
-  model->SetDateFolderModified(folder1,
-                               base::Time::FromMillisecondsSinceUnixEpoch(0));
+  model->SetDateFolderModified(folder1, account_folders_created_time);
   model->SetDateFolderModified(model->bookmark_bar_node(),
-                               base::Time::FromMillisecondsSinceUnixEpoch(1));
+                               account_folders_created_time + base::Seconds(1));
   model->SetDateFolderModified(folder2,
-                               base::Time::FromMillisecondsSinceUnixEpoch(2));
+                               account_folders_created_time + base::Seconds(2));
   model->SetDateFolderModified(model->account_other_node(),
-                               base::Time::FromMillisecondsSinceUnixEpoch(3));
+                               account_folders_created_time + base::Seconds(3));
 
   bookmarks::BookmarkNodesSplitByAccountAndLocal mru_bookmarks =
       bookmarks::GetMostRecentlyUsedFoldersForDisplay(
@@ -703,8 +706,9 @@ TEST_F(
 
   // When the permanent node is the most recently modified node, it is added at
   // the end.
-  model->SetDateFolderModified(model->bookmark_bar_node(),
-                               base::Time::FromMillisecondsSinceUnixEpoch(10));
+  model->SetDateFolderModified(
+      model->bookmark_bar_node(),
+      account_folders_created_time + base::Seconds(10));
   mru_bookmarks = bookmarks::GetMostRecentlyUsedFoldersForDisplay(
       model.get(), bookmark_in_account_other_node);
 
@@ -717,18 +721,20 @@ TEST_F(
     GetRecentlyUsedFoldersWithAccountBookmarks_MultipleLocalPermanentNodesDisplayed) {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   model->CreateAccountPermanentFolders();
+  const base::Time account_folders_created_time = base::Time::Now();
+
   const BookmarkNode* const local_bookmark = model->AddURL(
       model->bookmark_bar_node(), 0, u"Title", GURL("http://google.com"));
 
   // Set the local other node as most recently modified.
   model->SetDateFolderModified(model->bookmark_bar_node(),
-                               base::Time::FromMillisecondsSinceUnixEpoch(1));
+                               account_folders_created_time + base::Seconds(1));
   model->SetDateFolderModified(model->account_bookmark_bar_node(),
-                               base::Time::FromMillisecondsSinceUnixEpoch(1));
+                               account_folders_created_time + base::Seconds(1));
   model->SetDateFolderModified(model->account_other_node(),
-                               base::Time::FromMillisecondsSinceUnixEpoch(1));
+                               account_folders_created_time + base::Seconds(1));
   model->SetDateFolderModified(model->other_node(),
-                               base::Time::FromMillisecondsSinceUnixEpoch(2));
+                               account_folders_created_time + base::Seconds(2));
 
   const bookmarks::BookmarkNodesSplitByAccountAndLocal mru_bookmarks =
       bookmarks::GetMostRecentlyUsedFoldersForDisplay(model.get(),
@@ -907,6 +913,109 @@ TEST_F(BookmarkUtilsTest, GetPermanentNodesForDisplayWithAccountBookmarks) {
   // Local nodes too.
   EXPECT_THAT(permanent_display_nodes.local_nodes,
               ElementsAre(model->bookmark_bar_node(), model->other_node()));
+}
+
+TEST_F(BookmarkUtilsTest, GetMostRecentlyModifiedUserFolders_DefaultOrder) {
+  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
+  model->CreateAccountPermanentFolders();
+  std::vector<const BookmarkNode*> recently_modified =
+      GetMostRecentlyModifiedUserFolders(model.get());
+
+  // The permanent account nodes should come first in order, then the local
+  // ones in undefined order. The account other node comes first. Mobile nodes
+  // are not shown.
+  ASSERT_EQ(4u, recently_modified.size());
+  EXPECT_EQ(model->account_other_node(), recently_modified[0]);
+  EXPECT_EQ(model->account_bookmark_bar_node(), recently_modified[1]);
+}
+
+TEST_F(
+    BookmarkUtilsTest,
+    GetMostRecentlyModifiedUserFolders_LocalFolderModifiedBeforeAccountFoldersAdded) {
+  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
+
+  // The local node is set to last used, so it should be first in the list.
+  model->SetDateFolderModified(model->bookmark_bar_node(), base::Time::Now());
+
+  std::vector<const BookmarkNode*> recently_modified =
+      GetMostRecentlyModifiedUserFolders(model.get());
+  EXPECT_THAT(recently_modified,
+              ElementsAre(model->bookmark_bar_node(), model->other_node()));
+  // Creating the account permanent folders should push the account other node
+  // to the front of the list.
+  model->CreateAccountPermanentFolders();
+  recently_modified = GetMostRecentlyModifiedUserFolders(model.get());
+
+  // The permanent account nodes should come first in order, then the local
+  // ones. The account other node comes first. Mobile nodes are not shown.
+  EXPECT_THAT(recently_modified,
+              ElementsAre(model->account_other_node(),
+                          model->account_bookmark_bar_node(),
+                          model->bookmark_bar_node(), model->other_node()));
+}
+
+TEST_F(
+    BookmarkUtilsTest,
+    GetMostRecentlyModifiedUserFolders_LocalFolderModifiedAfterAccountFoldersAdded) {
+  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
+  model->CreateAccountPermanentFolders();
+
+  // The local node is used after the account nodes were added, so it should be
+  // first in the list.
+  model->SetDateFolderModified(model->bookmark_bar_node(), base::Time::Now());
+
+  std::vector<const BookmarkNode*> recently_modified =
+      GetMostRecentlyModifiedUserFolders(model.get());
+
+  // The local bookmark bar should come first in order. Mobile nodes are not
+  // shown.
+  ASSERT_EQ(4u, recently_modified.size());
+  EXPECT_EQ(model->bookmark_bar_node(), recently_modified[0]);
+}
+
+TEST_F(
+    BookmarkUtilsTest,
+    GetMostRecentlyModifiedUserFolders_DefinedModifiedOrderWithCustomLocalFolders) {
+  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
+  model->CreateAccountPermanentFolders();
+
+  const BookmarkNode* const local_folder1 =
+      model->AddFolder(model->other_node(), 0, u"Folder");
+  const BookmarkNode* const local_folder2 =
+      model->AddFolder(model->bookmark_bar_node(), 0, u"Folder2");
+
+  model->SetDateFolderModified(model->account_other_node(),
+                               base::Time::FromMillisecondsSinceUnixEpoch(0));
+  model->SetDateFolderModified(model->account_bookmark_bar_node(),
+                               base::Time::FromMillisecondsSinceUnixEpoch(1));
+
+  model->SetDateFolderModified(model->bookmark_bar_node(),
+                               base::Time::FromMillisecondsSinceUnixEpoch(2));
+  model->SetDateFolderModified(local_folder2,
+                               base::Time::FromMillisecondsSinceUnixEpoch(3));
+  model->SetDateFolderModified(model->other_node(),
+                               base::Time::FromMillisecondsSinceUnixEpoch(4));
+  model->SetDateFolderModified(local_folder1,
+                               base::Time::FromMillisecondsSinceUnixEpoch(5));
+
+  // This simulates signing out and in again, or turning account storage for
+  // bookmarks off and on through the settings. Doing this should row the
+  // account other node first, and then follow the order of the last recently
+  // modified folders.
+  model->RemoveAccountPermanentFolders();
+  model->CreateAccountPermanentFolders();
+
+  const std::vector<const BookmarkNode*> recently_modified =
+      GetMostRecentlyModifiedUserFolders(model.get());
+
+  // The permanent account nodes should come first in order, then the local
+  // permanent folders and non-permanent nodes. The account other node comes
+  // first. Mobile nodes are not shown.
+  EXPECT_THAT(recently_modified,
+              ElementsAre(model->account_other_node(),
+                          model->account_bookmark_bar_node(), local_folder1,
+                          model->other_node(), local_folder2,
+                          model->bookmark_bar_node()));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
