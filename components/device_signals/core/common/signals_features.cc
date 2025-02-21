@@ -10,6 +10,26 @@ BASE_FEATURE(kAllowClientCertificateReportingForUsers,
              "AllowClientCertificateReportingForUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the addition of device signals fields to Profile-level Chrome
+// Reports.
+BASE_FEATURE(kProfileSignalsReportingEnabled,
+             "ProfileSignalsReportingEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the addition of device signals fields to Browser-level Chrome
+// Reports.
+BASE_FEATURE(kBrowserSignalsReportingEnabled,
+             "BrowserSignalsReportingEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsProfileSignalsReportingEnabled() {
+  return base::FeatureList::IsEnabled(kProfileSignalsReportingEnabled);
+}
+
+bool IsBrowserSignalsReportingEnabled() {
+  return base::FeatureList::IsEnabled(kBrowserSignalsReportingEnabled);
+}
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
 // Enables the triggering of device signals consent dialog when conditions met

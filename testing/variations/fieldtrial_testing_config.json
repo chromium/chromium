@@ -3627,6 +3627,23 @@
             ]
         }
     ],
+    "BrowserSignalsReportingEnabled": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BrowserSignalsReportingEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowserThreadPoolAdjustmentForAndroid": [
         {
             "platforms": [
@@ -18378,6 +18395,23 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ProcessReuseOnPrerenderCOOPSwap"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ProfileSignalsReportingEnabled": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ProfileSignalsReportingEnabled"
                     ]
                 }
             ]
