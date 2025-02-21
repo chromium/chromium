@@ -22,7 +22,7 @@ var COUNTRY_CODE = 'ES';
 var PHONE = '1 123-123-1234';
 var EMAIL = 'johndoe@gmail.com';
 var CARD_NAME = 'CardName';
-var GUID = '1234-5678-90'
+var GUID = 'e4bbe384-ee63-45a4-8df3-713a58fdc181'
 var MASKED_NUMBER = '1111';
 var NUMBER = '4111 1111 1111 1111';
 var EXP_MONTH = '02';
@@ -32,6 +32,20 @@ var MASKED_CVC = '•••';
 var NICKNAME = 'nickname';
 var IBAN_VALUE = 'AD1400080001001234567890';
 var INVALID_IBAN_VALUE = 'AD14000800010012345678900';
+var ENTITY_INSTANCE = {
+  type: 1,  // Loyalty Card
+  attributes: [
+    {type: 5, value: 'The Discount'},  // Loyalty Card Program
+    {type: 6, value: 'The Airline'},   // Loyalty Card Provider
+  ],
+  guid: GUID,
+  nickname: 'Airline card'
+};
+
+var UPDATED_ENTITY_INSTANCE = {
+  ...ENTITY_INSTANCE,
+  nickname: 'New airline card'
+};
 
 var failOnceCalled = function() {
   chrome.test.fail();
@@ -891,8 +905,44 @@ var availableTests = [
     chrome.autofillPrivate.logServerIbanLinkClicked();
     chrome.test.assertNoLastError();
     chrome.test.succeed();
-  }
+  },
 
+  async function addEntityInstance() {
+    await chrome.autofillPrivate.addOrUpdateEntityInstance(ENTITY_INSTANCE);
+    chrome.test.succeed();
+  },
+
+  async function updateEntityInstance() {
+    await chrome.autofillPrivate.addOrUpdateEntityInstance(
+        UPDATED_ENTITY_INSTANCE);
+    chrome.test.succeed();
+  },
+
+  async function removeEntityInstance() {
+    await chrome.autofillPrivate.removeEntityInstance(GUID);
+    chrome.test.succeed();
+  },
+
+  async function loadEmptyEntityInstancesList() {
+    const entityInstancesList =
+        await chrome.autofillPrivate.loadEntityInstances();
+    chrome.test.assertEq([], entityInstancesList);
+    chrome.test.succeed();
+  },
+
+  async function loadFirstEntityInstance() {
+    const entityInstancesList =
+        await chrome.autofillPrivate.loadEntityInstances();
+    chrome.test.assertEq([ENTITY_INSTANCE], entityInstancesList);
+    chrome.test.succeed();
+  },
+
+  async function loadUpdatedEntityInstance() {
+    const entityInstancesList =
+        await chrome.autofillPrivate.loadEntityInstances();
+    chrome.test.assertEq([UPDATED_ENTITY_INSTANCE], entityInstancesList);
+    chrome.test.succeed();
+  },
 ];
 
 /** @const */
@@ -948,6 +998,12 @@ var TESTS_FOR_CONFIG = {
   'removeVirtualCard': ['removeVirtualCard'],
   'setAutofillSyncToggleEnabled': ['setAutofillSyncToggleEnabled'],
   'logServerIbanLinkClicked': ['logServerIbanLinkClicked'],
+  'addEntityInstance': ['addEntityInstance'],
+  'updateEntityInstance': ['updateEntityInstance'],
+  'removeEntityInstance': ['removeEntityInstance'],
+  'loadEmptyEntityInstancesList': ['loadEmptyEntityInstancesList'],
+  'loadFirstEntityInstance': ['loadFirstEntityInstance'],
+  'loadUpdatedEntityInstance': ['loadUpdatedEntityInstance'],
 };
 
 var testConfig = window.location.search.substring(1);

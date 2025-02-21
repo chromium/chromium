@@ -571,6 +571,60 @@ class AutofillPrivatePredictionImprovementsIphFeatureUsedFunction
   ResponseAction Run() override;
 };
 
+class AutofillPrivateAddOrUpdateEntityInstanceFunction
+    : public AutofillPrivateExtensionFunction {
+ public:
+  AutofillPrivateAddOrUpdateEntityInstanceFunction() = default;
+  AutofillPrivateAddOrUpdateEntityInstanceFunction(
+      const AutofillPrivateAddOrUpdateEntityInstanceFunction&) = delete;
+  AutofillPrivateAddOrUpdateEntityInstanceFunction& operator=(
+      const AutofillPrivateAddOrUpdateEntityInstanceFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.addOrUpdateEntityInstance",
+                             AUTOFILLPRIVATE_ADDORUPDATEENTITYINSTANCE)
+
+ protected:
+  ~AutofillPrivateAddOrUpdateEntityInstanceFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
+class AutofillPrivateRemoveEntityInstanceFunction
+    : public AutofillPrivateExtensionFunction {
+ public:
+  AutofillPrivateRemoveEntityInstanceFunction() = default;
+  AutofillPrivateRemoveEntityInstanceFunction(
+      const AutofillPrivateRemoveEntityInstanceFunction&) = delete;
+  AutofillPrivateRemoveEntityInstanceFunction& operator=(
+      const AutofillPrivateRemoveEntityInstanceFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.removeEntityInstance",
+                             AUTOFILLPRIVATE_REMOVEENTITYINSTANCE)
+
+ protected:
+  ~AutofillPrivateRemoveEntityInstanceFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
+class AutofillPrivateLoadEntityInstancesFunction
+    : public AutofillPrivateExtensionFunction {
+ public:
+  AutofillPrivateLoadEntityInstancesFunction() = default;
+  AutofillPrivateLoadEntityInstancesFunction(
+      const AutofillPrivateLoadEntityInstancesFunction&) = delete;
+  AutofillPrivateLoadEntityInstancesFunction& operator=(
+      const AutofillPrivateLoadEntityInstancesFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.loadEntityInstances",
+                             AUTOFILLPRIVATE_LOADENTITYINSTANCES)
+
+ protected:
+  ~AutofillPrivateLoadEntityInstancesFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_

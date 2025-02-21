@@ -16,6 +16,7 @@
 namespace autofill {
 class AddressDataManager;
 class CreditCard;
+class EntityInstance;
 class PaymentsDataManager;
 }  // namespace autofill
 
@@ -55,6 +56,16 @@ api::autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
     const autofill::CreditCard& credit_card,
     const autofill::PaymentsDataManager& paydm,
     bool mask_local_cards);
+
+// Converts an `api::autofill_private::EntityInstance` object to an
+// `autofill::EntityInstance` object.
+autofill::EntityInstance PrivateApiEntityInstanceToEntityInstance(
+    const api::autofill_private::EntityInstance& private_api_entity_instance);
+
+// Converts an `autofill::EntityInstance` object to an
+// `api::autofill_private::EntityInstance` object.
+api::autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
+    const autofill::EntityInstance& entity_instance);
 
 }  // namespace extensions::autofill_util
 

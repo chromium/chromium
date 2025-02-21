@@ -326,6 +326,31 @@ namespace autofillPrivate {
     DOMString value;
   };
 
+  // An attribute instance is a typed string value with additional metadata.
+  // It is associated with an `EntityInstance`. The type contains the value of
+  // an `AttributeTypeName` on the C++ side.
+  dictionary AttributeInstance {
+    // The attribute type.
+    long type;
+    // The attribute value.
+    DOMString value;
+  };
+
+  // An entity instance entry which can be saved in the "Autofill with AI"
+  // section of the settings UI. The type contains the value of an
+  // `EntityTypeName` on the C++ side.
+  dictionary EntityInstance {
+    // The entity type.
+    long type;
+    // The attribute instances of this entity instance.
+    AttributeInstance[] attributes;
+    // The guid of the entity.
+    DOMString guid;
+    // The nickname of the entity.
+    DOMString nickname;
+  };
+
+  callback VoidCallback = void();
   callback GetAccountInfoCallback = void(optional AccountInfo accountInfo);
   callback GetCountryListCallback = void(CountryEntry[] countries);
   callback GetAddressComponentsCallback = void(AddressComponents components);
@@ -338,6 +363,7 @@ namespace autofillPrivate {
   callback GetUserAnnotationsEntriesCallback = void(UserAnnotationsEntry[] items);
   callback hasUserAnnotationsEntriesCallback = void(boolean hasEntries);
   callback isUserEligibleForAutofillImprovementsCallback = void(boolean eligible);
+  callback LoadEntityInstancesCallback = void(EntityInstance[] entries);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -471,6 +497,18 @@ namespace autofillPrivate {
 
     // Notifies autofill client about the prediction improvements pre changing.
     static void predictionImprovementsIphFeatureUsed();
+
+    // Adds a new entity instance if it doesn't exist yet. Otherwise, it updates
+    // the entity instance.
+    static void addOrUpdateEntityInstance(
+        EntityInstance entityInstance, optional VoidCallback callback);
+
+    // Deletes an entity instance by its guid.
+    static void removeEntityInstance(
+        DOMString guid, optional VoidCallback callback);
+
+    // Returns all entity instances of the user.
+    static void loadEntityInstances(LoadEntityInstancesCallback callback);
   };
 
   interface Events {
