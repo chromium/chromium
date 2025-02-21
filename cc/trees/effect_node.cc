@@ -72,8 +72,6 @@ const char* RenderSurfaceReasonToString(RenderSurfaceReason reason) {
       return "2D transform with composited descendants";
     case RenderSurfaceReason::kTest:
       return "test";
-    default:
-      NOTREACHED() << static_cast<int>(reason);
   }
 }
 
