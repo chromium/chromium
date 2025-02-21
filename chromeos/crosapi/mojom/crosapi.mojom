@@ -79,7 +79,6 @@ import "chromeos/crosapi/mojom/video_capture.mojom";
 import "chromeos/crosapi/mojom/video_conference.mojom";
 import "chromeos/crosapi/mojom/kiosk_session_service.mojom";
 import "chromeos/crosapi/mojom/virtual_keyboard.mojom";
-import "chromeos/crosapi/mojom/volume_manager.mojom";
 import "chromeos/crosapi/mojom/web_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/media_ui.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
@@ -589,10 +588,7 @@ interface Crosapi {
   [MinVersion=96] BindDeviceLocalAccountExtensionService@100(
       pending_receiver<DeviceLocalAccountExtensionService> receiver);
 
-  // Binds the VolumeManager interface for accessing volume list, etc.
-  // Added in M106.
-  [MinVersion=90]
-  BindVolumeManager@94(pending_receiver<VolumeManager> receiver);
+  // BindVolumeManager@94 was removed.
 
   // Binds the vpn service. This service is used to facilirate
   // communication between chrome.vpnProvider extension in lacros and the

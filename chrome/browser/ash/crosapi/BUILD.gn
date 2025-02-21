@@ -141,8 +141,6 @@ static_library("crosapi") {
     "suggestion_service_ash.h",
     "virtual_keyboard_ash.cc",
     "virtual_keyboard_ash.h",
-    "volume_manager_ash.cc",
-    "volume_manager_ash.h",
     "vpn_service_ash.cc",
     "vpn_service_ash.h",
     "web_kiosk_service_ash.cc",
