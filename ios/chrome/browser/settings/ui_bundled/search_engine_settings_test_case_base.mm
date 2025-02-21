@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/search_engine_settings_test_case_base.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
-#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -25,6 +24,8 @@
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
 #import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
+
+using chrome_test_util::SettingsToolbarEditButton;
 
 NSString* const kCustomSearchEngineName = @"Custom Search Engine";
 
@@ -122,8 +123,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           : grey_accessibilityTrait(UIAccessibilityTraitNotEnabled);
   return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
                         IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
-                    grey_accessibilityID(kSettingsToolbarEditButtonId),
-                    enabledMatcher, nil);
+                    SettingsToolbarEditButton(), enabledMatcher, nil);
 }
 
 - (void)startHTTPServer {

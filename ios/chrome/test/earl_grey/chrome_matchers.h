@@ -672,6 +672,9 @@ id<GREYMatcher> HistoryEntry(const std::string& url, const std::string& title);
 // Returns a matcher to the add button in the toolbar in the settings view.
 id<GREYMatcher> SettingsToolbarAddButton();
 
+// Returns a matcher to the edit button in the toolbar in the settings view.
+id<GREYMatcher> SettingsToolbarEditButton();
+
 // Returns a matcher matching cells that can be swiped-to-dismiss.
 id<GREYMatcher> CellCanBeSwipedToDismissed();
 

@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
@@ -818,6 +819,10 @@ id<GREYMatcher> HistoryEntry(const std::string& url, const std::string& title) {
 
 id<GREYMatcher> SettingsToolbarAddButton() {
   return [ChromeMatchersAppInterface settingsToolbarAddButton];
+}
+
+id<GREYMatcher> SettingsToolbarEditButton() {
+  return grey_accessibilityID(kSettingsToolbarEditButtonId);
 }
 
 id<GREYMatcher> CellCanBeSwipedToDismissed() {

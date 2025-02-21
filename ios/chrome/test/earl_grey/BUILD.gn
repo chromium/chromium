@@ -326,6 +326,7 @@ source_set("eg_test_support+eg2") {
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/recent_tabs/ui_bundled:ui_constants",
     "//ios/chrome/browser/safe_mode/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
     "//ios/chrome/browser/settings/ui_bundled/cells:clear_browsing_data_constants",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
