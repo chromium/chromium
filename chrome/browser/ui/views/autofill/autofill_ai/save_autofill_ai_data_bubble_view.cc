@@ -18,6 +18,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/font.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -38,35 +39,57 @@ constexpr int kHeaderPadding = 20;
 
 constexpr int kBubbleWidth = 320;
 
+// Creates a view for the label attribute value.
+// - When the attribute value is a new or updated value from the new entity,
+//   the displayed text is bold.
+// - When the value is previous, to be updated value of the old entity, the
+//   text has a strike-through
+// This is intended to give users feedback about which entity value will be
+// changed.
+std::unique_ptr<views::Label> GetAttributeValueView(
+    const SaveAutofillAiDataController::EntityAttributeUpdateDetails& detail) {
+  std::unique_ptr<views::Label> label =
+      std::make_unique<views::Label>(detail.attribute_value);
+  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
+
+  const bool should_add_strike_through =
+      detail.update_type ==
+      SaveAutofillAiDataController::EntityAttributeUpdateType::
+          kOldEntityAttributeUpdated;
+  if (!should_add_strike_through) {
+    const bool is_new_or_updated_attribute_from_new_entity =
+        detail.update_type !=
+        SaveAutofillAiDataController::EntityAttributeUpdateType::
+            kNewEntityAttributeUnchanged;
+    label->SetTextStyle(is_new_or_updated_attribute_from_new_entity
+                            ? views::style::STYLE_BODY_3_MEDIUM
+                            : views::style::STYLE_BODY_4);
+  } else {
+    label->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
+    label->SetFontList(
+        label->font_list().DeriveWithStyle(gfx::Font::STRIKE_THROUGH));
+  }
+
+  return label;
+}
+
 // Helper to create a row displayed in the dialog. This row contains information
 // about the entity to be saved and possibly information about the old entity
 // value that was updated.
 std::unique_ptr<views::View> BuildEntityAttributeRow(
     const SaveAutofillAiDataController::EntityAttributeUpdateDetails& detail) {
-  const bool is_new_or_updated_attribute_from_new_entity =
-      (detail.update_type ==
-       SaveAutofillAiDataController::EntityAttributeUpdateType::
-           kNewEntityAttributeUpdated) ||
-      (detail.update_type ==
-       SaveAutofillAiDataController::EntityAttributeUpdateType::
-           kNewEntityAttributeAdded);
   auto row =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
           .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
-          .AddChildren(
-              views::Builder<views::Label>()
-                  .SetText(detail.attribute_name)
-                  .SetTextStyle(views::style::STYLE_BODY_4)
-                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT),
-              views::Builder<views::Label>()
-                  .SetText(std::u16string(detail.attribute_value))
-                  .SetTextStyle(is_new_or_updated_attribute_from_new_entity
-                                    ? views::style::STYLE_BODY_3_MEDIUM
-                                    : views::style::STYLE_BODY_4)
-                  .SetHorizontalAlignment(
-                      gfx::HorizontalAlignment::ALIGN_RIGHT))
           .Build();
+  row->AddChildView(
+      views::Builder<views::Label>()
+          .SetText(detail.attribute_name)
+          .SetTextStyle(views::style::STYLE_BODY_4)
+          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+          .Build());
+  row->AddChildView(GetAttributeValueView(detail));
 
   // Set every child to expand with the same ratio.
   for (auto child : row->children()) {
