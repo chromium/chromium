@@ -1273,6 +1273,12 @@
       status: "stable",
     },
     {
+      // scroll-marker-contain property
+      // https://github.com/w3c/csswg-drafts/issues/10916
+      name: "CSSScrollMarkerContain",
+      status: "experimental",
+    },
+    {
       // https://drafts.csswg.org/css-scroll-snap-2/#scrollsnapchange
       name: "CSSScrollSnapChangeEvent",
       status: "stable",

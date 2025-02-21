@@ -4951,6 +4951,16 @@
       invalidate: ["layout", "paint"],
     },
     {
+      name: "scroll-marker-contain",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["none", "auto"],
+      typedom_types: ["Keyword"],
+      default_value: "none",
+      runtime_flag: "CSSScrollMarkerContain",
+    },
+    {
       name: "scroll-marker-group",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
