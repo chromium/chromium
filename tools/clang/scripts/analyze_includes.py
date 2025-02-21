@@ -35,7 +35,7 @@ import re
 import sys
 import unittest
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def parse_build(build_log, root_filter=None):
@@ -463,7 +463,7 @@ def analyze(target, revision, build_log_file, json_file, root_filter):
       {
           'target': target,
           'revision': revision,
-          'date': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC'),
+          'date': datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC'),
           'files': names,
           'roots': [nr(x) for x in sorted(roots)],
           'includes': [[nr(x) for x in sorted(includes[n])] for n in names],
