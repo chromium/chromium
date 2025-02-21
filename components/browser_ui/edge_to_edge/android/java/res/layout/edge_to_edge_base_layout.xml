@@ -11,5 +11,5 @@ found in the LICENSE file.
     android:id="@+id/edge_to_edge_base_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/window_background_color">
+    android:background="@android:color/transparent">
 </org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeBaseLayout>
