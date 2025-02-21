@@ -41,7 +41,6 @@ class EntityInstance;
 //   type               The instance's attribute type, represented as string
 //                      AttributeType::name_as_string().
 //   value_encrypted    The encrypted string value of the attribute.
-//   context            The format string of the attribute.
 // -----------------------------------------------------------------------------
 class EntityTable : public WebDatabaseTable {
  public:

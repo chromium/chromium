@@ -38,7 +38,7 @@ void* GetKey() {
 namespace version {
 constexpr char kTableName[] = "entities_version";
 constexpr char kVersion[] = "version";
-constexpr int kCurrentVersion = 3;
+constexpr int kCurrentVersion = 4;
 }  // namespace version
 
 namespace attributes {
@@ -46,7 +46,6 @@ constexpr char kTableName[] = "attributes";
 constexpr char kEntityGuid[] = "entity_guid";
 constexpr char kType[] = "type";
 constexpr char kValueEncrypted[] = "value_encrypted";
-constexpr char kContext[] = "context";
 }  // namespace attributes
 
 namespace entities {
@@ -60,7 +59,6 @@ constexpr char kDateModified[] = "date_modified";
 struct AttributeRecord {
   std::string type_name;
   std::u16string value;
-  AttributeInstance::Context context;
 };
 
 std::optional<EntityInstance> ValidateInstance(
@@ -81,8 +79,7 @@ std::optional<EntityInstance> ValidateInstance(
   for (AttributeRecord& ar : attribute_records) {
     if (std::optional<AttributeType> attribute_type =
             StringToAttributeType(pass_key, *entity_type, ar.type_name)) {
-      attributes.emplace_back(*attribute_type, std::move(ar.value),
-                              std::move(ar.context));
+      attributes.emplace_back(*attribute_type, std::move(ar.value));
     }
   }
 
@@ -132,21 +129,20 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
     using enum AttributeTypeName;
     table.AddOrUpdateEntityInstance(EntityInstance(
         EntityType(EntityTypeName::kPassport),
-        {AttributeInstance(AttributeType(kPassportNumber), u"123", {}),
-         AttributeInstance(AttributeType(kPassportName), u"Pippi Långstrump",
-                           {}),
-         AttributeInstance(AttributeType(kPassportCountry), u"Sweden", {}),
-         AttributeInstance(AttributeType(kPassportExpiryDate), u"09/2098", {}),
-         AttributeInstance(AttributeType(kPassportIssueDate), u"10/1998", {})},
+        {AttributeInstance(AttributeType(kPassportNumber), u"123"),
+         AttributeInstance(AttributeType(kPassportName), u"Pippi Långstrump"),
+         AttributeInstance(AttributeType(kPassportCountry), u"Sweden"),
+         AttributeInstance(AttributeType(kPassportExpiryDate), u"09/2098"),
+         AttributeInstance(AttributeType(kPassportIssueDate), u"10/1998")},
         base::Uuid::ParseLowercase("00000000-0000-4000-8000-000000000000"),
         "Passie", base::Time::Now()));
     table.AddOrUpdateEntityInstance(EntityInstance(
         EntityType(EntityTypeName::kLoyaltyCard),
         {AttributeInstance(AttributeType(kLoyaltyCardProgram),
-                           u"Asterisk Alliance", {}),
+                           u"Asterisk Alliance"),
          AttributeInstance(AttributeType(kLoyaltyCardProvider),
-                           u"Propeller Airways", {}),
-         AttributeInstance(AttributeType(kLoyaltyCardMemberId), u"987", {})},
+                           u"Propeller Airways"),
+         AttributeInstance(AttributeType(kLoyaltyCardMemberId), u"987")},
         base::Uuid::ParseLowercase("11111111-1111-4111-8111-111111111111"),
         "Loyie", base::Time::Now()));
   }
@@ -202,8 +198,7 @@ bool EntityTable::CreateTablesIfNecessary() {
         /*column_names_and_types=*/
         {{attributes::kEntityGuid, "TEXT NOT NULL"},
          {attributes::kType, "TEXT NOT NULL"},
-         {attributes::kValueEncrypted, "BLOB NOT NULL"},
-         {attributes::kContext, "TEXT"}},
+         {attributes::kValueEncrypted, "BLOB NOT NULL"}},
         /*composite_primary_key=*/{attributes::kEntityGuid, attributes::kType});
   };
   auto create_entities_table = [&] {
@@ -254,7 +249,7 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
     sql::Statement s;
     InsertBuilder(db(), s, attributes::kTableName,
                   {attributes::kEntityGuid, attributes::kType,
-                   attributes::kValueEncrypted, attributes::kContext});
+                   attributes::kValueEncrypted});
     s.BindString(0, entity.guid().AsLowercaseString());
     s.BindString(1, attribute.type().name_as_string());
     std::string encrypted_value;
@@ -263,7 +258,6 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
     } else {
       return false;
     }
-    s.BindString(3, attribute.context().format);
     if (!s.Run()) {
       return false;
     }
@@ -351,7 +345,7 @@ std::vector<EntityInstance> EntityTable::GetEntityInstances() const {
     sql::Statement s;
     SelectBuilder(db(), s, attributes::kTableName,
                   {attributes::kEntityGuid, attributes::kType,
-                   attributes::kValueEncrypted, attributes::kContext});
+                   attributes::kValueEncrypted});
     while (s.Step()) {
       base::Uuid entity_guid = base::Uuid::ParseLowercase(s.ColumnString(0));
       std::string type_name = s.ColumnString(1);
@@ -359,12 +353,9 @@ std::vector<EntityInstance> EntityTable::GetEntityInstances() const {
       if (!encryptor()->DecryptString16(s.ColumnString(2), &decrypted_value)) {
         continue;
       }
-      AttributeInstance::Context context;
-      context.format = s.ColumnString(3);
       attribute_records[entity_guid].push_back(
           {.type_name = std::move(type_name),
-           .value = std::move(decrypted_value),
-           .context = std::move(context)});
+           .value = std::move(decrypted_value)});
     }
     if (!s.Succeeded()) {
       return {};

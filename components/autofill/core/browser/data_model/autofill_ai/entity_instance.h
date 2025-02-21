@@ -42,23 +42,6 @@ class AttributeInstance;
 // It is associated with an EntityInstance. The type is an AttributeType.
 class AttributeInstance final : public FormGroup {
  public:
-  // Metadata from the saving moment.
-  // This is more or less a placeholder for now.
-  // TODO(crbug.com/388590912): Figure out the details or delete Context.
-  struct Context {
-    Context();
-    Context(const Context&);
-    Context& operator=(const Context&);
-    Context(Context&&);
-    Context& operator=(Context&&);
-    ~Context();
-
-    friend bool operator==(const Context&, const Context&) = default;
-
-    // Human-readable description of the format, e.g., "date in MM/YYYY".
-    std::string format;
-  };
-
   // Transparent less-than relation based on the AttributeType.
   struct CompareByType;
 
@@ -68,7 +51,7 @@ class AttributeInstance final : public FormGroup {
   static bool DisambiguationOrder(const AttributeInstance& lhs,
                                   const AttributeInstance& rhs);
 
-  AttributeInstance(AttributeType type, std::u16string value, Context context);
+  AttributeInstance(AttributeType type, std::u16string value);
 
   AttributeInstance(const AttributeInstance&);
   AttributeInstance& operator=(const AttributeInstance&);
@@ -86,9 +69,6 @@ class AttributeInstance final : public FormGroup {
   // removes some special characters. Its underlying implementation is
   // `AutofillProfileComparator::NormalizeForComparison()`.
   std::u16string NormalizedValue() const;
-
-  // Metadata from the saving moment of the value.
-  const Context& context() const { return context_; }
 
   // autofill::FormGroup:
   std::u16string GetRawInfo(FieldType type) const override;
@@ -110,7 +90,6 @@ class AttributeInstance final : public FormGroup {
  private:
   AttributeType type_;
   std::u16string value_;
-  Context context_;
 };
 
 struct AttributeInstance::CompareByType {

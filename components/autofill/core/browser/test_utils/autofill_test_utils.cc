@@ -857,24 +857,21 @@ EntityInstance GetPassportEntityInstance(PassportEntityOptions options) {
   using enum AttributeTypeName;
   std::vector<AttributeInstance> attributes;
   if (options.number) {
-    attributes.emplace_back(AttributeType(kPassportNumber), options.number,
-                            AttributeInstance::Context{});
+    attributes.emplace_back(AttributeType(kPassportNumber), options.number);
   }
   if (options.name) {
-    attributes.emplace_back(AttributeType(kPassportName), options.name,
-                            AttributeInstance::Context{});
+    attributes.emplace_back(AttributeType(kPassportName), options.name);
   }
   if (options.country) {
-    attributes.emplace_back(AttributeType(kPassportCountry), options.country,
-                            AttributeInstance::Context{});
+    attributes.emplace_back(AttributeType(kPassportCountry), options.country);
   }
   if (options.expiry_date) {
     attributes.emplace_back(AttributeType(kPassportExpiryDate),
-                            options.expiry_date, AttributeInstance::Context{});
+                            options.expiry_date);
   }
   if (options.issue_date) {
     attributes.emplace_back(AttributeType(kPassportIssueDate),
-                            options.issue_date, AttributeInstance::Context{});
+                            options.issue_date);
   }
   return EntityInstance(
       EntityType(EntityTypeName::kPassport), std::move(attributes),
@@ -886,16 +883,16 @@ EntityInstance GetLoyaltyCardEntityInstance(LoyaltyCardEntityOptions options) {
   using enum AttributeTypeName;
   std::vector<AttributeInstance> attributes;
   if (options.program) {
-    attributes.emplace_back(AttributeType(kLoyaltyCardProgram), options.program,
-                            AttributeInstance::Context{});
+    attributes.emplace_back(AttributeType(kLoyaltyCardProgram),
+                            options.program);
   }
   if (options.provider) {
     attributes.emplace_back(AttributeType(kLoyaltyCardProvider),
-                            options.provider, AttributeInstance::Context{});
+                            options.provider);
   }
   if (options.member_id) {
     attributes.emplace_back(AttributeType(kLoyaltyCardMemberId),
-                            options.member_id, AttributeInstance::Context{});
+                            options.member_id);
   }
   return EntityInstance(
       EntityType(EntityTypeName::kLoyaltyCard), std::move(attributes),
