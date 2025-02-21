@@ -182,8 +182,11 @@ SharedDictionaryStorage::MaybeCreateWriter(
     case mojom::RequestMode::kCorsWithForcedPreflight:
       break;
     case mojom::RequestMode::kNavigate:
-      return base::unexpected(
-          mojom::SharedDictionaryError::kWriteErrorNavigationRequest);
+      if (!base::FeatureList::IsEnabled(
+              features::kSharedDictionaryRegisterNavigationRequests)) {
+        return base::unexpected(
+            mojom::SharedDictionaryError::kWriteErrorNavigationRequest);
+      }
   }
   if (!shared_dictionary_writer_enabled) {
     return base::unexpected(
@@ -204,14 +207,6 @@ SharedDictionaryStorage::MaybeCreateWriter(
   if (expiration <= base::TimeDelta()) {
     return base::unexpected(
         mojom::SharedDictionaryError::kWriteErrorExpiredResponse);
-  }
-  if (!base::FeatureList::IsEnabled(
-          network::features::kCompressionDictionaryTransport)) {
-    // During the Origin Trial experiment, kCompressionDictionaryTransport is
-    // disabled in the network service. In that case, we have a maximum
-    // expiration time on the dictionary entry to keep the duration constrained.
-    expiration =
-        std::min(expiration, shared_dictionary::kMaxExpirationForOriginTrial);
   }
 
   base::expected<DictionaryHeaderInfo, mojom::SharedDictionaryError> info =
