@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,10 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*arg_min_max_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kNonScalarMaxRank},
        /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
-       /*batch_normalization_input=*/DataTypeConstraint::kFloat16To32,
+       /*batch_normalization_input=*/
+       {DataTypeConstraint::kFloat16To32, kNonScalarMaxRank},
+       /*batch_normalization_mean=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*cast_input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*clamp_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*concat_inputs=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
@@ -79,8 +82,11 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
        /*cumulative_sum_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kNonScalarMaxRank},
-       /*dequantize_linear_input=*/kDequantizeLinearInputSupportedDataTypes,
-       /*dequantize_linear_scale=*/DataTypeConstraint::kFloat16To32,
+       /*dequantize_linear_input=*/
+       {kDequantizeLinearInputSupportedDataTypes, kMaxRank},
+       /*dequantize_linear_scale=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*dequantize_linear_zero_point=*/
+       {kDequantizeLinearInputSupportedDataTypes, kMaxRank},
        /*add_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*sub_input=*/
@@ -166,7 +172,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*max_pool2d_input=*/
        {DataTypeConstraint::kFloat16To32, kNonScalarMaxRank},
        /*prelu_input=*/
-       DataTypeConstraint::kFloat16To32Ints32To64,
+       {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
        /*quantize_linear_input=*/{},
        /*quantize_linear_zero_point=*/{},
        /*reduce_l1_input=*/
