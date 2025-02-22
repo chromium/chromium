@@ -27,7 +27,7 @@ void GlicNudgeController::UpdateNudgeLabel(content::WebContents* web_contents,
   auto* const tab_interface =
       browser_window_interface_->GetActiveTabInterface();
   if (tab_interface->GetContents() != web_contents) {
-    nudge_activity_callback_.Run(GlicNudgeActivity::kNudgeNotShownWebContents);
+    callback.Run(GlicNudgeActivity::kNudgeNotShownWebContents);
     return;
   }
 
