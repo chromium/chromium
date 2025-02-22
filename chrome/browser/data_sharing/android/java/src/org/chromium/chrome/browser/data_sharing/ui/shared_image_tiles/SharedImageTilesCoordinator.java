@@ -5,17 +5,18 @@
 package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
@@ -239,6 +240,7 @@ public class SharedImageTilesCoordinator {
                 Callback<Boolean> finishedCallback) {
             mFinishedCallback = finishedCallback;
             mReset = false;
+            @ColorInt int fallbackColor = SemanticColorUtils.getDefaultIconColorAccent1(context);
 
             mWaitingCount = iconViews.size();
             assert mWaitingCount <= validMembers.size();
@@ -246,16 +248,13 @@ public class SharedImageTilesCoordinator {
                 ImageView imageView = iconViews.get(i);
                 GroupMember member = validMembers.get(i);
                 DataSharingAvatarBitmapConfig.DataSharingAvatarCallback avatarCallback =
-                        new DataSharingAvatarBitmapConfig.DataSharingAvatarCallback() {
-                            @Override
-                            public void onAvatarLoaded(Bitmap bitmap) {
-                                if (!mReset) {
-                                    imageView.setImageBitmap(bitmap);
+                        (bitmap) -> {
+                            if (!mReset) {
+                                imageView.setImageBitmap(bitmap);
 
-                                    mWaitingCount -= 1;
-                                    if (mWaitingCount == 0) {
-                                        finishedCallback.onResult(true);
-                                    }
+                                mWaitingCount -= 1;
+                                if (mWaitingCount == 0) {
+                                    finishedCallback.onResult(true);
                                 }
                             }
                         };
@@ -264,6 +263,7 @@ public class SharedImageTilesCoordinator {
                                 .setContext(context)
                                 .setGroupMember(member)
                                 .setAvatarSizeInPixels(sizeInPx)
+                                .setAvatarFallbackColor(fallbackColor)
                                 .setDataSharingAvatarCallback(avatarCallback)
                                 .build();
                 dataSharingUiDelegate.getAvatarBitmap(config);

@@ -171,6 +171,7 @@ if (is_android) {
       ":java_resources",
       "//base:callback_java",
       "//chrome/browser/data_sharing:recent_activity_java",
+      "//components/browser_ui/styles/android:java",
       "//components/data_sharing/public:public_java",
     ]
   }
@@ -192,6 +193,7 @@ if (is_android) {
       "//components/saved_tab_groups/public:java",
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_appcompat_appcompat_java",
       "//third_party/androidx:androidx_test_core_java",
       "//third_party/androidx:androidx_test_ext_junit_java",
       "//third_party/junit:junit",
@@ -274,6 +276,7 @@ if (is_android) {
       "//chrome/browser/tab:java",
       "//chrome/browser/tabmodel:java",
       "//components/browser_ui/notifications/android:java",
+      "//components/browser_ui/styles/android:java",
       "//components/collaboration/public:java",
       "//components/data_sharing/public:public_java",
       "//components/embedder_support/android:util_java",

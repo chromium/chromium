@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.InstantMessage;
 import org.chromium.components.collaboration.messaging.InstantNotificationLevel;
@@ -238,12 +240,14 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 (Bitmap bitmap) -> onDrawable.onResult(new BitmapDrawable(bitmap));
         int sizeInPixels =
                 context.getResources().getDimensionPixelSize(R.dimen.message_description_icon_size);
+        @ColorInt int fallbackColor = SemanticColorUtils.getDefaultIconColorAccent1(context);
         DataSharingAvatarBitmapConfig config =
                 new DataSharingAvatarBitmapConfig.Builder()
                         .setContext(context)
                         .setGroupMember(groupMember)
                         .setIsDarkMode(ColorUtils.inNightMode(context))
                         .setAvatarSizeInPixels(sizeInPixels)
+                        .setAvatarFallbackColor(fallbackColor)
                         .setDataSharingAvatarCallback(onBitmap)
                         .build();
         mDataSharingService.getUiDelegate().getAvatarBitmap(config);

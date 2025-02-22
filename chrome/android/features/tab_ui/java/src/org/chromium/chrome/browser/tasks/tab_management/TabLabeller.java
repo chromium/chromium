@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -17,6 +18,7 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessageUtils;
@@ -99,6 +101,8 @@ public class TabLabeller extends TabObjectLabeller {
                 assert widthPx == heightPx;
                 // Even with a null member a valid bitmap will be produced.
                 @Nullable GroupMember groupMember = MessageUtils.extractMember(message);
+                @ColorInt
+                int fallbackColor = SemanticColorUtils.getDefaultIconColorAccent1(mContext);
                 DataSharingAvatarCallback avatarCallback =
                         (Bitmap bitmap) -> onAvatar(consumer, bitmap);
                 DataSharingAvatarBitmapConfig config =
@@ -106,6 +110,7 @@ public class TabLabeller extends TabObjectLabeller {
                                 .setContext(mContext)
                                 .setGroupMember(groupMember)
                                 .setAvatarSizeInPixels(widthPx)
+                                .setAvatarFallbackColor(fallbackColor)
                                 .setDataSharingAvatarCallback(avatarCallback)
                                 .build();
                 mDataSharingUiDelegate.getAvatarBitmap(config);
