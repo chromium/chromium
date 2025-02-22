@@ -1560,7 +1560,7 @@ Se questa policy non viene configurata, inizialmente Traduzione dal Vivo sarà d
 <translation id="2136073175041447267">Configura le unità cloud (Google Drive, Microsoft OneDrive) in <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2142409122365327693">Questa è una funzionalità beta.
 
-Questo criterio consente di stabilire la visibilità della scheda File di SharePoint e OneDrive nella pagina Nuova scheda. La scheda verrà visualizzata nella pagina Nuova scheda solo se il criterio è abilitato e la tua organizzazione ha autorizzato l'utilizzo dei dati dei file di SharePoint e OneDrive nel browser.
+Questa policy consente di stabilire la visibilità della scheda File di SharePoint e OneDrive nella pagina Nuova scheda. La scheda verrà visualizzata nella pagina Nuova scheda solo se la policy è abilitata e la tua organizzazione ha autorizzato l'utilizzo dei dati dei file di SharePoint e OneDrive nel browser.
 
 I dati di SharePoint e OneDrive non verranno archiviati dal browser.
 
@@ -1568,7 +1568,7 @@ La scheda dei file di SharePoint e OneDrive consigliati mostra un elenco di file
 
 La scheda Microsoft di SharePoint e OneDrive richiederà una configurazione amministrativa aggiuntiva. Per informazioni dettagliate su come collegare la scheda della pagina Nuova scheda di Chrome a SharePoint, consulta l'articolo del Centro assistenza.
 
-Se il criterio <ph name="NTPCARDSVISIBLE" /> è disattivato, la scheda di SharePoint e OneDrive non verrà mostrata. Se il criterio <ph name="NTPCARDSVISIBLE" /> è attivato, la scheda di SharePoint e OneDrive verrà mostrata se anche il relativo criterio è attivato e sono disponibili dati da mostrare. Se <ph name="NTPCARDSVISIBLE" /> non viene configurato, la scheda di SharePoint e OneDrive verrà mostrata se anche il relativo criterio è attivato, l'utente ha attivato la scheda in Personalizza Chrome e sono disponibili dati da mostrare.</translation>
+Se la policy <ph name="NTPCARDSVISIBLE" /> è disattivata, la scheda di SharePoint e OneDrive non verrà mostrata. Se la policy <ph name="NTPCARDSVISIBLE" /> è attivata, la scheda di SharePoint e OneDrive verrà mostrata se anche la relativa policy è attivata e sono disponibili dati da mostrare. Se <ph name="NTPCARDSVISIBLE" /> non viene configurata, la scheda di SharePoint e OneDrive verrà mostrata se anche la relativa policy è attivata, l'utente ha attivato la scheda in Personalizza Chrome e sono disponibili dati da mostrare.</translation>
 <translation id="2144236546337326489">Consenti l'attivazione della continuazione di attività Phone Hub</translation>
 <translation id="2145735238144543545">Certificati client richiesti</translation>
 <translation id="2146103669166779785">Colore esadecimale che verrà utilizzato per generare e applicare un tema al browser.</translation>
@@ -4842,7 +4842,7 @@ Se vengono impostate sia questa policy sia la policy PostQuantumKeyAgreementEnab
 <translation id="4562165737444703281">Consenti agli utenti di [attivare/configurare] il port forwarding in Crostini</translation>
 <translation id="456450545863578630">Attiva il trasferimento di file nelle connessioni di assistenza da remoto da parte degli amministratori aziendali</translation>
 <translation id="4567137030726189378">Consenti l'utilizzo degli Strumenti per sviluppatori</translation>
-<translation id="4570859815763368584">Criterio ritirato nella versione M68. Usa la policy DefaultPopupsSetting.
+<translation id="4570859815763368584">Policy ritirata nella versione M68. Usa la policy DefaultPopupsSetting.
 
       Per una spiegazione completa, visita la pagina https://www.chromestatus.com/feature/5675755719622656.
       Se questa policy viene attivata, sarà possibile contemporaneamente navigare nei siti e aprire nuove finestre/schede.
@@ -5198,14 +5198,14 @@ Se la policy viene impostata su False, verrà utilizzato il comportamento predef
 <translation id="4843535028402307134">https://github.com/w3c/ServiceWorker/issues/765 chiede che l'iframe srcdoc con
 l'attributo sandbox "allow-same-origin" sia sotto il controllo di ServiceWorker.
 
-Se il criterio viene abilitato o se non viene configurato,
+Se la policy viene abilitata o se non viene configurata,
 <ph name="PRODUCT_NAME" /> fa in modo che gli iframe srcdoc
 con attributi sandbox "allow-same-origin" siano sotto il controllo di ServiceWorker.
 
-Se il criterio viene disattivato, l'iframe srcdoc non viene controllato da
+Se la policy viene disattivata, l'iframe srcdoc non viene controllato da
 ServiceWorker.
 
-Questo criterio è stato pensato per essere temporaneo e verrà rimosso nel 2026.</translation>
+Questa policy è stata pensata per essere temporanea e verrà rimossa nel 2026.</translation>
 <translation id="4846678215172543001">Questa policy impedisce la visualizzazione di avvisi di URL simili sui siti elencati. Questi avvisi sono solitamente mostrati sui siti in cui <ph name="PRODUCT_NAME" /> crede che sia in atto un tentativo di spoofing di un altro sito noto all'utente.
 
        Se la policy viene attivata e impostata su uno o più domini, non verrà visualizzata alcuna pagina di avviso di somiglianza quando l'utente visita le pagine di quel dominio.
@@ -8255,7 +8255,7 @@ Se viene impostata su False o se non viene configurata, il layout non è disponi
 <translation id="6866755486434471318">Consenti a <ph name="PEPPER_NAME" /> di usare immagini condivise per la decodifica video.</translation>
 <translation id="6871249820683694350">Questa è una funzionalità beta.
 
-Questo criterio consente di stabilire la visibilità della scheda Outlook nella pagina Nuova scheda. La scheda verrà visualizzata nella pagina Nuova scheda solo se il criterio è abilitato e la tua organizzazione ha autorizzato l'utilizzo dei dati del calendario di Outlook nel browser.
+Questa policy consente di stabilire la visibilità della scheda Outlook nella pagina Nuova scheda. La scheda verrà visualizzata nella pagina Nuova scheda solo se la policy è abilitata e la tua organizzazione ha autorizzato l'utilizzo dei dati del calendario di Outlook nel browser.
 
 I dati di Outlook non verranno archiviati dal browser.
 
@@ -8263,7 +8263,7 @@ La scheda di Outlook mostra il prossimo evento nel calendario, nonché un'antepr
 
 La scheda Microsoft Outlook richiederà una configurazione amministrativa aggiuntiva. Per informazioni dettagliate su come collegare la scheda della pagina Nuova scheda di Chrome a Outlook, consulta l'articolo del Centro assistenza.
 
-Se il criterio <ph name="NTPCARDSVISIBLE" /> è disattivato, la scheda di Outlook non verrà mostrata. Se il criterio <ph name="NTPCARDSVISIBLE" /> è attivato, la scheda di Outlook verrà mostrata se anche il relativo criterio è attivato e sono disponibili dati da mostrare. Se il criterio <ph name="NTPCARDSVISIBLE" /> non viene configurato, la scheda di Outlook verrà mostrata se anche il relativo criterio è attivato, l'utente ha attivato la scheda in Personalizza Chrome e sono disponibili dati da mostrare.</translation>
+Se la policy <ph name="NTPCARDSVISIBLE" /> è disattivata, la scheda di Outlook non verrà mostrata. Se la policy <ph name="NTPCARDSVISIBLE" /> è attivata, la scheda di Outlook verrà mostrata se anche la relativa policy è attivata e sono disponibili dati da mostrare. Se la policy <ph name="NTPCARDSVISIBLE" /> non viene configurata, la scheda di Outlook verrà mostrata se anche la relativa policy è attivata, l'utente ha attivato la scheda in Personalizza Chrome e sono disponibili dati da mostrare.</translation>
 <translation id="6878757724611298427">Consenti agli utenti di utilizzare app per Android su dispositivi non affiliati</translation>
 <translation id="6881397131210596522">Se la policy viene impostata su 2, ai siti verrà automaticamente impedito di utilizzare l'API WebPrinting.
 
@@ -9693,7 +9693,7 @@ Questa policy è stata pensata per essere temporanea e verrà rimossa in futuro.
           Il valore della policy deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di inattività.</translation>
 <translation id="7992613144342460685">Concedere l'autorizzazione per il posizionamento delle finestre su questi siti</translation>
 <translation id="7995610550667275367">Scansione (supportata dalla versione 87)</translation>
-<translation id="7999023147219236247">Criterio per le richieste di concessione delle autorizzazioni delle app. PERMISSION_POLICY_UNSPECIFIED: policy non specificata. Se per un'autorizzazione non viene specificata alcuna policy ad alcun livello, viene usato per impostazione predefinita il comportamento "PROMPT". PROMPT: viene chiesto all'utente di concedere un'autorizzazione. GRANT: viene concessa automaticamente un'autorizzazione. DENY: viene negata automaticamente un'autorizzazione.</translation>
+<translation id="7999023147219236247">Policy per le richieste di concessione delle autorizzazioni delle app. PERMISSION_POLICY_UNSPECIFIED: policy non specificata. Se per un'autorizzazione non viene specificata alcuna policy ad alcun livello, viene usato per impostazione predefinita il comportamento "PROMPT". PROMPT: viene chiesto all'utente di concedere un'autorizzazione. GRANT: viene concessa automaticamente un'autorizzazione. DENY: viene negata automaticamente un'autorizzazione.</translation>
 <translation id="7999336306414770162">Disattiva i report sulle informazioni VPD del dispositivo</translation>
 <translation id="7999818120028621358">Attiva la generazione di rapporti sugli eventi di prevenzione di fughe di dati</translation>
 <translation id="8001701200415781021">Limita gli Account Google che è possibile impostare come account principali del browser in <ph name="PRODUCT_NAME" /></translation>
