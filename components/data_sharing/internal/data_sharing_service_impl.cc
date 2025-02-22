@@ -236,8 +236,28 @@ void DataSharingServiceImpl::ReadGroupDeprecated(
 void DataSharingServiceImpl::ReadNewGroup(
     const GroupToken& token,
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {
-  // TODO(crbug.com/377780190): Implement this.
-  return std::move(callback).Run(GroupData());
+  if (!sdk_delegate_) {
+    // Reply in a posted task to avoid reentrance on the calling side.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            base::unexpected(PeopleGroupActionFailure::kPersistentFailure)));
+    return;
+  }
+
+  data_sharing_pb::ReadGroupsParams params;
+  const std::string& group_id = token.group_id.value();
+  params.add_group_ids(group_id);
+  params.set_access_token(token.access_token);
+  data_sharing_pb::ReadGroupsParams::GroupParams* group_params =
+      params.add_group_params();
+  group_params->set_group_id(group_id);
+
+  sdk_delegate_->ReadGroups(
+      params,
+      base::BindOnce(&DataSharingServiceImpl::OnReadSingleGroupCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DataSharingServiceImpl::CreateGroup(

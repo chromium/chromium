@@ -31,6 +31,9 @@ message ReadGroupsParams {
     optional string consistency_token = 2;
   }
   repeated GroupParams group_params = 2;
+
+  // Only set for reading new group user is not part of.
+  optional string access_token = 3;
 }
 
 message FailedReadGroupResult {
