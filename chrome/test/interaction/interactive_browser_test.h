@@ -65,6 +65,14 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
   using StateChange = WebContentsInteractionTestUtil::StateChange;
 
+  // Since we enforce a 1:1 correspondence between ElementIdentifiers and
+  // WebContents defaulting to ContextMode::kAny prevents accidentally missing
+  // the correct context, which is a common mistake that causes tests to
+  // mysteriously time out looking in the wrong place.
+  static constexpr ui::InteractionSequence::ContextMode
+      kDefaultWebContentsContextMode =
+          ui::InteractionSequence::ContextMode::kAny;
+
   // Shorthand to convert a tracked element into a instrumented WebContents.
   // The element should be a TrackedElementWebContents.
   static WebContentsInteractionTestUtil* AsInstrumentedWebContents(
@@ -566,6 +574,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResult(
             return ui::test::internal::MatchAndExplain("CheckJsResult()", m,
                                                        result);
           })
+          .SetContext(kDefaultWebContentsContextMode)
           .SetDescription(base::StringPrintf("CheckJsResult(\"\n%s\n\")",
                                              function.c_str())));
 }
@@ -606,6 +615,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResultAt(
             return ui::test::internal::MatchAndExplain("CheckJsResultAt()", m,
                                                        result);
           })
+          .SetContext(kDefaultWebContentsContextMode)
           .SetDescription(base::StringPrintf(
               "CheckJsResultAt( %s, \"\n%s\n\")",
               internal::InteractiveBrowserTestPrivate::DeepQueryToString(where)
@@ -646,8 +656,12 @@ InteractiveBrowserTestApi::WaitForJsResultCommon(
       },
       std::move(expected), context);
 
-  return Steps(WaitForStateChange(webcontents_id, change),
-               Do([context]() mutable { context.Clear(); }));
+  return Steps(
+      WaitForStateChange(webcontents_id, change),
+      Do([context]() mutable { context.Clear(); })
+          // Preserve the context of the previous step so that
+          // `InSameContext()` on subsequent steps remains valid.
+          .SetContext(ui::InteractionSequence::ContextMode::kFromPreviousStep));
 }
 
 template <typename M>

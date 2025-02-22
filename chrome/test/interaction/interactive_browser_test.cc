@@ -45,17 +45,6 @@
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/views_delegate.h"
 
-namespace {
-
-// Since we enforce a 1:1 correspondence between ElementIdentifiers and
-// WebContents defaulting to ContextMode::kAny prevents accidentally missing the
-// correct context, which is a common mistake that causes tests to mysteriously
-// time out looking in the wrong place.
-constexpr ui::InteractionSequence::ContextMode kDefaultWebContentsContextMode =
-    ui::InteractionSequence::ContextMode::kAny;
-
-}  // namespace
-
 DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(InteractiveBrowserTestApi,
                                        kDefaultWaitForJsResultEvent);
 DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(InteractiveBrowserTestApi,
@@ -397,6 +386,7 @@ InteractiveBrowserTestApi::WaitForWebContentsPainted(
     ui::ElementIdentifier webcontents_id) {
   auto wait_step = WaitForEvent(webcontents_id,
                                 TrackedElementWebContents::kFirstNonEmptyPaint);
+  wait_step.SetContext(kDefaultWebContentsContextMode);
   wait_step.SetMustBeVisibleAtStart(false);
   wait_step.AddDescriptionPrefix("WaitForWebContentsPainted()");
 
@@ -420,26 +410,28 @@ InteractiveBrowserTestApi::WaitForWebContentsPainted(
         // Otherwise, create a timeout after the WebContents is shown.
         RunSubsequence(
             // Ensure that the contents are loaded, then wait a short time.
-            AfterShow(webcontents_id, &MaybePostPaintWorkaroundEvent),
+            InAnyContext(
+                AfterShow(webcontents_id, &MaybePostPaintWorkaroundEvent)),
             // After the timeout, first post a verbose warning describing the
             // known issue so that test maintainers are not surprised if
             // something later in the test breaks because paint status is still
             // being reported incorrectly.
-            AfterEvent(webcontents_id, kPaintWorkaroundEvent,
-                       []() { LOG(WARNING) << kPaintWorkaroundWarning; }),
-            // Ensure that the WebContents actually believes it's visible.
-            CheckElement(
-                webcontents_id,
-                [](ui::TrackedElement* el) {
-                  return AsInstrumentedWebContents(el)
-                      ->web_contents()
-                      ->GetVisibility();
-                },
-                content::Visibility::VISIBLE),
-            // Force a frame to render before proceeding.
-            // After this is done, we at least known that the contents have been
-            // painted - even if the WebContents object itself doesn't!
-            CheckJsResult(webcontents_id, kPaintWorkaroundFunction)));
+            InSameContext(
+                AfterEvent(webcontents_id, kPaintWorkaroundEvent,
+                           []() { LOG(WARNING) << kPaintWorkaroundWarning; }),
+                // Ensure that the WebContents actually believes it's visible.
+                CheckElement(
+                    webcontents_id,
+                    [](ui::TrackedElement* el) {
+                      return AsInstrumentedWebContents(el)
+                          ->web_contents()
+                          ->GetVisibility();
+                    },
+                    content::Visibility::VISIBLE),
+                // Force a frame to render before proceeding.
+                // After this is done, we at least known that the contents have
+                // been painted - even if the WebContents object itself doesn't!
+                CheckJsResult(webcontents_id, kPaintWorkaroundFunction))));
   }
 
   // If the element is already painted, there is no reason to actually wait (and
@@ -458,6 +450,7 @@ InteractiveBrowserTestApi::WaitForWebContentsPainted(
                                   ->HasPageBeenPainted();
              },
              Then(std::move(wait_step)))
+      .SetContext(kDefaultWebContentsContextMode)
       .AddDescriptionPrefix("WaitForWebContentsPainted()");
 }
 
@@ -498,6 +491,7 @@ InteractiveBrowserTestApi::FocusWebContents(
   RequireInteractiveTest();
   StepBuilder builder;
   builder.SetElementID(webcontents_id);
+  builder.SetContext(kDefaultWebContentsContextMode);
   builder.SetDescription("FocusWebContents()");
   builder.SetStartCallback(base::BindLambdaForTesting(
       [this](ui::InteractionSequence* seq, ui::TrackedElement* el) {
@@ -758,9 +752,9 @@ InteractiveBrowserTestApi::WaitForJsResultAt(
 InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::MoveMouseTo(
     ui::ElementIdentifier web_contents,
     const DeepQuery& where) {
-  auto steps =
-      Steps(WaitForWebContentsPainted(web_contents),
-            MoveMouseTo(web_contents, DeepQueryToRelativePosition(where)));
+  auto steps = Steps(WaitForWebContentsPainted(web_contents),
+                     InSameContext(MoveMouseTo(
+                         web_contents, DeepQueryToRelativePosition(where))));
   AddDescriptionPrefix(steps, "MoveMouseTo()");
   return steps;
 }
@@ -769,9 +763,10 @@ InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::DragMouseTo(
     ui::ElementIdentifier web_contents,
     const DeepQuery& where,
     bool release) {
-  auto steps = Steps(
-      WaitForWebContentsPainted(web_contents),
-      DragMouseTo(web_contents, DeepQueryToRelativePosition(where), release));
+  auto steps =
+      Steps(WaitForWebContentsPainted(web_contents),
+            InSameContext(DragMouseTo(
+                web_contents, DeepQueryToRelativePosition(where), release)));
   AddDescriptionPrefix(steps, "DragMouseTo()");
   return steps;
 }
@@ -873,8 +868,8 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ClickElement(
     )",
       js_button, b2s(shift), b2s(alt), b2s(ctrl), b2s(meta));
 
-  return std::move(ExecuteJsAt(web_contents, where, command)
-                       .SetDescription("ClickElement()"));
+  return ExecuteJsAt(web_contents, where, command)
+      .SetDescription("ClickElement()");
 }
 
 // static
