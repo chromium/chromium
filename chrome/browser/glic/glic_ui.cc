@@ -100,6 +100,9 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   }
   source->AddString("glicAllowedOrigins", allowed_origins);
 
+  bool skip_origin_check = command_line->HasSwitch(::switches::kGlicDev);
+  source->AddBoolean("glicSkipOriginCheck", skip_origin_check);
+
   source->AddBoolean("enableDebug",
                      base::FeatureList::IsEnabled(features::kGlicDebugWebview));
 

@@ -893,6 +893,8 @@ const char kGlicFreURL[] = "glic-fre-url";
 const char kGlicOpenOnStartup[] = "glic-open-on-startup";
 // List of allowed origins in the glic webview, as a space-separated list.
 const char kGlicAllowedOrigins[] = "glic-webui-allowed-origins";
+// Dev mode for glic only exposed via command line flag.
+const char kGlicDev[] = "glic-dev";
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

@@ -192,6 +192,11 @@ export function matcherForOrigin(originPattern: string): URLPattern|null {
 }
 
 export function urlMatchesAllowedOrigin(url: string) {
+  // For development.
+  if (loadTimeData.getBoolean('glicSkipOriginCheck')) {
+    return true;
+  }
+
   // A URL is allowed if it either matches glicGuestURL's origin, or it matches
   // any of the approved origins.
   const defaultUrl = new URL(loadTimeData.getString('glicGuestURL'));
