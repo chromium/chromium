@@ -102,13 +102,13 @@ IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
   RunTestSequence(
       ShowEditor(local_profile(), nullptr, u"", false),
       // The editor popup resides in a different context on MacOS.
-      InAnyContext(Steps(
+      InAnyContext(
           SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                   kSuppressedScreenshotError),
           Screenshot(EditAddressProfileView::kTopViewId,
                      /*screenshot_name=*/"editor", /*baseline_cl=*/"4846629"),
           PressButton(views::DialogClientView::kOkButtonElementId),
-          WaitForHide(EditAddressProfileView::kTopViewId))),
+          WaitForHide(EditAddressProfileView::kTopViewId)),
       EnsureClosedWithDecisionAndProfile(
           AutofillClient::AddressPromptUserDecision::kEditAccepted,
           local_profile()));

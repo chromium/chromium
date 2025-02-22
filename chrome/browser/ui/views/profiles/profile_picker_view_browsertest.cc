@@ -517,12 +517,16 @@ class ProfilePickerCreationFlowBrowserTest
     return account_info;
   }
 
+  static bool HasPromoBeenShown(Browser* browser,
+                                const base::Feature& feature) {
+    return browser->window()->IsFeaturePromoActive(feature) ||
+           browser->window()->IsFeaturePromoQueued(feature);
+  }
+
   // Returns true if the profile switch IPH has been shown.
-  bool ProfileSwitchPromoHasBeenShown(Browser* browser) {
-    return feature_engagement::TrackerFactory::GetForBrowserContext(
-               browser->profile())
-        ->HasEverTriggered(feature_engagement::kIPHProfileSwitchFeature,
-                           /*from_window=*/false);
+  static bool ProfileSwitchPromoHasBeenShown(Browser* browser) {
+    return HasPromoBeenShown(browser,
+                             feature_engagement::kIPHProfileSwitchFeature);
   }
 
   // Simulates a click on a profile card. The profile picker must be already
@@ -2304,11 +2308,8 @@ class SupervisedUserProfileIPHTest
 
   // Returns true if the supervised user profile IPH has been shown.
   bool SupervisedProfilePromoHasBeenShown(Browser* browser) {
-    return feature_engagement::TrackerFactory::GetForBrowserContext(
-               browser->profile())
-        ->HasEverTriggered(
-            feature_engagement::kIPHSupervisedUserProfileSigninFeature,
-            /*from_window=*/false);
+    return HasPromoBeenShown(
+        browser, feature_engagement::kIPHSupervisedUserProfileSigninFeature);
   }
 
   static bool ShouldIphShow(

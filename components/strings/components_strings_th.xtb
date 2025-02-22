@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">เกมเริ่มแล้ว</translation>
 <translation id="3067505415088964188">ราคาต่ำ</translation>
 <translation id="3068118691172921711">การอัปโหลดไฟล์ไปยัง <ph name="CLOUD_PROVIDER" /> จะเริ่มในอีก 1 นาที</translation>
-<translation id="3068976060094139647">คุณป้อนข้อมูลบัตรนี้โดยอัตโนมัติได้เนื่องจากบัญชีของคุณลิงก์กับ Google Pay</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} รายการ}other{{ITEMS} รายการ}}</translation>
 <translation id="3076865167425975822">ระบบปฏิบัติการ</translation>
 <translation id="3080254622891793721">กราฟิก</translation>
@@ -4376,7 +4375,6 @@
 <translation id="8757526089434340176">มีข้อเสนอจาก Google Pay</translation>
 <translation id="8759274551635299824">บัตรนี้หมดอายุแล้ว</translation>
 <translation id="87601671197631245">เว็บไซต์นี้ใช้การกำหนดค่าความปลอดภัยที่ล้าสมัย ซึ่งอาจเปิดเผยข้อมูลของคุณ (เช่น รหัสผ่าน ข้อความ หรือบัตรเครดิต) เมื่อมีการส่งไปยังเว็บไซต์นี้</translation>
-<translation id="8763226176721243078">คุณป้อนข้อมูลบัตรนี้โดยอัตโนมัติได้เนื่องจากบัญชี <ph name="CARD_ISSUER_NAME" /> ของคุณลิงก์กับ Google Pay</translation>
 <translation id="8763927697961133303">อุปกรณ์ USB</translation>
 <translation id="8763986294015493060">ปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมดที่เปิดอยู่</translation>
 <translation id="8766943070169463815">ชีตการตรวจสอบสิทธิ์ข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัยเปิดขึ้น</translation>

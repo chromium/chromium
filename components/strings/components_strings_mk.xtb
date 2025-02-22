@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">Играта започна.</translation>
 <translation id="3067505415088964188">Цената е ниска</translation>
 <translation id="3068118691172921711">Прикачувањето на вашата датотека во <ph name="CLOUD_PROVIDER" /> ќе започне по 1 минута</translation>
-<translation id="3068976060094139647">Може да ја пополните картичкава автоматски бидејќи вашата сметка е поврзана со Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} ставка}one{{ITEMS} ставка}other{{ITEMS} ставки}}</translation>
 <translation id="3076865167425975822">Оперативни системи</translation>
 <translation id="3080254622891793721">Графика</translation>
@@ -4375,7 +4374,6 @@
 <translation id="8757526089434340176">Достапна е понуда на Google Pay</translation>
 <translation id="8759274551635299824">Картичкава е истечена</translation>
 <translation id="87601671197631245">Сајтов користи застарена конфигурација за безбедност, што може да ги изложи вашите податоци (на пример, лозинките, пораките или кредитните картички) кога се испраќаат на овој сајт.</translation>
-<translation id="8763226176721243078">Може да ја пополните автоматски картичкава бидејќи вашата сметка на <ph name="CARD_ISSUER_NAME" /> е поврзана со Google Pay.</translation>
 <translation id="8763927697961133303">USB-уред</translation>
 <translation id="8763986294015493060">Затворете ги сите прозорци „Инкогнито“ што се отворени во моментов</translation>
 <translation id="8766943070169463815">Листот за проверка на акредитиви за безбедно плаќање е отворен</translation>

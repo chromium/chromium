@@ -188,8 +188,8 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
   setUndoResponseWithUndoAndRedo(
       undoAvailable: boolean, redoAvailable: boolean) {
     this.undoResponse_ = Object.assign(getDefaultUndoRedoComposeState());
-    this !.undoResponse_!.response!.undoAvailable = undoAvailable;
-    this !.undoResponse_!.response!.redoAvailable = redoAvailable;
+    this.undoResponse_!.response!.undoAvailable = undoAvailable;
+    this.undoResponse_!.response!.redoAvailable = redoAvailable;
   }
 
   setResponseBeforeError(state: ComposeState|null) {
@@ -203,8 +203,8 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
   setRedoResponseWithUndoAndRedo(
       undoAvailable: boolean, redoAvailable: boolean) {
     this.redoResponse_ = Object.assign(getDefaultUndoRedoComposeState());
-    this !.redoResponse_!.response!.undoAvailable = undoAvailable;
-    this !.redoResponse_!.response!.redoAvailable = redoAvailable;
+    this.redoResponse_!.response!.undoAvailable = undoAvailable;
+    this.redoResponse_!.response!.redoAvailable = redoAvailable;
   }
 
   showUi() {

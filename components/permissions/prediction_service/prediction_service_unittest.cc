@@ -352,6 +352,12 @@ class PredictionServiceTest : public testing::Test {
 
 // This test should be the first one, otherwise it fails.
 TEST_F(PredictionServiceTest, PromptCountsAreBucketed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {permissions::features::kPermissionPredictionsV2,
+       permissions::features::kPermissionsAIv1},
+      {});
+
   struct {
     size_t prompt_count;
     int expected_bucket;
@@ -396,8 +402,10 @@ TEST_F(PredictionServiceTest, PromptCountsAreBucketed) {
 TEST_F(PredictionServiceTest, BuiltProtoRequestIsCorrect) {
   // Test origin being added correctly in the request.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      permissions::features::kPermissionPredictionsV2);
+  scoped_feature_list.InitWithFeatures(
+      {permissions::features::kPermissionPredictionsV2,
+       permissions::features::kPermissionsAIv1},
+      {});
   kFeaturesAllCountsZero.url = test_requesting_url.GetWithEmptyPath();
   kRequestAllCountsZero.mutable_site_features()->set_origin(
       "https://www.test.example/");
@@ -453,7 +461,8 @@ TEST_F(PredictionServiceTest, CPSSv3BuiltProtoRequestIsCorrect) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {permissions::features::kPermissionPredictionsV2,
-       permissions::features::kPermissionPredictionsV3},
+       permissions::features::kPermissionPredictionsV3,
+       permissions::features::kPermissionsAIv1},
       {});
   kFeaturesAllCountsZero.url = test_requesting_url.GetWithEmptyPath();
   kRequestAllCountsZero.mutable_site_features()->set_origin(

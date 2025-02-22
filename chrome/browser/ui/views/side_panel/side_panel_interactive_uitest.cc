@@ -324,10 +324,10 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
   RunTestSequence(
       InContext(incognito->window()->GetElementContext(),
                 WaitForShow(kBrowserViewElementId)),
-      InSameContext(Steps(ActivateSurface(kBrowserViewElementId),
-                          EnsureNotPresent(kSidePanelElementId),
-                          OpenBookmarksSidePanel(),
-                          EnsureNotPresent(kSidePanelPinButtonElementId))));
+      InSameContext(ActivateSurface(kBrowserViewElementId),
+                    EnsureNotPresent(kSidePanelElementId),
+                    OpenBookmarksSidePanel(),
+                    EnsureNotPresent(kSidePanelPinButtonElementId)));
 }
 
 IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,

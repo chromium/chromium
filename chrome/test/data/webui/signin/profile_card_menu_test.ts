@@ -52,7 +52,7 @@ suite('ProfileCardMenuTest', function() {
     profileCardMenuElement.$.moreActionsButton.click();
     assertTrue(profileCardMenuElement.$.actionMenu.open);
     assertFalse(profileCardMenuElement.$.removeConfirmationDialog.open);
-    const menuButtons = profileCardMenuElement.shadowRoot!.querySelectorAll(
+    const menuButtons = profileCardMenuElement.shadowRoot.querySelectorAll(
         '#actionMenu > .dropdown-item');
     assertEquals(menuButtons.length, 2);
   });
@@ -74,7 +74,7 @@ suite('ProfileCardMenuTest', function() {
   test('ProfileCardMenuDeleteButton', function() {
     profileCardMenuElement.$.moreActionsButton.click();
     const menuButtons =
-        profileCardMenuElement.shadowRoot!.querySelectorAll<HTMLButtonElement>(
+        profileCardMenuElement.shadowRoot.querySelectorAll<HTMLButtonElement>(
             '#actionMenu > .dropdown-item');
     menuButtons[MenuButtonIndex.DELETE]!.click();
     assertFalse(profileCardMenuElement.$.actionMenu.open);

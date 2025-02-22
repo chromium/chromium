@@ -67,9 +67,6 @@ InputHandlerClient::ScrollEventDispatchMode GetScrollEventDispatchMode() {
 
 }  // namespace
 
-InputHandlerCommitData::InputHandlerCommitData() = default;
-InputHandlerCommitData::~InputHandlerCommitData() = default;
-
 // The minimum amount of scroll delta that must be consumed before we consider
 // a scroll to have happened.
 // TODO(tdresser): Use a more rational epsilon. See crbug.com/510550 for

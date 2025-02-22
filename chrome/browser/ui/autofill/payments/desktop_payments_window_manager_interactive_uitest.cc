@@ -1004,11 +1004,11 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
       TriggerDialogAndWaitForShow(views::DialogClientView::kOkButtonElementId),
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
-      InSameContext(Steps(
+      InSameContext(
           PressButton(views::DialogClientView::kOkButtonElementId),
           AfterHide(PaymentsWindowUserConsentDialogView::kTopViewId, []() {
             EXPECT_EQ(BrowserList::GetInstance()->size(), 2U);
-          }))));
+          })));
 }
 
 // Tests that the VCN 3DS consent dialog accepted histogram bucket is logged to
@@ -1021,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
       TriggerDialogAndWaitForShow(views::DialogClientView::kOkButtonElementId),
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
-      InSameContext(Steps(
+      InSameContext(
           PressButton(views::DialogClientView::kOkButtonElementId),
           AfterHide(
               PaymentsWindowUserConsentDialogView::kTopViewId,
@@ -1035,7 +1035,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
                        kVcn3dsFlowEventsConsentNotGivenYetHistogramName,
                        autofill_metrics::Vcn3dsFlowEvent::
                            kUserConsentDialogAccepted) == 1;
-          }))));
+          })));
 }
 
 // Ensures the UI can be shown, and verifies that cancelling the dialog runs the
@@ -1047,7 +1047,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
           views::DialogClientView::kCancelButtonElementId),
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
-      InSameContext(Steps(
+      InSameContext(
           PressButton(views::DialogClientView::kCancelButtonElementId),
           AfterHide(PaymentsWindowUserConsentDialogView::kTopViewId, [this]() {
             EXPECT_FALSE(
@@ -1057,7 +1057,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
                 response = authentication_response();
             ASSERT_TRUE(response.has_value());
             EXPECT_FALSE(response->card.has_value());
-          }))));
+          })));
 }
 
 // Tests that the VCN 3DS consent dialog declined histogram bucket is logged to
@@ -1070,17 +1070,17 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
       InSameContext(
-          Steps(PressButton(views::DialogClientView::kCancelButtonElementId),
-                Check([this]() {
-                  return histogram_tester_.GetBucketCount(
-                             kVcn3dsFlowEventsHistogramName,
-                             autofill_metrics::Vcn3dsFlowEvent::
-                                 kUserConsentDialogDeclined) == 1 &&
-                         histogram_tester_.GetBucketCount(
-                             kVcn3dsFlowEventsConsentNotGivenYetHistogramName,
-                             autofill_metrics::Vcn3dsFlowEvent::
-                                 kUserConsentDialogDeclined) == 1;
-                }))));
+          PressButton(views::DialogClientView::kCancelButtonElementId),
+          Check([this]() {
+            return histogram_tester_.GetBucketCount(
+                       kVcn3dsFlowEventsHistogramName,
+                       autofill_metrics::Vcn3dsFlowEvent::
+                           kUserConsentDialogDeclined) == 1 &&
+                   histogram_tester_.GetBucketCount(
+                       kVcn3dsFlowEventsConsentNotGivenYetHistogramName,
+                       autofill_metrics::Vcn3dsFlowEvent::
+                           kUserConsentDialogDeclined) == 1;
+          })));
 }
 
 }  // namespace payments

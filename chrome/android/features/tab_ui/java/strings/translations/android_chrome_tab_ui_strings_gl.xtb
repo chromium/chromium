@@ -30,7 +30,6 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="2118649612461486615">Información da tenda</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{As pestanas e grupos pechados poden volver abrirse desde as seccións Pestanas recentes e Grupos de pestanas. A pestana do modo de incógnito non estará dispoñible.}other{As pestanas e grupos pechados poden volver abrirse desde as seccións Pestanas recentes e Grupos de pestanas. As # pestanas do modo de incógnito non estarán dispoñibles.}}</translation>
 <translation id="2162620598375156287">Agora <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">O grupo de pestanas <ph name="TAB_GROUP_NAME" /> non está dispoñible</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Desagrupar pestana}other{Desagrupar pestanas}}</translation>
 <translation id="2271452184061378400">Os teus grupos de pestanas gárdanse aquí</translation>
 <translation id="2277224997687551299">Editar nome do grupo</translation>

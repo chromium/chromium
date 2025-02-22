@@ -28,7 +28,7 @@ suite('HoverButtonTest', () => {
         await microtasksFinished();
 
         // Assert.
-        const buttonLabel = hoverButtonElement.shadowRoot!.querySelector(
+        const buttonLabel = hoverButtonElement.shadowRoot.querySelector(
             'customize-chrome-button-label');
         assertEquals(hoverButtonElement.label, buttonLabel!.label);
         assertEquals(null, hoverButtonElement.labelDescription);
@@ -46,7 +46,7 @@ suite('HoverButtonTest', () => {
         await microtasksFinished();
 
         // Assert.
-        const buttonLabel = hoverButtonElement.shadowRoot!.querySelector(
+        const buttonLabel = hoverButtonElement.shadowRoot.querySelector(
             'customize-chrome-button-label');
         assertEquals(hoverButtonElement.label, buttonLabel!.label);
         assertEquals(
@@ -80,7 +80,7 @@ suite('HoverButtonTest', () => {
     hoverButtonElement.style.setProperty('--cr-icon-image', crIconImage);
 
     // Assert that icon is visible.
-    const icon = hoverButtonElement.shadowRoot!.querySelector<HTMLElement>(
+    const icon = hoverButtonElement.shadowRoot.querySelector<HTMLElement>(
         '#icon.cr-icon');
     assertTrue(!!icon);
     assertTrue(isVisible(icon));
@@ -94,13 +94,13 @@ suite('HoverButtonTest', () => {
 
   test('focus transfers to inner button', () => {
     assertNotEquals(
-        hoverButtonElement.shadowRoot!.activeElement,
+        hoverButtonElement.shadowRoot.activeElement,
         hoverButtonElement.$.hoverButton);
 
     hoverButtonElement.focus();
 
     assertEquals(
-        hoverButtonElement.shadowRoot!.activeElement,
+        hoverButtonElement.shadowRoot.activeElement,
         hoverButtonElement.$.hoverButton);
   });
 });

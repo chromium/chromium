@@ -57,10 +57,10 @@ suite('PasswordsSectionTest', function() {
     // Verify promo card is shown.
     assertTrue(!!promoCardElement);
     assertEquals(
-        promoCardsProxy.promo!.title,
+        promoCardsProxy.promo.title,
         promoCardElement.$.title.textContent!.trim());
     assertEquals(
-        promoCardsProxy.promo!.description,
+        promoCardsProxy.promo.description,
         promoCardElement.$.description.textContent!.trim());
     assertFalse(isVisible(promoCardElement.$.actionButton));
     const shownImage = promoCardElement.shadowRoot!.querySelector('img');

@@ -41,7 +41,7 @@ suite('drawer-test', function() {
       assertFalse(!!drawerSideBar);
 
       const menuButton =
-          app.$.toolbar.$.mainToolbar.shadowRoot!.querySelector<HTMLElement>(
+          app.$.toolbar.$.mainToolbar.shadowRoot.querySelector<HTMLElement>(
               '#menuButton');
       assertTrue(!!menuButton);
 

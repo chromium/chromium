@@ -71,8 +71,6 @@ std::u16string TabGroup::GetContentString() const {
 void TabGroup::AddTab() {
   if (tab_count_ == 0) {
     controller_->CreateTabGroup(id_);
-    TabGroupChange::VisualsChange visuals;
-    controller_->ChangeTabGroupVisuals(id_, visuals);
   }
   ++tab_count_;
 }

@@ -1192,6 +1192,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/378827528")
     public void testToolbarMenuItem_BookmarkActionTabsWithGroups() {
         final String httpsCanonicalUrl =
                 sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL);

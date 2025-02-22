@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_SPEECH_MONITOR_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_SPEECH_MONITOR_H_
 
-#include <chrono>
 #include <map>
 #include <optional>
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "content/public/browser/tts_platform.h"
 
 // TODO(katie): This may need to move into Content as part of the TTS refactor.
@@ -127,7 +127,9 @@ class SpeechMonitor : public content::TtsPlatform {
   void FinishSpeech();
 
   // Delayed utterances.
-  double GetDelayForLastUtteranceMS();
+  base::TimeDelta GetDelayForLastUtterance() const {
+    return delay_for_last_utterance_;
+  }
 
   // When set to `true`, SpeechMonitor will send `START` and `WORD` events for
   // each utterance and will wait to send the `END` event until `FinishSpeech()`
@@ -176,14 +178,11 @@ class SpeechMonitor : public content::TtsPlatform {
 
   std::string error_;
 
-  // Calculates the milliseconds elapsed since the last call to Speak().
-  double CalculateUtteranceDelayMS();
-
-  // Stores the milliseconds elapsed since the last call to Speak().
-  double delay_for_last_utterance_ms_;
+  // Stores the time elapsed since the last call to Speak().
+  base::TimeDelta delay_for_last_utterance_;
 
   // Stores the last time Speak() was called.
-  std::chrono::steady_clock::time_point time_of_last_utterance_;
+  base::TimeTicks time_of_last_utterance_;
 
   // Queue of expectations to be replayed.
   std::vector<ReplayArgs> replay_queue_;

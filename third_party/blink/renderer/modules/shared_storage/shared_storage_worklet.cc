@@ -378,6 +378,12 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
     return promise;
   }
 
+  // We want an accurate measure up to 8. Numbers beyond that will be grouped to
+  // the overflow bucket `kExclusiveMaxBucket`.
+  int kExclusiveMaxBucket = 9;
+  base::UmaHistogramExactLinear("Storage.SharedStorage.SelectURL.UrlsLength",
+                                urls.size(), kExclusiveMaxBucket);
+
   v8::Local<v8::Context> v8_context =
       script_state->GetIsolate()->GetCurrentContext();
 

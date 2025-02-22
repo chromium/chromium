@@ -1154,7 +1154,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="306573536155379004">Oyun başladı.</translation>
 <translation id="3067505415088964188">Düşük fiyatlı</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> hedefine dosya yükleme işleminiz 1 dakika sonra başlayacak</translation>
-<translation id="3068976060094139647">Hesabınız Google Pay'e bağlı olduğu için bu kartı otomatik olarak doldurabilirsiniz.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} öğe}other{{ITEMS} öğe}}</translation>
 <translation id="3076865167425975822">İşletim Sistemleri</translation>
 <translation id="3080254622891793721">Grafik</translation>
@@ -4377,7 +4376,6 @@ Ek ayrıntılar:
 <translation id="8757526089434340176">Google Pay teklifi mevcut</translation>
 <translation id="8759274551635299824">Bu kartın kullanım süresi doldu</translation>
 <translation id="87601671197631245">Bu site, eski bir güvenlik yapılandırması kullanıyor. Bu siteye gönderildiğinde bilgileriniz (ör. şifreler, mesajlar veya kredi kartları) gösterilebilir.</translation>
-<translation id="8763226176721243078"><ph name="CARD_ISSUER_NAME" /> hesabınız Google Pay'e bağlı olduğu için bu kartı otomatik olarak doldurabilirsiniz.</translation>
 <translation id="8763927697961133303">USB cihaz</translation>
 <translation id="8763986294015493060">Açık olan tüm gizli pencereleri kapat</translation>
 <translation id="8766943070169463815">Güvenli ödeme kimlik bilgisi doğrulama sayfası açıldı</translation>

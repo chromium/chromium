@@ -1146,7 +1146,7 @@ suite('SafeBrowsing', function() {
     // enforced.
     assertEquals(
         'auto',
-        (learnMoreLink!.computedStyleMap()!.get('pointer-events') as
+        (learnMoreLink!.computedStyleMap().get('pointer-events') as
          CSSKeywordValue)
             .value);
 

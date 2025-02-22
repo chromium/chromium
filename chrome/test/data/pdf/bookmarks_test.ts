@@ -71,7 +71,7 @@ chrome.test.runTests([
     await microtasksFinished();
 
     const rootBookmarks =
-        bookmarkContent.shadowRoot!.querySelectorAll('viewer-bookmark');
+        bookmarkContent.shadowRoot.querySelectorAll('viewer-bookmark');
     chrome.test.assertEq(3, rootBookmarks.length, 'three root bookmarks');
     const expandButton = rootBookmarks[0]!.$.expand;
     chrome.test.assertEq('false', expandButton.getAttribute('aria-expanded'));
@@ -81,7 +81,7 @@ chrome.test.runTests([
 
     chrome.test.assertEq('true', expandButton.getAttribute('aria-expanded'));
     const subBookmarks =
-        rootBookmarks[0]!.shadowRoot!.querySelectorAll('viewer-bookmark');
+        rootBookmarks[0]!.shadowRoot.querySelectorAll('viewer-bookmark');
     chrome.test.assertEq(1, subBookmarks.length, 'one sub bookmark');
 
     let lastPageChange: number|undefined;

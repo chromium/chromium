@@ -13,6 +13,9 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="3512634283363927263">Estas páginas destinam-se a ser usadas por programadores do Chrome e podem não ser testadas nem mantidas ativamente. Para as ativar, navegue para <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, clique no botão para ativar as páginas de depuração e, em seguida, navegue para esta página novamente.</translation>
 <translation id="3875312571075912821">Permita que o Chrome aceda à rede nas definições da sua firewall ou
           do antívirus.</translation>
+<translation id="4949828774841497663">Aceda a Aplicações &gt; Definições do sistema &gt; Rede, selecione a
+          rede ativa, clique no botão Detalhes… e desmarque todos os proxies
+          que possam ter sido selecionados.</translation>
 <translation id="5005121315113832363">Esta página foi bloqueada pelo Chrome</translation>
 <translation id="6011049234605203654">Aceda ao
           menu Chrome &gt;

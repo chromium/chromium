@@ -1154,7 +1154,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="306573536155379004">Hra byla spuštěna.</translation>
 <translation id="3067505415088964188">Cena je nízká</translation>
 <translation id="3068118691172921711">Nahrávání vašeho souboru do služby <ph name="CLOUD_PROVIDER" /> začne za 1 minutu</translation>
-<translation id="3068976060094139647">Tuto kartu můžete vyplnit automaticky, protože váš účet  je propojen s Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} položka}few{{ITEMS} položky}many{{ITEMS} položky}other{{ITEMS} položek}}</translation>
 <translation id="3076865167425975822">Operační systémy</translation>
 <translation id="3080254622891793721">Obrázek</translation>
@@ -4371,7 +4370,6 @@ Další podrobnosti:
 <translation id="8757526089434340176">K dispozici je nabídka Google Pay</translation>
 <translation id="8759274551635299824">Platnost této karty vypršela</translation>
 <translation id="87601671197631245">Tento web používá zastaralou konfiguraci zabezpečení, která vaše informace odesílané na tento web (například hesla, zprávy nebo kreditní karty) vystavuje riziku odhalení.</translation>
-<translation id="8763226176721243078">Tuto kartu můžete vyplnit automaticky, protože váš účet <ph name="CARD_ISSUER_NAME" /> je propojen s Google Pay.</translation>
 <translation id="8763927697961133303">Zařízení USB</translation>
 <translation id="8763986294015493060">Zavřít všechna aktuálně otevřená anonymní okna</translation>
 <translation id="8766943070169463815">List ověření identifikačních údajů pro zabezpečené platby je otevřený</translation>

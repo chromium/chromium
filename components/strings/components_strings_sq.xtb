@@ -1154,7 +1154,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="306573536155379004">Loja filloi.</translation>
 <translation id="3067505415088964188">Çmimi është i ulët</translation>
 <translation id="3068118691172921711">Ngarkimi i skedarit në <ph name="CLOUD_PROVIDER" /> do të fillojë pas 1 minute</translation>
-<translation id="3068976060094139647">Mund ta plotësosh automatikisht këtë kartë pasi llogaria jote është e lidhur me Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} artikull}other{{ITEMS} artikuj}}</translation>
 <translation id="3076865167425975822">Sistemet operative</translation>
 <translation id="3080254622891793721">Grafika</translation>
@@ -4374,7 +4373,6 @@ Detaje shtesë:
 <translation id="8757526089434340176">Disponohet ofertë e Google Pay</translation>
 <translation id="8759274551635299824">Kjo kartë ka skaduar</translation>
 <translation id="87601671197631245">Ky sajt përdor një konfigurim të vjetruar të sigurisë, i cili mund t'i ekspozojë informacionet e tua (p.sh. fjalëkalimet, mesazhet ose kartat e kreditit) kur dërgohen te ky sajt.</translation>
-<translation id="8763226176721243078">Mund ta plotësosh automatikisht këtë kartë pasi llogaria jote e <ph name="CARD_ISSUER_NAME" /> është e lidhur me Google Pay.</translation>
 <translation id="8763927697961133303">Pajisja USB</translation>
 <translation id="8763986294015493060">Mbylli të gjitha dritaret "e fshehta" që janë aktualisht të hapura</translation>
 <translation id="8766943070169463815">Fleta e vërtetimit të sigurt të kredencialeve të pagesës është e hapur</translation>

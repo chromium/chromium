@@ -28,6 +28,7 @@
 <translation id="1345251407431278948">Fixado! Pode aceder novamente à Pesquisa de imagens através do novo botão na barra de ferramentas</translation>
 <translation id="1356661055722410047">Novo! Pode traduzir texto e imagens no ecrã</translation>
 <translation id="1414495520565016063">Tem sessão iniciada no Chromium!</translation>
+<translation id="1465192221147974788">Para partilhar a sua janela, permita a gravação de ecrã para o Chromium nas Definições do sistema.</translation>
 <translation id="1478370723027452770">Obter ajuda com o Chrome for Testing</translation>
 <translation id="1497802159252041924">Erro ao instalar: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Partilhe um separador do Chromium</translation>
@@ -160,6 +161,7 @@
 <translation id="3130323860337406239">O Chromium está a utilizar o microfone.</translation>
 <translation id="3137969841538672700">Arraste para pesquisar</translation>
 <translation id="3144188012276422546">Este separador está a usar recursos adicionais. Para melhorar o seu desempenho, permita que o Chromium o torne inativo.</translation>
+<translation id="3149163023759831301">Para partilhar o ecrã, permita a gravação de ecrã para o Chromium nas Definições do sistema</translation>
 <translation id="3155163173539279776">Reiniciar o Chromium</translation>
 <translation id="3161522574479303604">Todos os idiomas</translation>
 <translation id="3179665906251668410">Abrir link numa janela de nave&amp;gação anónima do Chromium</translation>
@@ -182,8 +184,10 @@
 <translation id="3474745554856756813">Esta ação elimina <ph name="ITEMS_COUNT" /> itens deste dispositivo. Para recuperar os dados mais tarde, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">O atalho <ph name="SHORTCUT" /> permite alternar entre perfis do Chromium</translation>
 <translation id="3509308970982693815">Feche todas as janelas do Chromium e tente novamente.</translation>
+<translation id="3522404737534491619">Para partilhar a sua janela, permita a gravação de ecrã para o Chromium nas Definições do sistema</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> já tem sessão iniciada.  Para manter a sua navegação separada, inicie sessão no Chromium no seu perfil como <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">Para proteger a sua privacidade, eliminamos automaticamente os seus interesses com mais de 4 semanas. Enquanto navega, um interesse pode aparecer novamente na lista. Em alternativa, pode remover os interesses que não quer que o Chromium considere.</translation>
+<translation id="3561853857681580870">Para partilhar o ecrã, permita a gravação de ecrã para o Chromium nas Definições do sistema.</translation>
 <translation id="3567254597502212821">O seu histórico de navegação, um registo dos sites que visitou através do Chromium neste dispositivo.</translation>
 <translation id="3597003331831379823">Falha ao executar a configuração com privilégios elevados. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3639635944603682591">Os dados de navegação desta pessoa serão eliminados deste dispositivo. Para recuperar os dados, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
@@ -281,6 +285,7 @@
 <translation id="4942295735032723435">Para receber atualizações futuras do Chromium, precisa do macOS 11 ou posterior. Este computador está a usar o macOS 10.15.</translation>
 <translation id="4943838377383847465">O Chromium está no modo em segundo plano.</translation>
 <translation id="494490797786467921">Clicar para fechar a caixa de diálogo de início de sessão do Chromium</translation>
+<translation id="4950660488495335294">Com os perfis do Chromium, pode separar todos os seus itens do Chromium. Crie perfis para amigos e familiares ou separe o trabalho da diversão.</translation>
 <translation id="4987820182225656817">Os convidados podem utilizar o Chromium sem perder qualquer funcionalidade.</translation>
 <translation id="4994636714258228724">Adicionar-se ao Chromium</translation>
 <translation id="5123973130450702873">O Chromium precisa de autorização para monitorizar as suas mãos</translation>

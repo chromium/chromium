@@ -77,7 +77,6 @@ source_set("unit_tests") {
     ":desks",
     "//ash/public/cpp",
     "//base/test:test_support",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/profiles",

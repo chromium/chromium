@@ -30,7 +30,6 @@ Ef þú eyðir honum munu allir notendur umsvifalaust missa aðgang að flipahó
 <translation id="2118649612461486615">Upplýsingar um verslun</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Þú getur opnað lokuðu flipana og hópana þína aftur með því að fara í hlutann „Nýlegir flipar“ eða „Flipahópar“. Huliðsflipinn verður ekki sýnilegur.}one{Þú getur opnað lokuðu flipana og hópana þína aftur með því að fara í hlutann „Nýlegir flipar“ eða „Flipahópar“. # huliðsflipi verður ekki sýnilegur.}other{Þú getur opnað lokuðu flipana og hópana þína aftur með því að fara í hlutann „Nýlegir flipar“ eða „Flipahópar“. # huliðsflipar verða ekki sýnilegir.}}</translation>
 <translation id="2162620598375156287">Núna <ph name="CURRENT_PRICE" /> á <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">Flipahópurinn „<ph name="TAB_GROUP_NAME" />“ er ekki lengur tiltækur</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Taka flipa úr hópi}one{Taka flipa úr hópi}other{Taka flipa úr hópi}}</translation>
 <translation id="2271452184061378400">Flipahóparnir þínir eru vistaðir hér</translation>
 <translation id="2277224997687551299">Breyta heiti hóps</translation>

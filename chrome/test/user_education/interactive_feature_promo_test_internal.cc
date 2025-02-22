@@ -62,6 +62,7 @@ InteractiveFeaturePromoTestPrivate::InteractiveFeaturePromoTestPrivate(
     InitialSessionState initial_session_state)
     : InteractiveBrowserTestPrivate(std::move(test_util)),
       tracker_mode_(std::move(tracker_mode)),
+      clock_mode_(clock_mode),
       initial_session_state_(initial_session_state) {
   test_time_ = clock_mode == ClockMode::kUseTestClock
                    ? std::make_optional(base::Time::Now())
@@ -73,14 +74,65 @@ InteractiveFeaturePromoTestPrivate::InteractiveFeaturePromoTestPrivate(
               base::Unretained(this)));
   activation_lock_ = user_education::FeaturePromoControllerCommon::
       BlockActiveWindowCheckForTesting();
-  if (const auto* const allow_promos =
-          std::get_if<UseDefaultTrackerAllowingPromos>(&tracker_mode_)) {
-    feature_list_.InitAndEnableFeatures(allow_promos->features);
-  }
 }
 
 InteractiveFeaturePromoTestPrivate::~InteractiveFeaturePromoTestPrivate() =
     default;
+
+void InteractiveFeaturePromoTestPrivate::SetControllerMode(
+    ControllerMode mode) {
+  CHECK(!controller_mode_.has_value());
+  controller_mode_ = mode;
+}
+
+void InteractiveFeaturePromoTestPrivate::CommitControllerMode() {
+  if (!controller_mode_.has_value()) {
+    SetControllerMode(ControllerMode::kUserEd25);
+  }
+  if (clock_mode_ == ClockMode::kUseTestClock) {
+    CHECK(!use_shortened_timeouts_for_internal_testing_)
+        << "Changing timeouts has no effect with a test clock.";
+  }
+  std::vector<base::test::FeatureRefAndParams> enable;
+  std::vector<base::test::FeatureRef> disable;
+  if (const auto* const allow_promos =
+          std::get_if<UseDefaultTrackerAllowingPromos>(&tracker_mode_)) {
+    for (const auto& feature : allow_promos->features) {
+      enable.push_back(base::test::FeatureRefAndParams(*feature, {}));
+    }
+  }
+  switch (*controller_mode_) {
+    case ControllerMode::kUserEd25:
+      if (use_shortened_timeouts_for_internal_testing_) {
+        enable.push_back(base::test::FeatureRefAndParams(
+            user_education::features::kUserEducationExperienceVersion2Point5,
+            {{"low_priority_timeout", "3s"},
+             {"medium_priority_timeout", "2s"},
+             {"high_priority_timeout", "1s"}}));
+      } else {
+        enable.push_back(base::test::FeatureRefAndParams(
+            user_education::features::kUserEducationExperienceVersion2Point5,
+            {}));
+      }
+      break;
+    case ControllerMode::kUserEd20:
+      disable.push_back(
+          user_education::features::kUserEducationExperienceVersion2Point5);
+      break;
+  }
+  feature_list_.InitAndEnableFeaturesWithParameters(enable, disable);
+}
+
+void InteractiveFeaturePromoTestPrivate::ResetControllerMode() {
+  feature_list_.Reset();
+}
+
+void InteractiveFeaturePromoTestPrivate::DoTestSetUp() {
+  InteractiveBrowserTestPrivate::DoTestSetUp();
+  CHECK(controller_mode_.has_value());
+  CHECK_NE(controller_mode_ == ControllerMode::kUserEd20,
+           user_education::features::IsUserEducationV25());
+}
 
 void InteractiveFeaturePromoTestPrivate::DoTestTearDown() {
   profile_observations_.RemoveAllObservations();

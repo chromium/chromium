@@ -80,7 +80,7 @@ suite('DriveModuleV2', () => {
         await microtasksFinished();
         const fileSuggestion = module.$.fileSuggestion;
         const items =
-            Array.from(fileSuggestion.shadowRoot!.querySelectorAll('.file'));
+            Array.from(fileSuggestion.shadowRoot.querySelectorAll('.file'));
 
         assertEquals(6, items.length);
       });
@@ -115,7 +115,7 @@ suite('DriveModuleV2', () => {
     assertFalse(!!$$(driveModule, 'ntp-info-dialog'));
 
     // Act.
-    const infoButton = driveModule.$.moduleHeaderElementV2.shadowRoot!
+    const infoButton = driveModule.$.moduleHeaderElementV2.shadowRoot
                            .querySelector<HTMLElement>('#info');
     assertTrue(!!infoButton);
     infoButton.click();
@@ -148,7 +148,7 @@ suite('DriveModuleV2', () => {
 
         // Act.
         const whenFired = eventToPromise('disable-module', driveModule);
-        const disableButton = driveModule.$.moduleHeaderElementV2.shadowRoot!
+        const disableButton = driveModule.$.moduleHeaderElementV2.shadowRoot
                                   .querySelector<HTMLElement>('#disable');
         assertTrue(!!disableButton);
         disableButton.click();
@@ -182,7 +182,7 @@ suite('DriveModuleV2', () => {
 
     // Act.
     const whenFired = eventToPromise('dismiss-module-instance', moduleElement);
-    const dismissButton = moduleElement.$.moduleHeaderElementV2.shadowRoot!
+    const dismissButton = moduleElement.$.moduleHeaderElementV2.shadowRoot
                               .querySelector<HTMLElement>('#dismiss');
     assertTrue(!!dismissButton);
     dismissButton.click();
@@ -194,7 +194,7 @@ suite('DriveModuleV2', () => {
     assertEquals(1, handler.getCallCount('dismissModule'));
 
     // Act.
-    event.detail.restoreCallback!();
+    event.detail.restoreCallback();
 
     // Assert.
     assertEquals(1, handler.getCallCount('restoreModule'));

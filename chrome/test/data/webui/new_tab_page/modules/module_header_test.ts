@@ -42,7 +42,7 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
         'abc',
         $$<HTMLElement>(moduleHeader, '#disableButton')!.textContent!.trim());
     assertEquals(
-        'def', $$<HTMLElement>(moduleHeader, '#menuButton')!.title!.trim());
+        'def', $$<HTMLElement>(moduleHeader, '#menuButton')!.title.trim());
     assertEquals(
         'About this card',
         $$<HTMLElement>(moduleHeader, '#infoButton')!.textContent!.trim());

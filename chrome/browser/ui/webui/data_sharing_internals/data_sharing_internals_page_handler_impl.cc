@@ -18,6 +18,8 @@ data_sharing::mojom::MemberRole MemberRoleToRoleType(
       return data_sharing::mojom::MemberRole::kMember;
     case data_sharing::MemberRole::kInvitee:
       return data_sharing::mojom::MemberRole::kInvitee;
+    case data_sharing::MemberRole::kFormerMember:
+      return data_sharing::mojom::MemberRole::kFormerMember;
   }
 }
 }  // namespace

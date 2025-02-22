@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">Jocul a început.</translation>
 <translation id="3067505415088964188">Prețul este mic</translation>
 <translation id="3068118691172921711">Încărcarea fișierelor în <ph name="CLOUD_PROVIDER" /> va începe într-un minut</translation>
-<translation id="3068976060094139647">Poți completa automat acest card deoarece contul este conectat la Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} element}few{{ITEMS} elemente}other{{ITEMS} de elemente}}</translation>
 <translation id="3076865167425975822">Sisteme de operare</translation>
 <translation id="3080254622891793721">Grafică</translation>
@@ -4377,7 +4376,6 @@ Detalii suplimentare:
 <translation id="8757526089434340176">Ofertă Google Pay disponibilă</translation>
 <translation id="8759274551635299824">Acest card este expirat</translation>
 <translation id="87601671197631245">Site-ul folosește o configurație de securitate învechită, care îți poate expune informațiile (de exemplu, parolele, mesajele sau cardurile de credit) când sunt trimise la acest site.</translation>
-<translation id="8763226176721243078">Poți completa automat acest card deoarece contul <ph name="CARD_ISSUER_NAME" /> este conectat la Google Pay.</translation>
 <translation id="8763927697961133303">Dispozitiv USB</translation>
 <translation id="8763986294015493060">Închide toate ferestrele incognito deschise</translation>
 <translation id="8766943070169463815">Foaia de autentificare cu date de conectare pentru plăți securizate este deschisă</translation>

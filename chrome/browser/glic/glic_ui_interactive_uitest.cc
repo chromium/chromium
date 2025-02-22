@@ -118,12 +118,12 @@ class GlicUiInteractiveUiTestBase : public test::InteractiveGlicTest {
   auto CheckElementVisible(const DeepQuery& where, bool visible) {
     MultiStep steps;
     if (visible) {
-      steps = Steps(
-          InAnyContext(WaitForElementVisible(test::kGlicHostElementId, where)));
+      steps =
+          InAnyContext(WaitForElementVisible(test::kGlicHostElementId, where));
     }
-    steps.emplace_back(InAnyContext(CheckJsResultAt(test::kGlicHostElementId,
-                                                    where, "(el) => el.hidden",
-                                                    testing::Ne(visible))));
+    steps += InAnyContext(CheckJsResultAt(test::kGlicHostElementId, where,
+                                          "(el) => el.hidden",
+                                          testing::Ne(visible)));
     AddDescriptionPrefix(steps, "CheckElementVisible");
     return steps;
   }

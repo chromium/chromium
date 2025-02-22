@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">ഗെയിം ആരംഭിച്ചു.</translation>
 <translation id="3067505415088964188">കുറഞ്ഞ നിരക്ക്</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> എന്നതിലേക്കുള്ള നിങ്ങളുടെ ഫയൽ അപ്‌ലോഡ് ഒരു മിനിറ്റിനുള്ളിൽ ആരംഭിക്കും</translation>
-<translation id="3068976060094139647">നിങ്ങളുടെ അക്കൗണ്ട്, Google Pay-യുമായി ലിങ്ക് ചെയ്‌തിരിക്കുന്നതിനാൽ നിങ്ങൾക്ക് ഈ കാർഡ് സ്വയമേവ പൂരിപ്പിക്കാനാകും.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} ഇനം}other{{ITEMS} ഇനങ്ങൾ}}</translation>
 <translation id="3076865167425975822">ഓപ്പറേറ്റിംഗ് സിസ്റ്റങ്ങൾ</translation>
 <translation id="3080254622891793721">ഗ്രാഫിക്</translation>
@@ -2254,6 +2253,7 @@
 <translation id="4989809363548539747">ഈ പ്ലഗിൻ പിന്തുണയ്‌ക്കുന്നില്ല</translation>
 <translation id="4990241977441916452">Envelope A2</translation>
 <translation id="4992066212339426712">അൺമ്യൂട്ടുചെയ്യുക</translation>
+<translation id="4994095017621319069">ഒരു ടാബ് ഗ്രൂപ്പ് ഇനി ലഭ്യമാകില്ല</translation>
 <translation id="4994348767896109801">നിങ്ങൾ കാണുന്ന പരസ്യം വ്യക്തിപരമാക്കിയതാണോ എന്നത് ഈ ക്രമീകരണം, <ph name="BEGIN_LINK_1" />പരസ്യത്തിന്റെ വിഷയം<ph name="END_LINK_1" />, നിങ്ങളുടെ <ph name="BEGIN_LINK_2" />കുക്കി ക്രമീകരണം<ph name="END_LINK_2" />, നിങ്ങൾ കാണുന്ന സൈറ്റ് പരസ്യങ്ങൾ വ്യക്തിപരമാക്കുന്നുണ്ടോ എന്നിവ ഉൾപ്പെടെ നിരവധി കാര്യങ്ങളെ ആശ്രയിച്ചിരിക്കും. <ph name="BEGIN_LINK_3" />നിങ്ങളുടെ പരസ്യവുമായി ബന്ധപ്പെട്ട സ്വകാര്യത മാനേജ് ചെയ്യുന്നതിനെ<ph name="END_LINK_3" /> കുറിച്ച് കൂടുതലറിയുക.</translation>
 <translation id="4995474875135717171">പരിഷ്‌ക്കരിച്ചത്:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, സൈറ്റ് തിരയലും നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ യന്ത്രവും മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
@@ -3468,6 +3468,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> എണ്ണവും}other{<ph name="PAYMENT_METHOD_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> എണ്ണവും}}</translation>
 <translation id="7153618581592392745">ലാവെൻഡർ</translation>
 <translation id="7156870133441232244">സെർവർ TLS 1.2 അല്ലെങ്കിൽ അതിന് ശേഷമുള്ള പതിപ്പിലേക്ക് അപ്‌ഗ്രേഡ് ചെയ്യേണ്ടതുണ്ട്.</translation>
+<translation id="7156885531105222428">നിങ്ങൾ അഭ്യർത്ഥിച്ച പേജ്, ആപ്പിൽ കണ്ടെത്താനായില്ല</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> ഉപയോഗിച്ച് ഈ ഫയൽ അയയ്‌ക്കാൻ, നിങ്ങളുടെ ഉപകരണത്തിൽ ഇടം (<ph name="DISK_SPACE_SIZE" />) സൃഷ്‌ടിക്കുക}other{<ph name="FEATURE_NAME" /> ഉപയോഗിച്ച് ഈ ഫയലുകൾ അയയ്‌ക്കാൻ, നിങ്ങളുടെ ഉപകരണത്തിൽ ഇടം (<ph name="DISK_SPACE_SIZE" />) സൃഷ്‌ടിക്കുക}}</translation>
 <translation id="7160999678034985039">ജോലി സംരക്ഷിക്കുക, നിങ്ങൾ തയ്യാറാകുമ്പോൾ അപ്ഡേറ്റ് ചെയ്യാൻ ആരംഭിക്കുക.</translation>
 <translation id="7162277662076933695">സ്‌മാർട്ട് കാർഡ് റീഡർ</translation>
@@ -4253,6 +4254,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ബ്ലോക്ക് ചെയ്ത URL-കളുടെ ലിസ്റ്റും നിങ്ങളുടെ സിസ്റ്റം അഡ്‌മിൻ നടപ്പിലാക്കിയ മറ്റ് നയങ്ങളും കാണുന്നതിന് &lt;strong&gt;chrome://policy&lt;/strong&gt; സന്ദർശിക്കുക.</translation>
 <translation id="8536234749087605613">എൻവലപ്പ് (വിൻഡോ)</translation>
+<translation id="8538228968820006247">നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പ് നിറഞ്ഞിരിക്കുന്നു, ലിങ്ക് ഉപയോഗിച്ച് പുതിയ അംഗങ്ങൾക്ക് ചേരാനാകില്ല</translation>
 <translation id="8539500321752640291">2 അനുമതികൾ നൽകണോ?</translation>
 <translation id="8541158209346794904">Bluetooth ഉപകരണം</translation>
 <translation id="8541410041357371550">നിങ്ങൾക്ക് കൂടുതൽ പ്രസക്തമായ പരസ്യങ്ങൾ കാണിക്കാൻ ഈ സൈറ്റിന് Chrome-ൽ നിന്ന് നിങ്ങളുടെ പരസ്യ വിഷയങ്ങൾ ലഭിക്കുന്നു</translation>
@@ -4373,7 +4375,6 @@
 <translation id="8757526089434340176">Google Pay ഓഫർ ലഭ്യം</translation>
 <translation id="8759274551635299824">ഈ കാർഡ് കാലഹരണപ്പെട്ടു</translation>
 <translation id="87601671197631245">ഈ സൈറ്റ് കാലഹരണപ്പെട്ട സുരക്ഷാ കോൺഫിഗറേഷൻ ഉപയോഗിക്കുന്നതിനാൽ നിങ്ങളുടെ വിവരങ്ങൾ (ഉദാഹരണത്തിന്, പാസ്‌വേഡുകൾ, സന്ദേശങ്ങൾ, ക്രെഡിറ്റ് കാർഡുകൾ) ഈ സൈറ്റിലേക്ക് അയച്ചാൽ അവ വെളിപ്പെട്ടേക്കാം.</translation>
-<translation id="8763226176721243078">നിങ്ങളുടെ <ph name="CARD_ISSUER_NAME" /> അക്കൗണ്ട്, Google Pay-യുമായി ലിങ്ക് ചെയ്‌തിരിക്കുന്നതിനാൽ നിങ്ങൾക്ക് ഈ കാർഡ് സ്വയമേവ പൂരിപ്പിക്കാനാകും.</translation>
 <translation id="8763927697961133303">USB ഉപകരണം</translation>
 <translation id="8763986294015493060">നിലവിൽ തുറന്നിരിക്കുന്ന എല്ലാ അദൃശ്യ വിൻഡോകളും അടയ്ക്കുക</translation>
 <translation id="8766943070169463815">സുരക്ഷിതമായ പേയ്‌മെന്റ് ക്രെഡൻഷ്യൽ പരിശോധിച്ചുറപ്പിക്കൽ ഷീറ്റ് തുറന്നു</translation>

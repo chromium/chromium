@@ -266,7 +266,7 @@ suite('AutofillSectionAddressTests', function() {
     let actualSummary = '';
 
     // Eliminate white space between nodes!
-    const addressPieces = row!.querySelector('#addressSummary')!.children;
+    const addressPieces = row.querySelector('#addressSummary')!.children;
     for (const addressPiece of addressPieces) {
       actualSummary += addressPiece.textContent!.trim();
     }
@@ -320,9 +320,9 @@ suite('AutofillSectionAddressTests', function() {
     const addressList = section.$.addressList;
     const row = addressList.children[0];
     assertTrue(!!row);
-    const menuButton = row!.querySelector<HTMLElement>('.address-menu');
+    const menuButton = row.querySelector<HTMLElement>('.address-menu');
     assertTrue(!!menuButton);
-    menuButton!.click();
+    menuButton.click();
     flush();
 
     assertTrue(!!section.shadowRoot!.querySelector('#menuEditAddress'));
@@ -869,7 +869,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
       assertTrue(!!countrySelect);
       assertEquals(
           'United States',
-          countrySelect!.selectedOptions[0]!.textContent!.trim());
+          countrySelect.selectedOptions[0]!.textContent!.trim());
       index++;
       // Name
       row = rows[index]!;
@@ -956,7 +956,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
       assertTrue(!!countrySelect);
       assertEquals(
           'United Kingdom',
-          countrySelect!.selectedOptions[0]!.textContent!.trim());
+          countrySelect.selectedOptions[0]!.textContent!.trim());
       index++;
       // Name
       row = rows[index]!;
@@ -1054,7 +1054,7 @@ suite('AutofillSectionAddressLocaleTests', function() {
       const countrySelect = row.querySelector('select');
       assertTrue(!!countrySelect);
       assertEquals(
-          'Israel', countrySelect!.selectedOptions[0]!.textContent!.trim());
+          'Israel', countrySelect.selectedOptions[0]!.textContent!.trim());
       index++;
       // Name
       row = rows[index]!;

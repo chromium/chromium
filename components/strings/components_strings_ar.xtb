@@ -1155,7 +1155,6 @@
 <translation id="306573536155379004">بدأت اللعبة.</translation>
 <translation id="3067505415088964188">السعر منخفض</translation>
 <translation id="3068118691172921711">سيبدأ تحميل الملف إلى <ph name="CLOUD_PROVIDER" /> بعد دقيقة واحدة</translation>
-<translation id="3068976060094139647">‏يمكنك ملء بيانات هذه البطاقة تلقائيًا لأنّ حسابك مرتبط بحساب Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{عنصر واحد ({ITEMS})}zero{‫{ITEMS} عنصر}two{عنصران ({ITEMS})}few{‫{ITEMS} عناصر}many{‫{ITEMS} عنصرًا}other{‫{ITEMS} عنصر}}</translation>
 <translation id="3076865167425975822">أنظمة تشغيل</translation>
 <translation id="3080254622891793721">الرسم البياني</translation>
@@ -4381,7 +4380,6 @@
 <translation id="8757526089434340176">‏يتوفّر عرض Google Pay.</translation>
 <translation id="8759274551635299824">هذه البطاقة منتهية الصلاحية</translation>
 <translation id="87601671197631245">يستخدم هذا الموقع الإلكتروني إعداد أمان غير محدَّث، وقد يكشف ذلك عن معلوماتك (مثل كلمات المرور أو الرسائل أو بطاقات الائتمان) عند إرسالها إلى هذا الموقع الإلكتروني.</translation>
-<translation id="8763226176721243078">‏يمكنك ملء بيانات هذه البطاقة تلقائيًا لأنّ حسابك على <ph name="CARD_ISSUER_NAME" /> مرتبط بحساب Google Pay.</translation>
 <translation id="8763927697961133303">‏جهاز USB</translation>
 <translation id="8763986294015493060">إغلاق جميع النوافذ المفتوحة حاليًا في وضع التصفُّح المتخفي</translation>
 <translation id="8766943070169463815">تم فتح صفحة مصادقة بيانات اعتماد الدفع الآمن.</translation>

@@ -68,7 +68,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   set testSyncStatus(syncStatus: SyncStatus|null) {
     this.syncStatus_ = syncStatus;
     if (this.syncStatus_ && this.resolveGetSyncStatus_) {
-      this.resolveGetSyncStatus_(this.syncStatus_!);
+      this.resolveGetSyncStatus_(this.syncStatus_);
       this.resolveGetSyncStatus_ = null;
     }
   }
@@ -76,7 +76,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   getSyncStatus(): Promise<SyncStatus> {
     this.methodCalled('getSyncStatus');
     if (this.syncStatus_) {
-      return Promise.resolve(this.syncStatus_!);
+      return Promise.resolve(this.syncStatus_);
     } else {
       return new Promise((resolve) => {
         this.resolveGetSyncStatus_ = resolve;

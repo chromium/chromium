@@ -30,7 +30,6 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="2118649612461486615">Mağaza məlumatları</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Bağlanmış tab və qrupları Son tablar və ya Tab qrupları bölməsində yenidən aça bilərsiniz. Anonim tab əlçatan olmayacaq.}other{Bağlanmış tab və qrupları Son tablar və ya Tab qrupları bölməsində yenidən aça bilərsiniz. # anonim tab əlçatan olmayacaq.}}</translation>
 <translation id="2162620598375156287">İndi <ph name="SOURCE_WEBSITE" /> saytında <ph name="CURRENT_PRICE" /></translation>
-<translation id="2242907120821295124"><ph name="TAB_GROUP_NAME" /> tab qrupu artıq əlçatan deyil</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Tabı ayırın}other{Tabları ayırın}}</translation>
 <translation id="2271452184061378400">Tab qruplarınız burada yaddaşda saxlanılır</translation>
 <translation id="2277224997687551299">Qrup adına düzəliş edin</translation>

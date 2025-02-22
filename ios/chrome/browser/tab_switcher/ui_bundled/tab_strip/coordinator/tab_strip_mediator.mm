@@ -908,6 +908,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                                                sourceView:nil];
       break;
     case data_sharing::MemberRole::kInvitee:
+    case data_sharing::MemberRole::kFormerMember:
     case data_sharing::MemberRole::kUnknown:
       NOTREACHED(base::NotFatalUntil::M140);
   }

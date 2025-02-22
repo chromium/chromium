@@ -59,7 +59,7 @@ suite('MicrosoftFilesModule', () => {
     assertFalse(!!$$(microsoftFilesModule, 'ntp-info-dialog'));
 
     // Act.
-    const infoButton = microsoftFilesModule.$.moduleHeaderElementV2.shadowRoot!
+    const infoButton = microsoftFilesModule.$.moduleHeaderElementV2.shadowRoot
                            .querySelector<HTMLElement>('#info');
     assertTrue(!!infoButton);
     infoButton.click();
@@ -82,7 +82,7 @@ suite('MicrosoftFilesModule', () => {
     // Act.
     const whenFired = eventToPromise('disable-module', microsoftFilesModule);
     const disableButton =
-        microsoftFilesModule.$.moduleHeaderElementV2.shadowRoot!
+        microsoftFilesModule.$.moduleHeaderElementV2.shadowRoot
             .querySelector<HTMLElement>('#disable');
     assertTrue(!!disableButton);
     disableButton.click();
@@ -106,7 +106,7 @@ suite('MicrosoftFilesModule', () => {
 
     // Act.
     const signoutButton =
-        microsoftFilesModule.$.moduleHeaderElementV2.shadowRoot!
+        microsoftFilesModule.$.moduleHeaderElementV2.shadowRoot
             .querySelector<HTMLElement>('#signout');
     assertTrue(!!signoutButton);
     signoutButton.click();
@@ -155,7 +155,7 @@ suite('MicrosoftFilesModule', () => {
     const whenFired =
         eventToPromise('dismiss-module-instance', microsoftFilesModule);
     const dismissButton =
-        microsoftFilesModule.$.moduleHeaderElementV2.shadowRoot!
+        microsoftFilesModule.$.moduleHeaderElementV2.shadowRoot
             .querySelector<HTMLElement>('#dismiss');
     assertTrue(!!dismissButton);
     dismissButton.click();
@@ -166,7 +166,7 @@ suite('MicrosoftFilesModule', () => {
     assertEquals(1, handler.getCallCount('dismissModule'));
 
     // Restore module.
-    event.detail.restoreCallback!();
+    event.detail.restoreCallback();
     assertEquals(1, handler.getCallCount('restoreModule'));
   });
 });

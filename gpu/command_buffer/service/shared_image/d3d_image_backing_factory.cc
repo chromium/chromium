@@ -220,14 +220,16 @@ D3DImageBackingFactory::SwapChainBackings::operator=(
 
 // static
 bool D3DImageBackingFactory::IsD3DSharedImageSupported(
+    ID3D11Device* d3d11_device,
     const GpuPreferences& gpu_preferences) {
   // Only supported for passthrough command decoder.
   if (!gpu_preferences.use_passthrough_cmd_decoder) {
     return false;
   }
 
-  // D3D11 device will be null if ANGLE is using the D3D9 backend.
-  if (!gl::QueryD3D11DeviceObjectFromANGLE()) {
+  // D3D11 device will be null if ANGLE is using the D3D9 backend or
+  // when we're running with Graphite on D3D12.
+  if (!d3d11_device) {
     return false;
   }
 

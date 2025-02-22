@@ -206,8 +206,8 @@ suite('Metrics', function() {
     assertEquals(1, histogram[SyncedTabsHistogram.COLLAPSE_SESSION]);
     cards[0].$['card-heading'].click();
     assertEquals(1, histogram[SyncedTabsHistogram.EXPAND_SESSION]);
-    cards[0].shadowRoot!.querySelectorAll<HTMLElement>(
-                            '.website-link')[0]!.click();
+    cards[0].shadowRoot.querySelectorAll<HTMLElement>(
+                           '.website-link')[0]!.click();
     assertEquals(1, histogram[SyncedTabsHistogram.LINK_CLICKED]);
 
     const menuButton = cards[0].$['menu-button'];
@@ -221,7 +221,7 @@ suite('Metrics', function() {
     menuButton.click();
     await microtasksFinished();
 
-    syncedDeviceManager!.shadowRoot!
+    syncedDeviceManager.shadowRoot!
         .querySelector<HTMLElement>('#menuDeleteButton')!.click();
     assertEquals(1, histogram[SyncedTabsHistogram.HIDE_FOR_NOW]);
   });

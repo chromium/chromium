@@ -218,21 +218,21 @@ suite('ChooserExceptionList', function() {
         assertTrue(!!chooserExceptionListEntry);
 
         const siteListEntry =
-            chooserExceptionListEntry!.shadowRoot!.querySelector(
+            chooserExceptionListEntry.shadowRoot!.querySelector(
                 'site-list-entry');
         assertTrue(!!siteListEntry);
 
         // Ensure that the action menu container is hidden.
-        const dotsMenu = siteListEntry!.$.actionMenuButton;
+        const dotsMenu = siteListEntry.$.actionMenuButton;
         assertTrue(dotsMenu.hidden);
 
         // Ensure that the reset button is not hidden.
-        const resetButton = siteListEntry!.$.resetSite;
+        const resetButton = siteListEntry.$.resetSite;
         assertFalse(resetButton.hidden);
 
         // Ensure that the policy enforced indicator is hidden.
-        const policyIndicator = siteListEntry!.shadowRoot!.querySelector(
-            'cr-policy-pref-indicator');
+        const policyIndicator =
+            siteListEntry.shadowRoot!.querySelector('cr-policy-pref-indicator');
         assertFalse(!!policyIndicator);
       });
 
@@ -255,22 +255,22 @@ suite('ChooserExceptionList', function() {
         assertTrue(!!chooserExceptionListEntry);
 
         const siteListEntry =
-            chooserExceptionListEntry!.shadowRoot!.querySelector(
+            chooserExceptionListEntry.shadowRoot!.querySelector(
                 'site-list-entry');
         assertTrue(!!siteListEntry);
 
         // Ensure that the action menu container is hidden.
-        const dotsMenu = siteListEntry!.$.actionMenuButton;
+        const dotsMenu = siteListEntry.$.actionMenuButton;
         assertTrue(!!dotsMenu);
         assertTrue(dotsMenu.hidden);
 
         // Ensure that the reset button is hidden.
-        const resetButton = siteListEntry!.$.resetSite;
+        const resetButton = siteListEntry.$.resetSite;
         assertTrue(resetButton.hidden);
 
         // Ensure that the policy enforced indicator not is hidden.
-        const policyIndicator = siteListEntry!.shadowRoot!.querySelector(
-            'cr-policy-pref-indicator');
+        const policyIndicator =
+            siteListEntry.shadowRoot!.querySelector('cr-policy-pref-indicator');
         assertTrue(!!policyIndicator);
       });
 
@@ -370,16 +370,16 @@ suite('ChooserExceptionList', function() {
     assertTrue(!!chooserExceptionListEntry);
 
     const siteListEntry =
-        chooserExceptionListEntry!.shadowRoot!.querySelector('site-list-entry');
+        chooserExceptionListEntry.shadowRoot!.querySelector('site-list-entry');
     assertTrue(!!siteListEntry);
 
     // Assert that the action button is hidden.
-    const dotsMenu = siteListEntry!.$.actionMenuButton;
+    const dotsMenu = siteListEntry.$.actionMenuButton;
     assertTrue(!!dotsMenu);
     assertTrue(dotsMenu.hidden);
 
     // Assert that the reset button is visible.
-    const resetButton = siteListEntry!.$.resetSite;
+    const resetButton = siteListEntry.$.resetSite;
     assertFalse(resetButton.hidden);
 
     resetButton.click();
@@ -416,7 +416,7 @@ suite('ChooserExceptionList', function() {
         assertTrue(!!chooserExceptionListEntry);
 
         const siteListEntry =
-            chooserExceptionListEntry!.shadowRoot!.querySelector(
+            chooserExceptionListEntry.shadowRoot!.querySelector(
                 'site-list-entry');
         assertTrue(!!siteListEntry);
 
@@ -444,13 +444,13 @@ suite('ChooserExceptionList', function() {
           const text = params.text;
           const eventTarget = params.el;
 
-          siteListEntry!.fire('show-tooltip', {target: testElement, text});
-          assertFalse(innerTooltip!.hidden);
+          siteListEntry.fire('show-tooltip', {target: testElement, text});
+          assertFalse(innerTooltip.hidden);
           assertEquals(text, tooltip.innerHTML.trim());
 
           eventTarget.dispatchEvent(new MouseEvent(params.eventType));
           await microtasksFinished();
-          assertTrue(innerTooltip!.hidden);
+          assertTrue(innerTooltip.hidden);
         }
       });
 
@@ -513,12 +513,12 @@ suite('ChooserExceptionList', function() {
         assertTrue(!!chooserExceptionListEntry);
 
         const siteListEntry =
-            chooserExceptionListEntry!.shadowRoot!.querySelector(
+            chooserExceptionListEntry.shadowRoot!.querySelector(
                 'site-list-entry');
         assertTrue(!!siteListEntry);
         // Ensure that the incognito tooltip is hidden.
         const incognitoTooltip =
-            siteListEntry!.shadowRoot!.querySelector('#incognitoTooltip');
+            siteListEntry.shadowRoot!.querySelector('#incognitoTooltip');
         assertFalse(!!incognitoTooltip);
 
         // Simulate an incognito session being created.
@@ -532,12 +532,12 @@ suite('ChooserExceptionList', function() {
         chooserExceptionListEntry = testElement.shadowRoot!.querySelector(
             'chooser-exception-list-entry');
         assertTrue(!!chooserExceptionListEntry);
-        assertTrue(chooserExceptionListEntry!.$.listContainer
+        assertTrue(chooserExceptionListEntry.$.listContainer
                        .querySelector('iron-list')!.items!.some(
                            item => item.incognito));
 
         const siteListEntries =
-            chooserExceptionListEntry!.shadowRoot!.querySelectorAll(
+            chooserExceptionListEntry.shadowRoot!.querySelectorAll(
                 'site-list-entry');
         assertEquals(2, siteListEntries.length);
         assertTrue(
@@ -545,7 +545,7 @@ suite('ChooserExceptionList', function() {
 
         const tooltip = testElement.$.tooltip;
         assertTrue(!!tooltip);
-        const innerTooltip = tooltip.shadowRoot!.querySelector('#tooltip');
+        const innerTooltip = tooltip.shadowRoot.querySelector('#tooltip');
         assertTrue(!!innerTooltip);
         const text = loadTimeData.getString('incognitoSiteExceptionDesc');
         // This filtered array should be non-empty due to above test that
@@ -559,8 +559,8 @@ suite('ChooserExceptionList', function() {
               // exception
               assertTrue(!!incognitoTooltip);
               // Trigger mouse enter and check tooltip text
-              incognitoTooltip!.dispatchEvent(new MouseEvent('mouseenter'));
-              assertFalse(innerTooltip!.classList.contains('hidden'));
+              incognitoTooltip.dispatchEvent(new MouseEvent('mouseenter'));
+              assertFalse(innerTooltip.classList.contains('hidden'));
               assertEquals(text, tooltip.innerHTML.trim());
             });
       });
@@ -589,7 +589,7 @@ suite('ChooserExceptionList', function() {
     assertTrue(!!chooserExceptionListEntry);
 
     const siteListEntry =
-        chooserExceptionListEntry!.shadowRoot!.querySelector('site-list-entry');
+        chooserExceptionListEntry.shadowRoot!.querySelector('site-list-entry');
     assertTrue(!!siteListEntry);
 
     // Check both cancelling and accepting the dialog closes it.

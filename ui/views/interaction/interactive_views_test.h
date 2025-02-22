@@ -73,6 +73,8 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   // callbacks to ensure completion, and prints an error on failure. The context
   // will be pulled from `context_widget()`.
   template <typename... Args>
+    requires(sizeof...(Args) > 0 &&
+             (ui::test::internal::IsValueOrRvalue<Args> && ...))
   bool RunTestSequence(Args&&... steps);
 
   // Naming views:
@@ -508,6 +510,8 @@ const T* InteractiveViewsTestApi::AsView(const ui::TrackedElement* el) {
 }
 
 template <typename... Args>
+  requires(sizeof...(Args) > 0 &&
+           (ui::test::internal::IsValueOrRvalue<Args> && ...))
 bool InteractiveViewsTestApi::RunTestSequence(Args&&... steps) {
   return RunTestSequenceInContext(
       ElementTrackerViews::GetContextForWidget(context_widget()),
@@ -816,14 +820,14 @@ InteractiveViewsTestApi::WaitForViewPropertyCallback(
       subscription, property, add_listener, event_type,
       testing::Matcher<MatcherType>(std::forward<M>(matcher)));
 
-  auto steps = Steps(std::move(AfterShow(view, std::move(observe_property))
-                                   .SetMustRemainVisible(true)),
-                     AfterEvent(view, event_type, [subscription]() {
-                       // Need to reference subscription by value so that it is
-                       // not discarded until this step runs or the sequence
-                       // fails.
-                       subscription->data = base::CallbackListSubscription();
-                     }));
+  auto steps = Steps(
+      AfterShow(view, std::move(observe_property)).SetMustRemainVisible(true),
+      AfterEvent(view, event_type, [subscription]() {
+        // Need to reference subscription by value so that it is
+        // not discarded until this step runs or the sequence
+        // fails.
+        subscription->data = base::CallbackListSubscription();
+      }));
   AddDescriptionPrefix(
       steps, base::StrCat({"WaitForProperty( ", event_type.GetName(), ", )"}));
   return steps;

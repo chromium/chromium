@@ -1484,19 +1484,23 @@ void PermissionRequestManager::OnPermissionUiSelectorDone(
     const UiDecision& current_decision =
         selector_decisions_[decision_index].value();
 
-    if (!prediction_grant_likelihood_.has_value()) {
-      prediction_grant_likelihood_ = permission_ui_selectors_[decision_index]
-                                         ->PredictedGrantLikelihoodForUKM();
-    }
+    if (permission_ui_selectors_[decision_index]->IsPermissionRequestSupported(
+            requests_.front()->request_type())) {
+      if (!prediction_grant_likelihood_.has_value()) {
+        prediction_grant_likelihood_ = permission_ui_selectors_[decision_index]
+                                           ->PredictedGrantLikelihoodForUKM();
+      }
 
-    if (!permission_request_relevance_.has_value()) {
-      permission_request_relevance_ = permission_ui_selectors_[decision_index]
-                                          ->PermissionRequestRelevanceForUKM();
-    }
+      if (!permission_request_relevance_.has_value()) {
+        permission_request_relevance_ =
+            permission_ui_selectors_[decision_index]
+                ->PermissionRequestRelevanceForUKM();
+      }
 
-    if (!was_decision_held_back_.has_value()) {
-      was_decision_held_back_ = permission_ui_selectors_[decision_index]
-                                    ->WasSelectorDecisionHeldback();
+      if (!was_decision_held_back_.has_value()) {
+        was_decision_held_back_ = permission_ui_selectors_[decision_index]
+                                      ->WasSelectorDecisionHeldback();
+      }
     }
 
     if (current_decision.quiet_ui_reason.has_value()) {

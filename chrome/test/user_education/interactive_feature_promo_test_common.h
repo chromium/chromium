@@ -75,6 +75,14 @@ class InteractiveFeaturePromoTestCommon {
     kUseTestClock
   };
 
+  // Changes controller behavior.
+  enum class ControllerMode {
+    // Uses the default User Education 2.5 Experience.
+    kUserEd25,
+    // Use the old User Education 2.0 Experience.
+    kUserEd20
+  };
+
   // Describes how the test should start. You can use `session_test_util()` to
   // further update the session state.
   enum InitialSessionState {

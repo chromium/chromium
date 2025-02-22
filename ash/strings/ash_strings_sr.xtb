@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">Радна површина 2</translation>
 <translation id="1546930421365146760">Затражите од администратора да подеси овај уређај у Google администраторској конзоли</translation>
 <translation id="1549512626801247439">управљање меморијским простором</translation>
+<translation id="1549721333775633305">Прегледајте Quick Share подешавања. Quick Share је онемогућен</translation>
 <translation id="1550406609415860283">Доступни уређаји</translation>
 <translation id="1550523713251050646">Кликните за више опција</translation>
 <translation id="1555130319947370107">Плава</translation>
@@ -1475,6 +1476,7 @@
 <translation id="5856638668464565213">Мрежа <ph name="NETWORK_NAME" /> није активирана.</translation>
 <translation id="5860033963881614850">Искључено</translation>
 <translation id="5860491529813859533">Укључи</translation>
+<translation id="5864691701242730005">Прегледајте Quick Share подешавања. Изабрана видљивост је <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071">Батерија <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Прикупљају се информације о мрежи</translation>
 <translation id="5867606971598166637">Администратор система надгледа ваше екране</translation>
@@ -2264,6 +2266,7 @@
 <translation id="851660987304951246">Користите Помози ми да читам да бисте брзо резимирали садржај или постављали питања</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> се можда неће пунити док је укључен.</translation>
 <translation id="8535393432370007982">Опозовите редослед сортирања према боји</translation>
+<translation id="8536886494750559755">Прегледајте Quick Share подешавања. Видљиво је свима у периоду од <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Текст је копиран у привремену меморију</translation>
 <translation id="8541078764854166027">Уоквир. камере</translation>
 <translation id="8542053257095774575">Нема сачуваних радних површина нити шаблона</translation>

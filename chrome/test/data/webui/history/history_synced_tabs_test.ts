@@ -18,7 +18,7 @@ function getCards(manager: HistorySyncedDeviceManagerElement):
 }
 
 function numWindowSeparators(card: HistorySyncedDeviceCardElement): number {
-  return card.shadowRoot!.querySelectorAll(':not([hidden]).window-separator')
+  return card.shadowRoot.querySelectorAll(':not([hidden]).window-separator')
       .length;
 }
 
@@ -69,8 +69,8 @@ suite('<history-synced-device-manager>', function() {
           element.shadowRoot!.querySelector('history-synced-device-card')!;
       assertEquals(
           'http://www.google.com',
-          card.shadowRoot!.querySelectorAll<HTMLElement>(
-                              '.website-title')[0]!.textContent!.trim());
+          card.shadowRoot.querySelectorAll<HTMLElement>(
+                             '.website-title')[0]!.textContent!.trim());
       assertEquals(2, card.tabs.length);
     });
   });
@@ -133,7 +133,7 @@ suite('<history-synced-device-manager>', function() {
           // Check that the actual link changes.
           assertEquals(
               'http://crbug.com/new',
-              cards[0]!.shadowRoot!
+              cards[0]!.shadowRoot
                   .querySelectorAll<HTMLElement>(
                       '.website-title')[1]!.textContent!.trim());
         });
@@ -181,7 +181,7 @@ suite('<history-synced-device-manager>', function() {
           // Ensure the title text is rendered during searches.
           assertEquals(
               'http://www.google.com',
-              cards[0]!.shadowRoot!
+              cards[0]!.shadowRoot
                   .querySelectorAll<HTMLElement>(
                       '.website-title')[0]!.textContent!.trim());
 
@@ -257,7 +257,7 @@ suite('<history-synced-device-manager>', function() {
         [createSession('Chromebook', [createWindow(['https://example.com'])])]);
     await microtasksFinished();
     const cards = getCards(element);
-    const anchor = cards[0]!.shadowRoot!.querySelector('a')!;
+    const anchor = cards[0]!.shadowRoot.querySelector('a')!;
     anchor.click();
     const args = await testService.whenCalled('openForeignSessionTab');
     assertEquals('Chromebook', args.sessionTag, 'sessionTag is correct');

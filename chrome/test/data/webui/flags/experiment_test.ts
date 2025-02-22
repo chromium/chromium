@@ -80,10 +80,10 @@ suite('ExperimentTest', function() {
     assertTrue(isVisible(experimentName));
     assertTrue(isVisible(experiment.getRequiredElement('.description')));
     assertTrue(isVisible(experiment.getRequiredElement('.platforms')));
-    assertFalse(!!experiment.shadowRoot!.querySelector('.links-container'));
+    assertFalse(!!experiment.shadowRoot.querySelector('.links-container'));
     assertTrue(isVisible(experiment.getRequiredElement('.permalink')));
-    assertFalse(!!experiment.shadowRoot!.querySelector('.textarea-container'));
-    assertFalse(!!experiment.shadowRoot!.querySelector('.input-container'));
+    assertFalse(!!experiment.shadowRoot.querySelector('.textarea-container'));
+    assertFalse(!!experiment.shadowRoot.querySelector('.input-container'));
 
     const select = experiment.getRequiredElement('select');
     assertTrue(isVisible(select));
@@ -133,10 +133,10 @@ suite('ExperimentTest', function() {
     assertTrue(isVisible(experimentName));
     assertTrue(isVisible(experiment.getRequiredElement('.description')));
     assertTrue(isVisible(experiment.getRequiredElement('.platforms')));
-    assertFalse(!!experiment.shadowRoot!.querySelector('.links-container'));
+    assertFalse(!!experiment.shadowRoot.querySelector('.links-container'));
     assertTrue(isVisible(experiment.getRequiredElement('.permalink')));
-    assertFalse(!!experiment.shadowRoot!.querySelector('.textarea-container'));
-    assertFalse(!!experiment.shadowRoot!.querySelector('.input-container'));
+    assertFalse(!!experiment.shadowRoot.querySelector('.textarea-container'));
+    assertFalse(!!experiment.shadowRoot.querySelector('.input-container'));
 
     const select = experiment.getRequiredElement('select');
     assertTrue(isVisible(select));
@@ -189,10 +189,10 @@ suite('ExperimentTest', function() {
     assertTrue(isVisible(experimentName));
     assertTrue(isVisible(experiment.getRequiredElement('.description')));
     assertTrue(isVisible(experiment.getRequiredElement('.platforms')));
-    assertFalse(!!experiment.shadowRoot!.querySelector('.links-container'));
+    assertFalse(!!experiment.shadowRoot.querySelector('.links-container'));
     assertTrue(isVisible(experiment.getRequiredElement('.permalink')));
-    assertFalse(!!experiment.shadowRoot!.querySelector('.textarea-container'));
-    assertFalse(!!experiment.shadowRoot!.querySelector('.input-container'));
+    assertFalse(!!experiment.shadowRoot.querySelector('.textarea-container'));
+    assertFalse(!!experiment.shadowRoot.querySelector('.input-container'));
 
     const actions = experiment.getRequiredElement('.experiment-actions');
     assertTrue(!!actions);
@@ -234,7 +234,7 @@ suite('ExperimentTest', function() {
     assertTrue(isVisible(experiment));
     assertTrue(isVisible(experiment.getRequiredElement('.links-container')));
 
-    const links = experiment.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
+    const links = experiment.shadowRoot.querySelectorAll<HTMLAnchorElement>(
         '.links-container a');
     assertEquals(1, links.length);
     const linkElement = links[0]!;
@@ -256,10 +256,10 @@ suite('ExperimentTest', function() {
     await microtasksFinished();
 
     assertTrue(isVisible(experiment));
-    assertFalse(!!experiment.shadowRoot!.querySelector('.textarea-container'));
+    assertFalse(!!experiment.shadowRoot.querySelector('.textarea-container'));
 
     const inputContainer =
-        experiment.shadowRoot!.querySelector<HTMLInputElement>(
+        experiment.shadowRoot.querySelector<HTMLInputElement>(
             '.input-container');
     assertTrue(!!inputContainer);
     assertTrue(isVisible(inputContainer));
@@ -292,10 +292,10 @@ suite('ExperimentTest', function() {
     await microtasksFinished();
 
     assertTrue(isVisible(experiment));
-    assertFalse(!!experiment.shadowRoot!.querySelector('.input-container'));
+    assertFalse(!!experiment.shadowRoot.querySelector('.input-container'));
 
     const textareaContainer =
-        experiment.shadowRoot!.querySelector<HTMLInputElement>(
+        experiment.shadowRoot.querySelector<HTMLInputElement>(
             '.textarea-container');
     assertTrue(!!textareaContainer);
     assertTrue(isVisible(textareaContainer));
@@ -367,8 +367,8 @@ suite('ExperimentTest', function() {
 
     function assertNoHighlightsShown() {
       cloneQueries.forEach((query, i) => {
-        assertFalse(!!experiment.shadowRoot!.querySelector(query));
-        assertTrue(!!experiment.shadowRoot!.querySelector(originalQueries[i]!));
+        assertFalse(!!experiment.shadowRoot.querySelector(query));
+        assertTrue(!!experiment.shadowRoot.querySelector(originalQueries[i]!));
       });
     }
 
@@ -379,11 +379,11 @@ suite('ExperimentTest', function() {
       cloneQueries.forEach((query, i) => {
         // Check that original nodes have been removed.
         const originalNode =
-            experiment.shadowRoot!.querySelector(originalQueries[i]!);
+            experiment.shadowRoot.querySelector(originalQueries[i]!);
         assertFalse(!!originalNode);
 
         // Check that clone nodes have been added.
-        const cloneNode = experiment.shadowRoot!.querySelector(query);
+        const cloneNode = experiment.shadowRoot.querySelector(query);
         assertTrue(!!cloneNode);
 
         if (i === expectedHitIndex) {

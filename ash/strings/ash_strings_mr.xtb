@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">डेस्‍क २</translation>
 <translation id="1546930421365146760">तुमच्या अ‍ॅडमिनिस्ट्रेटरला हे डिव्हाइस Google ॲडमिन कन्सोलमध्ये सेट करण्यास सांगा</translation>
 <translation id="1549512626801247439">स्टोरेज व्यवस्थापन</translation>
+<translation id="1549721333775633305">क्विक शेअर सेटिंग्ज दाखवा. क्विक शेअर बंद करा</translation>
 <translation id="1550406609415860283">डिव्हाइस उपलब्ध</translation>
 <translation id="1550523713251050646">अधिक पर्यायांसाठी क्लिक करा</translation>
 <translation id="1555130319947370107">निळा</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> अ‍ॅक्टिव्ह केलेले नाही.</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">सुरू करा</translation>
+<translation id="5864691701242730005">क्विक शेअर सेटिंग्ज दाखवा. <ph name="VISIBILITY" /> दृश्यमानता निवडली आहे</translation>
 <translation id="5864748620896638071">बॅटरी <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">नेटवर्कसंबंधित माहिती गोळा करत आहे</translation>
 <translation id="5867606971598166637">तुमचा सिस्टीम अ‍ॅडमिनिस्ट्रेटर तुमच्या स्क्रीनवर लक्ष ठेवून आहे</translation>
@@ -2262,6 +2264,7 @@
 <translation id="851660987304951246">आशयाचा झटपट सारांश देण्यासाठी किंवा प्रश्न विचारण्यासाठी मला वाचण्यात मदत करा वापरा</translation>
 <translation id="8517041960877371778">तुमचे <ph name="DEVICE_TYPE" /> सुरू केले असताना कदाचित चार्ज होणार नाही.</translation>
 <translation id="8535393432370007982">रंगानुसार क्रमवारीचा क्रम पहिल्यासारखा करा</translation>
+<translation id="8536886494750559755">क्विक शेअर सेटिंग्ज दाखवा. <ph name="TIME_REMAINING" /> साठी प्रत्येकासाठी दृश्यमान असेल</translation>
 <translation id="8539803091108018926">मजकूर क्लिपबोर्डवर कॉपी केला</translation>
 <translation id="8541078764854166027">कॅमेरा फ्रेमिंग</translation>
 <translation id="8542053257095774575">कोणतीही सेव्ह केलेली डेस्‍क किंवा टेंप्लेट नाहीत</translation>

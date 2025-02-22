@@ -1855,6 +1855,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.SelectURL.UrlsLength" units="count"
+    expires_after="2025-08-21">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures length of the `urls` parameter in `selectURL()`. Recorded when
+    `selectURL()` is invoked and after successful length validation. Measures
+    numbers up to 8 precisely; numbers of 9 or more are grouped into the
+    overflow bucket 9.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Timing.UrlMappingDuringNavigation"
     units="ms" expires_after="2025-08-10">
   <owner>cammie@chromium.org</owner>
@@ -1970,6 +1983,20 @@ chromium-metrics-reviews@google.com.
     `SharedStorageWorkletHost::SelectURL()`, except for those where
     `SharedStorageWorkletHost`'s pointer to its associated `PageImpl` is
     nullptr.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Worklet.Timing.AbsoluteUsefulResourceDuration"
+    units="ms" expires_after="2025-08-21">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the total duration that a Shared Storage worklet is actively
+    processing operations (i.e, from the worklet's creation until either its
+    last operation completes or it is destroyed). Recorded when the worklet is
+    destroyed.
   </summary>
 </histogram>
 
@@ -2126,11 +2153,10 @@ chromium-metrics-reviews@google.com.
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    Measures the percentage of the time duration between a
-    `SharedStorageWorkletHost`'s creation and destruction that occurs before the
-    time of its last finished operation. For worklets that are destroyed before
-    completing their outstanding operations, we record 100. Recorded in the
-    destructor of `SharedStorageWorkletHost`.
+    Measures the percentage of a shared storage worklet's lifetime that it is
+    actively processing operations (i.e., from the worklet's creation until
+    either its last operation completes or it is destroyed). If the worklet has
+    zero lifetime, we record 100. Recorded when the worklet is destroyed.
   </summary>
 </histogram>
 

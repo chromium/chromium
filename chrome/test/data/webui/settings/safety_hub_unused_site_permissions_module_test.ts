@@ -51,8 +51,8 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     // about origins and associated permissions being equal.
     assertEquals(mockDataLength, siteList.length);
     for (const [i, site] of siteList.entries()) {
-      assertEquals(mockData[i]!.origin, site!.origin);
-      assertDeepEquals(site!.permissions, mockData[i]!.permissions);
+      assertEquals(mockData[i]!.origin, site.origin);
+      assertDeepEquals(site.permissions, mockData[i]!.permissions);
     }
   }
 
@@ -293,7 +293,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
   test('Undo Allow Again', async function() {
     for (const [i, site] of getSiteList().entries()) {
       // User clicks Allow Again and then Undo.
-      site!.querySelector('cr-icon-button')!.click();
+      site.querySelector('cr-icon-button')!.click();
       metricsBrowserProxy.reset();
       testElement.$.toastUndoButton.click();
 

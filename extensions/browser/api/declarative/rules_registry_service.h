@@ -20,6 +20,7 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/rules_registry_ids.h"
 
 namespace content {
 class BrowserContext;
@@ -37,9 +38,6 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
                              public ExtensionRegistryObserver,
                              public RulesCacheDelegate::Observer {
  public:
-  static const int kDefaultRulesRegistryID;
-  static const int kInvalidRulesRegistryID;
-
   struct RulesRegistryKey {
     std::string event_name;
     int rules_registry_id;
@@ -162,7 +160,7 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
   static const bool kServiceHasOwnInstanceInIncognito = true;
   static const bool kServiceIsNULLWhileTesting = true;
 
-  int current_rules_registry_id_;
+  int current_rules_registry_id_ = rules_registry_ids::kDefaultRulesRegistryID;
 
   RulesRegistryMap rule_registries_;
 
@@ -172,7 +170,7 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
   // Weak pointer into rule_registries_ to make it easier to handle content rule
   // conditions.
   raw_ptr<ContentRulesRegistry, AcrossTasksDanglingUntriaged>
-      content_rules_registry_;
+      content_rules_registry_ = nullptr;
 
   // Listen to extension load, unloaded notification.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

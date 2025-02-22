@@ -408,6 +408,17 @@
      ]
     }
    },
+   "ai": {
+    "language_detection": {
+     "capabilities-detached-crash.tentative.https.html": [
+      "705fff6ceec378b32d7ec6efe4cdece49bf6f107",
+      [
+       null,
+       {}
+      ]
+     ]
+    }
+   },
    "css": {
     "CSS2": {
      "floats": {
@@ -20059,7 +20070,7 @@
    },
    "speech-api": {
     "SpeechRecognition-abort-manual.https.html": [
-     "3c9e1ab2512e0a8451da5711252fc43956a41afa",
+     "3c6245bc62a6a6a0bc29564a098af6482aebdc67",
      [
       null,
       {}
@@ -20080,7 +20091,7 @@
      ]
     ],
     "SpeechRecognition-onerror-manual.https.html": [
-     "b0d5d5ebed059c92941af734d6e9d317aa6eda87",
+     "c1c20830659c09451206757d2a1aebdb040dad8d",
      [
       null,
       {}
@@ -20094,7 +20105,7 @@
      ]
     ],
     "SpeechRecognition-stop-manual.https.html": [
-     "e4741b7fc6f450a5038f99c1b3de15ae4f5b0db0",
+     "82701e9522944e2d364ed903ac0e08bad665227b",
      [
       null,
       {}
@@ -282078,6 +282089,66 @@
         ]
        ]
       },
+      "fill-and-stroke-styles": {
+       "2d.gradient.colorInterpolationMethod.html": [
+        "fe3c5ddad9817030d63cc5fc5be50fae4250ba47",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/fill-and-stroke-styles/2d.gradient.colorInterpolationMethod-expected.html",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              1
+             ],
+             [
+              0,
+              60000
+             ]
+            ]
+           ]
+          ]
+         }
+        ]
+       ],
+       "2d.gradient.hueInterpolationMethod.html": [
+        "ba73a65b6a3a20571e6ae83ee7015a11eb200836",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/fill-and-stroke-styles/2d.gradient.hueInterpolationMethod-expected.html",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              1
+             ],
+             [
+              0,
+              60000
+             ]
+            ]
+           ]
+          ]
+         }
+        ]
+       ]
+      },
       "filters": {
        "2d.filter.canvasFilterObject.componentTransfer.discrete.tentative.html": [
         "126ac8786c3b4b785f427acd15385ed7c3d57f54",
@@ -283815,12 +283886,12 @@
           ]
          ],
          "canvas-filter-object-turbulence.html": [
-          "d75187ac2ea7bd9d8a92c408b72c2fcd810e8103",
+          "eb0803e42e0d8cd925af408ee84d479852561e84",
           [
            null,
            [
             [
-             "/html/canvas/element/manual/filters/tentative/canvas-filter-object-turbulence-expected.html",
+             "/html/canvas/element/manual/filters/tentative/canvas-filter-object-blur-expected.html",
              "=="
             ]
            ],
@@ -284036,7 +284107,7 @@
          ]
         ],
         "canvas.2d.direction.inherit.dynamic.canvas.html": [
-         "5dd1ecb03d4c87b6f18dc85a0c78d593429656da",
+         "7762680f9ac45e8a63366c4a29056d331e0144d0",
          [
           null,
           [
@@ -284201,6 +284272,97 @@
           [
            [
             "/html/canvas/element/manual/text/canvas.2d.fontStretch-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.lang.dynamic.html": [
+         "52c526b3703b8058166808dce8282953eda32458",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.lang.dynamic-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.lang.empty.canvas.tentative.html": [
+         "4db9fc716c3a616a8257f00a6eb31796d89178e4",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.lang.empty-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.lang.inherit.canvas.tentative.html": [
+         "06fdf5001a31535e5278237b969f6569772fd0c3",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.lang-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.lang.inherit.disconnected.canvas.tentative.html": [
+         "dff0e5c8a418f40cdd9f15050985e433a7af090d",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.lang-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.lang.inherit.document.disconnected.canvas.tentative.html": [
+         "a13f87bbcb2a456be113c3242ee7f151c1f83e55",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.lang-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.lang.inherit.document.tentative.html": [
+         "3ff36f34fdb1edbd822caba0461c5dbed41daae6",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.lang-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.lang.tentative.html": [
+         "a9b4a8f63f04693fe9c89b6f917b1ce76cb7e439",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/text/canvas.2d.lang-ref.html",
             "=="
            ]
           ],
@@ -285325,6 +285487,124 @@
              [
               0,
               25392
+             ]
+            ]
+           ]
+          ]
+         }
+        ]
+       ]
+      },
+      "fill-and-stroke-styles": {
+       "2d.gradient.colorInterpolationMethod.html": [
+        "c84069e6dc8c589907739bb1bca3bc78529cd6e0",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.colorInterpolationMethod-expected.html",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              1
+             ],
+             [
+              0,
+              60000
+             ]
+            ]
+           ]
+          ]
+         }
+        ]
+       ],
+       "2d.gradient.colorInterpolationMethod.w.html": [
+        "d9b3170baca30985d41eb6255ea0c38532840163",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.colorInterpolationMethod-expected.html",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              1
+             ],
+             [
+              0,
+              60000
+             ]
+            ]
+           ]
+          ]
+         }
+        ]
+       ],
+       "2d.gradient.hueInterpolationMethod.html": [
+        "9169422061e6df117318a98e1989fe48cc3f0216",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.hueInterpolationMethod-expected.html",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              1
+             ],
+             [
+              0,
+              60000
+             ]
+            ]
+           ]
+          ]
+         }
+        ]
+       ],
+       "2d.gradient.hueInterpolationMethod.w.html": [
+        "8379f473c9a286123057afd203329538e8df24e3",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/fill-and-stroke-styles/2d.gradient.hueInterpolationMethod-expected.html",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              1
+             ],
+             [
+              0,
+              60000
              ]
             ]
            ]
@@ -287624,6 +287904,32 @@
           {}
          ]
         ],
+        "canvas.2d.offscreen.lang.inherit.tentative.html": [
+         "8c79d4693147218516ebfb500763bfd132133808",
+         [
+          null,
+          [
+           [
+            "/html/canvas/offscreen/manual/text/canvas.2d.offscreen.lang-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.offscreen.lang.tentative.html": [
+         "3978ce83241e67dc66e1813469d2016964f10f6b",
+         [
+          null,
+          [
+           [
+            "/html/canvas/offscreen/manual/text/canvas.2d.offscreen.lang-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
         "canvas.2d.offscreen.transferred.direction.inherit.document.html": [
          "1655ddc83e3a72c225ea233757a922530f74f237",
          [
@@ -287650,6 +287956,45 @@
           {}
          ]
         ],
+        "canvas.2d.offscreen.transferred.lang.inherit.document.tentative.html": [
+         "5c194d7dc796a33dc9a708873c5d1178f7b2df5e",
+         [
+          null,
+          [
+           [
+            "/html/canvas/offscreen/manual/text/canvas.2d.offscreen.lang-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.offscreen.transferred.lang.inherit.tentative.html": [
+         "24f5f6402f6133d68bd46c4f7d3a24347ff9e5bf",
+         [
+          null,
+          [
+           [
+            "/html/canvas/offscreen/manual/text/canvas.2d.offscreen.lang-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.offscreen.transferred.lang.tentative.html": [
+         "6cdbeb50bd57fa5117549af866b0f52e31618737",
+         [
+          null,
+          [
+           [
+            "/html/canvas/offscreen/manual/text/canvas.2d.offscreen.lang-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
         "canvas.2d.offscreen.worker.direction.html": [
          "56c7dc00f2174fe5d707d68f90b6ec4aab2aed71",
          [
@@ -287670,6 +288015,32 @@
           [
            [
             "/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.direction-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.offscreen.worker.lang.inherit.tentative.html": [
+         "5bbf90566683ce11ef1d06c198d425af0264896d",
+         [
+          null,
+          [
+           [
+            "/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas.2d.offscreen.worker.lang.tentative.html": [
+         "c8a44ed739ac521e6a73e3309f6408f17d7eccc8",
+         [
+          null,
+          [
+           [
+            "/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang-ref.html",
             "=="
            ]
           ],
@@ -297720,6 +298091,19 @@
          {
           "testdriver": true
          }
+        ]
+       ],
+       "interesttarget-outline-appearance.tentative.html": [
+        "28cb2052a8d430b5dfadd31171b17d32a567d073",
+        [
+         null,
+         [
+          [
+           "/html/semantics/the-button-element/interest-target/interesttarget-outline-appearance-ref.html",
+           "!="
+          ]
+         ],
+         {}
         ]
        ]
       }
@@ -312853,14 +313237,6 @@
      "Blob-bytes.any.worker-expected.txt": [
       "5081160ed0988d6b80a027c9f56fae2672d089e0",
       []
-     ],
-     "Blob-constructor.any-expected.txt": [
-      "10c7c059ce18edc47663f22222fbfa60d43764b6",
-      []
-     ],
-     "Blob-constructor.any.worker-expected.txt": [
-      "10c7c059ce18edc47663f22222fbfa60d43764b6",
-      []
      ]
     },
     "file": {
@@ -313009,22 +313385,6 @@
     ],
     "README.md": [
      "545f0bec6d9822e7862fc4010fb8d52d3dc4b768",
-     []
-    ],
-    "idb-binary-key-roundtrip.any-expected.txt": [
-     "3c11fd4d135b6a5a44a7e3877efcb001ed7b3186",
-     []
-    ],
-    "idb-binary-key-roundtrip.any.serviceworker-expected.txt": [
-     "3c11fd4d135b6a5a44a7e3877efcb001ed7b3186",
-     []
-    ],
-    "idb-binary-key-roundtrip.any.sharedworker-expected.txt": [
-     "3c11fd4d135b6a5a44a7e3877efcb001ed7b3186",
-     []
-    ],
-    "idb-binary-key-roundtrip.any.worker-expected.txt": [
-     "3c11fd4d135b6a5a44a7e3877efcb001ed7b3186",
      []
     ],
     "resources": {
@@ -313465,14 +313825,6 @@
       []
      ]
     },
-    "getRandomValues.any-expected.txt": [
-     "1a0cb5189c323f7a02d86aee4079f52f1a1f8cba",
-     []
-    ],
-    "getRandomValues.any.worker-expected.txt": [
-     "1a0cb5189c323f7a02d86aee4079f52f1a1f8cba",
-     []
-    ],
     "import_export": {
      "ec_importKey_failures_fixtures.js": [
       "a2d25e816cbd7354105cfde9e46ffdffbeb38e23",
@@ -315045,7 +315397,7 @@
     },
     "resources": {
      "bluetooth-fake-devices.js": [
-      "c503bf790c4b4a14405eb566383666539dabdda5",
+      "1c8e24f19d1bc90dc05a8cbabd1597022ace1acd",
       []
      ],
      "bluetooth-scanning-helpers.js": [
@@ -315053,7 +315405,7 @@
       []
      ],
      "bluetooth-test.js": [
-      "a771abbd51b625d669e510f7e70c9f633b3cffa1",
+      "bd597efd01b601754ce2c62e4c7fb4842fd5057c",
       []
      ],
      "health-thermometer-iframe.html": [
@@ -316465,22 +316817,6 @@
     ],
     "WEB_FEATURES.yml": [
      "c8b072631ea496142e16a2fe6ac5d516af3e2e14",
-     []
-    ],
-    "decompression-buffersource.tentative.any-expected.txt": [
-     "6e063021807acc044732b13bc2ef71a268e080f7",
-     []
-    ],
-    "decompression-buffersource.tentative.any.serviceworker-expected.txt": [
-     "6e063021807acc044732b13bc2ef71a268e080f7",
-     []
-    ],
-    "decompression-buffersource.tentative.any.sharedworker-expected.txt": [
-     "6e063021807acc044732b13bc2ef71a268e080f7",
-     []
-    ],
-    "decompression-buffersource.tentative.any.worker-expected.txt": [
-     "6e063021807acc044732b13bc2ef71a268e080f7",
      []
     ],
     "resources": {
@@ -366499,7 +366835,7 @@
       []
      ],
      "variable-definition-expected.txt": [
-      "82fefc47e9809cef900706b8e6cdfc5a28f4dc25",
+      "501eac3c4bbb58a3dc218f49b9c4cb6f8d0311b0",
       []
      ],
      "variable-external-font-face-01-ref.html": [
@@ -370576,10 +370912,6 @@
      },
      "screen-detached-frame-expected.txt": [
       "4964b7f132c560a67dd3bb4974106d6803ff9e9a",
-      []
-     ],
-     "scroll-offsets-fractional-zoom-expected.txt": [
-      "cea4e0df622b8e62f10bd339b5a5a2627a6b43ea",
       []
      ],
      "scrollTop-display-change-ref.html": [
@@ -376118,7 +376450,7 @@
      []
     ],
     "encodeInto.any-expected.txt": [
-     "616b8915d2f7c740ae565f6cba4dc8bff8b6229f",
+     "6154e7641f16c70406e3e732b641ea8d92681460",
      []
     ],
     "encodeInto.any.js.headers": [
@@ -376126,15 +376458,15 @@
      []
     ],
     "encodeInto.any.serviceworker-expected.txt": [
-     "616b8915d2f7c740ae565f6cba4dc8bff8b6229f",
+     "6154e7641f16c70406e3e732b641ea8d92681460",
      []
     ],
     "encodeInto.any.sharedworker-expected.txt": [
-     "616b8915d2f7c740ae565f6cba4dc8bff8b6229f",
+     "6154e7641f16c70406e3e732b641ea8d92681460",
      []
     ],
     "encodeInto.any.worker-expected.txt": [
-     "616b8915d2f7c740ae565f6cba4dc8bff8b6229f",
+     "6154e7641f16c70406e3e732b641ea8d92681460",
      []
     ],
     "eof-shift_jis-ref.html": [
@@ -379253,38 +379585,6 @@
        "4045507e6fcd9a6c77922648c8437ffb5ef413dd",
        []
       ],
-      "request-headers.any-expected.txt": [
-       "29985e4e3b42b2e34edea25a496bf37a05149160",
-       []
-      ],
-      "request-headers.any.serviceworker-expected.txt": [
-       "29985e4e3b42b2e34edea25a496bf37a05149160",
-       []
-      ],
-      "request-headers.any.sharedworker-expected.txt": [
-       "29985e4e3b42b2e34edea25a496bf37a05149160",
-       []
-      ],
-      "request-headers.any.worker-expected.txt": [
-       "29985e4e3b42b2e34edea25a496bf37a05149160",
-       []
-      ],
-      "request-upload.any-expected.txt": [
-       "29985e4e3b42b2e34edea25a496bf37a05149160",
-       []
-      ],
-      "request-upload.any.serviceworker-expected.txt": [
-       "29985e4e3b42b2e34edea25a496bf37a05149160",
-       []
-      ],
-      "request-upload.any.sharedworker-expected.txt": [
-       "29985e4e3b42b2e34edea25a496bf37a05149160",
-       []
-      ],
-      "request-upload.any.worker-expected.txt": [
-       "29985e4e3b42b2e34edea25a496bf37a05149160",
-       []
-      ],
       "scheme-blob.sub.any-expected.txt": [
        "df66469d9812460eab38c5c25c8764b0236d5b9e",
        []
@@ -379875,22 +380175,6 @@
       },
       "response-body-read-task-handling-expected.txt": [
        "fa5dfb70f656636873396e491831e67b00140496",
-       []
-      ],
-      "response-clone.any-expected.txt": [
-       "ffc65b1f8539b46296bff266c1f001d59c89b568",
-       []
-      ],
-      "response-clone.any.serviceworker-expected.txt": [
-       "ffc65b1f8539b46296bff266c1f001d59c89b568",
-       []
-      ],
-      "response-clone.any.sharedworker-expected.txt": [
-       "ffc65b1f8539b46296bff266c1f001d59c89b568",
-       []
-      ],
-      "response-clone.any.worker-expected.txt": [
-       "ffc65b1f8539b46296bff266c1f001d59c89b568",
        []
       ],
       "response-consume-empty.any-expected.txt": [
@@ -386888,6 +387172,14 @@
         "eeedd0ff05889ffd4468bf19a2e8e9e0a094201c",
         []
        ],
+       "2d.gradient.colorInterpolationMethod-expected.html": [
+        "8be5641b40695859d64d8be277cc667216a0a37b",
+        []
+       ],
+       "2d.gradient.hueInterpolationMethod-expected.html": [
+        "13ae67ad970eb6bc6a94d837d3f2c01c2ad9c3ba",
+        []
+       ],
        "2d.gradient.interpolate.alpha.png": [
         "af5ac0f07d64e7598e0ea6a8e37cff2a5c4ea2a0",
         []
@@ -387535,6 +387827,18 @@
         ],
         "canvas.2d.fontStretch-ref.html": [
          "00ecdccad3743db0d0a1ec99850f80ea7964d512",
+         []
+        ],
+        "canvas.2d.lang-ref.html": [
+         "fec2d7558ab727996b6f1b95f08290c69881f879",
+         []
+        ],
+        "canvas.2d.lang.dynamic-ref.html": [
+         "18027189f393223d01a26a1deed2c13bc6988e42",
+         []
+        ],
+        "canvas.2d.lang.empty-ref.html": [
+         "7f9f172fd458b05220bbe903de8de73297d20c2d",
          []
         ],
         "canvas_text_font_001-ref.htm": [
@@ -388253,6 +388557,16 @@
         []
        ]
       },
+      "fill-and-stroke-styles": {
+       "2d.gradient.colorInterpolationMethod-expected.html": [
+        "8be5641b40695859d64d8be277cc667216a0a37b",
+        []
+       ],
+       "2d.gradient.hueInterpolationMethod-expected.html": [
+        "13ae67ad970eb6bc6a94d837d3f2c01c2ad9c3ba",
+        []
+       ]
+      },
       "filters": {
        "2d.filter.canvasFilterObject.componentTransfer.discrete.tentative-expected.html": [
         "8b81b134aeab6d4457853556563ce927ccefea5f",
@@ -388571,8 +388885,16 @@
          "8949caa8486848a4d8f820752e1d73d26e2fc07d",
          []
         ],
+        "canvas.2d.offscreen.lang-ref.html": [
+         "b2c01b62a7b06a571369a835cb53a1f913e960e9",
+         []
+        ],
         "canvas.2d.offscreen.worker.direction-ref.html": [
          "23e70313cdbfd65535e5d16297ae5a074ee645ed",
+         []
+        ],
+        "canvas.2d.offscreen.worker.lang-ref.html": [
+         "84f46ba99f604d2cf318c0dd247c9682af352750",
          []
         ],
         "text-direction-worker-inherit.js": [
@@ -388581,6 +388903,14 @@
         ],
         "text-direction-worker.js": [
          "d85504f524e66fce864ab284da961624e2e3c3a5",
+         []
+        ],
+        "text-lang-worker-inherit.js": [
+         "604cc13ec90b3c5cdac26433dae6b9701b41f8e7",
+         []
+        ],
+        "text-lang-worker.js": [
+         "78b1d4ca7f1e4f9231fc81de043f54d17d01172b",
          []
         ]
        },
@@ -388716,7 +389046,7 @@
        []
       ],
       "canvas-grid-reftest.css": [
-       "368a06fbb371fa56850453b0ef05c2241d7be0dd",
+       "94ff2664e420f3c00d17df9c83e05862254d4a15",
        []
       ],
       "canvas-index.css": [
@@ -388758,7 +389088,7 @@
        []
       ],
       "gentest.py": [
-       "62434a2442c5936f0b37ea928c9d66d139d02ef1",
+       "a3f831c68d88e3e210beaaa17eb6aaade7e4874e",
        []
       ],
       "name2dir.yaml": [
@@ -388771,11 +389101,11 @@
         []
        ],
        "reftest_element.html": [
-        "6be754069e42ec87c433dc32744e93f1cc8f766a",
+        "30d1eae3fec07c9669076ef50edb3e1bff9232e6",
         []
        ],
        "reftest_element_grid.html": [
-        "f2bbb183358a274db1e37282ff33d94befa9f363",
+        "076bcde47a731b161e16bfcdb28c8c38676acb91",
         []
        ],
        "reftest_grid.html": [
@@ -388787,23 +389117,23 @@
         []
        ],
        "reftest_img_grid.html": [
-        "227184db2ea05349e5d1be398234ad29d1cd1123",
+        "7d23c839f3294295e0193940af93ba65d5d29a1e",
         []
        ],
        "reftest_offscreen.html": [
-        "db1cb83f6336aabbbe339ff34db26a83982bf7c5",
+        "69169e0f7e421a03f40132f914d307bca29e4072",
         []
        ],
        "reftest_offscreen_grid.html": [
-        "a9553e824198db2b414c669f5c2f20c5e20b0fd0",
+        "7badeea6249675f088a227e06ede570949850600",
         []
        ],
        "reftest_worker.html": [
-        "23147dec8766fa46b33c439a17aa526780af4b0d",
+        "0f03d7ae0dc96c8d628a916101709f814f2ada0f",
         []
        ],
        "reftest_worker_grid.html": [
-        "7cbe19775174d1f57d99d839503b65985c378875",
+        "47f746c2b68a0d8d4c904465b83ab2c37e03202f",
         []
        ],
        "testharness_element.html": [
@@ -388857,7 +389187,7 @@
         []
        ],
        "fill-and-stroke-styles.yaml": [
-        "2fb7169a3ab75682309ae017c2f18f4228f72f13",
+        "3a11cd4d062d27b07abb288b14dbeb9a6748c6bf",
         []
        ],
        "filters.yaml": [
@@ -388889,7 +389219,7 @@
         []
        ],
        "text.yaml": [
-        "42bf9a3c93964c4bc0ea575ce36d6892fba01bc0",
+        "27e705821b16c50713b566329a8143ff1987d340",
         []
        ],
        "the-canvas-state.yaml": [
@@ -393944,10 +394274,6 @@
         "63b60e490f47f4db77d33d7a4ca2f5b9a4181de8",
         []
        ],
-       "window-simple-success.https-expected.txt": [
-        "525a9dcd41f76fee6540184a67e156620be84673",
-        []
-       ],
        "window-simple-success.https.html.headers": [
         "63b60e490f47f4db77d33d7a4ca2f5b9a4181de8",
         []
@@ -398245,6 +398571,10 @@
         []
        ],
        "css-module": {
+        "WEB_FEATURES.yml": [
+         "5b5a81cc2e6e468fe309d1ab714a67c61a0bc312",
+         []
+        ],
         "resources": {
          "atImported.css": [
           "8629a846d14e60a3596e809b911622f6aecb5a04",
@@ -399961,7 +400291,11 @@
       },
       "interest-target": {
        "interesttarget-keyboard-invalidation-ref.html": [
-        "bcd3c103f607c952e4532f9c41e2dc9d60e160c5",
+        "76424374fb8cda5ec698e3229eac55570963f3e9",
+        []
+       ],
+       "interesttarget-outline-appearance-ref.html": [
+        "33b0cf668587f182caf87dfb98665a9301fca19a",
         []
        ],
        "resources": {
@@ -413411,6 +413745,10 @@
      "5e8f640c6659d176eaca4c71cc1798b7285540b7",
      []
     ],
+    "web-bluetooth-bidi-test.js": [
+     "044ad1a43aeccf2ad6762886ce182e8848c89ed8",
+     []
+    ],
     "webidl2": {
      ".gitignore": [
       "1d72980cd7ea87ceabf98742a13f9d2e1419edf0",
@@ -413466,7 +413804,7 @@
      []
     ],
     "sethtml-tree-construction.sub.dat": [
-     "08cb25a508007ee834a18456021f4bd9c078adaa",
+     "0986112a233745d9d1db81f45e8c8ef016ceac03",
      []
     ],
     "sethtml-unsafety.sub.dat": [
@@ -423586,7 +423924,7 @@
      ]
     },
     "testcommon.js": [
-     "b431b213dbef47d27954a4622a17f9a6e7a6a126",
+     "a5b747f0288a039967b40a574559e4b95cf358b3",
      []
     ],
     "timing-model": {
@@ -427499,22 +427837,6 @@
      "ea35c702ae7f42e72bbc751b4eff62d3b51fbdf3",
      []
     ],
-    "Send-binary-arraybufferview-float16.any.worker_default-expected.txt": [
-     "35f5a629c311755cee3a54b25b04c19de66e26d2",
-     []
-    ],
-    "Send-binary-arraybufferview-float16.any.worker_wss-expected.txt": [
-     "35f5a629c311755cee3a54b25b04c19de66e26d2",
-     []
-    ],
-    "Send-binary-arraybufferview-float16.any_default-expected.txt": [
-     "35f5a629c311755cee3a54b25b04c19de66e26d2",
-     []
-    ],
-    "Send-binary-arraybufferview-float16.any_wss-expected.txt": [
-     "35f5a629c311755cee3a54b25b04c19de66e26d2",
-     []
-    ],
     "back-forward-cache-with-closed-websocket-connection-ccns.tentative.window-expected.txt": [
      "5636f8fa1c23f49e0b0db852b4d8e822fddec536",
      []
@@ -431273,12 +431595,8 @@
       ]
      },
      "interface-objects": {
-      "001.worker-expected.txt": [
-       "d91b83d868a9c0b94227c43be137f05448ada808",
-       []
-      ],
       "003.any.sharedworker-expected.txt": [
-       "d24fe910874bc333fd34885d5ee9db9bc8a2e136",
+       "eafe3ec48c39462d4f90112de9a7f1e3634a38c8",
        []
       ]
      },
@@ -432413,14 +432731,6 @@
     ],
     "send-content-type-charset-expected.txt": [
      "100dab8abbfc90b083215cd74bddb7029de5a6ab",
-     []
-    ],
-    "send-data-sharedarraybuffer.any-expected.txt": [
-     "7dc341a775a3587a97290b55bc74acdb42252a2d",
-     []
-    ],
-    "send-data-sharedarraybuffer.any.worker-expected.txt": [
-     "7dc341a775a3587a97290b55bc74acdb42252a2d",
      []
     ],
     "send-no-response-event-order-expected.txt": [
@@ -459868,7 +460178,7 @@
     "bidi": {
      "adapter": {
       "adapter-absent-getAvailability.https.window.js": [
-       "419a9d411dfed5b7796bcaabfe9a0324036546be",
+       "ba58cc83b6ae88912aeeafaf2f6d4257b1769b22",
        [
         "bluetooth/bidi/adapter/adapter-absent-getAvailability.https.window.html",
         {
@@ -459897,7 +460207,7 @@
        ]
       ],
       "adapter-powered-off-getAvailability.https.window.js": [
-       "9bf10801bb72f58be9e77228afc06707b2df8a0b",
+       "ce99800cbbdbbeb50052ab2ae54c401b3880c322",
        [
         "bluetooth/bidi/adapter/adapter-powered-off-getAvailability.https.window.html",
         {
@@ -459926,7 +460236,7 @@
        ]
       ],
       "adapter-powered-on-getAvailability.https.window.js": [
-       "6ffba254d8a80cb574738802f9bd4e6360f4d159",
+       "fd91c9fa04b01a6b762a529d917c5cf741406dca",
        [
         "bluetooth/bidi/adapter/adapter-powered-on-getAvailability.https.window.html",
         {
@@ -459955,9 +460265,100 @@
        ]
       ],
       "cross-origin-iframe-getAvailability.sub.https.window.js": [
-       "fd638b55561d383dcb95f9444f60e39876156020",
+       "319aca32b1f76d98a2e393799d7692b059f6f981",
        [
         "bluetooth/bidi/adapter/cross-origin-iframe-getAvailability.sub.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testdriver.js?feature=bidi"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ],
+         "testdriver_features": [
+          "bidi"
+         ]
+        }
+       ]
+      ]
+     },
+     "requestDevice": {
+      "acceptAllDevices": {
+       "device-with-empty-name.https.window.js": [
+        "0fa52cd553babc42811de6dd5654cfa27046aaf9",
+        [
+         "bluetooth/bidi/requestDevice/acceptAllDevices/device-with-empty-name.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/resources/testdriver.js?feature=bidi"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/bluetooth/resources/bluetooth-test.js"
+           ],
+           [
+            "script",
+            "/bluetooth/resources/bluetooth-fake-devices.js"
+           ]
+          ],
+          "testdriver_features": [
+           "bidi"
+          ]
+         }
+        ]
+       ],
+       "device-with-name.https.window.js": [
+        "537d01f4f388ec2d40e15f1e2b92aabaa376857b",
+        [
+         "bluetooth/bidi/requestDevice/acceptAllDevices/device-with-name.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/resources/testdriver.js?feature=bidi"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/bluetooth/resources/bluetooth-test.js"
+           ],
+           [
+            "script",
+            "/bluetooth/resources/bluetooth-fake-devices.js"
+           ]
+          ],
+          "testdriver_features": [
+           "bidi"
+          ]
+         }
+        ]
+       ]
+      },
+      "radio-not-present.https.window.js": [
+       "370ededf222a59247de99d8b23d5d7280df0cca5",
+       [
+        "bluetooth/bidi/requestDevice/radio-not-present.https.window.html",
         {
          "script_metadata": [
           [
@@ -462224,58 +462625,6 @@
      },
      "requestDevice": {
       "acceptAllDevices": {
-       "device-with-empty-name.https.window.js": [
-        "15bde6a9336c9e4cb7a13e6cc3864fc3000d2fbc",
-        [
-         "bluetooth/legacy/requestDevice/acceptAllDevices/device-with-empty-name.https.window.html",
-         {
-          "script_metadata": [
-           [
-            "script",
-            "/resources/testdriver.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-vendor.js"
-           ],
-           [
-            "script",
-            "/bluetooth/resources/bluetooth-test.js"
-           ],
-           [
-            "script",
-            "/bluetooth/resources/bluetooth-fake-devices.js"
-           ]
-          ]
-         }
-        ]
-       ],
-       "device-with-name.https.window.js": [
-        "f3373a6bb64f517c57c7a1decd2c3c553478a55e",
-        [
-         "bluetooth/legacy/requestDevice/acceptAllDevices/device-with-name.https.window.html",
-         {
-          "script_metadata": [
-           [
-            "script",
-            "/resources/testdriver.js"
-           ],
-           [
-            "script",
-            "/resources/testdriver-vendor.js"
-           ],
-           [
-            "script",
-            "/bluetooth/resources/bluetooth-test.js"
-           ],
-           [
-            "script",
-            "/bluetooth/resources/bluetooth-fake-devices.js"
-           ]
-          ]
-         }
-        ]
-       ],
        "optional-services-missing.https.window.js": [
         "5226a645a868df080da1a71dcb1305fbbb59158a",
         [
@@ -463349,32 +463698,6 @@
        "a063b61163019336cfe3e776ed14b8dc54aea227",
        [
         "bluetooth/legacy/requestDevice/not-processing-user-gesture.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/resources/testdriver.js"
-          ],
-          [
-           "script",
-           "/resources/testdriver-vendor.js"
-          ],
-          [
-           "script",
-           "/bluetooth/resources/bluetooth-test.js"
-          ],
-          [
-           "script",
-           "/bluetooth/resources/bluetooth-fake-devices.js"
-          ]
-         ]
-        }
-       ]
-      ],
-      "radio-not-present.https.window.js": [
-       "b55d63c6ff45fa30f973facc43de58f560a2f28c",
-       [
-        "bluetooth/legacy/requestDevice/radio-not-present.https.window.html",
         {
          "script_metadata": [
           [
@@ -467802,7 +468125,7 @@
      ]
     ],
     "async-write-html-read-html.https.html": [
-     "2573916bd6af251ee0f8272441128209f8ad1738",
+     "85e4f88a01ffd6289b5a6de79e936467d6bbbb81",
      [
       null,
       {
@@ -489360,7 +489683,7 @@
        ]
       ],
       "auto-scrollbars.html": [
-       "a08d694ac5711b0ca8526fe21ef5a84c8db0b849",
+       "6bc10e22634b8f81f5b6db097151713754e58597",
        [
         null,
         {}
@@ -495278,21 +495601,21 @@
         ]
        ],
        "gap-decorations-style-computed.html": [
-        "3d55aed80ba3d96d2c419843c2482657f36bc2ee",
+        "4de870c09847f7eb3fbf98f26a9196e4dcb52214",
         [
          null,
          {}
         ]
        ],
        "gap-decorations-style-invalid.html": [
-        "1ea533111cd25158e1c553648679c850c791b455",
+        "af1d5ccae57f47d960b4d3886588955efbaec784",
         [
          null,
          {}
         ]
        ],
        "gap-decorations-style-valid.html": [
-        "d90a9f8337216d263940afa01c1003add8bd1229",
+        "1f41238345c4d42e95a0ada017b67860fa2f6bb0",
         [
          null,
          {}
@@ -518997,7 +519320,7 @@
       ]
      ],
      "if-style-query.html": [
-      "2bfe6536fc0e37fd6a3e504c87e1b0418f97d44c",
+      "3f59d678363032bb7c708ad5e29bcc4e902a6999",
       [
        null,
        {}
@@ -519680,7 +520003,7 @@
       ]
      ],
      "variable-definition.html": [
-      "d38b64c72efe82967be1b6ee1af1bd09431b21f8",
+      "ea32add8659086c3a4d061644609e9187743bd6d",
       [
        null,
        {}
@@ -523233,7 +523556,7 @@
       ]
      ],
      "scroll-offsets-fractional-zoom.html": [
-      "7dc3fd0fad1eef79247d1c477506a4ae231671ef",
+      "922083156892d3899f96415ec6072c265fbb0c3b",
       [
        null,
        {}
@@ -532519,6 +532842,17 @@
        ],
        [
         "dom/observable/tentative/observable-filter.any.worker.html",
+        {}
+       ]
+      ],
+      "observable-finally.any.js": [
+       "298907b1b4ca8c39f1403fc31fe55e75b3f8d6fc",
+       [
+        "dom/observable/tentative/observable-finally.any.html",
+        {}
+       ],
+       [
+        "dom/observable/tentative/observable-finally.any.worker.html",
         {}
        ]
       ],
@@ -575436,7 +575770,7 @@
       ]
      ],
      "generate-bid-browser-signals.https.window.js": [
-      "44a5f2841101296e3dc840b7662bf301e379664e",
+      "00c4bfdcc315c02211792888b0e377302df2e36d",
       [
        "fledge/tentative/generate-bid-browser-signals.https.window.html?1-4",
        {
@@ -604907,6 +605241,20 @@
          {}
         ]
        ],
+       "2d.text.lang.default.tentative.html": [
+        "e6e49e1803d0a0c0a06e875d97a1e899c172681a",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.lang.valid.tentative.html": [
+        "3876a3ecbb6bcc00c5752f4012da567b00a883dc",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.text.measure.actualBoundingBox.html": [
         "e59cf14cac3c804edfebd4472a29ee889a8fcb50",
         [
@@ -618600,6 +618948,34 @@
         "89f4f48c7371f119098789c44d46e7a611664519",
         [
          "html/canvas/offscreen/text/2d.text.fontVariantCaps2.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.lang.default.tentative.html": [
+        "142535fcfb1bd7de11f606ddedf49300f3bdb5a2",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.lang.default.tentative.worker.js": [
+        "a7b21d51cacb22c1eb552262a9bd0d943c455213",
+        [
+         "html/canvas/offscreen/text/2d.text.lang.default.tentative.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.lang.valid.tentative.html": [
+        "1e1dd58c15a325798179216dedc3755bbd716081",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.lang.valid.tentative.worker.js": [
+        "17c8b0d568644e61ebe16abcecd00a425f7ba837",
+        [
+         "html/canvas/offscreen/text/2d.text.lang.valid.tentative.worker.html",
          {}
         ]
        ],
@@ -688346,7 +688722,7 @@
       {}
      ]
     ],
-    "sanitizer-names.tenative.html": [
+    "sanitizer-names.tentative.html": [
      "e16f685a91cbe9960591f41a5805abd91ea7c02c",
      [
       null,
@@ -690560,7 +690936,7 @@
       ]
      ],
      "animation-range-ignored.html": [
-      "98a5d45c37f9349eb28b54406e6542e58cb5b2a0",
+      "1aa2864ad4c6c8897e51e9321c17c8159b3d3083",
       [
        null,
        {}
@@ -702388,7 +702764,7 @@
      ]
     ],
     "SpeechRecognition-basics.https.html": [
-     "d4dfc5edd093d5fc431341a54c66a2f0b7a0adec",
+     "16c22e7c95fbaf13125692bb3ecef865a9f365f5",
      [
       null,
       {}

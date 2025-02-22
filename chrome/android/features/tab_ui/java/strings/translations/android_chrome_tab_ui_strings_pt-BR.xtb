@@ -30,7 +30,6 @@ Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de g
 <translation id="2118649612461486615">Informações da loja</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Você pode reabrir as guias e os grupos fechados nas seções "Guias recentes" e "Grupos de guias". A guia anônima não estará disponível.}one{Você pode reabrir as guias e os grupos fechados nas seções "Guias recentes" e "Grupos de guias". # guia anônima não estará disponível.}other{Você pode reabrir as guias e os grupos fechados nas seções "Guias recentes" e "Grupos de guias". # guias anônimas não estarão disponíveis.}}</translation>
 <translation id="2162620598375156287">Agora por <ph name="CURRENT_PRICE" /> nesta loja: <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">O grupo de guias <ph name="TAB_GROUP_NAME" /> não está disponível</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Desagrupar guia}one{Desagrupar guia}other{Desagrupar guias}}</translation>
 <translation id="2271452184061378400">Seus grupos de guias são salvos aqui</translation>
 <translation id="2277224997687551299">Editar nome do grupo</translation>

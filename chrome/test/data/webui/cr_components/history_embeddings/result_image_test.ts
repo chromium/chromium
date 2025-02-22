@@ -46,7 +46,7 @@ suite('cr-history-embeddings-result-image', () => {
   });
 
   test('ShowsSvgByDefault', () => {
-    const svg = element.shadowRoot!.querySelector('svg');
+    const svg = element.shadowRoot.querySelector('svg');
     assertTrue(!!svg);
   });
 
@@ -83,7 +83,7 @@ suite('cr-history-embeddings-result-image', () => {
     await element.updateComplete;
     await imageServiceHandler.whenCalled('getPageImageUrl');
 
-    let imageElement = element.shadowRoot!.querySelector('#image')!;
+    let imageElement = element.shadowRoot.querySelector('#image')!;
     assertFalse(isVisible(imageElement));
     assertFalse(element.hasAttribute('has-image'));
 
@@ -100,7 +100,7 @@ suite('cr-history-embeddings-result-image', () => {
     await element.updateComplete;
 
     // Verify images are shown and set to the correct url.
-    imageElement = element.shadowRoot!.querySelector('#image')!;
+    imageElement = element.shadowRoot.querySelector('#image')!;
     assertTrue(isVisible(imageElement));
     assertEquals(imageUrl, imageElement.getAttribute('auto-src'));
     assertTrue(element.hasAttribute('has-image'));

@@ -188,6 +188,9 @@ class BrowserFeaturePromoController2xTestBase
     if (GetParam()) {
       enabled_features.emplace_back(
           user_education::features::kUserEducationExperienceVersion2Point5);
+    } else {
+      disabled_features.emplace_back(
+          user_education::features::kUserEducationExperienceVersion2Point5);
     }
 
     // Disable all registered IPH. These tests use only test features.
@@ -1683,9 +1686,8 @@ class BrowserFeaturePromoController2xViewsTestBase
       steps.emplace_back(AdvanceTime(*timeout_delta + base::Milliseconds(500)));
     }
 
-    steps = Steps(std::move(steps),
-                  WaitForEvent(kBrowserViewElementId, kPromoShownEvent),
-                  CheckResult([result]() { return result->data; }, expected));
+    steps += Steps(WaitForEvent(kBrowserViewElementId, kPromoShownEvent),
+                   CheckResult([result]() { return result->data; }, expected));
     AddDescriptionPrefix(steps, caller);
     return steps;
   }
@@ -2323,15 +2325,15 @@ class BrowserFeaturePromoController2xPriorityTest
     // Must be computed before `Do()`, which consumes `params`.
     const std::string caller =
         base::StrCat({"MaybeShowStartupPromo( ", params.feature->name, " )"});
-    return std::move(Do([this, p = std::move(params)]() mutable {
-                       // This is insurance, a parameter could be added to
-                       // specify whether the feature is expected to check the
-                       // tracker or not.
-                       EXPECT_CALL(*mock_tracker_,
-                                   ShouldTriggerHelpUI(Ref(*p.feature)))
-                           .WillRepeatedly(Return(true));
-                       controller_->MaybeShowStartupPromo(std::move(p));
-                     }).AddDescriptionPrefix(caller));
+    return Do([this, p = std::move(params)]() mutable {
+             // This is insurance, a parameter could be added to
+             // specify whether the feature is expected to check the
+             // tracker or not.
+             EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(*p.feature)))
+                 .WillRepeatedly(Return(true));
+             controller_->MaybeShowStartupPromo(std::move(p));
+           })
+        .AddDescriptionPrefix(caller);
   }
 
   auto ExpectShowingPromo(const base::Feature* feature) {
@@ -2343,13 +2345,12 @@ class BrowserFeaturePromoController2xPriorityTest
 
   auto ResetSessionData(base::TimeDelta since_session_start,
                         base::TimeDelta idle_time = base::Seconds(1)) {
-    return std::move(
-        WithView(
-            kBrowserViewElementId,
-            base::BindOnce(
-                &BrowserFeaturePromoController2xTestBase::ResetSessionDataImpl,
-                base::Unretained(this), since_session_start, idle_time))
-            .AddDescriptionPrefix("ResetSessionData()"));
+    return WithView(kBrowserViewElementId,
+                    base::BindOnce(&BrowserFeaturePromoController2xTestBase::
+                                       ResetSessionDataImpl,
+                                   base::Unretained(this), since_session_start,
+                                   idle_time))
+        .AddDescriptionPrefix("ResetSessionData()");
   }
 
   auto CheckPromoStatus(const base::Feature& iph_feature,

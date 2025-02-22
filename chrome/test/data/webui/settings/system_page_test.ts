@@ -113,7 +113,7 @@ suite('settings system page', function() {
     const restart = control.querySelector('cr-button');
     assertTrue(!!restart);  // The "RESTART" button should be showing now.
 
-    restart!.click();
+    restart.click();
     return lifetimeBrowserProxy.whenCalled('restart');
   });
 

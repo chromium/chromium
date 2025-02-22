@@ -52,21 +52,18 @@ class ProductMessagingControllerUiTest : public InteractiveFeaturePromoTest {
   }
 
   auto EnsureHandle() {
-    return std::move(Check([this]() {
-                       return !!notice_handle_;
-                     }).SetDescription("EnsureHandle()"));
+    return Check([this]() { return !!notice_handle_; })
+        .SetDescription("EnsureHandle()");
   }
 
   auto SetShown() {
-    return std::move(Do([this]() {
-                       notice_handle_.SetShown();
-                     }).SetDescription("SetShown()"));
+    return Do([this]() { notice_handle_.SetShown(); })
+        .SetDescription("SetShown()");
   }
 
   auto ReleaseHandle() {
-    return std::move(Do([this]() {
-                       notice_handle_.Release();
-                     }).SetDescription("ReleaseHandle()"));
+    return Do([this]() { notice_handle_.Release(); })
+        .SetDescription("ReleaseHandle()");
   }
 
   void OnNoticeShown(

@@ -95,7 +95,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
     if (!ironList || !ironList.items) {
       return [];
     }
-    return ironList.items!;
+    return ironList.items;
   }
 
   function getAddTabButton(): CrButtonElement {
@@ -675,8 +675,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
     const rowElement = getPowerBookmarksRowElement(renamedBookmarkId);
     assertTrue(!!rowElement);
-    let input =
-        rowElement.shadowRoot!.querySelector<CrInputElement>('cr-input');
+    let input = rowElement.shadowRoot.querySelector<CrInputElement>('cr-input');
     assertTrue(!!input);
 
     const inputChange = eventToPromise('input-change', rowElement);
@@ -694,7 +693,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertEquals(
         renamedBookmarkId, bookmarksApi.getArgs('renameBookmark')[0][0]);
     assertEquals(newName, bookmarksApi.getArgs('renameBookmark')[0][1]);
-    input = rowElement.shadowRoot!.querySelector<CrInputElement>('cr-input');
+    input = rowElement.shadowRoot.querySelector<CrInputElement>('cr-input');
     assertFalse(!!input);
   });
 
@@ -708,8 +707,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
         powerBookmarksList.shadowRoot!.querySelector<PowerBookmarkRowElement>(
             `#bookmark-${renamedBookmarkId}`);
     assertTrue(!!rowElement);
-    let input =
-        rowElement.shadowRoot!.querySelector<CrInputElement>('cr-input');
+    let input = rowElement.shadowRoot.querySelector<CrInputElement>('cr-input');
     const inputBlurred = eventToPromise(
         'input-change', getPowerBookmarksRowElement(renamedBookmarkId)!);
     assertTrue(!!input);
@@ -719,7 +717,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
     await flushTasks();
 
     // Blurring the input should remove it.
-    input = rowElement.shadowRoot!.querySelector<CrInputElement>('cr-input');
+    input = rowElement.shadowRoot.querySelector<CrInputElement>('cr-input');
     assertFalse(!!input);
   });
 
@@ -926,7 +924,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertTrue(!!folderElement);
 
     let expandButton =
-        folderElement.shadowRoot!.querySelector<PowerBookmarkRowElement>(
+        folderElement.shadowRoot.querySelector<PowerBookmarkRowElement>(
             '#expandButton');
     // Assert that the expand button is present for folders
     assertTrue(!!expandButton);
@@ -934,8 +932,9 @@ suite('SidePanelPowerBookmarksListTest', () => {
     const singleBookmarkElement = getPowerBookmarksRowElement('3');
     assertTrue(!!singleBookmarkElement);
 
-    expandButton = singleBookmarkElement.shadowRoot!
-                       .querySelector<PowerBookmarkRowElement>('#expandButton');
+    expandButton =
+        singleBookmarkElement.shadowRoot.querySelector<PowerBookmarkRowElement>(
+            '#expandButton');
     // Assert that the expand button is not present for single bookmarks
     assertFalse(!!expandButton);
   });
@@ -956,7 +955,8 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertTrue(!!folderElement);
 
     const expandButton =
-        folderElement.shadowRoot!.querySelector<PowerBookmarkRowElement>('#expandButton');
+        folderElement.shadowRoot.querySelector<PowerBookmarkRowElement>(
+            '#expandButton');
     assertTrue(!!expandButton);
 
     expandButton.click();
@@ -965,14 +965,14 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
     // Verify nested bookmarks are now visible
     const nestedBookmarkElement =
-        folderElement.shadowRoot!.querySelector<PowerBookmarkRowElement>(
+        folderElement.shadowRoot.querySelector<PowerBookmarkRowElement>(
             '#bookmark-6');
     assertTrue(!!nestedBookmarkElement);
     // Verify that the nested bookmark has the correct depth
     assertEquals(1, nestedBookmarkElement.depth);
 
     const bookmarkDiv =
-        nestedBookmarkElement.shadowRoot!.querySelector<HTMLElement>(
+        nestedBookmarkElement.shadowRoot.querySelector<HTMLElement>(
             '#bookmark');
     assertTrue(!!bookmarkDiv);
 
@@ -989,7 +989,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
     // Verify nested bookmarks are no longer visible
     const collapsedNestedBookmarkElement =
-        folderElement.shadowRoot!.querySelector<PowerBookmarkRowElement>(
+        folderElement.shadowRoot.querySelector<PowerBookmarkRowElement>(
             '#bookmark-6');
     assertFalse(!!collapsedNestedBookmarkElement);
   });

@@ -1008,6 +1008,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1682696837763999627">Veliki kursor miša</translation>
 <translation id="1682867089915960590">Želite da uključite navigaciju kursorom?</translation>
 <translation id="1686550358074589746">Omogući unos prevlačenjem</translation>
+<translation id="1686785653877010442">Sajtovi obično šalju obaveštenja da bi vas obavestili o udarnim vestima ili porukama ćaskanja.</translation>
 <translation id="168715261339224929">Da bi vam obeleživači bili dostupni na svim uređajima, uključite sinhronizaciju.</translation>
 <translation id="1688935057616748272">Unesite neko slovo</translation>
 <translation id="1689333818294560261">Nadimak</translation>
@@ -1283,6 +1284,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1878885068166344708">Stavka se ističe kad premestite fokus. Pritisnite Tab ili izaberite stavku da biste promenili fokus.</translation>
 <translation id="1879000426787380528">Prijavite se kao</translation>
 <translation id="18802377548000045">Kartice se skupljaju do velike širine</translation>
+<translation id="1880618477732738742">Promenite i odobrite pristup funkcijama kao što su geolociranje, mikrofon, kamera, kolačići itd. za sve veb-sajtove i dodatke, uključujući ovaj dodatak.</translation>
 <translation id="1880905663253319515">Želite da izbrišete sertifikat „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="1881445033931614352">Raspored tastature</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Stavka}one{# stavka}few{# stavke}other{# stavki}}</translation>
@@ -3466,6 +3468,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3435738964857648380">Bezbednost</translation>
 <translation id="343578350365773421">Nema papira</translation>
 <translation id="3435896845095436175">Omogući</translation>
+<translation id="3437397693214267762">Pogledajte Outlook kalendar i SharePoint i OneDrive fajlove</translation>
 <translation id="3438633801274389918">Nindža</translation>
 <translation id="3439153939049640737">Uvek dozvoli da <ph name="HOST" /> pristupa mikrofonu</translation>
 <translation id="3439970425423980614">Otvaranje PDF-a u pregledu</translation>
@@ -7125,6 +7128,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
     Koristite nalog da biste lako pristupali svim obeleživačima, fajlovima i drugom sadržaju. Ako nemate nalog, možete da ga otvorite na sledećem ekranu.</translation>
 <translation id="6054138466019582920">Pretraži ovu stranicu pomoću Google-a...</translation>
 <translation id="6054284857788651331">Nedavno zatvorena grupa kartica</translation>
+<translation id="6054819000749443354">Otvori podešavanja sistema</translation>
 <translation id="6054961935262556546">Promeni vidljivost</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 sa RSA šifrovanjem</translation>
 <translation id="6055544610007596637">Instalirajte aplikacije za <ph name="DEVICE_TYPE" /> iz Google Play prodavnice</translation>
@@ -8952,6 +8956,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7380459290951585794">Uverite se da je telefon u blizini, da je otključan i da su Bluetooth i WiFi uključeni</translation>
 <translation id="7380622428988553498">Ime uređaja sadrži nevažeće znakove</translation>
 <translation id="7380768571499464492">Ažurirano: <ph name="PRINTER_NAME" /></translation>
+<translation id="7382009635620830394">Ako se ova kartica onemogući, onemogućićemo i Microsoft kartice kao što su SharePoint i OneDrive fajlovi i Outlook kalendar.</translation>
 <translation id="7382085868019811559">Podrška za zastarele pregledače (LBS) omogućava da se određeni URL obrasci otvaraju u alternativnom pregledaču koji podržava zastarele funkcije potrebne za ispravan rad tih sajtova.</translation>
 <translation id="7382980704744807223">Sumnjivo</translation>
 <translation id="738322632977123193">Otpremanje nije uspelo. Koristite sliku u nekom od ovih formata: .jpg, .gif, .png, .bmp, .tif ili .webp</translation>
@@ -10622,6 +10627,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" />Imejlom <ph name="USER_EMAIL" /> upravlja <ph name="MANAGER" />. Ne možete da dodate ovaj imejl kao dodatni nalog.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Da biste koristili <ph name="USER_EMAIL" />, prvo se odjavite sa uređaja <ph name="DEVICE_TYPE" />. Zatim u dnu ekrana za prijavljivanje izaberite Dodaj osobu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Zadržite taster za pretragu da biste promenili ponašanje tastera u gornjem redu</translation>
+<translation id="8549127125482561383">Kako da pregledate zahteve</translation>
 <translation id="8549316893834449916">Za prijavljivanje na Chromebook ćete koristiti Google nalog – isti koji koristite i za Gmail, Disk, YouTube i drugo.</translation>
 <translation id="8550239873869577759">Preuzet je sumnjivi fajl</translation>
 <translation id="8551388862522347954">Licence</translation>

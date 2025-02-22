@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(FirmwareUpdateInteractiveUiTest,
       LaunchFirmwareUpdatesApp(),
       WaitForWebContentsReady(webcontents_id_,
                               GURL("chrome://accessory-update")),
-      InAnyContext(Steps(
+      InAnyContext(
           Log("Verifying that the update-card element is present."),
           EnsurePresent(webcontents_id_, kUpdateCardQuery),
           Log("Clicking on the update button."),
@@ -157,8 +157,7 @@ IN_PROC_BROWSER_TEST_F(FirmwareUpdateInteractiveUiTest,
                                      "continue the update process"),
           Log("Triggering successful update."), TriggerSuccessfulUpdate(),
           Log("Verifying existence of update done button."),
-          WaitForElementExists(webcontents_id_,
-                               kUpdateDialogDoneButtonQuery))));
+          WaitForElementExists(webcontents_id_, kUpdateDialogDoneButtonQuery)));
 }
 
 class FirmwareUpdateInteractiveUiTestWithReboot
@@ -228,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(FirmwareUpdateInteractiveUiTestWithReboot,
       LaunchFirmwareUpdatesApp(),
       WaitForWebContentsReady(webcontents_id_,
                               GURL("chrome://accessory-update")),
-      InAnyContext(Steps(
+      InAnyContext(
           Log("Verifying that the update-card element is present."),
           EnsurePresent(webcontents_id_, kUpdateCardQuery),
           Log("Clicking on the update button."),
@@ -251,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(FirmwareUpdateInteractiveUiTestWithReboot,
           Log("Triggering successful update."), TriggerSuccessfulUpdate(),
           Log("Verifying existence of restart later button."),
           WaitForElementExists(webcontents_id_,
-                               kUpdateDialogRestartLaterButtonQuery))));
+                               kUpdateDialogRestartLaterButtonQuery)));
 }
 }  // namespace
 }  // namespace ash

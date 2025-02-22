@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.RecreateObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -505,6 +506,11 @@ public class MultiInstanceManager
     }
 
     public void moveTabToWindow(Activity activity, Tab tab, int atIndex) {
+        // Not implemented
+    }
+
+    public void moveTabGroupToWindow(
+            Activity activity, TabGroupMetadata tabGroupMetadata, int atIndex) {
         // Not implemented
     }
 

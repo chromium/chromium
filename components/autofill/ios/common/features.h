@@ -15,6 +15,10 @@ BASE_DECLARE_FEATURE(kAddAddressManually);
 // Returns true if the AddAddressManually feature is enabled
 bool IsAddAddressManuallyEnabled();
 
+// Enables correctly setting the is_user_edited bit in the parsed form fields
+// instead of using true by default.
+BASE_DECLARE_FEATURE(kAutofillCorrectUserEditedBitInParsedField);
+
 // Controls whether to dynamically load the address input fields in the save
 // flow and settings based on the country value.
 // TODO(crbug.com/40281788): Remove once launched.

@@ -261,6 +261,94 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
       SaveCreditCardPromptResultIOS::kShown, 0);
 }
 
+// Tests histogram entries for server save modal shown and denied when dismissed
+// through the cancel button before being accepted.
+TEST_F(SaveCardInfobarModalOverlayMediatorTest,
+       LogsModalShownAndDeniedBeforeAcceptingServerSave) {
+  base::HistogramTester histogramTester;
+  FakeSaveCardModalConsumer* consumer =
+      [[FakeSaveCardModalConsumer alloc] init];
+
+  mediator_.consumer = consumer;
+  histogramTester.ExpectBucketCount(
+      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      SaveCreditCardPromptResultIOS::kShown, 1);
+
+  EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
+  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
+  [mediator_ dismissInfobarModal:nil];
+  histogramTester.ExpectBucketCount(
+      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      SaveCreditCardPromptResultIOS::kDenied, 1);
+
+  histogramTester.ExpectTotalCount(
+      kSaveCreditCardPromptResultHistogramStringForServerSave, 2);
+}
+
+// Tests histogram entry is not recorded for modal as denied when dismissed
+// through the cancel button after being accepted.
+TEST_F(SaveCardInfobarModalOverlayMediatorTest,
+       DoNotLogModalDeniedAfterAcceptingServerSave) {
+  base::HistogramTester histogramTester;
+
+  SaveCard();
+  histogramTester.ExpectBucketCount(
+      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      SaveCreditCardPromptResultIOS::kAccepted, 1);
+
+  EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
+  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
+  [mediator_ dismissInfobarModal:nil];
+  histogramTester.ExpectBucketCount(
+      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      SaveCreditCardPromptResultIOS::kDenied, 0);
+
+  histogramTester.ExpectTotalCount(
+      kSaveCreditCardPromptResultHistogramStringForServerSave, 1);
+}
+
+// Tests histogram entry for server save modal denied on link clicked before
+// being accepted.
+TEST_F(SaveCardInfobarModalOverlayMediatorTest, LogsModalDeniedOnLinkClick) {
+  base::HistogramTester histogramTester;
+  GURL url("https://testurl.com");
+
+  EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
+  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
+  [mediator_ dismissModalAndOpenURL:url];
+  histogramTester.ExpectBucketCount(
+      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      SaveCreditCardPromptResultIOS::kLinkClicked, 1);
+}
+
+// Tests histogram entry is not recorded for modal denied on link clicked after
+// being accepted.
+TEST_F(SaveCardInfobarModalOverlayMediatorTest,
+       DoNotLogModalDeniedOnLinkClickAfterAccepting) {
+  base::HistogramTester histogramTester;
+  GURL url("https://testurl.com");
+
+  ON_CALL(*delegate_,
+          UpdateAndAccept(base::SysNSStringToUTF16(kCardHolderName),
+                          base::SysNSStringToUTF16(kValidExpirationMonth),
+                          base::SysNSStringToUTF16(kValidExpirationYear)))
+      .WillByDefault(Return(true));
+  SaveCard();
+  histogramTester.ExpectBucketCount(
+      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      SaveCreditCardPromptResultIOS::kAccepted, 1);
+
+  EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
+  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
+  [mediator_ dismissModalAndOpenURL:url];
+  histogramTester.ExpectBucketCount(
+      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      SaveCreditCardPromptResultIOS::kLinkClicked, 0);
+
+  histogramTester.ExpectTotalCount(
+      kSaveCreditCardPromptResultHistogramStringForServerSave, 1);
+}
+
 class SaveCardInfobarModalOverlayMediatorWithLocalSave
     : public SaveCardInfobarModalOverlayMediatorTest {
  public:

@@ -37,6 +37,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupCollapsedUtils.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupColorUtils.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupMetadata.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupMetadataExtractor.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupModelFilter.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupModelFilterFactory.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupModelFilterImpl.java",

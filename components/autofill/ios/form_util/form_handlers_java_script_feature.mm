@@ -76,13 +76,6 @@ void FormHandlersJavaScriptFeature::TrackFormMutations(
                          base::Value::List().Append(mutation_tracking_delay));
 }
 
-void FormHandlersJavaScriptFeature::ToggleTrackingUserEditedFields(
-    web::WebFrame* frame,
-    bool track_user_edited_fields) {
-  CallJavaScriptFunction(frame, "formHandlers.toggleTrackingUserEditedFields",
-                         base::Value::List().Append(track_user_edited_fields));
-}
-
 std::optional<std::string>
 FormHandlersJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kScriptMessageName;

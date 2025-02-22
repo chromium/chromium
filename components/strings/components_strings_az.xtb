@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">Oyun başladı.</translation>
 <translation id="3067505415088964188">Qiymət aşağıdır</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> üzrə fayl yüklənməsi 1 dəqiqə sonra başlayacaq</translation>
-<translation id="3068976060094139647">Hesabınız Google Pay ilə əlaqələndirildiyinə görə bu kartı avtomatik doldura bilərsiniz.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} element}other{{ITEMS} element}}</translation>
 <translation id="3076865167425975822">Əməliyyat Sistemləri</translation>
 <translation id="3080254622891793721">Qrafik</translation>
@@ -4371,7 +4370,6 @@
 <translation id="8757526089434340176">Google Pay təklifi əlçatandır</translation>
 <translation id="8759274551635299824">Bu kartın vaxtı bitib</translation>
 <translation id="87601671197631245">Bu sayt vaxtı keçmiş təhlükəsizlik konfiqurasiyasından istifadə edir və bu da sayta göndərilən məlumatınızın (məsələn, parollar, mesajlar və ya kredit kartları) paylaşılmasına səbəb ola bilər.</translation>
-<translation id="8763226176721243078"><ph name="CARD_ISSUER_NAME" /> hesabınız Google Pay ilə əlaqələndirildiyinə görə bu kartı avtomatik doldura bilərsiniz.</translation>
 <translation id="8763927697961133303">USB cihazı</translation>
 <translation id="8763986294015493060">Hazırda açıq olan bütün Anonim pəncərələri bağlayın</translation>
 <translation id="8766943070169463815">Güvənli ödəniş məlumatları üzrə doğrulama vərəqəsi açılıb</translation>

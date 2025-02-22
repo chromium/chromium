@@ -268,7 +268,7 @@ suite('<bookmarks-list> command manager integration test', function() {
 
     assertEquals(MenuSource.LIST, commandManager.getMenuSourceForTesting());
     const menuCommands =
-        commandManager.shadowRoot!.querySelectorAll<HTMLElement>(
+        commandManager.shadowRoot.querySelectorAll<HTMLElement>(
             '.dropdown-item');
     assertDeepEquals(
         [Command.ADD_BOOKMARK.toString(), Command.ADD_FOLDER.toString()],

@@ -26,7 +26,7 @@ suite('SharePasswordLoadingDialogTest', function() {
     const header =
         dialog.shadowRoot!.querySelector('share-password-dialog-header');
     assertTrue(!!header);
-    assertEquals(TITLE, header.innerHTML!.trim());
+    assertEquals(TITLE, header.innerHTML.trim());
 
     const spinner = dialog.shadowRoot!.querySelector('.spinner');
     assertTrue(!!spinner);

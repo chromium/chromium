@@ -341,6 +341,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Settings.TogglePinning" enum="BooleanEnabled"
+    expires_after="2026-01-15">
+  <owner>charlesmeng@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    After the user interacts with the tabstrip context menu or glic button
+    context menu to toggle glic pinning, logs a boolean that reflects whether
+    glic pinning is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Glic.TabContext.PdfContentsRequested" enum="PdfRequestStates"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>

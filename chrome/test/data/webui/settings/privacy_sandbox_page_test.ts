@@ -258,7 +258,7 @@ suite('FledgeSubpage', function() {
     assertTrue(!!learnMoreLink);
     assertTrue(isVisible(learnMoreLink));
     assertFalse(isVisible(page.shadowRoot!.querySelector('#learnMoreLinkV2')));
-    learnMoreLink!.click();
+    learnMoreLink.click();
     await flushTasks();
     assertTrue(isVisible(page.shadowRoot!.querySelector('#body')));
     assertFalse(isVisible(page.shadowRoot!.querySelector('#bodyV2')));
@@ -347,7 +347,7 @@ suite('SiteSuggestedAdsSubpageAdsApiUxEnhancement', function() {
     const privacyPolicyLink =
         page.shadowRoot!.querySelector<HTMLElement>('#privacyPolicyLink');
     assertTrue(!!privacyPolicyLink);
-    privacyPolicyLink!.click();
+    privacyPolicyLink.click();
     assertEquals(
         'Settings.PrivacySandbox.SiteSuggestedAds.PrivacyPolicyLinkClicked',
         await metricsBrowserProxy.whenCalled('recordAction'));
@@ -1125,7 +1125,7 @@ suite('TopicsSubpageAdsApiUxEnhancements', function() {
     const privacyPolicyLink =
         page.shadowRoot!.querySelector<HTMLElement>('#privacyPolicyLink');
     assertTrue(!!privacyPolicyLink);
-    privacyPolicyLink!.click();
+    privacyPolicyLink.click();
     assertEquals(
         'Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked',
         await metricsBrowserProxy.whenCalled('recordAction'));
@@ -1843,7 +1843,7 @@ suite('FledgeSubpageSeeAllSites', function() {
         page.shadowRoot!.querySelector('#blockedSitesList')!;
     const blockedSites = blockedSitesList.querySelector('dom-repeat');
     assertTrue(!!blockedSites);
-    assertEquals(0, blockedSites!.items!.length);
+    assertEquals(0, blockedSites.items!.length);
     const blockedSitesDescription = page.shadowRoot!.querySelector<HTMLElement>(
         '#blockedSitesDescription')!;
     assertTrue(isVisible(blockedSitesDescription));
@@ -1870,13 +1870,12 @@ suite('FledgeSubpageSeeAllSites', function() {
         SettingsPrivacySandboxFledgeSubpageElement.maxFledgeSites,
         mainSitesList!.items!.length);
     assertEquals(2, remainingSitesList!.items!.length);
-    assertEquals(sitesList[0], mainSitesList!.items![0].site!);
-    assertEquals(
-        sitesList[sitesCount - 2], remainingSitesList!.items![0].site!);
+    assertEquals(sitesList[0], mainSitesList!.items![0].site);
+    assertEquals(sitesList[sitesCount - 2], remainingSitesList!.items![0].site);
 
     // Block site from the main current sites section.
     let items =
-        currentSitesSection!.querySelectorAll('privacy-sandbox-interest-item');
+        currentSitesSection.querySelectorAll('privacy-sandbox-interest-item');
     assertEquals(sitesCount, items.length);
     items[0]!.shadowRoot!.querySelector('cr-button')!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setFledgeJoiningAllowed');
@@ -1890,22 +1889,21 @@ suite('FledgeSubpageSeeAllSites', function() {
         SettingsPrivacySandboxFledgeSubpageElement.maxFledgeSites,
         mainSitesList!.items!.length);
     assertEquals(1, remainingSitesList!.items!.length);
-    assertEquals(sitesList[1], mainSitesList!.items![0].site!);
-    assertEquals(sitesList[sitesCount - 2], mainSitesList!.items!.at(-1).site!);
-    assertEquals(
-        sitesList[sitesCount - 1], remainingSitesList!.items![0].site!);
+    assertEquals(sitesList[1], mainSitesList!.items![0].site);
+    assertEquals(sitesList[sitesCount - 2], mainSitesList!.items!.at(-1).site);
+    assertEquals(sitesList[sitesCount - 1], remainingSitesList!.items![0].site);
     items = mainSitesList!.querySelectorAll('privacy-sandbox-interest-item');
 
     // Check that site was blocked.
     assertEquals(1, blockedSites.items!.length);
-    assertEquals(sitesList[0], blockedSites.items![0].site!);
+    assertEquals(sitesList[0], blockedSites.items![0].site);
     assertEquals(
         loadTimeData.getString('fledgePageBlockedSitesDescription'),
         blockedSitesDescription.innerText);
 
     // Block site from the "See all sites" section.
     items =
-        currentSitesSection!.querySelectorAll('privacy-sandbox-interest-item');
+        currentSitesSection.querySelectorAll('privacy-sandbox-interest-item');
     assertEquals(sitesCount - 1, items.length);
     items[SettingsPrivacySandboxFledgeSubpageElement.maxFledgeSites]!
         .shadowRoot!.querySelector('cr-button')!.click();
@@ -1920,8 +1918,8 @@ suite('FledgeSubpageSeeAllSites', function() {
 
     // Check that site was blocked.
     assertEquals(2, blockedSites.items!.length);
-    assertEquals(sitesList[0], blockedSites.items![0].site!);
-    assertEquals(sitesList[sitesCount - 1], blockedSites.items![1].site!);
+    assertEquals(sitesList[0], blockedSites.items![0].site);
+    assertEquals(sitesList[sitesCount - 1], blockedSites.items![1].site);
 
     // Allow first blocked site.
     let blockedItems =
@@ -1938,7 +1936,7 @@ suite('FledgeSubpageSeeAllSites', function() {
     blockedItems =
         blockedSitesList.querySelectorAll('privacy-sandbox-interest-item');
     assertEquals(1, blockedItems.length);
-    assertEquals(sitesList[sitesCount - 1], blockedSites.items![0].site!);
+    assertEquals(sitesList[sitesCount - 1], blockedSites.items![0].site);
     blockedItems[0]!.shadowRoot!.querySelector('cr-button')!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setFledgeJoiningAllowed');
     assertEquals(
@@ -2123,7 +2121,7 @@ suite('AdMeasurementSubpageAdsApiUxEnhancements', function() {
     const privacyPolicyLink =
         page.shadowRoot!.querySelector<HTMLElement>('#privacyPolicyLink');
     assertTrue(!!privacyPolicyLink);
-    privacyPolicyLink!.click();
+    privacyPolicyLink.click();
     assertEquals(
         'Settings.PrivacySandbox.AdMeasurement.PrivacyPolicyLinkClicked',
         await metricsBrowserProxy.whenCalled('recordAction'));
@@ -2192,7 +2190,7 @@ suite('TopicsSubpageAdTopicsContentParity', function() {
     const privacyPolicyLink =
         page.shadowRoot!.querySelector<HTMLElement>('#privacyPolicyLinkV2');
     assertTrue(!!privacyPolicyLink);
-    privacyPolicyLink!.click();
+    privacyPolicyLink.click();
     assertEquals(
         'Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked',
         await metricsBrowserProxy.whenCalled('recordAction'));
@@ -2243,7 +2241,7 @@ suite('TopicsSubpageAdTopicsContentParityDisabled', function() {
     const privacyPolicyLink =
         page.shadowRoot!.querySelector<HTMLElement>('#privacyPolicyLink');
     assertTrue(!!privacyPolicyLink);
-    privacyPolicyLink!.click();
+    privacyPolicyLink.click();
     assertEquals(
         'Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked',
         await metricsBrowserProxy.whenCalled('recordAction'));

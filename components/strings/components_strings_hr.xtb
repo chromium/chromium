@@ -1154,7 +1154,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="306573536155379004">Igra je pokrenuta.</translation>
 <translation id="3067505415088964188">Cijena je niska</translation>
 <translation id="3068118691172921711">Prijenos datoteka na uslugu <ph name="CLOUD_PROVIDER" /> započet će za 1 min</translation>
-<translation id="3068976060094139647">Možete automatski popuniti podatke o toj kartici jer je vaš račun povezan s Google Payom.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} stavka}one{{ITEMS} stavka}few{{ITEMS} stavke}other{{ITEMS} stavki}}</translation>
 <translation id="3076865167425975822">Operativni sustavi</translation>
 <translation id="3080254622891793721">Grafika</translation>
@@ -4379,7 +4378,6 @@ Dodatne pojedinosti:
 <translation id="8757526089434340176">Dostupna je ponuda Google Paya</translation>
 <translation id="8759274551635299824">Ta je kartica istekla</translation>
 <translation id="87601671197631245">Ova web-lokacija upotrebljava zastarjelu sigurnosnu konfiguraciju, pa bi vaši podaci (na primjer zaporke, poruke ili brojevi kreditnih kartica) mogli biti otkriveni kad se šalju na nju.</translation>
-<translation id="8763226176721243078">Možete automatski popuniti podatke o toj kartici jer je vaš <ph name="CARD_ISSUER_NAME" /> račun povezan s Google Payom.</translation>
 <translation id="8763927697961133303">USB uređaj</translation>
 <translation id="8763986294015493060">Zatvorite sve anonimne prozore koji su trenutačno otvoreni</translation>
 <translation id="8766943070169463815">Otvoren je list s autentifikacijom za vjerodajnicu sigurnog plaćanja</translation>

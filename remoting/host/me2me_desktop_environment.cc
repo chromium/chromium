@@ -132,12 +132,12 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
 Me2MeDesktopEnvironment::Me2MeDesktopEnvironment(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    std::unique_ptr<DesktopInteractionStrategy> platform_session,
+    std::unique_ptr<DesktopInteractionStrategy> interaction_strategy,
     base::WeakPtr<ClientSessionControl> client_session_control,
     const DesktopEnvironmentOptions& options)
     : BasicDesktopEnvironment(caller_task_runner,
                               ui_task_runner,
-                              std::move(platform_session),
+                              std::move(interaction_strategy),
                               client_session_control,
                               options) {
   DCHECK(caller_task_runner->BelongsToCurrentThread());

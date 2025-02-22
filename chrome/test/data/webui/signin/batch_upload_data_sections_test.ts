@@ -95,7 +95,7 @@ suite('BatchUploadViewTest', function() {
 
     // Uncheck the first item.
     const checkboxes =
-        dataSectionElement.shadowRoot!.querySelectorAll<CrCheckboxElement>(
+        dataSectionElement.shadowRoot.querySelectorAll<CrCheckboxElement>(
             '.item-checkbox');
     assertEquals(numberOfItems, checkboxes.length);
     const firstCheckbox = checkboxes[0]!;
@@ -135,7 +135,7 @@ suite('BatchUploadViewTest', function() {
 
     // Check that all items are selected by default.
     const itemCheckboxes =
-        dataSectionElement!.shadowRoot!.querySelectorAll<CrCheckboxElement>(
+        dataSectionElement!.shadowRoot.querySelectorAll<CrCheckboxElement>(
             '.item-checkbox');
     assertEquals(TEST_DATA.dataItems.length, itemCheckboxes.length);
     for (let j = 0; j < itemCheckboxes.length; ++j) {
@@ -151,7 +151,7 @@ suite('BatchUploadViewTest', function() {
 
     // Check that all items are selected by default.
     const itemCheckboxes =
-        dataSectionElement!.shadowRoot!.querySelectorAll<CrCheckboxElement>(
+        dataSectionElement!.shadowRoot.querySelectorAll<CrCheckboxElement>(
             '.item-checkbox');
     assertEquals(TEST_DATA.dataItems.length, itemCheckboxes.length);
 
@@ -218,7 +218,7 @@ suite('BatchUploadViewTest', function() {
 
     // Unselect the first checkbox.
     const checkboxes =
-        dataSectionElement.shadowRoot!.querySelectorAll<CrCheckboxElement>(
+        dataSectionElement.shadowRoot.querySelectorAll<CrCheckboxElement>(
             '.item-checkbox');
     assertEquals(checkboxes.length, TEST_DATA.dataItems.length);
     const firstCheckbox = checkboxes[0]!;
@@ -261,7 +261,7 @@ suite('BatchUploadViewTest', function() {
 
     // Unselect the first checkbox.
     const checkboxes =
-        dataSectionElement.shadowRoot!.querySelectorAll<CrCheckboxElement>(
+        dataSectionElement.shadowRoot.querySelectorAll<CrCheckboxElement>(
             '.item-checkbox');
     assertEquals(checkboxes.length, TEST_DATA.dataItems.length);
 

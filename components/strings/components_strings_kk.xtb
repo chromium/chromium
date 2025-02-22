@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">Ойын басталды.</translation>
 <translation id="3067505415088964188">Бағасы төмен</translation>
 <translation id="3068118691172921711">Файлды <ph name="CLOUD_PROVIDER" /> қызметіне жүктеп салу 1 минуттан кейін басталады.</translation>
-<translation id="3068976060094139647">Бұл картаны автоматты түрде толтыра аласыз, себебі аккаунтыңыз Google Pay-мен байланыстырылған.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} тауар}other{{ITEMS} тауар}}</translation>
 <translation id="3076865167425975822">Операциялық жүйелер</translation>
 <translation id="3080254622891793721">Кескін</translation>
@@ -4374,7 +4373,6 @@
 <translation id="8757526089434340176">Google Pay ұсынысы қолжетімді</translation>
 <translation id="8759274551635299824">Картаның мерзімі біткен</translation>
 <translation id="87601671197631245">Бұл сайттың қауіпсіздік конфигурациясы ескірген. Бұл сайтқа жіберілетін жеке ақпаратыңыз (мысалы, құпия сөздер, хабарлар не несиелік карта нөмірлері) жария етілуі мүмкін.</translation>
-<translation id="8763226176721243078">Бұл картаны автоматты түрде толтыра аласыз, себебі <ph name="CARD_ISSUER_NAME" /> аккаунтыңыз Google Pay-мен байланыстырылған.</translation>
 <translation id="8763927697961133303">USB құрылғысы</translation>
 <translation id="8763986294015493060">Қазір ашық тұрған инкогнито терезелерінің барлығын жабу</translation>
 <translation id="8766943070169463815">Қауіпсіз төлем деректерін аутентификациялау парағы ашылды.</translation>

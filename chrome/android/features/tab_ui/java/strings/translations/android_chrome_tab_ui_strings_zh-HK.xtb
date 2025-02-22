@@ -30,7 +30,6 @@
 <translation id="2118649612461486615">商店資料</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組。你將無法查看無痕式分頁。}other{你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組。你將無法查看 # 個無痕式分頁。}}</translation>
 <translation id="2162620598375156287">在 <ph name="SOURCE_WEBSITE" /> 上現售 <ph name="CURRENT_PRICE" /></translation>
-<translation id="2242907120821295124"><ph name="TAB_GROUP_NAME" />分頁群組已無法使用</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{將分頁移出群組}other{將分頁移出群組}}</translation>
 <translation id="2271452184061378400">分頁群組會儲存在這裡</translation>
 <translation id="2277224997687551299">編輯群組名稱</translation>

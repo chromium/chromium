@@ -19,7 +19,6 @@
 <translation id="1184145431117212167">安装失败，因为您的 Windows 版本不受支持。</translation>
 <translation id="1194807384646768652">Chrome 阻止了此项下载操作，因为这不是常下载的文件类型，可能具有危险性</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
-<translation id="1265739287306757398">了解如何操作</translation>
 <translation id="1278833599417554002">重新启动以更新 Chrome(&amp;C)</translation>
 <translation id="1290883685122687410">设置错误：<ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Chrome正在安装最新的系统更新，请稍候。</translation>
@@ -30,7 +29,6 @@
 <translation id="1363996462118479832">由于登录时发生错误，Chrome 操作系统无法同步您的数据。</translation>
 <translation id="137466361146087520">Google Chrome 测试版</translation>
 <translation id="1399397803214730675">该计算机已安装了更高版本的 Google Chrome 浏览器。如果该软件无法正常运行，请卸载 Google Chrome 浏览器，然后重试。</translation>
-<translation id="1407223320754252908">Chrome 内置了谷歌翻译，您可以随时翻译所需内容</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页。}=1{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页，但不会重新打开您的无痕式窗口。}other{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页，但不会重新打开您的 # 个无痕式窗口。}}</translation>
 <translation id="1434626383986940139">Chrome Canary 应用</translation>
 <translation id="146866447420868597">登录 Chrome？</translation>
@@ -65,7 +63,6 @@
 <translation id="1880677175115548835">选择文字</translation>
 <translation id="1919130412786645364">允许登录 Chrome</translation>
 <translation id="1953553007165777902">正在下载…还需 <ph name="MINUTE" /> 分钟</translation>
-<translation id="1982647487457769627">Chrome 支持多种平台，无论您使用哪种设备，都能获得熟悉的体验</translation>
 <translation id="2001586581944147178">让对您的互联网流量有访问权限的用户更难看到您访问的网站。Chrome 会使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{此扩展程序已不再受支持。Chrome 建议您移除它。}other{这些扩展程序已不再受支持。Chrome 建议您移除它们。}}</translation>
 <translation id="2018528049276128029">每份个人资料均包含自己的 Chrome 信息，例如书签、历史记录、密码等等</translation>
@@ -103,7 +100,6 @@
 <translation id="234869673307233423">Chrome 无法检查您的密码。请稍后重试。</translation>
 <translation id="235650106824528204">在使用此工作资料（例如创建书签、历史记录、密码和其他设置）时生成的任何 Chrome 数据都可由工作资料管理员移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">继续</translation>
-<translation id="2390624519615263404">查看安全功能</translation>
 <translation id="2401189691232800402">ChromeOS 系统</translation>
 <translation id="2403703063067034158">启动错误：另一个设置实例目前正在运行，请稍后重试。</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{一个或多个 Chrome 扩展程序访问过 1 部 HID 设备}=1{一个或多个 Chrome 扩展程序正在访问 1 部 HID 设备}other{一个或多个 Chrome 扩展程序正在访问 # 部 HID 设备}}</translation>
@@ -122,7 +118,6 @@
 <translation id="2580411288591421699">无法安装与当前运行版本相同的 Google Chrome 浏览器。请关闭 Google Chrome 浏览器，然后重试。</translation>
 <translation id="2586406160782125153">这会从这台设备上删除您的浏览数据。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chrome。</translation>
 <translation id="259935314519650377">未能缓存所下载的安装程序。错误：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
-<translation id="2632707915638608719">使用 Chrome 扩展程序，事半功倍</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome 会定期进行检查，以确保您的浏览器使用最安全的设置。如有任何事项需要您审核，我们会通知您。</translation>
 <translation id="2652691236519827073">在 Chrome 新标签页中打开链接(&amp;T)</translation>
@@ -151,7 +146,6 @@
 <translation id="2876628302275096482">详细了解 <ph name="BEGIN_LINK" />Chrome 如何确保您数据的私密性<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">任务管理器</translation>
 <translation id="2888126860611144412">关于 Chrome</translation>
-<translation id="29082080693925013">您可以固定经常访问的网站，并将标签页分组，从而保持井井有条</translation>
 <translation id="2915996080311180594">暂不重启</translation>
 <translation id="2926676257163822632">安全系数低的密码容易被人猜到。不妨让 Chrome <ph name="BEGIN_LINK" />为您创建并记住安全系数高的密码<ph name="END_LINK" />。</translation>
 <translation id="2926952073016206995">Chrome 需要为此网站授予摄像头权限</translation>
@@ -180,10 +174,8 @@
 <translation id="3196187562065225381">由于该文件具有危险性，Chrome 阻止了这次下载</translation>
 <translation id="3222857603094643834">使用 Google 智能镜头搜索此页面中的任何内容</translation>
 <translation id="3226612997184048185">如果您还将书签保存在 Google 账号中，则可在 Chrome 中跟踪商品价格，并在降价时收到通知</translation>
-<translation id="3234642784688107085">试用全新 AI 功能，创建主题、获取写作帮助，并让一切井然有序</translation>
 <translation id="3242123554343253302">添加 Chrome 个人资料</translation>
 <translation id="3245429137663807393">如果您还共享了 Chrome 使用情况报告，这些报告会包含您访问过的网址</translation>
-<translation id="3261565993776444564">试用新颜色来自定义浏览器</translation>
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3286538390144397061">立即重新启动</translation>
 <translation id="3289358082435924389">之后，Chrome 会询问您是否要使用已保存的信息自动填写表单</translation>
@@ -201,7 +193,6 @@
 <translation id="3503306920980160878">Chrome 需要获得位置权限，才能将您的位置信息共享给此网站</translation>
 <translation id="3533694711092285624">尚未保存任何密码。您需要先保存密码才能使用 Chrome 的密码检查功能。</translation>
 <translation id="3541482654983822893">Chrome 无法检查您的密码。请过 24 小时再试。</translation>
-<translation id="3564543103555793392">登录 Chrome 后，您可保存书签、密码等信息，然后在手机上使用这些信息</translation>
 <translation id="3576528680708590453">您的系统管理员已将 Google Chrome 配置为使用备用浏览器访问 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="3582972582564653026">在您的所有设备上同步并个性化设置 Chrome</translation>
 <translation id="3583751698304738917">您已使用另一份 Chrome 个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录</translation>
@@ -214,7 +205,6 @@
 <translation id="3635073343384702370">您需要先保存密码，然后才能使用 Chrome 的密码检查功能</translation>
 <translation id="3667616615096815454">无法安装，服务器无法识别该应用。</translation>
 <translation id="3673813398384385993">Chrome 发现“<ph name="EXTENSION_NAME" />”包含恶意软件</translation>
-<translation id="3695446226812920698">如何解决</translation>
 <translation id="3697952514309507634">其他 Chrome 个人资料</translation>
 <translation id="3703994572283698466">与 <ph name="BEGIN_LINK_LINUX_OSS" />Linux 开发环境<ph name="END_LINK_LINUX_OSS" />一样，Chrome 操作系统也是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="3716540481907974026">ChromeOS Flex 版本</translation>
@@ -233,7 +223,6 @@
 <translation id="3941890832296813527">安装时出错：安装程序文件名无效或不受支持。</translation>
 <translation id="3968962723676998462">请输入您的口令，以便将 Chrome 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
 <translation id="3973161977468201858">Google Chrome 想要删除您的 Google 密码管理工具数据。请输入您的 Windows 密码以允许此操作。</translation>
-<translation id="398236277091248993">Chrome 会借助性能提升功能保持快速运行</translation>
 <translation id="4022972681110646219">翻译屏幕</translation>
 <translation id="4023601594785368013">源语言：<ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">需要重新启动 Chrome 操作系统以应用更新。</translation>
@@ -284,7 +273,6 @@
 <translation id="4627412468266359539">可选：自动向 Google 发送诊断数据和使用情况数据，协助改进 ChromeOS Flex 的功能和性能。</translation>
 <translation id="4633000520311261472">为了提高 Chrome 的安全性，系统停用了一些未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中、可能是在您不知情的情况下添加的扩展程序。</translation>
 <translation id="4680828127924988555">取消安装</translation>
-<translation id="4710245680469034439">使用取材自大自然、艺术家作品集合等来源的主题，让您的浏览器个性十足</translation>
 <translation id="4720851490453439956">Google 更新程序内部服务</translation>
 <translation id="4724676981607797757">出现协议不受支持错误，因此安装失败。</translation>
 <translation id="4728575227883772061">未知错误导致安装失败。如果 Google Chrome 浏览器正在运行，请将其关闭，然后重试。</translation>
@@ -304,7 +292,6 @@
 <translation id="4895437082222824641">在 Chrome 新标签页中打开链接(&amp;T)</translation>
 <translation id="4918844574251943176">图片已复制</translation>
 <translation id="492720062778050435">Chrome 建议您检查此扩展程序</translation>
-<translation id="4951177103388687412">利用标签页分组保持井井有条，并专注地处理重要事务</translation>
 <translation id="4953650215774548573">将Google Chrome设为默认浏览器</translation>
 <translation id="495931528404527476">在 Chrome 中</translation>
 <translation id="4969674060580488087">您的账号登录详细信息已过期，ChromeOS Flex 无法同步您的数据。</translation>
@@ -346,7 +333,6 @@
 <translation id="5579324208890605088">启动错误：请以普通用户身份（非管理员身份）运行安装程序。</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5602351063754773347">Chrome 建议您移除它。<ph name="BEGIN_LINK" />详细了解受支持的扩展程序<ph name="END_LINK" /></translation>
-<translation id="5648328599815354043">Chrome 可采取更多措施来保障您的上网安全</translation>
 <translation id="5649680279845190972">若要在所有计算机上使用您的扩展程序等，请登录 Chrome</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能存在危险，因此 Chrome 已将其拦截。</translation>
 <translation id="566568153320186256">Chrome 会通过限制后台活动和视觉效果（例如流畅滚动和视频帧速率）来节省电池电量。<ph name="BEGIN_LINK" />详细了解节能模式<ph name="END_LINK" /></translation>
@@ -386,7 +372,6 @@
 <translation id="6070348360322141662">为了提高安全性，Google Chrome 将对您的数据进行加密</translation>
 <translation id="6075300983329039771">贵组织 (<ph name="MANAGER" />) 要求您登录 Chrome</translation>
 <translation id="608006075545470555">向此浏览器添加工作资料</translation>
-<translation id="6097822892606850415">借助 AI 更自信地撰写内容</translation>
 <translation id="6113794647360055231">Chrome现在更好用了</translation>
 <translation id="6116252277240876590">使用此语言显示 Chrome 中的菜单、设置、提醒和其他文字</translation>
 <translation id="6134085236017727171">如需使用麦克风，请在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中授予 Chrome 访问权限</translation>
@@ -406,7 +391,6 @@
 <translation id="6251759518630934363">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Chrome 警告。</translation>
 <translation id="6277547788421725101">你的家长已为 Chrome 停用“网站、应用和扩展程序的权限”</translation>
 <translation id="627882678981830918">自定义和控制 Chrome。将 Chrome 设为默认浏览器。</translation>
-<translation id="6288788894729749483">将 Chrome 设为默认浏览器，安全放心地在网络世界尽情操作、创作和探索</translation>
 <translation id="6291089322031436445">Chrome 开发者版应用</translation>
 <translation id="6291549208091401781">已为您计算机上的所有用户安装 Google Chrome。</translation>
 <translation id="6319856120645568262">Chrome 需要获得权限，才能绘制您周边环境的地图并跟踪您的双手</translation>
@@ -418,7 +402,6 @@
 <translation id="6417690341895039567">{COUNT,plural, =1{贵组织会在 Chrome 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{贵组织会在 Chrome 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
 <translation id="6418662306461808273">切换到现有的 Chrome 个人资料？</translation>
 <translation id="6473905796280459355">前往“关于 Chrome”页面</translation>
-<translation id="6479881432656947268">访问 Chrome 应用商店</translation>
 <translation id="6481963882741794338">关联 Chrome 和其他 Google 服务，以便获得个性化体验和实现其他用途</translation>
 <translation id="648319183876919572">“增强型安全浏览”功能有助于保护您免受危险的网站及下载内容的侵害</translation>
 <translation id="6489302989675808168">已开启 • Chrome 无法验证此扩展程序的来源</translation>
@@ -442,7 +425,6 @@
 <translation id="6794858689789885890">始终在关闭 Chrome 时删除设备上的网站数据</translation>
 <translation id="6831043979455480757">翻译</translation>
 <translation id="683440813066116847">Google Chrome Canary版的入站规则，允许mDNS流量。</translation>
-<translation id="6834926483721196812">Chrome 专为实现高性能而打造，可提供节能模式和省内存模式等功能</translation>
 <translation id="684888714667046800">无法连接到互联网。如果使用防火墙，请确保 <ph name="PRODUCT_EXE_NAME" /> 在许可名单中。</translation>
 <translation id="6851981911629679515">开启 Chrome 的 JavaScript 和 WebAssembly 引擎额外保护功能</translation>
 <translation id="6881299373831449287">正在更新 Chrome</translation>
@@ -461,7 +443,6 @@
 <translation id="7024536598735240744">解压缩时出错：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">已停止安装。</translation>
 <translation id="7025800014283535195">您可在此处切换 Chrome 个人资料</translation>
-<translation id="7048502283602470098">探索 AI</translation>
 <translation id="7059914902409643750">定制您的专属 Chrome</translation>
 <translation id="7071827361006050863">Chrome 即将删除浏览数据</translation>
 <translation id="7085332316435785646">选择是否要包含 Chrome 历史记录以便在各款 Google 服务中获享更个性化的体验</translation>
@@ -479,9 +460,7 @@
 <translation id="7302361266603927550">部分 Chrome 数据尚未保存到您的 Google 账号。建议等待几分钟，然后再尝试退出账号。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="7308322188646931570">Chrome 需要获得存储空间使用权限，才能下载文件</translation>
 <translation id="7339898014177206373">打开新的窗口</translation>
-<translation id="7352881504289275361">“增强型安全浏览”功能提供了 Chrome 最强大的在线保护机制，可在您浏览网页时保障您的安全</translation>
 <translation id="7386878009611068389">若要使用家长选择的设置更安全地上网，请切换到你已用 <ph name="USER_EMAIL_ADDRESS" /> 身份登录的 Chrome 资料</translation>
-<translation id="7394745511930161845">利用 AI 创建您自己的主题，使浏览器呈现独特的外观</translation>
 <translation id="7398801000654795464">您之前登录 Chrome 时使用的账号为 <ph name="USER_EMAIL_ADDRESS" />，请使用同一账号再次登录。</translation>
 <translation id="7412494426921990001">点击 Chrome 菜单</translation>
 <translation id="7419819959108735624">选择任何内容即可使用 Google 智能镜头进行搜索</translation>
@@ -514,25 +493,19 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659737857277959440">贵组织可以查看和管理浏览数据，例如您的书签、历史记录和密码，但无法查看 Chrome 个人资料中的浏览数据。</translation>
 <translation id="7661924425853052955">您近期未访问过该网站。Chrome 移除了<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />权限和另外 <ph name="COUNT" /> 项权限</translation>
-<translation id="7668816516367091728">直接在地址栏中执行翻译、计算等任务</translation>
 <translation id="7670287553302121848">Chrome 账号需要重新验证身份</translation>
 <translation id="769538538642757151">如有任何事项需要您审核，Chrome 会通知您</translation>
 <translation id="77283119132245232">为 <ph name="BROWSER_NAME" /> 提供系统跟踪服务。如果停用此服务，浏览器创建的性能轨迹将不包含系统级事件，例如上下文切换和就绪线程事件。</translation>
 <translation id="7736869414036750079">贵组织要求您登录 Chrome</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
 <translation id="7761834446675418963">点击您的姓名即可打开Chrome并开始浏览。</translation>
-<translation id="7763983146198734674">保存密码即可随时随地取用</translation>
 <translation id="7777080907402804672">如果图片缺少有用的说明，则 Chrome 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。您可以随时在“设置”中关闭此功能。</translation>
 <translation id="778331955594035129">Chrome 需要为此网站授予位置信息权限</translation>
-<translation id="7785741298021097183">Chrome 支持手机和计算机等所有设备，快速又安全。</translation>
 <translation id="7787950393032327779">其他计算机 (<ph name="HOST_NAME" />) 的另一个 Google Chrome 进程 (<ph name="PROCESS_ID" />) 好像正在使用此个人资料。Chrome 已锁定此个人资料以防止其受损。如果您确定其他进程目前未使用此个人资料，请为其解锁并重新启动 Chrome。</translation>
 <translation id="7801699035218095297">Google Chrome 正在尝试复制密码。请输入您的 Windows 密码以允许此操作。</translation>
-<translation id="7802622118583152311">Chrome 为您带来最新技术，让您享受更出色的浏览体验</translation>
 <translation id="7808348361785373670">从Chrome中移除…</translation>
 <translation id="7825851276765848807">由于未指定的错误导致安装失败。请重新下载 Google Chrome 浏览器。</translation>
-<translation id="7836610565365456468">用取材自艺术家作品、大自然等来源的鲜明主题，让浏览器焕然一新</translation>
 <translation id="7845233973568007926">感谢您完成安装。您必须重启计算机才能使用 <ph name="BUNDLE_NAME" />。</translation>
-<translation id="7852254990718225089">Chrome 中的 AI 技术有助于提升网络速度、安全性和便利性</translation>
 <translation id="7872446069773932638">正在下载…还需 <ph name="SECONDS" /> 秒</translation>
 <translation id="7886087451482920026">选择要使用 Google 智能镜头搜索的文字</translation>
 <translation id="7890208801193284374">如果您与亲朋好友共用计算机，他们将能够使用单独的账号进行浏览，并可随心所欲地设置Chrome。</translation>
@@ -540,7 +513,6 @@
 <translation id="7917470403848199310">Chrome 会询问您是否要保存表单信息，例如生日、年龄和护照号码</translation>
 <translation id="7917876797003313048">您可以管理您已登录的 Google 账号。您可通过登录自己的 Google 账号使用 Chrome 浏览器、Play 商店、Gmail 等产品。如果您想添加他人（比如某个家庭成员）的账号，请改为将这个新人添加到您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome 阻止了此项下载操作，因为该文件具有欺骗性，可能会意外更改您的设备</translation>
-<translation id="7947083960301164556">查看新变化</translation>
 <translation id="7951272445806340501">需要重启 ChromeOS Flex 以应用更新。</translation>
 <translation id="7959172989483770734">管理 Chrome 个人资料</translation>
 <translation id="7962410387636238736">此计算机将不会再收到 Google Chrome 更新，因为 Windows XP 和 Windows Vista 已不再受支持</translation>
@@ -581,7 +553,6 @@
 <translation id="8418845734693287262">由于您的账号登录详细信息已过期，Chrome 操作系统无法同步您的数据。</translation>
 <translation id="842386925677997438">Chrome 的安全工具</translation>
 <translation id="8425765582779547329">若要使用家长选择的设置更安全地上网，请登录 Chrome</translation>
-<translation id="8428213095426709021">设置</translation>
 <translation id="8429214465555795676">如需继续操作，您需要使用 <ph name="EMAIL" /> 登录 Chrome。这样才能确保符合您组织的政策。</translation>
 <translation id="8433638294851456451">若要从此处向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chrome。</translation>
 <translation id="8496177819998570653">Google 密码管理工具(&amp;A)</translation>
@@ -609,17 +580,14 @@
 <translation id="8781673607513845160">如需使用摄像头，请在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中授予 Chrome 访问权限</translation>
 <translation id="878572486461146056">安装时出错：您的网络管理员所应用的一项群组政策阻止了安装进程：<ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">Chrome 阻止了此项下载操作，因为该文件可能会危害您的个人和社交网络账号，包括 <ph name="USER_EMAIL" /></translation>
-<translation id="8797423385604279835">借助 AI 技术整理标签页</translation>
 <translation id="8801657293260363985">V8 是 Chrome 的 JavaScript 和 WebAssembly 引擎，用于提升网站性能</translation>
 <translation id="8821043148920470810">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。该计算机目前使用的是 Windows 7。</translation>
 <translation id="8823341990149967727">Chrome版本太旧</translation>
 <translation id="8825634023950448068">为了保护您的隐私，如果您的兴趣保留时间超过 4 周，系统便会自动将其删除。随着您继续浏览，某项兴趣可能会再次出现在列表中。如果 Chrome 的推测不准确，或者您不想看到某些广告，可以移除某项兴趣。</translation>
 <translation id="8834965163890861871">Google Chrome 正在尝试修改密码。请输入您的 Windows 密码以允许此操作。</translation>
-<translation id="8843389967774722327">Chrome 会定期添加新功能，帮助您处理各种事务</translation>
 <translation id="8843516219908676469">Chrome 可以更好地理解表单，并更快地为您自动填充表单</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome 建议您移除它}other{Chrome 建议您移除它们}}</translation>
 <translation id="8862326446509486874">您的权限不足，无法进行系统级安装。请尝试以管理员身份再次运行安装程序。</translation>
-<translation id="8908277254462331033">查看安全功能</translation>
 <translation id="8914504000324227558">重启 Chrome</translation>
 <translation id="8922193594870374009">若要从 <ph name="ORIGIN" /> 向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chrome。</translation>
 <translation id="8948460679427074738">此扩展程序尚未发布隐私权规范，例如如何收集和使用数据。Chrome 建议您移除它。</translation>

@@ -30,7 +30,6 @@ Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph na
 <translation id="2118649612461486615">Informacje o sklepie</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. Karta incognito nie będzie dostępna.}few{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. # karty incognito nie będą dostępne.}many{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. # kart incognito nie będzie dostępnych.}other{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. # karty incognito nie będzie dostępne.}}</translation>
 <translation id="2162620598375156287">Teraz za <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">Grupa kart <ph name="TAB_GROUP_NAME" /> nie jest już dostępna</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Usuń kartę z grupy}few{Usuń karty z grupy}many{Usuń karty z grupy}other{Usuń karty z grupy}}</translation>
 <translation id="2271452184061378400">Tutaj są zapisane Twoje grupy kart</translation>
 <translation id="2277224997687551299">Edytuj nazwę grupy</translation>

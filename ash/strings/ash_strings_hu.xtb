@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">2. asztal</translation>
 <translation id="1546930421365146760">Kérje meg a rendszergazdát, hogy állítsa be ezt az eszközt a Google Felügyeleti Konzolban</translation>
 <translation id="1549512626801247439">tárhelykezelés</translation>
+<translation id="1549721333775633305">A Quick Share beállításainak megjelenítése. A Quick Share le van tiltva</translation>
 <translation id="1550406609415860283">Rendelkezésre álló eszközök</translation>
 <translation id="1550523713251050646">Kattintson további lehetőségekért</translation>
 <translation id="1555130319947370107">Kék</translation>
@@ -1475,6 +1476,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5856638668464565213">A(z) <ph name="NETWORK_NAME" /> nincs aktiválva.</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
 <translation id="5860491529813859533">Bekapcsolás</translation>
+<translation id="5864691701242730005">A Quick Share beállításainak megjelenítése. Kiválasztott láthatóság: <ph name="VISIBILITY" />.</translation>
 <translation id="5864748620896638071">Akkumulátor <ph name="BATTERY_PERCENTAGE" />%-on</translation>
 <translation id="5867217927013474703">A hálózati információk összegyűjtése folyamatban van</translation>
 <translation id="5867606971598166637">Rendszergazdája felügyeli a képernyőit</translation>
@@ -2263,6 +2265,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="851660987304951246">A Segítség az olvasáshoz funkció használatával gyorsan foglalhat össze tartalmakat és tehet fel kérdéseket</translation>
 <translation id="8517041960877371778">Előfordulhat, hogy a(z) <ph name="DEVICE_TYPE" /> nem töltődik, amíg be van kapcsolva.</translation>
 <translation id="8535393432370007982">Szín szerinti rendezés visszavonása</translation>
+<translation id="8536886494750559755">A Quick Share beállításainak megjelenítése. Mindenki számára látható ennyi ideig: <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Szöveg vágólapra másolva</translation>
 <translation id="8541078764854166027">Keretezés</translation>
 <translation id="8542053257095774575">Nincsenek mentett asztalok vagy sablonok</translation>

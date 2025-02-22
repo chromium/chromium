@@ -198,29 +198,29 @@ suite('ExtensionsActivityLogHistoryTest', function() {
     // is in activity_log_history.js.
     assertEquals(
         activityLogItems[0]!.shadowRoot
-            .querySelector<HTMLElement>('#activity-key')!.innerText!,
+            .querySelector<HTMLElement>('#activity-key')!.innerText,
         'i18n.getUILanguage');
     assertEquals(
         activityLogItems[0]!.shadowRoot
-            .querySelector<HTMLElement>('#activity-count')!.innerText!,
+            .querySelector<HTMLElement>('#activity-count')!.innerText,
         '40');
 
     assertEquals(
         activityLogItems[1]!.shadowRoot
-            .querySelector<HTMLElement>('#activity-key')!.innerText!,
+            .querySelector<HTMLElement>('#activity-key')!.innerText,
         'Storage.getItem');
     assertEquals(
         activityLogItems[1]!.shadowRoot
-            .querySelector<HTMLElement>('#activity-count')!.innerText!,
+            .querySelector<HTMLElement>('#activity-count')!.innerText,
         '35');
 
     assertEquals(
         activityLogItems[2]!.shadowRoot
-            .querySelector<HTMLElement>('#activity-key')!.innerText!,
+            .querySelector<HTMLElement>('#activity-key')!.innerText,
         'Storage.setItem');
     assertEquals(
         activityLogItems[2]!.shadowRoot
-            .querySelector<HTMLElement>('#activity-count')!.innerText!,
+            .querySelector<HTMLElement>('#activity-count')!.innerText,
         '10');
   });
 
@@ -245,12 +245,12 @@ suite('ExtensionsActivityLogHistoryTest', function() {
     assertEquals(activityLogItems.length, 1);
     assertEquals(
         activityLogItems[0]!.shadowRoot
-            .querySelector<HTMLElement>('#activity-key')!.innerText!,
+            .querySelector<HTMLElement>('#activity-key')!.innerText,
         'i18n.getUILanguage');
 
     // Change search query so no results match.
     proxyDelegate.resetResolver('getFilteredExtensionActivityLog');
-    search!.setValue('query that does not match any activities');
+    search.setValue('query that does not match any activities');
 
     await proxyDelegate.whenCalled('getFilteredExtensionActivityLog');
 
@@ -265,7 +265,7 @@ suite('ExtensionsActivityLogHistoryTest', function() {
 
     // Finally, we clear the search query via the #clearSearch button.
     // We should see all the activities displayed.
-    search!.shadowRoot.querySelector<HTMLElement>('#clearSearch')!.click();
+    search.shadowRoot.querySelector<HTMLElement>('#clearSearch')!.click();
 
     await proxyDelegate.whenCalled('getExtensionActivityLog');
 
@@ -285,11 +285,11 @@ suite('ExtensionsActivityLogHistoryTest', function() {
 
     assertEquals(
         activityLogItems[0]!.shadowRoot
-            .querySelector<HTMLElement>('#activity-key')!.innerText!,
+            .querySelector<HTMLElement>('#activity-key')!.innerText,
         'script1.js');
     assertEquals(
         activityLogItems[1]!.shadowRoot
-            .querySelector<HTMLElement>('#activity-key')!.innerText!,
+            .querySelector<HTMLElement>('#activity-key')!.innerText,
         'script2.js');
   });
 
@@ -319,7 +319,7 @@ suite('ExtensionsActivityLogHistoryTest', function() {
         for (let i = 0; i < expectedNumItems; ++i) {
           assertEquals(
               activityLogItems[i]!.shadowRoot
-                  .querySelector<HTMLElement>('#activity-key')!.innerText!,
+                  .querySelector<HTMLElement>('#activity-key')!.innerText,
               expectedItemKeys[i]);
         }
       });

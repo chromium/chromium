@@ -94,7 +94,7 @@ suite('SupportedLinksItemElement', function() {
 
     await setUpSupportedLinksComponent('app1', appOptions);
     let supportedLinksDialog =
-        supportedLinksItem.shadowRoot!.querySelector<CrLitElement>('#dialog');
+        supportedLinksItem.shadowRoot.querySelector<CrLitElement>('#dialog');
     assertNull(supportedLinksDialog);
 
     // Open dialog.
@@ -131,7 +131,7 @@ suite('SupportedLinksItemElement', function() {
 
     // Wait for the stamped dialog to be destroyed.
     supportedLinksDialog =
-        supportedLinksItem.shadowRoot!.querySelector<CrLitElement>('#dialog');
+        supportedLinksItem.shadowRoot.querySelector<CrLitElement>('#dialog');
     assertNull(supportedLinksDialog);
   });
 });

@@ -1154,7 +1154,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="306573536155379004">Spiel gestartet.</translation>
 <translation id="3067505415088964188">Der Preis ist niedrig</translation>
 <translation id="3068118691172921711">Der Dateiupload in <ph name="CLOUD_PROVIDER" /> beginnt in 1 Minute</translation>
-<translation id="3068976060094139647">Du kannst diese Karte automatisch ausfüllen lassen, weil dein Konto mit Google Pay verknüpft ist.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} Element}other{{ITEMS} Elemente}}</translation>
 <translation id="3076865167425975822">Betriebssysteme</translation>
 <translation id="3080254622891793721">Grafik</translation>
@@ -4375,7 +4374,6 @@ Weitere Details:
 <translation id="8757526089434340176">Google Pay-Angebot verfügbar</translation>
 <translation id="8759274551635299824">Diese Karte ist abgelaufen</translation>
 <translation id="87601671197631245">Diese Website nutzt eine veraltete Sicherheitskonfiguration. Hierdurch können Informationen wie etwa Passwörter, Nachrichten oder Kreditkartendaten, die an diese Website gesendet werden, in die Hände Unbefugter gelangen.</translation>
-<translation id="8763226176721243078">Du kannst diese Karte automatisch ausfüllen lassen, weil dein <ph name="CARD_ISSUER_NAME" />-Konto mit Google Pay verknüpft ist.</translation>
 <translation id="8763927697961133303">USB-Gerät</translation>
 <translation id="8763986294015493060">Alle geöffneten Inkognitofenster schließen</translation>
 <translation id="8766943070169463815">Ansicht zum Authentifizieren der sicheren Anmeldedaten für Zahlungen ist geöffnet</translation>

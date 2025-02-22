@@ -508,7 +508,7 @@ suite('ItemTest', function() {
     });
     await microtasksFinished();
     assertTrue(!!iconWrapper);
-    assertEquals('true', iconWrapper!.ariaHidden);
+    assertEquals('true', iconWrapper.ariaHidden);
   });
 
   test('save dangerous click fires event for dangerous', async () => {

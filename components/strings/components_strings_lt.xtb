@@ -1154,7 +1154,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="306573536155379004">Žaidimas prasidėjo.</translation>
 <translation id="3067505415088964188">Kaina yra maža</translation>
 <translation id="3068118691172921711">Failų įkėlimas į „<ph name="CLOUD_PROVIDER" />“ bus pradėtas po vienos minutės</translation>
-<translation id="3068976060094139647">Galite automatiškai užpildyti šią kortelę, nes jūsų paskyra yra susieta su „Google Pay“.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} elementas}one{{ITEMS} elementas}few{{ITEMS} elementai}many{{ITEMS} elemento}other{{ITEMS} elementų}}</translation>
 <translation id="3076865167425975822">Operacinės sistemos</translation>
 <translation id="3080254622891793721">Grafiniai elementai</translation>
@@ -4381,7 +4380,6 @@ Papildoma išsami informacija:
 <translation id="8757526089434340176">Pasiekiamas „Google Pay“ pasiūlymas</translation>
 <translation id="8759274551635299824">Ši kortelė nebegalioja</translation>
 <translation id="87601671197631245">Šioje svetainėje naudojama pasenusi saugos konfigūracija, todėl gali būti atskleista į šią svetainę siunčiama informacija (pvz., slaptažodžiai, pranešimai ar kredito kortelių duomenys).</translation>
-<translation id="8763226176721243078">Galite automatiškai užpildyti šią kortelę, nes jūsų „<ph name="CARD_ISSUER_NAME" />“ paskyra yra susieta su „Google Pay“.</translation>
 <translation id="8763927697961133303">USB įrenginys</translation>
 <translation id="8763986294015493060">Uždaryti visus šiuo metu atidarytus inkognito langus</translation>
 <translation id="8766943070169463815">Saugaus mokėjimo prisijungimo duomenų autentifikavimo lapas atidarytas</translation>

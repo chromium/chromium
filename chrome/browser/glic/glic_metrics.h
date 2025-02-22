@@ -12,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enums.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class Profile;
@@ -66,6 +67,9 @@ class GlicMetrics {
   // Called when enabled changes.
   void OnEnabledChanged();
 
+  // Called when kGlicPinnedToTabstrip changes.
+  void OnPinningPrefChanged();
+
   // These members are cleared in OnResponseStopped.
   base::TimeTicks input_submitted_time_;
   mojom::WebClientMode input_mode_;
@@ -100,6 +104,11 @@ class GlicMetrics {
 
   // Holds subscriptions for callbacks.
   std::vector<base::CallbackListSubscription> subscriptions_;
+
+  // Cache the last value of the kGlicPinnedToTabstrip pref so that we only emit
+  // metrics for changes to the last value.
+  bool is_pinned_ = false;
+  PrefChangeRegistrar pref_registrar_;
 };
 
 }  // namespace glic

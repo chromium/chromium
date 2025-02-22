@@ -107,8 +107,8 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
 
   test('creating overlay shows waiting text', () => {
     // Assert.
-    assertTrue(isVisible(voiceSearchOverlay.shadowRoot!.querySelector(
-        '#texts *[text=waiting]')));
+    assertTrue(isVisible(
+        voiceSearchOverlay.shadowRoot.querySelector('#texts *[text=waiting]')));
     assertFalse(
         voiceSearchOverlay.$.micContainer.classList.contains('listening'));
     assertFalse(
@@ -123,7 +123,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
 
     // Assert.
     assertTrue(isVisible(
-        voiceSearchOverlay.shadowRoot!.querySelector('#texts *[text=speak]')));
+        voiceSearchOverlay.shadowRoot.querySelector('#texts *[text=speak]')));
     assertTrue(
         voiceSearchOverlay.$.micContainer.classList.contains('listening'));
     assertStyle(voiceSearchOverlay.$.micVolume, '--mic-volume-level', '0');
@@ -156,7 +156,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
 
     // Assert.
     const [intermediateResult, finalResult] =
-        voiceSearchOverlay.shadowRoot!.querySelectorAll<HTMLElement>(
+        voiceSearchOverlay.shadowRoot.querySelectorAll<HTMLElement>(
             '#texts *[text=result] span');
     assertTrue(isVisible(intermediateResult!));
     assertTrue(isVisible(finalResult!));
@@ -226,12 +226,12 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
           await microtasksFinished();
 
           // Assert.
-          assertTrue(isVisible(voiceSearchOverlay.shadowRoot!.querySelector(
+          assertTrue(isVisible(voiceSearchOverlay.shadowRoot.querySelector(
               '#texts *[text=error]')));
-          assertTrue(isVisible(voiceSearchOverlay.shadowRoot!.querySelector(
+          assertTrue(isVisible(voiceSearchOverlay.shadowRoot.querySelector(
               `#errors *[error="${text}"]`)));
           assertNotStyle(
-              voiceSearchOverlay.shadowRoot!.querySelector(
+              voiceSearchOverlay.shadowRoot.querySelector(
                   `#errorLinks *[link="${link}"]`)!,
               'display', 'none');
           assertFalse(voiceSearchOverlay.$.micContainer.classList.contains(
@@ -252,8 +252,8 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
 
     // Assert.
     assertTrue(isVisible(
-        voiceSearchOverlay.shadowRoot!.querySelector('#texts *[text=error]')));
-    assertTrue(isVisible(voiceSearchOverlay.shadowRoot!.querySelector(
+        voiceSearchOverlay.shadowRoot.querySelector('#texts *[text=error]')));
+    assertTrue(isVisible(voiceSearchOverlay.shadowRoot.querySelector(
         '#errors *[error="audio-capture"]')));
   });
 
@@ -269,7 +269,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
 
     // Assert.
     assertTrue(isVisible(
-        voiceSearchOverlay.shadowRoot!.querySelector('#texts *[text=result]')));
+        voiceSearchOverlay.shadowRoot.querySelector('#texts *[text=result]')));
   });
 
   const testParams = [
@@ -321,7 +321,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
 
     // Assert.
     assertTrue(isVisible(
-        voiceSearchOverlay.shadowRoot!.querySelector('#texts *[text=error]')));
+        voiceSearchOverlay.shadowRoot.querySelector('#texts *[text=error]')));
   });
 
   test('on error timeout closes overlay', async () => {
@@ -372,7 +372,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
       assertEquals(0, windowProxy.getCallCount('navigate'));
 
       // Act.
-      keydown(voiceSearchOverlay.shadowRoot!.activeElement as HTMLElement, key);
+      keydown(voiceSearchOverlay.shadowRoot.activeElement as HTMLElement, key);
 
       // Assert.
       assertEquals(1, windowProxy.getCallCount('navigate'));
@@ -381,7 +381,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
 
     test(`'${key}' does not submit query if no result`, () => {
       // Act.
-      keydown(voiceSearchOverlay.shadowRoot!.activeElement as HTMLElement, key);
+      keydown(voiceSearchOverlay.shadowRoot.activeElement as HTMLElement, key);
 
       // Assert.
       assertEquals(0, windowProxy.getCallCount('navigate'));
@@ -412,7 +412,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
   test('\'Escape\' closes overlay', () => {
     // Act.
     keydown(
-        voiceSearchOverlay.shadowRoot!.activeElement as HTMLElement, 'Escape');
+        voiceSearchOverlay.shadowRoot.activeElement as HTMLElement, 'Escape');
 
     // Assert.
     assertFalse(voiceSearchOverlay.$.dialog.open);

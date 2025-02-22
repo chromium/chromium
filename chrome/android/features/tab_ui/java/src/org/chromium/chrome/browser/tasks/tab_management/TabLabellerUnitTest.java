@@ -17,6 +17,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -82,7 +83,10 @@ public class TabLabellerUnitTest {
     @Before
     public void setUp() {
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
-        mContext = ApplicationProvider.getApplicationContext();
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
         mTabGroupIdSupplier.set(GROUP_ID1);
         mTabLabeller =
                 new TabLabeller(

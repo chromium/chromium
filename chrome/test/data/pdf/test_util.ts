@@ -425,7 +425,7 @@ export async function ensureFullscreen(): Promise<void> {
     return;
   }
 
-  const toolbar = viewer.shadowRoot!.querySelector('viewer-toolbar');
+  const toolbar = viewer.shadowRoot.querySelector('viewer-toolbar');
   assert(toolbar);
   toolbar.dispatchEvent(new CustomEvent('present-click'));
   await eventToPromise('fullscreenchange', viewer.$.scroller);
@@ -549,7 +549,7 @@ export function getBrushSelector(parentElement: HTMLElement):
 export function getSizeButtons(selector: InkSizeSelectorElement):
     NodeListOf<HTMLElement> {
   const sizeButtons =
-      selector.shadowRoot!.querySelectorAll<HTMLElement>('cr-icon-button');
+      selector.shadowRoot.querySelectorAll<HTMLElement>('cr-icon-button');
   assert(sizeButtons);
   assert(sizeButtons.length === 5);
   return sizeButtons;
@@ -576,7 +576,7 @@ export function assertSelectedSize(
  */
 export function getColorButtons(selector: InkColorSelectorElement):
     NodeListOf<HTMLElement> {
-  const colorButtons = selector.shadowRoot!.querySelectorAll('input');
+  const colorButtons = selector.shadowRoot.querySelectorAll('input');
   assert(colorButtons);
   return colorButtons;
 }

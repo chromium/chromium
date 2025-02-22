@@ -30,7 +30,6 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="2118649612461486615">Impormasyon ng store</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong tab na Incognito.}one{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong # tab na Incognito.}other{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong # na tab na Incognito.}}</translation>
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> ngayon sa <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">Hindi na available ang grupo ng tab na <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{I-ungroup ang tab}one{I-ungroup ang mga tab}other{I-ungroup ang mga tab}}</translation>
 <translation id="2271452184061378400">Nase-save dito ang iyong mga grupo ng tab</translation>
 <translation id="2277224997687551299">I-edit ang pangalan ng grupo</translation>

@@ -17,9 +17,9 @@ import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 export function getPage(type: 'basic'|'about'): Promise<HTMLElement> {
   const settingsUi = document.querySelector('settings-ui');
   assertTrue(!!settingsUi);
-  const settingsMain = settingsUi!.shadowRoot!.querySelector('settings-main');
+  const settingsMain = settingsUi.shadowRoot!.querySelector('settings-main');
   assertTrue(!!settingsMain);
-  const page = settingsMain!.shadowRoot!.querySelector<HTMLElement>(
+  const page = settingsMain.shadowRoot!.querySelector<HTMLElement>(
       `settings-${type}-page`);
   assertTrue(!!page);
 

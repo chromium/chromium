@@ -42,7 +42,7 @@ suite('DeletePasskeyDialogTest', function() {
         dialog.shadowRoot!.querySelector<HTMLAnchorElement>('#link a')!;
     assertTrue(!!link);
     assertEquals(link.textContent!.trim(), 'test.com');
-    assertEquals(link.href!.trim(), passkey.affiliatedDomains![0]!.url);
+    assertEquals(link.href.trim(), passkey.affiliatedDomains[0]!.url);
   });
 
   test('clicking cancel closes the dialog', function() {

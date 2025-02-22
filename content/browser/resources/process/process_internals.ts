@@ -175,6 +175,12 @@ function frameToTreeItem(frame: FrameInfo, parentProcessId: number = -1):
   if (frame.siteInstance.isPdf) {
     itemLabel += ', pdf';
   }
+  // TODO(crbug.com/398265332): only show the non-default case.
+  if (frame.siteInstance.areJavascriptOptimizersEnabled) {
+    itemLabel += ', js-opt-on';
+  } else {
+    itemLabel += ', js-opt-off';
+  }
   if (frame.siteInstance.storagePartition) {
     itemLabel += `, partition:${frame.siteInstance.storagePartition}`;
   }

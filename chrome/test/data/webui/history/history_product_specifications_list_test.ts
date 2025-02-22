@@ -5,7 +5,7 @@
 import 'chrome://history/history.js';
 
 import {ensureLazyLoaded, ProductSpecificationsBrowserProxyImpl, ShoppingServiceBrowserProxyImpl} from 'chrome://history/history.js';
-import type {CrButtonElement, CrCheckboxElement, ProductSpecificationsListsElement} from 'chrome://history/history.js';
+import type {CrButtonElement, ProductSpecificationsListsElement} from 'chrome://history/history.js';
 import {ProductSpecificationsCallbackRouter} from 'chrome://history/history.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -128,7 +128,7 @@ suite('ProductSpecificationsListTest', () => {
     const cardTitleHeader = productSpecificationsList.shadowRoot!.querySelector(
         '#card-title-header');
     assertTrue(!!cardTitleHeader);
-    const heading = cardTitleHeader!.textContent;
+    const heading = cardTitleHeader.textContent;
     assertTrue(!!heading);
     assertEquals('Comparison tables', heading.trim());
   });
@@ -142,7 +142,7 @@ suite('ProductSpecificationsListTest', () => {
         assertDeepEquals(new Set(), productSpecificationsList.selectedItems);
 
         const secondItem = items[1]!;
-        const checkbox = secondItem.$.checkbox as CrCheckboxElement;
+        const checkbox = secondItem.$.checkbox;
         checkbox.click();
 
         await checkbox.updateComplete;
@@ -169,7 +169,7 @@ suite('ProductSpecificationsListTest', () => {
 
     const button = menu.querySelector('button');
     assertTrue(!!button);
-    const buttonText = button!.textContent;
+    const buttonText = button.textContent;
     assertTrue(!!buttonText);
     assertEquals('Remove from tables', buttonText.trim());
   });
@@ -232,10 +232,10 @@ suite('ProductSpecificationsListTest', () => {
 
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
-    const checkbox0 = items[0]!.$.checkbox as CrCheckboxElement;
+    const checkbox0 = items[0]!.$.checkbox;
     checkbox0.click();
     await checkbox0.updateComplete;
-    const checkbox1 = items[1]!.$.checkbox as CrCheckboxElement;
+    const checkbox1 = items[1]!.$.checkbox;
     checkbox1.click();
     await checkbox1.updateComplete;
     assertDeepEquals(
@@ -375,7 +375,7 @@ suite('ProductSpecificationsListTest', () => {
     const newItems = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
 
-    assertEquals(1, newItems!.length);
+    assertEquals(1, newItems.length);
     assertDeepEquals('example2', newItems[0]!.item.name);
   });
 

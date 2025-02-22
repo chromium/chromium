@@ -26,6 +26,7 @@
 #include "extensions/browser/api/declarative/test_rules_registry.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/rules_registry_ids.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
@@ -40,7 +41,7 @@ const char kRule2Id[] = "rule2";
 }
 
 namespace extensions {
-const int kRulesRegistryID = RulesRegistryService::kDefaultRulesRegistryID;
+const int kRulesRegistryID = rules_registry_ids::kDefaultRulesRegistryID;
 
 class RulesRegistryWithCacheTest : public testing::Test {
  public:

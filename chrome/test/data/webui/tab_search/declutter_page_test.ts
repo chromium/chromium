@@ -63,10 +63,10 @@ suite('DeclutterPageTest', () => {
     const duplicateTabCount = 4;
     await declutterPageSetup(staleTabCount, duplicateTabCount);
     assertEquals(1, testApiProxy.getCallCount('getUnusedTabs'));
-    const staleTabElements = declutterPage.shadowRoot!.querySelectorAll(
+    const staleTabElements = declutterPage.shadowRoot.querySelectorAll(
         '#staleTabList > tab-search-item');
     assertEquals(staleTabCount, staleTabElements.length);
-    const duplicateTabElements = declutterPage.shadowRoot!.querySelectorAll(
+    const duplicateTabElements = declutterPage.shadowRoot.querySelectorAll(
         '#duplicateTabList > tab-search-item');
     assertEquals(duplicateTabCount, duplicateTabElements.length);
   });
@@ -75,11 +75,11 @@ suite('DeclutterPageTest', () => {
     await declutterPageSetup(3, 4);
     assertEquals(0, testApiProxy.getCallCount('declutterTabs'));
 
-    const staleTabElements = declutterPage.shadowRoot!.querySelectorAll(
+    const staleTabElements = declutterPage.shadowRoot.querySelectorAll(
         '#staleTabList > tab-search-item');
-    const duplicateTabElements = declutterPage.shadowRoot!.querySelectorAll(
+    const duplicateTabElements = declutterPage.shadowRoot.querySelectorAll(
         '#duplicateTabList > tab-search-item');
-    const closeButton = declutterPage.shadowRoot!.querySelector('cr-button');
+    const closeButton = declutterPage.shadowRoot.querySelector('cr-button');
     assertTrue(!!closeButton);
     closeButton.click();
 
@@ -98,11 +98,11 @@ suite('DeclutterPageTest', () => {
     assertEquals(0, testApiProxy.getCallCount('excludeFromStaleTabs'));
 
     const staleTabElement =
-        declutterPage.shadowRoot!.querySelector<TabSearchItemElement>(
+        declutterPage.shadowRoot.querySelector<TabSearchItemElement>(
             '#staleTabList > tab-search-item');
     assertTrue(!!staleTabElement);
     const removeButton =
-        staleTabElement.shadowRoot!.querySelector('cr-icon-button');
+        staleTabElement.shadowRoot.querySelector('cr-icon-button');
     assertTrue(!!removeButton);
     removeButton.click();
 
@@ -121,11 +121,11 @@ suite('DeclutterPageTest', () => {
     assertEquals(0, testApiProxy.getCallCount('excludeFromDuplicateTabs'));
 
     const duplicateTabElement =
-        declutterPage.shadowRoot!.querySelector<TabSearchItemElement>(
+        declutterPage.shadowRoot.querySelector<TabSearchItemElement>(
             '#duplicateTabList > tab-search-item');
     assertTrue(!!duplicateTabElement);
     const removeButton =
-        duplicateTabElement.shadowRoot!.querySelector('cr-icon-button');
+        duplicateTabElement.shadowRoot.querySelector('cr-icon-button');
     assertTrue(!!removeButton);
     removeButton.click();
 
@@ -135,20 +135,18 @@ suite('DeclutterPageTest', () => {
 
   test('Shows tab list on nonzero tabs', async () => {
     await declutterPageSetup(2);
-    const tabList = declutterPage.shadowRoot!.querySelector('#staleTabList');
+    const tabList = declutterPage.shadowRoot.querySelector('#staleTabList');
     assertTrue(!!tabList);
     assertTrue(isVisible(tabList));
-    const emptyState =
-        declutterPage.shadowRoot!.querySelector('.empty-content');
+    const emptyState = declutterPage.shadowRoot.querySelector('.empty-content');
     assertFalse(!!emptyState);
   });
 
   test('Shows empty state on zero tabs', async () => {
     await declutterPageSetup(0);
-    const tabList = declutterPage.shadowRoot!.querySelector('#staleTabList');
+    const tabList = declutterPage.shadowRoot.querySelector('#staleTabList');
     assertFalse(!!tabList);
-    const emptyState =
-        declutterPage.shadowRoot!.querySelector('.empty-content');
+    const emptyState = declutterPage.shadowRoot.querySelector('.empty-content');
     assertTrue(!!emptyState);
     assertTrue(isVisible(emptyState));
   });
@@ -157,15 +155,13 @@ suite('DeclutterPageTest', () => {
     await declutterPageSetup(2);
 
     const tabRows =
-        declutterPage.shadowRoot!.querySelectorAll('tab-search-item');
+        declutterPage.shadowRoot.querySelectorAll('tab-search-item');
     assertTrue(!!tabRows);
     assertEquals(2, tabRows.length);
 
-    const closeButton0 =
-        tabRows[0]!.shadowRoot!.querySelector(`cr-icon-button`);
+    const closeButton0 = tabRows[0]!.shadowRoot.querySelector(`cr-icon-button`);
     assertTrue(!!closeButton0);
-    const closeButton1 =
-        tabRows[1]!.shadowRoot!.querySelector(`cr-icon-button`);
+    const closeButton1 = tabRows[1]!.shadowRoot.querySelector(`cr-icon-button`);
     assertTrue(!!closeButton1);
 
     closeButton0.focus();
@@ -183,18 +179,15 @@ suite('DeclutterPageTest', () => {
     await declutterPageSetup(3);
 
     const tabRows =
-        declutterPage.shadowRoot!.querySelectorAll('tab-search-item');
+        declutterPage.shadowRoot.querySelectorAll('tab-search-item');
     assertTrue(!!tabRows);
     assertEquals(3, tabRows.length);
 
-    const closeButton0 =
-        tabRows[0]!.shadowRoot!.querySelector(`cr-icon-button`);
+    const closeButton0 = tabRows[0]!.shadowRoot.querySelector(`cr-icon-button`);
     assertTrue(!!closeButton0);
-    const closeButton1 =
-        tabRows[1]!.shadowRoot!.querySelector(`cr-icon-button`);
+    const closeButton1 = tabRows[1]!.shadowRoot.querySelector(`cr-icon-button`);
     assertTrue(!!closeButton1);
-    const closeButton2 =
-        tabRows[2]!.shadowRoot!.querySelector(`cr-icon-button`);
+    const closeButton2 = tabRows[2]!.shadowRoot.querySelector(`cr-icon-button`);
     assertTrue(!!closeButton2);
 
     closeButton0.focus();

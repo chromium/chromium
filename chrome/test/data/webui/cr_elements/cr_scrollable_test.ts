@@ -39,8 +39,7 @@ suite('cr-scrollable', () => {
     testElement = document.createElement('test-element') as TestElement;
     document.body.appendChild(testElement);
 
-    scrollableElement =
-        testElement.shadowRoot!.querySelector('.cr-scrollable')!;
+    scrollableElement = testElement.shadowRoot.querySelector('.cr-scrollable')!;
     childBlockElement = scrollableElement.querySelector('.block')!;
   });
 

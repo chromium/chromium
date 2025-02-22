@@ -136,11 +136,11 @@ suite('ExtensionsActivityLogStreamTest', function() {
         await waitForPaint();
         assertEquals(
             streamItems[0]!.shadowRoot
-                .querySelector<HTMLElement>('#activity-name')!.innerText!,
+                .querySelector<HTMLElement>('#activity-name')!.innerText,
             'testAPI.testMethod');
         assertEquals(
             streamItems[1]!.shadowRoot
-                .querySelector<HTMLElement>('#activity-name')!.innerText!,
+                .querySelector<HTMLElement>('#activity-name')!.innerText,
             'testAPI.DOMMethod');
       });
 
@@ -165,7 +165,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
     await waitForPaint();
     assertEquals(
         filteredStreamItems[0]!.shadowRoot
-            .querySelector<HTMLElement>('#activity-name')!.innerText!,
+            .querySelector<HTMLElement>('#activity-name')!.innerText,
         'testAPI.testMethod');
 
     // search again, expect none
@@ -181,7 +181,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
     proxyDelegate.getOnExtensionActivity().callListeners(contentScriptActivity);
     await microtasksFinished();
 
-    search!.shadowRoot.querySelector<HTMLElement>('#clearSearch')!.click();
+    search.shadowRoot.querySelector<HTMLElement>('#clearSearch')!.click();
     await eventToPromise('viewport-filled', activityLogStream);
 
     // We expect 4 activities to appear as |contentScriptActivity| (which is
@@ -201,11 +201,11 @@ suite('ExtensionsActivityLogStreamTest', function() {
     // We should see two items: one for every script called.
     assertEquals(
         streamItems[0]!.shadowRoot.querySelector<HTMLElement>(
-                                      '#activity-name')!.innerText!,
+                                      '#activity-name')!.innerText,
         'script1.js');
     assertEquals(
         streamItems[1]!.shadowRoot.querySelector<HTMLElement>(
-                                      '#activity-name')!.innerText!,
+                                      '#activity-name')!.innerText,
         'script2.js');
   });
 

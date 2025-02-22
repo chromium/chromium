@@ -30,7 +30,6 @@ Ezabatzen baduzu, berehala galduko dute denek "<ph name="TITLE_OF_GROUP" />" fit
 <translation id="2118649612461486615">Dendari buruzko informazioa</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Itxitako fitxak eta taldeak Azkenaldiko fitxak eta Fitxa taldeak ataletatik ireki daitezke berriro. Zure ezkutuko moduko fitxa ez da egongo erabilgarri.}other{Itxitako fitxak eta taldeak Azkenaldiko fitxak eta Fitxa taldeak ataletatik ireki daitezke berriro. Zure ezkutuko moduko # fitxak ez dira egongo erabilgarri.}}</translation>
 <translation id="2162620598375156287">Orain, <ph name="CURRENT_PRICE" /> balio du <ph name="SOURCE_WEBSITE" /> webgunean</translation>
-<translation id="2242907120821295124"><ph name="TAB_GROUP_NAME" /> fitxa taldea ez dago erabilgarri jada</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Kendu fitxa taldetik}other{Kendu fitxak taldetik}}</translation>
 <translation id="2271452184061378400">Hemen gordetzen dira fitxa taldeak</translation>
 <translation id="2277224997687551299">Editatu taldearen izena</translation>

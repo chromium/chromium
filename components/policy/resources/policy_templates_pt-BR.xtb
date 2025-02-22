@@ -378,7 +378,6 @@ Para ver mais informações sobre contextos seguros, consulte Secure Contexts (h
 <translation id="1305400589435476516">Se a política for definida como "Ativada", o roaming de dados será permitido no dispositivo.
 
       Se ela for definida como "Desativada" ou não for definida, o roaming de dados ficará indisponível.</translation>
-<translation id="1306041796676461437">Desativar suporte ao SSO empresarial extensível</translation>
 <translation id="1308526987406924874">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que o usuário conceda permissão de acesso a uma porta serial.
 
       Se a política não tiver definição, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
@@ -3646,15 +3645,6 @@ Não deixe a política sempre ativada, especialmente em implantações de produ�
 <translation id="3606571057705314194">Seletor de perfil desativado na inicialização</translation>
 <translation id="3608206578291537084">Ativar o pipeline de geração de relatórios criptografados</translation>
 <translation id="3608281460204780443">Mostrar o ícone da Chrome Web Store no acesso rápido do <ph name="PRODUCT_OS_NAME" /> e na página "Nova guia"</translation>
-<translation id="3608411984079625468">Configura o login automático de usuários em contas com provedores de autenticação por uma extensão SSO empresarial.
-
-Se a política for definida como 1 (<ph name="POLICY_VALUE_ENABLED" />) ou deixada sem definição, os provedores de autenticação com uma extensão SSO no dispositivo vão usar essa extensão para autenticar os usuários que tentam fazer login.
-
-Se ela for definida como 0 (<ph name="POLICY_VALUE_DISABLED" />), o login automático descrito acima será desativado.
-
-Esse recurso está disponível no MacOS Catalina e em versões mais recentes.
-
-Observação: esta política não se aplica ao modo convidado ou de navegação anônima.</translation>
 <translation id="3612482251405108708">Início automático da reautenticação on-line na tela de bloqueio</translation>
 <translation id="3616490235694929053">Esta política controla se a tela de configuração do tamanho de exibição é mostrada ao usuário durante o primeiro login.
       Se ela for definida como falsa, a tela não será mostrada.
@@ -5916,7 +5906,6 @@ Se a política não for definida ou se a lista não tiver referências de imagem
       Se esta política de plano de fundo for definida, o dispositivo ChromeOS vai fazer o download da imagem de plano de fundo, que será usada na tela de login caso nenhum usuário tenha feito login no dispositivo. Depois que o usuário faz login, a política de plano de fundo dele entra em ação.
 
       Se a política de plano de fundo do dispositivo não for definida, a política de plano de fundo do usuário vai definir o que exibir, caso ela tenha sido configurada.</translation>
-<translation id="5217106427763720473">Ativar suporte ao SSO empresarial extensível</translation>
 <translation id="5219844027738217407">Em apps Android, esta política afeta somente o microfone. Quando esta política é definida como true, o microfone é silenciado para todos os apps Android, sem exceções.</translation>
 <translation id="5222325605346216869">Forçar a limitação de timers do JavaScript em segundo plano.</translation>
 <translation id="5223606242837275233">Não permitir que os sites rolem até fragmentos de texto específicos via URL</translation>

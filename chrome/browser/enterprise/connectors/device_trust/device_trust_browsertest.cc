@@ -519,9 +519,8 @@ class DeviceTrustBrowserTestWithConsent
 
     RunTestSequence(
         InAnyContext(WaitForShow(kDeviceSignalsConsentOkButtonElementId)),
-        InSameContext(
-            Steps(PressButton(kDeviceSignalsConsentOkButtonElementId),
-                  WaitForHide(kDeviceSignalsConsentOkButtonElementId))));
+        InSameContext(PressButton(kDeviceSignalsConsentOkButtonElementId),
+                      WaitForHide(kDeviceSignalsConsentOkButtonElementId)));
 
     WaitForNavigation();
   }

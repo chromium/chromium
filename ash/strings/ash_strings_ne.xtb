@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">डेस्क २</translation>
 <translation id="1546930421365146760">आफ्ना एड्मिनलाई Google को एड्मिन कन्सोलमा यो डिभाइस सेटअप गरिदिन आग्रह गर्नुहोस्</translation>
 <translation id="1549512626801247439">भण्डारणको व्यवस्थापन</translation>
+<translation id="1549721333775633305">क्विक सेयरसम्बन्धी सेटिङ देखाउनुहोस्। क्विक सेयर अफ गरिएको छ</translation>
 <translation id="1550406609415860283">डिभाइसहरू उपलब्ध छन्</translation>
 <translation id="1550523713251050646">थप विकल्पहरूका लागि क्लिक गर्नुहोस्</translation>
 <translation id="1555130319947370107">निलो</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> एक्टिभेट गरिएको छैन।</translation>
 <translation id="5860033963881614850">बन्द</translation>
 <translation id="5860491529813859533">अन गर्नुहोस्</translation>
+<translation id="5864691701242730005">क्विक सेयरसम्बन्धी सेटिङ देखाउनुहोस्। <ph name="VISIBILITY" /> को भिजिबिलिटी चयन गरिएको छ</translation>
 <translation id="5864748620896638071"><ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ</translation>
 <translation id="5867217927013474703">नेटवर्कसम्बन्धी जानकारी सङ्कलन गरिँदै छ</translation>
 <translation id="5867606971598166637">तपाईंका सिस्टम एड्मिन तपाईंका स्क्रिनहरू अनुगमन गर्दै हुनुहुन्छ</translation>
@@ -2262,6 +2264,7 @@
 <translation id="851660987304951246">तुरुन्तै सामग्रीको सारांश बनाउन वा प्रश्नहरू सोध्न "मलाई पढ्न मद्दत गर" प्रयोग गर्नुहोस्</translation>
 <translation id="8517041960877371778">खुला हुँदा तपाईँको <ph name="DEVICE_TYPE" /> चार्ज नहुन सक्छ।</translation>
 <translation id="8535393432370007982">रङअनुसार क्रमबद्ध गर्ने कार्य अन्डू गर्नुहोस्</translation>
+<translation id="8536886494750559755">क्विक सेयरसम्बन्धी सेटिङ देखाउनुहोस्। सबै जना <ph name="TIME_REMAINING" /> सम्म देख्न सक्छन्</translation>
 <translation id="8539803091108018926">टेक्स्ट क्लिपबोर्डमा कपी गरिएको छ</translation>
 <translation id="8541078764854166027">क्यामेरा फ्रेमिङ</translation>
 <translation id="8542053257095774575">कुनै पनि डेस्क वा टेम्प्लेट सेभ गरिएको छैन</translation>

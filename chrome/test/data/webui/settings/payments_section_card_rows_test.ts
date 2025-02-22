@@ -26,7 +26,7 @@ suite('PaymentsSectionCardRows', function() {
   }
 
   function cleanUpWhitespace(sublabelElement: HTMLElement) {
-    return sublabelElement!.textContent!.trim()
+    return sublabelElement.textContent!.trim()
         .replace(/\s+/g, ' ')
         .replace(/\n/g, '');
   }
@@ -88,7 +88,7 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.nickname = 'My card name';
     updateCreditCardCallback(creditCard);
     assertEquals(
-        'More actions for My card name', menuButton!.getAttribute('title'));
+        'More actions for My card name', menuButton.getAttribute('title'));
 
     // Case 2: a card without nickname
     creditCard = createCreditCardEntry();
@@ -97,7 +97,7 @@ suite('PaymentsSectionCardRows', function() {
     updateCreditCardCallback(creditCard);
     assertEquals(
         'More actions for Visa ending in 1234',
-        menuButton!.getAttribute('title'));
+        menuButton.getAttribute('title'));
 
     // Case 3: a card without network
     creditCard = createCreditCardEntry();
@@ -106,14 +106,13 @@ suite('PaymentsSectionCardRows', function() {
     updateCreditCardCallback(creditCard);
     assertEquals(
         'More actions for Card ending in 1234',
-        menuButton!.getAttribute('title'));
+        menuButton.getAttribute('title'));
 
     // Case 4: a card without number
     creditCard = createCreditCardEntry();
     creditCard.cardNumber = undefined;
     updateCreditCardCallback(creditCard);
-    assertEquals(
-        'More actions for Jane Doe', menuButton!.getAttribute('title'));
+    assertEquals('More actions for Jane Doe', menuButton.getAttribute('title'));
 
     // Case 5: a card with CVC
     creditCard = createCreditCardEntry();
@@ -123,7 +122,7 @@ suite('PaymentsSectionCardRows', function() {
     updateCreditCardCallback(creditCard);
     assertEquals(
         'More actions for Visa ending in 1234, CVC saved',
-        menuButton!.getAttribute('title'));
+        menuButton.getAttribute('title'));
   });
 
   test('verifyCreditCardRowButtonIsOutlinkWhenRemote', async function() {
@@ -883,7 +882,7 @@ suite('PaymentsSectionEditCreditCardLink', function() {
     const outlinkButton = rowShadowRoot.querySelector<HTMLElement>(
         'cr-icon-button.icon-external');
     assertTrue(!!outlinkButton);
-    outlinkButton!.click();
+    outlinkButton.click();
 
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(
@@ -910,7 +909,7 @@ suite('PaymentsSectionEditCreditCardLink', function() {
         const outlinkButton = rowShadowRoot.querySelector<HTMLElement>(
             'cr-icon-button.icon-external');
         assertTrue(!!outlinkButton);
-        outlinkButton!.click();
+        outlinkButton.click();
 
         const url = await openWindowProxy.whenCalled('openUrl');
         assertEquals(loadTimeData.getString('managePaymentMethodsUrl'), url);

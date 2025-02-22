@@ -30,7 +30,6 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="2118649612461486615">Informácie o obchode</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zavreté karty a skupiny môžete znova otvoriť v sekciách Nedávne karty a Skupiny kariet. Karta inkognito nebude k dispozícii.}few{Zavreté karty a skupiny môžete znova otvoriť v sekciách Nedávne karty a Skupiny kariet. # karty inkognito nebudú k dispozícii.}many{Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section. Your # Incognito tabs won't be available.}other{Zavreté karty a skupiny môžete znova otvoriť v sekciách Nedávne karty a Skupiny kariet. # kariet inkognito nebude k dispozícii.}}</translation>
 <translation id="2162620598375156287">Teraz <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">Skupina kariet <ph name="TAB_GROUP_NAME" /> už nie je k dispozícii</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Zrušiť zoskupenie karty}few{Zrušiť zoskupenie kariet}many{Zrušiť zoskupenie kariet}other{Zrušiť zoskupenie kariet}}</translation>
 <translation id="2271452184061378400">Tu sa ukladajú vaše skupiny kariet</translation>
 <translation id="2277224997687551299">Upraviť názov skupiny</translation>

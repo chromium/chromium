@@ -61,14 +61,8 @@ public interface BrowserPaymentRequest {
     void close();
 
     /**
-     * Modifies the given method data if needed, called when methodData is created.
-     * @param methodData A map of method names to PaymentMethodData, could be null. This parameter
-     * could be modified in place.
-     */
-    default void modifyMethodDataIfNeeded(@Nullable Map<String, PaymentMethodData> methodData) {}
-
-    /**
      * Performs extra validation for the given input and disconnects the mojo pipe if failed.
+     *
      * @param webContents The WebContents that represents the merchant page.
      * @param methodData A map of the method data specified for the request.
      * @param details The payment details specified for the request.

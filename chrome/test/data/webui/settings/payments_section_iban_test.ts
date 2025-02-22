@@ -282,7 +282,7 @@ suite('PaymentsSectionIban', function() {
     assertTrue(!!menuEditIban);
     assertTrue(!!menuRemoveIban);
     assertFalse(menuEditIban.hidden);
-    assertFalse(menuRemoveIban!.hidden);
+    assertFalse(menuRemoveIban.hidden);
 
     flush();
   });

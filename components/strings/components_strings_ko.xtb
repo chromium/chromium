@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">게임이 시작되었습니다.</translation>
 <translation id="3067505415088964188">가격이 저렴함</translation>
 <translation id="3068118691172921711">1분 후 <ph name="CLOUD_PROVIDER" />에 파일이 업로드되기 시작합니다</translation>
-<translation id="3068976060094139647">계정이 Google Pay에 연결되어 있으므로 이 카드를 자동 완성할 수 있습니다.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{항목 {ITEMS}개}other{항목 {ITEMS}개}}</translation>
 <translation id="3076865167425975822">운영체제</translation>
 <translation id="3080254622891793721">그래픽</translation>
@@ -4375,7 +4374,6 @@
 <translation id="8757526089434340176">Google Pay 쿠폰 이용 가능</translation>
 <translation id="8759274551635299824">만료된 카드입니다.</translation>
 <translation id="87601671197631245">이 사이트에서는 오래된 보안 설정을 사용하므로 개인정보(예: 비밀번호, 메시지 또는 신용카드)를 이 사이트로 전송할 경우 정보가 유출될 수도 있습니다.</translation>
-<translation id="8763226176721243078"><ph name="CARD_ISSUER_NAME" /> 계정이 Google Pay에 연결되어 있으므로 이 카드를 자동 완성할 수 있습니다.</translation>
 <translation id="8763927697961133303">USB 기기</translation>
 <translation id="8763986294015493060">현재 열려 있는 시크릿 창 모두 닫기</translation>
 <translation id="8766943070169463815">보안 결제 사용자 인증 정보 승인 시트가 열림</translation>

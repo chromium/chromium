@@ -1029,6 +1029,7 @@
 <translation id="590746845088109442">बिल्लियां</translation>
 <translation id="5907649332524363701">बटन का रंग</translation>
 <translation id="5908813850962688338">इस अपडेट को इंस्टॉल करने में कुछ मिनट लगेंगे. अपडेट डाउनलोड होने के दौरान, अपने डिवाइस को पावर सॉकेट से कनेक्ट करके रखें. साथ ही, यह ध्यान रहे कि डिवाइस चालू हो. ऐसा हो सकता है कि इस प्रोसेस के दौरान आपका डिवाइस कई बार अपने-आप फिर से चालू हो जाए और स्क्रीन पर काला रंग दिखे. इंस्टॉलेशन पूरा करने के लिए, आपको डिवाइस रीस्टार्ट करने के लिए कहा जाएगा.</translation>
+<translation id="5915794087373112615">आपके शिक्षक को आपकी स्क्रीन <ph name="NUM_SECONDS" /> सेकंड में दिखेगी</translation>
 <translation id="5916084858004523819">निषिद्ध</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{आपकी फ़ाइल स्कैन कर दी गई है. साथ ही, उसे <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}one{आपकी फ़ाइल स्कैन कर दी गई है. साथ ही, उसे <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}other{आपकी फ़ाइलें स्कैन कर दी गई हैं. साथ ही, उन्हें <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}}</translation>
@@ -1520,6 +1521,7 @@
 <translation id="8054112564438735763">मटमैले</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> बैकग्राउंड पर <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">ऑडियो रिकॉर्ड करने के लिए, माइक कनेक्ट करें</translation>
 <translation id="8067126283828232460">एपीएन कनेक्ट है.</translation>
 <translation id="8067208048261192356">भूरे</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> को मिटाएं</translation>
@@ -1623,6 +1625,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">टी हाउस</translation>
 <translation id="8538236298648811558">Google के एआई की मदद से बनाए गए वॉलपेपर</translation>
+<translation id="8543574988889671960">टैब को फिर से लोड करें</translation>
 <translation id="8550364285433943656">कीबोर्ड के बटन इस्तेमाल करके गेम खेलने के लिए, कंट्रोल जोड़ें</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">मोबाइल और इंटरनेट सेवा देने वाली आपकी कंपनी को, अपने नेटवर्क से कनेक्ट करने लिए इस विकल्प की ज़रूरत पड़ सकती है. ज़्यादा जानकारी के लिए, उस कंपनी से संपर्क करें जो आपको मोबाइल और इंटरनेट सेवा देती है.</translation>

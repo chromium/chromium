@@ -74,6 +74,8 @@ class GlicMetricsTest : public testing::Test {
 
     metrics_ = std::make_unique<GlicMetrics>(&profile_, enabling_.get());
     metrics_->SetControllers(controller_.get(), tab_manager_.get());
+
+    ForceSigninAndModelExecutionCapability(&profile_);
   }
 
  protected:
@@ -257,7 +259,6 @@ TEST_F(GlicMetricsTest, ImpressionAfterFre) {
           features::kTabstripComboButton,
       },
       {});
-  ForceSigninAndModelExecutionCapability(&profile_);
 
   task_environment_.FastForwardBy(base::Minutes(16));
   histogram_tester_.ExpectTotalCount("Glic.EntryPoint.Impression", 1);

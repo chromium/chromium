@@ -66,15 +66,15 @@ suite('HostPermissionsToggleList', function() {
 
     // There should be three toggles, all enabled, and checked corresponding to
     // whether the host is granted.
-    assertEquals(CHROMIUM_ORG, hostToggles[0]!.innerText!.trim());
+    assertEquals(CHROMIUM_ORG, hostToggles[0]!.innerText.trim());
     assertFalse(hostToggles[0]!.disabled);
     assertTrue(hostToggles[0]!.checked);
 
-    assertEquals(EXAMPLE_COM, hostToggles[1]!.innerText!.trim());
+    assertEquals(EXAMPLE_COM, hostToggles[1]!.innerText.trim());
     assertFalse(hostToggles[1]!.disabled);
     assertTrue(hostToggles[1]!.checked);
 
-    assertEquals(GOOGLE_COM, hostToggles[2]!.innerText!.trim());
+    assertEquals(GOOGLE_COM, hostToggles[2]!.innerText.trim());
     assertFalse(hostToggles[2]!.disabled);
     assertFalse(hostToggles[2]!.checked);
   });
@@ -107,15 +107,15 @@ suite('HostPermissionsToggleList', function() {
     // There should be three toggles, and they should all be disabled and
     // checked, since the user selected to allow the extension to run on all
     // (requested) sites.
-    assertEquals(CHROMIUM_ORG, hostToggles[0]!.innerText!.trim());
+    assertEquals(CHROMIUM_ORG, hostToggles[0]!.innerText.trim());
     assertTrue(hostToggles[0]!.disabled);
     assertTrue(hostToggles[0]!.checked);
 
-    assertEquals(EXAMPLE_COM, hostToggles[1]!.innerText!.trim());
+    assertEquals(EXAMPLE_COM, hostToggles[1]!.innerText.trim());
     assertTrue(hostToggles[1]!.disabled);
     assertTrue(hostToggles[1]!.checked);
 
-    assertEquals(GOOGLE_COM, hostToggles[2]!.innerText!.trim());
+    assertEquals(GOOGLE_COM, hostToggles[2]!.innerText.trim());
     assertTrue(hostToggles[2]!.disabled);
     assertTrue(hostToggles[2]!.checked);
   });
@@ -138,7 +138,7 @@ suite('HostPermissionsToggleList', function() {
 
     assertTrue(!!element);
     const allSites = element.$.allHostsToggle;
-    assertFalse(allSites!.checked);
+    assertFalse(allSites.checked);
 
     const hostToggles =
         element.shadowRoot.querySelectorAll<ExtensionsToggleRowElement>(
@@ -147,15 +147,15 @@ suite('HostPermissionsToggleList', function() {
 
     // There should be three toggles, all enabled, and all unchecked, since no
     // host has been granted.
-    assertEquals(CHROMIUM_ORG, hostToggles[0]!.innerText!.trim());
+    assertEquals(CHROMIUM_ORG, hostToggles[0]!.innerText.trim());
     assertFalse(hostToggles[0]!.disabled);
     assertFalse(hostToggles[0]!.checked);
 
-    assertEquals(EXAMPLE_COM, hostToggles[1]!.innerText!.trim());
+    assertEquals(EXAMPLE_COM, hostToggles[1]!.innerText.trim());
     assertFalse(hostToggles[1]!.disabled);
     assertFalse(hostToggles[1]!.checked);
 
-    assertEquals(GOOGLE_COM, hostToggles[2]!.innerText!.trim());
+    assertEquals(GOOGLE_COM, hostToggles[2]!.innerText.trim());
     assertFalse(hostToggles[2]!.disabled);
     assertFalse(hostToggles[2]!.checked);
   });
@@ -265,8 +265,8 @@ suite('HostPermissionsToggleList', function() {
             '.host-toggle');
     assertEquals(3, hostToggles.length);
 
-    assertEquals(CHROMIUM_ORG, hostToggles[0]!.innerText!.trim());
-    assertEquals(GOOGLE_COM, hostToggles[2]!.innerText!.trim());
+    assertEquals(CHROMIUM_ORG, hostToggles[0]!.innerText.trim());
+    assertEquals(GOOGLE_COM, hostToggles[2]!.innerText.trim());
 
     hostToggles[0]!.getLabel().click();
     let [id, site] = await delegate.whenCalled('removeRuntimeHostPermission');
@@ -305,7 +305,7 @@ suite('HostPermissionsToggleList', function() {
             element.shadowRoot.querySelectorAll<ExtensionsToggleRowElement>(
                 '.host-toggle');
         assertEquals(1, hostToggles.length);
-        assertEquals(RESTRICTED_COM, hostToggles[0]!.innerText!.trim());
+        assertEquals(RESTRICTED_COM, hostToggles[0]!.innerText.trim());
         assertFalse(hostToggles[0]!.checked);
 
         hostToggles[0]!.getLabel().click();

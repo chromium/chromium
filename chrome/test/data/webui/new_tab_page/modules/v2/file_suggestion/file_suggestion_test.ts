@@ -38,7 +38,7 @@ suite('FileSuggestion', () => {
     await microtasksFinished();
 
     const files =
-        fileSuggestion.shadowRoot!.querySelectorAll<HTMLElement>('.file');
+        fileSuggestion.shadowRoot.querySelectorAll<HTMLElement>('.file');
     assertEquals(numFiles, files.length);
 
     const file1 = files[0];
@@ -80,7 +80,7 @@ suite('FileSuggestion', () => {
         await microtasksFinished();
 
         const files =
-            fileSuggestion.shadowRoot!.querySelectorAll<HTMLElement>('.file');
+            fileSuggestion.shadowRoot.querySelectorAll<HTMLElement>('.file');
         const clickIndex = 1;
         assertTrue(!!files[clickIndex]);
         const usagePromise = eventToPromise('usage', fileSuggestion);

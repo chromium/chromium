@@ -5,9 +5,11 @@
 #include "components/permissions/prediction_service/prediction_common.h"
 
 #include <cmath>
+
 #include "base/notreached.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/permissions/features.h"
 
 namespace permissions {
 
@@ -132,8 +134,10 @@ std::unique_ptr<GeneratePredictionsRequest> GetPredictionRequestProto(
       proto_request->mutable_permission_features()->Add();
   FillInStatsFeatures(entity.requested_permission_counts,
                       permission_features->mutable_permission_stats());
-  permission_features->set_permission_relevance(
-      ConvertToProtoRelevance(entity.permission_relevance));
+  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
+    permission_features->set_permission_relevance(
+        ConvertToProtoRelevance(entity.permission_relevance));
+  }
   switch (entity.type) {
     case RequestType::kNotifications:
       permission_features->mutable_notification_permission()->Clear();

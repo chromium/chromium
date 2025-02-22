@@ -10,7 +10,7 @@ import {FrePageHandlerFactory, FrePageHandlerRemote} from './glic_fre.mojom-webu
 
 const freHandler = new FrePageHandlerRemote();
 FrePageHandlerFactory.getRemote().createPageHandler(
-    (freHandler as FrePageHandlerRemote).$.bindNewPipeAndPassReceiver());
+    (freHandler).$.bindNewPipeAndPassReceiver());
 
 const webview =
     document.getElementById('fre-guest-frame') as chrome.webviewTag.WebView;

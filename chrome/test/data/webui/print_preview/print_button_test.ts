@@ -131,7 +131,7 @@ suite('PrintButtonTest', function() {
             d => d.id === 'Save as PDF');
     assertTrue(!!pdfDestination);
     destinationSettings.getDestinationStoreForTest().selectDestination(
-        pdfDestination!);
+        pdfDestination);
   }
 
   // Tests that hidePreview() is not called if Save as PDF is selected and

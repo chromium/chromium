@@ -447,6 +447,9 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForPool2d(
       const mojom::Pool2d& operation,
       CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddOperationForQuantizeLinear(const mojom::QuantizeLinear& operation,
+                                CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForReduce(
       const mojom::Reduce& operation,
       CoreML::Specification::MILSpec::Block& block);

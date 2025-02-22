@@ -86,8 +86,8 @@ class ExclusiveAccessPermissionPromptInteractiveTest
 
   MultiStep PressPromptButton(ui::ElementIdentifier button_identifier) {
     return InAnyContext(
-        Steps(WaitForShow(button_identifier), PressButton(button_identifier),
-              WaitForHide(ExclusiveAccessPermissionPromptView::kMainViewId)));
+        WaitForShow(button_identifier), PressButton(button_identifier),
+        WaitForHide(ExclusiveAccessPermissionPromptView::kMainViewId));
   }
 
   MultiStep CheckOutcome(TestContentSettings test_content_settings,

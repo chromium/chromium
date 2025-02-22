@@ -382,7 +382,6 @@ Para obtener más información sobre contextos seguros, consulta Secure Contexts
 <translation id="1305400589435476516">Si habilitas la política, se permitirá el roaming de datos para el dispositivo.
 
       Si inhabilitas la política o no la estableces, el roaming de datos no estará disponible.</translation>
-<translation id="1306041796676461437">Inhabilitar la compatibilidad con Extensible Enterprise SSO</translation>
 <translation id="1308526987406924874">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que no pueden pedir permiso a los usuarios para acceder a un puerto en serie.
 
       Si no estableces la política, se aplicará <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
@@ -3647,15 +3646,6 @@ Recuerda que no debes mantener habilitada esta política todo el tiempo, especia
 <translation id="3606571057705314194">Selector de perfiles inhabilitado en el inicio</translation>
 <translation id="3608206578291537084">Habilitar la canalización de informes encriptados</translation>
 <translation id="3608281460204780443">Mostrar el ícono de Chrome Web Store en el selector <ph name="PRODUCT_OS_NAME" /> y en la página de la nueva pestaña</translation>
-<translation id="3608411984079625468">Configura el acceso automático de los usuarios a las cuentas con proveedores de autenticación por medio de una extensión de SSO empresarial.
-
-Si estableces esta política en 1 (<ph name="POLICY_VALUE_ENABLED" />) o no la estableces, los proveedores de autenticación con una extensión de SSO en el dispositivo la usarán para autenticar a los usuarios que intenten acceder.
-
-Si estableces esta política en 0 (<ph name="POLICY_VALUE_DISABLED" />), se inhabilitará el acceso automático, tal como se describió anteriormente.
-
-Esta función está disponible a partir de MacOS Catalina.
-
-Nota: Esta política no se aplica al modo Incógnito ni de invitado.</translation>
 <translation id="3612482251405108708">Iniciar la reautenticación en línea de forma automática en la pantalla de bloqueo</translation>
 <translation id="3616490235694929053">Esta política controla si se muestra la pantalla de configuración del tamaño de visualización al usuario durante el primer acceso.
       Si la estableces como falsa, no se mostrará la pantalla de configuración del tamaño de visualización.
@@ -5918,7 +5908,6 @@ Si no estableces esta política, o la lista no contiene referencias de imagen v�
       Si estableces la política de fondo de pantalla del dispositivo, el dispositivo con ChromeOS descargará y usará la imagen de fondo de pantalla en la pantalla de acceso si aún ningún usuario accedió a su cuenta en el dispositivo. Una vez que el usuario acceda a su cuenta, se habilitará la política de fondo de pantalla del usuario.
 
       Si no estableces la política de fondo de pantalla del dispositivo, la política de fondo de pantalla del usuario, en caso de que la establezcas, decidirá lo que se muestra.</translation>
-<translation id="5217106427763720473">Habilitar la compatibilidad con Extensible Enterprise SSO</translation>
 <translation id="5219844027738217407">Para las apps de Android, esta política solo afecta al micrófono. Cuando esta política se establece como falsa, se silencia el micrófono para todas las apps de Android, sin excepciones.</translation>
 <translation id="5222325605346216869">Forzar la limitación de los cronómetros de JavaScript en segundo plano</translation>
 <translation id="5223606242837275233">No permitir que los sitios se desplacen a fragmentos de texto específicos mediante la URL</translation>

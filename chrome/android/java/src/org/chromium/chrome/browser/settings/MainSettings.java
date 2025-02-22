@@ -301,11 +301,13 @@ public class MainSettings extends ChromeBaseSettingsFragment
                                 }
                             });
 
+            // LINT.IfChange(InitPrefUiTheme)
             findPreference(PREF_UI_THEME)
                     .getExtras()
                     .putInt(
                             ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
                             ThemeSettingsEntry.SETTINGS);
+            // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/appearance/settings/AppearanceSettingsFragment.java:InitPrefUiTheme)
         } else {
             // NOTE: "Theme" and "Toolbar shortcut" move to "Appearance" settings when enabled.
             removePreferenceIfPresent(PREF_TOOLBAR_SHORTCUT);

@@ -30,7 +30,6 @@ Agar tark etsangiz, “<ph name="TITLE_OF_GROUP" />” varaqlar guruhiga boshqa 
 <translation id="2118649612461486615">Doʻkon haqida</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Oxirgi varaqlar va Varaqlar guruhi panellaridagi yopilgan varaq va guruhlar qayta ochiladi. Inkognito varaqlar tiklanmaydi.}other{Oxirgi varaqlar va Varaqlar guruhi panellaridagi yopilgan varaq va guruhlar qayta ochiladi. # ta inkognito varaq tiklanmaydi.}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> saytidagi joriy narxi: <ph name="CURRENT_PRICE" /></translation>
-<translation id="2242907120821295124"><ph name="TAB_GROUP_NAME" /> varaqlar guruhi endi mavjud emas</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Varaqni yechish}other{Varaqlar guruhini yechish}}</translation>
 <translation id="2271452184061378400">Varaqlar guruhi shu yerda saqlanadi</translation>
 <translation id="2277224997687551299">Guruh nomini tahrirlash</translation>

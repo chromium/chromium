@@ -1283,6 +1283,7 @@ if (current_toolchain == default_toolchain) {
     deps = [
       "javatests:chrome_test_java_org.chromium.chrome.browser",
       "javatests:chrome_test_java_org.chromium.chrome.browser.app",
+      "javatests:chrome_test_java_org.chromium.chrome.browser.appearance",
       "javatests:chrome_test_java_org.chromium.chrome.browser.autofill",
       "javatests:chrome_test_java_org.chromium.chrome.browser.bookmarks",
       "javatests:chrome_test_java_org.chromium.chrome.browser.browserservices",

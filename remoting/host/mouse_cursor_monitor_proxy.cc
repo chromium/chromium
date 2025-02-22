@@ -5,14 +5,19 @@
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
 
 #include <memory>
+#include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_checker.h"
 #include "build/build_config.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
@@ -32,13 +37,12 @@ class MouseCursorMonitorProxy::Core
 
   ~Core() override;
 
-  void CreateMouseCursorMonitor(const webrtc::DesktopCaptureOptions& options);
+  void CreateMouseCursorMonitor(
+      base::OnceCallback<std::unique_ptr<webrtc::MouseCursorMonitor>()>
+          creator);
 
   void Init(webrtc::MouseCursorMonitor::Mode mode);
   void Capture();
-
-  void SetMouseCursorMonitorForTests(
-      std::unique_ptr<webrtc::MouseCursorMonitor> mouse_cursor_monitor);
 
  private:
   // webrtc::MouseCursorMonitor::Callback implementation.
@@ -64,15 +68,11 @@ MouseCursorMonitorProxy::Core::~Core() {
 }
 
 void MouseCursorMonitorProxy::Core::CreateMouseCursorMonitor(
-    const webrtc::DesktopCaptureOptions& options) {
+    base::OnceCallback<std::unique_ptr<webrtc::MouseCursorMonitor>()> creator) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-#if BUILDFLAG(IS_CHROMEOS)
-  mouse_cursor_monitor_ = std::make_unique<MouseCursorMonitorAura>();
-#else   // BUILDFLAG(IS_CHROMEOS)
-  mouse_cursor_monitor_.reset(webrtc::MouseCursorMonitor::CreateForScreen(
-      options, webrtc::kFullDesktopScreenId));
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  mouse_cursor_monitor_ = std::move(creator).Run();
+
   if (!mouse_cursor_monitor_) {
     LOG(ERROR) << "Failed to initialize MouseCursorMonitor.";
   }
@@ -95,11 +95,6 @@ void MouseCursorMonitorProxy::Core::Capture() {
   }
 }
 
-void MouseCursorMonitorProxy::Core::SetMouseCursorMonitorForTests(
-    std::unique_ptr<webrtc::MouseCursorMonitor> mouse_cursor_monitor) {
-  mouse_cursor_monitor_ = std::move(mouse_cursor_monitor);
-}
-
 void MouseCursorMonitorProxy::Core::OnMouseCursor(webrtc::MouseCursor* cursor) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -120,12 +115,13 @@ void MouseCursorMonitorProxy::Core::OnMouseCursorPosition(
 
 MouseCursorMonitorProxy::MouseCursorMonitorProxy(
     scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner,
-    const webrtc::DesktopCaptureOptions& options)
+    base::OnceCallback<std::unique_ptr<webrtc::MouseCursorMonitor>()> creator)
     : capture_task_runner_(capture_task_runner) {
   core_ = std::make_unique<Core>(weak_factory_.GetWeakPtr());
   capture_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&Core::CreateMouseCursorMonitor,
-                                base::Unretained(core_.get()), options));
+      FROM_HERE,
+      base::BindOnce(&Core::CreateMouseCursorMonitor,
+                     base::Unretained(core_.get()), std::move(creator)));
 }
 
 MouseCursorMonitorProxy::~MouseCursorMonitorProxy() {
@@ -144,14 +140,6 @@ void MouseCursorMonitorProxy::Capture() {
   DCHECK(thread_checker_.CalledOnValidThread());
   capture_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Core::Capture, base::Unretained(core_.get())));
-}
-
-void MouseCursorMonitorProxy::SetMouseCursorMonitorForTests(
-    std::unique_ptr<webrtc::MouseCursorMonitor> mouse_cursor_monitor) {
-  capture_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&Core::SetMouseCursorMonitorForTests,
-                                base::Unretained(core_.get()),
-                                std::move(mouse_cursor_monitor)));
 }
 
 void MouseCursorMonitorProxy::OnMouseCursor(

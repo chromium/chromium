@@ -285,9 +285,8 @@ class UserNotActivePreconditionUiTest
   }
 
   auto Advance(base::TimeDelta time) {
-    return std::move(Do([this, time]() {
-                       test_clock_.Advance(time);
-                     }).SetDescription("Advance()"));
+    return Do([this, time]() { test_clock_.Advance(time); })
+        .SetDescription("Advance()");
   }
 
   auto CheckPrecondResult(user_education::FeaturePromoResult result) {
@@ -321,37 +320,6 @@ IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest,
   RunTestSequence(
       WaitForShow(kBrowserViewElementId),
       MoveMouseTo(ContentsWebView::kContentsWebViewElementId), ClickMouse(),
-      CheckPrecondResult(user_education::FeaturePromoResult::kBlockedByUi),
-      Advance(less_than_activity_time_),
-      CheckPrecondResult(user_education::FeaturePromoResult::kBlockedByUi),
-      Advance(more_than_activity_time_),
-      CheckPrecondResult(user_education::FeaturePromoResult::Success()));
-}
-
-// TODO(https://crbug.com/369403281): Mac doesn't properly respond to hover
-// events due to injected mouse moves in interactive tests, so this test won't
-// work on that platform (yet).
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ReturnsBlockedAfterMouseHoverOverTabstrip \
-  DISABLED_ReturnsBlockedAfterMouseHoverOverTabstrip
-#else
-#define MAYBE_ReturnsBlockedAfterMouseHoverOverTabstrip \
-  ReturnsBlockedAfterMouseHoverOverTabstrip
-#endif
-IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest,
-                       MAYBE_ReturnsBlockedAfterMouseHoverOverTabstrip) {
-#if BUILDFLAG(IS_LINUX)
-  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
-    GTEST_SKIP()
-        << "TODO(https://crbug.com/390834763): figure out why this is failing "
-           "on Linux Wayland testbot.";
-  }
-#endif
-
-  RunTestSequence(
-      WaitForShow(kBrowserViewElementId),
-      // Hovering the tabstrip does cause a delay.
-      MoveMouseTo(kTabStripElementId),
       CheckPrecondResult(user_education::FeaturePromoResult::kBlockedByUi),
       Advance(less_than_activity_time_),
       CheckPrecondResult(user_education::FeaturePromoResult::kBlockedByUi),

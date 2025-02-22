@@ -36,7 +36,7 @@ chrome.test.runTests([
 
     chrome.test.assertTrue(viewer.$.toolbar.annotationMode);
     chrome.test.assertTrue(
-        !!viewer.shadowRoot!.querySelector('viewer-side-panel'));
+        !!viewer.shadowRoot.querySelector('viewer-side-panel'));
     mockMetricsPrivate.assertCount(UserAction.OPEN_INK2_SIDE_PANEL, 1);
     mockMetricsPrivate.assertCount(UserAction.OPEN_INK2_BOTTOM_TOOLBAR, 0);
     chrome.test.succeed();

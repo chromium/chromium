@@ -25,6 +25,7 @@
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/desktop_capturer_wrapper.h"
+#include "remoting/host/desktop_display_info_loader.h"
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_interaction_strategy.h"
 #include "remoting/host/desktop_resizer.h"
@@ -84,13 +85,13 @@ std::unique_ptr<DesktopCapturer> LegacyInteractionStrategy::CreateVideoCapturer(
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner;
 #if BUILDFLAG(IS_CHROMEOS)
   capture_task_runner = ui_task_runner_;
-#else
+#else   // !BUILDFLAG(IS_CHROMEOS)
   // The mouse cursor monitor runs on the |video_capture_task_runner_| so the
   // desktop capturer also needs to run on that task_runner for certain
   // platforms. For example, if we run the desktop capturer on a different
   // thread on Windows, the cursor shape won't be captured when in GDI mode.
   capture_task_runner = video_capture_task_runner_;
-#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if defined(REMOTING_USE_X11)
   // Workaround for http://crbug.com/1361502: Run each capturer (and
@@ -101,17 +102,30 @@ std::unique_ptr<DesktopCapturer> LegacyInteractionStrategy::CreateVideoCapturer(
   options_.desktop_capture_options()->x_display()->IgnoreXServerGrabs();
 #endif  // REMOTING_USE_X11
 
+  auto creator = base::BindOnce(
+      [](webrtc::DesktopCaptureOptions options, webrtc::ScreenId id) {
+        std::unique_ptr<webrtc::DesktopCapturer> capturer;
+#if BUILDFLAG(IS_CHROMEOS)
+        capturer = std::make_unique<FrameSinkDesktopCapturer>();
+#else   // !BUILDFLAG(IS_CHROMEOS)
+        capturer = webrtc::DesktopCapturer::CreateScreenCapturer(options);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+        if (capturer) {
+          capturer->SelectSource(id);
+        }
+        return capturer;
+      },
+      *options_.desktop_capture_options(), id);
+
   std::unique_ptr<DesktopCapturer> desktop_capturer;
   if (options_.capture_video_on_dedicated_thread()) {
     auto desktop_capturer_wrapper = std::make_unique<DesktopCapturerWrapper>();
-    desktop_capturer_wrapper->CreateCapturer(
-        *options_.desktop_capture_options(), id);
+    desktop_capturer_wrapper->CreateCapturer(std::move(creator));
     desktop_capturer = std::move(desktop_capturer_wrapper);
   } else {
     auto desktop_capturer_proxy =
         std::make_unique<DesktopCapturerProxy>(std::move(capture_task_runner));
-    desktop_capturer_proxy->CreateCapturer(*options_.desktop_capture_options(),
-                                           id);
+    desktop_capturer_proxy->CreateCapturer(std::move(creator));
     desktop_capturer = std::move(desktop_capturer_proxy);
   }
 
@@ -127,15 +141,28 @@ std::unique_ptr<DesktopCapturer> LegacyInteractionStrategy::CreateVideoCapturer(
 
 std::unique_ptr<DesktopDisplayInfoMonitor>
 LegacyInteractionStrategy::CreateDisplayInfoMonitor() {
-  return std::make_unique<DesktopDisplayInfoMonitor>(ui_task_runner_);
+  return std::make_unique<DesktopDisplayInfoMonitor>(
+      ui_task_runner_, DesktopDisplayInfoLoader::Create());
 }
 
 std::unique_ptr<webrtc::MouseCursorMonitor>
 LegacyInteractionStrategy::CreateMouseCursorMonitor() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  return std::make_unique<MouseCursorMonitorProxy>(
-      video_capture_task_runner_, *options_.desktop_capture_options());
+  auto creator = base::BindOnce(
+      [](webrtc::DesktopCaptureOptions options)
+          -> std::unique_ptr<webrtc::MouseCursorMonitor> {
+#if BUILDFLAG(IS_CHROMEOS)
+        return std::make_unique<MouseCursorMonitorAura>();
+#else   // BUILDFLAG(IS_CHROMEOS)
+        return base::WrapUnique(webrtc::MouseCursorMonitor::CreateForScreen(
+            options, webrtc::kFullDesktopScreenId));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      },
+      *options_.desktop_capture_options());
+
+  return std::make_unique<MouseCursorMonitorProxy>(video_capture_task_runner_,
+                                                   std::move(creator));
 }
 
 std::unique_ptr<KeyboardLayoutMonitor>

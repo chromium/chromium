@@ -260,15 +260,13 @@ class InteractiveGlicTestT : public T {
     // NOTE: The use of "Api::" here is required because this is a template
     // class with weakly-specified base class; it is not necessary in derived
     // test classes.
-    Api::MultiStep steps;
-    steps.push_back(
+    auto steps = Api::Steps(
         EnsureGlicWindowState("window must be closed in order to open it",
-                              GlicWindowController::State::kClosed));
-    // Technically, this toggles the window, but we've already ensured that it's
-    // closed.
-    steps.push_back(ToggleGlicWindow(window_mode));
-    steps =
-        Api::Steps(std::move(steps), WaitForAndInstrumentGlic(instrument_mode));
+                              GlicWindowController::State::kClosed),
+        // Technically, this toggles the window, but we've already ensured that
+        // it's closed.
+        ToggleGlicWindow(window_mode),
+        WaitForAndInstrumentGlic(instrument_mode));
     Api::AddDescriptionPrefix(steps, "OpenGlicWindow");
     return steps;
   }

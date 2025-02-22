@@ -28,6 +28,8 @@ function roleTypeToString(role: MemberRole): string {
       return 'Member';
     case MemberRole.kInvitee:
       return 'Invitee';
+    case MemberRole.kFormerMember:
+      return 'FormerMember';
   }
 }
 

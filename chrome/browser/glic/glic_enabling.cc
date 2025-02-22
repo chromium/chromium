@@ -27,8 +27,26 @@ bool GlicEnabling::IsProfileEligible(const Profile* profile) {
   return IsEnabledByFlags() && profile->IsRegularProfile();
 }
 
-bool GlicEnabling::IsEnabledForProfile(const Profile* profile) {
+bool GlicEnabling::IsEnabledForProfile(Profile* profile) {
   if (!IsProfileEligible(profile)) {
+    return false;
+  }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CHECK(identity_manager);
+  AccountInfo primary_account =
+      identity_manager->FindExtendedAccountInfoByAccountId(
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+
+  // Not having a primary account is considered ineligible.
+  if (primary_account.IsEmpty()) {
+    return false;
+  }
+
+  // Treat `signin::Tribool::kUnknown` as false.
+  if (primary_account.capabilities.can_use_model_execution_features() !=
+      signin::Tribool::kTrue) {
     return false;
   }
 
@@ -36,7 +54,7 @@ bool GlicEnabling::IsEnabledForProfile(const Profile* profile) {
          static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled);
 }
 
-bool GlicEnabling::IsEnabledAndConsentForProfile(const Profile* profile) {
+bool GlicEnabling::IsEnabledAndConsentForProfile(Profile* profile) {
   if (!IsEnabledForProfile(profile)) {
     return false;
   }
@@ -65,6 +83,10 @@ GlicEnabling::GlicEnabling(Profile* profile) : profile_(profile) {
       prefs::kGlicSettingsPolicy,
       base::BindRepeating(&GlicEnabling::OnGlicSettingsPolicyChanged,
                           base::Unretained(this)));
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CHECK(identity_manager);
+  identity_manager_observation_.Observe(identity_manager);
 }
 GlicEnabling::~GlicEnabling() = default;
 
@@ -79,6 +101,23 @@ base::CallbackListSubscription GlicEnabling::RegisterEnableChanged(
 
 void GlicEnabling::OnGlicSettingsPolicyChanged() {
   enable_changed_callback_list_.Notify();
+}
+
+void GlicEnabling::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  enable_changed_callback_list_.Notify();
+}
+
+void GlicEnabling::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
+  enable_changed_callback_list_.Notify();
+}
+
+void GlicEnabling::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  // Do nothing for now because there is no callback list for detecting changes
+  // to IsReady().
 }
 
 }  // namespace glic

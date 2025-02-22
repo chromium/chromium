@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">デスク 2</translation>
 <translation id="1546930421365146760">管理者に Google 管理コンソールでこのデバイスをセットアップするよう依頼してください</translation>
 <translation id="1549512626801247439">ストレージ管理</translation>
+<translation id="1549721333775633305">Quick Share の設定を表示します。Quick Share が無効</translation>
 <translation id="1550406609415860283">利用可能なデバイス</translation>
 <translation id="1550523713251050646">クリックするとその他のオプションが表示されます</translation>
 <translation id="1555130319947370107">青</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> が無効です。</translation>
 <translation id="5860033963881614850">オフ</translation>
 <translation id="5860491529813859533">オンにする</translation>
+<translation id="5864691701242730005">Quick Share の設定を表示します。「<ph name="VISIBILITY" />」の公開設定が選択済み</translation>
 <translation id="5864748620896638071">バッテリー残量 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">ネットワーク情報を収集しています</translation>
 <translation id="5867606971598166637">システム管理者が画面をモニタリングしています</translation>
@@ -2263,6 +2265,7 @@
 <translation id="851660987304951246">文書読解サポート機能を使って、コンテンツをすばやく要約したり、質問したりできます</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> は電源がオンのままでは充電できない可能性があります。</translation>
 <translation id="8535393432370007982">色による並べ替えを元に戻す</translation>
+<translation id="8536886494750559755">Quick Share の設定を表示します。<ph name="TIME_REMAINING" />間すべてのユーザーに公開</translation>
 <translation id="8539803091108018926">テキストをクリップボードにコピーしました</translation>
 <translation id="8541078764854166027">カメラのフレーミング</translation>
 <translation id="8542053257095774575">保存したデスクやテンプレートはありません</translation>

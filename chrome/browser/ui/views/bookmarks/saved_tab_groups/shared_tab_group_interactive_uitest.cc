@@ -67,11 +67,10 @@ class SharedTabGroupInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   MultiStep FinishTabstripAnimations() {
-    return Steps(
-        WaitForShow(kTabStripElementId),
-        std::move(WithView(kTabStripElementId, [](TabStrip* tab_strip) {
-                    tab_strip->StopAnimating(true);
-                  }).SetDescription("FinishTabstripAnimation")));
+    return Steps(WaitForShow(kTabStripElementId),
+                 WithView(kTabStripElementId, [](TabStrip* tab_strip) {
+                   tab_strip->StopAnimating(true);
+                 }).SetDescription("FinishTabstripAnimation"));
   }
 
   MultiStep ShowBookmarksBar() {
@@ -152,7 +151,7 @@ class SharedTabGroupInteractiveUiTest : public InteractiveBrowserTest {
                                   member_role, avatar_url, given_name);
     data_sharing::GroupData group_data =
         data_sharing::GroupData(data_sharing::GroupId(collaboration_id),
-                                display_name, {group_member}, access_token);
+                                display_name, {group_member}, {}, access_token);
 
     data_sharing_service()->AddGroupDataForTesting(std::move(group_data));
   }

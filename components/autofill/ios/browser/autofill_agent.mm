@@ -1350,10 +1350,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   formHandlerFeature->TrackFormMutations(frame,
                                          kMutationTrackingEnabledDelayInMs);
 
-  formHandlerFeature->ToggleTrackingUserEditedFields(
-      frame,
-      /*track_user_edited_fields=*/true);
-
   driver->ScanForms(/*immediately=*/base::FeatureList::IsEnabled(
       kAutofillThrottleDocumentFormScanForceFirstScanIos));
 }

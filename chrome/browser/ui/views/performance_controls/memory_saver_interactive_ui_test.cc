@@ -284,11 +284,9 @@ class MemorySaverChipInteractiveTest
       const ui::ElementIdentifier& contents_id) {
     MultiStep result;
     for (int i = 0; i < MemorySaverChipTabHelper::kChipAnimationCount; i++) {
-      MultiStep temp = std::move(result);
-      result = Steps(std::move(temp),
-                     SelectTab(kTabStripElementId, non_discard_tab_index),
-                     DiscardAndReloadTab(discard_tab_index, contents_id),
-                     CheckChipIsExpandedState(true));
+      result += Steps(SelectTab(kTabStripElementId, non_discard_tab_index),
+                      DiscardAndReloadTab(discard_tab_index, contents_id),
+                      CheckChipIsExpandedState(true));
     }
 
     return result;

@@ -572,7 +572,7 @@ void TabGroupHeader::CreateHeaderWithoutTitle() {
     const bool should_show_attention_indicator = GetShowingAttentionIndicator();
     if (should_show_attention_indicator) {
       const gfx::Insets title_chip_insets =
-          group_style_->GetInsetsForHeaderChip(should_show_header_icon_);
+          group_style_->GetInsetsForHeaderChip();
       const int title_chip_vertical_inset = 0;
       gfx::Rect title_chip_bounds = group_style_->GetEmptyTitleChipBounds(this);
       const int attention_indicator_width =
@@ -580,8 +580,9 @@ void TabGroupHeader::CreateHeaderWithoutTitle() {
               should_show_attention_indicator);
 
       // The total width of the title chip includes the horizontal
-      // insets, the sync icon, and the attention indicator.
-      title_chip_bounds.set_width(sync_icon_width + attention_indicator_width +
+      // insets, the sync icon, and the attention indicator + its padding.
+      title_chip_bounds.set_width(sync_icon_width + kSyncIconPaddingFromLabel +
+                                  attention_indicator_width +
                                   title_chip_insets.width());
       title_chip_->SetBoundsRect(title_chip_bounds);
 
@@ -635,11 +636,10 @@ void TabGroupHeader::CreateHeaderWithTitle() {
       title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).height();
 
   // Width of title chip should at least be the width of an empty title chip.
-  const int total_content_width = sync_icon_width +
-                                  padding_between_label_sync_icon + text_width +
-                                  attention_indicator_width;
-  const gfx::Insets title_chip_insets =
-      group_style_->GetInsetsForHeaderChip(should_show_header_icon_);
+  const int total_content_width =
+      sync_icon_width + padding_between_label_sync_icon + text_width +
+      kSyncIconPaddingFromLabel + attention_indicator_width;
+  const gfx::Insets title_chip_insets = group_style_->GetInsetsForHeaderChip();
   const int title_chip_width =
       std::max(group_style_->GetEmptyTitleChipBounds(this).width(),
                total_content_width + title_chip_insets.width());

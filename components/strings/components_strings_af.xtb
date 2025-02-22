@@ -1154,7 +1154,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="306573536155379004">Speletjie het begin.</translation>
 <translation id="3067505415088964188">Prys is laag</translation>
 <translation id="3068118691172921711">Jou lêeroplaai na <ph name="CLOUD_PROVIDER" /> sal oor 1 minuut begin</translation>
-<translation id="3068976060094139647">Jy kan hierdie kaart outovul omdat jou -rekening aan Google Pay gekoppel is.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} item}other{{ITEMS} items}}</translation>
 <translation id="3076865167425975822">Bedryfstelsels</translation>
 <translation id="3080254622891793721">Grafika</translation>
@@ -4375,7 +4374,6 @@ Bykomende besonderhede:
 <translation id="8757526089434340176">Google Pay-aanbieding beskikbaar</translation>
 <translation id="8759274551635299824">Hierdie kaart het verval</translation>
 <translation id="87601671197631245">Hierdie werf gebruik 'n verouderde sekuriteitopstelling, wat jou inligting (byvoorbeeld, wagwoorde, boodskappe of kredietkaarte) kan blootstel wanneer dit na hierdie werf toe gestuur word.</translation>
-<translation id="8763226176721243078">Jy kan hierdie kaart outovul, want jou <ph name="CARD_ISSUER_NAME" />-rekening is aan Google Pay gekoppel.</translation>
 <translation id="8763927697961133303">USB-toestel</translation>
 <translation id="8763986294015493060">Maak alle Incognito-vensters wat tans oop is, toe</translation>
 <translation id="8766943070169463815">Veilige betaling se eiebewysstawingblad is oop</translation>

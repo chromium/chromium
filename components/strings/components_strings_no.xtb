@@ -1154,7 +1154,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="306573536155379004">Spillet er startet.</translation>
 <translation id="3067505415088964188">Prisen er lav</translation>
 <translation id="3068118691172921711">Opplastingen av filen din til <ph name="CLOUD_PROVIDER" /> starter om 1 minutt</translation>
-<translation id="3068976060094139647">Du kan autofylle dette kortet fordi kontoen din er knyttet til Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} vare}other{{ITEMS} varer}}</translation>
 <translation id="3076865167425975822">Operativsystemer</translation>
 <translation id="3080254622891793721">Grafikk</translation>
@@ -4378,7 +4377,6 @@ Mer informasjon:
 <translation id="8757526089434340176">Google Pay-tilbud er tilgjengelig</translation>
 <translation id="8759274551635299824">Dette kortet er utløpt</translation>
 <translation id="87601671197631245">Dette nettstedet bruker en utdatert sikkerhetskonfigurasjon, som betyr at informasjonen din (for eksempel passord, meldinger eller kredittkort) kan bli avslørt når den sendes til dette nettstedet.</translation>
-<translation id="8763226176721243078">Du kan autofylle dette kortet fordi <ph name="CARD_ISSUER_NAME" />-kontoen din er knyttet til Google Pay.</translation>
 <translation id="8763927697961133303">USB-enhet</translation>
 <translation id="8763986294015493060">Lukk alle åpne inkognitovinduer</translation>
 <translation id="8766943070169463815">Ark for sikker autentisering av betalingslegitimasjon er åpnet</translation>

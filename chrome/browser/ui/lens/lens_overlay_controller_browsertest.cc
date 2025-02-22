@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_untrusted_ui.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
@@ -512,6 +513,7 @@ class LensOverlayControllerFake : public LensOverlayController {
   std::unique_ptr<lens::LensOverlayQueryController> CreateLensQueryController(
       lens::LensOverlayFullImageResponseCallback full_image_callback,
       lens::LensOverlayUrlResponseCallback url_callback,
+      lens::LensOverlayInteractionResponseCallback interaction_callback,
       lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
@@ -527,9 +529,9 @@ class LensOverlayControllerFake : public LensOverlayController {
             base::BindRepeating(
                 &LensOverlayControllerFake::RecordUrlResponseCallback,
                 base::Unretained(this)),
-            suggest_inputs_callback, thumbnail_created_callback,
-            variations_client, identity_manager, profile, invocation_source,
-            use_dark_mode, gen204_controller);
+            interaction_callback, suggest_inputs_callback,
+            thumbnail_created_callback, variations_client, identity_manager,
+            profile, invocation_source, use_dark_mode, gen204_controller);
     // Set up the fake responses for the query controller.
     fake_query_controller->set_next_full_image_request_should_return_error(
         full_image_request_should_return_error_);

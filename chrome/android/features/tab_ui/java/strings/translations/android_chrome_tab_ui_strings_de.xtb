@@ -30,7 +30,6 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="2118649612461486615">Händlerinfo</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden. Deinen Inkognitotab findest du dort jedoch nicht.}other{Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden. Deine # Inkognitotabs findest du dort jedoch nicht.}}</translation>
 <translation id="2162620598375156287">Jetzt <ph name="CURRENT_PRICE" /> auf <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">Tabgruppe „<ph name="TAB_GROUP_NAME" />“ ist nicht mehr verfügbar</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Tab-Gruppierung aufheben}other{Tab-Gruppierung aufheben}}</translation>
 <translation id="2271452184061378400">Hier werden deine Tabgruppen gespeichert</translation>
 <translation id="2277224997687551299">Gruppenname bearbeiten</translation>

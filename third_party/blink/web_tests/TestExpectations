@@ -2636,6 +2636,9 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac13 ] wpt_internal/hid/hidDevice_reports.https.window.html [ Timeout ]
+[ Mac14-arm64 ] wpt_internal/hid/hidDevice_reports.https.window.html [ Timeout ]
+crbug.com/398049421 [ Mac12 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?3-4 [ Crash ]
 crbug.com/398077415 external/wpt/scroll-animations/css/view-timeline-pseudo-on-scroller.html [ Failure Pass ]
 crbug.com/398049418 [ Mac14 ] external/wpt/custom-elements/revamped-scoped-registry/Construct.tentative.html [ Failure Timeout ]
 crbug.com/398049418 [ Win11 ] external/wpt/custom-elements/revamped-scoped-registry/Construct.tentative.html [ Failure Timeout ]
@@ -2694,6 +2697,8 @@ crbug.com/393411227 external/wpt/css/cssom/adoptedstylesheets-adopt-style-subres
 crbug.com/393411227 external/wpt/css/cssom/adoptedstylesheets-adopt-style.tentative.html [ Failure ]
 crbug.com/393401460 external/wpt/webrtc/simulcast/av1.https.html [ Skip Timeout ]
 crbug.com/392927699 external/wpt/css/css-lists/list-style-position-001.html [ Failure ]
+crbug.com/392927987 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?5-6 [ Crash ]
+crbug.com/392927987 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?5-6 [ Crash ]
 crbug.com/392927987 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?5-6 [ Crash ]
 crbug.com/392948859 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?1-2 [ Crash Failure ]
 crbug.com/392180059 [ Linux ] external/wpt/digital-credentials/disabled-by-permissions-policy.https.sub.html [ Failure Timeout ]
@@ -3101,7 +3106,6 @@ crbug.com/366343782 [ Mac12 ] virtual/threaded/external/wpt/css/css-backgrounds/
 crbug.com/366307017 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-exit.html [ Failure Pass ]
 [ Mac15 ] external/wpt/html/browsers/history/the-location-interface/location_hash_set_empty_string.html [ Failure Timeout ]
 [ Win11-arm64 ] external/wpt/html/browsers/history/the-location-interface/location_hash_set_empty_string.html [ Failure Pass Timeout ]
-[ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-only-picker-opt-in.tentative.html [ Failure ]
 crbug.com/40571175 external/wpt/html/dom/elements/global-attributes/dir-shadow-39.html [ Failure ]
 crbug.com/364665776 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/SourceBuffer-short-frame-endOfStream.html [ Timeout ]
 [ Win11-arm64 ] external/wpt/css/filter-effects/drop-shadow-currentcolor-dynamic-003.html [ Failure ]
@@ -9116,3 +9120,4 @@ crbug.com/397870172 [ Linux ] external/wpt/css/css-scroll-snap/selection-target.
 
 #Gardener 2025-02-21
 crbug.com/398165466 [ Debug Mac14 ] http/tests/inspector-protocol/tracing/screenshots.js [ Failure Pass Timeout ]
+crbug.com/398286786 virtual/hsts-top-level-navigations-only/http/tests/security/only-top-level-navigation-hsts-upgrade.php [ Failure Skip ]

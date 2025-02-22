@@ -283,6 +283,7 @@ extern const char kGlicAlwaysOpenFre[];
 extern const char kGlicFreURL[];
 extern const char kGlicOpenOnStartup[];
 extern const char kGlicAllowedOrigins[];
+extern const char kGlicDev[];
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

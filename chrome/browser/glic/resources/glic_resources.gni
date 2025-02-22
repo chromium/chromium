@@ -3,5 +3,5 @@
 # found in the LICENSE file.
 
 declare_args() {
-  enable_glic_internal_resources = false
+  enable_glic_internal_resources = true
 }

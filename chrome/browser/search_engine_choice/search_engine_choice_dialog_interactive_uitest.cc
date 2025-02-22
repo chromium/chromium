@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
   int first_search_engine_id =
       search_engine_choice_service->GetSearchEngines().at(0)->prepopulate_id();
 
-  RunTestSequence(InAnyContext(Steps(
+  RunTestSequence(InAnyContext(
       WaitForShow(kSearchEngineChoiceDialogId),
       InstrumentNonTabWebView(kWebContentsId, kSearchEngineChoiceDialogId),
       Do([&] {
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
       PressJsButton(kWebContentsId, kRadioButton),
       WaitForButtonEnabled(kWebContentsId, kActionButton),
       PressJsButton(kWebContentsId, kActionButton),
-      WaitForHide(kSearchEngineChoiceDialogId))));
+      WaitForHide(kSearchEngineChoiceDialogId)));
 
   HistogramTester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,

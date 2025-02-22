@@ -21,7 +21,7 @@ targets.tests.gtest_test(
 )
 
 targets.tests.isolated_script_test(
-    name = "android_blink_wpt_tests",
+    name = "android_chrome_wpt_tests",
     args = [
         "--skipped",
         "always",
@@ -3151,7 +3151,7 @@ targets.tests.gtest_test(
 )
 
 targets.tests.isolated_script_test(
-    name = "webview_blink_wpt_tests",
+    name = "android_webview_wpt_tests",
     args = [
         "--skipped",
         "always",

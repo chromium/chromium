@@ -22,8 +22,7 @@ export class FakeTree {
     assertTrue(
         this.nodes.has(id),
         'You\'re trying to highlight a node that is not in this tree!');
-    this.setReadingHighlight(
-        id, 0, id, this.nodes.get(id!)!.textContent!.length);
+    this.setReadingHighlight(id, 0, id, this.nodes.get(id)!.textContent.length);
   }
 
   // Sets the current reading highlight on this fake tree
@@ -35,7 +34,7 @@ export class FakeTree {
     this.readingMode.getCurrentTextStartIndex = id => {
       switch (id) {
         case fromId:
-          return fromOffset!;
+          return fromOffset;
         case toId:
           return 0;
         default:
@@ -46,9 +45,9 @@ export class FakeTree {
     this.readingMode.getCurrentTextEndIndex = id => {
       switch (id) {
         case toId:
-          return toOffset!;
+          return toOffset;
         case fromId:
-          return this.nodes.get(fromId!)!.textContent!.length;
+          return this.nodes.get(fromId)!.textContent.length;
         default:
           return -1;
       }
@@ -83,10 +82,10 @@ export class FakeTreeBuilder {
         !!this.rootNode, 'You need to set the root node before building!');
     readingMode.rootId = this.rootNode.id;
     readingMode.getHtmlTag = id => {
-      return this.nodes.get(id)!.htmlTag!;
+      return this.nodes.get(id)!.htmlTag;
     };
     readingMode.getTextContent = id => {
-      return this.nodes.get(id)!.textContent!;
+      return this.nodes.get(id)!.textContent;
     };
     readingMode.getChildren = id => {
       return this.nodes.get(id)!.children;

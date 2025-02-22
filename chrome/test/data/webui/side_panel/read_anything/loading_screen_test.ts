@@ -27,7 +27,7 @@ suite('LoadingScreen', () => {
     app = await createApp();
     app.showLoading();
     emptyState =
-        app.shadowRoot!.querySelector<SpEmptyStateElement>('sp-empty-state')!;
+        app.shadowRoot.querySelector<SpEmptyStateElement>('sp-empty-state')!;
     return microtasksFinished();
   });
 

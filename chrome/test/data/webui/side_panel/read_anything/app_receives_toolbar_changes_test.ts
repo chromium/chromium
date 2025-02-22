@@ -315,7 +315,7 @@ suite('AppReceivesToolbarChanges', () => {
       });
 
       test('first press plays', async () => {
-        app.$.appFlexParent!.dispatchEvent(kPress);
+        app.$.appFlexParent.dispatchEvent(kPress);
         await microtasksFinished();
 
         assertTrue(app.speechPlayingState.isSpeechActive);
@@ -323,8 +323,8 @@ suite('AppReceivesToolbarChanges', () => {
       });
 
       test('second press pauses', async () => {
-        app.$.appFlexParent!.dispatchEvent(kPress);
-        app.$.appFlexParent!.dispatchEvent(kPress);
+        app.$.appFlexParent.dispatchEvent(kPress);
+        app.$.appFlexParent.dispatchEvent(kPress);
         await microtasksFinished();
 
         assertFalse(app.speechPlayingState.isSpeechActive);

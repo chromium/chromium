@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">ଗେମ୍ ଆରମ୍ଭ ହୋଇଛି।</translation>
 <translation id="3067505415088964188">ମୂଲ୍ୟ କମ ଅଟେ</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" />ରେ ଆପଣଙ୍କ ଫାଇଲର ଅପଲୋଡ 1 ମିନିଟରେ ଆରମ୍ଭ ହେବ</translation>
-<translation id="3068976060094139647">ଆପଣଙ୍କ ଆକାଉଣ୍ଟକୁ Google Pay ସହ ଲିଙ୍କ କରାଯାଇଥିବା ଯୋଗୁଁ ଆପଣ ଏହି କାର୍ଡକୁ ଅଟୋଫିଲ କରିପାରିବେ।</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} ଆଇଟମ}other{{ITEMS} ଆଇଟମ}}</translation>
 <translation id="3076865167425975822">ଅପରେଟିଂ ସିଷ୍ଟମଗୁଡ଼ିକ</translation>
 <translation id="3080254622891793721">ଗ୍ରାଫିକ୍</translation>
@@ -2252,6 +2251,7 @@
 <translation id="4989809363548539747">ଏହି ପ୍ଲଗଇନ୍ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="4990241977441916452">ଏନଭେଲପ A2</translation>
 <translation id="4992066212339426712">ଅନମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
+<translation id="4994095017621319069">1 ଟାବ ଗ୍ରୁପ ଆଉ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="4994348767896109801">ଆପଣ ଦେଖୁଥିବା କୌଣସି ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରାଯାଇଛି ନା ନାହିଁ ତାହା ଏହି ସେଟିଂ, <ph name="BEGIN_LINK_1" />ବିଜ୍ଞାପନ ବିଷୟ<ph name="END_LINK_1" />, ଆପଣଙ୍କ <ph name="BEGIN_LINK_2" />କୁକୀ ସେଟିଂସ<ph name="END_LINK_2" /> ଏବଂ ଆପଣ ଭ୍ୟୁ କରୁଥିବା ସାଇଟ ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରେ ନା ନାହିଁ ସମେତ ଅନେକ ଜିନିଷ ଉପରେ ନିର୍ଭର କରିପାରେ। <ph name="BEGIN_LINK_3" />ଆପଣଙ୍କ ବିଜ୍ଞାପନ ଗୋପନୀୟତାକୁ ପରିଚାଳନା କରିବା<ph name="END_LINK_3" /> ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ।</translation>
 <translation id="4995474875135717171">ପରିବର୍ତ୍ତନ କରାଯାଇଥିବା ସମୟ:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ସାଇଟ୍ ସନ୍ଧାନ ଓ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସନ୍ଧାନ ଇଞ୍ଜିନକୁ ପରିଚାଳନା କରିବା ପାଇଁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
@@ -3464,6 +3464,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ଏବଂ ଅଧିକ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />ଟି}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ଏବଂ ଅଧିକ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />ଟି}}</translation>
 <translation id="7153618581592392745">ଲାଭେଣ୍ଡର୍</translation>
 <translation id="7156870133441232244">ସର୍ଭରକୁ TLS 1.2 କିମ୍ବା ପରବର୍ତ୍ତୀ ସଂସ୍କରଣରେ ଅପଗ୍ରେଡ୍ କରିବା ଉଚିତ।</translation>
+<translation id="7156885531105222428">ଆପଣ ଅନୁରୋଧ କରିଥିବା ପେଜ ଆପ୍ଲିକେସନରେ ମିଳିଲା ନାହିଁ</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> ବ୍ୟବହାର କରି ଏହି ଫାଇଲ ପଠାଇବାକୁ ଆପଣଙ୍କ ଡିଭାଇସରେ ଆପଣଙ୍କ ଡିଭାଇସରେ (<ph name="DISK_SPACE_SIZE" />) ସ୍ପେସ ଖାଲି କରନ୍ତୁ}other{<ph name="FEATURE_NAME" /> ବ୍ୟବହାର କରି ଏହି ଫାଇଲଗୁଡ଼ିକୁ ପଠାଇବା ପାଇଁ ଆପଣଙ୍କ ଡିଭାଇସରେ ଆପଣଙ୍କ ଡିଭାଇସରେ (<ph name="DISK_SPACE_SIZE" />) ସ୍ପେସ ଖାଲି କରନ୍ତୁ}}</translation>
 <translation id="7160999678034985039">ଦୟାକରି ଆପଣଙ୍କ ୱାର୍କ ସେଭ କରନ୍ତୁ ଏବଂ ଆପଣ ପ୍ରସ୍ତୁତ ହେଲେ ଅପଡେଟ ଆରମ୍ଭ କରନ୍ତୁ।</translation>
 <translation id="7162277662076933695">ସ୍ମାର୍ଟ କାର୍ଡ ରିଡର</translation>
@@ -4251,6 +4252,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ବ୍ଲକ୍ କରାଯାଇଥିବା URLଗୁଡ଼ିକର ତାଲିକା ଏବଂ ଆପଣଙ୍କ ସିଷ୍ଟମ୍ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ଵାରା ଲାଗୁ କରାଯାଇଥିବା ଅନ୍ୟ ନୀତିଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ &lt;strong&gt;chrome://policy&lt;/strong&gt; କୁ ଭିଜିଟ୍ କରନ୍ତୁ।</translation>
 <translation id="8536234749087605613">ଏନଭେଲପ (ୱିଣ୍ଡୋ)</translation>
+<translation id="8538228968820006247">ଏହି ଟାବ ଗ୍ରୁପ ପୂର୍ଣ୍ଣ ଅଛି, ନୂଆ ସଦସ୍ୟମାନେ ଲିଙ୍କ ମାଧ୍ୟମରେ ଯୋଗ ଦେଇପାରିବେ ନାହିଁ</translation>
 <translation id="8539500321752640291">2ଟି ଅନୁମତି ଦେବେ?</translation>
 <translation id="8541158209346794904">ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସ୍</translation>
 <translation id="8541410041357371550">ଆପଣଙ୍କୁ ଅଧିକ ପ୍ରାସଙ୍ଗିକ ବିଜ୍ଞାପନ ଦେଖାଇବା ପାଇଁ ଏହି ସାଇଟ Chromeରୁ ଆପଣଙ୍କ ବିଜ୍ଞାପନ ବିଷୟଗୁଡ଼ିକ ପାଇଥାଏ</translation>
@@ -4371,7 +4373,6 @@
 <translation id="8757526089434340176">Google Pay ଅଫର୍ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="8759274551635299824">ଏହି କାର୍ଡର ସମୟ ସୀମା ସମାପ୍ତ ହୋଇଛି</translation>
 <translation id="87601671197631245">ଏହି ସାଇଟ୍ ଏକ ପୁରୁଣା ସୁରକ୍ଷା କନଫିଗରେସନ୍ ବ୍ୟବହାର କରେ, ଯାହା ଆପଣଙ୍କର ସୂଚନା (ଉଦାହରଣ ସ୍ୱରୂପ, ପାସୱାର୍ଡ, ମେସେଜ କିମ୍ବା କ୍ରେଡିଟ୍ କାର୍ଡଗୁଡ଼ିକ), ଏହି ସାଇଟକୁ ପଠାଇବା ସମୟରେ ପ୍ରକାଶ କରିଦେଇପାରେ।</translation>
-<translation id="8763226176721243078">ଆପଣଙ୍କ <ph name="CARD_ISSUER_NAME" /> ଆକାଉଣ୍ଟକୁ Google Pay ସହ ଲିଙ୍କ କରାଯାଇଥିବା ଯୋଗୁଁ ଆପଣ ଏହି କାର୍ଡକୁ ଅଟୋଫିଲ କରିପାରିବେ।</translation>
 <translation id="8763927697961133303">USB ଡିଭାଇସ୍</translation>
 <translation id="8763986294015493060">ବର୍ତ୍ତମାନ ଖୋଲା ଥିବା ସମସ୍ତ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8766943070169463815">ସୁରକ୍ଷିତ ଭାବରେ ପେମେଣ୍ଟ କରିବା ପାଇଁ କ୍ରେଡେନସିଆଲ୍ ପ୍ରମାଣୀକରଣ ସିଟ୍ ଖୋଲାଯାଇଛି</translation>

@@ -183,9 +183,7 @@ interface Crosapi {
   [MinVersion=131] BindDebugInterfaceRegisterer@133(
       pending_receiver<DebugInterfaceRegisterer> receiver);
 
-  // Binds the desk factory interface.
-  // Added in M109.
-  [MinVersion=99] BindDesk@103(pending_receiver<Desk> receiver);
+  // BindDesk@103 was removed.
 
   // Binds the desk profiles interface.
   // Added in M119.

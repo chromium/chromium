@@ -150,7 +150,6 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("page-serialization"),
     perfetto::Category("paint_preview"),
     perfetto::Category("pepper"),
-    perfetto::Category("persistent_cache"),
     perfetto::Category("PlatformMalloc"),
     perfetto::Category("power"),
     perfetto::Category("ppapi"),

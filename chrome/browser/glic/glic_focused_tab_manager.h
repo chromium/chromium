@@ -59,7 +59,8 @@ class GlicFocusedTabManager : public BrowserListObserver,
   void PrimaryPageChanged(content::Page& page) override;
 
   // GlicWindowController::StateObserver
-  void PanelStateChanged(const glic::mojom::PanelState& panel_state) override;
+  void PanelStateChanged(const glic::mojom::PanelState& panel_state,
+                         Browser*) override;
 
   // Callback for changes to focused tab. If no tab is in focus an error reason
   // is returned indicating why and maybe a tab candidate with details as to

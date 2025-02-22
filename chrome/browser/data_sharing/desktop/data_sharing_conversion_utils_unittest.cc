@@ -24,6 +24,15 @@ TEST_F(DataSharingConversionUtilsTest, ConvertGroup) {
   member->avatar_url = GURL("example.com");
   group->members.push_back(std::move(member));
 
+  auto former_member = data_sharing::mojom::GroupMember::New();
+  former_member->gaia_id = "789";
+  former_member->role = data_sharing::mojom::MemberRole::kMember;
+  former_member->display_name = "former member display";
+  former_member->given_name = "former member given";
+  former_member->email = "test@gmail.com";
+  former_member->avatar_url = GURL("example.com");
+  group->former_members.push_back(std::move(former_member));
+
   auto result = ConvertGroup(group);
 
   ASSERT_EQ(group->display_name, result.display_name());
@@ -37,5 +46,18 @@ TEST_F(DataSharingConversionUtilsTest, ConvertGroup) {
   ASSERT_EQ(group->members[0]->given_name, result.members(0).given_name());
   ASSERT_EQ(group->members[0]->email, result.members(0).email());
   ASSERT_EQ(group->members[0]->avatar_url, result.members(0).avatar_url());
+
+  ASSERT_EQ(1, result.former_members_size());
+  ASSERT_EQ(group->former_members[0]->gaia_id,
+            result.former_members(0).gaia_id());
+  ASSERT_EQ(data_sharing_pb::MEMBER_ROLE_MEMBER,
+            result.former_members(0).role());
+  ASSERT_EQ(group->former_members[0]->display_name,
+            result.former_members(0).display_name());
+  ASSERT_EQ(group->former_members[0]->given_name,
+            result.former_members(0).given_name());
+  ASSERT_EQ(group->former_members[0]->email, result.former_members(0).email());
+  ASSERT_EQ(group->former_members[0]->avatar_url,
+            result.former_members(0).avatar_url());
 }
 }  // namespace data_sharing

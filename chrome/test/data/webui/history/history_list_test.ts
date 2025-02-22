@@ -322,7 +322,7 @@ suite('HistoryListTest', function() {
 
     // Check that the search term is bolded correctly in the
     // history-item.
-    assertGT(title.children[1]!.innerHTML!.indexOf('<b>google</b>'), -1);
+    assertGT(title.children[1]!.innerHTML.indexOf('<b>google</b>'), -1);
   });
 
   test('CorrectDisplayMessageWhenNoHistoryAvailable', async function() {

@@ -54,7 +54,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     fakeTree = new FakeTreeBuilder()
                    .root(1)
                    .addTag(2, /* parentId= */ 1, 'p')
-                   .addText(textNodeIds[0]!!, /* parentId= */ 2, texts[0]!)
+                   .addText(textNodeIds[0]!, /* parentId= */ 2, texts[0]!)
                    .addTag(4, /* parentId= */ 1, 'p')
                    .addText(textNodeIds[1]!, /* parentId= */ 4, texts[1]!)
                    .addTag(6, /* parentId= */ 1, 'p')
@@ -114,7 +114,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     // Looks for the node containing the given text inside the given selectors
     function getTextNode(selector: string, text: string): Node {
       const nodesToCheck =
-          Array.from(app.shadowRoot!.querySelectorAll(selector));
+          Array.from(app.shadowRoot.querySelectorAll(selector));
       const parentNodeWithText =
           nodesToCheck.find((element) => element.textContent!.includes(text));
       return parentNodeWithText!.firstChild!;
@@ -163,7 +163,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       // (offset 12) of the third paragraph.
       await selectNodes(
           afterSelector, expectedAnchorOffset, texts[1]!, expectedFocusOffset,
-          texts[3]!);
+          texts[3]);
 
       assertEquals(expectedAnchorId, actualAnchorId);
       assertEquals(expectedFocusId, actualFocusId);
@@ -195,7 +195,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       const expectedFocusOffset = 7;
       await selectNodes(
           previousSelector, expectedAnchorOffset, texts[0]!,
-          expectedFocusOffset, texts[1]!);
+          expectedFocusOffset, texts[1]);
 
       assertEquals(textNodeIds[0]!, actualAnchorId);
       assertEquals(textNodeIds[1]!, actualFocusId);
@@ -232,7 +232,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       const expectedFocusOffset = 7;
       await selectNodes(
           previousSelector, expectedAnchorOffset, texts[0]!,
-          expectedFocusOffset, texts[1]!);
+          expectedFocusOffset, texts[1]);
 
       assertEquals(textNodeIds[0]!, actualAnchorId);
       assertEquals(textNodeIds[1]!, actualFocusId);
@@ -300,7 +300,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
 
       // select node starting after the end of the highlight
       const selectedText = texts[2]!.slice(highlightEnd);
-      const nodesToCheck = Array.from(app.shadowRoot!.querySelectorAll('span'));
+      const nodesToCheck = Array.from(app.shadowRoot.querySelectorAll('span'));
       const parentNodeWithText = nodesToCheck.find(
           (element) => element.textContent!.includes(selectedText));
       const textNode = parentNodeWithText!.lastChild!;
@@ -336,7 +336,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       const expectedFocusOffset = 10;
       await selectNodes(
           afterSelector, expectedAnchorOffset, texts[1]!, expectedFocusOffset,
-          texts[2]!);
+          texts[2]);
 
       assertEquals(textNodeIds[1]!, actualAnchorId);
       assertEquals(textNodeIds[2]!, actualFocusId);

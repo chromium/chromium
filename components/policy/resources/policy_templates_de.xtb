@@ -379,7 +379,6 @@ Weitere Informationen zu sicheren Kontexten findest du unter https://www.w3.org/
 <translation id="1305400589435476516">Wenn die Richtlinie aktiviert ist, wird Daten-Roaming für das Gerät zugelassen.
 
       Ist sie deaktiviert oder nicht konfiguriert, ist Daten-Roaming nicht verfügbar.</translation>
-<translation id="1306041796676461437">Unterstützung für erweiterbare Enterprise‑SSO deaktivieren</translation>
 <translation id="1308526987406924874">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht um Zugriff auf einen seriellen Port bitten dürfen.
 
       Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
@@ -3525,15 +3524,6 @@ Denke daran, diese Richtlinie nicht dauerhaft aktiviert zu lassen, insbesondere 
 <translation id="3606571057705314194">Profil-Picker beim Start deaktiviert</translation>
 <translation id="3608206578291537084">Verschlüsselte Pipeline für die Berichterstellung aktivieren</translation>
 <translation id="3608281460204780443">Chrome Web Store-Symbol im <ph name="PRODUCT_OS_NAME" />-Launcher und auf der Seite „Neuer Tab“ anzeigen</translation>
-<translation id="3608411984079625468">Mit dieser Richtlinie wird die automatische Nutzeranmeldung für Konten mit Authentifizierungsanbietern über eine Enterprise‑SSO‑Erweiterung konfiguriert.
-
-Wenn diese Richtlinie auf 1 (<ph name="POLICY_VALUE_ENABLED" />) gesetzt oder nicht konfiguriert ist, verwenden Authentifizierungsanbieter mit einer SSO‑Erweiterung auf dem Gerät diese Erweiterung, um Nutzer zu authentifizieren, die sich anmelden möchten.
-
-Ist die Richtlinie auf 0 (<ph name="POLICY_VALUE_DISABLED" />) gesetzt, wird die automatische Anmeldung, wie oben beschrieben, deaktiviert.
-
-Diese Funktion ist ab macOS Catalina verfügbar.
-
-Hinweis: Diese Richtlinie gilt nicht für den Inkognito- oder Gastmodus.</translation>
 <translation id="3612482251405108708">Automatischer Start der erneuten Onlineauthentifizierung auf dem Sperrbildschirm</translation>
 <translation id="3616490235694929053">Mit dieser Richtlinie wird festgelegt, ob dem Nutzer bei der ersten Anmeldung der Bildschirm mit der Einstellung für die Anzeigegröße angezeigt wird.
       Wenn die Richtlinie auf „false“ gesetzt ist, wird der Bildschirm mit der Einstellung für die Anzeigegröße nicht angezeigt.
@@ -5675,7 +5665,6 @@ Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bild
       Ist die Richtlinie für den Gerätehintergrund konfiguriert, lädt das Chrome OS-Gerät das Hintergrundbild herunter und zeigt es auf dem Anmeldebildschirm an, wenn sich noch kein Nutzer auf dem Gerät angemeldet hat. Sobald sich der Nutzer anmeldet, wird seine Hintergrundrichtlinie wirksam.
 
       Wenn die Richtlinie für den Gerätehintergrund nicht konfiguriert ist, wird über die Hintergrundrichtlinie des Nutzers bestimmt, was angezeigt werden soll, sofern diese konfiguriert ist.</translation>
-<translation id="5217106427763720473">Unterstützung für erweiterbare Enterprise‑SSO aktivieren</translation>
 <translation id="5219844027738217407">Bei Android-Apps betrifft diese Richtlinie nur das Mikrofon. Wenn diese Richtlinie auf "true" gesetzt ist, wird das Mikrofon ohne Ausnahme für alle Android-Apps stummgeschaltet.</translation>
 <translation id="5222325605346216869">Erzwingen, dass JavaScript-Timer im Hintergrund gedrosselt werden.</translation>
 <translation id="5223606242837275233">Nicht zulassen, dass auf Websites per URL zu bestimmten Textfragmenten gescrollt wird</translation>

@@ -382,7 +382,6 @@ Untuk informasi selengkapnya tentang konteks aman, lihat Konteks Aman (https://w
 <translation id="1305400589435476516">Jika kebijakan disetel ke Aktif, roaming data akan diizinkan untuk perangkat.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, roaming data menjadi tidak tersedia.</translation>
-<translation id="1306041796676461437">Menonaktifkan dukungan SSO Perusahaan yang dapat diperluas</translation>
 <translation id="1308526987406924874">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang tidak dapat meminta izin pengguna untuk mengakses port serial.
 
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
@@ -3659,15 +3658,6 @@ Perlu diingat untuk tidak selalu mengaktifkan kebijakan ini, terutama dalam depl
 <translation id="3606571057705314194">Pemilih profil dinonaktifkan saat browser dimulai</translation>
 <translation id="3608206578291537084">Aktifkan Pipeline Pelaporan Terenkripsi</translation>
 <translation id="3608281460204780443">Tampilkan ikon Chrome Web Store di peluncur <ph name="PRODUCT_OS_NAME" /> dan di halaman tab baru</translation>
-<translation id="3608411984079625468">Mengonfigurasi login pengguna otomatis untuk akun dengan penyedia autentikasi melalui Ekstensi SSO Perusahaan.
-
-Jika kebijakan ini disetel ke 1 (<ph name="POLICY_VALUE_ENABLED" />) atau tidak disetel, penyedia autentikasi dengan ekstensi SSO di perangkat akan menggunakan ekstensi tersebut untuk mengautentikasi pengguna yang mencoba login.
-
-Jika kebijakan ini disetel ke 0 (<ph name="POLICY_VALUE_DISABLED" />), login otomatis seperti yang dijelaskan di atas akan dinonaktifkan.
-
-Fitur ini tersedia mulai dari MacOS Catalina.
-
-Catatan: Kebijakan ini tidak berlaku untuk mode Tamu atau Samaran.</translation>
 <translation id="3612482251405108708">Memulai otomatis autentikasi ulang online di layar kunci</translation>
 <translation id="3616490235694929053">Kebijakan ini mengontrol apakah layar setelan ukuran tampilan akan ditampilkan kepada pengguna selama login pertama.
       Jika kebijakan disetel ke salah (false), layar setelan ukuran tampilan tidak akan ditampilkan.
@@ -5932,7 +5922,6 @@ Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang 
       Jika kebijakan wallpaper perangkat disetel, perangkat ChromeOS akan mendownload dan menggunakan gambar wallpaper di layar login jika belum ada pengguna yang login ke perangkat. Setelah pengguna login, kebijakan wallpaper pengguna akan diterapkan.
 
       Jika kebijakan wallpaper perangkat tidak disetel, kebijakan wallpaper pengguna yang akan menentukan gambar yang ditampilkan saat kebijakan wallpaper pengguna disetel.</translation>
-<translation id="5217106427763720473">Mengaktifkan dukungan SSO Perusahaan yang dapat diperluas</translation>
 <translation id="5219844027738217407">Untuk aplikasi Android, kebijakan ini hanya memengaruhi mikrofon. Jika kebijakan disetel ke true, mikrofon akan dibisukan untuk semua aplikasi Android, tanpa pengecualian.</translation>
 <translation id="5222325605346216869">Paksa throttling timer JavaScript latar belakang</translation>
 <translation id="5223606242837275233">Jangan izinkan situs men-scroll ke fragmen teks tertentu melalui URL</translation>

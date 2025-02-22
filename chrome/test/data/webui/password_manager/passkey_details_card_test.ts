@@ -55,8 +55,8 @@ suite('PasskeyDetailsCardTest', function() {
         card.shadowRoot!.querySelectorAll<HTMLAnchorElement>('a.site-link');
     assertEquals(domains.length, 1);
     assertEquals(
-        passkey.affiliatedDomains![0]!.name, domains[0]!.textContent!.trim());
-    assertEquals(passkey.affiliatedDomains![0]!.url, domains[0]!.href);
+        passkey.affiliatedDomains[0]!.name, domains[0]!.textContent!.trim());
+    assertEquals(passkey.affiliatedDomains[0]!.url, domains[0]!.href);
   });
 
   test('Clicking edit button opens an edit dialog', async function() {

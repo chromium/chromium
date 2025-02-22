@@ -1155,7 +1155,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="306573536155379004">Game dimulai.</translation>
 <translation id="3067505415088964188">Harga rendah</translation>
 <translation id="3068118691172921711">Proses upload file Anda ke <ph name="CLOUD_PROVIDER" /> akan dimulai dalam 1 menit</translation>
-<translation id="3068976060094139647">Anda dapat mengisi otomatis kartu ini karena akun Anda ditautkan ke Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} item}other{{ITEMS} item}}</translation>
 <translation id="3076865167425975822">Sistem Operasi</translation>
 <translation id="3080254622891793721">Grafis</translation>
@@ -4372,7 +4371,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8757526089434340176">Penawaran Google Pay tersedia</translation>
 <translation id="8759274551635299824">Kartu sudah tidak aktif</translation>
 <translation id="87601671197631245">Situs ini menggunakan konfigurasi keamanan yang telah habis masa berlakunya, yang dapat mengekspos informasi Anda (misalnya, sandi, pesan, atau kartu kredit) saat dikirimkan ke situs ini.</translation>
-<translation id="8763226176721243078">Anda dapat mengisi otomatis kartu ini karena akun <ph name="CARD_ISSUER_NAME" /> Anda ditautkan ke Google Pay.</translation>
 <translation id="8763927697961133303">Perangkat USB</translation>
 <translation id="8763986294015493060">Tutup semua jendela Samaran yang saat ini terbuka</translation>
 <translation id="8766943070169463815">Sheet autentikasi kredensial pembayaran aman dibuka</translation>

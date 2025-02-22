@@ -27,6 +27,7 @@
 <translation id="1345251407431278948">固定しました。ツールバーの新しいボタンから、画像検索にアクセスできます</translation>
 <translation id="1356661055722410047">New! 画面上のテキストや画像を翻訳できるようになりました</translation>
 <translation id="1414495520565016063">Chromium にログインしました</translation>
+<translation id="1465192221147974788">ウィンドウを共有するには、[システム設定] で Chromium に画面の録画を許可してください。</translation>
 <translation id="1478370723027452770">Chrome for Testing のヘルプを見る</translation>
 <translation id="1497802159252041924">インストール エラー: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium タブの共有</translation>
@@ -159,6 +160,7 @@
 <translation id="3130323860337406239">Chromium がマイクを使用しています。</translation>
 <translation id="3137969841538672700">ドラッグして検索</translation>
 <translation id="3144188012276422546">このタブでは追加のリソースが使用されています。パフォーマンスを改善するには、このタブを非アクティブにしてください。</translation>
+<translation id="3149163023759831301">画面を共有するには、[システム設定] で Chromium に画面の録画を許可してください。</translation>
 <translation id="3155163173539279776">Chromium を再起動します</translation>
 <translation id="3161522574479303604">すべての言語</translation>
 <translation id="3179665906251668410">Chromium のシークレット ウインドウでリンクを開く(&amp;G)</translation>
@@ -181,8 +183,10 @@
 <translation id="3474745554856756813">このデバイスから <ph name="ITEMS_COUNT" /> 件の項目を削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chromium にログインしてください。</translation>
 <translation id="3497319089134299931">Chromium プロフィールを切り替えるには、<ph name="SHORTCUT" /> を使用します</translation>
 <translation id="3509308970982693815">すべての Chromium ウィンドウを閉じてからもう一度お試しください。</translation>
+<translation id="3522404737534491619">ウィンドウを共有するには、[システム設定] で Chromium に画面の録画を許可してください。</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chromium にログインしてください。</translation>
 <translation id="3533435340678213462">ユーザーのプライバシーを保護するため、4 週間以上経過したユーザーの興味 / 関心は自動削除されます。閲覧を続けていると、興味 / 関心がリストに再度表示される場合もあります。Chromium に認識してほしくない興味 / 関心は削除できます。</translation>
+<translation id="3561853857681580870">画面を共有するには、[システム設定] で Chromium に画面の録画を許可してください。</translation>
 <translation id="3567254597502212821">閲覧履歴（このデバイスで Chromium を使用してアクセスしたサイトの記録）。</translation>
 <translation id="3597003331831379823">昇格された権限で設定を実行できませんでした。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3639635944603682591">この操作を行うと、このユーザーの閲覧データがこのデバイスから削除されます。データを復元するには、<ph name="USER_EMAIL" /> として Chromium にログインしてください。</translation>
@@ -280,6 +284,7 @@
 <translation id="4942295735032723435">今後、Chromium のアップデートを受信するには、macOS 11 以降が必要となります。このコンピュータでは macOS 10.15 が実行されています。</translation>
 <translation id="4943838377383847465">Chromium はバックグラウンド モードです。</translation>
 <translation id="494490797786467921">クリックすると、Chromium のログイン ダイアログを閉じます</translation>
+<translation id="4950660488495335294">Chromium プロフィールを使うと、Chromium のあらゆる項目や設定を個別に管理できます。友達や家族のプロフィールを作成したり、仕事とプライベートでプロフィールを使い分けたりできます。</translation>
 <translation id="4987820182225656817">ゲスト ユーザーは、記録を残さずに Chromium を使用できます。</translation>
 <translation id="4994636714258228724">Chromium に自分を追加</translation>
 <translation id="5123973130450702873">Chromium がハンド トラッキングの許可を求めています</translation>

@@ -92,7 +92,7 @@ suite('SafetyHubModule', function() {
     const item = getEntries()[1]!;
     const button = item.querySelector('cr-icon-button');
     assertTrue(!!button);
-    assertEquals('cr20:block', button!.ironIcon);
+    assertEquals('cr20:block', button.ironIcon);
 
     const clickEventPromise =
         eventToPromise('sh-module-item-button-click', testElement);
@@ -159,6 +159,6 @@ suite('SafetyHubModule', function() {
     assertTrue(!!tooltip);
     await waitUntilVisible(tooltip);
     assertTrue(isVisible(tooltip));
-    assertEquals(text, tooltip!.textContent!.trim());
+    assertEquals(text, tooltip.textContent!.trim());
   });
 });

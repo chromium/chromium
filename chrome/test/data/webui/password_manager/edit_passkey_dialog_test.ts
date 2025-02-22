@@ -51,7 +51,7 @@ suite('EditPasskeyDialogTest', function() {
         dialog.shadowRoot!.querySelectorAll<HTMLAnchorElement>('a.site-link');
     assertEquals(listItemElements.length, 1);
     assertEquals(listItemElements[0]!.textContent!.trim(), 'test.com');
-    assertEquals(listItemElements[0]!.href, passkey.affiliatedDomains![0]!.url);
+    assertEquals(listItemElements[0]!.href, passkey.affiliatedDomains[0]!.url);
   });
 
   test('passkey is updated', async function() {

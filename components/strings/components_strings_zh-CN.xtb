@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">游戏已开始。</translation>
 <translation id="3067505415088964188">价格低</translation>
 <translation id="3068118691172921711">系统将在 1 分钟后开始将文件上传到<ph name="CLOUD_PROVIDER" /></translation>
-<translation id="3068976060094139647">您可以自动填充此卡的信息，因为您的账号已关联到 Google Pay。</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} 项}other{{ITEMS} 项}}</translation>
 <translation id="3076865167425975822">操作系统</translation>
 <translation id="3080254622891793721">图形</translation>
@@ -4372,7 +4371,6 @@
 <translation id="8757526089434340176">有可用的 Google Pay 优惠</translation>
 <translation id="8759274551635299824">此信用卡已失效</translation>
 <translation id="87601671197631245">此网站使用的安全性配置已过时，这可能会导致您的信息（例如密码、消息或信用卡卡号）在发送至此网站的过程中遭到泄露。</translation>
-<translation id="8763226176721243078">您可以自动填充此卡的信息，因为您的 <ph name="CARD_ISSUER_NAME" /> 账号已关联到 Google Pay。</translation>
 <translation id="8763927697961133303">USB 设备</translation>
 <translation id="8763986294015493060">关闭当前打开的所有无痕式窗口</translation>
 <translation id="8766943070169463815">安全付款凭据身份验证表单已打开</translation>

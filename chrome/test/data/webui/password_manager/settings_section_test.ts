@@ -579,13 +579,13 @@ suite('SettingsSectionTest', function() {
         assertTrue(!!movePasswordsButton);
         assertTrue(isVisible(movePasswordsButton));
 
-        movePasswordsButton!.click();
+        movePasswordsButton.click();
         await flushTasks();
 
         const moveDialog =
             settings.shadowRoot!.querySelector('move-passwords-dialog');
         assertTrue(!!moveDialog);
-        const dialog = moveDialog!.shadowRoot!.querySelector('#dialog');
+        const dialog = moveDialog.shadowRoot!.querySelector('#dialog');
         assertTrue(!!dialog);
       });
 
@@ -629,7 +629,7 @@ suite('SettingsSectionTest', function() {
         assertTrue(!!movePasswordsButton);
         assertTrue(isVisible(movePasswordsButton));
 
-        movePasswordsButton!.click();
+        movePasswordsButton.click();
         await flushTasks();
 
         const entryPoint = await syncProxy.whenCalled('openBatchUpload');

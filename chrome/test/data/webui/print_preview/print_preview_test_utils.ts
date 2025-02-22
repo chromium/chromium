@@ -162,7 +162,7 @@ export function getCddTemplateWithAdvancedSettings(
   }
 
   // Add new capability.
-  template.capabilities!.printer.vendor_capability!.push({
+  template.capabilities!.printer.vendor_capability.push({
     display_name: 'Paper Type',
     id: 'paperType',
     type: 'SELECT',
@@ -179,7 +179,7 @@ export function getCddTemplateWithAdvancedSettings(
     return template;
   }
 
-  template.capabilities!.printer.vendor_capability!.push({
+  template.capabilities!.printer.vendor_capability.push({
     display_name: 'Watermark',
     id: 'watermark',
     type: 'TYPED_VALUE',
@@ -256,7 +256,7 @@ export function getPdfPrinter(): {capabilities: Cdd} {
  */
 export function getDefaultMediaSize(device: CapabilitiesResponse):
     MediaSizeOption {
-  const size = device.capabilities!.printer.media_size!.option!.find(
+  const size = device.capabilities!.printer.media_size!.option.find(
       opt => !!opt.is_default);
   return {
     width_microns: size!.width_microns,
@@ -270,7 +270,7 @@ export function getDefaultMediaSize(device: CapabilitiesResponse):
  */
 export function getDefaultOrientation(device: CapabilitiesResponse): string {
   const options = device.capabilities!.printer.page_orientation!.option;
-  const orientation = options!.find(opt => !!opt.is_default)!.type;
+  const orientation = options.find(opt => !!opt.is_default)!.type;
   assert(orientation);
   return orientation;
 }

@@ -1154,7 +1154,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="306573536155379004">Spillet er startet.</translation>
 <translation id="3067505415088964188">Prisen er lav</translation>
 <translation id="3068118691172921711">Din filupload til <ph name="CLOUD_PROVIDER" /> starter om 1 minut</translation>
-<translation id="3068976060094139647">Du kan udfylde dette kort automatisk, fordi din konto er knyttet til Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} element}one{{ITEMS} element}other{{ITEMS} elementer}}</translation>
 <translation id="3076865167425975822">Operativsystemer</translation>
 <translation id="3080254622891793721">Grafik</translation>
@@ -2255,6 +2254,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4989809363548539747">Dette plugin understøttes ikke</translation>
 <translation id="4990241977441916452">Konvolut A2</translation>
 <translation id="4992066212339426712">Slå lyden til</translation>
+<translation id="4994095017621319069">1 fanegruppe er ikke længere tilgængelig</translation>
 <translation id="4994348767896109801">Om en annonce, du ser, er personligt tilpasset, kan afhænge af mange ting, herunder denne indstilling, <ph name="BEGIN_LINK_1" />annonceemner<ph name="END_LINK_1" />, dine <ph name="BEGIN_LINK_2" />cookieindstillinger<ph name="END_LINK_2" />, og om det website, du besøger, foretager personlig tilpasning af annoncer. Se, hvordan du <ph name="BEGIN_LINK_3" />administrerer privatliv vedrørende annoncering<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Ændret:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten for at administrere websitesøgning og din standardsøgemaskine</translation>
@@ -3469,6 +3469,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> anden}one{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> anden}other{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> andre}}</translation>
 <translation id="7153618581592392745">Lavendelblå</translation>
 <translation id="7156870133441232244">Serveren skal opgraderes til TLS 1.2 eller nyere.</translation>
+<translation id="7156885531105222428">Den side, du anmodede om, blev ikke fundet i appen</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Hvis du vil sende denne fil via <ph name="FEATURE_NAME" />, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}one{Hvis du vil sende denne fil via <ph name="FEATURE_NAME" />, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}other{Hvis du vil sende disse filer via <ph name="FEATURE_NAME" />, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}}</translation>
 <translation id="7160999678034985039">Gem dit arbejde, og start opdateringen, når du er klar.</translation>
 <translation id="7162277662076933695">Smartkortlæser</translation>
@@ -4256,6 +4257,7 @@ Yderligere oplysninger:
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Gå til &lt;strong&gt;chrome://policy&lt;/strong&gt; for at se listen over blokerede webadresser og andre politikker, der håndhæves af din systemadministrator.</translation>
 <translation id="8536234749087605613">Kuvert (rude)</translation>
+<translation id="8538228968820006247">Din fanegruppe er fuld, og nye medlemmer kan ikke deltage via linket</translation>
 <translation id="8539500321752640291">Vil du godkende 2 tilladelser?</translation>
 <translation id="8541158209346794904">Bluetooth-enhed</translation>
 <translation id="8541410041357371550">Dette website henter dine annonceemner fra Chrome for at vise dig mere relevante annoncer</translation>
@@ -4377,7 +4379,6 @@ Yderligere oplysninger:
 <translation id="8757526089434340176">Der er et tilgængeligt Google Pay-tilbud</translation>
 <translation id="8759274551635299824">Kortet er udløbet</translation>
 <translation id="87601671197631245">Dette website benytter en forældet sikkerhedskonfiguration, der muligvis afslører dine oplysninger (f.eks. adgangskoder, meddelelser eller kreditkort), når de sendes til dette website.</translation>
-<translation id="8763226176721243078">Du kan udfylde dette kort automatisk, fordi din <ph name="CARD_ISSUER_NAME" />-konto er knyttet til Google Pay.</translation>
 <translation id="8763927697961133303">USB-enhed</translation>
 <translation id="8763986294015493060">Luk alle inkognitovinduer, der i øjeblikket er åbne</translation>
 <translation id="8766943070169463815">Arket til godkendelse af loginoplysninger til sikker betaling er åbnet</translation>

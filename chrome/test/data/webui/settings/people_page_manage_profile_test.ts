@@ -126,7 +126,7 @@ suite('ManageProfileTests', function() {
     await microtasksFinished();
     items =
         manageProfile.shadowRoot!.querySelector(
-                                     'cr-profile-avatar-selector')!.shadowRoot!
+                                     'cr-profile-avatar-selector')!.shadowRoot
             .querySelector('#avatar-grid')!.querySelectorAll<HTMLElement>(
                 '.avatar-container > .avatar');
 
@@ -154,7 +154,7 @@ suite('ManageProfileTests', function() {
     assertEquals('Initial Fake Name', nameField.value);
     // No policy indicator is shown.
     const policyIndicator =
-        nameField.shadowRoot!.querySelector<HTMLElement>('#policyIcon');
+        nameField.shadowRoot.querySelector<HTMLElement>('#policyIcon');
     assertEquals(policyIndicator, null);
 
     nameField.value = 'New Name';
@@ -189,7 +189,7 @@ suite('ManageProfileTests', function() {
 
     // The policy indicator is shown.
     const policyIndicator =
-        nameField.shadowRoot!.querySelector<HTMLElement>('#policyIcon');
+        nameField.shadowRoot.querySelector<HTMLElement>('#policyIcon');
     assertFalse(!!policyIndicator && policyIndicator.hidden);
   });
 
@@ -229,19 +229,19 @@ suite('ManageProfileTests', function() {
     assertTrue(!!hasShortcutToggle);
 
     // The profile shortcut toggle is checked.
-    assertTrue(hasShortcutToggle!.checked);
+    assertTrue(hasShortcutToggle.checked);
 
     // Simulate tapping the profile shortcut toggle.
-    hasShortcutToggle!.click();
+    hasShortcutToggle.click();
     await browserProxy.whenCalled('removeProfileShortcut');
 
     flush();
 
     // The profile shortcut toggle is checked.
-    assertFalse(hasShortcutToggle!.checked);
+    assertFalse(hasShortcutToggle.checked);
 
     // Simulate tapping the profile shortcut toggle.
-    hasShortcutToggle!.click();
+    hasShortcutToggle.click();
     await browserProxy.whenCalled('addProfileShortcut');
   });
 
@@ -267,7 +267,7 @@ suite('ManageProfileTests', function() {
             '#hasShortcutToggle');
     assertTrue(!!hasShortcutToggle);
 
-    assertFalse(hasShortcutToggle!.checked);
+    assertFalse(hasShortcutToggle.checked);
   });
 
   // Tests the case when the profile shortcut setting is hidden. This can

@@ -69,6 +69,9 @@ CONSOLE MESSAGE:     method addEventListener
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method dispatchEvent
 CONSOLE MESSAGE:     method removeEventListener
+CONSOLE MESSAGE: interface Float16Array : TypedArray
+CONSOLE MESSAGE:     attribute BYTES_PER_ELEMENT
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface MessageEvent : Event
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter data

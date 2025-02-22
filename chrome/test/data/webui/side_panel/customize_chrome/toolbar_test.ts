@@ -100,11 +100,11 @@ suite('CustomizerToolbarTest', () => {
     await microtasksFinished();
 
     const categories =
-        toolbarElement.shadowRoot!.querySelectorAll('.category-title');
+        toolbarElement.shadowRoot.querySelectorAll('.category-title');
     assertEquals(2, categories.length);
 
     const actions =
-        toolbarElement.shadowRoot!.querySelectorAll('.toggle-container');
+        toolbarElement.shadowRoot.querySelectorAll('.toggle-container');
     assertEquals(2, actions.length);
 
     const navigationCategory = categories[0];
@@ -140,7 +140,7 @@ suite('CustomizerToolbarTest', () => {
     await microtasksFinished();
 
     const homeAction =
-        toolbarElement.shadowRoot!.querySelector('.toggle-container');
+        toolbarElement.shadowRoot.querySelector('.toggle-container');
     assertTrue(!!homeAction);
     const iconUrl = homeAction.querySelector('img')!.src;
     assertEquals('https://example.com/foo_1.png', iconUrl);
@@ -151,7 +151,7 @@ suite('CustomizerToolbarTest', () => {
     await microtasksFinished();
 
     const homeAction =
-        toolbarElement.shadowRoot!.querySelector('.toggle-container');
+        toolbarElement.shadowRoot.querySelector('.toggle-container');
     assertTrue(!!homeAction);
     const homeActionToggle = homeAction.querySelector('cr-toggle');
     assertTrue(!!homeActionToggle);
@@ -169,7 +169,7 @@ suite('CustomizerToolbarTest', () => {
     await microtasksFinished();
 
     const homeAction =
-        toolbarElement.shadowRoot!.querySelector('.toggle-container');
+        toolbarElement.shadowRoot.querySelector('.toggle-container');
     assertTrue(!!homeAction);
     const homeActionToggle = homeAction.querySelector('cr-toggle');
     assertTrue(!!homeActionToggle);

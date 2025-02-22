@@ -1154,7 +1154,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="306573536155379004">A játék elindult.</translation>
 <translation id="3067505415088964188">Alacsony ár</translation>
 <translation id="3068118691172921711">A fájlok feltöltése a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásba 1 perc múlva kezdődik</translation>
-<translation id="3068976060094139647">Ennek a kártyának az adatait automatikusan kitöltheti, mert fiókja össze van kapcsolva a Google Pay szolgáltatással.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} elem}other{{ITEMS} elem}}</translation>
 <translation id="3076865167425975822">Operációs rendszer</translation>
 <translation id="3080254622891793721">Grafika</translation>
@@ -2252,6 +2251,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4989809363548539747">Ez a beépülő modul nem támogatott</translation>
 <translation id="4990241977441916452">A2 boríték</translation>
 <translation id="4992066212339426712">Némítás feloldása</translation>
+<translation id="4994095017621319069">1 lapcsoport már nem áll rendelkezésre</translation>
 <translation id="4994348767896109801">Az, hogy a megjelenő hirdetések személyre vannak-e szabva, több dolgon is múlhat, többek között ettől a beállítástól, a <ph name="BEGIN_LINK_1" />hirdetéstémáktól<ph name="END_LINK_1" />, a <ph name="BEGIN_LINK_2" />cookie-beállításaitól<ph name="END_LINK_2" /> és attól, hogy a felkeresett webhely személyre szabja-e a hirdetéseket. További információ a <ph name="BEGIN_LINK_3" />hirdetésekhez kapcsolódó adatvédelem kezeléséről<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Módosítva:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter gombot a Site Search és az alapértelmezett keresőmotor kezeléséhez.</translation>
@@ -3466,6 +3466,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Levendula</translation>
 <translation id="7156870133441232244">A szervert a TLS 1.2-es vagy újabb verziójára kell frissíteni.</translation>
+<translation id="7156885531105222428">A kért oldal nem található az alkalmazásban</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Ha a(z) <ph name="FEATURE_NAME" /> funkcióval szeretné elküldeni ezt a fájlt, szabadítson fel legalább <ph name="DISK_SPACE_SIZE" /> tárhelyet az eszközön.}other{Ha a(z) <ph name="FEATURE_NAME" /> funkcióval szeretné elküldeni ezeket a fájlokat, szabadítson fel legalább <ph name="DISK_SPACE_SIZE" /> tárhelyet az eszközön.}}</translation>
 <translation id="7160999678034985039">Mentse a munkáját, és ha készen áll, indítsa el a frissítést.</translation>
 <translation id="7162277662076933695">Intelligens kártyaolvasó</translation>
@@ -4254,6 +4255,7 @@ További részletek:
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">A &lt;strong&gt;chrome://policy&lt;/strong&gt; oldalon láthatja a rendszergazda által letiltott URL-ek és a beállított egyéb kötelező irányelvek listáját.</translation>
 <translation id="8536234749087605613">Boríték (ablakos)</translation>
+<translation id="8538228968820006247">A lapcsoport megtelt. Nem csatlakozhatnak új tagok a link használatával.</translation>
 <translation id="8539500321752640291">Megad 2 engedélyt?</translation>
 <translation id="8541158209346794904">Bluetooth-eszköz</translation>
 <translation id="8541410041357371550">Ez a webhely lekéri az Önre vonatkozó hirdetéstémákat a Chrome-ból, hogy relevánsabb hirdetéseket jelenítsen meg Önnek</translation>
@@ -4375,7 +4377,6 @@ További részletek:
 <translation id="8757526089434340176">Van ajánlat a Google Paytől</translation>
 <translation id="8759274551635299824">A kártya lejárt</translation>
 <translation id="87601671197631245">Ez a webhely elavult biztonsági konfigurációt használ, ezért előfordulhat, hogy mások látják az Ön adatait (például jelszavait, üzeneteit vagy hitelkártyaszámait), amikor elküldi őket a webhelynek.</translation>
-<translation id="8763226176721243078">Ennek a kártyának az adatait automatikusan kitöltheti, mert <ph name="CARD_ISSUER_NAME" />-fiókja össze van kapcsolva a Google Pay szolgáltatással.</translation>
 <translation id="8763927697961133303">USB-eszköz</translation>
 <translation id="8763986294015493060">Az összes jelenleg megnyitott inkognitó ablak bezárása</translation>
 <translation id="8766943070169463815">Biztonságos fizetés hitelesítési adatainak hitelesítési űrlapja megnyitva.</translation>

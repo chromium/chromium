@@ -54,9 +54,8 @@ suite('MicrosoftAuthModule', () => {
 
     // Act.
     const whenFired = eventToPromise('disable-module', microsoftAuthModule);
-    const disableButton =
-        microsoftAuthModule.$.moduleHeaderElementV2.shadowRoot!
-            .querySelector<HTMLElement>('#disable');
+    const disableButton = microsoftAuthModule.$.moduleHeaderElementV2.shadowRoot
+                              .querySelector<HTMLElement>('#disable');
     assertTrue(!!disableButton);
     disableButton.click();
 
@@ -84,7 +83,7 @@ suite('MicrosoftAuthModule', () => {
     assertEquals(1, handler.getCallCount('dismissModule'));
 
     // Act.
-    event.detail.restoreCallback!();
+    event.detail.restoreCallback();
 
     // Assert.
     assertEquals(1, handler.getCallCount('restoreModule'));

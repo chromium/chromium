@@ -49,7 +49,7 @@ suite('<bookmarks-folder-node>', function() {
 
   test('selecting and deselecting folders dispatches action', async () => {
     const rootFolders =
-        rootNode.shadowRoot!.querySelectorAll('bookmarks-folder-node');
+        rootNode.shadowRoot.querySelectorAll('bookmarks-folder-node');
     const firstGen = rootFolders[0]!.$['descendants'].querySelectorAll(
         'bookmarks-folder-node');
     const secondGen =
@@ -80,7 +80,7 @@ suite('<bookmarks-folder-node>', function() {
 
   test('depth calculation', function() {
     const rootFolders =
-        rootNode.shadowRoot!.querySelectorAll('bookmarks-folder-node');
+        rootNode.shadowRoot.querySelectorAll('bookmarks-folder-node');
     const firstGen = rootFolders[0]!.$['descendants'].querySelectorAll(
         'bookmarks-folder-node');
     const secondGen =
@@ -102,7 +102,7 @@ suite('<bookmarks-folder-node>', function() {
 
   test('doesn\'t highlight selected folder while searching', async () => {
     const rootFolders =
-        rootNode.shadowRoot!.querySelectorAll('bookmarks-folder-node');
+        rootNode.shadowRoot.querySelectorAll('bookmarks-folder-node');
 
     assertEquals('1', rootFolders[0]!.itemId);
     assertTrue(rootFolders[0]!.$.container.hasAttribute('selected'));

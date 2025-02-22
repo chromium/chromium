@@ -176,6 +176,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1546492247443594934">Radna površina 2</translation>
 <translation id="1546930421365146760">Zatražite od administratora da podesi ovaj uređaj u Google administratorskoj konzoli</translation>
 <translation id="1549512626801247439">upravljanje memorijskim prostorom</translation>
+<translation id="1549721333775633305">Pregledajte Quick Share podešavanja. Quick Share je onemogućen</translation>
 <translation id="1550406609415860283">Dostupni uređaji</translation>
 <translation id="1550523713251050646">Kliknite za više opcija</translation>
 <translation id="1555130319947370107">Plava</translation>
@@ -1475,6 +1476,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="5856638668464565213">Mreža <ph name="NETWORK_NAME" /> nije aktivirana.</translation>
 <translation id="5860033963881614850">Isključeno</translation>
 <translation id="5860491529813859533">Uključi</translation>
+<translation id="5864691701242730005">Pregledajte Quick Share podešavanja. Izabrana vidljivost je <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071">Baterija <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Prikupljaju se informacije o mreži</translation>
 <translation id="5867606971598166637">Administrator sistema nadgleda vaše ekrane</translation>
@@ -2264,6 +2266,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="851660987304951246">Koristite Pomozi mi da čitam da biste brzo rezimirali sadržaj ili postavljali pitanja</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> se možda neće puniti dok je uključen.</translation>
 <translation id="8535393432370007982">Opozovite redosled sortiranja prema boji</translation>
+<translation id="8536886494750559755">Pregledajte Quick Share podešavanja. Vidljivo je svima u periodu od <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Tekst je kopiran u privremenu memoriju</translation>
 <translation id="8541078764854166027">Uokvir. kamere</translation>
 <translation id="8542053257095774575">Nema sačuvanih radnih površina niti šablona</translation>

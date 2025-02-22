@@ -286,7 +286,7 @@ suite('SettingsToggleButton', () => {
     assertTrue(testElement.checked);
     flush();
 
-    learnMoreLink!.click();
+    learnMoreLink.click();
     assertTrue(testElement.checked);
   });
 
@@ -307,11 +307,11 @@ suite('SettingsToggleButton', () => {
 
     const crToggle = testElement.shadowRoot!.querySelector('#control');
     assertTrue(!!crToggle);
-    assertEquals(crToggle!.getAttribute('aria-label'), testLabelText);
+    assertEquals(crToggle.getAttribute('aria-label'), testLabelText);
 
     const testLabelTextAlt = 'test label text alt';
     testElement.setAttribute('label', testLabelTextAlt);
-    assertEquals(crToggle!.getAttribute('aria-label'), testLabelTextAlt);
+    assertEquals(crToggle.getAttribute('aria-label'), testLabelTextAlt);
   });
 
   test('set aria-label attribute should override aria-label of toggle', () => {
@@ -320,11 +320,11 @@ suite('SettingsToggleButton', () => {
 
     const crToggle = testElement.shadowRoot!.querySelector('#control');
     assertTrue(!!crToggle);
-    assertEquals(crToggle!.getAttribute('aria-label'), testLabelText);
+    assertEquals(crToggle.getAttribute('aria-label'), testLabelText);
 
     const testAriaLabel = 'test aria label';
     testElement.setAttribute('aria-label', testAriaLabel);
-    assertEquals(crToggle!.getAttribute('aria-label'), testAriaLabel);
+    assertEquals(crToggle.getAttribute('aria-label'), testAriaLabel);
   });
 
   test('sub label with action link should have proper role', () => {
@@ -336,7 +336,7 @@ suite('SettingsToggleButton', () => {
             '#sub-label-text-with-link');
     assertTrue(!!subLabelTextWithLink);
 
-    const actionLink = subLabelTextWithLink!.querySelector('a');
+    const actionLink = subLabelTextWithLink.querySelector('a');
     assertTrue(!!actionLink);
     assertEquals(actionLink.getAttribute('role'), 'link');
   });

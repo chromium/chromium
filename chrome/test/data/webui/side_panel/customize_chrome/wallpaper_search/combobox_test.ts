@@ -12,7 +12,7 @@ suite('ComboboxTest', () => {
   let combobox: CustomizeChromeComboboxElement;
 
   function getGroup(groupIndex: number): HTMLElement {
-    return combobox.shadowRoot!.querySelectorAll('[role=group]')[groupIndex] as
+    return combobox.shadowRoot.querySelectorAll('[role=group]')[groupIndex] as
         HTMLElement;
   }
 
@@ -23,11 +23,11 @@ suite('ComboboxTest', () => {
   }
 
   function getDefaultOption(): HTMLElement {
-    return combobox.shadowRoot!.querySelector('#defaultOption')!;
+    return combobox.shadowRoot.querySelector('#defaultOption')!;
   }
 
   function getOption(optionIndex: number): HTMLElement {
-    return combobox.shadowRoot!.querySelectorAll(
+    return combobox.shadowRoot.querySelectorAll(
                '[role=option]:not(#defaultOption)')[optionIndex] as HTMLElement;
   }
 
@@ -36,7 +36,7 @@ suite('ComboboxTest', () => {
   }
 
   function getHighlightedElement() {
-    return combobox.shadowRoot!.querySelector('[highlighted]');
+    return combobox.shadowRoot.querySelector('[highlighted]');
   }
 
   function open() {
@@ -79,7 +79,7 @@ suite('ComboboxTest', () => {
       assertTrue(isVisible(combobox.$.dropdown));
       assertEquals(
           expectedHighlight,
-          combobox.shadowRoot!.querySelector('[highlighted]'));
+          combobox.shadowRoot.querySelector('[highlighted]'));
       // Close the dropdown.
       return keydown('Escape');
     }
@@ -368,7 +368,7 @@ suite('ComboboxTest', () => {
     // Only the default option should be visible yet since group is by default
     // collapsed.
     assertEquals(
-        1, combobox.shadowRoot!.querySelectorAll('[role=option]').length);
+        1, combobox.shadowRoot.querySelectorAll('[role=option]').length);
 
     const groupLabel = getGroup(0).querySelector('label')!;
     const groupLabelIcon = groupLabel.querySelector('cr-icon')!;
@@ -379,7 +379,7 @@ suite('ComboboxTest', () => {
     toggleGroupExpand(0);
     await microtasksFinished();
     const options = Array.from<HTMLElement>(
-        combobox.shadowRoot!.querySelectorAll('[role=option]'));
+        combobox.shadowRoot.querySelectorAll('[role=option]'));
     assertEquals(3, options.filter(option => isVisible(option)).length);
 
     assertEquals('true', groupLabel.ariaExpanded);
@@ -400,7 +400,7 @@ suite('ComboboxTest', () => {
     ];
     await microtasksFinished();
 
-    const optionCheckmarks = combobox.shadowRoot!.querySelectorAll(
+    const optionCheckmarks = combobox.shadowRoot.querySelectorAll(
         'customize-chrome-check-mark-wrapper');
     assertEquals(2, optionCheckmarks.length);
 

@@ -114,7 +114,7 @@ suite('DestinationListTest', function() {
     flush();
     assertFalse(ironList.hidden);
     items.forEach(
-        item => assertFalse((item!.parentNode! as HTMLElement).hidden));
+        item => assertFalse((item.parentNode! as HTMLElement).hidden));
     assertTrue(noMatchHint.hidden);
   });
 

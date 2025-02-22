@@ -64,6 +64,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "ui/gl/direct_composition_support.h"
+#include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_surface_egl.h"
 #endif
 
@@ -757,8 +758,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
               ->GetSupportedFormatsForGLNativePixmapImport();
 #endif  // BUILDFLAG(IS_OZONE)
 
-  InitializePlatformOverlaySettings(&gpu_info_, gpu_feature_info_);
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Driver may create a compatibility profile context when collect graphics
   // information on Linux platform. Try to collect graphics information
@@ -875,6 +874,20 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       gpu_preferences_.gr_context_type = GrContextType::kGL;
     }
   }
+
+#if BUILDFLAG(IS_WIN)
+  {
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
+    if (dawn_context_provider_) {
+      d3d11_device = dawn_context_provider_->GetD3D11Device();
+    } else {
+      d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
+    }
+    gl::InitializeDirectComposition(std::move(d3d11_device));
+  }
+#endif
+
+  InitializePlatformOverlaySettings(&gpu_info_, gpu_feature_info_);
 
   init_successful_ = true;
   SetSkiaBackendType();

@@ -352,8 +352,16 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
 // Tests that attempting to close the `ToastView` does not succeed while the
 // menu is open. If that happens, the `ToastView` is closed once the menu
 // closes.
+
+// TODO(crbug.com/398296825): Flaky on Windows builds.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ToastDoesNotCloseWhileMenuIsOpen \
+  DISABLED_ToastDoesNotCloseWhileMenuIsOpen
+#else
+#define MAYBE_ToastDoesNotCloseWhileMenuIsOpen ToastDoesNotCloseWhileMenuIsOpen
+#endif
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
-                       ToastDoesNotCloseWhileMenuIsOpen) {
+                       MAYBE_ToastDoesNotCloseWhileMenuIsOpen) {
 #if BUILDFLAG(IS_OZONE)
   if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
     GTEST_SKIP() << "Flaky in Wayland due to way events are routed and bounds "

@@ -1154,7 +1154,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="306573536155379004">Game gestart.</translation>
 <translation id="3067505415088964188">Prijs is laag</translation>
 <translation id="3068118691172921711">Je bestandsupload naar <ph name="CLOUD_PROVIDER" /> begint over 1 minuut</translation>
-<translation id="3068976060094139647">Je kunt deze kaart automatisch invullen omdat je account aan Google Pay is gekoppeld.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} item}other{{ITEMS} items}}</translation>
 <translation id="3076865167425975822">Besturingssystemen</translation>
 <translation id="3080254622891793721">Afbeelding</translation>
@@ -2249,6 +2248,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4989809363548539747">Deze plug-in wordt niet ondersteund</translation>
 <translation id="4990241977441916452">Envelop A2</translation>
 <translation id="4992066212339426712">Geluid aanzetten</translation>
+<translation id="4994095017621319069">1 tabbladgroep is niet meer beschikbaar</translation>
 <translation id="4994348767896109801">Of een getoonde advertentie wordt gepersonaliseerd, is afhankelijk van verschillende factoren, waaronder deze instelling, <ph name="BEGIN_LINK_1" />advertentieonderwerpen<ph name="END_LINK_1" />, je <ph name="BEGIN_LINK_2" />cookie-instellingen<ph name="END_LINK_2" /> en of de site die je bekijkt advertenties personaliseert. Meer informatie over hoe je <ph name="BEGIN_LINK_3" />je advertentieprivacy beheert<ph name="END_LINK_3" /></translation>
 <translation id="4995474875135717171">Aangepast:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om Site Search en je standaard zoekmachine te beheren</translation>
@@ -3462,6 +3462,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lavendel</translation>
 <translation id="7156870133441232244">De server moet worden geüpgraded naar TLS 1.2 of hoger.</translation>
+<translation id="7156885531105222428">De door jou opgevraagde pagina kan niet worden gevonden in de app</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Als je dit bestand wilt versturen met <ph name="FEATURE_NAME" />, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}other{Als je deze bestanden wilt versturen met <ph name="FEATURE_NAME" />, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}}</translation>
 <translation id="7160999678034985039">Sla je werk op en start de update als je zover bent.</translation>
 <translation id="7162277662076933695">Smartkaartlezer</translation>
@@ -4249,6 +4250,7 @@ Aanvullende informatie:
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Ga naar &lt;strong&gt;chrome://policy&lt;/strong&gt; om de lijst met geblokkeerde URL's en andere beleidsregels te bekijken die worden afgedwongen door je systeembeheerder.</translation>
 <translation id="8536234749087605613">Envelop (venster)</translation>
+<translation id="8538228968820006247">Je tabbladgroep is vol, nieuwe leden kunnen niet deelnemen via de link</translation>
 <translation id="8539500321752640291">2 rechten toestaan?</translation>
 <translation id="8541158209346794904">Bluetooth-apparaat</translation>
 <translation id="8541410041357371550">Deze site krijgt je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien</translation>
@@ -4369,7 +4371,6 @@ Aanvullende informatie:
 <translation id="8757526089434340176">Google Pay-aanbieding beschikbaar</translation>
 <translation id="8759274551635299824">Deze pas is verlopen</translation>
 <translation id="87601671197631245">Deze site gebruikt een verouderde beveiligingsconfiguratie, waardoor je gegevens (zoals wachtwoorden, berichten of creditcardnummers) openbaar kunnen worden gemaakt als ze naar deze site worden gestuurd.</translation>
-<translation id="8763226176721243078">Je kunt deze kaart automatisch invullen omdat je <ph name="CARD_ISSUER_NAME" />-account aan Google Pay is gekoppeld.</translation>
 <translation id="8763927697961133303">USB-apparaat</translation>
 <translation id="8763986294015493060">Alle momenteel geopende incognitovensters sluiten</translation>
 <translation id="8766943070169463815">Blad voor beveiligde verificatie van betalingsgegevens is geopend</translation>

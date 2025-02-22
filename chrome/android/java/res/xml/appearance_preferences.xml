@@ -4,4 +4,14 @@ Copyright 2025 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<PreferenceScreen />
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Preference
+        android:fragment="org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment"
+        android:key="ui_theme"
+        android:order="0"
+        android:title="@string/theme_settings" />
+
+</PreferenceScreen>

@@ -38,9 +38,9 @@ const tests = [
 
     await microtasksFinished();
 
-    const icons = sidenav.shadowRoot!.querySelector('#icons')!;
-    const content = sidenav.shadowRoot!.querySelector('#content')!;
-    const buttons = sidenav.shadowRoot!.querySelectorAll('cr-icon-button');
+    const icons = sidenav.shadowRoot.querySelector('#icons')!;
+    const content = sidenav.shadowRoot.querySelector('#content')!;
+    const buttons = sidenav.shadowRoot.querySelectorAll('cr-icon-button');
     chrome.test.assertEq(3, buttons.length);
 
     const thumbnailButton = buttons[0]!;
@@ -194,9 +194,9 @@ const tests = [
     ];
 
     await microtasksFinished();
-    const icons = sidenav.shadowRoot!.querySelector('#icons')!;
-    const content = sidenav.shadowRoot!.querySelector('#content')!;
-    const buttons = sidenav.shadowRoot!.querySelectorAll('cr-icon-button');
+    const icons = sidenav.shadowRoot.querySelector('#icons')!;
+    const content = sidenav.shadowRoot.querySelector('#content')!;
+    const buttons = sidenav.shadowRoot.querySelectorAll('cr-icon-button');
     chrome.test.assertEq(2, buttons.length);
 
     const thumbnailButton = buttons[0]!;
@@ -289,9 +289,9 @@ const tests = [
 
     await microtasksFinished();
 
-    const icons = sidenav.shadowRoot!.querySelector('#icons')!;
-    const content = sidenav.shadowRoot!.querySelector('#content')!;
-    const buttons = sidenav.shadowRoot!.querySelectorAll('cr-icon-button');
+    const icons = sidenav.shadowRoot.querySelector('#icons')!;
+    const content = sidenav.shadowRoot.querySelector('#content')!;
+    const buttons = sidenav.shadowRoot.querySelectorAll('cr-icon-button');
     chrome.test.assertEq(2, buttons.length);
 
     const thumbnailButton = buttons[0]!;

@@ -122,9 +122,9 @@ function checkTableContents(
   const footerElement = tableElement.querySelector('#table-footer');
   assert(footerElement);
   if (footerPrefix === undefined) {
-    assert(footerElement!.textContent === '');
+    assert(footerElement.textContent === '');
   } else {
-    assert(footerElement!.textContent!.startsWith(footerPrefix));
+    assert(footerElement.textContent!.startsWith(footerPrefix));
   }
 }
 

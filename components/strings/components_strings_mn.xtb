@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">Тоглоом эхэллээ.</translation>
 <translation id="3067505415088964188">Үнэ хямд байна</translation>
 <translation id="3068118691172921711">Таны файлыг <ph name="CLOUD_PROVIDER" />-д 1 минутын дараа байршуулж эхэлнэ</translation>
-<translation id="3068976060094139647">Таны дансыг Google Pay-д холбосон тул та энэ картыг автоматаар бөглөх боломжтой.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} зүйл}other{{ITEMS} зүйл}}</translation>
 <translation id="3076865167425975822">Үйлдлийн системүүд</translation>
 <translation id="3080254622891793721">График</translation>
@@ -4375,7 +4374,6 @@
 <translation id="8757526089434340176">Google Pay-н санал боломжтой</translation>
 <translation id="8759274551635299824">Энэ картны хугацаа дууссан байна</translation>
 <translation id="87601671197631245">Энэ сайт аюулгүй байдлын хуучирсан тохируулга ашиглаж байгаа тул таны мэдээллийг (жишээлбэл нууц үг, мессеж эсвэл кредит карт) энэ сайт руу илгээх үед задруулж болзошгүй.</translation>
-<translation id="8763226176721243078">Таны <ph name="CARD_ISSUER_NAME" />-н дансыг Google Pay-д холбосон тул та энэ картыг автоматаар бөглөх боломжтой.</translation>
 <translation id="8763927697961133303">USB төхөөрөмж</translation>
 <translation id="8763986294015493060">Одоогоор нээлттэй байгаа бүх нууцлалтай цонхыг хаагаарай</translation>
 <translation id="8766943070169463815">Аюулгүй төлбөрийн мандат үнэмлэхийг баталгаажуулах хүснэгтийг нээсэн</translation>

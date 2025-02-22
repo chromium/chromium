@@ -319,6 +319,7 @@ ClientSharedImage::ClientSharedImage(
     : mailbox_(exported_si.mailbox_),
       metadata_(exported_si.metadata_),
       creation_sync_token_(exported_si.creation_sync_token_),
+      buffer_usage_(exported_si.buffer_usage_),
       sii_holder_(std::move(sii_holder)),
       texture_target_(exported_si.texture_target_) {
   if (exported_si.buffer_handle_) {
@@ -330,10 +331,10 @@ ClientSharedImage::ClientSharedImage(
 #endif
     gpu_memory_buffer_ =
         GpuMemoryBufferSupport().CreateGpuMemoryBufferImplFromHandle(
-            std::move(*exported_si.buffer_handle_), metadata_.size,
+            std::move(exported_si.buffer_handle_.value()), metadata_.size,
             viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
                 metadata_.format),
-            *exported_si.buffer_usage_, base::DoNothing(),
+            exported_si.buffer_usage_.value(), base::DoNothing(),
             gpu_memory_buffer_manager_.get());
   }
   CHECK(!mailbox_.IsZero());
@@ -347,6 +348,7 @@ ClientSharedImage::ClientSharedImage(ExportedSharedImage exported_si)
     : mailbox_(exported_si.mailbox_),
       metadata_(exported_si.metadata_),
       creation_sync_token_(exported_si.creation_sync_token_),
+      buffer_usage_(exported_si.buffer_usage_),
       texture_target_(exported_si.texture_target_) {
   if (exported_si.buffer_handle_) {
 #if BUILDFLAG(IS_WIN)
@@ -357,10 +359,10 @@ ClientSharedImage::ClientSharedImage(ExportedSharedImage exported_si)
 #endif
     gpu_memory_buffer_ =
         GpuMemoryBufferSupport().CreateGpuMemoryBufferImplFromHandle(
-            std::move(*exported_si.buffer_handle_), metadata_.size,
+            std::move(exported_si.buffer_handle_.value()), metadata_.size,
             viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
                 metadata_.format),
-            *exported_si.buffer_usage_, base::DoNothing(),
+            exported_si.buffer_usage_.value(), base::DoNothing(),
             gpu_memory_buffer_manager_.get());
   }
   CHECK(!mailbox_.IsZero());

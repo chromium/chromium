@@ -39,7 +39,7 @@ suite('UpdateContent', () => {
     new FakeTreeBuilder()
         .root(1)
         .addTag(2, /* parentId= */ 1, 'p')
-        .addText(textNodeIds[0]!!, /* parentId= */ 2, texts[0]!)
+        .addText(textNodeIds[0]!, /* parentId= */ 2, texts[0]!)
         .addTag(4, /* parentId= */ 1, 'p')
         .addText(textNodeIds[1]!, /* parentId= */ 4, texts[1]!)
         .addTag(6, /* parentId= */ 1, 'p')

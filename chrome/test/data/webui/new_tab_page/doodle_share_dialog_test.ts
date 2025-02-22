@@ -63,8 +63,8 @@ suite('NewTabPageDoodleShareDialogTest', () => {
       doodleShareDialog.url = {url: 'https://bar.com'};
 
       // Act.
-      doodleShareDialog.shadowRoot!.querySelector<HTMLElement>(
-                                       `#${buttonId}`)!.click();
+      doodleShareDialog.shadowRoot.querySelector<HTMLElement>(
+                                      `#${buttonId}`)!.click();
 
       // Assert.
       const openedUrl = await windowProxy.whenCalled('open');

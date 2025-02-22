@@ -94,7 +94,7 @@ export function waitForEvent(
 
   return new Promise<void>(function(resolve) {
     const listener = function(e: Event) {
-      if (!predicate!(e)) {
+      if (!predicate(e)) {
         return;
       }
 

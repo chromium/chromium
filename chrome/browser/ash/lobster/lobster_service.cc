@@ -8,8 +8,10 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -124,7 +126,14 @@ void LobsterService::ShowDisclaimerUI() {
 void LobsterService::LoadUI(std::optional<std::string> query,
                             ash::LobsterMode mode,
                             const gfx::Rect& caret_bounds) {
-  bubble_coordinator_.LoadUI(profile_, query, mode, caret_bounds);
+  bubble_coordinator_.LoadUI(
+      profile_, query, mode, caret_bounds,
+      /*should_show_feedback=*/
+      profile_->GetPrefs()->GetInteger(
+          ash::prefs::kLobsterEnterprisePolicySettings) ==
+              base::to_underlying(ash::LobsterEnterprisePolicyValue::
+                                      kAllowedWithModelImprovement) &&
+          base::FeatureList::IsEnabled(ash::features::kLobsterFeedback));
 }
 
 void LobsterService::ShowUI() {

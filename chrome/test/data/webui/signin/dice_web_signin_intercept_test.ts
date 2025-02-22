@@ -64,11 +64,11 @@ suite('DiceWebSigninInterceptTest', function() {
       expectedHeaderText: string, expectedBodyTitle: string,
       expectedBodyText: string, expectedConfirmLabel: string,
       expectedCancelLabel: string) {
-    const headerTextElement = app.shadowRoot!.querySelector('#headerText')!;
+    const headerTextElement = app.shadowRoot.querySelector('#headerText')!;
     assertEquals(expectedHeaderText, headerTextElement.textContent);
-    const titleElement = app.shadowRoot!.querySelector('#title')!;
+    const titleElement = app.shadowRoot.querySelector('#title')!;
     assertEquals(expectedBodyTitle, titleElement.textContent);
-    const contentsElement = app.shadowRoot!.querySelector('#contents')!;
+    const contentsElement = app.shadowRoot.querySelector('#contents')!;
     assertEquals(expectedBodyText, contentsElement.textContent);
     const confirmButton = app.$.acceptButton;
     assertEquals(expectedConfirmLabel, confirmButton.textContent!.trim());
@@ -78,7 +78,7 @@ suite('DiceWebSigninInterceptTest', function() {
 
   function checkImageUrl(elementId: string, expectedUrl: string) {
     assertTrue(isChildVisible(app, elementId));
-    const img = app.shadowRoot!.querySelector<HTMLImageElement>(elementId)!;
+    const img = app.shadowRoot.querySelector<HTMLImageElement>(elementId)!;
     assertEquals(expectedUrl, img.src);
   }
 
@@ -86,7 +86,7 @@ suite('DiceWebSigninInterceptTest', function() {
     assertTrue(isChildVisible(app, '#acceptButton'));
     const acceptButton = app.$.acceptButton;
     const cancelButton = app.$.cancelButton;
-    assertFalse(!!app.shadowRoot!.querySelector('.spinner'));
+    assertFalse(!!app.shadowRoot.querySelector('.spinner'));
     assertFalse(acceptButton.disabled);
     assertFalse(cancelButton.disabled);
 
@@ -96,7 +96,7 @@ suite('DiceWebSigninInterceptTest', function() {
     // Buttons are disabled and the spinner is active.
     assertTrue(acceptButton.disabled);
     assertTrue(cancelButton.disabled);
-    assertTrue(!!app.shadowRoot!.querySelector('.spinner'));
+    assertTrue(!!app.shadowRoot.querySelector('.spinner'));
     return browserProxy.whenCalled('accept');
   });
 
@@ -198,7 +198,7 @@ suite('DiceWebSigninInterceptTest', function() {
     await microtasksFinished();
 
     const managedDisclaimerElement =
-        app.shadowRoot!.querySelector('#managedDisclaimer')!;
+        app.shadowRoot.querySelector('#managedDisclaimer')!;
     assertTrue(isVisible(managedDisclaimerElement));
     assertEquals(
         'managed_disclaimer', managedDisclaimerElement.textContent!.trim());
@@ -224,7 +224,7 @@ suite('DiceWebSigninInterceptTestV2', function() {
 
   function checkImageUrl(elementId: string, expectedUrl: string) {
     assertTrue(isChildVisible(app, elementId));
-    const img = app.shadowRoot!.querySelector<HTMLImageElement>(elementId)!;
+    const img = app.shadowRoot.querySelector<HTMLImageElement>(elementId)!;
     assertEquals(expectedUrl, img.src);
   }
 
@@ -304,7 +304,7 @@ suite('DiceWebSigninInterceptTestV2', function() {
     await microtasksFinished();
 
     const managedDisclaimerElement =
-        app.shadowRoot!.querySelector('#managedDisclaimer')!;
+        app.shadowRoot.querySelector('#managedDisclaimer')!;
     assertTrue(isVisible(managedDisclaimerElement));
     assertEquals(
         'managed_disclaimer', managedDisclaimerElement.textContent!.trim());

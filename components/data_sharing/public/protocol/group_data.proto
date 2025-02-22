@@ -16,6 +16,7 @@ enum MemberRole {
   MEMBER_ROLE_OWNER = 1;
   MEMBER_ROLE_MEMBER = 2;
   MEMBER_ROLE_INVITEE = 3;
+  MEMBER_ROLE_FORMER_MEMBER = 4;
 };
 
 message GroupMember {
@@ -32,4 +33,5 @@ message GroupData {
   optional string display_name = 2;
   repeated GroupMember members = 3;
   optional string access_token = 4;
+  repeated GroupMember former_members = 5;
 };

@@ -1009,6 +1009,7 @@
 <translation id="1682696837763999627">माउसचा मोठा कर्सर</translation>
 <translation id="1682867089915960590">कॅरेट ब्राउझिंग सुरू करायचे आहे का?</translation>
 <translation id="1686550358074589746">ग्लाइड टायपिंग सुरू करा</translation>
+<translation id="1686785653877010442">तुम्हाला ब्रेकिंग न्यूज किंवा चॅट मेसेजबद्दल कळवण्यासाठी साइट सामान्यपणे नोटिफिकेशन पाठवतात.</translation>
 <translation id="168715261339224929">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क मिळवण्यासाठी, सिंक सुरू करा.</translation>
 <translation id="1688935057616748272">एखादे अक्षर टाइप करा</translation>
 <translation id="1689333818294560261">टोपणनाव</translation>
@@ -1293,6 +1294,7 @@
 <translation id="1878885068166344708">तुम्ही फोकस हलवता तेव्हा आयटम हायलाइट केला जातो. फोकस बदलण्यासाठी टॅब प्रेस करा किंवा आयटम निवडा.</translation>
 <translation id="1879000426787380528">हे म्हणून साइन करा</translation>
 <translation id="18802377548000045">टॅब मोठी रुंदीवर आक्रसतात</translation>
+<translation id="1880618477732738742">या एक्स्टेंशनसह तुमच्या सर्व वेबसाइट आणि एक्स्टेंशनसाठी भौगोलिक स्थान, मायक्रोफोन, कॅमेरा, कुकी इत्यादीसांरख्या वैशिष्‍ट्यांमध्ये बदल करा व अ‍ॅक्सेस द्या.</translation>
 <translation id="1880905663253319515">"<ph name="CERTIFICATE_NAME" />" सर्टिफिकेट हटवायचे?</translation>
 <translation id="1881445033931614352">कीबोर्ड लेआउट</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{आयटम}other{# आयटम}}</translation>
@@ -3480,6 +3482,7 @@
 <translation id="3435738964857648380">सुरक्षितता</translation>
 <translation id="343578350365773421">कागद संपले</translation>
 <translation id="3435896845095436175">सुरू करा</translation>
+<translation id="3437397693214267762">तुमचे Outlook Calendar आणि Sharepoint व OneDrive फाइल पहा</translation>
 <translation id="3438633801274389918">निन्जा</translation>
 <translation id="3439153939049640737">तुमचा मायक्रोफोन ॲक्सेस करण्यासाठी <ph name="HOST" /> ला नेहमी परवानगी  द्या</translation>
 <translation id="3439970425423980614">पूर्वावलोकनात पीडीएफ उघडत आहे</translation>
@@ -7141,6 +7144,7 @@ I feel - विटांची इमारत</translation>
     तुमचे सर्व बुकमार्क, फाइल आणि बरेच काही सहज अ‍ॅक्सेस करण्यासाठी तुमचे खाते वापरा. तुमच्याकडे खाते नसल्यास, तुम्ही पुढील स्क्रीनवर ते तयार करू शकता.</translation>
 <translation id="6054138466019582920">हे पेज Google वापरून शोधा…</translation>
 <translation id="6054284857788651331">अलीकडे बंद केलेला टॅब गट</translation>
+<translation id="6054819000749443354">सिस्टीम सेटिंग्ज उघडा</translation>
 <translation id="6054961935262556546">दृश्यमानता बदला</translation>
 <translation id="6055392876709372977">PKCS #1 RSA एंक्रिप्शनसह SHA-256</translation>
 <translation id="6055544610007596637">Google Play Store वरून तुमच्या <ph name="DEVICE_TYPE" /> साठी अ‍ॅप्स इंस्टॉल करा</translation>
@@ -8964,6 +8968,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7380459290951585794">तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा</translation>
 <translation id="7380622428988553498">डिव्हाइसच्या नावामध्ये चुकीच्या वर्णांचा समावेश आहे</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> अपडेट केला</translation>
+<translation id="7382009635620830394">हे कार्ड बंद केले असल्यास, तुमची SharePoint आणि OneDrive फाइल व Outlook Calendar यांसारखी Microsoft कार्डदेखील बंद केली जातील.</translation>
 <translation id="7382085868019811559">लेगसी ब्राउझर सपोर्ट (LBS) हे विशिष्ट URLs पॅटर्न पर्यायी ब्राउझरमध्ये उघडण्याची अनुमती देते, जो त्या साइट योग्यरीत्या रन होण्यासाठी आवश्यक असलेल्या परंपरागत वैशिष्‍ट्यांना सपोर्ट करतो.</translation>
 <translation id="7382980704744807223">संशयास्‍पद</translation>
 <translation id="738322632977123193">अपलोड करू शकत नाही. या फॉरमॅटपैकी एका फॉरमॅटमध्ये इमेज वापरा: .jpg, .gif, .png, .bmp, .tif, किंवा .webp</translation>
@@ -10632,6 +10637,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> हा <ph name="MANAGER" /> द्वारे व्यवस्थापित केला जातो. तुम्ही हा ईमेल अतिरिक्त खाते म्हणून जोडू शकत नाही.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" /><ph name="USER_EMAIL" /> वापरण्यासाठी, सर्वप्रथम तुमच्या <ph name="DEVICE_TYPE" /> मधून साइन आउट करा. त्यानंतर तुमच्या लॉग इन स्क्रीनच्या तळाशी, व्यक्ती जोडा निवडा.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">शीर्ष-पंक्ती की चे वर्तन बदलण्यासाठी शोध की प्रेस करून ठेवा</translation>
+<translation id="8549127125482561383">विनंत्या कशा दाखवायच्या</translation>
 <translation id="8549316893834449916">तुमच्या Chromebook मध्ये साइन इन करण्यासाठी तुम्ही तुमचे Google खाते वापराल – जे तुम्ही Gmail, Drive, YouTube आणि बर्‍याच गोष्टींसाठी वापरता.</translation>
 <translation id="8550239873869577759">संशयास्पद फाइल डाउनलोड केली आहे</translation>
 <translation id="8551388862522347954">परवाने</translation>

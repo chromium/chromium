@@ -176,6 +176,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1546492247443594934">Bureau 2</translation>
 <translation id="1546930421365146760">Vraag je beheerder dit apparaat in te stellen in de Google Beheerdersconsole</translation>
 <translation id="1549512626801247439">opslagbeheer</translation>
+<translation id="1549721333775633305">Instellingen voor Quick Share tonen. Quick Share staat uit.</translation>
 <translation id="1550406609415860283">Apparaten beschikbaar</translation>
 <translation id="1550523713251050646">Klik voor meer opties</translation>
 <translation id="1555130319947370107">Blauw</translation>
@@ -1474,6 +1475,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> is niet geactiveerd.</translation>
 <translation id="5860033963881614850">Uit</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
+<translation id="5864691701242730005">Instellingen voor Quick Share tonen. Zichtbaarheid <ph name="VISIBILITY" /> geselecteerd.</translation>
 <translation id="5864748620896638071">Batterij <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Netwerkinformatie ophalen</translation>
 <translation id="5867606971598166637">Je systeembeheerder houdt je schermen in de gaten</translation>
@@ -2262,6 +2264,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="851660987304951246">Gebruik Help me met lezen om snel content samen te vatten of vragen te stellen</translation>
 <translation id="8517041960877371778">Je <ph name="DEVICE_TYPE" /> wordt mogelijk niet opgeladen als deze aanstaat.</translation>
 <translation id="8535393432370007982">Sorteren op kleur ongedaan maken</translation>
+<translation id="8536886494750559755">Instellingen voor Quick Share tonen. Zichtbaar voor iedereen gedurende <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Tekst gekopieerd naar klembord</translation>
 <translation id="8541078764854166027">Cameraframing</translation>
 <translation id="8542053257095774575">Geen opgeslagen bureaus of templates</translation>

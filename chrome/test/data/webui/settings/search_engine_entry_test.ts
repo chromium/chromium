@@ -74,7 +74,7 @@ suite('SearchEngineEntryTest', function() {
     const menuButton = entry.shadowRoot!.querySelector<HTMLElement>(
         'cr-icon-button.icon-more-vert');
     assertTrue(!!menuButton);
-    menuButton!.click();
+    menuButton.click();
     const menu = entry.shadowRoot!.querySelector('cr-action-menu')!;
     assertTrue(menu.open);
     return menu;
@@ -134,7 +134,7 @@ suite('SearchEngineEntryTest', function() {
     const button =
         entry.shadowRoot!.querySelector<HTMLButtonElement>(`#${buttonId}`);
     assertTrue(!!button);
-    assertTrue(button!.hidden);
+    assertTrue(button.hidden);
   }
 
   test('Remove_Hidden', function() {
@@ -170,7 +170,7 @@ suite('SearchEngineEntryTest', function() {
     const button =
         entry.shadowRoot!.querySelector<HTMLButtonElement>(`#${buttonId}`);
     assertTrue(!!button);
-    assertTrue(button!.disabled);
+    assertTrue(button.disabled);
   }
 
   test('MakeDefault_Disabled', function() {

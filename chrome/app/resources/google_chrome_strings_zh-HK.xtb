@@ -21,7 +21,6 @@
 <translation id="1184145431117212167">你的 Windows 版本不受支援，因此無法安裝。</translation>
 <translation id="1194807384646768652">由於此檔案類型不是常見的下載項目，可能含有危險內容，因此 Chrome 已禁止下載</translation>
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
-<translation id="1265739287306757398">操作說明</translation>
 <translation id="1278833599417554002">重新啟動以更新 &amp;Chrome</translation>
 <translation id="1290883685122687410">設定錯誤：<ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">請稍候，Chrome 正在安裝最新的系統更新。</translation>
@@ -32,7 +31,6 @@
 <translation id="1363996462118479832">登入時發生錯誤，因此 Chrome OS 無法同步處理您的資料。</translation>
 <translation id="137466361146087520">Google Chrome 測試版</translation>
 <translation id="1399397803214730675">這部電腦已安裝較新的 Google Chrome 版本，如果軟件無法工作，請解除安裝 Google Chrome，然後再試一次。</translation>
-<translation id="1407223320754252908">Chrome 內置「Google 翻譯」，可以即時為你提供翻譯</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟您目前的分頁。}=1{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟您目前的分頁，但您的無痕式視窗不會重新開啟。}other{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟您目前的分頁，但有 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="1434626383986940139">Chrome Canary 應用程式</translation>
 <translation id="146866447420868597">要登入 Chrome 嗎？</translation>
@@ -69,7 +67,6 @@
 <translation id="1880677175115548835">選擇文字</translation>
 <translation id="1919130412786645364">允許登入 Chrome</translation>
 <translation id="1953553007165777902">正在下載… 剩餘 <ph name="MINUTE" /> 分鐘</translation>
-<translation id="1982647487457769627">Chrome 支援多個平台，不論你使用何種裝置，都能帶來熟悉體驗</translation>
 <translation id="2001586581944147178">讓可存取你互聯網流量的使用者難以查看你瀏覽的網站。Chrome 會透過安全連線在 DNS (網域名稱系統) 中查詢網站的 IP 位址。</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Chrome 不再支援此擴充程式，因此建議你移除。}other{Chrome 不再支援這些擴充程式，因此建議你移除。}}</translation>
 <translation id="2018528049276128029">每個設定檔都會保存本身專屬的 Chrome 資料，例如書籤、記錄、密碼等</translation>
@@ -107,7 +104,6 @@
 <translation id="234869673307233423">Chrome 無法檢查密碼，請稍後再試。</translation>
 <translation id="235650106824528204">工作設定檔管理員可移除任何在使用此設定檔時產生的 Chrome 資料 (例如建立的書籤、記錄、密碼和其他設定)。<ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">繼續</translation>
-<translation id="2390624519615263404">查看安全功能</translation>
 <translation id="2401189691232800402">Chrome OS 系統</translation>
 <translation id="2403703063067034158">啟動錯誤：目前正在執行其他設定操作，請稍後再試。</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{當時至少有一個 Chrome 擴充功能正在存取 1 部 HID 裝置}=1{至少有一個 Chrome 擴充功能正在存取 1 部 HID 裝置}other{至少有一個 Chrome 擴充功能正在存取 # 部 HID 裝置}}</translation>
@@ -126,7 +122,6 @@
 <translation id="2580411288591421699">您無法安裝這個版本的 Google Chrome，因為相同的版本目前正在執行中。請關閉 Google Chrome，然後再試一次。</translation>
 <translation id="2586406160782125153">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
 <translation id="259935314519650377">無法快取已下載的安裝程式。錯誤代碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
-<translation id="2632707915638608719">Chrome 擴充程式讓你事半功倍</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome 會定期檢查，確保瀏覽器採用最安全的設定。如有任何需要你檢查的事項，我們會通知你。</translation>
 <translation id="2652691236519827073">在 Chrome 的新分頁中開啟連結(&amp;T)</translation>
@@ -155,7 +150,6 @@
 <translation id="2876628302275096482">進一步瞭解 <ph name="BEGIN_LINK" />Chrome 如何確保你的資料保密<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2888126860611144412">關於 Chrome</translation>
-<translation id="29082080693925013">整理分頁時可固定常用網站，並將分頁分成不同的群組</translation>
 <translation id="2915996080311180594">稍後重新開機</translation>
 <translation id="2926676257163822632">安全性弱的密碼很容易被猜到。讓 Chrome <ph name="BEGIN_LINK" />為您建立並記住安全性強的密碼<ph name="END_LINK" />。</translation>
 <translation id="2926952073016206995">Chrome 需要相機權限，才能執行此網站要求的功能</translation>
@@ -184,10 +178,8 @@
 <translation id="3196187562065225381">由於此檔案有危險，因此 Chrome 已禁止下載</translation>
 <translation id="3222857603094643834">透過「Google 智能鏡頭」搜尋此頁面上的所有內容</translation>
 <translation id="3226612997184048185">如果一併將書籤儲存在 Google 帳戶中，便可以在 Chrome 中追蹤產品價格，並在降價時收到通知</translation>
-<translation id="3234642784688107085">試用全新 AI 功能製作主題、取得撰寫協助及整理分頁</translation>
 <translation id="3242123554343253302">新增 Chrome 設定檔</translation>
 <translation id="3245429137663807393">如果您同時分享 Chrome 使用情況報告，這些報告將會包含您瀏覽的網址</translation>
-<translation id="3261565993776444564">試用新顏色自訂瀏覽器</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3286538390144397061">立即重新啟動</translation>
 <translation id="3289358082435924389">日後，Chrome 就會詢問你是否要使用已儲存的資料來自動填入表格</translation>
@@ -205,7 +197,6 @@
 <translation id="3503306920980160878">Chrome 需要位置資訊存取權，才能與這個網站分享您的位置資訊</translation>
 <translation id="3533694711092285624">沒有已儲存的密碼。儲存密碼時，Chrome 可檢查您的密碼。</translation>
 <translation id="3541482654983822893">Chrome 無法檢查密碼，請於 24 小時後再試一次。</translation>
-<translation id="3564543103555793392">登入 Chrome 後，你可儲存書籤、密碼等資料，然後在手機上使用</translation>
 <translation id="3576528680708590453">系統管理員已設定 Google Chrome 開啟替代瀏覽器來存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="3582972582564653026">在不同裝置上同步和設定個人化的 Chrome</translation>
 <translation id="3583751698304738917">你已在另一個 Chrome 個人檔案中以 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入</translation>
@@ -218,7 +209,6 @@
 <translation id="3635073343384702370">儲存密碼時，Chrome 可檢查你的密碼</translation>
 <translation id="3667616615096815454">伺服器無法識別應用程式，因此無法安裝。</translation>
 <translation id="3673813398384385993">Chrome 發現「<ph name="EXTENSION_NAME" />」含有惡意軟件</translation>
-<translation id="3695446226812920698">瞭解詳情</translation>
 <translation id="3697952514309507634">其他 Chrome 設定檔</translation>
 <translation id="3703994572283698466">Chrome OS 得以面世，全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
 <translation id="3716540481907974026">ChromeOS Flex 版本</translation>
@@ -237,7 +227,6 @@
 <translation id="3941890832296813527">安裝錯誤：安裝程式檔案名稱無效或不支援。</translation>
 <translation id="3968962723676998462">輸入用於在帳戶 <ph name="ACCOUNT_EMAIL" /> 中使用及儲存 Chrome 資料的密碼短語</translation>
 <translation id="3973161977468201858">Google Chrome 想刪除你的「密碼管理工具」資料。如果允許，請輸入 Windows 密碼。</translation>
-<translation id="398236277091248993">Chrome 會運用效能強化功能維持順暢運作</translation>
 <translation id="4022972681110646219">翻譯畫面</translation>
 <translation id="4023601594785368013">原文語言：<ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">必須重新啟動 Chrome OS，才能套用更新。</translation>
@@ -288,7 +277,6 @@
 <translation id="4627412468266359539">選用：將診斷和使用情況資料自動傳送給 Google，協助改善 ChromeOS Flex 的功能和效能。</translation>
 <translation id="4633000520311261472">為了提高 Chrome 的安全性，我們已將部分未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，它們可能在您不知情的情況下新增至瀏覽器。</translation>
 <translation id="4680828127924988555">取消安裝</translation>
-<translation id="4710245680469034439">透過大自然、藝術作品等內容為靈感的主題來自訂瀏覽器。</translation>
 <translation id="4720851490453439956">Google 更新程式內部服務</translation>
 <translation id="4724676981607797757">由於發生不支援通訊協定的錯誤，因此無法安裝。</translation>
 <translation id="4728575227883772061">安裝失敗，錯誤原因不明。如果目前正在執行 Google Chrome，請先關閉，然後再試一次。</translation>
@@ -308,7 +296,6 @@
 <translation id="4895437082222824641">在 Chrome 新分頁中開啟連結(&amp;T)</translation>
 <translation id="4918844574251943176">已複製圖片</translation>
 <translation id="492720062778050435">Chrome 建議你檢查此擴充程式</translation>
-<translation id="4951177103388687412">透過分頁群組保持有條不紊，助你保持專注</translation>
 <translation id="4953650215774548573">將 Google Chrome 設為預設瀏覽器</translation>
 <translation id="495931528404527476">在 Chrome 中</translation>
 <translation id="4969674060580488087">您的帳戶登入詳情已過時，因此 ChromeOS Flex 無法同步處理您的資料。</translation>
@@ -354,7 +341,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5579324208890605088">啟動錯誤：請以一般使用者 (而非管理員) 身分執行安裝程式。</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5602351063754773347">Chrome 建議你移除此擴充程式。<ph name="BEGIN_LINK" />進一步瞭解支援的擴充程式<ph name="END_LINK" /></translation>
-<translation id="5648328599815354043">Chrome 會進一步保護你的網上安全</translation>
 <translation id="5649680279845190972">如要在所有電腦上使用你的擴充程式和其他資料，請登入 Chrome</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能不安全，因此 Chrome 已封鎖此檔案。</translation>
 <translation id="566568153320186256">Chrome 會限制背景活動和視覺效果 (例如流暢捲動和影片影格速率) 來節省電池電量。<ph name="BEGIN_LINK" />進一步瞭解省電模式<ph name="END_LINK" /></translation>
@@ -394,7 +380,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6070348360322141662">為提高安全性，Google Chrome 會將您的資料加密</translation>
 <translation id="6075300983329039771">你的機構 <ph name="MANAGER" /> 要求你登入 Chrome</translation>
 <translation id="608006075545470555">將工作設定檔新增至此瀏覽器</translation>
-<translation id="6097822892606850415">AI 可讓你在撰寫內容時更有自信</translation>
 <translation id="6113794647360055231">Chrome 變得更好用了</translation>
 <translation id="6116252277240876590">此語言用於顯示 Chrome 中的選單、設定、快訊和其他文字</translation>
 <translation id="6134085236017727171">如要使用麥克風，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中向 Chrome 授予存取權</translation>
@@ -414,7 +399,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6251759518630934363">此防護機制分析的網站資料比標準保護多，因此即使是 Google 不知道的網站，此防護機制亦能提供危險網站警告。你可選擇略過 Chrome 警告。</translation>
 <translation id="6277547788421725101">你的家長已停用 Chrome 的「網站、應用程式和擴充程式權限」設定</translation>
 <translation id="627882678981830918">自訂並控制 Chrome。將 Chrome 設定為預設瀏覽器。</translation>
-<translation id="6288788894729749483">將 Chrome 設定為預設瀏覽器後，可以安心在網上處理大小事、製作內容及探索事物</translation>
 <translation id="6291089322031436445">Chrome 開發人員應用程式</translation>
 <translation id="6291549208091401781">電腦上的所有使用者均安裝了 Google Chrome。</translation>
 <translation id="6319856120645568262">Chrome 需要適當權限，才能繪製周遭環境並進行手部追蹤</translation>
@@ -426,7 +410,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{根據機構規定，Chrome 會在閒置 1 分鐘後自動關閉。屆時系統將刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。}other{根據機構規定，Chrome 會在閒置 # 分鐘後自動關閉。屆時系統將刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。}}</translation>
 <translation id="6418662306461808273">要切換至現有 Chrome 設定檔嗎？</translation>
 <translation id="6473905796280459355">前往「關於 Chrome」頁面</translation>
-<translation id="6479881432656947268">前往「Chrome 網上應用程式商店」</translation>
 <translation id="6481963882741794338">連結 Chrome 和其他 Google 服務，用於個人化和其他用途</translation>
 <translation id="648319183876919572">「強化安全瀏覽」可進一步保護您免受危險網站和下載檔案威脅</translation>
 <translation id="6489302989675808168">已開啟 • Chrome 無法驗證此擴充程式的來源</translation>
@@ -450,7 +433,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6794858689789885890">在 Chrome 關閉後一律刪除裝置上的網站資料</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="683440813066116847">允許 mDNS 流量的 Google Chrome Canary 輸入規則。</translation>
-<translation id="6834926483721196812">Chrome 具備出色效能，例如「省電模式」和「記憶體節省模式」等功能</translation>
 <translation id="684888714667046800">無法連線至互聯網。如果你使用防火牆，請確保已將 <ph name="PRODUCT_EXE_NAME" /> 加入許可名單。</translation>
 <translation id="6851981911629679515">開啟 Chrome 的 JavaScript 和 WebAssembly 引擎額外防護</translation>
 <translation id="6881299373831449287">正在更新 Chrome</translation>
@@ -469,7 +451,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7024536598735240744">未封裝錯誤：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">已停止安裝。</translation>
 <translation id="7025800014283535195">您可在此處切換不同的 Chrome 設定檔</translation>
-<translation id="7048502283602470098">探索 AI</translation>
 <translation id="7059914902409643750">自訂屬於您的 Chrome</translation>
 <translation id="7071827361006050863">Chrome 即將刪除瀏覽資料</translation>
 <translation id="7085332316435785646">選擇是否包含 Chrome 記錄，以便在 Google 服務中享有更個人化的體驗</translation>
@@ -487,9 +468,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7302361266603927550">部分 Chrome 資料尚未儲存至 Google 帳戶。請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除此資料。</translation>
 <translation id="7308322188646931570">Chrome 需要儲存空間的存取權才能下載檔案</translation>
 <translation id="7339898014177206373">新視窗</translation>
-<translation id="7352881504289275361">「強化安全瀏覽」提供 Chrome 的最強網上保護，在你瀏覽網站時保護你的安全</translation>
 <translation id="7386878009611068389">如要按家長所選設定加強網上安全，請切換至你以 <ph name="USER_EMAIL_ADDRESS" /> 登入的 Chrome 設定檔</translation>
-<translation id="7394745511930161845">使用 AI 製作專屬主題，為瀏覽器打造獨一無二的外觀</translation>
 <translation id="7398801000654795464">您使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chrome，請使用相同帳戶重新登入。</translation>
 <translation id="7412494426921990001">按一下 Chrome 選單</translation>
 <translation id="7419819959108735624">選取要使用「Google 智能鏡頭」搜尋的內容</translation>
@@ -522,25 +501,19 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659737857277959440">機構可查看和管理瀏覽資料 (例如書籤、記錄和密碼)，但無法查看個人 Chrome 設定檔中的瀏覽資料。</translation>
 <translation id="7661924425853052955">由於最近沒有瀏覽記錄，Chrome 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和另外 <ph name="COUNT" /> 項權限</translation>
-<translation id="7668816516367091728">使用網址列就能翻譯、計算及執行其他工作</translation>
 <translation id="7670287553302121848">Chrome 帳戶需要重新驗證</translation>
 <translation id="769538538642757151">如有任何需要審核的事項，Chrome 會通知你</translation>
 <translation id="77283119132245232">提供 <ph name="BROWSER_NAME" /> 的系統追蹤服務。如停用此服務，瀏覽器建立的成效追蹤記錄將不會包括系統層級事件，例如內容轉換和就緒執行緒事件。</translation>
 <translation id="7736869414036750079">你的機構要求你登入 Chrome</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟件。</translation>
 <translation id="7761834446675418963">按一下您的名稱即可開啟 Chrome 並開始瀏覽。</translation>
-<translation id="7763983146198734674">儲存密碼就能隨時隨地存取</translation>
 <translation id="7777080907402804672">如果圖片並無有用的說明，Chrome 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。您可以隨時在設定中關閉此功能。</translation>
 <translation id="778331955594035129">Chrome 需要位置存取權，才能執行此網站要求的功能</translation>
-<translation id="7785741298021097183">Chrome 經過特別設計，可在所有裝置 (包括手機和電腦) 上提供高速而安全的上網體驗。</translation>
 <translation id="7787950393032327779">另一部電腦 (<ph name="PROCESS_ID" />) 的 Google Chrome 處理程序 (<ph name="HOST_NAME" />) 正在使用這個設定檔。Chrome 已鎖定這個設定檔，確保其不致受損。如果您確定其他處理程序目前未使用這個設定檔，請解除鎖定，然後重新啟動 Chrome。</translation>
 <translation id="7801699035218095297">Google Chrome 正在嘗試複製密碼。如果您同意，請輸入 Windows 密碼。</translation>
-<translation id="7802622118583152311">Chrome 採用最新的技術，為你帶來更優質的瀏覽體驗</translation>
 <translation id="7808348361785373670">從 Chrome 中移除…</translation>
 <translation id="7825851276765848807">不明錯誤導致安裝失敗，請再次下載 Google Chrome。</translation>
-<translation id="7836610565365456468">運用以藝術作品、大自然等內容為靈感的鮮明主題，讓瀏覽器煥然一新</translation>
 <translation id="7845233973568007926">多謝安裝。您必須先重新啟動電腦，才能使用 <ph name="BUNDLE_NAME" />。</translation>
-<translation id="7852254990718225089">Chrome 中的 AI 技術有助提升網絡速度、安全和便利性</translation>
 <translation id="7872446069773932638">正在下載… 剩餘 <ph name="SECONDS" /> 秒</translation>
 <translation id="7886087451482920026">使用「Google 智能鏡頭」選取文字</translation>
 <translation id="7890208801193284374">如果您與親朋好友共用電腦，每個人均可享有獨立的瀏覽空間，按照自己的偏好設定 Chrome。</translation>
@@ -548,7 +521,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7917470403848199310">Chrome 會詢問你是否要儲存表格資料，例如出生日期、年齡和護照號碼</translation>
 <translation id="7917876797003313048">您可管理已登入的 Google 帳戶。Google 帳戶可用於 Chrome 瀏覽器、Play 商店和 Gmail 等服務。如要新增其他人 (例如家庭成員) 的帳戶，請改為將使用者新增至您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">由於此檔案是欺詐檔案，可能會對裝置造成非預期的變更，因此 Chrome 已禁止下載</translation>
-<translation id="7947083960301164556">查看最新內容</translation>
 <translation id="7951272445806340501">ChromeOS Flex 必須重新啟動，才能套用更新。</translation>
 <translation id="7959172989483770734">管理 Chrome 設定檔</translation>
 <translation id="7962410387636238736">由於 Google Chrome 將停止支援 Windows XP 和 Windows Vista，因此這部電腦不會再收到 Google Chrome 更新。</translation>
@@ -589,7 +561,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8418845734693287262">您的帳戶登入詳情尚未更新，因此 Chrome OS 無法同步處理您的資料。</translation>
 <translation id="842386925677997438">Chrome 的安全工具</translation>
 <translation id="8425765582779547329">如要按家長所選設定加強網上安全，請登入 Chrome</translation>
-<translation id="8428213095426709021">設定</translation>
 <translation id="8429214465555795676">如要繼續，請使用 <ph name="EMAIL" /> 登入 Chrome，確保符合機構的政策。</translation>
 <translation id="8433638294851456451">如要將號碼從此處傳送至 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8496177819998570653">Google 密碼管理工具(&amp;A)</translation>
@@ -617,17 +588,14 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8781673607513845160">如要使用攝錄機，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中向 Chrome 授予存取權</translation>
 <translation id="878572486461146056">安裝錯誤：網絡管理員已套用防止安裝的群組政策：<ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">此檔案可能會損害你的個人和社交網絡帳戶 (包括 <ph name="USER_EMAIL" />)，因此 Chrome 已禁止下載</translation>
-<translation id="8797423385604279835">AI 可幫你整理分頁</translation>
 <translation id="8801657293260363985">V8 是 Chrome 的 JavaScript 和 WebAssembly 引擎，可提升網站效能</translation>
 <translation id="8821043148920470810">如要取得日後的 Google Chrome 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 7。</translation>
 <translation id="8823341990149967727">Chrome 版本過舊</translation>
 <translation id="8825634023950448068">為保障您的私隱，我們會自動刪除超過 4 星期的興趣。按瀏覽內容而定，某個主題可能會再次在您的興趣清單中顯示。如果您認為 Chrome 判斷錯誤或不想看到特定廣告，可以移除感興趣的主題。</translation>
 <translation id="8834965163890861871">Google Chrome 正在嘗試編輯密碼。如果您同意，請輸入 Windows 密碼。</translation>
-<translation id="8843389967774722327">Chrome 會定期加入新功能，協助你處理大小事</translation>
 <translation id="8843516219908676469">Chrome 可以更準確識別表格內容，更快自動填入相關資料</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome 建議你移除此擴充程式}other{Chrome 建議你移除這些擴充程式}}</translation>
 <translation id="8862326446509486874">您沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝程式。</translation>
-<translation id="8908277254462331033">查看安全功能</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8922193594870374009">如要將號碼從 <ph name="ORIGIN" /> 傳送至 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8948460679427074738">此擴充程式尚未發佈私隱守則，例如擴充程式如何收集和使用資料。Chrome 建議你移除此擴充程式。</translation>

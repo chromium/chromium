@@ -15,7 +15,7 @@ chrome.test.runTests([
     const viewerToolbar = viewer.$.toolbar;
     chrome.test.assertFalse(viewerToolbar.pdfAnnotationsEnabled);
 
-    const annotateButton = viewerToolbar.shadowRoot!.querySelector('#annotate');
+    const annotateButton = viewerToolbar.shadowRoot.querySelector('#annotate');
     chrome.test.assertTrue(annotateButton === null);
     chrome.test.succeed();
   },

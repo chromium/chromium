@@ -523,11 +523,6 @@ void GpuServiceImpl::UpdateGPUInfo() {
         image_decode_accelerator_worker_->GetSupportedProfiles();
   }
 
-#if BUILDFLAG(IS_WIN)
-  gpu_info_.shared_image_d3d =
-      gpu::D3DImageBackingFactory::IsD3DSharedImageSupported(gpu_preferences_);
-#endif
-
   // Record initialization only after collecting the GPU info because that can
   // take a significant amount of time.
   base::TimeTicks now = base::TimeTicks::Now();
@@ -592,6 +587,15 @@ void GpuServiceImpl::InitializeWithHost(
       std::move(pending_gpu_host), std::move(use_shader_cache_shm_count),
       default_offscreen_surface, std::move(creation_params), sync_point_manager,
       shared_image_manager, scheduler, shutdown_event);
+
+#if BUILDFLAG(IS_WIN)
+  // shared_image_d3d must be initialized after we call
+  // InitializeWithHostInternal as that is where the shared context state is
+  // created.
+  gpu_info_.shared_image_d3d =
+      gpu::D3DImageBackingFactory::IsD3DSharedImageSupported(
+          GetContextState()->GetD3D11Device().Get(), gpu_preferences_);
+#endif
 }
 #else
 void GpuServiceImpl::InitializeWithHost(

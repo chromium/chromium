@@ -348,6 +348,37 @@ lens::mojom::ParagraphPtr CreateParagraphMojomFromProto(
   return paragraph;
 }
 
+lens::mojom::TextPtr CreateTextMojomFromProto(
+    const lens::Text& response_text,
+    const ::google::protobuf::RepeatedPtrField<::lens::DeepGleamData>
+        deep_gleams,
+    const gfx::Size& resized_bitmap_size) {
+  lens::mojom::TextPtr text = lens::mojom::Text::New();
+  text->content_language = response_text.content_language();
+  if (response_text.has_text_layout()) {
+    const lens::TextLayout response_layout = response_text.text_layout();
+    lens::mojom::TextLayoutPtr text_layout = lens::mojom::TextLayout::New();
+    std::vector<lens::mojom::ParagraphPtr> paragraphs;
+
+    for (int i = 0; i < response_text.text_layout().paragraphs_size(); i++) {
+      const auto& response_paragraph =
+          response_text.text_layout().paragraphs()[i];
+      lens::DeepGleamData deep_gleam_data;
+      // The translated paragraphs should correspond to each paragraph of
+      // detected text and deep gleam data. That is, there should be the same
+      // amount of deep gleam data as paragraphs.
+      if (i < deep_gleams.size()) {
+        deep_gleam_data = deep_gleams[i];
+      }
+      paragraphs.push_back(CreateParagraphMojomFromProto(
+          response_paragraph, deep_gleam_data, resized_bitmap_size));
+    }
+    text_layout->paragraphs = std::move(paragraphs);
+    text->text_layout = std::move(text_layout);
+  }
+  return text;
+}
+
 }  // namespace
 
 std::vector<lens::mojom::OverlayObjectPtr>
@@ -381,38 +412,28 @@ CreateObjectsMojomArrayFromServerResponse(
 lens::mojom::TextPtr CreateTextMojomFromServerResponse(
     const lens::LensOverlayServerResponse& response,
     const gfx::Size resized_bitmap_size) {
-  lens::mojom::TextPtr text;
   // If the server response lacks text, then return an empty vector.
   if (!response.has_objects_response() ||
       !response.objects_response().has_text()) {
-    return text;
+    return lens::mojom::TextPtr();
   }
 
-  text = lens::mojom::Text::New();
-  const lens::Text response_text = response.objects_response().text();
-  text->content_language = response_text.content_language();
-  if (response_text.has_text_layout()) {
-    const lens::TextLayout response_layout = response_text.text_layout();
-    lens::mojom::TextLayoutPtr text_layout = lens::mojom::TextLayout::New();
-    std::vector<lens::mojom::ParagraphPtr> paragraphs;
-
-    for (int i = 0; i < response_text.text_layout().paragraphs_size(); i++) {
-      const auto& response_paragraph =
-          response_text.text_layout().paragraphs()[i];
-      lens::DeepGleamData deep_gleam_data;
-      // The translated paragraphs should correspond to each paragraph of
-      // detected text and deep gleam data. That is, there should be the same
-      // amount of deep gleam data as paragraphs.
-      if (i < response.objects_response().deep_gleams_size()) {
-        deep_gleam_data = response.objects_response().deep_gleams()[i];
-      }
-      paragraphs.push_back(CreateParagraphMojomFromProto(
-          response_paragraph, deep_gleam_data, resized_bitmap_size));
-    }
-    text_layout->paragraphs = std::move(paragraphs);
-    text->text_layout = std::move(text_layout);
-  }
-
-  return text;
+  return CreateTextMojomFromProto(response.objects_response().text(),
+                                  response.objects_response().deep_gleams(),
+                                  resized_bitmap_size);
 }
+
+lens::mojom::TextPtr CreateTextMojomFromInteractionResponse(
+    const lens::LensOverlayInteractionResponse& response,
+    const gfx::Size resized_bitmap_size) {
+  if (!response.has_text()) {
+    return lens::mojom::TextPtr();
+  }
+
+  return CreateTextMojomFromProto(
+      response.text(),
+      ::google::protobuf::RepeatedPtrField<::lens::DeepGleamData>(),
+      resized_bitmap_size);
+}
+
 }  // namespace lens

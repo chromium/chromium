@@ -51,8 +51,8 @@ suite('drag and drop', function() {
       bubbles: true,
       cancelable: true,
       composed: true,
-      clientX: xy!.x,
-      clientY: xy!.y,
+      clientX: xy.x,
+      clientY: xy.y,
       // Make this a primary input.
       buttons: 1,
     };

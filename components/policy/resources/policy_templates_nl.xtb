@@ -378,7 +378,6 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="1305400589435476516">Als je het beleid toepast, is dataroaming toegestaan voor het apparaat.
 
       Als je het beleid niet toepast of niet instelt, is dataroaming niet beschikbaar.</translation>
-<translation id="1306041796676461437">Ondersteuning voor Extensible Enterprise SSO uitzetten</translation>
 <translation id="1308526987406924874">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers niet mogen vragen om toegang tot een seriële poort.
 
       Als je het beleid niet instelt, is <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
@@ -3516,15 +3515,6 @@ Zorg dat je dit beleid niet altijd toepast, vooral niet tijdens productie-implem
 <translation id="3606571057705314194">Profielkiezer staat uit bij opstarten</translation>
 <translation id="3608206578291537084">De Encrypted Reporting Pipeline aanzetten</translation>
 <translation id="3608281460204780443">Het Chrome Web Store-icoon tonen in de <ph name="PRODUCT_OS_NAME" />-launcher en op de pagina Nieuw tabblad</translation>
-<translation id="3608411984079625468">Hiermee wordt automatisch inloggen voor gebruikers ingesteld voor accounts met verificatieproviders door een Enterprise SSO-extensie.
-
-Als je dit beleid instelt op 1 (<ph name="POLICY_VALUE_ENABLED" />) of niet instelt, gebruiken verificatieproviders met een SSO-extensie op het apparaat die extensie om gebruikers te verifiëren die proberen in te loggen.
-
-Als je dit beleid instelt op 0 (<ph name="POLICY_VALUE_DISABLED" />), wordt automatisch inloggen zoals hierboven beschreven uitgezet.
-
-Deze functie is beschikbaar vanaf MacOS Catalina.
-
-Opmerking: Dit beleid is niet van toepassing op de incognito- of gastmodus.</translation>
 <translation id="3612482251405108708">Automatisch starten van online opnieuw verifiëren op het vergrendelscherm</translation>
 <translation id="3616490235694929053">Met dit beleid bepaal je of het instellingenscherm voor de weergavegrootte aan de gebruiker wordt getoond als deze de eerste keer inlogt.
       Als je dit beleid instelt op False, wordt het instellingenscherm voor de weergavegrootte niet getoond.
@@ -5642,7 +5632,6 @@ Als dit beleid niet is ingesteld of de lijst geen geldige verwijzingen naar afbe
       Als het achtergrondbeleid voor het apparaat is ingesteld, downloadt het Chrome OS-apparaat de achtergrondafbeelding en gebruikt deze op het inlogscherm als er nog geen gebruiker is ingelogd op het apparaat. Zodra de gebruiker inlogt, wordt het achtergrondbeleid van de gebruiker toegepast.
 
       Als het achtergrondbeleid voor het apparaat niet is ingesteld, wordt op basis van het achtergrondbeleid van de gebruiker (als dit is ingesteld) bepaald wat wordt weergegeven.</translation>
-<translation id="5217106427763720473">Ondersteuning voor Extensible Enterprise SSO aanzetten</translation>
 <translation id="5219844027738217407">Voor Android-apps is dit beleid alleen van invloed op de microfoon. Wanneer dit beleid is ingesteld op True, wordt voor alle Android-apps, zonder uitzondering, de microfoon uitgezet.</translation>
 <translation id="5222325605346216869">Throttling van JavaScript-timers op de achtergrond afdwingen</translation>
 <translation id="5223606242837275233">Niet toestaan dat sites scrollen naar specifieke tekstfragmenten via de URL</translation>

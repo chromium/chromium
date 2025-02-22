@@ -50,7 +50,7 @@ suite('ExtensionManagerUnitTest', function() {
   }
 
   function getExtensions(): chrome.developerPrivate.ExtensionInfo[] {
-    return manager.$['items-list']!.extensions;
+    return manager.$['items-list'].extensions;
   }
 
   function getExtension(index: number): chrome.developerPrivate.ExtensionInfo {
@@ -279,7 +279,7 @@ suite('ExtensionManagerUnitTest', function() {
     await microtasksFinished();
     assertEquals(3, getExtensions().length);
 
-    const itemList = manager.$['items-list']!;
+    const itemList = manager.$['items-list'];
 
     service.itemStateChangedTarget.callListeners({
       event_type: chrome.developerPrivate.EventType.UNINSTALLED,

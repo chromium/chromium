@@ -3188,6 +3188,12 @@ void TabStripModel::TabGroupStateChanged(
   }
 
   if (new_group.has_value()) {
+    // Use IsEmpty() method as it relies on the tab_count_ maintained by  the
+    // TabGroup object. Any method that relies on the model for this would be
+    // wrong since the model is already updated.
+    const bool is_group_empty =
+        group_model_->GetTabGroup(new_group.value())->IsEmpty();
+
     // Update the group model.
     AddTabToGroupModel(new_group.value());
 
@@ -3195,6 +3201,14 @@ void TabStripModel::TabGroupStateChanged(
     for (auto& observer : observers_) {
       observer.TabGroupedStateChanged(this, std::nullopt, new_group, tab,
                                       index);
+    }
+
+    // TODO(398256328): Look into replacing the empty visual change with
+    // providing the right initial value or migrating clients to working with
+    // TabGroupChange::kCreated.
+    if (is_group_empty) {
+      TabGroupChange::VisualsChange visuals;
+      ChangeTabGroupVisuals(new_group.value(), visuals);
     }
   }
 }

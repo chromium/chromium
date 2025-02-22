@@ -30,7 +30,6 @@
 <translation id="2118649612461486615">Дэлгүүрийн мэдээлэл</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Та хаасан таб, бүлгээ саяхны табын хэсэг болон табын бүлгийн хэсгээс дахин нээх боломжтой. Таны нууцлалтай таб боломжгүй байх болно.}other{Та хаасан таб, бүлгээ саяхны табын хэсэг болон табын бүлгийн хэсгээс дахин нээх боломжтой. Таны нууцлалтай # таб боломжгүй байх болно.}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> дээр одоо <ph name="CURRENT_PRICE" /> байна</translation>
-<translation id="2242907120821295124"><ph name="TAB_GROUP_NAME" /> табын бүлэг цаашид боломжгүй</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Табыг бүлэглэхээ болих}other{Табуудыг бүлэглэхээ болих}}</translation>
 <translation id="2271452184061378400">Таны табын бүлгийг энд хадгалдаг</translation>
 <translation id="2277224997687551299">Бүлгийн нэрийг засах</translation>

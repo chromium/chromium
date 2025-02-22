@@ -68,7 +68,7 @@ suite('NewTabPageModulesOutlookCalendarModuleTest', () => {
     // Act.
     const whenFired = eventToPromise('disable-module', module);
     const disableButton =
-        module.$.moduleHeaderElementV2.shadowRoot!.querySelector<HTMLElement>(
+        module.$.moduleHeaderElementV2.shadowRoot.querySelector<HTMLElement>(
             '#disable');
     assertTrue(!!disableButton);
     disableButton.click();
@@ -92,7 +92,7 @@ suite('NewTabPageModulesOutlookCalendarModuleTest', () => {
     // Dismiss module.
     const whenFired = eventToPromise('dismiss-module-instance', module);
     const dismissButton =
-        module.$.moduleHeaderElementV2.shadowRoot!.querySelector<HTMLElement>(
+        module.$.moduleHeaderElementV2.shadowRoot.querySelector<HTMLElement>(
             '#dismiss');
     assertTrue(!!dismissButton);
     dismissButton.click();
@@ -103,7 +103,7 @@ suite('NewTabPageModulesOutlookCalendarModuleTest', () => {
     assertEquals(1, handler.getCallCount('dismissModule'));
 
     // Restore module.
-    event.detail.restoreCallback!();
+    event.detail.restoreCallback();
     assertEquals(1, handler.getCallCount('restoreModule'));
   });
 
@@ -118,7 +118,7 @@ suite('NewTabPageModulesOutlookCalendarModuleTest', () => {
 
     // Act.
     const signoutButton =
-        module.$.moduleHeaderElementV2.shadowRoot!.querySelector<HTMLElement>(
+        module.$.moduleHeaderElementV2.shadowRoot.querySelector<HTMLElement>(
             '#signout');
     assertTrue(!!signoutButton);
     signoutButton.click();

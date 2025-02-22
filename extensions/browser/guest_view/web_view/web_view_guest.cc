@@ -68,6 +68,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/rules_registry_ids.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
@@ -396,7 +397,7 @@ int WebViewGuest::GetOrGenerateRulesRegistryID(int embedder_process_id,
                                                int webview_instance_id) {
   bool is_web_view = embedder_process_id && webview_instance_id;
   if (!is_web_view)
-    return RulesRegistryService::kDefaultRulesRegistryID;
+    return rules_registry_ids::kDefaultRulesRegistryID;
 
   WebViewKey key = std::make_pair(content::ChildProcessId(embedder_process_id),
                                   webview_instance_id);
@@ -1176,7 +1177,7 @@ bool WebViewGuest::ClearData(base::Time remove_since,
 
 WebViewGuest::WebViewGuest(content::RenderFrameHost* owner_rfh)
     : GuestView<WebViewGuest>(owner_rfh),
-      rules_registry_id_(RulesRegistryService::kInvalidRulesRegistryID),
+      rules_registry_id_(rules_registry_ids::kInvalidRulesRegistryID),
       find_helper_(this),
       javascript_dialog_helper_(this),
       web_view_guest_delegate_(base::WrapUnique(

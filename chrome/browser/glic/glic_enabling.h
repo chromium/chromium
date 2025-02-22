@@ -7,8 +7,10 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
 #include "base/types/expected.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
 
@@ -34,7 +36,7 @@ namespace glic {
 // Finally, an eligible profile may be Glic-Enabled. In this state, Glic UI is
 // visible and usable by the user. This state can change at runtime so Glic
 // entry points should depend on this state.
-class GlicEnabling {
+class GlicEnabling : public signin::IdentityManager::Observer {
  public:
   // Returns whether the global Glic feature is enabled for Chrome. This status
   // will not change at runtime.
@@ -49,20 +51,20 @@ class GlicEnabling {
 
   // This is a convenience method for code outside of //chrome/browser/glic.
   // Code inside should use instance method IsEnabled() instead.
-  static bool IsEnabledForProfile(const Profile* profile);
+  static bool IsEnabledForProfile(Profile* profile);
 
   // Returns true if the given profile has Glic enabled and has completed the
   // FRE. True implies that IsEnabledByFlags(), IsProfileEligible(profile), and
   // IsEnabledForProfile(profile) are also true. This value can change at
   // runtime.
-  static bool IsEnabledAndConsentForProfile(const Profile* profile);
+  static bool IsEnabledAndConsentForProfile(Profile* profile);
 
   // Whether or not the profile is currently ready for Glic. This means no
   // additional steps must be taken before opening Glic.
   static bool IsReadyForProfile(Profile* profile);
 
   explicit GlicEnabling(Profile* profile);
-  ~GlicEnabling();
+  ~GlicEnabling() override;
 
   // TODO(crbug.com/390487066): This method is misnamed. It would be more
   // accurate to call it `IsAllowed()`.
@@ -83,6 +85,7 @@ class GlicEnabling {
   // If all entry-points have been disabled, then glic is functionally disabled.
   bool IsEnabled();
 
+  // This is called anytime IsEnabled() might return a different value.
   using EnableChangedCallback = base::RepeatingClosure;
   base::CallbackListSubscription RegisterEnableChanged(
       EnableChangedCallback callback);
@@ -90,10 +93,27 @@ class GlicEnabling {
  private:
   void OnGlicSettingsPolicyChanged();
 
+  // IdentityManagerObserver:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+
+  // Detects changes to capabilities.
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
+
+  // Detects paused state.
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
+
   raw_ptr<Profile> profile_;
   using EnableChangedCallbackList = base::RepeatingCallbackList<void()>;
   EnableChangedCallbackList enable_changed_callback_list_;
   PrefChangeRegistrar pref_registrar_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 };
 
 }  // namespace glic

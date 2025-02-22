@@ -21,6 +21,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/declarative/test_rules_registry.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
+#include "extensions/browser/rules_registry_ids.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -70,7 +71,7 @@ class RulesRegistryServiceTest : public testing::Test {
 TEST_F(RulesRegistryServiceTest, TestConstructionAndMultiThreading) {
   RulesRegistryService registry_service(nullptr);
 
-  int key = RulesRegistryService::kDefaultRulesRegistryID;
+  int key = rules_registry_ids::kDefaultRulesRegistryID;
   TestRulesRegistry* ui_registry = new TestRulesRegistry("ui", key);
 
   // Test registration.
@@ -140,13 +141,13 @@ TEST_F(RulesRegistryServiceTest, DefaultRulesRegistryRegistered) {
     EXPECT_EQ(
         test_case.expect_api_enabled,
         registry_service
-                .GetRulesRegistry(RulesRegistryService::kDefaultRulesRegistryID,
+                .GetRulesRegistry(rules_registry_ids::kDefaultRulesRegistryID,
                                   declarative_webrequest_constants::kOnRequest)
                 .get() != nullptr);
 
     // Content rules registry should always be created.
     EXPECT_TRUE(registry_service.GetRulesRegistry(
-        RulesRegistryService::kDefaultRulesRegistryID,
+        rules_registry_ids::kDefaultRulesRegistryID,
         declarative_content_constants::kOnPageChanged));
     EXPECT_TRUE(registry_service.content_rules_registry());
 

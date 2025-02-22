@@ -30,7 +30,6 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="2118649612461486615">Infos sur le magasin</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Vous pouvez rouvrir vos onglets et groupes fermés depuis les sections "Onglets récents" et "Groupes d'onglets". L'onglet de navigation privée ne sera pas disponible.}one{Vous pouvez rouvrir vos onglets et groupes fermés depuis les sections "Onglets récents" et "Groupes d'onglets". # onglet de navigation privée ne sera pas disponible.}other{Vous pouvez rouvrir vos onglets et groupes fermés depuis les sections "Onglets récents" et "Groupes d'onglets". # onglets de navigation privée ne seront pas disponibles.}}</translation>
 <translation id="2162620598375156287">Actuellement à <ph name="CURRENT_PRICE" /> sur <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">Le groupe d'onglets <ph name="TAB_GROUP_NAME" /> n'est plus dispo</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Dégrouper l'onglet}one{Dégrouper l'onglet}other{Dégrouper les onglets}}</translation>
 <translation id="2271452184061378400">Vos groupes d'onglets sont enregistrés ici</translation>
 <translation id="2277224997687551299">Modifier le nom du groupe</translation>

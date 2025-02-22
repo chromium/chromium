@@ -11,6 +11,7 @@ suite('WebviewTest', () => {
     loadTimeData.resetForTesting({
       glicAllowedOrigins: '',
       glicGuestURL: 'https://cat.fun/',
+      glicSkipOriginCheck: false,
     });
   });
 

@@ -21,6 +21,7 @@
 <translation id="4622039161600275920">このページは Chromium によってブロックされています</translation>
 <translation id="48558539577516920">ファイアウォールやウイルス対策の設定で、Chromium からネットワークへのアクセスを
         許可します。</translation>
+<translation id="4949828774841497663">[アプリケーション] &gt; [システム設定] &gt; [ネットワーク] に移動し、アクティブなネットワークを選択したあと、[詳細] ボタンをクリックして、選択されているプロキシがあれば選択を解除します。</translation>
 <translation id="580822234363523061">このオプションを無効にするには:
           Chromium メニュー &gt;
           <ph name="SETTINGS_TITLE" />

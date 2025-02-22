@@ -30,7 +30,6 @@
 <translation id="2118649612461486615">Podatki o trgovini</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. Anonimni zavihek ne bo na voljo.}one{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimni zavihek ne bo na voljo.}two{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimna zavihka ne bosta na voljo.}few{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimni zavihki ne bodo na voljo.}other{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimnih zavihkov ne bo na voljo.}}</translation>
 <translation id="2162620598375156287">Zdaj <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">Skupina zavihkov »<ph name="TAB_GROUP_NAME" />« ni več na voljo</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Razdruži zavihek}one{Razdruži zavihke}two{Razdruži zavihke}few{Razdruži zavihke}other{Razdruži zavihke}}</translation>
 <translation id="2271452184061378400">Skupine zavihkov so shranjene tukaj</translation>
 <translation id="2277224997687551299">Urejanje imena skupine</translation>

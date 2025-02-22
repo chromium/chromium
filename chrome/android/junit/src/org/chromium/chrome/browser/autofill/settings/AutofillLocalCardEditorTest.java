@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -43,6 +45,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -51,7 +55,11 @@ import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
+
+import java.util.List;
 
 /** Unit tests for {@link AutofillLocalCardEditorTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -66,7 +74,7 @@ public class AutofillLocalCardEditorTest {
                 /* origin= */ "",
                 /* isLocal= */ true,
                 /* name= */ "John Doe",
-                /* number= */ "4444333322221111",
+                /* number= */ NON_AMEX_CARD_NUMBER,
                 /* networkAndLastFourDigits= */ "",
                 /* month= */ "5",
                 AutofillTestHelper.nextYear(),
@@ -84,7 +92,7 @@ public class AutofillLocalCardEditorTest {
                 /* isLocal= */ true,
                 /* isVirtual= */ false,
                 /* name= */ "John Doe",
-                /* number= */ "4444111111111111",
+                /* number= */ NON_AMEX_CARD_NUMBER,
                 /* networkAndLastFourDigits= */ "",
                 /* month= */ "5",
                 AutofillTestHelper.nextYear(),
@@ -114,7 +122,7 @@ public class AutofillLocalCardEditorTest {
                 /* isLocal= */ true,
                 /* isVirtual= */ false,
                 /* name= */ "John Doe",
-                /* number= */ "378282246310005",
+                /* number= */ AMEX_CARD_NUMBER,
                 /* networkAndLastFourDigits= */ "",
                 /* month= */ "5",
                 AutofillTestHelper.nextYear(),
@@ -146,6 +154,9 @@ public class AutofillLocalCardEditorTest {
     @Mock private Profile mProfile;
     @Mock private PersonalDataManager mMockPersonalDataManager;
     @Mock private PersonalDataManager.Natives mPersonalDataManagerJni;
+    @Mock private SettingsNavigation mSettingsNavigation;
+
+    private UserActionTester mActionTester;
 
     private FragmentScenario mScenario;
 
@@ -163,6 +174,8 @@ public class AutofillLocalCardEditorTest {
     private ImageView mCvcHintImage;
 
     private String mNicknameInvalidError;
+    private String mExpirationDateInvalidError;
+    private String mExpiredCardError;
 
     @Before
     public void setUp() {
@@ -180,8 +193,12 @@ public class AutofillLocalCardEditorTest {
                                 return "visa";
                             }
                         });
+        when(mMockPersonalDataManager.getCreditCardForNumber(NON_AMEX_CARD_NUMBER))
+                .thenReturn(getSampleLocalCard());
 
         PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
+        mActionTester = new UserActionTester();
     }
 
     @After
@@ -189,15 +206,21 @@ public class AutofillLocalCardEditorTest {
         if (mScenario != null) {
             mScenario.close();
         }
+        mActionTester.tearDown();
     }
 
     private void initFragment(CreditCard card) {
-        String guid = card != null ? card.getGUID() : "";
-        when(mMockPersonalDataManager.getCreditCard(guid)).thenReturn(card);
+        Bundle arguments = new Bundle();
+        if (card != null) {
+            String guid = card.getGUID();
+            arguments.putString("guid", guid);
+            when(mMockPersonalDataManager.getCreditCard(guid)).thenReturn(card);
+        }
+
         mScenario =
                 FragmentScenario.launchInContainer(
                         AutofillLocalCardEditor.class,
-                        Bundle.EMPTY,
+                        arguments,
                         R.style.Theme_MaterialComponents,
                         new FragmentFactory() {
                             @NonNull
@@ -207,9 +230,6 @@ public class AutofillLocalCardEditorTest {
                                 Fragment fragment = super.instantiate(classLoader, className);
                                 if (fragment instanceof AutofillLocalCardEditor) {
                                     ((AutofillLocalCardEditor) fragment).setProfile(mProfile);
-                                    Bundle args = new Bundle();
-                                    args.putString("guid", guid);
-                                    fragment.setArguments(args);
                                 }
                                 return fragment;
                             }
@@ -235,6 +255,14 @@ public class AutofillLocalCardEditorTest {
                     mCvc = fragment.getView().findViewById(R.id.cvc);
                     mCvcHintImage = fragment.getView().findViewById(R.id.cvc_hint_image);
                     mNumberText = fragment.getView().findViewById(R.id.credit_card_number_edit);
+                    mExpirationDateInvalidError =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string
+                                                    .autofill_credit_card_editor_invalid_expiration_date);
+                    mExpiredCardError =
+                            fragment.getContext()
+                                    .getString(R.string.autofill_credit_card_editor_expired_card);
                 });
     }
 
@@ -252,7 +280,7 @@ public class AutofillLocalCardEditorTest {
         assertThat(actualDrawable).isNotNull();
         assertThat(expectedDrawable).isNotNull();
 
-        assertThat(expectedDrawable.getBitmap().sameAs(actualDrawable.getBitmap())).isTrue();
+        assertTrue(expectedDrawable.getBitmap().sameAs(actualDrawable.getBitmap()));
     }
 
     @Test
@@ -261,7 +289,7 @@ public class AutofillLocalCardEditorTest {
         initFragment(getSampleLocalCard());
 
         assertThat(mNicknameText.getText().toString()).isEmpty();
-        assertThat(mDoneButton.isEnabled()).isFalse();
+        assertFalse(mDoneButton.isEnabled());
     }
 
     @Test
@@ -274,7 +302,7 @@ public class AutofillLocalCardEditorTest {
 
         assertThat(mNicknameText.getText().toString()).isEqualTo(nickname);
         // If the nickname is not modified `mDoneButton` button should be disabled.
-        assertThat(mDoneButton.isEnabled()).isFalse();
+        assertFalse(mDoneButton.isEnabled());
     }
 
     @Test
@@ -294,7 +322,7 @@ public class AutofillLocalCardEditorTest {
 
         assertThat(mNicknameLabel.getError()).isEqualTo(mNicknameInvalidError);
         // Since the nickname has an error, the done button should be disabled.
-        assertThat(mDoneButton.isEnabled()).isFalse();
+        assertFalse(mDoneButton.isEnabled());
     }
 
     @Test
@@ -310,7 +338,7 @@ public class AutofillLocalCardEditorTest {
         // Set the nickname to valid one.
         mNicknameText.setText("Valid Nickname");
         assertThat(mNicknameLabel.getError()).isNull();
-        assertThat(mDoneButton.isEnabled()).isTrue();
+        assertTrue(mDoneButton.isEnabled());
     }
 
     @Test
@@ -327,7 +355,7 @@ public class AutofillLocalCardEditorTest {
         mNicknameText.setText(null);
 
         assertThat(mNicknameLabel.getError()).isNull();
-        assertThat(mDoneButton.isEnabled()).isTrue();
+        assertTrue(mDoneButton.isEnabled());
     }
 
     @Test
@@ -351,12 +379,12 @@ public class AutofillLocalCardEditorTest {
         assertThat(mExpirationMonth.getVisibility()).isEqualTo(View.VISIBLE);
         assertThat(mExpirationYear.getVisibility()).isEqualTo(View.VISIBLE);
 
-        assertThat(mExpirationMonth.isShown()).isTrue();
-        assertThat(mExpirationYear.isShown()).isTrue();
+        assertTrue(mExpirationMonth.isShown());
+        assertTrue(mExpirationYear.isShown());
 
         // The expiration date and the cvc fields should not be shown to the user.
-        assertThat(mExpirationDate.isShown()).isFalse();
-        assertThat(mCvc.isShown()).isFalse();
+        assertFalse(mExpirationDate.isShown());
+        assertFalse(mCvc.isShown());
     }
 
     @Test
@@ -368,12 +396,12 @@ public class AutofillLocalCardEditorTest {
         assertThat(mExpirationDate.getVisibility()).isEqualTo(View.VISIBLE);
         assertThat(mCvc.getVisibility()).isEqualTo(View.VISIBLE);
 
-        assertThat(mExpirationDate.isShown()).isTrue();
-        assertThat(mCvc.isShown()).isTrue();
+        assertTrue(mExpirationDate.isShown());
+        assertTrue(mCvc.isShown());
 
         // When the flag is on, month and year fields shouldn't be visible.
-        assertThat(mExpirationMonth.isShown()).isFalse();
-        assertThat(mExpirationYear.isShown()).isFalse();
+        assertFalse(mExpirationMonth.isShown());
+        assertFalse(mExpirationYear.isShown());
     }
 
     @Test
@@ -385,7 +413,7 @@ public class AutofillLocalCardEditorTest {
         initFragment(card);
 
         assertThat(mCvc.getText().toString()).isEqualTo(cvc);
-        assertThat(mDoneButton.isEnabled()).isFalse();
+        assertFalse(mDoneButton.isEnabled());
     }
 
     @Test
@@ -452,5 +480,295 @@ public class AutofillLocalCardEditorTest {
         verifyCvcHintImage(/* expectedImage= */ R.drawable.cvc_icon_amex);
         mNumberText.setText(NON_AMEX_CARD_NUMBER);
         verifyCvcHintImage(/* expectedImage= */ R.drawable.cvc_icon);
+    }
+
+    @Test
+    @MediumTest
+    public void expirationDateFieldSet_cardHasExpirationDate() {
+        CreditCard card = getSampleLocalCardWithCvc();
+        String validExpirationMonth = "12";
+        String validExpirationYear = AutofillTestHelper.nextYear();
+        card.setMonth(validExpirationMonth);
+        card.setYear(validExpirationYear);
+        initFragment(card);
+
+        assertThat(mExpirationDate.getText().toString())
+                .isEqualTo(
+                        String.format(
+                                "%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
+        assertFalse(mDoneButton.isEnabled());
+    }
+
+    @Test
+    @MediumTest
+    public void testExpirationDate_whenInvalidDate_showsErrorMessage() {
+        initFragment(getSampleLocalCardWithCvc());
+        String invalidExpirationMonth = "14";
+        String validExpirationYear = AutofillTestHelper.nextYear();
+
+        mExpirationDate.setText(
+                String.format("%s/%s", invalidExpirationMonth, validExpirationYear.substring(2)));
+
+        assertThat(mExpirationDate.getError()).isEqualTo(mExpirationDateInvalidError);
+        assertFalse(mDoneButton.isEnabled());
+    }
+
+    @Test
+    @MediumTest
+    public void testExpirationDate_whenDateInPast_showsErrorMessage() {
+        initFragment(getSampleLocalCardWithCvc());
+        String validExpirationMonth = "12";
+        String invalidPastExpirationYear = "2020";
+
+        mExpirationDate.setText(
+                String.format(
+                        "%s/%s", validExpirationMonth, invalidPastExpirationYear.substring(2)));
+
+        assertThat(mExpirationDate.getError()).isEqualTo(mExpiredCardError);
+        assertFalse(mDoneButton.isEnabled());
+    }
+
+    @Test
+    @MediumTest
+    public void testExpirationDate_whenDateIsCorrected_removesErrorMessage() {
+        CreditCard card = getSampleLocalCardWithCvc();
+        String validExpirationMonth = "12";
+        String invalidPastExpirationYear = "2020";
+        String validExpirationYear = AutofillTestHelper.nextYear();
+        card.setMonth(validExpirationMonth);
+        card.setYear(invalidPastExpirationYear);
+
+        initFragment(card);
+
+        assertThat(mExpirationDate.getError()).isEqualTo(mExpiredCardError);
+        assertFalse(mDoneButton.isEnabled());
+
+        mExpirationDate.setText(
+                String.format("%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
+
+        assertThat(mExpirationDate.getError()).isNull();
+        assertTrue(mDoneButton.isEnabled());
+    }
+
+    @Test
+    @MediumTest
+    public void testExpirationDate_whenDateIsEditedFromValidToIncomplete_disablesSaveButton() {
+        initFragment(getSampleLocalCardWithCvc());
+        String validExpirationMonth = "12";
+        String validExpirationYear = AutofillTestHelper.nextYear();
+
+        mExpirationDate.setText(
+                String.format("%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
+
+        assertThat(mExpirationDate.getError()).isNull();
+        assertTrue(mDoneButton.isEnabled());
+
+        mExpirationDate.setText(
+                String.format("%s/%s", validExpirationMonth, /* expiration year */ ""));
+
+        // Button should be disabled, but no error should be visible too.
+        assertFalse(mDoneButton.isEnabled());
+        assertThat(mDoneButton.getError()).isNull();
+    }
+
+    @Test
+    @MediumTest
+    public void testExpirationDate_whenDateIsEditedFromValidToEmpty_disablesSaveButton() {
+        initFragment(getSampleLocalCardWithCvc());
+        String validExpirationMonth = "12";
+        String validExpirationYear = AutofillTestHelper.nextYear();
+
+        mExpirationDate.setText(
+                String.format("%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
+
+        assertThat(mExpirationDate.getError()).isNull();
+        assertTrue(mDoneButton.isEnabled());
+
+        mExpirationDate.setText(/* date= */ "");
+
+        // Button should be disabled, but no error should be visible too.
+        assertFalse(mDoneButton.isEnabled());
+        assertThat(mDoneButton.getError()).isNull();
+    }
+
+    @Test
+    @MediumTest
+    public void
+            testExpirationDate_whenCorrectingOnlyNickname_keepsSaveButtonDisabledDueToInvalidDate() {
+        initFragment(getSampleLocalCardWithCvc());
+        String validNickname = "valid";
+        String invalidNickname = "Invalid 123";
+        String invalidPastExpirationYear = "2020";
+        String validExpirationMonth = "12";
+        String validExpirationYear = AutofillTestHelper.nextYear();
+
+        mExpirationDate.setText(
+                String.format("%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
+        mNicknameText.setText(validNickname);
+
+        assertTrue(mDoneButton.isEnabled());
+
+        mExpirationDate.setText(
+                String.format(
+                        "%s/%s", validExpirationMonth, invalidPastExpirationYear.substring(2)));
+        mNicknameText.setText(invalidNickname);
+
+        // Button should be disabled, but no error should be visible too.
+        assertFalse(mDoneButton.isEnabled());
+        assertThat(mDoneButton.getError()).isNull();
+
+        mNicknameText.setText(validNickname);
+
+        // Button should be disabled, but no error should be visible too.
+        assertFalse(mDoneButton.isEnabled());
+        assertThat(mDoneButton.getError()).isNull();
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordHistogram_whenNewCreditCardIsAddedWithoutExistingCards() {
+        initFragment(null);
+        // Expect histogram to record true for adding a card without existing cards.
+        HistogramWatcher saveCardWithoutExistingCardsHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                AutofillLocalCardEditor.CARD_ADDED_WITHOUT_EXISTING_CARDS_HISTOGRAM,
+                                true)
+                        .build();
+
+        mNumberText.setText(NON_AMEX_CARD_NUMBER);
+        mExpirationDate.setText(String.format("12/%s", AutofillTestHelper.nextYear().substring(2)));
+        mCvc.setText(/* code= */ "321");
+        mDoneButton.performClick();
+
+        saveCardWithoutExistingCardsHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordUserAction_whenNewCreditCardIsAddedWithCvc() {
+        initFragment(null);
+        String validExpirationYear = AutofillTestHelper.nextYear();
+        String validExpirationMonth = "12";
+
+        mNumberText.setText(NON_AMEX_CARD_NUMBER);
+        mExpirationDate.setText(
+                String.format("%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
+        mCvc.setText(/* code= */ "321");
+        mDoneButton.performClick();
+
+        assertTrue(mActionTester.getActions().contains("AutofillCreditCardsAddedWithCvc"));
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordUserAction_whenExistingCreditCardWithoutCvcIsEditedAndCvcIsLeftBlank() {
+        initFragment(getSampleLocalCard());
+        String validExpirationYear = AutofillTestHelper.nextYear();
+        String validExpirationMonth = "12";
+
+        mExpirationDate.setText(
+                String.format("%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
+        mDoneButton.performClick();
+
+        assertTrue(
+                mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasLeftBlank"));
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordUserAction_whenExistingCreditCardWithoutCvcIsEditedAndCvcIsAdded() {
+        initFragment(getSampleLocalCard());
+
+        mCvc.setText(/* code= */ "321");
+        mDoneButton.performClick();
+
+        assertTrue(mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasAdded"));
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordUserAction_whenExistingCreditCardWithCvcIsEditedAndCvcIsRemoved() {
+        initFragment(getSampleLocalCardWithCvc());
+
+        mCvc.setText(/* code= */ "");
+        mDoneButton.performClick();
+
+        assertTrue(
+                mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasRemoved"));
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordUserAction_whenExistingCreditCardWithCvcIsEditedAndCvcIsUpdated() {
+        initFragment(getSampleLocalCardWithCvc());
+
+        mCvc.setText(/* code= */ "321");
+        mDoneButton.performClick();
+
+        assertTrue(
+                mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasUpdated"));
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordUserAction_whenExistingCreditCardWithCvcIsEditedAndCvcIsUnchanged() {
+        initFragment(getSampleLocalCardWithCvc());
+        String validExpirationYear = AutofillTestHelper.nextYear();
+        String validExpirationMonth = "12";
+
+        mExpirationDate.setText(
+                String.format("%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
+        mDoneButton.performClick();
+
+        assertTrue(
+                mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasUnchanged"));
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordHistogram_whenAddCardFlowStarted() {
+        // Expect histogram to record add card flow.
+        HistogramWatcher addCardFlowHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(AutofillLocalCardEditor.ADD_CARD_FLOW_HISTOGRAM, true)
+                        .build();
+        initFragment(getSampleLocalCard());
+
+        addCardFlowHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordHistogram_whenAddCardFlowStartedWithoutExistingCards() {
+        // Expect histogram to record true for entering the add card flow without existing cards.
+        HistogramWatcher addCardFlowWithoutExistingCardsHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                AutofillLocalCardEditor
+                                        .ADD_CARD_FLOW_WITHOUT_EXISTING_CARDS_HISTOGRAM,
+                                true)
+                        .build();
+        initFragment(getSampleLocalCard());
+
+        addCardFlowWithoutExistingCardsHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordHistogram_whenAddCardFlowStartedWithExistingCards() {
+        when(mMockPersonalDataManager.getCreditCardsForSettings())
+                .thenReturn(List.of(getSampleLocalCard()));
+        // Expect histogram to record false for entering the card added with existing cards.
+        HistogramWatcher addCardFlowWithoutExistingCardsHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                AutofillLocalCardEditor
+                                        .ADD_CARD_FLOW_WITHOUT_EXISTING_CARDS_HISTOGRAM,
+                                false)
+                        .build();
+        initFragment(getSampleLocalCard());
+
+        addCardFlowWithoutExistingCardsHistogram.assertExpected();
     }
 }

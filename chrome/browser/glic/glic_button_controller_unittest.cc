@@ -11,6 +11,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/glic_vector_icon_manager.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -66,6 +67,7 @@ class GlicButtonControllerTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
     profile_ = testing_profile_manager_->CreateTestingProfile("profile");
+    ForceSigninAndModelExecutionCapability(profile_);
 
     TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
 
@@ -145,11 +147,11 @@ TEST_F(GlicButtonControllerTest, GlicDetachedOverridesSettings) {
 
   mojom::PanelState panel_state;
   panel_state.kind = mojom::PanelState_Kind::kAttached;
-  controller()->PanelStateChanged(panel_state);
+  controller()->PanelStateChanged(panel_state, nullptr);
   ASSERT_FALSE(controller_delegate()->show_state());
 
   panel_state.kind = mojom::PanelState_Kind::kDetached;
-  controller()->PanelStateChanged(panel_state);
+  controller()->PanelStateChanged(panel_state, nullptr);
   EXPECT_TRUE(controller_delegate()->show_state());
 }
 
@@ -161,21 +163,21 @@ TEST_F(GlicButtonControllerTest, GlicWindowPanelState) {
   panel_state.kind = mojom::PanelState_Kind::kHidden;
   const auto& hidden_icon =
       GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON);
-  controller()->PanelStateChanged(panel_state);
+  controller()->PanelStateChanged(panel_state, nullptr);
   EXPECT_EQ(controller_delegate()->icon()->reps.data(),
             hidden_icon.reps.data());
 
   const auto& attach_icon =
       GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON);
   panel_state.kind = mojom::PanelState_Kind::kAttached;
-  controller()->PanelStateChanged(panel_state);
+  controller()->PanelStateChanged(panel_state, nullptr);
   EXPECT_EQ(controller_delegate()->icon()->reps.data(),
             attach_icon.reps.data());
 
   const auto& detach_icon =
       GlicVectorIconManager::GetVectorIcon(IDR_GLIC_ATTACH_BUTTON_VECTOR_ICON);
   panel_state.kind = mojom::PanelState_Kind::kDetached;
-  controller()->PanelStateChanged(panel_state);
+  controller()->PanelStateChanged(panel_state, nullptr);
   EXPECT_EQ(controller_delegate()->icon()->reps.data(),
             detach_icon.reps.data());
 }

@@ -5,6 +5,7 @@
 #ifndef UI_BASE_INTERACTION_INTERACTIVE_TEST_INTERNAL_H_
 #define UI_BASE_INTERACTION_INTERACTIVE_TEST_INTERNAL_H_
 
+#include <algorithm>
 #include <concepts>
 #include <functional>
 #include <memory>
@@ -461,5 +462,19 @@ bool InteractiveTestPrivate::AddStateObserver(
 }  // namespace internal
 
 }  // namespace ui::test
+
+inline ui::test::internal::MultiStep& operator+=(
+    ui::test::internal::MultiStep& steps,
+    ui::InteractionSequence::StepBuilder&& step) {
+  steps.push_back(std::move(step));
+  return steps;
+}
+
+inline ui::test::internal::MultiStep& operator+=(
+    ui::test::internal::MultiStep& steps,
+    ui::test::internal::MultiStep&& other) {
+  std::ranges::move(other, std::back_inserter(steps));
+  return steps;
+}
 
 #endif  // UI_BASE_INTERACTION_INTERACTIVE_TEST_INTERNAL_H_

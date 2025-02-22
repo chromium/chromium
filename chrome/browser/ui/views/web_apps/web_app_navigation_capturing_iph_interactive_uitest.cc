@@ -185,9 +185,8 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
                                           base::DoNothing());
         }),
         InAnyContext(WaitForShow(kStartPageId)),
-        InSameContext(
-            Steps(ObserveState(kLatestDomMessage, kStartPageId),
-                  WaitForLaunchQueuesFlushedAndNavigationComplete())));
+        InSameContext(ObserveState(kLatestDomMessage, kStartPageId),
+                      WaitForLaunchQueuesFlushedAndNavigationComplete()));
     AddDescriptionPrefix(steps, "OpenAppStartPage()");
     return steps;
   }
@@ -279,7 +278,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                  feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)))),
       InSameContextAs(
           kDestinationPageId,
-          CheckPromoIsActive(
+          CheckPromoRequested(
               feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
               NavigationCapturingV2Enabled())));
 }
@@ -305,7 +304,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                  feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)))),
       InSameContextAs(
           kDestinationPageId,
-          CheckPromoIsActive(
+          CheckPromoRequested(
               feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
               NavigationCapturingV2Enabled())));
 }
@@ -333,7 +332,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                  feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)))),
       InSameContextAs(
           kDestinationPageId,
-          CheckPromoIsActive(
+          CheckPromoRequested(
               feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
               NavigationCapturingV2Enabled())));
 }
@@ -353,7 +352,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
              kAppPageId,
              WaitForPromo(
                  feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)))),
-      InAnyContext(CheckPromoIsActive(
+      InAnyContext(CheckPromoRequested(
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
           NavigationCapturingV2Enabled())));
 }
@@ -366,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
   RunTestSequence(
       OpenAppStartPage(app_id_a),
       TriggerAppLaunch(kToSiteBTargetBlankWithOpener, ui_controls::LEFT),
-      InSameContext(CheckPromoIsActive(
+      InSameContext(CheckPromoRequested(
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch, false)));
 }
 
@@ -377,12 +376,12 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
   RunTestSequence(
       OpenStartPage(),
       TriggerAppLaunch(kToSiteBTargetBlankNoOpener, ui_controls::LEFT),
-      InSameContext(Steps(
+      InSameContext(
           WaitForPromo(feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch),
           CheckActionCount("LinkCapturingIPHAppBubbleShown", 1),
           WithView(kBrowserViewElementId,
                    [](BrowserView* browser_view) { browser_view->Close(); }),
-          WaitForHide(kBrowserViewElementId))),
+          WaitForHide(kBrowserViewElementId)),
       CheckActionCount("LinkCapturingIPHAppBubbleNotAccepted", 1));
 }
 
@@ -394,11 +393,11 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
   RunTestSequence(
       OpenStartPage(),
       TriggerAppLaunch(kToSiteBTargetBlankNoOpener, ui_controls::LEFT),
-      InSameContext(Steps(
+      InSameContext(
           WaitForPromo(feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch),
           CheckActionCount("LinkCapturingIPHAppBubbleShown", 1),
           PressNonDefaultPromoButton(),
-          CheckActionCount("LinkCapturingIPHAppBubbleAccepted", 1))));
+          CheckActionCount("LinkCapturingIPHAppBubbleAccepted", 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
@@ -409,10 +408,10 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
   RunTestSequence(
       OpenStartPage(),
       TriggerAppLaunch(kToSiteBTargetBlankNoOpener, ui_controls::LEFT),
-      InSameContext(Steps(
+      InSameContext(
           WaitForPromo(feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch),
           PressDefaultPromoButton(),
-          CheckActionCount("LinkCapturingIPHAppBubbleNotAccepted", 1))));
+          CheckActionCount("LinkCapturingIPHAppBubbleNotAccepted", 1)));
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
@@ -437,7 +436,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
       If([this]() { return NavigationCapturingV2Enabled(); },
          Then(InSameContext(WaitForPromo(
              feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab)))),
-      InSameContext(CheckPromoIsActive(
+      InSameContext(CheckPromoRequested(
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
           NavigationCapturingV2Enabled())));
 }
@@ -460,14 +459,14 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
       If([this]() { return NavigationCapturingV2Enabled(); },
          Then(InSameContext(WaitForPromo(
              feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab)))),
-      InSameContext(CheckPromoIsActive(
+      InSameContext(CheckPromoRequested(
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
           NavigationCapturingV2Enabled())),
       AddInstrumentedTab(kNewPageId, GURL("https://www.example.com")),
       WaitForWebContentsReady(kNewPageId),
       InSameContextAs(
           kDestinationPageId,
-          CheckPromoIsActive(
+          CheckPromoRequested(
               feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
               false)));
 }

@@ -767,7 +767,7 @@ suite('ExtensionDetailViewTest', function() {
         item.shadowRoot.querySelector('#safetyCheckWarningContainer');
     assertTrue(!!safetyWarningText);
     assertTrue(isVisible(safetyWarningText));
-    assertTrue(safetyWarningText!.textContent!.includes('Test Message'));
+    assertTrue(safetyWarningText.textContent!.includes('Test Message'));
   });
 
   test('Mv2DeprecationMessage_None', () => {
