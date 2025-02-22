@@ -9,12 +9,6 @@ namespace base::internal {
 static_assert(sizeof(TaskSourceSortKey) <= 2 * sizeof(uint64_t),
               "Members in TaskSourceSortKey should be ordered to be compact.");
 
-TaskSourceSortKey::TaskSourceSortKey(TaskPriority priority,
-                                     TimeTicks ready_time,
-                                     uint8_t worker_count)
-    : priority_(priority),
-      worker_count_(worker_count),
-      ready_time_(ready_time) {}
 
 bool TaskSourceSortKey::operator<(const TaskSourceSortKey& other) const {
   // This TaskSourceSortKey is considered more important than |other| if it has

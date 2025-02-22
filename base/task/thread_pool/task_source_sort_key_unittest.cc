@@ -16,7 +16,7 @@ namespace base::internal {
 namespace {
 
 // Keys are manually ordered from the least important to the most important.
-const auto kTestKeys = std::to_array<TaskSourceSortKey>({
+constexpr auto kTestKeys = std::to_array<TaskSourceSortKey>({
     {TaskPriority::BEST_EFFORT, TimeTicks() + Seconds(2000)},
     {TaskPriority::BEST_EFFORT, TimeTicks() + Seconds(1000)},
     {TaskPriority::USER_VISIBLE, TimeTicks() + Seconds(2000), 1},
