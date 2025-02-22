@@ -394,14 +394,6 @@ BookmarkBarView::BookmarkBarView(Browser* browser, BrowserView* browser_view)
   SetID(VIEW_ID_BOOKMARK_BAR);
   SetProperty(views::kElementIdentifierKey, kBookmarkBarElementId);
 
-  // TODO(lgrey): This layer was introduced to support clipping the bookmark
-  // bar to bounds to prevent it from drawing over the toolbar while animating.
-  // This is no longer necessary, so the masking was removed; however removing
-  // the layer now makes the animation jerky (or jerkier). The animation should
-  // be fixed and, if the layer is no longer necessary, itshould be removed.
-  // See https://crbug.com/844037.
-  SetPaintToLayer();
-
   size_animation_.Reset(1);
   if (!gfx::Animation::ShouldRenderRichAnimation()) {
     animations_enabled = false;
