@@ -44,7 +44,7 @@ public class AndroidPaymentApp extends PaymentApp
         implements IsReadyToPayServiceHelper.ResultHandler, WindowAndroid.IntentCallback {
     private final Handler mHandler;
     private final AndroidIntentLauncher mLauncher;
-    private final DialogController mDialogController;
+    @Nullable private final DialogController mDialogController;
     private final Set<String> mMethodNames;
     private final boolean mIsIncognito;
     private final String mPackageName;
@@ -90,7 +90,7 @@ public class AndroidPaymentApp extends PaymentApp
      */
     public AndroidPaymentApp(
             AndroidIntentLauncher launcher,
-            DialogController dialogController,
+            @Nullable DialogController dialogController,
             String packageName,
             String activity,
             @Nullable String isReadyToPayService,
@@ -195,7 +195,7 @@ public class AndroidPaymentApp extends PaymentApp
 
         assert !mIsIncognito;
 
-        if (mShowReadyToPayDebugInfo) {
+        if (mShowReadyToPayDebugInfo && mDialogController != null) {
             mDialogController.showReadyToPayDebugInfo(
                     buildReadyToPayDebugInfoString(
                             mIsReadyToPayServiceName,
@@ -289,6 +289,10 @@ public class AndroidPaymentApp extends PaymentApp
             launchRunnable.run();
             return;
         }
+
+        // The dialog controller can be null only in WebView, which does not have a concept of
+        // incognito mode, i.e., `mIsIncognito` is always false in WebView.
+        assert mDialogController != null;
 
         mDialogController.showLeavingIncognitoWarning(
                 this::notifyErrorInvokingPaymentApp, launchRunnable);

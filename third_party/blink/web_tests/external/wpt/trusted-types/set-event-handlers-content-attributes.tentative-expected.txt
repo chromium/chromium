@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 513 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 519 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] DIV.setAttribute(onabort, "unsafe_handler()") calls default policy
   assert_equals: expected "Element onabort" but got "Element setAttribute"
 [FAIL] DIV.setAttributeNS(onabort, "unsafe_handler()") calls default policy
@@ -144,6 +144,18 @@ Found 513 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "Element onclose" but got "Element setAttribute"
 [FAIL] mrow.setAttributeNS(onclose, "unsafe_handler()") calls default policy
   assert_equals: expected "Element onclose" but got "Element setAttributeNS"
+[FAIL] DIV.setAttribute(oncommand, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncommand" but got "Element setAttribute"
+[FAIL] DIV.setAttributeNS(oncommand, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncommand" but got "Element setAttributeNS"
+[FAIL] g.setAttribute(oncommand, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncommand" but got "Element setAttribute"
+[FAIL] g.setAttributeNS(oncommand, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncommand" but got "Element setAttributeNS"
+[FAIL] mrow.setAttribute(oncommand, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncommand" but got "Element setAttribute"
+[FAIL] mrow.setAttributeNS(oncommand, "unsafe_handler()") calls default policy
+  assert_equals: expected "Element oncommand" but got "Element setAttributeNS"
 [FAIL] DIV.setAttribute(oncontextlost, "unsafe_handler()") calls default policy
   assert_equals: expected "Element oncontextlost" but got "Element setAttribute"
 [FAIL] DIV.setAttributeNS(oncontextlost, "unsafe_handler()") calls default policy

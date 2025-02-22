@@ -27,6 +27,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
@@ -1541,6 +1542,11 @@ void Page::SetVisionDeficiency(VisionDeficiency new_vision_deficiency) {
     vision_deficiency_ = new_vision_deficiency;
     SettingsChanged(ChangeType::kVisionDeficiency);
   }
+}
+
+void Page::SetPageLifecycleState(
+    mojom::blink::PageLifecycleStatePtr lifecycle_state) {
+  lifecycle_state_ = std::move(lifecycle_state);
 }
 
 void Page::Animate(base::TimeTicks monotonic_frame_begin_time) {
