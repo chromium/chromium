@@ -311,6 +311,12 @@ NO_STACK_PROTECTOR int RunContentProcess(
     command_line->AppendSwitch(switches::kUseMobileUserAgent);
 #endif
 
+#if BUILDFLAG(IS_TVOS)
+    // Set tvOS to single-process mode by default.
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitch(switches::kSingleProcess);
+#endif
+
 #if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && !defined(COMPONENT_BUILD)
     base::subtle::EnableFDOwnershipEnforcement(true);
 #endif
