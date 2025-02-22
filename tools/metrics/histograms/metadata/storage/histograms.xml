@@ -1855,6 +1855,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.SelectURL.UrlsLength" units="count"
+    expires_after="2025-08-21">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures length of the `urls` parameter in `selectURL()`. Recorded when
+    `selectURL()` is invoked and after successful length validation. Measures
+    numbers up to 8 precisely; numbers of 9 or more are grouped into the
+    overflow bucket 9.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Timing.UrlMappingDuringNavigation"
     units="ms" expires_after="2025-08-10">
   <owner>cammie@chromium.org</owner>
