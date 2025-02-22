@@ -4821,7 +4821,7 @@ Se vengono impostate sia questa policy sia la policy PostQuantumKeyAgreementEnab
 <translation id="4562165737444703281">Consenti agli utenti di [attivare/configurare] il port forwarding in Crostini</translation>
 <translation id="456450545863578630">Attiva il trasferimento di file nelle connessioni di assistenza da remoto da parte degli amministratori aziendali</translation>
 <translation id="4567137030726189378">Consenti l'utilizzo degli Strumenti per sviluppatori</translation>
-<translation id="4570859815763368584">Criterio ritirato nella versione M68. Usa la policy DefaultPopupsSetting.
+<translation id="4570859815763368584">Policy ritirata nella versione M68. Usa la policy DefaultPopupsSetting.
 
       Per una spiegazione completa, visita la pagina https://www.chromestatus.com/feature/5675755719622656.
       Se questa policy viene attivata, sarà possibile contemporaneamente navigare nei siti e aprire nuove finestre/schede.
@@ -9583,7 +9583,7 @@ Questa policy è stata pensata per essere temporanea e verrà rimossa in futuro.
           Il valore della policy deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di inattività.</translation>
 <translation id="7992613144342460685">Concedere l'autorizzazione per il posizionamento delle finestre su questi siti</translation>
 <translation id="7995610550667275367">Scansione (supportata dalla versione 87)</translation>
-<translation id="7999023147219236247">Criterio per le richieste di concessione delle autorizzazioni delle app. PERMISSION_POLICY_UNSPECIFIED: policy non specificata. Se per un'autorizzazione non viene specificata alcuna policy ad alcun livello, viene usato per impostazione predefinita il comportamento "PROMPT". PROMPT: viene chiesto all'utente di concedere un'autorizzazione. GRANT: viene concessa automaticamente un'autorizzazione. DENY: viene negata automaticamente un'autorizzazione.</translation>
+<translation id="7999023147219236247">Policy per le richieste di concessione delle autorizzazioni delle app. PERMISSION_POLICY_UNSPECIFIED: policy non specificata. Se per un'autorizzazione non viene specificata alcuna policy ad alcun livello, viene usato per impostazione predefinita il comportamento "PROMPT". PROMPT: viene chiesto all'utente di concedere un'autorizzazione. GRANT: viene concessa automaticamente un'autorizzazione. DENY: viene negata automaticamente un'autorizzazione.</translation>
 <translation id="7999336306414770162">Disattiva i report sulle informazioni VPD del dispositivo</translation>
 <translation id="7999818120028621358">Attiva la generazione di rapporti sugli eventi di prevenzione di fughe di dati</translation>
 <translation id="8001701200415781021">Limita gli Account Google che è possibile impostare come account principali del browser in <ph name="PRODUCT_NAME" /></translation>
