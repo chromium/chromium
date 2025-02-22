@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                  feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)))),
       InSameContextAs(
           kDestinationPageId,
-          CheckPromoIsActive(
+          CheckPromoRequested(
               feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
               NavigationCapturingV2Enabled())));
 }
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                  feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)))),
       InSameContextAs(
           kDestinationPageId,
-          CheckPromoIsActive(
+          CheckPromoRequested(
               feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
               NavigationCapturingV2Enabled())));
 }
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
                  feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)))),
       InSameContextAs(
           kDestinationPageId,
-          CheckPromoIsActive(
+          CheckPromoRequested(
               feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
               NavigationCapturingV2Enabled())));
 }
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
              kAppPageId,
              WaitForPromo(
                  feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch)))),
-      InAnyContext(CheckPromoIsActive(
+      InAnyContext(CheckPromoRequested(
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
           NavigationCapturingV2Enabled())));
 }
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
   RunTestSequence(
       OpenAppStartPage(app_id_a),
       TriggerAppLaunch(kToSiteBTargetBlankWithOpener, ui_controls::LEFT),
-      InSameContext(CheckPromoIsActive(
+      InSameContext(CheckPromoRequested(
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch, false)));
 }
 
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
       If([this]() { return NavigationCapturingV2Enabled(); },
          Then(InSameContext(WaitForPromo(
              feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab)))),
-      InSameContext(CheckPromoIsActive(
+      InSameContext(CheckPromoRequested(
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
           NavigationCapturingV2Enabled())));
 }
@@ -459,14 +459,14 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
       If([this]() { return NavigationCapturingV2Enabled(); },
          Then(InSameContext(WaitForPromo(
              feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab)))),
-      InSameContext(CheckPromoIsActive(
+      InSameContext(CheckPromoRequested(
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
           NavigationCapturingV2Enabled())),
       AddInstrumentedTab(kNewPageId, GURL("https://www.example.com")),
       WaitForWebContentsReady(kNewPageId),
       InSameContextAs(
           kDestinationPageId,
-          CheckPromoIsActive(
+          CheckPromoRequested(
               feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
               false)));
 }

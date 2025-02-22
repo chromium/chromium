@@ -82,6 +82,15 @@ class FeaturePromoLifecycleUiTest : public TestBase {
  public:
   FeaturePromoLifecycleUiTest()
       : TestBase(UseMockTracker(), ClockMode::kUseDefaultClock) {}
+
+  void SetUp() override {
+    SetControllerMode(ControllerMode::kUserEd25);
+    static_cast<internal::InteractiveFeaturePromoTestPrivate&>(
+        private_test_impl())
+        .set_use_shortened_timeouts_for_internal_testing(true);
+    TestBase::SetUp();
+  }
+
   ~FeaturePromoLifecycleUiTest() override = default;
 
   void SetUpOnMainThread() override {

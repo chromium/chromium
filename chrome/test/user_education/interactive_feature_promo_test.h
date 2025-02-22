@@ -49,6 +49,9 @@ class InteractiveFeaturePromoTestApi
           InitialSessionState::kOutsideGracePeriod);
   ~InteractiveFeaturePromoTestApi() override;
 
+  // Changes the controller mode. Call before calling base class `SetUp()`.
+  void SetControllerMode(ControllerMode controller_mode);
+
   // Gets the mock tracker, if the tracker mode is `UseMockTracker`.
   MockTracker* GetMockTrackerFor(Browser* browser);
 
@@ -117,17 +120,20 @@ class InteractiveFeaturePromoTestApi
   // that case.
   [[nodiscard]] MultiStep WaitForPromo(const base::Feature& iph_feature);
 
-  // Checks that the promo `iph_feature` is active.
+  // Checks that the promo `iph_feature` is has been requested and is either
+  // queued or showing. Does not handle the case where the promo has already
+  // been closed.
   //
   // If this step is done `InAnyContext()` it will verify that the promo is
-  // active in at least one browser (or if `active` is false, that it is not
-  // active in any browser.)
+  // requested in at least one browser (or if `active` is false, that it is not
+  // requested in any browser.)
   //
   // NOTE: the current context is potentially undefined after this step if it
   // is run `InAnyContext()`; do not follow this step with `InSameContext()` in
   // that case.
-  [[nodiscard]] StepBuilder CheckPromoIsActive(const base::Feature& iph_feature,
-                                               bool active = true);
+  [[nodiscard]] StepBuilder CheckPromoRequested(
+      const base::Feature& iph_feature,
+      bool requested = true);
 
   // Ends the specified promo via the API, with reason `kAborted`.
   [[nodiscard]] MultiStep AbortPromo(const base::Feature& iph_feature,
@@ -143,6 +149,11 @@ class InteractiveFeaturePromoTestApi
   // --------------------------------------------------------------------------
 
  private:
+  // Shared by CheckPromoRequested and some internal actions.
+  [[nodiscard]] StepBuilder CheckPromoImpl(const base::Feature& iph_feature,
+                                           bool requested,
+                                           bool include_queued);
+
   internal::InteractiveFeaturePromoTestPrivate& test_impl() {
     return static_cast<internal::InteractiveFeaturePromoTestPrivate&>(
         private_test_impl());
@@ -180,6 +191,20 @@ class InteractiveFeaturePromoTestT : public T,
   ~InteractiveFeaturePromoTestT() override = default;
 
  protected:
+  void SetUp() override {
+    static_cast<internal::InteractiveFeaturePromoTestPrivate&>(
+        private_test_impl())
+        .CommitControllerMode();
+    T::SetUp();
+  }
+
+  void TearDown() override {
+    T::TearDown();
+    static_cast<internal::InteractiveFeaturePromoTestPrivate&>(
+        private_test_impl())
+        .ResetControllerMode();
+  }
+
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
     private_test_impl().DoTestSetUp();

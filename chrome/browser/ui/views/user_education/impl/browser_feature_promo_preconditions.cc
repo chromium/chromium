@@ -157,9 +157,8 @@ NoCriticalNoticeShowingPrecondition::CheckPrecondition(ComputedData&) const {
 UserNotActivePrecondition::UserNotActivePrecondition(
     BrowserView& browser_view,
     const user_education::UserEducationTimeProvider& time_provider)
-    : FeaturePromoPreconditionBase(
-          kUserNotActivePrecondition,
-          "The user is not actively trying sending input"),
+    : FeaturePromoPreconditionBase(kUserNotActivePrecondition,
+                                   "The user is not actively sending input"),
       browser_view_(browser_view),
       time_provider_(time_provider) {
   if (browser_view.GetWidget()) {
@@ -181,26 +180,10 @@ void UserNotActivePrecondition::CreateEventMonitor() {
       {ui::EventType::kKeyPressed, ui::EventType::kKeyReleased,
        ui::EventType::kMousePressed, ui::EventType::kMouseReleased,
        ui::EventType::kTouchPressed, ui::EventType::kTouchReleased,
-       ui::EventType::kGestureBegin, ui::EventType::kGestureEnd,
-       ui::EventType::kMouseMoved});
+       ui::EventType::kGestureBegin, ui::EventType::kGestureEnd});
 }
 
 void UserNotActivePrecondition::OnEvent(const ui::Event& event) {
-  if (event.type() == ui::EventType::kMouseMoved) {
-    // For mouse moves, do not set the delay timer unless the mouse is being
-    // moved in the top container (toolbar, tabstrip, etc.). Other mouse moves
-    // are not significant enough to warrant delaying an IPH.
-    bool in_top_container = false;
-    if (auto* const top_container =
-            views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-                kTopContainerElementId, browser_view_->GetElementContext())) {
-      in_top_container = top_container->GetBoundsInScreen().Contains(
-          event.AsMouseEvent()->root_location());
-    }
-    if (!in_top_container) {
-      return;
-    }
-  }
   // Delay heavyweight IPH for the prescribed amount of time.
   last_active_time_ = time_provider_->GetCurrentTime();
 }
