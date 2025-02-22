@@ -2201,6 +2201,9 @@ extern const char kTpcdTrialSettingsDescription[];
 extern const char kTopLevelTpcdTrialSettingsName[];
 extern const char kTopLevelTpcdTrialSettingsDescription[];
 
+extern const char kBlockTpcsIncognitoName[];
+extern const char kBlockTpcsIncognitoDescription[];
+
 extern const char kTrackingProtection3pcdName[];
 extern const char kTrackingProtection3pcdDescription[];
 
