@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
+import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -19,12 +21,22 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         implements CustomDividerFragment {
 
+    public static final String PREF_UI_THEME = "ui_theme";
+
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.appearance_settings));
         SettingsUtils.addPreferencesFromResource(this, R.xml.appearance_preferences);
+
+        // LINT.IfChange(InitPrefUiTheme)
+        findPreference(PREF_UI_THEME)
+                .getExtras()
+                .putInt(
+                        ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
+                        ThemeSettingsEntry.SETTINGS);
+        // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/settings/MainSettings.java:InitPrefUiTheme)
     }
 
     @Override
