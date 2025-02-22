@@ -244,8 +244,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
   border->OnAnimationStep(kDummyTimeStamp);
   // 0.333/0.5.
   EXPECT_NEAR(border->opacity_for_testing(), 0.666, kFloatComparisonTolerance);
-  // 0.333/(0.5+1.5)=0.167, 1-(1-0.167)**2=0.306
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.306, kFloatComparisonTolerance);
+  // 0.333/0.5=0.666, 1-(1-0.666)**2~=0.888
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.888, kFloatComparisonTolerance);
 
   // T=1.333s
   timestamp += base::Seconds(1);
@@ -253,8 +253,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
   border->OnAnimationStep(kDummyTimeStamp);
   // Opacity ramp up is 0.5s.
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
-  // 1.333/(0.5+1.5)=0.667, 1-(1-0.667)**2=0.889
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.889, kFloatComparisonTolerance);
+  // clamped 1.333/0.5 -> 1.0, 1-(1-1.0.667)**2=1.0
+  EXPECT_NEAR(border->emphasis_for_testing(), 1.f, kFloatComparisonTolerance);
 
   // T=2.433s
   timestamp += base::Seconds(1.1);
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.889, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 1.f, kFloatComparisonTolerance);
 
   // Changing the active tab.
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUINewTabURL),
@@ -327,8 +327,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
-  // 0.123/(0.5+1.5)=0.062, 1-(1-0.062)**2=0.120
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.12, kFloatComparisonTolerance);
+  // 0.123/0.5=0.246, 1-(1-0.246)**2=0.431
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.431, kFloatComparisonTolerance);
 
   // T=3.567. For emphasis, T=2.234.
   timestamp += base::Seconds(2.111);
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedWindowChange) {
   tester->set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.889, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 1.f, kFloatComparisonTolerance);
 
   BorderView* new_border = nullptr;
   std::unique_ptr<TesterImpl> new_tester;
@@ -399,8 +399,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedWindowChange) {
   // 0.123/0.5=0.246
   EXPECT_NEAR(new_border->opacity_for_testing(), 0.246,
               kFloatComparisonTolerance);
-  // 0.123/(0.5+1.5)=0.062, 1-(1-0.062)**2=0.120
-  EXPECT_NEAR(new_border->emphasis_for_testing(), 0.12,
+  // 0.123/0.5=0.246, 1-(1-0.246)**2=0.120
+  EXPECT_NEAR(new_border->emphasis_for_testing(), 0.431,
               kFloatComparisonTolerance);
 
   new_border->CancelAnimation();
@@ -422,45 +422,44 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringEmphasisRampUp) {
   // T=0s.
   border->OnAnimationStep(kDummyTimeStamp);
 
-  // T=1.333s.
-  timestamp += base::Seconds(1.333);
+  // T=0.333s.
+  timestamp += base::Seconds(0.333);
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
-  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.889, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->opacity_for_testing(), 0.666, kFloatComparisonTolerance);
+  // 0.333/0.5=0.666, 1-(1-0.333)**2=0.888
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.888, kFloatComparisonTolerance);
 
   // Closing the glic window must start the ramping down process.
   glic_service(browser())->ClosePanel();
 
   // Calling `OnAnimationStep()` will set the start time of ramping down.
-  // T = 1.333s; for opacity, T=0s.
+  // T = 0.333s; for opacity, T=0s.
   border->OnAnimationStep(kDummyTimeStamp);
   // Opacity must start from its most recent value and decrease.
-  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->opacity_for_testing(), 0.666, kFloatComparisonTolerance);
   // Emphasis should remain as is.
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.889, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.888, kFloatComparisonTolerance);
 
-  // T=1.456s. For opacity, T=0.123s.
+  // T=0.456s. For opacity, T=0.123s.
   timestamp += base::Seconds(0.123);
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
-  // 1-((0.123/0.2)*1) = 0.385
-  EXPECT_NEAR(border->opacity_for_testing(), 0.385, kFloatComparisonTolerance);
-  // 1.456/(0.5+1.5)=0.728, 1-(1-0.728)**2=0.926
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.926, kFloatComparisonTolerance);
+  // 0.666-((0.123/0.2)*1) = 0.051.
+  EXPECT_NEAR(border->opacity_for_testing(), 0.051, kFloatComparisonTolerance);
+  // 0.456/0.5=0.912, 1-(1-0.912)**2=0.926
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.992, kFloatComparisonTolerance);
 
-  // T=1.526s. For opacity, T=0.193s.
+  // T=0.526s. For opacity, T=0.193s.
   timestamp += base::Seconds(0.07);
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
-  // 1-((0.193/0.2)*1) = 0.035
-  EXPECT_NEAR(border->opacity_for_testing(), 0.035, kFloatComparisonTolerance);
-  // 1.526/(0.5+1.5)=0.763, 1-(1-0.763)**2=0.943
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.943, kFloatComparisonTolerance);
-
-  timestamp += base::Seconds(5);
-  tester.set_next_time_tick(timestamp);
-  border->OnAnimationStep(kDummyTimeStamp);
+  // clamp 0.666-((0.193/0.2)*1) = 0.0
+  EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
+  // 0.52/0.5 -> 1, however since CancelAnimation has been invoked (this
+  // happens when the opacity ramp down is done in order to clean up), emphasis
+  // is reset to zero and the compositor is reset.
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
   EXPECT_FALSE(border->compositor_for_testing());
 }
 
@@ -485,9 +484,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringOpacityRampUp) {
   border->OnAnimationStep(kDummyTimeStamp);
   // (0.3/0.5)=0.6
   EXPECT_NEAR(border->opacity_for_testing(), 0.6, kFloatComparisonTolerance);
-  // 0.3/(0.5+1.5)=0.15, 1-(1-0.15)**2=0.2775
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.2775,
-              kFloatComparisonTolerance);
+  // 0.3/0.5=0.6, 1-(1-0.6)**2=0.84
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.84, kFloatComparisonTolerance);
 
   // Closing the glic window must start the ramping down process.
   glic_service(browser())->ClosePanel();
@@ -498,30 +496,28 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, RampingDownDuringOpacityRampUp) {
   // Opacity must start from its most recent value and decrease.
   EXPECT_NEAR(border->opacity_for_testing(), 0.6, kFloatComparisonTolerance);
   // Emphasis should remain as is.
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.2775,
-              kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.84, kFloatComparisonTolerance);
 
   // T=0.406s. For opacity, T=0.106s.
   timestamp += base::Seconds(0.106);
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
-  // 0.6-((0.106/0.2)*0.6)=0.282
-  EXPECT_NEAR(border->opacity_for_testing(), 0.282, kFloatComparisonTolerance);
-  // 0.406/(0.5+1.5)=0.203, 1-(1-0.203)**2=0.364
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.364, kFloatComparisonTolerance);
+  // 0.6-(0.106/0.2)=0.07
+  EXPECT_NEAR(border->opacity_for_testing(), 0.07, kFloatComparisonTolerance);
+  // 0.406/0.5=0.812, 1-(1-0.812)**2=0.965
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.965, kFloatComparisonTolerance);
 
   // T=0.45s. For opacity, T=0.15s.
   timestamp += base::Seconds(0.044);
   tester.set_next_time_tick(timestamp);
   border->OnAnimationStep(kDummyTimeStamp);
-  // 0.6-((0.15/0.2)*0.6)=0.15
-  EXPECT_NEAR(border->opacity_for_testing(), 0.15, kFloatComparisonTolerance);
-  // 0.45/(0.5+1.5)=0.225, 1-(1-0.225)**2=0.399
-  EXPECT_NEAR(border->emphasis_for_testing(), 0.399, kFloatComparisonTolerance);
-
-  timestamp += base::Seconds(5);
-  tester.set_next_time_tick(timestamp);
-  border->OnAnimationStep(kDummyTimeStamp);
+  // clamp 0.6-(0.15/0.2) -> 0
+  EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
+  // 0.45/0.5=0.9, 1-(1-0.9)**2=0.99.
+  // However since CancelAnimation has been invoked (this happens when the
+  // opacity ramp down is done in order to clean up), emphasis is reset to
+  // zero and the compositor is reset.
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
   EXPECT_FALSE(border->compositor_for_testing());
 }
 
