@@ -243,7 +243,7 @@ ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetDataSharingUrl(
   std::string access_token = ConvertJavaStringToUTF8(env, j_access_token);
   std::unique_ptr<GURL> url = data_sharing_service_->GetDataSharingUrl(
       GroupData(GroupId(group_id), /*display_name*/ "", /*members*/ {},
-                access_token));
+                /*former_members*/ {}, access_token));
 
   if (url) {
     return url::GURLAndroid::FromNativeGURL(env, *url);

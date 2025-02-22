@@ -380,10 +380,19 @@ TEST_P(DataSharingServiceImplTest, AddGroupDataForTesting) {
   const std::string given_name = "Invitee Given Name";
   const std::string access_token = "fake_access_token";
 
+  const GaiaId gaia_id2("gaia_id2");
+  const std::string display_name2 = "Former Member Display Name";
+  const std::string email2 = "former_member@mail.com";
+  const MemberRole role2 = MemberRole::kFormerMember;
+  const GURL avatar_url2 = GURL("chrome://newtab");
+  const std::string given_name2 = "Former Member Given Name";
+
   GroupMember group_member =
       GroupMember(gaia_id, display_name, email, role, avatar_url, given_name);
-  GroupData group_data =
-      GroupData(group_id, display_name, {group_member}, access_token);
+  GroupMember former_group_member = GroupMember(
+      gaia_id2, display_name2, email2, role2, avatar_url2, given_name2);
+  GroupData group_data = GroupData(group_id, display_name, {group_member},
+                                   {former_group_member}, access_token);
 
   data_sharing_service_->AddGroupDataForTesting(std::move(group_data));
 
@@ -400,6 +409,14 @@ TEST_P(DataSharingServiceImplTest, AddGroupDataForTesting) {
   EXPECT_EQ(returned_group_data->members[0].role, role);
   EXPECT_EQ(returned_group_data->members[0].avatar_url, avatar_url);
   EXPECT_EQ(returned_group_data->members[0].given_name, given_name);
+
+  EXPECT_EQ(returned_group_data->former_members.size(), 1u);
+  EXPECT_EQ(returned_group_data->former_members[0].gaia_id, gaia_id2);
+  EXPECT_EQ(returned_group_data->former_members[0].display_name, display_name2);
+  EXPECT_EQ(returned_group_data->former_members[0].email, email2);
+  EXPECT_EQ(returned_group_data->former_members[0].role, role2);
+  EXPECT_EQ(returned_group_data->former_members[0].avatar_url, avatar_url2);
+  EXPECT_EQ(returned_group_data->former_members[0].given_name, given_name2);
 }
 
 INSTANTIATE_TEST_SUITE_P(DataSharingServiceImplTestInstantiation,

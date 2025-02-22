@@ -434,6 +434,7 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
                                                 lastTabIdentifier:webStateID];
       break;
     case data_sharing::MemberRole::kInvitee:
+    case data_sharing::MemberRole::kFormerMember:
     case data_sharing::MemberRole::kUnknown:
       NOTREACHED();
   }

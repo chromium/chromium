@@ -172,8 +172,9 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
 
   // The user should be shown invitation screen for joining a collaboration
   // group.
-  GroupData group_data = GroupData(group_id, /*display_name=*/"",
-                                   /*members=*/{}, kAccessToken);
+  GroupData group_data =
+      GroupData(group_id, /*display_name=*/"",
+                /*members=*/{}, /*former_members=*/{}, kAccessToken);
   base::OnceCallback<void(Outcome)> join_ui_callback;
   base::OnceCallback<void(const data_sharing::DataSharingService::
                               SharedDataPreviewOrFailureOutcome&)>
@@ -524,8 +525,9 @@ TEST_F(CollaborationControllerTest, FullShareFlowAllStates) {
       .WillOnce(Return(std::make_unique<GURL>(url)));
   EXPECT_CALL(*delegate_,
               OnUrlReadyToShare(group_id, GURL(url), IsNotNullCallback()));
-  GroupData group_data = GroupData(group_id, /*display_name=*/"",
-                                   /*members=*/{}, kAccessToken);
+  GroupData group_data =
+      GroupData(group_id, /*display_name=*/"",
+                /*members=*/{}, /*former_members=*/{}, kAccessToken);
   std::move(group_data_callback).Run(group_data);
   std::move(tab_group_sharing_callback)
       .Run(tab_groups::TabGroupSyncService::TabGroupSharingResult::kSuccess);

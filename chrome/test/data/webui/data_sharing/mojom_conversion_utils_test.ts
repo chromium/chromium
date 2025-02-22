@@ -44,6 +44,7 @@ suite('MojomConversionUtilsTest', () => {
         avatarUrl: {url: avatarUrl},
         givenName,
       }],
+      formerMembers: [],
     };
 
     assertDeepEquals(expectedGroupData, groupData);

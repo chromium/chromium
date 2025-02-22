@@ -88,12 +88,14 @@ bool GroupToken::IsValid() const {
 GroupData::GroupData() = default;
 
 GroupData::GroupData(GroupId group_id,
-                     std::string display_name,
-                     std::vector<GroupMember> members,
+                     std::string display_name_param,
+                     std::vector<GroupMember> members_param,
+                     std::vector<GroupMember> former_members_param,
                      std::string access_token)
     : group_token(GroupToken(group_id, access_token)),
-      display_name(std::move(display_name)),
-      members(std::move(members)) {}
+      display_name(std::move(display_name_param)),
+      members(std::move(members_param)),
+      former_members(std::move(former_members_param)) {}
 
 GroupData::GroupData(const GroupData&) = default;
 GroupData& GroupData::operator=(const GroupData&) = default;

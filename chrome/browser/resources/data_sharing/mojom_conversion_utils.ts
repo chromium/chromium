@@ -21,11 +21,15 @@ export function toMojomGroupData(group: DataSharingSdkGroupData): GroupData {
   for (const member of group.members) {
     members.push(toMojomGroupMember(member));
   }
+  const formerMembers: GroupMember[] = [];
+  // TODO(crbug.com/396486431): convert formerMember from
+  // DataSharingSdkGroupData to GroupData when a new sdk version is updated.
   return {
     groupId: group.groupId,
     displayName: group.displayName || '',
     accessToken: group.accessToken || '',
     members,
+    formerMembers,
   };
 }
 

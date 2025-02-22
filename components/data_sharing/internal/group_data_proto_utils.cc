@@ -21,6 +21,8 @@ data_sharing_pb::MemberRole MemberRoleToProto(const MemberRole& member_role) {
       return data_sharing_pb::MEMBER_ROLE_MEMBER;
     case MemberRole::kInvitee:
       return data_sharing_pb::MEMBER_ROLE_INVITEE;
+    case MemberRole::kFormerMember:
+      return data_sharing_pb::MEMBER_ROLE_FORMER_MEMBER;
     case MemberRole::kUnknown:
       return data_sharing_pb::MEMBER_ROLE_UNSPECIFIED;
   }
@@ -35,6 +37,8 @@ MemberRole MemberRoleFromProto(const data_sharing_pb::MemberRole& member_role) {
       return MemberRole::kMember;
     case data_sharing_pb::MEMBER_ROLE_INVITEE:
       return MemberRole::kInvitee;
+    case data_sharing_pb::MEMBER_ROLE_FORMER_MEMBER:
+      return MemberRole::kFormerMember;
     case data_sharing_pb::MEMBER_ROLE_UNSPECIFIED:
       return MemberRole::kUnknown;
   }
@@ -74,6 +78,9 @@ data_sharing_pb::GroupData GroupDataToProto(const GroupData& group_data) {
   for (const auto& member : group_data.members) {
     *result.add_members() = GroupMemberToProto(member);
   }
+  for (const auto& member : group_data.former_members) {
+    *result.add_former_members() = GroupMemberToProto(member);
+  }
   result.set_access_token(group_data.group_token.access_token);
   return result;
 }
@@ -85,6 +92,9 @@ GroupData GroupDataFromProto(
   result.display_name = group_data_proto.display_name();
   for (const auto& member_proto : group_data_proto.members()) {
     result.members.push_back(GroupMemberFromProto(member_proto));
+  }
+  for (const auto& member_proto : group_data_proto.former_members()) {
+    result.former_members.push_back(GroupMemberFromProto(member_proto));
   }
   result.group_token.access_token = group_data_proto.access_token();
   return result;
