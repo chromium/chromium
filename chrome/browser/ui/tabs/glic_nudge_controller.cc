@@ -27,6 +27,7 @@ void GlicNudgeController::UpdateNudgeLabel(content::WebContents* web_contents,
   auto* const tab_interface =
       browser_window_interface_->GetActiveTabInterface();
   if (tab_interface->GetContents() != web_contents) {
+    nudge_activity_callback_.Run(GlicNudgeActivity::kNudgeNotShownWebContents);
     return;
   }
 
@@ -47,6 +48,9 @@ void GlicNudgeController::OnNudgeActivity(GlicNudgeActivity activity) {
     case GlicNudgeActivity::kNudgeClicked:
     case GlicNudgeActivity::kNudgeDismissed:
       nudge_activity_callback_.Run(activity);
+      nudge_activity_callback_.Reset();
+      break;
+    case GlicNudgeActivity::kNudgeNotShownWebContents:
       nudge_activity_callback_.Reset();
       break;
   }

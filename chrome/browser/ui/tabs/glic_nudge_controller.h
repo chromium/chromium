@@ -23,6 +23,7 @@ enum class GlicNudgeActivity {
   kNudgeShown,
   kNudgeClicked,
   kNudgeDismissed,
+  kNudgeNotShownWebContents,
 };
 
 // Controller that mediates Glic Nudges and ensures that only the active tab is

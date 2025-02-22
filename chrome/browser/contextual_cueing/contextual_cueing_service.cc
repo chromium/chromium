@@ -6,10 +6,21 @@
 
 #include <cmath>
 
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "url/gurl.h"
+
+namespace {
+
+void LogNudgeInteraction(contextual_cueing::NudgeInteraction interaction) {
+  base::UmaHistogramEnumeration("ContextualCueing.NudgeInteraction",
+                                interaction);
+}
+
+}  // namespace
 
 namespace contextual_cueing {
 
@@ -44,6 +55,8 @@ void ContextualCueingService::ReportPageLoad() {
 
 void ContextualCueingService::CueingNudgeShown(const GURL& url) {
   recent_nudge_tracker_.CueingNudgeShown();
+  LogNudgeInteraction(NudgeInteraction::kShown);
+
   if (kMinPageCountBetweenNudges.Get()) {
     // Let the cue logic be performed the next page after quiet count pages.
     remaining_quiet_loads_ = kMinPageCountBetweenNudges.Get() + 1;
@@ -60,6 +73,8 @@ void ContextualCueingService::CueingNudgeShown(const GURL& url) {
 }
 
 void ContextualCueingService::CueingNudgeDismissed() {
+  LogNudgeInteraction(NudgeInteraction::kDismissed);
+
   base::TimeDelta backoff_duration =
       kBackoffTime.Get() * pow(kBackoffMultiplierBase.Get(), dismiss_count_);
 
@@ -68,6 +83,8 @@ void ContextualCueingService::CueingNudgeDismissed() {
 }
 
 void ContextualCueingService::CueingNudgeClicked() {
+  LogNudgeInteraction(NudgeInteraction::kClicked);
+
   dismiss_count_ = 0;
 }
 
@@ -105,6 +122,9 @@ void ContextualCueingService::OnNudgeActivity(
       break;
     case tabs::GlicNudgeActivity::kNudgeDismissed:
       CueingNudgeDismissed();
+      break;
+    case tabs::GlicNudgeActivity::kNudgeNotShownWebContents:
+      LogNudgeInteraction(NudgeInteraction::kNudgeNotShownWebContents);
       break;
   }
 }

@@ -16,8 +16,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
@@ -143,10 +145,24 @@ void ContextualCueingHelper::OnOptimizationGuideCueingMetadata(
     recorder->set_nudge_decision(NudgeDecision::kServerDataMalformed);
     return;
   }
+
   ContextualCueingPageData::CreateForPage(
       web_contents()->GetPrimaryPage(), std::move(*parsed),
       base::BindOnce(&ContextualCueingHelper::OnCueingDecision,
                      weak_ptr_factory_.GetWeakPtr(), std::move(recorder)));
+}
+
+bool ContextualCueingHelper::IsBrowserBlockingNudges(
+    ScopedNudgeDecisionRecorder* recorder) {
+  // Determine if the Browser is available for nudging.
+  if (tabs::TabInterface::GetFromContents(web_contents())
+          ->GetBrowserWindowInterface()
+          ->GetUserEducationInterface()
+          ->IsFeaturePromoActive(feature_engagement::kIPHGlicPromoFeature)) {
+    recorder->set_nudge_decision(NudgeDecision::kNudgeNotShownIPH);
+    return true;
+  }
+  return false;
 }
 
 void ContextualCueingHelper::OnCueingDecision(
@@ -160,6 +176,10 @@ void ContextualCueingHelper::OnCueingDecision(
   if (cue_label.empty()) {
     decision_recorder->set_nudge_decision(
         NudgeDecision::kClientConditionsUnmet);
+    return;
+  }
+
+  if (IsBrowserBlockingNudges(decision_recorder.get())) {
     return;
   }
 
