@@ -53,7 +53,7 @@ void GroupPolicyManagerTests::DeletePolicyKey() {
 }
 
 TEST_F(GroupPolicyManagerTests, NoPolicySet) {
-  auto policy_manager = base::MakeRefCounted<GroupPolicyManager>();
+  auto policy_manager = base::MakeRefCounted<GroupPolicyManager>(false);
   EXPECT_FALSE(policy_manager->HasActiveDevicePolicies());
 
   EXPECT_EQ(policy_manager->source(), "Group Policy");
