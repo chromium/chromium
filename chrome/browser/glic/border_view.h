@@ -63,7 +63,7 @@ class BorderView : public views::View,
   };
   void set_tester(Tester* tester) { tester_ = tester; }
 
-  int GetMillisecondsSinceCreationForTesting() const;
+  float GetSecondsSinceCreationForTesting() const;
 
  private:
   // A value from 0 to 1 indicating how much the border is to be emphasized.
@@ -78,8 +78,8 @@ class BorderView : public views::View,
   // Sets the necessary bits to start ramping down the opacity once it's called.
   void StartRampingDown();
 
-  // Returns the number of milliseconds since construction; wraps after a day.
-  int GetMillisecondsSinceCreation() const;
+  // Returns the number of seconds since construction; wraps after a day.
+  float GetSecondsSinceCreation() const;
 
   // Returns the timestamp when the instance was created (but permits being
   // adjusted by the Tester).
