@@ -48,18 +48,6 @@ base::expected<WebContents*, std::string> OpenInNewTab(
   return tab_observer.window();
 }
 
-[[nodiscard]] testing::AssertionResult AccessStorage(
-    RenderFrameHost* frame,
-    blink::mojom::StorageTypeAccessed type) {
-  // We drop the first character of ToString(type) because it's just the
-  // constant-indicating 'k'.
-  return ExecJs(frame,
-                base::StringPrintf(kStorageAccessScript,
-                                   base::ToString(type).substr(1).c_str()),
-                EXECUTE_SCRIPT_NO_USER_GESTURE,
-                /*world_id=*/1);
-}
-
 void AccessCookieViaJSIn(WebContents* web_contents, RenderFrameHost* frame) {
   FrameCookieAccessObserver observer(web_contents, frame,
                                      CookieOperation::kChange);
