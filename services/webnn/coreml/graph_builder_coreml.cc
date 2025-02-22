@@ -147,6 +147,7 @@ constexpr char kOpLeakyReluTypeName[] = "leaky_relu";
 constexpr char kOpLstmTypeName[] = "lstm";
 constexpr char kOpMatmulTypeName[] = "matmul";
 constexpr char kOpPadTypeName[] = "pad";
+constexpr char kOpQuantizeLinearTypeName[] = "quantize";
 constexpr char kOpReluTypeName[] = "relu";
 constexpr char kOpReshapeTypeName[] = "reshape";
 constexpr char kOpReverseTypeName[] = "reverse";
@@ -1268,9 +1269,9 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, {3, 5}},
        // Prelu is not implemented.
        /*prelu_input=*/{},
-       // QuantizeLinear is not implemented.
-       /*quantize_linear_input=*/{},
-       /*quantize_linear_zero_point=*/{},
+       /*quantize_linear_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*quantize_linear_zero_point=*/
+       {DataTypeConstraint::kInts8, SupportedRanks::UpTo(1)},
        /*reduce_l1_input=*/
        {kFloatsAndInt32, kMaxRank},
        /*reduce_l2_input=*/
@@ -1564,6 +1565,11 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForPool2d(*operation->get_pool2d(), block));
         break;
       }
+      case mojom::Operation::Tag::kQuantizeLinear: {
+        RETURN_IF_ERROR(AddOperationForQuantizeLinear(
+            *operation->get_quantize_linear(), block));
+        break;
+      }
       case mojom::Operation::Tag::kReduce: {
         RETURN_IF_ERROR(AddOperationForReduce(*operation->get_reduce(), block));
         break;
@@ -1673,7 +1679,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         break;
       }
       case mojom::Operation::Tag::kPrelu:
-      case mojom::Operation::Tag::kQuantizeLinear:
         return NewNotSupportedError(NotSupportedOperatorError(*operation));
     }
   }
@@ -4508,6 +4513,100 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPool2d(
        {kParamCeilMode, CreateScalarImmediateValue(is_ceil)}});
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForQuantizeLinear(
+    const mojom::QuantizeLinear& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  const OperandInfo& zero_point_operand_info =
+      GetOperandInfo(operation.zero_point_operand_id);
+  const OperandInfo& scale_operand_info =
+      GetOperandInfo(operation.scale_operand_id);
+
+  const OperandDataType input_operand_data_type =
+      MILDataTypeToOperandType(input_operand_info.mil_data_type);
+  const OperandDataType zero_point_operand_data_type =
+      MILDataTypeToOperandType(zero_point_operand_info.mil_data_type);
+
+  CHECK(
+      context_properties_.data_type_limits.quantize_linear_input.data_types.Has(
+          input_operand_data_type));
+  CHECK_EQ(input_operand_info.mil_data_type, scale_operand_info.mil_data_type);
+  CHECK(context_properties_.data_type_limits.quantize_linear_zero_point
+            .data_types.Has(zero_point_operand_data_type));
+
+  // TODO(crbug.com/338529226): These params must all be constant tensors.
+  if (!constant_operands_->contains(operation.zero_point_operand_id)) {
+    return NewNotSupportedError(
+        "Unsupported options to quantizeLinear. 'zero_point' must be "
+        "constant.");
+  }
+
+  if (!constant_operands_->contains(operation.scale_operand_id)) {
+    return NewNotSupportedError(
+        "Unsupported options to quantizeLinear. 'scale' must be constant.");
+  }
+
+  const CoreML::Specification::MILSpec::DataType output_mil_data_type =
+      GetOperandInfo(operation.output_operand_id).mil_data_type;
+  CHECK_EQ(zero_point_operand_info.mil_data_type, output_mil_data_type);
+
+  if (scale_operand_info.dimensions.size() == 1 &&
+      scale_operand_info.dimensions[0] !=
+          input_operand_info
+              .dimensions[input_operand_info.dimensions.size() - 1]) {
+    return NewNotSupportedError(
+        "Unsupported options to quantizeLinear. The size of 'scale' must be "
+        "equal to the size of the input's last dimension.");
+  }
+
+  uint64_t input_operand_id = operation.input_operand_id;
+  if (input_operand_info.dimensions.empty()) {
+    ASSIGN_OR_RETURN(input_operand_id, GenerateInternalOperandInfo(
+                                           input_operand_info.mil_data_type,
+                                           std::array<uint32_t, 1>{1}));
+    RETURN_IF_ERROR(AddOperationForReshape(operation.input_operand_id,
+                                           input_operand_id, block));
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpQuantizeLinearTypeName);
+
+  static constexpr char kParamInput[] = "input";
+  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kParamInput,
+                                      input_operand_id));
+
+  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamZeroPoint,
+                                      operation.zero_point_operand_id));
+
+  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamScale,
+                                      operation.scale_operand_id));
+
+  // An "axis" must be specified if "scale" is a vector.
+  if (!scale_operand_info.dimensions.empty()) {
+    SetInputWithValue(*op->mutable_inputs(), kOpParamAxis,
+                      CreateScalarImmediateValue(base::checked_cast<int32_t>(
+                          input_operand_info.dimensions.size() - 1)));
+  }
+
+  static constexpr char kParamOutputDataType[] = "output_dtype";
+  SetInputWithValue(
+      *op->mutable_inputs(), kParamOutputDataType,
+      CreateStringImmediateValue(MilDataTypeToString(output_mil_data_type)));
+  if (input_operand_id != operation.input_operand_id) {
+    ASSIGN_OR_RETURN(uint64_t output_operand_id,
+                     GenerateInternalOperandInfo(output_mil_data_type,
+                                                 std::array<uint32_t, 1>{1}));
+    PopulateNamedValueType(output_operand_id, *op->add_outputs());
+    RETURN_IF_ERROR(AddOperationForReshape(output_operand_id,
+                                           operation.output_operand_id, block));
+  } else {
+    PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  }
   return base::ok();
 }
 
