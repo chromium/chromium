@@ -237,6 +237,16 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
 }
 
 - (void)dismissModalAndOpenURL:(const GURL&)linkURL {
+  InfoBarIOS* infobar = GetOverlayRequestInfobar(self.request);
+
+  if (infobar && !infobar->accepted()) {
+    // Logs that modal is being dismissed without being accepted due to link
+    // clicked by the user.
+    self.saveCardDelegate->LogSaveCreditCardInfoBarResultMetric(
+        autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kLinkClicked,
+        autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kModal);
+  }
+
   [self.save_card_delegate pendingURLToLoad:linkURL];
   [self dismissOverlay];
 }
@@ -262,6 +272,15 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
       autofill::autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
           autofill::autofill_metrics::SaveCardPromptResult::kClosed);
     }
+  } else {
+    autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
+        self.saveCardDelegate;
+
+    // Logs that modal is being dismissed without being accepted due to cancel
+    // button tapped by the user.
+    delegate->LogSaveCreditCardInfoBarResultMetric(
+        autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kDenied,
+        autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kModal);
   }
 }
 
