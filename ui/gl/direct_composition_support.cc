@@ -664,7 +664,11 @@ HRESULT DCompositionGetStatistics(COMPOSITION_FRAME_ID frameId,
 
 void InitializeDirectComposition(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
-  DCHECK(!g_dcomp_device);
+  CHECK(!g_dcomp_device);
+  if (!d3d11_device) {
+    return;
+  }
+
   if (GetGlWorkarounds().disable_direct_composition) {
     return;
   }

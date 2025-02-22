@@ -244,6 +244,9 @@ class DCompPresenterTestBase : public testing::Test {
         base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
     // All bots run on non-blocklisted hardware that supports DComp (>Win7)
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+        QueryD3D11DeviceObjectFromANGLE();
+    InitializeDirectComposition(d3d11_device.Get());
     ASSERT_TRUE(DirectCompositionSupported());
 
     presenter_ = CreateDCompPresenter();

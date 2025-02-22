@@ -78,6 +78,7 @@ class DCompImageBackingFactoryTest : public testing::Test {
     context_state_->InitializeGL(GpuPreferences(), std::move(feature_info));
 
     d3d11_device_ = gl::QueryD3D11DeviceObjectFromANGLE();
+    gl::InitializeDirectComposition(d3d11_device_);
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
     shared_image_representation_factory_ =
@@ -421,11 +422,11 @@ class DCompImageBackingFactoryVisualTreeTest
  protected:
   DCompImageBackingFactoryVisualTreeTest()
       : window_size_(100, 100),
-        window_(&platform_delegate_, gfx::Rect(window_size_)),
-        dcomp_device_(gl::GetDirectCompositionDevice()) {}
+        window_(&platform_delegate_, gfx::Rect(window_size_)) {}
 
   void SetUp() override {
     DCompImageBackingFactoryTest::SetUp();
+    dcomp_device_ = gl::GetDirectCompositionDevice();
 
     static_cast<ui::PlatformWindow*>(&window_)->Show();
     child_window_.Initialize();

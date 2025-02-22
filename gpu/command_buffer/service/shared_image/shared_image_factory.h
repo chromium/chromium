@@ -171,6 +171,9 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                            const std::string& debug_label);
   bool IsNativeBufferSupported(gfx::BufferFormat format,
                                gfx::BufferUsage usage);
+#if BUILDFLAG(IS_WIN)
+  bool IsD3DSharedImageSupported() const;
+#endif
 
   raw_ptr<SharedImageManager> shared_image_manager_;
   const scoped_refptr<SharedContextState> context_state_;
