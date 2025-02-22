@@ -30,7 +30,6 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="2118649612461486615">Thông tin cửa hàng</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Bạn có thể mở lại các thẻ và nhóm đã đóng trong phần Các thẻ gần đây và phần Nhóm thẻ. Thẻ ẩn danh sẽ bị mất.}other{Bạn có thể mở lại các thẻ và nhóm đã đóng trong phần Các thẻ gần đây và phần Nhóm thẻ. # thẻ ẩn danh sẽ bị mất.}}</translation>
 <translation id="2162620598375156287">Hiện có giá <ph name="CURRENT_PRICE" /> trên <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">Nhóm thẻ <ph name="TAB_GROUP_NAME" /> không còn hoạt động</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Bỏ thẻ khỏi nhóm}other{Bỏ thẻ khỏi nhóm}}</translation>
 <translation id="2271452184061378400">Các nhóm thẻ của bạn được lưu tại đây</translation>
 <translation id="2277224997687551299">Chỉnh sửa tên nhóm</translation>

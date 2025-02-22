@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">بازی شروع شد.</translation>
 <translation id="3067505415088964188">قیمت پایین است</translation>
 <translation id="3068118691172921711">بارگذاری فایل در <ph name="CLOUD_PROVIDER" /> تا ۱ دقیقه دیگر شروع خواهد شد</translation>
-<translation id="3068976060094139647">‏می‌توانید اطلاعات این کارت را به‌طور خودکار تکمیل کنید، زیرا حساب شما به Google Pay پیوند شده است.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{‫{ITEMS} مورد}one{‫{ITEMS} مورد}other{‫{ITEMS} مورد}}</translation>
 <translation id="3076865167425975822">سیستم‌عامل</translation>
 <translation id="3080254622891793721">ترسیمی</translation>
@@ -4376,7 +4375,6 @@
 <translation id="8757526089434340176">‏پیشنهادی از Google Pay دردسترس است</translation>
 <translation id="8759274551635299824">کارت منقضی شده است</translation>
 <translation id="87601671197631245">پیکربندی امنیتی این سایت قدیمی است و ممکن است اطلاعاتتان (برای مثال، گذرواژه‌ها، پیام‌ها، یا کارت‌های اعتباری) هنگام ارسال شدن به این سایت، درمعرض خطر قرار گیرد.</translation>
-<translation id="8763226176721243078">‏می‌توانید اطلاعات این کارت را به‌طور خودکار تکمیل کنید، زیرا حساب <ph name="CARD_ISSUER_NAME" /> شما به Google Pay پیوند شده است.</translation>
 <translation id="8763927697961133303">‏دستگاه USB</translation>
 <translation id="8763986294015493060">بستن همه پنجره‌های ناشناسی که درحال‌حاضر باز هستند</translation>
 <translation id="8766943070169463815">برگ اصالت‌سنجی اطلاعات کاربری پرداخت امن باز شد</translation>

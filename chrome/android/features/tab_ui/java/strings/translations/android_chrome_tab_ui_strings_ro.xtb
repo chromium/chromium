@@ -30,7 +30,6 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="2118649612461486615">Informații magazin</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file. Fila incognito nu va fi disponibilă.}few{Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file. Cele # file incognito nu vor fi disponibile.}other{Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file. Cele # de file incognito nu vor fi disponibile.}}</translation>
 <translation id="2162620598375156287">Acum la <ph name="CURRENT_PRICE" /> pe <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">Grupul de file <ph name="TAB_GROUP_NAME" /> nu mai este disponibil</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Elimină fila din grup}few{Elimină filele din grup}other{Elimină filele din grup}}</translation>
 <translation id="2271452184061378400">Grupurile de file se salvează aici</translation>
 <translation id="2277224997687551299">Editează numele grupului</translation>

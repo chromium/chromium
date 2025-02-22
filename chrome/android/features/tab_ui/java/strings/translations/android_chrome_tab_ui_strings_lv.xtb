@@ -30,7 +30,6 @@ Ja izdzēsīsiet šo grupu, visi lietotāji nekavējoties zaudēs piekļuvi ciļ
 <translation id="2118649612461486615">Veikala informācija</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Varat atkārtoti atvērt aizvērtās cilnes un grupas sadaļās “Nesen atvērtas cilnes” un “Ciļņu grupas”. Inkognito cilne nebūs pieejama.}zero{Varat atkārtoti atvērt aizvērtās cilnes un grupas sadaļās “Nesen atvērtas cilnes” un “Ciļņu grupas”. Neviena no # inkognito cilnēm nebūs pieejama.}one{Varat atkārtoti atvērt aizvērtās cilnes un grupas sadaļās “Nesen atvērtas cilnes” un “Ciļņu grupas”. Jūsu # inkognito cilne nebūs pieejama.}other{Varat atkārtoti atvērt aizvērtās cilnes un grupas sadaļās “Nesen atvērtas cilnes” un “Ciļņu grupas”. Neviena no # inkognito cilnēm nebūs pieejama.}}</translation>
 <translation id="2162620598375156287">Tagad cena vietnē <ph name="SOURCE_WEBSITE" /> ir <ph name="CURRENT_PRICE" /></translation>
-<translation id="2242907120821295124">Ciļņu grupa “<ph name="TAB_GROUP_NAME" />” vairs nav pieejama.</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Atcelt cilnes grupēšanu}zero{Atcelt ciļņu grupēšanu}one{Atcelt ciļņu grupēšanu}other{Atcelt ciļņu grupēšanu}}</translation>
 <translation id="2271452184061378400">Jūsu ciļņu grupas ir saglabātas šeit</translation>
 <translation id="2277224997687551299">Rediģēt grupas nosaukumu</translation>

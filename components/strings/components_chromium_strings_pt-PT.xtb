@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">Esta página foi bloqueada pelo Chromium</translation>
 <translation id="48558539577516920">Permita que o Chromium aceda à rede nas definições da sua firewall ou
           do antivírus.</translation>
+<translation id="4949828774841497663">Aceda a Aplicações &gt; Definições do sistema &gt; Rede, selecione a
+          rede ativa, clique no botão Detalhes… e desmarque todos os proxies
+          que possam ter sido selecionados.</translation>
 <translation id="580822234363523061">Aceda ao
           menu Chromium &gt;
           <ph name="SETTINGS_TITLE" />

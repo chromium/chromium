@@ -1153,7 +1153,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="306573536155379004">Oʻyin boshlandi.</translation>
 <translation id="3067505415088964188">Narx past</translation>
 <translation id="3068118691172921711">Fayllar 1 daqiqadan keyin <ph name="CLOUD_PROVIDER" /> xizmatiga yuklanadi</translation>
-<translation id="3068976060094139647">Hisobingiz Google Pay xizmatiga ulangani sababli bu karta maʼlumotlarini avtomatik kiritish mumkin.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} ta element}other{{ITEMS} ta element}}</translation>
 <translation id="3076865167425975822">Operatsion tizimlar</translation>
 <translation id="3080254622891793721">Tasvirlar</translation>
@@ -4369,7 +4368,6 @@ Batafsil axborot:
 <translation id="8757526089434340176">Google Pay taklifi mavjud</translation>
 <translation id="8759274551635299824">Kredit kartaning amal qilish muddati tugagan</translation>
 <translation id="87601671197631245">Bu sayt eskirgan xavfsizlik sozlamasidan foydalanadi. maʼlumotlaringiz (masalan, parollar, xabarlar va kredit kartalari) shu saytga yuborilganda ular xavf ostida qolishi mumkin.</translation>
-<translation id="8763226176721243078"><ph name="CARD_ISSUER_NAME" /> hisobingiz Google Pay xizmatiga ulangani sababli bu karta maʼlumotlarini avtomatik kiritish mumkin.</translation>
 <translation id="8763927697961133303">USB qurilma</translation>
 <translation id="8763986294015493060">Hozir ochilgan barcha Inkognito varaqlarni yopish</translation>
 <translation id="8766943070169463815">Xavfsiz toʻlovlar uchun hisob maʼlumotlarini tekshirish ekrani ochiq</translation>

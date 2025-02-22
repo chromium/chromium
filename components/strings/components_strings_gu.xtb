@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">ગેમ શરૂ થઈ ગઈ છે.</translation>
 <translation id="3067505415088964188">કિંમત ઓછી છે</translation>
 <translation id="3068118691172921711">તમારી ફાઇલને <ph name="CLOUD_PROVIDER" />માં અપલોડ કરવાની પ્રક્રિયા 1 મિનિટમાં શરૂ થશે</translation>
-<translation id="3068976060094139647">તમે આ કાર્ડને ઑટોમૅટિક રીતે ભરી શકો છો કારણ કે તમારું એકાઉન્ટ Google Pay સાથે લિંક થયેલું છે.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} આઇટમ}one{{ITEMS} આઇટમ}other{{ITEMS} આઇટમ}}</translation>
 <translation id="3076865167425975822">ઑપરેટિંગ સિસ્ટમ</translation>
 <translation id="3080254622891793721">ગ્રાફિક</translation>
@@ -4376,7 +4375,6 @@
 <translation id="8757526089434340176">Google Pay ઑફર ઉપલબ્ધ છે</translation>
 <translation id="8759274551635299824">આ કાર્ડની સમયસીમા સમાપ્ત થઈ ગઈ છે</translation>
 <translation id="87601671197631245">આ સાઇટ હજી પણ જૂના સુરક્ષા કન્ફિગ્યુરેશનનો ઉપયોગ કરે છે, જેને લીધે તમારી માહિતી (ઉદાહરણ તરીકે, પાસવર્ડ, મેસેજ અથવા ક્રેડિટ કાર્ડ) જ્યારે આ સાઇટને મોકલવામાં આવે, ત્યારે તે જોખમમાં આવી શકે છે.</translation>
-<translation id="8763226176721243078">તમે આ કાર્ડને ઑટોમૅટિક રીતે ભરવાની સુવિધાનો ઉપયોગ કરીને ભરી શકો છો કારણ કે તમારું <ph name="CARD_ISSUER_NAME" /> એકાઉન્ટ Google Pay સાથે લિંક થયેલું છે.</translation>
 <translation id="8763927697961133303">USB ઉપકરણ</translation>
 <translation id="8763986294015493060">હાલમાં ખુલ્લી બધી છૂપી વિન્ડો બંધ કરો</translation>
 <translation id="8766943070169463815">સુરક્ષિત ચુકવણી માટે લૉગ ઇન વિગતના પ્રમાણીકરણની શીટ ખુલ્લી છે</translation>

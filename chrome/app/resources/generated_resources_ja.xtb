@@ -1008,6 +1008,7 @@
 <translation id="1682696837763999627">大きなマウスカーソル</translation>
 <translation id="1682867089915960590">カーソル ブラウジングをオンにしますか？</translation>
 <translation id="1686550358074589746">グライド入力を有効化</translation>
+<translation id="1686785653877010442">サイトは、最新情報やチャット メッセージなどを知らせる目的で通知を送信する場合がよくあります。</translation>
 <translation id="168715261339224929">お使いのどのデバイスでも同じブックマークを使用するには、同期を有効にします。</translation>
 <translation id="1688935057616748272">文字を入力してください</translation>
 <translation id="1689333818294560261">ニックネーム</translation>
@@ -1281,6 +1282,7 @@
 <translation id="1878885068166344708">フォーカスを移動すると、項目がハイライト表示されます。フォーカスを変更するには Tab キーを押すか、項目を選択します。</translation>
 <translation id="1879000426787380528">次のアカウントでログイン</translation>
 <translation id="18802377548000045">タブを大サイズまで縮小</translation>
+<translation id="1880618477732738742">すべてのウェブサイトと拡張機能（この拡張機能を含む）に対し、位置情報、マイク、カメラ、Cookie などの機能へのアクセスを変更および許可します。</translation>
 <translation id="1880905663253319515">証明書「<ph name="CERTIFICATE_NAME" />」を削除しますか？</translation>
 <translation id="1881445033931614352">キーボードのレイアウト</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{アイテム}other{# 件のアイテム}}</translation>
@@ -3460,6 +3462,7 @@
 <translation id="3435738964857648380">セキュリティ</translation>
 <translation id="343578350365773421">用紙がありません</translation>
 <translation id="3435896845095436175">有効にする</translation>
+<translation id="3437397693214267762">Outlook カレンダー、SharePoint ファイル、OneDrive ファイルを表示</translation>
 <translation id="3438633801274389918">忍者</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> によるマイクへのアクセスを常に許可する</translation>
 <translation id="3439970425423980614">PDF をプレビューしています</translation>
@@ -7112,6 +7115,7 @@
     ご自分のアカウントを使用して、ブックマークやファイルなどに簡単にアクセスできます。アカウントをお持ちでない場合は、次の画面でアカウントを作成できます。</translation>
 <translation id="6054138466019582920">Google でこのページを検索(&amp;C)...</translation>
 <translation id="6054284857788651331">最近閉じたタブグループ</translation>
+<translation id="6054819000749443354">システム設定を開く</translation>
 <translation id="6054961935262556546">公開設定を変更</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 with RSA 暗号化</translation>
 <translation id="6055544610007596637">Google Play ストアから <ph name="DEVICE_TYPE" /> のアプリをインストール</translation>
@@ -8933,6 +8937,7 @@
 <translation id="7380459290951585794">Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください</translation>
 <translation id="7380622428988553498">デバイス名に無効な文字が含まれています</translation>
 <translation id="7380768571499464492">更新: <ph name="PRINTER_NAME" /></translation>
+<translation id="7382009635620830394">このカードを無効にした場合、SharePoint や OneDrive ファイル、Outlook カレンダーなどの Microsoft カードも無効になります。</translation>
 <translation id="7382085868019811559">従来のブラウザのサポート（LBS）を使用すると、サイトを適切に表示するために必要な従来の機能をサポートしている代替ブラウザで特定の URL パターンを開くことができます。</translation>
 <translation id="7382980704744807223">要注意</translation>
 <translation id="738322632977123193">アップロードできません。使用できる画像の形式は .jpg、.gif、.png、.bmp、.tif、.webp のいずれかです</translation>
@@ -10602,6 +10607,7 @@
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> は <ph name="MANAGER" /> により管理されています。このメールアドレスを追加アカウントとして設定することはできません。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" /><ph name="USER_EMAIL" /> を使用するには、まず <ph name="DEVICE_TYPE" /> にログインします。次に、ログイン画面の一番下にある [ユーザーを追加] を選択します。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">キーボードの最上段にあるキーの動作を切り替えるには、検索キーを押したままにします</translation>
+<translation id="8549127125482561383">リクエストの表示方法</translation>
 <translation id="8549316893834449916">Chromebook には Google アカウント（Gmail、ドライブ、YouTube などで使用しているのと同じアカウント）を使用してログインします。</translation>
 <translation id="8550239873869577759">不審なファイルをダウンロードしました</translation>
 <translation id="8551388862522347954">ライセンス</translation>

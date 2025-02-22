@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">Оюн башталды.</translation>
 <translation id="3067505415088964188">Баасы төмөн</translation>
 <translation id="3068118691172921711">Файлыңыз <ph name="CLOUD_PROVIDER" /> камсыздоочусуна 1 мүнөттөн кийин жүктөлүп бериле башталат</translation>
-<translation id="3068976060094139647">Аккаунтуңуз Google Pay'ге байланышкандыктан, бул картаны автотолтура аласыз.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} нерсе}other{{ITEMS} нерсе}}</translation>
 <translation id="3076865167425975822">Операциялык тутумдар</translation>
 <translation id="3080254622891793721">Графика</translation>
@@ -4374,7 +4373,6 @@
 <translation id="8757526089434340176">Google Pay сунушу жеткиликтүү</translation>
 <translation id="8759274551635299824">Бул карточканын мөөнөтү бүткөн</translation>
 <translation id="87601671197631245">Бул сайт эскирген коопсуздук конфигурациясын колдонуп жатат. Маалыматыңыз (мисалы, сырсөздөр, билдирүүлөр же насыя карталары) ушул сайтка жөнөтүлгөндө ачык көрүнүп калышы мүмкүн.</translation>
-<translation id="8763226176721243078"><ph name="CARD_ISSUER_NAME" /> аккаунтуңуз Google Pay'ге байланышкандыктан, бул картаны автотолтура аласыз.</translation>
 <translation id="8763927697961133303">USB түзмөгү</translation>
 <translation id="8763986294015493060">Учурда ачылып турган бардык Жашыруун терезелерди жабыңыз</translation>
 <translation id="8766943070169463815">Коопсуз төлөм үчүн эсептик дайындардын аныктыгын текшерүү барагы ачылды</translation>

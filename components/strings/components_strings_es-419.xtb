@@ -1154,7 +1154,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="306573536155379004">Comenzó el juego.</translation>
 <translation id="3067505415088964188">El precio es bajo</translation>
 <translation id="3068118691172921711">La carga de tu archivo a <ph name="CLOUD_PROVIDER" /> comenzará dentro de 1 minuto</translation>
-<translation id="3068976060094139647">Puedes completar automáticamente esta tarjeta porque tu cuenta está vinculada a Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} elemento}other{{ITEMS} elementos}}</translation>
 <translation id="3076865167425975822">Sistemas operativos</translation>
 <translation id="3080254622891793721">Gráfico</translation>
@@ -4381,7 +4380,6 @@ Detalles adicionales:
 <translation id="8757526089434340176">Oferta disponible de Google Pay</translation>
 <translation id="8759274551635299824">La tarjeta está vencida</translation>
 <translation id="87601671197631245">Este sitio usa una configuración de seguridad obsoleta. Si envías información (p. ej., contraseñas, mensajes o tarjetas de crédito) a este sitio, es posible que quede expuesta.</translation>
-<translation id="8763226176721243078">Puedes completar automáticamente esta tarjeta porque tu cuenta de <ph name="CARD_ISSUER_NAME" /> está vinculada a Google Pay.</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8763986294015493060">Cierra todas las ventanas de incógnito que estén abiertas</translation>
 <translation id="8766943070169463815">Está abierta la hoja de autenticación de credenciales de pago seguro</translation>

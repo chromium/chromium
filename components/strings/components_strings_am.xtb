@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">ጨዋታው ተጀምሯል።</translation>
 <translation id="3067505415088964188">ዋጋ ዝቅተኛ ነው</translation>
 <translation id="3068118691172921711">የፋይልዎ ወደ <ph name="CLOUD_PROVIDER" /> የሚደረግ ሰቀላ በ1 ደቂቃ ውስጥ ይጀምራል</translation>
-<translation id="3068976060094139647">መለያዎ ከGoogle Pay ጋር ስለተገናኘ ይህን ካርድ ራስ-ሙላ ማድረግ ይችላሉ።</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} ንጥል}one{{ITEMS} ንጥል}other{{ITEMS} ንጥሎች}}</translation>
 <translation id="3076865167425975822">ስርዓተ ክወናዎች</translation>
 <translation id="3080254622891793721">ግራፊክ</translation>
@@ -4376,7 +4375,6 @@
 <translation id="8757526089434340176">የGoogle Pay ቅናሽ ይገኛል</translation>
 <translation id="8759274551635299824">ይህ ካርድ የአገልግሎት ጊዜው አብቅቷል</translation>
 <translation id="87601671197631245">ይህ ጣቢያ ጊዜ ያለፈበት የደህንነት ውቅረትን ይጠቀማል፣ ይህ ወደዚህ ጣቢያ ሲላክ መረጃዎን (ለምሳሌ፦ የይለፍ ቃላት፣ መልዕክቶች ወይም ክሬዲት ካርዶች) ሊያጋልጥ ይችላል።</translation>
-<translation id="8763226176721243078">የእርስዎ <ph name="CARD_ISSUER_NAME" /> መለያ ከGoogle Pay ጋር ስለተገናኘ ይህን ካርድ ራስ-ሙላ ማድረግ ይችላሉ።</translation>
 <translation id="8763927697961133303">የዩኤስቢ መሣሪያ</translation>
 <translation id="8763986294015493060">በአሁኑ ጊዜ ክፍት የሆኑ ሁሉንም ማንነትን የማያሳውቁ መስኮቶች ይዝጉ</translation>
 <translation id="8766943070169463815">ደህንነቱ የተጠበቀ የክፍያ ማስረጃ ማረጋገጫ ሉህ ተከፍቷል</translation>

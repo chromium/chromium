@@ -30,7 +30,6 @@
 <translation id="2118649612461486615">매장 정보</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{닫은 탭 및 그룹은 최근 탭 섹션과 탭 그룹 섹션에서 다시 열 수 있습니다. 시크릿 탭은 확인할 수 없습니다.}other{닫은 탭 및 그룹은 최근 탭 섹션과 탭 그룹 섹션에서 다시 열 수 있습니다. 시크릿 탭 #개는 확인할 수 없습니다.}}</translation>
 <translation id="2162620598375156287">이제 <ph name="SOURCE_WEBSITE" />에서 <ph name="CURRENT_PRICE" />에 판매됨</translation>
-<translation id="2242907120821295124"><ph name="TAB_GROUP_NAME" /> 탭 그룹을 더 이상 사용할 수 없음</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{탭 그룹 해제}other{탭 그룹 해제}}</translation>
 <translation id="2271452184061378400">탭 그룹이 여기에 저장됩니다.</translation>
 <translation id="2277224997687551299">그룹 이름 수정</translation>

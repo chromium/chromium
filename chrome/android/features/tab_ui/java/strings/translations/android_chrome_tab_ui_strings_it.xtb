@@ -30,7 +30,6 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="2118649612461486615">Informazioni sul negozio</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede. La scheda di navigazione in incognito non sarà disponibile.}other{Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede. # schede di navigazione in incognito non saranno disponibili.}}</translation>
 <translation id="2162620598375156287">Ora a <ph name="CURRENT_PRICE" /> su <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">Gruppo di schede <ph name="TAB_GROUP_NAME" /> non più disponibile</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Separa scheda}other{Separa schede}}</translation>
 <translation id="2271452184061378400">I tuoi gruppi di schede vengono salvati qui</translation>
 <translation id="2277224997687551299">Modifica nome gruppo</translation>

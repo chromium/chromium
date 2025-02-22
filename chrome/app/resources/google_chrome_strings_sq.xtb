@@ -21,7 +21,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1184145431117212167">Instalimi dështoi pasi versioni yt i Windows nuk mbështetet.</translation>
 <translation id="1194807384646768652">Chrome e bllokoi këtë shkarkim sepse lloji i skedarit nuk është shkarkuar zakonisht dhe mund të jetë i rrezikshëm</translation>
 <translation id="1203500561924088507">Faleminderit që e instalove. Duhet të rinisësh shfletuesin përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1265739287306757398">Mëso se si</translation>
 <translation id="1278833599417554002">Nise përsëri për të përditësuar &amp;Chrome</translation>
 <translation id="1290883685122687410">Gabim në konfigurim: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Prit ndërsa Chrome instalon përditësimet më të fundit të sistemit.</translation>
@@ -32,7 +31,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1363996462118479832">ChromeOS nuk mund t'i sinkronizonte të dhënat e tua për shkak të një gabimi gjatë identifikimit.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Ky kompjuter e ka tashmë një version më të ri të Google Chrome. Nëse softueri nuk punon, çinstaloje Google Chrome dhe provo sërish.</translation>
-<translation id="1407223320754252908">Chrome ka "Përkthe me Google" të integruar, kështu që mund të përkthesh kur të nevojitet</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta rinisësh atë. Më pas, skedat e tua aktuale do të hapen përsëri.}=1{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta rinisësh atë. Më pas, skedat e tua aktuale do të hapen përsëri. Dritarja jote "e fshehtë" nuk do të rihapet.}other{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta rinisësh atë. Më pas, skedat e tua aktuale do të hapen përsëri. # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="1434626383986940139">Aplikacionet e Chrome Canary</translation>
 <translation id="146866447420868597">Do të identifikohesh në Chrome?</translation>
@@ -69,7 +67,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1880677175115548835">Përzgjidh tekstin</translation>
 <translation id="1919130412786645364">Lejo identifikimin në Chrome</translation>
 <translation id="1953553007165777902">Po shkarkohet... Kanë mbetur edhe <ph name="MINUTE" /> minuta</translation>
-<translation id="1982647487457769627">Chrome funksionon në të gjitha platformat për të të dhënë një përvojë të njohur, pavarësisht pajisjes</translation>
 <translation id="2001586581944147178">Bëj që personat që kanë qasje në trafikun tënd të internetit ta kenë më të vështirë të shikojnë sajtet që viziton ti. Chrome përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajt në sistemin e emrave të domeneve (DNS).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Kjo shtesë nuk mbështetet më. Chrome rekomandon që ta heqësh atë.}other{Këto shtesa nuk mbështeten më. Chrome rekomandon që t'i heqësh ato.}}</translation>
 <translation id="2018528049276128029">Secili profil duhet të zotërojë informacionin e vet të Chrome, si: faqeshënuesit, historikun, fjalëkalimet etj.</translation>
@@ -107,7 +104,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="234869673307233423">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri më vonë.</translation>
 <translation id="235650106824528204">Çdo e dhënë e Chrome që krijohet gjatë përdorimit të këtij profili (si p.sh. krijimi i faqeshënuesve, historikut, fjalëkalimeve dhe cilësimeve të tjera) mund të hiqet nga administratori i profilit të punës. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Vazhdo</translation>
-<translation id="2390624519615263404">Shiko veçoritë e sigurisë</translation>
 <translation id="2401189691232800402">Sistemi i ChromeOS</translation>
 <translation id="2403703063067034158">Gabim në nisje: aktualisht po ekzekutohet një shembull tjetër i konfigurimit; provo përsëri më vonë.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Një ose disa shtesa të Chrome kanë pasur qasje në 1 pajisje HID}=1{Një ose disa shtesa të Chrome kanë qasje në 1 pajisje HID}other{Një ose disa shtesa të Chrome kanë qasje në # pajisje HID}}</translation>
@@ -126,7 +122,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2580411288591421699">Nuk mund të instalohet i njëjti version i Google Chrome që po ekzekutohet aktualisht. Mbylle Google Chrome dhe provo përsëri.</translation>
 <translation id="2586406160782125153">Kjo do të fshijë të dhënat e shfletimit nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chrome si <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Instaluesi i shkarkuar nuk u ruajt te memoria specifike. Gabim: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2632707915638608719">Realizo më shumë gjëra me shtesat për Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome kontrollon rregullisht për t'u siguruar që shfletuesi yt ka cilësimet më të sigurta. Do të të informojmë nëse ka nevojë të rishikosh diçka.</translation>
 <translation id="2652691236519827073">Hape lidhjen në një &amp;skedë të re të Chrome</translation>
@@ -155,7 +150,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2876628302275096482">Mëso më shumë se <ph name="BEGIN_LINK" />si Chrome i mban private të dhënat e tua<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Menaxheri i detyrave</translation>
 <translation id="2888126860611144412">Rreth Chrome</translation>
-<translation id="29082080693925013">Për të qëndruar i organizuar, mund të gozhdosh sajtet e vizituara shpesh dhe të organizosh skedat në grupe</translation>
 <translation id="2915996080311180594">Rinise më vonë</translation>
 <translation id="2926676257163822632">Fjalëkalimet e dobëta mund të gjenden me lehtësi. Lejoje Chrome <ph name="BEGIN_LINK" />të krijojë dhe mbajë mend fjalëkalime të forta për ty<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome ka nevojë për lejen e kamerës për këtë sajt</translation>
@@ -184,10 +178,8 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3196187562065225381">Chrome e bllokoi këtë shkarkim sepse skedari është i rrezikshëm</translation>
 <translation id="3222857603094643834">Kërko çdo gjë në këtë faqe me "Lenten e Google"</translation>
 <translation id="3226612997184048185">Nëse i ruan faqeshënuesit e tu vetëm në "Llogarinë tënde të Google", mund t'i monitorosh çmimet e produkteve në Chrome dhe të marrësh njoftime kur të ulet çmimi</translation>
-<translation id="3234642784688107085">Provo veçoritë e reja nga IA-ja për të krijuar tema, për të marrë ndihmë për të shkruar dhe për të qëndruar i organizuar</translation>
 <translation id="3242123554343253302">Shto profilin e Chrome</translation>
 <translation id="3245429137663807393">Nëse ndan edhe raportet e përdorimit të Chrome, ato raporte përfshijnë URL-të që viziton</translation>
-<translation id="3261565993776444564">Provo një ngjyrë të re për të personalizuar shfletuesin tënd</translation>
 <translation id="3282568296779691940">Identifikohu në Chrome</translation>
 <translation id="3286538390144397061">Rindiz tani</translation>
 <translation id="3289358082435924389">Më vonë, Chrome do të të pyesë nëse dëshiron të përdorësh informacionet e ruajtura për të plotësuar automatikisht formularët</translation>
@@ -205,7 +197,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3503306920980160878">Chrome ka nevojë për qasje te vendndodhja jote për të ndarë vendndodhjen me këtë sajt</translation>
 <translation id="3533694711092285624">Nuk ka asnjë fjalëkalim të ruajtur. Chrome mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
 <translation id="3541482654983822893">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri pas 24 orësh.</translation>
-<translation id="3564543103555793392">Kur identifikohesh në Chrome, mund të ruash faqeshënuesit, fjalëkalimet etj. dhe më pas mund t'i përdorësh ato në telefonin tënd</translation>
 <translation id="3576528680708590453">Administratori i sistemit ka konfiguruar Google Chrome që të hapë një shfletues alternativ për t'u qasur te <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sinkronizo dhe personalizo Chrome nëpër pajisjet e tua</translation>
 <translation id="3583751698304738917">Je identifikuar tashmë si <ph name="USER_EMAIL_ADDRESS" /> në një profil tjetër të Chrome</translation>
@@ -218,7 +209,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3635073343384702370">Chrome mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato</translation>
 <translation id="3667616615096815454">Instalimi nuk mund të kryhej. Aplikacioni është i panjohur për serverin.</translation>
 <translation id="3673813398384385993">Chrome vuri re se "<ph name="EXTENSION_NAME" />" përmban softuer keqdashës</translation>
-<translation id="3695446226812920698">Mëso se si</translation>
 <translation id="3697952514309507634">Profilet e tjera të Chrome</translation>
 <translation id="3703994572283698466">ChromeOS mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versioni i Chrome OS Flex</translation>
@@ -237,7 +227,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3941890832296813527">Gabim gjatë instalimit: Emri i skedarit të instaluesit është i pavlefshëm ose nuk mbështetet.</translation>
 <translation id="3968962723676998462">Fut frazën e kalimit për të përdorur dhe ruajtur të dhënat e Chrome në llogarinë tënde <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome dëshiron të fshijë të dhënat e tua të "Menaxherit të fjalëkalimeve të Google". Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
-<translation id="398236277091248993">Chrome qëndron i shpejtë me veçori për përmirësimin e performancës</translation>
 <translation id="4022972681110646219">Përkthe ekranin</translation>
 <translation id="4023601594785368013">Gjuha origjinale: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">ChromeOS ka nevojë të riniset për të zbatuar përditësimin.</translation>
@@ -288,7 +277,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4627412468266359539">Opsionale: Ndihmo në përmirësimin e veçorive dhe të cilësisë së funksionimit të Chrome OS Flex duke dërguar automatikisht te Google të dhëna përdorimi dhe diagnostikuese.</translation>
 <translation id="4633000520311261472">Për ta bërë më të sigurt Chrome, çaktivizuam disa shtesa që nuk janë të listuara në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jenë shtuar pa dijeninë tënde.</translation>
 <translation id="4680828127924988555">Anulo instalimin</translation>
-<translation id="4710245680469034439">Personalizo shfletuesin me tema të frymëzuara nga natyra, koleksione nga artistë etj.</translation>
 <translation id="4720851490453439956">Google Updater Internal Service</translation>
 <translation id="4724676981607797757">Instalimi dështoi për shkak të një gabimi të protokollit të pambështetur.</translation>
 <translation id="4728575227883772061">Instalimi dështoi për shkak të një gabimi të paspecifikuar. Nëse Google Chrome është aktualisht në ekzekutim, mbylle dhe provo përsëri.</translation>
@@ -308,7 +296,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4895437082222824641">Hape lidhjen në një &amp;skedë të re të Chrome</translation>
 <translation id="4918844574251943176">Imazhi u kopjua</translation>
 <translation id="492720062778050435">Chrome rekomandon që ta rinovosh këtë shtesë</translation>
-<translation id="4951177103388687412">Qëndro i organizuar dhe i fokusuar me ndihmën nga grupet e skedave</translation>
 <translation id="4953650215774548573">Caktoje Google Chrome si shfletuesin tënd të parazgjedhur</translation>
 <translation id="495931528404527476">Në Chrome</translation>
 <translation id="4969674060580488087">Chrome OS Flex nuk mund t'i sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë tënde janë të papërditësuara.</translation>
@@ -354,7 +341,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5579324208890605088">Gabim në nisje: ekzekuto instaluesin si përdorues i rregullt, jo si administrator.</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
 <translation id="5602351063754773347">Chrome rekomandon që ta heqësh atë. <ph name="BEGIN_LINK" />Mëso më shumë rreth shtesave të mbështetura<ph name="END_LINK" /></translation>
-<translation id="5648328599815354043">Chrome bën më shumë për të të mbajtur të sigurt online</translation>
 <translation id="5649680279845190972">Për të marrë shtesat e tua dhe më shumë në të gjithë kompjuterët e tu, identifikohu në Chrome</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> mund të jetë i rrezikshëm, prandaj Chrome e ka bllokuar.</translation>
 <translation id="566568153320186256">Chrome kursen energjinë e baterisë duke kufizuar aktivitetin në sfond dhe efektet vizuale, si p.sh. lëvizjen e butë dhe shpejtësitë e kuadrove të videove. <ph name="BEGIN_LINK" />Mëso më shumë për "Kursyesin e energjisë"<ph name="END_LINK" /></translation>
@@ -394,7 +380,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6070348360322141662">Për më shumë siguri, Google Chrome do t'i enkriptojë të dhënat e tua</translation>
 <translation id="6075300983329039771">Organizata jote, <ph name="MANAGER" />, kërkon që të identifikohesh në Chrome</translation>
 <translation id="608006075545470555">Shto profilin e punës në këtë shfletues</translation>
-<translation id="6097822892606850415">Shkruaj me më shumë vetëbesim me ndihmën nga IA-ja</translation>
 <translation id="6113794647360055231">Chrome sapo është përmirësuar</translation>
 <translation id="6116252277240876590">Kjo gjuhë përdoret për të shfaqur menytë, cilësimet, sinjalizimet dhe tekste të tjera në Chrome</translation>
 <translation id="6134085236017727171">Për të përdorur mikrofonin, jepi Chrome qasje te <ph name="BEGIN_LINK" />cilësimet e sistemit<ph name="END_LINK" /></translation>
@@ -414,7 +399,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6251759518630934363">Të paralajmëron për sajtet e rrezikshme, edhe ato që Google nuk i ka njohur më parë, duke analizuar më shumë të dhëna nga sajtet sesa nga mbrojtja standarde. Mund të zgjedhësh që t'i kapërcesh paralajmërimet e Chrome.</translation>
 <translation id="6277547788421725101">Prindi yt ka çaktivizuar "Lejet për sajtet, aplikacionet dhe shtesat" për Chrome</translation>
 <translation id="627882678981830918">Personalizo dhe kontrollo Chrome. Cakto Chrome si parazgjedhje.</translation>
-<translation id="6288788894729749483">Cakto Chrome si shfletuesin e parazgjedhur për të vepruar, krijuar dhe eksploruar me siguri online</translation>
 <translation id="6291089322031436445">Aplikacionet e Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome është i instaluar tashmë për të gjithë përdoruesit në kompjuterin tënd.</translation>
 <translation id="6319856120645568262">Chrome ka nevojë për leje për të krijuar një hartë të ambientit rrethues dhe për të ndjekur duart e tua</translation>
@@ -426,7 +410,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizata jote e mbyll automatikisht Chrome kur ai nuk përdoret për 1 minutë. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}other{Organizata jote e mbyll automatikisht Chrome kur ai nuk përdoret për # minuta. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}}</translation>
 <translation id="6418662306461808273">Të kalohet te profili ekzistues i Chrome?</translation>
 <translation id="6473905796280459355">Shko te faqja "Rreth Chrome"</translation>
-<translation id="6479881432656947268">Vizito "Dyqanin e uebit të Chrome"</translation>
 <translation id="6481963882741794338">Lidh Chrome dhe shërbimet e tjera të Google për personalizimin dhe qëllime të tjera</translation>
 <translation id="648319183876919572">"Shfletimi i sigurt i përmirësuar" bën më shumë për të të mbrojtur nga uebsajtet dhe shkarkimet e rrezikshme</translation>
 <translation id="6489302989675808168">Aktive • Chrome nuk mund të verifikojë se nga vjen kjo shtesë</translation>
@@ -450,7 +433,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6794858689789885890">Fshi gjithmonë të dhënat e sajteve nga pajisja jote kur të mbyllësh Chrome</translation>
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="683440813066116847">Rregulli hyrës për Google Chrome për të lejuar trafikun mDNS.</translation>
-<translation id="6834926483721196812">Chrome është krijuar për performancë me veçoritë si "Kursyesi i energjisë" dhe "Kursyesi i memories"</translation>
 <translation id="684888714667046800">Lidhja me internetin nuk mund të kryhej. Nëse përdor një mur mbrojtës, sigurohu që <ph name="PRODUCT_EXE_NAME" /> të jetë në listën e lejimeve.</translation>
 <translation id="6851981911629679515">Aktivizo mbrojtjen shtesë në motorin e JavaScript dhe WebAssembly të Chrome</translation>
 <translation id="6881299373831449287">Po përditëson Chrome</translation>
@@ -469,7 +451,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7024536598735240744">Gabim shpaketimi: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalimi ndaloi.</translation>
 <translation id="7025800014283535195">Këtu mund të kalosh nga një profil i Chrome te një tjetër</translation>
-<translation id="7048502283602470098">Eksploro IA-në</translation>
 <translation id="7059914902409643750">Bëje Chrome tëndin</translation>
 <translation id="7071827361006050863">Chrome do t'i fshijë së shpejti të dhënat e shfletimit</translation>
 <translation id="7085332316435785646">Zgjidh nëse do të përfshish historikun e Chrome për përvoja më të personalizuara në shërbimet e Google</translation>
@@ -487,9 +468,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7302361266603927550">Disa nga të dhënat e tua të Chrome nuk janë ruajtur ende në "Llogarinë tënde të Google". Provo të presësh për disa minuta para se të dalësh nga ajo. Nëse del tani, këto të dhëna do të fshihen.</translation>
 <translation id="7308322188646931570">Chrome ka nevojë për qasje te hapësira ruajtëse për të shkarkuar skedarë</translation>
 <translation id="7339898014177206373">Dritare e re</translation>
-<translation id="7352881504289275361">"Shfletimi i sigurt i përmirësuar" ofron mbrojtjen më të fortë online të Chrome për të të mbajtur të sigurt ndërsa shfleton</translation>
 <translation id="7386878009611068389">Për të qëndruar më i sigurt online me zgjedhjet e prindit tënd, kalo te profili yt i Chrome ku je identifikuar tashmë si <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="7394745511930161845">Krijo temën tënde me IA për t'i dhënë shfletuesit tënd një pamje unike</translation>
 <translation id="7398801000654795464">Ishe i identifikuar në Chrome si <ph name="USER_EMAIL_ADDRESS" />. Përdor të njëjtën llogari për t'u identifikuar sërish.</translation>
 <translation id="7412494426921990001">Kliko te menyja e Chrome</translation>
 <translation id="7419819959108735624">Zgjidh çdo gjë për të kërkuar me "Lenten e Google"</translation>
@@ -522,25 +501,19 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7659737857277959440">Organizata jote mund të shikojë dhe të menaxhojë të dhënat e shfletimit, si p.sh. faqeshënuesit, historikun dhe fjalëkalimet e tua. Ajo nuk mund të shikojë të dhënat e shfletimit në profilet personale të Chrome.</translation>
 <translation id="7661924425853052955">Nuk ke vizituar së fundi. Chrome ka hequr lejet (<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="COUNT" /> të tjera)</translation>
-<translation id="7668816516367091728">Kryej detyra, si p.sh. përkthimi, llogaritja etj., drejtpërdrejt nga shiriti i adresave</translation>
 <translation id="7670287553302121848">Llogaria e Chrome kërkon rivërtetim</translation>
 <translation id="769538538642757151">Chrome do të të informojë nëse duhet të rishikosh diçka</translation>
 <translation id="77283119132245232">Ofron shërbime të gjurmimit të sistemit për <ph name="BROWSER_NAME" />. Nëse ky shërbim është i çaktivizuar, gjurmët e performancës të krijuara nga shfletuesi nuk do të përfshijnë ngjarjet e të gjithë sistemit, si p.sh. ngjarjet e ndryshimit të kontekstit dhe të nënprocesit të gatshëm.</translation>
 <translation id="7736869414036750079">Organizata jote kërkon që të identifikohesh në Chrome</translation>
 <translation id="7747138024166251722">Instaluesi nuk mund të krijonte një direktori të përkohshme. Kontrollo për hapësirë të lirë në disk dhe për lejen për të instaluar softuerin.</translation>
 <translation id="7761834446675418963">Kliko tek emri yt për të hapur Chrome dhe fillo shfletimin.</translation>
-<translation id="7763983146198734674">Ruaj fjalëkalimet dhe qasu në to në lëvizje</translation>
 <translation id="7777080907402804672">Nëse një imazh nuk ka një përshkrim të dobishëm, Chrome do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google. Këtë mund ta çaktivizosh te cilësimet në çdo moment.</translation>
 <translation id="778331955594035129">Chrome ka nevojë për lejen e vendndodhjes për të këtë sajt</translation>
-<translation id="7785741298021097183">Chrome është projektuar për të qenë i shpejtë dhe i sigurt në të gjitha pajisjet e tua - nga telefoni e deri te kompjuteri.</translation>
 <translation id="7787950393032327779">Me sa duket profili është në përdorim nga një proces tjetër i Google Chrome (<ph name="PROCESS_ID" />) në një kompjuter tjetër (<ph name="HOST_NAME" />). Chrome e ka kyçur profilin që të mos dëmtohet. Nëse je i sigurt se asnjë proces tjetër nuk po e përdor këtë profil, mund ta shkyçësh profilin dhe ta rihapësh Chrome.</translation>
 <translation id="7801699035218095297">Google Chrome po përpiqet të kopjojë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
-<translation id="7802622118583152311">Chrome të sjell teknologjinë më të fundit për shfletim më të mirë</translation>
 <translation id="7808348361785373670">Hiqe nga Chrome...</translation>
 <translation id="7825851276765848807">Instalimi dështoi për shkak të një gabimi të papërcaktuar. Shkarkoje Google Chrome përsëri.</translation>
-<translation id="7836610565365456468">Transformo shfletuesin me tema të gjalla të frymëzuara nga artistë, natyra etj.</translation>
 <translation id="7845233973568007926">Faleminderit që e instalove. Duhet të rinisësh kompjuterin përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
-<translation id="7852254990718225089">IA-ja në Chrome ndihmon për ta bërë uebin më të shpejtë, më të sigurt dhe më të qasshëm</translation>
 <translation id="7872446069773932638">Po shkarkohet... Kanë mbetur edhe <ph name="SECONDS" /> sekonda</translation>
 <translation id="7886087451482920026">Zgjidh tekstin me "Lenten e Google"</translation>
 <translation id="7890208801193284374">Nëse e ndan një kompjuter, miqtë dhe familja mund të shfletojnë veçmas dhe ta konfigurojnë Chrome pikërisht ashtu si dëshirojnë.</translation>
@@ -548,7 +521,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7917470403848199310">Chrome do të pyesë nëse dëshiron të ruash informacionet e formularit, si p.sh. ditëlindjen, moshën dhe numrin e pasaportës</translation>
 <translation id="7917876797003313048">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar. "Llogaritë e tua të Google" përdoren për shfletuesin Chrome, Play Store, Gmail etj. Nëse do të shtosh një llogari për dikë tjetër, si p.sh. anëtar të familjes, shto më mirë një person të ri te <ph name="DEVICE_TYPE" /> yt. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome e bllokoi këtë shkarkim sepse skedari është mashtrues dhe mund të bëjë ndryshime të papritura në pajisjen tënde</translation>
-<translation id="7947083960301164556">Shiko çfarë ka të re</translation>
 <translation id="7951272445806340501">Chrome OS Flex ka nevojë të riniset për të zbatuar përditësimin.</translation>
 <translation id="7959172989483770734">Menaxho profilet e Chrome</translation>
 <translation id="7962410387636238736">Ky kompjuter nuk do të marrë më përditësime të Google Chrome sepse Windows XP dhe Windows Vista nuk mbështeten më</translation>
@@ -589,7 +561,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8418845734693287262">ChromeOS nuk mund t'i sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>
 <translation id="842386925677997438">Veglat e sigurisë të Chrome</translation>
 <translation id="8425765582779547329">Për të qëndruar më i sigurt online me zgjedhjet e prindit tënd, identifikohu në Chrome</translation>
-<translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8429214465555795676">Për të vazhduar, do të të duhet të identifikohesh në Chrome me <ph name="EMAIL" />. Kjo siguron përputhjen me politikat e organizatës sate.</translation>
 <translation id="8433638294851456451">Për të dërguar një numër nga këtu te telefoni yt Android, identifikohu në Chrome në të dyja pajisjet.</translation>
 <translation id="8496177819998570653">Men&amp;axheri i fjalëkalimeve i Google</translation>
@@ -617,17 +588,14 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8781673607513845160">Për të përdorur kamerën, jepi Chrome qasje te <ph name="BEGIN_LINK" />cilësimet e sistemit<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Gabim gjatë instalimit: Administratori i rrjetit ka zbatuar një politikë grupi që parandalon instalimin: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">Chrome e bllokoi këtë shkarkim sepse skedari mund të dëmtojë llogaritë e tua personale dhe të rrjeteve sociale, duke përfshirë <ph name="USER_EMAIL" /></translation>
-<translation id="8797423385604279835">Organizo skedat me ndihmën nga IA-ja</translation>
 <translation id="8801657293260363985">V8 është motori i JavaScript dhe WebAssembly i Chrome që përdoret për të përmirësuar performancën e sajteve</translation>
 <translation id="8821043148920470810">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 7.</translation>
 <translation id="8823341990149967727">Sistemi operativ Chrome nuk është i përditësuar</translation>
 <translation id="8825634023950448068">Për të mbrojtur privatësinë tënde, ne fshijmë automatikisht interesat e tua që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një interes mund të shfaqet përsëri në listë. Nëse Chrome gabohet ose nëse nuk dëshiron të shikosh reklama të caktuara, mund të heqësh një interes.</translation>
 <translation id="8834965163890861871">Google Chrome po përpiqet t'i modifikojë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
-<translation id="8843389967774722327">Chrome shton rregullisht veçori të reja që të ndihmojnë të realizosh gjëra të ndryshme</translation>
 <translation id="8843516219908676469">Chrome i kupton më mirë formularët dhe mund t'i plotësojë automatikisht më shpejt për ty</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome rekomandon që ta heqësh atë}other{Chrome rekomandon që t'i heqësh ato}}</translation>
 <translation id="8862326446509486874">Nuk ke të drejtat e duhura për instalimin në nivel sistemi. Provo ta ekzekutosh përsëri instaluesin si Administrator.</translation>
-<translation id="8908277254462331033">Shiko veçoritë e sigurisë</translation>
 <translation id="8914504000324227558">Rinis Chrome</translation>
 <translation id="8922193594870374009">Për të dërguar një numër nga <ph name="ORIGIN" /> te telefoni yt Android, identifikohu në Chrome në të dyja pajisjet.</translation>
 <translation id="8948460679427074738">Kjo shtesë nuk i ka publikuar praktikat e privatësisë, si p.sh. se si i mbledh dhe i përdor të dhënat. Chrome rekomandon që ta heqësh atë.</translation>

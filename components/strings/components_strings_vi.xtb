@@ -1154,7 +1154,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="306573536155379004">Đã bắt đầu trò chơi.</translation>
 <translation id="3067505415088964188">Giá thấp</translation>
 <translation id="3068118691172921711">Quá trình tải tệp lên <ph name="CLOUD_PROVIDER" /> sẽ bắt đầu sau 1 phút</translation>
-<translation id="3068976060094139647">Bạn có thể tự động điền thẻ này vì tài khoản của bạn liên kết với Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} mục}other{{ITEMS} mục}}</translation>
 <translation id="3076865167425975822">Hệ điều hành</translation>
 <translation id="3080254622891793721">Đồ họa</translation>
@@ -4377,7 +4376,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8757526089434340176">Ưu đãi hiện có của Google Pay</translation>
 <translation id="8759274551635299824">Thẻ này đã hết hạn</translation>
 <translation id="87601671197631245">Trang web này dùng cấu hình bảo mật lỗi thời nên có thể làm lộ thông tin của bạn (chẳng hạn như mật khẩu, thư hoặc thẻ tín dụng) trong quá trình gửi các thông tin này đến trang web này.</translation>
-<translation id="8763226176721243078">Bạn có thể tự động điền thẻ này vì tài khoản <ph name="CARD_ISSUER_NAME" /> của bạn liên kết với Google Pay.</translation>
 <translation id="8763927697961133303">Thiết bị USB</translation>
 <translation id="8763986294015493060">Đóng tất cả cửa sổ ẩn danh đang mở</translation>
 <translation id="8766943070169463815">Đã mở bảng xác thực thông tin thanh toán an toàn</translation>

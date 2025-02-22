@@ -30,7 +30,6 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="TITLE_
 <translation id="2118649612461486615">Podaci o trgovini</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zatvorene kartice i grupe mogu se ponovo otvoriti u odjeljku Nedavne kartice i odjeljku Grupe kartica. Vaša anonimna kartica neće biti dostupna.}one{Zatvorene kartice i grupe mogu se ponovo otvoriti u odjeljku Nedavne kartice i odjeljku Grupe kartica. Vaša # anonimna kartica neće biti dostupna.}few{Zatvorene kartice i grupe mogu se ponovo otvoriti u odjeljku Nedavne kartice i odjeljku Grupe kartica. Vaše # anonimne kartice neće biti dostupne.}other{Zatvorene kartice i grupe mogu se ponovo otvoriti u odjeljku Nedavne kartice i odjeljku Grupe kartica. Vaših # anonimnih kartica neće biti dostupno.}}</translation>
 <translation id="2162620598375156287">Trenutačna cijena sada je <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">Grupa kartica <ph name="TAB_GROUP_NAME" /> više nije dostupna</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Ukloni karticu iz grupe}one{Ukloni kartice iz grupe}few{Ukloni kartice iz grupe}other{Ukloni kartice iz grupe}}</translation>
 <translation id="2271452184061378400">Ovdje se spremaju vaše grupe kartica</translation>
 <translation id="2277224997687551299">Uredi naziv grupe</translation>

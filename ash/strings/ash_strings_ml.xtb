@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">ഡെസ്‌ക് 2</translation>
 <translation id="1546930421365146760">ഈ ഉപകരണം Google അഡ്‌മിൻ കൺസോളിൽ സജ്ജീകരിക്കാൻ നിങ്ങളുടെ അഡ്‌മിനോട് ആവശ്യപ്പെടുക</translation>
 <translation id="1549512626801247439">സ്‌റ്റോറേജ് മാനേജ്‌മെന്റ്</translation>
+<translation id="1549721333775633305">ക്വിക്ക് ഷെയർ ക്രമീകരണം കാണിക്കുക. ക്വിക്ക് ഷെയർ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="1550406609415860283">ഉപകരണങ്ങൾ ലഭ്യമാണ്</translation>
 <translation id="1550523713251050646">കൂടുതൽ ഓപ്‌ഷനുകൾക്ക് ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="1555130319947370107">നീല</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> സജീവമാക്കിയിട്ടില്ല.</translation>
 <translation id="5860033963881614850">ഓഫാക്കുക</translation>
 <translation id="5860491529813859533">ഓൺ ചെയ്യുക</translation>
+<translation id="5864691701242730005">ക്വിക്ക് ഷെയർ ക്രമീകരണം കാണിക്കുക. <ph name="VISIBILITY" /> എന്നതിന്റെ ദൃശ്യപരത തിരഞ്ഞെടുത്തു</translation>
 <translation id="5864748620896638071">ബാറ്ററി <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">നെറ്റ്‍വർക്ക് വിവവരങ്ങൾ ശേഖരിക്കുന്നു</translation>
 <translation id="5867606971598166637">നിങ്ങളുടെ സിസ്റ്റം അഡ്മിൻ സ്ക്രീനുകൾ നിരീക്ഷിക്കുന്നു</translation>
@@ -2263,6 +2265,7 @@
 <translation id="851660987304951246">ഉള്ളടക്കം വേഗത്തിൽ സംഗ്രഹിക്കാനോ ചോദ്യങ്ങൾ ചോദിക്കാനോ 'എന്നെ വായിക്കാൻ സഹായിക്കൂ' ഉപയോഗിക്കുക</translation>
 <translation id="8517041960877371778">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഓണായിരിക്കുമ്പോൾ അത് ചാർജ്ജാകാതിരിക്കാം.</translation>
 <translation id="8535393432370007982">നിറം അനുസരിച്ചുള്ള അടുക്കൽ ക്രമം പഴയപടിയാക്കുക</translation>
+<translation id="8536886494750559755">ക്വിക്ക് ഷെയർ ക്രമീകരണം കാണിക്കുക. എല്ലാവർക്കും <ph name="TIME_REMAINING" /> നേരത്തേക്ക് ദൃശ്യമാണ്</translation>
 <translation id="8539803091108018926">ക്ലിപ്പ്ബോർഡിലേക്ക് ടെക്‌സ്‌റ്റ് പകർത്തി</translation>
 <translation id="8541078764854166027">ക്യാമറാ ഫ്രെയിമിംഗ്</translation>
 <translation id="8542053257095774575">സംരക്ഷിച്ച ഡെസ്ക്കുകളോ ടെംപ്ലേറ്റുകളോ ഇല്ല</translation>

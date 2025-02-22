@@ -1154,7 +1154,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="306573536155379004">Nagsimula na ang laro.</translation>
 <translation id="3067505415088964188">Mababa ang presyo</translation>
 <translation id="3068118691172921711">Magsisimula ang pag-upload ng iyong file sa <ph name="CLOUD_PROVIDER" /> sa loob ng 1 minuto</translation>
-<translation id="3068976060094139647">Puwede mong i-autofill ang card na ito dahil naka-link sa Google Pay ang iyong account.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} item}one{{ITEMS} item}other{{ITEMS} na item}}</translation>
 <translation id="3076865167425975822">Mga Operating System</translation>
 <translation id="3080254622891793721">Graphic</translation>
@@ -4379,7 +4378,6 @@ Mga karagdagang detalye:
 <translation id="8757526089434340176">Available ang alok ng Google Pay</translation>
 <translation id="8759274551635299824">Nag-expire na ang card na ito</translation>
 <translation id="87601671197631245">Gumagamit ang site na ito ng lumang configuration sa seguridad, na posibleng maglantad ng iyong impormasyon (halimbawa, mga password, mensahe, o credit card) kapag ipinadala ito sa site na ito.</translation>
-<translation id="8763226176721243078">Puwede mong i-autofill ang card na ito dahil naka-link sa Google Pay ang iyong <ph name="CARD_ISSUER_NAME" /> account.</translation>
 <translation id="8763927697961133303">USB device</translation>
 <translation id="8763986294015493060">Isara ang lahat ng Incognito window na kasalukuyang nakabukas</translation>
 <translation id="8766943070169463815">Binuksan ang sheet para sa pag-authenticate ng kredensyal sa secure na pagbabayad</translation>

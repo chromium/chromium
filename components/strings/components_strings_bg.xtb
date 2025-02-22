@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">Играта е стартирана.</translation>
 <translation id="3067505415088964188">Цената е ниска</translation>
 <translation id="3068118691172921711">Качването на файловете ви в(ъв) <ph name="CLOUD_PROVIDER" /> ще започне след 1 минута</translation>
-<translation id="3068976060094139647">Можете да попълните тази карта автоматично, защото профилът ви е свързан с Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} елемент}other{{ITEMS} елемента}}</translation>
 <translation id="3076865167425975822">Операционни системи</translation>
 <translation id="3080254622891793721">Графика</translation>
@@ -4376,7 +4375,6 @@
 <translation id="8757526089434340176">Има налична оферта от Google Pay</translation>
 <translation id="8759274551635299824">Тази карта е изтекла</translation>
 <translation id="87601671197631245">Този сайт използва остаряла конфигурация за сигурност, която може да разкрие информацията ви (например пароли, съобщения или кредитни карти) при изпращането ѝ до него.</translation>
-<translation id="8763226176721243078">Можете да попълните тази карта автоматично, защото профилът ви в(ъв) <ph name="CARD_ISSUER_NAME" /> е свързан с Google Pay.</translation>
 <translation id="8763927697961133303">USB устройство</translation>
 <translation id="8763986294015493060">Затваряне на всички отворени прозорци в режим „инкогнито“</translation>
 <translation id="8766943070169463815">Листът за удостоверяване на идентификационни данни за сигурни плащания е отворен</translation>

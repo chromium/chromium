@@ -380,7 +380,6 @@ Güvenli içerikler hakkında daha fazla bilgi için Secure Contexts sayfasına 
 <translation id="1305400589435476516">Politika, Etkin değerine ayarlanırsa cihazda veri dolaşımına izin verilir.
 
       Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa veri dolaşımı kullanılamaz.</translation>
-<translation id="1306041796676461437">Genişletilebilir Enterprise SSO desteğini devre dışı bırak</translation>
 <translation id="1308526987406924874">Politikayı ayarlamak, kullanıcılardan bir seri bağlantı noktasına erişme izni vermelerini isteyemeyecek siteleri belirten bir URL kalıpları listesi yapmanıza olanak tanır.
 
       Politika ayarlanmadan bırakılırsa <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (etkinse) bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
@@ -3571,15 +3570,6 @@ Bu politikayı her zaman (özellikle de üretim dağıtımı zamanlarında) etki
 <translation id="3606571057705314194">Başlangıçta profil seçiciyi devre dışı bırak</translation>
 <translation id="3608206578291537084">Şifrelenmiş Raporlama Ardışık Düzeni'ni etkinleştir</translation>
 <translation id="3608281460204780443"><ph name="PRODUCT_OS_NAME" /> başlatıcıda ve yeni sekme sayfasında Chrome Web Mağazası simgesini göster</translation>
-<translation id="3608411984079625468">Kimlik doğrulama sağlayıcısı olan hesaplarda kullanıcılar için Enterprise SSO Uzantısı ile otomatik oturum açmayı yapılandırır.
-
-Bu politika, 1 (<ph name="POLICY_VALUE_ENABLED" />) değerine ayarlanır veya ayarlanmadan bırakılırsa cihazda TOA uzantısı olan kimlik doğrulama sağlayıcılar, oturum açmaya çalışan kullanıcıların kimliğini doğrulamak için bu uzantıyı kullanır.
-
-Bu politika, 0 (<ph name="POLICY_VALUE_DISABLED" />) değerine ayarlanırsa yukarıda açıklandığı gibi otomatik oturum açma devre dışı bırakılır.
-
-Bu özellik, MacOS Catalina'dan itibaren kullanılabilir.
-
-Not: Bu politika gizli mod veya misafir modu için geçerli değildir.</translation>
 <translation id="3612482251405108708">Kilit ekranında yeniden online kimlik doğrulamayı otomatik olarak başlat</translation>
 <translation id="3616490235694929053">Bu politika, ilk oturum açma sırasında görüntü boyutu ayar ekranının kullanıcıya gösterilip gösterilmeyeceğini belirler.
       Bu politika yanlış değerine ayarlanırsa görüntü boyutu ayar ekranı gösterilmez.
@@ -5768,7 +5758,6 @@ Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph na
       Cihaz duvar kağıdı politikası ayarlanırsa ChromeOS cihaz, duvar kağıdı resmini indirir ve cihazda henüz hiçbir kullanıcı oturum açmamışken giriş ekranında bu resmi kullanır. Kullanıcı giriş yaptıktan sonra, kullanıcının duvar kağıdı politikası devreye girer.
 
       Cihaz duvar kağıdı politikası ayarlanmamış ve kullanıcının duvar kağıdı politikası ayarlanmışsa neyin gösterileceğini kullanıcının duvar kağıdı politikası belirler.</translation>
-<translation id="5217106427763720473">Genişletilebilir Enterprise SSO desteğini etkinleştir</translation>
 <translation id="5219844027738217407">Bu politika Android uygulamalarında sadece mikrofonu etkiler. Bu politika doğru olarak ayarlandığında, istisnasız tüm Android uygulamaları için mikrofon kapatılır.</translation>
 <translation id="5222325605346216869">Arka planda JavaScript zamanlayıcılarının kısıtlanmasını zorunlu kıl</translation>
 <translation id="5223606242837275233">Sitelerin URL yoluyla belirli metin parçalarına ilerlemesine izin verme</translation>

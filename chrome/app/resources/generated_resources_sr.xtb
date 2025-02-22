@@ -1008,6 +1008,7 @@
 <translation id="1682696837763999627">Велики курсор миша</translation>
 <translation id="1682867089915960590">Желите да укључите навигацију курсором?</translation>
 <translation id="1686550358074589746">Омогући унос превлачењем</translation>
+<translation id="1686785653877010442">Сајтови обично шаљу обавештења да би вас обавестили о ударним вестима или порукама ћаскања.</translation>
 <translation id="168715261339224929">Да би вам обележивачи били доступни на свим уређајима, укључите синхронизацију.</translation>
 <translation id="1688935057616748272">Унесите неко слово</translation>
 <translation id="1689333818294560261">Надимак</translation>
@@ -1283,6 +1284,7 @@
 <translation id="1878885068166344708">Ставка се истиче кад преместите фокус. Притисните Tab или изаберите ставку да бисте променили фокус.</translation>
 <translation id="1879000426787380528">Пријавите се као</translation>
 <translation id="18802377548000045">Картице се скупљају до велике ширине</translation>
+<translation id="1880618477732738742">Промените и одобрите приступ функцијама као што су геолоцирање, микрофон, камера, колачићи итд. за све веб-сајтове и додатке, укључујући овај додатак.</translation>
 <translation id="1880905663253319515">Желите да избришете сертификат „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="1881445033931614352">Распоред тастатуре</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Ставка}one{# ставка}few{# ставке}other{# ставки}}</translation>
@@ -3466,6 +3468,7 @@
 <translation id="3435738964857648380">Безбедност</translation>
 <translation id="343578350365773421">Нема папира</translation>
 <translation id="3435896845095436175">Омогући</translation>
+<translation id="3437397693214267762">Погледајте Outlook календар и SharePoint и OneDrive фајлове</translation>
 <translation id="3438633801274389918">Нинџа</translation>
 <translation id="3439153939049640737">Увек дозволи да <ph name="HOST" /> приступа микрофону</translation>
 <translation id="3439970425423980614">Отварање PDF-а у прегледу</translation>
@@ -7125,6 +7128,7 @@
     Користите налог да бисте лако приступали свим обележивачима, фајловима и другом садржају. Ако немате налог, можете да га отворите на следећем екрану.</translation>
 <translation id="6054138466019582920">Претражи ову страницу помоћу Google-а...</translation>
 <translation id="6054284857788651331">Недавно затворена група картица</translation>
+<translation id="6054819000749443354">Отвори подешавања система</translation>
 <translation id="6054961935262556546">Промени видљивост</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 са RSA шифровањем</translation>
 <translation id="6055544610007596637">Инсталирајте апликације за <ph name="DEVICE_TYPE" /> из Google Play продавнице</translation>
@@ -8952,6 +8956,7 @@
 <translation id="7380459290951585794">Уверите се да је телефон у близини, да је откључан и да су Bluetooth и WiFi укључени</translation>
 <translation id="7380622428988553498">Име уређаја садржи неважеће знакове</translation>
 <translation id="7380768571499464492">Ажурирано: <ph name="PRINTER_NAME" /></translation>
+<translation id="7382009635620830394">Ако се ова картица онемогући, онемогућићемо и Microsoft картице као што су SharePoint и OneDrive фајлови и Outlook календар.</translation>
 <translation id="7382085868019811559">Подршка за застареле прегледаче (LBS) омогућава да се одређени URL обрасци отварају у алтернативном прегледачу који подржава застареле функције потребне за исправан рад тих сајтова.</translation>
 <translation id="7382980704744807223">Сумњиво</translation>
 <translation id="738322632977123193">Отпремање није успело. Користите слику у неком од ових формата: .jpg, .gif, .png, .bmp, .tif или .webp</translation>
@@ -10622,6 +10627,7 @@
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" />Имејлом <ph name="USER_EMAIL" /> управља <ph name="MANAGER" />. Не можете да додате овај имејл као додатни налог.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Да бисте користили <ph name="USER_EMAIL" />, прво се одјавите са уређаја <ph name="DEVICE_TYPE" />. Затим у дну екрана за пријављивање изаберите Додај особу.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Задржите тастер за претрагу да бисте променили понашање тастера у горњем реду</translation>
+<translation id="8549127125482561383">Како да прегледате захтеве</translation>
 <translation id="8549316893834449916">За пријављивање на Chromebook ћете користити Google налог – исти који користите и за Gmail, Диск, YouTube и друго.</translation>
 <translation id="8550239873869577759">Преузет је сумњиви фајл</translation>
 <translation id="8551388862522347954">Лиценце</translation>

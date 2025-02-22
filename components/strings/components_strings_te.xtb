@@ -1149,7 +1149,6 @@
 <translation id="306573536155379004">గేమ్ ప్రారంభమైంది.</translation>
 <translation id="3067505415088964188">ధర తక్కువగా ఉంటుంది</translation>
 <translation id="3068118691172921711">మీ ఫైల్ అప్‌లోడ్ <ph name="CLOUD_PROVIDER" /> 1 నిమిషంలో ప్రారంభమవుతుంది</translation>
-<translation id="3068976060094139647">మీ ఖాతా Google Payకు లింక్ అయి ఉన్నందున మీరు ఈ కార్డ్‌ను ఆటోఫిల్ చేయవచ్చు.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} ఐటెమ్}other{{ITEMS} ఐటెమ్‌లు}}</translation>
 <translation id="3076865167425975822">ఆపరేటింగ్ సిస్టమ్‌లు</translation>
 <translation id="3080254622891793721">గ్రాఫిక్</translation>
@@ -4374,7 +4373,6 @@
 <translation id="8757526089434340176">Google Pay ఆఫర్ అందుబాటులో ఉంది</translation>
 <translation id="8759274551635299824">ఈ కార్డ్ గడువు ముగిసింది</translation>
 <translation id="87601671197631245">ఈ సైట్ ఉపయోగిస్తున్న భద్రతా కాన్ఫిగరేషన్ గడువు ముగిసింది, దీని వలన మీరు మీ సమాచారాన్ని (ఉదాహరణకు, పాస్‌వర్డ్‌లు, మెసేజ్‌లు లేదా క్రెడిట్ కార్డ్‌లు) ఈ సైట్‌కు పంపించినప్పుడు అది బహిర్గతం అవ్వవచ్చు.</translation>
-<translation id="8763226176721243078">మీ <ph name="CARD_ISSUER_NAME" /> ఖాతా Google Payకి లింక్ చేసినందున మీరు ఈ కార్డ్‌ను ఆటోఫిల్ చేయవచ్చు.</translation>
 <translation id="8763927697961133303">USB పరికరం</translation>
 <translation id="8763986294015493060">ప్రస్తుతం తెరిచి ఉన్న అజ్ఞాత విండోలన్నింటినీ మూసివేయండి</translation>
 <translation id="8766943070169463815">సురక్షిత పేమెంట్ ఆధారాల ప్రామాణీకరణ షీట్ తెరవబడింది</translation>

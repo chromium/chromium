@@ -1154,7 +1154,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="306573536155379004">Mae'r gêm wedi cychwyn.</translation>
 <translation id="3067505415088964188">Pris yn isel</translation>
 <translation id="3068118691172921711">Bydd eich uwchlwythiad ffeil i <ph name="CLOUD_PROVIDER" /> yn dechrau mewn 1 funud</translation>
-<translation id="3068976060094139647">Gallwch awtolenwi'r cerdyn hwn oherwydd bod eich cyfrif yn gysylltiedig â Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} eitem}zero{{ITEMS} eitem}two{{ITEMS} eitem}few{{ITEMS} eitem}many{{ITEMS} eitem}other{{ITEMS} eitem}}</translation>
 <translation id="3076865167425975822">Systemau Gweithredu</translation>
 <translation id="3080254622891793721">Graffig</translation>
@@ -4375,7 +4374,6 @@ Manylion ychwanegol:
 <translation id="8757526089434340176">Mae cynnig Google Pay ar gael</translation>
 <translation id="8759274551635299824">Mae'r cerdyn hwn wedi darfod</translation>
 <translation id="87601671197631245">Mae'r wefan hon yn defnyddio hen ffurfweddiad diogelwch, a allai ddatgelu'ch gwybodaeth (er enghraifft, cyfrineiriau, negeseuon, neu gardiau credyd) pan fydd yn cael ei hanfon i'r wefan hon.</translation>
-<translation id="8763226176721243078">Gallwch awtolenwi'r cerdyn hwn oherwydd bod eich cyfrif <ph name="CARD_ISSUER_NAME" /> yn gysylltiedig â Google Pay.</translation>
 <translation id="8763927697961133303">Dyfais USB</translation>
 <translation id="8763986294015493060">Cau pob ffenestr anhysbys sydd ar agor ar hyn o bryd</translation>
 <translation id="8766943070169463815">Mae'r daflen ddilysu manylion talu ddiogel ar agor</translation>

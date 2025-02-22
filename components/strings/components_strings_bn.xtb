@@ -1155,7 +1155,6 @@
 <translation id="306573536155379004">গেম শুরু হয়েছে।</translation>
 <translation id="3067505415088964188">দাম কম</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" />-এ আপনার ফাইল আপলোড ১ মিনিটে শুরু হবে</translation>
-<translation id="3068976060094139647">আপনার অ্যাকাউন্ট Google Pay-এর সাথে লিঙ্ক করা আছে তাই এই কার্ড অটোফিল করতে পারবেন।</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS}টি আইটেম}one{{ITEMS}টি আইটেম}other{{ITEMS}টি আইটেম}}</translation>
 <translation id="3076865167425975822">অপারেটিং সিস্টেম</translation>
 <translation id="3080254622891793721">গ্রাফিক</translation>
@@ -4379,7 +4378,6 @@
 <translation id="8757526089434340176">Google Pay অফার উপলভ্য</translation>
 <translation id="8759274551635299824">এই কার্ডটির মেয়াদ শেষ হয়েছে</translation>
 <translation id="87601671197631245">এই সাইটটি পুরনো সিকিউরিটি কনফিগারেশন ব্যবহার করে তাই আপনার তথ্য (যেমন, পাসওয়ার্ড, মেসেজ বা ক্রেডিট কার্ডের নম্বর) এই সাইটে পাঠানোর সময় এইসব তথ্যের নিরাপত্তা বিঘ্নিত হতে পারে।</translation>
-<translation id="8763226176721243078">আপনার <ph name="CARD_ISSUER_NAME" /> অ্যাকাউন্ট Google Pay-এর সাথে লিঙ্ক করা আছে বলে এই কার্ড অটোফিল করতে পারবেন।</translation>
 <translation id="8763927697961133303">USB ডিভাইস</translation>
 <translation id="8763986294015493060">বর্তমানে খোলা আছে এমন সব 'ছদ্মবেশী' উইন্ডো বন্ধ করুন</translation>
 <translation id="8766943070169463815">নিরাপদে পেমেন্ট ক্রেডেনশিয়াল যাচাই করার শিট খোলা হয়েছে</translation>

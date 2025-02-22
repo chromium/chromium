@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">Игра је покренута.</translation>
 <translation id="3067505415088964188">Цена је ниска</translation>
 <translation id="3068118691172921711">Отпремање фајлова у <ph name="CLOUD_PROVIDER" /> почиње за 1 минут</translation>
-<translation id="3068976060094139647">Можете да попуните ову картицу аутоматски јер је налог повезан са Google Pay-ом.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} ставка}one{{ITEMS} ставка}few{{ITEMS} ставке}other{{ITEMS} ставки}}</translation>
 <translation id="3076865167425975822">Оперативни системи</translation>
 <translation id="3080254622891793721">Слика</translation>
@@ -2255,6 +2254,7 @@
 <translation id="4989809363548539747">Ова додатна компонента није подржана</translation>
 <translation id="4990241977441916452">Коверта А2</translation>
 <translation id="4992066212339426712">Укључи звук</translation>
+<translation id="4994095017621319069">1 група картица више није доступна</translation>
 <translation id="4994348767896109801">Да ли ћете видети персонализовани оглас може да зависи од много тога, укључујући ово подешавање, <ph name="BEGIN_LINK_1" />теме огласа<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />подешавања колачића<ph name="END_LINK_2" /> и да ли сајт који прегледате персонализује огласе. Сазнајте више о <ph name="BEGIN_LINK_3" />управљању приватношћу са огласима<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Измењено:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали претрагом сајтова и подразумеваним претраживачем</translation>
@@ -3468,6 +3468,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Светлољубичаста</translation>
 <translation id="7156870133441232244">Сервер треба да се надогради на TLS 1.2 или новију верзију.</translation>
+<translation id="7156885531105222428">Нисмо успели да пронађемо тражену страницу у апликацији</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Да бисте послали овај фајл помоћу функције <ph name="FEATURE_NAME" />, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}one{Да бисте послали ове фајлове помоћу функције <ph name="FEATURE_NAME" />, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}few{Да бисте послали ове фајлове помоћу функције <ph name="FEATURE_NAME" />, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}other{Да бисте послали ове фајлове помоћу функције <ph name="FEATURE_NAME" />, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}}</translation>
 <translation id="7160999678034985039">Сачувајте свој рад и покрените ажурирање када будете спремни.</translation>
 <translation id="7162277662076933695">Читач паметних картица</translation>
@@ -4255,6 +4256,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Посетите &lt;strong&gt;chrome://policy&lt;/strong&gt; да бисте видели листу блокираних URL-ова и друге смернице које је одредио администратор система.</translation>
 <translation id="8536234749087605613">Коверта (прозор)</translation>
+<translation id="8538228968820006247">Група картица је пуна, нови чланови не могу да се придруже помоћу линка</translation>
 <translation id="8539500321752640291">Желите ли да омогућите 2 дозволе?</translation>
 <translation id="8541158209346794904">Bluetooth уређај</translation>
 <translation id="8541410041357371550">Овај сајт прима податке о вашим темама огласа из Chrome-а да би вам приказивао релевантније огласе.</translation>
@@ -4376,7 +4378,6 @@
 <translation id="8757526089434340176">Доступна је Google Pay понуда</translation>
 <translation id="8759274551635299824">Ова картица је истекла</translation>
 <translation id="87601671197631245">Овај сајт користи застарелу безбедносну конфигурацију која може да открије ваше информације (на пример, лозинке, поруке или кредитне картице) када се шаљу том сајту.</translation>
-<translation id="8763226176721243078">Можете да попуните ову картицу аутоматски јер је <ph name="CARD_ISSUER_NAME" /> налог повезан са Google Pay-ом.</translation>
 <translation id="8763927697961133303">USB уређај</translation>
 <translation id="8763986294015493060">Затворите све прозоре без архивирања који су тренутно отворени</translation>
 <translation id="8766943070169463815">Табела за потврду акредитива за безбедно плаћање је отворена</translation>

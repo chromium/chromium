@@ -29,6 +29,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1345251407431278948">Vastgezet. Je krijgt weer toegang tot Zoeken met afbeelding via de nieuwe knop op de werkbalk.</translation>
 <translation id="1356661055722410047">Nieuw! Je kunt zowel tekst als afbeeldingen op je scherm vertalen</translation>
 <translation id="1414495520565016063">Je bent ingelogd bij Chromium.</translation>
+<translation id="1465192221147974788">Als je je venster wilt delen, sta je schermopname voor Chromium toe in Systeeminstellingen.</translation>
 <translation id="1478370723027452770">Hulp bij Chrome for Testing</translation>
 <translation id="1497802159252041924">Installatiefout: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Een Chromium-tabblad delen</translation>
@@ -161,6 +162,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3130323860337406239">Chromium gebruikt je microfoon.</translation>
 <translation id="3137969841538672700">Sleep om te zoeken</translation>
 <translation id="3144188012276422546">Dit tabblad gebruikt extra resources. Sta toe dat Chromium het inactief maakt om de prestaties te verbeteren.</translation>
+<translation id="3149163023759831301">Als je je scherm wilt delen, sta je schermopname voor Chromium toe in Systeeminstellingen</translation>
 <translation id="3155163173539279776">Chromium opnieuw starten</translation>
 <translation id="3161522574479303604">Alle talen</translation>
 <translation id="3179665906251668410">Link openen in een Chromium-inco&amp;gnitovenster</translation>
@@ -183,8 +185,10 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3474745554856756813">Hiermee worden <ph name="ITEMS_COUNT" /> items verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chromium als <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> kan schakelen tussen Chromium-profielen</translation>
 <translation id="3509308970982693815">Sluit alle Chromium-vensters en probeer het opnieuw.</translation>
+<translation id="3522404737534491619">Als je je venster wilt delen, sta je schermopname voor Chromium toe in Systeeminstellingen</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> is al ingelogd.  Als je je browsegegevens gescheiden wilt houden, log je in Chromium in op je eigen profiel bij als <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">Ter bescherming van je privacy verwijderen we automatisch interesses die ouder zijn dan 4 weken. Het kan gebeuren dat een interesse weer in de lijst komt te staan als je blijft browsen. Je kunt ook interesses verwijderen waarvan je niet wilt dat Chromium deze overweegt.</translation>
+<translation id="3561853857681580870">Als je je scherm wilt delen, sta je schermopname voor Chromium toe in Systeeminstellingen.</translation>
 <translation id="3567254597502212821">Je browsegeschiedenis, een lijst van de sites die je via Chromium op dit apparaat hebt bezocht.</translation>
 <translation id="3597003331831379823">Kan configuratie met rechten op hoger niveau niet uitvoeren. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3639635944603682591">De browsegegevens van deze persoon worden verwijderd van dit apparaat. Als je de gegevens wilt herstellen, log je in bij Chromium als <ph name="USER_EMAIL" />.</translation>
@@ -282,6 +286,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4942295735032723435">Als je toekomstige Chromium-updates wilt krijgen, heb je macOS 11 of hoger nodig. Deze computer gebruikt macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium bevindt zich in de achtergrondmodus.</translation>
 <translation id="494490797786467921">Klik om het inlogdialoogvenster van Chromium te sluiten</translation>
+<translation id="4950660488495335294">Met Chromium-profielen kun je alle Chromium-gegevens gescheiden houden. Maak profielen voor vrienden en familie of maak onderscheid tussen werk en privé.</translation>
 <translation id="4987820182225656817">Gasten kunnen Chromium gebruiken zonder iets achter te laten.</translation>
 <translation id="4994636714258228724">Jezelf toevoegen aan Chromium</translation>
 <translation id="5123973130450702873">Chromium heeft rechten nodig om je handen te volgen</translation>

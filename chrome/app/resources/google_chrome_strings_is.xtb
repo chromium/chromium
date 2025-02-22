@@ -21,7 +21,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1184145431117212167">Uppsetning mistókst því að þín útgáfa af Windows er ekki studd.</translation>
 <translation id="1194807384646768652">Chrome lokaði á þetta niðurhal vegna þess að skráargerðin er ekki sótt oft og gæti verið hættuleg</translation>
 <translation id="1203500561924088507">Takk fyrir að setja upp. Þú þarft að endurræsa vafrann áður en þú getur notað <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1265739287306757398">Kynntu þér hvernig</translation>
 <translation id="1278833599417554002">Endurræstu til að uppfæra &amp;Chrome</translation>
 <translation id="1290883685122687410">Villa við uppsetningu: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Bíddu á meðan Chrome setur upp nýjustu kerfisuppfærslurnar.</translation>
@@ -32,7 +31,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1363996462118479832">ChromeOS gat ekki samstillt gögnin þín vegna innskráningarvillu.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Þessi tölva er þegar búin nýrri útgáfu af Google Chrome. Ef hugbúnaðurinn virkar ekki skaltu fjarlægja Google Chrome og reyna aftur.</translation>
-<translation id="1407223320754252908">Google Translate er innbyggt í Chrome svo þú getir þýtt þegar þú þarft þess</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome-uppfærslu er lokið. Þú getur notað nýju útgáfuna um leið og þú hefur endurræst. Núverandi flipar opnast aftur þegar endurræsingu er lokið.}=1{Chrome-uppfærslu er lokið. Þú getur notað nýju útgáfuna um leið og þú hefur endurræst. Núverandi flipar opnast aftur þegar endurræsingu er lokið. Huliðsglugginn opnast ekki aftur.}one{Chrome-uppfærslu er lokið. Þú getur notað nýju útgáfuna um leið og þú hefur endurræst. Núverandi flipar opnast aftur þegar endurræsingu er lokið. # huliðsgluggi opnast ekki aftur.}other{Chrome-uppfærslu er lokið. Þú getur notað nýju útgáfuna um leið og þú hefur endurræst. Núverandi flipar opnast aftur þegar endurræsingu er lokið. # huliðsgluggar opnast ekki aftur.}}</translation>
 <translation id="1434626383986940139">Chrome Canary forrit</translation>
 <translation id="146866447420868597">Skrá þig inn á Chrome?</translation>
@@ -69,7 +67,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1880677175115548835">Velja texta</translation>
 <translation id="1919130412786645364">Leyfa innskráningu í Chrome</translation>
 <translation id="1953553007165777902">Sækir... <ph name="MINUTE" /> mín. eftir</translation>
-<translation id="1982647487457769627">Chrome vinnur þvert á verkvanga til að gefa þér kunnuglega upplifun, sama hvert tækið er</translation>
 <translation id="2001586581944147178">Gerðu fólki með aðgang að netumferðinni þinni erfiðara fyrir að sjá hvaða vefsvæði þú skoðar. Chrome notar örugga tengingu til að finna IP-tölu vefsvæðis í DNS (nafnakerfi léna).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Þessi viðbót er ekki lengur studd. Chrome mælir með að þú fjarlægir hana.}one{Þessi viðbót er ekki lengur studd. Chrome mælir með að þú fjarlægir hana.}other{Þessar viðbætur eru ekki lengur studdar. Chrome mælir með að þú fjarlægir þær.}}</translation>
 <translation id="2018528049276128029">Á hverjum prófíl eru geymdar Chrome upplýsingar á borð við bókamerki, feril, aðgangsorð og fleira</translation>
@@ -107,7 +104,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="234869673307233423">Chrome getur ekki athugað aðgangsorðin þín. Reyndu aftur síðar.</translation>
 <translation id="235650106824528204">Stjórnandi vinnuprófíla getur fjarlægt öll Chrome gögn sem verða til við notkun þessa prófíls (þ.m.t. bókamerki, feril, aðgangsorð og aðrar stillingar). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Halda áfram</translation>
-<translation id="2390624519615263404">Skoða öryggiseiginleika</translation>
 <translation id="2401189691232800402">ChromeOS-kerfi</translation>
 <translation id="2403703063067034158">Villa í ræsingu: annað tilvik af uppsetningu er í keyrslu, reyndu aftur síðar.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Ein eða fleiri Chrome-viðbætur fengu aðgang að 1 HID-tæki}=1{Ein eða fleiri Chrome-viðbætur hafa aðgang að 1 HID-tæki}one{Ein eða fleiri Chrome-viðbætur hafa aðgang að # HID-tæki}other{Ein eða fleiri Chrome-viðbætur hafa aðgang að # HID-tækjum}}</translation>
@@ -126,7 +122,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2580411288591421699">Ekki er hægt að setja upp sömu útgáfu Google Chrome og er nú þegar í gangi. Lokaðu Google Chrome og reyndu aftur.</translation>
 <translation id="2586406160782125153">Þetta mun eyða vefskoðunargögnum úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
 <translation id="259935314519650377">Ekki tókst að vista uppsetningarforrit sem var sótt í skyndiminni. Villa: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2632707915638608719">Komdu meiru í verk með viðbótum fyrir Chrome</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome athugar reglulega hvort vafrinn þinn sé með öruggustu stillingarnar. Við látum þig vita ef þú þarft að yfirfara eitthvað.</translation>
 <translation id="2652691236519827073">Opna tengil í nýjum &amp;flipa í Chrome</translation>
@@ -155,7 +150,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2876628302275096482">Nánar um <ph name="BEGIN_LINK" />hvernig Chrome heldur gögnunum þínum leyndum<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Verkstjórn</translation>
 <translation id="2888126860611144412">Um Chrome</translation>
-<translation id="29082080693925013">Til að hafa skipulag á hlutunum getur þú fest vefsvæði sem þú heimsækir oft og flokkað flipa í hópa</translation>
 <translation id="2915996080311180594">Endurræsa seinna</translation>
 <translation id="2926676257163822632">Léleg aðgangsorð eru þau sem auðvelt er að giska á. Leyfðu Chrome <ph name="BEGIN_LINK" />að búa til traust aðgangsorð fyrir þig og muna þau<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome verður að fá leyfi fyrir myndavél fyrir þetta vefsvæði</translation>
@@ -184,10 +178,8 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3196187562065225381">Chrome lokaði á þetta niðurhal vegna þess að skráin er hættuleg</translation>
 <translation id="3222857603094643834">Leitaðu að hverju sem er á þessari síðu með Google-linsu</translation>
 <translation id="3226612997184048185">Ef þú vistar bókamerkin þín einnig á Google-reikningnum þínum geturðu vaktað verð á vörum í Chrome og fengið tilkynningar þegar verð lækka</translation>
-<translation id="3234642784688107085">Prófaðu nýja gervigreindareiginleika til að búa til þemu, fá aðstoð við skrif og hafa skipulag á hlutunum</translation>
 <translation id="3242123554343253302">Bæta við Chrome-prófíl</translation>
 <translation id="3245429137663807393">Ef þú deilir einnig Chrome notkunarskýrslum innihalda þær skýrslur vefslóðirnar sem þú opnar</translation>
-<translation id="3261565993776444564">Prófaðu nýjan lit til að sérsníða vafrann þinn</translation>
 <translation id="3282568296779691940">Skráðu þig inn á Chrome</translation>
 <translation id="3286538390144397061">Endurræsa núna</translation>
 <translation id="3289358082435924389">Seinna spyr Chrome þig hvort þú viljir nota vistaðar upplýsingar til að fylla eyðublöð út á sjálfvirkan hátt</translation>
@@ -205,7 +197,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3503306920980160878">Chrome þarf staðsetningaraðgang til að deila staðsetningu þinni með þessu vefsvæði</translation>
 <translation id="3533694711092285624">Engin vistuð aðgangsorð. Chrome getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
 <translation id="3541482654983822893">Chrome getur ekki athugað aðgangsorðin þín. Reyndu aftur eftir sólarhring.</translation>
-<translation id="3564543103555793392">Þú getur vistað bókamerki, aðgangsorð og fleira og notað þau síðan í símanum þínum þegar þú skráir þig inn á Chrome</translation>
 <translation id="3576528680708590453">Kerfisstjórinn hefur stillt Google Chrome á að opna annan vafra fyrir <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Samstilltu Chrome á milli tækja og gerðu það að þínu</translation>
 <translation id="3583751698304738917">Þú ert þegar skráð(ur) inn sem <ph name="USER_EMAIL_ADDRESS" /> á öðrum Chrome-prófíl</translation>
@@ -218,7 +209,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3635073343384702370">Chrome getur athugað aðgangsorðin þín þegar þú vistar þau</translation>
 <translation id="3667616615096815454">Ekki tókst að setja upp, þjónninn þekkir ekki forritið.</translation>
 <translation id="3673813398384385993">Chrome komst að því að „<ph name="EXTENSION_NAME" />“ inniheldur spilliforrit</translation>
-<translation id="3695446226812920698">Kynntu þér hvernig</translation>
 <translation id="3697952514309507634">Aðrir Chrome-prófílar</translation>
 <translation id="3703994572283698466">ChromeOS á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" /> og það sama á við um <ph name="BEGIN_LINK_LINUX_OSS" />Linux-forritunarumhverfið<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ChromeOS Flex útgáfa</translation>
@@ -238,7 +228,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3941890832296813527">Uppsetningarvilla: Skráarheiti uppsetningarforrits er ógilt eða ekki stutt.</translation>
 <translation id="3968962723676998462">Sláðu inn aðgangsorðið þitt til að nota og vista Chrome-gögn á reikningnum þínum, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome vill eyða gögnum Google-aðgangsorðastjórnunar. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
-<translation id="398236277091248993">Chrome er áfram hratt með afkastahvetjandi eiginleikum</translation>
 <translation id="4022972681110646219">Þýða skjá</translation>
 <translation id="4023601594785368013">Upprunalegt tungumál: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Endurræsa þarf ChromeOS til að nota uppfærsluna.</translation>
@@ -289,7 +278,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4627412468266359539">Valkvætt: Hjálpaðu til við að bæta eiginleika og afköst ChromeOs Flex með því að senda greiningar- og notkunargögn sjálfkrafa til Google.</translation>
 <translation id="4633000520311261472">Til að auka öryggi Chrome höfum við gert óvirkar einhverjar viðbætur sem ekki eru í <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og kann að hafa verið bætt við án þinnar vitundar.</translation>
 <translation id="4680828127924988555">Hætta við uppsetningu</translation>
-<translation id="4710245680469034439">Sérsníddu skoðun þína með þemum sem eru innblásin af listafólki, náttúrunni og fleiru</translation>
 <translation id="4720851490453439956">Innri uppfærsluþjónusta Google</translation>
 <translation id="4724676981607797757">Uppsetning mistókst vegna villu sem tengist óstuddri samskiptareglu.</translation>
 <translation id="4728575227883772061">Uppsetning mistókst vegna ótilgreindrar villu. Ef Google Chrome er í gangi eins og er skaltu loka því og reyna aftur.</translation>
@@ -309,7 +297,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4895437082222824641">Opna tengil í nýjum Chrome &amp;flipa</translation>
 <translation id="4918844574251943176">Mynd afrituð</translation>
 <translation id="492720062778050435">Chrome mælir með að þú farir yfir þessa viðbót</translation>
-<translation id="4951177103388687412">Hafðu skipulag á hlutunum og haltu einbeitingu með hjálp flipahópa</translation>
 <translation id="4953650215774548573">Stilla Google Chrome sem sjálfgefinn vafra</translation>
 <translation id="495931528404527476">Í Chrome</translation>
 <translation id="4969674060580488087">ChromeOS Flex gat ekki samstillt gögnin þín vegna þess að innskráningarupplýsingar reikningsins eru úreltar.</translation>
@@ -355,7 +342,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5579324208890605088">Villa í ræsingu: keyrðu uppsetningarforritið sem venjulegur notandi, ekki sem kerfisstjóri.</translation>
 <translation id="5596627076506792578">Fleiri valkostir</translation>
 <translation id="5602351063754773347">Chrome mælir með að þú fjarlægir hana. <ph name="BEGIN_LINK" />Nánar um studdar viðbætur<ph name="END_LINK" /></translation>
-<translation id="5648328599815354043">Chrome gerir meira til að veita þér vernd á netinu</translation>
 <translation id="5649680279845190972">Skráðu þig inn í Chrome til að fá viðbæturnar þínar og fleira í öllum tölvunum þínum</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> gæti verið skaðleg skrá og Chrome útilokaði hana.</translation>
 <translation id="566568153320186256">Chromium sparar rafhlöðunotkun með því að takmarka bakgrunnsvirkni og myndáhrif, s.s. mjúkflettingu og vídeórammatíðni. <ph name="BEGIN_LINK" />Nánar um orkusparnað<ph name="END_LINK" /></translation>
@@ -395,7 +381,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6070348360322141662">Google Chrome dulkóðar gögnin þín til að auka öryggið</translation>
 <translation id="6075300983329039771">Fyrirtækið þitt, <ph name="MANAGER" />, krefst þess að þú skráir þig inn í Chrome</translation>
 <translation id="608006075545470555">Bæta vinnusniði við þennan vafra</translation>
-<translation id="6097822892606850415">Skrifaðu af meira öryggi með hjálp frá gervigreind</translation>
 <translation id="6113794647360055231">Chrome er nú enn betra</translation>
 <translation id="6116252277240876590">Þetta tungumál er notað til að birta valmyndir, stillingar, viðvaranir og annan texta í Chrome</translation>
 <translation id="6134085236017727171">Veittu Chrome aðgang að hljóðnemanum þínum í <ph name="BEGIN_LINK" />kerfisstillingum<ph name="END_LINK" /> til að geta notað hann</translation>
@@ -415,7 +400,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6251759518630934363">Varar þig við hættulegum vefsvæðum, jafnvel þeim sem Google hafði enga vitneskju um, með því að greina fleiri gögn frá vefsvæðum en hefðbundin vörn. Þú getur valið að sleppa Chrome-viðvörunum.</translation>
 <translation id="6277547788421725101">Foreldri þitt hefur slökkt á „Heimildum fyrir vefsvæði, forrit og viðbætur" fyrir Chrome</translation>
 <translation id="627882678981830918">Sérsníddu og stjórnaðu Chrome. Stilltu Chrome sem sjálfgefinn vafra.</translation>
-<translation id="6288788894729749483">Stilltu Chrome sem sjálfgefinn vafra til að aðhafast, skapa og skoða á netinu með öruggum hætti</translation>
 <translation id="6291089322031436445">Chrome Dev forrit</translation>
 <translation id="6291549208091401781">Google Chrome hefur þegar verið sett upp fyrir alla notendur í tölvunni.</translation>
 <translation id="6319856120645568262">Chrome þarfnast heimildar til að kortleggja umhverfið þitt og rekja handahreyfingarnar þínar</translation>
@@ -427,7 +411,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í 1 mínútu. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}one{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í # mínútu. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}other{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í # mínútur. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}}</translation>
 <translation id="6418662306461808273">Skipta yfir í Chrome prófíl sem er til?</translation>
 <translation id="6473905796280459355">Fara á síðuna Um Chrome</translation>
-<translation id="6479881432656947268">Opna Vefverslun Chrome</translation>
 <translation id="6481963882741794338">Tengdu Chrome við aðrar Google-þjónustur til að sérsníða upplifun þína og fleira</translation>
 <translation id="648319183876919572">Enn öruggari vefskoðun gerir viðbótarráðstafanir til að vernda þig gegn skaðlegum vefsvæðum og niðurhali</translation>
 <translation id="6489302989675808168">Kveikt • Chrome getur ekki staðfest hvaðan þessi viðbót kemur</translation>
@@ -451,7 +434,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6794858689789885890">Ávallt eyða vefsvæðagögnum úr tækinu þegar þú lokar Chrome</translation>
 <translation id="6831043979455480757">Þýða</translation>
 <translation id="683440813066116847">Regla á innleið til að láta Google Chrome Canary leyfa mDNS-umferð.</translation>
-<translation id="6834926483721196812">Chrome er byggt fyrir afköst með eiginleikum eins og Orkusparnaður og Minnissparnaður</translation>
 <translation id="684888714667046800">Ekki er hægt að tengjast internetinu. Ef þú notar eldvegg skaltu tryggja að <ph name="PRODUCT_EXE_NAME" /> sé á hvíta listanum.</translation>
 <translation id="6851981911629679515">Kveikja á viðbótarvörn í JavaScript- og WebAssembly-vél Chrome</translation>
 <translation id="6881299373831449287">Uppfærir Chrome</translation>
@@ -470,7 +452,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7024536598735240744">Villa við afpökkun: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Uppsetning var stöðvuð.</translation>
 <translation id="7025800014283535195">Hér geturðu skipt á milli Chrome prófíla</translation>
-<translation id="7048502283602470098">Kanna gervigreind</translation>
 <translation id="7059914902409643750">Lagaðu Chrome að þínum þörfum</translation>
 <translation id="7071827361006050863">Chrome mun bráðlega eyða vefskoðunargögnum</translation>
 <translation id="7085332316435785646">Veldu hvort að Chrome-ferill eigi að fylgja með til að fá sérsniðnari upplifun í Google-þjónustum</translation>
@@ -488,9 +469,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7302361266603927550">Einhver Chrome-gögn hafa ekki enn verið vistuð á Google-reikningnum þínum. Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þú skráir þig út núna verður þessum gögnum eytt.</translation>
 <translation id="7308322188646931570">Chrome þarf aðgang að geymslu til að geta sótt skrár</translation>
 <translation id="7339898014177206373">Nýr gluggi</translation>
-<translation id="7352881504289275361">Enn öruggari vefskoðun býður upp á sterkustu netvörn Chrome til að veita þér vernd þegar þú skoðar</translation>
 <translation id="7386878009611068389">Til að vera öruggari á netinu með vali foreldra þinna skaltu skipta yfir í Chrome-prófílinn þinn þar sem þú ert þegar innskráð(ur) sem <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="7394745511930161845">Búðu til þitt eigið þema með gervigreind til að gefa vafranum þínum einstakt útlit</translation>
 <translation id="7398801000654795464">Þú varst skráð(ur) inn á Chrome sem <ph name="USER_EMAIL_ADDRESS" />. Notaðu sama reikning til að skrá þig inn aftur.</translation>
 <translation id="7412494426921990001">Smelltu á Chrome-valmyndina</translation>
 <translation id="7419819959108735624">Veldu hvað sem er til að leita með Google-linsu</translation>
@@ -523,25 +502,19 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7659737857277959440">Fyrirtækið þitt getur séð og stjórnað vefskoðunargögnunum þínum, s.s. bókamerkjum, ferli og aðgangsorðum. Það getur ekki séð vefskoðunargögn á Chrome-prófílum til einkanota.</translation>
 <translation id="7661924425853052955">Þú hefur ekki skoðað vefsvæðið nýlega. Chrome fjarlægði <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="COUNT" /> til viðbótar</translation>
-<translation id="7668816516367091728">Framkvæmir verkefni eins og þýðingar, útreikninga og fleira, beint af veffangastikunni</translation>
 <translation id="7670287553302121848">Chrome-reikningur þarfnast endurauðkenningar</translation>
 <translation id="769538538642757151">Chrome lætur þig vita ef þú þarft að yfirfara eitthvað</translation>
 <translation id="77283119132245232">Sér <ph name="BROWSER_NAME" /> fyrir kerfisrakningarþjónustu. Ef slökkt er á þessari þjónustu munu afkastaspor sem búin eru til af vafranum ekki innihalda viðburði úr öllu kerfinu eins og samhengisskipti og tilbúna þráðarviðburði.</translation>
 <translation id="7736869414036750079">Fyrirtækið þitt krefst þess að þú skráir þig inn í Chrome</translation>
 <translation id="7747138024166251722">Uppsetningarforritið gat ekki búið til tímabundna möppu. Athugaðu laust diskpláss og heimildir fyrir uppsetningu hugbúnaðar.</translation>
 <translation id="7761834446675418963">Smelltu á nafnið þitt til að opna Chrome og byrja að vafra.</translation>
-<translation id="7763983146198734674">Vistaðu aðgangsorðin þín og hafðu aðgang að þeim á ferðinni</translation>
 <translation id="7777080907402804672">Ef gagnlega lýsingu vantar við mynd reynir Chrome að útvega þér lýsingu. Til að búa til lýsingar eru myndir sendar til Google. Þú getur slökkt á þessu hvenær sem er í stillingunum.</translation>
 <translation id="778331955594035129">Chrome verður að fá staðsetningarheimild fyrir þetta vefsvæði</translation>
-<translation id="7785741298021097183">Chrome er hannað til að vera hratt og öruggt í öllum tækjunum þínum — allt frá símanum til tölvunnar.</translation>
 <translation id="7787950393032327779">Annað Google Chrome ferli (<ph name="PROCESS_ID" />) virðist vera að nota þennan prófíl í annarri tölvu (<ph name="HOST_NAME" />). Chrome hefur læst prófílnum svo hann skemmist ekki. Ef þú ert viss um að engin önnur ferli séu að nota þennan prófíl geturðu tekið hann úr lás og endurræst Chrome.</translation>
 <translation id="7801699035218095297">Google Chrome er að reyna að afrita aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
-<translation id="7802622118583152311">Chrome færir þér nýjustu tækni fyrir betri skoðun</translation>
 <translation id="7808348361785373670">Fjarlægja úr Chrome...</translation>
 <translation id="7825851276765848807">Uppsetning mistókst vegna ótilgreindrar villu. Sæktu Google Chrome aftur.</translation>
-<translation id="7836610565365456468">Umbreyttu vafranum þínum með líflegum þemum sem eru innblásin af listafólki, náttúrunni og fleiru</translation>
 <translation id="7845233973568007926">Takk fyrir að setja upp. Þú þarft að endurræsa tölvuna áður en þú getur notað <ph name="BUNDLE_NAME" />.</translation>
-<translation id="7852254990718225089">Gervigreind í Chrome hjálpar til við að gera vefinn hraðari, öruggari og aðgengilegri</translation>
 <translation id="7872446069773932638">Sækir... <ph name="SECONDS" /> sek. eftir</translation>
 <translation id="7886087451482920026">Notaðu Google-linsu til að velja texta</translation>
 <translation id="7890208801193284374">Ef nokkrir eru um sömu tölvu geta vinir og fjölskyldumeðlimir vafrað hver á sínum prófíl og sett Chrome upp eins og hverjum og einum líkar best.</translation>
@@ -549,7 +522,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7917470403848199310">Chrome spyr þig hvort þú viljir vista eyðublaðsupplýsingar, eins og fæðingardaginn þinn, aldur og númer vegabréfs</translation>
 <translation id="7917876797003313048">Þú getur stjórnað innskráðum Google reikningum þínum. Google reikningarnir þínir eru notaðir fyrir Chrome vafrann, Play Store, Gmail og fleira. Ef þú vilt bæta við reikningi fyrir einhvern annan, t.d. fjölskyldumeðlim, skaltu frekar bæta nýjum einstaklingi við <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome lokaði á þetta niðurhal vegna þess að skráin er blekkjandi og gæti gert óvæntar breytingar á tækinu þínu</translation>
-<translation id="7947083960301164556">Sjá hvað er nýtt</translation>
 <translation id="7951272445806340501">Endurræsa þarf ChromeOS Flex til að nota uppfærsluna.</translation>
 <translation id="7959172989483770734">Stjórna Chrome-prófílum</translation>
 <translation id="7962410387636238736">Þessi tölva tekur ekki lengur við uppfærslum á Google Chrome vegna þess að stýrikerfin Windows XP og Windows Vista eru ekki lengur studd</translation>
@@ -590,7 +562,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8418845734693287262">ChromeOS gat ekki samstillt gögnin þín vegna þess að innskráningarupplýsingar reikningsins eru úreltar.</translation>
 <translation id="842386925677997438">Öryggisverkfæri Chrome</translation>
 <translation id="8425765582779547329">Til að vera öruggari á netinu með vali foreldra þinna skaltu skrá þig inn í Chrome</translation>
-<translation id="8428213095426709021">Stillingar</translation>
 <translation id="8429214465555795676">Til að halda áfram þarftu að skrá þig inn í Chrome með <ph name="EMAIL" />. Það tryggir fylgni við reglur fyrirtækisins/stofnunarinnar þinnar.</translation>
 <translation id="8433638294851456451">Til að senda númer héðan í Android símann þinn skaltu skrá þig inn á Chrome í báðum tækjunum.</translation>
 <translation id="8496177819998570653">Google-aðgangsorðastjórnun</translation>
@@ -618,17 +589,14 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8781673607513845160">Veittu Chrome aðgang að myndavélinni þinni í <ph name="BEGIN_LINK" />kerfisstillingum<ph name="END_LINK" /> til að geta notað hana</translation>
 <translation id="878572486461146056">Uppsetningarvilla: Kerfisstjórinn hefur notað hópreglu sem kemur í veg fyrir uppsetningu: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796073561259064743">Chrome lokaði á þetta niðurhal vegna þess að skráin getur skaðað persónulega reikninga og samfélagsmiðlareikninga þína, þar á meðal <ph name="USER_EMAIL" /></translation>
-<translation id="8797423385604279835">Flokkaðu flipa með aðstoð frá gervigreind</translation>
 <translation id="8801657293260363985">V8 er JavaScript- and WebAssembly-vél Chrome sem er notuð til að bæta afköst vefsvæða</translation>
 <translation id="8821043148920470810">Til að fá frekari uppfærslur á Google Chrome þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 7.</translation>
 <translation id="8823341990149967727">Chrome er úrelt</translation>
 <translation id="8825634023950448068">Til að gæta persónuverndar þinnar eyðum við áhugasviðunum þínum sem eru eldri en 4 vikna sjálfkrafa. Áhugasvið kann að birtast aftur á listanum þegar þú heldur áfram að vafra. Ef Chrome skjátlast eða ef þú vilt ekki sjá tilteknar auglýsingar geturðu fjarlægt áhugasvið.</translation>
 <translation id="8834965163890861871">Google Chrome er að reyna að breyta aðgangsorðum. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
-<translation id="8843389967774722327">Chrome bætir reglulega við nýjum eiginleikum sem hjálpa þér að koma hlutunum í verk</translation>
 <translation id="8843516219908676469">Chromium skilur eyðublöð betur og er fljótari að fylla þau út sjálfkrafa fyrir þig</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome mælir með að þú fjarlægir hana}one{Chrome mælir með að þú fjarlægir þær}other{Chrome mælir með að þú fjarlægir þær}}</translation>
 <translation id="8862326446509486874">Þú hefur ekki tilskilin réttindi til uppsetningar fyrir kerfið allt. Prófaðu að keyra uppsetningarforritið aftur sem stjórnandi.</translation>
-<translation id="8908277254462331033">Skoða öryggiseiginleika</translation>
 <translation id="8914504000324227558">Endurræsa Chrome</translation>
 <translation id="8922193594870374009">Til að senda númer úr <ph name="ORIGIN" /> í Android símann þinn skaltu skrá þig inn á Chrome í báðum tækjunum.</translation>
 <translation id="8948460679427074738">Þessi viðbót hefur ekki gefið út vinnureglur um persónuvernd, svo sem hvernig hún safnar og notar gögn. Chrome mælir með að þú fjarlægir hana.</translation>

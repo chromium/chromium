@@ -1009,6 +1009,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1682696837763999627">Grote cursor</translation>
 <translation id="1682867089915960590">Browsen met navigatietoetsen aanzetten?</translation>
 <translation id="1686550358074589746">Typen door te swipen aanzetten</translation>
+<translation id="1686785653877010442">Sites sturen meestal meldingen om je op de hoogte te houden van actueel nieuws of nieuwe chatberichten.</translation>
 <translation id="168715261339224929">Zet de synchronisatie aan om al je bookmarks op al je apparaten te bekijken.</translation>
 <translation id="1688935057616748272">Typ een letter</translation>
 <translation id="1689333818294560261">Bijnaam</translation>
@@ -1284,6 +1285,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1878885068166344708">Het item wordt gemarkeerd als je de focus verplaatst. Druk op Tab of selecteer een item om de focus te wijzigen.</translation>
 <translation id="1879000426787380528">Inloggen als</translation>
 <translation id="18802377548000045">Tabbladen krimpen tot een grote breedte</translation>
+<translation id="1880618477732738742">Wijzig en geef toegang tot functies zoals geolocatie, microfoon, camera, cookies, enzovoort, voor al je websites en extensies, waaronder deze extensie.</translation>
 <translation id="1880905663253319515">Certificaat '<ph name="CERTIFICATE_NAME" />' verwijderen?</translation>
 <translation id="1881445033931614352">Toetsenbordindeling</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Item}other{# items}}</translation>
@@ -3466,6 +3468,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3435738964857648380">Beveiliging</translation>
 <translation id="343578350365773421">Papier is op</translation>
 <translation id="3435896845095436175">Aanzetten</translation>
+<translation id="3437397693214267762">Je Outlook Agenda en SharePoint- en OneDrive-bestanden bekijken</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> altijd toegang tot je microfoon geven</translation>
 <translation id="3439970425423980614">Pdf openen in voorbeeldweergave</translation>
@@ -7120,6 +7123,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
     Gebruik je account om makkelijk toegang te krijgen tot al je bookmarks, bestanden en meer. Als je geen account hebt, kun je op het volgende scherm een account maken.</translation>
 <translation id="6054138466019582920">Zoe&amp;ken op deze pagina met Google...</translation>
 <translation id="6054284857788651331">Recent gesloten tabbladgroep</translation>
+<translation id="6054819000749443354">Systeeminstellingen openen</translation>
 <translation id="6054961935262556546">Zichtbaarheid wijzigen</translation>
 <translation id="6055392876709372977">PKCS nr. 1 SHA-256 met RSA-versleuteling</translation>
 <translation id="6055544610007596637">Installeer apps voor je <ph name="DEVICE_TYPE" /> via de Google Play Store</translation>
@@ -8943,6 +8947,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7380459290951585794">Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
 <translation id="7380622428988553498">Apparaatnaam bevat ongeldige tekens</translation>
 <translation id="7380768571499464492">Geüpdatet: <ph name="PRINTER_NAME" /></translation>
+<translation id="7382009635620830394">Als deze kaart is uitgezet, worden je Microsoft-kaarten zoals SharePoint- en OneDrive-bestanden en Outlook Agenda ook uitgezet.</translation>
 <translation id="7382085868019811559">Via Ondersteuning voor oudere browsers (LBS) kunnen specifieke URL-patronen worden geopend in een alternatieve browser die verouderde functies ondersteunt die nodig zijn om die sites goed te laten werken.</translation>
 <translation id="7382980704744807223">Verdacht</translation>
 <translation id="738322632977123193">Kan niet uploaden. Gebruik een afbeelding met een van deze indelingen: .jpg, .gif, .png, .bmp, .tif of .webp</translation>
@@ -10611,6 +10616,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> wordt beheerd door <ph name="MANAGER" />. Je kunt dit e-mailadres niet toevoegen als extra account.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Als je <ph name="USER_EMAIL" /> wilt gebruiken, log je eerst uit van je <ph name="DEVICE_TYPE" />. Selecteer daarna onderaan het inlogscherm de optie Persoon toevoegen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Houd de zoektoets ingedrukt om het gedrag van de toetsen in de bovenste rij om te schakelen</translation>
+<translation id="8549127125482561383">Hoe verzoeken tonen</translation>
 <translation id="8549316893834449916">Je gebruikt je Google-account om in te loggen op je Chromebook. Dit is hetzelfde account dat je gebruikt voor Gmail, Drive, YouTube en meer.</translation>
 <translation id="8550239873869577759">Verdacht bestand gedownload</translation>
 <translation id="8551388862522347954">Licenties</translation>

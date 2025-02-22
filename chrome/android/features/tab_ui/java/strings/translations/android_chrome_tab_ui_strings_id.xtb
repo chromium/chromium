@@ -30,7 +30,6 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="2118649612461486615">Info toko</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab. Tab Samaran Anda tidak akan tersedia.}other{Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab. # tab Samaran Anda tidak akan tersedia.}}</translation>
 <translation id="2162620598375156287">Sekarang <ph name="CURRENT_PRICE" /> di <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">Grup tab <ph name="TAB_GROUP_NAME" /> tidak lagi tersedia</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Pisahkan tab}other{Pisahkan tab}}</translation>
 <translation id="2271452184061378400">Grup tab Anda disimpan di sini</translation>
 <translation id="2277224997687551299">Edit nama grup</translation>

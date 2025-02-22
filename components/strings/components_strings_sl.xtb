@@ -1154,7 +1154,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="306573536155379004">Igra se je začela.</translation>
 <translation id="3067505415088964188">Cena je nizka</translation>
 <translation id="3068118691172921711">Nalaganje datotek v storitev <ph name="CLOUD_PROVIDER" /> se bo začelo čez 1 minuto</translation>
-<translation id="3068976060094139647">To kartico lahko samodejno izpolnite, ker je vaš račun povezan z Googlom Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} element}one{{ITEMS} element}two{{ITEMS} elementa}few{{ITEMS} elementi}other{{ITEMS} elementov}}</translation>
 <translation id="3076865167425975822">Operacijski sistemi</translation>
 <translation id="3080254622891793721">Grafični elementi</translation>
@@ -4376,7 +4375,6 @@ Dodatne podrobnosti:
 <translation id="8757526089434340176">Na voljo je ponudba Googla Pay</translation>
 <translation id="8759274551635299824">Ta kartica je potekla</translation>
 <translation id="87601671197631245">To spletno mesto uporablja zastarelo varnostno konfiguracijo, zaradi česar so lahko vaši podatki ob pošiljanju temu spletnemu mestu izpostavljeni (npr. gesla, sporočila ali številke kreditnih kartic).</translation>
-<translation id="8763226176721243078">To kartico lahko samodejno izpolnite, ker je vaš račun za <ph name="CARD_ISSUER_NAME" /> povezan z Googlom Pay.</translation>
 <translation id="8763927697961133303">Naprava USB</translation>
 <translation id="8763986294015493060">Zapiranje vseh trenutno odprtih anonimnih oken.</translation>
 <translation id="8766943070169463815">Preglednica za preverjanje pristnosti poverilnice za varno plačilo je odprta</translation>

@@ -473,6 +473,7 @@
 <translation id="3226657629376379887">Meni sa radnjama za raspored</translation>
 <translation id="3227186760713762082">Vrednost (<ph name="CATEGORY_TEXT" />) deli se brojem <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Zadaci štampanja stariji od 1 dana se uklanjaju</translation>
+<translation id="3248791727258378769">Neće se praviti transkript</translation>
 <translation id="324961752321393509">Administrator ne dozvoljava zatvaranje ove aplikacije</translation>
 <translation id="3263941347294171263">Isključite i ponovo priključite uređaj <ph name="DEVICE_NAME" /> da biste nastavili proces ažuriranja</translation>
 <translation id="3268178239013324452">Nije uspelo – vrata su otvorena</translation>
@@ -672,6 +673,7 @@
 <translation id="420283545744377356">Isključite čuvar ekrana</translation>
 <translation id="4210636113897977670">Sačuvaj i zatvori</translation>
 <translation id="4210659479607886331">glečerska reka</translation>
+<translation id="4212169537710712814">Model transkripcije za <ph name="LANGUAGE_NAME" /> je preuzet</translation>
 <translation id="42126664696688958">Izvezi</translation>
 <translation id="4213104098953699324">USB tastatura</translation>
 <translation id="4227825898293920515">Lozinka ističe za <ph name="TIME" /></translation>
@@ -942,6 +944,7 @@
 <translation id="5431318178759467895">U boji</translation>
 <translation id="5457599981699367932">Pregledajte kao gost</translation>
 <translation id="54609108002486618">Upravljani</translation>
+<translation id="5461608756903394951">Preuzima se model transkripcije za <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5470776029649730099">jute</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Preostaje {0} pokušaj}one{Preostaje {0} pokušaj}few{Preostaju {0} pokušaja}other{Preostaje {0} pokušaja}}</translation>
 <translation id="5488280942828718790">ciklama</translation>
@@ -1193,6 +1196,7 @@
 <translation id="6595046262780525922">Želite da uključite transkripciju i preuzmete model transkripcije?</translation>
 <translation id="6596816719288285829">IP adresa</translation>
 <translation id="6599673642868607614">Hvala vam na povratnim informacijama. Povratne informacije nam pomažu da poboljšamo doživljaj Chromebook-a i pregledaće ih naš tim. Zbog velikog broja izveštaja ne možemo da šaljemo odgovore.</translation>
+<translation id="6608043585557830684">Transkripcija je isključena. Uključite je u podešavanjima ili u meniju <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Tasteri miša</translation>
 <translation id="6618744767048954150">U toku je</translation>
 <translation id="6620487321149975369">Zadaci štampanja će se pojaviti u istoriji ako ih ne uklonite ručno</translation>

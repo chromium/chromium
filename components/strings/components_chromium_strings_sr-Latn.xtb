@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">Chromium blokira ovu stranicu</translation>
 <translation id="48558539577516920">Dozvolite Chromium-u da pristupa mreži u zaštitnom zidu ili antivirusnim
           podešavanjima.</translation>
+<translation id="4949828774841497663">Idite u Applications (Aplikacije) &gt; System Settings (Podešavanja sistema) &gt; Network (Mreža), pa izaberite
+          aktivnu mrežu, kliknite na dugme Details... (Detalji), a zatim poništite izbor svih proksija
+          koji su izabrani.</translation>
 <translation id="580822234363523061">Idite u
           Chromium meni &gt;
           <ph name="SETTINGS_TITLE" />

@@ -379,7 +379,6 @@ Pour en savoir plus sur les contextes sécurisés, consultez la page https://www
 <translation id="1305400589435476516">Si cette règle est activée, l'itinérance des données est autorisée sur l'appareil.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, l'itinérance des données n'est pas disponible.</translation>
-<translation id="1306041796676461437">Désactiver la prise en charge d'extension SSO d'entreprise</translation>
 <translation id="1308526987406924874">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à demander aux utilisateurs à accéder à un port série.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
@@ -3522,15 +3521,6 @@ Veillez à ne pas laisser cette règle activée en permanence, en particulier po
 <translation id="3606571057705314194">Outil de sélection du profil désactivé au démarrage</translation>
 <translation id="3608206578291537084">Activer le pipeline de rapports chiffrés</translation>
 <translation id="3608281460204780443">Afficher l'icône du Chrome Web Store dans le lanceur d'applis <ph name="PRODUCT_OS_NAME" /> et sur la page de nouvel onglet</translation>
-<translation id="3608411984079625468">Configure la connexion automatique des utilisateurs de comptes recourant à des fournisseurs d'authentification via une extension SSO d'entreprise.
-
-Si cette règle est définie sur 1 (<ph name="POLICY_VALUE_ENABLED" />) ou n'est pas configurée, les fournisseurs d'authentification ayant une extension SSO sur l'appareil utiliseront cette extension pour authentifier les utilisateurs qui tentent de se connecter.
-
-Si cette règle est définie sur 0 (<ph name="POLICY_VALUE_DISABLED" />), la connexion automatique décrite ci-dessus est désactivée.
-
-Cette fonctionnalité est disponible à partir de macOS Catalina.
-
-Remarque : Cette règle ne s'applique ni à la navigation privée ni au mode Invité.</translation>
 <translation id="3612482251405108708">Démarrage automatique de la réauthentification en ligne sur l'écran de verrouillage</translation>
 <translation id="3616490235694929053">Cette règle définit si l'utilisateur voit l'écran de configuration de la taille d'affichage la première fois qu'il se connecte.
       Si cette règle est définie sur "False", l'écran n'est pas affiché.
@@ -5675,7 +5665,6 @@ Si cette règle n'est pas configurée ou si la liste ne contient aucune référe
       Si la règle relative au fond d'écran est configurée, l'appareil Chrome OS téléchargera et utilisera l'image de fond d'écran sur l'écran de connexion si aucun utilisateur ne s'est encore connecté à l'appareil. Lorsque l'utilisateur se connecte, la règle relative au fond d'écran pour cet utilisateur est activée.
 
       Si la règle relative au fond d'écran n'est pas définie pour l'appareil, la règle correspondante pour l'utilisateur détermine l'élément à afficher (si cette règle est définie).</translation>
-<translation id="5217106427763720473">Activer la prise en charge d'extension SSO d'entreprise</translation>
 <translation id="5219844027738217407">Cette règle ne s'applique qu'au micro pour les applications Android. Lorsqu'elle est définie sur "True", le son du micro est coupé pour toutes les applications Android sans exception.</translation>
 <translation id="5222325605346216869">Appliquer une limitation des minuteurs JavaScript en arrière-plan</translation>
 <translation id="5223606242837275233">Ne pas autoriser le défilement des sites jusqu'à des fragments de texte spécifiques au moyen d'une URL</translation>

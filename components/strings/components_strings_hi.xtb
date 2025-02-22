@@ -1155,7 +1155,6 @@
 <translation id="306573536155379004">गेम शुरू हो गया.</translation>
 <translation id="3067505415088964188">कीमत कम है</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> पर फ़ाइल अपलोड करने की प्रोसेस एक मिनट में शुरू होगी</translation>
-<translation id="3068976060094139647">आपका खाता, Google Pay से लिंक है. इसलिए, कार्ड की जानकारी को ऑटोमैटिक भरने की सुविधा का इस्तेमाल किया जा सकता है.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} आइटम}one{{ITEMS} आइटम}other{{ITEMS} आइटम}}</translation>
 <translation id="3076865167425975822">ऑपरेटिंग सिस्टम</translation>
 <translation id="3080254622891793721">ग्राफ़िक</translation>
@@ -4377,7 +4376,6 @@
 <translation id="8757526089434340176">Google Pay ऑफ़र उपलब्ध है</translation>
 <translation id="8759274551635299824">इस कार्ड की अवधि खत्म हो चुकी है</translation>
 <translation id="87601671197631245">यह साइट एक पुराने सुरक्षा कॉन्फ़िगरेशन का इस्तेमाल करती है. इस वजह से, साइट पर भेजी जाने वाली आपकी जानकारी (उदाहरण के लिए, पासवर्ड, मैसेज या क्रेडिट कार्ड) को कोई और देख सकता है.</translation>
-<translation id="8763226176721243078">आपका <ph name="CARD_ISSUER_NAME" /> खाता, Google Pay से लिंक है. इसलिए, कार्ड की जानकारी भरने के लिए ऑटोमैटिक तरीके से भरने की सुविधा का इस्तेमाल किया जा सकता है.</translation>
 <translation id="8763927697961133303">USB डिवाइस</translation>
 <translation id="8763986294015493060">सभी खुली हुई गुप्त विंडो बंद करें</translation>
 <translation id="8766943070169463815">सुरक्षित तरीके से पेमेंट करने के लिए, क्रेडेंशियल की पुष्टि करने की शीट खुली है</translation>

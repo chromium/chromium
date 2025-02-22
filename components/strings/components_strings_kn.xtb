@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">ಗೇಮ್ ಪ್ರಾರಂಭವಾಗಿದೆ.</translation>
 <translation id="3067505415088964188">ಕಡಿಮೆ ದರ</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> ಗೆ ನಿಮ್ಮ ಫೈಲ್ ಅಪ್‌ಲೋಡ್ 1 ನಿಮಿಷದಲ್ಲಿ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ</translation>
-<translation id="3068976060094139647">ನಿಮ್ಮ ಖಾತೆಯನ್ನು Google Pay ಗೆ ಲಿಂಕ್ ಮಾಡಿರುವುದರಿಂದ ನೀವು ಈ ಕಾರ್ಡ್ ಅನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಬಹುದು.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} ಐಟಂ}one{{ITEMS} ಐಟಂಗಳು}other{{ITEMS} ಐಟಂಗಳು}}</translation>
 <translation id="3076865167425975822">ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಮ್‌ಗಳು</translation>
 <translation id="3080254622891793721">ಗ್ರಾಫಿಕ್</translation>
@@ -2252,6 +2251,7 @@
 <translation id="4989809363548539747">ಈ ಪ್ಲಗಿನ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
 <translation id="4990241977441916452">ಎನ್ವಲಪ್ A2</translation>
 <translation id="4992066212339426712">ಅನ್‌ಮ್ಯೂಟ್</translation>
+<translation id="4994095017621319069">1 ಟ್ಯಾಬ್ ಗುಂಪು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="4994348767896109801">ನೀವು ನೋಡುವ ಆ್ಯಡ್‌ ವೈಯಕ್ತೀಕರಿಸಲ್ಪಟ್ಟಿದೆಯೇ ಎಂಬುದು ಈ ಸೆಟ್ಟಿಂಗ್, <ph name="BEGIN_LINK_1" />ಆ್ಯಡ್ ವಿಷಯಗಳು<ph name="END_LINK_1" />, ನಿಮ್ಮ <ph name="BEGIN_LINK_2" />ಕುಕಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳು<ph name="END_LINK_2" /> ಮತ್ತು ನೀವು ವೀಕ್ಷಿಸುತ್ತಿರುವ ಸೈಟ್ ಆ್ಯಡ್‌ಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸುತ್ತದೆಯೇ ಎಂಬುದನ್ನು ಒಳಗೊಂಡಂತೆ ಹಲವಾರು ವಿಷಯಗಳನ್ನು ಅವಲಂಬಿಸಿರುತ್ತದೆ. <ph name="BEGIN_LINK_3" />ನಿಮ್ಮ ಆ್ಯಡ್‌ ಗೌಪ್ಯತೆಯನ್ನು ನಿರ್ವಹಿಸುವ<ph name="END_LINK_3" /> ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="4995474875135717171">ಮಾರ್ಪಡಿಸಲಾಗಿದೆ:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಸೈಟ್ ಹುಡುಕಾಟ ಮತ್ತು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
@@ -3466,6 +3466,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ಇನ್ನಷ್ಟು}one{<ph name="PAYMENT_METHOD_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ಇನ್ನಷ್ಟು}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ಇನ್ನಷ್ಟು}}</translation>
 <translation id="7153618581592392745">ನಸು ಕೆನ್ನೀಲಿ</translation>
 <translation id="7156870133441232244">ಸರ್ವರ್ ಅನ್ನು TLS 1.2 ಅಥವಾ ನಂತರದ ಆವೃತ್ತಿಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ.</translation>
+<translation id="7156885531105222428">ನೀವು ವಿನಂತಿಸಿದ ಪುಟವು ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ಕಂಡುಬರಲಿಲ್ಲ</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> ಬಳಸಿಕೊಂಡು ಈ ಫೈಲ್ ಅನ್ನು ಕಳುಹಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ (<ph name="DISK_SPACE_SIZE" />) ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ}one{<ph name="FEATURE_NAME" /> ಬಳಸಿಕೊಂಡು ಈ ಫೈಲ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ (<ph name="DISK_SPACE_SIZE" />) ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ}other{<ph name="FEATURE_NAME" /> ಬಳಸಿಕೊಂಡು ಈ ಫೈಲ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ (<ph name="DISK_SPACE_SIZE" />) ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ}}</translation>
 <translation id="7160999678034985039">ನಿಮ್ಮ ಕೆಲಸವನ್ನು ಉಳಿಸಿ ಮತ್ತು ನೀವು ಸಿದ್ಧರಾದಾಗ ಅಪ್‌ಡೇಟ್‌ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="7162277662076933695">ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್ ರೀಡರ್</translation>
@@ -4252,6 +4253,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ನಿಮ್ಮ ಸಿಸ್ಟಮ್ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿರುವ URLಗಳ ಪಟ್ಟಿ ಮತ್ತು ಜಾರಿಗೊಳಿಸಿರುವ ಇತರ ನೀತಿಗಳನ್ನು ವೀಕ್ಷಿಸಲು &lt;strong&gt;chrome://policy&lt;/strong&gt; ಗೆ ಭೇಟಿ ನೀಡಿ.</translation>
 <translation id="8536234749087605613">ಎನ್ವಲಪ್ (ವಿಂಡೋ)</translation>
+<translation id="8538228968820006247">ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪು ಭರ್ತಿಯಾಗಿದೆ, ಹೊಸ ಸದಸ್ಯರು ಲಿಂಕ್ ಅನ್ನು ಬಳಸಿಕೊಂಡು ಸೇರಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8539500321752640291">2 ಅನುಮತಿಗಳನ್ನು ನೀಡಬೇಕೆ?</translation>
 <translation id="8541158209346794904">ಬ್ಲೂಟೂತ್ ಸಾಧನ</translation>
 <translation id="8541410041357371550">ನಿಮಗೆ ಹೆಚ್ಚು ಸಂಬಂಧಿತ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು ಈ ಸೈಟ್ ನಿಮ್ಮ ಜಾಹೀರಾತು ವಿಷಯಗಳನ್ನು Chrome ನಿಂದ ಪಡೆಯುತ್ತದೆ</translation>
@@ -4373,7 +4375,6 @@
 <translation id="8757526089434340176">Google Pay ಆಫರ್ ಲಭ್ಯವಿದೆ</translation>
 <translation id="8759274551635299824">ಈ ಕಾರ್ಡ್‌ನ ಅವಧಿ ಮುಕ್ತಾಯವಾಗಿದೆ</translation>
 <translation id="87601671197631245">ಈ ಸೈಟ್ ಹಳೆಯ ಸುರಕ್ಷತಾ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಬಳಸುತ್ತದೆ, ಇದು ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಈ ಸೈಟ್‌ಗೆ ಕಳುಹಿಸಿದಾಗ ಅದನ್ನು (ಉದಾಹರಣೆಗೆ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಸಂದೇಶಗಳು ಅಥವಾ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು) ಬಹಿರಂಗಪಡಿಸಬಹುದು.</translation>
-<translation id="8763226176721243078">ನಿಮ್ಮ <ph name="CARD_ISSUER_NAME" /> ಖಾತೆಯನ್ನು Google Pay ಗೆ ಲಿಂಕ್ ಮಾಡಿರುವುದರಿಂದ ನೀವು ಈ ಕಾರ್ಡ್ ಅನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಬಹುದು.</translation>
 <translation id="8763927697961133303">USB ಸಾಧನ</translation>
 <translation id="8763986294015493060">ಪ್ರಸ್ತುತವಾಗಿ ತೆರೆದಿರುವ ಎಲ್ಲಾ ಅಜ್ಞಾತ ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="8766943070169463815">ಸುರಕ್ಷಿತ ಪಾವತಿ ರುಜುವಾತು ದೃಢೀಕರಣ ಶೀಟ್ ತೆರೆದಿದೆ</translation>

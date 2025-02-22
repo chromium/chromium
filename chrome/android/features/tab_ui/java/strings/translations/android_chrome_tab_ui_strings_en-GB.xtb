@@ -30,7 +30,6 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="2118649612461486615">Shop info</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section. Your Incognito tab won't be available.}other{Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section. Your # Incognito tabs won't be available.}}</translation>
 <translation id="2162620598375156287">Now <ph name="CURRENT_PRICE" /> on <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124"><ph name="TAB_GROUP_NAME" /> tab group no longer available</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Ungroup tab}other{Ungroup tabs}}</translation>
 <translation id="2271452184061378400">Your tab groups are saved here</translation>
 <translation id="2277224997687551299">Edit group name</translation>

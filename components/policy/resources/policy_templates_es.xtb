@@ -379,7 +379,6 @@ Para obtener más información sobre contextos seguros, consulta la página Secu
 <translation id="1305400589435476516">Si se habilita la política, se permitirá utilizar el roaming de datos en el dispositivo.
 
       Si se inhabilita la política o no se establece, no se podrá utilizar el roaming de datos.</translation>
-<translation id="1306041796676461437">Inhabilitar la compatibilidad con SSO empresarial extensible</translation>
 <translation id="1308526987406924874">Si estableces esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios no pueden pedir a los usuarios que les permitan acceder a un puerto serie.
 
       Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
@@ -3531,15 +3530,6 @@ Recuerda que no debes dejar esta política habilitada en todo momento, especialm
 <translation id="3606571057705314194">Selector de perfil inhabilitado al iniciar</translation>
 <translation id="3608206578291537084">Habilitar el flujo de procesamiento de informes cifrados</translation>
 <translation id="3608281460204780443">Mostrar el icono de Chrome Web Store en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" /> y en la página Nueva pestaña</translation>
-<translation id="3608411984079625468">Configura el inicio de sesión automático de los usuarios para las cuentas que disponen de proveedores de autenticación a través de una extensión de SSO empresarial.
-
-Si se le asigna el valor 1 (<ph name="POLICY_VALUE_ENABLED" />) a esta política o no se le asigna ningún valor, los proveedores de autenticación con una extensión de SSO en el dispositivo usarán esa extensión para autenticar a los usuarios que intenten iniciar sesión.
-
-Si se le asigna el valor 0 (<ph name="POLICY_VALUE_DISABLED" />), el inicio de sesión automático, como se ha descrito más arriba, se inhabilitará.
-
-Esta función está disponible a partir de MacOS Catalina.
-
-Nota: Esta política no se aplica al modo Incógnito ni al modo Invitado.</translation>
 <translation id="3612482251405108708">Inicio automático de la reautenticación online en la pantalla de bloqueo</translation>
 <translation id="3616490235694929053">Esta política controla si se muestra al usuario la pantalla de configuración del tamaño de visualización durante el primer inicio de sesión
       Si se le asigna el valor false, no se mostrará la pantalla de configuración del tamaño de visualización.
@@ -5700,7 +5690,6 @@ Si no se define esta política o la lista no contiene ninguna referencia a una i
       Si se establece la política de fondo de pantalla del dispositivo, el dispositivo ChromeOS descargará y utilizará la imagen de fondo en la pantalla de inicio de sesión si ningún usuario ha iniciado sesión en el dispositivo. Una vez que el usuario inicie sesión, se aplicará la política de fondo de pantalla del usuario.
 
       Si no se establece esta política, pero sí se establece la política de fondo de pantalla del usuario, esta última decidirá qué contenido se mostrará.</translation>
-<translation id="5217106427763720473">Habilitar la compatibilidad con SSO empresarial extensible</translation>
 <translation id="5219844027738217407">En el caso de las aplicaciones para Android, esta política afecta solo al micrófono. Si se asigna el valor true a esta política, el micrófono se silenciará en todas las aplicaciones para Android, sin excepciones.</translation>
 <translation id="5222325605346216869">Forzar la limitación de los temporizadores de JavaScript en segundo plano</translation>
 <translation id="5223606242837275233">No permitir que las URLs de los sitios lleven a fragmentos de texto concretos</translation>

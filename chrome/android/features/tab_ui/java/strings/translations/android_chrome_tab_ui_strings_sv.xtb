@@ -30,7 +30,6 @@ Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="
 <translation id="2118649612461486615">Butiksinformation</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Du kan öppna dina stängda flikar och grupper på nytt från avsnittet Senaste flikar och avsnittet Flikgrupper. Inkognitofliken är inte tillgänglig.}other{Du kan öppna dina stängda flikar och grupper på nytt från avsnittet Senaste flikar och avsnittet Flikgrupper. Dina # inkognitoflikar är inte tillgängliga.}}</translation>
 <translation id="2162620598375156287">Nu <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">Flikgruppen <ph name="TAB_GROUP_NAME" /> är inte längre tillgänglig</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Dela upp flik}other{Dela upp flikar}}</translation>
 <translation id="2271452184061378400">Dina flikgrupper sparas här</translation>
 <translation id="2277224997687551299">Redigera gruppnamn</translation>

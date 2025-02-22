@@ -472,6 +472,7 @@
 <translation id="3226657629376379887">Handlingsmenu for layout</translation>
 <translation id="3227186760713762082">Divider værdien for <ph name="CATEGORY_TEXT" /> med <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Udskriftjobs, der er ældre end 1 dag, fjernes</translation>
+<translation id="3248791727258378769">Der oprettes ingen transskription</translation>
 <translation id="324961752321393509">Din administrator tillader ikke lukning af denne app</translation>
 <translation id="3263941347294171263">Tag stikket ud af <ph name="DEVICE_NAME" />, og sæt det derefter i igen for at fortsætte opdateringsprocessen</translation>
 <translation id="3268178239013324452">Handlingen mislykkedes – Åben låge</translation>
@@ -670,6 +671,7 @@
 <translation id="420283545744377356">Deaktiver Pauseskærm</translation>
 <translation id="4210636113897977670">Gem og luk</translation>
 <translation id="4210659479607886331">gletsjerflod</translation>
+<translation id="4212169537710712814">Download af transskriptionsmodellen for <ph name="LANGUAGE_NAME" /> er gennemført</translation>
 <translation id="42126664696688958">Eksportér</translation>
 <translation id="4213104098953699324">USB-tastatur</translation>
 <translation id="4227825898293920515">Adgangskoden udløber om <ph name="TIME" /></translation>
@@ -940,6 +942,7 @@
 <translation id="5431318178759467895">Farve</translation>
 <translation id="5457599981699367932">Anvend som gæst</translation>
 <translation id="54609108002486618">Administreret</translation>
+<translation id="5461608756903394951">Download af transskriptionsmodellen for <ph name="LANGUAGE_NAME" /> er i gang</translation>
 <translation id="5470776029649730099">sækkelærred</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} forsøg tilbage}one{{0} forsøg tilbage}other{{0} forsøg tilbage}}</translation>
 <translation id="5488280942828718790">magenta</translation>
@@ -1191,6 +1194,7 @@
 <translation id="6595046262780525922">Vil du aktivere transskription og downloade transskriptionsmodellen?</translation>
 <translation id="6596816719288285829">IP-adresse</translation>
 <translation id="6599673642868607614">Tak for din feedback. Din feedback hjælper os med at forbedre Chromebook-oplevelsen, og den vil blive gennemgået af vores team. Vi modtager mange indrapporteringer, så vi kan ikke sende dig et personligt svar.</translation>
+<translation id="6608043585557830684">Transskription er deaktiveret. Aktivér funktionen under Indstillinger eller i menuen <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Musetaster</translation>
 <translation id="6618744767048954150">Kører</translation>
 <translation id="6620487321149975369">Udskriftsjobs vises i historikken, medmindre de fjernes manuelt</translation>

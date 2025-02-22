@@ -1154,7 +1154,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="306573536155379004">Leikur hafinn.</translation>
 <translation id="3067505415088964188">Verð er lágt</translation>
 <translation id="3068118691172921711">Upphleðsla skráa á <ph name="CLOUD_PROVIDER" /> hefst eftir eina mínútu</translation>
-<translation id="3068976060094139647">Þú getur fyllt þetta kort út sjálfkrafa vegna þess að reikningurinn þinn er tengdur við Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} atriði}one{{ITEMS} atriði}other{{ITEMS} atriði}}</translation>
 <translation id="3076865167425975822">Stýrikerfi</translation>
 <translation id="3080254622891793721">Grafík</translation>
@@ -4375,7 +4374,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8757526089434340176">Google Pay tilboð í boði</translation>
 <translation id="8759274551635299824">Kortið er útrunnið</translation>
 <translation id="87601671197631245">Þetta vefsvæði notar úrelta öryggisstillingu sem gæti sett upplýsingarnar þínar í hættu (til dæmis aðgangsorð, skilaboð eða kreditkort) þegar þær eru sendar til vefsvæðisins.</translation>
-<translation id="8763226176721243078">Þú getur fyllt þetta kort út sjálfkrafa vegna þess að <ph name="CARD_ISSUER_NAME" />-reikningurinn þinn er tengdur við Google Pay.</translation>
 <translation id="8763927697961133303">USB-tæki</translation>
 <translation id="8763986294015493060">Loka öllum huliðsgluggum sem eru opnir</translation>
 <translation id="8766943070169463815">Sannvottunarsíða fyrir skilríki öruggrar greiðslu var opnuð</translation>

@@ -30,7 +30,6 @@ Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name
 <translation id="2118649612461486615">Üzletadatok</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{A bezárt lapok és csoportok újra megnyithatók a Nemrég megnyitott lapok és a Lapcsoportok szakaszban. Az inkognitó lap nem lesz hozzáférhető.}other{A bezárt lapok és csoportok újra megnyithatók a Nemrég megnyitott lapok és a Lapcsoportok szakaszban. # inkognitó lap nem lesz hozzáférhető.}}</translation>
 <translation id="2162620598375156287">Most <ph name="CURRENT_PRICE" /> áron a következő webhelyen: <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124"><ph name="TAB_GROUP_NAME" /> lapcsoport már nem áll rendelkezésre</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Lap kivétele a csoportból}other{Lapok kivétele a csoportból}}</translation>
 <translation id="2271452184061378400">Ide menti a rendszer a lapcsoportokat</translation>
 <translation id="2277224997687551299">Csoportnév szerkesztése</translation>

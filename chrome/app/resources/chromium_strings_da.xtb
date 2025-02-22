@@ -28,6 +28,7 @@
 <translation id="1345251407431278948">Panelet er fastgjort. Du kan tilgå billedsøgning igen via den nye knap på værktøjslinjen</translation>
 <translation id="1356661055722410047">Nyhed! Du kan oversætte både tekst og billeder på din skærm</translation>
 <translation id="1414495520565016063">Du er logget ind på Chromium.</translation>
+<translation id="1465192221147974788">Tillad skærmoptagelse for Chromium under Systemindstillinger for at dele dit vindue.</translation>
 <translation id="1478370723027452770">Få hjælp til Chrome for Testing</translation>
 <translation id="1497802159252041924">Installationsfejl: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
@@ -160,6 +161,7 @@
 <translation id="3130323860337406239">Chromium bruger din mikrofon.</translation>
 <translation id="3137969841538672700">Træk for at søge</translation>
 <translation id="3144188012276422546">Denne fane bruger ekstra ressourcer. Du kan forbedre ydeevnen ved at give Chromium tilladelse til at gøre den inaktiv.</translation>
+<translation id="3149163023759831301">Tillad skærmoptagelse for Chromium under Systemindstillinger for at dele din skærm.</translation>
 <translation id="3155163173539279776">Genstart Chromium</translation>
 <translation id="3161522574479303604">Alle sprog</translation>
 <translation id="3179665906251668410">Åbn linket i et Chromium-inko&amp;gnitovindue</translation>
@@ -182,8 +184,10 @@
 <translation id="3474745554856756813">Denne handling sletter <ph name="ITEMS_COUNT" /> elementer på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chromium som <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> kan skifte mellem Chromium-profiler</translation>
 <translation id="3509308970982693815">Luk alle Chromium-vinduer, og prøv igen.</translation>
+<translation id="3522404737534491619">Tillad skærmoptagelse for Chromium under Systemindstillinger for at dele dit vindue.</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> er allerede logget ind.  Hvis du vil holde din browsing adskilt, skal du logge ind i Chromium på din egen profil som <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">Vi sletter automatisk de interesser, der er ældre end 4 uger, for at beskytte dit privatliv. Mens du surfer, kan en interesse vises på listen igen. Du kan også fjerne interesser, som du ikke vil have, at Chromium skal tage med i betragtning.</translation>
+<translation id="3561853857681580870">Tillad skærmoptagelse for Chromium under Systemindstillinger for at dele din skærm.</translation>
 <translation id="3567254597502212821">Din browserhistorik, dvs. en oversigt over, hvilke websites du har besøgt i Chromium på denne enhed</translation>
 <translation id="3597003331831379823">Konfigurationen med udvidede adgangsrettigheder kunne ikke køres. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3639635944603682591">Brugerens browserdata slettes fra denne enhed. Log ind på Chromium som <ph name="USER_EMAIL" /> for at gendanne dataene.</translation>
@@ -281,6 +285,7 @@
 <translation id="4942295735032723435">Hvis du vil have fremtidige Chromium-opdateringer, skal du have macOS 11 eller nyere. Denne computer anvender macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium kører i baggrunden.</translation>
 <translation id="494490797786467921">Klik for at lukke dialogboksen til login i Chromium</translation>
+<translation id="4950660488495335294">Du kan organisere alle dine ting i Chromium ved hjælp af Chromium-profiler. Opret profiler til venner og familie, eller brug dem til at holde arbejde og fornøjelse adskilt.</translation>
 <translation id="4987820182225656817">Gæster kan bruge Chromium uden at efterlade noget.</translation>
 <translation id="4994636714258228724">Tilføj dig selv i Chromium</translation>
 <translation id="5123973130450702873">Chromium skal have tilladelse til at registrere dine håndbevægelser</translation>

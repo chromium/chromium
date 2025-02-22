@@ -1154,7 +1154,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="306573536155379004">Spelet har startats.</translation>
 <translation id="3067505415088964188">Priset är lågt</translation>
 <translation id="3068118691172921711">Filerna börjar laddas upp till <ph name="CLOUD_PROVIDER" /> om 1 minut</translation>
-<translation id="3068976060094139647">Du kan fylla i det här kortet automatiskt eftersom ditt konto är länkat till Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} objekt}other{{ITEMS} objekt}}</translation>
 <translation id="3076865167425975822">Operativsystem</translation>
 <translation id="3080254622891793721">Bild</translation>
@@ -4377,7 +4376,6 @@ Mer information:
 <translation id="8757526089434340176">Ett Google Pay-erbjudande är tillgängligt</translation>
 <translation id="8759274551635299824">Kortets giltighetstid har löpt ut</translation>
 <translation id="87601671197631245">Den här webbplatsens säkerhetskonfiguration är inaktuell. Det kan leda till att dina uppgifter (t.ex. lösenord, meddelanden eller kreditkort) exponeras när de skickas till den här webbplatsen.</translation>
-<translation id="8763226176721243078">Du kan fylla i det här kortet automatiskt eftersom ditt <ph name="CARD_ISSUER_NAME" />-konto är länkat till Google Pay.</translation>
 <translation id="8763927697961133303">USB-enhet</translation>
 <translation id="8763986294015493060">Stäng alla inkognitofönster som är öppna för närvarande</translation>
 <translation id="8766943070169463815">Ett arbetsblad för autentisering av användaruppgifter för säker betalning har öppnats</translation>

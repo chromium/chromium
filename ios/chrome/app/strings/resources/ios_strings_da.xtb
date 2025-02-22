@@ -977,6 +977,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5250371859659394278">Via en ukendt kilde</translation>
 <translation id="5271265092610673171">{count,plural, =1{Et obligatorisk felt er tomt. Udfyld det, inden du gemmer.}one{Et obligatorisk felt er tomt. Udfyld det, inden du gemmer.}other{Nogle obligatoriske felter er tomme. Udfyld dem, inden du gemmer.}}</translation>
 <translation id="5271549068863921519">Gem adgangskode</translation>
+<translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vil gerne invitere dig til en fanegruppe. Alle med linket kan redigere alle faner, så vær opmærksom på det, når du deltager. Linket udløber om 48 timer.</translation>
 <translation id="5279214046729249716">Ja, hold dem adskilt</translation>
 <translation id="5279600392753459966">Bloker alle</translation>
 <translation id="5282340693022193851">Du kan få notifikationer om prissporing ved at aktivere notifikationer i iOS-indstillingerne.</translation>

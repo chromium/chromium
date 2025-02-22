@@ -1009,6 +1009,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1682696837763999627">Cursor do rato grande</translation>
 <translation id="1682867089915960590">Ativar a navegação por cursor?</translation>
 <translation id="1686550358074589746">Ativar a escrita ao deslizar</translation>
+<translation id="1686785653877010442">Geralmente, os sites enviam notificações para informar acerca de notícias de última hora ou mensagens de chat.</translation>
 <translation id="168715261339224929">Para obter os seus marcadores em todos os dispositivos, ative a sincronização.</translation>
 <translation id="1688935057616748272">Introduza uma letra.</translation>
 <translation id="1689333818294560261">Alcunha</translation>
@@ -1284,6 +1285,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1878885068166344708">O item fica realçado quando move o foco. Prima a tecla Tab ou selecione um item para alterar o foco.</translation>
 <translation id="1879000426787380528">Iniciar sessão como</translation>
 <translation id="18802377548000045">Os separadores são reduzidos para uma largura grande</translation>
+<translation id="1880618477732738742">Altere e conceda acesso a funcionalidades como geolocalização, microfone, câmara, cookies, etc., para todos os seus Websites e extensões, incluindo esta extensão.</translation>
 <translation id="1880905663253319515">Eliminar o certificado "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Esquema de teclado</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Item}other{# itens}}</translation>
@@ -3469,6 +3471,7 @@ Quer pará-lo?</translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="343578350365773421">Sem papel</translation>
 <translation id="3435896845095436175">Ativar</translation>
+<translation id="3437397693214267762">Veja os seus ficheiros do Calendário do Outlook, do SharePoint e do OneDrive</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Permitir sempre que <ph name="HOST" /> aceda ao seu microfone</translation>
 <translation id="3439970425423980614">A abrir PDF na Pré-visualização</translation>
@@ -7130,6 +7133,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
     Use a sua conta para aceder facilmente a todos os seus marcadores, ficheiros e muito mais. Se não tiver uma conta, pode criar uma no ecrã seguinte.</translation>
 <translation id="6054138466019582920">Pesq&amp;uisar esta página com o Google…</translation>
 <translation id="6054284857788651331">Grupo de separadores fechado recentemente</translation>
+<translation id="6054819000749443354">Abrir Definições do sistema</translation>
 <translation id="6054961935262556546">Alterar visibilidade</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 Com encriptação RSA</translation>
 <translation id="6055544610007596637">Instale apps para o dispositivo <ph name="DEVICE_TYPE" /> na Google Play Store</translation>
@@ -8953,6 +8957,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7380459290951585794">Certifique-se de que o telemóvel está próximo, desbloqueado e com o Bluetooth e o Wi-Fi ativados</translation>
 <translation id="7380622428988553498">O nome do dispositivo contém carateres inválidos.</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> foi atualizada.</translation>
+<translation id="7382009635620830394">Se este cartão estiver desativado, os seus cartões da Microsoft, como os ficheiros do SharePoint e do OneDrive, e o Calendário do Outlook também são desativados.</translation>
 <translation id="7382085868019811559">A Compatibilidade com o navegador antigo (LBS) permite que padrões de URLs específicos sejam abertos num navegador alternativo que suporte funcionalidades antigas necessárias para executar esses sites adequadamente.</translation>
 <translation id="7382980704744807223">Suspeito</translation>
 <translation id="738322632977123193">Não é possível carregar. Use uma imagem num dos seguintes formatos: .jpg, .gif, .png, .bmp, .tif ou .webp</translation>
@@ -10623,6 +10628,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> é gerido por <ph name="MANAGER" />. Não é possível adicionar este email como uma conta adicional.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para usar <ph name="USER_EMAIL" />, termine primeiro a sessão de <ph name="DEVICE_TYPE" />. Na parte inferior do ecrã de início de sessão, selecione Adicionar pessoa.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Mantenha pressionada a tecla Pesquisar para alterar o comportamento das teclas da linha superior</translation>
+<translation id="8549127125482561383">Como mostrar pedidos</translation>
 <translation id="8549316893834449916">Utilize a sua Conta Google para iniciar sessão no seu Chromebook, isto é, a mesma conta que utiliza para o Gmail, o Drive, o YouTube e muito mais.</translation>
 <translation id="8550239873869577759">Ficheiro suspeito transferido</translation>
 <translation id="8551388862522347954">Licenças</translation>

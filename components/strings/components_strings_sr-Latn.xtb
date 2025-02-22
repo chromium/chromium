@@ -1154,7 +1154,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="306573536155379004">Igra je pokrenuta.</translation>
 <translation id="3067505415088964188">Cena je niska</translation>
 <translation id="3068118691172921711">Otpremanje fajlova u <ph name="CLOUD_PROVIDER" /> počinje za 1 minut</translation>
-<translation id="3068976060094139647">Možete da popunite ovu karticu automatski jer je nalog povezan sa Google Pay-om.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} stavka}one{{ITEMS} stavka}few{{ITEMS} stavke}other{{ITEMS} stavki}}</translation>
 <translation id="3076865167425975822">Operativni sistemi</translation>
 <translation id="3080254622891793721">Slika</translation>
@@ -2255,6 +2254,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4989809363548539747">Ova dodatna komponenta nije podržana</translation>
 <translation id="4990241977441916452">Koverta A2</translation>
 <translation id="4992066212339426712">Uključi zvuk</translation>
+<translation id="4994095017621319069">1 grupa kartica više nije dostupna</translation>
 <translation id="4994348767896109801">Da li ćete videti personalizovani oglas može da zavisi od mnogo toga, uključujući ovo podešavanje, <ph name="BEGIN_LINK_1" />teme oglasa<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />podešavanja kolačića<ph name="END_LINK_2" /> i da li sajt koji pregledate personalizuje oglase. Saznajte više o <ph name="BEGIN_LINK_3" />upravljanju privatnošću sa oglasima<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Izmenjeno:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali pretragom sajtova i podrazumevanim pretraživačem</translation>
@@ -3468,6 +3468,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Svetloljubičasta</translation>
 <translation id="7156870133441232244">Server treba da se nadogradi na TLS 1.2 ili noviju verziju.</translation>
+<translation id="7156885531105222428">Nismo uspeli da pronađemo traženu stranicu u aplikaciji</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Da biste poslali ovaj fajl pomoću funkcije <ph name="FEATURE_NAME" />, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}one{Da biste poslali ove fajlove pomoću funkcije <ph name="FEATURE_NAME" />, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}few{Da biste poslali ove fajlove pomoću funkcije <ph name="FEATURE_NAME" />, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}other{Da biste poslali ove fajlove pomoću funkcije <ph name="FEATURE_NAME" />, oslobodite prostor (<ph name="DISK_SPACE_SIZE" />) na uređaju}}</translation>
 <translation id="7160999678034985039">Sačuvajte svoj rad i pokrenite ažuriranje kada budete spremni.</translation>
 <translation id="7162277662076933695">Čitač pametnih kartica</translation>
@@ -4255,6 +4256,7 @@ Dodatni detalji:
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Posetite &lt;strong&gt;chrome://policy&lt;/strong&gt; da biste videli listu blokiranih URL-ova i druge smernice koje je odredio administrator sistema.</translation>
 <translation id="8536234749087605613">Koverta (prozor)</translation>
+<translation id="8538228968820006247">Grupa kartica je puna, novi članovi ne mogu da se pridruže pomoću linka</translation>
 <translation id="8539500321752640291">Želite li da omogućite 2 dozvole?</translation>
 <translation id="8541158209346794904">Bluetooth uređaj</translation>
 <translation id="8541410041357371550">Ovaj sajt prima podatke o vašim temama oglasa iz Chrome-a da bi vam prikazivao relevantnije oglase.</translation>
@@ -4376,7 +4378,6 @@ Dodatni detalji:
 <translation id="8757526089434340176">Dostupna je Google Pay ponuda</translation>
 <translation id="8759274551635299824">Ova kartica je istekla</translation>
 <translation id="87601671197631245">Ovaj sajt koristi zastarelu bezbednosnu konfiguraciju koja može da otkrije vaše informacije (na primer, lozinke, poruke ili kreditne kartice) kada se šalju tom sajtu.</translation>
-<translation id="8763226176721243078">Možete da popunite ovu karticu automatski jer je <ph name="CARD_ISSUER_NAME" /> nalog povezan sa Google Pay-om.</translation>
 <translation id="8763927697961133303">USB uređaj</translation>
 <translation id="8763986294015493060">Zatvorite sve prozore bez arhiviranja koji su trenutno otvoreni</translation>
 <translation id="8766943070169463815">Tabela za potvrdu akreditiva za bezbedno plaćanje je otvorena</translation>

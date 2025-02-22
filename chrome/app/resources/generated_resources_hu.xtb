@@ -1010,6 +1010,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1682696837763999627">Nagy egérmutató</translation>
 <translation id="1682867089915960590">Bekapcsolja a billentyűzettel böngészést?</translation>
 <translation id="1686550358074589746">Csúsztatással való gépelés engedélyezése</translation>
+<translation id="1686785653877010442">A webhelyek általában akkor küldenek értesítéseket, ha rendkívüli hírekről vagy csevegőüzenetekről szeretnék tájékoztatni Önt.</translation>
 <translation id="168715261339224929">Ha az összes eszközén szeretné elérni könyvjelzőit, kapcsolja be a szinkronizálást.</translation>
 <translation id="1688935057616748272">Írja be a kívánt karaktert</translation>
 <translation id="1689333818294560261">Egyedi név</translation>
@@ -1293,6 +1294,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1878885068166344708">Az elemek kiemelve jelennek meg, amikor rájuk helyezi a fókuszt. Nyomja meg a Tab billentyűt, vagy válassza ki valamelyik elemet a fókusz módosításához.</translation>
 <translation id="1879000426787380528">Bejelentkezés mint</translation>
 <translation id="18802377548000045">A lapok nagy szélességre zsugorodnak</translation>
+<translation id="1880618477732738742">Az összes webhelye és bővítménye számára (ezt a bővítményt is beleértve) módosíthatja és megadhatja a hozzáférést például olyan funkciókhoz, mint a földrajzihely-meghatározás, a mikrofon, a kamera és a cookie-k használata.</translation>
 <translation id="1880905663253319515">Törli a "<ph name="CERTIFICATE_NAME" />" tanúsítványt?</translation>
 <translation id="1881445033931614352">Billentyűzetkiosztás</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Elem}other{# elem}}</translation>
@@ -3480,6 +3482,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3435738964857648380">Biztonság</translation>
 <translation id="343578350365773421">Elfogyott a papír</translation>
 <translation id="3435896845095436175">Engedélyezés</translation>
+<translation id="3437397693214267762">Az Ön Outlook-naptárának, valamint SharePoint- és OneDrive-fájljainak megtekintése</translation>
 <translation id="3438633801274389918">Nindzsa</translation>
 <translation id="3439153939049640737">A(z) <ph name="HOST" /> mindig hozzáférhet az Ön mikrofonjához</translation>
 <translation id="3439970425423980614">PDF megnyitása előnézetben</translation>
@@ -7140,6 +7143,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
     Fiókja segítségével egyszerűen hozzáférhet könyvjelzőihez, fájljaihoz és egyebekhez. Ha nincs fiókja, a következő képernyőn létrehozhat egyet.</translation>
 <translation id="6054138466019582920">Keresés az oldalon a Google-lal…</translation>
 <translation id="6054284857788651331">Legutóbb bezárt lapcsoport</translation>
+<translation id="6054819000749443354">Rendszerbeállítások megnyitása</translation>
 <translation id="6054961935262556546">Láthatóság módosítása</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 RSA titkosítással</translation>
 <translation id="6055544610007596637">Alkalmazások telepítése <ph name="DEVICE_TYPE" /> eszközére a Google Play Áruházból</translation>
@@ -8963,6 +8967,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7380459290951585794">Gondoskodjon arról, hogy telefonja a közelben legyen feloldott állapotban, valamint arról, hogy Bluetooth- és Wi-Fi-kapcsolata be legyen kapcsolva.</translation>
 <translation id="7380622428988553498">Az eszköznév érvénytelen karaktereket tartalmaz</translation>
 <translation id="7380768571499464492">Frissítve: <ph name="PRINTER_NAME" /></translation>
+<translation id="7382009635620830394">Ha ez a kártya le van tiltva, akkor a Microsoft-kártyák (például a SharePoint- és a OneDrive-fájlok, valamint az Outlook-naptár) is le lesznek tiltva.</translation>
 <translation id="7382085868019811559">A Régi böngészők támogatása funkció segítségével bizonyos URL-mintákat olyan alternatív böngészőkben is megnyithat, amelyek támogatják az adott webhelyek megfelelő futtatásához szükséges régi funkciókat.</translation>
 <translation id="7382980704744807223">Gyanús</translation>
 <translation id="738322632977123193">Nem sikerült a feltöltés. Ilyen formátumú képeket használhat: .jpg, .gif, .png, .bmp, .tif és .webp</translation>
@@ -10632,6 +10637,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8547821378890700958">A(z) <ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> címet a következő kezeli: <ph name="MANAGER" />. Az e-mail-cím nem adható hozzá egyéb fiókként.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />A(z) <ph name="USER_EMAIL" /> használatához előbb jelentkezzen ki <ph name="DEVICE_TYPE" /> eszközéből. Majd a bejelentkezési képernyő alján válassza a Személy hozzáadása lehetőséget.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">A legfelső billentyűsor viselkedésének módosításához tartsa lenyomva a keresőgombot</translation>
+<translation id="8549127125482561383">A kérelmek megjelenítésének módja</translation>
 <translation id="8549316893834449916">A Chromebookba Google-fiókjával tud majd bejelentkezni – ugyanazzal a fiókkal, amellyel a Gmail, a Drive, a YouTube és a további kapcsolódó szolgáltatásokat is használja.</translation>
 <translation id="8550239873869577759">Gyanús fájl letöltve</translation>
 <translation id="8551388862522347954">Licencek</translation>

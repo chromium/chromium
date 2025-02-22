@@ -30,7 +30,6 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="2118649612461486615">Butiksinfo</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Dine lukkede faner og grupper kan åbnes igen via sektionerne Seneste faner og Fanegrupper. Din inkognitofane er ikke tilgængelig.}one{Dine lukkede faner og grupper kan åbnes igen via sektionerne Seneste faner og Fanegrupper. # inkognitofane er ikke tilgængelig.}other{Dine lukkede faner og grupper kan åbnes igen via sektionerne Seneste faner og Fanegrupper. # inkognitofaner er ikke tilgængelige.}}</translation>
 <translation id="2162620598375156287">Fås nu til <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">Fanegruppen <ph name="TAB_GROUP_NAME" /> er ikke længere tilgængelig</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Ophæv gruppering af fane}one{Ophæv gruppering af fane}other{Ophæv gruppering af faner}}</translation>
 <translation id="2271452184061378400">Dine fanegrupper gemmes her</translation>
 <translation id="2277224997687551299">Rediger gruppenavn</translation>

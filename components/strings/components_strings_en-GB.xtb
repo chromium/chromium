@@ -1154,7 +1154,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="306573536155379004">Game started.</translation>
 <translation id="3067505415088964188">Price is low</translation>
 <translation id="3068118691172921711">Your file upload to <ph name="CLOUD_PROVIDER" /> will begin in one minute</translation>
-<translation id="3068976060094139647">You can autofill this card because your account is linked to Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} item}other{{ITEMS} items}}</translation>
 <translation id="3076865167425975822">Operating systems</translation>
 <translation id="3080254622891793721">Graphic</translation>
@@ -4376,7 +4375,6 @@ Additional details:
 <translation id="8757526089434340176">Google Pay offer available</translation>
 <translation id="8759274551635299824">This card has expired</translation>
 <translation id="87601671197631245">This site uses an outdated security configuration, which may expose your information (for example, passwords, messages or credit cards) when it is sent to this site.</translation>
-<translation id="8763226176721243078">You can autofill this card because your <ph name="CARD_ISSUER_NAME" /> account is linked to Google Pay.</translation>
 <translation id="8763927697961133303">USB device</translation>
 <translation id="8763986294015493060">Close all incognito windows that are currently open</translation>
 <translation id="8766943070169463815">Secure payment credential authentication sheet is opened</translation>

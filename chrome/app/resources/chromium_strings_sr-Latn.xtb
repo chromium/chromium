@@ -30,6 +30,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1345251407431278948">Zakačeno je. Možete ponovo da pristupite pretrazi slika pomoću novog dugmeta na traci s alatkama</translation>
 <translation id="1356661055722410047">Novo. Možete da prevodite i tekst i slike na ekranu</translation>
 <translation id="1414495520565016063">Prijavljeni ste na Chromium!</translation>
+<translation id="1465192221147974788">Da biste delili prozor, dozvolite snimanje ekrana za Chromium u podešavanjima sistema.</translation>
 <translation id="1478370723027452770">Potražite pomoć za verziju Chrome for Testing</translation>
 <translation id="1497802159252041924">Greška pri instalaciji: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Delite Chromium karticu</translation>
@@ -162,6 +163,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3130323860337406239">Chromium koristi mikrofon.</translation>
 <translation id="3137969841538672700">Prevucite da biste pretražili</translation>
 <translation id="3144188012276422546">Ova kartica koristi dodatne resurse. Da biste poboljšali performanse, dozvolite Chromium-u da ih učini neaktivnim.</translation>
+<translation id="3149163023759831301">Da biste delili ekran, dozvolite snimanje ekrana za Chromium u podešavanjima sistema</translation>
 <translation id="3155163173539279776">Ponovo pokreni Chromium</translation>
 <translation id="3161522574479303604">Svi jezici</translation>
 <translation id="3179665906251668410">Otvori link u Chromium prozoru bez arhi&amp;viranja</translation>
@@ -184,8 +186,10 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3474745554856756813">Ovim ćete izbrisati <ph name="ITEMS_COUNT" /> stavke(i) sa ovog uređaja. Da biste kasnije vratili podatke, prijavite se u Chromium kao <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Pomoću prečice <ph name="SHORTCUT" /> možete da prelazite sa jednog Chromium profila na drugi</translation>
 <translation id="3509308970982693815">Zatvorite sve Chromium prozore i pokušajte ponovo.</translation>
+<translation id="3522404737534491619">Da biste delili prozor, dozvolite snimanje ekrana za Chromium u podešavanjima sistema</translation>
 <translation id="3530103706039034513">Korisnik <ph name="EXISTING_USER" /> je već prijavljen.  Da bi vam pregledanje bilo razdvojeno, prijavite se u Chromium preko svog profila kao <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">Radi zaštite privatnosti automatski brišemo interesovanja starija od 4 nedelje. Kada nastavite da pregledate, interesovanje će se možda ponovo pojaviti na listi. Možete i da uklanjate interesovanja za koja ne želite da ih Chromium uzima u obzir.</translation>
+<translation id="3561853857681580870">Da biste delili ekran, dozvolite snimanje ekrana za Chromium u podešavanjima sistema.</translation>
 <translation id="3567254597502212821">Istorija pregledanja, evidencija sajtova koje ste posetili pomoću Chromium-a na ovom uređaju.</translation>
 <translation id="3597003331831379823">Pokretanje podešavanja sa punim privilegijama nije uspelo. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3639635944603682591">Podaci pregledanja ove osobe će biti izbrisani sa ovog uređaja. Da biste vratili podatke, prijavite se u Chromium kao <ph name="USER_EMAIL" />.</translation>
@@ -283,6 +287,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4942295735032723435">Da biste dobijali buduća Chromium ažuriranja, treba vam macOS 11 ili novija verzija. Ovaj računar koristi macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium je u pozadinskom režimu.</translation>
 <translation id="494490797786467921">Kliknite da biste zatvorili dijalog za prijavljivanje u Chromium</translation>
+<translation id="4950660488495335294">Pomoću Chromium profila možete da razdvojite sve Chromium sadržaje. Napravite profile za prijatelje i porodicu ili razdvojite posao i zabavu.</translation>
 <translation id="4987820182225656817">Gosti mogu da koriste Chromium a da ne ostavljaju nikakve tragove.</translation>
 <translation id="4994636714258228724">Dodajte sebe u Chromium</translation>
 <translation id="5123973130450702873">Chromium-u treba dozvola za praćenje ruku</translation>

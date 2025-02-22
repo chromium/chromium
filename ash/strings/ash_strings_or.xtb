@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">ଡେସ୍କ 2</translation>
 <translation id="1546930421365146760">Google Admin କନସୋଲରେ ଏହି ଡିଭାଇସକୁ ସେଟ ଅପ କରିବା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ କୁହନ୍ତୁ</translation>
 <translation id="1549512626801247439">ଷ୍ଟୋରେଜ ପରିଚାଳନା</translation>
+<translation id="1549721333775633305">Quick Share ସେଟିଂ ଦେଖାନ୍ତୁ। Quick Share ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="1550406609415860283">ଡିଭାଇସଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="1550523713251050646">ଅଧିକ ବିକଳ୍ପଗୁଡ଼ିକ ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="1555130319947370107">ନୀଳ</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" />କୁ ସକ୍ରିୟ କରାଯାଇନାହିଁ।</translation>
 <translation id="5860033963881614850">ବନ୍ଦ ଅଛି</translation>
 <translation id="5860491529813859533">ଚାଲୁ କରନ୍ତୁ</translation>
+<translation id="5864691701242730005">Quick Share ସେଟିଂ ଦେଖାନ୍ତୁ। <ph name="VISIBILITY" /> ଭିଜିବିଲିଟୀ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="5864748620896638071">ବେଟେରୀ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">ନେଟୱାର୍କ ସୂଚନା ସଂଗ୍ରହ କରାଯାଉଛି</translation>
 <translation id="5867606971598166637">ଆପଣଙ୍କ ସିଷ୍ଟମ ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପଣଙ୍କର ସ୍କ୍ରିନକୁ ମନିଟର କରୁଛି</translation>
@@ -2261,6 +2263,7 @@
 <translation id="851660987304951246">ଶୀଘ୍ର ବିଷୟବସ୍ତୁର ସାରାଂଶ ତିଆରି କରିବା କିମ୍ବା ପ୍ରଶ୍ନ ପଚାରିବା ପାଇଁ 'ମୋତେ ପଢ଼ିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ'କୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8517041960877371778">ଯେତେବେଳେ ଏହା ଚାଲୁ ଅଛି, ସେତେବେଳେ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ଚାର୍ଜ ହୋ‍ଇନପାରେ।</translation>
 <translation id="8535393432370007982">ରଙ୍ଗ ଅନୁସାରେ ସର୍ଟ କରିବାକୁ ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
+<translation id="8536886494750559755">Quick Share ସେଟିଂ ଦେଖାନ୍ତୁ। <ph name="TIME_REMAINING" /> ପାଇଁ ସମସ୍ତଙ୍କୁ ଦେଖାଯିବ</translation>
 <translation id="8539803091108018926">କ୍ଲିପବୋର୍ଡକୁ ଟେକ୍ସଟ କପି କରାଯାଇଛି</translation>
 <translation id="8541078764854166027">କେମେରା ଫ୍ରେମିଂ</translation>
 <translation id="8542053257095774575">କୌଣସି ସେଭ ହୋଇଥିବା ଡେସ୍କ କିମ୍ବା ଟେମ୍ପଲେଟ ନାହିଁ</translation>

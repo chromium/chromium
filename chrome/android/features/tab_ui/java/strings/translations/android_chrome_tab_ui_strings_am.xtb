@@ -30,7 +30,6 @@
 <translation id="2118649612461486615">የመደብር መረጃ</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{የእርስዎ የተዘጉ ትሮች እና ቡድኖች ከቅርብ ጊዜ የትሮች ክፍል እና ከትር ቡድኖች ክፍል እንደገና ሊከፈቱ ይችላሉ። የእርስዎ ማንነት የማያሳውቅ ትር አይገኝም።}one{የእርስዎ የተዘጉ ትሮች እና ቡድኖች ከቅርብ ጊዜ የትሮች ክፍል እና ከትር ቡድኖች ክፍል እንደገና ሊከፈቱ ይችላሉ። የእርስዎ # ማንነት የማያሳውቅ ትር አይገኝም።}other{የእርስዎ የተዘጉ ትሮች እና ቡድኖች ከቅርብ ጊዜ የትሮች ክፍል እና ከትር ቡድኖች ክፍል እንደገና ሊከፈቱ ይችላሉ። የእርስዎ # ማንነት የማያሳውቁ ትሮች አይገኙም።}}</translation>
 <translation id="2162620598375156287">አሁን <ph name="CURRENT_PRICE" /> <ph name="SOURCE_WEBSITE" /> ላይ</translation>
-<translation id="2242907120821295124"><ph name="TAB_GROUP_NAME" /> የትር ቡድን ከእንግዲህ አይገኝም</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ትርን ነጥል}one{ትርን ነጥል}other{ትሮችን ነጥል}}</translation>
 <translation id="2271452184061378400">የእርስዎ የትር ቡድኖች እዚህ ተቀምጠዋል</translation>
 <translation id="2277224997687551299">የቡድን ስም ያርትዑ</translation>

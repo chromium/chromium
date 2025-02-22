@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">ಡೆಸ್ಕ್ 2</translation>
 <translation id="1546930421365146760">Google ನಿರ್ವಾಹಕ ಕನ್ಸೋಲ್‌ನಲ್ಲಿ ಈ ಸಾಧನವನ್ನು ಹೊಂದಿಸಲು ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಕೇಳಿ</translation>
 <translation id="1549512626801247439">ಸಂಗ್ರಹಣೆ ನಿರ್ವಹಣೆ</translation>
+<translation id="1549721333775633305">ಕ್ವಿಕ್ ಶೇರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. ಕ್ವಿಕ್ ಶೇರ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1550406609415860283">ಸಾಧನಗಳು ಲಭ್ಯವಿವೆ</translation>
 <translation id="1550523713251050646">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳಿಗೆ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="1555130319947370107">ನೀಲಿ</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ.</translation>
 <translation id="5860033963881614850">ಆಫ್</translation>
 <translation id="5860491529813859533">ಆನ್ ಮಾಡಿ</translation>
+<translation id="5864691701242730005">ಕ್ವಿಕ್ ಶೇರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. <ph name="VISIBILITY" /> ಗೋಚರತೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5864748620896638071">ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">ನೆಟ್‌ವರ್ಕ್ ಮಾಹಿತಿಯನ್ನು ಸಂಗ್ರಹಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5867606971598166637">ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ಗಳನ್ನು ಮಾನಿಟರ್ ಮಾಡುತ್ತಿದ್ದಾರೆ</translation>
@@ -2262,6 +2264,7 @@
 <translation id="851660987304951246">ಕಂಟೆಂಟ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ಸಾರಾಂಶಗೊಳಿಸಲು ಅಥವಾ ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಲು ನನಗೆ ಓದಲು ಸಹಾಯ ಮಾಡಿ ಅನ್ನು ಉಪಯೋಗಿಸಿ</translation>
 <translation id="8517041960877371778">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಆನ್ ಮಾಡಿರುವಾಗ ಅದನ್ನು ಚಾರ್ಜ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="8535393432370007982">ಬಣ್ಣದ ಪ್ರಕಾರ ಮಾಡಿರುವ ವಿಂಗಡಣೆಯನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>
+<translation id="8536886494750559755">ಕ್ವಿಕ್ ಶೇರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. <ph name="TIME_REMAINING" /> ವರೆಗೆ ಎಲ್ಲರಿಗೂ ಗೋಚರಿಸುತ್ತದೆ</translation>
 <translation id="8539803091108018926">ಪಠ್ಯವನ್ನು ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8541078764854166027">ಕ್ಯಾಮರಾ ಫ್ರೇಮಿಂಗ್</translation>
 <translation id="8542053257095774575">ಯಾವುದೇ ಡೆಸ್ಕ್‌ಗಳು ಅಥವಾ ಟೆಂಪ್ಲೇಟ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿಲ್ಲ</translation>

@@ -1153,7 +1153,6 @@
 <translation id="306573536155379004">已啟動遊戲。</translation>
 <translation id="3067505415088964188">價格較低</translation>
 <translation id="3068118691172921711">1 分鐘後開始上傳檔案至 <ph name="CLOUD_PROVIDER" /></translation>
-<translation id="3068976060094139647">你的帳戶已連結至 Google Pay，因此可以自動填入這張卡片的資訊。</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} 個項目}other{{ITEMS} 個項目}}</translation>
 <translation id="3076865167425975822">作業系統</translation>
 <translation id="3080254622891793721">圖片</translation>
@@ -4374,7 +4373,6 @@
 <translation id="8757526089434340176">提供 Google Pay 優惠</translation>
 <translation id="8759274551635299824">這張信用卡已過期</translation>
 <translation id="87601671197631245">這個網站的安全性設定過舊，因此你傳送給這個網站的的資訊 (例如密碼、訊息或信用卡資訊) 可能會外洩。</translation>
-<translation id="8763226176721243078">你的「<ph name="CARD_ISSUER_NAME" />」帳戶已連結至 Google Pay，因此可以自動填入這張卡片的資訊。</translation>
 <translation id="8763927697961133303">USB 裝置</translation>
 <translation id="8763986294015493060">關閉目前開啟的所有無痕視窗</translation>
 <translation id="8766943070169463815">已開啟安全付款憑證驗證表</translation>

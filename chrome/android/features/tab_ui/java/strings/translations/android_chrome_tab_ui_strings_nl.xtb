@@ -30,7 +30,6 @@ Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep
 <translation id="2118649612461486615">Winkelinformatie</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Je kunt je gesloten tabbladen en groepen opnieuw openen via het gedeelte Recente tabbladen en het gedeelte Tabbladgroepen. Je incognitotabblad is niet beschikbaar.}other{Je kunt je gesloten tabbladen en groepen opnieuw openen via het gedeelte Recente tabbladen en het gedeelte Tabbladgroepen. Je # incognitotabbladen zijn niet beschikbaar.}}</translation>
 <translation id="2162620598375156287">Nu <ph name="CURRENT_PRICE" /> op <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">Tabbladgroep <ph name="TAB_GROUP_NAME" /> is niet meer beschikbaar</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Tab uit groep verwijderen}other{Tabs uit groep verwijderen}}</translation>
 <translation id="2271452184061378400">Je tabbladgroepen worden hier opgeslagen</translation>
 <translation id="2277224997687551299">Groepsnaam bewerken</translation>

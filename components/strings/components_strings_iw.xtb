@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">המשחק התחיל.</translation>
 <translation id="3067505415088964188">המחיר נמוך</translation>
 <translation id="3068118691172921711">העלאת הקבצים אל <ph name="CLOUD_PROVIDER" /> תתחיל בעוד דקה</translation>
-<translation id="3068976060094139647">‏אפשר למלא את הפרטים של הכרטיס הזה באופן אוטומטי כי החשבון שלך מקושר ל-Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{פריט אחד ({ITEMS})}one{‫{ITEMS} פריטים}two{‫{ITEMS} פריטים}other{‫{ITEMS} פריטים}}</translation>
 <translation id="3076865167425975822">מערכות הפעלה</translation>
 <translation id="3080254622891793721">גרפיקה</translation>
@@ -4381,7 +4380,6 @@ Del</translation>
 <translation id="8757526089434340176">‏יש הטבה של Google Pay</translation>
 <translation id="8759274551635299824">פג תוקפו של הכרטיס</translation>
 <translation id="87601671197631245">באתר הזה נעשה שימוש בתצורת הגנה מיושנת, כך שמידע נשלח אליו עשוי להיחשף (למשל סיסמאות, הודעות או כרטיסי אשראי).</translation>
-<translation id="8763226176721243078">‏אפשר למלא את הפרטים של הכרטיס הזה באופן אוטומטי כי החשבון שלך ב-<ph name="CARD_ISSUER_NAME" /> מקושר ל-Google Pay.</translation>
 <translation id="8763927697961133303">‏התקן USB</translation>
 <translation id="8763986294015493060">סגירת כל החלונות הפרטיים שפתוחים כרגע</translation>
 <translation id="8766943070169463815">גיליון האימות של פרטי הכניסה לתשלום המאובטח פתוח</translation>

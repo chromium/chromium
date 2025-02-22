@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">ゲームを開始しました。</translation>
 <translation id="3067505415088964188">低価格</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> へのファイルのアップロードは 1 分後に開始されます</translation>
-<translation id="3068976060094139647">アカウントが Google Pay にリンクされているため、このカードを自動入力できます。</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} 個のアイテム}other{{ITEMS} 個のアイテム}}</translation>
 <translation id="3076865167425975822">オペレーティング システム</translation>
 <translation id="3080254622891793721">グラフィック</translation>
@@ -2255,6 +2254,7 @@
 <translation id="4989809363548539747">このプラグインはサポートされていません</translation>
 <translation id="4990241977441916452">A2 封筒</translation>
 <translation id="4992066212339426712">ミュートを解除</translation>
+<translation id="4994095017621319069">1 個のタブグループが使用できなくなりました</translation>
 <translation id="4994348767896109801">表示される広告がパーソナライズされるかどうかは、この設定、<ph name="BEGIN_LINK_1" />広告のトピック<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie の設定<ph name="END_LINK_2" />、アクセスしたサイトが広告をパーソナライズしているかどうかなど、さまざまな要素によって決まります。<ph name="BEGIN_LINK_3" />広告のプライバシー管理について<ph name="END_LINK_3" /></translation>
 <translation id="4995474875135717171">更新日時:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、サイト内検索とデフォルトの検索エンジンを管理します</translation>
@@ -3469,6 +3469,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件）}other{<ph name="PAYMENT_METHOD_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件）}}</translation>
 <translation id="7153618581592392745">ラベンダー</translation>
 <translation id="7156870133441232244">サーバーを TLS 1.2 以降にアップグレードする必要があります。</translation>
+<translation id="7156885531105222428">リクエストされたページはアプリケーションに見つかりませんでした</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> を使用してこのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" />　必要です）}other{<ph name="FEATURE_NAME" /> を使用してこれらのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" />　必要です）}}</translation>
 <translation id="7160999678034985039">作業内容を保存し、準備ができたら更新を開始してください。</translation>
 <translation id="7162277662076933695">スマート カードリーダー</translation>
@@ -4257,6 +4258,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">&lt;strong&gt;chrome://policy&lt;/strong&gt; で、ブロックされた URL のリストとシステム管理者が設定した他のポリシーを確認できます。</translation>
 <translation id="8536234749087605613">封筒（窓付き）</translation>
+<translation id="8538228968820006247">タブグループのユーザーが上限に達したため、新しいユーザーはリンクを使用して参加できません</translation>
 <translation id="8539500321752640291">2 つのアイテムの使用を許可しますか？</translation>
 <translation id="8541158209346794904">Bluetooth デバイス</translation>
 <translation id="8541410041357371550">このサイトでは、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します</translation>
@@ -4378,7 +4380,6 @@
 <translation id="8757526089434340176">Google Pay のクーポンをご利用いただけます</translation>
 <translation id="8759274551635299824">このカードは有効期限が切れています</translation>
 <translation id="87601671197631245">このサイトでは古いセキュリティ設定を使用しています。このサイトにパスワード、メッセージ、クレジット カードなどの情報を送信すると流出する恐れがあります。</translation>
-<translation id="8763226176721243078"><ph name="CARD_ISSUER_NAME" /> アカウントと Google Pay の連携により、こちらのカード情報の自動入力が可能です。</translation>
 <translation id="8763927697961133303">USB デバイス</translation>
 <translation id="8763986294015493060">現在開いているすべてのシークレット ウィンドウを閉じます</translation>
 <translation id="8766943070169463815">保護されたお支払い認証情報の認証シートが開いています</translation>

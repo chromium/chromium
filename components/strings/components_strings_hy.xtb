@@ -1160,7 +1160,6 @@
 <translation id="306573536155379004">Խաղը սկսված է։</translation>
 <translation id="3067505415088964188">Գինը ցածր է</translation>
 <translation id="3068118691172921711">Ֆայլի վերբեռնումը <ph name="CLOUD_PROVIDER" /> կսկսվի 1 րոպեից</translation>
-<translation id="3068976060094139647">Դուք կարող եք ավտոմատ լրացնել այս քարտը, քանի որ ձեր հաշիվը կապված է Google Pay-ի հետ։</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} տարր}one{{ITEMS} տարր}other{{ITEMS} տարր}}</translation>
 <translation id="3076865167425975822">Օպերացիոն համակարգեր</translation>
 <translation id="3080254622891793721">Գրաֆիկա</translation>
@@ -4384,7 +4383,6 @@
 <translation id="8757526089434340176">Հասանելի է Google Pay-ի առաջարկ</translation>
 <translation id="8759274551635299824">Քարտի ժամկետը սպառվել է</translation>
 <translation id="87601671197631245">Այս կայքն օգտագործում է անվտանգության հնացած կազմաձևում, ինչի հետևանքով ձեր տեղեկությունները (օր.` գաղտնաբառերը, հաղորդագրությունները կամ վարկային քարտի տվյալները) այս կայքում լրացնելիս կարող են բացահայտվել։</translation>
-<translation id="8763226176721243078">Դուք կարող եք ավտոմատ լրացնել այս քարտը, քանի որ ձեր <ph name="CARD_ISSUER_NAME" /> հաշիվը կապված է Google Pay-ի հետ։</translation>
 <translation id="8763927697961133303">USB սարք</translation>
 <translation id="8763986294015493060">Փակել ընթացիկ բացված բոլոր ինկոգնիտո պատուհանները</translation>
 <translation id="8766943070169463815">Պաշտպանված վճարումների մուտքային տվյալների նույնականացման էկրանը բացված է</translation>

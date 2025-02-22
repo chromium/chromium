@@ -30,7 +30,6 @@ Si el suprimeixes, tothom perdrà immediatament l'accés al grup de pestanyes "<
 <translation id="2118649612461486615">Informació de la botiga</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Pots tornar a obrir la pestanya i el grup tancats des de les seccions Pestanyes recents i Grups de pestanyes. La pestanya d'incògnit no estarà disponible.}other{Pots tornar a obrir les pestanyes i els grups tancats des de les seccions Pestanyes recents i Grups de pestanyes. # pestanyes d'incògnit no estaran disponibles.}}</translation>
 <translation id="2162620598375156287">Ara costa <ph name="CURRENT_PRICE" /> a <ph name="SOURCE_WEBSITE" /></translation>
-<translation id="2242907120821295124">El grup de pestanyes <ph name="TAB_GROUP_NAME" /> no està disponible</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Desagrupa la pestanya}other{Desagrupa les pestanyes}}</translation>
 <translation id="2271452184061378400">Els teus grups de pestanyes es desen aquí</translation>
 <translation id="2277224997687551299">Edita el nom del grup</translation>

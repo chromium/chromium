@@ -1154,7 +1154,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="306573536155379004">Le jeu a commencé.</translation>
 <translation id="3067505415088964188">Prix bas</translation>
 <translation id="3068118691172921711">L'importation de vos fichiers dans <ph name="CLOUD_PROVIDER" /> commencera dans 1 minute</translation>
-<translation id="3068976060094139647">Vous pouvez utiliser la saisie automatique pour cette carte, car votre compte est associé à Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} élément}one{{ITEMS} élément}other{{ITEMS} éléments}}</translation>
 <translation id="3076865167425975822">Systèmes d'exploitation</translation>
 <translation id="3080254622891793721">Image</translation>
@@ -4377,7 +4376,6 @@ Informations supplémentaires :
 <translation id="8757526089434340176">Offre Google Pay disponible</translation>
 <translation id="8759274551635299824">Carte arrivée à expiration</translation>
 <translation id="87601671197631245">La configuration de sécurité obsolète de ce site peut exposer vos informations, comme vos mots de passe, vos messages ou vos cartes de crédit, lorsqu'elles lui sont transmises.</translation>
-<translation id="8763226176721243078">Vous pouvez utiliser la saisie automatique pour cette carte, car votre compte <ph name="CARD_ISSUER_NAME" /> est associé à Google Pay.</translation>
 <translation id="8763927697961133303">Périphérique USB</translation>
 <translation id="8763986294015493060">Fermez toutes les fenêtres de navigation privée actuellement ouvertes</translation>
 <translation id="8766943070169463815">La fiche d'authentification concernant les infos de paiement sécurisé est ouverte</translation>

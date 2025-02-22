@@ -1154,7 +1154,6 @@
 <translation id="306573536155379004">गेमला सुरुवात झाली.</translation>
 <translation id="3067505415088964188">किंमत कमी आहे</translation>
 <translation id="3068118691172921711">तुमचा <ph name="CLOUD_PROVIDER" /> मधील फाइल अपलोड १ मिनिटाने सुरू होईल</translation>
-<translation id="3068976060094139647">तुम्ही हे कार्ड ऑटोफिल करू शकता, कारण तुमचे खाते Google Pay शी लिंक केलेले आहे.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} आयटम}other{{ITEMS} आयटम}}</translation>
 <translation id="3076865167425975822">ऑपरेटिंग सिस्टीम</translation>
 <translation id="3080254622891793721">ग्राफिक</translation>
@@ -2254,6 +2253,7 @@
 <translation id="4989809363548539747">हे प्लगइन सपोर्टेड नाही</translation>
 <translation id="4990241977441916452">एन्व्हलप ए२</translation>
 <translation id="4992066212339426712">अनम्यूट करा</translation>
+<translation id="4994095017621319069">१ टॅब गट आता उपलब्ध नाही</translation>
 <translation id="4994348767896109801">हे सेटिंग, <ph name="BEGIN_LINK_1" />जाहिरातीचे विषय<ph name="END_LINK_1" />, तुमची <ph name="BEGIN_LINK_2" />कुकी सेटिंग्ज<ph name="END_LINK_2" /> आणि तुम्ही पाहत असलेली साइट ही जाहिराती पर्सनलाइझ करते की नाही, यांसह अनेक गोष्टींवर तुम्ही पाहत असलेली जाहिरात ही पर्सनलाइझ केलेली आहे की नाही हे अवलंबून असू शकते. <ph name="BEGIN_LINK_3" />तुमची जाहिरातीसंबंधित गोपनीयता व्यवस्थापित करणे<ph name="END_LINK_3" /> याबद्दल अधिक जाणून घ्या.</translation>
 <translation id="4995474875135717171">सुधारित:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, साइट शोध आणि तुमचे डीफॉल्ट शोध इंजिन व्यवस्थापित करण्यासाठी, टॅब प्रेस करून एंटर प्रेस करा</translation>
@@ -3469,6 +3469,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> आणखी}other{<ph name="PAYMENT_METHOD_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> आणखी}}</translation>
 <translation id="7153618581592392745">फिकट जांभळा</translation>
 <translation id="7156870133441232244">सर्व्हर TLS 1.2 किंवा त्यापुढील आवृत्तीवर अपग्रेड करणे आवश्यक आहे.</translation>
+<translation id="7156885531105222428">तुम्ही विनंती केलेले पेज, अ‍ॅप्लिकेशनमध्ये आढळले नाही</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> वापरून ही फाइल पाठवण्यासाठी, तुमच्या डिव्हाइसवरील जागा (<ph name="DISK_SPACE_SIZE" />) मोकळी करा}other{<ph name="FEATURE_NAME" /> वापरून या फाइल पाठवण्यासाठी, तुमच्या डिव्हाइसवरील जागा (<ph name="DISK_SPACE_SIZE" />) मोकळी करा}}</translation>
 <translation id="7160999678034985039">कृपया तुमचे काम सेव्ह करा आणि तुम्ही तयार असाल, तेव्हा अपडेट सुरू करा.</translation>
 <translation id="7162277662076933695">स्‍मार्ट कार्ड रीडर</translation>
@@ -4256,6 +4257,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">तुमच्या सिस्टम अ‍ॅडमिनिस्ट्रेटरद्वारे ब्लॉक केलेल्या URL आणि लागू केलेली इतर धोरणे पाहण्यासाठी &lt;strong&gt;chrome://policy&lt;/strong&gt; ला भेट द्या.</translation>
 <translation id="8536234749087605613">एन्व्हलप (विंडो)</translation>
+<translation id="8538228968820006247">तुमचा टॅब गट पूर्ण भरला आहे, लिंक वापरून नवीन सदस्य सामील होऊ शकत नाही</translation>
 <translation id="8539500321752640291">दोन परवानग्यांना अनुमती द्यायची का?</translation>
 <translation id="8541158209346794904">ब्लूटूथ डिव्‍हाइस</translation>
 <translation id="8541410041357371550">तुम्हाला आणखी उपयुक्त जाहिराती दाखवण्यासाठी ही साइट Chrome मधून तुमचे जाहिरातीचे विषय मिळवते</translation>
@@ -4376,7 +4378,6 @@
 <translation id="8757526089434340176">Google Pay ऑफर उपलब्ध</translation>
 <translation id="8759274551635299824">या कार्डची मुदत संपली आहे</translation>
 <translation id="87601671197631245">ही साइट एक्सपायर झालेली सुरक्षितता कॉन्फिगरेशन वापरत आहे ज्यामुळे कदाचित तुमची माहिती (उदाहरणार्थ, पासवर्ड, मेसेज किंवा क्रेडिट कार्डे) या साइटला पाठवल्यानंतर ती उघड होऊ शकते.</translation>
-<translation id="8763226176721243078">तुम्ही हे कार्ड ऑटोफिल करू शकता, कारण तुमचे <ph name="CARD_ISSUER_NAME" /> खाते Google Pay शी लिंक केलेले आहे.</translation>
 <translation id="8763927697961133303">USB डिव्हाइस</translation>
 <translation id="8763986294015493060">सध्या उघड्या असलेल्या सर्व गुप्त विंडो बंद करा</translation>
 <translation id="8766943070169463815">सुरक्षित पेमेंट क्रेडेंशियल ची ऑथेंटिकेशन शीट उघडी आहे</translation>

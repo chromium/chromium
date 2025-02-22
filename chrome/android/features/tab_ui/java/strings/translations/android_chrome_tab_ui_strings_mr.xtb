@@ -30,7 +30,6 @@
 <translation id="2118649612461486615">स्टोअरची माहिती</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{तुमचे बंद केलेले टॅब आणि गट हे अलीकडील टॅब या विभागामधून व टॅब गट या विभागामधून पुन्हा उघडले जाऊ शकतात. तुमचा गुप्त टॅब उपलब्ध नसेल.}other{तुमचे बंद केलेले टॅब आणि गट हे अलीकडील टॅब या विभागामधून व टॅब गट या विभागामधून पुन्हा उघडले जाऊ शकतात. तुमचे # गुप्त टॅब उपलब्ध नसतील.}}</translation>
 <translation id="2162620598375156287">आता <ph name="SOURCE_WEBSITE" /> वर <ph name="CURRENT_PRICE" /> मध्ये आहे</translation>
-<translation id="2242907120821295124"><ph name="TAB_GROUP_NAME" /> टॅब गट आता उपलब्ध नाही</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{टॅब गटामधून काढून टाका}other{टॅब गटामधून काढून टाका}}</translation>
 <translation id="2271452184061378400">तुमचे टॅब गट इथे सेव्ह केलेले आहेत</translation>
 <translation id="2277224997687551299">गटाचे नाव संपादित करा</translation>

@@ -1154,7 +1154,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="306573536155379004">Peli aloitettu</translation>
 <translation id="3067505415088964188">Hinta on alhainen</translation>
 <translation id="3068118691172921711">Tiedostojen lataus (<ph name="CLOUD_PROVIDER" />) alkaa minuutin kuluttua</translation>
-<translation id="3068976060094139647">Voit täyttää kortin automaattisesti, koska tilisi on linkitetty Google Payhin.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} tuote}other{{ITEMS} tuotetta}}</translation>
 <translation id="3076865167425975822">Käyttöjärjestelmät</translation>
 <translation id="3080254622891793721">Graafinen</translation>
@@ -4378,7 +4377,6 @@ Lisätietoja:
 <translation id="8757526089434340176">Google Pay ‑tarjous saatavilla</translation>
 <translation id="8759274551635299824">Tämä kortti on vanhentunut.</translation>
 <translation id="87601671197631245">Tämä sivusto käyttää vanhentunutta tietoturvamääritystä, joka voi paljastaa tietosi (esim. salasanat, viestit tai credit-kortit), kun ne lähetetään sivustolle.</translation>
-<translation id="8763226176721243078">Voit täyttää kortin automaattisesti, koska <ph name="CARD_ISSUER_NAME" />-tilisi on linkitetty Google Payhin.</translation>
 <translation id="8763927697961133303">USB-laite</translation>
 <translation id="8763986294015493060">Sulje kaikki tällä hetkellä avoinna olevat incognito-ikkunat</translation>
 <translation id="8766943070169463815">Suojatun maksun kirjautumistietojen todennuspaneeli on avattu</translation>
