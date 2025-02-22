@@ -40,6 +40,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -99,7 +100,7 @@ namespace {
 
 const char* kChromeVoxPerformCommandMetric =
     "Accessibility.ChromeVox.PerformCommand";
-const double kExpectedPhoneticSpeechAndHintDelayMS = 1000;
+const base::TimeDelta kExpectedPhoneticSpeechAndHintDelay = base::Seconds(1);
 
 }  // namespace
 
@@ -1853,49 +1854,49 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   sm_.ExpectSpeech("L");
   sm_.ExpectSpeech("lima");
   sm_.Call([this]() {
-    EXPECT_TRUE(sm_.GetDelayForLastUtteranceMS() >=
-                kExpectedPhoneticSpeechAndHintDelayMS);
+    EXPECT_GE(sm_.GetDelayForLastUtterance(),
+              kExpectedPhoneticSpeechAndHintDelay);
   });
   sm_.ExpectSpeech("Press Search plus Space to activate");
   sm_.Call([this]() {
-    EXPECT_TRUE(sm_.GetDelayForLastUtteranceMS() >=
-                kExpectedPhoneticSpeechAndHintDelayMS);
+    EXPECT_GE(sm_.GetDelayForLastUtterance(),
+              kExpectedPhoneticSpeechAndHintDelay);
   });
   sm_.Call([this]() { SendKeyPressWithSearchAndShift(ui::VKEY_RIGHT); });
   sm_.ExpectSpeech("I");
   sm_.ExpectSpeech("india");
   sm_.Call([this]() {
-    EXPECT_TRUE(sm_.GetDelayForLastUtteranceMS() >=
-                kExpectedPhoneticSpeechAndHintDelayMS);
+    EXPECT_GE(sm_.GetDelayForLastUtterance(),
+              kExpectedPhoneticSpeechAndHintDelay);
   });
   sm_.ExpectSpeech("Press Search plus Space to activate");
   sm_.Call([this]() {
-    EXPECT_TRUE(sm_.GetDelayForLastUtteranceMS() >=
-                kExpectedPhoneticSpeechAndHintDelayMS);
+    EXPECT_GE(sm_.GetDelayForLastUtterance(),
+              kExpectedPhoneticSpeechAndHintDelay);
   });
   sm_.Call([this]() { SendKeyPressWithSearchAndShift(ui::VKEY_RIGHT); });
   sm_.ExpectSpeech("C");
   sm_.ExpectSpeech("charlie");
   sm_.Call([this]() {
-    EXPECT_TRUE(sm_.GetDelayForLastUtteranceMS() >=
-                kExpectedPhoneticSpeechAndHintDelayMS);
+    EXPECT_GE(sm_.GetDelayForLastUtterance(),
+              kExpectedPhoneticSpeechAndHintDelay);
   });
   sm_.ExpectSpeech("Press Search plus Space to activate");
   sm_.Call([this]() {
-    EXPECT_TRUE(sm_.GetDelayForLastUtteranceMS() >=
-                kExpectedPhoneticSpeechAndHintDelayMS);
+    EXPECT_GE(sm_.GetDelayForLastUtterance(),
+              kExpectedPhoneticSpeechAndHintDelay);
   });
   sm_.Call([this]() { SendKeyPressWithSearchAndShift(ui::VKEY_RIGHT); });
   sm_.ExpectSpeech("K");
   sm_.ExpectSpeech("kilo");
   sm_.Call([this]() {
-    EXPECT_TRUE(sm_.GetDelayForLastUtteranceMS() >=
-                kExpectedPhoneticSpeechAndHintDelayMS);
+    EXPECT_GE(sm_.GetDelayForLastUtterance(),
+              kExpectedPhoneticSpeechAndHintDelay);
   });
   sm_.ExpectSpeech("Press Search plus Space to activate");
   sm_.Call([this]() {
-    EXPECT_TRUE(sm_.GetDelayForLastUtteranceMS() >=
-                kExpectedPhoneticSpeechAndHintDelayMS);
+    EXPECT_GE(sm_.GetDelayForLastUtterance(),
+              kExpectedPhoneticSpeechAndHintDelay);
   });
   sm_.Replay();
 }
