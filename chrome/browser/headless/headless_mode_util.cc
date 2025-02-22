@@ -18,6 +18,7 @@
 #include "chrome/browser/headless/headless_mode_switches.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_switches.h"
+#include "ui/base/ui_base_switches.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/gl/gl_switches.h"               // nogncheck
@@ -98,7 +99,8 @@ class HeadlessModeHandleImpl : public HeadlessModeHandle {
   // Headless mode on Linux relies on ozone/headless platform.
   command_line->AppendSwitchASCII(::switches::kOzonePlatform,
                                   switches::kHeadless);
-  if (!command_line->HasSwitch(switches::kOzoneOverrideScreenSize)) {
+  if (!command_line->HasSwitch(switches::kScreenInfo) &&
+      !command_line->HasSwitch(switches::kOzoneOverrideScreenSize)) {
     command_line->AppendSwitchASCII(switches::kOzoneOverrideScreenSize,
                                     "800,600");
   }

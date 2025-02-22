@@ -341,4 +341,14 @@ HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "--ozone-override-screen-size=1234,5678")
 #endif
 
+// --screen-info switch is only supported on Linux at this time.
+#if BUILDFLAG(IS_LINUX)
+// This currently results in an unexpected screen orientation type,
+// see http://crbug.com/398150465.
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    MultipleScreenDetails,
+    "sanity/multiple-screen-details.js",
+    "--screen-info={label=#1}{600x800 label=#2}")
+#endif
+
 }  // namespace headless

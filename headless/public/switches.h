@@ -114,8 +114,8 @@ inline constexpr char kProxyBypassList[] = "proxy-bypass-list";
 // affects HTTP and HTTPS requests.
 inline constexpr char kProxyServer[] = "proxy-server";
 
-// Headless screen info in the format: {0,0 800x600},{800,0 600x800}.
-// See //headless/lib/browser/headless_screen_info.h for more details.
+// Headless screen info in the format: {0,0 800x600}{800,0 600x800}.
+// See //components/headless/screen_info/headless_screen_info.h for details.
 inline constexpr char kScreenInfo[] = "screen-info";
 
 // A string used to override the default user agent with a custom one.
