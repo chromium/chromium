@@ -350,10 +350,7 @@ void TabStripActionContainer::UpdateGlicButton() {
     std::unique_ptr<glic::GlicButton> glic_button =
         std::make_unique<glic::GlicButton>(tab_strip_controller_);
     glic_button->SetProperty(views::kCrossAxisAlignmentKey,
-                             views::LayoutAlignment::kCenter);
-    glic_button->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
+                             views::LayoutAlignment::kEnd);
 
     glic_button_ = AddChildView(std::move(glic_button));
   } else if (glic_button_ && !need_button) {
