@@ -172,14 +172,6 @@ x11::NotifyDetail XI2DetailToXDetail(x11::Input::NotifyDetail xi2_detail) {
   }
 }
 
-void SyncSetCounter(x11::Connection* connection,
-                    x11::Sync::Counter counter,
-                    int64_t value) {
-  x11::Sync::Int64 sync_value{.hi = static_cast<int32_t>(value >> 32),
-                              .lo = static_cast<uint32_t>(value)};
-  connection->sync().SetCounter({counter, sync_value});
-}
-
 // Returns the whole path from |window| to the root.
 std::vector<x11::Window> GetParentsList(x11::Connection* connection,
                                         x11::Window window) {
@@ -268,24 +260,14 @@ void X11Window::Initialize(PlatformWindowInitProperties properties) {
     TouchFactory::GetInstance()->SetupXI2ForXWindow(xwindow_);
   }
 
-  // Request the _NET_WM_SYNC_REQUEST protocol which is used for synchronizing
-  // between chrome and desktop compositor (or WM) during resizing.
-  // The resizing behavior with _NET_WM_SYNC_REQUEST is:
-  // 1. Desktop compositor (or WM) sends client message _NET_WM_SYNC_REQUEST
-  //    with a 64 bits counter to notify about an incoming resize.
-  // 2. Desktop compositor resizes chrome browser window.
-  // 3. Desktop compositor waits on an alert on value change of XSyncCounter on
-  //    chrome window.
-  // 4. Chrome handles the ConfigureNotify event, and renders a new frame with
-  //    the new size.
-  // 5. Chrome increases the XSyncCounter on chrome window
-  // 6. Desktop compositor gets the alert of counter change, and draws a new
-  //    frame with new content from chrome.
-  // 7. Desktop compositor responses user mouse move events, and starts a new
-  //    resize process, go to step 1.
   std::vector<x11::Atom> protocols = {
       x11::GetAtom("WM_DELETE_WINDOW"),
       x11::GetAtom("_NET_WM_PING"),
+
+      // Request the _NET_WM_SYNC_REQUEST protocol which is used for
+      // synchronizing between chrome and desktop compositor (or WM) during
+      // resizing. The protocol is documented at
+      // https://specifications.freedesktop.org/wm-spec/1.3/ar01s06.html
       x11::GetAtom("_NET_WM_SYNC_REQUEST"),
   };
   connection_->SetArrayProperty(xwindow_, x11::GetAtom("WM_PROTOCOLS"),
@@ -413,18 +395,12 @@ void X11Window::Initialize(PlatformWindowInitProperties properties) {
   if (IsSyncExtensionAvailable()) {
     x11::Sync::Int64 value{};
     update_counter_ = connection_->GenerateId<x11::Sync::Counter>();
-    connection_->sync().CreateCounter({update_counter_, value});
-    extended_update_counter_ = connection_->GenerateId<x11::Sync::Counter>();
-    connection_->sync().CreateCounter({extended_update_counter_, value});
+    connection_->sync().CreateCounter(update_counter_, value);
 
-    std::vector<x11::Sync::Counter> counters{update_counter_,
-                                             extended_update_counter_};
-
-    // Set XSyncCounter as window property _NET_WM_SYNC_REQUEST_COUNTER. the
-    // compositor will listen on them during resizing.
-    connection_->SetArrayProperty(xwindow_,
-                                  x11::GetAtom("_NET_WM_SYNC_REQUEST_COUNTER"),
-                                  x11::Atom::CARDINAL, counters);
+    // The compositor will listen for counter updates during resizing.
+    connection_->SetProperty(xwindow_,
+                             x11::GetAtom("_NET_WM_SYNC_REQUEST_COUNTER"),
+                             x11::Atom::CARDINAL, update_counter_);
   }
 
   // Always composite Chromium windows if a compositing WM is used.  Sometimes,
@@ -1239,23 +1215,10 @@ bool X11Window::IsWmTiling() const {
 }
 
 void X11Window::OnCompleteSwapAfterResize() {
-  if (configure_counter_value_is_extended_) {
-    if ((current_counter_value_ % 2) == 1) {
-      // An increase 3 means that the frame was not drawn as fast as possible.
-      // This can trigger different handling from the compositor.
-      // Setting an even number to |extended_update_counter_| will trigger a
-      // new resize.
-      current_counter_value_ += 3;
-      SyncSetCounter(&connection_.get(), extended_update_counter_,
-                     current_counter_value_);
-    }
-    return;
-  }
-
-  if (configure_counter_value_ != 0) {
-    SyncSetCounter(&connection_.get(), update_counter_,
-                   configure_counter_value_);
-    configure_counter_value_ = 0;
+  if (configure_counter_value_ && have_configure_) {
+    connection_->sync().SetCounter(update_counter_, *configure_counter_value_);
+    configure_counter_value_.reset();
+    have_configure_ = false;
   }
 }
 
@@ -1916,10 +1879,8 @@ void X11Window::CloseXWindow() {
   xwindow_ = x11::Window::None;
 
   if (update_counter_ != x11::Sync::Counter{}) {
-    connection_->sync().DestroyCounter({update_counter_});
-    connection_->sync().DestroyCounter({extended_update_counter_});
+    connection_->sync().DestroyCounter(update_counter_);
     update_counter_ = {};
-    extended_update_counter_ = {};
   }
 }
 
@@ -2385,10 +2346,15 @@ void X11Window::HandleEvent(const x11::Event& xev) {
                                x11::EventMask::SubstructureNotify |
                                    x11::EventMask::SubstructureRedirect);
       } else if (protocol == x11::GetAtom("_NET_WM_SYNC_REQUEST")) {
-        pending_counter_value_ =
-            client->data.data32[2] +
-            (static_cast<int64_t>(client->data.data32[3]) << 32);
-        pending_counter_value_is_extended_ = client->data.data32[4] != 0;
+        configure_counter_value_.reset();
+        have_configure_ = false;
+        const int32_t hi = static_cast<int32_t>(client->data.data32[3]);
+        const uint32_t lo = client->data.data32[2];
+        // The spec says the WM should never send a counter value of 0, so
+        // ignore it if it does.
+        if (hi || lo) {
+          configure_counter_value_ = x11::Sync::Int64{.hi = hi, .lo = lo};
+        }
       }
     } else {
       OnXWindowDragDropEvent(*client);
@@ -2443,12 +2409,8 @@ void X11Window::OnConfigureEvent(const x11::ConfigureNotifyEvent& configure,
                                  bool send_event) {
   DCHECK_EQ(xwindow_, configure.window);
 
-  if (pending_counter_value_) {
-    DCHECK(!configure_counter_value_);
-    configure_counter_value_ = pending_counter_value_;
-    configure_counter_value_is_extended_ = pending_counter_value_is_extended_;
-    pending_counter_value_is_extended_ = false;
-    pending_counter_value_ = 0;
+  if (configure_counter_value_) {
+    have_configure_ = true;
   }
 
   // During a Restore() -> ToggleFullscreen() or Restore() -> SetBounds() ->
@@ -2574,46 +2536,21 @@ void X11Window::OnFrameExtentsUpdated() {
   }
 }
 
-// Removes |delayed_resize_task_| from the task queue (if it's in the queue) and
-// adds it back at the end of the queue.
 void X11Window::DispatchResize(bool origin_changed) {
-  if (update_counter_ == x11::Sync::Counter{} ||
-      configure_counter_value_ == 0) {
-    // WM doesn't support _NET_WM_SYNC_REQUEST. Or we are too slow, so
-    // _NET_WM_SYNC_REQUEST is disabled by the compositor.
+  if (configure_counter_value_) {
+    // WM handles resize throttling. No need to delay resize events.
+    DelayedResize(origin_changed);
+  } else {
+    // Debounce resize events to avoid falling behind.
     delayed_resize_task_.Reset(base::BindOnce(
         &X11Window::DelayedResize, base::Unretained(this), origin_changed));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, delayed_resize_task_.callback());
     return;
   }
-
-  if (configure_counter_value_is_extended_) {
-    current_counter_value_ = configure_counter_value_;
-    configure_counter_value_ = 0;
-    // Make sure the counter is even number.
-    if ((current_counter_value_ % 2) == 1) {
-      ++current_counter_value_;
-    }
-  }
-
-  // If _NET_WM_SYNC_REQUEST is used to synchronize with compositor during
-  // resizing, the compositor will not resize the window, until last resize is
-  // handled, so we don't need accumulate resize events.
-  DelayedResize(origin_changed);
 }
 
 void X11Window::DelayedResize(bool origin_changed) {
-  if (configure_counter_value_is_extended_ &&
-      (current_counter_value_ % 2) == 0) {
-    // Increase the |extended_update_counter_|, so the compositor will know we
-    // are not frozen and re-enable _NET_WM_SYNC_REQUEST, if it was disabled.
-    // Increase the |extended_update_counter_| to an odd number will not trigger
-    // a new resize.
-    SyncSetCounter(&connection_.get(), extended_update_counter_,
-                   ++current_counter_value_);
-  }
-
   CancelResize();
   NotifyBoundsChanged(/*origin changed=*/origin_changed);
 

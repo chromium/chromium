@@ -450,11 +450,6 @@ class X11Window : public PlatformWindow,
   bool had_pointer_grab_ = false;
   bool had_window_focus_ = false;
 
-  // Used for synchronizing between |xwindow_| and desktop compositor during
-  // resizing.
-  x11::Sync::Counter update_counter_{};
-  x11::Sync::Counter extended_update_counter_{};
-
   // Whenever the bounds are set, we keep the previous set of bounds around so
   // we can have a better chance of getting the real
   // |restored_bounds_in_pixels_|. Window managers tend to send a Configure
@@ -494,13 +489,10 @@ class X11Window : public PlatformWindow,
   // The size of the window manager provided borders (if any).
   gfx::Insets native_window_frame_borders_in_pixels_;
 
-  // Used for synchronizing between |xwindow_| between desktop compositor during
-  // resizing.
-  int64_t pending_counter_value_ = 0;
-  int64_t configure_counter_value_ = 0;
-  int64_t current_counter_value_ = 0;
-  bool pending_counter_value_is_extended_ = false;
-  bool configure_counter_value_is_extended_ = false;
+  // Used for synchronizing between `xwindow_` and the WM during resizing.
+  std::optional<x11::Sync::Int64> configure_counter_value_;
+  bool have_configure_ = false;
+  x11::Sync::Counter update_counter_{};
 
   // Used for ignoring bounds changes during the fullscreening process.  For
   // cross-display fullscreening, there is a Restore() (called by BrowserView)
