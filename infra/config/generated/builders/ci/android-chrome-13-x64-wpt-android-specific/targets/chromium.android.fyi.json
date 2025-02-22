@@ -14,7 +14,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "android_blink_wpt_tests",
+        "name": "android_chrome_wpt_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

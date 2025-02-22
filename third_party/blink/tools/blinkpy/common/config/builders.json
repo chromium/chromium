@@ -322,7 +322,7 @@
         "port_name": "android",
         "specifiers": ["Android", "Release"],
         "steps": {
-            "android_blink_wpt_tests": {}
+            "android_chrome_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -331,7 +331,7 @@
         "port_name": "webview",
         "specifiers": ["Webview", "Release"],
         "steps": {
-            "webview_blink_wpt_tests": {}
+            "android_webview_wpt_tests": {}
         },
         "is_try_builder": true
     }

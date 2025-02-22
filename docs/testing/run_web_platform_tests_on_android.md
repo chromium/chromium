@@ -109,8 +109,8 @@ between suites that target different `//content` embedders:
 
 Suite Name | Browser Under Test | Harness | Tests Run
 --- | --- | --- | ---
-`android_blink_wpt_tests` | `chrome_android` | `run_wpt_tests.py` | Tests listed in [`android.filter`](#running-tests-in-cqci).
-`webview_blink_wpt_tests` | `android_webview` | `run_wpt_tests.py` | Tests listed in [`android.filter`](#running-tests-in-cqci).
+`android_chrome_wpt_tests` | `chrome_android` | `run_wpt_tests.py` | Tests listed in [`android.filter`](#running-tests-in-cqci).
+`android_webview_wpt_tests` | `android_webview` | `run_wpt_tests.py` | Tests listed in [`android.filter`](#running-tests-in-cqci).
 
 ## Test expectations and Baselines
 

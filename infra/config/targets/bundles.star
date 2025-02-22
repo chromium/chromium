@@ -769,16 +769,16 @@ targets.bundle(
     name = "android_rel_isolated_scripts",
     targets = [
         "private_code_failure_test",
-        "android_blink_wpt_tests",
-        "webview_blink_wpt_tests",
+        "android_chrome_wpt_tests",
+        "android_webview_wpt_tests",
     ],
     per_test_modifications = {
-        "android_blink_wpt_tests": targets.mixin(
+        "android_chrome_wpt_tests": targets.mixin(
             swarming = targets.swarming(
                 shards = 4,
             ),
         ),
-        "webview_blink_wpt_tests": targets.mixin(
+        "android_webview_wpt_tests": targets.mixin(
             swarming = targets.swarming(
                 shards = 4,
             ),
@@ -7272,10 +7272,10 @@ targets.bundle(
 targets.bundle(
     name = "wpt_web_tests_android",
     targets = [
-        "android_blink_wpt_tests",
+        "android_chrome_wpt_tests",
     ],
     per_test_modifications = {
-        "android_blink_wpt_tests": targets.mixin(
+        "android_chrome_wpt_tests": targets.mixin(
             swarming = targets.swarming(
                 shards = 4,
             ),
@@ -7286,10 +7286,10 @@ targets.bundle(
 targets.bundle(
     name = "wpt_web_tests_webview",
     targets = [
-        "webview_blink_wpt_tests",
+        "android_webview_wpt_tests",
     ],
     per_test_modifications = {
-        "webview_blink_wpt_tests": targets.mixin(
+        "android_webview_wpt_tests": targets.mixin(
             swarming = targets.swarming(
                 shards = 4,
             ),
