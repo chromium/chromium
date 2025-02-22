@@ -12,6 +12,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -293,7 +295,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             mContext = context;
             mWidgetId = widgetId;
             mPreferences = getWidgetState(mWidgetId);
-            mIconColor = mContext.getColor(R.color.default_icon_color_baseline);
+            mIconColor = getIconColor(mContext);
             SystemNightModeMonitor.getInstance().addObserver(this);
         }
 
@@ -532,13 +534,20 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
 
         @Override
         public void onSystemNightModeChanged() {
-            mIconColor = mContext.getColor(R.color.default_icon_color_baseline);
+            mIconColor = getIconColor(mContext);
             redrawWidget(mWidgetId);
         }
 
         private void setWidgetItemBackButtonVisible(boolean visible, RemoteViews views) {
             views.setViewVisibility(R.id.favicon, visible ? View.GONE : View.VISIBLE);
             views.setViewVisibility(R.id.back_button, visible ? View.VISIBLE : View.GONE);
+        }
+
+        private int getIconColor(Context context) {
+            ContextThemeWrapper wrapper =
+                    new ContextThemeWrapper(context, R.style.Theme_Chromium_Widget);
+
+            return SemanticColorUtils.getDefaultIconColorSecondary(wrapper);
         }
     }
 }

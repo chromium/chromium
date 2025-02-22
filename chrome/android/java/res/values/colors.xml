@@ -52,7 +52,6 @@ found in the LICENSE file.
 
     <!-- Bookmark widget colors -->
     <color name="bookmark_widget_pressed_highlight">@color/black_alpha_11</color>
-    <color name="bookmark_widget_background">@color/default_bg_color_baseline</color>
 
     <!-- History Navigation UI colors -->
     <color name="navigation_bubble_arrow">@android:color/black</color>
