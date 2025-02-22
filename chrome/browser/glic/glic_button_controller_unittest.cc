@@ -11,6 +11,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/glic_vector_icon_manager.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -66,6 +67,7 @@ class GlicButtonControllerTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
     profile_ = testing_profile_manager_->CreateTestingProfile("profile");
+    ForceSigninAndModelExecutionCapability(profile_);
 
     TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
 
