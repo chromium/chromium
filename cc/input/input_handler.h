@@ -174,36 +174,6 @@ class CC_EXPORT InputHandlerClient {
   InputHandlerClient() = default;
 };
 
-// Data passed from the input handler to the main thread.  Used to notify the
-// main thread about changes that have occurred as a result of input since the
-// last commit.
-struct InputHandlerCommitData {
-  // Defined in input_handler.cc to avoid inlining since flat_set has
-  // non-trivial size destructor.
-  InputHandlerCommitData();
-  ~InputHandlerCommitData();
-
-  // Unconsumed scroll delta since the last commit.
-  gfx::Vector2dF overscroll_delta;
-
-  // Elements that have scroll snapped to a new target since the last commit.
-  base::flat_set<ElementId> updated_snapped_elements;
-
-  // If a scroll was active at any point since the last commit, this will
-  // identify the scroller (even if it has since ended).
-  ElementId last_latched_scroller;
-
-  // True if a scroll gesture has ended since the last commit.
-  bool scroll_gesture_did_end = false;
-
-  // The following bits are set if a gesture of any type was started since
-  // the last commit.
-  bool has_pinch_zoomed = false;
-  bool has_scrolled_by_wheel = false;
-  bool has_scrolled_by_touch = false;
-  bool has_scrolled_by_precisiontouchpad = false;
-};
-
 // The InputHandler is a way for the embedders to interact with the input system
 // running on the compositor thread. Each instance of a compositor (i.e. a
 // LayerTreeHostImpl) is associated with one InputHandler instance. The
