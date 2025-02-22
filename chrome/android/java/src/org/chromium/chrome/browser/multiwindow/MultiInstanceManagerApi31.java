@@ -200,6 +200,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void moveTabGroupAction(InstanceInfo info, TabGroupMetadata tabGroupMetadata, int startIndex) {
+        Activity targetActivity = getActivityById(info.instanceId);
+        assert targetActivity != null;
+        reparentTabGroupToRunningActivity(
+                (ChromeTabbedActivity) targetActivity, tabGroupMetadata, startIndex);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void moveAndReparentTabToNewWindow(
             Tab tab,
             int instanceId,
@@ -220,6 +228,27 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void reparentTabToRunningActivity(
             ChromeTabbedActivity targetActivity, Tab tab, int tabAtIndex) {
+        Intent intent = createIntentForGeneralReparenting(targetActivity, tabAtIndex);
+        setupIntentForTabReparenting(tab, intent, null);
+
+        targetActivity.onNewIntent(intent);
+        bringTaskForeground(targetActivity.getTaskId());
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void reparentTabGroupToRunningActivity(
+            ChromeTabbedActivity targetActivity,
+            TabGroupMetadata tabGroupMetadata,
+            int tabAtIndex) {
+        Intent intent = createIntentForGeneralReparenting(targetActivity, tabAtIndex);
+        setupIntentForGroupReparenting(tabGroupMetadata, intent, null);
+
+        targetActivity.onNewIntent(intent);
+        bringTaskForeground(targetActivity.getTaskId());
+    }
+
+    private Intent createIntentForGeneralReparenting(
+            ChromeTabbedActivity targetActivity, int tabAtIndex) {
         assert targetActivity != null;
         Intent intent = new Intent();
         Context appContext = ContextUtils.getApplicationContext();
@@ -232,10 +261,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         if (tabAtIndex != TabList.INVALID_TAB_INDEX) {
             intent.putExtra(IntentHandler.EXTRA_TAB_INDEX, tabAtIndex);
         }
-        setupIntentForReparenting(tab, intent, null);
-
-        targetActivity.onNewIntent(intent);
-        bringTaskForeground(targetActivity.getTaskId());
+        return intent;
     }
 
     @Override
@@ -866,7 +892,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     }
 
     @VisibleForTesting
-    void setupIntentForReparenting(Tab tab, Intent intent, Runnable finalizeCallback) {
+    void setupIntentForTabReparenting(Tab tab, Intent intent, Runnable finalizeCallback) {
         ReparentingTask.from(tab).setupIntent(intent, finalizeCallback);
     }
 
@@ -1012,6 +1038,25 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         InstanceInfo info = getInstanceInfoFor(activity);
         if (info != null) {
             moveTabAction(info, tab, atIndex);
+        } else {
+            Log.w(TAG, "DnD: InstanceInfo of Chrome Window not found.");
+        }
+    }
+
+    /**
+     * Move an entire tab group to the current instance of the ChromeTabbedActivity window.
+     *
+     * @param activity Activity of the Chrome Window in which the tab group is to be moved.
+     * @param tabGroupMetadata The object containing the metadata of the tab group.
+     * @param atIndex Tab position index in the destination window instance.
+     */
+    @Override
+    public void moveTabGroupToWindow(
+            Activity activity, TabGroupMetadata tabGroupMetadata, int atIndex) {
+        // Get the current instance and move tab there.
+        InstanceInfo info = getInstanceInfoFor(activity);
+        if (info != null) {
+            moveTabGroupAction(info, tabGroupMetadata, atIndex);
         } else {
             Log.w(TAG, "DnD: InstanceInfo of Chrome Window not found.");
         }

@@ -73,6 +73,8 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -88,6 +90,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -145,6 +148,13 @@ public class MultiInstanceManagerApi31UnitTest {
     private static final int TASK_ID_62 = 62;
     private static final int TASK_ID_63 = 63;
 
+    private static final int TAB_ID_1 = 1;
+    private static final int TAB_ID_2 = 2;
+    private static final int TAB_ID_3 = 3;
+    private static final GURL TAB_URL_1 = new GURL("http://amazon.com");
+    private static final GURL TAB_URL_2 = new GURL("http://youtube.com");
+    private static final GURL TAB_URL_3 = new GURL("http://facebook.com");
+
     private static final String TITLE1 = "title1";
     private static final String TITLE2 = "title2";
     private static final String TITLE3 = "title3";
@@ -197,6 +207,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     private int mNormalTabCount;
     private int mIncognitoTabCount;
+    private ArrayList<Tab> mGroupedTabs;
 
     private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
@@ -308,7 +319,11 @@ public class MultiInstanceManagerApi31UnitTest {
         }
 
         @Override
-        void setupIntentForReparenting(Tab tab, Intent intent, Runnable finalizeCallback) {}
+        void setupIntentForTabReparenting(Tab tab, Intent intent, Runnable finalizeCallback) {}
+
+        @Override
+        void setupIntentForGroupReparenting(
+                TabGroupMetadata tabGroupMetadata, Intent intent, Runnable finalizeCallback) {}
 
         @Override
         void beginReparenting(
@@ -321,6 +336,14 @@ public class MultiInstanceManagerApi31UnitTest {
 
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(any())).thenReturn(true);
+
+        when(mTab1.getId()).thenReturn(TAB_ID_1);
+        when(mTab2.getId()).thenReturn(TAB_ID_2);
+        when(mTab3.getId()).thenReturn(TAB_ID_3);
+        when(mTab1.getUrl()).thenReturn(TAB_URL_1);
+        when(mTab2.getUrl()).thenReturn(TAB_URL_2);
+        when(mTab3.getUrl()).thenReturn(TAB_URL_3);
+        mGroupedTabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3));
 
         when(mActivityTask56.getTaskId()).thenReturn(TASK_ID_56);
         when(mActivityTask57.getTaskId()).thenReturn(TASK_ID_57);
@@ -1104,6 +1127,35 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Verify moveTabAction and getCurrentInstanceInfo are each called once.
         verify(mMultiInstanceManager, times(1)).moveTabAction(any(), eq(mTab1), eq(tabAtIndex));
+        verify(mMultiInstanceManager, times(1)).getInstanceInfoFor(any());
+    }
+
+    @Test
+    @Config(sdk = 31)
+    public void testTabGroupMove_MoveTabGroupToCurrentWindow_calledWithDesiredParameters() {
+        int tabAtIndex = 0;
+        mMultiInstanceManager.mTestBuildInstancesList = true;
+        // Create two instances first before asking to move the tab group from one to current.
+        assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
+        assertEquals(INSTANCE_ID_2, allocInstanceIndex(INSTANCE_ID_2, mTabbedActivityTask63, true));
+        assertEquals(2, mMultiInstanceManager.getInstanceInfo().size());
+
+        // Create `TabGroupMetadata` with a list of grouped tabs for tab group reparenting.
+        TabGroupMetadata tabGroupMetadata =
+                TabGroupMetadataExtractor.extractTabGroupMetadata(
+                        mGroupedTabs, INSTANCE_ID_1, mTab1.getId());
+
+        doNothing()
+                .when(mMultiInstanceManager)
+                .moveTabGroupAction(any(), eq(tabGroupMetadata), eq(tabAtIndex));
+
+        // Action
+        mMultiInstanceManager.moveTabGroupToWindow(
+                mTabbedActivityTask63, tabGroupMetadata, tabAtIndex);
+
+        // Verify moveTabGroupAction and getCurrentInstanceInfo are each called once.
+        verify(mMultiInstanceManager, times(1))
+                .moveTabGroupAction(any(), eq(tabGroupMetadata), eq(tabAtIndex));
         verify(mMultiInstanceManager, times(1)).getInstanceInfoFor(any());
     }
 
