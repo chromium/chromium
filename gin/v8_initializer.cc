@@ -523,6 +523,7 @@ void SetFeatureFlags() {
                          "--no-js-duplicate-named-groups");
   SetV8FlagsIfOverridden(features::kJavaScriptPromiseTry, "--js-promise-try",
                          "--no-js-promise-try");
+  SetV8Flags("--js-float16array");
 
   // WebAssembly features.
 

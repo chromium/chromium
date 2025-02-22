@@ -2586,6 +2586,9 @@ interface FileSystemWritableFileStream : WritableStream
     method seek
     method truncate
     method write
+interface Float16Array : TypedArray
+    attribute BYTES_PER_ELEMENT
+    method constructor
 interface FocusEvent : UIEvent
     attribute @@toStringTag
     getter relatedTarget

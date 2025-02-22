@@ -242,6 +242,9 @@ CONSOLE MESSAGE:     method defer
 CONSOLE MESSAGE:     method dispose
 CONSOLE MESSAGE:     method move
 CONSOLE MESSAGE:     method use
+CONSOLE MESSAGE: interface Float16Array : TypedArray
+CONSOLE MESSAGE:     attribute BYTES_PER_ELEMENT
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface Mesh2DIndexBuffer
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method constructor
@@ -724,6 +727,9 @@ CONSOLE MESSAGE:     method defer
 CONSOLE MESSAGE:     method dispose
 CONSOLE MESSAGE:     method move
 CONSOLE MESSAGE:     method use
+CONSOLE MESSAGE: interface Float16Array : TypedArray
+CONSOLE MESSAGE:     attribute BYTES_PER_ELEMENT
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface Mesh2DIndexBuffer
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method constructor
