@@ -15,5 +15,9 @@ This is a testharness.js-based test.
   assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
 [FAIL] importNode should clone a template content with a nested template element using a scoped registry
   assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] importNode: pass options argument with value { selfOnly: true }
+  assert_false: expected false got true
+[FAIL] importNode: pass options argument with value { customElements: null }
+  assert_throws_js: function "() => document.importNode(root, { customElements: null })" did not throw
 Harness: the test ran to completion.
 

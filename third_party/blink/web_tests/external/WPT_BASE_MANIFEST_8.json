@@ -373671,7 +373671,7 @@
       []
      ],
      "Document-importNode.tentative-expected.txt": [
-      "f0c6394131c774f06fd8172dca12ca882ec7a67d",
+      "15be046ce4075810086a6afb6b579ffe152cef2f",
       []
      ],
      "Element-customElements-exceptions.tentative-expected.txt": [
@@ -402139,7 +402139,7 @@
       },
       "events": {
        "event-handler-all-global-events-expected.txt": [
-        "4eecc6d7a1accaef6d984a65632c84df250bc32b",
+        "a3d15610a3262e50092ea7e64f1453825352430d",
         []
        ],
        "event-handler-attributes-body-window-expected.txt": [
@@ -404346,7 +404346,7 @@
      []
     ],
     "html.idl": [
-     "f10bb72e913eaed514b75cb5178712dfad84505c",
+     "f48fd37028109f05cf87dec346740f6a3cc148a6",
      []
     ],
     "idle-detection.idl": [
@@ -404598,7 +404598,7 @@
      []
     ],
     "ppa.idl": [
-     "71b2fba69e7cacfb631d942faf0a04421927686c",
+     "a00d2deba872fdd62dbae9dc7489ee87e3c4fa6f",
      []
     ],
     "prefer-current-tab.idl": [
@@ -404674,7 +404674,7 @@
      []
     ],
     "sanitizer-api.idl": [
-     "86ec7875f49ade94025c09bcb875f56f7f4573bf",
+     "70412cced28f41df3c2ea22c94663eff50155f95",
      []
     ],
     "sanitizer-api.tentative.idl": [
@@ -406938,7 +406938,7 @@
        []
       ],
       "math-global-event-handlers.tentative-expected.txt": [
-       "7c3aa33536553f47792cbd1bca1dd2e62d5bf708",
+       "78378e700cb15230669d4b5f70a42bfc9fbc50be",
        []
       ],
       "required-extensions-2-ref.html": [
@@ -421248,7 +421248,7 @@
      []
     ],
     "set-event-handlers-content-attributes.tentative-expected.txt": [
-     "8a930833d92244f50979e07ee5e766278f38310b",
+     "d75e37783703bf028d95a28b9000ffe5651a34aa",
      []
     ],
     "support": {
@@ -427189,7 +427189,7 @@
     },
     "resources": {
      "utils.js": [
-      "5c4cdaa9558f30b07456afdc22fb6913106f30de",
+      "496e7d5180c703ef0bc6912357fddb2094f3d22a",
       []
      ],
      "utils_validation.js": [
@@ -527720,7 +527720,7 @@
       ]
      ],
      "Document-importNode.tentative.html": [
-      "c49b0a37d2097f91cc1b9cafde8255881979d1c0",
+      "989dea0b263aee88f621e010792151e03406688d",
       [
        null,
        {}
@@ -755104,7 +755104,7 @@
       ]
      ],
      "dequantizeLinear.https.any.js": [
-      "ecca03660f42b9da3922f9b6d3164c5eb27662ef",
+      "b43004e974b762f0b3c57efc99d80f58e4de99e9",
       [
        "webnn/conformance_tests/dequantizeLinear.https.any.html?cpu",
        {
@@ -764959,7 +764959,7 @@
       ]
      ],
      "quantizeLinear.https.any.js": [
-      "804ca88ebbaf21ec9a266db6016aae163edf52ba",
+      "331b0fe57417d52b05067ed31bf3756057d2a625",
       [
        "webnn/conformance_tests/quantizeLinear.https.any.html?cpu",
        {
