@@ -572,11 +572,11 @@ class MetaBuildWrapper:
       return ret
 
     self.Print('')
+    cmd, _ = self.GetSwarmingCommand(self.args.target, vals)
     if self.args.swarmed:
-      cmd, _ = self.GetSwarmingCommand(self.args.target, vals)
       return self._RunUnderSwarming(self.args.path, self.args.target, cmd,
                                     self.args.internal)
-    return self._RunLocallyIsolated(self.args.path, self.args.target)
+    return self._RunLocallyIsolated(self.args.path, self.args.target, cmd)
 
   def CmdZip(self):
     ret = self.CmdIsolate()
@@ -732,17 +732,17 @@ class MetaBuildWrapper:
         self.RemoveDirectory(json_dir)
     return ret
 
-  def _RunLocallyIsolated(self, build_dir, target):
-    cmd = [
+  def _RunLocallyIsolated(self, build_dir, target, cmd):
+    isolate_cmd = [
         self.PathJoin(self.chromium_src_dir, 'tools', 'luci-go',
-                      self.isolate_exe),
-        'run',
-        '-i',
-        self.ToSrcRelPath('%s/%s.isolate' % (build_dir, target)),
-    ]
+                      self.isolate_exe), 'run', '-i',
+        self.ToSrcRelPath('%s/%s.isolate' %
+                          (build_dir, target)), '--relative-cwd',
+        self.ToSrcRelPath(build_dir), '--'
+    ] + cmd
     if self.args.extra_args:
-      cmd += ['--'] + self.args.extra_args
-    ret, _, _ = self.Run(cmd, force_verbose=True, capture_output=False)
+      isolate_cmd += self.args.extra_args
+    ret, _, _ = self.Run(isolate_cmd, force_verbose=True, capture_output=False)
     return ret
 
   def _DefaultDimensions(self):

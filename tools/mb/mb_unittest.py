@@ -694,7 +694,7 @@ class UnitTest(unittest.TestCase):
          "  'label': '//cc:cc_perftests',"
          "  'type': 'console_test_launcher',"
          "}}\n"),
-        'c:\\fake_src\out\Default\cc_perftests.exe.runtime_deps':
+        r'c:\\fake_src\out\Default\cc_perftests.exe.runtime_deps':
         ('cc_perftests\n'),
     }
     mbw = self.fake_mbw(files=files, win32=True)
@@ -883,6 +883,12 @@ class UnitTest(unittest.TestCase):
         mbw.files['/fake_src/out/Default/base_unittests.isolate'],
           '{"variables": {"command": ["vpython3", "../../testing/test_env.py", "./base_unittests", "--test-launcher-bot-mode", "--asan=0", "--lsan=0", "--msan=0", "--tsan=0", "--cfi-diag=0"], "files": ["../../.vpython3", "../../testing/test_env.py"]}}\n')
     # pylint: enable=line-too-long
+
+    # Check to make sure we're including the relative cwd and the
+    # command line in the call to `isolate`.
+    self.assertIn(
+        'relative-cwd out/Default -- vpython3 '
+        '../../testing/test_env.py', mbw.out)
 
   def test_run_swarmed(self):
     files = {
