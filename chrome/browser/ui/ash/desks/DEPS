@@ -16,7 +16,6 @@ include_rules = [
   "+chrome/browser/apps/icon_standardizer.h",
   "+chrome/browser/apps/platform_apps",
   "+chrome/browser/ash/app_restore",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/floating_workspace",
   "+chrome/browser/ash/login/login_manager_test.h",
   "+chrome/browser/ash/login/test",
