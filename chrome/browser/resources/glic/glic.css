@@ -19,7 +19,6 @@ webview:not([hidden]) {
 .dialog {
   position: absolute;
   right: 0;
-  width: 300px;
   font-family: Roboto, sans-serif;
   font-size: 13px;
   font-weight: 300;

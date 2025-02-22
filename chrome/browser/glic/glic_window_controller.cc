@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/tabs/window_finder.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
@@ -56,8 +57,6 @@ namespace {
 constexpr static int kAttachmentBuffer = 20;
 constexpr static int kDetachYDistance = 36;
 
-constexpr static int kWidgetDefaultWidth = 300;
-constexpr static int kWidgetTopBarHeight = 48;
 constexpr static int kAnimationDurationMs = 300;
 constexpr static int kInitialDetachedYPosition = 48;
 
@@ -86,6 +85,11 @@ GlicButton* GetGlicButton(Browser* browser) {
       ->AsBrowserView()
       ->tab_strip_region_view()
       ->GetGlicButton();
+}
+
+gfx::Size GetWidgetInitialSize() {
+  return {features::kGlicInitialWidth.Get(),
+          features::kGlicInitialHeight.Get()};
 }
 
 }  // namespace
@@ -449,7 +453,7 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
 }
 
 gfx::Rect GlicWindowController::GetInitialDetachedBounds() {
-  gfx::Size widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
+  gfx::Size widget_size = GetWidgetInitialSize();
   if (glic_size_) {
     widget_size = *glic_size_;
   }
@@ -482,8 +486,8 @@ void GlicWindowController::OpenAttached(Browser* browser) {
   glic_widget_->Show();
   AttachToBrowser(browser);
 
-  // Set target bounds for animation and run the open attached animation.
-  gfx::Size widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
+  // Set target size for animation and run the open attached animation.
+  gfx::Size widget_size = GetWidgetInitialSize();
   if (glic_size_) {
     widget_size = *glic_size_;
   }
@@ -599,7 +603,7 @@ void GlicWindowController::ShowFinish() {
 
   // Set the draggable area to the top bar of the window, by default.
   GetGlicView()->SetDraggableAreas(
-      {{0, 0, GetGlicView()->width(), kWidgetTopBarHeight}});
+      {{0, 0, GetGlicView()->width(), GetWidgetInitialSize().height()}});
   NotifyIfPanelStateChanged();
 }
 
@@ -1031,7 +1035,8 @@ Browser* GlicWindowController::FindBrowserForAttachment() {
     // Define attachment zone as the right of the tab strip. It either is the
     // width of the widget or 1/3 of the tab strip, whichever is smaller.
     gfx::Rect attachment_zone = tab_strip_region_view->GetBoundsInScreen();
-    int width = std::min(attachment_zone.width() / 3, kWidgetDefaultWidth);
+    int width =
+        std::min(attachment_zone.width() / 3, GetWidgetInitialSize().width());
     attachment_zone.SetByBounds(attachment_zone.right() - width,
                                 attachment_zone.y() - kAttachmentBuffer,
                                 attachment_zone.right() + kAttachmentBuffer,
