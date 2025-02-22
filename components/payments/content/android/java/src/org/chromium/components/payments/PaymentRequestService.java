@@ -537,7 +537,6 @@ public class PaymentRequestService
                     PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
             return false;
         }
-        mBrowserPaymentRequest.modifyMethodDataIfNeeded(methodData);
         methodData = Collections.unmodifiableMap(methodData);
 
         mQueryForQuota = new HashMap<>(methodData);
