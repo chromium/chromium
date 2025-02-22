@@ -116,13 +116,13 @@ suite('<bookmarks-list>', function() {
     focusedItem = items[0]!;
     assertEquals(
         focusedItem, document.activeElement!.shadowRoot!.activeElement);
-    assertEquals(focusedItem.$.menuButton, items[0]!.shadowRoot!.activeElement);
+    assertEquals(focusedItem.$.menuButton, items[0]!.shadowRoot.activeElement);
 
     keydown(focusedItem, 'ArrowLeft');
     focusedItem = items[0]!;
     assertEquals(
         focusedItem, document.activeElement!.shadowRoot!.activeElement);
-    assertEquals(null, items[0]!.shadowRoot!.activeElement);
+    assertEquals(null, items[0]!.shadowRoot.activeElement);
 
     keydown(focusedItem, 'End');
     focusedItem = items[5]!;
@@ -266,7 +266,7 @@ suite('<bookmarks-list>', function() {
     button.focus();
     keydown(button, 'Enter');
     testCommandManager.getCommandManager().closeCommandMenu();
-    assertEquals(button, items[0].shadowRoot!.activeElement);
+    assertEquals(button, items[0].shadowRoot.activeElement);
   });
 
   test('remove first item, focus on first item', async () => {

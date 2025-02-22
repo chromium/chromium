@@ -40,7 +40,7 @@ suite('AppTest', () => {
 
     assertFalse(app.$.drawer.open);
     const menuButton =
-        app.$.toolbar.$.mainToolbar.shadowRoot!.querySelector<HTMLElement>(
+        app.$.toolbar.$.mainToolbar.shadowRoot.querySelector<HTMLElement>(
             '#menuButton');
     assertTrue(isVisible(menuButton));
     menuButton!.click();
@@ -87,7 +87,7 @@ suite('AppTest', () => {
     toolbar.setSearchFieldValue(expectedQuery);
     await microtasksFinished();
     const contentContainer =
-        app.shadowRoot!.querySelector<RelatedWebsiteSetsListContainerElement>(
+        app.shadowRoot.querySelector<RelatedWebsiteSetsListContainerElement>(
             '#content > related-website-sets-list-container');
     assertTrue(!!contentContainer);
     const actualQuery = contentContainer.query;

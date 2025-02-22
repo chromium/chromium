@@ -164,7 +164,7 @@ suite('KeyArrowNavigationServiceTest', () => {
   });
 
   test('AddsElements', () => {
-    service.removeElementsWithin(rootElement as HTMLElement);
+    service.removeElementsWithin(rootElement);
     let elementListIds =
         service.getElementsForTesting().map((el: HTMLElement) => el.id);
 

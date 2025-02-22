@@ -113,7 +113,7 @@ function createWindowProxy() {
     const result = query.match(/\(min-width: (\d+)px\)/);
     assertTrue(!!result);
     const mediaListenerList = new FakeMediaQueryList(query);
-    mediaListenerLists.set(parseInt(result![1]!), mediaListenerList);
+    mediaListenerLists.set(parseInt(result[1]!), mediaListenerList);
     return mediaListenerList;
   });
   MostVisitedWindowProxy.setInstance(windowProxy);
@@ -126,9 +126,9 @@ function updateScreenWidth(isWide: boolean, isMedium: boolean) {
   const mediaListenerMediumWidth = mediaListenerLists.get(560);
   assertTrue(!!mediaListenerWideWidth);
   assertTrue(!!mediaListenerMediumWidth);
-  mediaListenerWideWidth!.matches = isWide;
-  mediaListenerMediumWidth!.matches = isMedium;
-  mediaListenerMediumWidth!.dispatchEvent(new Event('change'));
+  mediaListenerWideWidth.matches = isWide;
+  mediaListenerMediumWidth.matches = isMedium;
+  mediaListenerMediumWidth.dispatchEvent(new Event('change'));
   return microtasksFinished();
 }
 
@@ -688,7 +688,7 @@ suite('Modification', () => {
       saveButton.click();
       await handler.whenCalled('addMostVisitedTile');
       await microtasksFinished();
-      assertFalse($$<HTMLElement>(mostVisited, '#undo')!.hidden);
+      assertFalse($$<HTMLElement>(mostVisited, '#undo').hidden);
     });
 
     test('toast has no undo buttons when action successful', async () => {
@@ -801,7 +801,7 @@ suite('Modification', () => {
     queryTiles()[0]!.querySelector<HTMLElement>('#actionMenuButton')!.click();
     assertTrue(actionMenu.open);
     assertFalse(dialog.open);
-    $$<HTMLElement>(mostVisited, '#actionMenuEdit')!.click();
+    $$<HTMLElement>(mostVisited, '#actionMenuEdit').click();
     assertFalse(actionMenu.open);
     assertTrue(dialog.open);
   });
@@ -824,7 +824,7 @@ suite('Modification', () => {
       tile = queryTiles()[1]!;
       actionMenuButton = tile.querySelector<HTMLElement>('#actionMenuButton')!;
       actionMenuButton.click();
-      $$<HTMLElement>(mostVisited, '#actionMenuEdit')!.click();
+      $$<HTMLElement>(mostVisited, '#actionMenuEdit').click();
     });
 
     test('edit a tile URL', async () => {
@@ -869,7 +869,7 @@ suite('Modification', () => {
       saveButton.click();
       // Reopen dialog and edit URL.
       actionMenuButton.click();
-      $$<HTMLElement>(mostVisited, '#actionMenuEdit')!.click();
+      $$<HTMLElement>(mostVisited, '#actionMenuEdit').click();
       inputUrl.value = 'updated-url';
       await inputUrl.updateComplete;
       saveButton.click();
@@ -896,7 +896,7 @@ suite('Modification', () => {
 
   test('remove with action menu', async () => {
     const actionMenu = mostVisited.$.actionMenu;
-    const removeButton = $$<HTMLElement>(mostVisited, '#actionMenuRemove')!;
+    const removeButton = $$<HTMLElement>(mostVisited, '#actionMenuRemove');
     await addTiles(2);
     const secondTile = queryTiles()[1]!;
     const actionMenuButton =
@@ -917,7 +917,7 @@ suite('Modification', () => {
 
   test('remove query with action menu', async () => {
     const actionMenu = mostVisited.$.actionMenu;
-    const removeButton = $$<HTMLElement>(mostVisited, '#actionMenuRemove')!;
+    const removeButton = $$<HTMLElement>(mostVisited, '#actionMenuRemove');
     await addTiles([{
       title: 'title',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
@@ -981,7 +981,7 @@ suite('Modification', () => {
   test('tile url is set to href of <a>', async () => {
     await addTiles(1);
     const tile = queryTiles()[0]!;
-    assertEquals('https://a/', tile!.querySelector('a')!.href);
+    assertEquals('https://a/', tile.querySelector('a')!.href);
   });
 
   test('delete first tile', async () => {
@@ -1026,7 +1026,7 @@ suite('Modification', () => {
     }));
     mostVisited.$.addShortcut.click();
     await microtasksFinished();
-    const inputUrl = $$<CrInputElement>(mostVisited, '#dialogInputUrl')!;
+    const inputUrl = $$<CrInputElement>(mostVisited, '#dialogInputUrl');
     inputUrl.value = 'url';
     await inputUrl.updateComplete;
     const saveButton =

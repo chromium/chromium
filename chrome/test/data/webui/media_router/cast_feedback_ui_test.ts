@@ -43,14 +43,14 @@ suite('Suite', function() {
   const TEST_COMMENT: string = 'test comment';
 
   async function submit() {
-    const textArea = ui.shadowRoot!.querySelector('textarea');
+    const textArea = ui.shadowRoot.querySelector('textarea');
     assertTrue(!!textArea);
     textArea.value = TEST_COMMENT;
     textArea.dispatchEvent(new CustomEvent('input'));
     await microtasksFinished();
 
     const submitButton =
-        ui.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+        ui.shadowRoot.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!submitButton);
     assertFalse(submitButton.disabled);
     submitButton.click();

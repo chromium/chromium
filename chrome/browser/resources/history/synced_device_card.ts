@@ -108,7 +108,7 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
     titleRow.addItem('collapse', '#collapse-button');
     const rows = [titleRow];
     if (this.opened) {
-      this.shadowRoot!.querySelectorAll<HTMLElement>('.item-container')
+      this.shadowRoot.querySelectorAll<HTMLElement>('.item-container')
           .forEach(function(el) {
             const row = new FocusRow(el, null);
             row.addItem('link', '.website-link');
@@ -158,7 +158,7 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
   private updateIcons_() {
     setTimeout(() => {
       const icons =
-          this.shadowRoot!.querySelectorAll<HTMLElement>('.website-icon');
+          this.shadowRoot.querySelectorAll<HTMLElement>('.website-icon');
 
       for (let i = 0; i < this.tabs.length; i++) {
         // Entries on this UI are coming strictly from sync, so we can set

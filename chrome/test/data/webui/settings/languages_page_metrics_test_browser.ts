@@ -148,7 +148,7 @@ suite('LanguagesPageMetricsBrowser', function() {
       const menuItem = Array.from(menuItems).find(
           item => item.textContent!.trim() === i18nString);
       assertTrue(!!menuItem, 'Menu item "' + i18nKey + '" not found');
-      return menuItem!;
+      return menuItem;
     }
 
     let moveButton = getMenuItem('moveUp');

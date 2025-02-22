@@ -250,14 +250,14 @@ suite('AllBuilds', function() {
           const signoutDialog =
               testElement.shadowRoot!.querySelector('settings-signout-dialog');
           assertTrue(!!signoutDialog);
-          assertTrue(signoutDialog!.$.dialog.open);
+          assertTrue(signoutDialog.$.dialog.open);
 
           // The user clicks cancel.
-          const cancel = signoutDialog!.shadowRoot!.querySelector<HTMLElement>(
+          const cancel = signoutDialog.shadowRoot!.querySelector<HTMLElement>(
               '#disconnectCancel')!;
           cancel.click();
 
-          return eventToPromise('close', signoutDialog!);
+          return eventToPromise('close', signoutDialog);
         })
         .then(function() {
           flush();
@@ -278,15 +278,15 @@ suite('AllBuilds', function() {
           const signoutDialog =
               testElement.shadowRoot!.querySelector('settings-signout-dialog');
           assertTrue(!!signoutDialog);
-          assertTrue(signoutDialog!.$.dialog.open);
+          assertTrue(signoutDialog.$.dialog.open);
 
           // The user clicks confirm, which signs them out.
           const disconnectConfirm =
-              signoutDialog!.shadowRoot!.querySelector<HTMLElement>(
+              signoutDialog.shadowRoot!.querySelector<HTMLElement>(
                   '#disconnectConfirm')!;
           disconnectConfirm.click();
 
-          return eventToPromise('close', signoutDialog!);
+          return eventToPromise('close', signoutDialog);
         })
         .then(function() {
           flush();

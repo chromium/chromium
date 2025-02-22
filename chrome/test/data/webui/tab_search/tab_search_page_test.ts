@@ -220,7 +220,7 @@ suite('TabSearchAppTest', () => {
     assertEquals(tabData.tabId, tabInfo.tabId);
 
     const tabSearchItemCloseButton =
-        tabSearchItem.shadowRoot!.querySelector('cr-icon-button')!;
+        tabSearchItem.shadowRoot.querySelector('cr-icon-button')!;
     tabSearchItemCloseButton.click();
     const [tabId] = await testProxy.whenCalled('closeTab');
     assertEquals(tabData.tabId, tabId);
@@ -487,7 +487,7 @@ suite('TabSearchAppTest', () => {
         {tabIds: [3, 4, 5, 6], recentlyClosedTabs: []});
     await microtasksFinished();
     assertNotEquals(
-        null, tabSearchPage.shadowRoot!.querySelector('#no-results'));
+        null, tabSearchPage.shadowRoot.querySelector('#no-results'));
   });
 
   test('Closed tab appears in recently closed section', async () => {
@@ -711,7 +711,7 @@ suite('TabSearchAppTest', () => {
     assertTrue(!!recentlyClosedTitleItem);
 
     const recentlyClosedTitleExpandButton =
-        recentlyClosedTitleItem!.querySelector('cr-expand-button');
+        recentlyClosedTitleItem.querySelector('cr-expand-button');
     assertTrue(!!recentlyClosedTitleExpandButton);
 
     // Collapse the `Recently Closed` section and assert item count.

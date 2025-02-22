@@ -92,7 +92,7 @@ suite('<bookmarks-command-manager>', function() {
     await microtasksFinished();
 
     const commandHidden: {[key: string]: boolean} = {};
-    commandManager.shadowRoot!.querySelectorAll<HTMLElement>('.dropdown-item')
+    commandManager.shadowRoot.querySelectorAll<HTMLElement>('.dropdown-item')
         .forEach(element => {
           commandHidden[element.dataset['command']!] = element.hidden;
         });
@@ -209,7 +209,7 @@ suite('<bookmarks-command-manager>', function() {
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
     const showInFolderItem =
-        commandManager.shadowRoot!.querySelector<HTMLElement>(
+        commandManager.shadowRoot.querySelector<HTMLElement>(
             `[data-command='${Command.SHOW_IN_FOLDER}']`);
 
     // Show in folder hidden when search is inactive.
@@ -320,7 +320,7 @@ suite('<bookmarks-command-manager>', function() {
         await microtasksFinished();
 
         const commandItem: {[key: string]: HTMLButtonElement} = {};
-        commandManager.shadowRoot!
+        commandManager.shadowRoot
             .querySelectorAll<HTMLButtonElement>('.dropdown-item')
             .forEach(element => {
               commandItem[element.dataset['command']!] = element;
@@ -355,7 +355,7 @@ suite('<bookmarks-command-manager>', function() {
     // No divider line should be visible when only 'Open' commands are enabled.
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
     await microtasksFinished();
-    commandManager.shadowRoot!.querySelectorAll('hr').forEach(element => {
+    commandManager.shadowRoot.querySelectorAll('hr').forEach(element => {
       assertTrue(element.hidden);
     });
   });
@@ -373,7 +373,7 @@ suite('<bookmarks-command-manager>', function() {
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
     const commandItem: {[key: string]: HTMLElement} = {};
-    commandManager.shadowRoot!.querySelectorAll<HTMLElement>('.dropdown-item')
+    commandManager.shadowRoot.querySelectorAll<HTMLElement>('.dropdown-item')
         .forEach(element => {
           commandItem[element.dataset['command']!] = element;
         });
@@ -658,8 +658,8 @@ suite('<bookmarks-item> CommandManager integration', function() {
     // Ensure the dialog is the target even when clicking outside it, and send
     // a context menu event which should immediately dismiss the dialog,
     // allowing subsequent events to bubble through to elements below.
-    assertEquals(dropdown, commandManager.shadowRoot!.elementFromPoint(x, y));
-    assertEquals(dialog, dropdown.shadowRoot!.elementFromPoint(x, y));
+    assertEquals(dropdown, commandManager.shadowRoot.elementFromPoint(x, y));
+    assertEquals(dialog, dropdown.shadowRoot.elementFromPoint(x, y));
     customClick(dialog, {clientX: x, clientY: y, button: 1}, 'contextmenu');
     assertFalse(dropdown.open);
   });

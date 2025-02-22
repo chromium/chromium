@@ -1739,15 +1739,14 @@ suite('AppTest', () => {
     assertTrue(isVisible(learnMoreLink));
     assertEquals(
         loadTimeData.getString('compareLearnMoreUrl'),
-        learnMoreLink!.getAttribute('href'));
+        learnMoreLink.getAttribute('href'));
 
     assertTrue(!!disclaimer);
     assertTrue(!!disclaimer.textContent);
     // Remove the link part before verifying the string to avoid verifying the
     // spaces due to the templated string.
     const disclaimerText =
-        disclaimer!.textContent!.replace(learnMoreLink!.textContent!, '')
-            .trim();
+        disclaimer.textContent.replace(learnMoreLink.textContent!, '').trim();
     assertEquals(
         loadTimeData.getStringF('experimentalFeatureDisclaimer', testEmail),
         disclaimerText);
@@ -2234,12 +2233,11 @@ suite('AppTest', () => {
       const feedbackButtons =
           appElement.shadowRoot.querySelector('#feedbackButtons');
       assertTrue(!!feedbackButtons);
-      feedbackButtons!.dispatchEvent(
-          new CustomEvent('selected-option-changed', {
-            bubbles: true,
-            composed: true,
-            detail: {value: option},
-          }));
+      feedbackButtons.dispatchEvent(new CustomEvent('selected-option-changed', {
+        bubbles: true,
+        composed: true,
+        detail: {value: option},
+      }));
     }
 
     updateCrFeedbackButtons(CrFeedbackOption.THUMBS_DOWN);

@@ -252,8 +252,8 @@ suite('ProductSpecificationsTableTest', () => {
     assertTrue(!!text);
     // Titles should only show in the first column.
     assertNotStyle(text, 'visibility', 'hidden');
-    assertTrue(!!text!.textContent);
-    assertEquals(productDetails[0]!.content, text!.textContent.trim());
+    assertTrue(!!text.textContent);
+    assertEquals(productDetails[0]!.content, text.textContent.trim());
   });
 
   test('fires url change event', async () => {
@@ -274,7 +274,7 @@ suite('ProductSpecificationsTableTest', () => {
     const productSelector = $$(tableElement, 'product-selector');
     assertTrue(!!productSelector);
     const eventPromise = eventToPromise('url-change', tableElement);
-    productSelector!.dispatchEvent(new CustomEvent('selected-url-change', {
+    productSelector.dispatchEvent(new CustomEvent('selected-url-change', {
       detail: {
         url: 'https://foo.com',
       },
@@ -303,7 +303,7 @@ suite('ProductSpecificationsTableTest', () => {
     const productSelector = $$(tableElement, 'product-selector');
     assertTrue(!!productSelector);
     const eventPromise = eventToPromise('url-remove', tableElement);
-    productSelector!.dispatchEvent(new CustomEvent('remove-url'));
+    productSelector.dispatchEvent(new CustomEvent('remove-url'));
 
     // Assert.
     const event = await eventPromise;
@@ -337,7 +337,7 @@ suite('ProductSpecificationsTableTest', () => {
     // Act
     const openTabButton = $$<HTMLElement>(tableElement, '.open-tab-button');
     assertTrue(!!openTabButton);
-    openTabButton!.click();
+    openTabButton.click();
 
     // Assert.
     assertEquals(1, shoppingServiceApi.getCallCount('switchToOrOpenTab'));
@@ -364,7 +364,7 @@ suite('ProductSpecificationsTableTest', () => {
     // Act
     const productImage = $$<HTMLElement>(tableElement, '.main-image');
     assertTrue(!!productImage);
-    productImage!.click();
+    productImage.click();
 
     // Assert.
     assertEquals(1, shoppingServiceApi.getCallCount('switchToOrOpenTab'));
@@ -662,7 +662,7 @@ suite('ProductSpecificationsTableTest', () => {
         ];
         await microtasksFinished();
         const emptySections =
-            tableElement.shadowRoot!.querySelectorAll('empty-section');
+            tableElement.shadowRoot.querySelectorAll('empty-section');
         assertEquals(1, emptySections.length);
       });
 
@@ -812,14 +812,14 @@ suite('ProductSpecificationsTableTest', () => {
       const column = $$<HTMLElement>(tableElement, '.col');
       assertTrue(!!column);
       const openTabButton =
-          column!.querySelector<HTMLElement>('.open-tab-button');
+          column.querySelector<HTMLElement>('.open-tab-button');
       assertTrue(!!openTabButton);
       tableElement.$.table.dispatchEvent(new PointerEvent('pointerleave'));
       await microtasksFinished();
       assertFalse(isVisible(openTabButton));
 
       // Act/Assert
-      column!.dispatchEvent(new PointerEvent('pointerenter'));
+      column.dispatchEvent(new PointerEvent('pointerenter'));
       await microtasksFinished();
       assertTrue(isVisible(openTabButton));
 

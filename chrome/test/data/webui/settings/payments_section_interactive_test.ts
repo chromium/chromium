@@ -152,7 +152,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
         section.shadowRoot!.querySelector('settings-iban-edit-dialog');
     assertTrue(!!ibanDialog);
     ibanDialog.$.saveButton.disabled = false;
-    return ibanDialog!;
+    return ibanDialog;
   }
 
   /**
@@ -580,7 +580,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     assertFalse(isVisible(characterCount));
 
     // User clicks on nickname input.
-    nicknameInput!.focus();
+    nicknameInput.focus();
     // Character count is shown when nickname input field is focused.
     assertTrue(isVisible(characterCount));
     // For new card, the nickname is unset.
@@ -588,19 +588,19 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
 
     // User types in one character. Ensure the character count is dynamically
     // updated.
-    await typeInNickname(nicknameInput!, 'a');
+    await typeInNickname(nicknameInput, 'a');
     assertTrue(characterCount.textContent!.includes('1/25'));
     // User types in total 5 characters.
-    await typeInNickname(nicknameInput!, 'abcde');
+    await typeInNickname(nicknameInput, 'abcde');
     assertTrue(characterCount.textContent!.includes('5/25'));
 
     // User click outside of nickname input, the character count isn't shown.
-    nicknameInput!.blur();
+    nicknameInput.blur();
     await nicknameInput.updateComplete;
     assertFalse(isVisible(characterCount));
 
     // User clicks on nickname input again.
-    nicknameInput!.focus();
+    nicknameInput.focus();
     await nicknameInput.updateComplete;
     // Character count is shown when nickname input field is re-focused.
     assertTrue(isVisible(characterCount));
@@ -688,7 +688,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     assertTrue(!!characterCount);
     assertFalse(isVisible(characterCount));
     // User clicks on nickname input.
-    nicknameInput!.focus();
+    nicknameInput.focus();
     // Character count is shown when nickname input field is focused.
     assertTrue(isVisible(characterCount));
     // For new IBAN, the nickname is unset.
@@ -709,7 +709,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
 
     const savedPromise = eventToPromise('save-iban', ibanDialog);
     const saveButton = ibanDialog.$.saveButton;
-    saveButton!.click();
+    saveButton.click();
     const saveEvent = await savedPromise;
 
     // Verify the input values are correctly passed to save-iban.

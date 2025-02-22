@@ -99,7 +99,7 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       // Assert.
-      assertTrue(!!app.shadowRoot!.querySelector('ntp-voice-search-overlay'));
+      assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
       assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
       assertEquals(
           1,
@@ -118,7 +118,7 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       // Assert.
-      assertTrue(!!app.shadowRoot!.querySelector('ntp-voice-search-overlay'));
+      assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
       assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
       assertEquals(
           1,
@@ -135,7 +135,7 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       // Assert.
-      assertTrue(!!app.shadowRoot!.querySelector('ntp-voice-search-overlay'));
+      assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
     });
 
     if (isMac) {
@@ -149,7 +149,7 @@ suite('NewTabPageAppTest', () => {
         await microtasksFinished();
 
         // Assert.
-        assertTrue(!!app.shadowRoot!.querySelector('ntp-voice-search-overlay'));
+        assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
       });
     }
 
@@ -786,7 +786,7 @@ suite('NewTabPageAppTest', () => {
       assertTrue(moduleRegistry.getCallCount('initializeModules') > 0);
       assertEquals(1, handler.getCallCount('onModulesLoadedWithData'));
       assertEquals(
-          0, app.shadowRoot!.querySelectorAll('ntp-module-wrapper').length);
+          0, app.shadowRoot.querySelectorAll('ntp-module-wrapper').length);
     });
   });
 
@@ -904,7 +904,7 @@ suite('NewTabPageAppTest', () => {
 
     test('lens upload dialog closed on start', () => {
       // Assert.
-      assertFalse(!!app.shadowRoot!.querySelector('ntp-lens-upload-dialog'));
+      assertFalse(!!app.shadowRoot.querySelector('ntp-lens-upload-dialog'));
     });
 
     test('realbox is not visible when Lens upload dialog is open', async () => {
@@ -917,7 +917,7 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       // Assert.
-      const dialog = app.shadowRoot!.querySelector('ntp-lens-upload-dialog');
+      const dialog = app.shadowRoot.querySelector('ntp-lens-upload-dialog');
       assertTrue(!!dialog);
       assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
 
@@ -954,8 +954,8 @@ suite('NewTabPageAppTest', () => {
       };
 
       test('wallpaper search button is not shown if it is disabled', () => {
-        assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
-        assertFalse(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+        assertTrue(!!app.shadowRoot.querySelector('#customizeButton'));
+        assertFalse(!!app.shadowRoot.querySelector('#wallpaperSearchButton'));
       });
 
       test(
@@ -1025,8 +1025,8 @@ suite('NewTabPageAppTest', () => {
       };
 
       test('wallpaper search button shows if it is enabled', () => {
-        assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
-        assertTrue(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+        assertTrue(!!app.shadowRoot.querySelector('#customizeButton'));
+        assertTrue(!!app.shadowRoot.querySelector('#wallpaperSearchButton'));
       });
 
       test('button has animation', () => {
@@ -1201,15 +1201,15 @@ suite('NewTabPageAppTest', () => {
       });
 
       test('hide condition 0 shows button unconditonally', async () => {
-        assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
-        assertTrue(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+        assertTrue(!!app.shadowRoot.querySelector('#customizeButton'));
+        assertTrue(!!app.shadowRoot.querySelector('#wallpaperSearchButton'));
 
         const theme = createTheme({isBaseline: false});
         theme.backgroundImage = createBackgroundImage('https://foo.com');
         await callbackRouterRemote.$.flushForTesting();
 
-        assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
-        assertTrue(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+        assertTrue(!!app.shadowRoot.querySelector('#customizeButton'));
+        assertTrue(!!app.shadowRoot.querySelector('#wallpaperSearchButton'));
       });
 
       test(
@@ -1298,8 +1298,8 @@ suite('NewTabPageAppTest', () => {
           wallpaperSearchButtonHideCondition: /*BACKGROUND_IMAGE_SET*/ 1,
         });
 
-        assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
-        assertTrue(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+        assertTrue(!!app.shadowRoot.querySelector('#customizeButton'));
+        assertTrue(!!app.shadowRoot.querySelector('#wallpaperSearchButton'));
 
         // Set theme with a background image and baseline color.
         const theme = createTheme({isBaseline: true});
@@ -1308,8 +1308,8 @@ suite('NewTabPageAppTest', () => {
         await backgroundManager.whenCalled('setShowBackgroundImage');
         await microtasksFinished();
 
-        assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
-        assertFalse(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+        assertTrue(!!app.shadowRoot.querySelector('#customizeButton'));
+        assertFalse(!!app.shadowRoot.querySelector('#wallpaperSearchButton'));
       });
 
       test(
@@ -1320,18 +1320,18 @@ suite('NewTabPageAppTest', () => {
               wallpaperSearchButtonHideCondition: /*THEME_SET*/ 2,
             });
 
-            assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+            assertTrue(!!app.shadowRoot.querySelector('#customizeButton'));
             assertTrue(
-                !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+                !!app.shadowRoot.querySelector('#wallpaperSearchButton'));
 
             // Set theme with a non-baseline color that has no background image.
             callbackRouterRemote.setTheme(createTheme({isBaseline: false}));
             await callbackRouterRemote.$.flushForTesting();
             await microtasksFinished();
 
-            assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+            assertTrue(!!app.shadowRoot.querySelector('#customizeButton'));
             assertFalse(
-                !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+                !!app.shadowRoot.querySelector('#wallpaperSearchButton'));
 
             // Resurface button by setting a theme with a baseline color (and no
             // background image).
@@ -1339,9 +1339,9 @@ suite('NewTabPageAppTest', () => {
             await callbackRouterRemote.$.flushForTesting();
             await microtasksFinished();
 
-            assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+            assertTrue(!!app.shadowRoot.querySelector('#customizeButton'));
             assertTrue(
-                !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+                !!app.shadowRoot.querySelector('#wallpaperSearchButton'));
 
             // Set theme with a background image and baseline color.
             const theme = createTheme({isBaseline: true});
@@ -1350,9 +1350,9 @@ suite('NewTabPageAppTest', () => {
             await backgroundManager.whenCalled('setShowBackgroundImage');
             await microtasksFinished();
 
-            assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+            assertTrue(!!app.shadowRoot.querySelector('#customizeButton'));
             assertFalse(
-                !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+                !!app.shadowRoot.querySelector('#wallpaperSearchButton'));
           });
     });
   });

@@ -96,12 +96,12 @@ suite('AutoTabGroupsPageTest', () => {
   test('Organize tabs starts request', async () => {
     await autoTabGroupsPageSetup();
     assertEquals(0, testApiProxy.getCallCount('requestTabOrganization'));
-    const notStarted = autoTabGroupsPage.shadowRoot!.querySelector(
+    const notStarted = autoTabGroupsPage.shadowRoot.querySelector(
         'auto-tab-groups-not-started');
     assertTrue(!!notStarted);
     assertTrue(isVisible(notStarted));
 
-    const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
+    const actionButton = notStarted.shadowRoot.querySelector('cr-button');
     assertTrue(!!actionButton);
     actionButton.click();
 
@@ -112,17 +112,17 @@ suite('AutoTabGroupsPageTest', () => {
     await autoTabGroupsResultsSetup();
 
     function queryInput() {
-      const group = autoTabGroupsResults.shadowRoot!.querySelector(
+      const group = autoTabGroupsResults.shadowRoot.querySelector(
           'auto-tab-groups-group');
       assertTrue(!!group);
-      return group.shadowRoot!.querySelector('#input');
+      return group.shadowRoot.querySelector('#input');
     }
 
     function queryEditButton() {
-      const group = autoTabGroupsResults.shadowRoot!.querySelector(
+      const group = autoTabGroupsResults.shadowRoot.querySelector(
           'auto-tab-groups-group');
       assertTrue(!!group);
-      return group.shadowRoot!.querySelector<HTMLElement>('.icon-edit');
+      return group.shadowRoot.querySelector<HTMLElement>('.icon-edit');
     }
 
     assertFalse(!!queryInput());
@@ -143,7 +143,7 @@ suite('AutoTabGroupsPageTest', () => {
     await autoTabGroupsPageSetup();
 
     const results =
-        autoTabGroupsPage.shadowRoot!.querySelector('auto-tab-groups-results');
+        autoTabGroupsPage.shadowRoot.querySelector('auto-tab-groups-results');
     assertTrue(!!results);
     results.dispatchEvent(new CustomEvent(
         'name-change', {detail: {organizationId: 1, name: 'new-name'}}));
@@ -162,19 +162,18 @@ suite('AutoTabGroupsPageTest', () => {
     await microtasksFinished();
 
     const results =
-        autoTabGroupsPage.shadowRoot!.querySelector('auto-tab-groups-results');
+        autoTabGroupsPage.shadowRoot.querySelector('auto-tab-groups-results');
     assertTrue(!!results);
-    const group = results.shadowRoot!.querySelector('auto-tab-groups-group');
+    const group = results.shadowRoot.querySelector('auto-tab-groups-group');
     assertTrue(!!group);
 
     assertEquals(0, testApiProxy.getCallCount('removeTabFromOrganization'));
 
-    const tabRows = group.shadowRoot!.querySelectorAll('tab-search-item');
+    const tabRows = group.shadowRoot.querySelectorAll('tab-search-item');
     assertTrue(!!tabRows);
     assertEquals(3, tabRows.length);
 
-    const cancelButton =
-        tabRows[0]!.shadowRoot!.querySelector('cr-icon-button');
+    const cancelButton = tabRows[0]!.shadowRoot.querySelector('cr-icon-button');
     assertTrue(!!cancelButton);
     cancelButton.click();
 
@@ -185,20 +184,17 @@ suite('AutoTabGroupsPageTest', () => {
     await autoTabGroupsResultsSetup();
 
     const group =
-        autoTabGroupsResults.shadowRoot!.querySelector('auto-tab-groups-group');
+        autoTabGroupsResults.shadowRoot.querySelector('auto-tab-groups-group');
     assertTrue(!!group);
-    const tabRows = group.shadowRoot!.querySelectorAll('tab-search-item');
+    const tabRows = group.shadowRoot.querySelectorAll('tab-search-item');
     assertTrue(!!tabRows);
     assertEquals(3, tabRows.length);
 
-    const closeButton0 =
-        tabRows[0]!.shadowRoot!.querySelector(`cr-icon-button`);
+    const closeButton0 = tabRows[0]!.shadowRoot.querySelector(`cr-icon-button`);
     assertTrue(!!closeButton0);
-    const closeButton1 =
-        tabRows[1]!.shadowRoot!.querySelector(`cr-icon-button`);
+    const closeButton1 = tabRows[1]!.shadowRoot.querySelector(`cr-icon-button`);
     assertTrue(!!closeButton1);
-    const closeButton2 =
-        tabRows[2]!.shadowRoot!.querySelector(`cr-icon-button`);
+    const closeButton2 = tabRows[2]!.shadowRoot.querySelector(`cr-icon-button`);
     assertTrue(!!closeButton2);
 
     closeButton0.focus();
@@ -237,8 +233,7 @@ suite('AutoTabGroupsPageTest', () => {
     assertFalse(focusableElement1.matches(':focus'));
     assertFalse(focusableElement2.matches(':focus'));
 
-    const feedback =
-        autoTabGroupsResults.shadowRoot!.querySelector('.feedback');
+    const feedback = autoTabGroupsResults.shadowRoot.querySelector('.feedback');
     assertTrue(!!feedback);
     feedback.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
 
@@ -264,14 +259,14 @@ suite('AutoTabGroupsPageTest', () => {
 
         assertEquals(0, testApiProxy.getCallCount('acceptTabOrganization'));
 
-        const results = autoTabGroupsPage.shadowRoot!.querySelector(
+        const results = autoTabGroupsPage.shadowRoot.querySelector(
             'auto-tab-groups-results');
         assertTrue(!!results);
-        const actions = results.shadowRoot!.querySelector(
-            'auto-tab-groups-results-actions');
+        const actions =
+            results.shadowRoot.querySelector('auto-tab-groups-results-actions');
         assertTrue(!!actions);
         const createGroupsButton =
-            actions.shadowRoot!.querySelector<HTMLElement>('#createButton');
+            actions.shadowRoot.querySelector<HTMLElement>('#createButton');
         assertTrue(!!createGroupsButton);
         createGroupsButton.click();
         await microtasksFinished();
@@ -292,12 +287,12 @@ suite('AutoTabGroupsPageTest', () => {
     assertEquals(0, testApiProxy.getCallCount('rejectTabOrganization'));
 
     const results =
-        autoTabGroupsPage.shadowRoot!.querySelector('auto-tab-groups-results');
+        autoTabGroupsPage.shadowRoot.querySelector('auto-tab-groups-results');
     assertTrue(!!results);
-    const group = results.shadowRoot!.querySelector('auto-tab-groups-group');
+    const group = results.shadowRoot.querySelector('auto-tab-groups-group');
     assertTrue(!!group);
     const cancelButton =
-        group.shadowRoot!.querySelector<HTMLElement>('#rejectButton');
+        group.shadowRoot.querySelector<HTMLElement>('#rejectButton');
     assertTrue(!!cancelButton);
     cancelButton.click();
     await microtasksFinished();
@@ -315,13 +310,13 @@ suite('AutoTabGroupsPageTest', () => {
     assertEquals(0, testApiProxy.getCallCount('rejectSession'));
 
     const results =
-        autoTabGroupsPage.shadowRoot!.querySelector('auto-tab-groups-results');
+        autoTabGroupsPage.shadowRoot.querySelector('auto-tab-groups-results');
     assertTrue(!!results);
     const actions =
-        results.shadowRoot!.querySelector('auto-tab-groups-results-actions');
+        results.shadowRoot.querySelector('auto-tab-groups-results-actions');
     assertTrue(!!actions);
     const clearButton =
-        actions.shadowRoot!.querySelector<HTMLElement>('#clearButton');
+        actions.shadowRoot.querySelector<HTMLElement>('#clearButton');
     assertTrue(!!clearButton);
     clearButton.click();
     await microtasksFinished();
@@ -345,9 +340,9 @@ suite('AutoTabGroupsPageTest', () => {
     assertEquals(0, testApiProxy.getCallCount('startTabGroupTutorial'));
 
     const failure =
-        autoTabGroupsPage.shadowRoot!.querySelector('auto-tab-groups-failure');
+        autoTabGroupsPage.shadowRoot.querySelector('auto-tab-groups-failure');
     assertTrue(!!failure);
-    const links = failure.shadowRoot!.querySelectorAll<HTMLElement>(
+    const links = failure.shadowRoot.querySelectorAll<HTMLElement>(
         '.auto-tab-groups-link');
     assertEquals(1, links.length);
     const tipAction = links[0]!;
@@ -366,10 +361,10 @@ suite('AutoTabGroupsPageTest', () => {
 
     assertEquals(0, testApiProxy.getCallCount('openHelpPage'));
 
-    const notStarted = autoTabGroupsPage.shadowRoot!.querySelector(
+    const notStarted = autoTabGroupsPage.shadowRoot.querySelector(
         'auto-tab-groups-not-started');
     assertTrue(!!notStarted);
-    const links = notStarted.shadowRoot!.querySelectorAll<HTMLElement>(
+    const links = notStarted.shadowRoot.querySelectorAll<HTMLElement>(
         '.auto-tab-groups-link');
     assertEquals(1, links.length);
     const learnMore = links[0]!;
@@ -408,7 +403,7 @@ suite('AutoTabGroupsPageTest', () => {
         session);
     await microtasksFinished();
 
-    const header = autoTabGroupsPage.shadowRoot!.querySelector('#header');
+    const header = autoTabGroupsPage.shadowRoot.querySelector('#header');
     assertTrue(!!header);
     assertEquals(errorString, header.textContent!.trim());
   });
@@ -442,7 +437,7 @@ suite('AutoTabGroupsPageTest', () => {
         session);
     await microtasksFinished();
 
-    const header = autoTabGroupsPage.shadowRoot!.querySelector('#header');
+    const header = autoTabGroupsPage.shadowRoot.querySelector('#header');
     assertTrue(!!header);
     assertEquals(successString, header.textContent!.trim());
   });

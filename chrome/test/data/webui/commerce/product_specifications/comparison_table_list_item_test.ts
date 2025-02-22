@@ -215,7 +215,7 @@ suite('ComparisonTableListItemTest', () => {
 
           const renameButton = menu.querySelector<HTMLButtonElement>('#rename');
           assertTrue(!!renameButton);
-          renameButton!.click();
+          renameButton.click();
           await microtasksFinished();
 
           const input = $$<CrInputElement>(itemElement, '#renameInput');
@@ -234,7 +234,7 @@ suite('ComparisonTableListItemTest', () => {
 
       const deleteButton = menu.querySelector<HTMLButtonElement>('#delete');
       assertTrue(!!deleteButton);
-      deleteButton!.click();
+      deleteButton.click();
 
       const event = await deletePromise;
       assertEquals(TABLE_UUID, event.detail.uuid);

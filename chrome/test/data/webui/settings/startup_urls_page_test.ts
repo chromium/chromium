@@ -233,7 +233,7 @@ suite('StartupUrlsPage', function() {
     const useCurrentPagesButton =
         page.shadowRoot!.querySelector<HTMLElement>('#useCurrentPages > a');
     assertTrue(!!useCurrentPagesButton);
-    useCurrentPagesButton!.click();
+    useCurrentPagesButton.click();
     await browserProxy.whenCalled('useCurrentPages');
   });
 
@@ -244,7 +244,7 @@ suite('StartupUrlsPage', function() {
     assertFalse(
         !!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
 
-    addPageButton!.click();
+    addPageButton.click();
     flush();
     assertTrue(!!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
   });

@@ -72,7 +72,7 @@ suite('TabSearchItemTest', () => {
         TabItemType.OPEN_TAB, 'example'));
 
     let tabSearchItemCloseButton =
-        tabSearchItem.shadowRoot!.querySelector('cr-icon-button');
+        tabSearchItem.shadowRoot.querySelector('cr-icon-button');
     assertNotEquals(null, tabSearchItemCloseButton);
 
     setupTest(new TabData(
@@ -86,7 +86,7 @@ suite('TabSearchItemTest', () => {
         TabItemType.RECENTLY_CLOSED_TAB, 'example'));
 
     tabSearchItemCloseButton =
-        tabSearchItem.shadowRoot!.querySelector('cr-icon-button');
+        tabSearchItem.shadowRoot.querySelector('cr-icon-button');
     assertEquals(null, tabSearchItemCloseButton);
   });
 
@@ -110,15 +110,15 @@ suite('TabSearchItemTest', () => {
     setupTest(tabData);
 
     const groupDotElement =
-        tabSearchItem.shadowRoot!.querySelector('#groupDot')!;
+        tabSearchItem.shadowRoot.querySelector('#groupDot')!;
     assertNotEquals(null, groupDotElement);
-    const groupDotComputedStyle = getComputedStyle(groupDotElement!);
+    const groupDotComputedStyle = getComputedStyle(groupDotElement);
     assertEquals(
         groupDotComputedStyle.getPropertyValue('--tab-group-color-blue'),
         groupDotComputedStyle.getPropertyValue('--group-dot-color'));
 
     assertNotEquals(
-        null, tabSearchItem.shadowRoot!.querySelector('#groupTitle'));
+        null, tabSearchItem.shadowRoot.querySelector('#groupTitle'));
   });
 
   test('MediaAlertIndicatorPresence', () => {
@@ -134,7 +134,7 @@ suite('TabSearchItemTest', () => {
     setupTest(new TabData(tab, TabItemType.OPEN_TAB, 'example'));
 
     const recordingMediaAlert =
-        tabSearchItem.shadowRoot!.querySelector<HTMLElement>('#mediaAlert');
+        tabSearchItem.shadowRoot.querySelector<HTMLElement>('#mediaAlert');
     assertNotEquals(null, recordingMediaAlert);
     assertEquals('media-recording', recordingMediaAlert!.getAttribute('class'));
   });

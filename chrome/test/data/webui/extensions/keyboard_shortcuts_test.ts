@@ -124,12 +124,12 @@ suite('ExtensionShortcutTest', function() {
     keyDownOn(field, 65, []);
     await microtasksFinished();
     assertEquals('', field.value);
-    assertTrue(field.errorMessage!.startsWith('Include'));
+    assertTrue(field.errorMessage.startsWith('Include'));
     // Add shift to character.
     keyDownOn(field, 65, ['shift']);
     await microtasksFinished();
     assertEquals('', field.value);
-    assertTrue(field.errorMessage!.startsWith('Include'));
+    assertTrue(field.errorMessage.startsWith('Include'));
     // Press ctrl.
     keyDownOn(field, 17, ['ctrl']);
     await microtasksFinished();

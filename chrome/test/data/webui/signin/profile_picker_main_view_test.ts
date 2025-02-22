@@ -117,11 +117,11 @@ suite('ProfilePickerMainViewTest', function() {
     for (let i = 0; i < expectedProfiles.length; i++) {
       const profile = profiles[i]!;
       const expectedProfile = expectedProfiles[i]!;
-      assertTrue(!!profile.shadowRoot!.querySelector('profile-card-menu'));
-      profile.shadowRoot!.querySelector('cr-button')!.click();
+      assertTrue(!!profile.shadowRoot.querySelector('profile-card-menu'));
+      profile.shadowRoot.querySelector('cr-button')!.click();
       await browserProxy.whenCalled('launchSelectedProfile');
       assertEquals(
-          profile.shadowRoot!
+          profile.shadowRoot
               .querySelector<HTMLElement>('#forceSigninContainer')!.hidden,
           !expectedProfile.needsSignin);
 
@@ -131,11 +131,11 @@ suite('ProfilePickerMainViewTest', function() {
 
       assertEquals(profile.$.nameInput.value, expectedProfile.localProfileName);
       assertEquals(
-          profile.shadowRoot!.querySelector<HTMLElement>(
-                                 '#iconContainer')!.hidden,
+          profile.shadowRoot.querySelector<HTMLElement>(
+                                '#iconContainer')!.hidden,
           !expectedProfile.avatarBadge);
       assertEquals(
-          (profile.shadowRoot!
+          (profile.shadowRoot
                .querySelector<HTMLImageElement>('.profile-avatar')!.src)
               .split('/')
               .pop(),
@@ -158,7 +158,7 @@ suite('ProfilePickerMainViewTest', function() {
     assertTrue(mainViewElement.$.askOnStartup.checked);
     // Verify profile card.
     await verifyProfileCard(
-        profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
+        profiles, mainViewElement.shadowRoot.querySelectorAll('profile-card'));
     // Browse as guest.
     assertTrue(isVisible(mainViewElement.$.browseAsGuestButton));
     // Add profile
@@ -173,12 +173,12 @@ suite('ProfilePickerMainViewTest', function() {
     profiles[1] = profiles[4]!;
     await simulateProfilesListChanged(profiles);
     await verifyProfileCard(
-        profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
+        profiles, mainViewElement.shadowRoot.querySelectorAll('profile-card'));
     // Profiles update on remove.
     await simulateProfileRemoved(profiles[3]!.profilePath);
     profiles.splice(3, 1);
     await verifyProfileCard(
-        profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
+        profiles, mainViewElement.shadowRoot.querySelectorAll('profile-card'));
   });
 
   test('EditLocalProfileNameDisabledForWorkProfile', async function() {
@@ -199,12 +199,12 @@ suite('ProfilePickerMainViewTest', function() {
 
     // Verify that the input field is disabled.
     const localProfileName =
-        mainViewElement.shadowRoot!.querySelector('profile-card')!.$.nameInput;
+        mainViewElement.shadowRoot.querySelector('profile-card')!.$.nameInput;
     assertEquals(localProfileName.value, profiles[0]!.localProfileName);
     assertTrue(localProfileName.disabled);
     // Verify that the hover line is hidden.
     const hoverUnderline =
-        mainViewElement.shadowRoot!.querySelector('profile-card')!.shadowRoot!
+        mainViewElement.shadowRoot.querySelector('profile-card')!.shadowRoot
             .querySelector<HTMLElement>('#hoverUnderline');
     assertTrue(!!hoverUnderline && hoverUnderline?.hidden);
   });
@@ -214,7 +214,7 @@ suite('ProfilePickerMainViewTest', function() {
     const profiles = generateProfilesList(1);
     await simulateProfilesListChanged(profiles);
     const localProfileName =
-        mainViewElement.shadowRoot!.querySelector('profile-card')!.$.nameInput;
+        mainViewElement.shadowRoot.querySelector('profile-card')!.$.nameInput;
     assertEquals(localProfileName.value, profiles[0]!.localProfileName);
 
     // Set to valid profile name.
@@ -267,7 +267,7 @@ suite('ProfilePickerMainViewTest', function() {
     let profiles = generateProfilesList(1);
     await simulateProfilesListChanged(profiles);
     await verifyProfileCard(
-        profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
+        profiles, mainViewElement.shadowRoot.querySelectorAll('profile-card'));
     // The checkbox 'Ask when chrome opens' should only be visible to
     // multi-profile users.
     assertTrue(mainViewElement.$.askOnStartup.hidden);
@@ -275,7 +275,7 @@ suite('ProfilePickerMainViewTest', function() {
     profiles = generateProfilesList(2);
     await simulateProfilesListChanged(profiles);
     await verifyProfileCard(
-        profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
+        profiles, mainViewElement.shadowRoot.querySelectorAll('profile-card'));
     assertTrue(!mainViewElement.$.askOnStartup.hidden);
     assertTrue(mainViewElement.$.askOnStartup.checked);
     mainViewElement.$.askOnStartup.click();
@@ -291,13 +291,13 @@ suite('ProfilePickerMainViewTest', function() {
     const profiles = generateProfilesList(2);
     await simulateProfilesListChanged(profiles);
     await verifyProfileCard(
-        profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
+        profiles, mainViewElement.shadowRoot.querySelectorAll('profile-card'));
     assertTrue(!mainViewElement.$.askOnStartup.hidden);
     // Remove profile.
     await simulateProfileRemoved(profiles[0]!.profilePath);
     await verifyProfileCard(
         [profiles[1]!],
-        mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
+        mainViewElement.shadowRoot.querySelectorAll('profile-card'));
     assertTrue(mainViewElement.$.askOnStartup.hidden);
   });
 
@@ -313,7 +313,7 @@ suite('ProfilePickerMainViewTest', function() {
     const profiles = generateProfilesList(2);
     await simulateProfilesListChanged(profiles);
     await verifyProfileCard(
-        profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
+        profiles, mainViewElement.shadowRoot.querySelectorAll('profile-card'));
 
     // Checkbox hidden even if there are multiple profiles.
     assertTrue(mainViewElement.$.askOnStartup.hidden);
@@ -328,7 +328,7 @@ suite('ProfilePickerMainViewTest', function() {
     profiles[0]!.needsSignin = true;
     await simulateProfilesListChanged(profiles);
     await verifyProfileCard(
-        profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
+        profiles, mainViewElement.shadowRoot.querySelectorAll('profile-card'));
   });
 
   test('LearnMoreClickedInFooterText', async function() {
@@ -339,12 +339,11 @@ suite('ProfilePickerMainViewTest', function() {
     await simulateProfilesListChanged(generateProfilesList(2));
 
     const footerText =
-        mainViewElement.shadowRoot!.querySelector('#footer-text')!;
+        mainViewElement.shadowRoot.querySelector('#footer-text')!;
     assertTrue(isVisible(footerText));
 
-    const learnMoreLink =
-        mainViewElement.shadowRoot!.querySelector<HTMLElement>(
-            '.learn-more-link')!;
+    const learnMoreLink = mainViewElement.shadowRoot.querySelector<HTMLElement>(
+        '.learn-more-link')!;
     assertTrue(isVisible(learnMoreLink));
 
     learnMoreLink.click();
@@ -359,12 +358,11 @@ suite('ProfilePickerMainViewTest', function() {
     await simulateProfilesListChanged(generateProfilesList(0));
 
     const footerText =
-        mainViewElement.shadowRoot!.querySelector('#footer-text')!;
+        mainViewElement.shadowRoot.querySelector('#footer-text')!;
     assertFalse(isVisible(footerText));
 
-    const learnMoreLink =
-        mainViewElement.shadowRoot!.querySelector<HTMLElement>(
-            '.learn-more-link')!;
+    const learnMoreLink = mainViewElement.shadowRoot.querySelector<HTMLElement>(
+        '.learn-more-link')!;
     assertTrue(isVisible(learnMoreLink));
 
     learnMoreLink.click();
@@ -564,12 +562,11 @@ suite('ProfilePickerProfilesReorderingTest', function() {
           expectedPreviousEndProfileOrder, `Cycle ${c} initial order check`);
 
       const cards = Array.from(
-          mainViewElement.shadowRoot!.querySelectorAll<ProfileCardElement>(
+          mainViewElement.shadowRoot.querySelectorAll<ProfileCardElement>(
               'profile-card'));
 
       // Store the initial profile cards rects for later comparison.
-      const initialRects =
-          cards.map(card => card.getBoundingClientRect()) as DOMRect[];
+      const initialRects = cards.map(card => card.getBoundingClientRect());
 
       // // Equivalent to an array {0, 1, 2. ... , numberOfProfiles - 1}.
       const initialIndices = Array.from(Array(numberOfProfiles).keys());
@@ -700,12 +697,11 @@ suite('ProfilePickerProfilesReorderingTest', function() {
     await setupProfileReorderingTest(3);
 
     const cards = Array.from(
-        mainViewElement.shadowRoot!.querySelectorAll<ProfileCardElement>(
+        mainViewElement.shadowRoot.querySelectorAll<ProfileCardElement>(
             'profile-card'));
 
     // Store the initial profile cards rects for later comparison.
-    const initialRects =
-        cards.map(card => card.getBoundingClientRect()) as DOMRect[];
+    const initialRects = cards.map(card => card.getBoundingClientRect());
     const initiIndices = [0, 1, 2];
     assertProfilesPositions(
         cards, null, initialRects, initiIndices, 'Initial indicies check.');

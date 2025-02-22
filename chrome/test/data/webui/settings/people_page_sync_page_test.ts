@@ -278,12 +278,12 @@ suite('SyncSettings', function() {
     const link =
         encryptionDescription.querySelector<HTMLAnchorElement>('a[href]');
     assertTrue(!!link);
-    link!.target = '';
-    link!.href = '#';
+    link.target = '';
+    link.href = '#';
     // Prevent the link from triggering a page navigation when tapped.
     // Breaks the test in Vulcanized mode.
-    link!.addEventListener('click', e => e.preventDefault());
-    link!.click();
+    link.addEventListener('click', e => e.preventDefault());
+    link.click();
     assertTrue(encryptionCollapse.opened);
   });
 
@@ -327,15 +327,15 @@ suite('SyncSettings', function() {
 
     // Suppress opening a new tab, since then the test will continue running
     // on a background tab (which has throttled timers) and will timeout.
-    link!.target = '';
-    link!.href = '#';
+    link.target = '';
+    link.href = '#';
     // Prevent the link from triggering a page navigation when tapped.
     // Breaks the test in Vulcanized mode.
-    link!.addEventListener('click', function(e) {
+    link.addEventListener('click', function(e) {
       e.preventDefault();
     });
 
-    link!.click();
+    link.click();
 
     assertFalse(encryptWithPassphrase.checked);
   });
@@ -405,7 +405,7 @@ suite('SyncSettings', function() {
       passphraseConfirmationInput.updateComplete,
     ]);
 
-    saveNewPassphrase!.click();
+    saveNewPassphrase.click();
     flush();
 
     assertFalse(passphraseInput.invalid);
@@ -436,7 +436,7 @@ suite('SyncSettings', function() {
       passphraseInput.updateComplete,
       passphraseConfirmationInput.updateComplete,
     ]);
-    saveNewPassphrase!.click();
+    saveNewPassphrase.click();
 
     const passphrase = await browserProxy.whenCalled('setEncryptionPassphrase');
 
@@ -557,12 +557,12 @@ suite('SyncSettings', function() {
             '#submitExistingPassphrase');
     assertTrue(!!submitExistingPassphrase);
     await existingPassphraseInput.updateComplete;
-    submitExistingPassphrase!.click();
+    submitExistingPassphrase.click();
 
     const passphrase = await browserProxy.whenCalled('setDecryptionPassphrase');
 
     assertEquals('wrong', passphrase);
-    assertTrue(existingPassphraseInput!.invalid);
+    assertTrue(existingPassphraseInput.invalid);
   });
 
   test('EnterExistingCorrectPassphrase', async function() {
@@ -576,7 +576,7 @@ suite('SyncSettings', function() {
         syncPage.shadowRoot!.querySelector<CrInputElement>(
             '#existingPassphraseInput');
     assertTrue(!!existingPassphraseInput);
-    existingPassphraseInput!.value = 'right';
+    existingPassphraseInput.value = 'right';
     browserProxy.decryptionPassphraseSuccess = true;
 
     const submitExistingPassphrase =
@@ -584,7 +584,7 @@ suite('SyncSettings', function() {
             '#submitExistingPassphrase');
     assertTrue(!!submitExistingPassphrase);
     await existingPassphraseInput.updateComplete;
-    submitExistingPassphrase!.click();
+    submitExistingPassphrase.click();
 
     const passphrase = await browserProxy.whenCalled('setDecryptionPassphrase');
 
@@ -759,7 +759,7 @@ suite('SyncSettings', function() {
     assertTrue(!!cancelButton);
 
     // Clicking the setup cancel button aborts sync.
-    cancelButton!.click();
+    cancelButton.click();
     const abort = await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
     assertTrue(abort);
   });
@@ -780,7 +780,7 @@ suite('SyncSettings', function() {
                 '#setup-buttons .action-button');
 
     assertTrue(!!confirmButton);
-    confirmButton!.click();
+    confirmButton.click();
 
     const abort = await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
     assertFalse(abort);

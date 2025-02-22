@@ -15,7 +15,7 @@ function createDropdown(): ViewerBottomToolbarDropdownElement {
 }
 
 function getMenu(dropdown: ViewerBottomToolbarDropdownElement) {
-  return dropdown.shadowRoot!.querySelector('slot[name="menu"]');
+  return dropdown.shadowRoot.querySelector('slot[name="menu"]');
 }
 
 chrome.test.runTests([

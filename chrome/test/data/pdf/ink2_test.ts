@@ -51,7 +51,7 @@ chrome.test.runTests([
     viewerToolbar.toggleAnnotation();
     await microtasksFinished();
     mockMetricsPrivate.assertCount(UserAction.ENTER_INK2_ANNOTATION_MODE, 1);
-    const sidePanel = viewer.shadowRoot!.querySelector('viewer-side-panel');
+    const sidePanel = viewer.shadowRoot.querySelector('viewer-side-panel');
     assert(sidePanel);
 
     // The side panel should be visible when annotation mode is enabled.

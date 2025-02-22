@@ -87,7 +87,7 @@ suite('<bookmarks-toolbar>', function() {
 
     await microtasksFinished();
     const button =
-        toolbar.shadowRoot!.querySelector('cr-toolbar-selection-overlay')!
+        toolbar.shadowRoot.querySelector('cr-toolbar-selection-overlay')!
             .querySelector('cr-button')!;
     assertFalse(button.disabled);
     button.click();
@@ -101,7 +101,7 @@ suite('<bookmarks-toolbar>', function() {
     await microtasksFinished();
 
     const input =
-        toolbar.shadowRoot!.querySelector('cr-toolbar')!.getSearchField()
+        toolbar.shadowRoot.querySelector('cr-toolbar')!.getSearchField()
             .getSearchInput();
     const modifier = isMac ? 'meta' : 'ctrl';
     pressAndReleaseKeyOn(input, 67, modifier, 'c');
@@ -116,8 +116,7 @@ suite('<bookmarks-toolbar>', function() {
     await microtasksFinished();
 
     assertTrue(toolbar.showSelectionOverlay);
-    assertTrue(
-        toolbar.shadowRoot!.querySelector('cr-toolbar-selection-overlay')!
-            .querySelector('cr-button')!.disabled);
+    assertTrue(toolbar.shadowRoot.querySelector('cr-toolbar-selection-overlay')!
+                   .querySelector('cr-button')!.disabled);
   });
 });

@@ -806,8 +806,8 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(await areMatchesShowing());
 
     assertEquals('hello', realbox.$.input.value);
-    const start = realbox.$.input.selectionStart!;
-    const end = realbox.$.input.selectionEnd!;
+    const start = realbox.$.input.selectionStart;
+    const end = realbox.$.input.selectionEnd;
     assertEquals('hell', realbox.$.input.value.substring(start, end));
   });
 

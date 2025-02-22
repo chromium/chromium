@@ -51,16 +51,16 @@ suite('CardsTest', () => {
   }
 
   function getToggleElement(): CrToggleElement {
-    return customizeCards.$['showToggleContainer']!.querySelector('cr-toggle')!;
+    return customizeCards.$['showToggleContainer'].querySelector('cr-toggle')!;
   }
 
   function getCollapseElement() {
-    return customizeCards.shadowRoot!.querySelector('cr-collapse')!;
+    return customizeCards.shadowRoot.querySelector('cr-collapse')!;
   }
 
   function getCardsMap(): Map<string, HTMLElement> {
     const elements: HTMLElement[] = Array.from(
-        customizeCards.shadowRoot!.querySelectorAll<HTMLElement>('.card'));
+        customizeCards.shadowRoot.querySelectorAll<HTMLElement>('.card'));
     return Object.freeze(new Map(elements.map(cardEl => {
       const cardNameEl =
           cardEl.querySelector<ButtonLabelElement>('.card-label');
@@ -73,7 +73,7 @@ suite('CardsTest', () => {
   function assertCardCheckedStatus(
       cards: Map<string, HTMLElement>, name: string, checked: boolean) {
     assertTrue(cards.has(name));
-    const checkbox: CrCheckboxElement|null =
+    const checkbox: CrCheckboxElement =
         cards.get(name)!.querySelector('cr-checkbox')!;
     assertEquals(checked, checkbox.checked);
   }
@@ -119,7 +119,7 @@ suite('CardsTest', () => {
           // Assert.
           assertEquals(visible, getToggleElement().checked);
           const policyIndicator =
-              customizeCards.shadowRoot!.querySelector('cr-policy-indicator');
+              customizeCards.shadowRoot.querySelector('cr-policy-indicator');
           assertStyle(policyIndicator!, 'display', 'none');
 
           const collapseElement = getCollapseElement();
@@ -261,7 +261,7 @@ suite('CardsTest', () => {
               /*modulesVisible=*/ visible);
 
           const policyIndicator =
-              customizeCards.shadowRoot!.querySelector('cr-policy-indicator');
+              customizeCards.shadowRoot.querySelector('cr-policy-indicator');
           assertNotStyle(policyIndicator!, 'display', 'none');
           assertTrue(getToggleElement().disabled);
           const cards = getCardsMap();
@@ -371,7 +371,7 @@ suite('CardsTest', () => {
     assertTrue(!!fooCheckbox);
 
     // Act.
-    (fooCard as HTMLElement).click();
+    (fooCard).click();
     await fooCheckbox.updateComplete;
 
     // Assert.
@@ -399,7 +399,7 @@ suite('CardsTest', () => {
     document.body.appendChild(customizeCards);
 
     // Assert (no animation before initialize).
-    assertTrue(getCollapseElement().noAnimation!);
+    assertTrue(getCollapseElement().noAnimation);
 
     // Act (initialize).
     callbackRouterRemote.setModulesSettings(
@@ -415,7 +415,7 @@ suite('CardsTest', () => {
     await callbackRouterRemote.$.flushForTesting();
 
     // Assert (animation after initialize).
-    assertFalse(getCollapseElement().noAnimation!);
+    assertFalse(getCollapseElement().noAnimation);
 
     // Act (update).
     callbackRouterRemote.setModulesSettings(
@@ -431,7 +431,7 @@ suite('CardsTest', () => {
     await callbackRouterRemote.$.flushForTesting();
 
     // Assert (still animation after update).
-    assertFalse(getCollapseElement().noAnimation!);
+    assertFalse(getCollapseElement().noAnimation);
   });
 
   suite('Metrics', () => {

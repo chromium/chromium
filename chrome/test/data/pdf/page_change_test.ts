@@ -12,7 +12,7 @@ function getViewer(): PdfViewerElement {
 }
 
 function simulateFormFocusChange(focused: FormFieldFocusType) {
-  const plugin = getViewer().shadowRoot!.querySelector('embed')!;
+  const plugin = getViewer().shadowRoot.querySelector('embed')!;
   plugin.dispatchEvent(
       new MessageEvent('message', {data: {type: 'formFocusChange', focused}}));
 }

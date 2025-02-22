@@ -94,9 +94,9 @@ suite('VoiceSelectionMenu', () => {
       await openVoiceMenu();
 
       const dropdownItems: HTMLButtonElement = getDropdownItemForVoice(voice1);
-      assertTrue(isPositionedOnPage(dropdownItems!));
+      assertTrue(isPositionedOnPage(dropdownItems));
       assertEquals(
-          getDropdownItemForVoice(voice1)!.textContent!.trim(), voice1.name);
+          getDropdownItemForVoice(voice1).textContent!.trim(), voice1.name);
     });
 
     test('it shows language menu after button click', async () => {
@@ -109,7 +109,7 @@ suite('VoiceSelectionMenu', () => {
       await microtasksFinished();
 
       const languageMenuElement =
-          voiceSelectionMenu.shadowRoot!.querySelector<LanguageMenuElement>(
+          voiceSelectionMenu.shadowRoot.querySelector<LanguageMenuElement>(
               '#languageMenu');
       assertTrue(!!languageMenuElement);
       assertTrue(isPositionedOnPage(languageMenuElement));
@@ -155,9 +155,9 @@ suite('VoiceSelectionMenu', () => {
     assertEquals(2, groupTitles.length);
     const voiceNames = menu.querySelectorAll<HTMLElement>('.voice-name');
     assertEquals(4, voiceNames.length);
-    const englishVoice1 = groupTitles.item(0)!.nextElementSibling!;
+    const englishVoice1 = groupTitles.item(0).nextElementSibling!;
     const englishVoice2 = englishVoice1.nextElementSibling!;
-    const portugueseVoice1 = groupTitles.item(1)!.nextElementSibling!;
+    const portugueseVoice1 = groupTitles.item(1).nextElementSibling!;
     const portugueseVoice2 = portugueseVoice1.nextElementSibling!;
     assertEquals(googleVoice1.name, englishVoice1.textContent!.trim());
     assertEquals(
@@ -212,10 +212,10 @@ suite('VoiceSelectionMenu', () => {
           menu.querySelectorAll<HTMLElement>('.lang-group-title');
       assertEquals(2, groupTitles.length);
 
-      const firstVoice = groupTitles.item(0)!.nextElementSibling!;
+      const firstVoice = groupTitles.item(0).nextElementSibling!;
       const secondVoice = firstVoice.nextElementSibling!;
       const thirdVoice = secondVoice.nextElementSibling!;
-      const italianVoice = groupTitles.item(1)!.nextElementSibling!;
+      const italianVoice = groupTitles.item(1).nextElementSibling!;
       assertEquals(voice1.name, firstVoice.textContent!.trim());
       assertEquals(previewVoice.name, secondVoice.textContent!.trim());
       assertEquals(selectedVoice.name, thirdVoice.textContent!.trim());
@@ -231,7 +231,7 @@ suite('VoiceSelectionMenu', () => {
           menu.querySelectorAll<HTMLElement>('.lang-group-title');
       assertEquals(1, groupTitles.length);
 
-      const italianVoice = groupTitles.item(0)!.nextElementSibling!;
+      const italianVoice = groupTitles.item(0).nextElementSibling!;
       assertEquals(voice2.name, italianVoice.textContent!.trim());
     });
 
@@ -283,8 +283,8 @@ suite('VoiceSelectionMenu', () => {
               .querySelectorAll<HTMLElement>('.lang-group-title');
 
       assertEquals(
-          'English (United States)', groupTitles.item(0)!.textContent!.trim());
-      assertEquals('it-it', groupTitles.item(1)!.textContent!.trim());
+          'English (United States)', groupTitles.item(0).textContent!.trim());
+      assertEquals('it-it', groupTitles.item(1).textContent!.trim());
     });
 
     test('languages are grouped when voices have same names', async () => {
@@ -301,12 +301,12 @@ suite('VoiceSelectionMenu', () => {
       const voiceNames = menu.querySelectorAll<HTMLElement>('.voice-name');
 
       assertEquals(2, groupTitles.length);
-      assertEquals('en-us', groupTitles.item(0)!.textContent!.trim());
-      assertEquals('en-uk', groupTitles.item(1)!.textContent!.trim());
+      assertEquals('en-us', groupTitles.item(0).textContent!.trim());
+      assertEquals('en-uk', groupTitles.item(1).textContent!.trim());
       assertEquals(3, voiceNames.length);
-      assertEquals('Google English', voiceNames.item(0)!.textContent!.trim());
-      assertEquals('Google English', voiceNames.item(1)!.textContent!.trim());
-      assertEquals('Google English', voiceNames.item(2)!.textContent!.trim());
+      assertEquals('Google English', voiceNames.item(0).textContent!.trim());
+      assertEquals('Google English', voiceNames.item(1).textContent!.trim());
+      assertEquals('Google English', voiceNames.item(2).textContent!.trim());
     });
 
     test('preview button click emits play preview event', async () => {
@@ -318,7 +318,7 @@ suite('VoiceSelectionMenu', () => {
           getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
               '#preview-icon')!;
 
-      previewButton!.click();
+      previewButton.click();
       await microtasksFinished();
 
       assertTrue(clickEmitted);
@@ -331,7 +331,7 @@ suite('VoiceSelectionMenu', () => {
       const previewButton =
           getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
               '#preview-icon')!;
-      previewButton!.click();
+      previewButton.click();
 
       await microtasksFinished();
       await waitForSpinnerTimeout();

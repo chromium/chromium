@@ -100,7 +100,7 @@ suite('DownloadsHandler', function() {
         '#resetAutoOpenFileTypes');
     assertTrue(!!button);
 
-    button!.click();
+    button.click();
     await downloadsBrowserProxy.whenCalled('resetAutoOpenFileTypes');
 
     webUIListenerCallback('auto-open-downloads-changed', false);

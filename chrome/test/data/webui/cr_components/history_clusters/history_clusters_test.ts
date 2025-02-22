@@ -135,7 +135,7 @@ suite('HistoryClustersTest', () => {
   test('List displays one element per cluster', async () => {
     const clustersElement = await setupClustersElement();
 
-    const ironListItems = clustersElement.$.clusters.items!;
+    const ironListItems = clustersElement.$.clusters.items;
     assertEquals(ironListItems.length, 2);
   });
 

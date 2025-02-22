@@ -115,10 +115,10 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
         activityLogStreamItem.shadowRoot.querySelectorAll<HTMLElement>('.arg');
     assertEquals(4, argsDisplayed.length);
 
-    assertEquals(`"${argUrl}"`, argsDisplayed[0]!.innerText!);
-    assertEquals(`"${argUrl}"`, argsDisplayed[1]!.innerText!);
-    assertEquals(`["${argUrl}"]`, argsDisplayed[2]!.innerText!);
-    assertEquals(`{"url":"${argUrl}"}`, argsDisplayed[3]!.innerText!);
+    assertEquals(`"${argUrl}"`, argsDisplayed[0]!.innerText);
+    assertEquals(`"${argUrl}"`, argsDisplayed[1]!.innerText);
+    assertEquals(`["${argUrl}"]`, argsDisplayed[2]!.innerText);
+    assertEquals(`{"url":"${argUrl}"}`, argsDisplayed[3]!.innerText);
   });
 
   teardown(function() {

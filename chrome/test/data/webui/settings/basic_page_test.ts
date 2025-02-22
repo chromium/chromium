@@ -581,6 +581,6 @@ suite('ExperimentalAdvanced', () => {
             'settings-section[section=aiInfoCard]');
     assertTrue(!!sectionElement);
     assertEquals(
-        routes.AI.section, sectionElement!.getAttribute('nest-under-section'));
+        routes.AI.section, sectionElement.getAttribute('nest-under-section'));
   });
 });

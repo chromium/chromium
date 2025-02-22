@@ -42,10 +42,10 @@ suite('KeyValuePairViewerTest', function() {
   let collapsibleEntries: KeyValuePairEntryElement[];
 
   function getCollapsibleEntries(): KeyValuePairEntryElement[] {
-    const entries = Array.from(
-        element.shadowRoot!.querySelectorAll('key-value-pair-entry'));
+    const entries =
+        Array.from(element.shadowRoot.querySelectorAll('key-value-pair-entry'));
     return entries.filter((entry: KeyValuePairEntryElement) => {
-      return entry.shadowRoot!.querySelector('button:not([hidden])') !== null;
+      return entry.shadowRoot.querySelector('button:not([hidden])') !== null;
     });
   }
 

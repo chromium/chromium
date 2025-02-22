@@ -55,12 +55,12 @@ suite('DialogTests', function() {
     const dialog =
         resetPage.shadowRoot!.querySelector('settings-reset-profile-dialog');
     assertTrue(!!dialog);
-    assertTrue(dialog!.$.dialog.open);
+    assertTrue(dialog.$.dialog.open);
 
-    const whenDialogClosed = eventToPromise('close', dialog!);
+    const whenDialogClosed = eventToPromise('close', dialog);
 
     await resetPageBrowserProxy.whenCalled('onShowResetProfileDialog');
-    closeDialogFn(dialog!);
+    closeDialogFn(dialog);
     await Promise.all([
       whenDialogClosed,
       resetPageBrowserProxy.whenCalled('onHideResetProfileDialog'),
@@ -96,7 +96,7 @@ suite('DialogTests', function() {
     const showReportedSettingsLink =
         dialog.shadowRoot!.querySelector<HTMLElement>('[slot=footer] a');
     assertTrue(!!showReportedSettingsLink);
-    showReportedSettingsLink!.click();
+    showReportedSettingsLink.click();
 
     await resetPageBrowserProxy.whenCalled('showReportedSettings');
     // Ensure that the checkbox was not toggled as a result of
@@ -117,7 +117,7 @@ suite('DialogTests', function() {
     const dialog =
         resetPage.shadowRoot!.querySelector('settings-reset-profile-dialog');
     assertTrue(!!dialog);
-    dialog!.$.reset.click();
+    dialog.$.reset.click();
     const resetRequest =
         await resetPageBrowserProxy.whenCalled('performResetProfileSettings');
     assertEquals(expectedOrigin, resetRequest);

@@ -48,7 +48,7 @@ suite('ProfileCustomizationTest', function() {
 
   function checkImageUrl(elementId: string, expectedUrl: string) {
     assertTrue(isChildVisible(app, elementId));
-    const img = app.shadowRoot!.querySelector<HTMLImageElement>(elementId)!;
+    const img = app.shadowRoot.querySelector<HTMLImageElement>(elementId)!;
     assertEquals(expectedUrl, img.src);
   }
 
@@ -94,7 +94,7 @@ suite('ProfileCustomizationTest', function() {
 
     // No policy indicator is shown.
     const policyIndicator =
-        nameInput.shadowRoot!.querySelector<HTMLElement>('#policyIcon');
+        nameInput.shadowRoot.querySelector<HTMLElement>('#policyIcon');
     assertEquals(policyIndicator, null);
 
 
@@ -136,7 +136,7 @@ suite('ProfileCustomizationTest', function() {
     assertFalse(nameInput.invalid);
     assertTrue(nameInput.disabled);
     const policyIndicator =
-        nameInput.shadowRoot!.querySelector<HTMLElement>('#policyIcon');
+        nameInput.shadowRoot.querySelector<HTMLElement>('#policyIcon');
     assertFalse(!!policyIndicator && policyIndicator.hidden);
   });
 
@@ -164,7 +164,7 @@ suite('ProfileCustomizationTest', function() {
 
   test('ThemeColorPicker', async function() {
     await initializeApp();
-    assertTrue(!!app.shadowRoot!.querySelector('cr-theme-color-picker'));
+    assertTrue(!!app.shadowRoot.querySelector('cr-theme-color-picker'));
   });
 
   // Checks that there is no Delete Profile button in the default Profile
@@ -180,7 +180,7 @@ suite('ProfileCustomizationTest', function() {
     await initializeApp();
     assertTrue(isChildVisible(app, '#skipButton'));
     const skipButton =
-        app.shadowRoot!.querySelector<CrButtonElement>('#skipButton')!;
+        app.shadowRoot.querySelector<CrButtonElement>('#skipButton')!;
     skipButton.click();
     return browserProxy.whenCalled('skip');
   });
@@ -223,22 +223,22 @@ suite(`LocalProfileCreationTest`, function() {
 
     const activeView = 'active';
     const profileCustomizationDialog =
-        app.shadowRoot!.querySelector<HTMLElement>('#customizeDialog')!;
+        app.shadowRoot.querySelector<HTMLElement>('#customizeDialog')!;
     const avatarSelectionDialog =
-        app.shadowRoot!.querySelector<HTMLElement>('#selectAvatarDialog')!;
+        app.shadowRoot.querySelector<HTMLElement>('#selectAvatarDialog')!;
     assertTrue(profileCustomizationDialog.classList.contains(activeView));
     assertFalse(avatarSelectionDialog.classList.contains(activeView));
 
     // Open avatar customization.
     const avatarCustomizationButton =
-        app.shadowRoot!.querySelector<CrIconButtonElement>(
+        app.shadowRoot.querySelector<CrIconButtonElement>(
             '#customizeAvatarIcon')!;
     avatarCustomizationButton.click();
     assertFalse(profileCustomizationDialog.classList.contains(activeView));
     assertTrue(avatarSelectionDialog.classList.contains(activeView));
 
     const selectAvatarConfirmButton =
-        app.shadowRoot!.querySelector<CrButtonElement>(
+        app.shadowRoot.querySelector<CrButtonElement>(
             '#selectAvatarConfirmButton')!;
     selectAvatarConfirmButton.click();
     assertTrue(profileCustomizationDialog.classList.contains(activeView));
@@ -248,7 +248,7 @@ suite(`LocalProfileCreationTest`, function() {
   test('ClickDeleteProfileButton', function() {
     assertTrue(isChildVisible(app, '#deleteProfileButton'));
     const deleteProfileButton =
-        app.shadowRoot!.querySelector<CrButtonElement>('#deleteProfileButton')!;
+        app.shadowRoot.querySelector<CrButtonElement>('#deleteProfileButton')!;
     deleteProfileButton.click();
     return browserProxy.whenCalled('deleteProfile');
   });

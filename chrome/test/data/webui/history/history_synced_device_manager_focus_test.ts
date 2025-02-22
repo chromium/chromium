@@ -55,7 +55,7 @@ suite('<history-synced-device-manager>', function() {
     // Go to the first url.
     pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
     focused =
-        cards[0].shadowRoot!.querySelectorAll<HTMLElement>('.website-link')[0]!;
+        cards[0].shadowRoot.querySelectorAll<HTMLElement>('.website-link')[0]!;
     assertEquals(focused, getDeepActiveElement());
 
     // Collapse the first card.
@@ -80,7 +80,7 @@ suite('<history-synced-device-manager>', function() {
     // First card's urls are focusable again.
     pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
     focused =
-        cards[0].shadowRoot!.querySelectorAll<HTMLElement>('.website-link')[0]!;
+        cards[0].shadowRoot.querySelectorAll<HTMLElement>('.website-link')[0]!;
     assertEquals(focused, getDeepActiveElement());
 
     // Remove the second URL from the first card.
@@ -99,7 +99,7 @@ suite('<history-synced-device-manager>', function() {
 
     pressAndReleaseKeyOn(focused, 38, [], 'ArrowUp');
     focused =
-        cards[0].shadowRoot!.querySelectorAll<HTMLElement>('.website-link')[0]!;
+        cards[0].shadowRoot.querySelectorAll<HTMLElement>('.website-link')[0]!;
     assertEquals(focused, getDeepActiveElement());
 
     // Remove the second card.

@@ -27,7 +27,7 @@ suite('OnDeviceTranslationInternalsTest', function() {
 
   // Test that the package table is empty when there are no language packs.
   test('EmptyPackageTable', function() {
-    const packageTable = app.shadowRoot!.querySelector('.package-table');
+    const packageTable = app.shadowRoot.querySelector('.package-table');
     assert(packageTable);
     assertEquals(0, packageTable.querySelectorAll('.package-tr').length);
     assertEquals(0, packageTable.querySelectorAll('.package-name').length);
@@ -38,7 +38,7 @@ suite('OnDeviceTranslationInternalsTest', function() {
   // Test that the package table is populated with the language packs passed
   // via onLanguagePackStatus.
   test('NonEmptyPackageTable', async function() {
-    const packageTable = app.shadowRoot!.querySelector('.package-table');
+    const packageTable = app.shadowRoot.querySelector('.package-table');
     assert(packageTable);
     testBrowserProxy.callbackRouterRemote.onLanguagePackStatus([
       {
@@ -85,7 +85,7 @@ suite('OnDeviceTranslationInternalsTest', function() {
   // Test that the install button triggers the installLanguagePackage method
   // on the page handler.
   test('InstallPackage', async function() {
-    const packageTable = app.shadowRoot!.querySelector('.package-table');
+    const packageTable = app.shadowRoot.querySelector('.package-table');
     assert(packageTable);
     testBrowserProxy.callbackRouterRemote.onLanguagePackStatus([
       {
@@ -117,7 +117,7 @@ suite('OnDeviceTranslationInternalsTest', function() {
   // Test that the uninstall button triggers the uninstallLanguagePackage method
   // on the page handler.
   test('UninstallPackage', async function() {
-    const packageTable = app.shadowRoot!.querySelector('.package-table');
+    const packageTable = app.shadowRoot.querySelector('.package-table');
     assert(packageTable);
     testBrowserProxy.callbackRouterRemote.onLanguagePackStatus([
       {
@@ -151,7 +151,7 @@ suite('OnDeviceTranslationInternalsTest', function() {
   // Test that the package table is updated when onLanguagePackStatus is
   // called.
   test('UpdatePackageTable', async function() {
-    const packageTable = app.shadowRoot!.querySelector('.package-table');
+    const packageTable = app.shadowRoot.querySelector('.package-table');
     assert(packageTable);
     testBrowserProxy.callbackRouterRemote.onLanguagePackStatus([
       {

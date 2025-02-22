@@ -367,7 +367,7 @@ suite('SafetyHubPage', function() {
     const dialog = relaunchConfirmationDialogElement.shadowRoot!.querySelector(
         'cr-dialog')!;
     const description =
-        dialog.shadowRoot!.querySelector<HTMLSlotElement>('slot[name=body]')!;
+        dialog.shadowRoot.querySelector<HTMLSlotElement>('slot[name=body]')!;
     assertEquals(
         'Test description.', description.assignedNodes()[0]!.textContent);
 

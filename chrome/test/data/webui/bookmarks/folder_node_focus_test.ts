@@ -25,7 +25,7 @@ suite('<bookmarks-folder-node>', function() {
 
   function assertHasFocusAndNotSelected(id: string) {
     const node = getFolderNode(id);
-    const activeElement = node.shadowRoot!.activeElement;
+    const activeElement = node.shadowRoot.activeElement;
     assertTrue(
         activeElement != null && activeElement === getDeepActiveElement());
     const badAction = selectFolder(id);
@@ -80,7 +80,7 @@ suite('<bookmarks-folder-node>', function() {
           '0', getFolderNode(newFocus).$.container.getAttribute('tabindex'));
       assertEquals(
           getFolderNode(newFocus).$.container,
-          getFolderNode(newFocus).shadowRoot!.activeElement);
+          getFolderNode(newFocus).shadowRoot.activeElement);
     }
 
     store.data.folderOpenState.set('2', false);

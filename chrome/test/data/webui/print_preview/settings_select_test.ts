@@ -36,10 +36,10 @@ suite('SettingsSelectTest', function() {
     settingsSelect.settingName = 'mediaSize';
     settingsSelect.capability = getMediaSizeCapabilityWithCustomNames();
     const customLocalizedMediaName =
-        settingsSelect.capability!.option[0]!.custom_display_name_localized![0]!
+        settingsSelect.capability.option[0]!.custom_display_name_localized![0]!
             .value;
     const customMediaName =
-        settingsSelect.capability!.option[1]!.custom_display_name;
+        settingsSelect.capability.option[1]!.custom_display_name;
     flush();
 
     const select = settingsSelect.shadowRoot!.querySelector('select')!;
@@ -72,13 +72,13 @@ suite('SettingsSelectTest', function() {
       ],
     } as {option: Array<SelectOption & {color: string, size: number}>};
     flush();
-    const option0 = JSON.stringify(settingsSelect.capability!.option[0]!);
-    const option1 = JSON.stringify(settingsSelect.capability!.option[1]!);
+    const option0 = JSON.stringify(settingsSelect.capability.option[0]!);
+    const option1 = JSON.stringify(settingsSelect.capability.option[1]!);
     const select = settingsSelect.shadowRoot!.querySelector('select')!;
 
     // Normally done for initialization by the model and parent section.
     settingsSelect.set(
-        'settings.headerFooter.value', settingsSelect.capability!.option[1]!);
+        'settings.headerFooter.value', settingsSelect.capability.option[1]!);
     settingsSelect.selectValue(option1);
 
     // Verify that the selected option and names are as expected.

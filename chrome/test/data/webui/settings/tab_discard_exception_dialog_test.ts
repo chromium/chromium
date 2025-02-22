@@ -257,8 +257,7 @@ suite('TabDiscardExceptionsDialog', function() {
 
   function switchAddDialogTab(
       dialog: ExceptionTabbedAddDialogElement, tabId: ExceptionAddDialogTabs) {
-    const tabs =
-        dialog.$.tabs.shadowRoot!.querySelectorAll<HTMLElement>('.tab');
+    const tabs = dialog.$.tabs.shadowRoot.querySelectorAll<HTMLElement>('.tab');
     const tab = tabs[tabId];
     assertTrue(!!tab);
     tab.click();

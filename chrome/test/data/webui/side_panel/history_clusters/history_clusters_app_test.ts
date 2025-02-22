@@ -40,7 +40,7 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
   });
 
   function getEmbeddingsComponent() {
-    return app.shadowRoot!.querySelector('cr-history-embeddings');
+    return app.shadowRoot.querySelector('cr-history-embeddings');
   }
 
   async function forceEmbeddingsComponent() {
@@ -69,7 +69,7 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
     assertTrue(!!historyEmbeddingsElement);
     assertFalse(historyEmbeddingsElement.forceSuppressLogging);
 
-    const disclaimerLink = app.shadowRoot!.querySelector<HTMLElement>(
+    const disclaimerLink = app.shadowRoot.querySelector<HTMLElement>(
         '#historyEmbeddingsDisclaimerLink');
     assertTrue(!!disclaimerLink);
     assertTrue(isVisible(disclaimerLink));

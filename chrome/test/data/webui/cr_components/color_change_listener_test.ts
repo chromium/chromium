@@ -33,9 +33,9 @@ suite('ColorChangeListenerTest', () => {
     // ensure were getting the most recently added element.
     const node = nodes[nodes.length - 1];
     assertTrue(!!node);
-    const href = node!.getAttribute('href');
+    const href = node.getAttribute('href');
     assertTrue(!!href);
-    const params = new URLSearchParams(new URL(href!, location.href).search);
+    const params = new URLSearchParams(new URL(href, location.href).search);
     return params.has(param) ? params.get(param) : null;
   }
 

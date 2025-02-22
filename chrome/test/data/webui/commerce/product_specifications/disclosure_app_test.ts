@@ -90,12 +90,12 @@ suite('DisclosureAppTest', () => {
   test('disclosure has correct learn more link', () => {
     const learnMoreLinkElement = $$<HTMLElement>(app, '#learnMoreLink');
     assertTrue(!!learnMoreLinkElement);
-    assertTrue(!!learnMoreLinkElement!.textContent);
+    assertTrue(!!learnMoreLinkElement.textContent);
     assertEquals(
-        app.i18n('learnMore'), learnMoreLinkElement!.textContent!.trim());
+        app.i18n('learnMore'), learnMoreLinkElement.textContent.trim());
     assertEquals(
         loadTimeData.getString('compareLearnMoreUrl'),
-        learnMoreLinkElement!.getAttribute('href'));
+        learnMoreLinkElement.getAttribute('href'));
   });
 
   test('click disclosure learn more link', () => {
@@ -113,7 +113,7 @@ suite('DisclosureAppTest', () => {
 
     const learnMoreLinkElement = $$<HTMLElement>(app, '#learnMoreLink');
     assertTrue(!!learnMoreLinkElement);
-    learnMoreLinkElement!.click();
+    learnMoreLinkElement.click();
 
     assertEquals(
         1, metrics.count('Commerce.Compare.FirstRunExperience.LearnMore'));
@@ -127,7 +127,7 @@ suite('DisclosureAppTest', () => {
   test('accept button shows the correct text', () => {
     const acceptButton = $$<HTMLElement>(app, 'cr-button.action-button');
     assertTrue(!!acceptButton);
-    assertEquals(app.i18n('acceptDisclosure'), acceptButton!.innerText);
+    assertEquals(app.i18n('acceptDisclosure'), acceptButton.innerText);
   });
 
   test('click accept button', async () => {
@@ -307,7 +307,7 @@ suite('DisclosureAppTest', () => {
   test('decline button shows the correct text', () => {
     const declineButton = $$<HTMLElement>(app, 'cr-button.tonal-button');
     assertTrue(!!declineButton);
-    assertEquals(app.i18n('declineDisclosure'), declineButton!.innerText);
+    assertEquals(app.i18n('declineDisclosure'), declineButton.innerText);
   });
 
   test('click decline button', () => {

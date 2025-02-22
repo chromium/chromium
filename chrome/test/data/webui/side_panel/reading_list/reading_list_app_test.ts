@@ -26,12 +26,12 @@ suite('ReadingListAppTest', () => {
   }
 
   function queryItems() {
-    return readingListApp.shadowRoot!.querySelectorAll('reading-list-item');
+    return readingListApp.shadowRoot.querySelectorAll('reading-list-item');
   }
 
   function clickItem(url: string) {
-    readingListApp.shadowRoot!
-        .querySelector<HTMLElement>(`[data-url="${url}"]`)!.click();
+    readingListApp.shadowRoot.querySelector<HTMLElement>(
+                                 `[data-url="${url}"]`)!.click();
   }
 
   function getSampleData(): ReadLaterEntriesByStatus {
@@ -110,7 +110,7 @@ suite('ReadingListAppTest', () => {
   });
 
   test('click on item passes event info', async () => {
-    const item = readingListApp.shadowRoot!.querySelector(
+    const item = readingListApp.shadowRoot.querySelector(
         `[data-url="https://www.apple.com"]`)!;
     item.dispatchEvent(new MouseEvent('click'));
     const [, , click] = await testProxy.whenCalled('openUrl');
@@ -146,7 +146,7 @@ suite('ReadingListAppTest', () => {
     const expectedUrl = 'https://www.apple.com';
 
     const readingListItem =
-        readingListApp.shadowRoot!.querySelector<ReadingListItemElement>(
+        readingListApp.shadowRoot.querySelector<ReadingListItemElement>(
             `[data-url="${expectedUrl}"]`)!;
     assertEquals(
         'cr:check-circle', readingListItem.$.updateStatusButton.ironIcon);
@@ -163,7 +163,7 @@ suite('ReadingListAppTest', () => {
     const expectedUrl = 'https://www.bing.com';
 
     const readingListItem =
-        readingListApp.shadowRoot!.querySelector<ReadingListItemElement>(
+        readingListApp.shadowRoot.querySelector<ReadingListItemElement>(
             `[data-url="${expectedUrl}"]`)!;
     assertEquals(
         'read-later:check-circle-reverse',
@@ -178,7 +178,7 @@ suite('ReadingListAppTest', () => {
     const expectedUrl = 'https://www.apple.com';
 
     const readingListItem =
-        readingListApp.shadowRoot!.querySelector<ReadingListItemElement>(
+        readingListApp.shadowRoot.querySelector<ReadingListItemElement>(
             `[data-url="${expectedUrl}"]`)!;
     const readingListItemDeleteButton = readingListItem.$.deleteButton;
     readingListItemDeleteButton.click();
@@ -189,7 +189,7 @@ suite('ReadingListAppTest', () => {
   test('Enter key triggers action and passes correct url', async () => {
     const expectedUrl = 'https://www.apple.com';
     const readingListItem =
-        readingListApp.shadowRoot!.querySelector<ReadingListItemElement>(
+        readingListApp.shadowRoot.querySelector<ReadingListItemElement>(
             `[data-url="${expectedUrl}"]`)!;
 
     keyDownOn(readingListItem, 0, [], 'Enter');
@@ -201,7 +201,7 @@ suite('ReadingListAppTest', () => {
   test('Space key triggers action and passes correct url', async () => {
     const expectedUrl = 'https://www.apple.com';
     const readingListItem =
-        readingListApp.shadowRoot!.querySelector<ReadingListItemElement>(
+        readingListApp.shadowRoot.querySelector<ReadingListItemElement>(
             `[data-url="${expectedUrl}"]`)!;
 
     keyDownOn(readingListItem, 0, [], ' ');
@@ -237,33 +237,31 @@ suite('ReadingListAppTest', () => {
       'Keyboard navigation left/right cycles through list item elements',
       () => {
         const firstItem =
-            readingListApp.shadowRoot!.querySelector('reading-list-item')!;
+            readingListApp.shadowRoot.querySelector('reading-list-item')!;
         // Focus first item.
         firstItem.focus();
 
         keyDownOn(firstItem, 0, [], 'ArrowRight');
         assertEquals(
-            firstItem.$.updateStatusButton,
-            firstItem.shadowRoot!.activeElement);
+            firstItem.$.updateStatusButton, firstItem.shadowRoot.activeElement);
 
         keyDownOn(firstItem, 0, [], 'ArrowRight');
         assertEquals(
-            firstItem.$.deleteButton, firstItem.shadowRoot!.activeElement);
+            firstItem.$.deleteButton, firstItem.shadowRoot.activeElement);
 
         keyDownOn(firstItem, 0, [], 'ArrowRight');
-        assertEquals(firstItem, readingListApp.shadowRoot!.activeElement);
+        assertEquals(firstItem, readingListApp.shadowRoot.activeElement);
 
         keyDownOn(firstItem, 0, [], 'ArrowLeft');
         assertEquals(
-            firstItem.$.deleteButton, firstItem.shadowRoot!.activeElement);
+            firstItem.$.deleteButton, firstItem.shadowRoot.activeElement);
 
         keyDownOn(firstItem, 0, [], 'ArrowLeft');
         assertEquals(
-            firstItem.$.updateStatusButton,
-            firstItem.shadowRoot!.activeElement);
+            firstItem.$.updateStatusButton, firstItem.shadowRoot.activeElement);
 
         keyDownOn(firstItem, 0, [], 'ArrowLeft');
-        assertEquals(firstItem, readingListApp.shadowRoot!.activeElement);
+        assertEquals(firstItem, readingListApp.shadowRoot.activeElement);
       });
 
   test('Verify visibilitychange triggers data fetch', async () => {

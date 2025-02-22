@@ -19,7 +19,7 @@ function createToolbar() {
  * Returns the cr-icon-buttons in |toolbar|'s shadowRoot under |parentId|.
  */
 function getCrIconButtons(toolbar: ViewerToolbarElement, parentId: string) {
-  return toolbar.shadowRoot!.querySelector(`#${parentId}`)!.querySelectorAll(
+  return toolbar.shadowRoot.querySelector(`#${parentId}`)!.querySelectorAll(
       'cr-icon-button');
 }
 
@@ -160,7 +160,7 @@ const tests = [
     toolbar.viewportZoom = .8;
     toolbar.zoomBounds = {min: 25, max: 500};
     await microtasksFinished();
-    const zoomField = toolbar.shadowRoot!.querySelector<HTMLInputElement>(
+    const zoomField = toolbar.shadowRoot.querySelector<HTMLInputElement>(
         '#zoom-controls input')!;
     chrome.test.assertEq('80%', zoomField.value);
 
@@ -218,7 +218,7 @@ const tests = [
     const menu = toolbar.$.menu;
     chrome.test.assertFalse(menu.open);
 
-    const more = toolbar.shadowRoot!.querySelector<HTMLElement>('#more')!;
+    const more = toolbar.shadowRoot.querySelector<HTMLElement>('#more')!;
     const buttons = menu.querySelectorAll<HTMLElement>('.dropdown-item');
     chrome.test.assertTrue(buttons.length > 0);
 
@@ -240,8 +240,8 @@ const tests = [
 
     toolbar.twoUpViewEnabled = false;
     await microtasksFinished();
-    const button = toolbar.shadowRoot!.querySelector<HTMLElement>(
-        '#two-page-view-button')!;
+    const button =
+        toolbar.shadowRoot.querySelector<HTMLElement>('#two-page-view-button')!;
     assertCheckboxMenuButton(toolbar, button, false);
 
     let whenChanged = eventToPromise('two-up-view-changed', toolbar);
@@ -276,7 +276,7 @@ const tests = [
     // The menu needs to be open to check for visible menu elements.
     await openToolbarMenu(toolbar);
 
-    const button = toolbar.shadowRoot!.querySelector<HTMLElement>(
+    const button = toolbar.shadowRoot.querySelector<HTMLElement>(
         '#show-annotations-button')!;
     assertCheckboxMenuButton(toolbar, button, true);
 
@@ -322,12 +322,12 @@ const tests = [
   async function testPresentButton() {
     const toolbar = createToolbar();
     const button =
-        toolbar.shadowRoot!.querySelector<HTMLElement>('#present-button');
+        toolbar.shadowRoot.querySelector<HTMLElement>('#present-button');
     chrome.test.assertTrue(!!button);
 
     chrome.test.assertFalse(toolbar.$['present-button'].disabled);
     const whenFired = eventToPromise('present-click', toolbar);
-    button!.click();
+    button.click();
     await whenFired;
 
     // The present button should be disabled if the PDF Viewer is embedded.
@@ -340,11 +340,11 @@ const tests = [
   async function testPropertiesButton() {
     const toolbar = createToolbar();
     const button =
-        toolbar.shadowRoot!.querySelector<HTMLElement>('#properties-button');
+        toolbar.shadowRoot.querySelector<HTMLElement>('#properties-button');
     chrome.test.assertTrue(!!button);
 
     const whenFired = eventToPromise('properties-click', toolbar);
-    button!.click();
+    button.click();
     await whenFired;
     chrome.test.succeed();
   },

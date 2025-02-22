@@ -276,9 +276,9 @@ suite('SyncStatusTests', function() {
         signoutDialog.shadowRoot!.querySelector<CrCheckboxElement>(
             '#deleteProfile');
     assertTrue(!!deleteProfileCheckbox);
-    assertFalse(deleteProfileCheckbox!.hidden);
+    assertFalse(deleteProfileCheckbox.hidden);
 
-    assertLT(0, deleteProfileCheckbox!.clientHeight);
+    assertLT(0, deleteProfileCheckbox.clientHeight);
 
     const disconnectConfirm = signoutDialog.$.disconnectConfirm;
     assertTrue(!!disconnectConfirm);
@@ -322,11 +322,11 @@ suite('SyncStatusTests', function() {
         signoutDialog.shadowRoot!.querySelector<HTMLElement>(
             '#disconnectConfirm');
     assertTrue(!!disconnectConfirm);
-    assertFalse(disconnectConfirm!.hidden);
+    assertFalse(disconnectConfirm.hidden);
 
     syncBrowserProxy.resetResolver('signOut');
 
-    disconnectConfirm!.click();
+    disconnectConfirm.click();
 
     await new Promise(function(resolve) {
       listenOnce(window, 'popstate', resolve);

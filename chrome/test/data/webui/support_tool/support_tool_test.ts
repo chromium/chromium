@@ -444,7 +444,7 @@ suite('UrlGeneratorTest', function() {
     const dataCollectors =
         urlGenerator.shadowRoot!.querySelectorAll('cr-checkbox');
     // Select one of data collectors to enable the button.
-    const firstDataCollector = dataCollectors[0]! as CrCheckboxElement;
+    const firstDataCollector = dataCollectors[0]!;
     firstDataCollector.click();
     await firstDataCollector.updateComplete;
     // Ensure the button is enabled after we select at least one data collector.
@@ -481,7 +481,7 @@ suite('UrlGeneratorTest', function() {
     // we're testing for the error message.
     copyLinkButton.disabled = false;
     // Click the button to generate URL.
-    copyLinkButton!.click();
+    copyLinkButton.click();
     await browserProxy.whenCalled('generateCustomizedUrl');
     // Check that there's an error message shown to user.
     assertTrue(await waitForToastOpened(urlGenerator.$.errorMessageToast));
@@ -495,7 +495,7 @@ suite('UrlGeneratorTest', function() {
     const dataCollectors =
         urlGenerator.shadowRoot!.querySelectorAll('cr-checkbox');
     // Select one of data collectors to enable the button.
-    const firstDataCollector = dataCollectors[0]! as CrCheckboxElement;
+    const firstDataCollector = dataCollectors[0]!;
     firstDataCollector.click();
     await firstDataCollector.updateComplete;
     // Ensure the button is enabled after we select at least one data collector.

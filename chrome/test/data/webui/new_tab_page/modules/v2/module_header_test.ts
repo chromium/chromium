@@ -64,7 +64,7 @@ suite('ModuleHeaderV2', () => {
 
     // Assert.
     const dropDownItems =
-        moduleHeaderElementV2.shadowRoot!.querySelectorAll('button');
+        moduleHeaderElementV2.shadowRoot.querySelectorAll('button');
     assertEquals(3, dropDownItems.length);
     assertEquals('foo', dropDownItems[0]!.id);
     assertEquals('bar', dropDownItems[1]!.id);
@@ -90,7 +90,7 @@ suite('ModuleHeaderV2', () => {
 
         // Assert.
         const horizontalRules =
-            moduleHeaderElementV2.shadowRoot!.querySelectorAll('hr');
+            moduleHeaderElementV2.shadowRoot.querySelectorAll('hr');
         assertEquals(2, horizontalRules.length);
         assertTrue(isVisible(horizontalRules[0]!));
         assertFalse(isVisible(horizontalRules[1]!));
@@ -114,7 +114,7 @@ suite('ModuleHeaderV2', () => {
 
         // Assert.
         const horizontalRules =
-            moduleHeaderElementV2.shadowRoot!.querySelectorAll('hr');
+            moduleHeaderElementV2.shadowRoot.querySelectorAll('hr');
         assertEquals(2, horizontalRules.length);
         assertFalse(isVisible(horizontalRules[0]!));
         assertFalse(isVisible(horizontalRules[1]!));

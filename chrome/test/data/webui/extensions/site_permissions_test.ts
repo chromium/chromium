@@ -68,9 +68,9 @@ suite('SitePermissions', function() {
         2, permittedSites.shadowRoot.querySelectorAll('.site-row').length);
 
     // Test that the '#no-sites' message is visible for restricted sites.
-    testVisible(restrictedSites!, '#no-sites', true);
+    testVisible(restrictedSites, '#no-sites', true);
     assertEquals(
-        0, restrictedSites!.shadowRoot.querySelectorAll('.site-row').length);
+        0, restrictedSites.shadowRoot.querySelectorAll('.site-row').length);
   });
 
   test('user site settings update when event is fired', async function() {
@@ -96,9 +96,9 @@ suite('SitePermissions', function() {
 
     // Test that there is one site visible for restricted sites, and the
     // '#no-sites' messages is not visible.
-    testVisible(restrictedSites!, '#no-sites', false);
+    testVisible(restrictedSites, '#no-sites', false);
     assertEquals(
-        1, restrictedSites!.shadowRoot.querySelectorAll('.site-row').length);
+        1, restrictedSites.shadowRoot.querySelectorAll('.site-row').length);
   });
 
   test('clicking a link navigates to the all sites page', async () => {

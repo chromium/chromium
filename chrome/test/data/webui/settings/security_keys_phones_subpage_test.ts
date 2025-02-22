@@ -54,7 +54,7 @@ class TestSecurityKeysPhonesBrowserProxy extends TestBrowserProxy implements
     assertTrue(
         result !== null,
         'browserProxy methods called without result have being set for it');
-    return Promise.resolve(result!);
+    return Promise.resolve(result);
   }
 
   /**

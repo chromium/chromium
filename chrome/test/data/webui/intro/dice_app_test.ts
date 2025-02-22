@@ -30,7 +30,7 @@ suite('DiceAppTest', function() {
   });
 
   function isSelectorActive(selector: string) {
-    return testElement.shadowRoot!.querySelector(selector)!.classList.contains(
+    return testElement.shadowRoot.querySelector(selector)!.classList.contains(
         'active');
   }
 

@@ -82,7 +82,7 @@ suite('cr-history-embeddings-filter-chips', () => {
       assertEquals(days, Math.round(dateDiff / 1000 / 60 / 60 / 24));
     }
 
-    const suggestions = element.shadowRoot!.querySelectorAll<HTMLElement>(
+    const suggestions = element.shadowRoot.querySelectorAll<HTMLElement>(
         '#suggestions cr-chip');
     const yesterday = await clickChipAndGetSelectedSuggestion(suggestions[0]!);
     assertEquals('yesterday', yesterday.label);
@@ -97,7 +97,7 @@ suite('cr-history-embeddings-filter-chips', () => {
 
   test('UnselectingSuggestionsDispatchesEvent', async () => {
     const firstChip =
-        element.shadowRoot!.querySelector<HTMLElement>('#suggestions cr-chip')!;
+        element.shadowRoot.querySelector<HTMLElement>('#suggestions cr-chip')!;
     const selectPromise =
         eventToPromise('selected-suggestion-changed', element);
     firstChip.click();

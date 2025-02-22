@@ -636,8 +636,8 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
     const bubble2 = container.getHelpBubbleForTesting('p1');
     assertTrue(!!bubble1);
     assertTrue(!!bubble2);
-    assertEquals(container.$.title, bubble1!.getAnchorElement());
-    assertEquals(container.$.p1, bubble2!.getAnchorElement());
+    assertEquals(container.$.title, bubble1.getAnchorElement());
+    assertEquals(container.$.p1, bubble2.getAnchorElement());
     assertTrue(isVisible(bubble1));
     assertTrue(isVisible(bubble2));
   });
@@ -834,7 +834,7 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
         container.registerHelpBubble(LIST_ITEM_NATIVE_ID, '#bulletList');
     assertTrue(listItemBubble !== null, 'help bubble is registered');
     assertTrue(
-        container.canShowHelpBubble(listItemBubble!),
+        container.canShowHelpBubble(listItemBubble),
         'help bubble can be shown');
 
     // re-register when help bubble is not showing
@@ -844,17 +844,17 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
         listItemBubble !== null,
         'help bubble can be re-registered with same nativeId');
     assertTrue(
-        container.canShowHelpBubble(listItemBubble!),
+        container.canShowHelpBubble(listItemBubble),
         'help bubble can be shown after re-registering');
 
     // un-register directly when help bubble is not showing
     container.unregisterHelpBubble(LIST_ITEM_NATIVE_ID);
     assertFalse(
-        container.canShowHelpBubble(listItemBubble!),
+        container.canShowHelpBubble(listItemBubble),
         'help bubble cannot be shown');
     // unregisterHelpBubble clears out the nativeIds
     assertThrows(
-        () => container.showHelpBubble(listItemBubble!, defaultParams),
+        () => container.showHelpBubble(listItemBubble, defaultParams),
         'Can\'t show help bubble',
     );
   });
@@ -864,12 +864,12 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
         container.registerHelpBubble(LIST_ITEM_NATIVE_ID, '#list-item');
     assertTrue(listItemBubble !== null, 'help bubble is registered');
     assertTrue(
-        container.canShowHelpBubble(listItemBubble!),
+        container.canShowHelpBubble(listItemBubble),
         'help bubble can be shown');
     assertFalse(container.isHelpBubbleShowing());
     assertFalse(container.isHelpBubbleShowingForTesting('list-item'));
 
-    container.showHelpBubble(listItemBubble!, defaultParams);
+    container.showHelpBubble(listItemBubble, defaultParams);
     assertTrue(container.isHelpBubbleShowing());
     assertTrue(container.isHelpBubbleShowingForTesting('list-item'));
 

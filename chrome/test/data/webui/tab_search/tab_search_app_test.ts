@@ -29,7 +29,7 @@ suite('TabOrganizationPageTest', () => {
   });
 
   test('Setting tab index from callback router', async () => {
-    const crTabs = tabSearchApp.shadowRoot!.querySelector('cr-tabs');
+    const crTabs = tabSearchApp.shadowRoot.querySelector('cr-tabs');
     assertTrue(!!crTabs);
     assertEquals(0, crTabs.selected);
 

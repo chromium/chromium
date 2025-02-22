@@ -82,7 +82,7 @@ suite('DescriptionSectionTest', () => {
       assertTrue(!!summaries[index]!.textContent);
       assertEquals(
           description.summary[index]!.text,
-          summaries[index]!.textContent!.trim());
+          summaries[index]!.textContent.trim());
     });
   });
 
@@ -114,10 +114,10 @@ suite('DescriptionSectionTest', () => {
     attributes.forEach((attrElement, attrIndex) => {
       assertTrue(!!attrElement.textContent);
       assertTrue(!!description.attributes[attrIndex]);
-      assertTrue(attrElement.textContent!.trim().includes(
-          description.attributes[attrIndex]!.label));
-      assertTrue(attrElement.textContent!.trim().includes(
-          description.attributes[attrIndex]!.value));
+      assertTrue(attrElement.textContent.trim().includes(
+          description.attributes[attrIndex].label));
+      assertTrue(attrElement.textContent.trim().includes(
+          description.attributes[attrIndex].value));
     });
   });
 

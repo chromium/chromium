@@ -218,8 +218,8 @@ suite('NewTabPageLogoTest', () => {
   test('setting animated doodle shows image', async () => {
     // Arrange.
     const doodle = createImageDoodle();
-    doodle.image!.light!.imageUrl = {url: 'data:foo'};
-    doodle.image!.light!.animationUrl = {url: 'https://foo.com'};
+    doodle.image!.light.imageUrl = {url: 'data:foo'};
+    doodle.image!.light.animationUrl = {url: 'https://foo.com'};
 
     // Act.
     const logo = await createLogo(doodle);
@@ -584,7 +584,7 @@ suite('NewTabPageLogoTest', () => {
     const logo = await createLogo(createImageDoodle());
 
     // Assert.
-    assertFalse(!!logo.shadowRoot!.querySelector('ntp-doodle-share-dialog'));
+    assertFalse(!!logo.shadowRoot.querySelector('ntp-doodle-share-dialog'));
   });
 
   test('clicking share button adds share dialog', async () => {
@@ -597,7 +597,7 @@ suite('NewTabPageLogoTest', () => {
     await microtasksFinished();
 
     // Assert.
-    const dialog = logo.shadowRoot!.querySelector('ntp-doodle-share-dialog');
+    const dialog = logo.shadowRoot.querySelector('ntp-doodle-share-dialog');
     assertTrue(!!dialog);
     assertEquals(doodle.description, dialog.title);
     // Check that the title is not set as an HTML attribute, which would result
@@ -612,12 +612,12 @@ suite('NewTabPageLogoTest', () => {
     await microtasksFinished();
 
     // Act.
-    logo.shadowRoot!.querySelector('ntp-doodle-share-dialog')!.dispatchEvent(
+    logo.shadowRoot.querySelector('ntp-doodle-share-dialog')!.dispatchEvent(
         new Event('close'));
     await microtasksFinished();
 
     // Assert.
-    assertFalse(!!logo.shadowRoot!.querySelector('ntp-doodle-share-dialog'));
+    assertFalse(!!logo.shadowRoot.querySelector('ntp-doodle-share-dialog'));
   });
 
   [true, false].forEach(dark => {

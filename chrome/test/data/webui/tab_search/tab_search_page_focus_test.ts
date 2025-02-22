@@ -95,8 +95,7 @@ suite('TabSearchAppFocusTest', () => {
     await testProxy.whenCalled('switchToTab');
     assertEquals(2, testProxy.getCallCount('switchToTab'));
 
-    const closeButton =
-        tabSearchItem.shadowRoot!.querySelector('#closeButton')!;
+    const closeButton = tabSearchItem.shadowRoot.querySelector('#closeButton')!;
     keyDownOn(closeButton, 0, [], 'Enter');
     await testProxy.whenCalled('closeTab');
     assertEquals(1, testProxy.getCallCount('closeTab'));
@@ -114,7 +113,7 @@ suite('TabSearchAppFocusTest', () => {
     tabSearchItem.focus();
 
     const closeButton =
-        tabSearchItem.shadowRoot!.querySelector<HTMLElement>('#closeButton')!;
+        tabSearchItem.shadowRoot.querySelector<HTMLElement>('#closeButton')!;
     closeButton.focus();
 
     for (let i = 0; i < numTabItems - 1; i++) {
@@ -204,7 +203,7 @@ suite('TabSearchAppFocusTest', () => {
     assertTrue(!!recentlyClosedTitleItem);
 
     const recentlyClosedTitleExpandButton =
-        recentlyClosedTitleItem!.querySelector('cr-expand-button');
+        recentlyClosedTitleItem.querySelector('cr-expand-button');
     assertTrue(!!recentlyClosedTitleExpandButton);
 
     // Expand the `Recently Closed` section.

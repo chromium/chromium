@@ -8,7 +8,7 @@ const viewer = document.body.querySelector('pdf-viewer')!;
 const scroller = viewer.$.scroller;
 
 function simulateFormFocusChange(focused: boolean) {
-  const plugin = viewer.shadowRoot!.querySelector('embed')!;
+  const plugin = viewer.shadowRoot.querySelector('embed')!;
   plugin.dispatchEvent(
       new MessageEvent('message', {data: {type: 'formFocusChange', focused}}));
 }

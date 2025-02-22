@@ -156,7 +156,7 @@ suite('FlagsAppTest', function() {
 
     // Toggle unavailable tab and the unavailable experiments container
     // becomes visible.
-    const tabs = crTabs.shadowRoot!.querySelectorAll<HTMLElement>('.tab');
+    const tabs = crTabs.shadowRoot.querySelectorAll<HTMLElement>('.tab');
     assertEquals(2, tabs.length);
     tabs[1]!.click();
     await microtasksFinished();
@@ -168,12 +168,12 @@ suite('FlagsAppTest', function() {
 
   test('DefaultNonDefaultExperimentsRendered', async function() {
     function getDefaultEntries() {
-      return app.shadowRoot!.querySelectorAll(
+      return app.shadowRoot.querySelectorAll(
           '#default-experiments flags-experiment');
     }
 
     function getNonDefaultEntries() {
-      return app.shadowRoot!.querySelectorAll(
+      return app.shadowRoot.querySelectorAll(
           '#non-default-experiments flags-experiment');
     }
 
@@ -203,7 +203,7 @@ suite('FlagsAppTest', function() {
     assertEquals(2, experiments.length);
 
     // Focus the first experiment's <select> and simulate a change.
-    const select = experiments[0]!.shadowRoot!.querySelector('select');
+    const select = experiments[0]!.shadowRoot.querySelector('select');
     assertTrue(!!select);
     select.focus();
     assertEquals(select, getDeepActiveElement());
@@ -287,18 +287,18 @@ suite('FlagsAppTest', function() {
 
     assertFalse(isVisible(app.getRequiredElement('.no-match')));
     const noMatchMsg =
-        app.shadowRoot!.querySelectorAll<HTMLElement>('.tab-content .no-match');
+        app.shadowRoot.querySelectorAll<HTMLElement>('.tab-content .no-match');
     assertTrue(!!noMatchMsg[0]);
     assertEquals(
         2,
-        app.shadowRoot!
+        app.shadowRoot
             .querySelectorAll(
                 `#tab-content-available flags-experiment:not([hidden])`)
             .length);
     assertTrue(!!noMatchMsg[1]);
     assertEquals(
         1,
-        app.shadowRoot!
+        app.shadowRoot
             .querySelectorAll(
                 `#tab-content-unavailable flags-experiment:not([hidden])`)
             .length);
@@ -311,18 +311,18 @@ suite('FlagsAppTest', function() {
 
     assertTrue(isVisible(app.getRequiredElement('.no-match')));
     const noMatchMsg =
-        app.shadowRoot!.querySelectorAll<HTMLElement>('.tab-content .no-match');
+        app.shadowRoot.querySelectorAll<HTMLElement>('.tab-content .no-match');
     assertTrue(!!noMatchMsg[0]);
     assertEquals(
         0,
-        app.shadowRoot!
+        app.shadowRoot
             .querySelectorAll(
                 '#tab-content-available flags-experiment:not([hidden])')
             .length);
     assertTrue(!!noMatchMsg[1]);
     assertEquals(
         0,
-        app.shadowRoot!
+        app.shadowRoot
             .querySelectorAll(
                 '#tab-content-unavailable flags-experiment:not([hidden])')
             .length);
@@ -363,7 +363,7 @@ suite('FlagsAppTest', function() {
     const promise = eventToPromise('search-finished-for-testing', app);
     searchBoxInput('available');
     await promise;
-    const experiments = app.shadowRoot!.querySelectorAll(
+    const experiments = app.shadowRoot.querySelectorAll(
         '#tab-content-available flags-experiment:not([hidden])');
     assertEquals(2, experiments.length);
 

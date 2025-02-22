@@ -261,7 +261,7 @@ suite('PaymentsSectionCardDialogs', function() {
           numberInput.invalid,
           'Precondition failed: numberInput should initially be invalid');
       assertTrue(
-          saveButton!.disabled,
+          saveButton.disabled,
           'Precondition failed: saveButton should initially be disabled');
 
       // Now check the test case.
@@ -269,7 +269,7 @@ suite('PaymentsSectionCardDialogs', function() {
       flush();
       assertFalse(numberInput.invalid, `Expected ${cardNumber} to be valid`);
       assertFalse(
-          saveButton!.disabled,
+          saveButton.disabled,
           `Expected save button to be enabled for ${cardNumber}`);
 
       // Blur the input; the card should continue to be considered valid.
@@ -277,7 +277,7 @@ suite('PaymentsSectionCardDialogs', function() {
       assertFalse(
           numberInput.invalid, `Expected ${cardNumber} to be valid after blur`);
       assertFalse(
-          saveButton!.disabled,
+          saveButton.disabled,
           `Expected save button to be enabled for ${cardNumber} after blur`);
     }
   });
@@ -317,7 +317,7 @@ suite('PaymentsSectionCardDialogs', function() {
               numberInput.invalid,
               'Precondition failed: numberInput should initially be valid');
           assertFalse(
-              saveButton!.disabled,
+              saveButton.disabled,
               'Precondition failed: saveButton should initially be enabled');
 
           // Now check the test case.
@@ -326,7 +326,7 @@ suite('PaymentsSectionCardDialogs', function() {
           assertFalse(
               numberInput.invalid, `Expected ${cardNumber} to be valid`);
           assertTrue(
-              saveButton!.disabled,
+              saveButton.disabled,
               `Expected save button to be disabled for ${cardNumber}`);
 
           // Blur the input; this should do full verification and change the
@@ -336,7 +336,7 @@ suite('PaymentsSectionCardDialogs', function() {
               numberInput.invalid,
               `Expected ${cardNumber} to be invalid after blur`);
           assertTrue(
-              saveButton!.disabled,
+              saveButton.disabled,
               `Expected save button to be disabled for ${
                   cardNumber} after blur`);
         }
@@ -375,7 +375,7 @@ suite('PaymentsSectionCardDialogs', function() {
           numberInput.invalid,
           'Precondition failed: numberInput should initially be valid');
       assertFalse(
-          saveButton!.disabled,
+          saveButton.disabled,
           'Precondition failed: saveButton should initially be enabled');
 
       // Now check the test case.
@@ -383,7 +383,7 @@ suite('PaymentsSectionCardDialogs', function() {
       flush();
       assertTrue(numberInput.invalid, `Expected ${cardNumber} to be invalid`);
       assertTrue(
-          saveButton!.disabled,
+          saveButton.disabled,
           `Expected save button to be disabled for ${cardNumber}`);
 
       // Blur the input; the card number should remain invalid.
@@ -392,7 +392,7 @@ suite('PaymentsSectionCardDialogs', function() {
           numberInput.invalid,
           `Expected ${cardNumber} to still be invalid after blur`);
       assertTrue(
-          saveButton!.disabled,
+          saveButton.disabled,
           `Expected save button to still be disabled for ${
               cardNumber} after blur`);
     }
@@ -611,7 +611,7 @@ suite('PaymentsSectionCardDialogs', function() {
 
     const cvcInputBoxPlaceholder =
         cvcInput.shadowRoot!.querySelector<HTMLInputElement>(
-                                '#input')!.placeholder!.trim();
+                                '#input')!.placeholder.trim();
     assertTrue(!!cvcInputBoxPlaceholder);
     assertEquals(
         loadTimeData.getString('creditCardCvcInputPlaceholder'),

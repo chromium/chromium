@@ -128,17 +128,18 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
     // Test the order of the page URLs and activity count for the activity
     // log item here. Apparently a space is added at the end of the innerText,
     // hence the use of .includes.
-    assertTrue(pageUrls[0]!.querySelector<HTMLElement>('.page-url-link')!
-                   .innerText!.includes('chrome://extensions'));
+    assertTrue(
+        pageUrls[0]!.querySelector<HTMLElement>('.page-url-link')!.innerText
+            .includes('chrome://extensions'));
     assertEquals(
-        pageUrls[0]!.querySelector<HTMLElement>('.page-url-count')!.innerText!,
+        pageUrls[0]!.querySelector<HTMLElement>('.page-url-count')!.innerText,
         '10');
 
     assertTrue(
         pageUrls[1]!.querySelector<HTMLElement>(
-                        '.page-url-link')!.innerText!.includes('google.com'));
+                        '.page-url-link')!.innerText.includes('google.com'));
     assertEquals(
-        pageUrls[1]!.querySelector<HTMLElement>('.page-url-count')!.innerText!,
+        pageUrls[1]!.querySelector<HTMLElement>('.page-url-count')!.innerText,
         '5');
   });
 });

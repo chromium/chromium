@@ -138,7 +138,7 @@ export function findFolderNode(
       return node;
     }
 
-    node.shadowRoot!.querySelectorAll('bookmarks-folder-node').forEach((x) => {
+    node.shadowRoot.querySelectorAll('bookmarks-folder-node').forEach((x) => {
       nodes.unshift(x);
     });
   }

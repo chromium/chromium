@@ -633,7 +633,7 @@ suite('AppListTest', () => {
 
     appItems.forEach((item) => {
       const deprecatedIcon =
-          item!.shadowRoot.querySelector<HTMLImageElement>('#deprecatedIcon')!;
+          item.shadowRoot.querySelector<HTMLImageElement>('#deprecatedIcon')!;
       assertTrue(
           deprecatedIcon.hidden,
           'Non-deprecated app should not have deprecation icon');
@@ -666,8 +666,8 @@ suite('AppListTest', () => {
     let found = false;
     appItems.forEach((item) => {
       const deprecatedIcon =
-          item!.shadowRoot.querySelector<HTMLImageElement>('#deprecatedIcon')!;
-      if (item!.id === deprecatedAppInfo.id) {
+          item.shadowRoot.querySelector<HTMLImageElement>('#deprecatedIcon')!;
+      if (item.id === deprecatedAppInfo.id) {
         found = true;
         assertFalse(
             deprecatedIcon.hidden,
@@ -805,7 +805,7 @@ suite('AppListTest', () => {
     await callbackRouterRemote.$.flushForTesting();
 
     const appItem =
-        appListElement.shadowRoot!.querySelector('#' + isolatedWebAppInfo.id)!;
+        appListElement.shadowRoot.querySelector('#' + isolatedWebAppInfo.id)!;
     assertTrue(!!appItem, 'No apps.');
 
     const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');

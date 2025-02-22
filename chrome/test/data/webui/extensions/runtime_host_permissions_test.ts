@@ -113,8 +113,7 @@ suite('RuntimeHostPermissions', function() {
     assertFalse(testIsVisible('#add-site-button'));
 
     // Changing the data's access should change the UI appropriately.
-    const allSitesPermissions = structuredClone(permissions) as
-        chrome.developerPrivate.RuntimeHostPermissions;
+    const allSitesPermissions = structuredClone(permissions);
     allSitesPermissions.hostAccess = HostAccess.ON_ALL_SITES;
     element.permissions = allSitesPermissions;
     await microtasksFinished();
@@ -122,8 +121,7 @@ suite('RuntimeHostPermissions', function() {
     assertFalse(testIsVisible('#hosts'));
     assertFalse(testIsVisible('#add-site-button'));
 
-    const specificSitesPermissions = structuredClone(permissions) as
-        chrome.developerPrivate.RuntimeHostPermissions;
+    const specificSitesPermissions = structuredClone(permissions);
     specificSitesPermissions.hostAccess = HostAccess.ON_SPECIFIC_SITES;
     element.permissions = specificSitesPermissions;
     await microtasksFinished();

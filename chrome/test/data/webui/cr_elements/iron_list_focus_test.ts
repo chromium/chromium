@@ -28,14 +28,14 @@ class TestElement extends HTMLElement {
   get text() {
     const button = this.shadowRoot!.querySelector('button');
     assertTrue(!!button);
-    return button!.textContent;
+    return button.textContent;
   }
 
   // Pass focus to child in shadowRoot b/c iron-list expects that.
   override focus() {
     const button = this.shadowRoot!.querySelector('button');
     assertTrue(!!button);
-    button!.focus();
+    button.focus();
   }
 
   connectedCallback() {
