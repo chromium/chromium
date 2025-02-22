@@ -120,10 +120,10 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
 
   RunTestSequence(
       ShowPromo(),
-      InAnyContext(Steps(
+      InAnyContext(
           WaitForShow(
               user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-          CheckPromoIsActive(kTestIphFeature))));
+          CheckPromoIsActive(kTestIphFeature)));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
@@ -169,8 +169,8 @@ IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,
       kTestIphFeature, kTopContainerElementId, IDS_SETTINGS);
   RegisterTestFeature(other, std::move(spec));
 
-  RunTestSequence(InContext(other->window()->GetElementContext(),
-                            Steps(ShowPromo(), WaitForPromo(kTestIphFeature))));
+  RunTestSequence(InContext(other->window()->GetElementContext(), ShowPromo(),
+                            WaitForPromo(kTestIphFeature)));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveFeaturePromoTestUiTest,

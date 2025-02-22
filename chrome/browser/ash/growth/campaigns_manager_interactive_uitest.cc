@@ -463,8 +463,7 @@ class CampaignsManagerInteractiveUiNudgeTest
         Do([=, this]() {
           ash::LaunchSystemWebAppAsync(GetActiveUserProfile(), type);
         }),
-        std::move(
-            WaitForShow(kBrowserViewElementId).SetTransitionOnlyOnEvent(true)));
+        WaitForShow(kBrowserViewElementId).SetTransitionOnlyOnEvent(true));
   }
 
   bool ShouldUseTabletMode() { return std::get<0>(GetParam()); }
@@ -503,7 +502,7 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
       LaunchSystemWebApp(ash::SystemWebAppType::PERSONALIZATION),
       WaitForWindowWithTitle(env, u"Wallpaper & style"),
       WaitForShow(ash::SystemNudgeView::kBubbleIdForTesting),
-      WithoutDelay(Steps(
+      WithoutDelay(
           CheckHistogramCounts(
               "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 100,
               1),
@@ -513,7 +512,7 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 100, 0),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100, 0),
-          ToggleTabletMode())));
+          ToggleTabletMode()));
 }
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
@@ -526,13 +525,13 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
       LaunchSystemWebApp(ash::SystemWebAppType::SETTINGS),
       WaitForWindowWithTitle(env, u"Settings"),
       EnsureNotPresent(ash::SystemNudgeView::kBubbleIdForTesting),
-      WithoutDelay(Steps(
+      WithoutDelay(
           CheckHistogramCounts(
               "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 100,
               0),
           CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 100, 0),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100, 0),
-          ToggleTabletMode())));
+          ToggleTabletMode()));
 }
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
@@ -547,7 +546,7 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
       PressButton(ash::SystemNudgeView::kPrimaryButtonIdForTesting),
       WaitForHide(ash::SystemNudgeView::kBubbleIdForTesting),
       WaitForWindowWithTitle(env, u"www.google.com"),
-      WithoutDelay(Steps(
+      WithoutDelay(
           CheckHistogramCounts(
               "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 100,
               1),
@@ -557,7 +556,7 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 100, 0),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100,
-                               1))));
+                               1)));
 }
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
@@ -565,13 +564,13 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
   aura::Env* env = aura::Env::GetInstance();
   ASSERT_TRUE(env);
 
-  RunTestSequence(Steps(
+  RunTestSequence(
       SetTabletMode(ShouldUseTabletMode()),
       LaunchSystemWebApp(ash::SystemWebAppType::PERSONALIZATION),
       WaitForShow(ash::SystemNudgeView::kBubbleIdForTesting),
       PressButton(ash::SystemNudgeView::kSecondaryButtonIdForTesting),
       WaitForHide(ash::SystemNudgeView::kBubbleIdForTesting),
-      WithoutDelay(Steps(
+      WithoutDelay(
           CheckHistogramCounts(
               "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 100,
               1),
@@ -581,7 +580,7 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 100, 1),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100,
-                               1)))));
+                               1)));
 }
 
 // CampaignsManagerInteractiveUiNotificationTest
@@ -631,7 +630,7 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
   RunTestSequence(
       SetTabletMode(ShouldUseTabletMode()),
       WaitForShow(ShowNotificationActionPerformer::kBubbleIdForTesting),
-      WithoutDelay(Steps(
+      WithoutDelay(
           CheckHistogramCounts(
               "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 101,
               1),
@@ -641,7 +640,7 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 101, 0),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 101, 0),
-          ToggleTabletMode())));
+          ToggleTabletMode()));
 }
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
@@ -655,7 +654,7 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
       Click(/*button_index=*/0),
       WaitForHide(ShowNotificationActionPerformer::kBubbleIdForTesting),
       WaitForWindowWithTitle(env, u"www.google.com"),
-      WithoutDelay(Steps(
+      WithoutDelay(
           CheckHistogramCounts(
               "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 101,
               1),
@@ -665,7 +664,7 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 101, 0),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 101,
-                               0))));
+                               0)));
 }
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
@@ -678,7 +677,7 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
       WaitForShow(ShowNotificationActionPerformer::kBubbleIdForTesting),
       Click(/*button_index=*/1),
       WaitForHide(ShowNotificationActionPerformer::kBubbleIdForTesting),
-      WithoutDelay(Steps(
+      WithoutDelay(
           CheckHistogramCounts(
               "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500", 101,
               1),
@@ -688,7 +687,7 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
           CheckHistogramCounts(
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 101, 1),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 101,
-                               0))));
+                               0)));
 }
 
 IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,

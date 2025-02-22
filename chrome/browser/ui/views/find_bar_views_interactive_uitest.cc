@@ -215,10 +215,10 @@ class FindBarViewsUiTest : public InteractiveBrowserTest {
   }
 
   ui::InteractionSequence::StepBuilder BringBrowserWindowToFront() {
-    return std::move(Check([this]() {
-                       return ui_test_utils::BringBrowserWindowToFront(
-                           browser());
-                     }).SetDescription("BringBrowserWindowToFront()"));
+    return Check([this]() {
+             return ui_test_utils::BringBrowserWindowToFront(browser());
+           })
+        .SetDescription("BringBrowserWindowToFront()");
   }
 
   auto ShowFindBar() {

@@ -42,7 +42,7 @@ class ShortcutIntegrationInteractionTestApi : public InteractiveBrowserTestApi {
       ui::ElementIdentifier identifier);
 
   // Launches the given shortcut.
-  [[nodiscard]] StepBuilder LaunchShortcut(ui::ElementIdentifier identifier);
+  [[nodiscard]] MultiStep LaunchShortcut(ui::ElementIdentifier identifier);
 
   // Check that `matcher` matches (the base::FilePath for) the shortcut
   // identified by `identifier`.
@@ -51,9 +51,8 @@ class ShortcutIntegrationInteractionTestApi : public InteractiveBrowserTestApi {
   // .SetMustBeVisibleAtStart(true), this test step will wait for `identifier`
   // to be shown (i.e. created) before proceeding.
   template <typename M>
-  [[nodiscard]] static StepBuilder CheckShortcut(
-      ui::ElementIdentifier identifier,
-      M&& matcher) {
+  [[nodiscard]] static auto CheckShortcut(ui::ElementIdentifier identifier,
+                                          M&& matcher) {
     return InAnyContext(CheckElement(identifier, &GetShortcutPath, matcher));
   }
 

@@ -83,7 +83,7 @@ ShortcutIntegrationInteractionTestApi::InstrumentNextShortcut(
   });
 }
 
-ui::test::InteractiveTestApi::StepBuilder
+ui::test::InteractiveTestApi::MultiStep
 ShortcutIntegrationInteractionTestApi::LaunchShortcut(
     ui::ElementIdentifier identifier) {
   return InAnyContext(WithElement(identifier, [](ui::TrackedElement* element) {

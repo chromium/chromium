@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
 
   InstallExtension(&child().profile());
 
-  RunTestSequence(InAnyContext(Steps(
+  RunTestSequence(InAnyContext(
       Log("Given an installed disabled extension."),
       // Parent sets both the FL Permissions and Extensions switches.
       // Only one of them impacts the handling of supervised user extensions.
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
       // If the extension is not already enabled, check that the expect UI
       // dialog appears.
       CheckForParentDialogIfExtensionDisabled(should_be_enabled),
-      CheckExtensionLocationPermissions(kChildElementId, &child().profile()))));
+      CheckExtensionLocationPermissions(kChildElementId, &child().profile())));
 }
 
 INSTANTIATE_TEST_SUITE_P(

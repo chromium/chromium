@@ -511,8 +511,8 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerMultipleDisplaysUiTest,
                   OpenGlicWindow(GlicWindowMode::kDetached),
                   CheckControllerHasWidget(true),
                   CheckControllerWidgetMode(GlicWindowMode::kDetached),
-                  InAnyContext(Steps(MoveWidgetToSecondDisplay(),
-                                     CheckWidgetMovedToSecondaryDisplay(true))),
+                  InAnyContext(MoveWidgetToSecondDisplay(),
+                               CheckWidgetMovedToSecondaryDisplay(true)),
                   CloseGlicWindow(), CheckControllerHasWidget(false));
 }
 
@@ -522,12 +522,12 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerMultipleDisplaysUiTest,
     return;
   }
 
-  RunTestSequence(
-      CheckDisplaysSetUp(true), OpenGlicWindow(GlicWindowMode::kAttached),
-      CheckControllerHasWidget(true),
-      CheckControllerWidgetMode(GlicWindowMode::kAttached),
-      InAnyContext(Steps(DetachGlicWindow(), MoveWidgetToSecondDisplay(),
-                         CheckWidgetMovedToSecondaryDisplay(true))));
+  RunTestSequence(CheckDisplaysSetUp(true),
+                  OpenGlicWindow(GlicWindowMode::kAttached),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
+                  InAnyContext(DetachGlicWindow(), MoveWidgetToSecondDisplay(),
+                               CheckWidgetMovedToSecondaryDisplay(true)));
 }
 #endif
 

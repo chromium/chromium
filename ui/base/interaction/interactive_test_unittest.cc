@@ -262,10 +262,9 @@ TEST_F(InteractiveTestTest, WaitInAnyContext) {
 
   RunTestSequenceInContext(
       kTestContext1,
-      InAnyContext(Steps(WaitForShow(kTestId1), WaitForShow(kTestId2),
-                         WaitForActivate(kTestId1),
-                         WaitForEvent(kTestId2, kTestEvent1),
-                         WaitForHide(kTestId1))));
+      InAnyContext(WaitForShow(kTestId1), WaitForShow(kTestId2),
+                   WaitForActivate(kTestId1),
+                   WaitForEvent(kTestId2, kTestEvent1), WaitForHide(kTestId1)));
 }
 
 TEST_F(InteractiveTestTest, FlushInAnyContext) {
@@ -274,9 +273,8 @@ TEST_F(InteractiveTestTest, FlushInAnyContext) {
   e1.Show();
   e2.Show();
 
-  RunTestSequenceInContext(
-      kTestContext1,
-      InAnyContext(Steps(WaitForShow(kTestId1), WaitForShow(kTestId2))));
+  RunTestSequenceInContext(kTestContext1, InAnyContext(WaitForShow(kTestId1),
+                                                       WaitForShow(kTestId2)));
 }
 
 TEST_F(InteractiveTestTest, InteractionVerbs) {
@@ -338,14 +336,14 @@ TEST_F(InteractiveTestTest, InteractionVerbsInAnyContext) {
       kTestContext2, InAnyContext(PressButton(kTestId1, InputType::kDontCare)),
       InAnyContext(SelectMenuItem(kTestId2, InputType::kKeyboard)),
       InAnyContext(DoDefaultAction(kTestId3, InputType::kMouse)),
-      InAnyContext(Steps(SelectTab(kTestId4, 3U, InputType::kTouch),
-                         SelectDropdownItem(kTestId1, 2U, InputType::kDontCare),
-                         EnterText(kTestId2, u"The quick brown fox."),
-                         ActivateSurface(kTestId3),
+      InAnyContext(SelectTab(kTestId4, 3U, InputType::kTouch),
+                   SelectDropdownItem(kTestId1, 2U, InputType::kDontCare),
+                   EnterText(kTestId2, u"The quick brown fox."),
+                   ActivateSurface(kTestId3),
 #if !BUILDFLAG(IS_IOS)
-                         SendAccelerator(kTestId4, Accelerator()),
+                   SendAccelerator(kTestId4, Accelerator()),
 #endif
-                         Confirm(kTestId1))));
+                   Confirm(kTestId1)));
 
   EXPECT_THAT(simulator()->records(),
               testing::ElementsAre(
@@ -384,15 +382,14 @@ TEST_F(InteractiveTestTest, InteractionVerbsInSameContext) {
       kTestContext2, InAnyContext(PressButton(kTestId1, InputType::kDontCare)),
       InSameContext(SelectMenuItem(kTestId2, InputType::kKeyboard)),
       InSameContext(DoDefaultAction(kTestId3, InputType::kMouse)),
-      InSameContext(
-          Steps(SelectTab(kTestId4, 3U, InputType::kTouch),
-                SelectDropdownItem(kTestId1, 2U, InputType::kDontCare),
-                EnterText(kTestId2, u"The quick brown fox."),
-                ActivateSurface(kTestId3),
+      InSameContext(SelectTab(kTestId4, 3U, InputType::kTouch),
+                    SelectDropdownItem(kTestId1, 2U, InputType::kDontCare),
+                    EnterText(kTestId2, u"The quick brown fox."),
+                    ActivateSurface(kTestId3),
 #if !BUILDFLAG(IS_IOS)
-                SendAccelerator(kTestId4, Accelerator()),
+                    SendAccelerator(kTestId4, Accelerator()),
 #endif
-                Confirm(kTestId1))));
+                    Confirm(kTestId1)));
 
   EXPECT_THAT(simulator()->records(),
               testing::ElementsAre(

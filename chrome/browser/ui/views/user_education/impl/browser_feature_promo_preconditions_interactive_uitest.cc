@@ -285,9 +285,8 @@ class UserNotActivePreconditionUiTest
   }
 
   auto Advance(base::TimeDelta time) {
-    return std::move(Do([this, time]() {
-                       test_clock_.Advance(time);
-                     }).SetDescription("Advance()"));
+    return Do([this, time]() { test_clock_.Advance(time); })
+        .SetDescription("Advance()");
   }
 
   auto CheckPrecondResult(user_education::FeaturePromoResult result) {

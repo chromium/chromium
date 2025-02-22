@@ -62,11 +62,10 @@ class DataSharingChromeNativeUiTest : public InteractiveBrowserTest {
   }
 
   MultiStep FinishTabstripAnimations() {
-    return Steps(
-        WaitForShow(kTabStripElementId),
-        std::move(WithView(kTabStripElementId, [](TabStrip* tab_strip) {
-                    tab_strip->StopAnimating(true);
-                  }).SetDescription("FinishTabstripAnimation")));
+    return Steps(WaitForShow(kTabStripElementId),
+                 WithView(kTabStripElementId, [](TabStrip* tab_strip) {
+                   tab_strip->StopAnimating(true);
+                 }).SetDescription("FinishTabstripAnimation"));
   }
 
   MultiStep ShowBookmarksBar() {

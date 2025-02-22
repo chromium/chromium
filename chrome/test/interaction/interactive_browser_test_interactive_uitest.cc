@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
   RunTestSequence(
       InContext(incognito->window()->GetElementContext(),
                 WaitForShow(kBrowserViewElementId)),
-      InSameContext(Steps(
+      InSameContext(
           ActivateSurface(kBrowserViewElementId),
           MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
           SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                           [incognito](ui::TrackedElement* el) {
                             EXPECT_EQ(incognito->window()->GetElementContext(),
                                       el->context());
-                          }))))));
+                          })))));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
@@ -219,23 +219,22 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
 
   RunTestSequence(InContext(
       incognito->window()->GetElementContext(),
-      Steps(ActivateSurface(kBrowserViewElementId),
-            MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
-            SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
-            WaitForHide(AppMenuModel::kDownloadsMenuItem),
-            // These two types of actions use PostTask() internally and
-            // bounce off the pivot element. Make sure they still work in a
-            // "InSameContext".
-            EnsureNotPresent(AppMenuModel::kDownloadsMenuItem),
-            // Make sure this picks up the correct button, since it was
-            // after a string of non-element-specific actions.
-            WithElement(kToolbarAppMenuButtonElementId,
-                        base::BindOnce(base::BindLambdaForTesting(
-                            [incognito](ui::TrackedElement* el) {
-                              EXPECT_EQ(
-                                  incognito->window()->GetElementContext(),
+      ActivateSurface(kBrowserViewElementId),
+      MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
+      SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
+      WaitForHide(AppMenuModel::kDownloadsMenuItem),
+      // These two types of actions use PostTask() internally and
+      // bounce off the pivot element. Make sure they still work in a
+      // "InSameContext".
+      EnsureNotPresent(AppMenuModel::kDownloadsMenuItem),
+      // Make sure this picks up the correct button, since it was
+      // after a string of non-element-specific actions.
+      WithElement(kToolbarAppMenuButtonElementId,
+                  base::BindOnce(base::BindLambdaForTesting(
+                      [incognito](ui::TrackedElement* el) {
+                        EXPECT_EQ(incognito->window()->GetElementContext(),
                                   el->context());
-                            }))))));
+                      })))));
 }
 
 // Tests whether ActivateSurface() can correctly bring a browser window to the
@@ -249,10 +248,10 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, ActivateMultipleSurfaces) {
                               "programmatically raising/activating windows. "
                               "This invalidates the rest of the test."),
       InContext(incognito->window()->GetElementContext(),
-                Steps(ActivateSurface(kBrowserViewElementId),
-                      MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
-                      SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
-                      WaitForHide(AppMenuModel::kDownloadsMenuItem))),
+                ActivateSurface(kBrowserViewElementId),
+                MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
+                SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
+                WaitForHide(AppMenuModel::kDownloadsMenuItem)),
       ActivateSurface(kBrowserViewElementId),
       MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
       WaitForShow(AppMenuModel::kDownloadsMenuItem));
@@ -271,10 +270,10 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                               "This invalidates the rest of the test."),
       ObserveState(views::test::kCurrentWidgetFocus),
       InContext(incognito->window()->GetElementContext(),
-                Steps(ActivateSurface(kBrowserViewElementId),
-                      MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
-                      SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
-                      WaitForHide(AppMenuModel::kDownloadsMenuItem))),
+                ActivateSurface(kBrowserViewElementId),
+                MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
+                SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
+                WaitForHide(AppMenuModel::kDownloadsMenuItem)),
       ActivateSurface(kBrowserViewElementId),
       WaitForState(views::test::kCurrentWidgetFocus, [this]() {
         return BrowserView::GetBrowserViewForBrowser(browser())
@@ -297,10 +296,10 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                               "This invalidates the rest of the test."),
       ObserveState(views::test::kCurrentWidgetFocus),
       InContext(incognito->window()->GetElementContext(),
-                Steps(ActivateSurface(kBrowserViewElementId),
-                      MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
-                      SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
-                      WaitForHide(AppMenuModel::kDownloadsMenuItem))),
+                ActivateSurface(kBrowserViewElementId),
+                MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
+                SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
+                WaitForHide(AppMenuModel::kDownloadsMenuItem)),
       InstrumentTab(kWebContentsElementId),
       ActivateSurface(kWebContentsElementId),
       WaitForState(views::test::kCurrentWidgetFocus, [this]() {
@@ -347,10 +346,10 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                               "This invalidates the rest of the test."),
       ObserveState(views::test::kCurrentWidgetFocus),
       InContext(incognito->window()->GetElementContext(),
-                Steps(ActivateSurface(kBrowserViewElementId),
-                      MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
-                      SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
-                      WaitForHide(AppMenuModel::kDownloadsMenuItem))),
+                ActivateSurface(kBrowserViewElementId),
+                MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
+                SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
+                WaitForHide(AppMenuModel::kDownloadsMenuItem)),
       PressButton(kTabSearchButtonElementId),
       WaitForShow(kTabSearchBubbleElementId),
       NameDescendantViewByType<views::WebView>(kTabSearchBubbleElementId,

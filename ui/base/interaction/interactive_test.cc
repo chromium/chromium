@@ -313,63 +313,6 @@ InteractionSequence::StepBuilder InteractiveTestApi::NameElement(
                              GetFindElementCallback(std::move(spec)));
 }
 
-// static
-InteractiveTestApi::MultiStep InteractiveTestApi::InAnyContext(
-    MultiStep steps) {
-  for (auto& step : steps) {
-    step.SetContext(InteractionSequence::ContextMode::kAny)
-        .AddDescriptionPrefix("InAnyContext()");
-  }
-  return steps;
-}
-
-// static
-InteractiveTestApi::MultiStep InteractiveTestApi::InSameContext(
-    MultiStep steps) {
-  for (auto& step : steps) {
-    step.SetContext(InteractionSequence::ContextMode::kFromPreviousStep)
-        .AddDescriptionPrefix("InSameContext()");
-  }
-  return steps;
-}
-
-// static
-InteractiveTestApi::MultiStep InteractiveTestApi::InContext(
-    ElementContext context,
-    MultiStep steps) {
-  // This context may not yet exist, but we want the pivot element to exist.
-  private_test_impl_->MaybeAddPivotElement(context);
-  const std::string caller =
-      base::StringPrintf("InContext( %p, )", static_cast<const void*>(context));
-  for (auto& step : steps) {
-    step.SetContext(context).AddDescriptionPrefix(caller);
-  }
-
-  return steps;
-}
-
-// static
-InteractiveTestApi::MultiStep InteractiveTestApi::InSameContextAs(
-    ElementSpecifier element,
-    MultiStep steps) {
-  return Steps(
-      std::move(
-          WithElement(element, base::DoNothing())
-              .SetContext(InteractionSequence::ContextMode::kAny)
-              .SetDescription("InSameContextAs() - locate reference element")),
-      InSameContext(std::move(steps)));
-}
-
-// static
-InteractiveTestApi::MultiStep InteractiveTestApi::WithoutDelay(
-    MultiStep steps) {
-  for (auto& step : steps) {
-    step.SetStepStartMode(InteractionSequence::StepStartMode::kImmediate)
-        .AddDescriptionPrefix("WithoutDelay()");
-  }
-  return steps;
-}
-
 InteractiveTestApi::StepBuilder InteractiveTestApi::SetOnIncompatibleAction(
     OnIncompatibleAction action,
     const char* reason) {

@@ -187,12 +187,11 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
 
   // Forces `id` to overflow by filling toolbar with dummy buttons.
   auto AddDummyButtonsToToolbarTillElementOverflows(ui::ElementIdentifier id) {
-    auto result =
-        Steps(CheckIsManagedByController(id),
-              std::move(Do([this]() {
+    auto result = Steps(CheckIsManagedByController(id),
+                        Do([this]() {
                           SetBrowserWidth(kBrowserContentAllowedMinimumWidth);
-                        }).SetDescription("SetBrowserWidth()")),
-              std::move(Do([this, id]() {
+                        }).SetDescription("SetBrowserWidth()"),
+                        Do([this, id]() {
                           const auto* element =
                               toolbar_controller_->FindToolbarElementWithId(
                                   toolbar_container_view_, id);
@@ -202,28 +201,28 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
                                 CreateADummyButton());
                             views::test::RunScheduledLayout(browser_view_);
                           }
-                        }).SetDescription("ForceOverflow")),
-              WaitForShow(kToolbarOverflowButtonElementId), WaitForHide(id));
+                        }).SetDescription("ForceOverflow"),
+                        WaitForShow(kToolbarOverflowButtonElementId),
+                        WaitForHide(id));
     AddDescriptionPrefix(result,
                          "AddDummyButtonsToToolbarTillElementOverflows()");
     return result;
   }
 
   auto AddDummyButtonsToToolbarTillElementOverflows(actions::ActionId id) {
-    auto result =
-        Steps(CheckIsManagedByController(id),
-              std::move(Do([this]() {
+    auto result = Steps(CheckIsManagedByController(id),
+                        Do([this]() {
                           SetBrowserWidth(kBrowserContentAllowedMinimumWidth);
-                        }).SetDescription("SetBrowserWidth()")),
-              std::move(Do([this, id]() {
+                        }).SetDescription("SetBrowserWidth()"),
+                        Do([this, id]() {
                           while (!delegate()->IsOverflowed(id)) {
                             toolbar_container_view_->AddChildView(
                                 CreateADummyButton());
                             views::test::RunScheduledLayout(browser_view_);
                           }
-                        }).SetDescription("ForceOverflow")),
-              WaitForShow(kToolbarOverflowButtonElementId),
-              CheckActionItemOverflowed(id, true));
+                        }).SetDescription("ForceOverflow"),
+                        WaitForShow(kToolbarOverflowButtonElementId),
+                        CheckActionItemOverflowed(id, true));
     AddDescriptionPrefix(result,
                          "AddDummyButtonsToToolbarTillElementOverflows()");
     return result;

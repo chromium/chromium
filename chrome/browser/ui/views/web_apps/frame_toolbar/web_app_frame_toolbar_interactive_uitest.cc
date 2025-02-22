@@ -83,21 +83,21 @@ class WebAppFrameToolbarInteractiveUITest
   }
 
   auto CheckViewFocused(ElementSpecifier view) {
-    return std::move(
-        CheckView(
-            view,
-            [](views::View* view) {
-              if (view->HasFocus()) {
-                return true;
-              }
-              auto* const focused = view->GetFocusManager()->GetFocusedView();
-              LOG(ERROR) << "Expected " << view->GetClassName()
-                         << " to be focused, but focused view is "
-                         << (focused ? focused->GetClassName() : "(none)");
-              return false;
-            },
-            true)
-            .SetDescription("CheckViewFocused()"));
+    return CheckView(
+               view,
+               [](views::View* view) {
+                 if (view->HasFocus()) {
+                   return true;
+                 }
+                 auto* const focused =
+                     view->GetFocusManager()->GetFocusedView();
+                 LOG(ERROR) << "Expected " << view->GetClassName()
+                            << " to be focused, but focused view is "
+                            << (focused ? focused->GetClassName() : "(none)");
+                 return false;
+               },
+               true)
+        .SetDescription("CheckViewFocused()");
   }
 
   auto VerifyExtensionsMenuButtonIfNeeded(bool go_forward) {

@@ -161,20 +161,20 @@ InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::InstrumentTab(
 ui::InteractionSequence::StepBuilder
 InteractiveBrowserTestApi::InstrumentNextTab(ui::ElementIdentifier id,
                                              BrowserSpecifier in_browser) {
-  return std::move(
-      WithElement(
-          ui::test::internal::kInteractiveTestPivotElementId,
-          [this, id, in_browser](ui::TrackedElement* el) {
-            Browser* const browser = GetBrowserFor(el->context(), in_browser);
-            test_impl().AddInstrumentedWebContents(
-                browser
-                    ? WebContentsInteractionTestUtil::ForNextTabInBrowser(
-                          browser, id)
-                    : WebContentsInteractionTestUtil::ForNextTabInAnyBrowser(
-                          id));
-          })
-          .AddDescriptionPrefix(
-              base::StrCat({"InstrumentTab( ", id.GetName(), " )"})));
+  return WithElement(
+             ui::test::internal::kInteractiveTestPivotElementId,
+             [this, id, in_browser](ui::TrackedElement* el) {
+               Browser* const browser =
+                   GetBrowserFor(el->context(), in_browser);
+               test_impl().AddInstrumentedWebContents(
+                   browser
+                       ? WebContentsInteractionTestUtil::ForNextTabInBrowser(
+                             browser, id)
+                       : WebContentsInteractionTestUtil::ForNextTabInAnyBrowser(
+                             id));
+             })
+      .AddDescriptionPrefix(
+          base::StrCat({"InstrumentTab( ", id.GetName(), " )"}));
 }
 
 InteractiveBrowserTestApi::MultiStep
@@ -448,17 +448,17 @@ InteractiveBrowserTestApi::WaitForWebContentsPainted(
   //
   // Note: this could also be done with a custom `StateObserver` and
   // `WaitForState()` but this approach requires the fewest steps.
-  return std::move(IfElement(
-                       webcontents_id,
-                       [](const ui::TrackedElement* el) {
-                         // If the page is not ready (i.e. no element) or not
-                         // painted, execute the wait step; otherwise skip it.
-                         return !el || !el->AsA<TrackedElementWebContents>()
-                                            ->owner()
-                                            ->HasPageBeenPainted();
-                       },
-                       Then(std::move(wait_step)))
-                       .AddDescriptionPrefix("WaitForWebContentsPainted()"));
+  return IfElement(
+             webcontents_id,
+             [](const ui::TrackedElement* el) {
+               // If the page is not ready (i.e. no element) or not
+               // painted, execute the wait step; otherwise skip it.
+               return !el || !el->AsA<TrackedElementWebContents>()
+                                  ->owner()
+                                  ->HasPageBeenPainted();
+             },
+             Then(std::move(wait_step)))
+      .AddDescriptionPrefix("WaitForWebContentsPainted()");
 }
 
 // static

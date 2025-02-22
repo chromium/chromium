@@ -110,7 +110,7 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   auto ShowHelpBubble(ElementSpecifier element) {
-    return InAnyContext(std::move(
+    return InAnyContext(
         AfterShow(
             element,
             base::BindLambdaForTesting(
@@ -122,7 +122,7 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
                     seq->FailForTesting();
                   }
                 }))
-            .SetDescription("ShowHelpBubble")));
+            .SetDescription("ShowHelpBubble"));
   }
 
   auto CloseHelpBubble() {
@@ -132,17 +132,17 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   auto CheckHandlerHasHelpBubble(ElementSpecifier anchor,
                                  bool has_help_bubble) {
     return InAnyContext(
-        std::move(CheckElement(
-                      anchor,
-                      [](ui::TrackedElement* el) {
-                        return el->AsA<user_education::TrackedElementWebUI>()
-                            ->handler()
-                            ->IsHelpBubbleShowingForTesting(el->identifier());
-                      },
-                      has_help_bubble)
-                      .SetDescription(base::StringPrintf(
-                          "CheckHandlerHasHelpBubble(%s)",
-                          base::ToString(has_help_bubble)))));
+        CheckElement(
+            anchor,
+            [](ui::TrackedElement* el) {
+              return el->AsA<user_education::TrackedElementWebUI>()
+                  ->handler()
+                  ->IsHelpBubbleShowingForTesting(el->identifier());
+            },
+            has_help_bubble)
+            .SetDescription(
+                base::StringPrintf("CheckHandlerHasHelpBubble(%s)",
+                                   base::ToString(has_help_bubble))));
   }
 
   auto Cleanup() {

@@ -126,13 +126,13 @@ IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
       ConfigureAddressSync(/*enable_address_sync=*/false),
       ShowDialog(/*is_account_address_profile=*/false),
       // The delete dialog resides in a different context on MacOS.
-      InAnyContext(Steps(
+      InAnyContext(
           WaitForShow(views::DialogClientView::kTopViewId),
           SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                   kSuppressedScreenshotError),
           Screenshot(views::DialogClientView::kTopViewId,
                      /*screenshot_name=*/"local_address_profile",
-                     /*baseline_cl=*/"4905025"))));
+                     /*baseline_cl=*/"4905025")));
 }
 
 IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
@@ -141,13 +141,13 @@ IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
       ConfigureAddressSync(/*enable_address_sync=*/true),
       ShowDialog(/*is_account_address_profile=*/false),
       // The delete dialog resides in a different context on MacOS.
-      InAnyContext(Steps(
+      InAnyContext(
           WaitForShow(views::DialogClientView::kTopViewId),
           SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                   kSuppressedScreenshotError),
           Screenshot(views::DialogClientView::kTopViewId,
                      /*screenshot_name=*/"sync_address_profile",
-                     /*baseline_cl=*/"4905025"))));
+                     /*baseline_cl=*/"4905025")));
 }
 
 IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
@@ -157,24 +157,24 @@ IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
       MakePrimaryAccountAvailable(),
       ShowDialog(/*is_account_address_profile=*/true),
       // The delete dialog resides in a different context on MacOS.
-      InAnyContext(Steps(
+      InAnyContext(
           WaitForShow(views::DialogClientView::kTopViewId),
           SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                   kSuppressedScreenshotError),
           Screenshot(views::DialogClientView::kTopViewId,
                      /*screenshot_name=*/"account_address_profile",
-                     /*baseline_cl=*/"4905025"))));
+                     /*baseline_cl=*/"4905025")));
 }
 
 IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
                        DialogAccepted) {
-  RunTestSequence(ConfigureAddressSync(/*enable_address_sync=*/false),
-                  ShowDialog(/*is_account_address_profile=*/false),
-                  InAnyContext(Steps(
-                      WaitForShow(views::DialogClientView::kTopViewId),
-                      PressButton(views::DialogClientView::kOkButtonElementId),
-                      WaitForHide(views::DialogClientView::kTopViewId))),
-                  EnsureClosedWithUserDecision(/*user_accepted_delete=*/true));
+  RunTestSequence(
+      ConfigureAddressSync(/*enable_address_sync=*/false),
+      ShowDialog(/*is_account_address_profile=*/false),
+      InAnyContext(WaitForShow(views::DialogClientView::kTopViewId),
+                   PressButton(views::DialogClientView::kOkButtonElementId),
+                   WaitForHide(views::DialogClientView::kTopViewId)),
+      EnsureClosedWithUserDecision(/*user_accepted_delete=*/true));
 }
 
 IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
@@ -182,10 +182,9 @@ IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
   RunTestSequence(
       ConfigureAddressSync(/*enable_address_sync=*/false),
       ShowDialog(/*is_account_address_profile=*/false),
-      InAnyContext(
-          Steps(WaitForShow(views::DialogClientView::kTopViewId),
-                PressButton(views::DialogClientView::kCancelButtonElementId),
-                WaitForHide(views::DialogClientView::kTopViewId))),
+      InAnyContext(WaitForShow(views::DialogClientView::kTopViewId),
+                   PressButton(views::DialogClientView::kCancelButtonElementId),
+                   WaitForHide(views::DialogClientView::kTopViewId)),
       EnsureClosedWithUserDecision(/*user_accepted_delete=*/false));
 }
 

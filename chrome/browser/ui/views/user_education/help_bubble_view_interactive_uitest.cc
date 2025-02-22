@@ -159,8 +159,8 @@ class HelpBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
                       help_bubbles_.emplace_back(factories().CreateHelpBubble(
                           anchor, std::move(params)));
                     }),
-        std::move(WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting)
-                      .SetTransitionOnlyOnEvent(true)));
+        WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting)
+            .SetTransitionOnlyOnEvent(true));
   }
 
   // Closes the current help bubble and waits for it to hide.
@@ -168,8 +168,8 @@ class HelpBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
     return Steps(
         WithView(HelpBubbleView::kHelpBubbleElementIdForTesting,
                  [](HelpBubbleView* bubble) { bubble->GetWidget()->Close(); }),
-        std::move(WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting)
-                      .SetTransitionOnlyOnEvent(true)));
+        WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting)
+            .SetTransitionOnlyOnEvent(true));
   }
 
   user_education::HelpBubbleFactoryRegistry& factories() { return factories_; }

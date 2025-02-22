@@ -121,8 +121,8 @@ class EmbeddedPermissionPromptInteractiveTest
 
   auto PushPEPCPromptButton(ui::ElementIdentifier button_identifier) {
     return InAnyContext(
-        Steps(WaitForShow(button_identifier), PressButton(button_identifier),
-              WaitForHide(EmbeddedPermissionPromptBaseView::kMainViewId)));
+        WaitForShow(button_identifier), PressButton(button_identifier),
+        WaitForHide(EmbeddedPermissionPromptBaseView::kMainViewId));
   }
 
   // Checks that the next value in the queue matches the text in the label
@@ -134,10 +134,10 @@ class EmbeddedPermissionPromptInteractiveTest
                   size_t expected_label_index) {
     if (expected_label_index < expected_labels.size()) {
       return InAnyContext(
-          Steps(CheckViewProperty(label_identifier, &views::Label::GetText,
-                                  expected_labels[expected_label_index])));
+          CheckViewProperty(label_identifier, &views::Label::GetText,
+                            expected_labels[expected_label_index]));
     } else {
-      return InAnyContext(Steps(EnsureNotPresent(label_identifier)));
+      return InAnyContext(EnsureNotPresent(label_identifier));
     }
   }
 

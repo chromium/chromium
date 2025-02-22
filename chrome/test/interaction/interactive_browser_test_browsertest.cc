@@ -1254,7 +1254,7 @@ IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestDialogBrowsertest,
         widget = TestDialog::Show(browser(), GetParam());
       }),
       InAnyContext(WaitForShow(TestDialog::kElementId)),
-      InSameContext(Steps(
+      InSameContext(
           CheckView(
               TestDialog::kElementId,
               [](views::View* view) { return view->GetWidget()->parent(); },
@@ -1262,5 +1262,5 @@ IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestDialogBrowsertest,
           CheckElement(
               TestDialog::kElementId,
               [](ui::TrackedElement* el) { return el->context(); },
-              browser()->window()->GetElementContext()))));
+              browser()->window()->GetElementContext())));
 }

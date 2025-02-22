@@ -285,6 +285,12 @@ class StepBlock {
   MultiStep steps_;
 };
 
+// Explicitly exclude lvalue references when calling certain methods. These
+// methods would not compile anyway, but this concept is provided as a courtesy
+// to generate better compile errors.
+template <typename T>
+concept IsValueOrRvalue = !std::is_lvalue_reference_v<T>;
+
 }  // namespace ui::test::internal
 
 #endif  // UI_BASE_INTERACTION_INTERACTIVE_TEST_DEFINITIONS_H_

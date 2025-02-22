@@ -70,8 +70,44 @@ class InteractiveTestApi {
       internal::InteractiveTestPrivate::OnIncompatibleAction;
   using AdditionalContext = internal::InteractiveTestPrivate::AdditionalContext;
 
-  // Construct a MultiStep from one or more StepBuilders and/or MultiSteps.
+  // Construct a single MultiStep from one or more StepBuilders and/or
+  // MultiSteps. This should only be necessary when packaging up steps in custom
+  // verbs, or when appending a sequence of steps to another sequence.
+  //
+  // Note that you can use += to append one or more steps to the end of a
+  // `MultiStep`.
+  //
+  // Simple example in a custom verb:
+  // ```
+  //  auto MyCustomVerb() {
+  //    return Steps(
+  //        DoStep1(),
+  //        DoStep2(),
+  //        DoStep3());
+  //  }
+  // ```
+  //
+  // Example with concatenation:
+  // ```
+  //  auto MyCustomVerb(bool do_third_step) {
+  //    auto steps = Steps(
+  //        DoStep1(),
+  //        DoStep2());
+  //
+  //    if (do_third_step) {
+  //      steps += DoStep3();
+  //    }
+  //
+  //    steps += Steps(
+  //        DoStep4(),
+  //        DoStep5());
+  //
+  //    AddDescriptionPrefix(steps, "MyCustomVerb()");
+  //    return steps;
+  //  }
+  // ```
   template <typename... Args>
+    requires(internal::IsValueOrRvalue<Args> && ...)
   static MultiStep Steps(Args&&... args);
 
   // Returns an interaction simulator for things like clicking buttons.
@@ -83,6 +119,7 @@ class InteractiveTestApi {
   // StepBuilders with RunSynchronouslyForTesting(). Hooks both the completed
   // and aborted callbacks to ensure completion, and prints an error on failure.
   template <typename... Args>
+    requires(sizeof...(Args) > 0 && (internal::IsValueOrRvalue<Args> && ...))
   bool RunTestSequenceInContext(ElementContext context, Args&&... steps);
 
   // An ElementSpecifier holds either an ElementIdentifier or a
@@ -415,31 +452,28 @@ class InteractiveTestApi {
   //
   //    InAnyContext(PressButton(kElementIdentifier))
   // ```
-  //
-  // TODO(dfried): consider if we should have a version that takes variadic
-  // arguments and applies "in any context" to all of them?
-  [[nodiscard]] static MultiStep InAnyContext(MultiStep steps);
-  template <typename T>
-  [[nodiscard]] static StepBuilder InAnyContext(T&& step);
+  template <typename... Args>
+    requires(sizeof...(Args) > 0 && (internal::IsValueOrRvalue<Args> && ...))
+  [[nodiscard]] static MultiStep InAnyContext(Args&&... args);
 
   // Provides syntactic sugar so you can put "inherit context from previous
   // step" around a step or steps to ensure a sequence executes in a specific
   // context. For example:
   // ```
   //    InAnyContext(WaitForShow(kMyElementInOtherContext)),
-  //    InSameContext(Steps(
+  //    InSameContext(
   //      PressButton(kMyElementInOtherContext),
   //      WaitForHide(kMyElementInOtherContext)
-  //    )),
+  //    ),
   // ```
-  [[nodiscard]] static MultiStep InSameContext(MultiStep steps);
-  template <typename T>
-  [[nodiscard]] static StepBuilder InSameContext(T&& step);
+  template <typename... Args>
+    requires(sizeof...(Args) > 0 && (internal::IsValueOrRvalue<Args> && ...))
+  [[nodiscard]] static MultiStep InSameContext(Args&&... args);
 
   // Specifies that test step(s) should be executed in a specific context.
-  [[nodiscard]] MultiStep InContext(ElementContext context, MultiStep steps);
-  template <typename T>
-  [[nodiscard]] StepBuilder InContext(ElementContext context, T&& step);
+  template <typename... Args>
+    requires(sizeof...(Args) > 0 && (internal::IsValueOrRvalue<Args> && ...))
+  [[nodiscard]] MultiStep InContext(ElementContext context, Args&&... args);
 
   // Specifies that test step(s) should be executed in the same context as a
   // specific `element`, which should be unique across contexts or a specific
@@ -448,11 +482,10 @@ class InteractiveTestApi {
   // NOTE: If the previous step already references the element, prefer
   // `InSameContext()` as it has fewer limitations and handles elements that may
   // be present in multiple contexts.
+  template <typename... Args>
+    requires(sizeof...(Args) > 0 && (internal::IsValueOrRvalue<Args> && ...))
   [[nodiscard]] static MultiStep InSameContextAs(ElementSpecifier element,
-                                                 MultiStep steps);
-  template <typename T>
-  [[nodiscard]] static MultiStep InSameContextAs(ElementSpecifier element,
-                                                 T&& step);
+                                                 Args&&... steps);
 
   // Specifies that these test step(s) should be executed as soon as they are
   // eligible to trigger, one after the other. By default, once a step is
@@ -466,14 +499,14 @@ class InteractiveTestApi {
   //  PressButton(MyDialog::kCommitChangesButtonId),
   //  // Have to check the model when the dialog is completing because the model
   //  // goes away with the dialog.
-  //  WithoutDelay(Steps(
+  //  WithoutDelay(
   //    WaitForHide(MyDialog::kElementId),
   //    CheckResult(&CheckDialogModelCount, 3),
-  //    CheckResult(&CheckDialogModelResult, MyDialogModel::Result::kUpdated))),
+  //    CheckResult(&CheckDialogModelResult, MyDialogModel::Result::kUpdated)),
   // ```
-  [[nodiscard]] static MultiStep WithoutDelay(MultiStep steps);
-  template <typename T>
-  [[nodiscard]] static StepBuilder WithoutDelay(T&& step);
+  template <typename... Args>
+    requires(sizeof...(Args) > 0 && (internal::IsValueOrRvalue<Args> && ...))
+  [[nodiscard]] static MultiStep WithoutDelay(Args&&... steps);
 
   // Creates a method named `Name` that takes the same arguments as `Steps()`
   // and returns a strongly-typed StepBlock called `<Name>Block` that can be
@@ -484,6 +517,7 @@ class InteractiveTestApi {
     using StepBlock::StepBlock;                                 \
   };                                                            \
   template <typename... Args>                                   \
+    requires(internal::IsValueOrRvalue<Args> && ...)            \
   static Name##Block Name(Args&&... args) {                     \
     return Name##Block(Steps(std::forward<Args>(args)...));     \
   }
@@ -677,6 +711,7 @@ using InteractiveTest = InteractiveTestT<testing::Test>;
 
 // static
 template <typename... Args>
+  requires(internal::IsValueOrRvalue<Args> && ...)
 InteractiveTestApi::MultiStep InteractiveTestApi::Steps(Args&&... args) {
   MultiStep result;
   (AddStep(result, std::forward<Args>(args)), ...);
@@ -691,6 +726,7 @@ void InteractiveTestApi::AddStep(InteractionSequence::Builder& builder,
 }
 
 template <typename... Args>
+  requires(sizeof...(Args) > 0 && (internal::IsValueOrRvalue<Args> && ...))
 bool InteractiveTestApi::RunTestSequenceInContext(ElementContext context,
                                                   Args&&... steps) {
   // TODO(dfried): is there any additional automation we need to do in order to
@@ -830,43 +866,70 @@ InteractionSequence::StepBuilder InteractiveTestApi::NameElementRelative(
 }
 
 // static
-template <typename T>
-InteractionSequence::StepBuilder InteractiveTestApi::InAnyContext(T&& step) {
-  return std::move(step.SetContext(InteractionSequence::ContextMode::kAny)
-                       .AddDescriptionPrefix("InAnyContext()"));
+template <typename... Args>
+  requires(sizeof...(Args) > 0 && (internal::IsValueOrRvalue<Args> && ...))
+InteractiveTestApi::MultiStep InteractiveTestApi::InAnyContext(Args&&... args) {
+  auto steps = Steps(std::forward<Args>(args)...);
+  for (auto& step : steps) {
+    step.SetContext(InteractionSequence::ContextMode::kAny)
+        .AddDescriptionPrefix("InAnyContext()");
+  }
+  return steps;
 }
 
 // static
-template <typename T>
-InteractionSequence::StepBuilder InteractiveTestApi::InSameContext(T&& step) {
-  return std::move(
-      step.SetContext(InteractionSequence::ContextMode::kFromPreviousStep)
-          .AddDescriptionPrefix("InSameContext()"));
+template <typename... Args>
+  requires(sizeof...(Args) > 0 && (internal::IsValueOrRvalue<Args> && ...))
+InteractiveTestApi::MultiStep InteractiveTestApi::InSameContext(
+    Args&&... args) {
+  auto steps = Steps(std::forward<Args>(args)...);
+  for (auto& step : steps) {
+    step.SetContext(InteractionSequence::ContextMode::kFromPreviousStep)
+        .AddDescriptionPrefix("InSameContext()");
+  }
+  return steps;
 }
 
-template <typename T>
-InteractionSequence::StepBuilder InteractiveTestApi::InContext(
+template <typename... Args>
+  requires(sizeof...(Args) > 0 && (internal::IsValueOrRvalue<Args> && ...))
+InteractiveTestApi::MultiStep InteractiveTestApi::InContext(
     ElementContext context,
-    T&& step) {
-  return std::move(
-      step.SetContext(context).AddDescriptionPrefix(base::StringPrintf(
-          "InContext( %p, )", static_cast<const void*>(context))));
+    Args&&... args) {
+  // This context may not yet exist, but we want the pivot element to exist.
+  private_test_impl_->MaybeAddPivotElement(context);
+  auto steps = Steps(std::forward<Args>(args)...);
+  const std::string caller =
+      base::StringPrintf("InContext( %p, )", static_cast<const void*>(context));
+  for (auto& step : steps) {
+    step.SetContext(context).AddDescriptionPrefix(caller);
+  }
+  return steps;
 }
 
 // static
-template <typename T>
+template <typename... Args>
+  requires(sizeof...(Args) > 0 && (internal::IsValueOrRvalue<Args> && ...))
 InteractiveTestApi::MultiStep InteractiveTestApi::InSameContextAs(
     ElementSpecifier element,
-    T&& step) {
-  return InSameContextAs(element, Steps(std::forward<T>(step)));
+    Args&&... steps) {
+  return Steps(
+      WithElement(element, base::DoNothing())
+          .SetContext(InteractionSequence::ContextMode::kAny)
+          .SetDescription("InSameContextAs() - locate reference element"),
+      InSameContext(std::forward<Args>(steps)...));
 }
 
 // static
-template <typename T>
-InteractionSequence::StepBuilder InteractiveTestApi::WithoutDelay(T&& step) {
-  return std::move(
-      step.SetStepStartMode(InteractionSequence::StepStartMode::kImmediate)
-          .AddDescriptionPrefix("WithoutDelay()"));
+template <typename... Args>
+  requires(sizeof...(Args) > 0 && (internal::IsValueOrRvalue<Args> && ...))
+InteractiveTestApi::MultiStep InteractiveTestApi::WithoutDelay(
+    Args&&... steps) {
+  auto result = Steps(std::forward<Args>(steps)...);
+  for (auto& step : result) {
+    step.SetStepStartMode(InteractionSequence::StepStartMode::kImmediate)
+        .AddDescriptionPrefix("WithoutDelay()");
+  }
+  return result;
 }
 
 // static
