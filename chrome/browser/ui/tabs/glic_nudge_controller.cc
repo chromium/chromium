@@ -47,6 +47,7 @@ void GlicNudgeController::OnNudgeActivity(GlicNudgeActivity activity) {
       break;
     case GlicNudgeActivity::kNudgeClicked:
     case GlicNudgeActivity::kNudgeDismissed:
+    case GlicNudgeActivity::kNudgeIgnoredActiveTabChanged:
       nudge_activity_callback_.Run(activity);
       nudge_activity_callback_.Reset();
       break;
@@ -61,7 +62,7 @@ void GlicNudgeController::OnActiveTabChanged(
   for (auto& observer : observers_) {
     observer.OnTriggerGlicNudgeUI(std::string());
   }
-  OnNudgeActivity(tabs::GlicNudgeActivity::kNudgeDismissed);
+  OnNudgeActivity(tabs::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
 }
 
 }  // namespace tabs
