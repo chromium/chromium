@@ -9,7 +9,9 @@
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_fre_controller.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_window_controller.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -138,6 +140,12 @@ GlicMetrics::GlicMetrics(Profile* profile, GlicEnabling* enabling)
   is_enabled_ = enabling_->IsEnabled();
   subscriptions_.push_back(enabling_->RegisterEnableChanged(base::BindRepeating(
       &GlicMetrics::OnEnabledChanged, base::Unretained(this))));
+
+  is_pinned_ = profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
+  pref_registrar_.Init(profile_->GetPrefs());
+  pref_registrar_.Add(prefs::kGlicPinnedToTabstrip,
+                      base::BindRepeating(&GlicMetrics::OnPinningPrefChanged,
+                                          base::Unretained(this)));
 }
 GlicMetrics::~GlicMetrics() = default;
 
@@ -310,6 +318,17 @@ void GlicMetrics::OnEnabledChanged() {
   } else {
     base::RecordAction(base::UserMetricsAction("Glic.Disabled"));
   }
+}
+
+void GlicMetrics::OnPinningPrefChanged() {
+  bool is_pinned =
+      profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
+  if (is_pinned == is_pinned_) {
+    // No change, early exit.
+    return;
+  }
+  is_pinned_ = is_pinned;
+  base::UmaHistogramBoolean("Glic.Settings.TogglePinning", is_pinned_);
 }
 
 }  // namespace glic
