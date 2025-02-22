@@ -533,6 +533,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationSharedImageEncode);
 
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kRenderMutedAudio);
 
+// Serves as killswitch for rolling out Mappable SharedImage mojom support.
+// TODO(crbug.com/40263579): Eliminate post safe rollout.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kSupportMappableSharedImageOverMojo);
+
 // Based on a |command_line| and the current platform, returns the effective
 // autoplay policy. In other words, it will take into account the default policy
 // if none is specified via the command line and options passed for testing.

@@ -1684,6 +1684,12 @@ BASE_FEATURE(kRenderMutedAudio,
              "RenderMutedAudio",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Serves as killswitch for rolling out Mappable SharedImage mojom support.
+// TODO(crbug.com/40263579): Eliminate post safe rollout.
+BASE_FEATURE(kSupportMappableSharedImageOverMojo,
+             "SupportMappableSharedImageOverMojo",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   return base::FeatureList::IsEnabled(kChromeWideEchoCancellation) &&

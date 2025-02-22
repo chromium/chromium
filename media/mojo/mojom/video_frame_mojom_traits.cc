@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -15,6 +16,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
+#include "media/base/media_switches.h"
 #include "media/mojo/mojom/video_frame_metadata_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/system/handle.h"
@@ -29,6 +31,12 @@
 namespace mojo {
 
 namespace {
+
+// Determines whether Mappable SharedImage over mojo is supported.
+bool SupportMappableSI() {
+  return base::FeatureList::IsEnabled(
+      media::kSupportMappableSharedImageOverMojo);
+}
 
 base::ReadOnlySharedMemoryRegion CreateRegion(const media::VideoFrame& frame,
                                               std::vector<uint32_t>& offsets,
@@ -115,6 +123,7 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
             std::move(region), std::move(strides), std::move(offsets)));
   }
 
+  bool is_mappable_si_enabled = input->is_mappable_si_enabled();
   if (input->HasMappableGpuBuffer()) {
     auto gpu_memory_buffer_handle = input->GetGpuMemoryBufferHandle();
 
@@ -122,8 +131,16 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     std::optional<gpu::ExportedSharedImage> shared_image;
     gpu::SyncToken sync_token;
     if (input->HasSharedImage()) {
-      shared_image = input->shared_image()->Export();
+      bool with_buffer_handle = is_mappable_si_enabled && SupportMappableSI();
+      shared_image = input->shared_image()->Export(with_buffer_handle);
       sync_token = input->acquire_sync_token();
+
+      if (with_buffer_handle) {
+        return media::mojom::VideoFrameData::NewSharedImageData(
+            media::mojom::SharedImageVideoFrameData::New(
+                std::move(shared_image.value()), std::move(sync_token),
+                is_mappable_si_enabled, std::move(input->ycbcr_info())));
+      }
     }
 
     return media::mojom::VideoFrameData::NewGpuMemoryBufferSharedImageData(
@@ -133,11 +150,14 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
   }
 
   if (input->HasSharedImage()) {
+    // Mappable SI should only be used with `HasMappableGpuBuffer()`
+    // VideoFrames.
+    CHECK(!is_mappable_si_enabled);
     gpu::ExportedSharedImage shared_image = input->shared_image()->Export();
     return media::mojom::VideoFrameData::NewSharedImageData(
         media::mojom::SharedImageVideoFrameData::New(
             std::move(shared_image), input->acquire_sync_token(),
-            std::move(input->ycbcr_info())));
+            /*is_mappable_si_enabled=*/false, std::move(input->ycbcr_info())));
   }
 
   if (input->storage_type() == media::VideoFrame::STORAGE_OPAQUE) {
@@ -341,9 +361,25 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       return false;
     }
 
-    frame = media::VideoFrame::WrapSharedImage(
-        format, shared_image, sync_token, media::VideoFrame::ReleaseMailboxCB(),
-        coded_size, visible_rect, natural_size, timestamp);
+    bool is_mappable_si_enabled = shared_image_data.is_mappable_si_enabled();
+    if (is_mappable_si_enabled && SupportMappableSI()) {
+      // VideoFrame should have buffer usage if Mappable SharedImage is enabled.
+      // NOTE: This isn't exactly correct for software SharedImages can be
+      // mappable but do not have buffer usage. But since, such software
+      // SharedImages are not used with VideoFrames this should work.
+      if (!shared_image->buffer_usage().has_value()) {
+        return false;
+      }
+      frame = media::VideoFrame::WrapMappableSharedImage(
+          shared_image, sync_token,
+          media::VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB(), visible_rect,
+          natural_size, timestamp);
+    } else {
+      frame = media::VideoFrame::WrapSharedImage(
+          format, shared_image, sync_token,
+          media::VideoFrame::ReleaseMailboxCB(), coded_size, visible_rect,
+          natural_size, timestamp);
+    }
 
     frame->set_ycbcr_info(ycbcr_info);
   } else if (data.is_opaque_data()) {
