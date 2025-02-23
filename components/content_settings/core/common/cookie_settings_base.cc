@@ -119,6 +119,15 @@ bool IsThirdPartyRequest(const GURL& url,
              .CanAccessCookies(url, site_for_cookies) != net::OK;
 }
 
+// Returns true if the request is eligible for storage access.
+// https://privacycg.github.io/storage-access-headers/#request-eligible-for-storage-access
+bool IsEligibleForStorageAccess(net::CookieSettingOverrides overrides) {
+  return overrides.Has(
+             net::CookieSettingOverride::kStorageAccessGrantEligible) ||
+         overrides.Has(
+             net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
+}
+
 }  // namespace
 
 bool CookieSettingsBase::storage_access_api_grants_unpartitioned_storage_ =
@@ -803,10 +812,10 @@ CookieSettingsBase::GetStorageAccessStatus(
                                 overrides)) {
     return net::cookie_util::StorageAccessStatus::kActive;
   }
-  if (!overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible) &&
-      !overrides.Has(
-          net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader) &&
-      IsFullCookieAccessAllowed(
+  if (IsEligibleForStorageAccess(overrides)) {
+    return net::cookie_util::StorageAccessStatus::kNone;
+  }
+  if (IsFullCookieAccessAllowed(
           url, site_for_cookies, top_frame_origin,
           base::Union(overrides, {net::CookieSettingOverride::
                                       kStorageAccessGrantEligibleViaHeader}))) {
