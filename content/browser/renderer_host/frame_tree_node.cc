@@ -853,6 +853,18 @@ bool FrameTreeNode::NotifyUserActivation(
   return true;
 }
 
+bool FrameTreeNode::AreAncestorsSecure() {
+  RenderFrameHostImpl* frame = parent();
+  while (frame) {
+    if (!network::IsOriginPotentiallyTrustworthy(
+            frame->GetLastCommittedOrigin())) {
+      return false;
+    }
+    frame = frame->GetParent();
+  }
+  return true;
+}
+
 bool FrameTreeNode::ConsumeTransientUserActivation() {
   bool was_active = current_frame_host()->IsActiveUserActivation();
   for (FrameTreeNode* node : frame_tree().Nodes()) {
