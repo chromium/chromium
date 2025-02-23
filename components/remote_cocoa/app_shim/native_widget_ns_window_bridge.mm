@@ -419,33 +419,44 @@ void NativeWidgetNSWindowBridge::SetParent(uint64_t new_parent_id) {
     parent_->RemoveChildWindow(this);
     parent_ = nullptr;
   }
-  if (!new_parent_id)
-    return;
 
-  // It is only valid to have a NativeWidgetMac be the parent of another
-  // NativeWidgetMac.
+  // Strip the managed/transient collection behavior bits; they will be reset
+  // later.
+  NSWindowCollectionBehavior collectionBehavior =
+      window_.collectionBehavior & ~(NSWindowCollectionBehaviorManaged |
+                                     NSWindowCollectionBehaviorTransient);
+
+  // If `new_parent_id` is 0 or is invalid, leave the window as a top-level
+  // window.
+  //
+  // Details: When the OS tells us a window is closing it is removed from the id
+  // map. Since nothing is stopping the browser process from still trying to use
+  // that id until the browser process has been informed that the window is
+  // gone, it is totally possible to be passed no longer valid ids.
   NativeWidgetNSWindowBridge* new_parent =
-      NativeWidgetNSWindowBridge::GetFromId(new_parent_id);
-  if (!new_parent) {
-    // When the OS tells us a window is closing it is removed from the id map.
-    // Since nothing is stopping the browser process from still trying to use
-    // that id until the browser process has been informed that the window is
-    // gone, it is totally possible to be passed no longer valid ids here.
+      new_parent_id ? NativeWidgetNSWindowBridge::GetFromId(new_parent_id)
+                    : nil;
+  if (!new_parent_id || !new_parent) {
+    // When a window doesn't have a parent, it should have normal managed
+    // collection behavior.
+    window_.collectionBehavior =
+        collectionBehavior | NSWindowCollectionBehaviorManaged;
     return;
   }
 
   parent_ = new_parent;
   parent_->child_windows_.push_back(this);
 
+  // When a window has a parent, it must not have a fixed Space, otherwise
   // Widget::ShowInactive() could result in a Space switch when the widget has a
-  // parent, and we're calling -orderWindow:relativeTo:. Use Transient
-  // collection behaviour to prevent that.
-  // https://crbug.com/697829
-  [window_ setCollectionBehavior:[window_ collectionBehavior] |
-                                 NSWindowCollectionBehaviorTransient];
+  // parent, and we're calling -orderWindow:relativeTo:. Therefore, give it
+  // transient collection behavior. See https://crbug.com/41305285.
+  window_.collectionBehavior =
+      collectionBehavior | NSWindowCollectionBehaviorTransient;
 
-  if (wants_to_be_visible_)
+  if (wants_to_be_visible_) {
     parent_->OrderChildren();
+  }
 }
 
 void NativeWidgetNSWindowBridge::CreateSelectFileDialog(
