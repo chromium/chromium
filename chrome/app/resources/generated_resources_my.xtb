@@ -1009,6 +1009,7 @@
 <translation id="1682696837763999627">မောက်စ်ကာဆာအကြီး</translation>
 <translation id="1682867089915960590">Caret ဖြင့်ရှာဖွေခြင်းကို ဖွင့်မလား။</translation>
 <translation id="1686550358074589746">လက်ကိုရွှေ့၍ စာရိုက်ခြင်း ဖွင့်ရန်</translation>
+<translation id="1686785653877010442">သတင်းထူး (သို့) ချတ်မက်ဆေ့ဂျ်များအကြောင်း သင့်အား အသိပေးရန် ဝဘ်ဆိုက်များက အကြောင်းကြားချက် ပို့လေ့ရှိသည်။</translation>
 <translation id="168715261339224929">သင်၏ဝဘ်လိပ်စာများကို သင့်စက်များအားလုံးတွင် ရယူနိုင်ရန် စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ။</translation>
 <translation id="1688935057616748272">စာလုံးတစ်လုံး ရိုက်ရန်</translation>
 <translation id="1689333818294560261">နာမည်ပြောင်</translation>
@@ -1292,6 +1293,7 @@
 <translation id="1878885068166344708">အထူးပြသမှု ပြောင်းလိုက်သောအခါ အကြောင်းအရာကို မြင်သာအောင်လုပ်ပေးသည်။ အထူးပြသမှုပြောင်းရန် တဘ်ကို နှိပ်ပါ (သို့) အကြောင်းအရာကို ရွေးပါ။</translation>
 <translation id="1879000426787380528">အောက်ပါအဖြစ် လက်မှတ်ထိုးဝင်ပါ-</translation>
 <translation id="18802377548000045">ဗြက်အကြီးအတိုင်း တဘ်များကို ချုံ့မည်</translation>
+<translation id="1880618477732738742">ဤနောက်ဆက်တွဲအပါအဝင် သင်၏ ဝဘ်ဆိုက်နှင့် နောက်ဆက်တွဲအားလုံးအတွက် ပထဝီတည်နေရာ၊ မိုက်ခရိုဖုန်း၊ ကင်မရာ၊ ကွတ်ကီးများ စသည်တို့ကဲ့သို့သော ဝန်ဆောင်မှုများသုံးခွင့်ကို ပြောင်းရန်၊ ခွင့်ပြုရန်။</translation>
 <translation id="1880905663253319515">လက်မှတ် "<ph name="CERTIFICATE_NAME" />"ကို ဖျက်ရမလား?</translation>
 <translation id="1881445033931614352">လက်ကွက် အပြင်အဆင်</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{ဖိုင်}other{ဖိုင် # ဖိုင်}}</translation>
@@ -2096,7 +2098,7 @@
 <translation id="2435248616906486374">ကွန်ရက် ချိတ်ဆက်မှုပျက်တောက်</translation>
 <translation id="2435457462613246316">စကားဝှက်ကို ပြပါ</translation>
 <translation id="2436385001956947090">&amp;လင့်ခ် မိတ္တူကူးရန်</translation>
-<translation id="2437561292559037753">ဒေတာ မျှဝေခြင်း</translation>
+<translation id="2437561292559037753">ဒေတာမျှဝေခြင်း</translation>
 <translation id="2438853563451647815">ပရင်တာသို့ ချိတ်ဆက်မထားပါ</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> စကားဝှက် ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> ကို ဖွင့်နေသည်</translation>
@@ -3480,6 +3482,7 @@
 <translation id="3435738964857648380">လုံခြုံရေး</translation>
 <translation id="343578350365773421">စာရွက်ကုန်နေသည်</translation>
 <translation id="3435896845095436175">ဖွင့်ပေးရန်</translation>
+<translation id="3437397693214267762">သင်၏ Outlook Calendar၊ SharePoint နှင့် OneDrive ဖိုင်များကို ကြည့်ပါ</translation>
 <translation id="3438633801274389918">နင်ဂျာ</translation>
 <translation id="3439153939049640737"><ph name="HOST" />သင်၏ မိုက်ခရိုဖုန်းကို ရယူမှု အမြဲတမ်း ခွင်ပြုရန်</translation>
 <translation id="3439970425423980614">PDF ကို အစမ်းကြည့်ထဲ ဖွင့်ရန်</translation>
@@ -7138,6 +7141,7 @@
     သင်၏ လိပ်စာ၊ ဖိုင်နှင့် အခြားအရာအားလုံးကို လွယ်ကူစွာ သုံးနိုင်ရန် သင့်အကောင့်ကို သုံးနိုင်သည်။ သင့်တွင် အကောင့်မရှိပါက လာမည့်ဖန်သားပြင်၌ အကောင့်ဖွင့်နိုင်သည်။</translation>
 <translation id="6054138466019582920">ဤစာမျက်နှာကို Google ဖြင့် ရှာရန်...</translation>
 <translation id="6054284857788651331">မကြာသေးမီက ပိတ်ထားသော တဘ်အုပ်စု</translation>
+<translation id="6054819000749443354">စနစ်ဆက်တင်များ ဖွင့်ရန်</translation>
 <translation id="6054961935262556546">မြင်နိုင်မှုကို ပြောင်းရန်</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 RSA လျှို့ဝှက်ကုဒ် သွင်းမှုဖြင့်</translation>
 <translation id="6055544610007596637">သင်၏ <ph name="DEVICE_TYPE" /> အတွက် Google Play Store မှ အက်ပ်များကို ထည့်သွင်းပါ</translation>
@@ -8959,6 +8963,7 @@
 <translation id="7380459290951585794">သင့်ဖုန်းသည် အနီးတွင်ရှိပြီး လော့ခ်ဖွင့်ထားကာ ဘလူးတုသ်နှင့် Wi-Fi ဖွင့်ထားကြောင်း သေချာပါစေ</translation>
 <translation id="7380622428988553498">စက်အမည်တွင် မမှန်ကန်သော အက္ခရာများပါဝင်သည်</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> က အပ်ဒိတ်လုပ်ထားသည်</translation>
+<translation id="7382009635620830394">ဤကတ်ကို ပိတ်ပါက SharePoint နှင့် OneDrive ဖိုင်များ၊ Outlook Calendar တို့ကဲ့သို့သော သင်၏ Microsoft ကတ်များကိုလည်း ပိတ်ပါမည်။</translation>
 <translation id="7382085868019811559">‘ဝဘ်ဆိုက်အဟောင်း ဖွင့်ရန် အကူအညီ’ (LBS) သည် အဆိုပါဝဘ်ဆိုက်များ မှန်ကန်စွာဖွင့်နိုင်ရန် လိုအပ်သော ဝန်ဆောင်မှုအဟောင်းများကို ပံ့ပိုးသည့် အခြား ဘရောင်ဇာတွင် သက်ဆိုင်ရာ URL ပုံစံများကို ဖွင့်ခွင့်ပြုသည်။</translation>
 <translation id="7382980704744807223">သံသယဖြစ်ဖွယ်</translation>
 <translation id="738322632977123193">အပ်လုဒ်လုပ်၍ မရပါ။ ပုံအတွက် ဤဖော်မက်များအနက် တစ်ခုကိုသုံးပါ- .jpg၊ .gif၊ .png၊ .bmp၊ .tif (သို့) .webp</translation>
@@ -10628,6 +10633,7 @@
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> ကို <ph name="MANAGER" /> က စီမံခန့်ခွဲနေသည်။ ဤအီးမေးလ်ကို အခြားအကောင့်အဖြစ် ထည့်သွင်း၍ မရပါ။<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" /><ph name="USER_EMAIL" /> ကို သုံးရန် <ph name="DEVICE_TYPE" /> မှ အရင်ဆုံး ထွက်ပါ။ ထို့နောက် အကောင့်ဝင်ခြင်း ဖန်သားပြင်အောက်ခြေတွင် ‘ပုဂ္ဂိုလ် ထည့်ရန်’ ကို ရွေးပါ။<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">အပေါ်ဆုံးအတန်း ခလုတ်များ၏ အမူအကျင့်ကို ပြောင်းရန် Search ကီး ကိုဖိထားပါ</translation>
+<translation id="8549127125482561383">တောင်းဆိုချက်များ ပြနည်း</translation>
 <translation id="8549316893834449916">သင့် Chromebook သို့ လက်မှတ်ထိုးဝင်ရန် Gmail၊ Drive၊ YouTube နှင့် အခြားအရာများအတွက် အသုံးပြုသော သင်၏ Google Account ကို အသုံးပြုရမည်။</translation>
 <translation id="8550239873869577759">သံသယဖြစ်ဖွယ်ဖိုင်ကို ဒေါင်းလုဒ်လုပ်ထားသည်</translation>
 <translation id="8551388862522347954">လိုင်စင်များ</translation>

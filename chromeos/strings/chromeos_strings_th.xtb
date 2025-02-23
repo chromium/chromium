@@ -473,6 +473,7 @@
 <translation id="3226657629376379887">เมนูการทำงานสำหรับเลย์เอาต์</translation>
 <translation id="3227186760713762082">นำค่า <ph name="CATEGORY_TEXT" /> มาหารด้วย <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">ระบบจะนำงานพิมพ์ที่เก่ากว่า 1 วันออก</translation>
+<translation id="3248791727258378769">ระบบจะไม่สร้างข้อความถอดเสียง</translation>
 <translation id="324961752321393509">ผู้ดูแลระบบไม่อนุญาตให้ปิดแอปนี้</translation>
 <translation id="3263941347294171263">ถอดสายของ <ph name="DEVICE_NAME" /> แล้วเสียบใหม่เพื่ออัปเดตต่อ</translation>
 <translation id="3268178239013324452">ไม่สำเร็จ - ฝาเครื่องเปิดอยู่</translation>
@@ -672,6 +673,7 @@
 <translation id="420283545744377356">ปิดโปรแกรมรักษาหน้าจอ</translation>
 <translation id="4210636113897977670">บันทึกและออก</translation>
 <translation id="4210659479607886331">แม่น้ำจากธารน้ำแข็ง</translation>
+<translation id="4212169537710712814">ดาวน์โหลดโมเดลการถอดเสียงเป็นคำของภาษา<ph name="LANGUAGE_NAME" />เสร็จสมบูรณ์แล้ว</translation>
 <translation id="42126664696688958">ส่งออก</translation>
 <translation id="4213104098953699324">แป้นพิมพ์ USB</translation>
 <translation id="4227825898293920515">รหัสผ่านจะหมดอายุในอีก <ph name="TIME" /></translation>
@@ -942,6 +944,7 @@
 <translation id="5431318178759467895">สี</translation>
 <translation id="5457599981699367932">ท่องเว็บในฐานะผู้มาเยือน</translation>
 <translation id="54609108002486618">มีการจัดการ</translation>
+<translation id="5461608756903394951">กำลังดาวน์โหลดโมเดลการถอดเสียงเป็นคำของภาษา<ph name="LANGUAGE_NAME" /></translation>
 <translation id="5470776029649730099">ผ้ากระสอบ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{ลองได้อีก {0} ครั้ง}other{ลองได้อีก {0} ครั้ง}}</translation>
 <translation id="5488280942828718790">ม่วงแดง</translation>
@@ -1193,6 +1196,7 @@
 <translation id="6595046262780525922">เปิดการถอดเสียงเป็นคำและดาวน์โหลดโมเดลการถอดเสียงเป็นคำไหม</translation>
 <translation id="6596816719288285829">ที่อยู่ IP</translation>
 <translation id="6599673642868607614">ขอขอบคุณที่แสดงความคิดเห็น ความคิดเห็นของคุณจะช่วยเราปรับปรุงประสบการณ์การใช้งาน Chromebook และได้รับการตรวจสอบจากทีม แต่เราจะตอบกลับไม่ได้เนื่องจากได้รับรายงานเข้ามาเป็นจำนวนมาก</translation>
+<translation id="6608043585557830684">การถอดเสียงเป็นคำปิดอยู่ เปิดในการตั้งค่าหรือในเมนู <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="660846213831377756">แป้นเมาส์</translation>
 <translation id="6618744767048954150">กำลังดำเนินการ</translation>
 <translation id="6620487321149975369">งานพิมพ์จะปรากฏในประวัติการพิมพ์ เว้นแต่จะมีผู้ใช้นำออกไปด้วยตนเอง</translation>

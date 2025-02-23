@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">စာရေးခုံ ၂</translation>
 <translation id="1546930421365146760">သင့်စီမံခန့်ခွဲသူအား ‘Google စီမံခန့်ခွဲသူ’ ကွန်ဆိုးလ်တွင် ဤစက်ကို စနစ်ထည့်သွင်းခိုင်းပါ</translation>
 <translation id="1549512626801247439">သိုလှောင်ခန်းစီမံခန့်ခွဲမှုစနစ်</translation>
+<translation id="1549721333775633305">‘အမြန် မျှဝေပါ’ ဆက်တင်များကို ပြပါ။ ‘အမြန် မျှဝေပါ’ ပိတ်ထားသည်</translation>
 <translation id="1550406609415860283">ရနိုင်သောစက်များ</translation>
 <translation id="1550523713251050646">ပိုမိုရွေးစရာများအတွက် နှိပ်ပါ</translation>
 <translation id="1555130319947370107">အပြာရောင်</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ကို ဖွင့်မထားပါ။</translation>
 <translation id="5860033963881614850">ပိတ်ထား</translation>
 <translation id="5860491529813859533">ဖွင့်ရန်</translation>
+<translation id="5864691701242730005">‘အမြန် မျှဝေပါ’ ဆက်တင်များကို ပြပါ။ <ph name="VISIBILITY" /> မြင်နိုင်မှု ရွေးထားသည်</translation>
 <translation id="5864748620896638071">ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">ကွန်ရက်အချက်အလက်ကို စုစည်းနေသည်</translation>
 <translation id="5867606971598166637">သင့်စီမံခန့်ခွဲသူက ဖန်သားပြင်ကို စောင့်ကြည့်စစ်ဆေးလျက်ရှိသည်</translation>
@@ -2262,6 +2264,7 @@
 <translation id="851660987304951246">အကြောင်းအရာများ အမြန်အနှစ်ချုပ်ရန် (သို့) မေးခွန်းများမေးရန် ‘ကူဖတ်ပေးပါ’ သုံးနိုင်သည်</translation>
 <translation id="8517041960877371778">သင်၏ <ph name="DEVICE_TYPE" /> ကိရိယာမှာ ဖွင့်ထားလျှင် အားသွင်း၍ ရချင်မှရမည်.</translation>
 <translation id="8535393432370007982">အရောင်ဖြင့် အစီအစဉ်တကျစီစဉ်မှုကို နောက်ပြန်ရန်</translation>
+<translation id="8536886494750559755">‘အမြန် မျှဝေပါ’ ဆက်တင်များကို ပြပါ။ <ph name="TIME_REMAINING" /> အထိ လူတိုင်းမြင်နိုင်သည်</translation>
 <translation id="8539803091108018926">စာသားကို ‘ကလစ်ဘုတ်’ သို့ မိတ္တူကူးလိုက်ပါပြီ</translation>
 <translation id="8541078764854166027">ကင်မရာဘောင်ချိန်ရန်</translation>
 <translation id="8542053257095774575">သိမ်းထားသည့် မျက်နှာပြင်များ (သို့) ပုံစံများ မရှိပါ</translation>
