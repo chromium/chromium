@@ -6,15 +6,20 @@
 
 #include <array>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/generative_ai_country_restrictions.h"
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 #include "ash/public/cpp/lobster/lobster_text_input_context.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/base/network_change_notifier.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -85,10 +90,37 @@ bool IsImeAllowed(std::string_view current_ime_id) {
   return kImeAllowlist.contains(current_ime_id);
 }
 
+specialized_features::FeatureAccessConfig CreateFeatureAccessConfig() {
+  specialized_features::FeatureAccessConfig config;
+  config.disabled_in_kiosk_mode = true;
+
+  // Dogfood devices ignore all other checks.
+  if (base::FeatureList::IsEnabled(ash::features::kLobsterDogfood)) {
+    return config;
+  }
+
+  config.feature_flag = &ash::features::kLobster;
+  config.feature_management_flag = &ash::features::kFeatureManagementLobster;
+  config.capability_callback =
+      base::BindRepeating([](AccountCapabilities capabilities) {
+        return capabilities.can_use_manta_service();
+      });
+  config.country_codes = ash::GetGenerativeAiCountryAllowlist();
+  return config;
+}
+
 }  // namespace
 
-LobsterSystemStateProvider::LobsterSystemStateProvider(Profile* profile)
-    : profile_(profile) {}
+LobsterSystemStateProvider::LobsterSystemStateProvider(
+    PrefService* pref,
+    signin::IdentityManager* identity_manager)
+    : pref_(pref),
+      access_checker_(CreateFeatureAccessConfig(),
+                      pref_,
+                      identity_manager,
+                      /*variations_service_callback=*/base::BindRepeating([]() {
+                        return g_browser_process->variations_service();
+                      })) {}
 
 LobsterSystemStateProvider::~LobsterSystemStateProvider() = default;
 
@@ -97,12 +129,57 @@ ash::LobsterSystemState LobsterSystemStateProvider::GetSystemState(
   ash::LobsterSystemState system_state(ash::LobsterStatus::kEnabled,
                                        /*failed_checks=*/{});
 
+  specialized_features::FeatureAccessFailureSet access_checker_failure_set =
+      access_checker_.Check();
+
+  // Performs feature flag check
+  if (access_checker_failure_set.Has(
+          specialized_features::FeatureAccessFailure::kFeatureFlagDisabled)) {
+    system_state.status = ash::LobsterStatus::kBlocked;
+    system_state.failed_checks.Put(
+        ash::LobsterSystemCheck::kInvalidFeatureFlags);
+  }
+
+  // Performs a hardware check
+  if (access_checker_failure_set.Has(
+          specialized_features::FeatureAccessFailure::
+              kFeatureManagementCheckFailed)) {
+    system_state.status = ash::LobsterStatus::kBlocked;
+    system_state.failed_checks.Put(
+        ash::LobsterSystemCheck::kUnsupportedHardware);
+  }
+
+  // Performs a location check
+  if (access_checker_failure_set.Has(
+          specialized_features::FeatureAccessFailure::kCountryCheckFailed)) {
+    system_state.status = ash::LobsterStatus::kBlocked;
+    system_state.failed_checks.Put(ash::LobsterSystemCheck::kInvalidRegion);
+  }
+
+  // Performs account capabilities check
+  if (access_checker_failure_set.Has(
+          specialized_features::FeatureAccessFailure::
+              kAccountCapabilitiesCheckFailed)) {
+    system_state.status = ash::LobsterStatus::kBlocked;
+    system_state.failed_checks.Put(
+        ash::LobsterSystemCheck::kUnsatisfiedAccountCapabilitiesCheck);
+  }
+
+  // Performs a kiosk mode check
+  if (access_checker_failure_set.Has(
+          specialized_features::FeatureAccessFailure::
+              kDisabledInKioskModeCheckFailed)) {
+    system_state.status = ash::LobsterStatus::kBlocked;
+    system_state.failed_checks.Put(
+        ash::LobsterSystemCheck::kUnsupportedInKioskMode);
+  }
+
   if (!IsInputTypeAllowed(text_input_context.text_input_type)) {
     system_state.status = ash::LobsterStatus::kBlocked;
     system_state.failed_checks.Put(ash::LobsterSystemCheck::kInvalidInputField);
   }
 
-  if (!profile_->GetPrefs()->GetBoolean(ash::prefs::kLobsterEnabled)) {
+  if (!pref_->GetBoolean(ash::prefs::kLobsterEnabled)) {
     system_state.status = ash::LobsterStatus::kBlocked;
     system_state.failed_checks.Put(ash::LobsterSystemCheck::kSettingsOff);
   }
@@ -122,7 +199,7 @@ ash::LobsterSystemState LobsterSystemStateProvider::GetSystemState(
   }
 
   ash::LobsterConsentStatus consent_status = GetConsentStatusFromInteger(
-      profile_->GetPrefs()->GetInteger(ash::prefs::kOrcaConsentStatus));
+      pref_->GetInteger(ash::prefs::kOrcaConsentStatus));
 
   if (consent_status == ash::LobsterConsentStatus::kDeclined) {
     system_state.failed_checks.Put(ash::LobsterSystemCheck::kInvalidConsent);

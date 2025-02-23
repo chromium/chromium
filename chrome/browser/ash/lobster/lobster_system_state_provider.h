@@ -7,25 +7,32 @@
 
 #include "ash/public/cpp/lobster/lobster_text_input_context.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "ui/base/ime/text_input_type.h"
 
-class Profile;
+class PrefService;
 
 namespace ash {
 struct LobsterSystemState;
 }  // namespace ash
 
-// TODO(b/348280621): Complete enable/disable logic.
+namespace signin {
+class IdentityManager;
+}
+
 class LobsterSystemStateProvider {
  public:
-  explicit LobsterSystemStateProvider(Profile* profile);
+  explicit LobsterSystemStateProvider(
+      PrefService* pref,
+      signin::IdentityManager* identity_manager);
   ~LobsterSystemStateProvider();
 
   ash::LobsterSystemState GetSystemState(
       const ash::LobsterTextInputContext& text_input_context);
 
  private:
-  raw_ptr<Profile> profile_;
+  raw_ptr<PrefService> pref_;
+  specialized_features::FeatureAccessChecker access_checker_;
 };
 
 #endif  // CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SYSTEM_STATE_PROVIDER_H_
