@@ -26,6 +26,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_discard_reason.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-forward.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -107,6 +108,10 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // guest view.
   bool IsMainFrame() const;
   bool IsOutermostMainFrame() const;
+
+  // Returns true if all the ancestors of the current frame have a potentially
+  // trustworthy origin.
+  bool AreAncestorsSecure();
 
   FrameTree& frame_tree() const { return frame_tree_.get(); }
   Navigator& navigator();

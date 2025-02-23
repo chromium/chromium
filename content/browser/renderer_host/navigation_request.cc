@@ -304,17 +304,6 @@ void UpdateLoadFlagsWithCacheFlags(int* load_flags,
   }
 }
 
-// TODO(clamy): This should be function in FrameTreeNode.
-bool IsSecureFrame(RenderFrameHostImpl* frame) {
-  while (frame) {
-    if (!network::IsOriginPotentiallyTrustworthy(
-            frame->GetLastCommittedOrigin()))
-      return false;
-    frame = frame->GetParent();
-  }
-  return true;
-}
-
 // This should match blink::ResourceRequest::needsHTTPOrigin.
 bool NeedsHTTPOrigin(net::HttpRequestHeaders* headers,
                      const std::string& method) {
@@ -5410,7 +5399,7 @@ void NavigationRequest::OnStartChecksComplete(
           frame_tree_node_->current_frame_host()->IsInPrimaryMainFrame(),
           frame_tree_node_->IsOutermostMainFrame(),
           frame_tree_node_->IsMainFrame(),
-          IsSecureFrame(frame_tree_node_->parent()),
+          frame_tree_node_->AreAncestorsSecure(),
           frame_tree_node_->frame_tree_node_id(), report_raw_headers,
           upgrade_if_insecure_,
           blob_url_loader_factory_ ? blob_url_loader_factory_->Clone()
@@ -6011,7 +6000,7 @@ void NavigationRequest::InheritServiceWorkerControllerFromParentIfNeeded() {
       service_worker_context->context()
           ->service_worker_client_owner()
           .CreateServiceWorkerClientForWindow(
-              IsSecureFrame(frame_tree_node_->parent()),
+              frame_tree_node_->AreAncestorsSecure(),
               frame_tree_node_->frame_tree_node_id()),
       GetIsolationInfo());
   service_worker_handle_->service_worker_client()->InheritControllerFrom(
