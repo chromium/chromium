@@ -113,8 +113,6 @@ std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
         for (AttributeType type : DenseSet<AttributeType>::all()) {
           result.insert(type.field_type());
         }
-        // Some attributes may map to `UNKNOWN_TYPE` - remove that.
-        result.erase(UNKNOWN_TYPE);
         return result;
       }();
       return kAutofillAiFieldTypes;
