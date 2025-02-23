@@ -1009,6 +1009,7 @@
 <translation id="1682696837763999627">เคอร์เซอร์เมาส์ขนาดใหญ่</translation>
 <translation id="1682867089915960590">เปิดการเรียกดูด้วยแป้นพิมพ์ใช่ไหม</translation>
 <translation id="1686550358074589746">เปิดใช้การพิมพ์แบบเลื่อนผ่าน</translation>
+<translation id="1686785653877010442">เว็บไซต์มักจะส่งการแจ้งเตือนเพื่อแจ้งให้คุณทราบเกี่ยวกับข่าวด่วนหรือข้อความแชท</translation>
 <translation id="168715261339224929">เปิดการซิงค์เพื่อรับบุ๊กมาร์กในอุปกรณ์ทุกเครื่องของคุณ</translation>
 <translation id="1688935057616748272">พิมพ์ตัวอักษร</translation>
 <translation id="1689333818294560261">ชื่อเล่น</translation>
@@ -1284,6 +1285,7 @@
 <translation id="1878885068166344708">ระบบจะไฮไลต์รายการเมื่อย้ายโฟกัส กด Tab หรือเลือกรายการเพื่อเปลี่ยนโฟกัส</translation>
 <translation id="1879000426787380528">ลงชื่อเข้าใช้ด้วย</translation>
 <translation id="18802377548000045">แท็บจะย่อจนมีความกว้างที่ใหญ่</translation>
+<translation id="1880618477732738742">เปลี่ยนและให้สิทธิ์เข้าถึงฟีเจอร์ต่างๆ เช่น ตำแหน่งทางภูมิศาสตร์ ไมโครโฟน กล้อง คุกกี้ ฯลฯ สำหรับเว็บไซต์และส่วนขยายทั้งหมด รวมถึงส่วนขยายนี้</translation>
 <translation id="1880905663253319515">ลบใบรับรอง "<ph name="CERTIFICATE_NAME" />" หรือไม่</translation>
 <translation id="1881445033931614352">รูปแบบแป้นพิมพ์</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{รายการ}other{# รายการ}}</translation>
@@ -3466,6 +3468,7 @@
 <translation id="3435738964857648380">ความปลอดภัย</translation>
 <translation id="343578350365773421">กระดาษหมด</translation>
 <translation id="3435896845095436175">เปิดการใช้งาน</translation>
+<translation id="3437397693214267762">ดูปฏิทิน Outlook และไฟล์ SharePoint และ OneDrive</translation>
 <translation id="3438633801274389918">นินจา</translation>
 <translation id="3439153939049640737">อนุญาตให้ <ph name="HOST" /> เข้าถึงไมโครโฟนของคุณเสมอ</translation>
 <translation id="3439970425423980614">กำลังเปิด PDF ในหน้าตัวอย่าง</translation>
@@ -7121,6 +7124,7 @@
     ใช้บัญชีเพื่อเข้าถึงบุ๊กมาร์ก ไฟล์ และอื่นๆ ทั้งหมดได้อย่างง่ายดาย หากไม่มีบัญชี คุณสามารถสร้างได้ในหน้าจอถัดไป</translation>
 <translation id="6054138466019582920">ค้นหาหน้านี้ด้วย Google...</translation>
 <translation id="6054284857788651331">กลุ่มแท็บที่เพิ่งปิด</translation>
+<translation id="6054819000749443354">เปิดการตั้งค่าระบบ</translation>
 <translation id="6054961935262556546">เปลี่ยนระดับการเข้าถึง</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 พร้อมการเข้ารหัส RSA</translation>
 <translation id="6055544610007596637">ติดตั้งแอปสำหรับ <ph name="DEVICE_TYPE" /> จาก Google Play Store</translation>
@@ -8944,6 +8948,7 @@
 <translation id="7380459290951585794">ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ ปลดล็อกแล้ว และเปิดบลูทูธกับ Wi-Fi ไว้</translation>
 <translation id="7380622428988553498">ชื่ออุปกรณ์มีอักขระที่ไม่ถูกต้อง</translation>
 <translation id="7380768571499464492">อัปเดต <ph name="PRINTER_NAME" /> แล้ว</translation>
+<translation id="7382009635620830394">หากปิดใช้การ์ดนี้ การ์ด Microsoft เช่น ไฟล์ SharePoint และ OneDrive และปฏิทิน Outlook จะปิดใช้ด้วย</translation>
 <translation id="7382085868019811559">การรองรับเบราว์เซอร์เวอร์ชันเก่า (LBS) อนุญาตให้เปิดรูปแบบ URL ที่เจาะจงในเบราว์เซอร์สำรองที่รองรับฟีเจอร์เดิมซึ่งต้องใช้เพื่อให้เว็บไซต์เหล่านั้นทำงานได้อย่างถูกต้อง</translation>
 <translation id="7382980704744807223">น่าสงสัย</translation>
 <translation id="738322632977123193">อัปโหลดไม่ได้ ใช้รูปภาพที่มีรูปแบบใดรูปแบบหนึ่งต่อไปนี้ ได้แก่ .jpg, .gif, .png, .bmp, .tif หรือ .webp</translation>
@@ -10613,6 +10618,7 @@
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> จัดการโดย <ph name="MANAGER" /> คุณเพิ่มอีเมลนี้เป็นบัญชีเสริมไม่ได้<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />หากต้องการใช้ <ph name="USER_EMAIL" /> ให้ออกจากระบบ <ph name="DEVICE_TYPE" /> ก่อน จากนั้นเลือก "เพิ่มบุคคล" ที่ด้านล่างของหน้าจอการเข้าสู่ระบบ<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">กดแป้น "ค้นหา" ค้างไว้เพื่อเปลี่ยนการทำงานของแป้นแถวบนสุด</translation>
+<translation id="8549127125482561383">วิธีแสดงคำขอ</translation>
 <translation id="8549316893834449916">ลงชื่อเข้าใช้ Chromebook ของคุณด้วยบัญชี Google ซึ่งเป็นบัญชีเดียวกันกับ Gmail, ไดรฟ์, YouTube และอื่นๆ</translation>
 <translation id="8550239873869577759">ดาวน์โหลดไฟล์ที่น่าสงสัยแล้ว</translation>
 <translation id="8551388862522347954">ใบอนุญาต</translation>

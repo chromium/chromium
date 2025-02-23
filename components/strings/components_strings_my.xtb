@@ -2255,6 +2255,7 @@
 <translation id="4989809363548539747">ဤပလတ်အင်အား ပံ့ပိုးထားခြင်း မရှိပါ</translation>
 <translation id="4990241977441916452">A2 စာအိတ်</translation>
 <translation id="4992066212339426712">အသံတိတ်မှုဖြုတ်မည်</translation>
+<translation id="4994095017621319069">တဘ်အုပ်စု ၁ ခုကို မရနိုင်တော့ပါ</translation>
 <translation id="4994348767896109801">သင်မြင်ရသည့်ကြော်ငြာကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ထားခြင်း ရှိ၊ မရှိသည် ဤဆက်တင်၊ <ph name="BEGIN_LINK_1" />ကြော်ငြာအကြောင်းအရာများ<ph name="END_LINK_1" />၊ သင်၏ <ph name="BEGIN_LINK_2" />ကွတ်ကီး ဆက်တင်များ<ph name="END_LINK_2" /> နှင့် သင်ကြည့်နေသော ဝဘ်ဆိုက်သည် ကြော်ငြာများကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ခြင်း ရှိ၊ မရှိတို့အပေါ် မူတည်နိုင်သည်။ <ph name="BEGIN_LINK_3" />ကြော်ငြာဆိုင်ရာ အချက်အလက်လုံခြုံမှုကို စီမံခြင်း<ph name="END_LINK_3" /> အကြောင်း ပိုမိုလေ့လာရန်။</translation>
 <translation id="4995474875135717171">မွမ်းမံထားချိန်-</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ site search နှင့် သင့်ပုံသေ ရှာဖွေရေး အင်ဂျင်ကို စီမံရန် ‘တဘ်ခလုတ်’ ပြီးနောက် Enter နှိပ်ပါ</translation>
@@ -3467,6 +3468,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}other{<ph name="PAYMENT_METHOD_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}}</translation>
 <translation id="7153618581592392745">လာဗင်ဒါ</translation>
 <translation id="7156870133441232244">ဆာဗာကို TLS 1.2 နှင့်နောက်ပိုင်းသို့ အဆင့်မြှင့်တင်ရမည်။</translation>
+<translation id="7156885531105222428">သင်တောင်းဆိုထားသော စာမျက်နှာကို အပလီကေးရှင်းတွင် ရှာ၍မရလိုက်ပါ</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> သုံးပြီး ဤဖိုင်ကိုပို့ရန် သင့်စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}other{<ph name="FEATURE_NAME" /> သုံးပြီး ဤဖိုင်များကိုပို့ရန် သင့်စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}}</translation>
 <translation id="7160999678034985039">သင့်အလုပ်ကို သိမ်းပြီး အသင့်ဖြစ်ပါက စတင်အပ်ဒိတ်လုပ်ပါ။</translation>
 <translation id="7162277662076933695">စမတ်ကတ်ဖတ်စက်</translation>
@@ -4256,6 +4258,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">သင်၏ စနစ်စီမံခန့်ခွဲသူက ပြဋ္ဌာန်းထားသည့် အခြား မူဝါဒများနှင့် ပိတ်ထားသော URL များစာရင်းကို ကြည့်ရန် &lt;strong&gt;chrome://policy&lt;/strong&gt; သို့ ဝင်ကြည့်ပါ။</translation>
 <translation id="8536234749087605613">စာအိတ် (ဝင်းဒိုး)</translation>
+<translation id="8538228968820006247">သင့်တဘ်အုပ်စု ပြည့်နေသည်။ အဖွဲ့ဝင်အသစ်များသည် ဤလင့်ခ်ဖြင့် ပါဝင်၍မရပါ</translation>
 <translation id="8539500321752640291">ခွင့်ပြုချက် 2 ခုကို ခွင့်ပြုမလား။</translation>
 <translation id="8541158209346794904">ဘလူးတုသ် စက်ပစ္စည်း</translation>
 <translation id="8541410041357371550">ပိုမိုသက်ဆိုင်သည့် ကြော်ငြာများပြသရန် ဤဝဘ်ဆိုက်သည် သင့်ကြော်ငြာအကြောင်းအရာများကို Chrome ထံမှ ရယူသည်</translation>

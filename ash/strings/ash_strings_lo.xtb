@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">ໂຕະ 2</translation>
 <translation id="1546930421365146760">ຖາມຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເພື່ອຕິດຕັ້ງອຸປະກອນນີ້ໃນຄອນໂຊ Google Admin</translation>
 <translation id="1549512626801247439">ການຈັດການບ່ອນຈັດເກັບຂໍ້ມູນ</translation>
+<translation id="1549721333775633305">ສະແດງການຕັ້ງຄ່າການແຊຣ໌ດ່ວນ. ປິດການນຳໃຊ້ການແຊຣ໌ດ່ວນແລ້ວ</translation>
 <translation id="1550406609415860283">ອຸປະກອນທີ່ມີໃຫ້</translation>
 <translation id="1550523713251050646">ຄລິກສຳລັບຕົວເລືອກເພີ່ມເຕີມ</translation>
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ບໍ່ໄດ້ເປີດໃຊ້.</translation>
 <translation id="5860033963881614850">ປິດ</translation>
 <translation id="5860491529813859533">ເປີດ</translation>
+<translation id="5864691701242730005">ສະແດງການຕັ້ງຄ່າການແຊຣ໌ດ່ວນ. ເລືອກລະດັບການເບິ່ງເຫັນເປັນ <ph name="VISIBILITY" /> ແລ້ວ</translation>
 <translation id="5864748620896638071">ແບັດເຕີຣີ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">ກຳລັງຮວບຮວມຂໍ້ມູນເຄືອຂ່າຍ</translation>
 <translation id="5867606971598166637">ລະບົບຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານກຳລັງຕິດຕາມໜ້າຈໍຂອງທ່ານຢູ່</translation>
@@ -2262,6 +2264,7 @@
 <translation id="851660987304951246">ໃຊ້ຄຸນສົມບັດຊ່ວຍຂ້ອຍອ່ານເພື່ອສະຫຼຸບເນື້ອຫາ ຫຼື ຖາມຄຳຖາມຢ່າງວ່ອງໄວ</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ​ບໍ່ອາດ​ສາກ​ໄດ້ໃນ​ຂະ​ນະ​ທີ່​ມັນ​ເປີດ.</translation>
 <translation id="8535393432370007982">ຍົກເລີກການຈັດຮຽງລຳດັບຕາມສີ</translation>
+<translation id="8536886494750559755">ສະແດງການຕັ້ງຄ່າການແຊຣ໌ດ່ວນ. ທຸກຄົນຈະເບິ່ງເຫັນໄດ້ເປັນເວລາ <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">ສຳເນົາຂໍ້ຄວາມໃສ່ຄລິບບອດແລ້ວ</translation>
 <translation id="8541078764854166027">ການວາງເຟຣມກ້ອງຖ່າຍຮູບ</translation>
 <translation id="8542053257095774575">ບໍ່ມີໂຕະ ຫຼື ແມ່ແບບທີ່ບັນທຶກໄວ້</translation>

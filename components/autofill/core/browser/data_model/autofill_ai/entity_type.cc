@@ -15,13 +15,12 @@
 namespace autofill {
 
 // AttributeType::field_type() must be injective: distinct AttributeTypes must
-// be mapped to distinct FieldTypes or to UNKNOWN_TYPE.
+// be mapped to distinct FieldTypes.
 static_assert(
     std::ranges::all_of(DenseSet<AttributeType>::all(), [](AttributeType a) {
       return std::ranges::all_of(
           DenseSet<AttributeType>::all(), [&a](AttributeType b) {
-            return a == b || a.field_type() == UNKNOWN_TYPE ||
-                   a.field_type() != b.field_type();
+            return a == b || a.field_type() != b.field_type();
           });
     }));
 
@@ -31,9 +30,7 @@ std::optional<AttributeType> AttributeType::FromFieldType(FieldType type) {
   static constexpr auto kTable = []() {
     std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
     for (AttributeType at : DenseSet<AttributeType>::all()) {
-      FieldType ft = at.field_type();
-      CHECK(ft == UNKNOWN_TYPE || !arr[ft]);
-      arr[ft] = ft != UNKNOWN_TYPE ? std::optional(at) : std::nullopt;
+      arr[at.field_type()] = at;
     }
     return arr;
   }();

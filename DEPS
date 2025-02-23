@@ -284,7 +284,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'f9e568f66a9ae41520ffdfbc98bcef2c0b956235',
+  'v8_revision': 'e3aa245080656921bc463ebade65746be95577d3',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'b957f246763281e2945f8b116fc02ec82f889f9a',
+  'devtools_frontend_revision': 'c0dd326ecda9178c3f86ee108cf3a0a76719b155',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '6b5c61e1f86c87ed7b8609149f9d15d08d03165e',
+  'dawn_revision': 'd20125b786b14eb85894e593566705fc19461b17',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -496,11 +496,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
-  'llvm_libc_revision':    '1efd5593f9976b1cc0929f347b6a94d4926f1452',
+  'llvm_libc_revision':    '7f56829772d01907478433e4fbe07fddc95edad4',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
-  'libcxx_revision':       '8af5af8b0b9c99c57fe7cbe898e51deb8f7636e7',
+  'libcxx_revision':       '94672e2af44a266bfafbae01a18cae546aa67ed6',
 
   # GN CIPD package version.
   'gn_version': 'git_revision:ed1abc107815210dc66ec439542bee2f6cbabc00',
@@ -1452,7 +1452,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '70d4cf144ad03eb39419cdb151469b52b6a60cc4',
+    '985dac13742052d2a07eaf0f1be8e4c0a5de9120',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2947,7 +2947,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'jzPz_HEot1GB7yjTWcKg9D7kQcSvY64r4BMVNaTa1aAC',
+        'version': 's4ozJ8b5vBti9GSip-COrRe6H5NOvf5EFuaCV5blWeQC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2958,7 +2958,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'XPBPTNNjwx7P7TUbe1LcQCYSKKe7tJ67vBdWoGs21UAC',
+        'version': '28HAog60O3Kuuk1eTj1SrQsBTwqy653sIfKB5vZwvZcC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2991,7 +2991,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'goIypUJuIBl_vKbfp0wvcOMVb4PLFvpgiR5CkFAbw0MC',
+        'version': 'l_yowRII0BtythRlD4R-es_Vbzi-yHXLSEGuDvHFXqoC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4306,7 +4306,7 @@ deps = {
 
   'src/chrome/browser/glic/resources/internal': {
       'url': Var('chrome_git') + '/chrome/browser/glic/resources/internal.git' + '@' +
-        '4202baa6d6063d93cae8541a18385f740d66bbe7',
+        'edf887e30e442d3721790cff3ba7e44ca7572f1b',
       'condition': 'checkout_src_internal',
   },
 

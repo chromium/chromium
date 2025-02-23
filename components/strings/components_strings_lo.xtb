@@ -2254,6 +2254,7 @@
 <translation id="4989809363548539747">ບໍ່ຮອງຮັບປລັກອິນນີ້</translation>
 <translation id="4990241977441916452">Envelope A2</translation>
 <translation id="4992066212339426712">ເປີດສຽງ</translation>
+<translation id="4994095017621319069">ບໍ່ສາມາດໃຊ້ກຸ່ມແຖບ 1 ກຸ່ມໄດ້ອີກຕໍ່ໄປ</translation>
 <translation id="4994348767896109801">ໂຄສະນາທີ່ທ່ານເຫັນຈະໄດ້ຮັບການປັບແຕ່ງສ່ວນຕົວຫຼືບໍ່ນັ້ນຂຶ້ນຢູ່ກັບຫຼາຍໆຢ່າງ ເຊິ່ງຮວມທັງການຕັ້ງຄ່ານີ້, <ph name="BEGIN_LINK_1" />ຫົວຂໍ້ໂຄສະນາ<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />ການຕັ້ງຄ່າຄຸກກີ້<ph name="END_LINK_2" /> ຂອງທ່ານ ແລະ ເວັບໄຊທີ່ທ່ານກຳລັງເບິ່ງປັບແຕ່ງໂຄສະນາໃຫ້ເປັນແບບສ່ວນຕົວຫຼືບໍ່. ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ <ph name="BEGIN_LINK_3" />ການຈັດການຄວາມເປັນສ່ວນຕົວກ່ຽວກັບຕົວໂຄສະນາຂອງທ່ານ<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">ແກ້ໄຂເມື່ອ:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ tab ຈາກນັ້ນກົດ Enter ເພື່ອຈັດການການຊອກຫາເວັບໄຊ ແລະ ໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານ</translation>
@@ -3467,6 +3468,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ທີ່ຢູ່}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ທີ່ຢູ່}}</translation>
 <translation id="7153618581592392745">ສີມ່ວງລາເວນເດີ</translation>
 <translation id="7156870133441232244">ເຊີບເວີຄວນອັບເກຣດເປັນ TLS 1.2 ຫຼື ໃໝ່ກວ່າ.</translation>
+<translation id="7156885531105222428">ບໍ່ພົບໜ້າທີ່ທ່ານຮ້ອງຂໍໃນແອັບພລິເຄຊັນ</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{ເພື່ອສົ່ງໄຟລ໌ນີ້ໂດຍໃຊ້ <ph name="FEATURE_NAME" />, ໃຫ້ເພີ່ມພື້ນທີ່ຫວ່າງ (<ph name="DISK_SPACE_SIZE" />) ຢູ່ອຸປະກອນຂອງທ່ານ}other{ເພື່ອສົ່ງໄຟລ໌ເຫຼົ່ານີ້ໂດຍໃຊ້ <ph name="FEATURE_NAME" />, ໃຫ້ເພີ່ມພື້ນທີ່ຫວ່າງ (<ph name="DISK_SPACE_SIZE" />) ຢູ່ອຸປະກອນຂອງທ່ານ}}</translation>
 <translation id="7160999678034985039">ກະລຸນາບັນທຶກວຽກຂອງທ່ານ ແລະ ເລີ່ມການອັບເດດເມື່ອທ່ານພ້ອມ.</translation>
 <translation id="7162277662076933695">ຕົວອ່ານບັດອັດສະລິຍະ</translation>
@@ -4254,6 +4256,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ເຂົ້າຫາ &lt;strong&gt;chrome://policy&lt;/strong&gt; ເພື່ອເບິ່ງລາຍຊື່ຂອງ URL ທີ່ຖືກບລັອກໄວ້ ແລະ ນະໂຍບາຍອື່ນທີ່ຜູ້ຄວບຄຸມລະບົບຂອງທ່ານບັງຄັບໃຊ້.</translation>
 <translation id="8536234749087605613">ຊອງ (ມີຊ່ອງໃສຢູ່ທາງໜ້າ)</translation>
+<translation id="8538228968820006247">ກຸ່ມແຖບຂອງທ່ານເຕັມແລ້ວ, ສະມາຊິກໃໝ່ບໍ່ສາມາດເຂົ້າຮ່ວມດ້ວຍລິ້ງດັ່ງກ່າວໄດ້</translation>
 <translation id="8539500321752640291">ອະນຸຍາດ 2 ຢ່າງບໍ?</translation>
 <translation id="8541158209346794904">ອຸປະກອນ Bluetooth</translation>
 <translation id="8541410041357371550">ເວັບໄຊນີ້ຮັບຫົວຂໍ້ໂຄສະນາຂອງທ່ານຈາກ Chrome ເພື່ອສະແດງໂຄສະນາທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນໃຫ້ທ່ານເຫັນ</translation>

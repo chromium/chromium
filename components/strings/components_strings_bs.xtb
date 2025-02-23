@@ -2254,7 +2254,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4989809363548539747">Ovaj dodatak nije podržan</translation>
 <translation id="4990241977441916452">Koverta A2</translation>
 <translation id="4992066212339426712">Uključi zvuk</translation>
-<translation id="4994095017621319069">Jedna grupa kartica više nije dostupna</translation>
+<translation id="4994095017621319069">1 grupa kartica više nije dostupna</translation>
 <translation id="4994348767896109801">Hoće li se oglas koji vam se prikazuje personalizirati ovisi o mnogim faktorima, uključujući ovu postavku, <ph name="BEGIN_LINK_1" />teme oglasa<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />postavke kolačića<ph name="END_LINK_2" /> i o tome personalizira li oglase web lokacija koju pregledate. Saznajte više o <ph name="BEGIN_LINK_3" />upravljanju privatnošću pri izloženosti oglasima<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Izmijenjeno:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da upravljate pretraživanjem web lokacija i zadanim pretraživačem</translation>
@@ -4257,7 +4257,7 @@ Dodatni detalji:
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Posjetite &lt;strong&gt;chrome://policy&lt;/strong&gt; da vidite listu blokiranih URL-ova i druga pravila koja je nametnuo vaš administrator sistema.</translation>
 <translation id="8536234749087605613">Koverta (s prozorčićem)</translation>
-<translation id="8538228968820006247">Vaša je grupa kartica puna i novi članovi ne mogu se pridružiti putem veze</translation>
+<translation id="8538228968820006247">Grupa kartica je puna; novi članovi se ne mogu pridružiti pomoću linka</translation>
 <translation id="8539500321752640291">Dozvoliti 2 odobrenja?</translation>
 <translation id="8541158209346794904">Bluetooth uređaj</translation>
 <translation id="8541410041357371550">Ova web lokacija prikuplja vaše teme oglasa iz Chromea da vam prikazuje relevantnije oglase</translation>

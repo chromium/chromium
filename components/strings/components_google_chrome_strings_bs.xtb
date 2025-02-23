@@ -13,8 +13,8 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="3512634283363927263">Ove stranice su namijenjene za korištenje programerima Chromea i možda se neće aktivno održavati ili testirati. Da ih omogućite, idite na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite na dugme da omogućite stranice za otklanjanje grešaka, zatim se vratite na ovu stranicu.</translation>
 <translation id="3875312571075912821">Dozvolite Chromeu da pristupi mreži u postavkama vašeg zaštitnog zida ili
           antivirusnog programa.</translation>
-<translation id="4949828774841497663">Idite na Aplikacije &gt; Postavke sustava &gt; Mreža, odaberite
-          aktivnu mrežu, kliknite gumb Pojedinosti... i poništite odabir svih proxyja
+<translation id="4949828774841497663">Idite u Aplikacije &gt; Postavke sistema &gt; Mreža, odaberite
+          aktivnu mrežu, kliknite na dugme Detalji… i poništite odabir svih proksi servera
           koji su možda odabrani.</translation>
 <translation id="5005121315113832363">Ovu stranicu je blokirao Chrome</translation>
 <translation id="6011049234605203654">Idite u

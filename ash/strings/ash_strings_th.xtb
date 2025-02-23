@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">เดสก์ที่ 2</translation>
 <translation id="1546930421365146760">ขอให้ผู้ดูแลระบบตั้งค่าอุปกรณ์นี้ในคอนโซลผู้ดูแลระบบของ Google</translation>
 <translation id="1549512626801247439">การจัดการพื้นที่เก็บข้อมูล</translation>
+<translation id="1549721333775633305">แสดงการตั้งค่า Quick Share ปิดใช้ Quick Share แล้ว</translation>
 <translation id="1550406609415860283">อุปกรณ์ที่ใช้ได้</translation>
 <translation id="1550523713251050646">คลิกเพื่อดูตัวเลือกเพิ่มเติม</translation>
 <translation id="1555130319947370107">สีน้ำเงิน</translation>
@@ -1469,6 +1470,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ไม่ได้เปิดใช้งาน</translation>
 <translation id="5860033963881614850">ปิด</translation>
 <translation id="5860491529813859533">เปิด</translation>
+<translation id="5864691701242730005">แสดงการตั้งค่า Quick Share เลือกระดับการเข้าถึงเป็น<ph name="VISIBILITY" />แล้ว</translation>
 <translation id="5864748620896638071">แบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">กำลังรวบรวมข้อมูลเครือข่าย</translation>
 <translation id="5867606971598166637">ผู้ดูแลระบบกำลังตรวจสอบหน้าจอของคุณ</translation>
@@ -2257,6 +2259,7 @@
 <translation id="851660987304951246">ใช้ฟีเจอร์ช่วยฉันอ่านเพื่อสรุปเนื้อหาหรือถามคำถามอย่างรวดเร็ว</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ของคุณอาจไม่ชาร์จเมื่อเครื่องเปิดอยู่</translation>
 <translation id="8535393432370007982">เลิกทำการจัดเรียงลำดับตามสี</translation>
+<translation id="8536886494750559755">แสดงการตั้งค่า Quick Share ทุกคนจะมองเห็นได้เป็นเวลา <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">คัดลอกข้อความไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="8541078764854166027">จัดเฟรมกล้อง</translation>
 <translation id="8542053257095774575">ไม่มีเดสก์หรือเทมเพลตที่บันทึกไว้</translation>
