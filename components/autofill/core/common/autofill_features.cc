@@ -295,6 +295,12 @@ const base::FeatureParam<bool>
         &kAutofillImprovedLabels,
         "autofill_improved_labels_with_differentiating_labels_in_front", false};
 
+// If enabled, we include a `FormFieldData`'s maxlength in crowdsourcing votes.
+// TODO(crbug.com/393995180): Clean up when launched.
+BASE_FEATURE(kAutofillIncludeMaxLengthInCrowdsourcing,
+             "AutofillIncludeMaxLengthInCrowdsourcing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, we include a `FormData`'s URL in crowdsourcing votes.
 // TODO(crbug.com/385043924): Clean up when launched.
 BASE_FEATURE(kAutofillIncludeUrlInCrowdsourcing,

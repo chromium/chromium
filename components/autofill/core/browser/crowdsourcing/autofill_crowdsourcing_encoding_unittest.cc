@@ -1091,22 +1091,28 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
   struct FieldMetadata {
     const char *id, *name, *label, *placeholder, *aria_label, *aria_description,
         *css_classes, *autocomplete;
+    const size_t max_length;
   };
 
   static const FieldMetadata kFieldMetadata[] = {
       {"fname_id", "fname_name", "First Name:", "Please enter your first name",
        "Type your first name", "You can type your first name here", "blah",
-       "given-name"},
+       "given-name", 0},
       {"lname_id", "lname_name", "Last Name:", "Please enter your last name",
        "Type your lat name", "You can type your last name here", "blah",
-       "family-name"},
+       "family-name", 0},
       {"email_id", "email_name", "Email:", "Please enter your email address",
        "Type your email address", "You can type your email address here",
-       "blah", "email"},
-      {"id_only", "", "", "", "", "", "", ""},
-      {"", "name_only", "", "", "", "", "", ""},
+       "blah", "email", 0},
+      {"id_only", "", "", "", "", "", "", "", 0},
+      {"", "name_only", "", "", "", "", "", "",
+       FormFieldData::kDefaultMaxLength},
+      {"date1", "date1", "Year", "", "", "", "", "", 4},
+      {"date2", "date2", "Month", "Month", "", "", "", "", 2},
   };
 
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillIncludeMaxLengthInCrowdsourcing};
   FormData form;
   form.set_id_attribute(u"form-id");
   form.set_url(GURL("http://www.foo.com/"));
@@ -1126,11 +1132,12 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
     field.set_autocomplete_attribute(f.autocomplete);
     field.set_parsed_autocomplete(ParseAutocompleteAttribute(f.autocomplete));
     field.set_renderer_id(test::MakeFieldRendererId());
+    field.set_max_length(f.max_length);
     test_api(form).Append(field);
   }
   RandomizedEncoder encoder("seed for testing",
                             AutofillRandomizedValue_EncodingType_ALL_BITS,
-                            /*anonymous_url_collection_is_enabled*/ true);
+                            /*anonymous_url_collection_is_enabled=*/true);
 
   FormStructure form_structure(form);
   form_structure.set_randomized_encoder(
@@ -1140,8 +1147,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
   }
 
   std::vector<AutofillUploadContents> uploads = EncodeUploadRequest(
-      form_structure, {{}} /* available_field_types */,
-      std::string() /* login_form_signature */, true /* observed_submission */);
+      form_structure, /*available_field_types=*/{{}},
+      /*login_form_signature=*/std::string(), /*observed_submission=*/true);
   ASSERT_EQ(1u, uploads.size());
   AutofillUploadContents& upload = uploads.front();
 
@@ -1258,7 +1265,53 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
                     RandomizedEncoder::kFieldAutocomplete,
                     base::UTF8ToUTF16(field.autocomplete_attribute())));
     }
+    if (field.max_length() == 0 ||
+        field.max_length() == FormFieldData::kDefaultMaxLength) {
+      EXPECT_FALSE(metadata.has_max_length());
+    } else {
+      EXPECT_EQ(metadata.max_length().encoded_bits(),
+                encoder.EncodeForTesting(
+                    form_signature, field_signature,
+                    RandomizedEncoder::kFieldMaxLength,
+                    base::NumberToString16((field.max_length()))));
+    }
   }
+}
+
+// Tests that the maxlength attribute is not encoded if
+// `features::kAutofillIncludeMaxLengthInCrowdsourcing` is disabled.
+TEST_F(AutofillCrowdsourcingEncoding, MaxLengthIsNotSentIfFeatureIsOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillIncludeMaxLengthInCrowdsourcing);
+  FormData form;
+  form.set_id_attribute(u"form-id");
+  {
+    FormFieldData field;
+    field.set_id_attribute(u"field-id");
+    field.set_max_length(123);
+    test_api(form).Append(field);
+  }
+  RandomizedEncoder encoder("seed for testing",
+                            AutofillRandomizedValue_EncodingType_ALL_BITS,
+                            /*anonymous_url_collection_is_enabled=*/true);
+
+  FormStructure form_structure(form);
+  form_structure.set_randomized_encoder(
+      std::make_unique<RandomizedEncoder>(encoder));
+  for (auto& field : form_structure) {
+    field->set_host_form_signature(form_structure.form_signature());
+  }
+
+  std::vector<AutofillUploadContents> uploads = EncodeUploadRequest(
+      form_structure, /*available_field_types=*/{{}},
+      /*login_form_signature=*/std::string(), /*observed_submission=*/true);
+  ASSERT_EQ(uploads.size(), 1u);
+  AutofillUploadContents& upload = uploads.front();
+  ASSERT_EQ(upload.field_data_size(), 1);
+  ASSERT_TRUE(upload.field_data(0).has_randomized_field_metadata());
+  EXPECT_FALSE(
+      upload.field_data(0).randomized_field_metadata().has_max_length());
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, Metadata_OnlySendFullUrlWithUserConsent) {
