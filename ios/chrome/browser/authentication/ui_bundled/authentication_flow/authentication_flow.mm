@@ -64,6 +64,13 @@ namespace {
 // even without multi profile.
 enum class AuthenticationState {
   kBegin,
+  // Check if there are unsynced data with the primary account, in the current
+  // profile.
+  kCheckUnsyncedData,
+  // Display unsynced data confirmation, if there are any (based on
+  // `kCheckUnsyncedData` step).
+  // The dialog needs to be shown weither there is profile switching or not.
+  kAskUnsyncedDataConfirmationIfNeeded,
   kFetchManagedStatus,
   kFetchProfileSeparationPoliciesIfNeeded,
   kShowManagedConfirmationIfNeeded,
@@ -246,6 +253,9 @@ void RecordIOSIdentityAvailableInProfile(
 
   // `YES` if the profile switching is done.
   BOOL _didSwitchProfile;
+  // `YES` if the user is signed in and there are unsynced data in the current
+  // profile.
+  std::optional<BOOL> _hasUnsyncedData;
   base::ScopedClosureRunner _accountSwitchInProgress;
 }
 
@@ -332,6 +342,8 @@ void RecordIOSIdentityAvailableInProfile(
   DCHECK([self canceled]);
   switch (_state) {
     case AuthenticationState::kBegin:
+    case AuthenticationState::kCheckUnsyncedData:
+    case AuthenticationState::kAskUnsyncedDataConfirmationIfNeeded:
     case AuthenticationState::kFetchManagedStatus:
     case AuthenticationState::kFetchProfileSeparationPoliciesIfNeeded:
     case AuthenticationState::kShowManagedConfirmationIfNeeded:
@@ -360,6 +372,10 @@ void RecordIOSIdentityAvailableInProfile(
   DCHECK(![self canceled]);
   switch (_state) {
     case AuthenticationState::kBegin:
+      return AuthenticationState::kCheckUnsyncedData;
+    case AuthenticationState::kCheckUnsyncedData:
+      return AuthenticationState::kAskUnsyncedDataConfirmationIfNeeded;
+    case AuthenticationState::kAskUnsyncedDataConfirmationIfNeeded:
       return AuthenticationState::kFetchManagedStatus;
     case AuthenticationState::kFetchManagedStatus:
       return AuthenticationState::kFetchProfileSeparationPoliciesIfNeeded;
@@ -431,6 +447,14 @@ void RecordIOSIdentityAvailableInProfile(
     case AuthenticationState::kBegin:
       NOTREACHED();
 
+    case AuthenticationState::kCheckUnsyncedData:
+      [self checkUnsyncedDataStep];
+      return;
+
+    case AuthenticationState::kAskUnsyncedDataConfirmationIfNeeded:
+      [self askUnsyncedDataConfirmationIfNeededStep];
+      return;
+
     case AuthenticationState::kFetchManagedStatus:
       [_performer fetchManagedStatus:profile forIdentity:_identityToSignIn];
       return;
@@ -493,6 +517,36 @@ void RecordIOSIdentityAvailableInProfile(
       return;
   }
   NOTREACHED();
+}
+
+- (void)checkUnsyncedDataStep {
+  ProfileIOS* profile = [self originalProfile];
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  id<SystemIdentity> currentIdentity =
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  // AuthenticationFlow should not switch to the same identity.
+  CHECK(![currentIdentity isEqual:_identityToSignIn],
+        base::NotFatalUntil::M140);
+  if (!currentIdentity) {
+    _hasUnsyncedData = NO;
+    [self continueFlow];
+    return;
+  }
+  // TODO(crbug.com/375604649): Need to check for unsynced data and set
+  // `_hasUnsyncedData`.
+  _hasUnsyncedData = NO;
+  [self continueFlow];
+}
+
+- (void)askUnsyncedDataConfirmationIfNeededStep {
+  CHECK(_hasUnsyncedData.has_value(), base::NotFatalUntil::M140);
+  if (!_hasUnsyncedData.value()) {
+    [self continueFlow];
+    return;
+  }
+  // TODO(crbug.com/375604649): Need to display the unsynced data dialog.
+  [self continueFlow];
 }
 
 // Fetches ManagedAccountsSigninRestriction policy, if needed.
