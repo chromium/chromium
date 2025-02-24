@@ -404,11 +404,6 @@ public class TabListCoordinator
         configureRecyclerViewTouchHelpers();
     }
 
-    /** Returns the {@link TabListMode} of the coordinator. */
-    public @TabListMode int getTabListMode() {
-        return mMode;
-    }
-
     /**
      * @param onLongPressTabItemEventListener to handle long press events on tabs.
      */
@@ -791,14 +786,6 @@ public class TabListCoordinator
     }
 
     /**
-     * Inserts a special {@link org.chromium.ui.modelutil.MVCListAdapter.ListItem} to the end of
-     * model list.
-     */
-    void addSpecialListItemToEnd(@UiType int uiType, PropertyModel model) {
-        mMediator.addSpecialItemToModel(mModelList.size(), uiType, model);
-    }
-
-    /**
      * Removes a special {@link org.chromium.ui.modelutil.MVCListAdapter.ListItem} that has the
      * given {@code uiType} and/or its {@link PropertyModel} has the given {@code itemIdentifier}.
      *
@@ -839,10 +826,6 @@ public class TabListCoordinator
      */
     boolean specialItemExists(@MessageService.MessageType int itemIdentifier) {
         return mMediator.specialItemExistsInModel(itemIdentifier);
-    }
-
-    boolean isLastItemMessage() {
-        return mMediator.isLastItemMessage();
     }
 
     private void checkAwaitingLayout() {

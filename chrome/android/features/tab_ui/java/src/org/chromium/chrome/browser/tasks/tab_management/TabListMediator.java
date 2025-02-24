@@ -2347,8 +2347,7 @@ class TabListMediator implements TabListNotificationHandler {
         // The observers will be bound to the newFilter's when the model is reset for with tabs for
         // that filter for the first time. Doing this on the first reset after changing models
         // makes sense as otherwise we will be observing updates when the mModelList contains tabs
-        // for
-        // the oldFilter which can result in invalid updates.
+        // for the oldFilter which can result in invalid updates.
     }
 
     private void addObservers(TabGroupModelFilter filter, @NonNull List<Tab> tabs) {
@@ -2399,13 +2398,6 @@ class TabListMediator implements TabListNotificationHandler {
         }
         return mModelList.lastIndexForMessageItemFromType(itemIdentifier)
                 != TabModel.INVALID_TAB_INDEX;
-    }
-
-    boolean isLastItemMessage() {
-        if (mModelList.size() == 0) return false;
-        int index = mModelList.lastIndexForMessageItem();
-        if (index == TabModel.INVALID_TAB_INDEX) return false;
-        return index == mModelList.size() - 1;
     }
 
     /**
