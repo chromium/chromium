@@ -1450,28 +1450,30 @@ void WebTestControlHost::OnImageDump(const std::string& actual_pixel_hash,
     if (web_test_runtime_flags().dump_drag_image())
       discard_transparency = false;
 
-    gfx::PNGCodec::ColorFormat pixel_format;
-    switch (image.info().colorType()) {
-      case kBGRA_8888_SkColorType:
-        pixel_format = gfx::PNGCodec::FORMAT_BGRA;
-        break;
-      case kRGBA_8888_SkColorType:
-        pixel_format = gfx::PNGCodec::FORMAT_RGBA;
-        break;
-      default:
-        NOTREACHED();
-    }
+    if (!image.drawsNothing()) {
+      gfx::PNGCodec::ColorFormat pixel_format;
+      switch (image.info().colorType()) {
+        case kBGRA_8888_SkColorType:
+          pixel_format = gfx::PNGCodec::FORMAT_BGRA;
+          break;
+        case kRGBA_8888_SkColorType:
+          pixel_format = gfx::PNGCodec::FORMAT_RGBA;
+          break;
+        default:
+          NOTREACHED();
+      }
 
-    std::vector<gfx::PNGCodec::Comment> comments;
-    // Used by
-    // //third_party/blink/tools/blinkpy/common/read_checksum_from_png.py
-    comments.emplace_back("checksum", actual_pixel_hash);
-    std::optional<std::vector<uint8_t>> png = gfx::PNGCodec::Encode(
-        static_cast<const unsigned char*>(image.getPixels()), pixel_format,
-        gfx::Size(image.width(), image.height()),
-        static_cast<int>(image.rowBytes()), discard_transparency, comments);
-    if (png) {
-      printer_->PrintImageBlock(png.value());
+      std::vector<gfx::PNGCodec::Comment> comments;
+      // Used by
+      // //third_party/blink/tools/blinkpy/common/read_checksum_from_png.py
+      comments.emplace_back("checksum", actual_pixel_hash);
+      std::optional<std::vector<uint8_t>> png = gfx::PNGCodec::Encode(
+          static_cast<const unsigned char*>(image.getPixels()), pixel_format,
+          gfx::Size(image.width(), image.height()),
+          static_cast<int>(image.rowBytes()), discard_transparency, comments);
+      if (png) {
+        printer_->PrintImageBlock(png.value());
+      }
     }
   }
   printer_->PrintImageFooter();
