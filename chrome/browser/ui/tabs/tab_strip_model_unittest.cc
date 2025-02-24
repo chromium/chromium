@@ -909,6 +909,9 @@ TEST_F(TabStripModelTest, TestDetachGroupForInsertion) {
   tabstrip.AppendWebContents(CreateWebContentsWithID(1), false);
   tabstrip.AppendWebContents(CreateWebContentsWithID(2), false);
   tabstrip.AppendWebContents(CreateWebContentsWithID(3), true);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(4), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(5), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(6), true);
 
   tab_groups::TabGroupId group_id =
       tabstrip.AddToNewGroup(std::vector<int>{1, 2});
@@ -917,7 +920,17 @@ TEST_F(TabStripModelTest, TestDetachGroupForInsertion) {
 
   EXPECT_EQ(detached_group->collection_->TabCountRecursive(), 2u);
   EXPECT_FALSE(tabstrip.group_model()->ContainsTabGroup(group_id));
-  EXPECT_EQ(tabstrip.count(), 1);
+  EXPECT_EQ(tabstrip.count(), 4);
+
+  // Reinsert the detached group.
+  tabstrip.InsertDetachedTabGroupAt(std::move(detached_group), 0);
+
+  EXPECT_TRUE(tabstrip.group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(tabstrip.group_model()->GetTabGroup(group_id)->ListTabs().length(),
+            2u);
+  EXPECT_EQ(tabstrip.GetTabAtIndex(0)->GetGroup().value(), group_id);
+  EXPECT_EQ(tabstrip.GetTabAtIndex(1)->GetGroup().value(), group_id);
+  EXPECT_EQ(tabstrip.count(), 6);
 }
 
 TEST_F(TabStripModelTest, TestBasicOpenerAPI) {

@@ -30,6 +30,7 @@ void TabGroupModel::AddTabGroup(TabGroup* group, base::PassKey<TabStripModel>) {
   CHECK(!ContainsTabGroup(group->id()));
   group_ids_.emplace_back(group->id());
   groups_[group->id()] = group;
+  group->set_controller(controller_, base::PassKey<TabGroupModel>());
 }
 
 bool TabGroupModel::ContainsTabGroup(const tab_groups::TabGroupId& id) const {
@@ -44,6 +45,9 @@ TabGroup* TabGroupModel::GetTabGroup(const tab_groups::TabGroupId& id) const {
 void TabGroupModel::RemoveTabGroup(const tab_groups::TabGroupId& id,
                                    base::PassKey<TabStripModel>) {
   CHECK(ContainsTabGroup(id));
+  // TODO(397754004): Set the controller for the group to nullptr. This might
+  // break callers that try to query any group related information of remove
+  // notification from tabstripmodel.
   std::erase(group_ids_, id);
   groups_.erase(id);
 }

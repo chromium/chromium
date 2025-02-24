@@ -547,7 +547,67 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
 void TabStripModel::InsertDetachedTabGroupImpl(
     std::unique_ptr<DetachedTabGroup> detached_group,
     int index) {
+  // TODO(392952244): Remove once observers have been migrated.
   NOTIMPLEMENTED();
+
+  CHECK(detached_group->collection_);
+
+  const tab_groups::TabGroupId& group_id =
+      detached_group->collection_->GetTabGroupId();
+  tabs::TabGroupTabCollection* group_collection =
+      detached_group->collection_.get();
+  for (size_t i = 0; i < group_collection->ChildCount(); i++) {
+    tabs::TabModel* tab = group_collection->GetTabAtIndex(i);
+    delegate()->WillAddWebContents(tab->GetContents());
+  }
+
+  index = ConstrainInsertionIndex(index, false);
+
+  for (int i = index;
+       i < index + static_cast<int>(group_collection->ChildCount()); i++) {
+    selection_model_.IncrementFrom(index);
+  }
+
+  TabStripSelectionChange selection(GetActiveTab(), selection_model_);
+
+  if (empty()) {
+    selection_model_.SetSelectedIndex(index);
+  }
+
+  // Add the group collection.
+  group_model_->AddTabGroup(
+      std::move(detached_group->collection_->GetTabGroup()),
+      base::PassKey<TabStripModel>());
+  contents_data_->InsertTabGroupAt(std::move(detached_group->collection_),
+                                   index);
+
+  ValidateTabStripModel();
+
+  for (size_t i = 0; i < group_collection->ChildCount(); i++) {
+    tabs::TabModel* tab = group_collection->GetTabAtIndex(i);
+    tab->DidInsert(base::PassKey<TabStripModel>());
+  }
+
+  // Send add notifications for tabs.
+  selection.new_model = selection_model_;
+  selection.new_tab = GetActiveTab();
+  selection.new_contents = GetActiveWebContents();
+  TabStripModelChange::Insert insert;
+
+  const gfx::Range tabs_in_group =
+      group_model_->GetTabGroup(group_id)->ListTabs();
+
+  for (int i = static_cast<int>(tabs_in_group.start());
+       i < static_cast<int>(tabs_in_group.end()); i++) {
+    insert.contents.push_back(
+        {GetTabAtIndex(i), GetTabAtIndex(i)->GetContents(), i});
+  }
+
+  TabStripModelChange change(std::move(insert));
+  OnChange(change, selection);
+
+  // Send group attach notification.
+  OnTabGroupAttached(*group_model_->GetTabGroup(group_id));
 }
 
 std::unique_ptr<DetachedTab> TabStripModel::DetachTabImpl(
@@ -788,7 +848,7 @@ void TabStripModel::MoveGroupToImpl(const tab_groups::TabGroupId& group,
       PrepareTabsToMoveToIndex(tab_indices, to_index);
 
   // Remove all the tabs from the model.
-  contents_data_->MoveGroupTo(group, to_index);
+  contents_data_->MoveTabGroupTo(group, to_index);
 
   UpdateSelectionModelForMoves(tab_indices, to_index);
   ValidateTabStripModel();
