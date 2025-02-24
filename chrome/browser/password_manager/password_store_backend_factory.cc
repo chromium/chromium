@@ -97,8 +97,6 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBuiltInBackend(
 // login db deprecation.
 std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackendAndroid(
     PrefService* prefs,
-    password_manager::PasswordAffiliationSourceAdapter&
-        password_affiliation_adapter,
     const base::FilePath& login_db_directory,
     os_crypt_async::OSCryptAsync* os_crypt_async) {
   CHECK(base::FeatureList::IsEnabled(
@@ -115,7 +113,7 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackendAndroid(
   if (password_manager_android_util::IsPasswordManagerAvailable(
           prefs, std::make_unique<PasswordManagerUtilBridge>())) {
     return std::make_unique<password_manager::PasswordStoreAndroidLocalBackend>(
-        prefs, password_affiliation_adapter);
+        prefs);
   }
 
   return std::make_unique<password_manager::PasswordStoreEmptyBackend>();
@@ -133,8 +131,7 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackendAndroid(
           prefs, std::make_unique<PasswordManagerUtilBridge>())) {
     return std::make_unique<
         password_manager::PasswordStoreAndroidAccountBackend>(
-        prefs, /*password_affiliation_adapter=*/nullptr,
-        password_manager::kAccountStore);
+        prefs, password_manager::kAccountStore);
   }
   return std::make_unique<password_manager::PasswordStoreEmptyBackend>();
 }
@@ -143,8 +140,6 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackendAndroid(
 std::unique_ptr<PasswordStoreBackend>
 CreateProfilePasswordStoreBackendForUpmAndroid(
     PrefService* prefs,
-    password_manager::PasswordAffiliationSourceAdapter&
-        password_affiliation_adapter,
     const base::FilePath& login_db_directory,
     os_crypt_async::OSCryptAsync* os_crypt_async) {
   base::UmaHistogramBoolean(
@@ -166,14 +161,13 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
           CreateProfilePasswordStoreBuiltInBackend(login_db_directory, prefs,
                                                    os_crypt_async),
           std::make_unique<password_manager::PasswordStoreAndroidLocalBackend>(
-              prefs, password_affiliation_adapter),
+              prefs),
           prefs);
     // UPM M2: The password store proxy backend is created. No migrations are
     // needed.
     case UseUpmLocalAndSeparateStoresState::kOn:
       return std::make_unique<
-          password_manager::PasswordStoreAndroidLocalBackend>(
-          prefs, password_affiliation_adapter);
+          password_manager::PasswordStoreAndroidLocalBackend>(prefs);
     // Old UPM: support for local passwords in GMSCore is unavailable for some
     // reason.
     case UseUpmLocalAndSeparateStoresState::kOff: {
@@ -183,8 +177,7 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
       // storage requests go to the built-in backend instead.
       auto android_account_backend = std::make_unique<
           password_manager::PasswordStoreAndroidAccountBackend>(
-          prefs, &password_affiliation_adapter,
-          password_manager::kProfileStore);
+          prefs, password_manager::kProfileStore);
       // Chrome stopped trying to migrate passwords to the account GMSCore
       // storage. Only PasswordStoreProxyBackend is created.
       return std::make_unique<password_manager::PasswordStoreProxyBackend>(
@@ -200,8 +193,6 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
 std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackend(
     const base::FilePath& login_db_directory,
     PrefService* prefs,
-    password_manager::PasswordAffiliationSourceAdapter&
-        password_affiliation_adapter,
     os_crypt_async::OSCryptAsync* os_crypt_async) {
   TRACE_EVENT0("passwords", "PasswordStoreBackendCreation");
 
@@ -213,16 +204,14 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackend(
     // is considered deprecated. There will be only 2 options for
     // the backend: an empty one if the Android backend isn't supported,
     // or the Android backend.
-    return CreateProfilePasswordStoreBackendAndroid(
-        prefs, password_affiliation_adapter, login_db_directory,
-        os_crypt_async);
+    return CreateProfilePasswordStoreBackendAndroid(prefs, login_db_directory,
+                                                    os_crypt_async);
   }
 
   // This are the absolute minimum requirements to have any version of UPM.
   if (password_manager_android_util::AreMinUpmRequirementsMet()) {
     return CreateProfilePasswordStoreBackendForUpmAndroid(
-        prefs, password_affiliation_adapter, login_db_directory,
-        os_crypt_async);
+        prefs, login_db_directory, os_crypt_async);
   }
 #endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   return CreateProfilePasswordStoreBuiltInBackend(login_db_directory, prefs,
@@ -265,8 +254,7 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
   CHECK(password_manager_android_util::AreMinUpmRequirementsMet());
   backend =
       std::make_unique<password_manager::PasswordStoreAndroidAccountBackend>(
-          prefs, /*password_affiliation_adapter=*/nullptr,
-          password_manager::kAccountStore);
+          prefs, password_manager::kAccountStore);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
