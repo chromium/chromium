@@ -232,7 +232,7 @@ message ContentNode {
   ContentAttributes content_attributes = 2;
 }
 
-// Next ID: 22
+// Next ID: 23
 message ContentAttributes {
   oneof content_data {
     // Only set if attribute_type is CONTENT_ATTRIBUTE_TEXT.
@@ -259,6 +259,12 @@ message ContentAttributes {
     // Only set if attribute_type is CONTENT_ATTRIBUTE_TABLE_ROW.
     TableRowData table_row_data = 13;
   }
+
+  // The ID for this ContentNode. This is unique to the AnnotatedPageContent,
+  // including the embedded iframes. The value may change across different
+  // AnnotatedPageContent extractions for the same page; it is not guaranteed to
+  // be stable in the same page across different time.
+  int32 content_node_id = 22;
 
   // The IDs of the DOM nodes whose content is represented by this ContentNode.
   // This is used to map the results of the receiver's action back to the
