@@ -6,12 +6,12 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CLUSTER_DATA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.COLOR_INDEX;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CREATION_MILLIS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DISPLAY_AS_SHARED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TIMESTAMP_EVENT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -29,8 +29,8 @@ public class TabGroupRowViewBinder {
             view.setColorIndex(model.get(COLOR_INDEX));
         } else if (propertyKey == TITLE_DATA) {
             view.setTitleData(model.get(TITLE_DATA));
-        } else if (propertyKey == CREATION_MILLIS) {
-            view.setCreationMillis(model.get(CREATION_MILLIS));
+        } else if (propertyKey == TIMESTAMP_EVENT) {
+            view.setTimestampEvent(model.get(TIMESTAMP_EVENT));
         } else if (propertyKey == OPEN_RUNNABLE
                 || propertyKey == DELETE_RUNNABLE
                 || propertyKey == LEAVE_RUNNABLE) {

@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -109,7 +110,9 @@ class TabGroupRowMediator {
         Pair<String, Integer> titleData = new Pair<>(userTitle, numberOfTabs);
         builder.with(TabGroupRowProperties.TITLE_DATA, titleData);
 
-        builder.with(TabGroupRowProperties.CREATION_MILLIS, savedTabGroup.creationTimeMs);
+        builder.with(
+                TabGroupRowProperties.TIMESTAMP_EVENT,
+                new TabGroupTimeAgo(savedTabGroup.creationTimeMs, TimestampEvent.CREATED));
         builder.with(TabGroupRowProperties.OPEN_RUNNABLE, this::openGroup);
         builder.with(TabGroupRowProperties.DESTROYABLE, this::destroy);
         mPropertyModel = builder.build();

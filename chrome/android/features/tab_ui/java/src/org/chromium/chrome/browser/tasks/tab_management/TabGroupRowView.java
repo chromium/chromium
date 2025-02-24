@@ -45,7 +45,6 @@ public class TabGroupRowView extends LinearLayout {
     private TextView mSubtitleTextView;
     private FrameLayout mImageTilesContainer;
     private ListMenuButton mListMenuButton;
-    private TabGroupTimeAgoResolver mTimeAgoResolver;
 
     /** Constructor for inflation. */
     public TabGroupRowView(Context context, @Nullable AttributeSet attrs) {
@@ -61,7 +60,6 @@ public class TabGroupRowView extends LinearLayout {
         mSubtitleTextView = findViewById(R.id.tab_group_subtitle);
         mImageTilesContainer = findViewById(R.id.image_tiles_container);
         mListMenuButton = findViewById(R.id.more);
-        mTimeAgoResolver = new TabGroupTimeAgoResolver(getResources(), Clock.systemUTC());
 
         setTouchDelegate(getListMenuItemTouchDelegate());
     }
@@ -90,6 +88,13 @@ public class TabGroupRowView extends LinearLayout {
                 resources.getString(R.string.tab_group_row_accessibility_text, title));
     }
 
+    void setTimestampEvent(TabGroupTimeAgo event) {
+        TabGroupTimeAgoTextResolver timeAgoResolver =
+                new TabGroupTimeAgoTextResolver(getResources(), Clock.systemUTC());
+        mSubtitleTextView.setText(
+                timeAgoResolver.resolveTimeAgoText(event.timestampMs, event.eventType));
+    }
+
     private TouchDelegate getListMenuItemTouchDelegate() {
         Rect rect = new Rect();
         mListMenuButton.getHitRect(rect);
@@ -108,10 +113,6 @@ public class TabGroupRowView extends LinearLayout {
         rect.bottom += halfHeightDelta;
 
         return new TouchDelegate(rect, mListMenuButton);
-    }
-
-    void setCreationMillis(long creationMillis) {
-        mSubtitleTextView.setText(mTimeAgoResolver.resolveTimeAgoText(creationMillis));
     }
 
     void setColorIndex(@TabGroupColorId int colorIndex) {
@@ -172,9 +173,5 @@ public class TabGroupRowView extends LinearLayout {
         } else if (textId == R.string.leave_tab_group_menu_item && leaveRunnable != null) {
             leaveRunnable.run();
         }
-    }
-
-    void setTimeAgoResolverForTesting(TabGroupTimeAgoResolver timeAgoResolver) {
-        mTimeAgoResolver = timeAgoResolver;
     }
 }
