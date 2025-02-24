@@ -6730,12 +6730,14 @@ String AXNodeObject::TextAlternativeFromTooltip(
   // First try for interest target, then for hint popover.
   // TODO(accessibility) Consider only using interest target.
   AXObject* popover_ax_object = nullptr;
-  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled()) {
+  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          GetElement()->GetDocument().GetExecutionContext())) {
     popover_ax_object =
         AXObjectCache().Get(GetElement()->interestTargetElement());
   }
   if (popover_ax_object) {
-    DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+    DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+        GetElement()->GetDocument().GetExecutionContext()));
     name_from = ax::mojom::blink::NameFrom::kInterestTarget;
   } else {
     auto* form_control = DynamicTo<HTMLFormControlElement>(GetElement());
@@ -7696,10 +7698,10 @@ String AXNodeObject::Description(
           DescriptionSource(found_description, kTitleAttr));
       description_sources->back().type = description_from;
     }
-    const AtomicString& title = GetElement()->FastGetAttribute(kTitleAttr);
+    const AtomicString& title = element->FastGetAttribute(kTitleAttr);
     if (!title.empty() &&
         String(title).StripWhiteSpace() !=
-            GetElement()->GetInnerTextWithoutUpdate().StripWhiteSpace()) {
+            element->GetInnerTextWithoutUpdate().StripWhiteSpace()) {
       description = title;
       if (description_sources) {
         found_description = true;
@@ -7712,10 +7714,12 @@ String AXNodeObject::Description(
 
   // For form controls that act as interest target triggering elements, use
   // the target for a description if it only contains plain contents.
-  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled() &&
+  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          element->GetDocument().GetExecutionContext()) &&
       name_from != ax::mojom::blink::NameFrom::kInterestTarget) {
-    if (Element* interest_target = GetElement()->interestTargetElement()) {
-      DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+    if (Element* interest_target = element->interestTargetElement()) {
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          element->GetDocument().GetExecutionContext()));
       description_from = ax::mojom::blink::DescriptionFrom::kInterestTarget;
       if (description_sources) {
         description_sources->push_back(DescriptionSource(

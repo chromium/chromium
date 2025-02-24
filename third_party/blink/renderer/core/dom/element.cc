@@ -1313,7 +1313,8 @@ InterestInvokerTargetData* Element::GetInterestInvokerTargetData() const {
 }
 
 bool Element::InterestGained(Element& interest_target) {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   CHECK(IsInTreeScope());
   CHECK(GetDocument().IsActive());
   Event* interest_event =
@@ -1335,7 +1336,8 @@ bool Element::InterestGained(Element& interest_target) {
 }
 
 bool Element::InterestLost(Element& interest_target) {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   CHECK(IsInTreeScope());
   CHECK(GetDocument().IsActive());
   Event* lose_interest_event =
@@ -1361,7 +1363,8 @@ bool Element::InterestLost(Element& interest_target) {
 
 void Element::DefaultEventHandler(Event& event) {
   if (Element* target = interestTargetElement()) {
-    CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+    CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+        GetDocument().GetExecutionContext()));
     if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
         keyboard_event && event.type() == event_type_names::kKeydown) {
       const int modifiers =
@@ -6324,7 +6327,8 @@ void Element::ParseAttribute(const AttributeModificationParams& params) {
   if (params.name.Matches(xml_names::kLangAttr)) {
     LangAttributeChanged();
   } else if (params.name.Matches(html_names::kInteresttargetAttr)) {
-    if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled()) {
+    if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+            GetDocument().GetExecutionContext())) {
       if (!params.old_value.IsNull() && params.old_value != params.new_value) {
         // We are changing the value of the `interesttarget` attribute, which
         // might "point" it at a different target element. So clear the
@@ -10509,7 +10513,8 @@ Element* Element::GetInterestInvoker() const {
 }
 
 bool Element::HasInterest() {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   auto* target = interestTargetElement();
   if (!target) {
     return false;
@@ -10540,7 +10545,8 @@ void Element::SetHovered(bool hovered) {
 
   InvalidateIfHasEffectiveAppearance();
 
-  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled() &&
+  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          GetDocument().GetExecutionContext()) &&
       IsInTreeScope() && document.IsActive()) {
     // Mechanics of `interesttarget` invokers ("interest invokers"):
     //  - It is possible for there to be nested DOM elements that both have the

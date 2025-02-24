@@ -384,7 +384,8 @@ HTMLFormControlElement::popoverTargetElement() {
 }
 
 Element* HTMLFormControlElement::interestTargetElement() {
-  if (!RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled()) {
+  if (!RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          GetDocument().GetExecutionContext())) {
     return nullptr;
   }
   if (!IsInTreeScope() || IsDisabledFormControl()) {

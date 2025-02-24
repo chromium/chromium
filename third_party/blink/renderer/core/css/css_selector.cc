@@ -803,7 +803,8 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   }
 
   if (match->type == CSSSelector::kPseudoHasInterest &&
-      !RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled()) {
+      !RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          document ? document->GetExecutionContext() : nullptr)) {
     return CSSSelector::kPseudoUnknown;
   }
 

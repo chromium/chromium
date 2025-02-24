@@ -32,7 +32,8 @@ class InterestInvokerData final : public GarbageCollected<InterestInvokerData>,
   }
   void cancelInterestGainedTask() { interest_gained_task_.Cancel(); }
   void setInterestGainedTask(TaskHandle&& task) {
-    DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+    DCHECK(RuntimeEnabledFeatures::
+               HTMLInterestTargetAttributeEnabledByRuntimeFlag());
     DCHECK(!interest_gained_task_.IsActive());
     interest_gained_task_ = std::move(task);
   }
@@ -40,7 +41,8 @@ class InterestInvokerData final : public GarbageCollected<InterestInvokerData>,
   bool hasInterestLostTask() const { return interest_lost_task_.IsActive(); }
   void cancelInterestLostTask() { interest_lost_task_.Cancel(); }
   void setInterestLostTask(TaskHandle&& task) {
-    DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+    DCHECK(RuntimeEnabledFeatures::
+               HTMLInterestTargetAttributeEnabledByRuntimeFlag());
     DCHECK(!interest_lost_task_.IsActive());
     interest_lost_task_ = std::move(task);
   }

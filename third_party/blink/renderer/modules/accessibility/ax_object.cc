@@ -2855,11 +2855,12 @@ AXObject* AXObject::GetCommandForElement() const {
 // their interest target, when that interest target is a) visible, b) is rich,
 // and c) not the next element in the DOM (depth first search order).
 AXObject* AXObject::GetInterestTargetForInvoker() const {
-  if (!RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled()) {
+  if (!GetElement()) {
     return nullptr;
   }
 
-  if (!GetElement()) {
+  if (!RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          GetElement()->GetDocument().GetExecutionContext())) {
     return nullptr;
   }
 
