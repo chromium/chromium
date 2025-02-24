@@ -12,6 +12,7 @@
 #include "components/facilitated_payments/content/browser/security_checker.h"
 #include "components/facilitated_payments/core/browser/ewallet_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
+#include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/pix_manager.h"
 #include "components/optimization_guide/core/test_optimization_guide_decider.h"
 #include "content/public/browser/web_contents.h"
@@ -20,32 +21,6 @@
 
 namespace payments::facilitated {
 namespace {
-
-// A mock for the facilitated payment "client" interface, used for loading risk
-// data, and showing the PIX payment prompt.
-class FakeFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
- public:
-  FakeFacilitatedPaymentsClient() = default;
-  ~FakeFacilitatedPaymentsClient() override = default;
-
-  MOCK_METHOD(void,
-              LoadRiskData,
-              (base::OnceCallback<void(const std::string&)>),
-              (override));
-  MOCK_METHOD(autofill::PaymentsDataManager*,
-              GetPaymentsDataManager,
-              (),
-              (override));
-  MOCK_METHOD(FacilitatedPaymentsNetworkInterface*,
-              GetFacilitatedPaymentsNetworkInterface,
-              (),
-              (override));
-  MOCK_METHOD(std::optional<CoreAccountInfo>,
-              GetCoreAccountInfo,
-              (),
-              (override));
-  MOCK_METHOD(bool, IsInLandscapeMode, (), (override));
-};
 
 class MockPixManager : public PixManager {
  public:
@@ -101,7 +76,7 @@ class ContentFacilitatedPaymentsDriverTest
 
     decider_ =
         std::make_unique<optimization_guide::TestOptimizationGuideDecider>();
-    client_ = std::make_unique<FakeFacilitatedPaymentsClient>();
+    client_ = std::make_unique<MockFacilitatedPaymentsClient>();
     content::RenderFrameHost* render_frame_host =
         RenderViewHostTestHarness::web_contents()->GetPrimaryMainFrame();
     std::unique_ptr<MockSecurityChecker> sc =

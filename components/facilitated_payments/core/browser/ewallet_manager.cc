@@ -83,6 +83,12 @@ void EwalletManager::TriggerEwalletPushPayment(const GURL& payment_link_url,
     return;
   }
 
+  if (client_->IsFoldable()) {
+    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kFoldableDevice,
+                               scheme_);
+    return;
+  }
+
   autofill::PaymentsDataManager* payments_data_manager =
       client_->GetPaymentsDataManager();
   if (!payments_data_manager) {

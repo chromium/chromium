@@ -4,6 +4,7 @@
 
 #include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 
+#include "base/android/build_info.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
@@ -80,6 +81,10 @@ ChromeFacilitatedPaymentsClient::GetCoreAccountInfo() {
 
 bool ChromeFacilitatedPaymentsClient::IsInLandscapeMode() {
   return facilitated_payments_controller_->IsInLandscapeMode();
+}
+
+bool ChromeFacilitatedPaymentsClient::IsFoldable() {
+  return base::android::BuildInfo::GetInstance()->is_foldable();
 }
 
 void ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(

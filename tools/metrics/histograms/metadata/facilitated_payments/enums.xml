@@ -44,6 +44,7 @@ reviewer.
       label="The FOP selector either wasn't shown, or was dismissed not as a
              result of a user action"/>
   <int value="12" label="The FOP selector was closed by the user"/>
+  <int value="13" label="Foldable devices not supported"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:EwalletFlowExitedReason) -->
