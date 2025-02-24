@@ -4,6 +4,8 @@
 
 package org.chromium.components.webauthn.cred_man;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.webauthn.WebauthnModeProvider.is;
 
 import android.content.Context;
@@ -20,7 +22,6 @@ import android.os.Bundle;
 import android.os.OutcomeReceiver;
 import android.os.SystemClock;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -31,6 +32,8 @@ import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.Fido2CredentialRequest.ConditionalUiState;
@@ -49,6 +52,7 @@ import org.chromium.content_public.browser.RenderFrameHost;
 
 import java.nio.ByteBuffer;
 
+@NullMarked
 public class CredManHelper {
     // These two values are formed differently because they come from the
     // Jetpack library, not the framework.
@@ -61,22 +65,21 @@ public class CredManHelper {
 
     private static final String TAG = "CredManHelper";
 
-    private ErrorCallback mErrorCallback;
-    private Barrier mBarrier;
+    private @Nullable Barrier mBarrier;
     private boolean mPlayServicesAvailable;
     private boolean mRequestPasswords;
     private final AuthenticationContextProvider mAuthenticationContextProvider;
     private final WebauthnBrowserBridge.Provider mBridgeProvider;
-    private byte[] mClientDataJson;
+    private byte @Nullable [] mClientDataJson;
     private ConditionalUiState mConditionalUiState = ConditionalUiState.NONE;
-    private CredManRequestDecorator mCredManRequestDecorator;
+    private @Nullable CredManRequestDecorator mCredManRequestDecorator;
     private CredManMetricsHelper mMetricsHelper;
-    private Runnable mNoCredentialsFallback;
+    private @Nullable Runnable mNoCredentialsFallback;
 
     // A callback that provides an AuthenticatorStatus error in the first argument, and optionally a
     // metrics recording outcome in the second.
     public interface ErrorCallback {
-        public void onResult(int error, Integer metricsOutcome);
+        public void onResult(int error, @Nullable Integer metricsOutcome);
     }
 
     public CredManHelper(
@@ -97,9 +100,9 @@ public class CredManHelper {
     public int startMakeRequest(
             PublicKeyCredentialCreationOptions options,
             String originString,
-            @Nullable byte[] clientDataJson,
-            @Nullable byte[] clientDataHash,
-            MakeCredentialResponseCallback makeCallback,
+            byte @Nullable [] clientDataJson,
+            byte @Nullable [] clientDataHash,
+            @Nullable MakeCredentialResponseCallback makeCallback,
             ErrorCallback errorCallback) {
         mClientDataJson = clientDataJson;
         final String requestAsJson =
@@ -146,6 +149,7 @@ public class CredManHelper {
                         String json =
                                 data.getString(
                                         CRED_MAN_PREFIX + "BUNDLE_KEY_REGISTRATION_RESPONSE_JSON");
+                        assertNonNull(json);
                         byte[] responseSerialized =
                                 Fido2CredentialRequestJni.get()
                                         .makeCredentialResponseFromJson(json);
@@ -175,6 +179,7 @@ public class CredManHelper {
                             response.info.clientDataJson = mClientDataJson;
                         }
                         response.echoCredProps = options.credProps;
+                        assumeNonNull(makeCallback);
                         makeCallback.onRegisterResponse(AuthenticatorStatus.SUCCESS, response);
                         mMetricsHelper.recordCredManCreateRequestHistogram(
                                 CredManCreateRequestEnum.SUCCESS);
@@ -189,6 +194,7 @@ public class CredManHelper {
         final CreateCredentialRequest request =
                 requestHelper.getCreateCredentialRequest(mCredManRequestDecorator);
         Context context = mAuthenticationContextProvider.getContext();
+        assumeNonNull(context);
         final CredentialManager manager =
                 (CredentialManager) context.getSystemService(Context.CREDENTIAL_SERVICE);
         manager.createCredential(context, request, null, context.getMainExecutor(), receiver);
@@ -201,15 +207,17 @@ public class CredManHelper {
     public void startPrefetchRequest(
             PublicKeyCredentialRequestOptions options,
             String originString,
-            @Nullable byte[] clientDataJson,
-            @Nullable byte[] clientDataHash,
-            GetAssertionResponseCallback getCallback,
+            byte @Nullable [] clientDataJson,
+            byte @Nullable [] clientDataHash,
+            @Nullable GetAssertionResponseCallback getCallback,
             ErrorCallback errorCallback,
             Barrier barrier,
             boolean ignoreGpm) {
         long startTimeMs = SystemClock.elapsedRealtime();
-        mErrorCallback = errorCallback;
-        mBarrier = barrier;
+        mBarrier = barrier; // Store this for any cancellation requests.
+        final ErrorCallback localErrorCallback = errorCallback;
+        final Barrier localBarrier = barrier;
+        final WebauthnBrowserBridge localBridge = assumeNonNull(mBridgeProvider.getBridge());
 
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         OutcomeReceiver<PrepareGetCredentialResponse, GetCredentialException> receiver =
@@ -224,7 +232,7 @@ public class CredManHelper {
                                 "CredMan prepareGetCredential call failed: %s",
                                 e.getType() + " (" + e.getMessage() + ")");
                         mConditionalUiState = ConditionalUiState.NONE;
-                        mBarrier.onCredManFailed(AuthenticatorStatus.UNKNOWN_ERROR);
+                        localBarrier.onCredManFailed(AuthenticatorStatus.UNKNOWN_ERROR);
                         mMetricsHelper.recordCredmanPrepareRequestHistogram(
                                 CredManPrepareRequestEnum.FAILURE);
                     }
@@ -236,7 +244,7 @@ public class CredManHelper {
                             // The request was completed synchronously when the cancellation was
                             // received.
                             mConditionalUiState = ConditionalUiState.NONE;
-                            mBridgeProvider.getBridge().cleanupCredManRequest(frameHost);
+                            localBridge.cleanupCredManRequest(frameHost);
                             return;
                         }
                         if (mConditionalUiState != ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST) {
@@ -255,25 +263,22 @@ public class CredManHelper {
 
                         mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
 
-                        mBarrier.onCredManSuccessful(
+                        localBarrier.onCredManSuccessful(
                                 () -> {
-                                    mBridgeProvider
-                                            .getBridge()
-                                            .onCredManConditionalRequestPending(
-                                                    frameHost,
-                                                    hasPublicKeyCredentials
-                                                            || hasAuthenticationResults,
-                                                    (requestPasswords) -> {
-                                                        setRequestPasswords(requestPasswords);
-                                                        startGetRequest(
-                                                                options,
-                                                                originString,
-                                                                clientDataJson,
-                                                                clientDataHash,
-                                                                getCallback,
-                                                                errorCallback,
-                                                                ignoreGpm);
-                                                    });
+                                    localBridge.onCredManConditionalRequestPending(
+                                            frameHost,
+                                            hasPublicKeyCredentials || hasAuthenticationResults,
+                                            (requestPasswords) -> {
+                                                setRequestPasswords(requestPasswords);
+                                                startGetRequest(
+                                                        options,
+                                                        originString,
+                                                        clientDataJson,
+                                                        clientDataHash,
+                                                        getCallback,
+                                                        localErrorCallback,
+                                                        ignoreGpm);
+                                            });
                                 });
                         mMetricsHelper.recordCredmanPrepareRequestHistogram(
                                 hasPublicKeyCredentials
@@ -298,11 +303,12 @@ public class CredManHelper {
             mConditionalUiState = ConditionalUiState.NONE;
             mMetricsHelper.recordCredmanPrepareRequestHistogram(
                     CredManPrepareRequestEnum.COULD_NOT_SEND_REQUEST);
-            mBarrier.onCredManFailed(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+            localBarrier.onCredManFailed(AuthenticatorStatus.NOT_ALLOWED_ERROR);
             return;
         }
 
         Context context = mAuthenticationContextProvider.getContext();
+        assumeNonNull(context);
         final CredentialManager manager =
                 (CredentialManager) context.getSystemService(Context.CREDENTIAL_SERVICE);
         manager.prepareGetCredential(
@@ -310,7 +316,7 @@ public class CredManHelper {
         mMetricsHelper.recordCredmanPrepareRequestHistogram(CredManPrepareRequestEnum.SENT_REQUEST);
     }
 
-    public void setNoCredentialsFallback(Runnable noCredentialsFallback) {
+    public void setNoCredentialsFallback(@Nullable Runnable noCredentialsFallback) {
         mNoCredentialsFallback = noCredentialsFallback;
     }
 
@@ -319,14 +325,16 @@ public class CredManHelper {
     public int startGetRequest(
             PublicKeyCredentialRequestOptions options,
             String originString,
-            @Nullable byte[] clientDataJson,
-            byte[] clientDataHash,
-            GetAssertionResponseCallback getCallback,
+            byte @Nullable [] clientDataJson,
+            byte @Nullable [] clientDataHash,
+            @Nullable GetAssertionResponseCallback getCallback,
             ErrorCallback errorCallback,
             boolean ignoreGpm) {
-        mErrorCallback = errorCallback;
         mClientDataJson = clientDataJson;
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
+        final ErrorCallback localErrorCallback = errorCallback;
+        final Barrier localBarrier = assumeNonNull(mBarrier);
+        final WebauthnBrowserBridge localBridge = assumeNonNull(mBridgeProvider.getBridge());
 
         // The Android 14 APIs have to be called via reflection until Chromium
         // builds with the Android 14 SDK by default.
@@ -342,13 +350,13 @@ public class CredManHelper {
                         notifyBrowserOnCredManClosed(false);
                         if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
                             mConditionalUiState = ConditionalUiState.NONE;
-                            mBridgeProvider.getBridge().cleanupCredManRequest(frameHost);
-                            mBarrier.onCredManCancelled();
+                            localBridge.cleanupCredManRequest(frameHost);
+                            localBarrier.onCredManCancelled();
                             return;
                         }
                         if (errorType.equals(GetCredentialException.TYPE_USER_CANCELED)) {
                             if (mConditionalUiState == ConditionalUiState.NONE) {
-                                mErrorCallback.onResult(
+                                localErrorCallback.onResult(
                                         AuthenticatorStatus.NOT_ALLOWED_ERROR,
                                         GetAssertionOutcome.USER_CANCELLATION);
                             }
@@ -369,7 +377,7 @@ public class CredManHelper {
                             if (mNoCredentialsFallback != null) {
                                 mNoCredentialsFallback.run();
                             } else if (mConditionalUiState == ConditionalUiState.NONE) {
-                                mErrorCallback.onResult(
+                                localErrorCallback.onResult(
                                         AuthenticatorStatus.NOT_ALLOWED_ERROR,
                                         GetAssertionOutcome.CREDENTIAL_NOT_RECOGNIZED);
                             }
@@ -378,7 +386,7 @@ public class CredManHelper {
                             //  * GetCredentialException.TYPE_UNKNOWN
                             //  * GetCredentialException.TYPE_NO_CREATE_OPTIONS
                             //  * GetCredentialException.TYPE_INTERRUPTED
-                            mErrorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR, null);
+                            localErrorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR, null);
                             mMetricsHelper.reportGetCredentialMetrics(
                                     CredManGetRequestEnum.FAILURE, mConditionalUiState);
                         }
@@ -393,21 +401,18 @@ public class CredManHelper {
                         if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
                             notifyBrowserOnCredManClosed(false);
                             mConditionalUiState = ConditionalUiState.NONE;
-                            mBridgeProvider.getBridge().cleanupCredManRequest(frameHost);
-                            mBarrier.onCredManCancelled();
+                            localBridge.cleanupCredManRequest(frameHost);
+                            localBarrier.onCredManCancelled();
                             return;
                         }
                         Bundle data = getCredentialResponse.getCredential().getData();
                         String type = getCredentialResponse.getCredential().getType();
 
                         if (!TYPE_PASSKEY.equals(type)) {
-                            mBridgeProvider
-                                    .getBridge()
-                                    .onPasswordCredentialReceived(
-                                            frameHost,
-                                            data.getString(CRED_MAN_PREFIX + "BUNDLE_KEY_ID"),
-                                            data.getString(
-                                                    CRED_MAN_PREFIX + "BUNDLE_KEY_PASSWORD"));
+                            localBridge.onPasswordCredentialReceived(
+                                    frameHost,
+                                    data.getString(CRED_MAN_PREFIX + "BUNDLE_KEY_ID"),
+                                    data.getString(CRED_MAN_PREFIX + "BUNDLE_KEY_PASSWORD"));
                             mMetricsHelper.reportGetCredentialMetrics(
                                     CredManGetRequestEnum.SUCCESS_PASSWORD, mConditionalUiState);
                             return;
@@ -417,6 +422,7 @@ public class CredManHelper {
                                 data.getString(
                                         CRED_MAN_PREFIX
                                                 + "BUNDLE_KEY_AUTHENTICATION_RESPONSE_JSON");
+                        assertNonNull(json);
                         byte[] responseSerialized =
                                 Fido2CredentialRequestJni.get().getCredentialResponseFromJson(json);
                         if (responseSerialized == null) {
@@ -431,7 +437,7 @@ public class CredManHelper {
                                             ? ConditionalUiState.WAITING_FOR_SELECTION
                                             : ConditionalUiState.NONE;
                             notifyBrowserOnCredManClosed(false);
-                            mErrorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR, null);
+                            localErrorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR, null);
                             return;
                         }
 
@@ -449,7 +455,7 @@ public class CredManHelper {
                                             ? ConditionalUiState.WAITING_FOR_SELECTION
                                             : ConditionalUiState.NONE;
                             notifyBrowserOnCredManClosed(false);
-                            mErrorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR, null);
+                            localErrorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR, null);
                             return;
                         }
                         if (mClientDataJson != null) {
@@ -466,6 +472,7 @@ public class CredManHelper {
                         if (frameHost != null) {
                             frameHost.notifyWebAuthnAssertionRequestSucceeded();
                         }
+                        assumeNonNull(getCallback);
                         getCallback.onSignResponse(AuthenticatorStatus.SUCCESS, response);
                     }
                 };
@@ -498,6 +505,7 @@ public class CredManHelper {
             return AuthenticatorStatus.NOT_ALLOWED_ERROR;
         }
         Context context = mAuthenticationContextProvider.getContext();
+        assumeNonNull(context);
         final CredentialManager manager =
                 (CredentialManager) context.getSystemService(Context.CREDENTIAL_SERVICE);
         manager.getCredential(
@@ -511,13 +519,16 @@ public class CredManHelper {
         switch (mConditionalUiState) {
             case WAITING_FOR_CREDENTIAL_LIST:
                 mConditionalUiState = ConditionalUiState.CANCEL_PENDING;
+                assumeNonNull(mBarrier);
                 mBarrier.onCredManCancelled();
                 break;
             case WAITING_FOR_SELECTION:
+                assumeNonNull(mBridgeProvider.getBridge());
                 mBridgeProvider
                         .getBridge()
                         .cleanupCredManRequest(mAuthenticationContextProvider.getRenderFrameHost());
                 mConditionalUiState = ConditionalUiState.NONE;
+                assumeNonNull(mBarrier);
                 mBarrier.onCredManCancelled();
                 break;
             default:
@@ -565,7 +576,7 @@ public class CredManHelper {
     private GetCredentialRequest buildGetCredentialRequest(
             PublicKeyCredentialRequestOptions options,
             String originString,
-            byte[] clientDataHash,
+            byte @Nullable [] clientDataHash,
             boolean requestPasswords,
             boolean preferImmediatelyAvailable,
             boolean ignoreGpm) {

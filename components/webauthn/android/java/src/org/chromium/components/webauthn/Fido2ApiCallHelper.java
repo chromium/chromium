@@ -4,6 +4,9 @@
 
 package org.chromium.components.webauthn;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.PendingIntent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +19,8 @@ import com.google.android.gms.tasks.Task;
 
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.components.webauthn.Fido2ApiCall.Fido2ApiCallParams;
@@ -28,8 +33,9 @@ import java.util.List;
  * Provides helper methods to wrap Fido2ApiCall invocations. This class is useful to override GMS
  * Core API interactions from Fido2CredentialRequest in tests.
  */
+@NullMarked
 public class Fido2ApiCallHelper {
-    private static Fido2ApiCallHelper sInstance;
+    private static @Nullable Fido2ApiCallHelper sInstance;
 
     public static void overrideInstanceForTesting(Fido2ApiCallHelper instance) {
         sInstance = instance;
@@ -58,6 +64,8 @@ public class Fido2ApiCallHelper {
         Fido2ApiCallParams params =
                 WebauthnModeProvider.getInstance()
                         .getFido2ApiCallParams(authenticationContextProvider.getWebContents());
+        assertNonNull(authenticationContextProvider.getContext());
+        assertNonNull(params);
         Fido2ApiCall call = new Fido2ApiCall(authenticationContextProvider.getContext(), params);
         Parcel args = call.start();
         WebauthnCredentialDetailsListResult result = new WebauthnCredentialDetailsListResult();
@@ -79,6 +87,7 @@ public class Fido2ApiCallHelper {
             String relyingParty,
             OnSuccessListener<List<WebauthnCredentialDetails>> successListener,
             OnFailureListener failureListener) {
+        assertNonNull(authenticationContextProvider.getContext());
         Fido2ApiCall call =
                 new Fido2ApiCall(
                         authenticationContextProvider.getContext(), Fido2ApiCall.PERSISTENT_API);
@@ -102,15 +111,17 @@ public class Fido2ApiCallHelper {
             AuthenticationContextProvider authenticationContextProvider,
             PublicKeyCredentialCreationOptions options,
             Uri uri,
-            byte[] clientDataHash,
-            Bundle browserOptions,
-            ResultReceiver resultReceiver,
+            byte @Nullable [] clientDataHash,
+            @Nullable Bundle browserOptions,
+            @Nullable ResultReceiver resultReceiver,
             OnSuccessListener<PendingIntent> successCallback,
             OnFailureListener failureCallback)
             throws NoSuchAlgorithmException {
         Fido2ApiCallParams params =
                 WebauthnModeProvider.getInstance()
                         .getFido2ApiCallParams(authenticationContextProvider.getWebContents());
+        assertNonNull(authenticationContextProvider.getContext());
+        assertNonNull(params);
         Fido2ApiCall call = new Fido2ApiCall(authenticationContextProvider.getContext(), params);
         Parcel args = call.start();
         Fido2ApiCall.PendingIntentResult result =
@@ -118,6 +129,7 @@ public class Fido2ApiCallHelper {
         args.writeStrongBinder(result);
         args.writeInt(1); // This indicates that the following options are present.
 
+        assumeNonNull(params.mMethodInterfaces);
         params.mMethodInterfaces.makeCredential(
                 options, uri, clientDataHash, browserOptions, resultReceiver, args);
 
@@ -131,13 +143,15 @@ public class Fido2ApiCallHelper {
             AuthenticationContextProvider authenticationContextProvider,
             PublicKeyCredentialRequestOptions options,
             Uri uri,
-            byte[] clientDataHash,
-            ResultReceiver resultReceiver,
+            byte @Nullable [] clientDataHash,
+            @Nullable ResultReceiver resultReceiver,
             OnSuccessListener<PendingIntent> successCallback,
             OnFailureListener failureCallback) {
         Fido2ApiCallParams params =
                 WebauthnModeProvider.getInstance()
                         .getFido2ApiCallParams(authenticationContextProvider.getWebContents());
+        assertNonNull(authenticationContextProvider.getContext());
+        assertNonNull(params);
         Fido2ApiCall call = new Fido2ApiCall(authenticationContextProvider.getContext(), params);
         Parcel args = call.start();
         Fido2ApiCall.PendingIntentResult result =
@@ -145,6 +159,7 @@ public class Fido2ApiCallHelper {
         args.writeStrongBinder(result);
         args.writeInt(1); // This indicates that the following options are present.
 
+        assumeNonNull(params.mMethodInterfaces);
         params.mMethodInterfaces.getAssertion(
                 options, uri, clientDataHash, /* tunnelId= */ null, resultReceiver, args);
         Task<PendingIntent> task =

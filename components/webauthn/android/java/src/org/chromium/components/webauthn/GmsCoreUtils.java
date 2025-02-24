@@ -5,7 +5,9 @@
 package org.chromium.components.webauthn;
 
 import org.chromium.base.PackageUtils;
+import org.chromium.build.annotations.NullMarked;
 
+@NullMarked
 public class GmsCoreUtils {
     private static final String GMSCORE_PACKAGE_NAME = "com.google.android.gms";
     private static final int GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS = 223300000;

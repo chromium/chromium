@@ -9,6 +9,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderFrameHost;
 
 import java.util.List;
@@ -18,10 +20,11 @@ import java.util.List;
  * browser.
  */
 @JNINamespace("webauthn")
+@NullMarked
 public class WebauthnBrowserBridge {
     /** Owner of the bridge should implement this interface and cache the bridge. */
     public interface Provider {
-        WebauthnBrowserBridge getBridge();
+        @Nullable WebauthnBrowserBridge getBridge();
     }
 
     private long mNativeWebauthnBrowserBridge;
@@ -42,11 +45,11 @@ public class WebauthnBrowserBridge {
      *     sign-in.
      */
     public void onCredentialsDetailsListReceived(
-            RenderFrameHost frameHost,
+            @Nullable RenderFrameHost frameHost,
             List<WebauthnCredentialDetails> credentialList,
             boolean isConditionalRequest,
             Callback<byte[]> getAssertionCallback,
-            Runnable hybridCallback) {
+            @Nullable Runnable hybridCallback) {
         assert credentialList != null;
         assert getAssertionCallback != null;
         prepareNativeBrowserBridgeIfRequired();
@@ -75,7 +78,9 @@ public class WebauthnBrowserBridge {
      *     completed conditional request.
      */
     public void onCredManConditionalRequestPending(
-            RenderFrameHost frameHost, boolean hasResults, Callback<Boolean> fullAssertion) {
+            @Nullable RenderFrameHost frameHost,
+            boolean hasResults,
+            Callback<Boolean> fullAssertion) {
         prepareNativeBrowserBridgeIfRequired();
 
         WebauthnBrowserBridgeJni.get()
@@ -89,7 +94,7 @@ public class WebauthnBrowserBridge {
      * @param frameHost The RenderFrameHost related to this CredMan call
      * @param success true iff user is authenticated
      */
-    public void onCredManUiClosed(RenderFrameHost frameHost, boolean success) {
+    public void onCredManUiClosed(@Nullable RenderFrameHost frameHost, boolean success) {
         prepareNativeBrowserBridgeIfRequired();
 
         WebauthnBrowserBridgeJni.get()
@@ -97,7 +102,9 @@ public class WebauthnBrowserBridge {
     }
 
     public void onPasswordCredentialReceived(
-            RenderFrameHost frameHost, String username, String password) {
+            @Nullable RenderFrameHost frameHost,
+            @Nullable String username,
+            @Nullable String password) {
         prepareNativeBrowserBridgeIfRequired();
 
         WebauthnBrowserBridgeJni.get()
@@ -111,7 +118,7 @@ public class WebauthnBrowserBridge {
      *
      * @param frameHost The RenderFrameHost for the frame that generated the cancellation.
      */
-    public void cleanupRequest(RenderFrameHost frameHost) {
+    public void cleanupRequest(@Nullable RenderFrameHost frameHost) {
         // This should never be called without a bridge already having been created.
         assert mNativeWebauthnBrowserBridge != 0;
 
@@ -124,7 +131,7 @@ public class WebauthnBrowserBridge {
      *
      * @param frameHost The RenderFrameHost for the frame that generated the cancellation.
      */
-    public void cleanupCredManRequest(RenderFrameHost frameHost) {
+    public void cleanupCredManRequest(@Nullable RenderFrameHost frameHost) {
         // This should never be called without a bridge already having been created.
         assert mNativeWebauthnBrowserBridge != 0;
 
@@ -139,23 +146,26 @@ public class WebauthnBrowserBridge {
     }
 
     @CalledByNative
-    private static String getWebauthnCredentialDetailsUserName(WebauthnCredentialDetails cred) {
+    private static @Nullable String getWebauthnCredentialDetailsUserName(
+            WebauthnCredentialDetails cred) {
         return cred.mUserName;
     }
 
     @CalledByNative
-    private static String getWebauthnCredentialDetailsUserDisplayName(
+    private static @Nullable String getWebauthnCredentialDetailsUserDisplayName(
             WebauthnCredentialDetails cred) {
         return cred.mUserDisplayName;
     }
 
     @CalledByNative
-    private static byte[] getWebauthnCredentialDetailsUserId(WebauthnCredentialDetails cred) {
+    private static byte @Nullable [] getWebauthnCredentialDetailsUserId(
+            WebauthnCredentialDetails cred) {
         return cred.mUserId;
     }
 
     @CalledByNative
-    private static byte[] getWebauthnCredentialDetailsCredentialId(WebauthnCredentialDetails cred) {
+    private static byte @Nullable [] getWebauthnCredentialDetailsCredentialId(
+            WebauthnCredentialDetails cred) {
         return cred.mCredentialId;
     }
 
@@ -176,29 +186,32 @@ public class WebauthnBrowserBridge {
                 long nativeWebauthnBrowserBridge,
                 WebauthnBrowserBridge caller,
                 WebauthnCredentialDetails[] credentialList,
-                RenderFrameHost frameHost,
+                @Nullable RenderFrameHost frameHost,
                 boolean isConditionalRequest,
                 Callback<byte[]> getAssertionCallback,
-                Runnable hybridCallback);
+                @Nullable Runnable hybridCallback);
 
         void onCredManConditionalRequestPending(
                 long nativeWebauthnBrowserBridge,
-                RenderFrameHost frameHost,
+                @Nullable RenderFrameHost frameHost,
                 boolean hasResults,
                 Callback<Boolean> fullAssertion);
 
         void onCredManUiClosed(
-                long nativeWebauthnBrowserBridge, RenderFrameHost frameHost, boolean success);
+                long nativeWebauthnBrowserBridge,
+                @Nullable RenderFrameHost frameHost,
+                boolean success);
 
         void onPasswordCredentialReceived(
                 long nativeWebauthnBrowserBridge,
-                RenderFrameHost frameHost,
-                String username,
-                String password);
+                @Nullable RenderFrameHost frameHost,
+                @Nullable String username,
+                @Nullable String password);
 
-        void cleanupRequest(long nativeWebauthnBrowserBridge, RenderFrameHost frameHost);
+        void cleanupRequest(long nativeWebauthnBrowserBridge, @Nullable RenderFrameHost frameHost);
 
-        void cleanupCredManRequest(long nativeWebauthnBrowserBridge, RenderFrameHost frameHost);
+        void cleanupCredManRequest(
+                long nativeWebauthnBrowserBridge, @Nullable RenderFrameHost frameHost);
 
         void destroy(long nativeWebauthnBrowserBridge);
     }

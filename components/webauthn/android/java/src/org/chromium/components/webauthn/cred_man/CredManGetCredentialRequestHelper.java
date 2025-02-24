@@ -12,17 +12,19 @@ import android.credentials.GetCredentialRequest;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderFrameHost;
 
 /**
  * This class is responsible for holding the arguments to create a valid {@link
  * GetCredentialRequest}. The request can be formed using the `getGetCredentialRequest` method.
  */
+@NullMarked
 class CredManGetCredentialRequestHelper {
-    private static CredManGetCredentialRequestHelper sInstanceForTesting;
+    private static @Nullable CredManGetCredentialRequestHelper sInstanceForTesting;
 
     // Auto-select means that, when an allowlist is present and one of the providers matches with
     // it, the account selector can be skipped. (However, if two or more providers match with the
@@ -32,23 +34,23 @@ class CredManGetCredentialRequestHelper {
     private static final String TYPE_PASSWORD_CREDENTIAL =
             "android.credentials.TYPE_PASSWORD_CREDENTIAL";
 
-    private String mRequestAsJson;
-    private byte[] mClientDataHash;
+    private @Nullable String mRequestAsJson;
+    private byte @Nullable [] mClientDataHash;
     private boolean mPreferImmediatelyAvailable;
     private boolean mAllowAutoSelect;
     private boolean mRequestPasswords;
 
-    @Nullable private String mOrigin;
+    private @Nullable String mOrigin;
     private boolean mPlayServicesAvailable;
     private boolean mIgnoreGpm;
-    @Nullable private RenderFrameHost mRenderFrameHost;
+    private @Nullable RenderFrameHost mRenderFrameHost;
 
     static class Builder {
         private CredManGetCredentialRequestHelper mHelper;
 
         Builder(
                 String requestAsJson,
-                byte[] clientDataHash,
+                byte @Nullable [] clientDataHash,
                 boolean preferImmediatelyAvailable,
                 boolean allowAutoSelect,
                 boolean requestPasswords) {
@@ -75,7 +77,7 @@ class CredManGetCredentialRequestHelper {
             return this;
         }
 
-        Builder setRenderFrameHost(RenderFrameHost renderFrameHost) {
+        Builder setRenderFrameHost(@Nullable RenderFrameHost renderFrameHost) {
             mHelper.mRenderFrameHost = renderFrameHost;
             return this;
         }
@@ -104,8 +106,7 @@ class CredManGetCredentialRequestHelper {
         return mPreferImmediatelyAvailable;
     }
 
-    @Nullable
-    String getOrigin() {
+    @Nullable String getOrigin() {
         return mOrigin;
     }
 
@@ -117,8 +118,7 @@ class CredManGetCredentialRequestHelper {
         return mIgnoreGpm;
     }
 
-    @Nullable
-    RenderFrameHost getRenderFrameHost() {
+    @Nullable RenderFrameHost getRenderFrameHost() {
         return mRenderFrameHost;
     }
 

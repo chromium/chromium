@@ -5,11 +5,13 @@
 package org.chromium.components.webauthn;
 
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Callback interface for receiving a response from a request to produce a
  * signed assertion from an authenticator.
  */
+@NullMarked
 public interface GetAssertionResponseCallback {
     public void onSignResponse(int status, GetAssertionAuthenticatorResponse response);
 }

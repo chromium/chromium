@@ -5,6 +5,7 @@
 package org.chromium.services.service_manager;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.bindings.Interface;
 
 /**
@@ -13,7 +14,7 @@ import org.chromium.mojo.bindings.Interface;
  * @param <I> the mojo interface
  */
 @NullMarked
-public interface InterfaceFactory<I extends Interface> {
+public interface InterfaceFactory<I extends @Nullable Interface> {
     /** Returns an implementation of the mojo interface. */
     I createImpl();
 }

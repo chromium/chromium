@@ -4,20 +4,25 @@
 
 package org.chromium.components.webauthn;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Helper class to compare the results from the passkey cache service and FIDO2 module. Should not
  * be used if WebAuthenticationAndroidUsePasskeyCache is disabled. Note that the cache results are
  * not used to enumerate passkeys. They are used only for comparison.
  */
+@NullMarked
 public class Fido2GetCredentialsComparator {
     public static class Factory {
-        private static Fido2GetCredentialsComparator sInstanceForTesting;
+        private static @Nullable Fido2GetCredentialsComparator sInstanceForTesting;
 
         public static Fido2GetCredentialsComparator get(boolean isGoogleRp) {
             return sInstanceForTesting == null
@@ -68,8 +73,8 @@ public class Fido2GetCredentialsComparator {
 
     private static final String HISTOGRAM_PREFIX = "WebAuthentication.Android.Fido2VsPasskeyCache";
 
-    private State mPasskeysCacheResultState;
-    private State mFido2ResultState;
+    private @Nullable State mPasskeysCacheResultState;
+    private @Nullable State mFido2ResultState;
     private boolean mIsGoogleRp;
 
     void onGetCredentialsSuccessful(int credentialCount) {
@@ -150,6 +155,8 @@ public class Fido2GetCredentialsComparator {
     }
 
     private @SuccessState int getSuccessState() {
+        assumeNonNull(mFido2ResultState);
+        assumeNonNull(mPasskeysCacheResultState);
         if (mFido2ResultState.successful) {
             return mPasskeysCacheResultState.successful
                     ? SuccessState.FIDO2_SUCCESSFUL_CACHE_SUCCESSFUL

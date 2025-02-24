@@ -4,10 +4,13 @@
 
 package org.chromium.components.webauthn;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Callback interface for receiving a response from a request to call
  * IsUserVerifyingPlatformAuthenticator.
  */
+@NullMarked
 public interface IsUvpaaResponseCallback {
     public void onIsUserVerifyingPlatformAuthenticatorAvailableResponse(boolean isUVPAA);
 }

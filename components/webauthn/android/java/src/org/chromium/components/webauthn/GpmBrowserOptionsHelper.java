@@ -10,15 +10,18 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 
 /** Provides helper methods to add GPM-specific flags to credential requests. */
+@NullMarked
 public class GpmBrowserOptionsHelper {
     private static final String CHANNEL_KEY = "com.android.chrome.CHANNEL";
     private static final String INCOGNITO_KEY = "com.android.chrome.INCOGNITO";
-    private static Boolean sIsIncognitoForTesting;
+    private static @Nullable Boolean sIsIncognitoForTesting;
 
     /**
      * Adds the channel info so that GPM can (depending on context and request):
@@ -42,7 +45,7 @@ public class GpmBrowserOptionsHelper {
      * @param renderFrameHost The frame from which the request is made.
      */
     public static void addIncognitoExtraToOptions(
-            Bundle browserOptions, RenderFrameHost renderFrameHost) {
+            Bundle browserOptions, @Nullable RenderFrameHost renderFrameHost) {
         browserOptions.putBoolean(INCOGNITO_KEY, isIncognito(renderFrameHost));
     }
 
@@ -57,7 +60,7 @@ public class GpmBrowserOptionsHelper {
         return browserOptions;
     }
 
-    private static final String getChannel() {
+    private static final @Nullable String getChannel() {
         if (VersionInfo.isCanaryBuild()) {
             return "canary";
         }
@@ -77,7 +80,7 @@ public class GpmBrowserOptionsHelper {
         return null;
     }
 
-    private static final boolean isIncognito(RenderFrameHost frameHost) {
+    private static final boolean isIncognito(@Nullable RenderFrameHost frameHost) {
         if (sIsIncognitoForTesting != null) return sIsIncognitoForTesting;
         if (frameHost == null) return false;
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(frameHost);
