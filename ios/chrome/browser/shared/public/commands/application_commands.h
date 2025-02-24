@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #include "base/ios/block_types.h"
+#include "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #include "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
 
 class GURL;
@@ -195,6 +196,11 @@ enum class TabGridOpeningMode {
 
 // Opens a debug menu for AI prototyping.
 - (void)openAIMenu;
+
+// Shows the sign-in upgrade promo with a completion block that is called when
+// the promo is dismissed.
+- (void)showSigninUpgradePromoWithCompletion:
+    (SigninCoordinatorCompletionCallback)dismissalCompletion;
 
 @end
 

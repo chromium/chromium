@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_type.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_coordinator.h"
@@ -2712,6 +2713,14 @@ enum class ToolbarKind {
   self.defaultBrowserGenericPromoCoordinator.handler = self;
   self.defaultBrowserGenericPromoCoordinator.promoWasFromRemindMeLater = YES;
   [self.defaultBrowserGenericPromoCoordinator start];
+}
+
+- (void)showSigninPromo {
+  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+      showSigninUpgradePromoWithCompletion:^(SigninCoordinatorResult result,
+                                             id<SystemIdentity>) {
+        [self.promosManagerCoordinator promoWasDismissed];
+      }];
 }
 
 #pragma mark - PageInfoCommands

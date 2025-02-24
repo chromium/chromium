@@ -1448,15 +1448,7 @@ void OnListFamilyMembersResponse(
     return;
   }
   self.sceneState.profileState.appState.signinUpgradePromoPresentedOnce = YES;
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
-  Browser* browser = self.mainInterface.browser;
-  self.signinCoordinator = [SigninCoordinator
-      upgradeSigninPromoCoordinatorWithBaseViewController:self.mainInterface
-                                                              .viewController
-                                                  browser:browser];
-  [self startSigninCoordinatorWithCompletion:nil];
+  [self showSigninUpgradePromoWithCompletion:nil];
 }
 
 - (BOOL)canHandleIntents {
@@ -1568,6 +1560,19 @@ void OnListFamilyMembersResponse(
 }
 
 #pragma mark - ApplicationCommands
+
+- (void)showSigninUpgradePromoWithCompletion:
+    (SigninCoordinatorCompletionCallback)dismissalCompletion {
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
+  Browser* browser = self.mainInterface.browser;
+  self.signinCoordinator = [SigninCoordinator
+      upgradeSigninPromoCoordinatorWithBaseViewController:self.mainInterface
+                                                              .viewController
+                                                  browser:browser];
+  [self startSigninCoordinatorWithCompletion:dismissalCompletion];
+}
 
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion {
   [self dismissModalDialogsWithCompletion:completion dismissOmnibox:YES];
