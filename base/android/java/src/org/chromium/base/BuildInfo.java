@@ -81,9 +81,6 @@ public class BuildInfo {
     /** Truncated version of Build.FINGERPRINT (for crash reporting). */
     public final String androidBuildFingerprint;
 
-    /** Whether or not the device has apps installed for using custom themes. */
-    public final String customThemes;
-
     /** Product version as stored in Android resources. */
     public final String resourcesVersion;
 
@@ -190,7 +187,6 @@ public class BuildInfo {
         installerPackageName = ApkInfo.getInstallerPackageName();
         abiString = AndroidInfo.getAndroidSupportedAbis();
         androidBuildFingerprint = AndroidInfo.getAndroidBuildFingerprint();
-        customThemes = DeviceInfo.getCustomThemes();
         resourcesVersion = ApkInfo.getResourcesVersion();
         isTV = DeviceInfo.isTV();
         isAutomotive = DeviceInfo.isAutomotive();

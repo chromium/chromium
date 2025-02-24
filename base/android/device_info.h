@@ -15,11 +15,9 @@ void set_gms_version_code_for_test(const std::string& gms_version_code);
 bool is_tv();
 bool is_automotive();
 bool is_foldable();
-
 bool is_desktop();
 // Available only on Android T+.
 int32_t vulkan_deqp_level();
-const char* custom_themes();
 
 }  // namespace base::android::device_info
 

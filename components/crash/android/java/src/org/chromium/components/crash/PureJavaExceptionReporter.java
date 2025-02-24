@@ -62,7 +62,6 @@ public abstract class PureJavaExceptionReporter
     public static final String EXCEPTION_INFO = "exception_info";
     public static final String PROCESS_TYPE = "ptype";
     public static final String EARLY_JAVA_EXCEPTION = "early_java_exception";
-    public static final String CUSTOM_THEMES = "custom_themes";
     public static final String RESOURCES_VERSION = "resources_version";
 
     private static final String DUMP_LOCATION_SWITCH = "breakpad-dump-location";
@@ -146,7 +145,6 @@ public abstract class PureJavaExceptionReporter
                 String.format(
                         "%s v%s (%s)",
                         buildInfo.packageName, BuildConfig.VERSION_CODE, buildInfo.versionName));
-        mReportContent.put(CUSTOM_THEMES, buildInfo.customThemes);
         mReportContent.put(RESOURCES_VERSION, buildInfo.resourcesVersion);
 
         AtomicReferenceArray<String> values = CrashKeys.getInstance().getValues();
