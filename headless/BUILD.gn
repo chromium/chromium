@@ -556,6 +556,7 @@ group("headless_tests") {
 
 test("headless_unittests") {
   sources = [
+    "lib/browser/headless_bluetooth_delegate_unittest.cc",
     "lib/browser/headless_browser_impl_unittest.cc",
     "lib/browser/headless_client_hints_controller_delegate_unittest.cc",
     "lib/renderer/allowlist_unittest.cc",
@@ -574,6 +575,7 @@ test("headless_unittests") {
     "//content/public/app",
     "//content/public/child:child",
     "//content/public/common",
+    "//device/bluetooth/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx:test_support",

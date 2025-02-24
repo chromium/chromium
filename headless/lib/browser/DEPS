@@ -27,6 +27,10 @@ include_rules = [
   "+ui/events/keycodes/dom",
 ]
 specific_include_rules = {
+  "headless_bluetooth_delegate_unittest.cc": [
+    "+device/bluetooth/public/cpp/bluetooth_uuid.h",
+    "+third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h",
+  ],
   "headless_browser_main_parts.*": [
     "+components/origin_trials/browser",
   ],

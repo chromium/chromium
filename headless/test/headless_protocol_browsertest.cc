@@ -386,6 +386,11 @@ HEADLESS_PROTOCOL_TEST(GrantPermissions, "sanity/grant_permissions.js")
 HEADLESS_PROTOCOL_TEST(AutoHyphenation, "sanity/auto-hyphenation.js")
 #endif
 
+// Web Bluetooth is still experimental on Linux.
+#if !BUILDFLAG(IS_LINUX)
+HEADLESS_PROTOCOL_TEST(Bluetooth, "emulation/bluetooth.js")
+#endif
+
 class HeadlessProtocolBrowserTestWithKnownPermission
     : public HeadlessProtocolBrowserTest {
  public:

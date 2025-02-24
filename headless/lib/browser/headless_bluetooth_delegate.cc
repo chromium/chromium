@@ -77,12 +77,6 @@ void HeadlessBluetoothDelegate::RevokeDevicePermissionWebInitiated(
     const WebBluetoothDeviceId& device_id) {}
 
 bool HeadlessBluetoothDelegate::MayUseBluetooth(RenderFrameHost* rfh) {
-  // Disable any other non-default StoragePartition contexts, unless it has a
-  // non-http/https scheme.
-  if (rfh->GetStoragePartition() !=
-      rfh->GetBrowserContext()->GetDefaultStoragePartition()) {
-    return !rfh->GetLastCommittedURL().SchemeIsHTTPOrHTTPS();
-  }
   return true;
 }
 
