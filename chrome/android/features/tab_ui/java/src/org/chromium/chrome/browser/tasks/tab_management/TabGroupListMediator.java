@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
-import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator.RowType;
 import org.chromium.chrome.tab_ui.R;
@@ -257,45 +256,6 @@ public class TabGroupListMediator {
         mMessagingBackendService.removePersistentMessageObserver(mPersistentMessageObserver);
     }
 
-    private @GroupWindowState int getState(SavedTabGroup savedTabGroup) {
-        if (savedTabGroup.localId == null) {
-            return GroupWindowState.HIDDEN;
-        }
-        Token groupId = savedTabGroup.localId.tabGroupId;
-        boolean isFullyClosing = true;
-        int rootId = Tab.INVALID_TAB_ID;
-        TabList tabList = mFilter.getTabModel().getComprehensiveModel();
-        for (int i = 0; i < tabList.getCount(); i++) {
-            Tab tab = tabList.getTabAt(i);
-            if (groupId.equals(tab.getTabGroupId())) {
-                rootId = tab.getRootId();
-                isFullyClosing &= tab.isClosing();
-            }
-        }
-        if (rootId == Tab.INVALID_TAB_ID) return GroupWindowState.IN_ANOTHER;
-
-        // If the group is only partially closing no special case is required since we still have to
-        // do all the IN_CURRENT work and returning to the tab group via the dialog will work.
-        return isFullyClosing ? GroupWindowState.IN_CURRENT_CLOSING : GroupWindowState.IN_CURRENT;
-    }
-
-    private List<SavedTabGroup> getSortedGroupList() {
-        List<SavedTabGroup> groupList = new ArrayList<>();
-        if (mTabGroupSyncService == null) return groupList;
-
-        for (String syncGroupId : mTabGroupSyncService.getAllGroupIds()) {
-            SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncGroupId);
-            assert !savedTabGroup.savedTabs.isEmpty();
-
-            // To simplify interactions, do not include any groups currently open in other windows.
-            if (getState(savedTabGroup) != GroupWindowState.IN_ANOTHER) {
-                groupList.add(savedTabGroup);
-            }
-        }
-        groupList.sort((a, b) -> Long.compare(b.creationTimeMs, a.creationTimeMs));
-        return groupList;
-    }
-
     private List<PropertyModel> getTabGroupRemovedMessageModelList() {
         List<PersistentMessage> messages =
                 mMessagingBackendService.getMessages(
@@ -350,7 +310,11 @@ public class TabGroupListMediator {
             mModelList.add(new ListItem(RowType.TAB_GROUP_REMOVED_CARD, propertyModel));
         }
 
-        for (SavedTabGroup savedTabGroup : getSortedGroupList()) {
+        GroupWindowChecker sortUtil = new GroupWindowChecker(mTabGroupSyncService, mFilter);
+        List<SavedTabGroup> sortedTabGroups =
+                sortUtil.getSortedGroupList(
+                        (a, b) -> Long.compare(b.creationTimeMs, a.creationTimeMs));
+        for (SavedTabGroup savedTabGroup : sortedTabGroups) {
             TabGroupRowMediator rowMediator =
                     new TabGroupRowMediator(
                             mContext,
@@ -364,7 +328,7 @@ public class TabGroupListMediator {
                             mModalDialogManager,
                             mActionConfirmationManager,
                             mFaviconResolver,
-                            () -> getState(savedTabGroup));
+                            () -> sortUtil.getState(savedTabGroup));
             ListItem listItem = new ListItem(RowType.TAB_GROUP, rowMediator.getModel());
             mModelList.add(listItem);
         }
