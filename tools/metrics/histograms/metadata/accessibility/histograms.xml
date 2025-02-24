@@ -3323,6 +3323,7 @@ even if they fit the naming pattern. -->
     <variant name="Android.ScreenReader" summary="Android (e.g. Talkback)"/>
     <variant name="Mac.ScreenReader" summary="MacOS (e.g. VoiceOver)"/>
     <variant name="WinJAWS" summary="Windows, specifically JAWS."/>
+    <variant name="WinNarrator" summary="Windows, specifically Narrator."/>
     <variant name="WinNVDA" summary="Windows, specifically NVDA"/>
     <variant name="WinScreenReader2"
         summary="Windows. This is tracking the presence of the kScreenReader
