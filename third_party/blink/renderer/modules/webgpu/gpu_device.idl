@@ -25,7 +25,7 @@
 
     [RaisesException] GPUBindGroup createBindGroup(GPUBindGroupDescriptor descriptor);
     [RaisesException] GPUBindGroupLayout createBindGroupLayout(GPUBindGroupLayoutDescriptor descriptor);
-    [CallWith=ScriptState] GPUPipelineLayout createPipelineLayout(GPUPipelineLayoutDescriptor descriptor);
+    GPUPipelineLayout createPipelineLayout(GPUPipelineLayoutDescriptor descriptor);
 
     GPUShaderModule createShaderModule(GPUShaderModuleDescriptor descriptor);
     [CallWith=ScriptState] GPURenderPipeline createRenderPipeline(GPURenderPipelineDescriptor descriptor);
