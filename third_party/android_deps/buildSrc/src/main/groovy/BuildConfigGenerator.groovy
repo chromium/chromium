@@ -209,22 +209,22 @@ class BuildConfigGenerator extends DefaultTask {
         String cpePrefix = dependency.cpePrefix ? dependency.cpePrefix : 'unknown'
 
         return """\
-            Name: ${dependency.displayName}
-            Short Name: ${dependency.name}
-            URL: ${dependency.url}
-            Version: ${dependency.version}
-            License: ${licenseString}
-            License File: LICENSE
-            CPEPrefix: ${cpePrefix}
-            Security Critical: ${securityCritical ? 'yes' : 'no'}
-            Shipped: ${dependency.isShipped ? 'yes' : 'no'}
-            ${dependency.licenseAndroidCompatible ? 'License Android Compatible: yes' : ''}
-            Description:
-            ${dependency.description}
+Name: ${dependency.displayName}
+Short Name: ${dependency.name}
+URL: ${dependency.url}
+Version: ${dependency.version}
+License: ${licenseString}
+License File: LICENSE
+CPEPrefix: ${cpePrefix}
+Security Critical: ${securityCritical ? 'yes' : 'no'}
+Shipped: ${dependency.isShipped ? 'yes' : 'no'}
+${dependency.licenseAndroidCompatible ? 'License Android Compatible: yes' : ''}
+Description:
+${dependency.description}
 
-            Local Modifications:
-            No modifications.
-            """.stripIndent(/* forceGroovyBehavior */ true)
+Local Modifications:
+No modifications.
+"""
     }
 
     static String makeCipdYaml(ChromiumDepGraph.DependencyDescription dependency, String cipdBucket, String repoPath) {
