@@ -6919,22 +6919,22 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Interstitial shown prior to making digital identity request to wallet -->
-      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_DIALOG_TITLE" translateable="false">
-        Make sure you trust this site with your data
+      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_DIALOG_TITLE">
+        Do you trust this site with your data?
       </message>
-      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_LOW_RISK_DIALOG_TEXT" translateable="false">
-        <ph name="WEBSITE_ORIGIN">%1$s<ex>www.cheapalcohol.com</ex></ph> wants to use personal info from your digital wallet. Only continue if you trust this site.
+      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_LOW_RISK_DIALOG_TEXT">
+        <ph name="WEBSITE_ORIGIN">%1$s<ex>www.cheapalcohol.com</ex></ph> wants to use personal info from your digital wallet.
       </message>
-      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_LOW_RISK_NEGATIVE_BUTTON_TEXT" translateable="false">
+      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_LOW_RISK_NEGATIVE_BUTTON_TEXT">
         Cancel
       </message>
-      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_HIGH_RISK_DIALOG_TEXT" translateable="false">
+      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_HIGH_RISK_DIALOG_TEXT">
         <ph name="WEBSITE_ORIGIN">%1$s<ex>www.cheapalcohol.com</ex></ph> wants to use personal info from your digital wallet. Only continue if you trust this site. Dangerous sites might trick you into revealing things like your legal name or ID number.
       </message>
-      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_HIGH_RISK_NEGATIVE_BUTTON_TEXT" translateable="false">
+      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_HIGH_RISK_NEGATIVE_BUTTON_TEXT">
         Back to safety
       </message>
-      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_REQUEST_ABORTED_DIALOG_TEXT" translateable="false">
+      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_REQUEST_ABORTED_DIALOG_TEXT"  translateable="false">
         <ph name="WEBSITE_ORIGIN">%1$s<ex>www.cheapalcohol.com</ex></ph> has canceled the request for identity information.
       </message>
 
