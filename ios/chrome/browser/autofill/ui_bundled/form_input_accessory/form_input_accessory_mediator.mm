@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/containers/contains.h"
 #import "base/containers/fixed_flat_set.h"
+#import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
@@ -811,6 +812,17 @@ bool IsSuggestionRefreshAllowed() {
 
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
                     atIndex:(NSInteger)index {
+  if (base::FeatureList::IsEnabled(kStatelessFormSuggestionController)) {
+    // When using the stateless FormSuggestionsController, ensure the params
+    // attached to the suggestion are the same as the ones held by this mediator
+    // to keep the status quo as this mediator should be the source of truth
+    // when it is used instead of directly using the suggestions provider for
+    // accepting the suggestions.
+    formSuggestion = [FormSuggestion copy:formSuggestion
+                             andSetParams:_lastSeenParams
+                                 provider:formSuggestion.provider];
+  }
+
   [self logReauthenticationEvent:ReauthenticationEvent::kAttempt
                             type:formSuggestion.type];
 
