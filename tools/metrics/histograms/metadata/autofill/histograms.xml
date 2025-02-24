@@ -334,7 +334,7 @@ chromium-metrics-reviews@google.com.
   <variant name="JavaScriptChangedValue"/>
   <variant name="NotifyPasswordManagerAboutClearedForm"/>
   <variant name="OnProvisionallySaveForm"/>
-  <variant name="OnTextFieldDidChange"/>
+  <variant name="OnTextFieldValueChanged"/>
   <variant name="QueryAutofillSuggestions"/>
   <variant name="ShowSuggestionPopup"/>
   <variant name="UpdateFormCache"/>
