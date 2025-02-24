@@ -4,6 +4,7 @@
 
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 
+#include "base/containers/contains.h"
 #include "base/containers/to_value_list.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
@@ -218,14 +219,10 @@ void RealtimeReportingClientBase::ReportEventWithTimestampDeprecated(
   }
 
 #ifndef NDEBUG
-  // Make sure the event is included in the kAllReportingEvents array.
-  bool found = false;
-  for (const char* event_name : kAllReportingEvents) {
-    if (event_name == name) {
-      found = true;
-      break;
-    }
-  }
+  // Make sure the event is included in the kAllReportingEnabledEvents or the
+  // kAllReportingOptInEvents array.
+  bool found = base::Contains(kAllReportingEnabledEvents, name) ||
+               base::Contains(kAllReportingOptInEvents, name);
   DCHECK(found);
 #endif
 

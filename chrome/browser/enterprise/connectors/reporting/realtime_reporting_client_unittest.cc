@@ -286,9 +286,14 @@ INSTANTIATE_TEST_SUITE_P(All, RealtimeReportingClientUmaTest, testing::Bool());
 
 TEST_F(RealtimeReportingClientTestBase,
        TestEventNameToUmaEnumMapIncludesAllEvents) {
-  EXPECT_EQ(sizeof(kAllReportingEvents) / sizeof(kAllReportingEvents[0]),
-            kEventNameToUmaEnumMap.size());
-  for (const char* eventName : kAllReportingEvents) {
+  std::set<std::string> all_reporting_events;
+  all_reporting_events.insert(kAllReportingEnabledEvents.begin(),
+                              kAllReportingEnabledEvents.end());
+  all_reporting_events.insert(kAllReportingOptInEvents.begin(),
+                              kAllReportingOptInEvents.end());
+
+  EXPECT_EQ(all_reporting_events.size(), kEventNameToUmaEnumMap.size());
+  for (std::string eventName : all_reporting_events) {
     EXPECT_TRUE(kEventNameToUmaEnumMap.contains(eventName));
   }
 }

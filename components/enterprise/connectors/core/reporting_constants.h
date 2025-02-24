@@ -30,20 +30,26 @@ inline constexpr char kKeyUnscannedFileEvent[] = "unscannedFileEvent";
 inline constexpr char kKeyLoginEvent[] = "loginEvent";
 inline constexpr char kKeyPasswordBreachEvent[] = "passwordBreachEvent";
 
-// All events that the reporting connector supports.
-inline constexpr std::array<const char*, 12> kAllReportingEvents = {
+// All the reporting events that can be set in the `enabled_events_names` field
+// of `ReportingSettings`
+inline constexpr std::array<const char*, 9> kAllReportingEnabledEvents = {
     kKeyPasswordReuseEvent,
     kKeyPasswordChangedEvent,
     kKeyDangerousDownloadEvent,
     kKeyInterstitialEvent,
     kKeySensitiveDataEvent,
     kKeyUnscannedFileEvent,
-    kKeyLoginEvent,
-    kKeyPasswordBreachEvent,
     kKeyUrlFilteringInterstitialEvent,
     kExtensionInstallEvent,
-    kExtensionTelemetryEvent,
     kBrowserCrashEvent,
+};
+
+// All the reporting events that can be set in the `enabled_opt_in_events` field
+// of `ReportingSettings`.
+inline constexpr std::array<const char*, 3> kAllReportingOptInEvents = {
+    kKeyLoginEvent,
+    kKeyPasswordBreachEvent,
+    kExtensionTelemetryEvent,
 };
 
 inline constexpr char kAllUploadSizeUmaMetricName[] =
