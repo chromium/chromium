@@ -68,6 +68,10 @@ import java.util.List;
  * TabListCoordinator} as well as the life-cycle of shared component objects.
  */
 public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogController {
+    static final String COMPONENT_NAME_PREFIX = "TabGridDialog";
+    private static final String FROM_STRIP_COMPONENT_NAME = COMPONENT_NAME_PREFIX + "FromStrip";
+    private static final String IN_SWITCHER_COMPONENT_NAME = COMPONENT_NAME_PREFIX + "InSwitcher";
+
     private final String mComponentName;
     private final TabListCoordinator mTabListCoordinator;
     private final TabGridDialogMediator mMediator;
@@ -113,8 +117,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mActivity = activity;
             mComponentName =
                     animationSourceViewProvider == null
-                            ? "TabGridDialogFromStrip"
-                            : "TabGridDialogInSwitcher";
+                            ? FROM_STRIP_COMPONENT_NAME
+                            : IN_SWITCHER_COMPONENT_NAME;
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mModalDialogManager = modalDialogManager;
             mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;

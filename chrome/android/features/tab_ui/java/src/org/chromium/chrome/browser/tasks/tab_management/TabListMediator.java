@@ -1019,10 +1019,14 @@ class TabListMediator implements TabListNotificationHandler {
 
                         // Check if we need to delay tab addition to model.
                         boolean delayAdd =
-                                (type == TabLaunchType.FROM_TAB_SWITCHER_UI)
+                                (type == TabLaunchType.FROM_TAB_SWITCHER_UI
+                                                || type == TabLaunchType.FROM_TAB_GROUP_UI)
                                         && markedForSelection
-                                        && TabSwitcherPaneCoordinator.COMPONENT_NAME.equals(
-                                                mComponentName);
+                                        && (mComponentName.equals(
+                                                        TabSwitcherPaneCoordinator.COMPONENT_NAME)
+                                                || mComponentName.startsWith(
+                                                        TabGridDialogCoordinator
+                                                                .COMPONENT_NAME_PREFIX));
                         if (delayAdd) {
                             mTabToAddDelayed = tab;
                             return;
@@ -1435,6 +1439,8 @@ class TabListMediator implements TabListNotificationHandler {
      */
     boolean resetWithListOfTabs(@Nullable List<Tab> tabs, boolean quickMode) {
         mShowingTabs = tabs != null;
+        // The reset supersedes any delayed tab additions, don't add the tab.
+        mTabToAddDelayed = null;
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         if (mShowingTabs) {
             addObservers(filter, tabs);
