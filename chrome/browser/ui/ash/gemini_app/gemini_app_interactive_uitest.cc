@@ -532,7 +532,8 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, LaunchFromAppList) {
 IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, PRE_LaunchFromShelf) {}
 
 // Verifies that the Gemini app can be launched from the shelf.
-IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, LaunchFromShelf) {
+// TODO(crbug.com/398755364): Re-enable this test
+IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, DISABLED_LaunchFromShelf) {
   // Views.
   raw_ptr<ash::ShelfAppButton> chrome_app = nullptr;
   raw_ptr<ash::ShelfAppButton> gemini_app = nullptr;
