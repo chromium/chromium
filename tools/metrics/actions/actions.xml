@@ -47655,6 +47655,8 @@ should be able to be added at any place in this file.
       label="For Enhanced Safe Browsing Promo feature"/>
   <suffix name="iOSLensOverlayEntrypointTip"
       label="For iOSLensOverlayEntrypoint IPH feature"/>
+  <suffix name="iOSLensOverlayEscapeHatchTip"
+      label="For iOSLensOverlayEscapeHatchTip IPH feature"/>
   <suffix name="iOSOverflowMenuCustomization"
       label="For iOSOverflowMenuCustomization feature"/>
   <suffix name="iOSPageInfoRevamp"

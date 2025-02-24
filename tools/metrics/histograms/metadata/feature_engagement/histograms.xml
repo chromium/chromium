@@ -274,6 +274,8 @@ chromium-metrics-reviews@google.com.
       summary="Showing the Enhanced Safe Browsing Promo on iOS"/>
   <variant name="IPH_iOSLensOverlayEntrypointTip"
       summary="IOS Lens overlay toolbar entrypoint"/>
+  <variant name="IPH_iOSLensOverlayEscapeHatchTip"
+      summary="IOS Lens overlay Escape Hatch"/>
   <variant name="IPH_iOSOverflowMenuCustomization"
       summary="overflow menu customization"/>
   <variant name="IPH_iOSPageInfoRevamp"

@@ -10,6 +10,8 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/feature_engagement/public/feature_list.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -413,6 +415,10 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
       if (!_selectionViewController.translateFilterActive) {
         [self showResultsBottomSheet];
       }
+    } else {
+      if (IsLVFEscapeHatchEnabled()) {
+        [self scheduleTooltipHintDisplayIfNecessary];
+      }
     }
   }
 
@@ -804,10 +810,58 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
       }];
 }
 
-- (void)scheduleTooltipHintDisplay {
+- (BOOL)shouldShowTooltipHint {
+  if (_isExiting || _isStopped) {
+    return NO;
+  }
+  if (_entrypoint != LensOverlayEntrypoint::kLocationBar) {
+    return NO;
+  }
+
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (!profile) {
+    return NO;
+  }
+
+  feature_engagement::Tracker* engagementTracker =
+      feature_engagement::TrackerFactory::GetForProfile(profile);
+  if (!engagementTracker) {
+    return NO;
+  }
+
+  return engagementTracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSLensOverlayEscapeHatchTipFeature);
+}
+
+- (void)didShowTooltipHint {
   if (_isExiting || _isStopped) {
     return;
   }
+
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (!profile) {
+    return;
+  }
+
+  feature_engagement::Tracker* engagementTracker =
+      feature_engagement::TrackerFactory::GetForProfile(profile);
+  if (!engagementTracker) {
+    return;
+  }
+
+  engagementTracker->Dismissed(
+      feature_engagement::kIPHiOSLensOverlayEscapeHatchTipFeature);
+}
+
+- (void)scheduleTooltipHintDisplayIfNecessary {
+  if (_isExiting || _isStopped) {
+    return;
+  }
+
+  if (!IsLVFEscapeHatchEnabled() || ![self shouldShowTooltipHint]) {
+    return;
+  }
+
   __weak __typeof(self) weakSelf = self;
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
@@ -826,6 +880,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     if ([_selectionViewController
             respondsToSelector:@selector(requestShowOverflowMenuTooltip)]) {
       [_selectionViewController requestShowOverflowMenuTooltip];
+      [self didShowTooltipHint];
     }
   }
 }
@@ -1172,9 +1227,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   [_selectionViewController setTopIconsHidden:NO];
   [_selectionViewController start];
 
-  if (IsLVFEscapeHatchEnabled()) {
-    [self scheduleTooltipHintDisplay];
-  }
+  [self scheduleTooltipHintDisplayIfNecessary];
 }
 
 // Configures and initializes the presenter responsible for displaying the
