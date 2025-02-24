@@ -376,9 +376,11 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // - The callback is asynchronous because the request may be delayed if the
   //   page is not ready to be rendered.
   // - Modifications made with ApplyStroke() are not included in the thumbnail.
-  void RequestThumbnail(int page_index,
-                        float device_pixel_ratio,
-                        SendThumbnailCallback send_callback);
+  //
+  // Virtual to support testing.
+  virtual void RequestThumbnail(int page_index,
+                                float device_pixel_ratio,
+                                SendThumbnailCallback send_callback);
 #if BUILDFLAG(ENABLE_PDF_INK2)
   // Virtual to support testing.
   virtual gfx::Size GetThumbnailSize(int page_index, float device_pixel_ratio);

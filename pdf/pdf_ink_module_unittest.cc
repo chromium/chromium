@@ -287,6 +287,11 @@ class FakeClient : public PdfInkModuleClient {
   MOCK_METHOD(void, PostMessage, (base::Value::Dict message), (override));
 
   MOCK_METHOD(void,
+              RequestThumbnail,
+              (int page_index, SendThumbnailCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
               StrokeAdded,
               (int page_index, InkStrokeId id, const ink::Stroke& stroke),
               (override));
@@ -763,7 +768,12 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
 
           std::optional<int> page_number = dict.FindInt("pageNumber");
           ASSERT_TRUE(page_number.has_value());
-          updated_thumbnail_page_indices_.push_back(page_number.value() - 1);
+
+          std::optional<bool> is_ink = dict.FindBool("isInk");
+          ASSERT_TRUE(is_ink.has_value());
+          auto& updated = is_ink.value() ? updated_thumbnail_page_indices_
+                                         : updated_pdf_thumbnail_page_indices_;
+          updated.push_back(page_number.value() - 1);
         });
   }
 
@@ -1012,6 +1022,9 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
   const std::vector<int>& updated_thumbnail_page_indices() const {
     return updated_thumbnail_page_indices_;
   }
+  const std::vector<int>& updated_pdf_thumbnail_page_indices() const {
+    return updated_pdf_thumbnail_page_indices_;
+  }
 
  private:
   void ApplyStrokeWithMouseAtPointsMaybeHandled(
@@ -1091,6 +1104,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
   }
 
   std::vector<int> updated_thumbnail_page_indices_;
+  std::vector<int> updated_pdf_thumbnail_page_indices_;
 };
 
 TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithMouseIfNotEnabled) {
@@ -1520,6 +1534,9 @@ TEST_F(PdfInkModuleStrokeTest, EraseStroke) {
   // Nothing got erased, so the count stays at 2.
   EXPECT_EQ(2, client().stroke_finished_count());
   EXPECT_THAT(updated_thumbnail_page_indices(), ElementsAre(0, 0));
+
+  // PDF thumbnail never needed to be updated.
+  EXPECT_TRUE(updated_pdf_thumbnail_page_indices().empty());
 }
 
 TEST_F(PdfInkModuleStrokeTest, EraseOnPageWithoutStrokes) {
@@ -2598,6 +2615,14 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEraseLoadedV2Shapes) {
 
   InitializeSimpleSinglePageBasicLayout();
   EnableAnnotationMode();
+  EXPECT_TRUE(updated_thumbnail_page_indices().empty());
+  EXPECT_TRUE(updated_pdf_thumbnail_page_indices().empty());
+
+  EXPECT_CALL(client(), RequestThumbnail)
+      .WillRepeatedly([&](int page_index, SendThumbnailCallback callback) {
+        std::move(callback).Run(
+            Thumbnail(gfx::SizeF(50, 25), /*device_pixel_ratio=*/1));
+      });
 
   // Stroke with the eraser tool in the corner opposite from `kCornerPoints`,
   // which does nothing.
@@ -2605,6 +2630,7 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEraseLoadedV2Shapes) {
   ApplyStrokeWithMouseAtPoints(
       gfx::PointF(), base::span_from_ref(gfx::PointF()), gfx::PointF());
   VerifyAndClearExpectations();
+  EXPECT_TRUE(updated_pdf_thumbnail_page_indices().empty());
 
   // Stroke twice where `shape0` is, and that should deactivate only that shape
   // and only once.
@@ -2618,6 +2644,7 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEraseLoadedV2Shapes) {
   ApplyStrokeWithMouseAtPoints(
       kMouseDownPoint, base::span_from_ref(kMouseMovePoint), kMouseUpPoint);
   VerifyAndClearExpectations();
+  EXPECT_THAT(updated_pdf_thumbnail_page_indices(), ElementsAre(0));
 
   // Undo should reactivate `shape0`.
   ExpectNoStrokeAdded();
@@ -2627,6 +2654,7 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEraseLoadedV2Shapes) {
   EXPECT_CALL(client(), UpdateShapeActive(_, kShapeId1, _)).Times(0);
   PerformUndo();
   VerifyAndClearExpectations();
+  EXPECT_THAT(updated_pdf_thumbnail_page_indices(), ElementsAre(0, 0));
 
   // Redo should deactivate `shape0`.
   ExpectNoStrokeAdded();
@@ -2635,6 +2663,8 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEraseLoadedV2Shapes) {
               UpdateShapeActive(kPageIndex, kShapeId0, /*active=*/false));
   EXPECT_CALL(client(), UpdateShapeActive(_, kShapeId1, _)).Times(0);
   PerformRedo();
+  EXPECT_TRUE(updated_thumbnail_page_indices().empty());
+  EXPECT_THAT(updated_pdf_thumbnail_page_indices(), ElementsAre(0, 0, 0));
 }
 
 // Regression test for crbug.com/378724153.

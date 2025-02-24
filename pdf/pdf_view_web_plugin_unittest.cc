@@ -21,6 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -2801,6 +2802,25 @@ TEST_F(PdfViewWebPluginInkTest, GetZoom) {
   plugin_->UpdateGeometry(kWindowRect, kWindowRect, kWindowRect,
                           /*is_visible=*/true);
   EXPECT_EQ(2.5f, plugin_->ink_module_client_for_testing()->GetZoom());
+}
+
+TEST_F(PdfViewWebPluginInkTest, RequestThumbnail) {
+  EXPECT_CALL(*engine_ptr_, RequestThumbnail)
+      .WillOnce([](int page_index, float device_pixel_ratio,
+                   SendThumbnailCallback send_callback) {
+        EXPECT_EQ(0, page_index);
+        EXPECT_EQ(1.0f, device_pixel_ratio);
+        std::move(send_callback)
+            .Run(Thumbnail(gfx::SizeF(612, 792), device_pixel_ratio));
+      });
+
+  base::test::TestFuture<Thumbnail> future;
+  plugin_->ink_module_client_for_testing()->RequestThumbnail(
+      /*page_index=*/0, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  Thumbnail thumbnail = future.Take();
+  EXPECT_EQ(gfx::Size(108, 140), thumbnail.image_size());
+  EXPECT_EQ(1.0f, thumbnail.device_pixel_ratio());
 }
 
 TEST_F(PdfViewWebPluginInkTest, AddUpdateDiscardStroke) {

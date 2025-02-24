@@ -14,12 +14,14 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/buildflags.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_ids.h"
 #include "pdf/pdf_ink_undo_redo_model.h"
+#include "pdf/ui/thumbnail.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "third_party/ink/src/ink/strokes/in_progress_stroke.h"
@@ -274,7 +276,8 @@ class PdfInkModule {
     ~EraserState();
 
     bool erasing = false;
-    base::flat_set<int> page_indices_with_erasures;
+    base::flat_set<int> page_indices_with_stroke_erasures;
+    base::flat_set<int> page_indices_with_partitioned_mesh_erasures;
 
     // The event position for the last input, similar to what is stored in
     // `DrawingStrokeState` for compensating for missed input events.
@@ -403,6 +406,16 @@ class PdfInkModule {
   // that page, regardless of page visibility.
   bool DrawThumbnail(SkCanvas& canvas, int page_index);
 
+  // Updates the page indices in `ink_updates` using
+  // GenerateAndSendInkThumbnailInternal(), and updates the page indices in
+  // `pdf_updates` using PdfInkModuleClient::RequestThumbnail().
+  void RequestThumbnailUpdates(const base::flat_set<int>& ink_updates,
+                               const base::flat_set<int>& pdf_updates);
+
+  // Handles the callback for PDF thumbnail generation requests. Sends
+  // `thumbnail` to the WebUI.
+  void OnGotThumbnail(int page_index, Thumbnail thumbnail);
+
   const raw_ref<PdfInkModuleClient> client_;
 
   bool enabled_ = false;
@@ -436,6 +449,8 @@ class PdfInkModule {
   DocumentStrokesMap strokes_;
 
   PdfInkUndoRedoModel undo_redo_model_;
+
+  base::WeakPtrFactory<PdfInkModule> weak_factory_{this};
 };
 
 }  // namespace chrome_pdf
