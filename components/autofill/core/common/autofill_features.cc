@@ -446,8 +446,13 @@ BASE_FEATURE(kAutofillModelPredictions,
 
 // When true, use the machine learning model as the active `HeuristicSource`,
 // else use the source provided by `kAutofillParsingPatternActiveSource`.
-const base::FeatureParam<bool> kAutofillModelPredictionsAreActive{
-    &kAutofillModelPredictions, "model_active", false};
+// It is defined with `BASE_FEATURE_PARAM()` to enable caching as the parameter
+// is accesses in several getters.
+BASE_FEATURE_PARAM(bool,
+                   kAutofillModelPredictionsAreActive,
+                   &kAutofillModelPredictions,
+                   "model_active",
+                   false);
 
 // If enabled, a pre-filled field will only be overwritten if it's not
 // classified as meaningfully pre-filled based on server predictions. If also

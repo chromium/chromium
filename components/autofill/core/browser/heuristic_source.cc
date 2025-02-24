@@ -15,9 +15,7 @@ namespace autofill {
 
 HeuristicSource GetActiveHeuristicSource() {
   if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
-    bool model_predictions_active =
-        features::kAutofillModelPredictionsAreActive.Get();
-    if (model_predictions_active) {
+    if (features::kAutofillModelPredictionsAreActive.Get()) {
       return HeuristicSource::kAutofillMachineLearning;
     }
   }
