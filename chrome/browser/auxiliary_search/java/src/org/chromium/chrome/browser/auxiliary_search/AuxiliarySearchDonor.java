@@ -44,6 +44,10 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
+import org.chromium.chrome.browser.auxiliary_search.schema.CustomTabWebPage;
+import org.chromium.chrome.browser.auxiliary_search.schema.TabWebPage;
+import org.chromium.chrome.browser.auxiliary_search.schema.TopSiteWebPage;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -59,9 +63,6 @@ public class AuxiliarySearchDonor {
 
     /** Callback to set schema visibilities for package names. */
     interface SetDocumentClassVisibilityForPackageCallback {
-        /** TODO(https://397457989): Remove this API once the internal usages are removed. */
-        void setDocumentClassVisibility(String packageName, String sha256Certificate);
-
         /**
          * @param schemaClass The class type of the schema to set visibility.
          * @param packageName The package name of the app which can see the schema.
@@ -92,6 +93,7 @@ public class AuxiliarySearchDonor {
     private Callback<Boolean> mPendingCallback;
     private boolean mSharedTabsWithOsState;
     private Boolean mIsDeviceCompatible;
+    private boolean mSupportMultiDataSource;
     private boolean mIsCreatedSessionAndInitForTesting;
 
     /** Static class that implements the initialization-on-demand holder idiom. */
@@ -109,6 +111,8 @@ public class AuxiliarySearchDonor {
         mNamespace = mContext.getPackageName();
         mSkipSchemaCheck = AuxiliarySearchUtils.SKIP_SCHEMA_CHECK.getValue();
 
+        mSupportMultiDataSource =
+                ChromeFeatureList.sAndroidAppIntegrationMultiDataSource.isEnabled();
         mSharedTabsWithOsState = AuxiliarySearchUtils.isShareTabsWithOsEnabled();
         boolean shouldInit = mSharedTabsWithOsState || !isShareTabsWithOsEnabledKeyExist();
         if (shouldInit) {
@@ -188,7 +192,7 @@ public class AuxiliarySearchDonor {
 
         mIsSchemaSet =
                 ChromeSharedPreferences.getInstance()
-                        .readBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, false);
+                        .readBoolean(getSchemaSetPreferenceKey(), false);
 
         if (!mIsDeviceCompatible) {
             if (mIsSchemaSet) {
@@ -233,32 +237,15 @@ public class AuxiliarySearchDonor {
             SetSchemaRequest.Builder requestBuilder =
                     new SetSchemaRequest.Builder()
                             .setForceOverride(true)
-                            .addDocumentClasses(WebPage.class);
+                            .addDocumentClasses(getSupportedDocumentClasses());
             AuxiliarySearchControllerFactory.getInstance()
                     .setSchemaTypeVisibilityForPackage(
-                            new SetDocumentClassVisibilityForPackageCallback() {
-                                @Override
-                                public void setDocumentClassVisibility(
-                                        String packageName, String sha256Certificate) {
-                                    setDocumentClassVisibilityImpl(
-                                            requestBuilder,
-                                            WebPage.class,
-                                            packageName,
-                                            sha256Certificate);
-                                }
-
-                                @Override
-                                public void setDocumentClassVisibility(
-                                        Class<?> schemaClass,
-                                        String packageName,
-                                        String sha256Certificate) {
+                            (schemaClass, packageName, sha256Certificate) ->
                                     setDocumentClassVisibilityImpl(
                                             requestBuilder,
                                             schemaClass,
                                             packageName,
-                                            sha256Certificate);
-                                }
-                            });
+                                            sha256Certificate));
             return requestBuilder.build();
         } catch (AppSearchException e) {
             Log.i(TAG, "Failed to add document when building SetSchemaRequest.");
@@ -266,7 +253,21 @@ public class AuxiliarySearchDonor {
         }
     }
 
-    void setDocumentClassVisibilityImpl(
+    /** Returns a list of supported document classes. */
+    @VisibleForTesting
+    List<Class<?>> getSupportedDocumentClasses() {
+        List<Class<?>> documents = new ArrayList<>();
+        if (mSupportMultiDataSource) {
+            documents.add(TabWebPage.class);
+            documents.add(CustomTabWebPage.class);
+            documents.add(TopSiteWebPage.class);
+        } else {
+            documents.add(WebPage.class);
+        }
+        return documents;
+    }
+
+    private void setDocumentClassVisibilityImpl(
             SetSchemaRequest.Builder requestBuilder,
             Class<?> schemaClass,
             String packageName,
@@ -287,10 +288,16 @@ public class AuxiliarySearchDonor {
         if (response == null || !response.getMigrationFailures().isEmpty()) return;
 
         mIsSchemaSet = true;
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, true);
+        ChromeSharedPreferences.getInstance().writeBoolean(getSchemaSetPreferenceKey(), true);
 
         handlePendingDonations();
+    }
+
+    @VisibleForTesting
+    String getSchemaSetPreferenceKey() {
+        return mSupportMultiDataSource
+                ? ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_V2_SET
+                : ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET;
     }
 
     private void handlePendingDonations() {
