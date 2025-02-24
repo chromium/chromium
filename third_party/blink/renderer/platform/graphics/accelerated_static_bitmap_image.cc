@@ -83,7 +83,10 @@ scoped_refptr<AcceleratedStaticBitmapImage>
 AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
     gpu::ExportedSharedImage exported_shared_image,
     const gpu::SyncToken& sync_token,
-    const SkImageInfo& sk_image_info,
+    const gfx::Size& size,
+    SkColorType sk_color_type,
+    SkAlphaType alpha_type,
+    sk_sp<SkColorSpace> sk_color_space,
     base::OnceCallback<void(const gpu::SyncToken&)> external_callback) {
   auto shared_gpu_context = blink::SharedGpuContext::ContextProviderWrapper();
   if (!shared_gpu_context) {
@@ -113,10 +116,8 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
       shared_gpu_context, shared_image);
 
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
-      std::move(shared_image), sync_token, 0u,
-      gfx::Size(sk_image_info.width(), sk_image_info.height()),
-      sk_image_info.colorType(), sk_image_info.alphaType(),
-      sk_image_info.refColorSpace(), ImageOrientationEnum::kDefault,
+      std::move(shared_image), sync_token, 0u, size, sk_color_type, alpha_type,
+      std::move(sk_color_space), ImageOrientationEnum::kDefault,
       shared_gpu_context, base::PlatformThreadRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
       std::move(release_callback)));

@@ -72,7 +72,10 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   CreateFromExternalSharedImage(
       gpu::ExportedSharedImage exported_shared_image,
       const gpu::SyncToken& sync_token,
-      const SkImageInfo& sk_image_info,
+      const gfx::Size& size,
+      SkColorType sk_color_type,
+      SkAlphaType alpha_type,
+      sk_sp<SkColorSpace> sk_color_space,
       base::OnceCallback<void(const gpu::SyncToken&)> release_callback);
 
   bool CurrentFrameKnownToBeOpaque() override;
