@@ -59,25 +59,25 @@ using signin_ui::SigninCompletionCallback;
 namespace {
 
 // The states of the sign-in flow state machine.
-// TODO(crbug.com/375605482): Need to remove steps from SIGN_OUT_IF_NEEDED to
-// COMPLETE_WITH_FAILURE can be replaced with `AuthenticationFlowInProfile` even
-// without multi profile.
-enum AuthenticationState {
-  BEGIN,
-  FETCH_MANAGED_STATUS,
-  FETCH_PROFILE_SEPARATION_POLICIES_IF_NEEDED,
-  SHOW_MANAGED_CONFIRMATION_IF_NEEDED,
-  CONVERT_PERSONAL_PROFILE_TO_MANAGED_IF_NEEDED,
-  SWITCH_PROFILE_IF_NEEDED,
-  SIGN_OUT_IF_NEEDED,
-  SIGN_IN,
-  REGISTER_FOR_USER_POLICY,
-  FETCH_USER_POLICY,
-  FETCH_CAPABILITIES,
-  COMPLETE_WITH_SUCCESS,
-  COMPLETE_WITH_FAILURE,
-  CLEANUP_BEFORE_DONE,
-  DONE,
+// TODO(crbug.com/375605482): Need to remove steps from `kSignOutIfNeeded` to
+// `kCompleteWithFailure` can be replaced with `AuthenticationFlowInProfile`
+// even without multi profile.
+enum class AuthenticationState {
+  kBegin,
+  kFetchManagedStatus,
+  kFetchProfileSeparationPoliciesIfNeeded,
+  kShowManagedConfirmationIfNeeded,
+  kConvertPersonalProfileToManagedIfNeeded,
+  kSwitchProfileIfNeeded,
+  kSignOutIfNeeded,
+  kSignIn,
+  kRegisterForUserPolicy,
+  kFetchUserPolicy,
+  kFetchCapabilities,
+  kCompleteWithSuccess,
+  kCompleteWithFailure,
+  kCleanupBeforeDone,
+  kDone,
 };
 
 enum class CancelationReason {
@@ -268,7 +268,7 @@ void RecordIOSIdentityAvailableInProfile(
     _accessPoint = accessPoint;
     _postSignInActions = postSignInActions;
     _presentingViewController = presentingViewController;
-    _state = BEGIN;
+    _state = AuthenticationState::kBegin;
     _cancelationReason = CancelationReason::kNotCanceled;
     _profileSeparationDataMigrationSettings =
         policy::ProfileSeparationDataMigrationSettings::USER_OPT_IN;
@@ -277,7 +277,7 @@ void RecordIOSIdentityAvailableInProfile(
 }
 
 - (void)startSignInWithCompletion:(SigninCompletionCallback)completion {
-  DCHECK_EQ(BEGIN, _state);
+  DCHECK_EQ(AuthenticationState::kBegin, _state);
   DCHECK(!_signInCompletion);
   DCHECK(completion);
   _signInCompletion = [completion copy];
@@ -301,7 +301,7 @@ void RecordIOSIdentityAvailableInProfile(
 }
 
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action {
-  if (_state == DONE) {
+  if (_state == AuthenticationState::kDone) {
     return;
   }
   __weak __typeof(self) weakSelf = self;
@@ -312,13 +312,13 @@ void RecordIOSIdentityAvailableInProfile(
 }
 
 - (void)performerInterrupted {
-  if (_state != DONE) {
+  if (_state != AuthenticationState::kDone) {
     // The performer might not have been able to continue the flow if it was
     // waiting for a callback (e.g. waiting for AccountReconcilor). In this
     // case, we force the flow to finish synchronously.
     [self cancelFlowWithReason:CancelationReason::kFailed];
   }
-  DCHECK_EQ(DONE, _state);
+  DCHECK_EQ(AuthenticationState::kDone, _state);
 }
 
 - (void)setPresentingViewController:
@@ -331,24 +331,24 @@ void RecordIOSIdentityAvailableInProfile(
 - (AuthenticationState)nextStateFailedOrCanceled {
   DCHECK([self canceled]);
   switch (_state) {
-    case BEGIN:
-    case FETCH_MANAGED_STATUS:
-    case FETCH_PROFILE_SEPARATION_POLICIES_IF_NEEDED:
-    case SHOW_MANAGED_CONFIRMATION_IF_NEEDED:
-    case CONVERT_PERSONAL_PROFILE_TO_MANAGED_IF_NEEDED:
-    case SWITCH_PROFILE_IF_NEEDED:
-    case SIGN_OUT_IF_NEEDED:
-    case SIGN_IN:
-    case REGISTER_FOR_USER_POLICY:
-    case FETCH_USER_POLICY:
-    case FETCH_CAPABILITIES:
-      return COMPLETE_WITH_FAILURE;
-    case COMPLETE_WITH_SUCCESS:
-    case COMPLETE_WITH_FAILURE:
-      return CLEANUP_BEFORE_DONE;
-    case CLEANUP_BEFORE_DONE:
-    case DONE:
-      return DONE;
+    case AuthenticationState::kBegin:
+    case AuthenticationState::kFetchManagedStatus:
+    case AuthenticationState::kFetchProfileSeparationPoliciesIfNeeded:
+    case AuthenticationState::kShowManagedConfirmationIfNeeded:
+    case AuthenticationState::kConvertPersonalProfileToManagedIfNeeded:
+    case AuthenticationState::kSwitchProfileIfNeeded:
+    case AuthenticationState::kSignOutIfNeeded:
+    case AuthenticationState::kSignIn:
+    case AuthenticationState::kRegisterForUserPolicy:
+    case AuthenticationState::kFetchUserPolicy:
+    case AuthenticationState::kFetchCapabilities:
+      return AuthenticationState::kCompleteWithFailure;
+    case AuthenticationState::kCompleteWithSuccess:
+    case AuthenticationState::kCompleteWithFailure:
+      return AuthenticationState::kCleanupBeforeDone;
+    case AuthenticationState::kCleanupBeforeDone:
+    case AuthenticationState::kDone:
+      return AuthenticationState::kDone;
   }
 }
 
@@ -359,61 +359,61 @@ void RecordIOSIdentityAvailableInProfile(
   }
   DCHECK(![self canceled]);
   switch (_state) {
-    case BEGIN:
-      return FETCH_MANAGED_STATUS;
-    case FETCH_MANAGED_STATUS:
-      return FETCH_PROFILE_SEPARATION_POLICIES_IF_NEEDED;
-    case FETCH_PROFILE_SEPARATION_POLICIES_IF_NEEDED:
-      return SHOW_MANAGED_CONFIRMATION_IF_NEEDED;
-    case SHOW_MANAGED_CONFIRMATION_IF_NEEDED:
-      return CONVERT_PERSONAL_PROFILE_TO_MANAGED_IF_NEEDED;
-    case CONVERT_PERSONAL_PROFILE_TO_MANAGED_IF_NEEDED:
-      return SWITCH_PROFILE_IF_NEEDED;
-    case SWITCH_PROFILE_IF_NEEDED:
+    case AuthenticationState::kBegin:
+      return AuthenticationState::kFetchManagedStatus;
+    case AuthenticationState::kFetchManagedStatus:
+      return AuthenticationState::kFetchProfileSeparationPoliciesIfNeeded;
+    case AuthenticationState::kFetchProfileSeparationPoliciesIfNeeded:
+      return AuthenticationState::kShowManagedConfirmationIfNeeded;
+    case AuthenticationState::kShowManagedConfirmationIfNeeded:
+      return AuthenticationState::kConvertPersonalProfileToManagedIfNeeded;
+    case AuthenticationState::kConvertPersonalProfileToManagedIfNeeded:
+      return AuthenticationState::kSwitchProfileIfNeeded;
+    case AuthenticationState::kSwitchProfileIfNeeded:
       if (_didSwitchProfile) {
         // Once the profile switch is done, there is nothing more to do in this
-        // profile. The COMPLETE_WITH_SUCCESS should be skipped. The completion
+        // profile. The `kCompleteWithSuccess` should be skipped. The completion
         // block has been passed to `AuthenticationFlowInProfile`.
         CHECK(!_signInCompletion);
-        return CLEANUP_BEFORE_DONE;
+        return AuthenticationState::kCleanupBeforeDone;
       }
-      return SIGN_OUT_IF_NEEDED;
-    case SIGN_OUT_IF_NEEDED:
-      return SIGN_IN;
-    case SIGN_IN:
+      return AuthenticationState::kSignOutIfNeeded;
+    case AuthenticationState::kSignOutIfNeeded:
+      return AuthenticationState::kSignIn;
+    case AuthenticationState::kSignIn:
       if (policy::IsAnyUserPolicyFeatureEnabled() &&
           _identityToSignInHostedDomain.length > 0) {
-        return REGISTER_FOR_USER_POLICY;
+        return AuthenticationState::kRegisterForUserPolicy;
       } else if ([self shouldFetchCapabilities]) {
-        return FETCH_CAPABILITIES;
+        return AuthenticationState::kFetchCapabilities;
       } else {
-        return COMPLETE_WITH_SUCCESS;
+        return AuthenticationState::kCompleteWithSuccess;
       }
-    case REGISTER_FOR_USER_POLICY:
+    case AuthenticationState::kRegisterForUserPolicy:
       if (!_dmToken.length || !_clientID.length) {
         // Skip fetching user policies when registration failed.
         if ([self shouldFetchCapabilities]) {
-          return FETCH_CAPABILITIES;
+          return AuthenticationState::kFetchCapabilities;
         } else {
-          return COMPLETE_WITH_SUCCESS;
+          return AuthenticationState::kCompleteWithSuccess;
         }
       }
       // Fetch user policies when registration is successful.
-      return FETCH_USER_POLICY;
-    case FETCH_USER_POLICY:
+      return AuthenticationState::kFetchUserPolicy;
+    case AuthenticationState::kFetchUserPolicy:
       if ([self shouldFetchCapabilities]) {
-        return FETCH_CAPABILITIES;
+        return AuthenticationState::kFetchCapabilities;
       } else {
-        return COMPLETE_WITH_SUCCESS;
+        return AuthenticationState::kCompleteWithSuccess;
       }
-    case FETCH_CAPABILITIES:
-      return COMPLETE_WITH_SUCCESS;
-    case COMPLETE_WITH_SUCCESS:
-    case COMPLETE_WITH_FAILURE:
-      return CLEANUP_BEFORE_DONE;
-    case CLEANUP_BEFORE_DONE:
-    case DONE:
-      return DONE;
+    case AuthenticationState::kFetchCapabilities:
+      return AuthenticationState::kCompleteWithSuccess;
+    case AuthenticationState::kCompleteWithSuccess:
+    case AuthenticationState::kCompleteWithFailure:
+      return AuthenticationState::kCleanupBeforeDone;
+    case AuthenticationState::kCleanupBeforeDone:
+    case AuthenticationState::kDone:
+      return AuthenticationState::kDone;
   }
 }
 
@@ -428,58 +428,58 @@ void RecordIOSIdentityAvailableInProfile(
   }
   _state = [self nextState];
   switch (_state) {
-    case BEGIN:
+    case AuthenticationState::kBegin:
       NOTREACHED();
 
-    case FETCH_MANAGED_STATUS:
+    case AuthenticationState::kFetchManagedStatus:
       [_performer fetchManagedStatus:profile forIdentity:_identityToSignIn];
       return;
 
-    case FETCH_PROFILE_SEPARATION_POLICIES_IF_NEEDED:
+    case AuthenticationState::kFetchProfileSeparationPoliciesIfNeeded:
       [self fetchProfileSeparationPoliciesIfNeededStep];
       return;
 
-    case SHOW_MANAGED_CONFIRMATION_IF_NEEDED:
+    case AuthenticationState::kShowManagedConfirmationIfNeeded:
       [self showManagedConfirmationIfNeededStep];
       return;
 
-    case CONVERT_PERSONAL_PROFILE_TO_MANAGED_IF_NEEDED:
+    case AuthenticationState::kConvertPersonalProfileToManagedIfNeeded:
       [self convertPersonalProfileToManagedIfNeededStep];
       return;
 
-    case SWITCH_PROFILE_IF_NEEDED:
+    case AuthenticationState::kSwitchProfileIfNeeded:
       [self switchProfileIfNeededStep];
       return;
 
-    case SIGN_OUT_IF_NEEDED:
+    case AuthenticationState::kSignOutIfNeeded:
       [self signOutIfNeededStep];
       return;
 
-    case SIGN_IN:
+    case AuthenticationState::kSignIn:
       [self signInStep];
       return;
 
-    case REGISTER_FOR_USER_POLICY:
+    case AuthenticationState::kRegisterForUserPolicy:
       [_performer registerUserPolicy:profile forIdentity:_identityToSignIn];
       return;
 
-    case FETCH_USER_POLICY:
+    case AuthenticationState::kFetchUserPolicy:
       [_performer fetchUserPolicy:profile
                       withDmToken:_dmToken
                          clientID:_clientID
                userAffiliationIDs:_userAffiliationIDs
                          identity:_identityToSignIn];
       return;
-    case FETCH_CAPABILITIES:
+    case AuthenticationState::kFetchCapabilities:
       [self fetchCapabilities];
       return;
-    case COMPLETE_WITH_SUCCESS:
+    case AuthenticationState::kCompleteWithSuccess:
       [self completeWithSuccessStep];
       return;
-    case COMPLETE_WITH_FAILURE:
+    case AuthenticationState::kCompleteWithFailure:
       [self completeWithFailureStep];
       return;
-    case CLEANUP_BEFORE_DONE: {
+    case AuthenticationState::kCleanupBeforeDone: {
       // Clean up asynchronously to ensure that `self` does not die while
       // the flow is running.
       DCHECK([NSThread isMainThread]);
@@ -489,7 +489,7 @@ void RecordIOSIdentityAvailableInProfile(
       [self continueFlow];
       return;
     }
-    case DONE:
+    case AuthenticationState::kDone:
       return;
   }
   NOTREACHED();
@@ -786,13 +786,13 @@ void RecordIOSIdentityAvailableInProfile(
 }
 
 - (void)didFetchManagedStatus:(NSString*)hostedDomain {
-  DCHECK_EQ(FETCH_MANAGED_STATUS, _state);
+  DCHECK_EQ(AuthenticationState::kFetchManagedStatus, _state);
   _identityToSignInHostedDomain = hostedDomain;
   [self continueFlow];
 }
 
 - (void)didFailFetchManagedStatus:(NSError*)error {
-  DCHECK_EQ(FETCH_MANAGED_STATUS, _state);
+  DCHECK_EQ(AuthenticationState::kFetchManagedStatus, _state);
   NSError* flowError =
       [NSError errorWithDomain:kAuthenticationErrorDomain
                           code:AUTHENTICATION_FLOW_ERROR
@@ -838,7 +838,7 @@ void RecordIOSIdentityAvailableInProfile(
                                    clientID:(NSString*)clientID
                          userAffiliationIDs:
                              (NSArray<NSString*>*)userAffiliationIDs {
-  DCHECK_EQ(REGISTER_FOR_USER_POLICY, _state);
+  DCHECK_EQ(AuthenticationState::kRegisterForUserPolicy, _state);
 
   _dmToken = dmToken;
   _clientID = clientID;
@@ -847,7 +847,7 @@ void RecordIOSIdentityAvailableInProfile(
 }
 
 - (void)didFetchUserPolicyWithSuccess:(BOOL)success {
-  DCHECK_EQ(FETCH_USER_POLICY, _state);
+  DCHECK_EQ(AuthenticationState::kFetchUserPolicy, _state);
   DLOG_IF(ERROR, !success) << "Error fetching policy for user";
   [self continueFlow];
 }
