@@ -194,8 +194,10 @@ class PixManager {
   // payment.
   void OnApiAvailabilityReceived(bool is_api_available);
 
-  // Called after showing the PIX the payment prompt.
-  void OnPixPaymentPromptResult(bool is_prompt_accepted,
+  // Called after showing the PIX the payment prompt. The FOP selector was shown
+  // at `fop_selector_shown_timestamp`.
+  void OnPixPaymentPromptResult(base::TimeTicks fop_selector_shown_timestamp,
+                                bool is_prompt_accepted,
                                 int64_t selected_instrument_id);
 
   // Invoked when risk data is fetched. The call to fetch the risk data was made

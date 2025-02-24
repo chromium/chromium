@@ -188,16 +188,19 @@ void PixManager::OnApiAvailabilityReceived(bool is_api_available) {
   ShowPixPaymentPrompt(
       client_->GetPaymentsDataManager()->GetMaskedBankAccounts(),
       base::BindOnce(&PixManager::OnPixPaymentPromptResult,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
-void PixManager::OnPixPaymentPromptResult(bool is_prompt_accepted,
-                                          int64_t selected_instrument_id) {
+void PixManager::OnPixPaymentPromptResult(
+    base::TimeTicks fop_selector_shown_timestamp,
+    bool is_prompt_accepted,
+    int64_t selected_instrument_id) {
   if (!is_prompt_accepted) {
     // The metric for the reason of this early-return is logged in `OnUiEvent`.
     return;
   }
-  LogPixFopSelected();
+  LogPixFopSelectedAndLatency(base::TimeTicks::Now() -
+                              fop_selector_shown_timestamp);
   LogPixFopSelectorResultUkm(/*accepted=*/true, ukm_source_id_);
   ShowProgressScreen();
 

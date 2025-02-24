@@ -183,7 +183,8 @@ TEST_F(PixManagerTest, OnPixPaymentPromptResult_FopSelectorDeclined) {
   EXPECT_CALL(*client_, ShowProgressScreen()).Times(0);
   EXPECT_CALL(*client_, LoadRiskData(testing::_)).Times(0);
 
-  pix_manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/false,
+  pix_manager_->OnPixPaymentPromptResult(base::TimeTicks::Now(),
+                                         /*is_prompt_accepted=*/false,
                                          /*selected_instrument_id=*/0);
 
   histogram_tester.ExpectUniqueSample(
@@ -202,12 +203,17 @@ TEST_F(PixManagerTest, OnPixPaymentPromptResult_FopSelected) {
   EXPECT_CALL(*client_, ShowProgressScreen());
   EXPECT_CALL(*client_, LoadRiskData(testing::_));
 
-  pix_manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
-                                         /*selected_instrument_id=*/0);
+  pix_manager_->OnPixPaymentPromptResult(
+      base::TimeTicks::Now() - base::Seconds(2), /*is_prompt_accepted=*/true,
+      /*selected_instrument_id=*/0);
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.FopSelector.UserAction",
       /*sample=*/FopSelectorAction::kFopSelected,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.FopSelected.Latency",
+      /*sample=*/2000,
       /*expected_bucket_count=*/1);
 
   auto ukm_entries = ukm_recorder_.GetEntries(

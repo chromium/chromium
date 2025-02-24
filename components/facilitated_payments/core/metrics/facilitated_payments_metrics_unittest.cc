@@ -51,15 +51,19 @@ TEST(FacilitatedPaymentsMetricsTest, LogEwalletPaymentLinkDetected) {
       /*expected_bucket_count=*/1);
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogFopSelected) {
+TEST(FacilitatedPaymentsMetricsTest, LogPixFopSelectedAndLatency) {
   base::HistogramTester histogram_tester;
 
-  LogPixFopSelected();
+  LogPixFopSelectedAndLatency(base::Milliseconds(10));
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.FopSelector.UserAction",
       /*sample=*/FopSelectorAction::kFopSelected,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "FacilitatedPayments.Pix.FopSelected.Latency",
+      /*sample=*/10,
+      /*expected_count=*/1);
 }
 
 TEST(FacilitatedPaymentsMetricsTest, LogEwalletFopSelected) {
