@@ -15,7 +15,8 @@ namespace collaboration {
 
 // Helper class responsible for bridging the CollaborationService between
 // C++ and Java.
-class CollaborationServiceAndroid : public base::SupportsUserData::Data {
+class CollaborationServiceAndroid : public base::SupportsUserData::Data,
+                                    public CollaborationService::Observer {
  public:
   explicit CollaborationServiceAndroid(CollaborationService* service);
   ~CollaborationServiceAndroid() override;
@@ -46,6 +47,9 @@ class CollaborationServiceAndroid : public base::SupportsUserData::Data {
 
   // Returns the CollaborationServiceImpl java object.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+
+  // CollaborationService::Observer overrides.
+  void OnServiceStatusChanged(const ServiceStatusUpdate& update) override;
 
  private:
   // A reference to the Java counterpart of this class.  See
