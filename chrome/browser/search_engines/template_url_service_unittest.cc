@@ -2665,6 +2665,9 @@ class TemplateURLServiceEnterpriseSearchTest
     data->SetKeyword(base::UTF8ToUTF16(keyword));
     data->SetURL(std::string("https://") + keyword + ".com/q={searchTerms}");
     data->policy_origin = policy_origin_;
+    if (policy_origin_ == TemplateURLData::PolicyOrigin::kSearchAggregator) {
+      data->suggestions_url = "https://" + keyword + ".com/suggest";
+    }
     data->enforced_by_policy = false;
     data->featured_by_policy = featured_by_policy;
     data->is_active = TemplateURLData::ActiveStatus::kTrue;
@@ -2787,11 +2790,13 @@ TEST_P(TemplateURLServiceEnterpriseSearchTest, EnterpriseSearchPolicyUpdates) {
   constexpr char kKeyword2[] = "enterprise_search_2";
   constexpr char kKeyword3[] = "enterprise_search_3";
   constexpr char kKeyword4[] = "enterprise_search_4";
+  constexpr char kKeyword5[] = "enterprise_search_5";
 
   constexpr char16_t kKeyword1U16[] = u"enterprise_search_1";
   constexpr char16_t kKeyword2U16[] = u"enterprise_search_2";
   constexpr char16_t kKeyword3U16[] = u"enterprise_search_3";
   constexpr char16_t kKeyword4U16[] = u"enterprise_search_4";
+  constexpr char16_t kKeyword5U16[] = u"enterprise_search_5";
 
   // Reset the model to ensure an `EnterpriseSearchManager` instance is
   // created.
@@ -2807,6 +2812,8 @@ TEST_P(TemplateURLServiceEnterpriseSearchTest, EnterpriseSearchPolicyUpdates) {
       CreateEnterpriseSearchEntry(kKeyword2));
   initial_enterprise_search_engines.push_back(
       CreateEnterpriseSearchEntry(kKeyword3));
+  initial_enterprise_search_engines.push_back(
+      CreateEnterpriseSearchEntry(kKeyword4));
 
   SetManagedSearchSettingsPreference(initial_enterprise_search_engines,
                                      test_util()->profile());
@@ -2819,8 +2826,8 @@ TEST_P(TemplateURLServiceEnterpriseSearchTest, EnterpriseSearchPolicyUpdates) {
     ExpectSimilar(engine.get(), &actual_turl->data());
   }
 
-  // Update the policy including one addition (`kKeyword4`), one deletion
-  // (`kKeyword3`), one update (`kKeyword2`).
+  // Update the policy including one addition (`kKeyword5`), one deletion
+  // (`kKeyword4`), one name update (`kKeyword2`), one url update (`kKeyword3`).
   EnterpriseSearchManager::OwnedTemplateURLDataVector
       updated_enterprise_search_engines;
   updated_enterprise_search_engines.push_back(
@@ -2829,14 +2836,18 @@ TEST_P(TemplateURLServiceEnterpriseSearchTest, EnterpriseSearchPolicyUpdates) {
       CreateEnterpriseSearchEntry(kKeyword2);
   updated_engine_2->SetShortName(u"newname");
   updated_enterprise_search_engines.push_back(std::move(updated_engine_2));
+  std::unique_ptr<TemplateURLData> updated_engine_3 =
+      CreateEnterpriseSearchEntry(kKeyword3);
+  updated_engine_3->SetURL("https://name.com/q={searchTerms}");
+  updated_enterprise_search_engines.push_back(std::move(updated_engine_3));
   updated_enterprise_search_engines.push_back(
-      CreateEnterpriseSearchEntry(kKeyword4));
+      CreateEnterpriseSearchEntry(kKeyword5));
 
   SetManagedSearchSettingsPreference(updated_enterprise_search_engines,
                                      test_util()->profile());
 
   // Ensure the deleted enterprise search engine can no longer be accessed.
-  EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword3U16));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword4U16));
 
   // Ensure updated managed enterprise search engines can be accessed.
   for (auto& engine : updated_enterprise_search_engines) {
@@ -2854,6 +2865,7 @@ TEST_P(TemplateURLServiceEnterpriseSearchTest, EnterpriseSearchPolicyUpdates) {
   EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword2U16));
   EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword3U16));
   EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword4U16));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword5U16));
 }
 
 TEST_P(TemplateURLServiceEnterpriseSearchTest,
@@ -3354,6 +3366,61 @@ INSTANTIATE_TEST_SUITE_P(
             .choice_enabled = true,
             .policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator}),
     &EnterpriseSearchTestParamToTestSuffix);
+
+TEST_P(TemplateURLServiceEnterpriseSearchForSearchAggregator,
+       UpdatesSuggestionsUrl) {
+  constexpr char kKeyword[] = "enterprise_search";
+  constexpr char kKeywordWithAt[] = "@enterprise_search";
+
+  // Reset the model to ensure an `EnterpriseSearchManager` instance is
+  // created.
+  test_util()->ResetModel(/*verify_load=*/true);
+
+  // Set a managed preference that establishes enterprise search providers.
+  // In the first stage, add keywords `kKeyword` and `kKeywordWithAt`.
+  EnterpriseSearchManager::OwnedTemplateURLDataVector
+      initial_enterprise_search_engines;
+  initial_enterprise_search_engines.push_back(
+      CreateEnterpriseSearchEntry(kKeyword, /*featured_by_policy=*/false));
+  initial_enterprise_search_engines.push_back(
+      CreateEnterpriseSearchEntry(kKeywordWithAt, /*featured_by_policy=*/true));
+
+  SetManagedSearchSettingsPreference(initial_enterprise_search_engines,
+                                     test_util()->profile());
+
+  // Ensure managed enterprise search engines can be accessed.
+  for (auto& engine : initial_enterprise_search_engines) {
+    const TemplateURL* actual_turl =
+        model()->GetTemplateURLForKeyword(engine->keyword());
+    ASSERT_TRUE(actual_turl);
+    ExpectSimilar(engine.get(), &actual_turl->data());
+  }
+
+  // Update the policy suggestions_url.
+  EnterpriseSearchManager::OwnedTemplateURLDataVector
+      updated_enterprise_search_engines;
+  std::unique_ptr<TemplateURLData> updated_engine =
+      CreateEnterpriseSearchEntry(kKeyword, /*featured_by_policy=*/false);
+  updated_engine->suggestions_url = "https://enterprise_search.com/new-suggest";
+  updated_enterprise_search_engines.push_back(std::move(updated_engine));
+  std::unique_ptr<TemplateURLData> updated_engine_with_at =
+      CreateEnterpriseSearchEntry(kKeywordWithAt, /*featured_by_policy=*/true);
+  updated_engine_with_at->suggestions_url =
+      "https://@enterprise_search.com/new-suggest";
+  updated_enterprise_search_engines.push_back(
+      std::move(updated_engine_with_at));
+
+  SetManagedSearchSettingsPreference(updated_enterprise_search_engines,
+                                     test_util()->profile());
+
+  // Ensure updated managed enterprise search engines can be accessed.
+  for (auto& engine : updated_enterprise_search_engines) {
+    const TemplateURL* actual_turl =
+        model()->GetTemplateURLForKeyword(engine->keyword());
+    ASSERT_TRUE(actual_turl);
+    ExpectSimilar(engine.get(), &actual_turl->data());
+  }
+}
 
 TEST_P(TemplateURLServiceEnterpriseSearchForSearchAggregator,
        UpdatesFaviconUrl) {
