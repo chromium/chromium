@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_translate_action_listener.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
@@ -177,20 +178,22 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 #endif  // BUILDFLAG(ENABLE_GLIC)
   }     // IsInNormalWindow() end.
 
-  auto* pinned_actions_model = PinnedToolbarActionsModel::Get(profile);
-  CHECK(pinned_actions_model);
-  page_action_controller_ =
-      std::make_unique<page_actions::PageActionController>(
-          pinned_actions_model);
-  page_action_controller_->Initialize(
-      tab, std::vector<actions::ActionId>(page_actions::kActionIds.begin(),
-                                          page_actions::kActionIds.end()));
-  translate_page_action_controller_ =
-      std::make_unique<TranslatePageActionController>(tab);
+  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    auto* pinned_actions_model = PinnedToolbarActionsModel::Get(profile);
+    CHECK(pinned_actions_model);
+    page_action_controller_ =
+        std::make_unique<page_actions::PageActionController>(
+            pinned_actions_model);
+    page_action_controller_->Initialize(
+        tab, std::vector<actions::ActionId>(page_actions::kActionIds.begin(),
+                                            page_actions::kActionIds.end()));
+    translate_page_action_controller_ =
+        std::make_unique<TranslatePageActionController>(tab);
 
-  memory_saver_chip_controller_ =
-      std::make_unique<memory_saver::MemorySaverChipController>(
-          *page_action_controller());
+    memory_saver_chip_controller_ =
+        std::make_unique<memory_saver::MemorySaverChipController>(
+            *page_action_controller());
+  }
 
   customize_chrome_side_panel_controller_ =
       std::make_unique<customize_chrome::SidePanelControllerViews>(tab);
