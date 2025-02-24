@@ -652,8 +652,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 .getAccessorySheetVisualStateProvider(),
                         mOverviewColorSupplier,
                         mInsetObserver,
-                        mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper(),
-                        getTabObscuringHandler());
+                        mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper());
     }
 
     @Override

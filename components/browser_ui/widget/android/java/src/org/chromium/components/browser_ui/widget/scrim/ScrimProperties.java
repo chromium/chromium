@@ -36,6 +36,12 @@ public class ScrimProperties {
      */
     public static final WritableIntPropertyKey TOP_MARGIN = new WritableIntPropertyKey();
 
+    /**
+     * The bottom margin of the scrim. This can be used to shrink the scrim to show items, such as
+     * the bottom toolbar, at the bottom of the screen.
+     */
+    public static final WritableIntPropertyKey BOTTOM_MARGIN = new WritableIntPropertyKey();
+
     /** Whether the scrim should affect the status bar color. */
     public static final ReadableBooleanPropertyKey AFFECTS_STATUS_BAR =
             new ReadableBooleanPropertyKey();
@@ -87,6 +93,7 @@ public class ScrimProperties {
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 TOP_MARGIN,
+                BOTTOM_MARGIN,
                 AFFECTS_STATUS_BAR,
                 ANCHOR_VIEW,
                 SHOW_IN_FRONT_OF_ANCHOR_VIEW,

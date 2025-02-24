@@ -548,7 +548,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             getTabModelSelectorSupplier(),
                             this::getBrowserControlsManager,
                             this::getFullscreenManager,
-                            mBackPressManager);
+                            mBackPressManager,
+                            mRootUiCoordinator.getScrimManagerSupplier(),
+                            getEdgeToEdgeSupplier());
         }
     }
 

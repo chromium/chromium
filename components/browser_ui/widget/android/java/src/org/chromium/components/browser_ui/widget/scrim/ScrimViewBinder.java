@@ -9,6 +9,7 @@ import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.AF
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.ALPHA;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.ANCHOR_VIEW;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.BACKGROUND_COLOR;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.BOTTOM_MARGIN;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.CLICK_DELEGATE;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.GESTURE_DETECTOR;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW;
@@ -28,7 +29,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 class ScrimViewBinder {
     static void bind(PropertyModel model, ScrimView view, PropertyKey propertyKey) {
-        if (TOP_MARGIN == propertyKey) {
+        if (TOP_MARGIN == propertyKey || BOTTOM_MARGIN == propertyKey) {
             // Noop; this is not used until the anchor is set as the view won't have layout params
             // until it is attached to its parent.
         } else if (AFFECTS_STATUS_BAR == propertyKey) {
@@ -46,6 +47,7 @@ class ScrimViewBinder {
 
             assert view.getLayoutParams() instanceof MarginLayoutParams;
             ((MarginLayoutParams) view.getLayoutParams()).topMargin = model.get(TOP_MARGIN);
+            ((MarginLayoutParams) view.getLayoutParams()).bottomMargin = model.get(BOTTOM_MARGIN);
 
         } else if (SHOW_IN_FRONT_OF_ANCHOR_VIEW == propertyKey) {
             // Noop; this is not used until the anchor is set.

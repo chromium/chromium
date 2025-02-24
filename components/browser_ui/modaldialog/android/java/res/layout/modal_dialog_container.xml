@@ -13,10 +13,4 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <View
-        android:id="@+id/scrim"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/modal_dialog_scrim_color" />
-
 </FrameLayout>

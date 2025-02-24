@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
-import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -65,8 +64,6 @@ public class TabbedSystemUiCoordinator {
      * @param overviewColorSupplier Notifies when the overview color changes.
      * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
      * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
-     * @param tabObscuringHandler A {@link TabObscuringHandler} to listen to the tab-obscuring state
-     *     change.
      */
     public TabbedSystemUiCoordinator(
             Window window,
@@ -85,8 +82,7 @@ public class TabbedSystemUiCoordinator {
                             accessorySheetVisualStateSupplier,
             @NonNull ObservableSupplier<Integer> overviewColorSupplier,
             InsetObserver insetObserver,
-            @NonNull EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
-            @NonNull TabObscuringHandler tabObscuringHandler) {
+            @NonNull EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             assert layoutManagerSupplier != null;
             mNavigationBarColorController =
@@ -105,8 +101,7 @@ public class TabbedSystemUiCoordinator {
                             accessorySheetVisualStateSupplier,
                             overviewColorSupplier,
                             insetObserver,
-                            edgeToEdgeSystemBarColorHelper,
-                            tabObscuringHandler);
+                            edgeToEdgeSystemBarColorHelper);
         }
     }
 

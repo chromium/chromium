@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -141,8 +140,6 @@ class TabbedNavigationBarColorController
      * @param overviewColorSupplier Notifies when the overview color changes.
      * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
      * @param edgeToEdgeSystemBarColorHelper Helps setting nav bar colors when in edge-to-edge.
-     * @param tabObscuringHandler A {@link TabObscuringHandler} to listen to the tab-obscuring state
-     *     change.
      */
     TabbedNavigationBarColorController(
             Context context,
@@ -161,8 +158,7 @@ class TabbedNavigationBarColorController
                             accessorySheetVisualStateSupplier,
             @NonNull ObservableSupplier<Integer> overviewColorSupplier,
             InsetObserver insetObserver,
-            @NonNull EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
-            @NonNull TabObscuringHandler tabObscuringHandler) {
+            @NonNull EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
         this(
                 context,
                 tabModelSelector,
@@ -173,7 +169,6 @@ class TabbedNavigationBarColorController
                 edgeToEdgeSystemBarColorHelper,
                 ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
                         ? new BottomAttachedUiObserver(
-                                context,
                                 bottomControlsStacker,
                                 browserControlsStateProvider,
                                 snackbarManagerSupplier.get(),
@@ -181,8 +176,7 @@ class TabbedNavigationBarColorController
                                 bottomSheetController,
                                 omniboxSuggestionsVisualState,
                                 accessorySheetVisualStateSupplier,
-                                insetObserver,
-                                tabObscuringHandler)
+                                insetObserver)
                         : null);
     }
 
@@ -306,11 +300,6 @@ class TabbedNavigationBarColorController
             @Nullable @ColorInt Integer color, boolean forceShowDivider, boolean disableAnimation) {
         mBottomAttachedUiColor = color;
         updateNavigationBarColor(forceShowDivider, disableAnimation);
-    }
-
-    @Override
-    public void onScrimOverlapChanged(@ColorInt int scrimColor) {
-        setNavigationBarScrimColor(scrimColor);
     }
 
     /**
@@ -452,13 +441,7 @@ class TabbedNavigationBarColorController
      */
     public void setNavigationBarScrimColor(@ColorInt int scrimColor) {
         mCurrentScrimColor = scrimColor;
-        @ColorInt
-        int scrimNavigationBarColor =
-                applyCurrentScrimToColor(getNavigationBarColor(mForceDarkNavigationBarColor));
-        mEdgeToEdgeSystemBarColorHelper.setNavigationBarColor(scrimNavigationBarColor);
-        mEdgeToEdgeSystemBarColorHelper.setNavigationBarDividerColor(
-                applyCurrentScrimToColor(
-                        getNavigationBarDividerColor(mForceDarkNavigationBarColor, false)));
+        updateNavigationBarColor();
     }
 
     @ColorInt
