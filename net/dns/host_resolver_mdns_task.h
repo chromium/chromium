@@ -6,6 +6,7 @@
 #define NET_DNS_HOST_RESOLVER_MDNS_TASK_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -14,13 +15,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/mdns_client.h"
 #include "net/dns/public/dns_query_type.h"
 
 namespace net {
 
+class HostResolverInternalResult;
 class RecordParsed;
 
 // Representation of a single HostResolverImpl::Job task to resolve the hostname
@@ -44,12 +45,14 @@ class HostResolverMdnsTask {
   void Start(base::OnceClosure completion_closure);
 
   // Results only available after invocation of the completion closure.
-  HostCache::Entry GetResults() const;
+  std::set<std::unique_ptr<HostResolverInternalResult>> GetResults() const;
 
-  static HostCache::Entry ParseResult(int error,
-                                      DnsQueryType query_type,
-                                      const RecordParsed* parsed,
-                                      const std::string& expected_hostname);
+  // If `error` is `OK`, `parsed` must not be null.
+  static std::unique_ptr<HostResolverInternalResult> ParseResult(
+      int error,
+      std::string query_hostname,
+      DnsQueryType query_type,
+      const RecordParsed* parsed);
 
  private:
   class Transaction;
