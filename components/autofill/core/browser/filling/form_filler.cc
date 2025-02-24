@@ -956,39 +956,22 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
           [&](const AutofillProfile* profile)
               -> std::pair<std::u16string, std::optional<FieldType>> {
             return GetFillingValueAndTypeForProfile(
-                CHECK_DEREF(absl::get<const AutofillProfile*>(filling_payload)),
-                manager_->client().GetAppLocale(), autofill_field.Type(),
-                field_data, manager_->client().GetAddressNormalizer(),
-                failure_to_fill);
+                CHECK_DEREF(profile), manager_->client().GetAppLocale(),
+                autofill_field.Type(), field_data,
+                manager_->client().GetAddressNormalizer(), failure_to_fill);
           },
           [&](const CreditCard* credit_card)
               -> std::pair<std::u16string, std::optional<FieldType>> {
-            return std::make_pair(
+            return {
                 GetFillingValueForCreditCard(
-                    CHECK_DEREF(absl::get<const CreditCard*>(filling_payload)),
-                    manager_->client().GetAppLocale(), action_persistence,
-                    autofill_field, failure_to_fill),
-                autofill_field.Type().GetStorableType());
+                    CHECK_DEREF(credit_card), manager_->client().GetAppLocale(),
+                    action_persistence, autofill_field, failure_to_fill),
+                autofill_field.Type().GetStorableType()};
           },
           [&](const EntityInstance* entity)
               -> std::pair<std::u16string, std::optional<FieldType>> {
-            std::optional<FieldType> field_type =
-                autofill_field.GetAutofillAiServerTypePredictions();
-            if (!field_type) {
-              return {u"", std::nullopt};
-            }
-            std::optional<AttributeType> attribute_type =
-                AttributeType::FromFieldType(*field_type);
-            if (!attribute_type) {
-              return {u"", std::nullopt};
-            }
-            base::optional_ref<const AttributeInstance> attribute_instance =
-                entity->attribute(*attribute_type);
-            if (!attribute_instance) {
-              return {u"", std::nullopt};
-            }
-            // TODO(crbug.com/397620383): Which type should we return here?
-            return {attribute_instance->value(), std::nullopt};
+            return GetFillValueAndTypeForEntity(
+                CHECK_DEREF(entity), autofill_field, action_persistence);
           }},
       filling_payload);
   return {value_to_fill, filling_type, /*value_is_an_override=*/false};
