@@ -28,6 +28,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/page_print_analysis_request.h"
+#include "chrome/browser/enterprise/connectors/analysis/page_print_request_handler.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/data_controls/reporting_service.h"
@@ -251,14 +252,7 @@ void ContentAnalysisDelegate::BypassWarnings(
   // Mark the printed page as complying and report a warning bypass.
   if (page_warning_) {
     result_.page_result = true;
-
-    ReportAnalysisConnectorWarningBypass(
-        profile_, url_, url_, "", /*destination*/ data_.printer_name, title_,
-        /*sha256*/ std::string(),
-        /*mime_type*/ std::string(),
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
-        GetContentTransferMethod(), access_point_, /*content_size*/ -1,
-        page_response_, user_justification);
+    page_print_request_handler_->ReportWarningBypass(user_justification);
   }
 
   RunCallback();
@@ -536,10 +530,8 @@ void ContentAnalysisDelegate::SetOnAckAllRequestsCallbackForTesting(
   *OnAckAllRequestsStorage() = std::move(callback);
 }
 
-void ContentAnalysisDelegate::SetPageWarningForTesting(
-    ContentAnalysisResponse page_response) {
+void ContentAnalysisDelegate::SetPageWarningForTesting() {
   page_warning_ = true;
-  page_response_ = std::move(page_response);
 }
 
 ContentAnalysisDelegate::ContentAnalysisDelegate(
@@ -718,47 +710,23 @@ bool ContentAnalysisDelegate::CancelDialog() {
   return true;
 }
 
-void ContentAnalysisDelegate::PageRequestCallback(
-    BinaryUploadService::Result result,
-    ContentAnalysisResponse response) {
-  // Remember to send an ack for this response.
-  if (result == safe_browsing::BinaryUploadService::Result::SUCCESS) {
-    final_actions_[response.request_token()] = GetAckFinalAction(response);
-  }
+void ContentAnalysisDelegate::PageRequestCallback(RequestHandlerResult result) {
+  DCHECK(page_print_request_handler_);
 
-  RecordDeepScanMetrics(
-      data_.settings.cloud_or_local_settings.is_cloud_analysis(), access_point_,
-      base::TimeTicks::Now() - upload_start_time_, page_size_bytes_, result,
-      response);
+  page_print_request_result_ = std::move(result);
+
+  page_print_request_handler_->AppendFinalActionsTo(&final_actions_);
+
+  result_.page_result = page_print_request_result_.complies;
+
+  UpdateFinalResult(page_print_request_result_.final_result,
+                    page_print_request_result_.tag,
+                    page_print_request_result_.custom_rule_message);
+
+  page_warning_ = page_print_request_result_.final_result ==
+                  FinalContentAnalysisResult::WARNING;
 
   page_request_complete_ = true;
-
-  RequestHandlerResult request_handler_result =
-      CalculateRequestHandlerResult(data_.settings, result, response);
-
-  DVLOG(1) << __func__ << ": print result=" << request_handler_result.complies;
-
-  result_.page_result = request_handler_result.complies;
-  bool should_warn = request_handler_result.final_result ==
-                     FinalContentAnalysisResult::WARNING;
-
-  MaybeReportDeepScanningVerdict(
-      profile_, url_, url_, "", /*destination*/ data_.printer_name, title_,
-      /*sha256*/ std::string(),
-      /*mime_type*/ std::string(),
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
-      GetContentTransferMethod(), access_point_, /*content_size*/ -1, result,
-      response,
-      CalculateEventResult(data_.settings, result_.page_result, should_warn));
-
-  UpdateFinalResult(request_handler_result.final_result,
-                    request_handler_result.tag,
-                    request_handler_result.custom_rule_message);
-
-  if (should_warn) {
-    page_warning_ = true;
-    page_response_ = std::move(response);
-  }
 
   MaybeCompleteScanRequest();
 }
@@ -912,33 +880,12 @@ void ContentAnalysisDelegate::PreparePageRequest() {
   page_request_complete_ = !data_.page.IsValid();
 
   if (!page_request_complete_) {
-    page_size_bytes_ = data_.page.GetSize();
-    auto request = std::make_unique<PagePrintAnalysisRequest>(
-        data_.settings, std::move(data_.page),
+    page_print_request_handler_ = PagePrintRequestHandler::Create(
+        this, GetBinaryUploadService(), profile_, url_, data_.printer_name,
+        page_content_type_, std::move(data_.page),
         base::BindOnce(&ContentAnalysisDelegate::PageRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
-
-    InitializeRequest(request.get());
-    request->set_analysis_connector(PRINT);
-    request->set_filename(title_);
-    if (!data_.printer_name.empty()) {
-      request->set_printer_name(data_.printer_name);
-    }
-    if (!page_content_type_.empty()) {
-      request->set_content_type(page_content_type_);
-    }
-    if (ShouldNotUploadLargePage(page_size_bytes_)) {
-      // The request shouldn't be finished early synchronously so that
-      // `UploadData()` can return "false" to `CreateForWebContents()` and let
-      // it initialize the tab modal dialog.
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&ContentAnalysisDelegate::FinishLargeDataRequestEarly,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(request),
-                         BinaryUploadService::Result::FILE_TOO_LARGE));
-    } else {
-      UploadPageForDeepScanning(std::move(request));
-    }
+    page_print_request_handler_->UploadData();
   }
 }
 
@@ -963,14 +910,6 @@ void ContentAnalysisDelegate::UploadTextForDeepScanning(
 }
 
 void ContentAnalysisDelegate::UploadImageForDeepScanning(
-    std::unique_ptr<BinaryUploadService::Request> request) {
-  BinaryUploadService* upload_service = GetBinaryUploadService();
-  if (upload_service) {
-    upload_service->MaybeUploadForDeepScanning(std::move(request));
-  }
-}
-
-void ContentAnalysisDelegate::UploadPageForDeepScanning(
     std::unique_ptr<BinaryUploadService::Request> request) {
   BinaryUploadService* upload_service = GetBinaryUploadService();
   if (upload_service) {
@@ -1097,23 +1036,6 @@ void ContentAnalysisDelegate::AckAllRequests() {
   }
 }
 
-void ContentAnalysisDelegate::FinishLargeDataRequestEarly(
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
-    safe_browsing::BinaryUploadService::Result result) {
-  // We add the request here in case we never actually uploaded anything, so
-  // it wasn't added in OnGetRequestData
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
-      request->per_profile_request(), /*access_token*/ "", /*upload_info*/
-      "Skipped - Large data blocked", /*upload_url*/ "",
-      request->content_analysis_request());
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
-      /*token=*/"", safe_browsing::BinaryUploadService::ResultToString(result),
-      enterprise_connectors::ContentAnalysisResponse());
-
-  request->FinishRequest(result,
-                         enterprise_connectors::ContentAnalysisResponse());
-}
-
 std::string ContentAnalysisDelegate::GetContentTransferMethod() const {
   switch (data_.reason) {
     case enterprise_connectors::ContentAnalysisRequest::UNKNOWN:
@@ -1183,11 +1105,11 @@ std::string ContentAnalysisDelegate::email() const {
 }
 
 std::string ContentAnalysisDelegate::url() const {
-  return data_.url.spec();
+  return url_.spec();
 }
 
 const GURL& ContentAnalysisDelegate::tab_url() const {
-  return data_.url;
+  return url_;
 }
 
 ContentAnalysisRequest::Reason ContentAnalysisDelegate::reason() const {

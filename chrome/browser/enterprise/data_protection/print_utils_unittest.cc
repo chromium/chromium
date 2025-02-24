@@ -9,6 +9,8 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/analysis/page_print_request_handler.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
@@ -113,37 +115,53 @@ ContentAnalysisResponse CreateResponse(
 
 class PrintTestContentAnalysisDelegate : public ContentAnalysisDelegate {
  public:
-  PrintTestContentAnalysisDelegate(
-      ContentAnalysisResponse::Result::TriggeredRule::Action action,
-      content::WebContents* contents,
-      ContentAnalysisDelegate::Data data,
-      ContentAnalysisDelegate::CompletionCallback callback)
-      : ContentAnalysisDelegate(contents,
-                                std::move(data),
-                                std::move(callback),
-                                safe_browsing::DeepScanAccessPoint::PRINT),
-        action_(action) {}
+  using ContentAnalysisDelegate::ContentAnalysisDelegate;
 
   static std::unique_ptr<ContentAnalysisDelegate> Create(
-      ContentAnalysisResponse::Result::TriggeredRule::Action action,
       content::WebContents* contents,
       ContentAnalysisDelegate::Data data,
       ContentAnalysisDelegate::CompletionCallback callback) {
-    auto delegate = std::make_unique<PrintTestContentAnalysisDelegate>(
-        action, contents, std::move(data), std::move(callback));
+    auto delegate = base::WrapUnique(new PrintTestContentAnalysisDelegate(
+        contents, std::move(data), std::move(callback),
+        safe_browsing::DeepScanAccessPoint::PRINT));
     test_delegate_ = delegate.get();
     return delegate;
   }
+};
 
- private:
-  void UploadPageForDeepScanning(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
-      override {
-    ASSERT_EQ(request->printer_name(), kPrinterName);
-    PageRequestCallback(safe_browsing::BinaryUploadService::Result::SUCCESS,
-                        CreateResponse(action_));
+class TestPagePrintRequestHandler
+    : public enterprise_connectors::PagePrintRequestHandler {
+ public:
+  static std::unique_ptr<PagePrintRequestHandler> Create(
+      ContentAnalysisResponse::Result::TriggeredRule::Action action,
+      enterprise_connectors::ContentAnalysisInfo* content_analysis_info,
+      safe_browsing::BinaryUploadService* upload_service,
+      Profile* profile,
+      GURL url,
+      const std::string& printer_name,
+      const std::string& page_content_type,
+      base::ReadOnlySharedMemoryRegion page_region,
+      CompletionCallback callback) {
+    auto handler = base::WrapUnique(new TestPagePrintRequestHandler(
+        content_analysis_info, upload_service, profile, url, printer_name,
+        page_content_type, std::move(page_region), std::move(callback)));
+    handler->action_ = action;
+    return handler;
   }
 
+ protected:
+  using PagePrintRequestHandler::PagePrintRequestHandler;
+
+  void UploadForDeepScanning(
+      std::unique_ptr<enterprise_connectors::PagePrintAnalysisRequest> request)
+      override {
+    ASSERT_EQ(request->printer_name(), kPrinterName);
+    OnContentAnalysisResponse(
+        safe_browsing::BinaryUploadService::Result::SUCCESS,
+        CreateResponse(action_));
+  }
+
+ private:
   ContentAnalysisResponse::Result::TriggeredRule::Action action_;
 };
 
@@ -196,6 +214,7 @@ class PrintContentAnalysisUtilsTest
     RealtimeReportingClientFactory::GetForProfile(profile())
         ->SetBrowserCloudPolicyClientForTesting(nullptr);
     SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
+    enterprise_connectors::PagePrintRequestHandler::ResetFactoryForTesting();
     PrintPreviewTest::TearDown();
   }
 
@@ -312,9 +331,12 @@ TEST_P(PrintContentAnalysisUtilsTest,
 #endif  // BUILDFLAG(IS_MAC)
 
 TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyAllowed) {
-  ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
-      &PrintTestContentAnalysisDelegate::Create,
-      ContentAnalysisResponse::Result::TriggeredRule::ACTION_UNSPECIFIED));
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&PrintTestContentAnalysisDelegate::Create));
+  enterprise_connectors::PagePrintRequestHandler::SetFactoryForTesting(
+      base::BindRepeating(
+          &TestPagePrintRequestHandler::Create,
+          ContentAnalysisResponse::Result::TriggeredRule::ACTION_UNSPECIFIED));
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();
@@ -334,9 +356,12 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyAllowed) {
 }
 
 TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyReportOnly) {
-  ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
-      &PrintTestContentAnalysisDelegate::Create,
-      ContentAnalysisResponse::Result::TriggeredRule::REPORT_ONLY));
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&PrintTestContentAnalysisDelegate::Create));
+  enterprise_connectors::PagePrintRequestHandler::SetFactoryForTesting(
+      base::BindRepeating(
+          &TestPagePrintRequestHandler::Create,
+          ContentAnalysisResponse::Result::TriggeredRule::REPORT_ONLY));
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
@@ -376,9 +401,12 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyReportOnly) {
 }
 
 TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnThenCancel) {
-  ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
-      &PrintTestContentAnalysisDelegate::Create,
-      ContentAnalysisResponse::Result::TriggeredRule::WARN));
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&PrintTestContentAnalysisDelegate::Create));
+  enterprise_connectors::PagePrintRequestHandler::SetFactoryForTesting(
+      base::BindRepeating(
+          &TestPagePrintRequestHandler::Create,
+          ContentAnalysisResponse::Result::TriggeredRule::WARN));
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.SetDoneClosure(base::BindLambdaForTesting([this, &validator]() {
@@ -424,9 +452,12 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnThenCancel) {
 }
 
 TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
-  ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
-      &PrintTestContentAnalysisDelegate::Create,
-      ContentAnalysisResponse::Result::TriggeredRule::WARN));
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&PrintTestContentAnalysisDelegate::Create));
+  enterprise_connectors::PagePrintRequestHandler::SetFactoryForTesting(
+      base::BindRepeating(
+          &TestPagePrintRequestHandler::Create,
+          ContentAnalysisResponse::Result::TriggeredRule::WARN));
 
   bool bypassed = false;
   enterprise_connectors::test::EventReportValidator validator(client_.get());
@@ -459,8 +490,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
           /*content_transfer_method*/ std::nullopt,
           /*user_justification*/ kUserJustification);
       ASSERT_TRUE(test_delegate_);
-      test_delegate_->SetPageWarningForTesting(
-          CreateResponse(ContentAnalysisResponse::Result::TriggeredRule::WARN));
+      test_delegate_->SetPageWarningForTesting();
       test_delegate_->BypassWarnings(kUserJustification);
     }
   }));
@@ -502,9 +532,12 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
 }
 
 TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyBlocked) {
-  ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
-      &PrintTestContentAnalysisDelegate::Create,
-      ContentAnalysisResponse::Result::TriggeredRule::BLOCK));
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&PrintTestContentAnalysisDelegate::Create));
+  enterprise_connectors::PagePrintRequestHandler::SetFactoryForTesting(
+      base::BindRepeating(
+          &TestPagePrintRequestHandler::Create,
+          ContentAnalysisResponse::Result::TriggeredRule::BLOCK));
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(

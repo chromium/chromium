@@ -109,9 +109,6 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   void UploadImageForDeepScanning(
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
       override;
-  void UploadPageForDeepScanning(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
-      override;
   bool ShowFinalResultInDialog() override;
   bool CancelDialog() override;
   safe_browsing::BinaryUploadService* GetBinaryUploadService() override;
@@ -123,6 +120,8 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
       const base::FilePath& path,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
       FakeFilesRequestHandler::FakeFileRequestCallback callback);
+  void FakeUploadPageForDeepScanning(
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
 
   static safe_browsing::BinaryUploadService::Result result_;
   static bool dialog_shown_;

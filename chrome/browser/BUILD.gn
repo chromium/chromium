@@ -6611,6 +6611,8 @@ static_library("browser") {
       "enterprise/connectors/analysis/files_request_handler.h",
       "enterprise/connectors/analysis/page_print_analysis_request.cc",
       "enterprise/connectors/analysis/page_print_analysis_request.h",
+      "enterprise/connectors/analysis/page_print_request_handler.cc",
+      "enterprise/connectors/analysis/page_print_request_handler.h",
       "enterprise/connectors/analysis/request_handler_base.cc",
       "enterprise/connectors/analysis/request_handler_base.h",
       "enterprise/connectors/reporting/browser_crash_event_router.cc",

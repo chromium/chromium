@@ -6,9 +6,12 @@
 
 #include <optional>
 
+#include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "chrome/browser/enterprise/connectors/analysis/page_print_request_handler.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/test/fake_files_request_handler.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -18,6 +21,41 @@ namespace enterprise_connectors::test {
 namespace {
 
 base::TimeDelta response_delay = base::Seconds(0);
+
+class FakePagePrintRequestHandler : public PagePrintRequestHandler {
+ public:
+  static std::unique_ptr<PagePrintRequestHandler> Create(
+      base::OnceCallback<
+          void(std::unique_ptr<safe_browsing::BinaryUploadService::Request>)>
+          upload_callback,
+      ContentAnalysisInfo* content_analysis_info,
+      safe_browsing::BinaryUploadService* upload_service,
+      Profile* profile,
+      GURL url,
+      const std::string& printer_name,
+      const std::string& page_content_type,
+      base::ReadOnlySharedMemoryRegion page_region,
+      CompletionCallback callback) {
+    auto handler = base::WrapUnique(new FakePagePrintRequestHandler(
+        content_analysis_info, upload_service, profile, url, printer_name,
+        page_content_type, std::move(page_region), std::move(callback)));
+    handler->upload_callback_ = std::move(upload_callback);
+    return handler;
+  }
+
+ protected:
+  using PagePrintRequestHandler::PagePrintRequestHandler;
+
+  void UploadForDeepScanning(
+      std::unique_ptr<PagePrintAnalysisRequest> request) override {
+    std::move(upload_callback_).Run(std::move(request));
+  }
+
+ private:
+  base::OnceCallback<void(
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request>)>
+      upload_callback_;
+};
 
 }  // namespace
 
@@ -92,6 +130,11 @@ std::unique_ptr<ContentAnalysisDelegate> FakeContentAnalysisDelegate::Create(
       &FakeFilesRequestHandler::Create,
       base::BindRepeating(
           &FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning,
+          base::Unretained(ret.get()))));
+  PagePrintRequestHandler::SetFactoryForTesting(base::BindRepeating(
+      &FakePagePrintRequestHandler::Create,
+      base::BindRepeating(
+          &FakeContentAnalysisDelegate::FakeUploadPageForDeepScanning,
           base::Unretained(ret.get()))));
   return ret;
 }
@@ -203,7 +246,8 @@ void FakeContentAnalysisDelegate::Response(
       std::move(file_request_callback.value()).Run(path, result_, response);
       break;
     case AnalysisConnector::PRINT:
-      PageRequestCallback(result_, response);
+      PageRequestCallback(CalculateRequestHandlerResult(
+          GetDataForTesting().settings, result_, response));
       break;
     case AnalysisConnector::FILE_TRANSFER:
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
@@ -288,7 +332,7 @@ void FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning(
       response_delay);
 }
 
-void FakeContentAnalysisDelegate::UploadPageForDeepScanning(
+void FakeContentAnalysisDelegate::FakeUploadPageForDeepScanning(
     std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
   if (GetDataForTesting()
           .settings.cloud_or_local_settings.is_cloud_analysis()) {
