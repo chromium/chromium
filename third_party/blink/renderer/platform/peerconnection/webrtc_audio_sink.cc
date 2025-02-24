@@ -56,11 +56,11 @@ WebRtcAudioSink::WebRtcAudioSink(
     scoped_refptr<webrtc::AudioSourceInterface> track_source,
     scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
-    : adapter_(
-          new rtc::RefCountedObject<Adapter>(label,
-                                             std::move(track_source),
-                                             std::move(signaling_task_runner),
-                                             std::move(main_task_runner))),
+    : adapter_(new webrtc::RefCountedObject<Adapter>(
+          label,
+          std::move(track_source),
+          std::move(signaling_task_runner),
+          std::move(main_task_runner))),
       fifo_(ConvertToBaseRepeatingCallback(
           CrossThreadBindRepeating(&WebRtcAudioSink::DeliverRebufferedAudio,
                                    CrossThreadUnretained(this)))),

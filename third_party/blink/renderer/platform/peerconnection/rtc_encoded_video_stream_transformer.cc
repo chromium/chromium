@@ -37,10 +37,10 @@ using webrtc::Metronome;
 const size_t kMaxBufferedFrames = 60;
 
 // This delegate class exists to work around the fact that
-// RTCEncodedVideoStreamTransformer cannot derive from rtc::RefCountedObject
+// RTCEncodedVideoStreamTransformer cannot derive from webrtc::RefCountedObject
 // and post tasks referencing itself as an rtc::scoped_refptr. Instead,
 // RTCEncodedVideoStreamTransformer creates a delegate using
-// rtc::RefCountedObject and posts tasks referencing the delegate, which
+// webrtc::RefCountedObject and posts tasks referencing the delegate, which
 // invokes the RTCEncodedVideoStreamTransformer via callbacks.
 class RTCEncodedVideoStreamTransformerDelegate
     : public webrtc::FrameTransformerInterface {
@@ -217,11 +217,11 @@ RTCEncodedVideoStreamTransformer::RTCEncodedVideoStreamTransformer(
     scoped_refptr<base::SingleThreadTaskRunner> realm_task_runner,
     std::unique_ptr<Metronome> metronome)
     : broker_(base::AdoptRef(new Broker(this))),
-      delegate_(
-          new rtc::RefCountedObject<RTCEncodedVideoStreamTransformerDelegate>(
-              std::move(realm_task_runner),
-              broker_,
-              std::move(metronome))) {}
+      delegate_(new webrtc::RefCountedObject<
+                RTCEncodedVideoStreamTransformerDelegate>(
+          std::move(realm_task_runner),
+          broker_,
+          std::move(metronome))) {}
 
 RTCEncodedVideoStreamTransformer::~RTCEncodedVideoStreamTransformer() {
   broker_->ClearTransformer();

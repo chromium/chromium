@@ -486,7 +486,7 @@ void RTCVideoDecoderAdapter::Impl::OnOutput(
   webrtc::VideoFrame rtc_frame =
       webrtc::VideoFrame::Builder()
           .set_video_frame_buffer(rtc::scoped_refptr<WebRtcVideoFrameAdapter>(
-              new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+              new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
                   std::move(frame), frame_adapter_shared_resources_)))
           .set_rtp_timestamp(static_cast<uint32_t>(timestamp.InMicroseconds()))
           .set_timestamp_us(0)

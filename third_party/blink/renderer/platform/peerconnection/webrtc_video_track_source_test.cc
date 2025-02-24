@@ -46,7 +46,7 @@ class MockVideoSink : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
 TEST(WebRtcVideoTrackSourceRefreshFrameTest, CallsRefreshFrame) {
   bool called = false;
   scoped_refptr<WebRtcVideoTrackSource> track_source =
-      new rtc::RefCountedObject<WebRtcVideoTrackSource>(
+      new webrtc::RefCountedObject<WebRtcVideoTrackSource>(
           /*is_screencast=*/false,
           /*needs_denoising=*/std::nullopt,
           base::BindLambdaForTesting([](const media::VideoCaptureFeedback&) {}),
@@ -65,7 +65,7 @@ class WebRtcVideoTrackSourceTest
       : shared_resources_(
             base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
                 /*gpu_factories=*/nullptr)),
-        track_source_(new rtc::RefCountedObject<WebRtcVideoTrackSource>(
+        track_source_(new webrtc::RefCountedObject<WebRtcVideoTrackSource>(
             /*is_screencast=*/false,
             /*needs_denoising=*/std::nullopt,
             base::BindRepeating(&WebRtcVideoTrackSourceTest::ProcessFeedback,

@@ -1315,7 +1315,7 @@ TEST_F(RTCVideoEncoderEncodeTest, SoftwareFallbackOnBadEncodeInput) {
       gfx::Size(kInputFrameWidth, kInputFrameHeight));
   frame->set_timestamp(base::Milliseconds(1));
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
-      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+      new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
           frame, base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
                      nullptr)));
   std::vector<webrtc::VideoFrameType> frame_types;
@@ -1427,7 +1427,7 @@ TEST_F(RTCVideoEncoderEncodeTest, AcceptsRepeatedWrappedMediaVideoFrame) {
       gfx::Size(kInputFrameWidth, kInputFrameHeight));
   frame->set_timestamp(base::Milliseconds(1));
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
-      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+      new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
           frame, base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
                      nullptr)));
   std::vector<webrtc::VideoFrameType> frame_types;
@@ -2596,7 +2596,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeFrameWithAdapter) {
   auto frame = media::VideoFrame::CreateBlackFrame(
       gfx::Size(kInputFrameWidth, kInputFrameHeight));
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
-      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+      new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
           frame, base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
                      nullptr)));
   std::vector<webrtc::VideoFrameType> frame_types;
@@ -2613,7 +2613,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeFrameWithAdapter) {
   // encoder.
   frame = media::VideoFrame::CreateBlackFrame(
       gfx::Size(kInputFrameWidth * 2, kInputFrameHeight * 2));
-  frame_adapter = new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+  frame_adapter = new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
       frame,
       base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(nullptr));
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
