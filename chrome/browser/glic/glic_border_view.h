@@ -60,6 +60,7 @@ class GlicBorderView : public views::View,
     virtual base::TimeTicks GetTestCreationTime() = 0;
     virtual void AnimationStarted() = 0;
     virtual void EmphasisRestarted() = 0;
+    virtual void FocusedTabChanged(const GURL& actual_url) = 0;
   };
   void set_tester(Tester* tester) { tester_ = tester; }
 
