@@ -19,6 +19,7 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/prediction_service/prediction_common.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/prefs/pref_service.h"
@@ -40,11 +41,11 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
   void SetUp() override {
     InitFeatureList();
 
-    // enable msbb
+    // Enable msbb.
     testing_profile_->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
-    // enable cpss for both notification and geolocation
+    // Enable cpss for both notification and geolocation.
     testing_profile_->GetPrefs()->SetBoolean(prefs::kEnableNotificationCPSS,
                                              true);
     testing_profile_->GetPrefs()->SetBoolean(prefs::kEnableGeolocationCPSS,
@@ -206,6 +207,44 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
                 kServicePredictedVeryUnlikelyGrant,
             geolocation_decision.quiet_ui_reason);
 }
+// `kPermissionsAIv1` is not enabled for Android.
+// This test verifies that `GetPredictionRequestProto` does not crash if
+// `kPermissionsAIv1` is enabled.
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUseTFLite) {
+  // Disable msbb.
+  profile()->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+
+  feature_list_->Reset();
+  feature_list_->InitWithFeatures(
+      {
+          permissions::features::kPermissionPredictionsV2,
+          permissions::features::kPermissionsAIv1,
+          permissions::features::kPermissionOnDeviceNotificationPredictions,
+          permissions::features::kPermissionOnDeviceGeolocationPredictions,
+          features::kQuietNotificationPrompts,
+      },
+      {});
+
+  PredictionBasedPermissionUiSelector prediction_selector(profile());
+
+  EXPECT_EQ(PredictionSource::USE_ONDEVICE_TFLITE,
+            prediction_selector.GetPredictionTypeToUse(
+                permissions::RequestType::kNotifications));
+
+  auto decided = [](ContentSetting, bool, bool) {};
+  permissions::PermissionRequest permission_request(
+      GURL("http://example.com/"), permissions::RequestType::kGeolocation,
+      /* user_gesture=*/true, base::BindRepeating(decided),
+      /* delete_callback */ base::NullCallback());
+
+  permissions::PredictionRequestFeatures features =
+      prediction_selector.BuildPredictionRequestFeatures(&permission_request);
+
+  auto proto_request = GetPredictionRequestProto(features);
+}
+#endif
 
 TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
   PredictionBasedPermissionUiSelector prediction_selector(profile());
