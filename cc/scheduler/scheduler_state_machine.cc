@@ -1493,8 +1493,29 @@ bool SchedulerStateMachine::ShouldBlockDeadlineIndefinitely() const {
   return false;
 }
 
-void SchedulerStateMachine::SetThrottleMainFrames(base::TimeDelta interval) {
-  main_frame_throttled_interval_ = interval;
+void SchedulerStateMachine::FrameIntervalUpdated(
+    base::TimeDelta frame_interval) {
+  // Only query the feature (and thus enter the experiment group) if we see a
+  // short interval. This ignores 90Hz displays, on purpose, and adds some
+  // leeway.
+  //
+  // Apply some slack, so that if for some reason the interval is a bit larger
+  // than 8.33333333333333ms, then we catch it still.
+  constexpr float kSlackFactor = .9;
+  if (frame_interval < base::Hertz(120) * (1 / kSlackFactor) &&
+      base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz)) {
+    // Here as well, use a slack factor, to make sure that small timing
+    // variations don't result in uneven pacing.
+    //
+    // Use interval / 2 rather than an actual interval as refresh rates are
+    // not necessarily 120: it could be something really close, or it could be
+    // 144Hz for instance.
+    base::TimeDelta throttled_interval = kSlackFactor * frame_interval * 2;
+    TRACE_EVENT("cc", "ThrottleMainFrame", "interval", throttled_interval);
+    main_frame_throttled_interval_ = throttled_interval;
+  } else {
+    main_frame_throttled_interval_ = base::TimeDelta();
+  }
 }
 
 bool SchedulerStateMachine::IsDrawThrottled() const {

@@ -1619,8 +1619,10 @@ TEST_F(SchedulerTest, BeginMainFrameThrottling) {
   fake_external_begin_frame_source_->TestOnBeginFrame(args);
   EXPECT_EQ(client_->frame_interval(), interval);
   constexpr float kSlackFactor = .9;
-  EXPECT_EQ(scheduler_->state_machine().main_frame_throttled_interval(),
-            base::Hertz(60) * kSlackFactor);
+  EXPECT_NEAR(scheduler_->state_machine()
+                  .main_frame_throttled_interval()
+                  .InMillisecondsF(),
+              (base::Hertz(60) * kSlackFactor).InMillisecondsF(), 1e-2);
 
   // Not at 90Hz.
   interval = base::Hertz(90);
