@@ -2,6 +2,7 @@
   {
     "name": "Passport",
     "attributes": [ "Name", "Number", "Country", "Expiry date", "Issue date" ],
+    "obfuscated attributes": [ "Number" ],
     "import constraints": [
       [ "Number", "Name" ],
       [ "Number", "Country" ],

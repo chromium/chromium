@@ -102,6 +102,16 @@ def generate_cpp_functions(schema):
   yield '  return std::nullopt;'
   yield '}'
   yield ''
+  yield 'bool AttributeType::is_obfuscated() const {'
+  yield '  switch (name_) {'
+  for entity, attribute in ((entity, attribute) for entity in schema for attribute in entity['attributes']):
+    yield f'    case {attribute_name(entity["name"], attribute)}:'
+    is_obfuscated = attribute in entity.get('obfuscated attributes', [])
+    yield f'      return {"true" if is_obfuscated else "false"};'
+  yield '  }'
+  yield '  NOTREACHED();'
+  yield '}'
+  yield ''
   yield 'std::string_view AttributeType::name_as_string() const {'
   yield '  return AttributeTypeNameToString(name_);'
   yield '}'

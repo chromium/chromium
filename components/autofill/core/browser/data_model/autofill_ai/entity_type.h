@@ -64,6 +64,10 @@ class AttributeType final {
   // Maps this AttributeType to the corresponding Autofill AI `FieldType`.
   constexpr FieldType field_type() const;
 
+  // Returns whether the attribute should be obfuscated in preview and
+  // suggestion labels.
+  bool is_obfuscated() const;
+
   // Returns whether the corresponding type has a non-trivial structure (e.g.
   // Name, Address) or whether the structure is trivial.
   constexpr bool is_structured_type() const;
