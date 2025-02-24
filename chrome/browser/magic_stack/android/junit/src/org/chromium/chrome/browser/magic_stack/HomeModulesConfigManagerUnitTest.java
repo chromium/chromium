@@ -8,10 +8,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getEducationalTipModuleList;
+
 import android.text.TextUtils;
+import android.view.ViewGroup;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -23,13 +27,18 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager.HomeModulesStateListener;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -40,10 +49,37 @@ public class HomeModulesConfigManagerUnitTest {
 
     private List<ModuleConfigChecker> mModuleConfigCheckerList = new ArrayList<>();
     private HomeModulesConfigManager mHomeModulesConfigManager;
+    private ModuleRegistry mModuleRegistry;
+
+    static class TestModuleProviderBuilder implements ModuleProviderBuilder, ModuleConfigChecker {
+        public TestModuleProviderBuilder() {}
+
+        @Override
+        public boolean isEligible() {
+            return false;
+        }
+
+        @Override
+        public boolean build(
+                ModuleDelegate moduleDelegate, Callback<ModuleProvider> onModuleBuiltCallback) {
+            return false;
+        }
+
+        @Override
+        public ViewGroup createView(ViewGroup parentView) {
+            return null;
+        }
+
+        @Override
+        public void bind(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {}
+    }
 
     @Before
     public void setUp() {
         mHomeModulesConfigManager = HomeModulesConfigManager.getInstance();
+        mModuleRegistry =
+                new ModuleRegistry(
+                        mHomeModulesConfigManager, mock(ActivityLifecycleDispatcher.class));
     }
 
     @After
@@ -125,6 +161,104 @@ public class HomeModulesConfigManagerUnitTest {
     }
 
     @Test
+    public void testGetTabResumptionListItemSingleTabShownFirst() {
+        // Verifies that the return list of getModuleListShownInSettings() contains and only
+        // SINGLE_TAB.
+        registerModuleConfigCheckerWithEligibility(ModuleType.SINGLE_TAB, true);
+        List<Integer> moduleList = mHomeModulesConfigManager.getModuleListShownInSettings();
+        assertEquals(1, moduleList.size());
+        assertEquals(ModuleType.SINGLE_TAB, (int) moduleList.get(0));
+
+        // Verifies that the return list of getModuleListShownInSettings contains only one of
+        // SINGLE_TAB and TAB_RESUMPTION.
+        registerModuleConfigCheckerWithEligibility(ModuleType.TAB_RESUMPTION, true);
+        moduleList = mHomeModulesConfigManager.getModuleListShownInSettings();
+        assertEquals(1, moduleList.size());
+        assertTrue(
+                moduleList.contains(ModuleType.SINGLE_TAB)
+                        || moduleList.contains(ModuleType.TAB_RESUMPTION));
+    }
+
+    @Test
+    public void testGetTabResumptionListItemTabResumptionShownFirst() {
+        // Verifies that the return list of getModuleListShownInSettings() contains and only
+        // TAB_RESUMPTION.
+        registerModuleConfigCheckerWithEligibility(ModuleType.TAB_RESUMPTION, true);
+        List<Integer> moduleList = mHomeModulesConfigManager.getModuleListShownInSettings();
+        assertEquals(1, moduleList.size());
+        assertEquals(ModuleType.TAB_RESUMPTION, (int) moduleList.get(0));
+
+        // Verifies that the return list of getModuleListShownInSettings contains only one of
+        // SINGLE_TAB and TAB_RESUMPTION.
+        registerModuleConfigCheckerWithEligibility(ModuleType.SINGLE_TAB, true);
+        moduleList = mHomeModulesConfigManager.getModuleListShownInSettings();
+        assertEquals(1, moduleList.size());
+        assertTrue(
+                moduleList.contains(ModuleType.SINGLE_TAB)
+                        || moduleList.contains(ModuleType.TAB_RESUMPTION));
+    }
+
+    @Test
+    public void testGetEducationalTipListItemShown() {
+        for (@ModuleType int tipModule : getEducationalTipModuleList()) {
+            registerModuleConfigCheckerWithEligibility(tipModule, true);
+        }
+
+        // Verifies that the return list of getModuleListShownInSettings() contains only one of
+        // educational tip modules.
+        List<Integer> moduleList = mHomeModulesConfigManager.getModuleListShownInSettings();
+        assertEquals(1, moduleList.size());
+        assertTrue(HomeModulesUtils.belongsToEducationalTipModule(moduleList.get(0)));
+    }
+
+    @Test
+    public void testGetMultipleListItemShown() {
+        List<Integer> moduleTypeList =
+                Arrays.asList(
+                        ModuleType.TAB_RESUMPTION,
+                        ModuleType.SAFETY_HUB,
+                        ModuleType.QUICK_DELETE_PROMO,
+                        ModuleType.PRICE_CHANGE);
+
+        for (Integer moduleType : moduleTypeList) {
+            registerModuleConfigCheckerWithEligibility(moduleType, true);
+        }
+
+        List<Integer> moduleList = mHomeModulesConfigManager.getModuleListShownInSettings();
+
+        for (Integer moduleType : moduleTypeList) {
+            assertTrue(moduleList.contains(moduleType));
+        }
+    }
+
+    @Test
+    public void testGetMultipleListItemShownSomeComplex() {
+        List<Integer> eligibleTypeList =
+                Arrays.asList(
+                        ModuleType.TAB_RESUMPTION,
+                        ModuleType.SAFETY_HUB,
+                        ModuleType.AUXILIARY_SEARCH);
+        List<Integer> notEligibleTypeList =
+                Arrays.asList(ModuleType.SINGLE_TAB, ModuleType.PRICE_CHANGE);
+
+        for (Integer moduleType : eligibleTypeList) {
+            registerModuleConfigCheckerWithEligibility(moduleType, true);
+        }
+
+        for (Integer moduleType : notEligibleTypeList) {
+            registerModuleConfigCheckerWithEligibility(moduleType, false);
+        }
+
+        List<Integer> moduleList = mHomeModulesConfigManager.getModuleListShownInSettings();
+
+        // Verifies the return list of getModuleListShownInSettings() only contains eligible module
+        // types.
+        for (Integer moduleType : eligibleTypeList) {
+            assertTrue(moduleList.contains(moduleType));
+        }
+    }
+
+    @Test
     public void testGetSettingsPreferenceKey() {
         String tabResumptionPreferenceKey =
                 ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
@@ -177,5 +311,12 @@ public class HomeModulesConfigManagerUnitTest {
             mModuleConfigCheckerList.add(moduleConfigChecker);
             mHomeModulesConfigManager.registerModuleEligibilityChecker(i, moduleConfigChecker);
         }
+    }
+
+    private void registerModuleConfigCheckerWithEligibility(
+            @ModuleType int moduleType, boolean eligibility) {
+        TestModuleProviderBuilder builder = mock(TestModuleProviderBuilder.class);
+        when(builder.isEligible()).thenReturn(eligibility);
+        mModuleRegistry.registerModule(moduleType, builder);
     }
 }
