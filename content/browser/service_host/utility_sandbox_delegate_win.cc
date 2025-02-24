@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/utility_sandbox_delegate.h"
+#include "content/browser/service_host/utility_sandbox_delegate.h"
 
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -54,14 +54,16 @@ bool AudioInitializeConfig(sandbox::TargetConfig* config) {
   // Custom default policy allowing audio drivers to read device properties
   // (https://crbug.com/883326).
   auto result = config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
-  if (result != sandbox::SBOX_ALL_OK)
+  if (result != sandbox::SBOX_ALL_OK) {
     return false;
+  }
   config->SetLockdownDefaultDacl();
   config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
   result = config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
                                  sandbox::USER_RESTRICTED_NON_ADMIN);
-  if (result != sandbox::SBOX_ALL_OK)
+  if (result != sandbox::SBOX_ALL_OK) {
     return false;
+  }
 
   config->SetDesktop(sandbox::Desktop::kAlternateWinstation);
 
@@ -74,17 +76,20 @@ bool NetworkInitializeConfig(sandbox::TargetConfig* config) {
   // LPAC sandbox is enabled, so do not use a restricted token.
   auto result = config->SetTokenLevel(sandbox::USER_UNPROTECTED,
                                       sandbox::USER_UNPROTECTED);
-  if (result != sandbox::SBOX_ALL_OK)
+  if (result != sandbox::SBOX_ALL_OK) {
     return false;
+  }
   // Network Sandbox in LPAC sandbox needs access to its data files. These
   // files are marked on disk with an ACE that permits this access.
   auto lpac_capability =
       GetContentClient()->browser()->GetLPACCapabilityNameForNetworkService();
-  if (lpac_capability.empty())
+  if (lpac_capability.empty()) {
     return false;
+  }
   auto* app_container = config->GetAppContainer();
-  if (!app_container)
+  if (!app_container) {
     return false;
+  }
   app_container->AddCapability(lpac_capability.c_str());
 
   // Add capability SID for 'network_service' for loopback access for testing.
@@ -109,8 +114,9 @@ bool PrintBackendInitializeConfig(sandbox::TargetConfig* config) {
   // will fail with error code ERROR_ACCESS_DENIED (0x5).
   auto result = config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
                                       sandbox::USER_LIMITED);
-  if (result != sandbox::SBOX_ALL_OK)
+  if (result != sandbox::SBOX_ALL_OK) {
     return false;
+  }
   config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
   return true;
 }
@@ -124,20 +130,23 @@ bool IconReaderInitializeConfig(sandbox::TargetConfig* config) {
 
   auto result = config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
                                       sandbox::USER_LOCKDOWN);
-  if (result != sandbox::SBOX_ALL_OK)
+  if (result != sandbox::SBOX_ALL_OK) {
     return false;
+  }
   config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_UNTRUSTED);
   result = config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
-  if (result != sandbox::SBOX_ALL_OK)
+  if (result != sandbox::SBOX_ALL_OK) {
     return false;
+  }
   config->SetLockdownDefaultDacl();
   config->SetDesktop(sandbox::Desktop::kAlternateWinstation);
 
   sandbox::MitigationFlags flags = config->GetDelayedProcessMitigations();
   flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
   result = config->SetDelayedProcessMitigations(flags);
-  if (result != sandbox::SBOX_ALL_OK)
+  if (result != sandbox::SBOX_ALL_OK) {
     return false;
+  }
   return true;
 }
 
@@ -166,29 +175,34 @@ bool XrCompositingInitializeConfig(sandbox::TargetConfig* config,
   // Unprotected token/job.
   auto result = config->SetTokenLevel(sandbox::USER_UNPROTECTED,
                                       sandbox::USER_UNPROTECTED);
-  if (result != sandbox::SBOX_ALL_OK)
+  if (result != sandbox::SBOX_ALL_OK) {
     return false;
+  }
 
   result = sandbox::policy::SandboxWin::SetJobLevel(
       sandbox_type, sandbox::JobLevel::kUnprotected, 0, config);
-  if (result != sandbox::SBOX_ALL_OK)
+  if (result != sandbox::SBOX_ALL_OK) {
     return false;
+  }
 
   // There were issues with some mitigations, causing an inability
   // to load OpenVR and Oculus APIs.
   result = config->SetProcessMitigations(0);
-  if (result != sandbox::SBOX_ALL_OK)
+  if (result != sandbox::SBOX_ALL_OK) {
     return false;
+  }
 
   result = config->SetDelayedProcessMitigations(0);
-  if (result != sandbox::SBOX_ALL_OK)
+  if (result != sandbox::SBOX_ALL_OK) {
     return false;
+  }
 
   std::string appcontainer_id = UtilityAppContainerId(cmd_line);
   result = sandbox::policy::SandboxWin::AddAppContainerProfileToConfig(
       cmd_line, sandbox_type, appcontainer_id, config);
-  if (result != sandbox::SBOX_ALL_OK)
+  if (result != sandbox::SBOX_ALL_OK) {
     return false;
+  }
 
   return true;
 }
@@ -199,13 +213,15 @@ bool ScreenAIInitializeConfig(sandbox::TargetConfig* config,
 
   auto result = config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
                                       sandbox::USER_LOCKDOWN);
-  if (result != sandbox::SBOX_ALL_OK)
+  if (result != sandbox::SBOX_ALL_OK) {
     return false;
+  }
 
   result = sandbox::policy::SandboxWin::SetJobLevel(
       sandbox_type, sandbox::JobLevel::kLimitedUser, 0, config);
-  if (result != sandbox::SBOX_ALL_OK)
+  if (result != sandbox::SBOX_ALL_OK) {
     return false;
+  }
 
   return true;
 }
@@ -394,15 +410,17 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
 bool UtilitySandboxedProcessLauncherDelegate::ShouldUnsandboxedRunInJob() {
   auto utility_sub_type =
       cmd_line_.GetSwitchValueASCII(switches::kUtilitySubType);
-  if (utility_sub_type == network::mojom::NetworkService::Name_)
+  if (utility_sub_type == network::mojom::NetworkService::Name_) {
     return true;
+  }
   return false;
 }
 
 bool UtilitySandboxedProcessLauncherDelegate::CetCompatible() {
   // TODO(crbug.com/40803284) can remove once v8 is cet-compatible.
-  if (sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit)
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit) {
     return false;
+  }
   auto utility_sub_type =
       cmd_line_.GetSwitchValueASCII(switches::kUtilitySubType);
   return GetContentClient()->browser()->IsUtilityCetCompatible(

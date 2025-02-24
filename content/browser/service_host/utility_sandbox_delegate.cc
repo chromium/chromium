@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/utility_sandbox_delegate.h"
+#include "content/browser/service_host/utility_sandbox_delegate.h"
 
 #include <optional>
 
@@ -127,8 +127,9 @@ ZygoteCommunication* UtilitySandboxedProcessLauncherDelegate::GetZygote() {
   }
 
   // If the sandbox has been disabled for a given type, don't use a zygote.
-  if (sandbox::policy::IsUnsandboxedSandboxType(sandbox_type_))
+  if (sandbox::policy::IsUnsandboxedSandboxType(sandbox_type_)) {
     return nullptr;
+  }
 
   // TODO(crbug.com/40261714): remove this special case and fork from the
   // zygote. For now, browser tests fail when forking the network service from

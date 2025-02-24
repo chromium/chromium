@@ -5,7 +5,7 @@
 // This file exposes services in the browser to the utility process.
 
 #include "build/build_config.h"
-#include "content/browser/utility_process_host.h"
+#include "content/browser/service_host/utility_process_host.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "media/media_buildflags.h"

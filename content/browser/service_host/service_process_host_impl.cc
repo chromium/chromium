@@ -14,7 +14,7 @@
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "content/browser/utility_process_host.h"
+#include "content/browser/service_host/utility_process_host.h"
 #include "content/common/child_process.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -32,10 +32,12 @@ namespace {
 
 // Changes to this function should be reviewed by a security person.
 bool ShouldEnableSandbox(sandbox::mojom::Sandbox sandbox) {
-  if (sandbox == sandbox::mojom::Sandbox::kAudio)
+  if (sandbox == sandbox::mojom::Sandbox::kAudio) {
     return GetContentClient()->browser()->ShouldSandboxAudioService();
-  if (sandbox == sandbox::mojom::Sandbox::kNetwork)
+  }
+  if (sandbox == sandbox::mojom::Sandbox::kNetwork) {
     return GetContentClient()->browser()->ShouldSandboxNetworkService();
+  }
   return true;
 }
 
@@ -58,8 +60,9 @@ class ServiceProcessTracker {
                             std::move(process));
     auto info_dup = info.Duplicate();
     processes_.insert({id, std::move(info)});
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnServiceProcessLaunched(info_dup);
+    }
     return info_dup;
   }
 
@@ -68,8 +71,9 @@ class ServiceProcessTracker {
     auto iter = processes_.find(id);
     CHECK(iter != processes_.end(), base::NotFatalUntil::M130);
 
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnServiceProcessTerminatedNormally(iter->second.Duplicate());
+    }
     processes_.erase(iter);
   }
 
@@ -77,8 +81,9 @@ class ServiceProcessTracker {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     auto iter = processes_.find(id);
     CHECK(iter != processes_.end(), base::NotFatalUntil::M130);
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnServiceProcessCrashed(iter->second.Duplicate());
+    }
     processes_.erase(iter);
   }
 
@@ -97,8 +102,9 @@ class ServiceProcessTracker {
   std::vector<ServiceProcessInfo> GetProcesses() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     std::vector<ServiceProcessInfo> processes;
-    for (const auto& entry : processes_)
+    for (const auto& entry : processes_) {
       processes.push_back(entry.second.Duplicate());
+    }
     return processes;
   }
 
@@ -158,8 +164,9 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
     // TODO(crbug.com/40654042): It is unclear how we can observe
     // |OnProcessCrashed()| without observing |OnProcessLaunched()| first, but
     // it can happen on Android. Ignore the notification in this case.
-    if (!process_info_)
+    if (!process_info_) {
       return;
+    }
 
     GetServiceProcessTracker().NotifyCrashed(
         process_info_->service_process_id());

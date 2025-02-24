@@ -7,7 +7,7 @@
 #pragma allow_unsafe_libc_calls
 #endif
 
-#include "content/browser/utility_process_host.h"
+#include "content/browser/service_host/utility_process_host.h"
 
 #include <string_view>
 
@@ -25,7 +25,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
-#include "content/browser/utility_sandbox_delegate.h"
+#include "content/browser/service_host/utility_sandbox_delegate.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -95,8 +95,8 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     expect_failed_launch_ = true;
 
 #if BUILDFLAG(IS_WIN)
-      // The Windows sandbox does not like the child process being a different
-      // process, so launch unsandboxed for the purpose of this test.
+    // The Windows sandbox does not like the child process being a different
+    // process, so launch unsandboxed for the purpose of this test.
     host_->SetSandboxType(sandbox::mojom::Sandbox::kNoSandbox);
 #endif
     // Simulate a catastrophic launch failure for all child processes by

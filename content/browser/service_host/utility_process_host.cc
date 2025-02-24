@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/utility_process_host.h"
+#include "content/browser/service_host/utility_process_host.h"
 
 #include <memory>
 #include <utility>
@@ -25,7 +25,7 @@
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
-#include "content/browser/utility_sandbox_delegate.h"
+#include "content/browser/service_host/utility_sandbox_delegate.h"
 #include "content/common/features.h"
 #include "content/common/in_process_child_thread_params.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -172,8 +172,9 @@ UtilityProcessHost::UtilityProcessHost(std::unique_ptr<Client> client)
 
 UtilityProcessHost::~UtilityProcessHost() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (client_ && launch_state_ == LaunchState::kLaunchComplete)
+  if (client_ && launch_state_ == LaunchState::kLaunchComplete) {
     client_->OnProcessTerminatedNormally();
+  }
 }
 
 base::WeakPtr<UtilityProcessHost> UtilityProcessHost::AsWeakPtr() {
@@ -245,8 +246,9 @@ mojom::ChildProcess* UtilityProcessHost::GetChildProcess() {
 }
 
 bool UtilityProcessHost::StartProcess() {
-  if (started_)
+  if (started_) {
     return true;
+  }
 
   started_ = true;
   process_->SetName(name_);
@@ -279,8 +281,9 @@ bool UtilityProcessHost::StartProcess() {
     }
 #else  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_MAC)
-    if (sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit)
+    if (sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit) {
       DCHECK_EQ(child_flags_, ChildProcessHost::CHILD_RENDERER);
+    }
 #endif  // BUILDFLAG(IS_MAC)
     int child_flags = child_flags_;
 
@@ -289,8 +292,9 @@ bool UtilityProcessHost::StartProcess() {
     // updates will happen while a developer is running with
     // |switches::kUtilityCmdPrefix|. See ChildProcessHost::GetChildPath() for
     // a similar case with Valgrind.
-    if (has_cmd_prefix)
+    if (has_cmd_prefix) {
       child_flags = ChildProcessHost::CHILD_NORMAL;
+    }
 
     base::FilePath exe_path = ChildProcessHost::GetChildPath(child_flags);
     if (exe_path.empty()) {
@@ -401,8 +405,9 @@ bool UtilityProcessHost::StartProcess() {
           switches::kUtilityCmdPrefix));
     }
 
-    for (const auto& extra_switch : extra_switches_)
+    for (const auto& extra_switch : extra_switches_) {
       cmd_line->AppendSwitch(extra_switch);
+    }
 
 #if BUILDFLAG(IS_WIN)
     if (media::IsMediaFoundationD3D11VideoCaptureEnabled()) {
@@ -474,8 +479,9 @@ bool UtilityProcessHost::StartProcess() {
 
 void UtilityProcessHost::OnProcessLaunched() {
   launch_state_ = LaunchState::kLaunchComplete;
-  if (client_)
+  if (client_) {
     client_->OnProcessLaunched(process_->GetProcess());
+  }
 }
 
 void UtilityProcessHost::OnProcessLaunchFailed(int error_code) {
@@ -483,8 +489,9 @@ void UtilityProcessHost::OnProcessLaunchFailed(int error_code) {
 }
 
 void UtilityProcessHost::OnProcessCrashed(int exit_code) {
-  if (!client_)
+  if (!client_) {
     return;
+  }
 
   // Take ownership of |client_| so the destructor doesn't notify it of
   // termination.

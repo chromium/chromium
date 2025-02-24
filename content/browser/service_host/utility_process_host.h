@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_UTILITY_PROCESS_HOST_H_
-#define CONTENT_BROWSER_UTILITY_PROCESS_HOST_H_
+#ifndef CONTENT_BROWSER_SERVICE_HOST_UTILITY_PROCESS_HOST_H_
+#define CONTENT_BROWSER_SERVICE_HOST_UTILITY_PROCESS_HOST_H_
 
 #include <memory>
 #include <optional>
@@ -50,7 +50,7 @@ typedef base::Thread* (*UtilityMainThreadFactoryFunction)(
 
 // This class acts as the browser-side host to a utility child process.  A
 // utility process is a short-lived process that is created to run a specific
-// task.  This class lives solely on the IO thread.
+// task.  This class lives solely on the UI thread.
 // If you need a single method call in the process, use StartFooBar(p).
 // If you need multiple batches of work to be done in the process, use
 // StartBatchMode(), then multiple calls to StartFooBar(p), then finish with
@@ -214,4 +214,4 @@ class CONTENT_EXPORT UtilityProcessHost
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_UTILITY_PROCESS_HOST_H_
+#endif  // CONTENT_BROWSER_SERVICE_HOST_UTILITY_PROCESS_HOST_H_

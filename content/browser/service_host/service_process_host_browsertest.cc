@@ -85,8 +85,9 @@ class EchoServiceProcessObserver : public ServiceProcessHost::Observer {
 
   void OnServiceProcessTerminatedNormally(
       const ServiceProcessInfo& info) override {
-    if (info.IsService<echo::mojom::EchoService>())
+    if (info.IsService<echo::mojom::EchoService>()) {
       death_loop_.Quit();
+    }
   }
 
   void OnServiceProcessCrashed(const ServiceProcessInfo& info) override {
