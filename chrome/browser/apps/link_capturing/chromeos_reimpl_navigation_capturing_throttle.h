@@ -50,10 +50,6 @@ class ChromeOsReimplNavigationCapturingThrottle
   // Identify whether web contents need to be deleted post navigation capturing.
   bool IsEmptyDanglingWebContentsAfterLinkCapture();
 
-  // Identify if the current navigation was triggered via a link click and not
-  // any other sources.
-  bool IsCapturableLinkClick();
-
   raw_ref<Profile> profile_;
   base::WeakPtrFactory<ChromeOsReimplNavigationCapturingThrottle>
       weak_ptr_factory_{this};

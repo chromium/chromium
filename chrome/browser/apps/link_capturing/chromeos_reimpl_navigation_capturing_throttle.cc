@@ -12,23 +12,32 @@
 #include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/values_equivalent.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_tab_data.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/web_applications/navigation_capturing_process.h"  // nogncheck https://crbug.com/377760841
+#include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace apps {
 
@@ -144,6 +153,243 @@ void LaunchApp(base::WeakPtr<AppServiceProxy> proxy,
       GetMetricsPlatform(app_type));
 }
 
+ui::PageTransition MaskOutPageTransition(ui::PageTransition page_transition,
+                                         ui::PageTransition mask) {
+  return ui::PageTransitionFromInt(page_transition & ~mask);
+}
+
+bool IsCapturableLinkNavigation(ui::PageTransition page_transition,
+                                bool allow_form_submit,
+                                bool is_in_fenced_frame_tree,
+                                bool has_user_gesture) {
+  // Navigations inside fenced frame trees are marked with
+  // PAGE_TRANSITION_AUTO_SUBFRAME in order not to add session history items
+  // (see https://crrev.com/c/3265344). So we only check |has_user_gesture|.
+  if (is_in_fenced_frame_tree) {
+    DCHECK(ui::PageTransitionCoreTypeIs(page_transition,
+                                        ui::PAGE_TRANSITION_AUTO_SUBFRAME));
+    return has_user_gesture;
+  }
+
+  // Mask out any redirect qualifiers
+  page_transition = MaskOutPageTransition(page_transition,
+                                          ui::PAGE_TRANSITION_IS_REDIRECT_MASK);
+
+  if (!ui::PageTransitionCoreTypeIs(page_transition,
+                                    ui::PAGE_TRANSITION_LINK) &&
+      !(allow_form_submit &&
+        ui::PageTransitionCoreTypeIs(page_transition,
+                                     ui::PAGE_TRANSITION_FORM_SUBMIT))) {
+    // Do not handle the |url| if this event wasn't spawned by the user clicking
+    // on a link.
+    return false;
+  }
+
+  if (base::to_underlying(ui::PageTransitionGetQualifier(page_transition)) !=
+      0) {
+    // Qualifiers indicate that this navigation was the result of a click on a
+    // forward/back button, or typing in the URL bar. Don't handle any of those
+    // types of navigations.
+    return false;
+  }
+
+  return true;
+}
+
+// Returns true if |url| is a known and valid redirector that will redirect a
+// navigation elsewhere.
+// static
+bool IsGoogleRedirectorUrl(const GURL& url) {
+  // This currently only check for redirectors on the "google" domain.
+  if (!page_load_metrics::IsGoogleSearchHostname(url)) {
+    return false;
+  }
+
+  return url.path_piece() == "/url" && url.has_query();
+}
+
+// If the previous url and current url are not the same (AKA a redirection),
+// determines if the redirection should be considered for an app launch. Returns
+// false for redirections where:
+// * `previous_url` is an extension.
+// * `previous_url` is a google redirector.
+// static
+bool ShouldCaptureUrlIfRedirected(const GURL& previous_url,
+                                  const GURL& current_url) {
+  // Check the scheme for both |previous_url| and |current_url| since an
+  // extension could have referred us (e.g. Google Docs).
+  if (previous_url.SchemeIs(extensions::kExtensionScheme)) {
+    return false;
+  }
+
+  // Skip URL redirectors that are intermediate pages redirecting towards a
+  // final URL.
+  if (IsGoogleRedirectorUrl(current_url)) {
+    return false;
+  }
+
+  return true;
+}
+
+// Retrieves the 'starting' url for the given navigation handle. This considers
+// the referrer url, last committed url, and the initiator origin.
+GURL GetStartingUrl(content::NavigationHandle* navigation_handle) {
+  // This helps us determine a reference GURL for the current NavigationHandle.
+  // This is the order or preference: Referrer > LastCommittedURL >
+  // InitiatorOrigin. InitiatorOrigin *should* only be used on very rare cases,
+  // e.g. when the navigation goes from https: to http: on a new tab, thus
+  // losing the other potential referrers.
+  const GURL referrer_url = navigation_handle->GetReferrer().url;
+  if (referrer_url.is_valid()) {
+    return referrer_url;
+  }
+
+  const GURL last_committed_url =
+      navigation_handle->GetWebContents()->GetLastCommittedURL();
+  if (last_committed_url.is_valid()) {
+    return last_committed_url;
+  }
+
+  const auto& initiator_origin = navigation_handle->GetInitiatorOrigin();
+  return initiator_origin.has_value() ? initiator_origin->GetURL() : GURL();
+}
+
+// Returns if the navigation appears to be a link navigation, but not from an
+// HTML post form.
+bool IsNavigateFromNonFormNonContextMenuLink(
+    content::NavigationHandle* navigation_handle) {
+  // Always handle http(s) <form> submissions in Chrome for two reasons: 1) we
+  // don't have a way to send POST data to ARC, and 2) intercepting http(s) form
+  // submissions is not very important because such submissions are usually
+  // done within the same domain. ShouldOverrideUrlLoading() below filters out
+  // such submissions anyway.
+  constexpr bool kAllowFormSubmit = false;
+
+  ui::PageTransition page_transition = navigation_handle->GetPageTransition();
+
+  return IsCapturableLinkNavigation(page_transition, kAllowFormSubmit,
+                                    navigation_handle->IsInFencedFrameTree(),
+                                    navigation_handle->HasUserGesture()) &&
+         !navigation_handle->WasStartedFromContextMenu();
+}
+
+std::optional<std::string> GetLaunchAppId(
+    const AppIdsToLaunchForUrl& app_ids_to_launch,
+    bool is_navigation_from_link,
+    int redirection_chain_size) {
+  if (app_ids_to_launch.candidates.empty()) {
+    return std::nullopt;
+  }
+
+  if (app_ids_to_launch.preferred) {
+    if (is_navigation_from_link) {
+      // A link click is always captured.
+      return app_ids_to_launch.preferred;
+    }
+
+    if (redirection_chain_size > 1 &&
+        web_app::ChromeOsWebAppExperiments::ShouldLaunchForRedirectedNavigation(
+            *app_ids_to_launch.preferred)) {
+      // For specific applications, we want to launch them after a redirect led
+      // to an app-controlled URL. Note: this behavior isn't covered by the web
+      // specs for Navigation Capturing, still it shouldn't be removed without
+      // prior alignment (e.g., the Enterprise Clippy project).
+      return app_ids_to_launch.preferred;
+    }
+  }
+
+  return std::nullopt;
+}
+
+// Returns if the the link navigation should be handled, either for web apps or
+// arc apps. If this is a prerender navigation, then returning 'true' here will
+// cancel the prerender in preparation of having the throttle run again when
+// `NavigationCapturingProcess` is attached to the `NavigationHandle`.
+bool ShouldThrottleCaptureNavigation(
+    AppType app_type,
+    const AppIdsToLaunchForUrl& app_ids_to_launch,
+    bool is_link_click,
+    content::NavigationHandle* handle) {
+  content::WebContents* web_contents = handle->GetWebContents();
+  CHECK(web_contents);
+
+  if (app_type == AppType::kWeb) {
+    if (!base::FeatureList::IsEnabled(
+            features::kNavigationCapturingOnExistingFrames)) {
+      return false;
+    }
+    bool is_new_frame_capture_for_non_prerendering =
+        web_app::NavigationCapturingProcess::GetForNavigationHandle(*handle);
+    if (is_new_frame_capture_for_non_prerendering) {
+      return false;
+    }
+    // Note: During prerendering, for navigations that would normally be cause
+    // by the NavigationCapturingProcess, they go through here still. This is an
+    // unfortunate edge case as it's not possible to know if the prerender is
+    // for a new frame or an existing one. The responsibility of this throttle
+    // is to handle the 'existing frame' cases, and to function all prerenders
+    // for that case must be cancelled. So - this means that ALL prerenders are
+    // then cancelled.
+    // TODO(https://crbug.com/397964745): Have a better way to allow
+    // prerendering to occur and still allow this supplemental capturing.
+  }
+
+  // Exclude #ref navigations, pushState/replaceState, etc. This doesn't exclude
+  // target="_self".
+  if (handle->IsSameDocument()) {
+    return false;
+  }
+
+  const GURL& url = handle->GetURL();
+  if (!url.is_valid()) {
+    return false;
+  }
+
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+
+  if (!ShouldCaptureUrlIfRedirected(GetStartingUrl(handle), url)) {
+    return false;
+  }
+
+  // The v1 throttle seems to think this catches the 'popup' case and exits
+  // early.
+  WindowOpenDisposition disposition =
+      GetLinkCapturingSourceDisposition(web_contents);
+  if (disposition != WindowOpenDisposition::CURRENT_TAB &&
+      !web_contents->GetLastCommittedURL().is_valid()) {
+    return false;
+  }
+
+  std::optional<std::string> launch_app_id = GetLaunchAppId(
+      app_ids_to_launch, is_link_click, handle->GetRedirectChain().size());
+  if (!launch_app_id) {
+    return false;
+  }
+
+  // Don't capture if already inside the target app scope.
+  // TODO(crbug.com/313518305): Query App Service intent filters instead, so
+  // that this check also covers ARC apps.
+  if (app_type == AppType::kWeb &&
+      base::ValuesEquivalent(web_app::WebAppTabHelper::GetAppId(web_contents),
+                             &launch_app_id.value())) {
+    return false;
+  }
+
+  // Don't capture if already inside a Web App window for the target app. If the
+  // previous early return didn't trigger, this means we are in an app window
+  // but out of scope of the original app, and navigating will put us back in
+  // scope.
+  web_app::WebAppTabHelper* tab_helper =
+      web_app::WebAppTabHelper::FromWebContents(web_contents);
+  if (tab_helper && tab_helper->window_app_id() == launch_app_id) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 // static
@@ -159,6 +405,22 @@ ChromeOsReimplNavigationCapturingThrottle::MaybeCreate(
   if (!AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     return nullptr;
   }
+
+  // Don't handle navigations in subframes or main frames that are in a nested
+  // frame tree (e.g. fenced-frame).
+  if (!handle->IsInOutermostMainFrame()) {
+    return nullptr;
+  }
+
+  if (handle->ExistingDocumentWasDiscarded()) {
+    return nullptr;
+  }
+
+  // Note: We specifically allow prerendering navigations so that we can destroy
+  // the prerender. Opening an app must only happen when the user intentionally
+  // navigates; however, for a prerender, the prerender-activating navigation
+  // doesn't run throttles so we must cancel it during initial loading to get a
+  // standard (non-prerendering) navigation at link-click-time.
 
   return base::WrapUnique(
       new ChromeOsReimplNavigationCapturingThrottle(handle, profile));
@@ -190,6 +452,7 @@ ChromeOsReimplNavigationCapturingThrottle::WillStartRequest() {
 
   CHECK(navigation_handle());
   content::NavigationHandle* handle = navigation_handle();
+
   AppIdsToLaunchForUrl app_ids_to_launch =
       FindAppIdsToLaunchForUrl(proxy, handle->GetURL());
 
@@ -202,17 +465,44 @@ ChromeOsReimplNavigationCapturingThrottle::WillStartRequest() {
 
   const std::string launch_app_id = *app_ids_to_launch.preferred;
   const AppType app_type = proxy->AppRegistryCache().GetAppType(launch_app_id);
-  const bool does_projector_swa_handle_url =
-      base::Contains(app_candidates, ash::kChromeUIUntrustedProjectorSwaAppId);
-  const bool is_app_capturable =
-      (app_type == AppType::kArc) || does_projector_swa_handle_url;
 
-  if (!is_app_capturable) {
+  // Only automatically launch supported app types.
+  if (app_type != AppType::kArc && app_type != AppType::kWeb &&
+      !IsSystemWebApp(&profile_.get(), launch_app_id)) {
     return content::NavigationThrottle::PROCEED;
   }
 
-  auto launch_source = IsCapturableLinkClick() ? LaunchSource::kFromLink
-                                               : LaunchSource::kFromOmnibox;
+  const bool does_projector_swa_handle_url =
+      base::Contains(app_candidates, ash::kChromeUIUntrustedProjectorSwaAppId);
+
+  // Note: This is an unfortunate way to detect a link click. If there is a
+  // better way to know all of navigation's original disposition, frame, etc,
+  // that would be much better.
+  bool is_link_click = IsNavigateFromNonFormNonContextMenuLink(handle);
+  bool is_capturable = does_projector_swa_handle_url ||
+                       ShouldThrottleCaptureNavigation(
+                           app_type, app_ids_to_launch, is_link_click, handle);
+  if (!is_capturable) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
+  // If this is a prerender navigation that would otherwise launch an app, we
+  // must cancel it. We only want to launch an app once the URL is intentionally
+  // navigated to by the user. We cancel the navigation here so that when the
+  // link is clicked, we'll run NavigationThrottles again. If we leave the
+  // prerendering alive, the activating navigation won't run throttles.
+  // TODO(https://crbug.com/397964745): Have a better way to allow prerendering
+  // here, as this stops prerendering for ALL in-app-scope links, whether or not
+  // they are captured via the NavigationCapturingProcess or not (as prerender
+  // runs without calling browser_navigator.cc, so this throttle is created &
+  // used).
+  if (handle->IsInPrerenderedMainFrame()) {
+    return content::NavigationThrottle::CANCEL_AND_IGNORE;
+  }
+
+  auto launch_source = IsNavigateFromNonFormNonContextMenuLink(handle)
+                           ? LaunchSource::kFromLink
+                           : LaunchSource::kFromOmnibox;
   GURL redirected_url =
       does_projector_swa_handle_url
           ? RedirectUrlIfProjectorApp(&profile_.get(), launch_app_id,
@@ -270,33 +560,6 @@ bool ChromeOsReimplNavigationCapturingThrottle::
          // Check whether the action was in the context of a user activation to
          // distinguish redirects from click event handlers.
          !IsNavigationUserInitiated(navigation_handle());
-}
-
-bool ChromeOsReimplNavigationCapturingThrottle::IsCapturableLinkClick() {
-  CHECK(navigation_handle());
-
-  if (navigation_handle()->WasStartedFromContextMenu()) {
-    return false;
-  }
-
-  ui::PageTransition page_transition = navigation_handle()->GetPageTransition();
-  // Mask out redirect qualifiers from page transition.
-  page_transition = ui::PageTransitionFromInt(
-      page_transition & ~ui::PAGE_TRANSITION_IS_REDIRECT_MASK);
-  if (!ui::PageTransitionCoreTypeIs(page_transition,
-                                    ui::PAGE_TRANSITION_LINK)) {
-    return false;
-  }
-
-  if (base::to_underlying(ui::PageTransitionGetQualifier(page_transition)) !=
-      0) {
-    // Qualifiers indicate that this navigation was the result of a click on a
-    // forward/back button, or typing in the URL bar. Don't handle any of those
-    // types of navigations.
-    return false;
-  }
-
-  return true;
 }
 
 }  // namespace apps
