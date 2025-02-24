@@ -893,7 +893,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   TabGroupItem* groupItem =
       [[TabGroupItem alloc] initWithTabGroup:group
                                 webStateList:self.webStateList];
-
+  _tabToClose = item;
   switch (userRole) {
     case data_sharing::MemberRole::kOwner:
       [_tabStripHandler showTabGroupConfirmationForAction:
