@@ -106,6 +106,8 @@ static_library("browser") {
     "data_manager/addresses/address_data_manager.h",
     "data_manager/autofill_ai/entity_data_manager.cc",
     "data_manager/autofill_ai/entity_data_manager.h",
+    "data_manager/passes/passes_data_manager.cc",
+    "data_manager/passes/passes_data_manager.h",
     "data_manager/payments/payments_data_manager.cc",
     "data_manager/payments/payments_data_manager.h",
     "data_manager/personal_data_manager.cc",
