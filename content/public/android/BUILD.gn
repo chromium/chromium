@@ -291,6 +291,8 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/accessibility/ViewStructureBuilder.java",
     "java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityDelegate.java",
     "java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java",
+    "java/src/org/chromium/content/browser/accessibility/api_wrapper/AccessibilityApiWrapper.java",
+    "java/src/org/chromium/content/browser/accessibility/api_wrapper/AccessibilityApiWrapperDelegate.java",
     "java/src/org/chromium/content/browser/accessibility/captioning/CaptioningBridge.java",
     "java/src/org/chromium/content/browser/accessibility/captioning/CaptioningChangeDelegate.java",
     "java/src/org/chromium/content/browser/accessibility/captioning/CaptioningController.java",
