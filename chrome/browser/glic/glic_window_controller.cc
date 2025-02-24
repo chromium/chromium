@@ -299,7 +299,7 @@ void GlicWindowController::OnWidgetDestroyed(views::Widget* widget) {
 
 void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
                                                  const gfx::Rect& new_bounds) {
-  if (!attached_browser_ && in_move_loop_) {
+  if (in_move_loop_) {
     // While in a move loop, look for nearby browsers to toggle the drop to
     // attach indicator.
     HandleGlicButtonIndicator();

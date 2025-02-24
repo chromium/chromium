@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">Түр хүлээнэ үү ...</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Дундын</translation>
+<translation id="2749164457515831917">Зөвлөмжүүдийг хольсон</translation>
 <translation id="2751739896257479635">EAP 2-р шатны баталгаажуулалт</translation>
 <translation id="2754757901767760034">чийдэн</translation>
 <translation id="2780756493585863768">Google AI-аар дэмжигдсэн саяхны дэвсгэр</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">Бүдүүвчийн үйлдлийн цэс</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />-н утгыг <ph name="CONVERSION_RATE" />-д хуваана уу</translation>
 <translation id="3246869037381808805">1 хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
+<translation id="3248791727258378769">Ямар ч сийрүүлэг үүсгэхгүй</translation>
 <translation id="324961752321393509">Танай администратор энэ аппыг хаахыг зөвшөөрдөггүй</translation>
 <translation id="3263941347294171263">Шинэчлэх явцыг үргэлжлүүлэхийн тулд <ph name="DEVICE_NAME" />-г салгаад, дахин залгана уу</translation>
 <translation id="3268178239013324452">Амжилтгүй болсон - Таг нээлттэй</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">Температурын нэгжийг сонгоно уу</translation>
 <translation id="3661106764436337772">Илүү хурдан бөгөөд илүү итгэлтэй бичээрэй</translation>
 <translation id="3662461537616691585">хүрэн ягаан, элгэн хүрэн</translation>
+<translation id="3664755900672940272">Түүвэр заавруудыг хольсон</translation>
 <translation id="3668449597372804501">Үүл нүүхийг харуулсан дэлгэцийн зураг</translation>
 <translation id="3668570675727296296">Хэлний тохиргоо</translation>
 <translation id="3675132884790542448">гахайнууд</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">Дэлгэц амраагчийг унтраах</translation>
 <translation id="4210636113897977670">Хадгалаад, гарах</translation>
 <translation id="4210659479607886331">мөсөн гол</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> хэлний сийрүүлгийн загварыг татаж дууслаа</translation>
 <translation id="42126664696688958">Экспортлох</translation>
 <translation id="4213104098953699324">USB гар</translation>
 <translation id="4227825898293920515">Нууц үгний хугацаа <ph name="TIME" />-н дотор дуусна</translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">Өнгө</translation>
 <translation id="5457599981699367932">Зочны хувиар хайлт хийх</translation>
 <translation id="54609108002486618">Удирдсан</translation>
+<translation id="5461608756903394951"><ph name="LANGUAGE_NAME" /> хэлний сийрүүлгийн загварыг татаж байна</translation>
 <translation id="5470776029649730099">таар</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} оролдлого үлдсэн}other{{0} оролдлого үлдсэн}}</translation>
 <translation id="5488280942828718790">ягаавтар</translation>
@@ -1191,6 +1196,7 @@
 <translation id="6595046262780525922">Сийрүүлгийг асааж, сийрүүлгийн загварыг татах уу?</translation>
 <translation id="6596816719288285829">IP хаяг</translation>
 <translation id="6599673642868607614">Санал хүсэлт өгсөнд баярлалаа. Таны санал хүсэлт бидэнд Chromebook-н хэрэглээг сайжруулахад тусалдаг бөгөөд үүнийг манай баг шалгана. Олон тооны мэдээлэл ирдэг тул бид хариу илгээх боломжгүй.</translation>
+<translation id="6608043585557830684">Сийрүүлгийг унтраасан. Тохиргоонд эсвэл <ph name="THREE_DOTS_MENU_ICON" /> цэсэд асаана уу.</translation>
 <translation id="660846213831377756">Хулганын товч</translation>
 <translation id="6618744767048954150">Ажиллуулж байна</translation>
 <translation id="6620487321149975369">Хэвлэлийн ажлыг гараар хасахгүй бол түүхэнд харагдана</translation>
@@ -1279,6 +1285,7 @@
 <translation id="6975620886940770104">Гэрэлтэж буй <ph name="GLOWSCAPES_FEATURE" /> бүхий <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">коаланууд</translation>
 <translation id="6977381486153291903">Жижиг программын шалгалт</translation>
+<translation id="6978396562261420054">Зураг үүсгэсэн</translation>
 <translation id="6981982820502123353">Хандалт</translation>
 <translation id="6982462588253070448">элсэн манхнууд</translation>
 <translation id="7005833343836210400">Төхөөрөмж офлайн байна</translation>

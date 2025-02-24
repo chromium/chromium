@@ -542,9 +542,8 @@ bool ShouldFetchScannerActions(PerformCaptureType capture_type) {
 // Returns true if region search should be performed on a captured image with
 // the given `capture_type`.
 bool ShouldSendRegionSearch(PerformCaptureType capture_type) {
-  return features::IsSunfishFeatureEnabled() &&
-         (capture_type == PerformCaptureType::kSunfish ||
-          capture_type == PerformCaptureType::kSearch);
+  return CanShowSunfishUi() && (capture_type == PerformCaptureType::kSunfish ||
+                                capture_type == PerformCaptureType::kSearch);
 }
 
 // Returns true if the capture type requires a network connection.
@@ -717,6 +716,9 @@ SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
 
 void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
                                                    GURL url) {
+  // We should not use `CanShowSunfishUi` here, as that could change between
+  // sending the region and receiving a URL (for example, if the Sunfish policy
+  // changes).
   DCHECK(features::IsSunfishFeatureEnabled());
   const bool is_active = IsActive();
   const bool should_end_session =
@@ -778,6 +780,9 @@ void CaptureModeController::MaybeUpdateSearchResultsPanelBounds() {
     return;
   }
 
+  // We should not use `CanShowSunfishUi` here, as that could change between
+  // sending the region and receiving a URL (for example, if the Sunfish policy
+  // changes).
   CHECK(features::IsSunfishFeatureEnabled());
 
   aura::Window* current_root = capture_mode_session_->current_root();
@@ -2113,7 +2118,7 @@ void CaptureModeController::MaybeShowScannerDisclaimerOnSunfishStartup(
       // Below conditions imply scanner is disabled in some way.
       // Hence we should skip showing the disclaimer.
       !ScannerController::CanShowUiForShell()) {
-    if (!features::IsSunfishFeatureEnabled() && IsActive()) {
+    if (!CanShowSunfishUi() && IsActive()) {
       // Should stop because if both scanner and sunfish are disabled, then
       // there is nothing you can do in the session.
       Stop();
@@ -2130,10 +2135,9 @@ void CaptureModeController::MaybeShowScannerDisclaimerOnSunfishStartup(
   // Otherwise, allow the session to continue (DoNothing) since sunfish can run
   // without scanner.
   base::RepeatingClosure decline_callback =
-      features::IsSunfishFeatureEnabled()
-          ? base::DoNothing()
-          : base::BindRepeating(&CaptureModeController::Stop,
-                                weak_ptr_factory_.GetWeakPtr());
+      CanShowSunfishUi() ? base::DoNothing()
+                         : base::BindRepeating(&CaptureModeController::Stop,
+                                               weak_ptr_factory_.GetWeakPtr());
   capture_mode_session_->MaybeShowScannerDisclaimer(
       /*accept_callback=*/base::DoNothing(), decline_callback);
 }

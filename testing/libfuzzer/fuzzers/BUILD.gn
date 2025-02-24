@@ -482,6 +482,7 @@ test("paint_vector_icon_fuzztest") {
 test("chrome_tint_wgsl_fuzzer") {
   sources = [ "tint_wgsl_fuzzer.cc" ]
   fuzztests = [ "ChromiumTintWgslTest.CanParseWithoutCrashing" ]
+  fuzztest_stack_limit_kb = 512
 
   deps = [
     "//base",

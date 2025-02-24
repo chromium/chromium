@@ -207,9 +207,9 @@ class CC_EXPORT SchedulerStateMachine {
 
   bool IsDrawThrottled() const;
 
-  // Throttles main frame production to a given interval, but not compositor
-  // frames.
-  void SetThrottleMainFrames(base::TimeDelta interval);
+  // May throttle main frame updates, but not compositor frames.
+  void FrameIntervalUpdated(base::TimeDelta frame_interval);
+
   base::TimeDelta main_frame_throttled_interval() const {
     return main_frame_throttled_interval_;
   }

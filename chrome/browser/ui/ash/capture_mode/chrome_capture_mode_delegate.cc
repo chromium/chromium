@@ -538,6 +538,9 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
   if (!profile || image.empty() || region.IsEmpty()) {
     return;
   }
+  // We should not use `CanShowSunfishUi` here, as that could change between
+  // starting the image capture and finishing the image capture (for example, if
+  // the Sunfish policy changes).
   DCHECK(ash::features::IsSunfishFeatureEnabled());
   if (!lens_overlay_query_controller_) {
     lens_overlay_query_controller_ =

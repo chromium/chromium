@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/affiliations/core/browser/affiliation_api.pb.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/affiliations/core/browser/features.h"
 #include "components/affiliations/core/browser/lookup_affiliation_response_parser.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "crypto/sha2.h"
@@ -107,10 +106,8 @@ affiliation_pb::LookupAffiliationMask CreateLookupMask(
   affiliation_pb::LookupAffiliationMask mask;
 
   mask.set_branding_info(request_info.branding_info);
-  const bool grouping_info =
-      base::FeatureList::IsEnabled(features::kAffiliationsGroupInfoEnabled);
-  mask.set_grouping_info(grouping_info);
-  mask.set_group_branding_info(grouping_info);
+  mask.set_grouping_info(true);
+  mask.set_group_branding_info(true);
   mask.set_change_password_info(request_info.change_password_info);
   mask.set_psl_extension_list(request_info.psl_extension_list);
   return mask;

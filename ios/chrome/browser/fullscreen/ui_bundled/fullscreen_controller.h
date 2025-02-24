@@ -12,6 +12,7 @@
 class Browser;
 @class ChromeBroadcaster;
 class FullscreenControllerObserver;
+@class ToolbarUIState;
 
 // An object that observes scrolling events in the main content area and
 // calculates how much of the toolbar should be visible as a result.  When the
@@ -35,6 +36,8 @@ class FullscreenController : public base::SupportsUserData::Data {
   // Adds and removes FullscreenControllerObservers.
   virtual void AddObserver(FullscreenControllerObserver* observer) = 0;
   virtual void RemoveObserver(FullscreenControllerObserver* observer) = 0;
+
+  virtual void SetToolbarUIState(ToolbarUIState* toolbar_ui_state) = 0;
 
   // FullscreenController can be disabled when a feature requires that the
   // toolbar be fully visible.  Since there are multiple reasons fullscreen

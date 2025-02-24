@@ -1012,6 +1012,7 @@
 <translation id="1682696837763999627">مؤشر الماوس الكبير</translation>
 <translation id="1682867089915960590">هل تريد تفعيل ميزة "التصفُّح النصي بالمؤشر"؟</translation>
 <translation id="1686550358074589746">تفعيل ميزة الكتابة بالتمرير</translation>
+<translation id="1686785653877010442">ترسل المواقع الإلكترونية عادةً الإشعارات لإعلامك بالأخبار العاجلة أو رسائل المحادثات.</translation>
 <translation id="168715261339224929">للحصول على الإشارات المرجعية على جميع أجهزتك، يُرجى تفعيل المزامنة.</translation>
 <translation id="1688935057616748272">يرجى كتابة حرف.</translation>
 <translation id="1689333818294560261">اللقب</translation>
@@ -1023,7 +1024,6 @@
 <translation id="1692210323591458290">أرجواني داكن</translation>
 <translation id="1692713444215319269">"قلب الألوان" والمكبِّر وإعدادات العرض</translation>
 <translation id="169341880170235617">أصبحت مجموعات علامات التبويب تُحفَظ تلقائيًا</translation>
-<translation id="1694470329618537745">آخر التعديلات على هذه المجموعة</translation>
 <translation id="1695487653372841667">‏يمكنك تحديد البيانات التي تتم مشاركتها مع Google. ويمكنك تغيير هذا الإعداد في أي وقت من خلال الإعدادات.</translation>
 <translation id="1695510246756136088">يتعذَّر الاتصال بالإنترنت. يُرجى إعادة المحاولة.</translation>
 <translation id="1696555181932908973">يمكنك تجربة طرق أخرى للمتابعة على "<ph name="SITE_ETLD_PLUS_ONE" />".</translation>
@@ -1288,6 +1288,7 @@
 <translation id="1878885068166344708">‏يتم تمييز العنصر عند نقل التركيز إليه. اضغط على مفتاح التبويب (Tab) أو اختَر عنصرًا للتركيز عليه.</translation>
 <translation id="1879000426787380528">تسجيل الدخول باسم</translation>
 <translation id="18802377548000045">عرض علامات التبويب بحجم كبير</translation>
+<translation id="1880618477732738742">تغيير ومنح أذونات الوصول إلى ميزات مثل رصد الموقع الجغرافي والميكروفون والكاميرا وملفات تعريف الارتباط وغيرها، لجميع المواقع الإلكترونية والإضافات، بما في ذلك هذه الإضافة</translation>
 <translation id="1880905663253319515">هل تريد حذف الشهادة "<ph name="CERTIFICATE_NAME" />"؟</translation>
 <translation id="1881445033931614352">تنسيق لوحة المفاتيح</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{عنصر واحد}zero{# عناصر}two{عنصران}few{# عناصر}many{# عنصرًا}other{# عنصر}}</translation>
@@ -3473,6 +3474,7 @@
 <translation id="3435738964857648380">أمن المعلومات</translation>
 <translation id="343578350365773421">نفد الورق</translation>
 <translation id="3435896845095436175">تفعيل الإضافات</translation>
+<translation id="3437397693214267762">‏الاطّلاع على ملفات "تقويم Outlook"‏ (Outlook Calendar) وSharePoint وOneDrive</translation>
 <translation id="3438633801274389918">النينجا</translation>
 <translation id="3439153939049640737">السماح دائمًا لـ <ph name="HOST" /> بالدخول إلى الميكروفون</translation>
 <translation id="3439970425423980614">‏جارٍ فتح ملف PDF في تطبيق المعاينة</translation>
@@ -7131,6 +7133,7 @@
     يمكنك استخدام حسابك للوصول بسهولة إلى جميع الإشارات المرجعية والملفات وغير ذلك. إذا لم يكن لديك حساب، يمكنك إنشاء حساب من خلال الشاشة التالية.</translation>
 <translation id="6054138466019582920">‏البحث في هذه الصفحة باستخدام Google…</translation>
 <translation id="6054284857788651331">مجموعة علامات تبويب تم إغلاقها مؤخرًا</translation>
+<translation id="6054819000749443354">‏فتح "إعدادات النظام" (System Settings)</translation>
 <translation id="6054961935262556546">تغيير إذن الوصول</translation>
 <translation id="6055392876709372977">‏PKCS #1 SHA-256 مع ترميز RSA</translation>
 <translation id="6055544610007596637">‏تثبيت التطبيقات على جهاز <ph name="DEVICE_TYPE" /> من "متجر Google Play"</translation>
@@ -8706,7 +8709,6 @@
 <translation id="7189234443051076392">التأكد من توفر مساحة كافية على جهازك</translation>
 <translation id="7189451821249468368">ليست لديك ترقيات كافية لتسجيل هذا الجهاز. يُرجى التواصل مع قسم المبيعات لشراء المزيد من الترقيات. في حال كنت تعتقد أنك تلقّيت هذه الرسالة عن طريق الخطأ، يُرجى التواصل مع فريق الدعم.</translation>
 <translation id="7189965711416741966">تمت إضافة بصمة إصبع.</translation>
-<translation id="7190883804815364931">آخر تعديل على علامة التبويب هذه</translation>
 <translation id="7190921792980745354">هل تريد حظر "<ph name="MEMBER_FULL_NAME" />"؟</translation>
 <translation id="7191063546666816478">ستظل بعض الروابط المتوافقة مفتوحة في تطبيقات <ph name="APP_NAME" /> و<ph name="APP_NAME_2" /> و<ph name="APP_NAME_3" /> وتطبيقات أخرى يبلغ عددها <ph name="NUMBER_OF_OTHER_APPS" />.</translation>
 <translation id="7191159667348037">‏طابعة غير معروفة (USB)</translation>
@@ -8963,6 +8965,7 @@
 <translation id="7380459290951585794">‏يُرجى التأكُّد من أنّ هاتفك قريب وغير مُقفَل وتم تفعيل البلوتوث وWi-Fi فيه.</translation>
 <translation id="7380622428988553498">يحتوي اسم الجهاز على أحرف غير صالحة.</translation>
 <translation id="7380768571499464492">آخر تحديث: <ph name="PRINTER_NAME" /></translation>
+<translation id="7382009635620830394">‏في حال إيقاف هذه البطاقة، سيتم أيضًا إيقاف بطاقات Microsoft مثل ملفات SharePoint وOneDrive و"تقويم Outlook"‏ (Outlook Calendar).</translation>
 <translation id="7382085868019811559">‏تسمح ميزة "الوصول إلى المتصفحات القديمة (LBS)" بفتح أنماط عناوين URL محدّدة في متصفحات بديلة متوافقة مع الميزات القديمة المطلوبة لتشغيل هذه المواقع الإلكترونية على نحو صحيح.</translation>
 <translation id="7382980704744807223">الملف مريب</translation>
 <translation id="738322632977123193">‏يتعذّر تحميل الملف. يجب استخدام صورة بأحد التنسيقات التالية: ‎.‎jpg أو ‎.gif أو ‎.png أو ‎.bmp أو ‎.tif أو ‎.webp.</translation>
@@ -10633,6 +10636,7 @@
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" />تتم إدارة <ph name="USER_EMAIL" /> من خلال <ph name="MANAGER" />. لا يمكنك إضافة هذا البريد الإلكتروني كحساب إضافي.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />لاستخدام <ph name="USER_EMAIL" />، سجِّل الخروج من جهاز <ph name="DEVICE_TYPE" /> أولاً. واختَر "إضافة شخص" في أسفل شاشة تسجيل الدخول.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">اضغط على مفتاح البحث باستمرار لتبديل سلوك مفاتيح الصف العلوي</translation>
+<translation id="8549127125482561383">كيفية عرض الطلبات</translation>
 <translation id="8549316893834449916">‏يجب أن تستخدم حسابك على Google لتسجيل الدخول إلى جهاز Chromebook، وهو الحساب نفسه الذي تستخدمه على Gmail وDrive وYouTube وغيرها من المنتجات.</translation>
 <translation id="8550239873869577759">تم تنزيل ملف مُريب.</translation>
 <translation id="8551388862522347954">التراخيص</translation>

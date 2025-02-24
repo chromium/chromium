@@ -8,14 +8,14 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 
+@protocol CardSwipeViewDelegate;
 @protocol SideSwipeToolbarInteracting;
+@protocol SideSwipeToolbarSnapshotProviding;
 @protocol SideSwipeUIControllerDelegate;
+@protocol TabStripHighlighting;
 
 // The side swipe coordinator.
 @interface SideSwipeCoordinator : ChromeCoordinator
-
-// The side swipe mediator delegate.
-@property(nonatomic, weak) id<SideSwipeMediatorDelegate> swipeDelegate;
 
 // The side swipe view controller delegate.
 @property(nonatomic, weak) id<SideSwipeUIControllerDelegate>
@@ -31,6 +31,9 @@
 // Snapshot provider for top and bottom toolbars.
 @property(nonatomic, weak) id<SideSwipeToolbarSnapshotProviding>
     toolbarSnapshotProvider;
+
+// The card swipe delegate.
+@property(nonatomic, weak) id<CardSwipeViewDelegate> cardSwipeViewDelegate;
 
 // Delegate for tab strip highlighting.
 @property(nonatomic, weak) id<TabStripHighlighting> tabStripDelegate;

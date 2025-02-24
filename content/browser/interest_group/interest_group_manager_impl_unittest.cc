@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -460,6 +461,29 @@ TEST_F(InterestGroupManagerImplTest,
     EXPECT_EQ("metadata1", ad.metadata);
     EXPECT_EQ(ad.selectable_buyer_and_seller_reporting_ids, std::nullopt);
   }
+}
+
+TEST_F(InterestGroupManagerImplTest, RecordRandomDebugReportLockout) {
+  base::test::TestFuture<std::optional<DebugReportLockoutAndCooldowns>> result;
+  base::flat_set<url::Origin> origins;
+  interest_group_manager_->GetDebugReportLockoutAndCooldowns(
+      origins, result.GetCallback());
+  ASSERT_TRUE(result.Get().has_value());
+  EXPECT_FALSE(result.Get()->lockout.has_value());
+
+  base::Time now = base::Time::Now();
+  interest_group_manager_->RecordRandomDebugReportLockout(now);
+  base::test::TestFuture<std::optional<DebugReportLockoutAndCooldowns>> result2;
+  interest_group_manager_->GetDebugReportLockoutAndCooldowns(
+      origins, result2.GetCallback());
+
+  ASSERT_TRUE(result2.Get().has_value());
+  EXPECT_TRUE(result2.Get()->lockout.has_value());
+  base::Time expected_time = base::Time::FromDeltaSinceWindowsEpoch(
+      now.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
+  EXPECT_EQ(expected_time, result2.Get()->lockout->starting_time);
+  EXPECT_GE(result2.Get()->lockout->duration, base::Days(1));
+  EXPECT_LE(result2.Get()->lockout->duration, base::Days(90));
 }
 }  // namespace
 }  // namespace content

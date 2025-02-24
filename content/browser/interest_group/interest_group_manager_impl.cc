@@ -510,6 +510,12 @@ void InterestGroupManagerImpl::RecordDebugReportLockout(
   caching_storage_.RecordDebugReportLockout(starting_time, duration);
 }
 
+void InterestGroupManagerImpl::RecordRandomDebugReportLockout(
+    base::Time starting_time) {
+  int random = base::RandInt(1, 90);
+  caching_storage_.RecordDebugReportLockout(starting_time, base::Days(random));
+}
+
 void InterestGroupManagerImpl::RecordDebugReportCooldown(
     const url::Origin& origin,
     base::Time cooldown_start,

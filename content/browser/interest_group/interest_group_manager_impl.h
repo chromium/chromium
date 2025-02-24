@@ -270,6 +270,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // empty. Otherwise replaces the existing entry.
   void RecordDebugReportLockout(base::Time starting_time,
                                 base::TimeDelta duration);
+  // Adds an entry with random duration to forDebuggingOnly report lockout
+  // table. This is used to avoid new user bias when changing from allowing 3PC
+  // to disallowing 3PC.
+  void RecordRandomDebugReportLockout(base::Time starting_time);
   // Adds an entry to forDebuggingOnly report cooldown table for `origin` if it
   // does not exist, otherwise replaces the existing entry.
   void RecordDebugReportCooldown(const url::Origin& origin,

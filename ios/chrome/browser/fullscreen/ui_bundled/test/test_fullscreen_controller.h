@@ -42,6 +42,7 @@ class TestFullscreenController : public FullscreenController {
   void EnterForceFullscreenMode(bool insets_update_enabled) override;
   void ExitForceFullscreenMode() override;
   void ResizeHorizontalViewport() override;
+  void SetToolbarUIState(ToolbarUIState* toolbarUIState) override;
 
   // Calls FullscreenViewportInsetRangeChanged() on observers.
   void OnFullscreenViewportInsetRangeChanged(UIEdgeInsets min_viewport_insets,

@@ -17,18 +17,21 @@
 #include <stdio.h>
 
 #include <cstring>
+#include <forward_list>
 #include <list>
 #include <memory>
 #include <numeric>
 #include <scoped_allocator>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/exception_testing.h"
+#include "absl/base/internal/iterator_traits_test_helper.h"
 #include "absl/base/options.h"
 #include "absl/container/internal/test_allocator.h"
 #include "absl/hash/hash_testing.h"
@@ -407,6 +410,20 @@ TEST(IteratorConstructorTest, FromBidirectionalIteratorRange) {
   std::list<int> const items(kInput, kInput + ABSL_ARRAYSIZE(kInput));
   absl::FixedArray<int> const fixed(items.begin(), items.end());
   EXPECT_THAT(fixed, testing::ElementsAreArray(kInput));
+}
+
+TEST(IteratorConstructorTest, FromCpp20ForwardIteratorRange) {
+  std::forward_list<int> const kUnzippedInput = {2, 3, 5, 7, 11, 13, 17};
+  absl::base_internal::Cpp20ForwardZipIterator<
+      std::forward_list<int>::const_iterator> const
+      begin(std::begin(kUnzippedInput), std::begin(kUnzippedInput));
+  absl::base_internal::
+      Cpp20ForwardZipIterator<std::forward_list<int>::const_iterator> const end(
+          std::end(kUnzippedInput), std::end(kUnzippedInput));
+
+  std::forward_list<std::pair<int, int>> const items(begin, end);
+  absl::FixedArray<std::pair<int, int>> const fixed(begin, end);
+  EXPECT_THAT(fixed, testing::ElementsAreArray(items));
 }
 
 TEST(InitListConstructorTest, InitListConstruction) {

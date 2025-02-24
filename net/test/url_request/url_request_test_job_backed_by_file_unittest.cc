@@ -262,7 +262,13 @@ TEST_F(URLRequestTestJobBackedByFileEventsTest, SmallFile) {
   RunSuccessfulRequestWithString(MakeContentOfSize(17 * 1024), nullptr);
 }
 
-TEST_F(URLRequestTestJobBackedByFileEventsTest, BigFile) {
+// TODO(crbug.com/398792039): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_BigFile DISABLED_BigFile
+#else
+#define MAYBE_BigFile BigFile
+#endif
+TEST_F(URLRequestTestJobBackedByFileEventsTest, MAYBE_BigFile) {
   RunSuccessfulRequestWithString(MakeContentOfSize(3 * 1024 * 1024), nullptr);
 }
 

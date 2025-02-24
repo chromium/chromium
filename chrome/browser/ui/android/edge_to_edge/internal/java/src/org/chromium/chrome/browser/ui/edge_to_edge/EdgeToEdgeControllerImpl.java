@@ -392,8 +392,7 @@ public class EdgeToEdgeControllerImpl
     void drawToEdge(boolean pageOptedIntoEdgeToEdge, boolean changedWindowState) {
         // Exit early if there is a tappable navbar (3-button) as the controller should not function
         // when 3-button nav is enabled.
-        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
-                && EdgeToEdgeUtils.hasTappableNavigationBar(mActivity.getWindow())) {
+        if (EdgeToEdgeUtils.hasTappableNavigationBar(mActivity.getWindow())) {
             return;
         }
 
@@ -450,8 +449,7 @@ public class EdgeToEdgeControllerImpl
     WindowInsetsCompat handleWindowInsets(View rootView, @NonNull WindowInsetsCompat windowInsets) {
         // Exit early if there is a tappable navbar (3-button) as the controller should not function
         // when 3-button nav is enabled.
-        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
-                && EdgeToEdgeUtils.hasTappableNavigationBar(mActivity.getWindow())) {
+        if (EdgeToEdgeUtils.hasTappableNavigationBar(mActivity.getWindow())) {
             return windowInsets;
         }
 

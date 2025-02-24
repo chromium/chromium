@@ -54,6 +54,9 @@ bool TestFullscreenController::ResizesScrollView() const {
   return model_->ResizesScrollView();
 }
 
+void TestFullscreenController::SetToolbarUIState(
+    ToolbarUIState* toolbar_ui_state) {}
+
 void TestFullscreenController::BrowserTraitCollectionChangedBegin() {}
 
 void TestFullscreenController::BrowserTraitCollectionChangedEnd() {}

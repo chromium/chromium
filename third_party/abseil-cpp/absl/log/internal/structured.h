@@ -139,8 +139,6 @@ class ABSL_MUST_USE_RESULT AsStructuredValueImpl final {
   }
 };
 
-#ifdef ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION
-
 // Template deduction guide so `AsStructuredValueImpl(42, data)` works
 // without specifying the template type.
 template <typename T>
@@ -154,8 +152,6 @@ AsStructuredValueImpl(
     T value, StructuredProtoField field,
     typename AsStructuredValueImpl<T>::ValueFormatter value_formatter)
     -> AsStructuredValueImpl<T>;
-
-#endif  // ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION
 
 }  // namespace log_internal
 ABSL_NAMESPACE_END

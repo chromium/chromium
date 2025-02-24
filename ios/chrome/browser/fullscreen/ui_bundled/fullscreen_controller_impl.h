@@ -49,6 +49,7 @@ class FullscreenControllerImpl : public FullscreenController {
   void EnterForceFullscreenMode(bool insets_update_enabled) override;
   void ExitForceFullscreenMode() override;
   void ResizeHorizontalViewport() override;
+  void SetToolbarUIState(ToolbarUIState* toolbar_ui_state) override;
 
  private:
   // The broadcaster that drives the model.

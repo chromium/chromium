@@ -237,7 +237,7 @@ ABSL_MUST_USE_RESULT inline std::string AsciiStrToUpper(std::string&& s) {
 // Returns absl::string_view with whitespace stripped from the beginning of the
 // given string_view.
 ABSL_MUST_USE_RESULT inline absl::string_view StripLeadingAsciiWhitespace(
-    absl::string_view str) {
+    absl::string_view str ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   auto it = std::find_if_not(str.begin(), str.end(), absl::ascii_isspace);
   return str.substr(static_cast<size_t>(it - str.begin()));
 }
@@ -251,7 +251,7 @@ inline void StripLeadingAsciiWhitespace(absl::Nonnull<std::string*> str) {
 // Returns absl::string_view with whitespace stripped from the end of the given
 // string_view.
 ABSL_MUST_USE_RESULT inline absl::string_view StripTrailingAsciiWhitespace(
-    absl::string_view str) {
+    absl::string_view str ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   auto it = std::find_if_not(str.rbegin(), str.rend(), absl::ascii_isspace);
   return str.substr(0, static_cast<size_t>(str.rend() - it));
 }
@@ -265,7 +265,7 @@ inline void StripTrailingAsciiWhitespace(absl::Nonnull<std::string*> str) {
 // Returns absl::string_view with whitespace stripped from both ends of the
 // given string_view.
 ABSL_MUST_USE_RESULT inline absl::string_view StripAsciiWhitespace(
-    absl::string_view str) {
+    absl::string_view str ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   return StripTrailingAsciiWhitespace(StripLeadingAsciiWhitespace(str));
 }
 

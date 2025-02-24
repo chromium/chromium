@@ -2926,7 +2926,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     controller.StartFlow(transports_info, {});
 
     // There is no phone available, so no passkeys should be sent to autofill.
-    EXPECT_TRUE(delegate->GetPasskeys()->empty());
+    EXPECT_TRUE(delegate->GetPasskeys().value()->empty());
   }
   {
     auto model =
@@ -2941,7 +2941,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     controller.StartFlow(transports_info, {});
 
     // There is no phone from sync, so no passkeys should be sent to autofill.
-    EXPECT_TRUE(delegate->GetPasskeys()->empty());
+    EXPECT_TRUE(delegate->GetPasskeys().value()->empty());
   }
   {
     auto model =
@@ -2955,9 +2955,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     controller.set_ui_presentation(UIPresentation::kAutofill);
     controller.StartFlow(transports_info, {});
 
-    ASSERT_EQ(delegate->GetPasskeys()->size(), 1u);
-    const password_manager::PasskeyCredential& passkey =
-        delegate->GetPasskeys()->at(0);
+    auto* passkeys = delegate->GetPasskeys().value();
+    ASSERT_EQ(passkeys->size(), 1u);
+    const password_manager::PasskeyCredential& passkey = passkeys->at(0);
     EXPECT_EQ(passkey.credential_id(), kPhoneCred1.cred_id);
     EXPECT_EQ(passkey.display_name(), "");
     EXPECT_EQ(passkey.username(), kPhoneCred1.user.name);

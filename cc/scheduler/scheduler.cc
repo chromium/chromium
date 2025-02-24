@@ -393,27 +393,11 @@ bool Scheduler::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
   if (args.interval != last_frame_interval_ && args.interval.is_positive()) {
     last_frame_interval_ = args.interval;
     client_->FrameIntervalUpdated(last_frame_interval_);
-
-    // Only query the feature (and thus enter the experiment group) if we see a
-    // short interval. This ignores 90Hz displays, on purpose, and adds some
-    // leeway.
-    //
-    // Apply some slack, so that if for some reason the interval is a bit larger
-    // than 8.33333333333333ms, then we catch it still.
-    constexpr float kSlackFactor = .9;
-    if (args.interval < base::Hertz(120) * (1 / kSlackFactor) &&
-        base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz)) {
-      TRACE_EVENT0("cc", "ThrottleMainFrameTo60Hz");
-      // Note that we don't change args.interval, so the next main frame will
-      // see e.g. 8ms, even though the next one will come in 16ms. This is not
-      // necessarily bad, as it is mostly used for idle period timing.
-      //
-      // Here as well, use a slack factor, to make sure that small timing
-      // variations don't result in uneven pacing.
-      state_machine_.SetThrottleMainFrames(base::Hertz(60.) * kSlackFactor);
-    } else {
-      state_machine_.SetThrottleMainFrames(base::TimeDelta());
-    }
+    // Note that even if the call below ends up throttling BeginMainFrame()
+    // calls, args.interval stays at the lower interval. This is done on
+    // purpose, as "urgent" updates can happen sooner than the throttled
+    // interval.
+    state_machine_.FrameIntervalUpdated(last_frame_interval_);
   }
 
   // Drop the BeginFrame if we don't need one.

@@ -196,6 +196,7 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::
           ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER:
       case ContentSettingsType::CONTROLLED_FRAME:
+      case ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS:
         break;
 
       default:

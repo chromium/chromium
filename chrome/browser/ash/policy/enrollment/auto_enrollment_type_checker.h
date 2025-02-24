@@ -75,6 +75,9 @@ class AutoEnrollmentTypeChecker {
     kMaxValue = kEnabledViaAlwaysSwitch
   };
 
+  // Returns true if FRE state keys are supported.
+  static bool AreFREStateKeysSupported();
+
   // Returns true when unified state determination is enabled based on
   // command-line switch, official build status and server-based kill-switch.
   static bool IsUnifiedStateDeterminationEnabled();
@@ -87,7 +90,8 @@ class AutoEnrollmentTypeChecker {
   // switch and official build status.
   static bool IsInitialEnrollmentEnabled();
 
-  // Returns true if any either FRE or initial enrollment are enabled.
+  // Returns true if any of Unified, FRE, or Initial state determination are
+  // enabled.
   static bool IsEnabled();
 
   // Returns whether the FRE auto-enrollment check is required. Ignores all

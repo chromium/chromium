@@ -227,8 +227,6 @@ cc_library(
     hdrs = [
         "internal/hide_ptr.h",
         "internal/identity.h",
-        "internal/inline_variable.h",
-        "internal/invoke.h",
         "internal/scheduling_mode.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
@@ -456,39 +454,6 @@ cc_test(
     deps = [
         ":exception_safety_testing",
         "//absl/memory",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
-    ],
-)
-
-cc_test(
-    name = "inline_variable_test",
-    size = "small",
-    srcs = [
-        "inline_variable_test.cc",
-        "inline_variable_test_a.cc",
-        "inline_variable_test_b.cc",
-        "internal/inline_variable_testing.h",
-    ],
-    copts = ABSL_TEST_COPTS,
-    linkopts = ABSL_DEFAULT_LINKOPTS,
-    deps = [
-        ":base_internal",
-        "@googletest//:gtest",
-        "@googletest//:gtest_main",
-    ],
-)
-
-cc_test(
-    name = "invoke_test",
-    size = "small",
-    srcs = ["invoke_test.cc"],
-    copts = ABSL_TEST_COPTS,
-    linkopts = ABSL_DEFAULT_LINKOPTS,
-    deps = [
-        ":base_internal",
-        "//absl/memory",
-        "//absl/strings",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
@@ -953,6 +918,31 @@ cc_test(
 )
 
 cc_library(
+    name = "iterator_traits_internal",
+    hdrs = ["internal/iterator_traits.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":config",
+        "//absl/meta:type_traits",
+    ],
+)
+
+cc_test(
+    name = "iterator_traits_test",
+    srcs = ["internal/iterator_traits_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":config",
+        ":iterator_traits_internal",
+        ":iterator_traits_test_helper",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_library(
     name = "tracing_internal",
     srcs = ["internal/tracing.cc"],
     hdrs = ["internal/tracing.h"],
@@ -965,6 +955,14 @@ cc_library(
         "//absl/base:config",
         "//absl/base:core_headers",
     ],
+)
+
+cc_library(
+    name = "iterator_traits_test_helper",
+    hdrs = ["internal/iterator_traits_test_helper.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [":config"],
 )
 
 cc_test(

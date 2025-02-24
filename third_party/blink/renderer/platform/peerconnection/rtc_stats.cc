@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/webrtc/api/stats/rtc_stats.h"
 #include "third_party/webrtc/api/stats/rtcstats_objects.h"
+#include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 namespace blink {
 
@@ -80,7 +81,7 @@ CreateRTCStatsCollectorCallback(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread,
     RTCStatsReportCallback callback) {
   return rtc::scoped_refptr<RTCStatsCollectorCallbackImpl>(
-      new rtc::RefCountedObject<RTCStatsCollectorCallbackImpl>(
+      new webrtc::RefCountedObject<RTCStatsCollectorCallbackImpl>(
           std::move(main_thread), std::move(callback)));
 }
 

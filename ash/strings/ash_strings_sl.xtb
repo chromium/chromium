@@ -176,6 +176,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1546492247443594934">Namizje 2</translation>
 <translation id="1546930421365146760">Skrbnika prosite, da to napravo nastavi v Googlovi skrbniški konzoli.</translation>
 <translation id="1549512626801247439">upravljanje shrambe</translation>
+<translation id="1549721333775633305">Prikaz nastavitev Hitrega deljenja. Hitro deljenje je onemogočeno.</translation>
 <translation id="1550406609415860283">Na voljo so naprave</translation>
 <translation id="1550523713251050646">Kliknite za več možnosti</translation>
 <translation id="1555130319947370107">Modra</translation>
@@ -1474,6 +1475,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="5856638668464565213">Omrežje <ph name="NETWORK_NAME" /> ni aktivirano.</translation>
 <translation id="5860033963881614850">Izklopljeno</translation>
 <translation id="5860491529813859533">Vklopi</translation>
+<translation id="5864691701242730005">Prikaz nastavitev Hitrega deljenja. Izbrana je vidnost: <ph name="VISIBILITY" />.</translation>
 <translation id="5864748620896638071"><ph name="BATTERY_PERCENTAGE" /> % baterije</translation>
 <translation id="5867217927013474703">Zbiranje podatkov o omrežju</translation>
 <translation id="5867606971598166637">Skrbnik sistema nadzira vaše zaslone</translation>
@@ -2262,6 +2264,7 @@ Nova namestitev</translation>
 <translation id="851660987304951246">Uporabite funkcijo Pomagaj mi brati za hiter povzetek vsebine ali postavljanje vprašanj</translation>
 <translation id="8517041960877371778">Akumulator naprave <ph name="DEVICE_TYPE" /> se morda ne bo polnil, medtem ko je naprava vklopljena.</translation>
 <translation id="8535393432370007982">Razveljavi način razvrščanja po barvi</translation>
+<translation id="8536886494750559755">Prikaz nastavitev Hitrega deljenja. Vidno vsem <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Besedilo je kopirano v odložišče</translation>
 <translation id="8541078764854166027">Kadriranje</translation>
 <translation id="8542053257095774575">Ni shranjenih namizij ali predlogov</translation>

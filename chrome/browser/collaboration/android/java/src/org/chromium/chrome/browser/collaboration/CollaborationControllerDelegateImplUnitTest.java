@@ -137,7 +137,7 @@ public class CollaborationControllerDelegateImplUnitTest {
                         mStartAccountRefreshCallback);
 
         if (type == FlowType.JOIN) {
-            verify(mLoadingFullscreenCoordinator).startLoading(any());
+            verify(mLoadingFullscreenCoordinator).startLoading(any(), any());
         }
     }
 
@@ -152,7 +152,7 @@ public class CollaborationControllerDelegateImplUnitTest {
                         mLoadingFullscreenCoordinator,
                         mSwitchToTabSwitcherCallback,
                         mStartAccountRefreshCallback);
-        verify(mLoadingFullscreenCoordinator).startLoading(any());
+        verify(mLoadingFullscreenCoordinator).startLoading(any(), any());
 
         long resultCallback = 1;
         long exitCallback = 2;

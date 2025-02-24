@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/entities/field_filling_entity_util.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
@@ -1197,24 +1198,28 @@ TEST_F(AutofillExternalDelegateTest, FillAutofillAiFillsFullForm) {
                            {.role = IBAN_VALUE},
                            {.role = UNKNOWN_TYPE}}});
 
-  const std::u16string value_to_fill = u"123";
+  base::optional_ref<const AttributeInstance> passport_number =
+      passport.attribute(AttributeType(AttributeTypeName::kPassportNumber));
   const FieldGlobalId& field_to_fill = queried_form().fields()[2].global_id();
 
-  auto field_with_value = [](FieldGlobalId field_id,
-                             std::u16string_view value) {
+  auto field_with_value = [](FieldGlobalId field_id, std::u16string value) {
     return AllOf(Property("global_id", &FormFieldData::global_id, field_id),
-                 Property("value", &FormFieldData::value, value));
+                 Property("value", &FormFieldData::value, Eq(value)));
   };
 
-  EXPECT_CALL(driver(), ApplyFormAction(_, mojom::ActionPersistence::kPreview,
-                                        ElementsAre(field_with_value(
-                                            field_to_fill, value_to_fill)),
-                                        _, _))
+  EXPECT_CALL(
+      driver(),
+      ApplyFormAction(
+          _, mojom::ActionPersistence::kPreview,
+          ElementsAre(field_with_value(
+              field_to_fill, GetObfuscatedAttributeValue(*passport_number))),
+          _, _))
       .WillOnce(Return(std::vector<FieldGlobalId>{}));
-  EXPECT_CALL(driver(), ApplyFormAction(_, mojom::ActionPersistence::kFill,
-                                        ElementsAre(field_with_value(
-                                            field_to_fill, value_to_fill)),
-                                        _, _))
+  EXPECT_CALL(driver(),
+              ApplyFormAction(_, mojom::ActionPersistence::kFill,
+                              ElementsAre(field_with_value(
+                                  field_to_fill, passport_number->value())),
+                              _, _))
       .WillOnce(Return(std::vector<FieldGlobalId>{}));
 
   Suggestion fill_suggestion =

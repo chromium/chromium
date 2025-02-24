@@ -51,7 +51,7 @@ class RTCEncodedAudioStreamTransformerTest : public ::testing::Test {
             blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
         webrtc_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner({})),
         webrtc_callback_(
-            new rtc::RefCountedObject<MockWebRtcTransformedFrameCallback>()),
+            new webrtc::RefCountedObject<MockWebRtcTransformedFrameCallback>()),
         encoded_audio_stream_transformer_(main_task_runner_) {}
 
   void SetUp() override {
@@ -118,7 +118,7 @@ TEST_F(RTCEncodedAudioStreamTransformerTest,
   encoded_audio_stream_transformer_.StartShortCircuiting();
 
   rtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_2(
-      new rtc::RefCountedObject<MockWebRtcTransformedFrameCallback>());
+      new webrtc::RefCountedObject<MockWebRtcTransformedFrameCallback>());
   EXPECT_CALL(*webrtc_callback_2, StartShortCircuiting);
   encoded_audio_stream_transformer_.RegisterTransformedFrameCallback(
       webrtc_callback_2);

@@ -15,7 +15,8 @@ namespace blink {
 InterestEvent::InterestEvent(const AtomicString& type,
                              const InterestEventInit* initializer)
     : Event(type, initializer) {
-  DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::
+             HTMLInterestTargetAttributeEnabledByRuntimeFlag());
   if (initializer->hasSource()) {
     source_ = initializer->source();
   }
@@ -24,7 +25,8 @@ InterestEvent::InterestEvent(const AtomicString& type,
 InterestEvent::InterestEvent(const AtomicString& type, Element* source)
     : Event(type, Bubbles::kNo, Cancelable::kYes, ComposedMode::kComposed),
       source_(source) {
-  DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+  DCHECK(RuntimeEnabledFeatures::
+             HTMLInterestTargetAttributeEnabledByRuntimeFlag());
 }
 
 Element* InterestEvent::source() const {

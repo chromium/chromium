@@ -8139,7 +8139,8 @@ void Document::SetDialogPointerdownTarget(const HTMLDialogElement* dialog) {
 }
 
 void Document::SetKeyboardInterestTargetElement(Element* element) {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+  CHECK(!element || RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+                        element->GetDocument().GetExecutionContext()));
   CHECK(!element || element->interestTargetElement());
   keyboard_interest_target_element_ = element;
 }

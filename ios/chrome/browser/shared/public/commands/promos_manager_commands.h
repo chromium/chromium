@@ -30,6 +30,9 @@
 // Shows the default browser promo after the user tapped Remind Me Later.
 - (void)showDefaultBrowserPromoAfterRemindMeLater;
 
+// Shows the sign-in fullscreen promo.
+- (void)showSigninPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_PROMOS_MANAGER_COMMANDS_H_

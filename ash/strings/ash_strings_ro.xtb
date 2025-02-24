@@ -176,6 +176,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1546492247443594934">Desktop 2</translation>
 <translation id="1546930421365146760">Solicită-i administratorului să configureze acest dispozitiv în consola de administrare Google</translation>
 <translation id="1549512626801247439">gestionarea stocării</translation>
+<translation id="1549721333775633305">Afișează setările Quick Share. Quick Share este dezactivat</translation>
 <translation id="1550406609415860283">Dispozitive disponibile</translation>
 <translation id="1550523713251050646">Dă clic pentru mai multe opțiuni</translation>
 <translation id="1555130319947370107">Albastru</translation>
@@ -1474,6 +1475,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5856638668464565213">Rețeaua <ph name="NETWORK_NAME" /> nu este activată.</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
 <translation id="5860491529813859533">Activează</translation>
+<translation id="5864691701242730005">Afișează setările Quick Share. A fost selectată vizibilitatea pentru <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071">Baterie <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5867217927013474703">Se colectează informații despre rețea</translation>
 <translation id="5867606971598166637">Administratorul de sistem îți monitorizează ecranele</translation>
@@ -2262,6 +2264,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="851660987304951246">Folosește funcția Ajută-mă să citesc pentru a rezuma rapid conținutul sau a pune întrebări</translation>
 <translation id="8517041960877371778">Este posibil ca <ph name="DEVICE_TYPE" /> să nu se încarce cât timp este pornit.</translation>
 <translation id="8535393432370007982">Anulează sortarea după culoare</translation>
+<translation id="8536886494750559755">Afișează setările Quick Share. Vizibile pentru toată lumea timp de <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Textul a fost copiat în clipboard</translation>
 <translation id="8541078764854166027">Încadrare cameră</translation>
 <translation id="8542053257095774575">Nu există desktopuri sau șabloane salvate</translation>

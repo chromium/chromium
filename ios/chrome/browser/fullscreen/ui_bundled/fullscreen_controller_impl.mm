@@ -194,3 +194,6 @@ void FullscreenControllerImpl::ResizeHorizontalViewport() {
   // two relayouts.
   mediator_.ResizeHorizontalInsets();
 }
+
+void FullscreenControllerImpl::SetToolbarUIState(
+    ToolbarUIState* toolbar_ui_state) {}

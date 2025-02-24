@@ -189,7 +189,10 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
           IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_AND_DELETE_TITLE);
       break;
     case SignedInUserStateWithManagedAccountAndMigratedFromSyncing: {
-      std::u16string hostedDomain = HostedDomainForPrimaryAccount(self.browser);
+      signin::IdentityManager* identityManager =
+          IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
+      std::u16string hostedDomain =
+          HostedDomainForPrimaryAccount(identityManager);
       title = l10n_util::GetNSStringF(
           IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_MANAGED_ACCOUNT,
           hostedDomain);

@@ -58,6 +58,7 @@ const char kChromeUIPasswordManagerInternalsHost[] =
     "password-manager-internals";
 const char kChromeUIPolicyHost[] = "policy";
 const char kChromeUIPrefsInternalsHost[] = "prefs-internals";
+const char kChromeUIProfileInternalsHost[] = "profile-internals";
 const char kChromeUISignInInternalsHost[] = "signin-internals";
 const char kChromeUITermsHost[] = "terms";
 const char kChromeUITranslateInternalsHost[] = "translate-internals";

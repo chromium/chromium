@@ -270,8 +270,8 @@ void EnrollmentHandler::StartEnrollment() {
     return;
   }
 
-  // Request state keys if FRE is enabled.
-  if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
+  // Request state keys if supported.
+  if (AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
     LOG(WARNING) << "Requesting state keys.";
     state_keys_broker_->RequestStateKeys(base::BindOnce(
         // This simply allows the keys to be wrapped in an std::optional, which

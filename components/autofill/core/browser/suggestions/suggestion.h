@@ -273,7 +273,6 @@ struct Suggestion {
     kCardVisa,
     kIban,
     kBnpl,
-    kAutofillAi,
     kSaveAndFill,
   };
 

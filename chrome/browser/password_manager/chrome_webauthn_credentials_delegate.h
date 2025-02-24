@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
@@ -53,7 +54,8 @@ class ChromeWebAuthnCredentialsDelegate final :
       const std::string& backend_id,
       password_manager::WebAuthnCredentialsDelegate::OnPasskeySelectedCallback
           callback) override;
-  const std::optional<std::vector<password_manager::PasskeyCredential>>&
+  base::expected<const std::vector<password_manager::PasskeyCredential>*,
+                 PasskeysUnavailableReason>
   GetPasskeys() const override;
   void NotifyForPasskeysDisplay() override;
   bool IsSecurityKeyOrHybridFlowAvailable() const override;
@@ -127,6 +129,11 @@ class ChromeWebAuthnCredentialsDelegate final :
   // Set to true when the timer for the PasskeyRetrievalWaitDuration metric has
   // been started, since we only want to use it once.
   bool passkey_retrieval_timer_started_ = false;
+
+  // Set when `NotifyWebAuthnRequestAborted` has been called. It is reset if
+  // passkeys are provided again after that, indicating that an additional
+  // request has been made.
+  bool last_request_was_aborted_ = false;
 
   base::WeakPtrFactory<ChromeWebAuthnCredentialsDelegate> weak_ptr_factory_{
       this};

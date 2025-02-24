@@ -16,6 +16,10 @@
 class Browser;
 class PrefService;
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace signin_metrics {
 enum class AccessPoint;
 }  // namespace signin_metrics
@@ -35,7 +39,8 @@ using SignoutActionSheetCoordinatorCompletion =
     void (^)(SignoutActionSheetCoordinatorResult result);
 
 // Returns the hosted domain for the primary account.
-std::u16string HostedDomainForPrimaryAccount(Browser* browser);
+std::u16string HostedDomainForPrimaryAccount(
+    signin::IdentityManager* identity_manager);
 
 // Returns the sign in alert coordinator for `error`. `dismissAction` is called
 // when the dialog is dismissed (the user taps on the Ok button) or cancelled

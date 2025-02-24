@@ -13,7 +13,7 @@
 #pragma mark - StandardPromoDisplayHandler
 
 - (void)handleDisplay {
-  // TODO(crbug.com/396111598): Display the sign-in promo.
+  [self.handler showSigninPromo];
 }
 
 #pragma mark - PromoProtocol

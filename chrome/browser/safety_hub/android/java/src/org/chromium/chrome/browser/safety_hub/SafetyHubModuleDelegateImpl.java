@@ -108,13 +108,14 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
 
     @Override
     public int getLocalPasswordsCount(@Nullable PasswordStoreBridge passwordStoreBridge) {
-        // TODO(http://crbug.com/397905386): Check isPasswordManagerAvailable.
-        boolean usesSplitStoresAndUpmForLocalPasswords =
-                usesSplitStoresAndUPMForLocal(UserPrefs.get(mProfile));
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
-        boolean isSyncingPasswords = PasswordManagerHelper.hasChosenToSyncPasswords(syncService);
-
         if (passwordStoreBridge == null) {
+            return INVALID_PASSWORD_COUNT;
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
+            if (PasswordManagerUtilBridge.isPasswordManagerAvailable(UserPrefs.get(mProfile))) {
+                return passwordStoreBridge.getPasswordStoreCredentialsCountForProfileStore();
+            }
             return INVALID_PASSWORD_COUNT;
         }
 
@@ -123,7 +124,9 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
         // passwords.
         //    2. If they're not in use, but the user is not syncing, then profile store stores
         // local passwords.
-        if (usesSplitStoresAndUpmForLocalPasswords || !isSyncingPasswords) {
+        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        boolean isSyncingPasswords = PasswordManagerHelper.hasChosenToSyncPasswords(syncService);
+        if (usesSplitStoresAndUPMForLocal(UserPrefs.get(mProfile)) || !isSyncingPasswords) {
             return passwordStoreBridge.getPasswordStoreCredentialsCountForProfileStore();
         }
 

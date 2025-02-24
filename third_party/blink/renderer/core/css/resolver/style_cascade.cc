@@ -210,6 +210,16 @@ std::optional<const CSSValue*> FindOrNullopt(
   return it->value.Get();
 }
 
+const CSSSyntaxDefinition* FindOrNull(
+    const HashMap<String, const CSSSyntaxDefinition*>& map,
+    const String& key) {
+  auto it = map.find(key);
+  if (it == map.end()) {
+    return nullptr;
+  }
+  return it->value;
+}
+
 bool EvaluateContainerQuery(Element& element,
                             PseudoId pseudo_id,
                             const ContainerQuery& query,
@@ -1517,12 +1527,11 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
     // Locals shadow arguments, which shadow custom properties
     // from the element.
 
-    // Ensure that any local variable with a matching name is applied
-    // (i.e. exists on function_context->locals).
-    // TODO(crbug.com/325504770): This may create cycles.
-    LookupAndApplyLocalVariable(var_name, resolver, context, *function_context);
     for (FunctionContext* frame = function_context; frame;
          frame = frame->parent) {
+      // Ensure that any local variable with a matching name is applied
+      // (i.e. exists on frame->locals).
+      LookupAndApplyLocalVariable(var_name, resolver, context, *frame);
       if (std::optional<const CSSValue*> local_variable =
               FindOrNullopt(frame->locals, var_name)) {
         return ResolveArgumentOrLocalInto(
@@ -1624,15 +1633,33 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     return false;
   }
 
-  // Parse and resolve function arguments.
+  // When parsing function arguments, one of three things can happen
+  // (per argument):
+  //
+  //   1. The argument is present, and valid. In this case, the value ends
+  //      up in `function_arguments`, fully resolved.
+  //   2. The argument is defaulted, meaning that the argument is missing,
+  //      but the parameter has a default. In this case, that default value
+  //      ends up in `unresolved_defaults`, and if the parameter has a
+  //      non-universal type, that type ends up in `default_types`. The default
+  //      values may refer to other arguments, which means that that basically
+  //      resolve "inside" the function (unlike non-defaulted arguments).
+  //   3. The argument is either missing (with no default), or present but
+  //      invalid in some other way (e.g. type mismatch). In this case,
+  //      `ResolveFunctionInto` as a whole fails.
+  //
+  // Soon after all of these hash maps are populated, there is a process
+  // of resolving the `unresolved_defaults` (against their corresponding types),
+  // and inserting the results into `function_arguments`. This is explained
+  // a bit further down in the function.
   HeapHashMap<String, Member<const CSSValue>> function_arguments;
+  HeapHashMap<String, Member<const CSSValue>> unresolved_defaults;
+  HashMap<String, const CSSSyntaxDefinition*> default_types;
 
   bool first_parameter = true;
   for (const StyleRuleFunction::Parameter& parameter :
        function->GetParameters()) {
     stream.ConsumeWhitespace();
-
-    StringView argument_string;
 
     if (!stream.AtEnd() &&
         (first_parameter || stream.Peek().GetType() == kCommaToken)) {
@@ -1640,6 +1667,7 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
       if (stream.Peek().GetType() == kCommaToken) {
         stream.ConsumeIncludingWhitespace();
       }
+      StringView argument_string;
       // Handle {}-wrapper.
       // https://drafts.csswg.org/css-values-5/#component-function-commas
       if (stream.Peek().GetType() == kLeftBraceToken) {
@@ -1651,39 +1679,85 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
         argument_string = ConsumeUntilPeekedTypeIs<kCommaToken>(stream);
       }
       DCHECK(!argument_string.empty());  // Handled parse-time.
+      CSSVariableData* argument_data = CSSVariableData::Create(
+          argument_string.ToString(),
+          /*is_animation_tainted=*/false, /*is_attr_tainted=*/false,
+          /*needs_variable_resolution=*/true);
+      // TODO(crbug.com/393924687): Work with CSSVariableData directly.
+      const CSSValue* argument_value =
+          MakeGarbageCollected<CSSUnparsedDeclarationValue>(argument_data,
+                                                            &context);
+      // We need to resolve the argument in the context of this function,
+      // so that we can do type coercion on the resolved value before the call.
+      // In particular, we want any var() within the argument to be resolved
+      // in our context; e.g., --foo(var(--a)) should be our a, not foo's a
+      // (if that even exists).
+      //
+      // Note that if this expression comes from directly a function call,
+      // as in the example above (and if the return and argument types are the
+      // same), we will effectively do type parsing of exactly the same data
+      // twice. This is wasteful, and it's possible that we should do something
+      // about it if it proves to be a common case.
+      argument_value =
+          ResolveFunctionExpression(*argument_value, &parameter.type, resolver,
+                                    context, function_context);
+      if (!argument_value) {
+        return false;
+      }
+      function_arguments.insert(parameter.name, argument_value);
     } else if (parameter.default_value) {
-      argument_string = parameter.default_value->OriginalText();
+      const CSSValue* defaulted_value =
+          MakeGarbageCollected<CSSUnparsedDeclarationValue>(
+              parameter.default_value, &context);
+      unresolved_defaults.insert(parameter.name, defaulted_value);
+      if (!parameter.type.IsUniversal()) {
+        default_types.insert(parameter.name, &parameter.type);
+      }
     } else {
       // Argument was missing, with no default.
       return false;
     }
-
-    DCHECK(!argument_string.empty());
-
-    // We need to resolve the argument in the context of this function,
-    // so that we can do type coercion on the resolved value before the call.
-    // In particular, we want any var() within the argument to be resolved
-    // in our context; e.g., --foo(var(--a)) should be our a, not foo's a
-    // (if that even exists).
-    //
-    // Note that if this expression comes from directly a function call,
-    // as in the example above (and if the return and argument types are the
-    // same), we will effectively do type parsing of exactly the same data
-    // twice. This is wasteful, and it's possible that we should do something
-    // about it if it proves to be a common case.
-    const CSSValue* argument_value = ResolveFunctionExpression(
-        argument_string, parameter.type, resolver, context, function_context);
-    if (argument_value == nullptr) {
-      return false;
-    }
-
-    function_arguments.insert(parameter.name, argument_value);
   }
 
   if (!stream.AtEnd()) {
     // This could mean that we have more arguments than we have parameters,
     // which isn't allowed.
     return false;
+  }
+
+  // Defaulted arguments essentially resolve as typed locals in their
+  // own "private" stack frame. We pretend that `unresolved_defaults`
+  // are unresolved local variables, and apply those local variables
+  // as normal. (This also means cycles between defaulted arguments
+  // are handled correctly.)
+  //
+  // This roughly corresponds to the first invocation of "resolve function
+  // styles" in "evaluate a custom function".
+  // https://drafts.csswg.org/css-mixins-1/#evaluate-a-custom-function
+  if (!unresolved_defaults.empty()) {
+    FunctionContext default_context{
+        .arguments = std::move(function_arguments),  // Borrow them for a bit.
+        .locals = {},  // Populated by ApplyLocalVariables.
+        .unresolved_locals = unresolved_defaults,
+        .local_types = std::move(default_types),
+        .parent = function_context};
+
+    ApplyLocalVariables(resolver, context, default_context);
+
+    // Resolving a default may place this function in a cycle,
+    // e.g. @function --f(--x:--f()).
+    if (resolver.InCycle()) {
+      return false;
+    }
+
+    // All the resolved locals (i.e. resolved defaults) now exist
+    // in `default_context.locals`. We merge all the newly resolved defaulted
+    // arguments into `function_arguments`, to make the full set of arguments
+    // visible to the "real" stack frame (`local_function_context`).
+    function_arguments = std::move(default_context.arguments);
+    for (const auto& [name, value] : default_context.locals) {
+      function_arguments.insert(name, value);
+    }
   }
 
   const CSSUnparsedDeclarationValue* unresolved_result = nullptr;
@@ -1699,9 +1773,10 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   }
 
   FunctionContext local_function_context{
-      .arguments = function_arguments,
+      .arguments = std::move(function_arguments),
       .locals = {},  // Populated by ApplyLocalVariables.
       .unresolved_locals = unresolved_locals,
+      .local_types = {},  // Locals variables are untyped.
       .parent = function_context};
 
   ApplyLocalVariables(resolver, context, local_function_context);
@@ -1711,9 +1786,9 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     return false;
   }
 
-  const CSSValue* ret_value = ResolveFunctionExpression(
-      unresolved_result->VariableDataValue()->OriginalText(),
-      function->GetReturnType(), resolver, context, &local_function_context);
+  const CSSValue* ret_value =
+      ResolveFunctionExpression(*unresolved_result, &function->GetReturnType(),
+                                resolver, context, &local_function_context);
   if (ret_value == nullptr) {
     return false;
   }
@@ -1760,29 +1835,28 @@ bool StyleCascade::ResolveArgumentOrLocalInto(const CSSValue* value,
 // and similar, which could cause massive blowup as the values are passed
 // through a large tree of function calls.
 const CSSValue* StyleCascade::ResolveFunctionExpression(
-    StringView expr,
-    const CSSSyntaxDefinition& type,
+    const CSSValue& unresolved,
+    const CSSSyntaxDefinition* type,
     CascadeResolver& resolver,
     const CSSParserContext& context,
     FunctionContext* function_context) {
-  TokenSequence resolved_expr;
-
-  CSSParserTokenStream argument_stream(expr);
-  if (!ResolveTokensInto(argument_stream, resolver, context, function_context,
-                         /* stop_type */ kEOFToken, resolved_expr)) {
+  CSSVariableData* data =
+      To<CSSUnparsedDeclarationValue>(unresolved).VariableDataValue();
+  if (data->NeedsVariableResolution()) {
+    data = ResolveVariableData(data, context, function_context, resolver);
+  }
+  if (!data) {
     return nullptr;
   }
-
-  const CSSValue* value = type.Parse(resolved_expr.OriginalText(), context,
-                                     /*is_animation_tainted=*/false);
+  // TODO(crbug.com/393924687): Work with CSSVariableData directly.
+  if (!type) {
+    return MakeGarbageCollected<CSSUnparsedDeclarationValue>(data, &context);
+  }
+  const CSSValue* value = type->Parse(data->OriginalText(), context,
+                                      /*is_animation_tainted=*/false);
   if (!value) {
     return nullptr;
   }
-
-  // TODO(crbug.com/325504770): We need to return a CSSUnparsedDeclarationValue
-  // (or CSSVariableData) from this function. We're currently losing
-  // tainting information held by TokenSequence.
-
   // Resolve the value as if it were a registered property, to get rid of
   // extraneous calc(), resolve lengths and so on.
   return &StyleBuilderConverter::ConvertRegisteredPropertyValue(state_, *value,
@@ -1796,9 +1870,12 @@ void StyleCascade::ApplyLocalVariables(CascadeResolver& resolver,
     if (function_context.locals.find(name) != function_context.locals.end()) {
       // Already applied. This can happen because a call to ResolveLocalVariable
       // may trigger application of other local variables via var().
+      continue;
     }
+    const CSSSyntaxDefinition* type =
+        FindOrNull(function_context.local_types, name);
     const CSSValue* resolved = ResolveLocalVariable(
-        AtomicString(name), *value, resolver, context, function_context);
+        AtomicString(name), *value, type, resolver, context, function_context);
     // Note: The following call may insert an explicit nullptr;
     // this is intentional.
     function_context.locals.insert(name, resolved);
@@ -1822,9 +1899,11 @@ void StyleCascade::LookupAndApplyLocalVariable(
     return;
   }
 
+  const CSSSyntaxDefinition* type =
+      FindOrNull(function_context.local_types, name);
   const CSSValue* resolved =
-      ResolveLocalVariable(AtomicString(name), *unresolved_it->value, resolver,
-                           context, function_context);
+      ResolveLocalVariable(AtomicString(name), *unresolved_it->value, type,
+                           resolver, context, function_context);
   // Note: we may insert an explicit nullptr here; this is intentional.
   function_context.locals.insert(name, resolved);
 }
@@ -1832,6 +1911,7 @@ void StyleCascade::LookupAndApplyLocalVariable(
 const CSSValue* StyleCascade::ResolveLocalVariable(
     const AtomicString& name,
     const CSSValue& unresolved,
+    const CSSSyntaxDefinition* type,
     CascadeResolver& resolver,
     const CSSParserContext& context,
     FunctionContext& function_context) {
@@ -1840,16 +1920,8 @@ const CSSValue* StyleCascade::ResolveLocalVariable(
     return nullptr;
   }
   CascadeResolver::AutoLock lock(LocalVariable(name), resolver);
-  CSSVariableData* data =
-      To<CSSUnparsedDeclarationValue>(unresolved).VariableDataValue();
-  if (data->NeedsVariableResolution()) {
-    data = ResolveVariableData(data, context, &function_context, resolver);
-  }
-  if (!data) {
-    return nullptr;
-  }
-  // TODO: Work with CSSVariableData directly.
-  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(data, &context);
+  return ResolveFunctionExpression(unresolved, type, resolver, context,
+                                   &function_context);
 }
 
 void StyleCascade::FlattenFunctionBody(

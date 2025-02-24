@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
+#include "components/autofill/core/browser/webdata/passes/passes_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -525,6 +526,14 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetEntityInstances(
   return std::make_unique<WDResult<std::vector<EntityInstance>>>(
       AUTOFILL_ENTITY_INSTANCE_RESULT,
       EntityTable::FromWebDatabase(db)->GetEntityInstances());
+}
+
+std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetLoyaltyCards(
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  return std::make_unique<WDResult<std::vector<LoyaltyCard>>>(
+      AUTOFILL_LOYALTY_CARD_RESULT,
+      PassesTable::FromWebDatabase(db)->GetLoyaltyCards());
 }
 
 std::unique_ptr<WDTypedResult>

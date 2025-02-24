@@ -1012,6 +1012,7 @@
 <translation id="1682696837763999627">माउस का कर्सर बड़ा करने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="1682867089915960590">क्या आप कैरेट ब्राउज़िंग चालू करना चाहते हैं?</translation>
 <translation id="1686550358074589746">ग्लाइड करके लिखने की सुविधा चालू करें</translation>
+<translation id="1686785653877010442">ताज़ा खबरों की जानकारी देने या चैट मैसेज के बारे में बताने के लिए, साइटें आपको सूचनाएं भेजती हैं.</translation>
 <translation id="168715261339224929">अपने सभी डिवाइस पर अपने बुकमार्क पाने के लिए, सिंक चालू करें.</translation>
 <translation id="1688935057616748272">कोई अक्षर लिखें</translation>
 <translation id="1689333818294560261">प्रचलित नाम</translation>
@@ -1023,7 +1024,6 @@
 <translation id="1692210323591458290">गहरा बैंगनी</translation>
 <translation id="1692713444215319269">रंग बदलने की सुविधा, ज़ूम करने की सुविधा, और डिसप्ले की सेटिंग</translation>
 <translation id="169341880170235617">टैब ग्रुप अपने-आप सेव हो जाते हैं</translation>
-<translation id="1694470329618537745">इस ग्रुप से जुड़े हाल ही के अपडेट</translation>
 <translation id="1695487653372841667">Google के साथ किस जानकारी को शेयर किया जाए और किसे नहीं, यह तय करने का विकल्प आपके पास होता है. सेटिंग में जाकर, इसे कभी भी बदला जा सकता है.</translation>
 <translation id="1695510246756136088">इंटरनेट से कनेक्ट नहीं हो सका. फिर से कोशिश करें.</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> पर जारी रखने के लिए, दूसरे तरीके आज़माए जा सकते हैं.</translation>
@@ -1296,6 +1296,7 @@
 <translation id="1878885068166344708">आइटम पर फ़ोकस ले जाने पर, वह हाइलाइट हो जाता है. फ़ोकस बदलने के लिए, tab दबाएं या किसी आइटम को चुनें.</translation>
 <translation id="1879000426787380528">इस रूप में साइन इन करें</translation>
 <translation id="18802377548000045">टैब की चौड़ाई ज़्यादा हो जाती है</translation>
+<translation id="1880618477732738742">इस एक्सटेंशन के साथ-साथ, अपनी सभी वेबसाइटों और एक्सटेंशन के लिए, जियोलोकेशन, माइक्रोफ़ोन, कैमरा, कुकी वगैरह जैसी सुविधाओं का ऐक्सेस बदलें और ऐक्सेस उपलब्ध कराएं.</translation>
 <translation id="1880905663253319515">प्रमाणपत्र "<ph name="CERTIFICATE_NAME" />" मिटाएं?</translation>
 <translation id="1881445033931614352">कीबोर्ड का लेआउट</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{आइटम}one{# आइटम}other{# आइटम}}</translation>
@@ -3483,6 +3484,7 @@
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="343578350365773421">काग़ज़ खत्म हो गया है</translation>
 <translation id="3435896845095436175">चालू करें</translation>
+<translation id="3437397693214267762">Outlook Calendar, SharePoint, और OneDrive की फ़ाइलें देखें</translation>
 <translation id="3438633801274389918">निंजा</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> को कभी भी अपना माइक्रोफ़ोन एक्सेस करने दें</translation>
 <translation id="3439970425423980614">PDF को 'झलक' में खोल रहे हैं</translation>
@@ -7140,6 +7142,7 @@
     अपने सभी बुकमार्क, फ़ाइलों वगैरह को आसानी से ऐक्सेस करने के लिए, अपने खाते का इस्तेमाल करें. अगर आपके पास Google खाता नहीं है, तो अगली स्क्रीन पर जाकर खाता बनाया जा सकता है.</translation>
 <translation id="6054138466019582920">इस पेज को Google की मदद से खोजें…</translation>
 <translation id="6054284857788651331">हाल ही में बंद हुआ टैब ग्रुप</translation>
+<translation id="6054819000749443354">सिस्टम सेटिंग खोलें</translation>
 <translation id="6054961935262556546">'किसको दिखे' सेटिंग बदलें</translation>
 <translation id="6055392876709372977">RSA सुरक्षित करने के तरीके के साथ PKCS #1 SHA-256</translation>
 <translation id="6055544610007596637">Google Play Store से अपने <ph name="DEVICE_TYPE" /> पर ऐप्लिकेशन इंस्टॉल करें</translation>
@@ -8708,7 +8711,6 @@
 <translation id="7189234443051076392">पक्का करें कि आपके डिवाइस पर ज़रूरी जगह मौजूद हो</translation>
 <translation id="7189451821249468368">आपके सॉफ़्टवेयर लाइसेंस अपग्रेड नहीं हैं, इसलिए आप इस डिवाइस का नाम दर्ज नहीं कर सकते. कृपया सॉफ़्टवेयर लाइसेंस खरीदने के लिए, सेल्स टीम से संपर्क करें. अगर आपको लगता है कि आप यह मैसेज किसी गड़बड़ी की वजह से देख रहे हैं, तो सहायता टीम से संपर्क करें.</translation>
 <translation id="7189965711416741966">फ़िंगरप्रिंट जोड़ा गया.</translation>
-<translation id="7190883804815364931">इस टैब से जुड़ा पिछला अपडेट</translation>
 <translation id="7190921792980745354">क्या आपको <ph name="MEMBER_FULL_NAME" /> को ब्लॉक करना है?</translation>
 <translation id="7191063546666816478">कुछ सहायता लिंक <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, और <ph name="NUMBER_OF_OTHER_APPS" /> अन्य ऐप्लिकेशन में अब भी खुलेंगे.</translation>
 <translation id="7191159667348037">अज्ञात प्रिंटर (USB)</translation>
@@ -8965,6 +8967,7 @@
 <translation id="7380459290951585794">पक्का करें कि आपका फ़ोन आस-पास हो और अनलॉक हो. साथ ही, उसका ब्लूटूथ और वाई-फ़ाई चालू हो</translation>
 <translation id="7380622428988553498">डिवाइस के नाम में अमान्य वर्ण हैं</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> अपडेट किया गया</translation>
+<translation id="7382009635620830394">अगर इस कार्ड को बंद किया जाता है, तो आपके Microsoft कार्ड भी बंद हो जाएंगे. जैसे, Sharepoint और OneDrive फ़ाइलें और Outlook Calendar.</translation>
 <translation id="7382085868019811559">लेगसी ब्राउज़र के लिए सपोर्ट (एलबीएस) सुविधा की मदद से, अलग-अलग यूआरएल पैटर्न को ऐसे वैकल्पिक ब्राउज़र में खोला जा सकता है जिसमें, उन साइटों को ठीक से चलाने के लिए ज़रूरी लेगसी सुविधाएं काम करती हों.</translation>
 <translation id="7382980704744807223">संदिग्ध</translation>
 <translation id="738322632977123193">इमेज को अपलोड नहीं किया जा सकता. इनमें से किसी एक इमेज फ़ॉर्मैट का इस्तेमाल करें: .jpg, .gif, .png, .bmp, .tif या .webP</translation>
@@ -10633,6 +10636,7 @@
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> को <ph name="MANAGER" /> मैनेज करता है. इस ईमेल को अतिरिक्त खाते के तौर पर नहीं जोड़ा जा सकता.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" /><ph name="USER_EMAIL" /> को इस्तेमाल करने के लिए, पहले अपने <ph name="DEVICE_TYPE" /> से साइन आउट करें. उसके बाद, लॉगिन स्क्रीन पर सबसे नीचे, 'व्यक्ति को जोड़ें' चुनें.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">शीर्ष-पंक्ति वाली कुंजियों का व्यवहार स्विच करने के लिए खोज की दबाए रखें</translation>
+<translation id="8549127125482561383">अनुरोध दिखाने का तरीका</translation>
 <translation id="8549316893834449916">आप Chromebook में साइन इन करने के लिए, Google खाते का इस्तेमाल करेंगे. यह वही खाता है जिसे आप Gmail, Drive, YouTube वगैरह के लिए इस्तेमाल करते हैं.</translation>
 <translation id="8550239873869577759">संदिग्ध फ़ाइल डाउनलोड की गई</translation>
 <translation id="8551388862522347954">लाइसेंस</translation>

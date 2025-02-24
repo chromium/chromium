@@ -187,7 +187,8 @@ void InterceptNavigationDelegate::ShouldIgnoreNavigation(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Avoid having two outstanding checks at once for simplicity.
   if (should_ignore_result_callback_) {
-    RequestFinishPendingShouldIgnoreCheck();
+    std::move(result_callback).Run(false);
+    return;
   }
   GURL escaped_url = escape_external_handler_value_
                          ? GURL(base::EscapeExternalHandlerValue(

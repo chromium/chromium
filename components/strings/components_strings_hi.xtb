@@ -2254,6 +2254,7 @@
 <translation id="4989809363548539747">यह प्लग इन समर्थित नहीं है</translation>
 <translation id="4990241977441916452">A2 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="4992066212339426712">अनम्यूट करें</translation>
+<translation id="4994095017621319069">1 टैब ग्रुप अब मौजूद नहीं है</translation>
 <translation id="4994348767896109801">आपको दिखने वाला विज्ञापन आपकी दिलचस्पी के हिसाब से है या नहीं, यह कई चीज़ों से तय होता है. इनमें दिलचस्पी के हिसाब से विज्ञापन दिखाने की सेटिंग, <ph name="BEGIN_LINK_1" />विज्ञापन के विषय<ph name="END_LINK_1" />, और आपकी <ph name="BEGIN_LINK_2" />कुकी सेटिंग<ph name="END_LINK_2" /> शामिल हैं. साथ ही, यह इस पर निर्भर होता है कि आप जिस साइट पर हैं वह लोगों की दिलचस्पी के हिसाब से विज्ञापन दिखाती है या नहीं. <ph name="BEGIN_LINK_3" />Chrome पर विज्ञापन देखने के दौरान अपनी निजता मैनेज करने<ph name="END_LINK_3" /> के बारे में ज़्यादा जानें.</translation>
 <translation id="4995474875135717171">आखिरी बार बदलाव किया गया:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, साइट खोज और अपने डिफ़ॉल्ट सर्च इंजन को मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
@@ -3468,6 +3469,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}one{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}other{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}}</translation>
 <translation id="7153618581592392745">हल्का बैंगनी</translation>
 <translation id="7156870133441232244">इस सर्वर को TLS 1.2 या इसके बाद वाले वर्शन पर अपग्रेड करना होगा.</translation>
+<translation id="7156885531105222428">आपने जिस पेज के लिए अनुरोध किया है वह ऐप्लिकेशन में नहीं मिला</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> का इस्तेमाल करके यह फ़ाइल भेजने के लिए, अपने डिवाइस में जगह (<ph name="DISK_SPACE_SIZE" />) खाली करें}one{<ph name="FEATURE_NAME" /> का इस्तेमाल करके यह फ़ाइल भेजने के लिए, अपने डिवाइस में जगह (<ph name="DISK_SPACE_SIZE" />) खाली करें}other{<ph name="FEATURE_NAME" /> का इस्तेमाल करके इन फ़ाइलों को भेजने के लिए, अपने डिवाइस में जगह (<ph name="DISK_SPACE_SIZE" />) खाली करें}}</translation>
 <translation id="7160999678034985039">कृपया अपने काम को सेव करें और जब आप तैयार हों, तो अपडेट करना शुरू करें.</translation>
 <translation id="7162277662076933695">स्मार्ट कार्ड रीडर</translation>
@@ -4255,6 +4257,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">&lt;strong&gt;chrome://policy&lt;/strong&gt; पर जाकर, ब्लॉक किए गए यूआरएल की सूची और ऐसी नीतियां देखें जिन्हें आपके एडमिन ने लागू किया है.</translation>
 <translation id="8536234749087605613">एन्वेलप (विंडो)</translation>
+<translation id="8538228968820006247">आपके टैब ग्रुप में अब और लोग नहीं जोड़े जा सकते. लिंक से नए लोग इस टैब ग्रुप शामिल नहीं हो सकते</translation>
 <translation id="8539500321752640291">क्या आप Chromium को ये दोनों अनुमतियां देना चाहते हैं?</translation>
 <translation id="8541158209346794904">ब्लूटूथ डिवाइस</translation>
 <translation id="8541410041357371550">यह साइट, विज्ञापनों के विषयों बारे में जानने के लिए Chrome की मदद लेती है, ताकि आपको ज़्यादा काम के विज्ञापन दिखाए जा सकें</translation>

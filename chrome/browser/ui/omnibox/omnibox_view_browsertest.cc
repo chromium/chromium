@@ -30,6 +30,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -63,6 +64,8 @@
 #include "components/search_engines/enterprise/site_search_policy_handler.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -180,6 +183,14 @@ class OmniboxViewTest : public InProcessBrowserTest {
     ASSERT_NO_FATAL_FAILURE(SetupComponents());
     chrome::FocusLocationBar(browser());
     ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
+    identity_test_env()->SetPrimaryAccount("test@mail.com",
+                                           signin::ConsentLevel::kSignin);
+    identity_test_env()->SetRefreshTokenForPrimaryAccount();
+    identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
   }
 
   void SetUp() override {
@@ -189,6 +200,14 @@ class OmniboxViewTest : public InProcessBrowserTest {
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &OmniboxViewTest::OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
   }
 
   static void GetOmniboxViewForBrowser(const Browser* browser,
@@ -388,12 +407,24 @@ class OmniboxViewTest : public InProcessBrowserTest {
     omnibox_view->Update();
   }
 
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
   policy::MockConfigurationPolicyProvider* policy_provider() {
     return &policy_provider_;
   }
 
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_adaptor_->identity_test_env();
+  }
+
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+  base::CallbackListSubscription create_services_subscription_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 
   // Non-owning pointer.
   raw_ptr<TestLocationBarModel> test_location_bar_model_ = nullptr;

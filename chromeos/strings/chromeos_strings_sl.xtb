@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">Počakajte ...</translation>
 <translation id="2740531572673183784">V redu</translation>
 <translation id="2744221223678373668">V skupni rabi</translation>
+<translation id="2749164457515831917">Predlogi so bili naključno razporejeni</translation>
 <translation id="2751739896257479635">2. faza preverjanja pristnosti EAP</translation>
 <translation id="2754757901767760034">svetilka</translation>
 <translation id="2780756493585863768">Nedavna ozadja, ki uporabljajo Googlovo umetno inteligenco</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">Meni z dejanji za postavitev</translation>
 <translation id="3227186760713762082">Deljenje vrednosti kategorije »<ph name="CATEGORY_TEXT" />« s/z: <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Izbrisana bodo tiskalna opravila, starejša od 1 dneva</translation>
+<translation id="3248791727258378769">Prepis ne bo ustvarjen</translation>
 <translation id="324961752321393509">Skrbnik ne dovoli zapiranja te aplikacije</translation>
 <translation id="3263941347294171263">Če želite nadaljevati postopek posodobitve, odklopite in znova priklopite napravo <ph name="DEVICE_NAME" /></translation>
 <translation id="3268178239013324452">Napaka – vrata so odprta</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">Izbira enote temperature</translation>
 <translation id="3661106764436337772">Pišite hitreje in z več samozavesti</translation>
 <translation id="3662461537616691585">bordo in kostanjevo rdeča</translation>
+<translation id="3664755900672940272">Vzorčni pozivi so bili naključno razporejeni</translation>
 <translation id="3668449597372804501">Zaslonsko ozadje premika oblakov</translation>
 <translation id="3668570675727296296">Jezikovne nastavitve</translation>
 <translation id="3675132884790542448">prašiči</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">Izklop ohranjevalnika zaslona</translation>
 <translation id="4210636113897977670">Shrani in zapri</translation>
 <translation id="4210659479607886331">ledeniška reka</translation>
+<translation id="4212169537710712814">Prenos modela prepisa v jeziku <ph name="LANGUAGE_NAME" /> je končan</translation>
 <translation id="42126664696688958">Izvozi</translation>
 <translation id="4213104098953699324">Tipkovnica USB</translation>
 <translation id="4227825898293920515">Geslo poteče čez toliko časa: <ph name="TIME" /></translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">Barvno</translation>
 <translation id="5457599981699367932">Brskajte kot gost</translation>
 <translation id="54609108002486618">Upravljan</translation>
+<translation id="5461608756903394951">Poteka prenos modela prepisa v jeziku <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5470776029649730099">vrečevina</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Na voljo imate še {0} poskus}one{Na voljo imate še {0} poskus}two{Na voljo imate še {0} poskusa}few{Na voljo imate še {0} poskuse}other{Na voljo imate še {0} poskusov}}</translation>
 <translation id="5488280942828718790">magenta</translation>
@@ -1191,6 +1196,7 @@
 <translation id="6595046262780525922">Želite vklopiti prepis in prenesti model prepisa?</translation>
 <translation id="6596816719288285829">Naslov IP</translation>
 <translation id="6599673642868607614">Hvala za povratne informacije. Povratne informacije nam pomagajo izboljšati uporabo Chromebooka, zato jih bo pregledala naša skupina. Zaradi velikega števila poročil vam ne bomo mogli odgovoriti.</translation>
+<translation id="6608043585557830684">Prepis je izklopljen. Vklopite ga v nastavitvah ali meniju <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Tipke miške</translation>
 <translation id="6618744767048954150">Preverjanje poteka</translation>
 <translation id="6620487321149975369">Tiskalna opravila bodo prikazana v zgodovini, razen če jih ročno odstranite</translation>
@@ -1279,6 +1285,7 @@
 <translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" /> in <ph name="GLOWSCAPES_FEATURE" />, ki žari</translation>
 <translation id="6975981640379148271">koale</translation>
 <translation id="6977381486153291903">Različica vdelane programske opreme</translation>
+<translation id="6978396562261420054">Generirana slika</translation>
 <translation id="6981982820502123353">Dostopnost</translation>
 <translation id="6982462588253070448">peščene sipine</translation>
 <translation id="7005833343836210400">Naprava nima vzpostavljene povezave</translation>

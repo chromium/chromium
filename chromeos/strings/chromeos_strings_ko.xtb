@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">잠시 기다려 주세요...</translation>
 <translation id="2740531572673183784">확인</translation>
 <translation id="2744221223678373668">공유</translation>
+<translation id="2749164457515831917">셔플된 추천</translation>
 <translation id="2751739896257479635">EAP 2단계 인증</translation>
 <translation id="2754757901767760034">전등</translation>
 <translation id="2780756493585863768">Google AI 기반 최근 배경</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">레이아웃 작업 메뉴</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> 값을 <ph name="CONVERSION_RATE" />(으)로 나눕니다.</translation>
 <translation id="3246869037381808805">1일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
+<translation id="3248791727258378769">스크립트가 생성되지 않습니다</translation>
 <translation id="324961752321393509">관리자가 이 앱의 종료를 허용하지 않습니다.</translation>
 <translation id="3263941347294171263">업데이트를 계속하려면 <ph name="DEVICE_NAME" />에서 전원을 분리했다가 다시 연결하세요.</translation>
 <translation id="3268178239013324452">실패 - 덮개 열림</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">온도 단위 선택</translation>
 <translation id="3661106764436337772">더 빠르고 자신 있게 작성하기</translation>
 <translation id="3662461537616691585">버건디색 및 적갈색</translation>
+<translation id="3664755900672940272">셔플된 샘플 프롬프트</translation>
 <translation id="3668449597372804501">구름 흐름 배경화면</translation>
 <translation id="3668570675727296296">언어 설정</translation>
 <translation id="3675132884790542448">돼지</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">화면 보호기 사용 중지</translation>
 <translation id="4210636113897977670">저장 및 종료</translation>
 <translation id="4210659479607886331">빙하 강</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> 스크립트 작성 모델 다운로드 완료</translation>
 <translation id="42126664696688958">내보내기</translation>
 <translation id="4213104098953699324">USB 키보드</translation>
 <translation id="4227825898293920515">비밀번호가 <ph name="TIME" /> 후에 만료됨</translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">컬러</translation>
 <translation id="5457599981699367932">게스트로 로그인</translation>
 <translation id="54609108002486618">관리</translation>
+<translation id="5461608756903394951"><ph name="LANGUAGE_NAME" /> 스크립트 작성 모델 다운로드 중</translation>
 <translation id="5470776029649730099">벌랩</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{남은 시도 {0}회}other{남은 시도 {0}회}}</translation>
 <translation id="5488280942828718790">핫핑크색</translation>
@@ -1191,6 +1196,7 @@
 <translation id="6595046262780525922">스크립트 작성을 사용 설정하고 스크립트 작성 모델을 다운로드할까요?</translation>
 <translation id="6596816719288285829">IP 주소</translation>
 <translation id="6599673642868607614">의견을 보내 주셔서 감사합니다. 사용자의 의견은 Google팀에서 검토할 예정이며 Chromebook 사용 환경을 개선하는 데 도움이 됩니다. 접수되는 의견이 많아 직접 답변해 드리기는 어렵습니다.</translation>
+<translation id="6608043585557830684">스크립트 작성이 사용 중지되었습니다. 설정 또는 <ph name="THREE_DOTS_MENU_ICON" /> 메뉴에서 사용 설정하세요.</translation>
 <translation id="660846213831377756">마우스 키</translation>
 <translation id="6618744767048954150">실행 중</translation>
 <translation id="6620487321149975369">수동으로 삭제하지 않으면 인쇄 작업이 기록에 나타납니다.</translation>
@@ -1279,6 +1285,7 @@
 <translation id="6975620886940770104"><ph name="GLOWSCAPES_FEATURE" />이(가) 빛나는 <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">코알라</translation>
 <translation id="6977381486153291903">펌웨어 버전</translation>
+<translation id="6978396562261420054">생성된 이미지</translation>
 <translation id="6981982820502123353">접근성</translation>
 <translation id="6982462588253070448">모래 언덕</translation>
 <translation id="7005833343836210400">기기가 오프라인 상태입니다.</translation>

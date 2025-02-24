@@ -7,23 +7,36 @@
 #import "base/ios/block_types.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/animated_scoped_fullscreen_disabler.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/card_side_swipe_view.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/card_swipe_view_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_gesture_recognizer.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mutator.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_navigation_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_navigation_view.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_snapshot_navigation_view.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_tab_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_util.h"
+#import "ios/chrome/browser/tabs/ui_bundled/requirements/tab_strip_highlighting.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/side_swipe_toolbar_interacting.h"
+#import "ios/web/public/web_state.h"
+#import "ui/base/device_form_factor.h"
 
 namespace {
 
 // Swipe starting distance from edge.
 const CGFloat kSwipeEdge = 20;
+
+// The distance between touches for a swipe between tabs to begin.
+const CGFloat kPanGestureRecognizerThreshold = 25;
+
+// Distance between sections of iPad side swipe.
+const CGFloat kIpadTabSwipeDistance = 100;
 
 }  // namespace
 
@@ -31,27 +44,55 @@ const CGFloat kSwipeEdge = 20;
   // Side swipe view for page navigation.
   UIView<HorizontalPanGestureHandler>* _pageSideSwipeView;
 
+  // Side swipe view for tab navigation.
+  CardSideSwipeView* _tabSideSwipeView;
+
   // Curtain over web view while waiting for it to load.
   UIView* _curtain;
 
   // Swipe gesture recognizer.
   SideSwipeGestureRecognizer* _swipeGestureRecognizer;
+  SideSwipeGestureRecognizer* _panGestureRecognizer;
 
   // If the swipe is for a page change or a tab change.
   SwipeType _swipeType;
-
-  // YES if the user is currently swiping.
-  BOOL _inSwipe;
-
-  // The animated disabler displays the toolbar when a side swipe navigation
-  // gesture is being recognized.
-  std::unique_ptr<AnimatedScopedFullscreenDisabler> _animatedFullscreenDisabler;
 
   // Whether to allow navigating from the leading edge.
   BOOL _leadingEdgeNavigationEnabled;
 
   // Whether to allow navigating from the trailing edge.
   BOOL _trailingEdgeNavigationEnabled;
+
+  // Used in iPad side swipe gesture, tracks the starting tab index.
+  unsigned int _startingTabIndex;
+
+  // The disabler that prevents the toolbar from being scrolled away when the
+  // side swipe gesture is being recognized.
+  std::unique_ptr<ScopedFullscreenDisabler> _fullscreenDisabler;
+
+  // The animated disabler displays the toolbar when a side swipe navigation
+  // gesture is being recognized.
+  std::unique_ptr<AnimatedScopedFullscreenDisabler> _animatedFullscreenDisabler;
+
+  // The webStateList owned by the current browser.
+  raw_ptr<WebStateList> _webStateList;
+}
+
+- (instancetype)initWithFullscreenController:
+                    (FullscreenController*)fullscreenController
+                                webStateList:(WebStateList*)webStateList {
+  self = [super init];
+  if (self) {
+    _fullscreenController = fullscreenController;
+    _webStateList = webStateList;
+  }
+  return self;
+}
+
+- (void)disconnect {
+  [_tabSideSwipeView disconnect];
+  _fullscreenController = nullptr;
+  _webStateList = nullptr;
 }
 
 - (void)addHorizontalGesturesToView:(UIView*)view {
@@ -62,12 +103,21 @@ const CGFloat kSwipeEdge = 20;
   [_swipeGestureRecognizer setDelegate:self];
   [_swipeGestureRecognizer setSwipeEdge:kSwipeEdge];
   [view addGestureRecognizer:_swipeGestureRecognizer];
+
+  // Add a second gesture recognizer to handle swiping on the toolbar to change
+  // tabs.
+  _panGestureRecognizer =
+      [[SideSwipeGestureRecognizer alloc] initWithTarget:self
+                                                  action:@selector(handlePan:)];
+  [_panGestureRecognizer setMaximumNumberOfTouches:1];
+  [_panGestureRecognizer setSwipeThreshold:kPanGestureRecognizerThreshold];
+  [_panGestureRecognizer setDelegate:self];
+  [view addGestureRecognizer:_panGestureRecognizer];
 }
 
 - (void)animateSwipe:(SwipeType)swipeType
          inDirection:(UISwipeGestureRecognizerDirection)direction {
-  if (self.mutator.inSwipe ||
-      [_sideSwipeUIControllerDelegate preventSideSwipe]) {
+  if (_inSwipe || [_sideSwipeUIControllerDelegate preventSideSwipe]) {
     return;
   }
   switch (swipeType) {
@@ -116,6 +166,19 @@ const CGFloat kSwipeEdge = 20;
 
 - (void)setEnabled:(BOOL)enabled {
   [_swipeGestureRecognizer setEnabled:enabled];
+}
+
+- (BOOL)isSideSwipeInProgress {
+  return ([_tabSideSwipeView window] || _inSwipe);
+}
+
+- (void)stopSideSwipeAnimation {
+  if (!_inSwipe) {
+    return;
+  }
+  CGRect frame = [_sideSwipeUIControllerDelegate sideSwipeContentView].frame;
+  frame.origin.x = 0;
+  [_sideSwipeUIControllerDelegate sideSwipeContentView].frame = frame;
 }
 
 #pragma mark - SideSwipeConsumer
@@ -178,7 +241,11 @@ const CGFloat kSwipeEdge = 20;
   // first, and confirm the right gesture recognizer is firing.
   if ([self.toolbarInteractionHandler
           isInsideToolbar:[gesture.view convertPoint:location toView:nil]]) {
-    return NO;
+    if (![gesture isEqual:_panGestureRecognizer]) {
+      return NO;
+    }
+
+    return [_sideSwipeUIControllerDelegate canBeginToolbarSwipe];
   }
 
   // Otherwise, only allow contentView touches with `swipeGestureRecognizer_`.
@@ -235,7 +302,6 @@ const CGFloat kSwipeEdge = 20;
 - (void)animatePageNavigationInDirection:
     (UISwipeGestureRecognizerDirection)direction {
   _inSwipe = YES;
-  [_mutator setInSwipe:YES];
 
   [_sideSwipeUIControllerDelegate
       updateAccessoryViewsForSideSwipeWithVisibility:NO];
@@ -298,7 +364,6 @@ const CGFloat kSwipeEdge = 20;
   [_sideSwipeUIControllerDelegate
       updateAccessoryViewsForSideSwipeWithVisibility:YES];
   _inSwipe = NO;
-  [self.mutator setInSwipe:NO];
 }
 
 // Handles the completion of a side swipe gesture that met the navigation
@@ -320,7 +385,6 @@ const CGFloat kSwipeEdge = 20;
 
 - (void)handleCurtainCompletion {
   _inSwipe = NO;
-  [self.mutator setInSwipe:NO];
 }
 
 // Adds a visual "curtain" overlay to the view, used to obscure content during
@@ -365,7 +429,11 @@ const CGFloat kSwipeEdge = 20;
 - (void)handleSwipe:(SideSwipeGestureRecognizer*)gesture {
   DCHECK(_swipeType != SwipeType::NONE);
   if (_swipeType == SwipeType::CHANGE_TAB) {
-    return;
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+      return [self handleiPhoneTabSwipe:gesture];
+    } else {
+      return [self handleiPadTabSwipe:gesture];
+    }
   }
   if (_swipeType == SwipeType::CHANGE_PAGE) {
     return [self handleSwipeToNavigate:gesture];
@@ -383,7 +451,6 @@ const CGFloat kSwipeEdge = 20;
     _animatedFullscreenDisabler->StartAnimation();
 
     _inSwipe = YES;
-    [self.mutator setInSwipe:YES];
     [_sideSwipeUIControllerDelegate
         updateAccessoryViewsForSideSwipeWithVisibility:NO];
     BOOL goBack = IsSwipingBack(gesture.direction);
@@ -440,6 +507,137 @@ const CGFloat kSwipeEdge = 20;
       onUnderThresholdCompletion:^{
         [weakSelf handleUnderThresholdCompletion];
       }];
+}
+
+- (void)handlePan:(SideSwipeGestureRecognizer*)gesture {
+  // Do not trigger a CheckForOverRealization here, as it's expected
+  // that many WebStates may realize from multiple swipes.
+  web::IgnoreOverRealizationCheck();
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    return [self handleiPhoneTabSwipe:gesture];
+  } else {
+    return [self handleiPadTabSwipe:gesture];
+  }
+}
+
+// Show horizontal swipe stack view for iPhone.
+- (void)handleiPhoneTabSwipe:(SideSwipeGestureRecognizer*)gesture {
+  if (gesture.state == UIGestureRecognizerStateBegan) {
+    _inSwipe = YES;
+
+    CGRect frame =
+        [[_sideSwipeUIControllerDelegate sideSwipeContentView] frame];
+
+    // Add horizontal stack view controller.
+    CGFloat headerHeight =
+        self.fullscreenController->GetMaxViewportInsets().top;
+
+    if (_tabSideSwipeView) {
+      [_tabSideSwipeView setFrame:frame];
+      [_tabSideSwipeView setTopMargin:headerHeight];
+    } else {
+      _tabSideSwipeView =
+          [[CardSideSwipeView alloc] initWithFrame:frame
+                                         topMargin:headerHeight
+                                      webStateList:_webStateList];
+      _tabSideSwipeView.toolbarSnapshotProvider = self.toolbarSnapshotProvider;
+
+      [_tabSideSwipeView setAutoresizingMask:UIViewAutoresizingFlexibleWidth |
+                                             UIViewAutoresizingFlexibleHeight];
+      [_tabSideSwipeView setDelegate:_cardSwipeViewDelegate];
+      [_tabSideSwipeView setBackgroundColor:[UIColor blackColor]];
+    }
+
+    // Ensure that there's an up-to-date snapshot of the current tab.
+    [self.tabsDelegate updateActiveTabSnapshot];
+
+    // Layout tabs with new snapshots in the current orientation.
+    [_tabSideSwipeView updateViewsForDirection:gesture.direction];
+
+    // Insert above the toolbar.
+    [gesture.view addSubview:_tabSideSwipeView];
+  }
+
+  __weak SideSwipeUIController* weakSelf = self;
+  [_tabSideSwipeView handleHorizontalPan:gesture
+                   actionBeforeTabSwitch:^(int destinationTabIndex) {
+                     [weakSelf.tabsDelegate
+                         willTabSwitchWithSwipeToTabIndex:destinationTabIndex];
+                   }];
+}
+
+// Handles iPad tab swipe gestures.
+- (void)handleiPadTabSwipe:(SideSwipeGestureRecognizer*)gesture {
+  // Don't handle swipe when there are no tabs.
+  int count = [self.tabsDelegate tabCount];
+  if (count == 0) {
+    return;
+  }
+
+  if (gesture.state == UIGestureRecognizerStateBegan) {
+    // Disable fullscreen while the side swipe gesture is occurring.
+    _fullscreenDisabler =
+        std::make_unique<ScopedFullscreenDisabler>(self.fullscreenController);
+    [self.tabsDelegate updateActiveTabSnapshot];
+
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:kSideSwipeWillStartNotification
+                      object:nil];
+    [self.tabStripDelegate setHighlightsSelectedTab:YES];
+    _startingTabIndex = [self.tabsDelegate activeTabIndex];
+  } else if (gesture.state == UIGestureRecognizerStateChanged) {
+    // Side swipe for iPad involves changing the selected tab as the swipe moves
+    // across the width of the view.  The screen is broken up into
+    // `kIpadTabSwipeDistance` / `width` segments, with the current tab in the
+    // first section.  The swipe does not wrap edges.
+    CGFloat distance = [gesture locationInView:gesture.view].x;
+    if (gesture.direction == UISwipeGestureRecognizerDirectionLeft) {
+      distance = gesture.startPoint.x - distance;
+    } else {
+      distance -= gesture.startPoint.x;
+    }
+
+    int indexDelta = std::floor(distance / kIpadTabSwipeDistance);
+    // Don't wrap past the first tab.
+    if (indexDelta < count) {
+      // Flip delta when swiping forward.
+      if (IsSwipingForward(gesture.direction)) {
+        indexDelta = 0 - indexDelta;
+      }
+
+      int currentIndex = [self.tabsDelegate activeTabIndex];
+      DCHECK_GE(currentIndex, 0);
+      // Wrap around edges.
+      int newIndex = (int)(_startingTabIndex + indexDelta) % count;
+
+      // C99 defines the modulo result as negative if our offset is negative.
+      if (newIndex < 0) {
+        newIndex += count;
+      }
+
+      if (newIndex != currentIndex) {
+        [self.tabsDelegate willTabSwitchWithSwipeToTabIndex:newIndex];
+        [self.tabsDelegate tabSwitchWithSwipeToTabIndex:newIndex];
+      }
+    }
+  } else {
+    if (gesture.state == UIGestureRecognizerStateCancelled) {
+      [self.tabsDelegate
+          cancelTabSwitchWithSwipeAndRevertToInitialTabIndex:_startingTabIndex];
+    }
+
+    [self.tabsDelegate didCompleteTabSwitchWithSwipe];
+
+    // Redisplay the view if it was in overlay preview mode.
+    [_sideSwipeUIControllerDelegate sideSwipeRedisplayTabView];
+    [self.tabStripDelegate setHighlightsSelectedTab:NO];
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:kSideSwipeDidStopNotification
+                      object:nil];
+
+    // Stop disabling fullscreen.
+    _fullscreenDisabler = nullptr;
+  }
 }
 
 // Determines whether edge navigation is enabled for the specified swipe

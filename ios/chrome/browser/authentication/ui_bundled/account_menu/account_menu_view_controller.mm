@@ -272,6 +272,10 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
            forControlEvents:UIControlEventTouchUpInside];
   }
 
+  if (_hideEllipsisMenu) {
+    return;
+  }
+
   // Ellipsis button
   UIAction* manageYourAccountAction = [UIAction
       actionWithTitle:
@@ -289,11 +293,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   manageYourAccountAction.subtitle = [self.dataSource primaryAccountEmail];
 
   UIMenu* ellipsisMenu;
-  if (_hideEllipsisMenu) {
-    // TODO(crbug.com/392534699): Remove manageYourAccountAction and the
-    // ellipsisMenu completely.
-    ellipsisMenu = [UIMenu menuWithChildren:@[ manageYourAccountAction ]];
-  } else {
     UIAction* editAccountListAction = [UIAction
         actionWithTitle:l10n_util::GetNSString(
                             IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST)
@@ -307,7 +306,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
                 }];
     ellipsisMenu = [UIMenu
         menuWithChildren:@[ manageYourAccountAction, editAccountListAction ]];
-  }
 
   _ellipsisButton =
       [self addTopButtonWithSymbolName:kEllipsisCircleFillSymbol
@@ -624,13 +622,26 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 }
 
 - (void)updatePrimaryAccount {
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock manageYourAccountButtonAction = nil;
+  if (_hideEllipsisMenu) {
+    manageYourAccountButtonAction = ^{
+      base::RecordAction(
+          base::UserMetricsAction("Signin_AccountMenu_ManageAccount"));
+      [weakSelf.mutator didTapManageYourGoogleAccount];
+    };
+  }
   _identityAccountView = [[CentralAccountView alloc]
-        initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)
-          avatarImage:self.dataSource.primaryAccountAvatar
-                 name:self.dataSource.primaryAccountUserFullName
-                email:self.dataSource.primaryAccountEmail
-      managementState:self.dataSource.managementState
-      useLargeMargins:NO];
+                      initWithFrame:CGRectMake(0, 0,
+                                               self.tableView.frame.size.width,
+                                               0)
+                        avatarImage:self.dataSource.primaryAccountAvatar
+                               name:self.dataSource.primaryAccountUserFullName
+                              email:self.dataSource.primaryAccountEmail
+                    managementState:self.dataSource.managementState
+                    useLargeMargins:NO
+         addManageYourAccountButton:_hideEllipsisMenu
+      manageYourAccountButtonAction:manageYourAccountButtonAction];
   [_identityAccountView updateTopPadding:[self navigationBarHeight]];
   self.tableView.tableHeaderView = _identityAccountView;
   [self.tableView reloadData];

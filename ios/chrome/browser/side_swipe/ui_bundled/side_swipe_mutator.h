@@ -14,9 +14,6 @@
 // Manages side-swipe navigation and tab switching.
 @protocol SideSwipeMutator
 
-// Whether or not a side swipe is currently being performed.
-@property(nonatomic, assign) BOOL inSwipe;
-
 // Performs navigation in the specified direction.
 - (void)navigateInDirection:(NavigationDirection)direction;
 

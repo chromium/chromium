@@ -64,6 +64,7 @@
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/card_swipe_view_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_coordinator.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller_delegate.h"
@@ -165,9 +166,9 @@ enum HeaderBehaviour {
 #pragma mark - BVC
 
 // Note other delegates defined in the Delegates category header.
-@interface BrowserViewController () <FullscreenUIElement,
+@interface BrowserViewController () <CardSwipeViewDelegate,
+                                     FullscreenUIElement,
                                      MainContentUI,
-                                     SideSwipeMediatorDelegate,
                                      SideSwipeUIControllerDelegate,
                                      TabStripPresentation,
                                      UIGestureRecognizerDelegate> {
@@ -358,8 +359,8 @@ enum HeaderBehaviour {
     _browserContainerViewController = browserContainerViewController;
     _keyCommandsProvider = keyCommandsProvider;
     _sideSwipeCoordinator = dependencies.sideSwipeCoordinator;
-    [_sideSwipeCoordinator setSwipeDelegate:self];
     [_sideSwipeCoordinator setSideSwipeUIControllerDelegate:self];
+    [_sideSwipeCoordinator setCardSwipeViewDelegate:self];
     _bookmarksCoordinator = dependencies.bookmarksCoordinator;
     self.toolbarAccessoryPresenter = dependencies.toolbarAccessoryPresenter;
     self.ntpCoordinator = dependencies.ntpCoordinator;
@@ -2543,13 +2544,7 @@ enum HeaderBehaviour {
   return [hitView isDescendantOfView:self.contentArea];
 }
 
-// TODO(crbug.com/40842427): Factor this delegate into a mediator or other
-// helper
-#pragma mark - SideSwipeMediatorDelegate
-
-- (UIView*)sideSwipeFullscreenView {
-  return self.view;
-}
+#pragma mark - CardSwipeViewDelegate
 
 - (void)sideSwipeViewDismissAnimationDidEnd:(UIView*)sideSwipeView {
   DCHECK(!IsRegularXRegularSizeClass(self));
@@ -2561,6 +2556,14 @@ enum HeaderBehaviour {
   // Reset horizontal stack view.
   [sideSwipeView removeFromSuperview];
   [_sideSwipeCoordinator setSwipeInProgress:NO];
+}
+
+// TODO(crbug.com/40842427): Factor this delegate into a mediator or other
+// helper
+#pragma mark - SideSwipeUIControllerDelegate
+
+- (UIView*)sideSwipeFullscreenView {
+  return self.view;
 }
 
 - (UIView*)sideSwipeContentView {

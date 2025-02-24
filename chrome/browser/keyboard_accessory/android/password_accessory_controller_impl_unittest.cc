@@ -19,6 +19,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/expected.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
@@ -122,7 +123,7 @@ constexpr char kExampleSignonRealm[] = "https://example.com/";
 constexpr char16_t kExampleDomain[] = u"example.com";
 constexpr char16_t kUsername[] = u"alice";
 constexpr char16_t kPassword[] = u"password123";
-const std::optional<std::vector<PasskeyCredential>> kNoPasskeys = std::nullopt;
+const std::vector<PasskeyCredential> kNoPasskeys;
 
 class MockPasswordGenerationController
     : public PasswordGenerationControllerImpl {
@@ -377,7 +378,7 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     webauthn_credentials_delegate_ = std::make_unique<
         NiceMock<password_manager::MockWebAuthnCredentialsDelegate>>();
     ON_CALL(*webauthn_credentials_delegate(), GetPasskeys)
-        .WillByDefault(ReturnRef(kNoPasskeys));
+        .WillByDefault(Return(base::ok(&kNoPasskeys)));
     ON_CALL(*password_client(), GetWebAuthnCredentialsDelegateForDriver)
         .WillByDefault(Return(webauthn_credentials_delegate()));
     ON_CALL(*password_client(), GetWebAuthnCredManDelegateForDriver)
@@ -1939,10 +1940,9 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectPasskey) {
       PasskeyCredential::UserId({81, 28, 83, 84}),
       PasskeyCredential::Username("someone@example.com"),
       PasskeyCredential::DisplayName("someone"));
-  const std::optional<std::vector<PasskeyCredential>> kTestPasskeys(
-      {kTestPasskey});
+  std::vector<PasskeyCredential> kTestPasskeys({kTestPasskey});
   ON_CALL(*webauthn_credentials_delegate(), GetPasskeys)
-      .WillByDefault(ReturnRef(kTestPasskeys));
+      .WillByDefault(Return(base::ok(&kTestPasskeys)));
   CreateSheetController();
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {}, CredentialCache::IsOriginBlocklisted(false),

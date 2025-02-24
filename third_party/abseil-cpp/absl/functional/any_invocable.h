@@ -25,7 +25,7 @@
 //
 // NOTE: `absl::AnyInvocable` is similar to the C++23 `std::move_only_function`
 // abstraction, but has a slightly different API and is not designed to be a
-// drop-in replacement or C++11-compatible backfill of that type.
+// drop-in replacement or backfill of that type.
 //
 // Credits to Matt Calabrese (https://github.com/mattcalabrese) for the original
 // implementation.
@@ -97,11 +97,10 @@ ABSL_NAMESPACE_BEGIN
 // my_func(std::move(func6));
 //
 // `AnyInvocable` also properly respects `const` qualifiers, reference
-// qualifiers, and the `noexcept` specification (only in C++ 17 and beyond) as
-// part of the user-specified function type (e.g.
-// `AnyInvocable<void() const && noexcept>`). These qualifiers will be applied
-// to the `AnyInvocable` object's `operator()`, and the underlying invocable
-// must be compatible with those qualifiers.
+// qualifiers, and the `noexcept` specification  as part of the user-specified
+// function type (e.g. `AnyInvocable<void() const && noexcept>`). These
+// qualifiers will be applied to the `AnyInvocable` object's `operator()`, and
+// the underlying invocable must be compatible with those qualifiers.
 //
 // Comparison of const and non-const function types:
 //

@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/strings/strcat.h"
+#include "base/types/expected.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -444,9 +445,9 @@ TEST_F(PasswordSuggestionGeneratorTest,
 // Verify that no passkeys suggestions are generated when
 //  `ShowWebAuthnCredentials` is `true`, but there're not passkeys saved.
 TEST_F(PasswordSuggestionGeneratorTest, PasskeySuggestions_NoPasskeysSaved) {
-  std::optional<std::vector<PasskeyCredential>> passkeys = std::nullopt;
+  std::vector<PasskeyCredential> passkeys;
   ON_CALL(credentials_delegate(), GetPasskeys)
-      .WillByDefault(ReturnRef(passkeys));
+      .WillByDefault(Return(base::ok(&passkeys)));
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
@@ -459,11 +460,10 @@ TEST_F(PasswordSuggestionGeneratorTest, PasskeySuggestions_NoPasskeysSaved) {
 // Verify that no passkeys suggestions are generated when there're passkeys
 // saved but `ShowWebAuthnCredentials` is `false`.
 TEST_F(PasswordSuggestionGeneratorTest, PasskeySuggestions_DontShowPasskey) {
-  const auto passkeys =
-      std::optional(std::vector<PasskeyCredential>{passkey_credential(
-          PasskeyCredential::Source::kWindowsHello, "username")});
+  const std::vector<PasskeyCredential> passkeys({passkey_credential(
+      PasskeyCredential::Source::kWindowsHello, "username")});
   ON_CALL(credentials_delegate(), GetPasskeys)
-      .WillByDefault(ReturnRef(passkeys));
+      .WillByDefault(Return(base::ok(&passkeys)));
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
@@ -477,9 +477,9 @@ TEST_F(PasswordSuggestionGeneratorTest, PasskeySuggestions_DontShowPasskey) {
 TEST_F(PasswordSuggestionGeneratorTest, PasskeySuggestions_SingleSavedPasskey) {
   const auto passkey =
       passkey_credential(PasskeyCredential::Source::kWindowsHello, "username");
-  const auto passkeys = std::optional(std::vector<PasskeyCredential>{passkey});
+  const std::vector<PasskeyCredential> passkeys({passkey});
   ON_CALL(credentials_delegate(), GetPasskeys)
-      .WillByDefault(ReturnRef(passkeys));
+      .WillByDefault(Return(base::ok(&passkeys)));
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
@@ -507,10 +507,9 @@ TEST_F(PasswordSuggestionGeneratorTest,
       passkey_credential(PasskeyCredential::Source::kTouchId, "foo");
   const auto bar_passkey =
       passkey_credential(PasskeyCredential::Source::kICloudKeychain, "bar");
-  const auto passkeys =
-      std::optional(std::vector<PasskeyCredential>{foo_passkey, bar_passkey});
+  const std::vector<PasskeyCredential> passkeys({foo_passkey, bar_passkey});
   ON_CALL(credentials_delegate(), GetPasskeys)
-      .WillByDefault(ReturnRef(passkeys));
+      .WillByDefault(Return(base::ok(&passkeys)));
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
@@ -572,9 +571,9 @@ TEST_F(PasswordSuggestionGeneratorTest, GeneratePassword_HasSavedPassword) {
 TEST_F(PasswordSuggestionGeneratorTest, GeneratePassword_HasSavedPasskey) {
   const auto passkey =
       passkey_credential(PasskeyCredential::Source::kWindowsHello, "username");
-  const auto passkeys = std::optional(std::vector<PasskeyCredential>{passkey});
+  const std::vector<PasskeyCredential> passkeys({passkey});
   ON_CALL(credentials_delegate(), GetPasskeys)
-      .WillByDefault(ReturnRef(passkeys));
+      .WillByDefault(Return(base::ok(&passkeys)));
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
@@ -614,10 +613,9 @@ TEST_F(PasswordSuggestionGeneratorTest, DomainSuggestions_SuggestionOrder) {
       passkey_credential(PasskeyCredential::Source::kTouchId, "foo");
   const auto bar_passkey =
       passkey_credential(PasskeyCredential::Source::kICloudKeychain, "bar");
-  const auto passkeys =
-      std::optional(std::vector<PasskeyCredential>{foo_passkey, bar_passkey});
+  const std::vector<PasskeyCredential> passkeys({foo_passkey, bar_passkey});
   ON_CALL(credentials_delegate(), GetPasskeys)
-      .WillByDefault(ReturnRef(passkeys));
+      .WillByDefault(Return(base::ok(&passkeys)));
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       fill_data, favicon(), /*username_filter=*/u"", OffersGeneration(true),

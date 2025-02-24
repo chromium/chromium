@@ -5,12 +5,21 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_ENTITIES_FIELD_FILLING_ENTITY_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_ENTITIES_FIELD_FILLING_ENTITY_UTIL_H_
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/containers/flat_set.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
+class AttributeInstance;
+class AutofillField;
 class EntityDataManager;
+class EntityInstance;
 class FormStructure;
 
 // Returns all fields in a `FormStructure` that are fillable by Autofill AI,
@@ -19,6 +28,14 @@ class FormStructure;
 base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
     const FormStructure& form,
     const EntityDataManager& edm);
+
+std::pair<std::u16string, std::optional<FieldType>>
+GetFillValueAndTypeForEntity(const EntityInstance& entity,
+                             const AutofillField& field,
+                             mojom::ActionPersistence action_persistence);
+
+// Returns an obfuscated version of `attribute`'s value.
+std::u16string GetObfuscatedAttributeValue(const AttributeInstance& attribute);
 
 }  // namespace autofill
 

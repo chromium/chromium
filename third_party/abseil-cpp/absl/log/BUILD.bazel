@@ -152,7 +152,6 @@ cc_library(
 
 cc_library(
     name = "log_entry",
-    srcs = ["log_entry.cc"],
     hdrs = ["log_entry.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,

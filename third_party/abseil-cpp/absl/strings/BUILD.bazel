@@ -104,6 +104,7 @@ cc_library(
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:endian",
+        "//absl/base:iterator_traits_internal",
         "//absl/base:nullability",
         "//absl/base:raw_logging_internal",
         "//absl/base:throw_delegate",
@@ -437,7 +438,6 @@ cc_library(
     ],
     deps = [
         ":strings",
-        "//absl/base:base_internal",
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:endian",
@@ -568,7 +568,6 @@ cc_library(
         "cord.cc",
         "cord_analysis.cc",
         "cord_analysis.h",
-        "cord_buffer.cc",
     ],
     hdrs = [
         "cord.h",

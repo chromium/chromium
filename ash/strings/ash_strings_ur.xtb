@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">ڈیسک 2</translation>
 <translation id="1546930421365146760">‏اس آلہ کو Google منتظم کونسول میں سیٹ اپ کرنے کیلئے اپنے منتظم سے مطالبہ کریں</translation>
 <translation id="1549512626801247439">اسٹوریج کا نظم</translation>
+<translation id="1549721333775633305">فوری اشتراک کی ترتیبات دکھائیں۔ فوری اشتراک کو غیر فعال کیا گیا</translation>
 <translation id="1550406609415860283">دستیاب آلات</translation>
 <translation id="1550523713251050646">مزید اختیارات کیلئے کلک کریں</translation>
 <translation id="1555130319947370107">نیلا</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> فعال نہیں ہے۔</translation>
 <translation id="5860033963881614850">آف</translation>
 <translation id="5860491529813859533">آن کریں</translation>
+<translation id="5864691701242730005">فوری اشتراک کی ترتیبات دکھائیں۔ <ph name="VISIBILITY" /> مرئیت کا انتخاب کیا گیا</translation>
 <translation id="5864748620896638071">بیٹری %<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="5867217927013474703">نیٹ ورک کی معلومات جمع کی جا رہی ہیں</translation>
 <translation id="5867606971598166637">آپ کے سسٹم کا منتظم آپ کی اسکرینز کی نگرانی کر رہا ہے</translation>
@@ -2261,6 +2263,7 @@
 <translation id="851660987304951246">مواد کا فوری خلاصہ کرنے یا سوالات پوچھنے کے لیے پڑھنے میں میری مدد کریں کا استعمال کریں</translation>
 <translation id="8517041960877371778">ہو سکتا ہے کہ آپ کا <ph name="DEVICE_TYPE" /> آن ہونے کی صورت میں چارج نہ ہو۔</translation>
 <translation id="8535393432370007982">رنگ کے لحاظ سے ترتیب کو کالعدم کریں</translation>
+<translation id="8536886494750559755">فوری اشتراک کی ترتیبات دکھائیں۔ <ph name="TIME_REMAINING" /> کی خاطر ہر ایک کیلئے مرئی</translation>
 <translation id="8539803091108018926">ٹیکسٹ کلپ بورڈ میں کاپی ہو گیا</translation>
 <translation id="8541078764854166027">کیمرا فریمنگ</translation>
 <translation id="8542053257095774575">محفوظ کردہ کوئی ڈیسک یا تمثیل نہیں ہے</translation>

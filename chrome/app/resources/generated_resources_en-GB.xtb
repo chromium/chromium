@@ -1021,7 +1021,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1692210323591458290">Dark purple</translation>
 <translation id="1692713444215319269">Colour inversion, magnifier and display settings</translation>
 <translation id="169341880170235617">Your tab groups now automatically save</translation>
-<translation id="1694470329618537745">Latest updates to this group</translation>
 <translation id="1695487653372841667">You can control what data is shared with Google. You can change this at any time in Settings.</translation>
 <translation id="1695510246756136088">Can't connect to the Internet. Try again.</translation>
 <translation id="1696555181932908973">You can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -8707,7 +8706,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7189234443051076392">Make sure that there is enough space on your device</translation>
 <translation id="7189451821249468368">You do not have enough upgrades to enrol this device. Please contact sales to purchase more. If you believe that you're seeing this message in error, please contact support.</translation>
 <translation id="7189965711416741966">Fingerprint added.</translation>
-<translation id="7190883804815364931">Last update to this tab</translation>
 <translation id="7190921792980745354">Block <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Some supported links will still open in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> and <ph name="NUMBER_OF_OTHER_APPS" /> other apps.</translation>
 <translation id="7191159667348037">Unknown printer (USB)</translation>

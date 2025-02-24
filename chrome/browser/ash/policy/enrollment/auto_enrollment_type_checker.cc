@@ -90,14 +90,14 @@ static bool IsOfficialGoogleFlexAndFREOnFlexIsEnabled() {
              AutoEnrollmentTypeChecker::kForcedReEnrollmentNever;
 }
 
+}  // namespace
+
 // Returns true if FRE state keys are supported.
-static bool AreFREStateKeysSupported() {
+bool AutoEnrollmentTypeChecker::AreFREStateKeysSupported() {
   // TODO(b/331677599): Return IsOfficialGoogleOS().
   return IsOfficialGoogleChrome() ||
          IsOfficialGoogleFlexAndFREOnFlexIsEnabled();
 }
-
-}  // namespace
 
 // static
 bool AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled() {
@@ -178,7 +178,8 @@ bool AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled() {
 
 // static
 bool AutoEnrollmentTypeChecker::IsEnabled() {
-  return IsFREEnabled() || IsInitialEnrollmentEnabled();
+  return IsUnifiedStateDeterminationEnabled() || IsFREEnabled() ||
+         IsInitialEnrollmentEnabled();
 }
 
 // static

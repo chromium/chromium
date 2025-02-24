@@ -20,8 +20,9 @@ namespace ash {
 
 namespace {
 
-// Extra checks for Sunfish prefs and policy, used in `IsSunfishSessionAllowed`.
-bool IsSunfishSessionAllowedExtraChecks() {
+// Extra checks for Sunfish prefs and policy, used in `CanShowSunfishUi` and
+// `IsSunfishSessionAllowed`.
+bool ExtraSunfishChecks() {
   Shell* shell = Shell::HasInstance() ? Shell::Get() : nullptr;
   if (!shell) {
     return false;
@@ -51,10 +52,14 @@ void CaptureScreenshotsOfAllDisplays() {
   CaptureModeController::Get()->CaptureScreenshotsOfAllDisplays();
 }
 
+bool CanShowSunfishUi() {
+  return features::IsSunfishFeatureEnabled() && ExtraSunfishChecks();
+}
+
 bool IsSunfishSessionAllowed() {
   return (features::IsSunfishFeatureEnabled() ||
           ScannerController::CanShowUiForShell()) &&
-         IsSunfishSessionAllowedExtraChecks();
+         ExtraSunfishChecks();
 }
 
 }  // namespace ash

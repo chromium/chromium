@@ -1010,6 +1010,7 @@
 <translation id="1682696837763999627">큰 마우스 커서</translation>
 <translation id="1682867089915960590">캐럿 브라우징을 사용 설정하시겠습니까?</translation>
 <translation id="1686550358074589746">글라이드 타이핑 사용</translation>
+<translation id="1686785653877010442">사이트에서는 보통 속보 또는 채팅 메시지에 관한 알림을 전송합니다.</translation>
 <translation id="168715261339224929">어느 기기에서나 북마크를 사용하려면 동기화를 사용 설정하세요.</translation>
 <translation id="1688935057616748272">문자를 입력하세요</translation>
 <translation id="1689333818294560261">닉네임</translation>
@@ -1021,7 +1022,6 @@
 <translation id="1692210323591458290">진한 보라색</translation>
 <translation id="1692713444215319269">색상 반전, 돋보기, 디스플레이 설정</translation>
 <translation id="169341880170235617">이제 탭 그룹이 자동으로 저장됩니다.</translation>
-<translation id="1694470329618537745">이 그룹의 최신 업데이트</translation>
 <translation id="1695487653372841667">사용자는 Google과 어떤 데이터를 공유할지 관리할 수 있으며 언제든지 설정에서 변경할 수 있습니다</translation>
 <translation id="1695510246756136088">인터넷에 연결할 수 없습니다. 다시 시도해 주세요.</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />에서 계속하려면 다른 방법을 시도해 보세요.</translation>
@@ -1294,6 +1294,7 @@
 <translation id="1878885068166344708">포커스를 이동하면 항목이 강조표시됩니다. 포커스를 변경하려면 Tab 키를 누르거나 항목을 선택하세요</translation>
 <translation id="1879000426787380528">다음 사용자로 로그인</translation>
 <translation id="18802377548000045">탭이 넓은 폭으로 줄어듦</translation>
+<translation id="1880618477732738742">이 확장 프로그램을 비롯한 모든 웹사이트 및 확장 프로그램에서 위치정보, 마이크, 카메라, 쿠키 등의 기능에 대한 액세스 권한을 변경하고 부여합니다.</translation>
 <translation id="1880905663253319515">인증서 '<ph name="CERTIFICATE_NAME" />'을(를) 삭제하시겠습니까?</translation>
 <translation id="1881445033931614352">키보드 레이아웃</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{항목}other{항목 #개}}</translation>
@@ -3483,6 +3484,7 @@
 <translation id="3435738964857648380">보안</translation>
 <translation id="343578350365773421">용지 부족</translation>
 <translation id="3435896845095436175">사용</translation>
+<translation id="3437397693214267762">Outlook Calendar 및 SharePoint/OneDrive 파일 보기</translation>
 <translation id="3438633801274389918">닌자</translation>
 <translation id="3439153939049640737"><ph name="HOST" />에서 마이크에 액세스하도록 항상 허용</translation>
 <translation id="3439970425423980614">미리보기에서 PDF 여는 중</translation>
@@ -7142,6 +7144,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
     내 계정을 사용하여 모든 북마크, 파일 등에 쉽게 액세스해 보세요. 계정이 없는 경우 다음 화면에서 계정을 만들 수 있습니다.</translation>
 <translation id="6054138466019582920">Google에서 이 페이지 검색(&amp;C)…</translation>
 <translation id="6054284857788651331">최근에 닫은 탭 그룹</translation>
+<translation id="6054819000749443354">시스템 설정 열기</translation>
 <translation id="6054961935262556546">공개 상태 변경</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256(RSA 암호화 사용)</translation>
 <translation id="6055544610007596637">Google Play 스토어에서 <ph name="DEVICE_TYPE" />용 앱 설치</translation>
@@ -8708,7 +8711,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7189234443051076392">기기 저장용량이 충분한지 확인합니다.</translation>
 <translation id="7189451821249468368">기기를 등록하는 데 필요한 업그레이드가 부족합니다. 판매처에 문의하여 추가로 구매하시기 바랍니다. 이 메시지가 잘못 표시되었다고 판단되는 경우 지원팀에 문의하세요.</translation>
 <translation id="7189965711416741966">지문이 추가되었습니다.</translation>
-<translation id="7190883804815364931">이 탭의 최종 업데이트</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" />님을 차단하시겠습니까?</translation>
 <translation id="7191063546666816478">지원되는 링크 일부는 <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> 외 <ph name="NUMBER_OF_OTHER_APPS" />개의 다른 앱에서 계속 열 수 있습니다.</translation>
 <translation id="7191159667348037">알 수 없는 프린터(USB)</translation>
@@ -8965,6 +8967,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7380459290951585794">휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있어야 합니다.</translation>
 <translation id="7380622428988553498">기기 이름에 잘못된 문자가 포함되어 있습니다.</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> 업데이트됨</translation>
+<translation id="7382009635620830394">이 카드가 사용 중지되면 SharePoint 및 OneDrive 파일, Outlook Calendar와 같은 Microsoft 카드도 사용 중지됩니다.</translation>
 <translation id="7382085868019811559">이전 브라우저 지원(LBS)을 사용하면 특정 사이트를 올바르게 실행하는 데 필요한 레거시 기능을 지원하는 대체 브라우저에서 해당 패턴의 URL을 열 수 있습니다.</translation>
 <translation id="7382980704744807223">의심스러운 파일</translation>
 <translation id="738322632977123193">업로드할 수 없습니다. 이미지는 .jpg, .gif, .png, .bmp, .tif, .webp 형식 중 하나여야 합니다.</translation>
@@ -10635,6 +10638,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> 계정은 <ph name="MANAGER" />에서 관리합니다. 이 이메일을 추가 계정으로 사용할 수 없습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" /><ph name="USER_EMAIL" /> 계정을 사용하려면 먼저 <ph name="DEVICE_TYPE" />에서 로그아웃한 다음, 로그인 화면 하단에서 사용자 추가를 선택하세요.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">맨 위 키의 동작을 전환하려면 검색 키를 길게 누름</translation>
+<translation id="8549127125482561383">요청 표시 방법</translation>
 <translation id="8549316893834449916">Gmail, 드라이브, YouTube 등에 사용하는 계정과 동일한 Google 계정으로 Chromebook에 로그인합니다.</translation>
 <translation id="8550239873869577759">의심스러운 파일이 다운로드됨</translation>
 <translation id="8551388862522347954">라이선스</translation>

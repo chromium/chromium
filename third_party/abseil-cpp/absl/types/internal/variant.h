@@ -30,8 +30,6 @@
 
 #include "absl/base/config.h"
 #include "absl/base/internal/identity.h"
-#include "absl/base/internal/inline_variable.h"
-#include "absl/base/internal/invoke.h"
 #include "absl/base/macros.h"
 #include "absl/base/optimization.h"
 #include "absl/meta/type_traits.h"
@@ -46,7 +44,7 @@ ABSL_NAMESPACE_BEGIN
 template <class... Types>
 class variant;
 
-ABSL_INTERNAL_INLINE_CONSTEXPR(size_t, variant_npos, static_cast<size_t>(-1));
+inline constexpr size_t variant_npos =  static_cast<size_t>(-1);
 
 template <class T>
 struct variant_size;
@@ -280,7 +278,7 @@ struct UnreachableSwitchCase {
 template <class Op, std::size_t I>
 struct ReachableSwitchCase {
   static VisitIndicesResultT<Op, std::size_t> Run(Op&& op) {
-    return absl::base_internal::invoke(std::forward<Op>(op), SizeT<I>());
+    return std::invoke(std::forward<Op>(op), SizeT<I>());
   }
 };
 
@@ -289,7 +287,7 @@ struct ReachableSwitchCase {
 // power of 2 is because the number was picked to correspond to a power of 2
 // amount of "normal" alternatives, plus one for the possibility of the user
 // providing "monostate" in addition to the more natural alternatives.
-ABSL_INTERNAL_INLINE_CONSTEXPR(std::size_t, MaxUnrolledVisitCases, 33);
+inline constexpr std::size_t MaxUnrolledVisitCases = 33;
 
 // Note: The default-definition is for unreachable cases.
 template <bool IsReachable>
@@ -412,7 +410,7 @@ struct VisitIndicesSwitch {
         return PickCase<Op, 32, EndIndex>::Run(std::forward<Op>(op));
       default:
         ABSL_ASSERT(i == variant_npos);
-        return absl::base_internal::invoke(std::forward<Op>(op), NPos());
+        return std::invoke(std::forward<Op>(op), NPos());
     }
   }
 };
@@ -476,7 +474,7 @@ struct VisitIndicesVariadicImpl<absl::index_sequence<N...>, EndIndices...> {
     template <std::size_t I>
     VisitIndicesResultT<Op, decltype(EndIndices)...> operator()(
         SizeT<I> /*index*/) && {
-      return base_internal::invoke(
+      return std::invoke(
           std::forward<Op>(op),
           SizeT<UnflattenIndex<I, N, (EndIndices + 1)...>::value -
                 std::size_t{1}>()...);
@@ -906,7 +904,7 @@ struct PerformVisitation {
                      absl::result_of_t<Op(VariantAccessResult<
                                           Is, QualifiedVariants>...)>>::value,
         "All visitation overloads must have the same return type.");
-    return absl::base_internal::invoke(
+    return std::invoke(
         std::forward<Op>(op),
         VariantCoreAccess::Access<Is>(
             std::forward<QualifiedVariants>(std::get<TupIs>(variant_tup)))...);

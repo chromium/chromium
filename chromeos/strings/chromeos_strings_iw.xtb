@@ -473,6 +473,7 @@
 <translation id="3226657629376379887">תפריט הפעולות בפריסה</translation>
 <translation id="3227186760713762082">צריך לחלק את הערך של <ph name="CATEGORY_TEXT" /> ב-<ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">משימות הדפסה בנות יותר מיום אחד יוסרו</translation>
+<translation id="3248791727258378769">לא ייווצר תמליל</translation>
 <translation id="324961752321393509">אין אישור מהאדמין שלך לסגור את האפליקציה הזו</translation>
 <translation id="3263941347294171263">כדי להמשיך בתהליך העדכון, צריך לנתק את <ph name="DEVICE_NAME" /> ולחבר אותו מחדש</translation>
 <translation id="3268178239013324452">נכשלה – דלת המדפסת פתוחה</translation>
@@ -672,6 +673,7 @@
 <translation id="420283545744377356">השבתה של שומר המסך</translation>
 <translation id="4210636113897977670">שמירה ויציאה</translation>
 <translation id="4210659479607886331">נהר בקרחון</translation>
+<translation id="4212169537710712814">הורדת מודל התמלול ב<ph name="LANGUAGE_NAME" /> בוצעה</translation>
 <translation id="42126664696688958">ייצוא</translation>
 <translation id="4213104098953699324">‏מקלדת USB</translation>
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
@@ -942,6 +944,7 @@
 <translation id="5431318178759467895">צבע</translation>
 <translation id="5457599981699367932">גלישה כאורח</translation>
 <translation id="54609108002486618">מנוהל</translation>
+<translation id="5461608756903394951">מתבצעת הורדה של מודל התמלול ב<ph name="LANGUAGE_NAME" /></translation>
 <translation id="5470776029649730099">יוטה</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{נותר ניסיון אחד ({0})}one{נותרו {0} ניסיונות}two{נותרו {0} ניסיונות}other{נותרו {0} ניסיונות}}</translation>
 <translation id="5488280942828718790">מג'נטה</translation>
@@ -1193,6 +1196,7 @@
 <translation id="6595046262780525922">להפעיל את התמלול ולהוריד את מודל התמלול?</translation>
 <translation id="6596816719288285829">‏כתובת IP</translation>
 <translation id="6599673642868607614">‏תודה על המשוב שלך. המשוב שלך ייבדק על ידי הצוות שלנו ויעזור בשיפור חוויית השימוש ב-Chromebook. אנחנו מקבלים הרבה דיווחים, ולכן לא נוכל לשלוח תשובה.</translation>
+<translation id="6608043585557830684">התמליל מושבת. אפשר להפעיל אותו ב"הגדרות" או בתפריט <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">מקשי העכבר</translation>
 <translation id="6618744767048954150">הבדיקה מתבצעת עכשיו</translation>
 <translation id="6620487321149975369">משימות הדפסה יופיעו תחת היסטוריה אלא אם הן הוסרו ידנית</translation>

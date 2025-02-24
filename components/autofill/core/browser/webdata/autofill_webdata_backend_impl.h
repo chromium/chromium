@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
@@ -17,6 +18,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/webdata/common/web_data_results.h"
@@ -157,6 +159,9 @@ class AutofillWebDataBackendImpl
       base::Time delete_end,
       WebDatabase* db);
   std::unique_ptr<WDTypedResult> GetEntityInstances(WebDatabase* db);
+
+  // Retrieves LoyaltyCards from the database.
+  std::unique_ptr<WDTypedResult> GetLoyaltyCards(WebDatabase* db);
 
   // Returns the number of values such that all for autofill entries with that
   // value, the interval between creation date and last usage is entirely

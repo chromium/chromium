@@ -36,7 +36,6 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
-        "//absl/base:base_internal",
         "//absl/base:core_headers",
         "//absl/utility",
     ],

@@ -398,7 +398,7 @@ class ABSL_ATTRIBUTE_VIEW string_view {
     if (ABSL_PREDICT_FALSE(pos > length_)) {
       base_internal::ThrowStdOutOfRange("absl::string_view::substr");
     }
-    return string_view(ptr_ + pos, Min(n, length_ - pos));
+    return string_view(ptr_ + pos, (std::min)(n, length_ - pos));
   }
 
   // string_view::compare()
@@ -409,10 +409,10 @@ class ABSL_ATTRIBUTE_VIEW string_view {
   // is greater than `x`.
   constexpr int compare(string_view x) const noexcept {
     return CompareImpl(length_, x.length_,
-                       Min(length_, x.length_) == 0
+                       (std::min)(length_, x.length_) == 0
                            ? 0
                            : ABSL_INTERNAL_STRING_VIEW_MEMCMP(
-                                 ptr_, x.ptr_, Min(length_, x.length_)));
+                                 ptr_, x.ptr_, (std::min)(length_, x.length_)));
   }
 
   // Overload of `string_view::compare()` for comparing a substring of the
@@ -687,10 +687,6 @@ class ABSL_ATTRIBUTE_VIEW string_view {
 #else
     return str ? strlen(str) : 0;
 #endif
-  }
-
-  static constexpr size_t Min(size_type length_a, size_type length_b) {
-    return length_a < length_b ? length_a : length_b;
   }
 
   static constexpr int CompareImpl(size_type length_a, size_type length_b,

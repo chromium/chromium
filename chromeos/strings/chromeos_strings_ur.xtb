@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">براہ کرم انتظار کریں…</translation>
 <translation id="2740531572673183784">ٹھیک ہے</translation>
 <translation id="2744221223678373668">اشتراک کردہ</translation>
+<translation id="2749164457515831917">تجاویز شفل کی گئیں</translation>
 <translation id="2751739896257479635">‏EAP مرحلہ 2 توثیق</translation>
 <translation id="2754757901767760034">لیمپ</translation>
 <translation id="2780756493585863768">‏Google AI سے تقویت یافتہ حالیہ پس منظر</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">لے آؤٹ کارروائیوں کا مینیو</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> قدر کو <ph name="CONVERSION_RATE" /> سے تقسیم کریں</translation>
 <translation id="3246869037381808805">1 دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
+<translation id="3248791727258378769">کوئی ٹرانسکرپٹ تخلیقی نہیں کی جائے گی</translation>
 <translation id="324961752321393509">آپ کا منتظم اس ایپ کو بند کرنے کی اجازت نہیں دیتا ہے</translation>
 <translation id="3263941347294171263">اپ ڈیٹ ہونے کے عمل کو جاری رکھنے کے لیے <ph name="DEVICE_NAME" /> کو ان پلگ کریں اور دوبارہ پلگ ان کریں</translation>
 <translation id="3268178239013324452">ناکام ہو گیا - دروازہ کھلا ہے</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">درجۂ حرارت کی یونٹ منتخب کریں</translation>
 <translation id="3661106764436337772">تیزی سے اور زیادہ اعتماد کے ساتھ لکھیں</translation>
 <translation id="3662461537616691585">برگنڈی اور میرون</translation>
+<translation id="3664755900672940272">نمونے کے پرامپٹس شفل کیے گئے</translation>
 <translation id="3668449597372804501">کلاؤڈ فلو وال پیپر</translation>
 <translation id="3668570675727296296">زبان کی ترتیبات</translation>
 <translation id="3675132884790542448">سور</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">اسکرین سیور آف کریں</translation>
 <translation id="4210636113897977670">محفوظ کریں اور باہر نکلیں</translation>
 <translation id="4210659479607886331">برفانی ندیاں</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> کے ٹرانسکرپشن ماڈل کو ڈاؤن لوڈ کرنے کا عمل مکمل ہو گیا</translation>
 <translation id="42126664696688958">برآمد کریں</translation>
 <translation id="4213104098953699324">‏USB کی بورڈ</translation>
 <translation id="4227825898293920515">پاس ورڈ کی میعاد <ph name="TIME" /> میں ختم ہونے والی ہے</translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">رنگ</translation>
 <translation id="5457599981699367932">مہمان کے بطور براؤز کریں</translation>
 <translation id="54609108002486618">نظم کردہ</translation>
+<translation id="5461608756903394951"><ph name="LANGUAGE_NAME" /> کے ٹرانسکرپشن ماڈل کو ڈاؤن لوڈ کرنے کا عمل جاری ہے</translation>
 <translation id="5470776029649730099">پَٹ سَن</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} کوشش باقی ہے}other{{0} کوششیں باقی ہیں}}</translation>
 <translation id="5488280942828718790">قرمزی</translation>
@@ -1191,6 +1196,7 @@
 <translation id="6595046262780525922">ٹرانسکرپشن آن کریں اور ٹرانسکرپشن ماڈل ڈاؤن لوڈ کریں؟</translation>
 <translation id="6596816719288285829">‏IP پتہ</translation>
 <translation id="6599673642868607614">‏آپ کے تاثرات کیلئے شکریہ۔ آپ کے تاثرات Chromebook کے تجربے کو بہتر بنانے میں ہماری مدد کرتے ہیں اور ہماری ٹیم اس کا جائزہ لے گی۔ رپورٹس کی بڑی تعداد کی وجہ سے، ہم جواب نہیں بھیج سکیں گے۔</translation>
+<translation id="6608043585557830684">ٹرانسکرپشن آف ہے۔ ترتیبات یا <ph name="THREE_DOTS_MENU_ICON" /> مینو میں آن کریں۔</translation>
 <translation id="660846213831377756">ماؤس کیز</translation>
 <translation id="6618744767048954150">جاری ہے</translation>
 <translation id="6620487321149975369">پرنٹ جابز سرگزشت میں ظاہر ہوں گی جب تک کہ انہیں دستی طور پر ہٹا نہیں دیا جاتا</translation>
@@ -1279,6 +1285,7 @@
 <translation id="6975620886940770104">چمکتی ہوئی <ph name="GLOWSCAPES_FEATURE" /> والی <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">کوالا</translation>
 <translation id="6977381486153291903">فرم ویئر نظر ثانی</translation>
+<translation id="6978396562261420054">تخلیق کردہ تصویر</translation>
 <translation id="6981982820502123353">ایکسیسبیلٹی</translation>
 <translation id="6982462588253070448">ریت کے ٹیلے</translation>
 <translation id="7005833343836210400">آلہ آف لائن ہے</translation>

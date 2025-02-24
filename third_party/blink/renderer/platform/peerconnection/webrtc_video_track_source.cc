@@ -482,8 +482,8 @@ void WebRtcVideoTrackSource::DeliverFrame(
   }
 
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
-      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame,
-                                                         adapter_resources_));
+      new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+          frame, adapter_resources_));
 
   webrtc::VideoFrame::Builder frame_builder =
       webrtc::VideoFrame::Builder()

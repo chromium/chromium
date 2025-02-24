@@ -73,6 +73,7 @@ absl_source_set("strings") {
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:endian",
+    "//third_party/abseil-cpp/absl/base:iterator_traits_internal",
     "//third_party/abseil-cpp/absl/base:nullability",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/base:throw_delegate",
@@ -272,7 +273,6 @@ absl_source_set("cord_internal") {
   deps = [
     ":string_view",
     ":strings",
-    "//third_party/abseil-cpp/absl/base:base_internal",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:endian",
@@ -353,7 +353,6 @@ absl_source_set("cord") {
     "cord.cc",
     "cord_analysis.cc",
     "cord_analysis.h",
-    "cord_buffer.cc",
   ]
   public = [
     "cord.h",

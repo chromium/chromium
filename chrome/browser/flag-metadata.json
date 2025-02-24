@@ -748,6 +748,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "autofill-payments-field-swapping",
+    "owners": ["vidhanj@google.com"],
+    "expiry_milestone": 138
+  },
+  {
     "name": "autofill-payments-sheet-v2",
     "owners": [ "vincb@google.com", "bling-transactions@google.com" ],
     "expiry_milestone": 135

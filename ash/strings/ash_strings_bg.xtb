@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">Работен кът 2</translation>
 <translation id="1546930421365146760">Помолете администратора си да настрои това устройство в Google Admin Console</translation>
 <translation id="1549512626801247439">управление на хранилището</translation>
+<translation id="1549721333775633305">Показване на настройките за „Бързо споделяне“. Функцията „Бързо споделяне“ е деактивирана</translation>
 <translation id="1550406609415860283">Налични устройства</translation>
 <translation id="1550523713251050646">Кликнете за още опции</translation>
 <translation id="1555130319947370107">Синьо</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> не е активирана.</translation>
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5860491529813859533">Включване</translation>
+<translation id="5864691701242730005">Показване на настройките за „Бързо споделяне“. Избрана е видимостта за „<ph name="VISIBILITY" />“</translation>
 <translation id="5864748620896638071">Батерия: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Събира се информация за мрежата</translation>
 <translation id="5867606971598166637">Системният ви администратор наблюдава екраните ви</translation>
@@ -2262,6 +2264,7 @@
 <translation id="851660987304951246">Използвайте функцията за помощ при четене с цел бързо обобщаване на съдържание или задаване на въпроси</translation>
 <translation id="8517041960877371778">Възможно е вашият <ph name="DEVICE_TYPE" /> да не се зарежда, докато е включен.</translation>
 <translation id="8535393432370007982">Отмяна на сортирането по цвят</translation>
+<translation id="8536886494750559755">Показване на настройките за „Бързо споделяне“. Устройството е видимо за всички в продължение на <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Текстът е копиран в буферната памет</translation>
 <translation id="8541078764854166027">Центриране</translation>
 <translation id="8542053257095774575">Няма запазени работни кътове или шаблони</translation>

@@ -211,18 +211,6 @@ public class ManualFillingTestHelper {
         return DOMUtils.getNodeValue(mWebContentsRef.get(), nodeId);
     }
 
-    public void clickEmailField(boolean forceAccessory) throws TimeoutException {
-        // TODO(fhorschig): This should be |focusNode|. Change with autofill popup deprecation.
-        DOMUtils.clickNode(mWebContentsRef.get(), USERNAME_NODE_ID);
-        if (forceAccessory) {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        getManualFillingCoordinator().getMediatorForTesting().show(true);
-                    });
-        }
-        getKeyboard().showKeyboard(mActivityTestRule.getActivity().getCurrentFocus());
-    }
-
     public void clickFieldWithoutCompletion() throws TimeoutException {
         DOMUtils.waitForNonZeroNodeBounds(mWebContentsRef.get(), PASSWORD_NODE_ID);
         DOMUtils.focusNode(mWebContentsRef.get(), NO_COMPLETION_FIELD_ID);

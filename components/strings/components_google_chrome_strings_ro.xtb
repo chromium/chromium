@@ -12,6 +12,9 @@
 <translation id="3512634283363927263">Aceste pagini sunt destinate dezvoltatorilor Chrome și este posibil să nu fie întreținute sau testate în mod activ. Pentru a le activa, accesează <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, dă clic pe butonul pentru a activa paginile de remediere a erorilor, apoi accesează din nou această pagină.</translation>
 <translation id="3875312571075912821">Din setările pentru firewall sau antivirus, permite browserului Chrome să acceseze
           rețeaua.</translation>
+<translation id="4949828774841497663">Accesează Aplicații &gt; Setări de sistem &gt; Rețea, selectează rețeaua
+          activă, dă clic pe butonul Detalii... și deselectează orice proxy
+          care ar fi fost selectat.</translation>
 <translation id="5005121315113832363">Pagina a fost blocată de Chrome</translation>
 <translation id="6011049234605203654">Accesați
           meniul Chrome &gt;

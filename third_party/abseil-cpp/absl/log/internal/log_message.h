@@ -17,12 +17,12 @@
 // -----------------------------------------------------------------------------
 //
 // This file declares `class absl::log_internal::LogMessage`. This class more or
-// less represents a particular log message. LOG/CHECK macros create a
-// temporary instance of `LogMessage` and then stream values to it.  At the end
-// of the LOG/CHECK statement, LogMessage instance goes out of scope and
-// `~LogMessage` directs the message to the registered log sinks.
-// Heap-allocation of `LogMessage` is unsupported.  Construction outside of a
-// `LOG` macro is unsupported.
+// less represents a particular log message. LOG/CHECK macros create a temporary
+// instance of `LogMessage` and then stream values to it.  At the end of the
+// LOG/CHECK statement, the LogMessage is voidified by operator&&, and `Flush()`
+// directs the message to the registered log sinks.  Heap-allocation of
+// `LogMessage` is unsupported.  Construction outside of a `LOG` macro is
+// unsupported.
 
 #ifndef ABSL_LOG_INTERNAL_LOG_MESSAGE_H_
 #define ABSL_LOG_INTERNAL_LOG_MESSAGE_H_
@@ -183,17 +183,13 @@ class LogMessage {
   LogMessage& operator<<(char (&buf)[SIZE]) ABSL_ATTRIBUTE_NOINLINE;
 
   // Types that support `AbslStringify()` are serialized that way.
-  template <typename T,
-            typename std::enable_if<absl::HasAbslStringify<T>::value,
-                                    int>::type = 0>
-  LogMessage& operator<<(const T& v) ABSL_ATTRIBUTE_NOINLINE;
-
   // Types that don't support `AbslStringify()` but do support streaming into a
   // `std::ostream&` are serialized that way.
-  template <typename T,
-            typename std::enable_if<!absl::HasAbslStringify<T>::value,
-                                    int>::type = 0>
+  template <typename T>
   LogMessage& operator<<(const T& v) ABSL_ATTRIBUTE_NOINLINE;
+
+  // Dispatches the completed `absl::LogEntry` to applicable `absl::LogSink`s.
+  void Flush();
 
   // Note: We explicitly do not support `operator<<` for non-const references
   // because it breaks logging of non-integer bitfield types (i.e., enums).
@@ -206,11 +202,6 @@ class LogMessage {
   // Similar to `FailWithoutStackTrace()`, but without `abort()`.  Terminates
   // the process with an error exit code.
   [[noreturn]] static void FailQuietly();
-
-  // Dispatches the completed `absl::LogEntry` to applicable `absl::LogSink`s.
-  // This might as well be inlined into `~LogMessage` except that
-  // `~LogMessageFatal` needs to call it early.
-  void Flush();
 
   // After this is called, failures are done as quiet as possible for this log
   // message.
@@ -308,21 +299,16 @@ class StringifySink final {
 };
 
 // Note: the following is declared `ABSL_ATTRIBUTE_NOINLINE`
-template <typename T,
-          typename std::enable_if<absl::HasAbslStringify<T>::value, int>::type>
+template <typename T>
 LogMessage& LogMessage::operator<<(const T& v) {
-  StringifySink sink(*this);
-  // Replace with public API.
-  AbslStringify(sink, v);
-  return *this;
-}
-
-// Note: the following is declared `ABSL_ATTRIBUTE_NOINLINE`
-template <typename T,
-          typename std::enable_if<!absl::HasAbslStringify<T>::value, int>::type>
-LogMessage& LogMessage::operator<<(const T& v) {
-  OstreamView view(*data_);
-  view.stream() << log_internal::NullGuard<T>().Guard(v);
+  if constexpr (absl::HasAbslStringify<T>::value) {
+    StringifySink sink(*this);
+    // Replace with public API.
+    AbslStringify(sink, v);
+  } else {
+    OstreamView view(*data_);
+    view.stream() << log_internal::NullGuard<T>().Guard(v);
+  }
   return *this;
 }
 

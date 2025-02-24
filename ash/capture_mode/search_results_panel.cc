@@ -158,6 +158,9 @@ BEGIN_METADATA(SunfishSearchBoxView)
 END_METADATA
 
 SearchResultsPanel::SearchResultsPanel() {
+  // We should not use `CanShowSunfishUi` here, as that could change between
+  // sending the region and receiving a URL which will then create this view
+  // (for example, if the Sunfish policy changes).
   DCHECK(features::IsSunfishFeatureEnabled());
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)

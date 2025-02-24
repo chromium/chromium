@@ -586,11 +586,10 @@ void DevToolsFileHelper::RemoveFileSystem(const std::string& file_system_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::FilePath path = base::FilePath::FromUTF8Unsafe(file_system_path);
   isolated_context()->RevokeFileSystemByPath(path);
-
-  connected_automatic_file_systems_.erase(file_system_path);
+  DisconnectAutomaticFileSystem(file_system_path);
 
   // Only update the automatic file system list if the feature is turned on.
-  if (!base::FeatureList::IsEnabled(features::kDevToolsAutomaticFileSystems)) {
+  if (base::FeatureList::IsEnabled(features::kDevToolsAutomaticFileSystems)) {
     ScopedDictPrefUpdate update(profile_->GetPrefs(),
                                 prefs::kDevToolsAutomaticFileSystems);
     base::Value::Dict& automatic_file_systems_value = update.Get();

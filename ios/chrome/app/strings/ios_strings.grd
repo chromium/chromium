@@ -4092,7 +4092,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         other {{COUNT} passwords are saved only to this device. To use them on your other devices, save them in your Google Account, {EMAIL}.}}
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SECTION_TITLE" desc="Section title in settings &gt; password, about saving all local passwords to the user's account. [iOS Only]">
-        Use passwords on all your Devices
+        Use passwords on all your devices
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SNACKBAR_MESSAGE" desc="Snackbar message in settings &gt; password, about local passwords having been saved into the user's account. [iOS Only]">
         {COUNT, plural,

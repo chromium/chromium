@@ -34,7 +34,9 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabels) {
                                            name:mainText
                                           email:detailText
                                 managementState:ManagementState()
-                                useLargeMargins:YES];
+                                useLargeMargins:YES
+                     addManageYourAccountButton:NO
+                  manageYourAccountButtonAction:nil];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
   EXPECT_NSEQ(accountView.name, mainText);
@@ -57,7 +59,9 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithoutGivenName) {
                                            name:nil
                                           email:mainText
                                 managementState:ManagementState()
-                                useLargeMargins:YES];
+                                useLargeMargins:YES
+                     addManageYourAccountButton:NO
+                  manageYourAccountButtonAction:nil];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
   EXPECT_NSEQ(accountView.name, mainText);
@@ -83,7 +87,9 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithMachinePolicyDomain) {
                                            name:mainText
                                           email:detailText
                                 managementState:std::move(managementState)
-                                useLargeMargins:YES];
+                                useLargeMargins:YES
+                     addManageYourAccountButton:NO
+                  manageYourAccountButtonAction:nil];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
   EXPECT_NSEQ(accountView.name, mainText);
@@ -109,7 +115,9 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithUserPolicyDomain) {
                                            name:mainText
                                           email:detailText
                                 managementState:std::move(managementState)
-                                useLargeMargins:YES];
+                                useLargeMargins:YES
+                     addManageYourAccountButton:NO
+                  manageYourAccountButtonAction:nil];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
   EXPECT_NSEQ(accountView.name, mainText);

@@ -64,27 +64,27 @@ class CRC32AcceleratedX86ARMCombined : public CRC32 {
 constexpr size_t kSmallCutoff = 256;
 constexpr size_t kMediumCutoff = 2048;
 
-#define ABSL_INTERNAL_STEP1(crc)                      \
+#define ABSL_INTERNAL_STEP1(crc, p)                   \
   do {                                                \
     crc = CRC32_u8(static_cast<uint32_t>(crc), *p++); \
   } while (0)
-#define ABSL_INTERNAL_STEP2(crc)                                               \
+#define ABSL_INTERNAL_STEP2(crc, p)                                            \
   do {                                                                         \
     crc =                                                                      \
         CRC32_u16(static_cast<uint32_t>(crc), absl::little_endian::Load16(p)); \
     p += 2;                                                                    \
   } while (0)
-#define ABSL_INTERNAL_STEP4(crc)                                               \
+#define ABSL_INTERNAL_STEP4(crc, p)                                            \
   do {                                                                         \
     crc =                                                                      \
         CRC32_u32(static_cast<uint32_t>(crc), absl::little_endian::Load32(p)); \
     p += 4;                                                                    \
   } while (0)
-#define ABSL_INTERNAL_STEP8(crc, data)                  \
-  do {                                                  \
-    crc = CRC32_u64(static_cast<uint32_t>(crc),         \
-                    absl::little_endian::Load64(data)); \
-    data += 8;                                          \
+#define ABSL_INTERNAL_STEP8(crc, p)                                            \
+  do {                                                                         \
+    crc =                                                                      \
+        CRC32_u64(static_cast<uint32_t>(crc), absl::little_endian::Load64(p)); \
+    p += 8;                                                                    \
   } while (0)
 #define ABSL_INTERNAL_STEP8BY2(crc0, crc1, p0, p1) \
   do {                                             \
@@ -345,24 +345,6 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreamsBase
   static constexpr size_t kMaxStreams = 3;
 };
 
-#ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
-alignas(16) constexpr uint64_t
-    CRC32AcceleratedX86ARMCombinedMultipleStreamsBase::k1k2[2];
-alignas(16) constexpr uint64_t
-    CRC32AcceleratedX86ARMCombinedMultipleStreamsBase::k3k4[2];
-alignas(16) constexpr uint64_t
-    CRC32AcceleratedX86ARMCombinedMultipleStreamsBase::k5k6[2];
-alignas(16) constexpr uint64_t
-    CRC32AcceleratedX86ARMCombinedMultipleStreamsBase::k7k0[2];
-alignas(16) constexpr uint64_t
-    CRC32AcceleratedX86ARMCombinedMultipleStreamsBase::kPoly[2];
-alignas(16) constexpr uint32_t
-    CRC32AcceleratedX86ARMCombinedMultipleStreamsBase::kMask[4];
-constexpr size_t
-    CRC32AcceleratedX86ARMCombinedMultipleStreamsBase::kGroupsSmall;
-constexpr size_t CRC32AcceleratedX86ARMCombinedMultipleStreamsBase::kMaxStreams;
-#endif  // ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
-
 template <size_t num_crc_streams, size_t num_pclmul_streams,
           CutoffStrategy strategy>
 class CRC32AcceleratedX86ARMCombinedMultipleStreams
@@ -384,15 +366,15 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
       length &= ~size_t{8};
     }
     if (length & 4) {
-      ABSL_INTERNAL_STEP4(l);
+      ABSL_INTERNAL_STEP4(l, p);
       length &= ~size_t{4};
     }
     if (length & 2) {
-      ABSL_INTERNAL_STEP2(l);
+      ABSL_INTERNAL_STEP2(l, p);
       length &= ~size_t{2};
     }
     if (length & 1) {
-      ABSL_INTERNAL_STEP1(l);
+      ABSL_INTERNAL_STEP1(l, p);
       length &= ~size_t{1};
     }
     if (length == 0) {
@@ -478,7 +460,7 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
       const uint8_t* x = RoundUp<8>(p);
       // Process bytes until p is 8-byte aligned, if that isn't past the end.
       while (p != x) {
-        ABSL_INTERNAL_STEP1(l);
+        ABSL_INTERNAL_STEP1(l, p);
       }
 
       size_t bs = static_cast<size_t>(e - p) /
@@ -597,7 +579,7 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
     }
     // Process the last few bytes
     while (p != e) {
-      ABSL_INTERNAL_STEP1(l);
+      ABSL_INTERNAL_STEP1(l, p);
     }
 
 #undef ABSL_INTERNAL_STEP8BY3

@@ -603,7 +603,7 @@ void ChromePasswordManagerClient::
   if (webauthn_delegate) {
     webauthn_delegate->NotifyForPasskeysDisplay();
     if (webauthn_delegate->GetPasskeys().has_value()) {
-      passkeys = *webauthn_delegate->GetPasskeys();
+      passkeys = *webauthn_delegate->GetPasskeys().value();
       should_show_hybrid_option =
           webauthn_delegate->IsSecurityKeyOrHybridFlowAvailable();
     }

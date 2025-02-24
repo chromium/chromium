@@ -43,14 +43,14 @@ class raw_hash_map : public raw_hash_set<Policy, Hash, Eq, Alloc> {
   using MappedConstReference = decltype(P::value(
       std::addressof(std::declval<typename raw_hash_map::const_reference>())));
 
-  using KeyArgImpl =
-      KeyArg<IsTransparent<Eq>::value && IsTransparent<Hash>::value>;
+  template <class K>
+  using key_arg =
+      typename KeyArg<IsTransparent<Eq>::value && IsTransparent<Hash>::value>::
+          template type<K, typename Policy::key_type>;
 
  public:
   using key_type = typename Policy::key_type;
   using mapped_type = typename Policy::mapped_type;
-  template <class K>
-  using key_arg = typename KeyArgImpl::template type<K, key_type>;
 
   static_assert(!std::is_reference<key_type>::value, "");
 

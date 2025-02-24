@@ -35,6 +35,9 @@ void OpenURLFromTabInternal(NavigateParams& new_tab_params) {
 }  // namespace
 
 SearchResultsView::SearchResultsView() : AshWebViewImpl(GetInitParams()) {
+  // We should not use `CanShowSunfishUi` here, as that could change between
+  // sending the region and receiving a URL which will then create this view
+  // (for example, if the Sunfish policy changes).
   DCHECK(features::IsSunfishFeatureEnabled());
 }
 

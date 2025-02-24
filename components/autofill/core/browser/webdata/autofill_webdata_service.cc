@@ -156,6 +156,15 @@ WebDataServiceBase::Handle AutofillWebDataService::GetEntityInstances(
       std::move(consumer));
 }
 
+WebDataServiceBase::Handle AutofillWebDataService::GetLoyaltyCards(
+    WebDataServiceRequestCallback consumer) {
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::GetLoyaltyCards,
+                     autofill_backend_),
+      std::move(consumer));
+}
+
 WebDataServiceBase::Handle
 AutofillWebDataService::GetCountOfValuesContainedBetween(
     base::Time begin,

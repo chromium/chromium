@@ -287,8 +287,6 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
   // constructor.
   CHECK(sunfish_button);
   controller_->MaybeShowSunfishLauncherNudge(sunfish_button);
-  RecordSunfishSessionButtonVisibilityOnLauncherShown(
-      /*is_visible=*/sunfish_button->GetVisible());
 }
 
 ShelfAction AppListBubblePresenter::Toggle(int64_t display_id) {

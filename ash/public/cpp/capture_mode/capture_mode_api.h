@@ -17,6 +17,14 @@ void ASH_EXPORT CaptureScreenshotsOfAllDisplays();
 // Returns true if the active account can bypass the feature key check.
 bool ASH_EXPORT IsSunfishFeatureEnabledWithFeatureKey();
 
+// Returns whether Sunfish-related UI can be shown. This function checks the
+// Sunfish-feature flag, Sunfish prefs and Sunfish policy.
+// If `CanShowSunfishUi`, then `IsSunfishSessionAllowed`, but the reverse may
+// not be true (if the Sunfish-feature flag is disabled and Scanner-related UI
+// is allowed to be shown, `IsSunfishSessionAllowed` but not
+// `CanShowSunfishUi`).
+bool ASH_EXPORT CanShowSunfishUi();
+
 // Returns whether a capture mode session with `kSunfish` behavior type is
 // is allowed by feature flags and user prefs / policies.
 // This is also the source of truth for whether any action buttons can be shown

@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/card_swipe_view_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_consumer.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller.h"
@@ -39,21 +40,25 @@
   feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForProfile(profile);
   _sideSwipeMediator = [[SideSwipeMediator alloc]
-      initWithFullscreenController:_fullscreenController
-                      webStateList:self.browser->GetWebStateList()];
-  _sideSwipeMediator.layoutGuideCenter =
-      LayoutGuideCenterForBrowser(self.browser);
-  _sideSwipeMediator.toolbarInteractionHandler = self.toolbarInteractionHandler;
-  _sideSwipeMediator.toolbarSnapshotProvider = self.toolbarSnapshotProvider;
+      initWithWebStateList:self.browser->GetWebStateList()];
   _sideSwipeMediator.engagementTracker = engagementTracker;
   _sideSwipeMediator.helpHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
 
-  _sideSwipeUIController = [[SideSwipeUIController alloc] init];
+  _sideSwipeUIController = [[SideSwipeUIController alloc]
+      initWithFullscreenController:_fullscreenController
+                      webStateList:self.browser->GetWebStateList()];
 
-  _sideSwipeUIController.fullscreenController = _fullscreenController;
+  _sideSwipeUIController.layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
+  _sideSwipeUIController.toolbarInteractionHandler =
+      self.toolbarInteractionHandler;
+  _sideSwipeUIController.toolbarSnapshotProvider = self.toolbarSnapshotProvider;
+  _sideSwipeUIController.tabStripDelegate = self.tabStripDelegate;
   _sideSwipeUIController.mutator = _sideSwipeMediator;
   _sideSwipeUIController.navigationDelegate = _sideSwipeMediator;
+  _sideSwipeUIController.tabsDelegate = _sideSwipeMediator;
+  _sideSwipeUIController.cardSwipeViewDelegate = self.cardSwipeViewDelegate;
   [_sideSwipeUIController
       setSideSwipeUIControllerDelegate:_sideSwipeUIControllerDelegate];
   _sideSwipeMediator.consumer = _sideSwipeUIController;
@@ -68,34 +73,28 @@
 
   _fullscreenController = nullptr;
   [_sideSwipeMediator disconnect];
+  [_sideSwipeUIController disconnect];
   _sideSwipeMediator = nil;
 }
 
 - (void)stopActiveSideSwipeAnimation {
-  [_sideSwipeMediator resetContentView];
+  [_sideSwipeUIController stopSideSwipeAnimation];
 }
 
 - (void)addHorizontalGesturesToView:(UIView*)view {
-  [_sideSwipeMediator addHorizontalGesturesToView:view];
   [_sideSwipeUIController addHorizontalGesturesToView:view];
 }
 
 - (void)setEnabled:(BOOL)enabled {
-  [_sideSwipeMediator setEnabled:enabled];
   [_sideSwipeUIController setEnabled:enabled];
 }
 
 - (BOOL)swipeInProgress {
-  return [_sideSwipeMediator isSideSwipeInProgress];
+  return [_sideSwipeUIController isSideSwipeInProgress];
 }
 
 - (void)setSwipeInProgress:(BOOL)inSwipe {
-  [_sideSwipeMediator setInSwipe:inSwipe];
-}
-
-- (void)setSwipeDelegate:(id<SideSwipeMediatorDelegate>)swipeDelegate {
-  [_sideSwipeMediator setSwipeDelegate:swipeDelegate];
-  _swipeDelegate = swipeDelegate;
+  [_sideSwipeUIController setInSwipe:inSwipe];
 }
 
 - (void)setSideSwipeUIControllerDelegate:
@@ -103,6 +102,30 @@
   [_sideSwipeUIController
       setSideSwipeUIControllerDelegate:sideSwipeUIControllerDelegate];
   _sideSwipeUIControllerDelegate = sideSwipeUIControllerDelegate;
+}
+
+- (void)setTabStripDelegate:(id<TabStripHighlighting>)tabStripDelegate {
+  _tabStripDelegate = tabStripDelegate;
+  [_sideSwipeUIController setTabStripDelegate:tabStripDelegate];
+}
+
+- (void)setToolbarSnapshotProvider:
+    (id<SideSwipeToolbarSnapshotProviding>)toolbarSnapshotProvider {
+  _toolbarSnapshotProvider = toolbarSnapshotProvider;
+  [_sideSwipeUIController setToolbarSnapshotProvider:toolbarSnapshotProvider];
+}
+
+- (void)setToolbarInteractionHandler:
+    (id<SideSwipeToolbarInteracting>)toolbarInteractionHandler {
+  _toolbarInteractionHandler = toolbarInteractionHandler;
+  [_sideSwipeUIController
+      setToolbarInteractionHandler:toolbarInteractionHandler];
+}
+
+- (void)setCardSwipeViewDelegate:
+    (id<CardSwipeViewDelegate>)cardSwipeViewDelegate {
+  _cardSwipeViewDelegate = cardSwipeViewDelegate;
+  [_sideSwipeUIController setCardSwipeViewDelegate:cardSwipeViewDelegate];
 }
 
 - (void)animatePageSideSwipeInDirection:

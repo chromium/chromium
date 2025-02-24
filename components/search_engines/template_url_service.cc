@@ -180,6 +180,7 @@ bool ShouldMergeEnterpriseSearchEngines(const TemplateURL& existing_turl,
 
   return existing_turl.short_name() != new_values.short_name() ||
          existing_turl.url() != new_values.url() ||
+         existing_turl.suggestions_url() != new_values.suggestions_url() ||
          existing_turl.featured_by_policy() !=
              new_values.featured_by_policy() ||
          (existing_turl.policy_origin() ==
@@ -197,6 +198,7 @@ TemplateURLData MergeEnterpriseSearchEngines(TemplateURLData existing_data,
   TemplateURLData merged_data(existing_data);
   merged_data.SetShortName(new_values.short_name());
   merged_data.SetURL(new_values.url());
+  merged_data.suggestions_url = new_values.suggestions_url();
   merged_data.featured_by_policy = new_values.featured_by_policy();
   if (existing_data.policy_origin ==
       TemplateURLData::PolicyOrigin::kSearchAggregator) {

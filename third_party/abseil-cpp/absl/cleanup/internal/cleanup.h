@@ -19,7 +19,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "absl/base/internal/invoke.h"
 #include "absl/base/macros.h"
 #include "absl/base/thread_annotations.h"
 #include "absl/utility/utility.h"
@@ -39,7 +38,7 @@ constexpr bool WasDeduced() {
 
 template <typename Callback>
 constexpr bool ReturnsVoid() {
-  return (std::is_same<base_internal::invoke_result_t<Callback>, void>::value);
+  return (std::is_same<std::invoke_result_t<Callback>, void>::value);
 }
 
 template <typename Callback>

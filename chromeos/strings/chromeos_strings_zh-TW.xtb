@@ -472,6 +472,7 @@
 <translation id="3226657629376379887">版面配置動作選單</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />值除以 <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">系統會移除 1 天前的列印工作</translation>
+<translation id="3248791727258378769">系統不會建立轉錄稿</translation>
 <translation id="324961752321393509">系統管理員不允許關閉這個應用程式</translation>
 <translation id="3263941347294171263">請將「<ph name="DEVICE_NAME" />」的線拔除再重新接上，以繼續進行更新程序</translation>
 <translation id="3268178239013324452">失敗 - 蓋子處於開啟狀態</translation>
@@ -670,6 +671,7 @@
 <translation id="420283545744377356">關閉螢幕保護程式</translation>
 <translation id="4210636113897977670">儲存並結束</translation>
 <translation id="4210659479607886331">冰川河</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" />語音轉錄模型下載完成</translation>
 <translation id="42126664696688958">匯出</translation>
 <translation id="4213104098953699324">USB 鍵盤</translation>
 <translation id="4227825898293920515">密碼將在 <ph name="TIME" />後到期</translation>
@@ -940,6 +942,7 @@
 <translation id="5431318178759467895">彩色</translation>
 <translation id="5457599981699367932">以訪客身分瀏覽</translation>
 <translation id="54609108002486618">受管理</translation>
+<translation id="5461608756903394951">正在下載<ph name="LANGUAGE_NAME" />語音轉錄模型</translation>
 <translation id="5470776029649730099">粗麻布</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{剩餘嘗試次數：{0} 次}other{剩餘嘗試次數：{0} 次}}</translation>
 <translation id="5488280942828718790">洋紅色</translation>
@@ -1191,6 +1194,7 @@
 <translation id="6595046262780525922">要開啟語音轉錄功能並下載語音轉錄模型嗎？</translation>
 <translation id="6596816719288285829">IP 位址</translation>
 <translation id="6599673642868607614">感謝你提供寶貴意見，你的意見將有助於我們改善 Chromebook 體驗，我們的團隊會檢閱你提供的內容。由於回報數量眾多，我們不會逐一回覆。</translation>
+<translation id="6608043585557830684">語音轉錄功能已關閉。如要開啟，請前往「設定」或使用「<ph name="THREE_DOTS_MENU_ICON" />」選單。</translation>
 <translation id="660846213831377756">滑鼠按鍵</translation>
 <translation id="6618744767048954150">檢查中</translation>
 <translation id="6620487321149975369">除非手動移除列印工作，否則這項資料會顯示在歷史記錄中</translation>
@@ -1620,6 +1624,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">茶室</translation>
 <translation id="8538236298648811558">採用 Google AI 技術</translation>
+<translation id="8543574988889671960">重新載入分頁</translation>
 <translation id="8550364285433943656">針對遊戲操作設定控制項，即可使用鍵盤按鍵玩遊戲</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">你的電信業者可能會要求你必須選擇此選項才能連線至他們的網路。如要瞭解詳情，請洽詢你的電信業者。</translation>

@@ -21,6 +21,13 @@ TEST(AutofillAttributeTypeTest, Relationships) {
   EXPECT_EQ(a, AttributeType::FromFieldType(PASSPORT_NAME_TAG));
 }
 
+TEST(AutofillAttributeTypeTest, IsObfuscated) {
+  AttributeType name = AttributeType(AttributeTypeName::kPassportName);
+  AttributeType number = AttributeType(AttributeTypeName::kPassportNumber);
+  EXPECT_FALSE(name.is_obfuscated());
+  EXPECT_TRUE(number.is_obfuscated());
+}
+
 TEST(AutofillEntityTypeTest, Attributes) {
   using enum AttributeTypeName;
   EntityType e = EntityType(EntityTypeName::kPassport);

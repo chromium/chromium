@@ -819,10 +819,9 @@ void SearchBoxView::OnThemeChanged() {
     sunfish_button()->SetImageModel(
         views::ImageButton::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(
-            features::IsSunfishFeatureEnabled() ? kLensColorIcon : kScannerIcon,
+            CanShowSunfishUi() ? kLensColorIcon : kScannerIcon,
             button_icon_color,
-            features::IsSunfishFeatureEnabled() ? kLensColorIconSize
-                                                : GetSearchBoxIconSize()));
+            CanShowSunfishUi() ? kLensColorIconSize : GetSearchBoxIconSize()));
   }
   assistant_button()->SetImageModel(
       views::ImageButton::STATE_NORMAL,

@@ -13,6 +13,9 @@
 <translation id="3512634283363927263">이 페이지는 Chrome 개발자를 위한 것으로, 적극적으로 유지보수되거나 테스트되지 않을 수 있습니다. 사용 설정하려면 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />로 이동하여 버튼을 클릭하여 디버그 페이지를 사용 설정한 다음 이 페이지로 다시 이동하세요.</translation>
 <translation id="3875312571075912821">Chrome이 방화벽이나 백신 프로그램이 설정된
         네트워크에 액세스할 수 있도록 허용합니다.</translation>
+<translation id="4949828774841497663">애플리케이션 &gt; 시스템 설정 &gt; 네트워크로 이동하여
+          활성 네트워크를 선택하고 세부정보... 버튼을 클릭한 후
+          선택되어 있을 수 있는 프록시를 선택 해제합니다.</translation>
 <translation id="5005121315113832363">Chrome에서 차단한 페이지입니다.</translation>
 <translation id="6011049234605203654">Chrome 메뉴 &gt;
           <ph name="SETTINGS_TITLE" />

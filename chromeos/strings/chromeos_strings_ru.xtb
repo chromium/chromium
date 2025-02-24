@@ -473,6 +473,7 @@
 <translation id="3226657629376379887">Меню действий, связанных с раскладкой</translation>
 <translation id="3227186760713762082">Разделите значение "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Задания печати, хранящиеся дольше 1 дня, будут удалены</translation>
+<translation id="3248791727258378769">Расшифровка создана не будет</translation>
 <translation id="324961752321393509">Администратор запретил закрывать это приложение</translation>
 <translation id="3263941347294171263">Чтобы продолжить обновление, отключите и снова подключите устройство "<ph name="DEVICE_NAME" />".</translation>
 <translation id="3268178239013324452">Сбой: крышка открыта</translation>
@@ -672,6 +673,7 @@
 <translation id="420283545744377356">Не использовать заставку</translation>
 <translation id="4210636113897977670">Сохранить и закрыть</translation>
 <translation id="4210659479607886331">ледниковая река</translation>
+<translation id="4212169537710712814">Модель расшифровки скачана. Язык: <ph name="LANGUAGE_NAME" />.</translation>
 <translation id="42126664696688958">Экспортировать</translation>
 <translation id="4213104098953699324">Клавиатура USB</translation>
 <translation id="4227825898293920515">Срок действия пароля истекает через <ph name="TIME" /></translation>
@@ -942,6 +944,7 @@
 <translation id="5431318178759467895">Цветная печать</translation>
 <translation id="5457599981699367932">Войти в гостевой режим</translation>
 <translation id="54609108002486618">Автоматическое управление</translation>
+<translation id="5461608756903394951">Модель расшифровки скачивается. Язык: <ph name="LANGUAGE_NAME" />.</translation>
 <translation id="5470776029649730099">мешковина</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Осталась {0} попытка.}one{Осталась {0} попытка.}few{Осталось {0} попытки.}many{Осталось {0} попыток.}other{Осталось {0} попытки.}}</translation>
 <translation id="5488280942828718790">маджента</translation>
@@ -1193,6 +1196,7 @@
 <translation id="6595046262780525922">Включить расшифровку и скачать модель?</translation>
 <translation id="6596816719288285829">IP-адрес</translation>
 <translation id="6599673642868607614">Благодарим за отзыв. Он поможет нам улучшить Chromebook и будет рассмотрен нашей командой. Мы получаем множество обращений, поэтому не сможем вам ответить.</translation>
+<translation id="6608043585557830684">Расшифровка отключена. Включите ее в настройках или меню <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Клавиши управления указателем</translation>
 <translation id="6618744767048954150">Выполняется</translation>
 <translation id="6620487321149975369">Задания печати показываются в истории до тех пор, пока вы их не удалите</translation>

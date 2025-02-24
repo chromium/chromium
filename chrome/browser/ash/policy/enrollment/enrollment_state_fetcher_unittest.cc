@@ -247,13 +247,14 @@ class EnrollmentStateFetcherTest : public testing::Test {
   }
 
   std::string GetTestStateKey() {
-    return AutoEnrollmentTypeChecker::IsFREEnabled() ? kTestStateKey
-                                                     : std::string();
+    return AutoEnrollmentTypeChecker::AreFREStateKeysSupported()
+               ? kTestStateKey
+               : std::string();
   }
 
   void ExpectStateKeysRequestOrNotDependingOnFRESupport(
       base::TimeDelta time = base::TimeDelta()) {
-    if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
+    if (AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
       EXPECT_CALL(state_key_broker_, RequestStateKeys)
           .WillOnce(DoAll(
               InvokeWithoutArgs(
@@ -427,7 +428,7 @@ TEST_F(EnrollmentStateFetcherTest, OwnershipUnknown) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, StateKeysMissingDueToCommunicationError) {
-  if (!AutoEnrollmentTypeChecker::IsFREEnabled()) {
+  if (!AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
     // State keys are not requested, this test doesn't apply.
     return;
   }
@@ -452,7 +453,7 @@ TEST_F(EnrollmentStateFetcherTest, StateKeysMissingDueToCommunicationError) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, StateKeysMissingDueToMissingIdentifiers) {
-  if (!AutoEnrollmentTypeChecker::IsFREEnabled()) {
+  if (!AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
     // State keys are not requested, this test doesn't apply.
     return;
   }
@@ -477,7 +478,7 @@ TEST_F(EnrollmentStateFetcherTest, StateKeysMissingDueToMissingIdentifiers) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, StateKeysRetrievalSucceedOnRetry) {
-  if (!AutoEnrollmentTypeChecker::IsFREEnabled()) {
+  if (!AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
     // State keys are not requested, this test doesn't apply.
     return;
   }
@@ -705,7 +706,9 @@ TEST_F(EnrollmentStateFetcherTest, UmaHistogramsTimes) {
   const char* ds = kUMAStateDeterminationTotalDurationByState;
   histograms.ExpectUniqueTimeSample(
       base::StrCat({ds, kUMASuffixNoEnrollment}),
-      base::Seconds(AutoEnrollmentTypeChecker::IsFREEnabled() ? 15 : 11), 1);
+      base::Seconds(AutoEnrollmentTypeChecker::AreFREStateKeysSupported() ? 15
+                                                                          : 11),
+      1);
   histograms.ExpectTotalCount(
       base::StrCat({ds, kUMASuffixStateKeysRetrievalError}), 0);
   histograms.ExpectTotalCount(base::StrCat({ds, kUMASuffixConnectionError}), 0);
@@ -721,7 +724,7 @@ TEST_F(EnrollmentStateFetcherTest, UmaHistogramsTimes) {
       base::StrCat({step_d, kUMASuffixOPRFRequest}), base::Seconds(2), 1);
   histograms.ExpectUniqueTimeSample(
       base::StrCat({step_d, kUMASuffixQueryRequest}), base::Seconds(3), 1);
-  if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
+  if (AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
     histograms.ExpectUniqueTimeSample(
         base::StrCat({step_d, kUMASuffixStateKeysRetrieval}), base::Seconds(4),
         1);

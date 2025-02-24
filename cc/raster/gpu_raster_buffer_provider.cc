@@ -64,7 +64,7 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     auto backing = std::make_unique<ResourcePool::Backing>();
     backing->overlay_candidate = client_->tile_overlay_candidate_;
     backing->is_using_raw_draw =
-        !backing->overlay_candidate && client_->is_using_raw_draw_;
+        !client_->tile_overlay_candidate_ && client_->is_using_raw_draw_;
     in_use_resource.set_backing(std::move(backing));
   }
   backing_ = in_use_resource.backing();
@@ -334,7 +334,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
     gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-    if (backing_->overlay_candidate) {
+    if (client_->tile_overlay_candidate_) {
       flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     } else if (client_->is_using_raw_draw_) {
       flags |= gpu::SHARED_IMAGE_USAGE_RAW_DRAW;
@@ -368,7 +368,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
   // support LCD text, so disable LCD text for Raw Draw backings.
   // TODO(penghuang): remove it when sktext::gpu::Slug can be serialized.
   bool is_raw_draw_backing =
-      client_->is_using_raw_draw_ && !backing_->overlay_candidate;
+      client_->is_using_raw_draw_ && !client_->tile_overlay_candidate_;
   bool use_lcd_text = playback_settings.use_lcd_text && !is_raw_draw_backing;
 
   ri->BeginRasterCHROMIUM(

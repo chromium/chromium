@@ -82,8 +82,6 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kScanCreditCard";
     case Suggestion::Icon::kSettings:
       return "kSettings";
-    case Suggestion::Icon::kAutofillAi:
-      return "kAutofillAi";
     case Suggestion::Icon::kSettingsAndroid:
       return "kSettingsAndroid";
     case Suggestion::Icon::kUndo:

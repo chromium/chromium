@@ -28,6 +28,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="1345251407431278948">Пошук за зображенням закріплено. Щоб скористатися ним, натисніть нову кнопку на панелі інструментів.</translation>
 <translation id="1356661055722410047">Новинка! Тепер ви можете перекладати текст і зображення на екрані.</translation>
 <translation id="1414495520565016063">Ви ввійшли в Chromium.</translation>
+<translation id="1465192221147974788">Щоб показувати своє вікно, у системних параметрах дозвольте Chromium записувати відео з екрана.</translation>
 <translation id="1478370723027452770">Отримати довідку щодо Chrome for Testing</translation>
 <translation id="1497802159252041924">Помилка встановлення: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Поділитися вкладкою Chromium</translation>
@@ -160,6 +161,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3130323860337406239">Chromium використовує ваш мікрофон.</translation>
 <translation id="3137969841538672700">Перетягніть, щоб вибрати область для пошуку</translation>
 <translation id="3144188012276422546">Ця вкладка використовує додаткові ресурси. Щоб підвищити продуктивність, дозвольте Chromium зробити її неактивною.</translation>
+<translation id="3149163023759831301">Щоб показувати свій екран, у системних параметрах дозвольте Chromium записувати відео з екрана</translation>
 <translation id="3155163173539279776">Перезапустити Chromium</translation>
 <translation id="3161522574479303604">Усі мови</translation>
 <translation id="3179665906251668410">Відкрити посилання в аноні&amp;мному вікні Chromium</translation>
@@ -182,8 +184,10 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3474745554856756813">З цього пристрою буде видалено стільки елементів: <ph name="ITEMS_COUNT" />. Щоб відновити дані пізніше, увійдіть в обліковий запис Chromium як <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Комбінація клавіш <ph name="SHORTCUT" /> перемикає профілі Chromium</translation>
 <translation id="3509308970982693815">Закрийте всі вікна Chromium і повторіть спробу.</translation>
+<translation id="3522404737534491619">Щоб показувати своє вікно, у системних параметрах дозвольте Chromium записувати відео з екрана</translation>
 <translation id="3530103706039034513">Ви вже ввійшли в обліковий запис <ph name="EXISTING_USER" />.  Щоб переглядати вебсторінки окремо, увійдіть у свій профіль у Chromium як <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">З міркувань конфіденційності ми автоматично видаляємо ваші інтереси через 4 тижні. Якщо ви й надалі переглядатимете веб-сторінки, відповідний інтерес може знову з’явитися в списку. Щоб Chromium не враховував певні інтереси, їх можна вилучити.</translation>
+<translation id="3561853857681580870">Щоб показувати свій екран, у системних параметрах дозвольте Chromium записувати відео з екрана.</translation>
 <translation id="3567254597502212821">Ваша історія веб-перегляду – перелік сайтів, які ви відвідали через Chromium на цьому пристрої.</translation>
 <translation id="3597003331831379823">Не вдалося виконати налаштування з розширеними повноваженнями. <ph name="METAINSTALLER_ERROR" />.</translation>
 <translation id="3639635944603682591">Дані веб-перегляду користувача буде видалено з цього пристрою. Щоб відновити їх, увійдіть в обліковий запис Chromium як <ph name="USER_EMAIL" />.</translation>
@@ -281,6 +285,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="4942295735032723435">Щоб отримувати майбутні оновлення Chromium, потрібна операційна система macOS 11 або новішої версії. На цьому комп’ютері встановлено macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium у фоновому режимі.</translation>
 <translation id="494490797786467921">Натисніть, щоб закрити вікно входу в Chromium</translation>
+<translation id="4950660488495335294">Створюйте різні профілі Chromium для різних цілей (наприклад, робочий і особистий) та для різних людей (як-от друзів і членів сім’ї).</translation>
 <translation id="4987820182225656817">Гості можуть анонімно користуватися Chromium.</translation>
 <translation id="4994636714258228724">Додати себе в Chromium</translation>
 <translation id="5123973130450702873">Вебпереглядачу Chromium потрібен дозвіл на відстеження ваших рук</translation>

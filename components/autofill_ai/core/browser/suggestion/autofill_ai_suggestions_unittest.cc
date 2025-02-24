@@ -160,6 +160,24 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PrefixMatching) {
                                                triggering_field_type));
 }
 
+// Tests that no prefix matching is performed if the attribute that would be
+// filled into the triggering field is obfuscated.
+TEST_F(AutofillAiSuggestionsTest,
+       GetFillingSuggestionNoPrefixMatchingForObfuscatedAttributes) {
+  autofill::EntityInstance passport =
+      MakePassportWithRandomGuid({.number = u"12345"});
+
+  autofill::FieldType triggering_field_type = autofill::PASSPORT_NUMBER;
+  std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG});
+
+  form->field(0)->set_value(u"12");
+
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(), {passport});
+  EXPECT_FALSE(suggestions.empty());
+}
+
 TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_LoyaltyCardEntity) {
   autofill::EntityInstance loyalty_card_entity =
       autofill::test::GetLoyaltyCardEntityInstance();
@@ -278,13 +296,13 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
   // makes it identical to `passport`. The passport with
   // passport_a_without_an_expiry_date should be deduped because it is a
   // proper subset of `passport`.
-  EXPECT_THAT(suggestions, SizeIs(Ge(2)));
-  EXPECT_EQ(
-      suggestions[0].main_text.value,
-      GetEntityInstanceValueForFieldType(passport, triggering_field_type));
-  EXPECT_EQ(suggestions[1].main_text.value,
+  ASSERT_THAT(suggestions, SizeIs(Ge(2)));
+  EXPECT_EQ(suggestions[0].main_text.value,
             GetEntityInstanceValueForFieldType(another_persons_passport,
                                                triggering_field_type));
+  EXPECT_EQ(
+      suggestions[1].main_text.value,
+      GetEntityInstanceValueForFieldType(passport, triggering_field_type));
 }
 
 // Tests that an "Undo Autofill" suggestion is appended if the trigger field

@@ -1007,6 +1007,7 @@
 <translation id="1682696837763999627">Голям курсор на мишката</translation>
 <translation id="1682867089915960590">Да се включи ли Caret Browsing?</translation>
 <translation id="1686550358074589746">Активиране на въвеждането с плъзгане</translation>
+<translation id="1686785653877010442">Сайтовете обикновено изпращат известия, за да ви уведомяват за извънредни новини или съобщения в чата.</translation>
 <translation id="168715261339224929">Включете синхронизирането, за да получите отметките си на всичките си устройства.</translation>
 <translation id="1688935057616748272">Въведете буква</translation>
 <translation id="1689333818294560261">Псевдоним</translation>
@@ -1018,7 +1019,6 @@
 <translation id="1692210323591458290">Тъмнолилаво</translation>
 <translation id="1692713444215319269">Настройки за инвертирането на цветовете, лупата и екрана</translation>
 <translation id="169341880170235617">Групите раздели вече се запазват автоматично</translation>
-<translation id="1694470329618537745">Най-новите актуализации на тази група</translation>
 <translation id="1695487653372841667">Имате възможност да контролирате какви данни се споделят с Google. Можете да промените това по всяко време от настройките.</translation>
 <translation id="1695510246756136088">Не може да се установи връзка с интернет. Опитайте отново.</translation>
 <translation id="1696555181932908973">Можете да изпробвате други начини за продължаване към <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -1290,6 +1290,7 @@
 <translation id="1878885068166344708">При преместване на фокуса се откроява елемент. Натиснете Tab или изберете даден елемент, за да промените фокуса.</translation>
 <translation id="1879000426787380528">Вход като</translation>
 <translation id="18802377548000045">Разделите се свиват до размер с голяма ширина</translation>
+<translation id="1880618477732738742">Промяна и предоставяне на достъп до функции като геолокация, микрофон, камера, „бисквитки“ и др. за всички ваши уебсайтове и разширения, включително това разширение.</translation>
 <translation id="1880905663253319515">Да се изтрие ли сертификатът „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="1881445033931614352">Клавиатурна подредба</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Елемент}other{# елемента}}</translation>
@@ -3477,6 +3478,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3435738964857648380">Сигурност</translation>
 <translation id="343578350365773421">Няма хартия</translation>
 <translation id="3435896845095436175">Активиране</translation>
+<translation id="3437397693214267762">Преглед на календара ви в Outlook и на файловете ви в SharePoint и OneDrive</translation>
 <translation id="3438633801274389918">Нинджа</translation>
 <translation id="3439153939049640737">Достъпът на <ph name="HOST" /> до микрофона ви винаги да е разрешен</translation>
 <translation id="3439970425423980614">Отваря се визуализация на PDF</translation>
@@ -7139,6 +7141,7 @@ Chrome Root Program има доверие, и постоянно се подла
     Той ви осигурява лесен достъп до всичките ви отметки, файлове и др. Ако нямате профил, можете да си създадете такъв на следващия екран.</translation>
 <translation id="6054138466019582920">&amp;Търсене на тази страница с Google...</translation>
 <translation id="6054284857788651331">Наскоро затворена група с раздели</translation>
+<translation id="6054819000749443354">Отваряне на System Settings</translation>
 <translation id="6054961935262556546">Промяна на видимостта</translation>
 <translation id="6055392876709372977">PKCS 1 SHA-256 с RSA шифроване</translation>
 <translation id="6055544610007596637">Инсталирайте приложения за вашия <ph name="DEVICE_TYPE" /> от Google Play Магазин</translation>
@@ -8705,7 +8708,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7189234443051076392">Уверете се, че има достатъчно място на устройството ви.</translation>
 <translation id="7189451821249468368">Нямате достатъчно надстройки, за да запишете това устройство. Моля, свържете се с екипа за продажби, за да купите още. Ако смятате, че виждате това съобщение по погрешка, обърнете се към екипа за поддръжка.</translation>
 <translation id="7189965711416741966">Отпечатъкът е добавен.</translation>
-<translation id="7190883804815364931">Последна актуализация на този раздел</translation>
 <translation id="7190921792980745354">Да се блокира ли <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Някои поддържани връзки ще продължат да се отварят в(ъв) <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> и още <ph name="NUMBER_OF_OTHER_APPS" /> приложения.</translation>
 <translation id="7191159667348037">Неизвестен принтер (USB)</translation>
@@ -8962,6 +8964,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7380459290951585794">Телефонът трябва да е наблизо, да е отключен и Bluetooth и функцията за Wi-Fi да са включени</translation>
 <translation id="7380622428988553498">Името на устройството съдържа невалидни знаци</translation>
 <translation id="7380768571499464492">Актуализирането на <ph name="PRINTER_NAME" /> завърши</translation>
+<translation id="7382009635620830394">Ако тази карта е деактивирана, картите ви за Microsoft, като например за файловете в SharePoint и OneDrive и за календара в Outlook, също ще бъдат деактивирани.</translation>
 <translation id="7382085868019811559">Поддръжката на наследени браузъри (LBS) позволява URL адреси, отговарящи на определени шаблони, да се отварят в алтернативен браузър, който поддържа наследените функции, необходими за правилната работа на тези сайтове.</translation>
 <translation id="7382980704744807223">Съмнително</translation>
 <translation id="738322632977123193">Качването не е възможно. Използвайте изображение в един от следните формати: .jpg, .gif, .png, .bmp, .tif или .webp</translation>
@@ -10632,6 +10635,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> се управлява от <ph name="MANAGER" />. Не можете да добавите този имейл като допълнителен профил.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />За да използвате <ph name="USER_EMAIL" />, първо излезте от профила си на <ph name="DEVICE_TYPE" />. След това в долната част на екрана за вход изберете „Добавяне на човек“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Задръжте клавиша „търсене“, за да промените поведението на клавишите от най-горния ред</translation>
+<translation id="8549127125482561383">Как да се показват заявките</translation>
 <translation id="8549316893834449916">За вход в Chromebook ще използвате профила си в Google, същия, с който работите в Gmail, Диск, YouTube и др.</translation>
 <translation id="8550239873869577759">Изтеглен бе подозрителен файл</translation>
 <translation id="8551388862522347954">Лицензи</translation>

@@ -108,7 +108,7 @@ Abseil contains the following C++ library components:
   <br /> The `profiling` library contains utility code for profiling C++
   entities.  It is currently a private dependency of other Abseil libraries.
 * [`random`](absl/random/)
-  <br /> The `random` library contains functions for generating psuedorandom
+  <br /> The `random` library contains functions for generating pseudorandom
   values.
 * [`status`](absl/status/)
   <br /> The `status` library contains abstractions for error handling,

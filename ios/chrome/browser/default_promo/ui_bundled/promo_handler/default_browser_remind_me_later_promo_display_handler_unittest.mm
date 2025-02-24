@@ -46,6 +46,9 @@
 - (void)showOmniboxPositionChoicePromo {
 }
 
+- (void)showSigninPromo {
+}
+
 @end
 
 class DefaultBrowserRemindMeLaterPromoDisplayHandlerTest : public PlatformTest {

@@ -1,4 +1,4 @@
-# OS VR Extensions
+# OS XR Extensions
 
 This library is not (yet) distributed with the Android SDK, and so has been
 manually built and committed here.

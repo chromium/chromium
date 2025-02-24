@@ -2354,6 +2354,7 @@
     {
       name: "HTMLInterestTargetAttribute",
       status: "experimental",
+      origin_trial_feature_name: "HTMLInterestTargetAttribute",
     },
     {
       // A flag, just for local testing to make the

@@ -28,9 +28,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-std::u16string HostedDomainForPrimaryAccount(Browser* browser) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser->GetProfile());
+std::u16string HostedDomainForPrimaryAccount(
+    signin::IdentityManager* identity_manager) {
   return base::UTF8ToUTF16(
       identity_manager
           ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(

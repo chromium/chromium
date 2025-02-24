@@ -56,12 +56,12 @@ void DeviceCloudPolicyInitializer::Init() {
   policy_store_->AddObserver(this);
   policy_manager_observer_.Observe(policy_manager_.get());
 
-  // If FRE is enabled, we want to obtain state keys before proceeding.
-  if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
-  state_keys_update_subscription_ =
-      state_keys_broker_->RegisterUpdateCallback(base::BindRepeating(
-          &DeviceCloudPolicyInitializer::TryToStartConnection,
-          base::Unretained(this)));
+  // If supported, we want to obtain state keys before proceeding.
+  if (AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
+    state_keys_update_subscription_ =
+        state_keys_broker_->RegisterUpdateCallback(base::BindRepeating(
+            &DeviceCloudPolicyInitializer::TryToStartConnection,
+            base::Unretained(this)));
   }
 
   // TODO(b/333951800): This could be an else to the if, check if warranted.
@@ -132,7 +132,7 @@ void DeviceCloudPolicyInitializer::TryToStartConnection() {
   // TODO(b/181140445): If we had a separate state keys upload request to DM
   // Server we could drop the `state_keys_broker_->available()` requirement.
   if (state_keys_broker_->available() ||
-      !AutoEnrollmentTypeChecker::IsFREEnabled()) {
+      !AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
     StartConnection(CreateClient(enterprise_service_));
   }
 }

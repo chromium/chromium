@@ -4,10 +4,14 @@
 
 package org.chromium.components.browser_ui.widget.loading;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,8 +27,8 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
-import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ChromeImageButton;
 
 /** Unit tests for {@link LoadingFullscreenCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -42,26 +46,31 @@ public class LoadingFullscreenCoordinatorUnitTest {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity = activity;
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mActivity.getLayoutInflater().inflate(R.layout.loading_fullscreen, null);
     }
 
     @Test
     public void testShowLoading() {
-        LoadingFullscreenCoordinator loadingCoordinator =
-                new LoadingFullscreenCoordinator(
-                        mActivity,
-                        mScrimManager,
-                        mActivity.findViewById(R.id.loading_fullscreen_container));
+        LinearLayout layout =
+                (LinearLayout)
+                        mActivity.getLayoutInflater().inflate(R.layout.loading_fullscreen, null);
+        ChromeImageButton closeButton = layout.findViewById(R.id.loading_close_button);
+        TextView text = layout.findViewById(R.id.loading_text);
+        assertNotNull(layout);
 
+        LoadingFullscreenCoordinator loadingCoordinator =
+                new LoadingFullscreenCoordinator(mActivity, mScrimManager, layout);
+
+        String loadingText = "loading_text";
         loadingCoordinator.startLoading(
+                loadingText,
                 () -> {
                     loadingCoordinator.closeLoadingScreen();
                 });
         verify(mScrimManager).showScrim(mPropertyModelArgumentCaptor.capture());
         PropertyModel propertyModel = mPropertyModelArgumentCaptor.getValue();
-        Runnable closeScrimRunnable = propertyModel.get(ScrimProperties.CLICK_DELEGATE);
+        closeButton.performClick();
 
-        closeScrimRunnable.run();
         verify(mScrimManager).hideScrim(eq(propertyModel), eq(true));
+        assertEquals(loadingText, text.getText().toString());
     }
 }
