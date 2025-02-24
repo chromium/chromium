@@ -4,34 +4,29 @@
 
 package org.chromium.chromecast.shell;
 
-import android.content.Context;
-import android.hardware.display.DisplayManager;
-import android.view.Display;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.content_public.browser.WebContents;
 
 /**
- * The Java component of CastContentWindowAndroid. This class is responsible for
- * starting, stopping and monitoring CastWebContentsActivity.
- * <p>
- * See chromecast/browser/cast_content_window_android.* for the native half.
+ * The Java component of CastContentWindowAndroid. This class is responsible for starting, stopping
+ * and monitoring CastWebContentsActivity.
+ *
+ * <p>See chromecast/browser/cast_content_window_android.* for the native half.
  */
 @JNINamespace("chromecast")
-public class CastContentWindowAndroid implements CastWebContentsComponent.OnComponentClosedHandler,
-                                                 CastWebContentsComponent.SurfaceEventHandler {
+public class CastContentWindowAndroid
+        implements CastWebContentsComponent.OnComponentClosedHandler,
+                CastWebContentsComponent.SurfaceEventHandler {
     private static final String TAG = "CastContentWindow";
     private static final boolean DEBUG = true;
 
     // Note: CastContentWindowAndroid may outlive the native object. The native
     // ref should be checked that it is not zero before it is used.
     private long mNativeCastContentWindowAndroid;
-    private Context mContext;
     private CastWebContentsComponent mComponent;
 
     private boolean mScreenAccess;
@@ -41,37 +36,36 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
 
     @SuppressWarnings("unused")
     @CalledByNative
-    private static CastContentWindowAndroid create(long nativeCastContentWindowAndroid,
-            boolean enableTouchInput, boolean turnOnScreen, boolean keepScreenOn, String sessionId,
-            int displayId) {
-        return new CastContentWindowAndroid(nativeCastContentWindowAndroid,
-                getContextWithDisplay(displayId), enableTouchInput, turnOnScreen, keepScreenOn,
+    private static CastContentWindowAndroid create(
+            long nativeCastContentWindowAndroid,
+            boolean enableTouchInput,
+            boolean turnOnScreen,
+            boolean keepScreenOn,
+            String sessionId) {
+        return new CastContentWindowAndroid(
+                nativeCastContentWindowAndroid,
+                enableTouchInput,
+                turnOnScreen,
+                keepScreenOn,
                 sessionId);
     }
 
-    private static Context getContextWithDisplay(int displayId) {
-        Context context = ContextUtils.getApplicationContext();
-        DisplayManager displayManager = context.getSystemService(DisplayManager.class);
-        Display display = displayManager.getDisplay(displayId);
-        if (display != null) {
-            return context.createDisplayContext(display);
-        }
-        Log.i(TAG,
-                "Display with the given cast display id is not available, "
-                        + "use the default display to create the web view.");
-        return context;
-    }
-
-    private CastContentWindowAndroid(long nativeCastContentWindowAndroid, final Context context,
-            boolean enableTouchInput, boolean turnOnScreen, boolean keepScreenOn,
+    private CastContentWindowAndroid(
+            long nativeCastContentWindowAndroid,
+            boolean enableTouchInput,
+            boolean turnOnScreen,
+            boolean keepScreenOn,
             String sessionId) {
         mNativeCastContentWindowAndroid = nativeCastContentWindowAndroid;
-        mContext = context;
-        Log.i(TAG,
-                "Creating new CastContentWindowAndroid(No. " + sInstanceId++
-                        + ") Seesion ID: " + sessionId);
-        mComponent = new CastWebContentsComponent(
-                sessionId, this, this, enableTouchInput, turnOnScreen, keepScreenOn);
+        Log.i(
+                TAG,
+                "Creating new CastContentWindowAndroid(No. "
+                        + sInstanceId++
+                        + ") Seesion ID: "
+                        + sessionId);
+        mComponent =
+                new CastWebContentsComponent(
+                        sessionId, this, this, enableTouchInput, turnOnScreen, keepScreenOn);
     }
 
     @SuppressWarnings("unused")
@@ -79,8 +73,9 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
     private void createWindowForWebContents(
             WebContents webContents, String appId, boolean shouldRequestAudioFocus) {
         if (DEBUG) Log.d(TAG, "createWindowForWebContents");
-        mStartParams = new CastWebContentsComponent.StartParams(
-                mContext, webContents, appId, shouldRequestAudioFocus);
+        mStartParams =
+                new CastWebContentsComponent.StartParams(
+                        webContents, appId, shouldRequestAudioFocus);
         maybeStartComponent();
     }
 
@@ -103,7 +98,7 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
     @CalledByNative
     private void revokeScreenAccess() {
         if (DEBUG) Log.d(TAG, "revokeScreenAccess");
-        mComponent.stop(mContext);
+        mComponent.stop();
         mScreenAccess = false;
     }
 
@@ -138,15 +133,16 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
         // Instrumentation.startActivitySync to guarentee onCreate is run.
 
         if (DEBUG) Log.d(TAG, "onNativeDestroyed");
-        mComponent.stop(mContext);
+        mComponent.stop();
     }
 
     @Override
     public void onComponentClosed() {
         if (DEBUG) Log.d(TAG, "onComponentClosed");
         if (mNativeCastContentWindowAndroid != 0) {
-            CastContentWindowAndroidJni.get().onActivityStopped(
-                    mNativeCastContentWindowAndroid, CastContentWindowAndroid.this);
+            CastContentWindowAndroidJni.get()
+                    .onActivityStopped(
+                            mNativeCastContentWindowAndroid, CastContentWindowAndroid.this);
         }
     }
 
@@ -154,8 +150,11 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
     public void onVisibilityChange(int visibilityType) {
         if (DEBUG) Log.d(TAG, "onVisibilityChange type=" + visibilityType);
         if (mNativeCastContentWindowAndroid != 0) {
-            CastContentWindowAndroidJni.get().onVisibilityChange(
-                    mNativeCastContentWindowAndroid, CastContentWindowAndroid.this, visibilityType);
+            CastContentWindowAndroidJni.get()
+                    .onVisibilityChange(
+                            mNativeCastContentWindowAndroid,
+                            CastContentWindowAndroid.this,
+                            visibilityType);
         }
     }
 
@@ -163,7 +162,10 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
     interface Natives {
         void onActivityStopped(
                 long nativeCastContentWindowAndroid, CastContentWindowAndroid caller);
-        void onVisibilityChange(long nativeCastContentWindowAndroid,
-                CastContentWindowAndroid caller, int visibilityType);
+
+        void onVisibilityChange(
+                long nativeCastContentWindowAndroid,
+                CastContentWindowAndroid caller,
+                int visibilityType);
     }
 }
