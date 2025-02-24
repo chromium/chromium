@@ -296,6 +296,29 @@ TEST_F(CollaborationControllerTest, DelegateOutcomeError) {
   run_loop.Run();
 }
 
+TEST_F(CollaborationControllerTest, ReadNewGroupError) {
+  // Start Join flow.
+  InitializeJoinController(base::DoNothing());
+
+  base::OnceCallback<void(
+      const data_sharing::DataSharingService::GroupDataOrFailureOutcome&)>
+      callback;
+  EXPECT_CALL(
+      *data_sharing_service_,
+      ReadNewGroup(GroupToken(data_sharing::GroupId(kGroupId), kAccessToken),
+                   IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&callback));
+
+  controller_->SetStateForTesting(StateId::kCheckingFlowRequirements);
+
+  std::move(callback).Run(
+      base::unexpected(data_sharing::DataSharingService::
+                           PeopleGroupActionFailure::kPersistentFailure));
+
+  // Fix this to expect error when SDK implementation is done.
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kAddingUserToGroup);
+}
+
 TEST_F(CollaborationControllerTest, PreviewDataUrlInvalidFailure) {
   // Start Join flow.
   InitializeJoinController(base::DoNothing());
