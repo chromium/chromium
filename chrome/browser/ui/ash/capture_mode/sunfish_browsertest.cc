@@ -160,13 +160,13 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, SendSearchRequests) {
 IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, BrowserPolicy) {
   ChromeCaptureModeDelegate* delegate = ChromeCaptureModeDelegate::Get();
   EXPECT_TRUE(delegate->IsSearchAllowedByPolicy());
-  EXPECT_TRUE(IsSunfishSessionAllowed());
+  EXPECT_TRUE(CanShowSunfishUi());
 
   browser()->profile()->GetPrefs()->SetInteger(
       lens::prefs::kLensOverlaySettings,
       static_cast<int>(lens::prefs::LensOverlaySettingsPolicyValue::kDisabled));
   EXPECT_FALSE(delegate->IsSearchAllowedByPolicy());
-  EXPECT_FALSE(IsSunfishSessionAllowed());
+  EXPECT_FALSE(CanShowSunfishUi());
 }
 
 }  // namespace ash

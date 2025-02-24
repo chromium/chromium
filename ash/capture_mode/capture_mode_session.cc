@@ -3633,7 +3633,7 @@ CaptureModeSession::ShowDefaultActionButtonsOrPerformSearch() {
   // which checks if *either* Scanner or Sunfish is enabled. Check again if
   // Sunfish specifically is enabled to show the Search button.
   if (active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected() &&
-      features::IsSunfishFeatureEnabled()) {
+      CanShowSunfishUi()) {
     if (controller_->IsNetworkConnectionOffline()) {
       ShowActionContainerError(l10n_util::GetStringUTF16(
           IDS_ASH_SCREEN_CAPTURE_MORE_ACTIONS_UNAVAILABLE_OFFLINE_ERROR));
