@@ -390,6 +390,7 @@ void CloudBinaryUploadService::OnGetInstanceID(Request::Id request_id,
 
   if (instance_id != BinaryFCMService::kInvalidId) {
     request->set_fcm_token(instance_id);
+
     // Record FCM token fetching duration only if it is successful.
     base::UmaHistogramCustomTimes(
         "SafeBrowsingBinaryUploadRequest.TimeToGetFCMToken",
@@ -636,18 +637,20 @@ void CloudBinaryUploadService::FinishRequest(
   WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
       active_tokens_[request->id()], ResultToString(result), response);
 
-  std::string instance_id = request->fcm_notification_token();
   request->FinishRequest(result, response);
-  FinishRequestCleanup(request, instance_id);
+  CleanupRequest(request);
+}
+
+void CloudBinaryUploadService::CleanupRequest(Request* request) {
+  FinishRequestCleanup(request);
 
   // Now that a request has been cleaned up, we can try to allocate resources
   // for queued uploads.
   PopRequestQueue();
 }
 
-void CloudBinaryUploadService::FinishRequestCleanup(
-    Request* request,
-    const std::string& instance_id) {
+void CloudBinaryUploadService::FinishRequestCleanup(Request* request) {
+  std::string instance_id = request->fcm_notification_token();
   Request::Id request_id = request->id();
   std::string dm_token = request->device_token();
   auto connector = request->analysis_connector();
