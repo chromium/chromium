@@ -121,7 +121,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     private CallbackController mCallbackController = new CallbackController();
     private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private boolean mUpdateMenuItemVisible;
-    private ShareUtils mShareUtils;
     private final Supplier<ReadAloudController> mReadAloudControllerSupplier;
     private @Nullable ModelList mModelList;
     private int mReadAloudPos;
@@ -232,7 +231,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         }
 
         mBookmarkModelSupplier = bookmarkModelSupplier;
-        mShareUtils = new ShareUtils();
     }
 
     @Override
@@ -511,7 +509,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
         // Don't allow either "chrome://" pages or interstitial pages to be shared, or when the
         // current tab is null.
-        boolean showShare = isCurrentTabNotNull && mShareUtils.shouldEnableShare(currentTab);
+        boolean showShare = isCurrentTabNotNull && ShareUtils.shouldEnableShare(currentTab);
         menu.findItem(R.id.share_row_menu_id).setVisible(showShare);
 
         if (isCurrentTabNotNull) {

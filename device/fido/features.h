@@ -140,10 +140,6 @@ BASE_DECLARE_FEATURE(kSyncSecurityDomainBeforePINRenewal);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnRemoteDesktopAllowedOriginsPolicy);
 
-// Deprecation flag for registering to FCM messages for linking and prelinking.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnRegisterForFcm);
-
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

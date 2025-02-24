@@ -10,6 +10,8 @@
 
 namespace apps::features {
 
+BASE_DECLARE_FEATURE(kNavigationCapturingOnExistingFrames);
+
 // Returns true if the updated UX for link capturing needs to be shown. Only set
 // to true on desktop platforms if kPwaNavigationCapturing is enabled, and
 // always on CrOS.

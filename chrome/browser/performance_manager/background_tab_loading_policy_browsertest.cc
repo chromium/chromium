@@ -77,18 +77,15 @@ class BackgroundTabLoadingBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     // Configure BackgroundTabLoadingPolicy for the tests.
-    PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindLambdaForTesting([]() {
-          // Set a value explicitly for thresholds that depends on system
-          // information, to avoid flakiness when tests run in different
-          // environments.
-          policies::BackgroundTabLoadingPolicy* policy =
-              policies::BackgroundTabLoadingPolicy::GetInstance();
-          EXPECT_TRUE(policy);
-          policy->SetMaxSimultaneousLoadsForTesting(1);
-          policy->SetFreeMemoryForTesting(policies::BackgroundTabLoadingPolicy::
-                                              kDesiredAmountOfFreeMemoryMb);
-        }));
+    //
+    // Set a value explicitly for thresholds that depends on system information,
+    // to avoid flakiness when tests run in different environments.
+    policies::BackgroundTabLoadingPolicy* policy =
+        policies::BackgroundTabLoadingPolicy::GetInstance();
+    EXPECT_TRUE(policy);
+    policy->SetMaxSimultaneousLoadsForTesting(1);
+    policy->SetFreeMemoryForTesting(
+        policies::BackgroundTabLoadingPolicy::kDesiredAmountOfFreeMemoryMb);
   }
 
   GURL url_;

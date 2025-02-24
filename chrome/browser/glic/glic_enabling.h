@@ -100,6 +100,8 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // Detects changes to capabilities.
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
+  void OnRefreshTokensLoaded() override;
+
   // Detects paused state.
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info,

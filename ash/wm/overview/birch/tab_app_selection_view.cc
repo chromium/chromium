@@ -8,6 +8,7 @@
 #include "ash/birch/coral_util.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
@@ -19,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -78,6 +80,11 @@ std::unique_ptr<views::Label> CreateSubtitle(int text_message_id, int id) {
                                               *label);
       }))
       .Build();
+}
+
+// Returns the pref service to use for coral policy prefs.
+PrefService* GetPrefService() {
+  return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
 }
 
 }  // namespace
@@ -462,7 +469,9 @@ TabAppSelectionView::TabAppSelectionView(const base::Token& group_id,
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_SELECTOR_ACCESSIBLE_NAME));
 
-  AddChildView(std::make_unique<UserFeedbackView>(this));
+  if (coral_util::IsCoralFeedbackAllowedByPolicy(GetPrefService())) {
+    AddChildView(std::make_unique<UserFeedbackView>(this));
+  }
 
   auto* tab_app_items_view =
       AddChildView(std::make_unique<views::BoxLayoutView>());

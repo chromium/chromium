@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_CONTENT_CREDENTIAL_MANAGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_CONTENT_CREDENTIAL_MANAGER_H_
 
-#include "components/password_manager/core/browser/credential_manager_impl.h"
+#include <memory>
+
+#include "components/password_manager/core/browser/credential_manager_interface.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -17,13 +19,14 @@ namespace password_manager {
 class PasswordManagerClient;
 struct CredentialInfo;
 
-// Implements blink::mojom::CredentialManager using core class
-// CredentialManagerImpl. Methods Store, PreventSilentAccess and Get are invoked
-// from the renderer with callbacks as arguments. PasswordManagerClient is used
-// to invoke UI.
+// Implements blink::mojom::CredentialManager using an implementation of
+// ChromeCredentialManagerInterface. Methods Store, PreventSilentAccess and Get
+// are invoked from the renderer with callbacks as arguments.
+// PasswordManagerClient is used to invoke UI.
 class ContentCredentialManager : public blink::mojom::CredentialManager {
  public:
-  explicit ContentCredentialManager(PasswordManagerClient* client);
+  explicit ContentCredentialManager(
+      std::unique_ptr<CredentialManagerInterface> credential_manager);
 
   ContentCredentialManager(const ContentCredentialManager&) = delete;
   ContentCredentialManager& operator=(const ContentCredentialManager&) = delete;
@@ -44,7 +47,7 @@ class ContentCredentialManager : public blink::mojom::CredentialManager {
            GetCallback callback) override;
 
  private:
-  CredentialManagerImpl impl_;
+  std::unique_ptr<CredentialManagerInterface> credential_manager_;
 
   mojo::Receiver<blink::mojom::CredentialManager> receiver_{this};
 };

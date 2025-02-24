@@ -224,51 +224,19 @@ TEST_F(PerformanceManagerTest, NodeAccessors) {
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForRenderProcessHost(rph);
 
-  // Post a task to the Graph and make it call a function on the UI thread that
-  // will ensure that the nodes are really associated with the content objects.
+  EXPECT_TRUE(page_node);
+  EXPECT_TRUE(frame_node);
+  EXPECT_TRUE(process_node);
 
-  base::RunLoop run_loop;
-  auto check_proxies_on_main_thread = base::BindLambdaForTesting(
-      [&](base::WeakPtr<content::WebContents> weak_contents,
-          const RenderFrameHostProxy& rfh_proxy,
-          const RenderProcessHostProxy& rph_proxy) {
-        EXPECT_EQ(contents.get(), weak_contents.get());
-        EXPECT_EQ(rfh, rfh_proxy.Get());
-        EXPECT_EQ(rph, rph_proxy.Get());
-        run_loop.Quit();
-      });
-
-  auto call_on_graph_cb = base::BindLambdaForTesting([&]() {
-    EXPECT_TRUE(page_node.get());
-    EXPECT_TRUE(frame_node.get());
-    EXPECT_TRUE(process_node.get());
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(check_proxies_on_main_thread),
-                                  page_node->GetWebContents(),
-                                  frame_node->GetRenderFrameHostProxy(),
-                                  process_node->GetRenderProcessHostProxy()));
-  });
-
-  PerformanceManager::CallOnGraph(FROM_HERE, call_on_graph_cb);
-
-  // Wait for |check_proxies_on_main_thread| to be called.
-  run_loop.Run();
+  EXPECT_EQ(contents.get(), page_node->GetWebContents().get());
+  EXPECT_EQ(rfh, frame_node->GetRenderFrameHostProxy().Get());
+  EXPECT_EQ(rph, process_node->GetRenderProcessHostProxy().Get());
 
   contents.reset();
 
-  // After deleting |contents| the corresponding WeakPtr's should be
-  // invalid.
-  base::RunLoop run_loop_after_contents_reset;
-  auto quit_closure = run_loop_after_contents_reset.QuitClosure();
-  auto call_on_graph_cb_2 = base::BindLambdaForTesting([&]() {
-    EXPECT_FALSE(page_node.get());
-    EXPECT_FALSE(frame_node.get());
-    EXPECT_FALSE(process_node.get());
-    std::move(quit_closure).Run();
-  });
-
-  PerformanceManager::CallOnGraph(FROM_HERE, call_on_graph_cb_2);
-  run_loop_after_contents_reset.Run();
+  EXPECT_FALSE(page_node);
+  EXPECT_FALSE(frame_node);
+  EXPECT_FALSE(process_node);
 }
 
 // Tests that the PerformanceManager accessors to look up nodes don't crash

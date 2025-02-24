@@ -37,13 +37,14 @@ class AutofillDriver;
 #endif  // !BUILDFLAG(IS_IOS)
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
+class MockBnplManager;
 class TouchToFillDelegate;
 class VirtualCardEnrollmentManager;
 
 namespace payments {
 
-class PaymentsWindowManager;
 class BnplManager;
+class PaymentsWindowManager;
 
 // This class is for easier writing of tests. It is owned by TestAutofillClient.
 class TestPaymentsAutofillClient : public PaymentsAutofillClient {
@@ -194,6 +195,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       std::unique_ptr<AutofillOfferManager> autofill_offer_manager) {
     autofill_offer_manager_ = std::move(autofill_offer_manager);
   }
+
+  MockBnplManager& CreateOrGetMockBnplManager();
 
   bool unmask_authenticator_selection_dialog_shown() const {
     return unmask_authenticator_selection_dialog_shown_;

@@ -38,7 +38,7 @@ void* GetKey() {
 namespace version {
 constexpr char kTableName[] = "entities_version";
 constexpr char kVersion[] = "version";
-constexpr int kCurrentVersion = 4;
+constexpr int kCurrentVersion = 5;
 }  // namespace version
 
 namespace attributes {
@@ -79,8 +79,12 @@ std::optional<EntityInstance> ValidateInstance(
   for (AttributeRecord& ar : attribute_records) {
     if (std::optional<AttributeType> attribute_type =
             StringToAttributeType(pass_key, *entity_type, ar.type_name)) {
-      attributes.emplace_back(*attribute_type, std::move(ar.value));
+      attributes.emplace_back(*attribute_type);
+      attributes.back().SetInfo(attribute_type->field_type(), ar.value);
     }
+  }
+  for (AttributeInstance& attribute : attributes) {
+    attribute.FinalizeInfo();
   }
 
   // Remove attributes that don't belong to the entity according to the schema.
@@ -127,24 +131,38 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
 
   if (add) {
     using enum AttributeTypeName;
-    table.AddOrUpdateEntityInstance(EntityInstance(
-        EntityType(EntityTypeName::kPassport),
-        {AttributeInstance(AttributeType(kPassportNumber), u"123"),
-         AttributeInstance(AttributeType(kPassportName), u"Pippi Långstrump"),
-         AttributeInstance(AttributeType(kPassportCountry), u"Sweden"),
-         AttributeInstance(AttributeType(kPassportExpiryDate), u"09/2098"),
-         AttributeInstance(AttributeType(kPassportIssueDate), u"10/1998")},
-        base::Uuid::ParseLowercase("00000000-0000-4000-8000-000000000000"),
-        "Passie", base::Time::Now()));
-    table.AddOrUpdateEntityInstance(EntityInstance(
-        EntityType(EntityTypeName::kLoyaltyCard),
-        {AttributeInstance(AttributeType(kLoyaltyCardProgram),
-                           u"Asterisk Alliance"),
-         AttributeInstance(AttributeType(kLoyaltyCardProvider),
-                           u"Propeller Airways"),
-         AttributeInstance(AttributeType(kLoyaltyCardMemberId), u"987")},
-        base::Uuid::ParseLowercase("11111111-1111-4111-8111-111111111111"),
-        "Loyie", base::Time::Now()));
+    {
+      // Add a passport instance.
+      AttributeInstance number((AttributeType(kPassportNumber)));
+      AttributeInstance name((AttributeType(kPassportName)));
+      AttributeInstance country((AttributeType(kPassportCountry)));
+      AttributeInstance expiry_date((AttributeType(kPassportExpiryDate)));
+      AttributeInstance issue_date((AttributeType(kPassportIssueDate)));
+      number.SetInfo(PASSPORT_NUMBER, u"123");
+      name.SetInfo(NAME_FULL, u"Pippi Långstrump");
+      country.SetInfo(ADDRESS_HOME_COUNTRY, u"Sweden");
+      expiry_date.SetInfo(PASSPORT_EXPIRATION_DATE_TAG, u"09/2098");
+      issue_date.SetInfo(PASSPORT_ISSUE_DATE_TAG, u"10/1998");
+      table.AddOrUpdateEntityInstance(EntityInstance(
+          EntityType(EntityTypeName::kPassport),
+          {number, name, country, expiry_date, issue_date},
+          base::Uuid::ParseLowercase("00000000-0000-4000-8000-000000000000"),
+          "Passie", base::Time::Now()));
+    }
+    {
+      // Add a loyalty card instance.
+      AttributeInstance program((AttributeType(kLoyaltyCardProgram)));
+      AttributeInstance provider((AttributeType(kLoyaltyCardProvider)));
+      AttributeInstance member_id((AttributeType(kLoyaltyCardMemberId)));
+      program.SetInfo(LOYALTY_MEMBERSHIP_PROGRAM, u"Asterisk Alliance");
+      provider.SetInfo(LOYALTY_MEMBERSHIP_PROVIDER, u"Propeller Airways");
+      program.SetInfo(LOYALTY_MEMBERSHIP_ID, u"987");
+      table.AddOrUpdateEntityInstance(EntityInstance(
+          EntityType(EntityTypeName::kLoyaltyCard),
+          {program, provider, member_id},
+          base::Uuid::ParseLowercase("11111111-1111-4111-8111-111111111111"),
+          "Loyie", base::Time::Now()));
+    }
   }
 }
 

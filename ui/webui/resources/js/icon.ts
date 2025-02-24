@@ -101,6 +101,18 @@ export function getImage(path: string): string {
                             getUrlForCss(path);
 }
 
+/**
+ * Returns the URL for an external image, using chrome://image to fetch it.
+ *
+ * @param url URL of the external image.
+ * @return The url using chrome://image.
+ */
+export function getImageForUrl(url: string): string {
+  const imageUrl = new URL('chrome://image/');
+  imageUrl.searchParams.set('url', url);
+  return getUrlForCss(imageUrl.toString());
+}
+
 function getBaseFaviconUrl(): URL {
   const faviconUrl = new URL('chrome://favicon2/');
   faviconUrl.searchParams.set('size', '16');

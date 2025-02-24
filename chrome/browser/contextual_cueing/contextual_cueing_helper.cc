@@ -125,10 +125,11 @@ void ContextualCueingHelper::PrimaryMainDocumentElementAvailable() {
       web_contents()->GetLastCommittedURL(),
       optimization_guide::proto::GLIC_CONTEXTUAL_CUEING,
       base::BindOnce(&ContextualCueingHelper::OnOptimizationGuideCueingMetadata,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 void ContextualCueingHelper::OnOptimizationGuideCueingMetadata(
+    base::TimeTicks document_available_time,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
   std::unique_ptr<ScopedNudgeDecisionRecorder> recorder =
@@ -151,7 +152,8 @@ void ContextualCueingHelper::OnOptimizationGuideCueingMetadata(
   ContextualCueingPageData::CreateForPage(
       web_contents()->GetPrimaryPage(), std::move(*parsed),
       base::BindOnce(&ContextualCueingHelper::OnCueingDecision,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(recorder)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(recorder),
+                     document_available_time));
 }
 
 bool ContextualCueingHelper::IsBrowserBlockingNudges(
@@ -200,6 +202,7 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
 
 void ContextualCueingHelper::OnCueingDecision(
     std::unique_ptr<ScopedNudgeDecisionRecorder> decision_recorder,
+    base::TimeTicks document_available_time,
     std::string cue_label) {
   CHECK_EQ(NudgeDecision::kUnknown, decision_recorder->nudge_decision());
   if (ContextualCueingPageData::GetForPage(web_contents()->GetPrimaryPage())) {
@@ -228,7 +231,8 @@ void ContextualCueingHelper::OnCueingDecision(
       base::BindRepeating(
           &ContextualCueingService::OnNudgeActivity,
           contextual_cueing_service_->GetWeakPtr(), url,
-          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()));
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+          document_available_time));
 }
 
 // static

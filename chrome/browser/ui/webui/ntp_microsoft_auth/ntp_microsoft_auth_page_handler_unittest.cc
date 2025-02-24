@@ -49,7 +49,7 @@ class MockMicrosoftAuthService : public MicrosoftAuthService {
  public:
   MOCK_METHOD(void, AddObserver, (MicrosoftAuthServiceObserver*), (override));
   MOCK_METHOD0(ClearAuthData, void());
-  MOCK_METHOD0(GetAuthState, new_tab_page::mojom::AuthState());
+  MOCK_METHOD0(GetAuthState, MicrosoftAuthService::AuthState());
   MOCK_METHOD1(SetAccessToken, void(new_tab_page::mojom::AccessTokenPtr));
   MOCK_METHOD0(SetAuthStateError, void());
 };
@@ -118,31 +118,24 @@ TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, ClearAuthData) {
   handler().ClearAuthData();
 }
 
-TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, GetAuthState) {
-  base::MockCallback<MicrosoftAuthUntrustedPageHandler::GetAuthStateCallback>
-      callback;
-  new_tab_page::mojom::AuthState state;
-  EXPECT_CALL(callback, Run).WillOnce(MoveArg<0>(&state));
+TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, MaybeAcquireTokenSilent) {
+  EXPECT_CALL(mock_document(), AcquireTokenSilent).Times(0);
   ON_CALL(mock_auth_service(), GetAuthState)
-      .WillByDefault(testing::Return(new_tab_page::mojom::AuthState::kSuccess));
+      .WillByDefault(
+          testing::Return(MicrosoftAuthService::AuthState::kSuccess));
 
-  handler().GetAuthState(callback.Get());
-  EXPECT_EQ(state, new_tab_page::mojom::AuthState::kSuccess);
+  handler().MaybeAcquireTokenSilent();
   histogram_tester().ExpectBucketCount("NewTabPage.MicrosoftAuth.AuthStarted",
                                        new_tab_page::mojom::AuthType::kSilent,
                                        0);
 }
 
-TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, GetAuthStateNone) {
-  base::MockCallback<MicrosoftAuthUntrustedPageHandler::GetAuthStateCallback>
-      callback;
-  new_tab_page::mojom::AuthState state;
-  EXPECT_CALL(callback, Run).WillOnce(MoveArg<0>(&state));
+TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, MaybeAcquireTokenSilentNone) {
+  EXPECT_CALL(mock_document(), AcquireTokenSilent);
   ON_CALL(mock_auth_service(), GetAuthState)
-      .WillByDefault(testing::Return(new_tab_page::mojom::AuthState::kNone));
+      .WillByDefault(testing::Return(MicrosoftAuthService::AuthState::kNone));
 
-  handler().GetAuthState(callback.Get());
-  EXPECT_EQ(state, new_tab_page::mojom::AuthState::kNone);
+  handler().MaybeAcquireTokenSilent();
   histogram_tester().ExpectBucketCount("NewTabPage.MicrosoftAuth.AuthStarted",
                                        new_tab_page::mojom::AuthType::kSilent,
                                        1);
@@ -174,7 +167,7 @@ TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, SetAuthStateError) {
 
 TEST_F(NtpMicrosoftAuthUntrustedPageHandlerTest, OnAuthStateUpdated) {
   ON_CALL(mock_auth_service(), GetAuthState)
-      .WillByDefault(testing::Return(new_tab_page::mojom::AuthState::kNone));
+      .WillByDefault(testing::Return(MicrosoftAuthService::AuthState::kNone));
   EXPECT_CALL(mock_document(), AcquireTokenSilent);
 
   auth_service_observer().OnAuthStateUpdated();

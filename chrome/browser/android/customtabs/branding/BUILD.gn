@@ -50,10 +50,10 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/branding_icon.xml",
     "java/res/layout/custom_tabs_toast_branding_layout.xml",
     "java/res/layout/custom_tabs_toolbar_branding_layout.xml",
     "java/res/values/dimens.xml",
-    "java/res/values/ids.xml",
   ]
 
   deps = [ "//chrome/browser/ui/android/strings:ui_strings_grd" ]

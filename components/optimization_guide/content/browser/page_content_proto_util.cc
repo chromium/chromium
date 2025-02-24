@@ -322,6 +322,8 @@ void ConvertTableRowData(
 bool ConvertAttributes(
     const blink::mojom::AIPageContentAttributes& mojom_attributes,
     optimization_guide::proto::ContentAttributes* proto_attributes) {
+  proto_attributes->set_content_node_id(mojom_attributes.content_node_id);
+
   for (const auto& dom_node_id : mojom_attributes.dom_node_ids) {
     proto_attributes->add_dom_node_ids(dom_node_id);
   }

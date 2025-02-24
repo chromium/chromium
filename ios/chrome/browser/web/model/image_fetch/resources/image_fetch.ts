@@ -56,7 +56,7 @@ function getImageDataByCanvas(url: string): string | null {
   }
 
   for (const img of document.images) {
-    if (img && img.src == url) {
+    if (img && img.src === url) {
       const canvas = document.createElement('canvas');
       canvas.width = img.naturalWidth;
       canvas.height = img.naturalHeight;
@@ -95,7 +95,7 @@ function getImageDataByXMLHttpRequest(
   xhr.responseType = 'blob';
 
   xhr.onload = function() {
-    if (xhr.status != 200) {
+    if (xhr.status !== 200) {
       onError();
       return;
     }

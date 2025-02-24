@@ -7,8 +7,6 @@ package org.chromium.components.webauthn.cred_man;
 import android.content.Context;
 import android.os.Build;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
@@ -16,11 +14,14 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webauthn.CredManSupport;
 import org.chromium.components.webauthn.GmsCoreUtils;
 import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.components.webauthn.WebauthnModeProvider;
 
+@NullMarked
 public class CredManSupportProvider {
     private static final int GMSCORE_MIN_VERSION_CANARY_DEV = 241900000;
     private static final int GMSCORE_MIN_VERSION_BETA_STABLE = 242300000;

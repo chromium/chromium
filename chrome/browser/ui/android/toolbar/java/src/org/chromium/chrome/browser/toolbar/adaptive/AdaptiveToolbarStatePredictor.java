@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -319,10 +320,12 @@ public class AdaptiveToolbarStatePredictor {
     /** For testing only. */
     public static void setSegmentationResultsForTesting(Pair<Boolean, List<Integer>> results) {
         sSegmentationResultsForTesting = results == null ? null : results.second;
+        ResettersForTesting.register(() -> sSegmentationResultsForTesting = null);
     }
 
     /** For testing only. */
     public static void setToolbarStateForTesting(Integer toolbarState) {
         sToolbarStateForTesting = toolbarState;
+        ResettersForTesting.register(() -> sToolbarStateForTesting = null);
     }
 }

@@ -103,6 +103,13 @@ chromium-metrics-reviews@google.com.
   <summary>Emitted each time a Bluetooth device is disconnected.</summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.DeviceKeyMissing" enum="BooleanDetected"
+    expires_after="2025-12-31">
+  <owner>laikatherine@chromium.org</owner>
+  <owner>chromeos-bt-team@google.com</owner>
+  <summary>Emitted each time a Bluetooth device has missing keys.</summary>
+</histogram>
+
 <histogram
     name="Bluetooth.ChromeOS.DeviceSelectionDuration{DeviceSelectionUISurfaces}"
     units="ms" expires_after="2025-11-20">

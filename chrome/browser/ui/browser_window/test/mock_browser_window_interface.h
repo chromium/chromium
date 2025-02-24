@@ -52,6 +52,10 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               GetExclusiveAccessManager,
               (),
               (override));
+  MOCK_METHOD(ImmersiveModeController*,
+              GetImmersiveModeController,
+              (),
+              (override));
   MOCK_METHOD(BrowserActions*, GetActions, (), (override));
   MOCK_METHOD(Type, GetType, (), (const, override));
   MOCK_METHOD(BrowserUserEducationInterface*,

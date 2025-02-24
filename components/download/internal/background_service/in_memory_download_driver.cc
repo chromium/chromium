@@ -6,6 +6,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "components/download/internal/background_service/in_memory_download.h"
+#include "components/download/public/background_service/url_loader_factory_getter.h"
 #include "services/network/public/cpp/resource_request_body.h"
 
 namespace download {
@@ -15,6 +16,7 @@ namespace {
 DriverEntry::State ToDriverEntryState(InMemoryDownload::State state) {
   switch (state) {
     case InMemoryDownload::State::INITIAL:
+    case InMemoryDownload::State::RETRIEVE_URL_LOADER_FACTIORY:
     case InMemoryDownload::State::RETRIEVE_BLOB_CONTEXT:
     case InMemoryDownload::State::IN_PROGRESS:
       return DriverEntry::State::IN_PROGRESS;
@@ -45,8 +47,9 @@ DriverEntry CreateDriverEntry(const InMemoryDownload& download) {
 
   if (download.state() == InMemoryDownload::State::COMPLETE) {
     auto blob_handle = download.ResultAsBlob();
-    if (blob_handle)
+    if (blob_handle) {
       entry.blob_handle = std::optional<storage::BlobDataHandle>(*blob_handle);
+    }
   }
   return entry;
 }
@@ -54,10 +57,8 @@ DriverEntry CreateDriverEntry(const InMemoryDownload& download) {
 }  // namespace
 
 InMemoryDownloadFactory::InMemoryDownloadFactory(
-    network::mojom::URLLoaderFactory* url_loader_factory,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
-    : url_loader_factory_(url_loader_factory),
-      io_task_runner_(io_task_runner) {}
+    : io_task_runner_(io_task_runner) {}
 
 InMemoryDownloadFactory::~InMemoryDownloadFactory() = default;
 
@@ -67,18 +68,19 @@ std::unique_ptr<InMemoryDownload> InMemoryDownloadFactory::Create(
     scoped_refptr<network::ResourceRequestBody> request_body,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     InMemoryDownload::Delegate* delegate) {
-  DCHECK(url_loader_factory_);
   return std::make_unique<InMemoryDownloadImpl>(
       guid, request_params, std::move(request_body), traffic_annotation,
-      delegate, url_loader_factory_, io_task_runner_);
+      delegate, io_task_runner_);
 }
 
 InMemoryDownloadDriver::InMemoryDownloadDriver(
     std::unique_ptr<InMemoryDownload::Factory> download_factory,
-    BlobContextGetterFactoryPtr blob_context_getter_factory)
+    BlobContextGetterFactoryPtr blob_context_getter_factory,
+    URLLoaderFactoryGetterPtr url_loader_factory_getter)
     : client_(nullptr),
       download_factory_(std::move(download_factory)),
-      blob_context_getter_factory_(std::move(blob_context_getter_factory)) {}
+      blob_context_getter_factory_(std::move(blob_context_getter_factory)),
+      url_loader_factory_getter_(std::move(url_loader_factory_getter)) {}
 
 InMemoryDownloadDriver::~InMemoryDownloadDriver() = default;
 
@@ -118,22 +120,25 @@ void InMemoryDownloadDriver::Remove(const std::string& guid, bool remove_file) {
 
 void InMemoryDownloadDriver::Pause(const std::string& guid) {
   auto it = downloads_.find(guid);
-  if (it != downloads_.end())
+  if (it != downloads_.end()) {
     it->second->Pause();
+  }
 }
 
 void InMemoryDownloadDriver::Resume(const std::string& guid) {
   auto it = downloads_.find(guid);
-  if (it != downloads_.end())
+  if (it != downloads_.end()) {
     it->second->Resume();
+  }
 }
 
 std::optional<DriverEntry> InMemoryDownloadDriver::Find(
     const std::string& guid) {
   std::optional<DriverEntry> entry;
   auto it = downloads_.find(guid);
-  if (it != downloads_.end())
+  if (it != downloads_.end()) {
     entry = CreateDriverEntry(*it->second);
+  }
   return entry;
 }
 
@@ -183,6 +188,7 @@ void InMemoryDownloadDriver::OnDownloadComplete(InMemoryDownload* download) {
       // OnDownloadSucceeded.
       return;
     case InMemoryDownload::State::INITIAL:
+    case InMemoryDownload::State::RETRIEVE_URL_LOADER_FACTIORY:
     case InMemoryDownload::State::RETRIEVE_BLOB_CONTEXT:
     case InMemoryDownload::State::IN_PROGRESS:
       NOTREACHED();
@@ -198,6 +204,11 @@ void InMemoryDownloadDriver::OnUploadProgress(InMemoryDownload* download) {
 void InMemoryDownloadDriver::RetrieveBlobContextGetter(
     BlobContextGetterCallback callback) {
   blob_context_getter_factory_->RetrieveBlobContextGetter(std::move(callback));
+}
+
+void InMemoryDownloadDriver::RetrievedURLLoaderFactory(
+    URLLoaderFactoryGetterCallback callback) {
+  url_loader_factory_getter_->RetrieveURLLoaderFactory(std::move(callback));
 }
 
 }  // namespace download

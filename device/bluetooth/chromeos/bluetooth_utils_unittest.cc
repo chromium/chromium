@@ -654,4 +654,17 @@ TEST_F(BluetoothUtilsTest, TestFlossManagerClientInitMetric) {
   assert_histograms();
 }
 
+TEST_F(BluetoothUtilsTest, TestDeviceKeyMissingMetric) {
+  static int expected_num_successes = 0, expected_num_failures = 0;
+  auto assert_histograms = [&]() {
+    histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.DeviceKeyMissing", 1,
+                                       expected_num_successes);
+    histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.DeviceKeyMissing", 0,
+                                       expected_num_failures);
+  };
+  RecordDeviceKeyMissing();
+  expected_num_successes++;
+  assert_histograms();
+}
+
 }  // namespace device

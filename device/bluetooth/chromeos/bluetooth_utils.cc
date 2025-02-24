@@ -715,4 +715,8 @@ void RecordFlossManagerClientInit(bool success, base::TimeDelta duration) {
                             success);
 }
 
+void RecordDeviceKeyMissing() {
+  base::UmaHistogramBoolean("Bluetooth.ChromeOS.DeviceKeyMissing", true);
+}
+
 }  // namespace device

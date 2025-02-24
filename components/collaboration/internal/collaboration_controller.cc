@@ -421,10 +421,10 @@ class CheckingFlowRequirementsState : public ControllerState {
   // Called to process the outcome of data sharing read event.
   void ProcessGroupDataOrFailureOutcome(
       const GroupDataOrFailureOutcome& group_outcome) {
-    // TODO(crbug.com/373403973): add version check.
+    // TODO(crbug.com/373403973): add version check once all platforms
+    // implemented ReadNewGroup in SDK.
     if (!group_outcome.has_value()) {
       RecordJoinEvent(CollaborationServiceJoinEvent::kReadNewGroupFailed);
-      HandleErrorWithType(ErrorInfo::Type::kInvalidUrl);
     }
 
     RecordJoinEvent(CollaborationServiceJoinEvent::kReadNewGroupSuccess);

@@ -2623,6 +2623,7 @@ Full version information for the fingerprint enum values:
   <int value="795193284" label="CROS Cr50 0.5.171"/>
   <int value="817381184" label="CROS Cr50 0.5.2"/>
   <int value="823358270" label="CROS Cr50 0.6.93"/>
+  <int value="831565723" label="CROS Ti50 0.23.160"/>
   <int value="832251848" label="CROS Cr50 0.4.18"/>
   <int value="839444603" label="CROS Cr50 0.3.21"/>
   <int value="847042924" label="IFX 9645 rev 78 fw 133.33 build 00e3"/>

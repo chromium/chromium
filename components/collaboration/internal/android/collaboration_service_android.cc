@@ -153,4 +153,21 @@ ScopedJavaLocalRef<jobject> CollaborationServiceAndroid::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(java_obj_);
 }
 
+void CollaborationServiceAndroid::OnServiceStatusChanged(
+    const ServiceStatusUpdate& update) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  auto j_old_status = Java_ServiceStatus_createServiceStatus(
+      env, static_cast<int>(update.old_status.signin_status),
+      static_cast<int>(update.old_status.sync_status),
+      static_cast<int>(update.old_status.collaboration_status));
+  auto j_new_status = Java_ServiceStatus_createServiceStatus(
+      env, static_cast<int>(update.new_status.signin_status),
+      static_cast<int>(update.new_status.sync_status),
+      static_cast<int>(update.new_status.collaboration_status));
+
+  Java_CollaborationServiceImpl_onServiceStatusChanged(
+      env, java_obj_, j_old_status, j_new_status);
+}
+
 }  // namespace collaboration

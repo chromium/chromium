@@ -9,6 +9,7 @@
 
 #include "extensions/browser/api/system_cpu/cpu_info_provider.h"
 
+#include <inttypes.h>
 #include <stdint.h>
 
 #include <cstdio>
@@ -60,7 +61,7 @@ bool CpuInfoProvider::QueryCpuTimePerProcessor(
     uint32_t pindex = 0;
     int vals =
         sscanf(line.c_str(),
-               "cpu%" PRIu32 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64,
+               "cpu%" SCNu32 " %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64,
                &pindex, &user, &nice, &sys, &idle);
     if (vals != 5 || pindex >= infos->size()) {
       // TODO(b/326303922): This fires in internal integration tests, reevaluate

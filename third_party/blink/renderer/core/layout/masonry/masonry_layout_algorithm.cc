@@ -96,6 +96,7 @@ LayoutUnit ContributionSizeForVirtualItem(
 
 GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
     const GridLineResolver& line_resolver,
+    SizingConstraint sizing_constraint,
     wtf_size_t* start_offset) const {
   const auto& style = Style();
   const auto& available_size = ChildAvailableSize();
@@ -114,7 +115,10 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
     GridTrackSizingAlgorithm::CacheGridItemsProperties(track_collection,
                                                        &virtual_items);
 
-    const GridTrackSizingAlgorithm track_sizing_algorithm;
+    // TODO(ethavar): Compute the min available size and use it here.
+    const GridTrackSizingAlgorithm track_sizing_algorithm(
+        style, ChildAvailableSize(), ChildAvailableSize(), sizing_constraint);
+
     track_sizing_algorithm.ComputeUsedTrackSizes(
         ContributionSizeForVirtualItem, &track_collection, &virtual_items);
   }

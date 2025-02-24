@@ -254,6 +254,11 @@ bool ShouldShowResponse(CoralResponse* response) {
   return groups[0]->entities.size() != (tab_num + app_num);
 }
 
+// Returns the pref service to use for coral policy prefs.
+PrefService* GetPrefService() {
+  return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -423,6 +428,12 @@ void BirchCoralProvider::RemoveObserver(Observer* observer) {
 }
 
 void BirchCoralProvider::RequestBirchDataFetch() {
+  if (!coral_util::IsCoralAllowedByPolicy(GetPrefService())) {
+    // Coral is disabled by policy.
+    Shell::Get()->birch_model()->SetCoralItems({});
+    return;
+  }
+
   // Use the customized fake response if set.
   if (fake_response_) {
     auto fake_response_copy = std::make_unique<CoralResponse>();
@@ -752,6 +763,7 @@ void BirchCoralProvider::MaybeCacheTabEmbedding(TabClusterUIItem* tab_item) {
       session_controller->GetPrimaryUserPrefService() &&
       session_controller->GetPrimaryUserPrefService()->GetBoolean(
           prefs::kBirchUseCoral) &&
+      coral_util::IsCoralAllowedByPolicy(GetPrefService()) &&
       IsValidTab(tab_item) && ShouldCreateEmbedding(tab_item)) {
     CacheTabEmbedding(tab_item);
   }

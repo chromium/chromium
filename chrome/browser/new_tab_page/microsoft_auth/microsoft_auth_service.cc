@@ -16,7 +16,7 @@ MicrosoftAuthService::~MicrosoftAuthService() = default;
 
 void MicrosoftAuthService::ClearAuthData() {
   access_token_ = new_tab_page::mojom::AccessToken::New();
-  state_ = new_tab_page::mojom::AuthState::kNone;
+  state_ = AuthState::kNone;
   NotifyObservers();
 }
 
@@ -27,20 +27,20 @@ std::string MicrosoftAuthService::GetAccessToken() {
   return access_token_->token;
 }
 
-new_tab_page::mojom::AuthState MicrosoftAuthService::GetAuthState() {
+MicrosoftAuthService::AuthState MicrosoftAuthService::GetAuthState() {
   CheckAccessTokenExpiration();
   return state_;
 }
 
 void MicrosoftAuthService::SetAuthStateError() {
-  state_ = new_tab_page::mojom::AuthState::kError;
+  state_ = AuthState::kError;
   NotifyObservers();
 }
 
 void MicrosoftAuthService::SetAccessToken(
     new_tab_page::mojom::AccessTokenPtr access_token) {
   access_token_ = std::move(access_token);
-  state_ = new_tab_page::mojom::AuthState::kSuccess;
+  state_ = AuthState::kSuccess;
   NotifyObservers();
 }
 
@@ -60,7 +60,7 @@ void MicrosoftAuthService::CheckAccessTokenExpiration() {
       access_token_->expiration <= base::Time::Now() + base::Seconds(30)) {
     // Reset access_token_ and state_, if access_token_ is expired.
     access_token_ = new_tab_page::mojom::AccessToken::New();
-    state_ = new_tab_page::mojom::AuthState::kNone;
+    state_ = AuthState::kNone;
     NotifyObservers();
   }
 }

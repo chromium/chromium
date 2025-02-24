@@ -168,7 +168,6 @@ AtomicString HTMLButtonElement::command() const {
       return lower_action;
     }
   }
-  NOTREACHED();
 }
 
 CommandEventType HTMLButtonElement::GetCommandEventType(

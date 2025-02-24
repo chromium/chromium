@@ -42,6 +42,7 @@ class ContextualCueingService
   // Called when cueing nudge activity happens.
   void OnNudgeActivity(const GURL& url,
                        ukm::SourceId source_id,
+                       base::TimeTicks document_available_time,
                        tabs::GlicNudgeActivity activity);
 
   // Should be called when the cueing UI is shown for the tab with `url`.

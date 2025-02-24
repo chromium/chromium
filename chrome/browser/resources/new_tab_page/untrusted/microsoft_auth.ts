@@ -10,7 +10,6 @@
 import {MicrosoftAuthUntrustedDocumentProxy} from './microsoft_auth_proxy.js';
 import type {AuthenticationResult, AuthError, Configuration, PopupRequest} from './msal_browser.js';
 import {PublicClientApplication} from './msal_browser.js';
-import {AuthState} from './ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import type {MicrosoftAuthUntrustedDocumentCallbackRouter} from './ntp_microsoft_auth_shared_ui.mojom-webui.js';
 import type {MicrosoftAuthUntrustedPageHandlerRemote} from './ntp_microsoft_auth_untrusted_ui.mojom-webui.js';
 
@@ -41,7 +40,7 @@ const msalApp = new PublicClientApplication(msalConfig);
 let callbackRouterToParent: MicrosoftAuthUntrustedDocumentCallbackRouter;
 let callbackRouterToHandler: MicrosoftAuthUntrustedDocumentCallbackRouter;
 let handler: MicrosoftAuthUntrustedPageHandlerRemote;
-msalApp.initialize().then(async () => {
+msalApp.initialize().then(() => {
   const proxy = MicrosoftAuthUntrustedDocumentProxy.getInstance();
   callbackRouterToParent = proxy.callbackRouterToParent;
   callbackRouterToHandler = proxy.callbackRouterToHandler;
@@ -49,11 +48,7 @@ msalApp.initialize().then(async () => {
   callbackRouterToHandler.acquireTokenSilent.addListener(acquireTokenSilent);
   callbackRouterToParent.acquireTokenPopup.addListener(acquireTokenPopup);
   callbackRouterToParent.signOut.addListener(signOut);
-
-  const {state} = await handler.getAuthState();
-  if (state === AuthState.kNone) {
-    acquireTokenSilent();
-  }
+  handler.maybeAcquireTokenSilent();
 });
 
 function handleAcquireTokenResponse(result: typeof AuthenticationResult|null) {

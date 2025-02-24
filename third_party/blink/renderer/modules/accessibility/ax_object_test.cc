@@ -1853,6 +1853,65 @@ TEST_F(AccessibilityTest, ScrollerFocusability) {
   ASSERT_TRUE(scroller_node->IsFocused());
 }
 
+TEST_F(AccessibilityTest, ScrollButtonPseudoElement) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #scroller::scroll-button(block-end) {
+      content: "Scroll down";
+    }
+    </style>
+    <div id=scroller style="overflow:scroll;height:50px;">
+      <div id=content style="height:1000px"></div>
+    </div>
+  )HTML");
+  auto* scroller = GetElementById("scroller");
+  auto* scrollButton = GetAXObjectByElementId(
+      "scroller", PseudoId::kPseudoIdScrollButtonBlockEnd);
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::blink::Action::kDoDefault;
+  const ui::AXTreeID div_child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  action_data.target_node_id = scrollButton->AXObjectID();
+  action_data.child_tree_id = div_child_tree_id;
+
+  scrollButton->PerformAction(action_data);
+  ASSERT_GT(scroller->scrollTop(), 0);
+}
+
+TEST_F(AccessibilityTest, ScrollMarkerPseudoElement) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #scroller {
+      scroll-marker-group: before;
+    }
+    #scroller::scroll-marker-group {
+      height: 100px;
+      width: 50px;
+    }
+    .marker::scroll-marker {
+      content: "Target";
+      height: 50px;
+      width: 50px;
+    }
+    </style>
+    <div id=scroller style="overflow:scroll;height:50px;">
+      <div class=marker></div>
+      <div id=content style="height:1000px"></div>
+      <div id=target class=marker></div>
+    </div>
+  )HTML");
+  auto* scroller = GetElementById("scroller");
+  auto* scrollMarker =
+      GetAXObjectByElementId("target", PseudoId::kPseudoIdScrollMarker);
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::blink::Action::kDoDefault;
+  const ui::AXTreeID div_child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  action_data.target_node_id = scrollMarker->AXObjectID();
+  action_data.child_tree_id = div_child_tree_id;
+
+  scrollMarker->PerformAction(action_data);
+  ASSERT_GT(scroller->scrollTop(), 0);
+}
+
 TEST_F(AccessibilityTest, CanComputeAsNaturalParent) {
   SetBodyInnerHTML(R"HTML(M<img usemap="#map"><map name="map"><hr><progress>
     <div><input type="range">M)HTML");

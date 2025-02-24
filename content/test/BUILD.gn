@@ -1641,7 +1641,8 @@ test("content_browsertests") {
     "../browser/security/coop/cross_origin_opener_policy_browsertest.cc",
     "../browser/security/dip/document_isolation_policy_browsertest.cc",
     "../browser/security_exploit_browsertest.cc",
-    "../browser/service_process_host_browsertest.cc",
+    "../browser/service_host/service_process_host_browsertest.cc",
+    "../browser/service_host/utility_process_host_browsertest.cc",
     "../browser/service_worker/service_worker_auth_browsertest.cc",
     "../browser/service_worker/service_worker_browsertest.cc",
     "../browser/service_worker/service_worker_clients_api_browsertest.cc",
@@ -1688,7 +1689,6 @@ test("content_browsertests") {
     "../browser/tracing/tracing_controller_browsertest.cc",
     "../browser/tracing/tracing_end_to_end_browsertest.cc",
     "../browser/usb/usb_browsertest.cc",
-    "../browser/utility_process_host_browsertest.cc",
     "../browser/vibration_browsertest.cc",
     "../browser/web_contents/file_chooser_impl_browsertest.cc",
     "../browser/web_contents/opened_by_dom_browsertest.cc",
@@ -2117,7 +2117,7 @@ test("content_browsertests") {
 
   if (is_linux || is_chromeos) {
     sources += [
-      "../browser/utility_process_sandbox_browsertest.cc",
+      "../browser/service_host/utility_process_sandbox_browsertest.cc",
       "../browser/zygote_host/zygote_browsertest.cc",
     ]
     deps += [
@@ -3038,8 +3038,8 @@ test("content_unittests") {
   if (is_win) {
     sources += [
       "../browser/renderer_host/renderer_sandboxed_process_launcher_delegate_unittest.cc",
+      "../browser/service_host/utility_sandbox_delegate_unittest.cc",
       "../browser/speech/tts_win_utils_unittest.cc",
-      "../browser/utility_sandbox_delegate_unittest.cc",
       "../renderer/media/win/overlay_state_observer_impl_unittest.cc",
     ]
   }

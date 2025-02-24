@@ -31,8 +31,8 @@ interface MicrosoftAuthUntrustedDocumentInterfacesFactory {
 interface MicrosoftAuthUntrustedPageHandler {
   // Clears data for Microsoft auth.
   ClearAuthData();
-  // Gets the current cached state of auth.
-  GetAuthState() => (AuthState state);
+  // Starts silent auth process if the current auth state is kNone.
+  MaybeAcquireTokenSilent();
   // Sets Microsoft API access token in the browser-side.
   SetAccessToken(AccessToken access_token);
   // Sets error state for Microsoft auth in the browser-side.

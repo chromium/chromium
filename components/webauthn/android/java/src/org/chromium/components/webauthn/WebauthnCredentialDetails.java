@@ -4,19 +4,23 @@
 
 package org.chromium.components.webauthn;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Describes a WebAuthn credential available on the authenticator. */
+@NullMarked
 public final class WebauthnCredentialDetails {
     /** Username associated with the credential. */
-    public String mUserName;
+    public @Nullable String mUserName;
 
     /** Display name associated with the credential. */
-    public String mUserDisplayName;
+    public @Nullable String mUserDisplayName;
 
     /** Unique identifier associated with the user account that the credential signs in to. */
-    public byte[] mUserId;
+    public byte @Nullable [] mUserId;
 
     /** Identifier for the credential itself. */
-    public byte[] mCredentialId;
+    public byte @Nullable [] mCredentialId;
 
     /** Whether the credential is discoverable. */
     public boolean mIsDiscoverable;

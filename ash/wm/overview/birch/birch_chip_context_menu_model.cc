@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 
+#include "ash/birch/coral_util.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -117,7 +118,8 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
   }
 
   // Add feedback menu for Coral.
-  if (chip_type == BirchSuggestionType::kCoral) {
+  if (chip_type == BirchSuggestionType::kCoral &&
+      coral_util::IsCoralFeedbackAllowedByPolicy(GetPrefService())) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     AddItemWithIcon(base::to_underlying(CommandId::kProvideFeedback),
                     l10n_util::GetStringUTF16(IDS_ASH_BIRCH_SEND_FEEDBACK),

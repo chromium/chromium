@@ -168,7 +168,8 @@ TEST_F(SessionServiceImplTest, RegisterNoId) {
 }
 
 TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
-  auto scoped_null_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure();
+  auto scoped_null_fetcher =
+      ScopedTestRegistrationFetcher::CreateWithFailure(kUrlString);
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       kChallenge,
@@ -477,7 +478,8 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue) {
       future_2.GetCallback<TestDeferCompletion::CallbackType>());
 
   // Set up a null fetcher for failure refresh.
-  auto scoped_null_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure();
+  auto scoped_null_fetcher =
+      ScopedTestRegistrationFetcher::CreateWithFailure(kUrlString);
   service().DeferRequestForRefresh(request.get(), Session::Id(kSessionId),
                                    defer_completion.GetRestartCb(),
                                    defer_completion.GetContinueCb());
@@ -589,6 +591,60 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
   EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
 
   ASSERT_TRUE(service().GetSession(site, Session::Id(kSessionId2)));
+  ASSERT_FALSE(service().GetSession(site, Session::Id(kSessionId)));
+}
+
+TEST_F(SessionServiceImplTest, RefreshWithInvalidParams) {
+  // Register a session with kSessionId.
+  AddSessionsForTesting({{kSessionId, kUrlString, kOrigin}});
+
+  auto site = SchemefulSite(kTestUrl);
+  ASSERT_TRUE(service().GetSession(site, Session::Id(kSessionId)));
+
+  // Create a request and defer it.
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  // The request needs to be samesite for it to be considered
+  // candidate for deferral.
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  std::optional<Session::Id> maybe_id =
+      service().GetAnySessionRequiringDeferral(request.get());
+  ASSERT_TRUE(maybe_id);
+  EXPECT_EQ(**maybe_id, kSessionId);
+
+  // Defer the request.
+  // Set AccessCallback for DeferRequestForRefresh().
+  FakeDeviceBoundSessionObserver observer;
+  request->SetDeviceBoundSessionAccessCallback(observer.GetCallback());
+
+  // Set RestartCallback and ContinueCallback.
+  base::test::TestFuture<TestDeferCompletion::CallbackType> future;
+  TestDeferCompletion defer_completion(
+      future.GetCallback<TestDeferCompletion::CallbackType>());
+
+  // Set up the fetcher for a successful refresh, but with invalid
+  // parameters (e.g. doesn't specify any bound credentials).
+  ScopedTestRegistrationFetcher scoped_test_fetcher(base::BindRepeating([]() {
+    return base::expected<SessionParams, SessionError>(
+        SessionParams(kSessionId, GURL(), "", SessionParams::Scope(),
+                      std::vector<SessionParams::Credential>(),
+                      unexportable_keys::UnexportableKeyId()));
+  }));
+  service().DeferRequestForRefresh(request.get(), Session::Id(kSessionId),
+                                   defer_completion.GetRestartCb(),
+                                   defer_completion.GetContinueCb());
+
+  // Check access callback triggered by DeferRequestForRefresh.
+  EXPECT_THAT(
+      observer.notifications(),
+      ElementsAre(SessionAccess{SessionAccess::AccessType::kUpdate,
+                                SessionKey(site, Session::Id(kSessionId))},
+                  SessionAccess{SessionAccess::AccessType::kTermination,
+                                SessionKey(site, Session::Id(kSessionId))}));
+  // Check the restart callback is called due to unsuccessful refresh.
+  EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kContinue);
   ASSERT_FALSE(service().GetSession(site, Session::Id(kSessionId)));
 }
 
@@ -740,11 +796,9 @@ TEST_F(SessionServiceImplWithStoreTest, GetAllSessionsWaitsForSessionsToLoad) {
 
   SessionParams::Scope scope;
   scope.origin = "example.com";
-  std::unique_ptr<Session> session = Session::CreateIfValid(
-      SessionParams("session_id", "https://example.com/refresh",
-                    std::move(scope),
-                    /*creds=*/{}),
-      kTestUrl);
+  std::unique_ptr<Session> session = Session::CreateIfValid(SessionParams(
+      "session_id", kTestUrl, "https://example.com/refresh", std::move(scope),
+      /*creds=*/{}, unexportable_keys::UnexportableKeyId()));
   ASSERT_TRUE(session);
 
   // Complete loading. If we did not defer, we'd miss this session.

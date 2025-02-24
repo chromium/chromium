@@ -90,6 +90,12 @@ public class CollaborationServiceFactoryTest {
                     public void deleteGroup(String groupId, Callback<Boolean> callback) {
                         callback.onResult(false);
                     }
+
+                    @Override
+                    public void addObserver(Observer observer) {}
+
+                    @Override
+                    public void removeObserver(Observer observer) {}
                 };
 
         CollaborationServiceFactory.setForTesting(testService);

@@ -212,6 +212,8 @@ DEFINE_VARIATION_PARAM(kIPHBottomToolbarTipFeature, "IPH_BottomToolbarTip");
 #if BUILDFLAG(IS_IOS)
 DEFINE_VARIATION_PARAM(kIPHiOSLensOverlayEntrypointTipFeature,
                        "IPH_iOSLensOverlayEntrypointTip");
+DEFINE_VARIATION_PARAM(kIPHiOSLensOverlayEscapeHatchTipFeature,
+                       "IPH_iOSLensOverlayEscapeHatchTip");
 DEFINE_VARIATION_PARAM(kIPHLongPressToolbarTipFeature,
                        "IPH_LongPressToolbarTip");
 DEFINE_VARIATION_PARAM(kIPHBadgedReadingListFeature, "IPH_BadgedReadingList");
@@ -669,6 +671,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSContextualPanelPriceInsightsFeature),
         VARIATION_ENTRY(kIPHHomeCustomizationMenuFeature),
         VARIATION_ENTRY(kIPHiOSLensOverlayEntrypointTipFeature),
+        VARIATION_ENTRY(kIPHiOSLensOverlayEscapeHatchTipFeature),
         VARIATION_ENTRY(kIPHiOSSharedTabGroupForeground),
         VARIATION_ENTRY(kIPHiOSDefaultBrowserBannerPromoFeature),
         VARIATION_ENTRY(kIPHiOSReminderNotificationsOverflowMenuBubbleFeature),

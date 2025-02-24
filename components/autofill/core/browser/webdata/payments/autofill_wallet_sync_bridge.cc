@@ -30,6 +30,7 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/webdata/common/web_database.h"
 
 using sync_pb::AutofillWalletSpecifics;
 using syncer::EntityData;
@@ -431,6 +432,8 @@ void AutofillWalletSyncBridge::SetSyncData(
     bool notify_webdata_backend) {
   bool wallet_data_changed = false;
 
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
+
   // Extract the Autofill types from the sync |entity_data|.
   std::vector<CreditCard> wallet_cards;
   std::vector<Iban> wallet_ibans;
@@ -469,12 +472,20 @@ void AutofillWalletSyncBridge::SetSyncData(
   if (wallet_card_data_changed) {
     ReconcileServerCvcForWalletCards();
   }
+
   // Commit the transaction to make sure the data and the metadata with the
   // new progress marker is written down (especially on Android where we
   // cannot rely on committing transactions on shutdown). We need to commit
   // even if the wallet data has not changed because the data type state incl.
   // the progress marker always changes.
+
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
   web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
 
   if (web_data_backend_ && wallet_data_changed)
     web_data_backend_->NotifyOnAutofillChangedBySync(

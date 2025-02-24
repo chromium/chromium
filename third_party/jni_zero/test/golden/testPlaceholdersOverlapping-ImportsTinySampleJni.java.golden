@@ -6,7 +6,6 @@ package org.jni_zero.extrapackage;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.GEN_JNI;
 import org.jni_zero.JniTestInstanceHolder;
-import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.internal.NullUnmarked;
 import org.jni_zero.internal.Nullable;
 
@@ -20,7 +19,6 @@ class ImportsTinySampleJni implements ImportsTinySample.Natives {
     if (holder != null && holder.value != null) {
       return (ImportsTinySample.Natives) holder.value;
     }
-    NativeLibraryLoadedStatus.checkLoaded();
     return new ImportsTinySampleJni();
   }
 

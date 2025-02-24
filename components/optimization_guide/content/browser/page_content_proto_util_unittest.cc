@@ -627,5 +627,27 @@ TEST(PageContentProtoUtilTest, ConvertFormControlData) {
   EXPECT_TRUE(form_control_data_proto.select_options(0).is_selected());
 }
 
+TEST(PageContentProtoUtilTest, ConvertNodeId) {
+  auto root_content = CreatePageContent();
+  root_content->root_node->content_attributes->content_node_id = 1;
+  root_content->root_node->children_nodes.emplace_back(
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kContainer));
+  root_content->root_node->children_nodes[0]
+      ->content_attributes->content_node_id = 2;
+
+  proto::AnnotatedPageContent proto;
+  EXPECT_TRUE(ConvertAIPageContentToProto(root_content, proto));
+
+  EXPECT_EQ(proto.version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  ASSERT_EQ(proto.root_node().children_nodes_size(), 1);
+  EXPECT_EQ(proto.root_node().content_attributes().content_node_id(), 1);
+  EXPECT_EQ(proto.root_node()
+                .children_nodes(0)
+                .content_attributes()
+                .content_node_id(),
+            2);
+}
+
 }  // namespace
 }  // namespace optimization_guide

@@ -456,8 +456,10 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             tabListCoordinator.addSpecialListItem(
                     0, TabProperties.UiType.CUSTOM_MESSAGE, nextMessage.model);
         } else {
-            tabListCoordinator.addSpecialListItemToEnd(
-                    TabProperties.UiType.MESSAGE, nextMessage.model);
+            tabListCoordinator.addSpecialListItem(
+                    tabListCoordinator.getTabListModelSize(),
+                    TabProperties.UiType.MESSAGE,
+                    nextMessage.model);
         }
         for (MessageUpdateObserver observer : mObservers) {
             observer.onAppendedMessage();
@@ -504,7 +506,10 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
         assert tabListCoordinator != null;
         if (mIncognitoReauthPromoMessageService.isIncognitoReauthPromoMessageEnabled(mProfile)) {
-            tabListCoordinator.addSpecialListItemToEnd(TabProperties.UiType.LARGE_MESSAGE, model);
+            tabListCoordinator.addSpecialListItem(
+                    tabListCoordinator.getTabListModelSize(),
+                    TabProperties.UiType.LARGE_MESSAGE,
+                    model);
             mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
             return true;
         }
@@ -578,14 +583,18 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                 continue;
             } else if (messages.get(i).type
                     == MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE) {
-                tabListCoordinator.addSpecialListItemToEnd(
-                        TabProperties.UiType.LARGE_MESSAGE, messages.get(i).model);
+                tabListCoordinator.addSpecialListItem(
+                        tabListCoordinator.getTabListModelSize(),
+                        TabProperties.UiType.LARGE_MESSAGE,
+                        messages.get(i).model);
             } else if (messages.get(i).type == MessageService.MessageType.ARCHIVED_TABS_MESSAGE) {
                 tabListCoordinator.addSpecialListItem(
                         0, TabProperties.UiType.CUSTOM_MESSAGE, messages.get(i).model);
             } else {
-                tabListCoordinator.addSpecialListItemToEnd(
-                        TabProperties.UiType.MESSAGE, messages.get(i).model);
+                tabListCoordinator.addSpecialListItem(
+                        tabListCoordinator.getTabListModelSize(),
+                        TabProperties.UiType.MESSAGE,
+                        messages.get(i).model);
             }
         }
         sAppendedMessagesForTesting = messages.size() > 0;

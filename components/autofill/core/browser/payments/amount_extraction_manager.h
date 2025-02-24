@@ -68,6 +68,9 @@ class AmountExtractionManager {
 
   bool GetSearchRequestPendingForTesting();
 
+ private:
+  friend class AmountExtractionManagerTest;
+
   // Invoked after the amount extraction process completes.
   // `extracted_amount` provides the extracted amount upon success and an
   // empty string upon failure. `search_request_start_timestamp` is the time

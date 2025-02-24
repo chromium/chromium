@@ -114,6 +114,7 @@ class TabGroupRowMediator {
                 TabGroupRowProperties.TIMESTAMP_EVENT,
                 new TabGroupTimeAgo(savedTabGroup.creationTimeMs, TimestampEvent.CREATED));
         builder.with(TabGroupRowProperties.OPEN_RUNNABLE, this::openGroup);
+        builder.with(TabGroupRowProperties.ROW_CLICK_RUNNABLE, this::openGroup);
         builder.with(TabGroupRowProperties.DESTROYABLE, this::destroy);
         mPropertyModel = builder.build();
 

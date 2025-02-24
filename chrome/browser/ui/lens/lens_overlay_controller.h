@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_handler.h"
@@ -126,6 +127,7 @@ class LensOverlayController : public LensSearchboxClient,
                               public views::WidgetObserver,
                               public OmniboxTabHelper::Observer,
                               public content::RenderProcessHostObserver,
+                              public ImmersiveModeController::Observer,
                               public find_in_page::FindResultObserver {
  public:
   LensOverlayController(tabs::TabInterface* tab,
@@ -420,6 +422,10 @@ class LensOverlayController : public LensSearchboxClient,
   // Show preselection toast bubble. Creates a preselection bubble if it does
   // not exist.
   void ShowPreselectionBubble();
+
+  // Closes the preselection bubble and reopens it. Used to prevent UI conflicts
+  // between the preselection bubble and top chrome in fullscreen.
+  void CloseAndReshowPreselectionBubble();
 
   // Hides preselection toast bubble. Used when backgrounding the overlay. This
   // hides the widget associated with the bubble.
@@ -846,6 +852,12 @@ class LensOverlayController : public LensSearchboxClient,
   // find_in_page::FindResultObserver:
   void OnFindEmptyText(content::WebContents* web_contents) override;
   void OnFindResultAvailable(content::WebContents* web_contents) override;
+
+  // ImmersiveModeController::Observer:
+  void OnImmersiveRevealStarted() override;
+  void OnImmersiveRevealEnded() override;
+  void OnImmersiveFullscreenEntered() override;
+  void OnImmersiveFullscreenExited() override;
 
   // Overridden from LensSearchboxClient:
   const GURL& GetPageURL() const override;
@@ -1303,6 +1315,11 @@ class LensOverlayController : public LensSearchboxClient,
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       preselection_widget_observer_{this};
 
+  // Observer to get notifications when the immersive mode reveal state changes.
+  base::ScopedObservation<ImmersiveModeController,
+                          ImmersiveModeController::Observer>
+      immersive_mode_observer_{this};
+
   base::ScopedObservation<OmniboxTabHelper, OmniboxTabHelper::Observer>
       omnibox_tab_helper_observer_{this};
 
@@ -1362,6 +1379,18 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Preselection toast bubble. Weak; owns itself. NULL when closed.
   raw_ptr<views::Widget> preselection_widget_ = nullptr;
+
+  // The anchor view to the preselection bubble. This anchor is an invisible
+  // sibling of the the `overlay_view_`, user to always keep the preselection
+  // bubble anchored to the top of the screen, while also maintaining focus
+  // order.
+  raw_ptr<views::View> preselection_widget_anchor_;
+
+#if BUILDFLAG(IS_MAC)
+  // Register for adding observers to prefs the current profiles pref service.
+  // Currently only used to observe the immersive mode pref on Mac.
+  PrefChangeRegistrar pref_change_registrar_;
+#endif  // BUILDFLAG(IS_MAC)
 
   // --------------------Browser window scoped state: END---------------------
 

@@ -846,58 +846,57 @@ export declare interface GlicApiBootMessage {
   glicApiSource: string;
 }
 
+//
 // Types used in presubmit check.
-export namespace checks {
+//
 
-  // Types consumed by the client. These are subject to stricter checks than
-  // those in TypesConsumedByHost.
-  export interface TypesConsumedByClient {
-    hostRegistry: GlicHostRegistry;
-    browserHost: GlicBrowserHost;
-    tabContextResult: TabContextResult;
-    tabData: TabData;
-    imageOriginAnnotations: ImageOriginAnnotations;
-    screenshot: Screenshot;
-    userProfileInfo: UserProfileInfo;
-    chromeVersion: ChromeVersion;
-    focusedTabData: FocusedTabData;
-    focusedTabCandidate: FocusedTabCandidate;
-    pdfDocumentData: PdfDocumentData;
-    webPageData: WebPageData;
-    documentData: DocumentData;
-    panelState: PanelState;
-    annotatedPageData: AnnotatedPageData;
-  }
+// Types consumed by the client. These are subject to stricter checks than
+// those in TypesConsumedByHost.
+export interface TypesConsumedByClient {
+  hostRegistry: GlicHostRegistry;
+  browserHost: GlicBrowserHost;
+  tabContextResult: TabContextResult;
+  tabData: TabData;
+  imageOriginAnnotations: ImageOriginAnnotations;
+  screenshot: Screenshot;
+  userProfileInfo: UserProfileInfo;
+  chromeVersion: ChromeVersion;
+  focusedTabData: FocusedTabData;
+  focusedTabCandidate: FocusedTabCandidate;
+  pdfDocumentData: PdfDocumentData;
+  webPageData: WebPageData;
+  documentData: DocumentData;
+  panelState: PanelState;
+  annotatedPageData: AnnotatedPageData;
+}
 
-  // Types consumed by the host.
-  export interface TypesConsumedByHost {
-    webClient: GlicWebClient;
-    resizeWindowOptions: ResizeWindowOptions;
-    createTabOptions: CreateTabOptions;
-    glicBrowserHostMetrics: GlicBrowserHostMetrics;
-    openPanelInfo: OpenPanelInfo;
-    tabContextOptions: TabContextOptions;
-    draggableArea: DraggableArea;
-    subscriber: Subscriber;
-    scrollToParams: ScrollToParams;
-    scrollToSelector: ScrollToSelector;
-    scrollToTextSelector: ScrollToTextSelector;
-    scrollToTextFragmentSelector: ScrollToTextFragmentSelector;
-  }
+// Types consumed by the host.
+export interface TypesConsumedByHost {
+  webClient: GlicWebClient;
+  resizeWindowOptions: ResizeWindowOptions;
+  createTabOptions: CreateTabOptions;
+  glicBrowserHostMetrics: GlicBrowserHostMetrics;
+  openPanelInfo: OpenPanelInfo;
+  tabContextOptions: TabContextOptions;
+  draggableArea: DraggableArea;
+  subscriber: Subscriber;
+  scrollToParams: ScrollToParams;
+  scrollToSelector: ScrollToSelector;
+  scrollToTextSelector: ScrollToTextSelector;
+  scrollToTextFragmentSelector: ScrollToTextFragmentSelector;
+}
 
-  // Enums that should not be changed.
-  export interface ClosedEnums {
-    panelStateKind: typeof PanelStateKind;
-    webClientMode: typeof WebClientMode;
-  }
+// Enums that should not be changed.
+export interface ClosedEnums {
+  panelStateKind: typeof PanelStateKind;
+  webClientMode: typeof WebClientMode;
+}
 
-  // Enums that can be extended.
-  export interface ExtensibleEnums {
-    getTabContextErrorReason: typeof GetTabContextErrorReason;
-    captureScreenshotErrorReason: typeof CaptureScreenshotErrorReason;
-    scrollToErrorReason: typeof ScrollToErrorReason;
-    invalidCandidateError: typeof InvalidCandidateError;
-    noCandidateTabError: typeof NoCandidateTabError;
-  }
-
+// Enums that can be extended.
+export interface ExtensibleEnums {
+  getTabContextErrorReason: typeof GetTabContextErrorReason;
+  captureScreenshotErrorReason: typeof CaptureScreenshotErrorReason;
+  scrollToErrorReason: typeof ScrollToErrorReason;
+  invalidCandidateError: typeof InvalidCandidateError;
+  noCandidateTabError: typeof NoCandidateTabError;
 }

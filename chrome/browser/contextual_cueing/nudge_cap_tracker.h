@@ -28,6 +28,9 @@ class NudgeCapTracker {
   // for nudge cap calculation.
   void CueingNudgeShown();
 
+  // Returns the time when the most recent nudge was shown.
+  std::optional<base::TimeTicks> GetMostRecentNudgeTime() const;
+
  private:
   base::queue<base::TimeTicks> recent_nudge_timestamps_;
 

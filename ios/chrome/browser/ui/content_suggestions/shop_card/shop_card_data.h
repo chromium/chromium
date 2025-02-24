@@ -35,6 +35,9 @@ enum class ShopCardItemType {
 // Price Drop if it exists for the URL corresponding to the ShopCard.
 @property(nonatomic, assign) std::optional<PriceDrop> priceDrop;
 
+// Describes contents of the ShopCard for accessibility.
+@property(nonatomic, copy) NSString* accessibilityString;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SHOP_CARD_SHOP_CARD_DATA_H_

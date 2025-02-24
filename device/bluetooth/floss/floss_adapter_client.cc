@@ -274,6 +274,12 @@ void FlossAdapterClient::Init(dbus::Bus* bus,
       base::BindOnce(&HandleExported, adapter::kOnDeviceCleared));
 
   callbacks->ExportMethod(
+      adapter::kCallbackInterface, adapter::kOnDeviceKeyMissing,
+      base::BindRepeating(&FlossAdapterClient::OnDeviceKeyMissing,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&HandleExported, adapter::kOnDeviceKeyMissing));
+
+  callbacks->ExportMethod(
       adapter::kCallbackInterface, adapter::kOnDevicePropertiesChanged,
       base::BindRepeating(&FlossAdapterClient::OnDevicePropertiesChanged,
                           weak_ptr_factory_.GetWeakPtr()),
@@ -485,6 +491,28 @@ void FlossAdapterClient::OnDeviceCleared(
 
   for (auto& observer : observers_) {
     observer.AdapterClearedDevice(device);
+  }
+
+  std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
+}
+
+void FlossAdapterClient::OnDeviceKeyMissing(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  dbus::MessageReader reader(method_call);
+  FlossDeviceId device;
+
+  DVLOG(1) << __func__;
+
+  if (!ReadAllDBusParams(&reader, &device)) {
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, kErrorInvalidParameters, std::string()));
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.AdapterKeyMissingDevice(device);
   }
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));

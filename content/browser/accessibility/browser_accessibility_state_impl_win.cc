@@ -21,6 +21,7 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
+#include "base/win/registry.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform.h"
@@ -36,6 +37,10 @@ static bool g_jaws = false;
 static bool g_nvda = false;
 static bool g_supernova = false;
 static bool g_zoomtext = false;
+static bool g_narrator = false;
+
+const wchar_t kNarratorRegistryKey[] = L"Software\\Microsoft\\Narrator\\NoRoam";
+const wchar_t kNarratorRunningStateValueName[] = L"RunningState";
 
 // Enables accessibility based on clues that indicate accessibility API usage.
 class WindowsAccessibilityEnabler
@@ -251,10 +256,20 @@ void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
     }
   }
 
+  // Narrator detection.
+  DWORD narrator_value = 0;
+  base::win::RegKey narrator_key(HKEY_CURRENT_USER, kNarratorRegistryKey,
+                                 KEY_READ);
+  if (narrator_key.Valid()) {
+    narrator_key.ReadValueDW(kNarratorRunningStateValueName, &narrator_value);
+  }
+  g_narrator = narrator_value != 0;
+
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinJAWS", g_jaws);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA", g_nvda);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova", g_supernova);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText", g_zoomtext);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNarrator", g_narrator);
 }
 
 void BrowserAccessibilityStateImplWin::UpdateUniqueUserHistograms() {
@@ -267,6 +282,7 @@ void BrowserAccessibilityStateImplWin::UpdateUniqueUserHistograms() {
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA.EveryReport", g_nvda);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova.EveryReport", g_supernova);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText.EveryReport", g_zoomtext);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNarrator.EveryReport", g_narrator);
 }
 
 ui::AXPlatform::ProductStrings

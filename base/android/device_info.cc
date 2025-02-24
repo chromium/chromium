@@ -24,7 +24,6 @@ struct DeviceInfo {
   // std::string.c_str() doesn't guarantee that memory won't be allocated when
   // it is called.
   const char* gms_version_code;
-  const char* custom_themes;
   bool is_tv;
   bool is_automotive;
   bool is_foldable;
@@ -51,7 +50,6 @@ DeviceInfo& get_device_info() {
 static void JNI_DeviceInfo_FillFields(
     JNIEnv* env,
     const jni_zero::JavaParamRef<jstring>& gmsVersionCode,
-    const jni_zero::JavaParamRef<jstring>& customThemes,
     jboolean isTV,
     jboolean isAutomotive,
     jboolean isFoldable,
@@ -64,7 +62,6 @@ static void JNI_DeviceInfo_FillFields(
       };
   holder =
       DeviceInfo{.gms_version_code = java_string_to_const_char(gmsVersionCode),
-                 .custom_themes = java_string_to_const_char(customThemes),
                  .is_tv = static_cast<bool>(isTV),
                  .is_automotive = static_cast<bool>(isAutomotive),
                  .is_foldable = static_cast<bool>(isFoldable),
@@ -101,7 +98,4 @@ int32_t vulkan_deqp_level() {
   return get_device_info().vulkan_deqp_level;
 }
 
-const char* custom_themes() {
-  return get_device_info().custom_themes;
-}
 }  // namespace base::android::device_info

@@ -221,6 +221,11 @@ struct AIPageContentFormControlData {
 };
 
 struct AIPageContentAttributes {
+  // An ID for this content node, unique across all frames in the page.
+  // The value may change across calls to GetAIPageContent for the same DOM
+  // node; it is not guaranteed to be stable.
+  int32 content_node_id;
+
   // The IDs of the DOM nodes whose content is represented by this ContentNode.
   array<int32> dom_node_ids;
 

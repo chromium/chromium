@@ -39,7 +39,7 @@ class MicrosoftAuthUntrustedPageHandler
 
   // new_tab_page::mojom::MicrosoftAuthUntrustedPageHandler:
   void ClearAuthData() override;
-  void GetAuthState(GetAuthStateCallback callback) override;
+  void MaybeAcquireTokenSilent() override;
   void SetAccessToken(
       new_tab_page::mojom::AccessTokenPtr access_token) override;
   void SetAuthStateError() override;

@@ -1062,6 +1062,47 @@ INSTANTIATE_TEST_SUITE_P(
                 AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS,
             CreditCardCategoryBenefit::BenefitCategory::kSubscription},
         BenefitOptimizationToBenefitCategoryTestCase{
+            "bmo",
+            optimization_guide::proto::
+                BMO_CREDIT_CARD_AIR_MILES_PARTNER_BENEFITS,
+            CreditCardCategoryBenefit::BenefitCategory::kAirMilesPartner},
+        BenefitOptimizationToBenefitCategoryTestCase{
+            "bmo",
+            optimization_guide::proto::BMO_CREDIT_CARD_ALCOHOL_STORE_BENEFITS,
+            CreditCardCategoryBenefit::BenefitCategory::kAlcoholStores},
+        BenefitOptimizationToBenefitCategoryTestCase{
+            "bmo", optimization_guide::proto::BMO_CREDIT_CARD_DINING_BENEFITS,
+            CreditCardCategoryBenefit::BenefitCategory::kDining},
+        BenefitOptimizationToBenefitCategoryTestCase{
+            "bmo",
+            optimization_guide::proto::BMO_CREDIT_CARD_DRUGSTORE_BENEFITS,
+            CreditCardCategoryBenefit::BenefitCategory::kDrugstores},
+        BenefitOptimizationToBenefitCategoryTestCase{
+            "bmo",
+            optimization_guide::proto::BMO_CREDIT_CARD_ENTERTAINMENT_BENEFITS,
+            CreditCardCategoryBenefit::BenefitCategory::kEntertainment},
+        BenefitOptimizationToBenefitCategoryTestCase{
+            "bmo", optimization_guide::proto::BMO_CREDIT_CARD_GROCERY_BENEFITS,
+            CreditCardCategoryBenefit::BenefitCategory::kGroceryStores},
+        BenefitOptimizationToBenefitCategoryTestCase{
+            "bmo",
+            optimization_guide::proto::BMO_CREDIT_CARD_OFFICE_SUPPLY_BENEFITS,
+            CreditCardCategoryBenefit::BenefitCategory::kOfficeSupplies},
+        BenefitOptimizationToBenefitCategoryTestCase{
+            "bmo",
+            optimization_guide::proto::BMO_CREDIT_CARD_RECURRING_BILL_BENEFITS,
+            CreditCardCategoryBenefit::BenefitCategory::kRecurringBills},
+        BenefitOptimizationToBenefitCategoryTestCase{
+            "bmo", optimization_guide::proto::BMO_CREDIT_CARD_TRANSIT_BENEFITS,
+            CreditCardCategoryBenefit::BenefitCategory::kTransit},
+        BenefitOptimizationToBenefitCategoryTestCase{
+            "bmo", optimization_guide::proto::BMO_CREDIT_CARD_TRAVEL_BENEFITS,
+            CreditCardCategoryBenefit::BenefitCategory::kTravel},
+        BenefitOptimizationToBenefitCategoryTestCase{
+            "bmo",
+            optimization_guide::proto::BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS,
+            CreditCardCategoryBenefit::BenefitCategory::kWholesaleClubs},
+        BenefitOptimizationToBenefitCategoryTestCase{
             "capitalone",
             optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS,
             CreditCardCategoryBenefit::BenefitCategory::kDining},

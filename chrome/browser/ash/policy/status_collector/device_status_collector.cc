@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 
+#include <inttypes.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/types.h>
@@ -2050,7 +2051,7 @@ void DeviceStatusCollector::ReceiveCPUStatistics(const std::string& stats) {
     // sys_time, and idle_time.
     uint64_t user = 0, nice = 0, system = 0, idle = 0;
     int vals = sscanf(stats.c_str(),
-                      "cpu %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64, &user,
+                      "cpu %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64, &user,
                       &nice, &system, &idle);
     DCHECK_EQ(4, vals);
 

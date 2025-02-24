@@ -162,6 +162,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSContextualPanelPriceInsightsFeature,
     &kIPHHomeCustomizationMenuFeature,
     &kIPHiOSLensOverlayEntrypointTipFeature,
+    &kIPHiOSLensOverlayEscapeHatchTipFeature,
     &kIPHiOSSharedTabGroupForeground,
     &kIPHiOSDefaultBrowserBannerPromoFeature,
     &kIPHiOSReminderNotificationsOverflowMenuBubbleFeature,

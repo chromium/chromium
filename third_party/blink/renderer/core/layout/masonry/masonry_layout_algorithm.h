@@ -15,6 +15,7 @@ namespace blink {
 class GridItems;
 class GridLineResolver;
 class GridSizingTrackCollection;
+enum class SizingConstraint;
 struct GridItemData;
 
 class CORE_EXPORT MasonryLayoutAlgorithm
@@ -30,6 +31,7 @@ class CORE_EXPORT MasonryLayoutAlgorithm
 
   GridSizingTrackCollection BuildGridAxisTracks(
       const GridLineResolver& line_resolver,
+      SizingConstraint sizing_constraint,
       wtf_size_t* start_offset) const;
 
   wtf_size_t ComputeAutomaticRepetitions() const;

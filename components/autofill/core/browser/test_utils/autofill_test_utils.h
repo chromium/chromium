@@ -219,6 +219,11 @@ std::vector<CardUnmaskChallengeOption> GetCardUnmaskChallengeOptions(
 // One getter for each benefit type.
 CreditCardFlatRateBenefit GetActiveCreditCardFlatRateBenefit();
 CreditCardCategoryBenefit GetActiveCreditCardCategoryBenefit();
+CreditCardCategoryBenefit CreateCreditCardCategoryBenefit(
+    CreditCardBenefitBase::BenefitId benefit_id,
+    CreditCardBenefitBase::LinkedCardInstrumentId linked_card_instrument_id,
+    CreditCardCategoryBenefit::BenefitCategory benefit_category,
+    std::u16string benefit_description);
 CreditCardMerchantBenefit GetActiveCreditCardMerchantBenefit();
 
 // Returns a set of merchant origin webpages used for a merchant credit card

@@ -705,6 +705,16 @@ namespace OmniboxFieldTrial {
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions:
 
+// Whether to ignore all ZPS prefetch responses received from the Suggest
+// service when the user is on a Google SRP. This can be used, for example,
+// during experimentation to measure the performance impact of only the
+// request/response portion of ZPS prefetching (i.e. without updating the
+// user-visible list of suggestions in the Omnibox).
+const base::FeatureParam<bool> kZeroSuggestPrefetchingOnSRPCounterfactual(
+    &omnibox::kZeroSuggestPrefetchingOnSRP,
+    "ZeroSuggestPrefetchingOnSRPCounterfactual",
+    false);
+
 // The debouncing delay (in milliseconds) to use when throttling ZPS prefetch
 // requests.
 const base::FeatureParam<int> kZeroSuggestPrefetchDebounceDelay(

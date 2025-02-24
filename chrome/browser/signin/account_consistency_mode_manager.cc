@@ -193,9 +193,7 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
 
 #if BUILDFLAG(ENABLE_MIRROR)
   return AccountConsistencyMethod::kMirror;
-#endif
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
     VLOG(1) << "Desktop Identity Consistency disabled as sign-in to Chrome "
                "is not allowed";
@@ -203,7 +201,7 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
   }
 
   return AccountConsistencyMethod::kDice;
-#endif
-
+#else
   NOTREACHED();
+#endif
 }

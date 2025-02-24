@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.readaloud.ReadAloudToolbarButtonController;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController;
 import org.chromium.chrome.browser.share.ShareButtonController;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
@@ -151,7 +150,6 @@ public class AdaptiveToolbarUiCoordinator {
                         mActivityTabProvider,
                         shareDelegateSupplier,
                         trackerSupplier,
-                        new ShareUtils(),
                         mModalDialogManagerSupplier.get(),
                         onShareRunnable);
         TranslateToolbarButtonController translateToolbarButtonController =

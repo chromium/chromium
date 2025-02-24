@@ -470,6 +470,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   static AXPlatformNodeBase* FromNativeViewAccessible(
       gfx::NativeViewAccessible accessible);
 
+  // Releases resources used by the platform node. Called by `Destroy()`. The
+  // default implementation deletes the instance. Subclasses with different
+  // memory management requirements may provide their own implementation; e.g.,
+  // Windows.
   virtual void Dispose();
 
   // Sets the hypertext selection in this object if possible.

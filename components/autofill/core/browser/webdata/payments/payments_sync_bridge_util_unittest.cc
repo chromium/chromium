@@ -251,16 +251,14 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
             CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
 }
 
-// Test suite for benefit syncing helpers that takes a bool indicating
-// whether benefit syncing should be enabled for testing.
-class PaymentsSyncBridgeUtilCardBenefitsTest
-    : public PaymentsSyncBridgeUtilTest,
-      public testing::WithParamInterface<bool> {
+class PaymentsSyncBridgeUtilCardBenefitsTest : public testing::Test {
  public:
-  PaymentsSyncBridgeUtilCardBenefitsTest() {
-    feature_list_.InitWithFeatureState(
-        features::kAutofillEnableCardBenefitsSync, IsBenefitsSyncEnabled());
-  }
+  PaymentsSyncBridgeUtilCardBenefitsTest() = default;
+
+  PaymentsSyncBridgeUtilCardBenefitsTest(
+      const PaymentsSyncBridgeUtilCardBenefitsTest&) = delete;
+  PaymentsSyncBridgeUtilCardBenefitsTest& operator=(
+      const PaymentsSyncBridgeUtilCardBenefitsTest&) = delete;
 
   ~PaymentsSyncBridgeUtilCardBenefitsTest() override = default;
 
@@ -288,6 +286,24 @@ class PaymentsSyncBridgeUtilCardBenefitsTest
                                               wallet_specifics_card);
   }
 
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
+
+// Test suite for benefit syncing helpers that takes a bool indicating
+// whether benefit syncing should be enabled for testing.
+class PaymentsSyncBridgeUtilCardBenefitsSyncTest
+    : public PaymentsSyncBridgeUtilCardBenefitsTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PaymentsSyncBridgeUtilCardBenefitsSyncTest() {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillEnableCardBenefitsSync, IsBenefitsSyncEnabled());
+  }
+
+  ~PaymentsSyncBridgeUtilCardBenefitsSyncTest() override = default;
+
   bool IsBenefitsSyncEnabled() const { return GetParam(); }
 
  private:
@@ -297,7 +313,7 @@ class PaymentsSyncBridgeUtilCardBenefitsTest
 // Initializes the parameterized test suite with a bool indicating whether
 // benefit syncing should be enabled for testing.
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
-                         PaymentsSyncBridgeUtilCardBenefitsTest,
+                         PaymentsSyncBridgeUtilCardBenefitsSyncTest,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& arg) {
                            return arg.param ? "BenefitSyncEnabled"
@@ -306,7 +322,7 @@ INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
 
 // Tests that PopulateWalletTypesFromSyncData behaves as expected for wallet
 // card and card benefit.
-TEST_P(PaymentsSyncBridgeUtilCardBenefitsTest,
+TEST_P(PaymentsSyncBridgeUtilCardBenefitsSyncTest,
        PopulateWalletTypesFromSyncDataForCreditCardBenefits) {
   // Generate two credit card specifics.
   sync_pb::AutofillWalletSpecifics wallet_specifics_card1 =
@@ -373,6 +389,100 @@ TEST_P(PaymentsSyncBridgeUtilCardBenefitsTest,
     EXPECT_TRUE(benefits.empty());
   }
 }
+
+class PaymentsSyncBridgeUtilCardCategoryBenefitsTest
+    : public PaymentsSyncBridgeUtilCardBenefitsTest,
+      public testing::WithParamInterface<
+          CreditCardCategoryBenefit::BenefitCategory> {
+ public:
+  PaymentsSyncBridgeUtilCardCategoryBenefitsTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableCardBenefitsSync);
+  }
+
+  ~PaymentsSyncBridgeUtilCardCategoryBenefitsTest() override = default;
+
+  CreditCardCategoryBenefit::BenefitCategory GetCardBenefitCategory() const {
+    return GetParam();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that PopulateWalletTypesFromSyncData behaves as expected for card
+// category benefits.
+TEST_P(PaymentsSyncBridgeUtilCardCategoryBenefitsTest, VerifyBenefitCategory) {
+  // Generate credit card specifics.
+  sync_pb::AutofillWalletSpecifics wallet_specifics_card =
+      PrepareCardSpecificForBenefit(/*card_tag=*/"1", /*instrument_id=*/1234);
+
+  // Set a time in milliseconds accuracy so that the testing benefits can be
+  // generated in milliseconds to match the server format.
+  task_environment_.FastForwardBy(base::Milliseconds(1234));
+
+  // Add one credit-card-linked category benefit to card.
+  CreditCardBenefit category_benefit = test::CreateCreditCardCategoryBenefit(
+      /*benefit_id=*/CreditCardBenefitBase::BenefitId("id1"),
+      /*linked_card_instrument_id=*/
+      CreditCardBenefitBase::LinkedCardInstrumentId(1234),
+      /*benefit_category=*/GetCardBenefitCategory(),
+      /*benefit_description=*/u"Get 2x points on purchase on this website");
+  AddBenefitForCard(category_benefit, wallet_specifics_card);
+
+  // Add cards to entity.
+  syncer::EntityChangeList entity_data;
+  entity_data.push_back(EntityChange::CreateAdd(
+      wallet_specifics_card.mutable_masked_card()->id(),
+      SpecificsToEntity(wallet_specifics_card, /*client_tag=*/"card-card1")));
+
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      payment_instrument_creation_options;
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data,
+                                  bank_accounts, benefits, payment_instruments,
+                                  payment_instrument_creation_options);
+
+  if (GetCardBenefitCategory() ==
+      CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory) {
+    ASSERT_EQ(0U, benefits.size());
+  } else {
+    ASSERT_EQ(1U, benefits.size());
+    //  This call is correct only because we know that the
+    // `CreditCardCategoryBenefit` alternative is active at index 0
+    CreditCardCategoryBenefit* category_benefit_alternative =
+        absl::get_if<CreditCardCategoryBenefit>(&benefits[0]);
+    EXPECT_EQ(GetCardBenefitCategory(),
+              category_benefit_alternative->benefit_category());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    PaymentsSyncBridgeUtilCardCategoryBenefitsTest,
+    testing::Values(
+        CreditCardCategoryBenefit::BenefitCategory::kSubscription,
+        CreditCardCategoryBenefit::BenefitCategory::kFlights,
+        CreditCardCategoryBenefit::BenefitCategory::kDining,
+        CreditCardCategoryBenefit::BenefitCategory::kEntertainment,
+        CreditCardCategoryBenefit::BenefitCategory::kStreaming,
+        CreditCardCategoryBenefit::BenefitCategory::kGroceryStores,
+        CreditCardCategoryBenefit::BenefitCategory::kAirMilesPartner,
+        CreditCardCategoryBenefit::BenefitCategory::kAlcoholStores,
+        CreditCardCategoryBenefit::BenefitCategory::kDrugstores,
+        CreditCardCategoryBenefit::BenefitCategory::kOfficeSupplies,
+        CreditCardCategoryBenefit::BenefitCategory::kRecurringBills,
+        CreditCardCategoryBenefit::BenefitCategory::kTransit,
+        CreditCardCategoryBenefit::BenefitCategory::kTravel,
+        CreditCardCategoryBenefit::BenefitCategory::kWholesaleClubs,
+        CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory));
 
 // Verify that the billing address id from the card saved on disk is kept if it
 // is a local profile guid.

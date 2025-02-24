@@ -328,8 +328,10 @@ ul, menu, dir {
     list-style-type: disc;
     margin-block-start: 1__qem;
     margin-block-end: 1em;
-    margin-inline-start: 0;
-    margin-inline-end: 0;
+    @supports not blink-feature(CorrectStylesForLists) {
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
     padding-inline-start: 40px
 }
 
@@ -338,22 +340,60 @@ ol {
     list-style-type: decimal;
     margin-block-start: 1__qem;
     margin-block-end: 1em;
-    margin-inline-start: 0;
-    margin-inline-end: 0;
+    @supports not blink-feature(CorrectStylesForLists) {
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
     padding-inline-start: 40px
 }
 
 li {
     display: list-item;
+    /* TODO(crbug.com/40774317, crbug.com/40787216): We should use
+       text-align: match-parent once it is supported. */
     text-align: -webkit-match-parent;
 }
 
-ul ul, ol ul {
-    list-style-type: circle
+@supports not blink-feature(CorrectStylesForLists) {
+    ul ul, ol ul {
+        list-style-type: circle
+    }
+
+    ol ol ul, ol ul ul, ul ol ul, ul ul ul {
+        list-style-type: square
+    }
+
+    ol ul, ul ol, ul ul, ol ol {
+        margin-block-start: 0;
+        margin-block-end: 0
+    }
 }
 
-ol ol ul, ol ul ul, ul ol ul, ul ul ul {
-    list-style-type: square
+@supports blink-feature(CorrectStylesForLists) {
+    :is(dir, dl, menu, ol, ul) dir,
+    :is(dir, dl, menu, ol, ul) dl,
+    :is(dir, dl, menu, ol, ul) menu,
+    :is(dir, dl, menu, ol, ul) ol,
+    :is(dir, dl, menu, ol, ul) ul {
+        margin-block-start: 0;
+        margin-block-end: 0;
+    }
+
+    :is(dir, menu, ol, ul) dir,
+    :is(dir, menu, ol, ul) menu,
+    :is(dir, menu, ol, ul) ul {
+        list-style-type: circle
+    }
+
+    :is(dir, menu, ol, ul) :is(dir, menu, ol, ul) dir,
+    :is(dir, menu, ol, ul) :is(dir, menu, ol, ul) menu,
+    :is(dir, menu, ol, ul) :is(dir, menu, ol, ul) ul {
+        list-style-type: square
+    }
+
+    /* TODO(crbug.com/40774317, crbug.com/354025385): We should add rule
+       ol, ul, menu { counter-reset: list-item; }
+       once it is supported. */
 }
 
 dd {
@@ -365,17 +405,14 @@ dl {
     display: block;
     margin-block-start: 1__qem;
     margin-block-end: 1em;
-    margin-inline-start: 0;
-    margin-inline-end: 0;
+    @supports not blink-feature(CorrectStylesForLists) {
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
 }
 
 dt {
     display: block
-}
-
-ol ul, ul ol, ul ul, ol ol {
-    margin-block-start: 0;
-    margin-block-end: 0
 }
 
 /* form elements */

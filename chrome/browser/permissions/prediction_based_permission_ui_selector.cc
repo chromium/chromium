@@ -352,6 +352,13 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
                                ? 1
                                : 0;
 
+  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
+    // Init `permission_relevance` here to avoid a crash during
+    // `ConvertToProtoRelevance` execution.
+    features.permission_relevance =
+        permissions::PermissionRequestRelevance::kUnspecified;
+  }
+
   base::Time cutoff = base::Time::Now() - kPermissionActionCutoffAge;
 
   permissions::PermissionActionsHistory* action_history =

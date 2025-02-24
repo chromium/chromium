@@ -81,8 +81,14 @@ std::string RealtimeReportingJobConfiguration::GetPayload() {
     // dict to find the event type. |payload| still stores the final serialized
     // string in both cases.
     const auto& dict = payload_.FindList(kEventListKey)->front().GetDict();
-    for (const std::string& event_name :
-         enterprise_connectors::kAllReportingEvents) {
+    std::set<std::string> all_reporting_events;
+    all_reporting_events.insert(
+        enterprise_connectors::kAllReportingEnabledEvents.begin(),
+        enterprise_connectors::kAllReportingEnabledEvents.end());
+    all_reporting_events.insert(
+        enterprise_connectors::kAllReportingOptInEvents.begin(),
+        enterprise_connectors::kAllReportingOptInEvents.end());
+    for (const std::string& event_name : all_reporting_events) {
       if (dict.contains(event_name)) {
         metric_name =
             enterprise_connectors::GetPayloadSizeUmaMetricName(event_name);

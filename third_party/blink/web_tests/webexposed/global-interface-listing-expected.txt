@@ -29,7 +29,6 @@ interface AILanguageDetectorCapabilities
     method languageAvailable
 interface AILanguageDetectorFactory
     attribute @@toStringTag
-    method availability
     method capabilities
     method constructor
     method create
@@ -2695,6 +2694,7 @@ interface Element : Node
     method setHTML
     method setHTMLUnsafe
     method setPointerCapture
+    method startViewTransition
     method toggleAttribute
     method webkitMatchesSelector
     method webkitRequestFullScreen

@@ -23,14 +23,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_STACK_ITEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_STACK_ITEM_H_
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -78,7 +74,8 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
     // We rely on Create() allocating extra memory past our end for the
     // attributes.
     for (wtf_size_t i = 0; i < token->Attributes().size(); ++i) {
-      new (TokenAttributesData() + i) Attribute(token->Attributes()[i]);
+      new (UNSAFE_TODO(TokenAttributesData() + i))
+          Attribute(token->Attributes()[i]);
     }
   }
 
@@ -114,11 +111,11 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
 
   const base::span<Attribute> Attributes() {
     DCHECK(LocalName());
-    return {TokenAttributesData(), num_token_attributes_};
+    return UNSAFE_TODO({TokenAttributesData(), num_token_attributes_});
   }
   const base::span<const Attribute> Attributes() const {
     DCHECK(LocalName());
-    return {TokenAttributesData(), num_token_attributes_};
+    return UNSAFE_TODO({TokenAttributesData(), num_token_attributes_});
   }
   Attribute* GetAttributeItem(const QualifiedName& attribute_name) {
     DCHECK(LocalName());
@@ -345,11 +342,11 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   // by Create().
   Attribute* TokenAttributesData() {
     static_assert(alignof(HTMLStackItem) >= alignof(Attribute));
-    return reinterpret_cast<Attribute*>(this + 1);
+    return reinterpret_cast<Attribute*>(UNSAFE_TODO(this + 1));
   }
   const Attribute* TokenAttributesData() const {
     static_assert(alignof(HTMLStackItem) >= alignof(Attribute));
-    return reinterpret_cast<const Attribute*>(this + 1);
+    return reinterpret_cast<const Attribute*>(UNSAFE_TODO(this + 1));
   }
 
   Member<ContainerNode> node_;

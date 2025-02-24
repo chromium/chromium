@@ -211,6 +211,7 @@ source_set("unit_tests") {
     "//chrome/browser/search_engines",
     "//chrome/test:test_support",
     "//components/optimization_guide/core:test_support",
+    "//components/permissions/prediction_service:prediction_service",
     "//components/site_engagement/content",
     "//components/ukm/content",
     "//components/unified_consent",

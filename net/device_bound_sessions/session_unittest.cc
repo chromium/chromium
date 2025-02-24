@@ -46,18 +46,21 @@ SessionParams CreateValidParams() {
   std::vector<SessionParams::Credential> cookie_credentials(
       {SessionParams::Credential{"test_cookie",
                                  "Secure; Domain=example.test"}});
-  SessionParams params{kSessionId, kUrlString, std::move(scope),
-                       std::move(cookie_credentials)};
-  return params;
+  return SessionParams{kSessionId,
+                       kTestUrl,
+                       kUrlString,
+                       std::move(scope),
+                       std::move(cookie_credentials),
+                       unexportable_keys::UnexportableKeyId()};
 }
 
 TEST_F(SessionTest, ValidService) {
-  auto session = Session::CreateIfValid(CreateValidParams(), kTestUrl);
+  auto session = Session::CreateIfValid(CreateValidParams());
   EXPECT_TRUE(session);
 }
 
 TEST_F(SessionTest, DefaultExpiry) {
-  auto session = Session::CreateIfValid(CreateValidParams(), kTestUrl);
+  auto session = Session::CreateIfValid(CreateValidParams());
   ASSERT_TRUE(session);
   EXPECT_LT(base::Time::Now() + base::Days(399), session->expiry_date());
 }
@@ -65,7 +68,7 @@ TEST_F(SessionTest, DefaultExpiry) {
 TEST_F(SessionTest, RelativeServiceRefreshUrl) {
   auto params = CreateValidParams();
   params.refresh_url = "/internal/RefreshSession";
-  std::unique_ptr<Session> session = Session::CreateIfValid(params, kTestUrl);
+  std::unique_ptr<Session> session = Session::CreateIfValid(params);
   ASSERT_TRUE(session);
 
   // Validate session refresh URL.
@@ -76,7 +79,7 @@ TEST_F(SessionTest, RelativeServiceRefreshUrl) {
 TEST_F(SessionTest, RelativeServiceRefreshUrlEscaped) {
   auto params = CreateValidParams();
   params.refresh_url = "/internal%26RefreshSession";
-  std::unique_ptr<Session> session = Session::CreateIfValid(params, kTestUrl);
+  std::unique_ptr<Session> session = Session::CreateIfValid(params);
   ASSERT_TRUE(session);
 
   // Validate session refresh URL.
@@ -87,36 +90,37 @@ TEST_F(SessionTest, RelativeServiceRefreshUrlEscaped) {
 TEST_F(SessionTest, InvalidServiceRefreshUrl) {
   auto params = CreateValidParams();
   params.refresh_url = "";
-  EXPECT_FALSE(Session::CreateIfValid(params, kTestUrl));
+  EXPECT_FALSE(Session::CreateIfValid(params));
 }
 
 TEST_F(SessionTest, InvalidTestUrl) {
   auto params = CreateValidParams();
-  EXPECT_FALSE(Session::CreateIfValid(params, kTestUrlForWrongETLD));
+  params.fetcher_url = kTestUrlForWrongETLD;
+  EXPECT_FALSE(Session::CreateIfValid(params));
 }
 
 TEST_F(SessionTest, NonSecureUrl) {
   // HTTP is not allowed for the refresh URL.
   {
     auto params = CreateValidParams();
+    params.fetcher_url = GURL("http://example.test/index.html");
     params.refresh_url = "http://example.test/registration";
-    EXPECT_FALSE(
-        Session::CreateIfValid(params, GURL("http://example.test/index.html")));
+    EXPECT_FALSE(Session::CreateIfValid(params));
   }
 
   // But localhost is okay.
   {
     auto params = CreateValidParams();
+    params.fetcher_url = GURL("http://localhost:8080/index.html");
     params.refresh_url = "http://localhost:8080/registration";
     params.scope.origin = "localhost";
-    EXPECT_TRUE(Session::CreateIfValid(
-        params, GURL("http://localhost:8080/index.html")));
+    EXPECT_TRUE(Session::CreateIfValid(params));
   }
 }
 
 TEST_F(SessionTest, ToFromProto) {
   std::unique_ptr<Session> session =
-      Session::CreateIfValid(CreateValidParams(), kTestUrl);
+      Session::CreateIfValid(CreateValidParams());
   ASSERT_TRUE(session);
 
   // Convert to proto and validate contents.
@@ -129,6 +133,8 @@ TEST_F(SessionTest, ToFromProto) {
   // Restore session from proto and validate contents.
   std::unique_ptr<Session> restored = Session::CreateFromProto(sproto);
   ASSERT_TRUE(restored);
+  // Simulate unwrapping successfully.
+  restored->set_unexportable_key_id(session->unexportable_key_id());
   EXPECT_TRUE(restored->IsEqualForTesting(*session));
 }
 
@@ -141,7 +147,7 @@ TEST_F(SessionTest, FailCreateFromInvalidProto) {
 
   // Create a fully populated proto.
   std::unique_ptr<Session> session =
-      Session::CreateIfValid(CreateValidParams(), kTestUrl);
+      Session::CreateIfValid(CreateValidParams());
   ASSERT_TRUE(session);
   proto::Session sproto = session->ToProto();
 
@@ -196,7 +202,7 @@ TEST_F(SessionTest, FailCreateFromInvalidProto) {
 
 TEST_F(SessionTest, DeferredSession) {
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session = Session::CreateIfValid(params);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -214,7 +220,7 @@ TEST_F(SessionTest, NotDeferredAsExcluded) {
   spec.domain = "example.test";
   spec.path = "/index.html";
   params.scope.specifications.push_back(spec);
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session = Session::CreateIfValid(params);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -229,7 +235,7 @@ TEST_F(SessionTest, NotDeferredSubdomain) {
   const char subdomain[] = "https://test.example.test/index.html";
   const GURL url_subdomain(subdomain);
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session = Session::CreateIfValid(params);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -252,7 +258,7 @@ TEST_F(SessionTest, DeferredIncludedSubdomain) {
   spec.domain = "test.example.test";
   spec.path = "/index.html";
   params.scope.specifications.push_back(spec);
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session = Session::CreateIfValid(params);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -263,7 +269,7 @@ TEST_F(SessionTest, DeferredIncludedSubdomain) {
 
 TEST_F(SessionTest, NotDeferredWithCookieSession) {
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session = Session::CreateIfValid(params);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -287,7 +293,7 @@ TEST_F(SessionTest, NotDeferredInsecure) {
   const char insecure_url[] = "http://example.test/index.html";
   const GURL test_insecure_url(insecure_url);
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session = Session::CreateIfValid(params);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request = context_->CreateRequest(
@@ -342,7 +348,7 @@ class InsecureDelegate : public CookieAccessDelegate {
 
 TEST_F(SessionTest, NotDeferredNotSameSite) {
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session = Session::CreateIfValid(params);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -356,7 +362,7 @@ TEST_F(SessionTest, DeferredNotSameSiteDelegate) {
   context_->cookie_store()->SetCookieAccessDelegate(
       std::make_unique<InsecureDelegate>());
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session = Session::CreateIfValid(params);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -381,7 +387,7 @@ TEST_F(SessionTest, NotDeferredIncludedSubdomainHostCraving) {
   std::vector<SessionParams::Credential> cookie_credentials(
       {SessionParams::Credential{"test_cookie", "Secure;"}});
   params.credentials = std::move(cookie_credentials);
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session = Session::CreateIfValid(params);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -391,7 +397,7 @@ TEST_F(SessionTest, NotDeferredIncludedSubdomainHostCraving) {
 }
 
 TEST_F(SessionTest, CreationDate) {
-  auto session = Session::CreateIfValid(CreateValidParams(), kTestUrl);
+  auto session = Session::CreateIfValid(CreateValidParams());
   ASSERT_TRUE(session);
   // Make sure it's set to a plausible value.
   EXPECT_LT(base::Time::Now() - base::Days(1), session->creation_date());
@@ -399,7 +405,7 @@ TEST_F(SessionTest, CreationDate) {
 
 TEST_F(SessionTest, NetLogSessionInfo) {
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session = Session::CreateIfValid(params);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -415,7 +421,7 @@ TEST_F(SessionTest, NetLogSessionInfo) {
 
 TEST_F(SessionTest, NetLogMissingCookie) {
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session = Session::CreateIfValid(params);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -433,7 +439,7 @@ TEST_F(SessionTest, NetLogMissingCookie) {
 
 TEST_F(SessionTest, NetLogNoRefresh) {
   auto params = CreateValidParams();
-  auto session = Session::CreateIfValid(params, kTestUrl);
+  auto session = Session::CreateIfValid(params);
   ASSERT_TRUE(session);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =

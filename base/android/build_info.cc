@@ -56,7 +56,6 @@ BuildInfo::BuildInfo()
       android_build_fp_(android_info::android_build_fp()),
       installer_package_name_(apk_info::installer_package_name()),
       abi_name_(android_info::abi_name()),
-      custom_themes_(device_info::custom_themes()),
       resources_version_(apk_info::resources_version()),
       target_sdk_version_(apk_info::target_sdk_version()),
       is_debug_android_(android_info::is_debug_android()),

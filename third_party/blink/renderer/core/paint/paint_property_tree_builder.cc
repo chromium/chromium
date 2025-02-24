@@ -3695,9 +3695,6 @@ void PaintPropertyTreeBuilder::UpdateForChildren() {
   if (!ObjectTypeMightNeedPaintProperties())
     return;
 
-  // For now, only consider single fragment elements as possible isolation
-  // boundaries.
-  // TODO(crbug.com/890932): See if this is needed.
   bool is_isolated = true;
   FragmentPaintPropertyTreeBuilder builder(object_, pre_paint_info_, context_,
                                            GetFragmentData());

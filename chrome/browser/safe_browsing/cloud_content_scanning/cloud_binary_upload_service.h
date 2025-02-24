@@ -148,7 +148,9 @@ class CloudBinaryUploadService : public BinaryUploadService {
       const enterprise_connectors::ContentAnalysisResponse& response);
 
   // Called at the end of the FinishRequest method.
-  void FinishRequestCleanup(Request* request, const std::string& instance_id);
+  void FinishRequestCleanup(Request* request);
+
+  void CleanupRequest(Request* request);
 
   // Tries to start uploads from `request_queue_` depending on the number of
   // currently active requests. This should be called whenever

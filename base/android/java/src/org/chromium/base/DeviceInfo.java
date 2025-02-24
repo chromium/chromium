@@ -51,9 +51,6 @@ public final class DeviceInfo {
     /** Whether we're running on an Android Desktop OS device or not. */
     private final boolean mIsDesktop;
 
-    /** Whether or not the device has apps installed for using custom themes. */
-    private final String mCustomThemes;
-
     /**
      * version of the FEATURE_VULKAN_DEQP_LEVEL, if available. Queried only on Android T or above
      */
@@ -74,7 +71,6 @@ public final class DeviceInfo {
         DeviceInfoJni.get()
                 .fillFields(
                         /* gmsVersionCode= */ getGmsVersionCode(),
-                        /* customThemes= */ getCustomThemes(),
                         /* isTV= */ isTV(),
                         /* isAutomotive= */ isAutomotive(),
                         /* isFoldable= */ isFoldable(),
@@ -107,10 +103,6 @@ public final class DeviceInfo {
 
     public static boolean isDesktop() {
         return getInstance().mIsDesktop;
-    }
-
-    public static String getCustomThemes() {
-        return getInstance().mCustomThemes;
     }
 
     public static int getVulkanDeqpLevel() {
@@ -198,19 +190,12 @@ public final class DeviceInfo {
             }
         }
         mVulkanDeqpLevel = vulkanLevel;
-
-        // Substratum is a theme engine that enables users to use custom themes provided
-        // by theme apps. Sometimes these can cause crashs if not installed correctly.
-        // These crashes can be difficult to debug, so knowing if the theme manager is
-        // present on the device is useful (http://crbug.com/820591).
-        mCustomThemes = String.valueOf(PackageUtils.isPackageInstalled("projekt.substratum"));
     }
 
     @NativeMethods
     interface Natives {
         void fillFields(
                 String gmsVersionCode,
-                String customThemes,
                 boolean isTV,
                 boolean isAutomotive,
                 boolean isFoldable,

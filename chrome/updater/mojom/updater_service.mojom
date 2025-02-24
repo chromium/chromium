@@ -9,7 +9,7 @@ import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
 
 // Struct containing the information required to register an application with
 // the updater. Passed from client to server during RegisterApp and Install.
-// Next version: 3
+// Next version: 4
 [Stable] struct RegistrationRequest {
   // Application ID of the app.
   string app_id;
@@ -55,6 +55,9 @@ import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
 
   // A unique identifier for the installer responsible for registering this app.
   [MinVersion=2] string? install_id;
+
+  // `lang` of the app.
+  [MinVersion=3] string? lang;
 };
 
 // Struct containing details on the state of an update. It is passed

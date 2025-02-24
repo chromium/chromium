@@ -271,7 +271,6 @@ public class ToolbarPositionControllerTest {
         doReturn(mControlContainerView).when(mControlContainer).getView();
         doReturn(CONTROL_CONTAINER_ID).when(mControlContainerView).getId();
         doReturn(mProgressBarLayoutParams).when(mProgressBarContainer).getLayoutParams();
-        doReturn(1).when(mControlContainer).getToolbarHairlineHeight();
         mContext = ContextUtils.getApplicationContext();
         doReturn(mContext.getResources()).when(mProgressBarContainer).getResources();
         mWindowAndroid = new WindowAndroid(mContext, false);

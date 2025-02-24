@@ -131,12 +131,12 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   void OnRegistrationComplete(
       OnAccessCallback on_access_callback,
-      std::optional<RegistrationFetcher::RegistrationCompleteParams> params);
+      base::expected<SessionParams, SessionError> params_or_error);
   void OnRefreshRequestCompletion(
       OnAccessCallback on_access_callback,
       SchemefulSite site,
       Session::Id session_id,
-      std::optional<RegistrationFetcher::RegistrationCompleteParams> result);
+      base::expected<SessionParams, SessionError> params_or_error);
 
   void AddSession(const SchemefulSite& site, std::unique_ptr<Session> session);
   void UnblockDeferredRequests(const Session::Id& session_id,

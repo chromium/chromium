@@ -982,6 +982,7 @@ public class NavigationTransitionsTest {
             "BackForwardTransitions"
                     + ":transition_from_native_pages/true"
                     + "/transition_to_native_pages/false")
+    @DisabledTest(message = "crbug.com/398843362")
     public void testSwipeBackToNTPWithoutTransition() throws TimeoutException {
         if (mTestNavigationMode == NAVIGATION_MODE_GESTURAL
                 && VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE) return;

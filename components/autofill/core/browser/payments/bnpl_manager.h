@@ -37,7 +37,7 @@ class BnplManager {
   explicit BnplManager(PaymentsAutofillClient* payments_autofill_client);
   BnplManager(const BnplManager& other) = delete;
   BnplManager& operator=(const BnplManager& other) = delete;
-  ~BnplManager();
+  virtual ~BnplManager();
 
   // Retrieve supported BNPL issuers.
   static const std::array<std::string_view, 2>& GetSupportedBnplIssuerIds();
@@ -56,21 +56,21 @@ class BnplManager {
   // with the given `trigger_source`. This must be called before
   // `OnSuggestionsShown()` and `OnAmountExtractionReturned()`, so that the
   // manager can update suggestions for buy-now-pay-later.
-  void NotifyOfSuggestionGeneration(
+  virtual void NotifyOfSuggestionGeneration(
       const AutofillSuggestionTriggerSource trigger_source);
 
   // Runs after credit card suggestions are shown and collects the current
   // shown suggestions and a callback for updating the suggestions. This must
   // be called after `NotifyOfSuggestionGeneration()`, so that the manager can
   // update suggestions for buy-now-pay-later.
-  void OnSuggestionsShown(
+  virtual void OnSuggestionsShown(
       base::span<const Suggestion> suggestions,
       UpdateSuggestionsCallback update_suggestions_callback);
 
   // Runs after amount extraction completion and collects the amount extraction
   // result. This must be called after `NotifyOfSuggestionGeneration()`, so
   // that the manager can update suggestions for buy-now-pay-later.
-  void OnAmountExtractionReturned(
+  virtual void OnAmountExtractionReturned(
       const std::optional<uint64_t>& extracted_amount);
 
   // Returns the supported country codes for BNPL.

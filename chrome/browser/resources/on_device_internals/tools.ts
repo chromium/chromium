@@ -410,15 +410,14 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     const {bitmap} = await this.proxy_.handler.decodeBitmap(bigBuffer);
     return bitmap;
   }
-  private async decodeAudio_(): Promise<AudioData|null> {
+  private async decodeAudio_(): Promise<AudioData> {
     const audioCtx = new AudioContext({sampleRate: 48000});
-    const buffer =
-        await audioCtx.decodeAudioData(await this.audioFile_!.arrayBuffer());
+    const arrayBuffer = await this.audioFile_!.arrayBuffer();
+    const buffer = await audioCtx.decodeAudioData(arrayBuffer);
     if (buffer.numberOfChannels > 1) {
-      return null;
+      throw new Error('Multichannel audio is not supported');
     }
     return {
-
       sampleRate: buffer.sampleRate,
       channelCount: buffer.numberOfChannels,
       frameCount: buffer.length,
@@ -448,12 +447,12 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
       }
     }
     if (this.audioFile_ !== null) {
-      const audio = await this.decodeAudio_();
-      if (audio) {
+      try {
+        const audio = await this.decodeAudio_();
         pieces.unshift({audio});
-      } else {
+      } catch (error) {
         this.audioFile_ = null;
-        this.audioError_ = 'Audio is invalid';
+        this.audioError_ = `Audio is invalid: ${error}`;
         return;
       }
     }

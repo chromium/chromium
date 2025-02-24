@@ -164,10 +164,8 @@ class IdentifiableSurface {
     // will key this type on a digest of both the enums' values.
     kWebGLShaderPrecisionFormat = 16,
 
-    // A type for recording reads of the offsetWidth and offsetHeight properties
-    // when we believe it may be trying to detect the size of the scrollbar.
-    // The input for this surface should be a member of `ScrollbarSurface`.
-    kScrollbarSize = 17,
+    // Reserved 17.
+    // Was kScrollbarSize.
 
     // WebGL2RenderingContext.getInternal
     kWebGLInternalFormatParameter = 18,
@@ -315,14 +313,6 @@ class IdentifiableSurface {
     // At least one drawing operation was only partially digested, for
     // performance reasons.
     kPartiallyDigested = UINT64_C(0x40)
-  };
-
-  // Possible inputs for Type::kScrollbarSize.
-  enum class ScrollbarSurface : uint64_t {
-    kScrollingElementWidth = 0,
-    kScrollingElementHeight = 1,
-    kElemScrollbarWidth = 2,
-    kElemScrollbarHeight = 3,
   };
 
   // Possible inputs for Type::kMediaFeature.

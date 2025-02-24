@@ -48,11 +48,13 @@ class ContextualCueingHelper
 
   // Called when optimization guide metadata is received.
   void OnOptimizationGuideCueingMetadata(
+      base::TimeTicks document_available_time,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
   void OnCueingDecision(
       std::unique_ptr<ScopedNudgeDecisionRecorder> decision_recorder,
+      base::TimeTicks document_available_time,
       std::string cue_label);
 
   bool IsBrowserBlockingNudges(ScopedNudgeDecisionRecorder* recorder);

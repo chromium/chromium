@@ -4,11 +4,31 @@
 
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router.h"
 
+#include "base/containers/contains.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace enterprise_connectors {
+
+namespace {
+
+bool IsEventInReportingSettings(const std::string& event,
+                                std::optional<ReportingSettings> settings) {
+  if (!settings.has_value()) {
+    return false;
+  }
+  if (base::Contains(kAllReportingEnabledEvents, event)) {
+    return settings->enabled_event_names.count(event) > 0;
+  }
+  if (base::Contains(kAllReportingOptInEvents, event)) {
+    return settings->enabled_opt_in_events.count(event) > 0;
+  }
+  return false;
+}
+
+}  // namespace
 
 ReportingEventRouter::ReportingEventRouter(content::BrowserContext* context)
     : context_(context) {
@@ -21,9 +41,8 @@ bool ReportingEventRouter::IsEventEnabled(const std::string& event) {
   if (!reporting_client_) {
     return false;
   }
-  std::optional<ReportingSettings> settings =
-      reporting_client_->GetReportingSettings();
-  return settings.has_value() && settings->enabled_event_names.count(event) > 0;
+  return IsEventInReportingSettings(event,
+                                    reporting_client_->GetReportingSettings());
 }
 
 // ---------------------------------------

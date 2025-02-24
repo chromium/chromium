@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CONTENT_EXTRACTION_AI_PAGE_CONTENT_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CONTENT_EXTRACTION_AI_PAGE_CONTENT_AGENT_H_
 
+#include <cstdint>
+
 #include "base/functional/callback_forward.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -66,7 +68,7 @@ class MODULES_EXPORT AIPageContentAgent final
   // Synchronously services a single request.
   class ContentBuilder {
    public:
-    ContentBuilder(const mojom::blink::AIPageContentOptions& options);
+    explicit ContentBuilder(const mojom::blink::AIPageContentOptions& options);
     ~ContentBuilder();
 
     mojom::blink::AIPageContentPtr Build(LocalFrame& frame);
@@ -76,13 +78,16 @@ class MODULES_EXPORT AIPageContentAgent final
     // visible for `visibility`.
     bool WalkChildren(const LayoutObject& object,
                       mojom::blink::AIPageContentNode& content_node,
-                      const ComputedStyle& document_style) const;
+                      const ComputedStyle& document_style,
+                      uint32_t* content_node_id_counter) const;
     void ProcessIframe(const LayoutIFrame& object,
-                       mojom::blink::AIPageContentNode& content_node) const;
+                       mojom::blink::AIPageContentNode& content_node,
+                       uint32_t* content_node_id_counter) const;
     mojom::blink::AIPageContentNodePtr MaybeGenerateContentNode(
         const LayoutObject& object,
-        const ComputedStyle& document_style) const;
-    std::optional<DOMNodeId> AddNodeId(
+        const ComputedStyle& document_style,
+        uint32_t* content_node_id_counter) const;
+    std::optional<DOMNodeId> AddDomNodeId(
         const LayoutObject& object,
         mojom::blink::AIPageContentAttributes& attributes) const;
     void AddNodeGeometry(

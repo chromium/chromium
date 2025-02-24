@@ -71,7 +71,6 @@ public final class ShareButtonControllerUnitTest {
 
     private Configuration mConfiguration = new Configuration();
     private ShareButtonController mShareButtonController;
-    private ShareUtils mShareUtils = new ShareUtils();
 
     @Before
     public void setUp() {
@@ -99,7 +98,6 @@ public final class ShareButtonControllerUnitTest {
                         mTabProvider,
                         mShareDelegateSupplier,
                         () -> mTracker,
-                        mShareUtils,
                         mModalDialogManager,
                         CallbackUtils.emptyRunnable());
 

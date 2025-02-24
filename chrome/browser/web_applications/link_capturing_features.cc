@@ -11,6 +11,10 @@
 
 namespace apps::features {
 
+BASE_FEATURE(kNavigationCapturingOnExistingFrames,
+             "NavigationCapturingOnCurrentFrames",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool ShouldShowLinkCapturingUX() {
 #if BUILDFLAG(IS_CHROMEOS)
   return true;

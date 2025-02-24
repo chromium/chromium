@@ -9,9 +9,12 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for the Shared Tab Group Notice Bottom Sheet. */
@@ -25,11 +28,14 @@ public class TabGroupShareNoticeBottomSheetCoordinator {
 
         /** Hides the bottom sheet. */
         void hide(@StateChangeReason int hideReason);
+
+        /** To be run on closing the bottom sheet. */
+        void onSheetClosed();
     }
 
     private final BottomSheetController mBottomSheetController;
     private final Context mContext;
-    private final Profile mProfile;
+    private final Tracker mTracker;
 
     /**
      * @param bottomSheetController The controller for the bottom sheet.
@@ -40,7 +46,7 @@ public class TabGroupShareNoticeBottomSheetCoordinator {
             BottomSheetController bottomSheetController, Context context, Profile profile) {
         mBottomSheetController = bottomSheetController;
         mContext = context;
-        mProfile = profile;
+        mTracker = TrackerFactory.getTrackerForProfile(profile);
     }
 
     /** Initializes the delegate. */
@@ -57,20 +63,31 @@ public class TabGroupShareNoticeBottomSheetCoordinator {
             public void hide(@StateChangeReason int hideReason) {
                 mBottomSheetController.hideContent(mView, /* animate= */ true, hideReason);
             }
+
+            @Override
+            public void onSheetClosed() {
+                mTracker.notifyEvent("tab_group_share_notice_dismissed");
+                mTracker.dismissed(FeatureConstants.TAB_GROUP_SHARE_NOTICE_FEATURE);
+            }
         };
     }
 
     /** Requests to show the bottom sheet content. */
     public void requestShowContent() {
+        if (!shouldDisplayNotice()) return;
         mView = new TabGroupShareNoticeBottomSheetView(mContext);
 
         TabGroupShareNoticeBottomSheetCoordinatorDelegate delegate = initDelegate();
         TabGroupShareNoticeBottomSheetMediator mMediator =
-                new TabGroupShareNoticeBottomSheetMediator(
-                        mBottomSheetController, delegate, mProfile);
+                new TabGroupShareNoticeBottomSheetMediator(mBottomSheetController, delegate);
 
         PropertyModelChangeProcessor.create(
                 mMediator.getModel(), mView, TabGroupShareNoticeBottomSheetViewBinder::bind);
         mMediator.requestShowContent();
+    }
+
+    /** Returns whether the user has read the notice. */
+    private boolean shouldDisplayNotice() {
+        return mTracker.shouldTriggerHelpUi(FeatureConstants.TAB_GROUP_SHARE_NOTICE_FEATURE);
     }
 }

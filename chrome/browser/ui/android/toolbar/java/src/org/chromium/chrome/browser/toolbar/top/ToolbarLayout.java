@@ -12,7 +12,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.util.AttributeSet;
-import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -62,6 +61,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.MotionEventUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
@@ -632,10 +632,9 @@ public abstract class ToolbarLayout extends FrameLayout
 
     @Override
     public boolean onGenericMotionEvent(MotionEvent event) {
-        // Consumes mouse button events on toolbar so they don't get leaked to content layer.
-        // See https://crbug.com/740855.
-        if ((event.getSource() & InputDevice.SOURCE_CLASS_POINTER) != 0
-                && event.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE) {
+        // Consumes mouse/trackpad button events on toolbar so they don't get leaked to content
+        // layer. See https://crbug.com/740855 (mouse) and https://crbug.com/384916573 (trackpad).
+        if (MotionEventUtils.isMouseEvent(event) || MotionEventUtils.isTrackpadEvent(event)) {
             int action = event.getActionMasked();
             if (action == MotionEvent.ACTION_BUTTON_PRESS
                     || action == MotionEvent.ACTION_BUTTON_RELEASE

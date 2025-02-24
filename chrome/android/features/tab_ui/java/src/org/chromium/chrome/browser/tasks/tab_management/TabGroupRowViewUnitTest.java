@@ -22,6 +22,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DISPLAY_AS_SHARED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ROW_CLICK_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
 
@@ -86,6 +87,7 @@ public class TabGroupRowViewUnitTest {
     private TextView mSubtitleTextView;
     private FrameLayout mImageTilesContainer;
     private ListMenuButton mListMenuButton;
+    private View mMenuLayout;
     private PropertyModel mPropertyModel;
 
     @Before
@@ -110,6 +112,7 @@ public class TabGroupRowViewUnitTest {
         mSubtitleTextView = mTabGroupRowView.findViewById(R.id.tab_group_subtitle);
         mImageTilesContainer = mTabGroupRowView.findViewById(R.id.image_tiles_container);
         mListMenuButton = mTabGroupRowView.findViewById(R.id.more);
+        mMenuLayout = mTabGroupRowView.findViewById(R.id.tab_group_menu);
 
         PropertyModelChangeProcessor.create(
                 mPropertyModel, mTabGroupRowView, TabGroupRowViewBinder::bind);
@@ -182,13 +185,13 @@ public class TabGroupRowViewUnitTest {
     }
 
     @Test
-    public void testSetOpenRunnable() {
-        remakeWithProperty(OPEN_RUNNABLE, mRunnable);
+    public void testSetRowClickRunnable() {
+        remakeWithProperty(ROW_CLICK_RUNNABLE, mRunnable);
         mTabGroupRowView.performClick();
         verify(mRunnable).run();
 
         reset(mRunnable);
-        remakeWithProperty(OPEN_RUNNABLE, null);
+        remakeWithProperty(ROW_CLICK_RUNNABLE, null);
         mTabGroupRowView.performClick();
         verifyNoInteractions(mRunnable);
     }
@@ -292,5 +295,17 @@ public class TabGroupRowViewUnitTest {
         assertEquals(1, mImageTilesContainer.getChildCount());
         remakeWithProperty(SHARED_IMAGE_TILES_VIEW, null);
         assertEquals(0, mImageTilesContainer.getChildCount());
+    }
+
+    @Test
+    public void testDisableMenu() {
+        remakeWithModel(new PropertyModel.Builder(ALL_KEYS).with(OPEN_RUNNABLE, null).build());
+        assertEquals(View.GONE, mMenuLayout.getVisibility());
+    }
+
+    @Test
+    public void testEnableMenu() {
+        remakeWithModel(new PropertyModel.Builder(ALL_KEYS).with(OPEN_RUNNABLE, () -> {}).build());
+        assertEquals(View.VISIBLE, mMenuLayout.getVisibility());
     }
 }

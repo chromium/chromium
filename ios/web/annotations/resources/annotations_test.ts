@@ -63,7 +63,7 @@ function clickAnnotation(index: number, viewport: boolean): boolean {
         return;
       }
       const element = node as Element;
-      if (element.shadowRoot && element.shadowRoot != node) {
+      if (element.shadowRoot && element.shadowRoot !== node) {
         traverse(element.shadowRoot);
         return;
       }

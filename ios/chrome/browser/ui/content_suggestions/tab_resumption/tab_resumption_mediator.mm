@@ -10,6 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "components/commerce/core/commerce_constants.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/commerce_types.h"
@@ -28,6 +29,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
+#import "components/url_formatter/elide_url.h"
 #import "components/visited_url_ranking/public/url_visit_util.h"
 #import "components/visited_url_ranking/public/visited_url_ranking_service.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -78,7 +80,9 @@
 #import "ios/chrome/browser/visited_url_ranking/model/visited_url_ranking_service_factory.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -192,8 +196,9 @@ PriceDrop GetPriceDrop(payments::CurrencyFormatter* formatter,
   return price_drop;
 }
 
-bool HasPriceDrop(const std::optional<const commerce::PriceTrackingData>&
-                      price_tracking_data) {
+bool HasPriceDropDataForTabResumption(
+    const std::optional<const commerce::PriceTrackingData>&
+        price_tracking_data) {
   return price_tracking_data.has_value() &&
          price_tracking_data->has_product_update() &&
          price_tracking_data->product_update().has_old_price() &&
@@ -205,7 +210,11 @@ bool HasPriceDrop(const std::optional<const commerce::PriceTrackingData>&
              .new_price()
              .has_currency_code() &&
          price_tracking_data->product_update().old_price().currency_code() ==
-             price_tracking_data->product_update().new_price().currency_code();
+             price_tracking_data->product_update()
+                 .new_price()
+                 .currency_code() &&
+         price_tracking_data->has_buyable_product() &&
+         price_tracking_data->buyable_product().has_title();
 }
 
 // A Product Detail Page is price trackable if it has a cluster ID.
@@ -216,11 +225,17 @@ bool IsPriceTrackable(const std::optional<const commerce::PriceTrackingData>&
          price_tracking_data->buyable_product().has_product_cluster_id();
 }
 
+std::u16string GetHostnameFromGURL(const GURL& url) {
+  return url_formatter::
+      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(url);
+}
+
 void ConfigureTabResumptionItemForShopCard(
     const base::flat_map<
         optimization_guide::proto::OptimizationType,
         optimization_guide::OptimizationGuideDecisionWithMetadata>& decisions,
-    TabResumptionItem* item) {
+    TabResumptionItem* item,
+    const GURL& url) {
   auto iter = decisions.find(optimization_guide::proto::PRICE_TRACKING);
   if (iter == decisions.end()) {
     return;
@@ -237,7 +252,7 @@ void ConfigureTabResumptionItemForShopCard(
           .ParsedMetadata<commerce::PriceTrackingData>();
 
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 &&
-      HasPriceDrop(price_tracking_data)) {
+      HasPriceDropDataForTabResumption(price_tracking_data)) {
     item.shopCardData = [[ShopCardData alloc] init];
     item.shopCardData.shopCardItemType = ShopCardItemType::kPriceDropOnTab;
 
@@ -248,8 +263,14 @@ void ConfigureTabResumptionItemForShopCard(
     formatter->SetMaxFractionalDigits(2);
     item.shopCardData.priceDrop = GetPriceDrop(
         formatter.get(),
-        price_tracking_data->product_update().old_price().amount_micros(),
-        price_tracking_data->product_update().new_price().amount_micros());
+        price_tracking_data->product_update().new_price().amount_micros(),
+        price_tracking_data->product_update().old_price().amount_micros());
+    item.shopCardData.accessibilityString = l10n_util::GetNSStringF(
+        IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_DROP_OPEN_TABS_ACCESSIBILITY_LABEL,
+        base::SysNSStringToUTF16(item.shopCardData.priceDrop->previous_price),
+        base::SysNSStringToUTF16(item.shopCardData.priceDrop->current_price),
+        base::UTF8ToUTF16(price_tracking_data->buyable_product().title()),
+        GetHostnameFromGURL(url));
   }
 
   // A URL is price trackable if it has a cluster ID.
@@ -1018,7 +1039,7 @@ class TabResumptionMediatorProxy {
                   optimization_guide::proto::OptimizationType,
                   optimization_guide::OptimizationGuideDecisionWithMetadata>&
                   decisions) {
-              ConfigureTabResumptionItemForShopCard(decisions, item);
+              ConfigureTabResumptionItemForShopCard(decisions, item, url);
               // Fetch the favicon.
               [weakSelf fetchImageForItem:item];
             }));

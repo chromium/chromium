@@ -7,7 +7,6 @@ import java.util.Map;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.GEN_JNI;
 import org.jni_zero.JniTestInstanceHolder;
-import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.SampleForTests;
 import org.jni_zero.SampleProxyEdgeCases;
 import org.jni_zero.internal.Boolean;
@@ -24,7 +23,6 @@ class SampleProxyEdgeCasesJni implements SampleProxyEdgeCases.Natives {
     if (holder != null && holder.value != null) {
       return (SampleProxyEdgeCases.Natives) holder.value;
     }
-    NativeLibraryLoadedStatus.checkLoaded();
     return new SampleProxyEdgeCasesJni();
   }
 

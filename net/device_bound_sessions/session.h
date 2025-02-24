@@ -42,11 +42,8 @@ class NET_EXPORT Session {
 
   ~Session();
 
-  // Creates an instance of `Session` based on the `params` and `fetcher_url`.
-  // The `fetcher_url` is the registration or refresh endpoint that was called
-  // into and returned the `params` session instructions.
-  static std::unique_ptr<Session> CreateIfValid(const SessionParams& params,
-                                                const GURL& fetcher_url);
+  // Creates an instance of `Session` based on the `params`.
+  static std::unique_ptr<Session> CreateIfValid(const SessionParams& params);
   static std::unique_ptr<Session> CreateFromProto(const proto::Session& proto);
   proto::Session ToProto() const;
 

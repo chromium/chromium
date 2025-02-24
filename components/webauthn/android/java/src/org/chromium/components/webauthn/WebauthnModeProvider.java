@@ -7,6 +7,8 @@ package org.chromium.components.webauthn;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webauthn.Fido2ApiCall.Fido2ApiCallParams;
 import org.chromium.components.webauthn.cred_man.AppCredManRequestDecorator;
 import org.chromium.components.webauthn.cred_man.BrowserCredManRequestDecorator;
@@ -29,11 +31,13 @@ import org.chromium.content_public.browser.WebContents;
  * <p>Note: if both methods are called, global mode has priority.
  */
 @JNINamespace("webauthn")
+@NullMarked
 public class WebauthnModeProvider {
-    private static WebauthnModeProvider sInstance;
+    private static @Nullable WebauthnModeProvider sInstance;
     private @WebauthnMode int mGlobalMode;
 
-    public CredManRequestDecorator getCredManRequestDecorator(WebContents webContents) {
+    public @Nullable CredManRequestDecorator getCredManRequestDecorator(
+            @Nullable WebContents webContents) {
         int mode = getWebauthnMode(webContents);
         if (mode == WebauthnMode.APP) {
             return AppCredManRequestDecorator.getInstance();
@@ -47,7 +51,7 @@ public class WebauthnModeProvider {
         return null;
     }
 
-    public Fido2ApiCallParams getFido2ApiCallParams(WebContents webContents) {
+    public @Nullable Fido2ApiCallParams getFido2ApiCallParams(@Nullable WebContents webContents) {
         int mode = getWebauthnMode(webContents);
         if (mode == WebauthnMode.APP) {
             return Fido2ApiCall.APP_API;
@@ -61,7 +65,7 @@ public class WebauthnModeProvider {
         return null;
     }
 
-    public @WebauthnMode int getWebauthnMode(WebContents webContents) {
+    public @WebauthnMode int getWebauthnMode(@Nullable WebContents webContents) {
         if (mGlobalMode != WebauthnMode.NONE) return mGlobalMode;
         return WebauthnModeProviderJni.get().getWebauthnModeForWebContents(webContents);
     }
@@ -79,12 +83,12 @@ public class WebauthnModeProvider {
         WebauthnModeProviderJni.get().setWebauthnModeForWebContents(webContents, mode);
     }
 
-    public static boolean isChrome(WebContents webContents) {
+    public static boolean isChrome(@Nullable WebContents webContents) {
         @WebauthnMode int mode = getInstance().getWebauthnMode(webContents);
         return mode == WebauthnMode.CHROME || mode == WebauthnMode.CHROME_3PP_ENABLED;
     }
 
-    public static boolean is(WebContents webContents, @WebauthnMode int expectedMode) {
+    public static boolean is(@Nullable WebContents webContents, @WebauthnMode int expectedMode) {
         return getInstance().getWebauthnMode(webContents) == expectedMode;
     }
 
@@ -105,6 +109,6 @@ public class WebauthnModeProvider {
         void setWebauthnModeForWebContents(WebContents webContents, @WebauthnMode int mode);
 
         @WebauthnMode
-        int getWebauthnModeForWebContents(WebContents webContents);
+        int getWebauthnModeForWebContents(@Nullable WebContents webContents);
     }
 }

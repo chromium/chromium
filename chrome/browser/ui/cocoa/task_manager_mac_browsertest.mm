@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/pattern.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/task_manager/task_manager_tester.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -50,7 +51,11 @@ using browsertest_util::WaitForTaskManagerRows;
 
 class TaskManagerMacTest : public InProcessBrowserTest {
  public:
-  TaskManagerMacTest() = default;
+  TaskManagerMacTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kTaskManagerDesktopRefresh});
+  }
   ~TaskManagerMacTest() override = default;
 
   TaskManagerMacTest(const TaskManagerMacTest&) = delete;
@@ -128,6 +133,9 @@ class TaskManagerMacTest : public InProcessBrowserTest {
     }
     return std::nullopt;
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that all defined columns have a corresponding string IDs for keying

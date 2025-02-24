@@ -26,6 +26,7 @@ static_library("browser") {
     "credential_cache.h",
     "credential_manager_impl.cc",
     "credential_manager_impl.h",
+    "credential_manager_interface.h",
     "credential_manager_logger.cc",
     "credential_manager_logger.h",
     "credential_manager_password_form_manager.cc",

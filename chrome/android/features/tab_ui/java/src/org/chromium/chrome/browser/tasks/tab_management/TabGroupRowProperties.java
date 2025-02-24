@@ -36,6 +36,8 @@ public class TabGroupRowProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> LEAVE_RUNNABLE =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Runnable> ROW_CLICK_RUNNABLE =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<SharedImageTilesView> SHARED_IMAGE_TILES_VIEW =
             new WritableObjectPropertyKey<>();
 
@@ -51,7 +53,8 @@ public class TabGroupRowProperties {
         OPEN_RUNNABLE,
         DELETE_RUNNABLE,
         LEAVE_RUNNABLE,
+        ROW_CLICK_RUNNABLE,
         SHARED_IMAGE_TILES_VIEW,
-        DESTROYABLE,
+        DESTROYABLE
     };
 }

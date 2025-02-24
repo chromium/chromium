@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TimeUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
@@ -18,6 +19,9 @@ import org.chromium.components.prefs.PrefService;
 
 /** Manages fetching and setting the password information for Safety Hub. */
 public class SafetyHubPasswordsFetchService {
+    private static final long CHECKUP_COOL_DOWN_PERIOD_IN_MS =
+            60 * TimeUtils.MILLISECONDS_PER_MINUTE;
+
     @NonNull private final PrefService mPrefService;
     @NonNull private final PasswordManagerHelper mPasswordManagerHelper;
 
@@ -81,7 +85,13 @@ public class SafetyHubPasswordsFetchService {
     /**
      * Makes a call to GMSCore to perform a password checkup in the background for `mAccount`. It
      * also triggers several calls to GMSCore to fetch the compromised, weak and reuse password
-     * counts. `onFinishedCallback` runs either: (1) on success, when all password counts have
+     * counts.
+     *
+     * <p>The password checkup has a holdback period of one hour. In other words, if the client has
+     * made a password checkup call to GMSCore for this account in the last hour, then it assumes
+     * the results are still fresh and they can be reused.
+     *
+     * <p>`onFinishedCallback` runs either: (1) on success, when all password counts have
      * successfully been returned and the appropriate preferences have been updated with the
      * results; or (2) if any error has occurred either when running the checkup or fetching the
      * counts.
@@ -93,10 +103,21 @@ public class SafetyHubPasswordsFetchService {
             return;
         }
 
+        long currentTimeInMs = TimeUtils.currentTimeMillis();
+        long timeSinceLastCheckupInMs =
+                currentTimeInMs - mPrefService.getLong(getLastTimeInMsCheckCompletedPreference());
+        if (timeSinceLastCheckupInMs <= CHECKUP_COOL_DOWN_PERIOD_IN_MS) {
+            onFinishedCallback.onResult(/* errorOccurred */ false);
+            return;
+        }
+
         mPasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
                 mAccount,
                 success -> {
+                    mPrefService.setLong(
+                            getLastTimeInMsCheckCompletedPreference(),
+                            TimeUtils.currentTimeMillis());
                     fetchPasswordsCount(onFinishedCallback);
                 },
                 error -> {
@@ -139,6 +160,11 @@ public class SafetyHubPasswordsFetchService {
         return mAccount == null
                 ? Pref.LOCAL_REUSED_CREDENTIALS_COUNT
                 : Pref.REUSED_CREDENTIALS_COUNT;
+    }
+
+    private String getLastTimeInMsCheckCompletedPreference() {
+        assert mAccount == null; // Not yet implemented for account passwords.
+        return Pref.LAST_TIME_IN_MS_LOCAL_PASSWORD_CHECK_COMPLETED;
     }
 
     /** Makes a call to GMSCore to fetch the latest leaked passwords count for `mAccount`. */

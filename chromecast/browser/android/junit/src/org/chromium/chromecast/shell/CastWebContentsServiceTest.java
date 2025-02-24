@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.robolectric.Robolectric;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.android.controller.ServiceController;
 import org.robolectric.annotation.Config;
@@ -38,9 +37,7 @@ import org.chromium.chromecast.base.ReactiveRecorder;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Tests for CastWebContentsService.
- */
+/** Tests for CastWebContentsService. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CastWebContentsServiceTest {
@@ -81,8 +78,7 @@ public class CastWebContentsServiceTest {
         when(mWebContents.getTitle()).thenReturn(WEBCONTENTS_TITLE);
         mMediaSession = mock(MediaSession.class);
         mInstanceId = "1";
-        mIntent = CastWebContentsIntentUtils.requestStartCastService(
-                RuntimeEnvironment.application, mWebContents, mInstanceId);
+        mIntent = CastWebContentsIntentUtils.requestStartCastService(mWebContents, mInstanceId);
         mServiceLifecycle =
                 Robolectric.buildService(CastWebContentsService.class).withIntent(mIntent);
         mService = mServiceLifecycle.get();
@@ -114,7 +110,8 @@ public class CastWebContentsServiceTest {
         Notification notification = mShadowService.getLastForegroundNotification();
         String notificationChannelId = notification.getChannelId();
         assertNotNull(notificationChannelId);
-        assertEquals("org.chromium.chromecast.shell.CastWebContentsService.channel",
+        assertEquals(
+                "org.chromium.chromecast.shell.CastWebContentsService.channel",
                 notificationChannelId);
     }
 
@@ -163,8 +160,7 @@ public class CastWebContentsServiceTest {
     public void testDoesNotDisplayNullWebContents() {
         ReactiveRecorder recordWebContentsPresentation =
                 ReactiveRecorder.record(mService.observeWebContentsStateForTesting());
-        mIntent = CastWebContentsIntentUtils.requestStartCastService(
-                RuntimeEnvironment.application, null, mInstanceId);
+        mIntent = CastWebContentsIntentUtils.requestStartCastService(null, mInstanceId);
         mServiceLifecycle.withIntent(mIntent).bind();
         recordWebContentsPresentation.verify().end();
     }

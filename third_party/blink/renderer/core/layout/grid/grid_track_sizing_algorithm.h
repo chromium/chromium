@@ -8,11 +8,11 @@
 #include "base/containers/span.h"
 #include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
 
 namespace blink {
 
-class ComputedStyle;
 class GridItems;
 class GridSizingTrackCollection;
 struct BoxStrut;
@@ -30,6 +30,8 @@ enum class GridItemContributionType {
   kForFreeSpace
 };
 
+enum class SizingConstraint { kLayout, kMaxContent, kMinContent };
+
 using ContributionSizeFunctionRef =
     base::FunctionRef<LayoutUnit(GridItemContributionType, GridItemData*)>;
 
@@ -41,6 +43,16 @@ class GridTrackSizingAlgorithm {
     LayoutUnit gutter_size;
     LayoutUnit start_offset;
   };
+
+  GridTrackSizingAlgorithm(const ComputedStyle& container_style,
+                           const LogicalSize& container_available_size,
+                           const LogicalSize& container_min_available_size,
+                           SizingConstraint sizing_constraint)
+      : available_size_(container_available_size),
+        min_available_size_(container_min_available_size),
+        sizing_constraint_(sizing_constraint),
+        columns_alignment_(container_style.JustifyContent()),
+        rows_alignment_(container_style.AlignContent()) {}
 
   // Caches the track span properties necessary for the track sizing algorithm
   // to work based on the grid items' placement within the track collection.
@@ -85,6 +97,19 @@ class GridTrackSizingAlgorithm {
       GridItemContributionType contribution_type,
       bool is_group_spanning_flex_track,
       GridSizingTrackCollection* track_collection) const;
+
+  void MaximizeTracks(GridSizingTrackCollection* track_collection) const;
+
+  void StretchAutoTracks(GridSizingTrackCollection* track_collection) const;
+
+  LayoutUnit DetermineFreeSpace(
+      const GridSizingTrackCollection& track_collection) const;
+
+  LogicalSize available_size_;
+  LogicalSize min_available_size_;
+  SizingConstraint sizing_constraint_;
+  StyleContentAlignmentData columns_alignment_;
+  StyleContentAlignmentData rows_alignment_;
 };
 
 }  // namespace blink

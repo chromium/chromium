@@ -9,27 +9,14 @@
 #include <vector>
 
 #include "content/public/browser/bluetooth_delegate.h"
-
-namespace blink {
-class WebBluetoothDeviceId;
-}  // namespace blink
-
-namespace content {
-class BluetoothChooser;
-class BluetoothScanningPrompt;
-}  // namespace content
-
-namespace device {
-class BluetoothDevice;
-class BluetoothUUID;
-class RenderFrameHost;
-}  // namespace device
+#include "headless/public/headless_export.h"
 
 namespace headless {
 
 // A thin layer of BluetoothDelegate for Headless shell that provides a basic
 // chooser and rejects any permission of accessing a bluetooth device.
-class HeadlessBluetoothDelegate : public content::BluetoothDelegate {
+class HEADLESS_EXPORT HeadlessBluetoothDelegate
+    : public content::BluetoothDelegate {
  public:
   HeadlessBluetoothDelegate();
   // Not copyable or movable.

@@ -109,8 +109,6 @@ class BASE_EXPORT BuildInfo {
 
   const char* package_name() const { return package_name_; }
 
-  const char* custom_themes() const { return custom_themes_; }
-
   const char* resources_version() const { return resources_version_; }
 
   const char* build_type() const { return build_type_; }
@@ -187,7 +185,6 @@ class BASE_EXPORT BuildInfo {
   const char* const android_build_fp_;
   const char* const installer_package_name_;
   const char* const abi_name_;
-  const char* const custom_themes_;
   const char* const resources_version_;
   // Not needed by breakpad.
   const int target_sdk_version_;

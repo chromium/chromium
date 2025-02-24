@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
@@ -658,6 +659,18 @@ CreditCardCategoryBenefit GetActiveCreditCardCategoryBenefit() {
       /*expiry_time=*/GetArbitraryFutureTime());
 }
 
+CreditCardCategoryBenefit CreateCreditCardCategoryBenefit(
+    CreditCardBenefitBase::BenefitId benefit_id,
+    CreditCardBenefitBase::LinkedCardInstrumentId linked_card_instrument_id,
+    CreditCardCategoryBenefit::BenefitCategory benefit_category,
+    std::u16string benefit_description) {
+  return CreditCardCategoryBenefit(benefit_id, linked_card_instrument_id,
+                                   benefit_category,
+                                   std::move(benefit_description),
+                                   /*start_time=*/GetArbitraryPastTime(),
+                                   /*expiry_time=*/GetArbitraryFutureTime());
+}
+
 CreditCardMerchantBenefit GetActiveCreditCardMerchantBenefit() {
   return CreditCardMerchantBenefit(
       CreditCardBenefitBase::BenefitId("id3"),
@@ -857,21 +870,26 @@ EntityInstance GetPassportEntityInstance(PassportEntityOptions options) {
   using enum AttributeTypeName;
   std::vector<AttributeInstance> attributes;
   if (options.number) {
-    attributes.emplace_back(AttributeType(kPassportNumber), options.number);
+    attributes.emplace_back(AttributeType(kPassportNumber));
+    attributes.back().SetInfo(PASSPORT_NUMBER, options.number);
   }
   if (options.name) {
-    attributes.emplace_back(AttributeType(kPassportName), options.name);
+    attributes.emplace_back(AttributeType(kPassportName));
+    attributes.back().SetInfo(PASSPORT_NAME_TAG, options.name);
+    attributes.back().FinalizeInfo();
   }
   if (options.country) {
-    attributes.emplace_back(AttributeType(kPassportCountry), options.country);
+    attributes.emplace_back(AttributeType(kPassportCountry));
+    attributes.back().SetInfo(PASSPORT_ISSUING_COUNTRY_TAG, options.country);
   }
   if (options.expiry_date) {
-    attributes.emplace_back(AttributeType(kPassportExpiryDate),
-                            options.expiry_date);
+    attributes.emplace_back(AttributeType(kPassportExpiryDate));
+    attributes.back().SetInfo(PASSPORT_EXPIRATION_DATE_TAG,
+                              options.expiry_date);
   }
   if (options.issue_date) {
-    attributes.emplace_back(AttributeType(kPassportIssueDate),
-                            options.issue_date);
+    attributes.emplace_back(AttributeType(kPassportIssueDate));
+    attributes.back().SetInfo(PASSPORT_ISSUE_DATE_TAG, options.issue_date);
   }
   return EntityInstance(
       EntityType(EntityTypeName::kPassport), std::move(attributes),
@@ -883,16 +901,16 @@ EntityInstance GetLoyaltyCardEntityInstance(LoyaltyCardEntityOptions options) {
   using enum AttributeTypeName;
   std::vector<AttributeInstance> attributes;
   if (options.program) {
-    attributes.emplace_back(AttributeType(kLoyaltyCardProgram),
-                            options.program);
+    attributes.emplace_back(AttributeType(kLoyaltyCardProgram));
+    attributes.back().SetInfo(LOYALTY_MEMBERSHIP_PROGRAM, options.program);
   }
   if (options.provider) {
-    attributes.emplace_back(AttributeType(kLoyaltyCardProvider),
-                            options.provider);
+    attributes.emplace_back(AttributeType(kLoyaltyCardProvider));
+    attributes.back().SetInfo(LOYALTY_MEMBERSHIP_PROVIDER, options.provider);
   }
   if (options.member_id) {
-    attributes.emplace_back(AttributeType(kLoyaltyCardMemberId),
-                            options.member_id);
+    attributes.emplace_back(AttributeType(kLoyaltyCardMemberId));
+    attributes.back().SetInfo(LOYALTY_MEMBERSHIP_ID, options.member_id);
   }
   return EntityInstance(
       EntityType(EntityTypeName::kLoyaltyCard), std::move(attributes),

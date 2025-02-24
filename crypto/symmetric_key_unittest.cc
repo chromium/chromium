@@ -37,16 +37,3 @@ TEST(SymmetricKeyTest, ImportGeneratedKey) {
 
   EXPECT_EQ(key1->key(), key2->key());
 }
-
-TEST(SymmetricKeyTest, ImportDerivedKey) {
-  std::unique_ptr<crypto::SymmetricKey> key1(
-      crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-          crypto::SymmetricKey::HMAC_SHA1, "password", "somesalt", 1024, 128));
-  ASSERT_TRUE(key1);
-
-  std::unique_ptr<crypto::SymmetricKey> key2(crypto::SymmetricKey::Import(
-      crypto::SymmetricKey::HMAC_SHA1, key1->key()));
-  ASSERT_TRUE(key2);
-
-  EXPECT_EQ(key1->key(), key2->key());
-}

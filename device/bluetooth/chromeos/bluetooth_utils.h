@@ -211,6 +211,9 @@ DEVICE_BLUETOOTH_EXPORT void MaybeRecordConnectionToastShownCount(
 DEVICE_BLUETOOTH_EXPORT void RecordFlossManagerClientInit(
     bool success,
     base::TimeDelta duration);
+
+// Record each time a Bluetooth device has missing keys
+DEVICE_BLUETOOTH_EXPORT void RecordDeviceKeyMissing();
 }  // namespace device
 
 #endif  // DEVICE_BLUETOOTH_CHROMEOS_BLUETOOTH_UTILS_H_

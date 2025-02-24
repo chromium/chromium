@@ -6,15 +6,11 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupShareNoticeBottomSheetCoordinator.TabGroupShareNoticeBottomSheetCoordinatorDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -25,14 +21,13 @@ public class TabGroupShareNoticeBottomSheetMediator {
     private final BottomSheetController mBottomSheetController;
     private final TabGroupShareNoticeBottomSheetCoordinatorDelegate mDelegate;
     private final PropertyModel mModel;
-    private final Tracker mTracker;
 
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
                 @Override
                 public void onSheetClosed(@StateChangeReason int reason) {
-                    markHasReadNotice();
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
+                    mDelegate.onSheetClosed();
                 }
 
                 @Override
@@ -45,28 +40,13 @@ public class TabGroupShareNoticeBottomSheetMediator {
     /**
      * @param bottomSheetController The controller to use for showing or hiding the content.
      * @param delegate For handling view layer interactions.
-     * @param profile The current user profile.
-     */
-    TabGroupShareNoticeBottomSheetMediator(
-            BottomSheetController bottomSheetController,
-            TabGroupShareNoticeBottomSheetCoordinatorDelegate delegate,
-            Profile profile) {
-        this(bottomSheetController, delegate, TrackerFactory.getTrackerForProfile(profile));
-    }
-
-    /**
-     * @param bottomSheetController The controller to use for showing or hiding the content.
-     * @param delegate For handling view layer interactions.
-     * @param tracker Tracker to manage feature engagement.
      */
     @VisibleForTesting
     TabGroupShareNoticeBottomSheetMediator(
             BottomSheetController bottomSheetController,
-            TabGroupShareNoticeBottomSheetCoordinatorDelegate delegate,
-            Tracker tracker) {
+            TabGroupShareNoticeBottomSheetCoordinatorDelegate delegate) {
         mBottomSheetController = bottomSheetController;
         mDelegate = delegate;
-        mTracker = tracker;
 
         mModel =
                 new PropertyModel.Builder(TabGroupShareNoticeBottomSheetProperties.ALL_KEYS)
@@ -81,7 +61,7 @@ public class TabGroupShareNoticeBottomSheetMediator {
      * notice.
      */
     void requestShowContent() {
-        if (!shouldDisplayNotice() || !mDelegate.requestShowContent()) return;
+        if (!mDelegate.requestShowContent()) return;
         mBottomSheetController.addObserver(mBottomSheetObserver);
     }
 
@@ -90,20 +70,13 @@ public class TabGroupShareNoticeBottomSheetMediator {
         mDelegate.hide(hideReason);
     }
 
-    /** Marks the notice as read. */
-    @VisibleForTesting
-    void markHasReadNotice() {
-        mTracker.notifyEvent("tab_group_share_notice_dismissed");
-        mTracker.dismissed(FeatureConstants.TAB_GROUP_SHARE_NOTICE_FEATURE);
-    }
-
     /** Returns the model for the bottom sheet. */
     PropertyModel getModel() {
         return mModel;
     }
 
-    /** Returns whether the user has read the notice. */
-    private boolean shouldDisplayNotice() {
-        return mTracker.shouldTriggerHelpUi(FeatureConstants.TAB_GROUP_SHARE_NOTICE_FEATURE);
+    @VisibleForTesting
+    BottomSheetObserver getBottomSheetObserver() {
+        return mBottomSheetObserver;
     }
 }

@@ -706,6 +706,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, JSHeapMemory) {
 #define MAYBE_SentDataObserved SentDataObserved
 #endif
 IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_SentDataObserved) {
+  // TODO(crbug.com/397484647): Migrate TaskManagerDesktopRefreshBrowserTest
+  // version of this test into this one.
   ShowTaskManager();
   GURL test_gurl = embedded_test_server()->GetURL("/title1.html");
 
@@ -735,6 +737,9 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_SentDataObserved) {
   // There shouldn't be too much usage on the browser process. Note that it
   // should be the first row since tasks are sorted by process ID then by task
   // ID.
+  if (base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
+    model()->UpdateModel(DisplayCategory::kSystem, u"");
+  }
   EXPECT_GE(20000,
             model()->GetColumnValue(ColumnSpecifier::TOTAL_NETWORK_USE, 0));
 }
@@ -747,6 +752,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_SentDataObserved) {
 #define MAYBE_TotalSentDataObserved TotalSentDataObserved
 #endif
 IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_TotalSentDataObserved) {
+  // TODO(crbug.com/397484647): Migrate TaskManagerDesktopRefreshBrowserTest
+  // version of this test into this one.
   ShowTaskManager();
   GURL test_gurl = embedded_test_server()->GetURL("/title1.html");
 
@@ -794,6 +801,9 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_TotalSentDataObserved) {
   // There shouldn't be too much usage on the browser process. Note that it
   // should be the first row since tasks are sorted by process ID then by task
   // ID.
+  if (base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
+    model()->UpdateModel(DisplayCategory::kSystem, u"");
+  }
   EXPECT_GE(20000,
             model()->GetColumnValue(ColumnSpecifier::TOTAL_NETWORK_USE, 0));
 }

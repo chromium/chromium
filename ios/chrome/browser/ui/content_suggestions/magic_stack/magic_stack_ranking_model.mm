@@ -694,6 +694,12 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       segmentation_platform::kParcelTrackingFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           parcelTrackingFreshnessImpressionCount));
+  int shopCardFreshnessImpressionCount = _localState->GetInteger(
+      prefs::kIosMagicStackSegmentationShopCardImpressionsSinceFreshness);
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kShopCardFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          shopCardFreshnessImpressionCount));
   __weak MagicStackRankingModel* weakSelf = self;
   segmentation_platform::PredictionOptions options;
 

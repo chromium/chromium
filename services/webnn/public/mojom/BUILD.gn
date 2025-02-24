@@ -4,12 +4,22 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+# The features file is separate because it is the only common WebNN header
+# that has no dependencies on other WebNN Mojom files. This separation
+# allows WebNN-dependent components to use features without importing the
+# rest of WebNN (ex. //gpu/config).
+mojom_component("features") {
+  output_prefix = "webnn_mojom_features"
+  macro_prefix = "WEBNN_MOJOM_FEATURES"
+
+  sources = [ "features.mojom" ]
+}
+
 mojom_component("mojom") {
   output_prefix = "webnn_mojom"
   macro_prefix = "WEBNN_MOJOM"
 
   sources = [
-    "features.mojom",
     "webnn_context.mojom",
     "webnn_context_properties.mojom",
     "webnn_context_provider.mojom",
@@ -20,10 +30,13 @@ mojom_component("mojom") {
   ]
 
   deps = [
+    ":features",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//third_party/blink/public/mojom/tokens",
   ]
+
+  public_deps = [ ":features" ]
 
   shared_webnn_typemaps = [
     {

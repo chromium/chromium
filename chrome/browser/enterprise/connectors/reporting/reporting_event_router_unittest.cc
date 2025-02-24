@@ -38,17 +38,17 @@ class ReportingEventRouterTest : public testing::Test {
     RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
         profile_, base::BindRepeating(&test::MockRealtimeReportingClient::
                                           CreateMockRealtimeReportingClient));
-    reportingEventRouter_ = std::make_unique<ReportingEventRouter>(profile_);
+    reporting_event_router_ = std::make_unique<ReportingEventRouter>(profile_);
 
-    mockRealtimeReportingClient_ =
+    mock_real_time_reporting_client_ =
         static_cast<test::MockRealtimeReportingClient*>(
             RealtimeReportingClientFactory::GetForProfile(profile_));
-    mockRealtimeReportingClient_->SetProfileUserNameForTesting(
+    mock_real_time_reporting_client_->SetProfileUserNameForTesting(
         kFakeProfileUsername);
   }
 
   void TearDown() override {
-    mockRealtimeReportingClient_->SetBrowserCloudPolicyClientForTesting(
+    mock_real_time_reporting_client_->SetBrowserCloudPolicyClientForTesting(
         nullptr);
   }
 
@@ -57,8 +57,8 @@ class ReportingEventRouterTest : public testing::Test {
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
-  raw_ptr<test::MockRealtimeReportingClient> mockRealtimeReportingClient_;
-  std::unique_ptr<ReportingEventRouter> reportingEventRouter_;
+  raw_ptr<test::MockRealtimeReportingClient> mock_real_time_reporting_client_;
+  std::unique_ptr<ReportingEventRouter> reporting_event_router_;
 };
 
 TEST_F(ReportingEventRouterTest, CheckEventEnabledReturnsFalse) {
@@ -69,10 +69,10 @@ TEST_F(ReportingEventRouterTest, CheckEventEnabledReturnsFalse) {
   // Set a mock cloud policy client in the router.
   client_ = std::make_unique<policy::MockCloudPolicyClient>();
   client_->SetDMToken("fake-token");
-  mockRealtimeReportingClient_->SetBrowserCloudPolicyClientForTesting(
+  mock_real_time_reporting_client_->SetBrowserCloudPolicyClientForTesting(
       client_.get());
 
-  EXPECT_FALSE(reportingEventRouter_->IsEventEnabled(kKeyPasswordReuseEvent));
+  EXPECT_FALSE(reporting_event_router_->IsEventEnabled(kKeyPasswordReuseEvent));
 }
 
 TEST_F(ReportingEventRouterTest, CheckEventEnabledReturnsTrue) {
@@ -84,10 +84,25 @@ TEST_F(ReportingEventRouterTest, CheckEventEnabledReturnsTrue) {
   // Set a mock cloud policy client in the router.
   client_ = std::make_unique<policy::MockCloudPolicyClient>();
   client_->SetDMToken("fake-token");
-  mockRealtimeReportingClient_->SetBrowserCloudPolicyClientForTesting(
+  mock_real_time_reporting_client_->SetBrowserCloudPolicyClientForTesting(
       client_.get());
 
-  EXPECT_TRUE(reportingEventRouter_->IsEventEnabled(kKeyPasswordReuseEvent));
+  EXPECT_TRUE(reporting_event_router_->IsEventEnabled(kKeyPasswordReuseEvent));
+}
+
+TEST_F(ReportingEventRouterTest, CheckEventOptInReturnsTrue) {
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/{{kKeyLoginEvent, {"*"}}});
+
+  // Set a mock cloud policy client in the router.
+  client_ = std::make_unique<policy::MockCloudPolicyClient>();
+  client_->SetDMToken("fake-token");
+  mock_real_time_reporting_client_->SetBrowserCloudPolicyClientForTesting(
+      client_.get());
+
+  EXPECT_TRUE(reporting_event_router_->IsEventEnabled(kKeyLoginEvent));
 }
 
 }  // namespace enterprise_connectors

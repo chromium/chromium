@@ -47,9 +47,7 @@ class FrameNodeImplBrowserTest : public InProcessBrowserTest {
 // Templated PassToGraph helper that also returns a pointer to the object.
 template <typename DerivedType>
 DerivedType* PassToPMGraph(std::unique_ptr<DerivedType> graph_owned) {
-  DerivedType* object = graph_owned.get();
-  PerformanceManagerImpl::PassToGraph(FROM_HERE, std::move(graph_owned));
-  return object;
+  return PerformanceManager::GetGraph()->PassToGraph(std::move(graph_owned));
 }
 
 // A FrameNodeObserver that allows waiting until a frame's viewport intersection
@@ -121,10 +119,8 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
         return frame_node->GetParentFrameNode() == main_frame_node;
       });
   base::RunLoop run_loop;
-  PerformanceManagerImpl::PassToGraph(
-      FROM_HERE,
-      std::make_unique<ViewportIntersectionStateChangedObserver>(
-          std::move(frame_node_matcher), false, run_loop.QuitClosure()));
+  PassToPMGraph(std::make_unique<ViewportIntersectionStateChangedObserver>(
+      std::move(frame_node_matcher), false, run_loop.QuitClosure()));
 
   // Navigate.
   const GURL main_frame_url(
@@ -152,10 +148,8 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Hidden) {
         return frame_node->GetParentFrameNode() == main_frame_node;
       });
   base::RunLoop run_loop;
-  PerformanceManagerImpl::PassToGraph(
-      FROM_HERE,
-      std::make_unique<ViewportIntersectionStateChangedObserver>(
-          std::move(frame_node_matcher), false, run_loop.QuitClosure()));
+  PassToPMGraph(std::make_unique<ViewportIntersectionStateChangedObserver>(
+      std::move(frame_node_matcher), false, run_loop.QuitClosure()));
 
   // Navigate.
   const GURL main_frame_url(
@@ -184,10 +178,8 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
         return frame_node->GetParentFrameNode() == main_frame_node;
       });
   base::RunLoop run_loop;
-  PerformanceManagerImpl::PassToGraph(
-      FROM_HERE,
-      std::make_unique<ViewportIntersectionStateChangedObserver>(
-          std::move(frame_node_matcher), true, run_loop.QuitClosure()));
+  PassToPMGraph(std::make_unique<ViewportIntersectionStateChangedObserver>(
+      std::move(frame_node_matcher), true, run_loop.QuitClosure()));
 
   // Navigate.
   const GURL main_frame_url(
@@ -215,10 +207,8 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Scaled) {
         return frame_node->GetParentFrameNode() == main_frame_node;
       });
   base::RunLoop run_loop;
-  PerformanceManagerImpl::PassToGraph(
-      FROM_HERE,
-      std::make_unique<ViewportIntersectionStateChangedObserver>(
-          std::move(frame_node_matcher), true, run_loop.QuitClosure()));
+  PassToPMGraph(std::make_unique<ViewportIntersectionStateChangedObserver>(
+      std::move(frame_node_matcher), true, run_loop.QuitClosure()));
 
   // Navigate.
   const GURL main_frame_url(
@@ -246,10 +236,8 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Rotated) {
         return frame_node->GetParentFrameNode() == main_frame_node;
       });
   base::RunLoop run_loop;
-  PerformanceManagerImpl::PassToGraph(
-      FROM_HERE,
-      std::make_unique<ViewportIntersectionStateChangedObserver>(
-          std::move(frame_node_matcher), true, run_loop.QuitClosure()));
+  PassToPMGraph(std::make_unique<ViewportIntersectionStateChangedObserver>(
+      std::move(frame_node_matcher), true, run_loop.QuitClosure()));
 
   // Navigate.
   const GURL main_frame_url(

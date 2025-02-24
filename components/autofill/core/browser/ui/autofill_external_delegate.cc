@@ -46,6 +46,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
+#include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -527,6 +528,17 @@ void AutofillExternalDelegate::OnSuggestionsShown(
       autofill_ai_delegate->OnSuggestionsShown(
           shown_suggestion_types, query_form_, query_field_,
           CreateUpdateSuggestionsCallback());
+    }
+  }
+
+  // Notify the BNPL manager about suggestion shown if the current shown
+  // suggesion list contains a credit card entry.
+  if (shown_suggestion_types.contains(SuggestionType::kCreditCardEntry)) {
+    if (payments::BnplManager* bnpl_manager = manager_->client()
+                                                  .GetPaymentsAutofillClient()
+                                                  ->GetPaymentsBnplManager()) {
+      bnpl_manager->OnSuggestionsShown(suggestions,
+                                       CreateUpdateSuggestionsCallback());
     }
   }
 

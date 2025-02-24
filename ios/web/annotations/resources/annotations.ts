@@ -291,7 +291,7 @@ function decorateAnnotations(annotations: Annotation[]): void {
         const annotationText =
             annotation.text.substring(annotationLeft, annotationRight);
         // Text has changed, forget the rest of this annotation.
-        if (nodeText != annotationText) {
+        if (nodeText !== annotationText) {
           failures++;
           annotationIndex++;
           continue;
@@ -379,8 +379,8 @@ function removeDecorationsWithType(type: string): void {
       if (!(replacement instanceof HTMLElement)) {
         continue;
       }
-      var element = replacement as HTMLElement;
-      var replacementType = element.getAttribute('data-type');
+      const element = replacement as HTMLElement;
+      const replacementType = element.getAttribute('data-type');
       if (replacementType === type) {
         hasReplacementOfType = true;
       } else {
@@ -410,8 +410,8 @@ function removeDecorationsWithType(type: string): void {
         newReplacements.push(replacement);
         continue;
       }
-      var element = replacement as HTMLElement;
-      var replacementType = element.getAttribute('data-type');
+      const element = replacement as HTMLElement;
+      const replacementType = element.getAttribute('data-type');
       if (replacementType !== type) {
         newReplacements.push(replacement);
         continue;
@@ -504,7 +504,7 @@ function enumerateTextNodes(
 
       if (includeShadowDOM) {
         const element = node as Element;
-        if (element.shadowRoot && element.shadowRoot != node) {
+        if (element.shadowRoot && element.shadowRoot !== node) {
           nodes.push(element.shadowRoot);
           continue;
         }
@@ -698,7 +698,7 @@ function replaceNode(
     // the text to be parsed and '\n' to be upgraded to <br>.
     element.textContent = replacement.text;
 
-    if (replacement.type == 'PHONE_NUMBER' || replacement.type == 'EMAIL') {
+    if (replacement.type === 'PHONE_NUMBER' || replacement.type === 'EMAIL') {
       element.style.cssText = decorationStylesForPhoneAndEmail;
     } else {
       element.style.cssText = decorationStyles;

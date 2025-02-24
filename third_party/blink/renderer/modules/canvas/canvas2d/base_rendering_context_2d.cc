@@ -4045,6 +4045,9 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   // provider might stick around for while. Jettison any unnecessary resources.
   resource_provider_from_webgpu_access_->ClearRecycledResources();
 
+  WillDraw(SkIRect::MakeXYWH(0, 0, Width(), Height()),
+           CanvasPerformanceMonitor::DrawType::kOther);
+
   return webgpu_access_texture_;
 }
 

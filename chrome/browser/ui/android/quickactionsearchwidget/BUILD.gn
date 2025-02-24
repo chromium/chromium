@@ -78,6 +78,7 @@ android_resources("java_resources") {
     "java/res/values-sw240dp/styles.xml",
     "java/res/values-sw280dp/dimens.xml",
     "java/res/values-sw280dp/styles.xml",
+    "java/res/values-v31/dimens.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
     "java/res/xml/quick_action_search_widget_dino_info.xml",

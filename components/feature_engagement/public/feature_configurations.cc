@@ -1882,6 +1882,24 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     return config;
   }
+  if (kIPHiOSLensOverlayEscapeHatchTipFeature.name == feature->name) {
+    // A config that allows the Lens overlay escape hatch IPH to be shown to
+    // users. This will be triggered a maximum of 2 times.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 1);
+
+    constexpr char kLensOverlayEscapeHatchFeatureTriggerEvent[] =
+        "lens_overlay_escape_hatch_feature_trigger";
+
+    config->trigger = EventConfig(kLensOverlayEscapeHatchFeatureTriggerEvent,
+                                  Comparator(LESS_THAN, 2),
+                                  feature_engagement::kMaxStoragePeriod,
+                                  feature_engagement::kMaxStoragePeriod);
+
+    return config;
+  }
   if (kIPHiOSContextualPanelPriceInsightsFeature.name == feature->name) {
     // The contextual panel's price insights entrypoint IPH config to control
     // the impressions of the IPH for this infoblock. Shows the IPH 3 times

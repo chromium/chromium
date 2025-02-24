@@ -1930,74 +1930,6 @@ bool Element::IsViewportScrollElement() {
          (quirks_mode && IsHTMLElement() && document.body() == this);
 }
 
-void Element::RecordScrollbarSizeForStudy(int measurement,
-                                          bool is_width,
-                                          bool is_offset) {
-  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
-          IdentifiableSurface::Type::kScrollbarSize) ||
-      (!is_offset && !IsViewportScrollElement())) {
-    return;
-  }
-
-  // Check for presence of a scrollbar.
-  PaintLayerScrollableArea* area;
-  if (IsViewportScrollElement()) {
-    auto* view = GetDocument().View();
-    if (!view) {
-      return;
-    }
-    area = view->LayoutViewport();
-  } else {
-    auto* layout = GetLayoutBox();
-    if (!layout) {
-      return;
-    }
-    area = layout->GetScrollableArea();
-  }
-  if (!area || area->HasOverlayOverflowControls()) {
-    return;
-  }
-
-  Scrollbar* scrollbar =
-      is_width ? area->VerticalScrollbar() : area->HorizontalScrollbar();
-  // We intentionally exclude platform overlay scrollbars since their size
-  // cannot be detected in JavaScript using the methods below.
-  if (!scrollbar) {
-    return;
-  }
-
-  IdentifiableSurface::ScrollbarSurface surface;
-  int scrollbar_size;
-
-  // There are two common ways to detect the size of a scrollbar in a DOM
-  // window. They are:
-  // 1. Compute the difference of the window.inner[Width|Height] and the
-  //    corresponding document.scrollingElement.offset[Width|Height].
-  // 2. Any HTML element that insets the layout to fit a scrollbar, so it is
-  //    measurable by a JavaScript program on a site.
-  if (IsViewportScrollElement()) {
-    LocalDOMWindow* dom_window = GetDocument().domWindow();
-    scrollbar_size =
-        (is_width ? dom_window->innerWidth() : dom_window->innerHeight()) -
-        measurement;
-    surface =
-        is_width
-            ? IdentifiableSurface::ScrollbarSurface::kScrollingElementWidth
-            : IdentifiableSurface::ScrollbarSurface::kScrollingElementHeight;
-  } else {
-    scrollbar_size = measurement - (is_width ? clientWidth() : clientHeight());
-    surface = is_width
-                  ? IdentifiableSurface::ScrollbarSurface::kElemScrollbarWidth
-                  : IdentifiableSurface::ScrollbarSurface::kElemScrollbarHeight;
-  }
-
-  blink::IdentifiabilityMetricBuilder(GetDocument().UkmSourceID())
-      .Add(blink::IdentifiableSurface::FromTypeAndToken(
-               blink::IdentifiableSurface::Type::kScrollbarSize, surface),
-           scrollbar_size)
-      .Record(GetDocument().UkmRecorder());
-}
-
 int Element::clientWidth() {
   // When in strict mode, clientWidth for the document element should return the
   // width of the containing frame.
@@ -2016,20 +1948,13 @@ int Element::clientWidth() {
         // OverflowClipRect() may return infinite along a particular axis if
         // |layout_view| is not a scroll-container.
         DCHECK(layout_view->IsScrollContainer());
-        int result =
-            AdjustForAbsoluteZoom::AdjustLayoutUnit(
-                layout_view->OverflowClipRect(PhysicalOffset()).Width(),
-                layout_view->StyleRef())
-                .Round();
-        RecordScrollbarSizeForStudy(result, /* is_width= */ true,
-                                    /* is_offset= */ false);
-        return result;
+        return AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                   layout_view->OverflowClipRect(PhysicalOffset()).Width(),
+                   layout_view->StyleRef())
+            .Round();
       }
-      int result = AdjustForAbsoluteZoom::AdjustInt(
+      return AdjustForAbsoluteZoom::AdjustInt(
           layout_view->GetLayoutSize().width(), layout_view->StyleRef());
-      RecordScrollbarSizeForStudy(result, /* is_width= */ true,
-                                  /* is_offset= */ false);
-      return result;
     }
   }
 
@@ -2042,8 +1967,6 @@ int Element::clientWidth() {
                  layout_object->ClientWidthWithTableSpecialBehavior(),
                  layout_object->StyleRef())
                  .Round();
-    RecordScrollbarSizeForStudy(result, /* is_width= */ true,
-                                /* is_offset= */ false);
   }
   return result;
 }
@@ -2066,20 +1989,13 @@ int Element::clientHeight() {
         // OverflowClipRect() may return infinite along a particular axis if
         // |layout_view| is not a scroll-container.
         DCHECK(layout_view->IsScrollContainer());
-        int result =
-            AdjustForAbsoluteZoom::AdjustLayoutUnit(
-                layout_view->OverflowClipRect(PhysicalOffset()).Height(),
-                layout_view->StyleRef())
-                .Round();
-        RecordScrollbarSizeForStudy(result, /* is_width= */ false,
-                                    /* is_offset= */ false);
-        return result;
+        return AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                   layout_view->OverflowClipRect(PhysicalOffset()).Height(),
+                   layout_view->StyleRef())
+            .Round();
       }
-      int result = AdjustForAbsoluteZoom::AdjustInt(
+      return AdjustForAbsoluteZoom::AdjustInt(
           layout_view->GetLayoutSize().height(), layout_view->StyleRef());
-      RecordScrollbarSizeForStudy(result, /* is_width= */ false,
-                                  /* is_offset= */ false);
-      return result;
     }
   }
 
@@ -2092,8 +2008,6 @@ int Element::clientHeight() {
                  layout_object->ClientHeightWithTableSpecialBehavior(),
                  layout_object->StyleRef())
                  .Round();
-    RecordScrollbarSizeForStudy(result, /* is_width= */ false,
-                                /* is_offset= */ false);
   }
   return result;
 }

@@ -85,6 +85,9 @@ struct RegistrationRequest {
 
   // Server may use to move the app to a new cohort.
   std::string cohort_hint;
+
+  // `lang` of the app.
+  std::string lang;
 };
 
 }  // namespace updater

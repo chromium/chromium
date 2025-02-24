@@ -78,7 +78,7 @@ TEST_F(MicrosoftAuthServiceTest, ClearAuthData) {
 
   EXPECT_TRUE(auth_service().GetAccessToken().empty());
   EXPECT_EQ(auth_service().GetAuthState(),
-            new_tab_page::mojom::AuthState::kNone);
+            MicrosoftAuthService::AuthState::kNone);
 }
 
 TEST_F(MicrosoftAuthServiceTest, SetAccessToken) {
@@ -91,7 +91,7 @@ TEST_F(MicrosoftAuthServiceTest, SetAccessToken) {
 
   EXPECT_EQ(auth_service().GetAccessToken(), "1234");
   EXPECT_EQ(auth_service().GetAuthState(),
-            new_tab_page::mojom::AuthState::kSuccess);
+            MicrosoftAuthService::AuthState::kSuccess);
 }
 
 TEST_F(MicrosoftAuthServiceTest, GetExpiredAccessToken) {
@@ -107,7 +107,7 @@ TEST_F(MicrosoftAuthServiceTest, GetExpiredAccessToken) {
 
   EXPECT_TRUE(auth_service().GetAccessToken().empty());
   EXPECT_EQ(auth_service().GetAuthState(),
-            new_tab_page::mojom::AuthState::kNone);
+            MicrosoftAuthService::AuthState::kNone);
 }
 
 TEST_F(MicrosoftAuthServiceTest, GetEmptyAccessToken) {
@@ -119,18 +119,18 @@ TEST_F(MicrosoftAuthServiceTest, SetAuthStateError) {
   auth_service().SetAuthStateError();
 
   EXPECT_EQ(auth_service().GetAuthState(),
-            new_tab_page::mojom::AuthState::kError);
+            MicrosoftAuthService::AuthState::kError);
 }
 
 TEST_F(MicrosoftAuthServiceTest, GetAuthState) {
   EXPECT_CALL(observer(), OnAuthStateUpdated).Times(2);
   EXPECT_EQ(auth_service().GetAuthState(),
-            new_tab_page::mojom::AuthState::kNone);
+            MicrosoftAuthService::AuthState::kNone);
 
   auth_service().SetAuthStateError();
 
   EXPECT_EQ(auth_service().GetAuthState(),
-            new_tab_page::mojom::AuthState::kError);
+            MicrosoftAuthService::AuthState::kError);
 
   new_tab_page::mojom::AccessTokenPtr access_token =
       new_tab_page::mojom::AccessToken::New();
@@ -139,5 +139,5 @@ TEST_F(MicrosoftAuthServiceTest, GetAuthState) {
   auth_service().SetAccessToken(std::move(access_token));
 
   EXPECT_EQ(auth_service().GetAuthState(),
-            new_tab_page::mojom::AuthState::kSuccess);
+            MicrosoftAuthService::AuthState::kSuccess);
 }

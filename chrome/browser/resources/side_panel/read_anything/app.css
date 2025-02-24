@@ -69,8 +69,9 @@
   letter-spacing: var(--letter-spacing);
   line-height: var(--line-height);
   margin: 0 auto;
-  /* max-width should match line width limit in read_anything_constants.h. */
+  /* LINT.IfChange(MaxLineWidth) */
   max-width: 60ch;
+  /* LINT.ThenChange(//chrome/renderer/accessibility/read_anything/read_anything_node_utils.cc:MaxLineWidth) */
   overflow-wrap: break-word;
   padding: 20px;
 }

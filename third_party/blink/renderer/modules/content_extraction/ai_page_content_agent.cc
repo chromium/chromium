@@ -211,7 +211,7 @@ void AddAnnotatedRoles(
   }
 }
 
-std::optional<DOMNodeId> GetNodeId(const LayoutObject& object) {
+std::optional<DOMNodeId> GetDomNodeId(const LayoutObject& object) {
   auto* node = object.GetNode();
   if (object.IsLayoutView()) {
     node = &object.GetDocument();
@@ -684,10 +684,13 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
 
   auto* layout_view = document.GetLayoutView();
   auto* document_style = layout_view->Style();
-  auto root_node = MaybeGenerateContentNode(*layout_view, *document_style);
+  uint32_t content_node_id_counter = 0;
+  auto root_node = MaybeGenerateContentNode(*layout_view, *document_style,
+                                            &content_node_id_counter);
   CHECK(root_node);
 
-  WalkChildren(*layout_view, *root_node, *document_style);
+  WalkChildren(*layout_view, *root_node, *document_style,
+               &content_node_id_counter);
   page_content->root_node = std::move(root_node);
   return page_content;
 }
@@ -695,7 +698,8 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
 bool AIPageContentAgent::ContentBuilder::WalkChildren(
     const LayoutObject& object,
     mojom::blink::AIPageContentNode& content_node,
-    const ComputedStyle& document_style) const {
+    const ComputedStyle& document_style,
+    uint32_t* content_node_id_counter) const {
   if (object.ChildPrePaintBlockedByDisplayLock()) {
     return false;
   }
@@ -710,7 +714,8 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
     has_visible_content |= IsVisible(*child);
 
     bool child_has_visible_content = false;
-    auto child_content_node = MaybeGenerateContentNode(*child, document_style);
+    auto child_content_node = MaybeGenerateContentNode(*child, document_style,
+                                                       content_node_id_counter);
     if (child_content_node &&
         child_content_node->content_attributes->attribute_type ==
             mojom::blink::AIPageContentAttributeType::kIframe) {
@@ -718,8 +723,8 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
     } else {
       auto& node_for_child =
           child_content_node ? *child_content_node : content_node;
-      child_has_visible_content =
-          WalkChildren(*child, node_for_child, document_style);
+      child_has_visible_content = WalkChildren(
+          *child, node_for_child, document_style, content_node_id_counter);
       has_visible_content |= child_has_visible_content;
     }
 
@@ -735,7 +740,8 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
 
 void AIPageContentAgent::ContentBuilder::ProcessIframe(
     const LayoutIFrame& object,
-    mojom::blink::AIPageContentNode& content_node) const {
+    mojom::blink::AIPageContentNode& content_node,
+    uint32_t* content_node_id_counter) const {
   CHECK(IsVisible(object));
 
   content_node.content_attributes->attribute_type =
@@ -755,14 +761,15 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
     // Add a node for the iframe's LayoutView for consistency with remote
     // frames.
     auto child_content_node = MaybeGenerateContentNode(
-        *child_layout_view, *child_layout_view->Style());
+        *child_layout_view, *child_layout_view->Style(),
+        content_node_id_counter);
     CHECK(child_content_node);
 
     // We could consider removing an iframe with no visible content. But this is
     // likely not common and should be done in the browser so it's consistently
     // done for local and remote frames.
     WalkChildren(*child_layout_view, *child_content_node,
-                 *child_layout_view->Style());
+                 *child_layout_view->Style(), content_node_id_counter);
     content_node.children_nodes.emplace_back(std::move(child_content_node));
   }
 }
@@ -770,7 +777,8 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
 mojom::blink::AIPageContentNodePtr
 AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
     const LayoutObject& object,
-    const ComputedStyle& document_style) const {
+    const ComputedStyle& document_style,
+    uint32_t* content_node_id_counter) const {
   auto content_node = mojom::blink::AIPageContentNode::New();
   content_node->content_attributes =
       mojom::blink::AIPageContentAttributes::New();
@@ -787,7 +795,7 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
     if (!IsVisible(object)) {
       return nullptr;
     }
-    ProcessIframe(*iframe, *content_node);
+    ProcessIframe(*iframe, *content_node, content_node_id_counter);
   } else if (object.IsLayoutView()) {
     attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kRoot;
   } else if (object.IsText()) {
@@ -849,8 +857,13 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
     return nullptr;
   }
 
-  if (auto node_id = AddNodeId(object, attributes)) {
-    attributes.common_ancestor_dom_node_id = *node_id;
+  // Set the content node id once it is clear that the node will be generated.
+  CHECK(content_node_id_counter);
+  attributes.content_node_id = *content_node_id_counter;
+  (*content_node_id_counter)++;
+
+  if (auto dom_node_id = AddDomNodeId(object, attributes)) {
+    attributes.common_ancestor_dom_node_id = *dom_node_id;
   }
 
   AddNodeGeometry(object, attributes);
@@ -860,10 +873,10 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   return content_node;
 }
 
-std::optional<DOMNodeId> AIPageContentAgent::ContentBuilder::AddNodeId(
+std::optional<DOMNodeId> AIPageContentAgent::ContentBuilder::AddDomNodeId(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) const {
-  if (auto node_id = GetNodeId(object)) {
+  if (auto node_id = GetDomNodeId(object)) {
     attributes.dom_node_ids.push_back(*node_id);
     return node_id;
   }

@@ -8,6 +8,8 @@ import android.content.Context;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.blink.mojom.Authenticator;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
@@ -16,7 +18,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.Origin;
 
 /** Factory class registered to create Authenticators upon request. */
-public class AuthenticatorFactory implements InterfaceFactory<Authenticator> {
+@NullMarked
+public class AuthenticatorFactory implements InterfaceFactory<@Nullable Authenticator> {
     private final RenderFrameHost mRenderFrameHost;
     private final CreateConfirmationUiDelegate.Factory mConfirmationFactory;
 
@@ -28,7 +31,7 @@ public class AuthenticatorFactory implements InterfaceFactory<Authenticator> {
     }
 
     @Override
-    public Authenticator createImpl() {
+    public @Nullable Authenticator createImpl() {
         if (mRenderFrameHost == null) {
             return null;
         }

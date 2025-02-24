@@ -220,6 +220,18 @@ class AIPageContentAgentTest : public testing::Test {
     return table_cell;
   }
 
+  void CheckIframeNode(const mojom::blink::AIPageContentNode& node) {
+    const auto& attributes = *node.content_attributes;
+    EXPECT_EQ(attributes.attribute_type,
+              mojom::blink::AIPageContentAttributeType::kIframe);
+  }
+
+  void CheckRootNode(const mojom::blink::AIPageContentNode& node) {
+    const auto& attributes = *node.content_attributes;
+    EXPECT_EQ(attributes.attribute_type,
+              mojom::blink::AIPageContentAttributeType::kRoot);
+  }
+
   void CheckAlmostEquals(const gfx::Point& actual, const gfx::Point& expected) {
     // Allow 1px difference for rounding.
     const int kTolerance = 1;
@@ -2015,6 +2027,57 @@ TEST_F(AIPageContentAgentTest, InteractiveElements) {
       resize_text.content_attributes->interaction_info->can_resize_vertical);
   EXPECT_FALSE(
       resize_text.content_attributes->interaction_info->can_resize_horizontal);
+}
+
+TEST_F(AIPageContentAgentTest, ContentNodeIds) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <main>"
+      "    <h1>Heading</h1>"
+      "    text"
+      "  </main>"
+      "  <iframe srcdoc='iframe text'></iframe>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.content_attributes->content_node_id, 0);
+  EXPECT_EQ(root.children_nodes.size(), 2u);
+
+  const auto& main = *root.children_nodes[0];
+  CheckContainerNode(main);
+  EXPECT_EQ(main.content_attributes->content_node_id, 1);
+  EXPECT_EQ(main.children_nodes.size(), 2u);
+
+  auto& heading = *main.children_nodes[0];
+  CheckHeadingNode(heading);
+  EXPECT_EQ(heading.content_attributes->content_node_id, 2);
+  EXPECT_EQ(heading.children_nodes.size(), 1u);
+
+  CheckTextNode(*heading.children_nodes[0], "Heading");
+  EXPECT_EQ(heading.children_nodes[0]->content_attributes->content_node_id, 3);
+
+  CheckTextNode(*main.children_nodes[1], "    text  ");
+  EXPECT_EQ(main.children_nodes[1]->content_attributes->content_node_id, 4);
+
+  const auto& iframe = *root.children_nodes[1];
+  CheckIframeNode(iframe);
+  EXPECT_EQ(iframe.content_attributes->content_node_id, 7);
+  EXPECT_EQ(iframe.children_nodes.size(), 1u);
+
+  const auto& iframe_root = *iframe.children_nodes[0];
+  CheckRootNode(iframe_root);
+  EXPECT_EQ(iframe_root.content_attributes->content_node_id, 5);
+  EXPECT_EQ(iframe_root.children_nodes.size(), 1u);
+
+  CheckTextNode(*iframe_root.children_nodes[0], "iframe text");
+  EXPECT_EQ(iframe_root.children_nodes[0]->content_attributes->content_node_id,
+            6);
 }
 
 }  // namespace

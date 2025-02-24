@@ -130,7 +130,7 @@ function getNextNode(node: Node|null): Node|null {
  */
 function getNextTextNode(node: Node|null): Node|null {
   let n = getNextNode(node);
-  while (n != null && n.nodeType != n.TEXT_NODE) {
+  while (n != null && n.nodeType !== n.TEXT_NODE) {
     n = getNextNode(n);
   }
   return n;
@@ -141,7 +141,7 @@ function getNextTextNode(node: Node|null): Node|null {
  */
 function getPrevTextNode(node: Node|null): Node|null {
   let n = getPrevNode(node);
-  while (n != null && n.nodeType != n.TEXT_NODE) {
+  while (n != null && n.nodeType !== n.TEXT_NODE) {
     n = getPrevNode(n);
   }
   return n;

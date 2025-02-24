@@ -554,6 +554,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness,
       -1);
+  // Pref used to store the number of impressions of the shop card
+  // module in the Home Surface since a shop card freshness signal.
+  registry->RegisterIntegerPref(
+      prefs::kIosMagicStackSegmentationShopCardImpressionsSinceFreshness, -1);
 
   // Preferences related to the new Safety Check Manager.
 

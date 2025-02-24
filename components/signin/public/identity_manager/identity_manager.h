@@ -10,6 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
@@ -80,6 +81,8 @@ class IdentityManager : public KeyedService,
 
     // Called when there is a change in the primary account or in the consent
     // level for the primary account.
+    // To avoid undesired UI changes during the account switching process, UI
+    // code can use `OnEndBatchOfPrimaryAccountChanges()`.
     //
     // Note: Observers are not allowed to change the primary account directly
     // from this methood as that would lead to |event_details| not being correct
@@ -162,7 +165,15 @@ class IdentityManager : public KeyedService,
 #if BUILDFLAG(IS_IOS)
     // Called after the list of accounts in `GetAccountsOnDevice` changes.
     virtual void OnAccountsOnDeviceChanged() {}
-#endif
+    // Called once the batch of primary account changes ended.
+    // This method is also called for each single primary account event, when
+    // there is no batch.
+    // UI code should prefer this event instead of `OnPrimaryAccountChanged()`,
+    // to avoid UI glitches when the user wants to switch from one primary
+    // account to another (by showing sign-out temporary state).
+    // See `StartBatchOfPrimaryAccountChanges()`.
+    virtual void OnEndBatchOfPrimaryAccountChanges() {}
+#endif  // BUILDFLAG(IS_IOS)
 
     // Called on Shutdown(), for observers that aren't KeyedServices to remove
     // their observers.
@@ -172,6 +183,17 @@ class IdentityManager : public KeyedService,
   // Methods to register or remove observers.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+#if BUILDFLAG(IS_IOS)
+  // Starts a batch of primary account changes by setting
+  // `batch_of_primary_account_changes_in_progress_` to `true`. As long as the
+  // batch is running, `OnEndBatchOfPrimaryAccountChanges()` are not sent when
+  // `OnPrimaryAccountChanged()` occurs.
+  // The batch needs to be used when the primary account is switched from one
+  // account to another.
+  // See `OnEndBatchOfPrimaryAccountChanges()`.
+  base::ScopedClosureRunner StartBatchOfPrimaryAccountChanges();
+#endif  // BUILDFLAG(IS_IOS)
 
   // Provides access to the core information of the user's primary account.
   // The primary account may or may not be blessed with the sync consent.
@@ -508,6 +530,9 @@ class IdentityManager : public KeyedService,
   jboolean IsClearPrimaryAccountAllowed(JNIEnv* env) const;
 #endif
 
+  // Returns a weak pointer of this.
+  base::WeakPtr<IdentityManager> GetWeakPtr();
+
  private:
   // These test helpers need to use some of the private methods below.
   friend void SetRefreshTokenForPrimaryAccount(
@@ -631,6 +656,7 @@ class IdentityManager : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, OnNetworkInitialized);
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, RefreshAccountInfoIfStale);
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, FindExtendedPrimaryAccountInfo);
+  FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, BatchOfPrimaryAccountChanges);
 
   // Both classes only call FindExtendedPrimaryAccountInfo().
   // TODO(crbug.com/40183609): Delete once the private calls have been
@@ -707,6 +733,16 @@ class IdentityManager : public KeyedService,
   void OnAccountUpdated(const AccountInfo& info);
   void OnAccountRemoved(const AccountInfo& info);
 
+#if BUILDFLAG(IS_IOS)
+  // Starts and stops the account switching. Those method can only be called by
+  // `StartBatchOfPrimaryAccountChanges()`. Only one account switching can be
+  // started at the same time.
+  void BatchOfPrimaryAccountChangesDone();
+  // Triggers `OnEndBatchOfPrimaryAccountChanges()` events. A batch of primary
+  // account changes should not be in progress when calling this method.
+  void FireOnEndBatchOfPrimaryAccountChanges();
+#endif  // BUILDFLAG(IS_IOS)
+
   // Backing signin classes.
   std::unique_ptr<AccountTrackerService> account_tracker_service_;
   std::unique_ptr<ProfileOAuth2TokenService> token_service_;
@@ -754,6 +790,12 @@ class IdentityManager : public KeyedService,
   base::flat_map<CoreAccountId, base::TimeTicks>
       account_info_fetch_start_times_;
 #endif
+#if BUILDFLAG(IS_IOS)
+  // `true` if there is an account switching back in progress.
+  // See `StartBatchOfPrimaryAccountChanges()`.
+  bool batch_of_primary_account_changes_in_progress_ = false;
+#endif  // BUILDFLAG(IS_IOS)
+  base::WeakPtrFactory<IdentityManager> weak_pointer_factory_;
 };
 
 }  // namespace signin

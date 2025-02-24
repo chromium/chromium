@@ -492,8 +492,9 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
           SecurityDescriptionType::SAFE_BROWSING);
       security_description->details = identity_info.safe_browsing_details;
       return security_description;
-#endif
+#else
       NOTREACHED();
+#endif
     }
     case PageInfo::SAFE_BROWSING_STATUS_SIGNED_IN_SYNC_PASSWORD_REUSE:
     case PageInfo::SAFE_BROWSING_STATUS_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
@@ -504,8 +505,9 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
           SecurityDescriptionType::SAFE_BROWSING);
       security_description->details = identity_info.safe_browsing_details;
       return security_description;
-#endif
+#else
       NOTREACHED();
+#endif
     }
     case PageInfo::SAFE_BROWSING_STATUS_BILLING:
       return CreateSecurityDescription(SecuritySummaryColor::RED,

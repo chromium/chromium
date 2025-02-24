@@ -116,11 +116,14 @@ void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
 
 void EnterpriseSearchAggregatorProvider::Stop(bool clear_cached_results,
                                               bool due_to_user_inactivity) {
-  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
-  debouncer_->CancelRequest();
-
-  if (loader_) {
-    loader_.reset();
+  // Ignore the stop timer since this provider is expected to take longer than
+  // 1500ms (the stop timer gets triggered due to user inactivity).
+  if (!due_to_user_inactivity) {
+    AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
+    debouncer_->CancelRequest();
+    if (loader_) {
+      loader_.reset();
+    }
   }
 }
 

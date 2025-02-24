@@ -245,9 +245,6 @@ GetSyncDataIfRegisteredInternal() {
 
   RegistrationState* state = GetRegistrationState();
   if (!state->have_data_for_sync()) {
-    if (!base::FeatureList::IsEnabled(device::kWebAuthnRegisterForFcm)) {
-      state->StartPrelinkEligibilityChecks();
-    }
     // Not yet ready to provide sync data. When the data is ready,
     // |state| will signal to Sync that something changed and this
     // function will be called again.

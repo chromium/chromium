@@ -647,6 +647,9 @@ BASE_FEATURE(kIPHHomeCustomizationMenuFeature,
 BASE_FEATURE(kIPHiOSLensOverlayEntrypointTipFeature,
              "IPH_iOSLensOverlayEntrypointTip",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSLensOverlayEscapeHatchTipFeature,
+             "IPH_iOSLensOverlayEscapeHatchTip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSSharedTabGroupForeground,
              "IPH_iOSSharedTabGroupForeground",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -18,6 +18,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/environment.h"
@@ -161,12 +162,20 @@ base::FilePath CanonicalizePath(base::FilePath path) {
 scoped_refptr<base::RefCountedMemory> ReadCursorFromThemeImpl(
     const std::string& theme,
     const std::string& cursor_name,
-    base::flat_set<ThemeAndCursorName>* parent_theme_and_cursor_names) {
+    base::flat_set<ThemeAndCursorName>* parent_theme_and_cursor_names,
+    base::flat_map<ThemeAndCursorName, scoped_refptr<base::RefCountedMemory>>*
+        cache) {
   constexpr const char kCursorDir[] = "cursors";
   constexpr const char kThemeInfo[] = "index.theme";
 
   auto theme_and_cursor_name = std::make_pair(theme, cursor_name);
+  auto it = cache->find(theme_and_cursor_name);
+  if (it != cache->end()) {
+    return it->second;
+  }
+
   if (parent_theme_and_cursor_names->contains(theme_and_cursor_name)) {
+    // Circular dependency.
     return nullptr;
   }
   ScopedSetInsertion scoped_set_insertion(parent_theme_and_cursor_names,
@@ -184,7 +193,10 @@ scoped_refptr<base::RefCountedMemory> ReadCursorFromThemeImpl(
 
     std::string contents;
     if (base::ReadFileToString(cursor_dir.Append(cursor_name), &contents)) {
-      return base::MakeRefCounted<base::RefCountedString>(std::move(contents));
+      auto result =
+          base::MakeRefCounted<base::RefCountedString>(std::move(contents));
+      (*cache)[theme_and_cursor_name] = result;
+      return result;
     }
 
     if (base_themes.empty())
@@ -193,11 +205,13 @@ scoped_refptr<base::RefCountedMemory> ReadCursorFromThemeImpl(
 
   for (const auto& path : base_themes) {
     if (auto contents = ReadCursorFromThemeImpl(
-            path, cursor_name, parent_theme_and_cursor_names)) {
+            path, cursor_name, parent_theme_and_cursor_names, cache)) {
+      (*cache)[theme_and_cursor_name] = contents;
       return contents;
     }
   }
 
+  (*cache)[theme_and_cursor_name] = nullptr;
   return nullptr;
 }
 
@@ -207,7 +221,10 @@ scoped_refptr<base::RefCountedMemory> ReadCursorFromTheme(
     const std::string& theme,
     const std::string& cursor_name) {
   base::flat_set<ThemeAndCursorName> parent_theme_names;
-  return ReadCursorFromThemeImpl(theme, cursor_name, &parent_theme_names);
+  base::flat_map<ThemeAndCursorName, scoped_refptr<base::RefCountedMemory>>
+      cache;
+  return ReadCursorFromThemeImpl(theme, cursor_name, &parent_theme_names,
+                                 &cache);
 }
 
 scoped_refptr<base::RefCountedMemory> ReadCursorFile(

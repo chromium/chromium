@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.appearance.settings;
 
+import static org.chromium.chrome.browser.settings.MainSettings.PREF_TOOLBAR_SHORTCUT;
 import static org.chromium.chrome.browser.settings.MainSettings.PREF_UI_THEME;
+import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.NEW_TAB;
+import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.NONE;
 
 import androidx.annotation.NonNull;
 import androidx.preference.Preference;
@@ -14,11 +17,17 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
+import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 
 /** Tests for {@link AppearanceSettingsFragment}. */
@@ -30,7 +39,27 @@ public class AppearanceSettingsFragmentTest {
     public final BlankUiTestActivitySettingsTestRule mSettingsTestRule =
             new BlankUiTestActivitySettingsTestRule();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Profile mProfile;
+
     private AppearanceSettingsFragment mSettings;
+
+    @Test
+    @SmallTest
+    public void testToolbarShortcutPreferenceIsAbsentWhenDisabled() {
+        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(NONE);
+        launchSettings();
+        Assert.assertNull(mSettings.findPreference(PREF_TOOLBAR_SHORTCUT));
+    }
+
+    @Test
+    @SmallTest
+    public void testToolbarShortcutPreferenceIsPresentWhenEnabled() throws ClassNotFoundException {
+        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(NEW_TAB);
+        launchSettings();
+        assertSettingsExists(PREF_TOOLBAR_SHORTCUT, AdaptiveToolbarSettingsFragment.class);
+    }
 
     @Test
     @SmallTest
@@ -53,7 +82,10 @@ public class AppearanceSettingsFragmentTest {
     }
 
     private void launchSettings() {
-        mSettingsTestRule.launchPreference(AppearanceSettingsFragment.class);
+        mSettingsTestRule.launchPreference(
+                AppearanceSettingsFragment.class,
+                /* fragmentArgs= */ null,
+                (fragment) -> ((AppearanceSettingsFragment) fragment).setProfile(mProfile));
         mSettings = (AppearanceSettingsFragment) mSettingsTestRule.getPreferenceFragment();
     }
 }

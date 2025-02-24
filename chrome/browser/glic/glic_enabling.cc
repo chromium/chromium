@@ -112,6 +112,10 @@ void GlicEnabling::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
   enable_changed_callback_list_.Notify();
 }
 
+void GlicEnabling::OnRefreshTokensLoaded() {
+  enable_changed_callback_list_.Notify();
+}
+
 void GlicEnabling::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
     const GoogleServiceAuthError& error,

@@ -65,7 +65,8 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
       diagnostics_provider_(std::move(parameters.diagnostics_provider)),
       account_consistency_(parameters.account_consistency),
       require_sync_consent_for_scope_verification_(
-          parameters.require_sync_consent_for_scope_verification) {
+          parameters.require_sync_consent_for_scope_verification),
+      weak_pointer_factory_(this) {
   DCHECK(account_fetcher_service_);
   DCHECK(diagnostics_provider_);
   DCHECK(signin_client_);
@@ -128,6 +129,16 @@ void IdentityManager::Shutdown() {
   token_service_.reset();
   account_tracker_service_.reset();
 }
+
+#if BUILDFLAG(IS_IOS)
+base::ScopedClosureRunner IdentityManager::StartBatchOfPrimaryAccountChanges() {
+  CHECK(!batch_of_primary_account_changes_in_progress_,
+        base::NotFatalUntil::M140);
+  batch_of_primary_account_changes_in_progress_ = true;
+  return base::ScopedClosureRunner(base::BindOnce(
+      &IdentityManager::BatchOfPrimaryAccountChangesDone, GetWeakPtr()));
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 void IdentityManager::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
@@ -462,6 +473,10 @@ jboolean IdentityManager::IsClearPrimaryAccountAllowed(JNIEnv* env) const {
 }
 #endif
 
+base::WeakPtr<IdentityManager> IdentityManager::GetWeakPtr() {
+  return weak_pointer_factory_.GetWeakPtr();
+}
+
 AccountInfo IdentityManager::FindExtendedPrimaryAccountInfo(
     ConsentLevel consent_level) {
   CoreAccountId account_id = GetPrimaryAccountId(consent_level);
@@ -535,6 +550,11 @@ void IdentityManager::OnPrimaryAccountChanged(
         ConvertToJavaPrimaryAccountChangeEvent(env, event_details));
   }
 #endif
+#if BUILDFLAG(IS_IOS)
+  if (!batch_of_primary_account_changes_in_progress_) {
+    FireOnEndBatchOfPrimaryAccountChanges();
+  }
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 void IdentityManager::OnRefreshTokenAvailable(const CoreAccountId& account_id) {
@@ -706,4 +726,20 @@ void IdentityManager::OnAccountRemoved(const AccountInfo& info) {
   }
 }
 
+#if BUILDFLAG(IS_IOS)
+void IdentityManager::BatchOfPrimaryAccountChangesDone() {
+  CHECK(batch_of_primary_account_changes_in_progress_,
+        base::NotFatalUntil::M140);
+  batch_of_primary_account_changes_in_progress_ = false;
+  FireOnEndBatchOfPrimaryAccountChanges();
+}
+
+void IdentityManager::FireOnEndBatchOfPrimaryAccountChanges() {
+  CHECK(!batch_of_primary_account_changes_in_progress_,
+        base::NotFatalUntil::M140);
+  for (auto& observer : observer_list_) {
+    observer.OnEndBatchOfPrimaryAccountChanges();
+  }
+}
+#endif  // BUILDFLAG(IS_IOS)
 }  // namespace signin

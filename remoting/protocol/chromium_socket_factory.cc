@@ -316,8 +316,6 @@ int UdpPacketSocket::SetOption(rtc::Socket::Option option, int value) {
       NOTIMPLEMENTED() << "Unexpected socket option: " << option;
       return -1;
   }
-
-  NOTREACHED();
 }
 
 int UdpPacketSocket::GetError() const {

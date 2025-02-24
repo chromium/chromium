@@ -121,36 +121,31 @@ void SessionServiceImpl::OnLoadSessionsComplete(
 
 void SessionServiceImpl::OnRegistrationComplete(
     OnAccessCallback on_access_callback,
-    std::optional<RegistrationFetcher::RegistrationCompleteParams> params) {
-  // There was a failure attempting to register. Since this specific
-  // registration request did not add a session, no cleanup is needed.
-  if (!params) {
+    base::expected<SessionParams, SessionError> params_or_error) {
+  if (!params_or_error.has_value()) {
+    // There was a failure attempting to register. This registration
+    // request could be used to clean up an existing session if the
+    // server returned `"continue": false` in the JSON. In that case, we
+    // need to delete the session. In all other cases, we failed to
+    // create a new session, so there's nothing to clean up.
+    const SessionError& error = params_or_error.error();
+    if (error.type == SessionError::ErrorType::kServerRequestedTermination &&
+        error.session_id.has_value()) {
+      Session::Id session_id(*error.session_id);
+      DeleteSessionAndNotify(error.site, session_id, on_access_callback);
+    }
     return;
   }
 
-  const SchemefulSite site(url::Origin::Create(params->url));
+  const SessionParams& params = *params_or_error;
+  const SchemefulSite site(url::Origin::Create(GURL(params.fetcher_url)));
 
-  // It's possible that the session was already added in a previous request,
-  // and that this registration request is used just to terminate that session
-  // with session instruction `"continue": false`. To handle this case, we
-  // attempt to delete the session.
-  if (std::holds_alternative<SessionTerminationParams>(params->params)) {
-    const SessionTerminationParams& termination_params =
-        std::get<SessionTerminationParams>(params->params);
-    Session::Id session_id(termination_params.session_id);
-    DeleteSessionAndNotify(site, session_id, on_access_callback);
-    return;
-  }
-
-  CHECK(std::holds_alternative<SessionParams>(params->params));
-  auto session = Session::CreateIfValid(
-      std::move(std::get<SessionParams>(params->params)), params->url);
+  auto session = Session::CreateIfValid(std::move(params));
   if (!session) {
     // The attempt to create a valid session failed. Since this specific
     // registration request did not add a session, no cleanup is needed.
     return;
   }
-  session->set_unexportable_key_id(std::move(params->key_id));
   NotifySessionAccess(on_access_callback, SessionAccess::AccessType::kCreation,
                       site, *session);
   AddSession(site, std::move(session));
@@ -250,8 +245,7 @@ void SessionServiceImpl::OnRefreshRequestCompletion(
     OnAccessCallback on_access_callback,
     SchemefulSite site,
     Session::Id session_id,
-    std::optional<RegistrationFetcher::RegistrationCompleteParams>
-        refresh_result) {
+    base::expected<SessionParams, SessionError> params_or_error) {
   // If refresh succeeded:
   // 1. update the session by adding a new session and deleting the old one
   // 2. restart the deferred requests.
@@ -263,49 +257,42 @@ void SessionServiceImpl::OnRefreshRequestCompletion(
   // for example, if the the old session_id is still in use while deleting it.
   // Is it service's responsibility to keep the session_id same with the one in
   // received JSON which parsed as result_result->params?
-  if (refresh_result) {
-    if (std::holds_alternative<SessionTerminationParams>(
-            refresh_result->params)) {
-      const SessionTerminationParams& termination_params =
-          std::get<SessionTerminationParams>(refresh_result->params);
-      Session::Id new_session_id(termination_params.session_id);
-
-      // Only delete the session requested by the server.
-      DeleteSessionAndNotify(site, new_session_id, on_access_callback);
+  if (params_or_error.has_value()) {
+    auto new_session = Session::CreateIfValid(*params_or_error);
+    if (!new_session) {
+      // New parameters are invalid, terminate the session.
+      DeleteSessionAndNotify(site, session_id, on_access_callback);
+      UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
       return;
     }
 
-    CHECK(std::holds_alternative<SessionParams>(refresh_result->params));
-    auto new_session = Session::CreateIfValid(
-        std::move(std::get<SessionParams>(refresh_result->params)),
-        refresh_result->url);
-    if (new_session) {
-      new_session->set_unexportable_key_id(std::move(refresh_result->key_id));
-      // Delete old session.
-      DeleteSessionAndNotify(site, session_id,
-                             new_session->id() == session_id
-                                 ? base::NullCallback()
-                                 : on_access_callback);
-      // Add the new session.
-      SchemefulSite new_site(url::Origin::Create(refresh_result->url));
-      if (new_session->id() != session_id) {
-        NotifySessionAccess(on_access_callback,
-                            SessionAccess::AccessType::kCreation, new_site,
-                            *new_session);
-      }
-      AddSession(new_site, std::move(new_session));
-      // The session has been refreshed, restart the request.
-      UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/true);
-      return;
+    // Delete old session.
+    DeleteSessionAndNotify(site, session_id,
+                           new_session->id() == session_id
+                               ? base::NullCallback()
+                               : on_access_callback);
+    // Add the new session.
+    SchemefulSite new_site(
+        url::Origin::Create(GURL(params_or_error->fetcher_url)));
+    if (new_session->id() != session_id) {
+      NotifySessionAccess(on_access_callback,
+                          SessionAccess::AccessType::kCreation, new_site,
+                          *new_session);
     }
+    AddSession(new_site, std::move(new_session));
+    // The session has been refreshed, restart the request.
+    UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/true);
+  } else if (const SessionError& error = params_or_error.error();
+             error.IsFatal()) {
+    Session::Id session_to_terminate =
+        error.session_id ? Session::Id(*error.session_id) : session_id;
+    DeleteSessionAndNotify(error.site, session_to_terminate,
+                           on_access_callback);
+    UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
+  } else {
+    // Transient error, unblock the request without cookies.
+    UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/true);
   }
-
-  // Refresh failed:
-  // 1. Clear the existing session which initiated the refresh flow.
-  // 2. continue all deferred requests.
-  // TODO(crbug.com/353766139): Do we need a retry mechanism?
-  DeleteSessionAndNotify(site, session_id, on_access_callback);
-  UnblockDeferredRequests(session_id, /*is_cookie_refreshed=*/false);
 }
 
 // Continue or restart all deferred requests for the session and remove the

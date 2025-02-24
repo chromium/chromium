@@ -22,7 +22,6 @@
 #include "components/performance_manager/render_process_user_data.h"
 #include "components/performance_manager/test_support/graph/mock_page_node_observer.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
@@ -114,49 +113,48 @@ void PerformanceManagerTabHelperTest::CheckGraphTopology(
   EXPECT_EQ(process_nodes.size(), hosts.size());
 
   // Check out the graph itself.
-  RunInGraph([&process_nodes, num_hosts, grandchild_url](Graph* graph) {
-    EXPECT_GE(num_hosts, CountAllRenderProcessNodes(graph));
-    EXPECT_EQ(4u, graph->GetAllFrameNodes().size());
+  auto* graph = PerformanceManager::GetGraph();
 
-    // Expect all frame nodes to be current. This fails if our
-    // implementation of RenderFrameHostChanged is borked.
-    for (auto* frame : graph->GetAllFrameNodes()) {
-      EXPECT_TRUE(frame->IsCurrent());
+  EXPECT_GE(num_hosts, CountAllRenderProcessNodes(graph));
+  EXPECT_EQ(4u, graph->GetAllFrameNodes().size());
+
+  // Expect all frame nodes to be current. This fails if our
+  // implementation of RenderFrameHostChanged is borked.
+  for (auto* frame : graph->GetAllFrameNodes()) {
+    EXPECT_TRUE(frame->IsCurrent());
+  }
+
+  ASSERT_EQ(1u, graph->GetAllPageNodes().size());
+  auto* page = graph->GetAllPageNodes().AsVector()[0];
+
+  // Extra RPHs can and most definitely do exist.
+  auto associated_process_nodes =
+      GraphOperations::GetAssociatedProcessNodes(page);
+  EXPECT_GE(CountAllRenderProcessNodes(graph), associated_process_nodes.size());
+  EXPECT_GE(num_hosts, associated_process_nodes.size());
+
+  for (const ProcessNode* process_node : associated_process_nodes) {
+    EXPECT_TRUE(base::Contains(process_nodes, process_node));
+  }
+
+  EXPECT_EQ(4u, GraphOperations::GetFrameNodes(page).size());
+  ASSERT_EQ(1u, page->GetMainFrameNodes().size());
+
+  auto* main_frame = page->GetMainFrameNode();
+  EXPECT_EQ(kParentUrl, main_frame->GetURL().spec());
+  EXPECT_EQ(2u, main_frame->GetChildFrameNodes().size());
+
+  for (const FrameNode* child_frame : main_frame->GetChildFrameNodes()) {
+    if (child_frame->GetURL().spec() == kChild1Url) {
+      ASSERT_EQ(1u, child_frame->GetChildFrameNodes().size());
+      auto* grandchild_frame = *child_frame->GetChildFrameNodes().begin();
+      EXPECT_EQ(grandchild_url, grandchild_frame->GetURL().spec());
+    } else if (child_frame->GetURL().spec() == kChild2Url) {
+      EXPECT_TRUE(child_frame->GetChildFrameNodes().empty());
+    } else {
+      FAIL() << "Unexpected child frame: " << child_frame->GetURL().spec();
     }
-
-    ASSERT_EQ(1u, graph->GetAllPageNodes().size());
-    auto* page = graph->GetAllPageNodes().AsVector()[0];
-
-    // Extra RPHs can and most definitely do exist.
-    auto associated_process_nodes =
-        GraphOperations::GetAssociatedProcessNodes(page);
-    EXPECT_GE(CountAllRenderProcessNodes(graph),
-              associated_process_nodes.size());
-    EXPECT_GE(num_hosts, associated_process_nodes.size());
-
-    for (const ProcessNode* process_node : associated_process_nodes) {
-      EXPECT_TRUE(base::Contains(process_nodes, process_node));
-    }
-
-    EXPECT_EQ(4u, GraphOperations::GetFrameNodes(page).size());
-    ASSERT_EQ(1u, page->GetMainFrameNodes().size());
-
-    auto* main_frame = page->GetMainFrameNode();
-    EXPECT_EQ(kParentUrl, main_frame->GetURL().spec());
-    EXPECT_EQ(2u, main_frame->GetChildFrameNodes().size());
-
-    for (const FrameNode* child_frame : main_frame->GetChildFrameNodes()) {
-      if (child_frame->GetURL().spec() == kChild1Url) {
-        ASSERT_EQ(1u, child_frame->GetChildFrameNodes().size());
-        auto* grandchild_frame = *child_frame->GetChildFrameNodes().begin();
-        EXPECT_EQ(grandchild_url, grandchild_frame->GetURL().spec());
-      } else if (child_frame->GetURL().spec() == kChild2Url) {
-        EXPECT_TRUE(child_frame->GetChildFrameNodes().empty());
-      } else {
-        FAIL() << "Unexpected child frame: " << child_frame->GetURL().spec();
-      }
-    }
-  });
+  }
 }
 
 }  // namespace
@@ -214,31 +212,28 @@ TEST_P(PerformanceManagerTabHelperTest, FrameHierarchyReflectsToGraph) {
 
   size_t num_hosts = CountAllRenderProcessHosts();
 
-  RunInGraph([num_hosts](Graph* graph) {
-    EXPECT_GE(num_hosts, CountAllRenderProcessNodes(graph));
-    EXPECT_EQ(0u, graph->GetAllFrameNodes().size());
-    ASSERT_EQ(0u, graph->GetAllPageNodes().size());
-  });
+  auto* graph = PerformanceManager::GetGraph();
+  EXPECT_GE(num_hosts, CountAllRenderProcessNodes(graph));
+  EXPECT_EQ(0u, graph->GetAllFrameNodes().size());
+  ASSERT_EQ(0u, graph->GetAllPageNodes().size());
 }
 
 namespace {
 
 void ExpectPageIsAudible(bool is_audible) {
-  RunInGraph([&](Graph* graph) {
-    ASSERT_EQ(1u, graph->GetAllPageNodes().size());
-    auto* page = graph->GetAllPageNodes().AsVector()[0];
-    EXPECT_EQ(is_audible, page->IsAudible());
-  });
+  auto* graph = PerformanceManager::GetGraph();
+  ASSERT_EQ(1u, graph->GetAllPageNodes().size());
+  auto* page = graph->GetAllPageNodes().AsVector()[0];
+  EXPECT_EQ(is_audible, page->IsAudible());
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 void ExpectNotificationPermissionStatus(
     std::optional<blink::mojom::PermissionStatus> status) {
-  RunInGraph([&](Graph* graph) {
-    ASSERT_EQ(1u, graph->GetAllPageNodes().size());
-    auto* page = graph->GetAllPageNodes().AsVector()[0];
-    EXPECT_EQ(status, page->GetNotificationPermissionStatus());
-  });
+  auto* graph = PerformanceManager::GetGraph();
+  ASSERT_EQ(1u, graph->GetAllPageNodes().size());
+  auto* page = graph->GetAllPageNodes().AsVector()[0];
+  EXPECT_EQ(status, page->GetNotificationPermissionStatus());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -369,9 +364,11 @@ TEST_P(PerformanceManagerTabHelperTest,
       web_contents(), GURL(kCousinFreddyUrl));
   EXPECT_NE(web_contents()->GetPrimaryMainFrame(), first_nav_main_rfh);
 
-  // Mock observer, this can only be used from the PM sequence.
+  // Mock observer.
+  Graph* graph = PerformanceManager::GetGraph();
+
   MockPageNodeObserver observer;
-  RunInGraph([&](Graph* graph) { graph->AddPageNodeObserver(&observer); });
+  graph->AddPageNodeObserver(&observer);
 
   auto* tab_helper =
       PerformanceManagerTabHelper::FromWebContents(web_contents());
@@ -382,12 +379,10 @@ TEST_P(PerformanceManagerTabHelperTest,
   tab_helper->DidUpdateFaviconURL(first_nav_main_rfh, {});
   tab_helper->DidUpdateFaviconURL(first_nav_main_rfh, {});
 
-  RunInGraph([&] {
-    // The observer shouldn't have been called at this point.
-    testing::Mock::VerifyAndClear(&observer);
-    // Set the expectation for the next check.
-    EXPECT_CALL(observer, OnFaviconUpdated(::testing::_));
-  });
+  // The observer shouldn't have been called at this point.
+  testing::Mock::VerifyAndClear(&observer);
+  // Set the expectation for the next check.
+  EXPECT_CALL(observer, OnFaviconUpdated(::testing::_));
 
   // Sanity check to ensure that notification sent to the active main frame are
   // forwarded. DidUpdateFaviconURL needs to be called twice as the first
@@ -395,10 +390,8 @@ TEST_P(PerformanceManagerTabHelperTest,
   tab_helper->DidUpdateFaviconURL(web_contents()->GetPrimaryMainFrame(), {});
   tab_helper->DidUpdateFaviconURL(web_contents()->GetPrimaryMainFrame(), {});
 
-  RunInGraph([&](Graph* graph) {
-    testing::Mock::VerifyAndClear(&observer);
-    graph->RemovePageNodeObserver(&observer);
-  });
+  testing::Mock::VerifyAndClear(&observer);
+  graph->RemovePageNodeObserver(&observer);
 }
 
 }  // namespace performance_manager
