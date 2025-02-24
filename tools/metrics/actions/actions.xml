@@ -27030,6 +27030,41 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarTabMenu.AddToTabGroup">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User opened the bottom sheet to add a tab to a new or existing tab group,
+    via the tab context menu on tab strip on Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabMenu.CloseTab">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User closed a tab via the tab context menu on tab strip on Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabMenu.RemoveFromTabGroup">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User removed a tab from its tab group via the tab context menu on tab strip
+    on Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabMenu.ShareTab">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User shared the URL open in a tab, via the tab context menu on tab strip on
+    Android.
+  </description>
+</action>
+
 <action name="MobileToolbarToggleBookmark">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

@@ -1612,7 +1612,7 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.onReset(tabGroup);
         // Check that the text indicates that this is not the last tab in the group.
         assertEquals(
-                mActivity.getString(R.string.tab_grid_dialog_remove_from_group),
+                mActivity.getString(R.string.remove_tab_from_group),
                 mModel.get(TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT));
 
         // Mock that tab1 is the only tab that remains in the group.
@@ -1636,7 +1636,7 @@ public class TabGridDialogMediatorUnitTest {
 
         // Check that the text indicates that this is not the last tab in the group.
         assertEquals(
-                mActivity.getString(R.string.tab_grid_dialog_remove_from_group),
+                mActivity.getString(R.string.remove_tab_from_group),
                 mModel.get(TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT));
 
         // Mock that tab1 is the only tab that remains in the group.

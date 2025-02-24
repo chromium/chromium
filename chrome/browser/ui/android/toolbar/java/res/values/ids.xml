@@ -21,6 +21,9 @@ found in the LICENSE file.
     <item type="id" name="share_group" />
     <item type="id" name="close_tab_group" />
     <item type="id" name="delete_tab_group" />
+    <item type="id" name="add_to_tab_group" />
+    <item type="id" name="remove_from_tab_group" />
+    <item type="id" name="share_tab" />
 
     <!-- Presentation is the same as delete_tab_group, but helps handler impl. -->
     <item type="id" name="delete_shared_group" />

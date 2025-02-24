@@ -255,8 +255,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
      * @param itemList The {@link ModelList} to populate.
      * @param memberRole The role of the current user in the group.
      */
-    protected abstract void buildCollaborationMenuItems(
-            ModelList itemList, @MemberRole int memberRole);
+    protected void buildCollaborationMenuItems(ModelList itemList, @MemberRole int memberRole) {}
 
     /** Concrete class required to get a specific menu width for the menu pop up window. */
     protected abstract @DimenRes int getMenuWidth();

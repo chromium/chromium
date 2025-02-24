@@ -1421,7 +1421,7 @@ public class TabGridDialogMediator
     }
 
     private void updateUngroupBarText(int tabCount) {
-        @StringRes int ungroupBarTextId = R.string.tab_grid_dialog_remove_from_group;
+        @StringRes int ungroupBarTextId = R.string.remove_tab_from_group;
         if (tabCount == 1) {
             boolean isMember = MemberRole.MEMBER == getMemberRole();
             ungroupBarTextId =

@@ -334,7 +334,7 @@
       </message>
 
       <!-- Tab Grid Dialog strings -->
-      <message name="IDS_TAB_GRID_DIALOG_REMOVE_FROM_GROUP" desc="This text shows on the ungroup bar in TabGridDialog. When user drags a tab and drops it on the ungroup bar, this tab will be moved out of the group.">
+      <message name="IDS_REMOVE_TAB_FROM_GROUP" desc="Content description for an action which removes a tab from its group.">
         Remove from group
       </message>
       <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_EDIT_GROUP_NAME" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the group name field will be focused and the keyboard will show for users to edit the group name.">
@@ -1030,6 +1030,11 @@
       </message>
       <message name="IDS_ACCESSIBILITY_TAB_GROUP_REMOVED_DISMISS_BUTTON" desc="The accessibility text to read when the 'X' button on the tab removed message card is focused">
         Dismiss the card.
+      </message>
+
+      <!-- Tab context menu (for individual tabs) -->
+      <message name="IDS_ADD_TAB_TO_GROUP" desc="Content description for an action which adds a tab to a group.">
+        Add to group
       </message>
     </messages>
   </release>
