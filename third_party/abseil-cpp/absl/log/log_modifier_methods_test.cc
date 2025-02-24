@@ -15,6 +15,8 @@
 
 #include <errno.h>
 
+#include <string>
+
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "absl/log/internal/test_actions.h"
@@ -74,6 +76,14 @@ TEST(TailCallsModifiesTest, AtLocationFileLine) {
 
   test_sink.StartCapturingLogs();
   LOG(INFO).AtLocation("/my/very/very/very_long_source_file.cc", 777)
+      << "hello world";
+}
+
+TEST(TailCallsModifiesTest, AtLocationFileLineLifetime) {
+  // The macro takes care to not use this temporary after its lifetime.
+  // The only salient expectation is "no sanitizer diagnostics".
+  LOG(INFO).AtLocation(std::string("/my/very/very/very_long_source_file.cc"),
+                       777)
       << "hello world";
 }
 

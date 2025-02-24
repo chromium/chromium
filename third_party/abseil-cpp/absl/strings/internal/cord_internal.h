@@ -25,7 +25,6 @@
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/endian.h"
-#include "absl/base/internal/invoke.h"
 #include "absl/base/macros.h"
 #include "absl/base/nullability.h"
 #include "absl/base/optimization.h"
@@ -358,16 +357,15 @@ struct CordRepExternal : public CordRep {
 struct Rank0 {};
 struct Rank1 : Rank0 {};
 
-template <typename Releaser, typename = ::absl::base_internal::invoke_result_t<
-                                 Releaser, absl::string_view>>
+template <typename Releaser,
+          typename = ::std::invoke_result_t<Releaser, absl::string_view>>
 void InvokeReleaser(Rank1, Releaser&& releaser, absl::string_view data) {
-  ::absl::base_internal::invoke(std::forward<Releaser>(releaser), data);
+  ::std::invoke(std::forward<Releaser>(releaser), data);
 }
 
-template <typename Releaser,
-          typename = ::absl::base_internal::invoke_result_t<Releaser>>
+template <typename Releaser, typename = ::std::invoke_result_t<Releaser>>
 void InvokeReleaser(Rank0, Releaser&& releaser, absl::string_view) {
-  ::absl::base_internal::invoke(std::forward<Releaser>(releaser));
+  ::std::invoke(std::forward<Releaser>(releaser));
 }
 
 // We use CompressedTuple so that we can benefit from EBCO.

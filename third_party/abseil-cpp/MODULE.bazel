@@ -25,9 +25,6 @@ cc_configure = use_extension("@rules_cc//cc:extensions.bzl",
                              dev_dependency = True)
 use_repo(cc_configure, "local_config_cc")
 
-# Only direct dependencies need to be listed below.
-# Please keep the versions in sync with the versions in the WORKSPACE file.
-
 bazel_dep(name = "rules_cc", version = "0.0.17")
 bazel_dep(name = "bazel_skylib", version = "1.7.1")
 bazel_dep(name = "platforms", version = "0.0.10")

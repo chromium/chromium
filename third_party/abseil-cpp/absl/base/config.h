@@ -274,7 +274,6 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_HAVE_STD_IS_TRIVIALLY_COPYABLE 1
 #endif
 
-
 // ABSL_HAVE_THREAD_LOCAL
 //
 // DEPRECATED - `thread_local` is available on all supported platforms.
@@ -520,31 +519,11 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE 0
 #endif
 
-// ABSL_HAVE_STD_ANY
-//
-// Checks whether C++17 std::any is available.
-#ifdef ABSL_HAVE_STD_ANY
-#error "ABSL_HAVE_STD_ANY cannot be directly set."
-#elif defined(__cpp_lib_any) && __cpp_lib_any >= 201606L
+// Deprecated macros for polyfill detection.
 #define ABSL_HAVE_STD_ANY 1
-#elif defined(ABSL_INTERNAL_CPLUSPLUS_LANG) && \
-    ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L && \
-    !ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE
-#define ABSL_HAVE_STD_ANY 1
-#endif
-
-// ABSL_HAVE_STD_OPTIONAL
-//
-// Checks whether C++17 std::optional is available.
-#ifdef ABSL_HAVE_STD_OPTIONAL
-#error "ABSL_HAVE_STD_OPTIONAL cannot be directly set."
-#elif defined(__cpp_lib_optional) && __cpp_lib_optional >= 202106L
+#define ABSL_USES_STD_ANY 1
 #define ABSL_HAVE_STD_OPTIONAL 1
-#elif defined(ABSL_INTERNAL_CPLUSPLUS_LANG) && \
-    ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L && \
-    !ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE
-#define ABSL_HAVE_STD_OPTIONAL 1
-#endif
+#define ABSL_USES_STD_OPTIONAL 1
 
 // ABSL_HAVE_STD_VARIANT
 //
@@ -585,36 +564,6 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
     (defined(ABSL_INTERNAL_CPLUSPLUS_LANG) &&        \
      ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L)
 #define ABSL_HAVE_STD_ORDERING 1
-#endif
-
-// ABSL_USES_STD_ANY
-//
-// Indicates whether absl::any is an alias for std::any.
-#if !defined(ABSL_OPTION_USE_STD_ANY)
-#error options.h is misconfigured.
-#elif ABSL_OPTION_USE_STD_ANY == 0 || \
-    (ABSL_OPTION_USE_STD_ANY == 2 && !defined(ABSL_HAVE_STD_ANY))
-#undef ABSL_USES_STD_ANY
-#elif ABSL_OPTION_USE_STD_ANY == 1 || \
-    (ABSL_OPTION_USE_STD_ANY == 2 && defined(ABSL_HAVE_STD_ANY))
-#define ABSL_USES_STD_ANY 1
-#else
-#error options.h is misconfigured.
-#endif
-
-// ABSL_USES_STD_OPTIONAL
-//
-// Indicates whether absl::optional is an alias for std::optional.
-#if !defined(ABSL_OPTION_USE_STD_OPTIONAL)
-#error options.h is misconfigured.
-#elif ABSL_OPTION_USE_STD_OPTIONAL == 0 || \
-    (ABSL_OPTION_USE_STD_OPTIONAL == 2 && !defined(ABSL_HAVE_STD_OPTIONAL))
-#undef ABSL_USES_STD_OPTIONAL
-#elif ABSL_OPTION_USE_STD_OPTIONAL == 1 || \
-    (ABSL_OPTION_USE_STD_OPTIONAL == 2 && defined(ABSL_HAVE_STD_OPTIONAL))
-#define ABSL_USES_STD_OPTIONAL 1
-#else
-#error options.h is misconfigured.
 #endif
 
 // ABSL_USES_STD_VARIANT
@@ -813,34 +762,13 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 
 // ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION
 //
-// Class template argument deduction is a language feature added in C++17.
+// Deprecated: always defined to 1.
+// Class template argument deduction is a language feature added in C++17,
+// which means all versions of C++ supported by Abseil have it.
 #ifdef ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION
 #error "ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION cannot be directly set."
-#elif defined(__cpp_deduction_guides)
+#else
 #define ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION 1
-#endif
-
-// ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
-//
-// Prior to C++17, static constexpr variables defined in classes required a
-// separate definition outside of the class body, for example:
-//
-// class Foo {
-//   static constexpr int kBar = 0;
-// };
-// constexpr int Foo::kBar;
-//
-// In C++17, these variables defined in classes are considered inline variables,
-// and the extra declaration is redundant. Since some compilers warn on the
-// extra declarations, ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL can be used
-// conditionally ignore them:
-//
-// #ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
-// constexpr int Foo::kBar;
-// #endif
-#if defined(ABSL_INTERNAL_CPLUSPLUS_LANG) && \
-    ABSL_INTERNAL_CPLUSPLUS_LANG < 201703L
-#define ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL 1
 #endif
 
 // `ABSL_INTERNAL_HAS_RTTI` determines whether abseil is being compiled with

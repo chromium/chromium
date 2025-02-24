@@ -31,6 +31,7 @@
 #ifndef ABSL_RANDOM_RANDOM_H_
 #define ABSL_RANDOM_RANDOM_H_
 
+#include <cstdint>
 #include <random>
 
 #include "absl/random/distributions.h"  // IWYU pragma: export

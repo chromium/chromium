@@ -375,14 +375,14 @@ template <typename H, typename T,
 H hash_bytes(H hash_state, const T& value) {
   const unsigned char* start = reinterpret_cast<const unsigned char*>(&value);
   uint64_t v;
-  if (sizeof(T) == 1) {
+  if constexpr (sizeof(T) == 1) {
     v = *start;
-  } else if (sizeof(T) == 2) {
+  } else if constexpr (sizeof(T) == 2) {
     v = absl::base_internal::UnalignedLoad16(start);
-  } else if (sizeof(T) == 4) {
+  } else if constexpr (sizeof(T) == 4) {
     v = absl::base_internal::UnalignedLoad32(start);
   } else {
-    assert(sizeof(T) == 8);
+    static_assert(sizeof(T) == 8);
     v = absl::base_internal::UnalignedLoad64(start);
   }
   return CombineRaw()(std::move(hash_state), v);
@@ -512,7 +512,7 @@ H AbslHashValue(H hash_state, T C::*ptr) {
     // padding (namely when they have 1 or 3 ints). The value below is a lower
     // bound on the number of salient, non-padding bytes that we use for
     // hashing.
-    if (alignof(T C::*) == alignof(int)) {
+    if constexpr (alignof(T C::*) == alignof(int)) {
       // No padding when all subobjects have the same size as the total
       // alignment. This happens in 32-bit mode.
       return n;
@@ -1299,7 +1299,7 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
   // helps ensure that low bits still have high quality.
   ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t WeakMix(uint64_t n) {
     // WeakMix doesn't work well on 32-bit platforms so just use Mix.
-    if (sizeof(size_t) < 8) return Mix(n, kMul);
+    if constexpr (sizeof(size_t) < 8) return Mix(n, kMul);
 #ifdef __ARM_ACLE
     // gbswap_64 compiles to `rev` on ARM, but `rbit` is better because it
     // reverses bits rather than reversing bytes.

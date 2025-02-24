@@ -291,16 +291,8 @@ LogMessage::LogMessage(absl::Nonnull<const char*> file, int line, WarningTag)
 LogMessage::LogMessage(absl::Nonnull<const char*> file, int line, ErrorTag)
     : LogMessage(file, line, absl::LogSeverity::kError) {}
 
-LogMessage::~LogMessage() {
-#ifdef ABSL_MIN_LOG_LEVEL
-  if (data_->entry.log_severity() <
-          static_cast<absl::LogSeverity>(ABSL_MIN_LOG_LEVEL) &&
-      data_->entry.log_severity() < absl::LogSeverity::kFatal) {
-    return;
-  }
-#endif
-  Flush();
-}
+// This cannot go in the header since LogMessageData is defined in this file.
+LogMessage::~LogMessage() = default;
 
 LogMessage& LogMessage::AtLocation(absl::string_view file, int line) {
   data_->entry.full_filename_ = file;
@@ -691,7 +683,6 @@ LogMessageFatal::LogMessageFatal(absl::Nonnull<const char*> file, int line,
 }
 
 LogMessageFatal::~LogMessageFatal() {
-  Flush();
   FailWithoutStackTrace();
 }
 
@@ -700,7 +691,6 @@ LogMessageDebugFatal::LogMessageDebugFatal(absl::Nonnull<const char*> file,
     : LogMessage(file, line, absl::LogSeverity::kFatal) {}
 
 LogMessageDebugFatal::~LogMessageDebugFatal() {
-  Flush();
   FailWithoutStackTrace();
 }
 
@@ -711,7 +701,6 @@ LogMessageQuietlyDebugFatal::LogMessageQuietlyDebugFatal(
 }
 
 LogMessageQuietlyDebugFatal::~LogMessageQuietlyDebugFatal() {
-  Flush();
   FailQuietly();
 }
 
@@ -729,7 +718,6 @@ LogMessageQuietlyFatal::LogMessageQuietlyFatal(
 }
 
 LogMessageQuietlyFatal::~LogMessageQuietlyFatal() {
-  Flush();
   FailQuietly();
 }
 #if defined(_MSC_VER) && !defined(__clang__)

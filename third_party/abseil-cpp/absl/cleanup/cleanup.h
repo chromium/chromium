@@ -115,10 +115,8 @@ class ABSL_MUST_USE_RESULT Cleanup final {
 // `absl::Cleanup c = /* callback */;`
 //
 // C++17 type deduction API for creating an instance of `absl::Cleanup`
-#if defined(ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION)
 template <typename Callback>
 Cleanup(Callback callback) -> Cleanup<cleanup_internal::Tag, Callback>;
-#endif  // defined(ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION)
 
 // `auto c = absl::MakeCleanup(/* callback */);`
 //

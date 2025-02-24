@@ -65,7 +65,7 @@
   switch (0)                                             \
   case 0:                                                \
   default:                                               \
-    !(condition) ? (void)0 : ::absl::log_internal::Voidify()&&
+    !(condition) ? (void)0 : ::absl::log_internal::Voidify() &&
 
 // `ABSL_LOG_INTERNAL_STATEFUL_CONDITION` applies a condition like
 // `ABSL_LOG_INTERNAL_STATELESS_CONDITION` but adds to that a series of variable
@@ -96,7 +96,8 @@
     for (const uint32_t COUNTER ABSL_ATTRIBUTE_UNUSED =                   \
              absl_log_internal_stateful_condition_state.counter();        \
          absl_log_internal_stateful_condition_do_log;                     \
-         absl_log_internal_stateful_condition_do_log = false)
+         absl_log_internal_stateful_condition_do_log = false)             \
+  ::absl::log_internal::Voidify() &&
 
 // `ABSL_LOG_INTERNAL_CONDITION_*` serve to combine any conditions from the
 // macro (e.g. `LOG_IF` or `VLOG`) with inherent conditions (e.g.

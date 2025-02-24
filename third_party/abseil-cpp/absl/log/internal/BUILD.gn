@@ -278,7 +278,10 @@ absl_source_set("test_matchers") {
 
 absl_source_set("voidify") {
   public = [ "voidify.h" ]
-  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+  ]
 }
 
 absl_source_set("proto") {

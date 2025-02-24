@@ -199,12 +199,10 @@ class NoDestructor {
       impl_;
 };
 
-#ifdef ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION
 // Provide 'Class Template Argument Deduction': the type of NoDestructor's T
 // will be the same type as the argument passed to NoDestructor's constructor.
 template <typename T>
 NoDestructor(T) -> NoDestructor<T>;
-#endif  // ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION
 
 ABSL_NAMESPACE_END
 }  // namespace absl

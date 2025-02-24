@@ -78,7 +78,6 @@ for std in ${STD}; do
           --copt="-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1" \
           --copt=-Werror \
           --define="absl=1" \
-          --enable_bzlmod=false \
           --features=external_include_paths \
           --keep_going \
           --show_timestamps \

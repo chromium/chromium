@@ -31,6 +31,7 @@
 #include "gtest/gtest.h"
 #include "absl/base/attributes.h"
 #include "absl/base/internal/exception_testing.h"
+#include "absl/base/internal/iterator_traits_test_helper.h"
 #include "absl/base/macros.h"
 #include "absl/base/options.h"
 #include "absl/container/internal/test_allocator.h"
@@ -645,6 +646,33 @@ TEST(IntVec, Insert) {
         EXPECT_THAT(v, ElementsAreArray(std_v));
         EXPECT_EQ(it, v.cbegin() + pos);
       }
+    }
+  }
+}
+
+TEST(IntPairVec, Insert) {
+  for (size_t len = 0; len < 20; len++) {
+    for (ptrdiff_t pos = 0; pos <= static_cast<ptrdiff_t>(len); pos++) {
+      // Iterator range (C++20 forward iterator)
+      const std::forward_list<int> unzipped_input = {9999, 8888, 7777};
+      const absl::base_internal::Cpp20ForwardZipIterator<
+          std::forward_list<int>::const_iterator>
+          begin(unzipped_input.cbegin(), unzipped_input.cbegin());
+      const absl::base_internal::Cpp20ForwardZipIterator<
+          std::forward_list<int>::const_iterator>
+          end(unzipped_input.cend(), unzipped_input.cend());
+
+      std::vector<std::pair<int, int>> std_v;
+      absl::InlinedVector<std::pair<int, int>, 8> v;
+      for (size_t i = 0; i < len; ++i) {
+        std_v.emplace_back(i, i);
+        v.emplace_back(i, i);
+      }
+
+      std_v.insert(std_v.begin() + pos, begin, end);
+      auto it = v.insert(v.cbegin() + pos, begin, end);
+      EXPECT_THAT(v, ElementsAreArray(std_v));
+      EXPECT_EQ(it, v.cbegin() + pos);
     }
   }
 }
