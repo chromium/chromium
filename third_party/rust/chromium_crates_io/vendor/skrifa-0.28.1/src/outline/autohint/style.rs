@@ -1,7 +1,7 @@
 //! Styles, scripts and glyph style mapping.
 
 use super::metrics::BlueZones;
-use super::shape::ShaperCoverageKind;
+use super::shape::{ShaperCoverageKind, VisitedLookupSet};
 use alloc::vec::Vec;
 use raw::types::{GlyphId, Tag};
 
@@ -122,6 +122,20 @@ impl GlyphStyleMap {
     ///
     /// Roughly based on <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/autofit/afglobal.c#L126>
     pub fn new(glyph_count: u32, shaper: &Shaper) -> Self {
+        let lookup_count = shaper.lookup_count() as usize;
+        if lookup_count > 0 {
+            // If we're processing lookups, allocate some temporary memory to
+            // store the visited set
+            let lookup_set_byte_size = (lookup_count + 7) / 8;
+            super::super::memory::with_temporary_memory(lookup_set_byte_size, |bytes| {
+                Self::new_inner(glyph_count, shaper, VisitedLookupSet::new(bytes))
+            })
+        } else {
+            Self::new_inner(glyph_count, shaper, VisitedLookupSet::new(&mut []))
+        }
+    }
+
+    fn new_inner(glyph_count: u32, shaper: &Shaper, mut visited_set: VisitedLookupSet) -> Self {
         let mut map = Self {
             styles: vec![GlyphStyle::default(); glyph_count as usize],
             metrics_map: [UNMAPPED_STYLE; MAX_STYLES],
@@ -131,7 +145,12 @@ impl GlyphStyleMap {
         // See <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/autofit/afglobal.c#L233>
         for style in super::style::STYLE_CLASSES {
             if style.feature.is_some()
-                && shaper.compute_coverage(style, ShaperCoverageKind::Script, &mut map.styles)
+                && shaper.compute_coverage(
+                    style,
+                    ShaperCoverageKind::Script,
+                    &mut map.styles,
+                    &mut visited_set,
+                )
             {
                 map.use_style(style.index);
             }
@@ -171,7 +190,12 @@ impl GlyphStyleMap {
         // See <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/autofit/afglobal.c#L239>
         for style in super::style::STYLE_CLASSES {
             if style.feature.is_none()
-                && shaper.compute_coverage(style, ShaperCoverageKind::Script, &mut map.styles)
+                && shaper.compute_coverage(
+                    style,
+                    ShaperCoverageKind::Script,
+                    &mut map.styles,
+                    &mut visited_set,
+                )
             {
                 map.use_style(style.index);
             }
@@ -180,7 +204,12 @@ impl GlyphStyleMap {
         // to Latin in FreeType
         // See <https://gitlab.freedesktop.org/freetype/freetype/-/blob/57617782464411201ce7bbc93b086c1b4d7d84a5/src/autofit/afglobal.c#L248>
         let default_style = &STYLE_CLASSES[StyleClass::LATN];
-        if shaper.compute_coverage(default_style, ShaperCoverageKind::Default, &mut map.styles) {
+        if shaper.compute_coverage(
+            default_style,
+            ShaperCoverageKind::Default,
+            &mut map.styles,
+            &mut visited_set,
+        ) {
             map.use_style(default_style.index);
         }
         // Step 4: Assign a default to all remaining glyphs

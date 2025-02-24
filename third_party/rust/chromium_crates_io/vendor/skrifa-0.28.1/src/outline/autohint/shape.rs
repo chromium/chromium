@@ -107,6 +107,14 @@ impl<'a> Shaper<'a> {
         &self.charmap
     }
 
+    pub fn lookup_count(&self) -> u16 {
+        self.gsub
+            .as_ref()
+            .and_then(|gsub| gsub.lookup_list().ok())
+            .map(|list| list.lookup_count())
+            .unwrap_or_default()
+    }
+
     pub fn cluster_shaper(&'a self, style: &StyleClass) -> ClusterShaper<'a> {
         if self.mode == ShaperMode::BestEffort {
             // For now, only apply substitutions for styles with an associated
@@ -149,6 +157,7 @@ impl<'a> Shaper<'a> {
         style: &StyleClass,
         coverage_kind: ShaperCoverageKind,
         glyph_styles: &mut [GlyphStyle],
+        visited_set: &mut VisitedLookupSet<'_>,
     ) -> bool {
         let Some(gsub) = self.gsub.as_ref() else {
             return false;
@@ -192,7 +201,13 @@ impl<'a> Shaper<'a> {
             }
         }
         // Check each requested script that is available in GSUB
-        let mut gsub_handler = GsubHandler::new(&self.charmap, &lookup_list, style, glyph_styles);
+        let mut gsub_handler = GsubHandler::new(
+            &self.charmap,
+            &lookup_list,
+            style,
+            glyph_styles,
+            visited_set,
+        );
         for script in script_tags.iter().filter_map(|tag| {
             tag.and_then(|tag| script_list.index_for_tag(tag))
                 .and_then(|ix| script_list.script_records().get(ix as usize))
@@ -379,7 +394,7 @@ enum ClusterShaperKind<'a> {
 /// to allocate a lookup set or iterate them twice. Note that since
 /// substitutions are checked for individual characters, we ignore ligatures
 /// and contextual lookups (and alternates since they aren't applicable).
-struct GsubHandler<'a> {
+struct GsubHandler<'a, 'b> {
     charmap: &'a Charmap<'a>,
     lookup_list: &'a SubstitutionLookupList<'a>,
     style: &'a StyleClass,
@@ -390,17 +405,17 @@ struct GsubHandler<'a> {
     // Keep track of our range of touched gids in the style list
     min_gid: usize,
     max_gid: usize,
-    // Stack for detecting cycles in lookups
-    lookup_stack: [u16; MAX_NESTING_DEPTH],
     lookup_depth: usize,
+    visited_set: &'a mut VisitedLookupSet<'b>,
 }
 
-impl<'a> GsubHandler<'a> {
+impl<'a, 'b> GsubHandler<'a, 'b> {
     fn new(
         charmap: &'a Charmap<'a>,
         lookup_list: &'a SubstitutionLookupList,
         style: &'a StyleClass,
         glyph_styles: &'a mut [GlyphStyle],
+        visited_set: &'a mut VisitedLookupSet<'b>,
     ) -> Self {
         let min_gid = glyph_styles.len();
         // If we have a feature, then we need to check the blue string to see
@@ -415,29 +430,23 @@ impl<'a> GsubHandler<'a> {
             need_blue_substs,
             min_gid,
             max_gid: 0,
-            lookup_stack: [0; MAX_NESTING_DEPTH],
             lookup_depth: 0,
+            visited_set,
         }
     }
 
     fn process_lookup(&mut self, lookup_index: u16) -> Result<(), ProcessLookupError> {
-        // Guard: don't cycle and don't exceed depth limit
-        // Note: we use a linear search here under the assumption that
-        // most fonts have shallow contextual lookup chains
-        if self.lookup_depth != 0 {
-            if self.lookup_depth == MAX_NESTING_DEPTH {
-                return Err(ProcessLookupError::ExceededMaxDepth);
-            }
-            if self.lookup_stack[..self.lookup_depth].contains(&lookup_index) {
-                return Err(ProcessLookupError::CycleDetected);
-            }
+        // General protection against stack overflows
+        if self.lookup_depth == MAX_NESTING_DEPTH {
+            return Err(ProcessLookupError::ExceededMaxDepth);
         }
-        self.lookup_stack[self.lookup_depth] = lookup_index;
+        // Skip lookups that have already been processed
+        if !self.visited_set.insert(lookup_index) {
+            return Ok(());
+        }
         self.lookup_depth += 1;
-
         // Actually process the lookup
         let result = self.process_lookup_inner(lookup_index);
-
         // Out we go again
         self.lookup_depth -= 1;
         result
@@ -611,6 +620,7 @@ impl<'a> GsubHandler<'a> {
     /// Finishes processing for this set of GSUB lookups and
     /// returns the range of touched glyphs.
     fn finish(self) -> Option<Range<usize>> {
+        self.visited_set.clear();
         if self.min_gid > self.max_gid {
             // We didn't touch any glyphs
             return None;
@@ -660,10 +670,40 @@ impl<'a> GsubHandler<'a> {
     }
 }
 
+pub(crate) struct VisitedLookupSet<'a>(&'a mut [u8]);
+
+impl<'a> VisitedLookupSet<'a> {
+    pub fn new(storage: &'a mut [u8]) -> Self {
+        Self(storage)
+    }
+
+    /// If the given lookup index is not already in the set, adds it and
+    /// returns `true`. Returns `false` otherwise.
+    ///
+    /// This follows the behavior of `HashSet::insert`.
+    fn insert(&mut self, lookup_index: u16) -> bool {
+        let byte_ix = lookup_index as usize / 8;
+        let bit_mask = 1 << (lookup_index % 8) as u8;
+        if let Some(byte) = self.0.get_mut(byte_ix) {
+            if *byte & bit_mask == 0 {
+                *byte |= bit_mask;
+                true
+            } else {
+                false
+            }
+        } else {
+            false
+        }
+    }
+
+    fn clear(&mut self) {
+        self.0.fill(0);
+    }
+}
+
 #[derive(PartialEq, Debug)]
 enum ProcessLookupError {
     ExceededMaxDepth,
-    CycleDetected,
 }
 
 #[cfg(test)]
@@ -711,7 +751,15 @@ mod tests {
         }
         let lookup_list_buf = bad_lookup_builder.build();
         let lookup_list = SubstitutionLookupList::read(FontData::new(&lookup_list_buf)).unwrap();
-        let mut gsub_handler = GsubHandler::new(&shaper.charmap, &lookup_list, style, &mut []);
+        let mut set_buf = [0u8; 8192];
+        let mut visited_set = VisitedLookupSet(&mut set_buf);
+        let mut gsub_handler = GsubHandler::new(
+            &shaper.charmap,
+            &lookup_list,
+            style,
+            &mut [],
+            &mut visited_set,
+        );
         assert_eq!(
             gsub_handler.process_lookup(0),
             Err(ProcessLookupError::ExceededMaxDepth)
@@ -719,7 +767,7 @@ mod tests {
     }
 
     #[test]
-    fn detect_cycles() {
+    fn dont_cycle_forever() {
         let font = FontRef::new(font_test_data::NOTOSERIF_AUTOHINT_SHAPING).unwrap();
         let shaper = Shaper::new(&font, ShaperMode::BestEffort);
         let style = &style::STYLE_CLASSES[style::StyleClass::LATN];
@@ -729,11 +777,32 @@ mod tests {
         bad_lookup_builder.lookups.push(0);
         let lookup_list_buf = bad_lookup_builder.build();
         let lookup_list = SubstitutionLookupList::read(FontData::new(&lookup_list_buf)).unwrap();
-        let mut gsub_handler = GsubHandler::new(&shaper.charmap, &lookup_list, style, &mut []);
-        assert_eq!(
-            gsub_handler.process_lookup(0),
-            Err(ProcessLookupError::CycleDetected)
+        let mut set_buf = [0u8; 8192];
+        let mut visited_set = VisitedLookupSet(&mut set_buf);
+        let mut gsub_handler = GsubHandler::new(
+            &shaper.charmap,
+            &lookup_list,
+            style,
+            &mut [],
+            &mut visited_set,
         );
+        gsub_handler.process_lookup(0).unwrap();
+    }
+
+    #[test]
+    fn visited_set() {
+        let count = 2341u16;
+        let n_bytes = (count as usize + 7) / 8;
+        let mut set_buf = vec![0u8; n_bytes];
+        let mut set = VisitedLookupSet::new(&mut set_buf);
+        for i in 0..count {
+            assert!(set.insert(i));
+            assert!(!set.insert(i));
+        }
+        for byte in &set_buf[0..set_buf.len() - 1] {
+            assert_eq!(*byte, 0xFF);
+        }
+        assert_eq!(*set_buf.last().unwrap(), 0b00011111);
     }
 
     #[derive(Default)]

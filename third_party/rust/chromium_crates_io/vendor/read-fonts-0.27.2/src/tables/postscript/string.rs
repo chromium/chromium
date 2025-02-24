@@ -67,6 +67,11 @@ impl<'a> Latin1String<'a> {
     pub fn chars(&self) -> impl Iterator<Item = char> + Clone + 'a {
         self.chars.iter().map(|b| *b as char)
     }
+
+    /// Returns the raw bytes of the string.
+    pub fn bytes(&self) -> &'a [u8] {
+        self.chars
+    }
 }
 
 impl PartialEq<&str> for Latin1String<'_> {

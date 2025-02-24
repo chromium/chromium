@@ -3,6 +3,7 @@
 use std::fmt;
 
 mod blend;
+mod charset;
 mod fd_select;
 mod index;
 mod stack;
@@ -14,6 +15,7 @@ pub mod dict;
 include!("../../generated/generated_postscript.rs");
 
 pub use blend::BlendState;
+pub use charset::{Charset, CharsetIter};
 pub use index::Index;
 pub use stack::{Number, Stack};
 pub use string::{Latin1String, StringId, STANDARD_STRINGS};

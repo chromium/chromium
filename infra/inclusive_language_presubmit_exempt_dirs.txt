@@ -46,7 +46,6 @@ chrome/browser/autofill/android/junit/src/org/chromium/chrome/browser/autofill/e
 chrome/browser/chromeos/extensions/telemetry 2 1
 chrome/browser/download 1 1
 chrome/browser/extensions 2 1
-chrome/browser/extensions/api/identity 1 1
 chrome/browser/extensions/commands 3 1
 chrome/browser/feed/android 1 1
 chrome/browser/first_run 1 1
@@ -458,7 +457,6 @@ third_party/blink/web_tests/external/wpt/resource-timing 1 1
 third_party/blink/web_tests/external/wpt/sanitizer-api/support 3 1
 third_party/blink/web_tests/external/wpt/wai-aria/scripts 1 1
 third_party/blink/web_tests/external/wpt/webaudio/js 1 1
-third_party/blink/web_tests/external/wpt/webcodecs 1 1
 third_party/blink/web_tests/external/wpt/webrtc 1 1
 third_party/blink/web_tests/external/wpt/webrtc/third_party/sdp 2 1
 third_party/blink/web_tests/external/wpt/websockets/stream/tentative 1 1
@@ -700,7 +698,7 @@ third_party/rust/chromium_crates_io/vendor/rand_chacha-0.3.1 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4/src 3 1
 third_party/rust/chromium_crates_io/vendor/rand_pcg-0.3.1 4 1
-third_party/rust/chromium_crates_io/vendor/read-fonts-0.27.1/src/tables 3 2
+third_party/rust/chromium_crates_io/vendor/read-fonts-0.27.2/src/tables 3 2
 third_party/rust/chromium_crates_io/vendor/regex-1.11.1 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.11.1/src 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.11.1/tests 7 6
@@ -750,7 +748,7 @@ third_party/rust/chromium_crates_io/vendor/windows-sys-0.52.0/src/Windows/Wdk/Sy
 third_party/rust/chromium_crates_io/vendor/windows-sys-0.52.0/src/Windows/Win32/Networking/Clustering 2 1
 third_party/rust/chromium_crates_io/vendor/write16-1.0.0 1 1
 third_party/rust/chromium_crates_io/vendor/zerocopy-0.7.35 1 1
-third_party/screen-ai 3 1
+third_party/screen-ai 2 1
 third_party/sentencepiece/src 2 2
 third_party/sentencepiece/src/doc 3 1
 third_party/sentencepiece/src/src 1 1

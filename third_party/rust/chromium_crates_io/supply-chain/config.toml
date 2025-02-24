@@ -368,7 +368,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."rand_pcg:0.3.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."read-fonts:0.27.1"]
+[policy."read-fonts:0.27.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."regex-automata:0.4.9"]
@@ -434,7 +434,7 @@ criteria = []
 [policy."simd-adler32:0.3.7"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."skrifa:0.28.0"]
+[policy."skrifa:0.28.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."small_ctor:0.1.2"]
@@ -763,9 +763,10 @@ https://crbug.com/366411886
 
 Bumped up the exemption to 1.14.0 in February 2025.
 WARNING: The `malloc_size_of` feature has **not** been audited because
-this feature does not explicitly document its safetly requirements.
+this feature does not explicitly document its safety requirements.
 See also https://chromium-review.googlesource.com/c/chromium/src/+/6275133/comment/ea0d7a93_98051a2e/
 and https://github.com/servo/malloc_size_of/issues/8.
+This feature is banned in gnrt_config.toml.
 """
 
 [[exemptions.syn]]

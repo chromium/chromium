@@ -2,7 +2,7 @@
 
 include!("../../generated/generated_cff.rs");
 
-use super::postscript::{Index1, Latin1String, StringId};
+use super::postscript::{dict, Charset, Error, Index1, Latin1String, StringId};
 
 /// The [Compact Font Format](https://learn.microsoft.com/en-us/typography/opentype/spec/cff) table.
 #[derive(Clone)]
@@ -79,6 +79,40 @@ impl<'a> Cff<'a> {
     pub fn global_subrs(&self) -> Index1<'a> {
         self.global_subrs.clone()
     }
+
+    /// Returns the character set associated with the top dict at the given
+    /// index.
+    ///
+    /// See "Charsets" at <https://adobe-type-tools.github.io/font-tech-notes/pdfs/5176.CFF.pdf#page=21>
+    pub fn charset(&self, top_dict_index: usize) -> Result<Option<Charset<'a>>, Error> {
+        let top_dict = self.top_dicts().get(top_dict_index)?;
+        let offset_data = self.offset_data();
+        let mut charset_offset: Option<usize> = None;
+        let mut num_glyphs: Option<u32> = None;
+        for entry in dict::entries(top_dict, None) {
+            match entry {
+                Ok(dict::Entry::Charset(offset)) => {
+                    charset_offset = Some(offset);
+                }
+                Ok(dict::Entry::CharstringsOffset(offset)) => {
+                    num_glyphs = Some(
+                        Index1::read(
+                            offset_data
+                                .split_off(offset)
+                                .ok_or(ReadError::OutOfBounds)?,
+                        )?
+                        .count() as u32,
+                    );
+                }
+                _ => {}
+            }
+        }
+        if let Some((charset_offset, num_glyphs)) = charset_offset.zip(num_glyphs) {
+            Ok(Some(Charset::new(offset_data, charset_offset, num_glyphs)?))
+        } else {
+            Ok(None)
+        }
+    }
 }
 
 impl TopLevelTable for Cff<'_> {
@@ -151,5 +185,34 @@ mod tests {
             cff.string(StringId::new(395)).unwrap(),
             "Noto Serif Display"
         );
+    }
+
+    #[test]
+    fn glyph_names() {
+        test_glyph_names(
+            font_test_data::NOTO_SERIF_DISPLAY_TRIMMED,
+            &[".notdef", "i", "j", "k", "l"],
+        );
+    }
+
+    #[test]
+    fn icons_glyph_names() {
+        test_glyph_names(font_test_data::MATERIAL_ICONS_SUBSET, &[".notdef", "_10k"]);
+    }
+
+    fn test_glyph_names(font_data: &[u8], expected_names: &[&str]) {
+        let font = FontRef::new(font_data).unwrap();
+        let cff = font.cff().unwrap();
+        let charset = cff.charset(0).unwrap().unwrap();
+        let sid_to_string = |sid| std::str::from_utf8(cff.string(sid).unwrap().bytes()).unwrap();
+        let names_by_lookup = (0..charset.num_glyphs())
+            .map(|gid| sid_to_string(charset.string_id(GlyphId::new(gid)).unwrap()))
+            .collect::<Vec<_>>();
+        assert_eq!(names_by_lookup, expected_names);
+        let names_by_iter = charset
+            .iter()
+            .map(|(_gid, sid)| sid_to_string(sid))
+            .collect::<Vec<_>>();
+        assert_eq!(names_by_iter, expected_names);
     }
 }

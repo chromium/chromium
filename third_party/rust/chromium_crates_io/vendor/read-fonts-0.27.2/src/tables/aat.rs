@@ -30,7 +30,7 @@ impl Lookup0<'_> {
 
 /// Lookup segment for format 2.
 #[derive(Copy, Clone, bytemuck::AnyBitPattern)]
-#[repr(packed)]
+#[repr(C, packed)]
 pub struct LookupSegment2<T>
 where
     T: LookupValue,
@@ -93,7 +93,7 @@ impl Lookup4<'_> {
 
 /// Lookup single record for format 6.
 #[derive(Copy, Clone, bytemuck::AnyBitPattern)]
-#[repr(packed)]
+#[repr(C, packed)]
 pub struct LookupSingle<T>
 where
     T: LookupValue,
@@ -661,7 +661,7 @@ mod tests {
     }
 
     #[derive(Copy, Clone, Debug, bytemuck::AnyBitPattern)]
-    #[repr(packed)]
+    #[repr(C, packed)]
     struct ContextualData {
         _mark_index: BigEndian<u16>,
         current_index: BigEndian<u16>,

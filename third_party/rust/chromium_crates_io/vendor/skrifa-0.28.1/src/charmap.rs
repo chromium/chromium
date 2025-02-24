@@ -16,11 +16,11 @@
 
 use read_fonts::{
     tables::cmap::{
-        self, Cmap, Cmap12, Cmap12Iter, Cmap14, Cmap14Iter, Cmap4, Cmap4Iter, CmapSubtable,
-        EncodingRecord, PlatformId,
+        self, Cmap, Cmap12, Cmap12Iter, Cmap12IterLimits, Cmap14, Cmap14Iter, Cmap4, Cmap4Iter,
+        CmapSubtable, EncodingRecord, PlatformId,
     },
     types::GlyphId,
-    FontData, TableProvider,
+    FontData, FontRef, TableProvider,
 };
 
 pub use read_fonts::tables::cmap::MapVariant;
@@ -32,7 +32,7 @@ pub use read_fonts::tables::cmap::MapVariant;
 ///
 /// ## Obtaining a Charmap
 ///
-/// Typically a Charmap is acquired by calling [charmap](crate::MetadataProvider::charmap) on a [FontRef](crate::FontRef).
+/// Typically a Charmap is acquired by calling [charmap](crate::MetadataProvider::charmap) on a [FontRef].
 ///
 /// ## Selection strategy
 ///
@@ -54,15 +54,16 @@ pub use read_fonts::tables::cmap::MapVariant;
 pub struct Charmap<'a> {
     codepoint_subtable: Option<CodepointSubtable<'a>>,
     variant_subtable: Option<Cmap14<'a>>,
+    cmap12_limits: Cmap12IterLimits,
 }
 
 impl<'a> Charmap<'a> {
     /// Creates a new character map from the given font.
-    pub fn new(font: &impl TableProvider<'a>) -> Self {
+    pub fn new(font: &FontRef<'a>) -> Self {
         let Ok(cmap) = font.cmap() else {
             return Default::default();
         };
-        let selection = MappingSelection::new(&cmap);
+        let selection = MappingSelection::new(font, &cmap);
         Self {
             codepoint_subtable: selection
                 .codepoint_subtable
@@ -71,6 +72,7 @@ impl<'a> Charmap<'a> {
                     is_symbol: selection.mapping_index.codepoint_subtable_is_symbol,
                 }),
             variant_subtable: selection.variant_subtable,
+            cmap12_limits: selection.mapping_index.cmap12_limits,
         }
     }
 
@@ -107,7 +109,9 @@ impl<'a> Charmap<'a> {
             .map(|subtable| {
                 Mappings(match &subtable.subtable {
                     SupportedSubtable::Format4(cmap4) => MappingsInner::Format4(cmap4.iter()),
-                    SupportedSubtable::Format12(cmap12) => MappingsInner::Format12(cmap12.iter()),
+                    SupportedSubtable::Format12(cmap12) => {
+                        MappingsInner::Format12(cmap12.iter_with_limits(self.cmap12_limits))
+                    }
                 })
             })
             .unwrap_or(Mappings(MappingsInner::None))
@@ -142,23 +146,25 @@ pub struct MappingIndex {
     codepoint_subtable_is_symbol: bool,
     /// Index of Unicode variation selector subtable.
     variant_subtable: Option<u16>,
+    /// Limits for iterating a cmap format 12 subtable.
+    cmap12_limits: Cmap12IterLimits,
 }
 
 impl MappingIndex {
     /// Finds the indices of the most suitable Unicode mapping tables in the
     /// given font.
-    pub fn new<'a>(font: &impl TableProvider<'a>) -> Self {
+    pub fn new(font: &FontRef) -> Self {
         let Ok(cmap) = font.cmap() else {
             return Default::default();
         };
-        MappingSelection::new(&cmap).mapping_index
+        MappingSelection::new(font, &cmap).mapping_index
     }
 
     /// Creates a new character map for the given font using the tables referenced by
     /// the precomputed indices.
     ///
     /// The font should be the same as the one used to construct this object.
-    pub fn charmap<'a>(&self, font: &impl TableProvider<'a>) -> Charmap<'a> {
+    pub fn charmap<'a>(&self, font: &FontRef<'a>) -> Charmap<'a> {
         let Ok(cmap) = font.cmap() else {
             return Default::default();
         };
@@ -180,6 +186,7 @@ impl MappingIndex {
                     CmapSubtable::Format14(cmap14) => Some(cmap14),
                     _ => None,
                 }),
+            cmap12_limits: Cmap12IterLimits::default_for_font(font),
         }
     }
 }
@@ -319,7 +326,7 @@ struct MappingSelection<'a> {
 }
 
 impl<'a> MappingSelection<'a> {
-    fn new(cmap: &Cmap<'a>) -> Self {
+    fn new(font: &FontRef<'a>, cmap: &Cmap<'a>) -> Self {
         const ENCODING_MS_SYMBOL: u16 = 0;
         const ENCODING_MS_UNICODE_CS: u16 = 1;
         const ENCODING_APPLE_ID_UNICODE_32: u16 = 4;
@@ -380,6 +387,7 @@ impl<'a> MappingSelection<'a> {
                 _ => {}
             }
         }
+        mapping_index.cmap12_limits = Cmap12IterLimits::default_for_font(font);
         Self {
             mapping_index,
             codepoint_subtable,

@@ -32,9 +32,10 @@ impl Engine<'_> {
         let ppem = gs.ppem as u32;
         let point_count = gs.zp0().points.len();
         let n = self.value_stack.pop_count_checked()?;
-        // Additionally limit n to the number of points in zp0 since
-        // we don't expect to modify a point more than once
-        let n = n.min(point_count);
+        // Each exception requires two values on the stack so limit our
+        // count to prevent looping in non-pedantic mode (where the stack ops
+        // will produce 0 instead of an underflow error)
+        let n = n.min(self.value_stack.len() / 2);
         let bias = match opcode {
             Opcode::DELTAP2 => 16,
             Opcode::DELTAP3 => 32,
@@ -98,9 +99,10 @@ impl Engine<'_> {
         let gs = &mut self.graphics;
         let ppem = gs.ppem as u32;
         let n = self.value_stack.pop_count_checked()?;
-        // Additionally limit n to the number of CVT entries since we
-        // don't expect to modify an entry more than once
-        let n = n.min(self.cvt.len());
+        // Each exception requires two values on the stack so limit our
+        // count to prevent looping in non-pedantic mode (where the stack ops
+        // will produce 0 instead of an underflow error)
+        let n = n.min(self.value_stack.len() / 2);
         let bias = match opcode {
             Opcode::DELTAC2 => 16,
             Opcode::DELTAC3 => 32,

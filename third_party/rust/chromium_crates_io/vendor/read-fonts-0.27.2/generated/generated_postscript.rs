@@ -689,3 +689,418 @@ impl<'a> SomeRecord<'a> for FdSelectRange4 {
         }
     }
 }
+
+/// Charset with custom glyph id to string id mappings.
+#[derive(Clone)]
+pub enum CustomCharset<'a> {
+    Format0(CharsetFormat0<'a>),
+    Format1(CharsetFormat1<'a>),
+    Format2(CharsetFormat2<'a>),
+}
+
+impl<'a> CustomCharset<'a> {
+    ///Return the `FontData` used to resolve offsets for this table.
+    pub fn offset_data(&self) -> FontData<'a> {
+        match self {
+            Self::Format0(item) => item.offset_data(),
+            Self::Format1(item) => item.offset_data(),
+            Self::Format2(item) => item.offset_data(),
+        }
+    }
+
+    /// Format; =0
+    pub fn format(&self) -> u8 {
+        match self {
+            Self::Format0(item) => item.format(),
+            Self::Format1(item) => item.format(),
+            Self::Format2(item) => item.format(),
+        }
+    }
+}
+
+impl<'a> FontRead<'a> for CustomCharset<'a> {
+    fn read(data: FontData<'a>) -> Result<Self, ReadError> {
+        let format: u8 = data.read_at(0usize)?;
+        match format {
+            CharsetFormat0Marker::FORMAT => Ok(Self::Format0(FontRead::read(data)?)),
+            CharsetFormat1Marker::FORMAT => Ok(Self::Format1(FontRead::read(data)?)),
+            CharsetFormat2Marker::FORMAT => Ok(Self::Format2(FontRead::read(data)?)),
+            other => Err(ReadError::InvalidFormat(other.into())),
+        }
+    }
+}
+
+impl MinByteRange for CustomCharset<'_> {
+    fn min_byte_range(&self) -> Range<usize> {
+        match self {
+            Self::Format0(item) => item.min_byte_range(),
+            Self::Format1(item) => item.min_byte_range(),
+            Self::Format2(item) => item.min_byte_range(),
+        }
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> CustomCharset<'a> {
+    fn dyn_inner<'b>(&'b self) -> &'b dyn SomeTable<'a> {
+        match self {
+            Self::Format0(table) => table,
+            Self::Format1(table) => table,
+            Self::Format2(table) => table,
+        }
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl std::fmt::Debug for CustomCharset<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.dyn_inner().fmt(f)
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> SomeTable<'a> for CustomCharset<'a> {
+    fn type_name(&self) -> &str {
+        self.dyn_inner().type_name()
+    }
+    fn get_field(&self, idx: usize) -> Option<Field<'a>> {
+        self.dyn_inner().get_field(idx)
+    }
+}
+
+impl Format<u8> for CharsetFormat0Marker {
+    const FORMAT: u8 = 0;
+}
+
+/// Charset format 0.
+#[derive(Debug, Clone, Copy)]
+#[doc(hidden)]
+pub struct CharsetFormat0Marker {
+    glyph_byte_len: usize,
+}
+
+impl CharsetFormat0Marker {
+    pub fn format_byte_range(&self) -> Range<usize> {
+        let start = 0;
+        start..start + u8::RAW_BYTE_LEN
+    }
+
+    pub fn glyph_byte_range(&self) -> Range<usize> {
+        let start = self.format_byte_range().end;
+        start..start + self.glyph_byte_len
+    }
+}
+
+impl MinByteRange for CharsetFormat0Marker {
+    fn min_byte_range(&self) -> Range<usize> {
+        0..self.glyph_byte_range().end
+    }
+}
+
+impl<'a> FontRead<'a> for CharsetFormat0<'a> {
+    fn read(data: FontData<'a>) -> Result<Self, ReadError> {
+        let mut cursor = data.cursor();
+        cursor.advance::<u8>();
+        let glyph_byte_len = cursor.remaining_bytes() / u16::RAW_BYTE_LEN * u16::RAW_BYTE_LEN;
+        cursor.advance_by(glyph_byte_len);
+        cursor.finish(CharsetFormat0Marker { glyph_byte_len })
+    }
+}
+
+/// Charset format 0.
+pub type CharsetFormat0<'a> = TableRef<'a, CharsetFormat0Marker>;
+
+#[allow(clippy::needless_lifetimes)]
+impl<'a> CharsetFormat0<'a> {
+    /// Format; =0
+    pub fn format(&self) -> u8 {
+        let range = self.shape.format_byte_range();
+        self.data.read_at(range.start).unwrap()
+    }
+
+    /// Glyph name array.
+    pub fn glyph(&self) -> &'a [BigEndian<u16>] {
+        let range = self.shape.glyph_byte_range();
+        self.data.read_array(range).unwrap()
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> SomeTable<'a> for CharsetFormat0<'a> {
+    fn type_name(&self) -> &str {
+        "CharsetFormat0"
+    }
+    fn get_field(&self, idx: usize) -> Option<Field<'a>> {
+        match idx {
+            0usize => Some(Field::new("format", self.format())),
+            1usize => Some(Field::new("glyph", self.glyph())),
+            _ => None,
+        }
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+#[allow(clippy::needless_lifetimes)]
+impl<'a> std::fmt::Debug for CharsetFormat0<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        (self as &dyn SomeTable<'a>).fmt(f)
+    }
+}
+
+impl Format<u8> for CharsetFormat1Marker {
+    const FORMAT: u8 = 1;
+}
+
+/// Charset format 1.
+#[derive(Debug, Clone, Copy)]
+#[doc(hidden)]
+pub struct CharsetFormat1Marker {
+    ranges_byte_len: usize,
+}
+
+impl CharsetFormat1Marker {
+    pub fn format_byte_range(&self) -> Range<usize> {
+        let start = 0;
+        start..start + u8::RAW_BYTE_LEN
+    }
+
+    pub fn ranges_byte_range(&self) -> Range<usize> {
+        let start = self.format_byte_range().end;
+        start..start + self.ranges_byte_len
+    }
+}
+
+impl MinByteRange for CharsetFormat1Marker {
+    fn min_byte_range(&self) -> Range<usize> {
+        0..self.ranges_byte_range().end
+    }
+}
+
+impl<'a> FontRead<'a> for CharsetFormat1<'a> {
+    fn read(data: FontData<'a>) -> Result<Self, ReadError> {
+        let mut cursor = data.cursor();
+        cursor.advance::<u8>();
+        let ranges_byte_len =
+            cursor.remaining_bytes() / CharsetRange1::RAW_BYTE_LEN * CharsetRange1::RAW_BYTE_LEN;
+        cursor.advance_by(ranges_byte_len);
+        cursor.finish(CharsetFormat1Marker { ranges_byte_len })
+    }
+}
+
+/// Charset format 1.
+pub type CharsetFormat1<'a> = TableRef<'a, CharsetFormat1Marker>;
+
+#[allow(clippy::needless_lifetimes)]
+impl<'a> CharsetFormat1<'a> {
+    /// Format; =1
+    pub fn format(&self) -> u8 {
+        let range = self.shape.format_byte_range();
+        self.data.read_at(range.start).unwrap()
+    }
+
+    /// Range1 array.
+    pub fn ranges(&self) -> &'a [CharsetRange1] {
+        let range = self.shape.ranges_byte_range();
+        self.data.read_array(range).unwrap()
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> SomeTable<'a> for CharsetFormat1<'a> {
+    fn type_name(&self) -> &str {
+        "CharsetFormat1"
+    }
+    fn get_field(&self, idx: usize) -> Option<Field<'a>> {
+        match idx {
+            0usize => Some(Field::new("format", self.format())),
+            1usize => Some(Field::new(
+                "ranges",
+                traversal::FieldType::array_of_records(
+                    stringify!(CharsetRange1),
+                    self.ranges(),
+                    self.offset_data(),
+                ),
+            )),
+            _ => None,
+        }
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+#[allow(clippy::needless_lifetimes)]
+impl<'a> std::fmt::Debug for CharsetFormat1<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        (self as &dyn SomeTable<'a>).fmt(f)
+    }
+}
+
+/// Range struct for Charset format 1.
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Copy, bytemuck :: AnyBitPattern)]
+#[repr(C)]
+#[repr(packed)]
+pub struct CharsetRange1 {
+    /// First glyph in range.
+    pub first: BigEndian<u16>,
+    /// Glyphs left in range (excluding first).
+    pub n_left: u8,
+}
+
+impl CharsetRange1 {
+    /// First glyph in range.
+    pub fn first(&self) -> u16 {
+        self.first.get()
+    }
+
+    /// Glyphs left in range (excluding first).
+    pub fn n_left(&self) -> u8 {
+        self.n_left
+    }
+}
+
+impl FixedSize for CharsetRange1 {
+    const RAW_BYTE_LEN: usize = u16::RAW_BYTE_LEN + u8::RAW_BYTE_LEN;
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> SomeRecord<'a> for CharsetRange1 {
+    fn traverse(self, data: FontData<'a>) -> RecordResolver<'a> {
+        RecordResolver {
+            name: "CharsetRange1",
+            get_field: Box::new(move |idx, _data| match idx {
+                0usize => Some(Field::new("first", self.first())),
+                1usize => Some(Field::new("n_left", self.n_left())),
+                _ => None,
+            }),
+            data,
+        }
+    }
+}
+
+impl Format<u8> for CharsetFormat2Marker {
+    const FORMAT: u8 = 2;
+}
+
+/// Charset format 2.
+#[derive(Debug, Clone, Copy)]
+#[doc(hidden)]
+pub struct CharsetFormat2Marker {
+    ranges_byte_len: usize,
+}
+
+impl CharsetFormat2Marker {
+    pub fn format_byte_range(&self) -> Range<usize> {
+        let start = 0;
+        start..start + u8::RAW_BYTE_LEN
+    }
+
+    pub fn ranges_byte_range(&self) -> Range<usize> {
+        let start = self.format_byte_range().end;
+        start..start + self.ranges_byte_len
+    }
+}
+
+impl MinByteRange for CharsetFormat2Marker {
+    fn min_byte_range(&self) -> Range<usize> {
+        0..self.ranges_byte_range().end
+    }
+}
+
+impl<'a> FontRead<'a> for CharsetFormat2<'a> {
+    fn read(data: FontData<'a>) -> Result<Self, ReadError> {
+        let mut cursor = data.cursor();
+        cursor.advance::<u8>();
+        let ranges_byte_len =
+            cursor.remaining_bytes() / CharsetRange2::RAW_BYTE_LEN * CharsetRange2::RAW_BYTE_LEN;
+        cursor.advance_by(ranges_byte_len);
+        cursor.finish(CharsetFormat2Marker { ranges_byte_len })
+    }
+}
+
+/// Charset format 2.
+pub type CharsetFormat2<'a> = TableRef<'a, CharsetFormat2Marker>;
+
+#[allow(clippy::needless_lifetimes)]
+impl<'a> CharsetFormat2<'a> {
+    /// Format; =2
+    pub fn format(&self) -> u8 {
+        let range = self.shape.format_byte_range();
+        self.data.read_at(range.start).unwrap()
+    }
+
+    /// Range2 array.
+    pub fn ranges(&self) -> &'a [CharsetRange2] {
+        let range = self.shape.ranges_byte_range();
+        self.data.read_array(range).unwrap()
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> SomeTable<'a> for CharsetFormat2<'a> {
+    fn type_name(&self) -> &str {
+        "CharsetFormat2"
+    }
+    fn get_field(&self, idx: usize) -> Option<Field<'a>> {
+        match idx {
+            0usize => Some(Field::new("format", self.format())),
+            1usize => Some(Field::new(
+                "ranges",
+                traversal::FieldType::array_of_records(
+                    stringify!(CharsetRange2),
+                    self.ranges(),
+                    self.offset_data(),
+                ),
+            )),
+            _ => None,
+        }
+    }
+}
+
+#[cfg(feature = "experimental_traverse")]
+#[allow(clippy::needless_lifetimes)]
+impl<'a> std::fmt::Debug for CharsetFormat2<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        (self as &dyn SomeTable<'a>).fmt(f)
+    }
+}
+
+/// Range struct for Charset format 2.
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Copy, bytemuck :: AnyBitPattern)]
+#[repr(C)]
+#[repr(packed)]
+pub struct CharsetRange2 {
+    /// First glyph in range.
+    pub first: BigEndian<u16>,
+    /// Glyphs left in range (excluding first).
+    pub n_left: BigEndian<u16>,
+}
+
+impl CharsetRange2 {
+    /// First glyph in range.
+    pub fn first(&self) -> u16 {
+        self.first.get()
+    }
+
+    /// Glyphs left in range (excluding first).
+    pub fn n_left(&self) -> u16 {
+        self.n_left.get()
+    }
+}
+
+impl FixedSize for CharsetRange2 {
+    const RAW_BYTE_LEN: usize = u16::RAW_BYTE_LEN + u16::RAW_BYTE_LEN;
+}
+
+#[cfg(feature = "experimental_traverse")]
+impl<'a> SomeRecord<'a> for CharsetRange2 {
+    fn traverse(self, data: FontData<'a>) -> RecordResolver<'a> {
+        RecordResolver {
+            name: "CharsetRange2",
+            get_field: Box::new(move |idx, _data| match idx {
+                0usize => Some(Field::new("first", self.first())),
+                1usize => Some(Field::new("n_left", self.n_left())),
+                _ => None,
+            }),
+            data,
+        }
+    }
+}
