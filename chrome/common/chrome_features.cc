@@ -319,6 +319,9 @@ const base::FeatureParam<int> kGlicInitialWidth{&kGlic, "glic-initial-width",
 const base::FeatureParam<int> kGlicInitialHeight{&kGlic, "glic-initial-height",
                                                  48};
 
+const base::FeatureParam<std::string> kGlicDefaultHotkey{
+    &kGlic, "glic-default-hotkey", ""};
+
 BASE_FEATURE(kGlicURLConfig,
              "GlicURLConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);
