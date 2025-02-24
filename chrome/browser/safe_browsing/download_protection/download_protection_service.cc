@@ -14,8 +14,6 @@
 #include "base/not_fatal_until.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -27,8 +25,6 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
 #include "chrome/browser/safe_browsing/download_protection/check_file_system_access_write_request.h"
-#include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
-#include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
 #include "chrome/browser/safe_browsing/download_protection/download_url_sb_client.h"
@@ -64,6 +60,12 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #endif
 
 using content::BrowserThread;
@@ -139,11 +141,13 @@ DownloadProtectionService::DownloadProtectionService(
       enabled_(false),
       binary_feature_extractor_(new BinaryFeatureExtractor()),
       download_request_timeout_ms_(kDownloadRequestTimeoutMs),
+#if !BUILDFLAG(IS_ANDROID)
       feedback_service_(new DownloadFeedbackService(
           this,
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT})
               .get())),
+#endif
       allowlist_sample_rate_(kAllowlistDownloadSampleRate),
       weak_ptr_factory_(this) {
   if (sb_service) {
@@ -214,7 +218,9 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
       content::DownloadItemUtils::GetBrowserContext(item));
   bool safe_browsing_enabled =
       profile && IsSafeBrowsingEnabled(*profile->GetPrefs());
-  auto settings = DeepScanningRequest::ShouldUploadBinary(item);
+  auto settings = ShouldUploadBinaryForDeepScanning(item);
+
+#if !BUILDFLAG(IS_ANDROID)
   bool report_only_scan =
       settings.has_value() &&
       settings.value().block_until_verdict ==
@@ -235,12 +241,16 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
         /*password=*/std::nullopt);
     return true;
   }
+#else
+  CHECK(!settings.has_value());
+#endif
 
   if (safe_browsing_enabled) {
     CheckClientDownload(item, std::move(callback), /*password=*/std::nullopt);
     return true;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   if (settings.has_value()) {
     DCHECK(report_only_scan);
     DCHECK(!safe_browsing_enabled);
@@ -253,6 +263,7 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
         /*password=*/std::nullopt);
     return true;
   }
+#endif
 
   return false;
 }
@@ -637,6 +648,7 @@ bool DownloadProtectionService::MaybeBeginFeedbackForDownload(
     download::DownloadItem* download,
     const std::string& ping_request,
     const std::string& ping_response) {
+#if !BUILDFLAG(IS_ANDROID)
   PrefService* prefs = profile->GetPrefs();
   bool is_extended_reporting = IsExtendedReportingEnabled(*prefs);
   if (!profile->IsOffTheRecord() && is_extended_reporting) {
@@ -644,9 +656,11 @@ bool DownloadProtectionService::MaybeBeginFeedbackForDownload(
                                                 ping_response);
     return true;
   }
+#endif
   return false;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void DownloadProtectionService::UploadForDeepScanning(
     download::DownloadItem* item,
     CheckDownloadRepeatingCallback callback,
@@ -780,6 +794,7 @@ DownloadProtectionService::GetDeepScanningRequests() {
   }
   return requests;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 scoped_refptr<network::SharedURLLoaderFactory>
 DownloadProtectionService::GetURLLoaderFactory(
@@ -816,6 +831,7 @@ int DownloadProtectionService::GetDownloadAttributionUserGestureLimit(
   return kDownloadAttributionUserGestureLimit;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void DownloadProtectionService::RequestFinished(DeepScanningRequest* request) {
   auto it = deep_scanning_requests_.find(request);
   CHECK(it != deep_scanning_requests_.end(), base::NotFatalUntil::M130);
@@ -827,6 +843,7 @@ BinaryUploadService* DownloadProtectionService::GetBinaryUploadService(
     const enterprise_connectors::AnalysisSettings& settings) {
   return BinaryUploadService::GetForProfile(profile, settings);
 }
+#endif
 
 SafeBrowsingNavigationObserverManager*
 DownloadProtectionService::GetNavigationObserverManager(

@@ -15,8 +15,6 @@
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
@@ -592,17 +590,24 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
     GetAdditionalPromptResult(response, &result, &reason, &token);
 
     if (!token.empty()) {
-      const TailoredVerdictOverrideData& local_override =
-          WebUIInfoSingleton::GetInstance()->tailored_verdict_override();
       SetDownloadProtectionData(
           token, response.verdict(),
-          local_override.override_value.value_or(response.tailored_verdict()));
+#if !BUILDFLAG(IS_ANDROID)
+          WebUIInfoSingleton::GetInstance()
+              ->tailored_verdict_override()
+              .override_value.value_or(response.tailored_verdict())
+#else
+          response.tailored_verdict()
+#endif
+      );
     }
 
+#if !BUILDFLAG(IS_ANDROID)
     bool upload_requested = response.upload();
     MaybeBeginFeedbackForDownload(result, upload_requested,
                                   client_download_request_data_,
                                   *response_body.get());
+#endif
   }
 
   // We don't need the loader anymore.

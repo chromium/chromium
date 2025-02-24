@@ -37,6 +37,7 @@ class DownloadRequestMaker;
 
 // This class encapsulates the process of uploading a file to Safe Browsing for
 // deep scanning and reporting the result.
+// Deep scanning is not supported on Android.
 class DeepScanningRequest : public download::DownloadItem::Observer,
                             public enterprise_connectors::ContentAnalysisInfo {
  public:

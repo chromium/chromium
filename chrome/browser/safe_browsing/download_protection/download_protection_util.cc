@@ -25,6 +25,10 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
+#endif
+
 namespace safe_browsing {
 
 namespace {
@@ -464,5 +468,15 @@ bool ShouldSendDangerousDownloadReport(
   }
 }
 #endif
+
+std::optional<enterprise_connectors::AnalysisSettings>
+ShouldUploadBinaryForDeepScanning(download::DownloadItem* item) {
+#if BUILDFLAG(IS_ANDROID)
+  // Deep scanning is not supported on Android.
+  return std::nullopt;
+#else
+  return DeepScanningRequest::ShouldUploadBinary(item);
+#endif
+}
 
 }  // namespace safe_browsing
