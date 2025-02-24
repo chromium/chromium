@@ -902,6 +902,43 @@ TEST_F(PixManagerTest, LogInitiatePurchaseActionResultAndLatency) {
   }
 }
 
+TEST_F(PixManagerTest, LogTransactionResultAndLatency) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate Pix code being copied. The transaction latency is computed from
+  // this point.
+  pix_manager_->OnPixCodeCopiedToClipboard(GURL("https://example.com/"),
+                                           std::string(),
+                                           ukm::UkmRecorder::GetNewSourceID());
+  // Fully mocked time, does not advance by itself.
+  FastForwardBy(base::Seconds(2));
+
+  for (PurchaseActionResult result :
+       {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
+        PurchaseActionResult::kResultCanceled}) {
+    std::string result_string;
+    switch (result) {
+      case PurchaseActionResult::kResultOk:
+        result_string = "Succeeded";
+        break;
+      case PurchaseActionResult::kCouldNotInvoke:
+        result_string = "Failed";
+        break;
+      case PurchaseActionResult::kResultCanceled:
+        result_string = "Abandoned";
+        break;
+    }
+
+    pix_manager_->OnPurchaseActionResult(result);
+
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"FacilitatedPayments.Pix.Transaction.", result_string,
+                      ".Latency"}),
+        /*sample=*/2000,
+        /*expected_count=*/1);
+  }
+}
+
 // Verify that the API client is initialized lazily, so it does not take up
 // space in memory unless it's being used.
 TEST_F(PixManagerTest, ApiClientInitializedLazily) {

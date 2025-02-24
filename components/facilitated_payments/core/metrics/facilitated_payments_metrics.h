@@ -233,6 +233,12 @@ void LogInitiatePurchaseActionAttempt(
 void LogPixInitiatePurchaseActionResultAndLatency(PurchaseActionResult result,
                                                   base::TimeDelta duration);
 
+// Logs the result and the overall latency for the Pix transaction. The latency
+// is measured between the time when the Pix code was copied to the time when
+// Chrome receives `PurchaseActionResult` from the payments backend.
+void LogPixTransactionResultAndLatency(PurchaseActionResult result,
+                                       base::TimeDelta duration);
+
 // Log the result and latency for the InitiatePurchaseAction call made to the
 // payments platform (client) during eWallet payflow.
 void LogEwalletInitiatePurchaseActionResultAndLatency(

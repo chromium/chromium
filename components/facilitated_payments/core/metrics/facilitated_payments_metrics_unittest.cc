@@ -149,6 +149,22 @@ TEST(FacilitatedPaymentsMetricsTest,
   }
 }
 
+TEST(FacilitatedPaymentsMetricsTest, LogPixTransactionResultAndLatency) {
+  for (PurchaseActionResult result :
+       {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
+        PurchaseActionResult::kResultCanceled}) {
+    base::HistogramTester histogram_tester;
+
+    LogPixTransactionResultAndLatency(result, base::Milliseconds(10));
+
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"FacilitatedPayments.Pix.Transaction.",
+                      GetPurchaseActionResultString(result), ".Latency"}),
+        /*sample=*/10,
+        /*expected_count=*/1);
+  }
+}
+
 TEST(FacilitatedPaymentsMetricsTest,
      LogEwalletInitiatePurchaseActionResultAndLatency_DeviceBound) {
   for (PurchaseActionResult result :
