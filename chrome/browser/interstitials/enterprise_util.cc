@@ -5,18 +5,18 @@
 #include "chrome/browser/interstitials/enterprise_util.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
+#include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 extensions::SafeBrowsingPrivateEventRouter* GetEventRouter(
     content::WebContents* web_contents) {
   // |web_contents| can be null in tests.
@@ -44,7 +44,7 @@ void MaybeTriggerSecurityInterstitialShownEvent(
     const GURL& page_url,
     const std::string& reason,
     int net_error_code) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   extensions::SafeBrowsingPrivateEventRouter* event_router =
       GetEventRouter(web_contents);
   if (!event_router)
@@ -58,7 +58,7 @@ void MaybeTriggerSecurityInterstitialProceededEvent(
     const GURL& page_url,
     const std::string& reason,
     int net_error_code) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   extensions::SafeBrowsingPrivateEventRouter* event_router =
       GetEventRouter(web_contents);
   if (!event_router)
@@ -68,6 +68,7 @@ void MaybeTriggerSecurityInterstitialProceededEvent(
 #endif
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 void MaybeTriggerUrlFilteringInterstitialEvent(
     content::WebContents* web_contents,
     const GURL& page_url,
@@ -81,5 +82,6 @@ void MaybeTriggerUrlFilteringInterstitialEvent(
   }
   event_router->OnUrlFilteringInterstitial(page_url, threat_type,
                                            rt_lookup_response);
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
