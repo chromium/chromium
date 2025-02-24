@@ -58,6 +58,7 @@ extern const char kChromeUIPasswordManagerInternalsHost[];
 extern const char kChromeUIPolicyHost[];
 extern const char kChromeUIPopularSitesInternalsHost[];
 extern const char kChromeUIPrefsInternalsHost[];
+extern const char kChromeUIProfileInternalsHost[];
 extern const char kChromeUISignInInternalsHost[];
 extern const char kChromeUITermsHost[];
 extern const char kChromeUITranslateInternalsHost[];
