@@ -11,7 +11,8 @@
 
 namespace blink {
 
-class CullRectUpdaterTest : public PaintControllerPaintTestBase {
+class CullRectUpdaterTest : public PaintControllerPaintTestBase,
+                            private CullRectTestConfig {
  protected:
   CullRect GetCullRect(const char* id) {
     return GetLayoutObjectByElementId(id)->FirstFragment().GetCullRect();
