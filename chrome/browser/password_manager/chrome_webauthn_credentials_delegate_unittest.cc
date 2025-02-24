@@ -214,7 +214,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
 
   auto passkeys = credentials_delegate()->GetPasskeys();
   ASSERT_TRUE(passkeys.has_value());
-  EXPECT_EQ(*passkeys, credentials);
+  EXPECT_EQ(*passkeys.value(), credentials);
   EXPECT_TRUE(credentials_delegate()->IsSecurityKeyOrHybridFlowAvailable());
 }
 
@@ -235,7 +235,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentialsDelayed) {
 
   auto passkeys = credentials_delegate()->GetPasskeys();
   ASSERT_TRUE(passkeys.has_value());
-  EXPECT_EQ(*passkeys, credentials);
+  EXPECT_EQ(*passkeys.value(), credentials);
 }
 
 // Testing retrieving suggestions when there are no public key credentials
@@ -280,7 +280,10 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, AbortRequest) {
   credentials_delegate()->OnCredentialsReceived(
       {passkey1}, SecurityKeyOrHybridFlowAvailable(true));
   credentials_delegate()->NotifyWebAuthnRequestAborted();
-  EXPECT_FALSE(credentials_delegate()->GetPasskeys());
+  auto outcome = credentials_delegate()->GetPasskeys();
+  EXPECT_FALSE(outcome.has_value());
+  EXPECT_EQ(outcome.error(), ChromeWebAuthnCredentialsDelegate::
+                                 PasskeysUnavailableReason::kRequestAborted);
 }
 
 // Test aborting a request when a retrieve suggestions callback is pending.
@@ -291,7 +294,10 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, AbortRequestPendingCallback) {
   EXPECT_FALSE(future.IsReady());
   credentials_delegate()->NotifyWebAuthnRequestAborted();
   EXPECT_TRUE(future.IsReady());
-  EXPECT_FALSE(credentials_delegate()->GetPasskeys());
+  auto outcome = credentials_delegate()->GetPasskeys();
+  EXPECT_FALSE(outcome.has_value());
+  EXPECT_EQ(outcome.error(), ChromeWebAuthnCredentialsDelegate::
+                                 PasskeysUnavailableReason::kRequestAborted);
 }
 
 // Test that multiple clients can receive notifications for passkey
@@ -309,7 +315,17 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
       {passkey1, passkey2}, SecurityKeyOrHybridFlowAvailable(true));
   EXPECT_TRUE(future1.IsReady());
   EXPECT_TRUE(future2.IsReady());
-  EXPECT_EQ(credentials_delegate()->GetPasskeys()->size(), 2ul);
+  EXPECT_TRUE(credentials_delegate()->GetPasskeys().has_value());
+  EXPECT_EQ(credentials_delegate()->GetPasskeys().value()->size(), 2ul);
+}
+
+// Tests that `GetPasskeys` returns the correct status when no passkey list has
+// been received.
+TEST_F(ChromeWebAuthnCredentialsDelegateTest, GetPasskeysCalledWithNoPasskeys) {
+  auto outcome = credentials_delegate()->GetPasskeys();
+  EXPECT_FALSE(outcome.has_value());
+  EXPECT_EQ(outcome.error(), ChromeWebAuthnCredentialsDelegate::
+                                 PasskeysUnavailableReason::kNotReceived);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

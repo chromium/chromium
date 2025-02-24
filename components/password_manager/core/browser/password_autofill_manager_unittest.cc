@@ -24,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -1364,10 +1365,9 @@ TEST_F(PasswordAutofillManagerTest,
 
   // Return a WebAuthn credential.
   auto passkey = MakeTestPasskeyCredential();
-  std::optional<std::vector<PasskeyCredential>> passkey_list =
-      std::vector<PasskeyCredential>{passkey};
+  std::vector<PasskeyCredential> passkey_list({passkey});
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
-      .WillRepeatedly(ReturnRef(passkey_list));
+      .WillRepeatedly(Return(base::ok(&passkey_list)));
   EXPECT_CALL(*webauthn_credentials_delegate_,
               IsSecurityKeyOrHybridFlowAvailable)
       .WillRepeatedly(Return(true));
@@ -1452,10 +1452,9 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
 
   // Return a WebAuthn credential.
   auto passkey = MakeTestPasskeyCredential();
-  std::optional<std::vector<PasskeyCredential>> passkey_list =
-      std::vector<PasskeyCredential>{passkey};
+  std::vector<PasskeyCredential> passkey_list({passkey});
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
-      .WillRepeatedly(ReturnRef(passkey_list));
+      .WillRepeatedly(Return(base::ok(&passkey_list)));
   EXPECT_CALL(*webauthn_credentials_delegate_,
               IsSecurityKeyOrHybridFlowAvailable)
       .WillRepeatedly(Return(true));
@@ -1529,9 +1528,9 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
   InitializePasswordAutofillManager(&client, &autofill_client);
 
   // Enable WebAuthn autofill.
-  std::optional<std::vector<PasskeyCredential>> passkeys(std::in_place);
+  std::vector<PasskeyCredential> passkeys;
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
-      .WillRepeatedly(ReturnRef(passkeys));
+      .WillRepeatedly(Return(base::ok(&passkeys)));
   EXPECT_CALL(*webauthn_credentials_delegate_,
               IsSecurityKeyOrHybridFlowAvailable)
       .WillRepeatedly(Return(true));
@@ -1563,9 +1562,9 @@ TEST_F(PasswordAutofillManagerTest, DoesntShowWebAuthnSignInWithAnotherDevice) {
   InitializePasswordAutofillManager(&client, &autofill_client);
 
   // Enable WebAuthn autofill.
-  std::optional<std::vector<PasskeyCredential>> passkeys(std::in_place);
+  std::vector<PasskeyCredential> passkeys;
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
-      .WillRepeatedly(ReturnRef(passkeys));
+      .WillRepeatedly(Return(base::ok(&passkeys)));
   EXPECT_CALL(*webauthn_credentials_delegate_,
               IsSecurityKeyOrHybridFlowAvailable)
       .WillRepeatedly(Return(false));
@@ -1605,10 +1604,9 @@ TEST_F(PasswordAutofillManagerTest,
   password_autofill_manager_->OnAddPasswordFillData(data);
 
   // Enable WebAuthn autofill to return a credential.
-  std::optional<std::vector<PasskeyCredential>> passkeys =
-      std::vector{MakeTestPasskeyCredential()};
+  std::vector<PasskeyCredential> passkeys({MakeTestPasskeyCredential()});
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
-      .WillRepeatedly(ReturnRef(passkeys));
+      .WillRepeatedly(Return(base::ok(&passkeys)));
   EXPECT_CALL(*webauthn_credentials_delegate_,
               IsSecurityKeyOrHybridFlowAvailable)
       .WillRepeatedly(Return(true));
@@ -1652,10 +1650,9 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnFaviconWithoutPasswords) {
   password_autofill_manager_->OnAddPasswordFillData(data);
 
   // Enable WebAuthn autofill to return a credential.
-  std::optional<std::vector<PasskeyCredential>> passkeys =
-      std::vector{MakeTestPasskeyCredential()};
+  std::vector<PasskeyCredential> passkeys({MakeTestPasskeyCredential()});
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
-      .WillRepeatedly(ReturnRef(passkeys));
+      .WillRepeatedly(Return(base::ok(&passkeys)));
   EXPECT_CALL(*webauthn_credentials_delegate_,
               IsSecurityKeyOrHybridFlowAvailable)
       .WillRepeatedly(Return(true));
@@ -1697,9 +1694,9 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithoutPasswordData) {
   password_autofill_manager_->DeleteFillData();
 
   // Enable WebAuthn autofill.
-  std::optional<std::vector<PasskeyCredential>> passkeys(std::in_place);
+  std::vector<PasskeyCredential> passkeys;
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
-      .WillRepeatedly(ReturnRef(passkeys));
+      .WillRepeatedly(Return(base::ok(&passkeys)));
   EXPECT_CALL(*webauthn_credentials_delegate_,
               IsSecurityKeyOrHybridFlowAvailable)
       .WillRepeatedly(Return(true));
@@ -1833,10 +1830,9 @@ TEST_F(PasswordAutofillManagerTest,
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
 
-  std::optional<std::vector<PasskeyCredential>> passkey_list =
-      std::vector<PasskeyCredential>{MakeTestPasskeyCredential()};
+  std::vector<PasskeyCredential> passkey_list({MakeTestPasskeyCredential()});
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
-      .WillRepeatedly(ReturnRef(passkey_list));
+      .WillRepeatedly(Return(base::ok(&passkey_list)));
 
   // Show suggestions including WebAuthn credentials.
   autofill::AutofillClient::PopupOpenArgs open_args;
@@ -1972,9 +1968,10 @@ TEST_F(PasswordAutofillManagerTest, WaitForPasskeysWithAutofocusTrigger) {
               IsSecurityKeyOrHybridFlowAvailable)
       .WillRepeatedly(Return(false));
 
-  std::optional<std::vector<PasskeyCredential>> nullopt = std::nullopt;
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
-      .WillRepeatedly(ReturnRef(nullopt));
+      .WillRepeatedly(Return(
+          base::unexpected(WebAuthnCredentialsDelegate::
+                               PasskeysUnavailableReason::kNotReceived)));
   EXPECT_CALL(autofill_client, ShowAutofillSuggestions).Times(0);
 
   // This call will not attempt to show suggestions because passkeys are still
@@ -1990,10 +1987,9 @@ TEST_F(PasswordAutofillManagerTest, WaitForPasskeysWithAutofocusTrigger) {
 
   // Simulate a WebAuthn credential being provided by the platform via the
   // WebAuthnCredentialsDelegate.
-  std::optional<std::vector<PasskeyCredential>> passkey_list =
-      std::vector<PasskeyCredential>{MakeTestPasskeyCredential()};
+  std::vector<PasskeyCredential> passkey_list({MakeTestPasskeyCredential()});
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
-      .WillRepeatedly(ReturnRef(passkey_list));
+      .WillRepeatedly(Return(base::ok(&passkey_list)));
 
   // Show password suggestions including WebAuthn credentials.
   autofill::AutofillClient::PopupOpenArgs open_args;
@@ -2026,9 +2022,10 @@ TEST_F(PasswordAutofillManagerTest,
               IsSecurityKeyOrHybridFlowAvailable)
       .WillRepeatedly(Return(false));
 
-  std::optional<std::vector<PasskeyCredential>> nullopt = std::nullopt;
   EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
-      .WillRepeatedly(ReturnRef(nullopt));
+      .WillRepeatedly(Return(
+          base::unexpected(WebAuthnCredentialsDelegate::
+                               PasskeysUnavailableReason::kNotReceived)));
   EXPECT_CALL(autofill_client, ShowAutofillSuggestions).Times(0);
 
   // This call will not attempt to show suggestions because passkeys are still
@@ -2050,6 +2047,48 @@ TEST_F(PasswordAutofillManagerTest,
   // Called again with different trigger.
   password_autofill_manager_->OnShowPasswordSuggestions(
       kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
+      /*typed_username=*/std::u16string(), ShowWebAuthnCredentials(true),
+      element_bounds);
+
+  ASSERT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(
+                  autofill::SuggestionType::kPasswordEntry,
+                  autofill::SuggestionType::kSeparator,
+                  autofill::SuggestionType::kAllSavedPasswordsEntry));
+}
+
+TEST_F(PasswordAutofillManagerTest,
+       WaitForPasskeysIgnoredWhenWebAuthnRequestAborted) {
+  base::test::ScopedFeatureList wait_for_passkey_feature_list_(
+      features::kDelaySuggestionsOnAutofocusWaitingForPasskeys);
+#if BUILDFLAG(IS_ANDROID)
+  webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      webauthn::CredManSupport::DISABLED);
+#endif  // BUILDFLAG(IS_ANDROID)
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  EXPECT_CALL(*webauthn_credentials_delegate_,
+              IsSecurityKeyOrHybridFlowAvailable)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(*webauthn_credentials_delegate_, GetPasskeys)
+      .WillRepeatedly(Return(
+          base::unexpected(WebAuthnCredentialsDelegate::
+                               PasskeysUnavailableReason::kRequestAborted)));
+  autofill::AutofillClient::PopupOpenArgs open_args;
+  EXPECT_CALL(autofill_client, ShowAutofillSuggestions)
+      .WillOnce(SavePopupOpenArgs(open_args));
+
+  // This should show suggestions without passkeys because the request was
+  // aborted.
+  gfx::RectF element_bounds;
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      kElementId,
+      autofill::AutofillSuggestionTriggerSource::
+          kPasswordManagerProcessedFocusedField,
+      base::i18n::RIGHT_TO_LEFT,
       /*typed_username=*/std::u16string(), ShowWebAuthnCredentials(true),
       element_bounds);
 

@@ -119,9 +119,19 @@ void ChromeWebAuthnCredentialsDelegate::SelectPasskey(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-const std::optional<std::vector<PasskeyCredential>>&
+base::expected<const std::vector<PasskeyCredential>*,
+               ChromeWebAuthnCredentialsDelegate::PasskeysUnavailableReason>
 ChromeWebAuthnCredentialsDelegate::GetPasskeys() const {
-  return passkeys_;
+  if (!passkeys_) {
+    return last_request_was_aborted_
+               ? base::unexpected(
+                     ChromeWebAuthnCredentialsDelegate::
+                         PasskeysUnavailableReason::kRequestAborted)
+               : base::unexpected(ChromeWebAuthnCredentialsDelegate::
+                                      PasskeysUnavailableReason::kNotReceived);
+  }
+
+  return base::ok(&passkeys_.value());
 }
 
 void ChromeWebAuthnCredentialsDelegate::NotifyForPasskeysDisplay() {
@@ -185,6 +195,7 @@ void ChromeWebAuthnCredentialsDelegate::RequestNotificationWhenPasskeysReady(
 void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
     std::vector<PasskeyCredential> credentials,
     SecurityKeyOrHybridFlowAvailable security_key_or_hybrid_flow_available) {
+  last_request_was_aborted_ = false;
   if (!credentials.empty() && !passkeys_after_fill_recorded_) {
     passkeys_after_fill_recorded_ = true;
     base::UmaHistogramBoolean(
@@ -201,6 +212,7 @@ void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
 
 void ChromeWebAuthnCredentialsDelegate::NotifyWebAuthnRequestAborted() {
   passkeys_ = std::nullopt;
+  last_request_was_aborted_ = true;
   NotifyClientsOfPasskeyAvailability();
 #if !BUILDFLAG(IS_ANDROID)
   // Also dismiss the autofill popup if it is being displayed and a webauthn

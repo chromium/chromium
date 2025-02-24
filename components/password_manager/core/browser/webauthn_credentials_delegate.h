@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 
-#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 
@@ -21,6 +21,13 @@ namespace password_manager {
 class WebAuthnCredentialsDelegate {
  public:
   using OnPasskeySelectedCallback = base::OnceClosure;
+
+  // Reasons why `GetPasskeys` might not have a passkey list to return.
+  enum class PasskeysUnavailableReason {
+    kNotReceived,
+    kRequestAborted,
+  };
+
   virtual ~WebAuthnCredentialsDelegate() = default;
 
   // Launches the WebAuthn flow that lets users use their phones (hybrid) or
@@ -38,8 +45,9 @@ class WebAuthnCredentialsDelegate {
   // Returns the list of eligible passkeys to fulfill an ongoing WebAuthn
   // request if one has been received and is active. Returns std::nullopt
   // otherwise.
-  virtual const std::optional<std::vector<PasskeyCredential>>& GetPasskeys()
-      const = 0;
+  virtual base::expected<const std::vector<PasskeyCredential>*,
+                         PasskeysUnavailableReason>
+  GetPasskeys() const = 0;
 
   // Called when a passkey consumer is displaying a UI surface that will
   // include passkeys, if any are available. This is for metrics recording

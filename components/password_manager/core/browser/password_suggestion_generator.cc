@@ -283,7 +283,7 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
       uses_passkeys = true;
 #endif
       std::ranges::transform(
-          *delegate->GetPasskeys(), std::back_inserter(suggestions),
+          *delegate->GetPasskeys().value(), std::back_inserter(suggestions),
           [&page_favicon](const auto& passkey) {
             Suggestion suggestion(
                 base::UTF16ToUTF8(ToUsernameString(passkey.username())),
@@ -321,7 +321,7 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
 #endif  //! BUILDFLAG(IS_IOS)
     if (passkey_from_another_device_in_autofill) {
       bool listed_passkeys = delegate->GetPasskeys().has_value() &&
-                             delegate->GetPasskeys()->size() > 0;
+                             delegate->GetPasskeys().value()->size() > 0;
       suggestions.emplace_back(
           CreatePasskeyFromAnotherDeviceEntry(listed_passkeys));
     }

@@ -957,7 +957,7 @@ bool PasswordFormManager::WebAuthnCredentialsAvailable() const {
     if (base::FeatureList::IsEnabled(
             features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu)) {
       return delegate && delegate->GetPasskeys().has_value() &&
-             !delegate->GetPasskeys()->empty();
+             !delegate->GetPasskeys().value()->empty();
     }
 #endif  //! BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     return delegate && delegate->GetPasskeys().has_value();

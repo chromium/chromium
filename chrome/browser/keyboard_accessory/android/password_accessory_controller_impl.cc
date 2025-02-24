@@ -276,10 +276,11 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
     if (password_manager::WebAuthnCredentialsDelegate* credentials_delegate =
             password_client_->GetWebAuthnCredentialsDelegateForDriver(driver)) {
       credentials_delegate->NotifyForPasskeysDisplay();
-      if (auto passkeys = credentials_delegate->GetPasskeys()) {
-        passkeys_to_add.reserve(passkeys->size());
+      auto passkeys = credentials_delegate->GetPasskeys();
+      if (passkeys.has_value()) {
+        passkeys_to_add.reserve(passkeys.value()->size());
         for (const password_manager::PasskeyCredential& passkey :
-             passkeys.value()) {
+             *passkeys.value()) {
           passkeys_to_add.emplace_back(passkey.display_name(),
                                        passkey.credential_id());
         }
@@ -657,8 +658,8 @@ PasswordAccessoryControllerImpl::CreateManagePasswordsFooter() const {
           driver_supplier_.Run((&GetWebContents()))) {
     if (password_manager::WebAuthnCredentialsDelegate* credentials_delegate =
             password_client_->GetWebAuthnCredentialsDelegateForDriver(driver)) {
-      has_passkeys |= credentials_delegate->GetPasskeys() &&
-                      !credentials_delegate->GetPasskeys()->empty();
+      auto passkeys = credentials_delegate->GetPasskeys();
+      has_passkeys |= passkeys.has_value() && !passkeys.value()->empty();
       if (credentials_delegate->IsSecurityKeyOrHybridFlowAvailable()) {
         std::u16string passkey_other_device_title = l10n_util::GetStringUTF16(
             IDS_PASSWORD_MANAGER_ACCESSORY_USE_DEVICE_PASSKEY);
