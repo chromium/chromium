@@ -56,6 +56,7 @@ class NameInfo : public FormGroup {
                                      VerificationStatus status) override;
   // Return the verification status of a structured name value.
   VerificationStatus GetVerificationStatus(FieldType type) const override;
+  FieldTypeSet GetSupportedTypes() const override;
 
   // Derives all missing tokens in the structured representation of the name by
   // either parsing missing tokens from their assigned parent or by formatting
@@ -95,9 +96,6 @@ class NameInfo : public FormGroup {
   const AddressComponent* GetRootForType(FieldType type) const;
 
  private:
-  // FormGroup:
-  FieldTypeSet GetSupportedTypes() const override;
-
   // Returns the root node of either `name_` or `alternative_name_`
   // depending on the `type`.
   // This node is unique by definition.

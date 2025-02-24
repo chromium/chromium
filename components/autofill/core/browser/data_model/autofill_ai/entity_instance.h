@@ -16,7 +16,8 @@
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
-#include "components/autofill/core/browser/data_model/form_group.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/is_required.h"
@@ -39,8 +40,34 @@ class EntityInstance;
 class AttributeInstance;
 
 // An attribute instance is a typed string value with additional metadata.
-// It is associated with an EntityInstance. The type is an AttributeType.
-class AttributeInstance final : public FormGroup {
+// It is associated with an EntityInstance. Attributes are used in order to fill
+// fields with information of certain types.
+//
+// Note that there are two concepts of types that are relevant here:
+// - AttributeType: This is the type of the attribute itself and determines the
+//   structure of the attribute.
+// - FieldType: This is the type of data that can be requested by consumers from
+//   the attribute.
+//
+// `AutofillField` computes two types for the field: One is available through
+// `AutofillField::GetAutofillAiServerTypePredictions()` and represents the
+// type used in order to figure out the appropriate AttributeInstance to fill
+// the field. The other is available through `AutofillField::Type()` and
+// represents the general classification of the field (through Autofill server
+// and heuristic prediction logic).
+//
+// It could happen that these two types are totally unrelated (e.g., the former
+// returns PASSPORT_NAME_TAG and the latter returns PHONE_HOME_WHOLE_NUMBER)
+// or that the two types are equal (e.g., both return PASSPORT_NAME_TAG). This
+// is a small problem for setter/getter API that (1) assumes that the provided
+// field type to a given method is supported and (2) doesn't have support for
+// `FieldType`s of group `FieldTypeGroup::kAutofillAi`. See
+// `AttributeInstance::GetNormalizedType()` and the getter/setter methods for
+// how this problem is handled.
+class AttributeInstance final {
+  // TODO(crbug.com/389625753): Also support for countries, states and dates.
+  using InfoStructure = absl::variant<NameInfo, std::u16string>;
+
  public:
   // Transparent less-than relation based on the AttributeType.
   struct CompareByType;
@@ -51,18 +78,19 @@ class AttributeInstance final : public FormGroup {
   static bool DisambiguationOrder(const AttributeInstance& lhs,
                                   const AttributeInstance& rhs);
 
-  AttributeInstance(AttributeType type, std::u16string value);
+  explicit AttributeInstance(AttributeType type);
 
   AttributeInstance(const AttributeInstance&);
   AttributeInstance& operator=(const AttributeInstance&);
   AttributeInstance(AttributeInstance&&);
   AttributeInstance& operator=(AttributeInstance&&);
-  ~AttributeInstance() override;
+  ~AttributeInstance();
 
   const AttributeType& type() const { return type_; }
 
-  // Typically a user-entered string, e.g., a date.
-  const std::u16string& value() const { return value_; }
+  // Returns the full value stored in the attribute, formatted according to
+  // `app_locale`.
+  std::u16string value() const;
 
   // Returns the normalized version of `this` attribute instance value. This
   // normalization removes extra spaces, converts the value to lowercase and
@@ -70,26 +98,53 @@ class AttributeInstance final : public FormGroup {
   // `AutofillProfileComparator::NormalizeForComparison()`.
   std::u16string NormalizedValue() const;
 
-  // autofill::FormGroup:
-  std::u16string GetRawInfo(FieldType type) const override;
-  void SetRawInfoWithVerificationStatus(FieldType type,
-                                        const std::u16string& value,
-                                        VerificationStatus status) override;
-  std::u16string GetInfo(const AutofillType& type,
-                         const std::string& app_locale) const override;
-  VerificationStatus GetVerificationStatus(FieldType type) const override;
-  bool SetInfoWithVerificationStatus(const AutofillType& type,
+  // In the functions below, `type` refers to the type of data we want to fetch
+  // from the attribute, and not the type of the attribute itself. The two might
+  // coincide for unstructured types but they are different for structured
+  // types. See `GetNormalizedType()` below for more information about the
+  // correlation between the needed data type and the type of the attribute.
+  // Also note that `type` below is mostly interesting for structured attributes
+  // and is assumed to be just the attribute-type-equivalent field type for
+  // unstructured ones.
+
+  // Returns the value stored in this attribute instance for a specific `type`.
+  std::u16string GetInfo(FieldType type) const;
+  // Returns the verification status of a value stored in this attribute
+  // instance for a specific `type`.
+  VerificationStatus GetVerificationStatus(FieldType type) const;
+  // Populates the attribute with a value for a specific `type`.
+  void SetInfo(FieldType type, const std::u16string& value);
+  // Similar to `SetInfo` but also assigns a verification status to the set
+  // value.
+  void SetInfoWithVerificationStatus(FieldType type,
                                      const std::u16string& value,
-                                     const std::string& app_locale,
-                                     const VerificationStatus status) override;
-  FieldTypeSet GetSupportedTypes() const override;
+                                     VerificationStatus status);
+  // Returns the set of `FieldType`s for which the setter/getter functions above
+  // may be called.
+  FieldTypeSet GetSupportedTypes() const;
+
+  // Returns the FieldType that represents the whole value stored in this
+  // attribute.
+  FieldType GetTopLevelType() const;
+
+  // This is a no-op for unstructured attributes, and for structured attributes
+  // the function propagates changes in a component to its subcomponents. This
+  // should be called when constructing a structured attribute object from
+  // scratch (e.g., Loading the object from the database, creating an import
+  // candidate).
+  void FinalizeInfo();
 
   friend bool operator==(const AttributeInstance& lhs,
-                         const AttributeInstance& rhs);
+                         const AttributeInstance& rhs) = default;
 
  private:
+  // This function checks that `info_type` is supported by the attribute and
+  // otherwise tries to convert it into one that is. Returns the supported type
+  // if found and UNKNOWN_TYPE otherwise.
+  FieldType GetNormalizedType(FieldType info_type) const;
+
   AttributeType type_;
-  std::u16string value_;
+  InfoStructure info_;
 };
 
 struct AttributeInstance::CompareByType {

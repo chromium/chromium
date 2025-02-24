@@ -7,14 +7,42 @@
 #include <algorithm>
 #include <ranges>
 
+#include "base/functional/overloaded.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/contact_info.h"
+#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
-AttributeInstance::AttributeInstance(AttributeType type, std::u16string value)
-    : type_(type), value_(std::move(value)) {}
+AttributeInstance::AttributeInstance(AttributeType type) : type_(type) {
+  switch (type.name()) {
+    case AttributeTypeName::kPassportName:
+    case AttributeTypeName::kDriversLicenseName:
+      info_ = NameInfo();
+      break;
+    case AttributeTypeName::kPassportNumber:
+    case AttributeTypeName::kPassportCountry:
+    case AttributeTypeName::kPassportExpiryDate:
+    case AttributeTypeName::kPassportIssueDate:
+    case AttributeTypeName::kLoyaltyCardProgram:
+    case AttributeTypeName::kLoyaltyCardProvider:
+    case AttributeTypeName::kLoyaltyCardMemberId:
+    case AttributeTypeName::kVehicleOwner:
+    case AttributeTypeName::kVehicleLicensePlate:
+    case AttributeTypeName::kVehicleVin:
+    case AttributeTypeName::kVehicleMake:
+    case AttributeTypeName::kVehicleModel:
+    case AttributeTypeName::kDriversLicenseRegion:
+    case AttributeTypeName::kDriversLicenseNumber:
+    case AttributeTypeName::kDriversLicenseExpirationDate:
+    case AttributeTypeName::kDriversLicenseIssueDate:
+      info_ = u"";
+      break;
+  }
+}
 
 AttributeInstance::AttributeInstance(const AttributeInstance&) = default;
 AttributeInstance& AttributeInstance::operator=(const AttributeInstance&) =
@@ -23,46 +51,114 @@ AttributeInstance::AttributeInstance(AttributeInstance&&) = default;
 AttributeInstance& AttributeInstance::operator=(AttributeInstance&&) = default;
 AttributeInstance::~AttributeInstance() = default;
 
-std::u16string AttributeInstance::GetRawInfo(FieldType type) const {
-  return value_;
-}
-
-void AttributeInstance::SetRawInfoWithVerificationStatus(
-    FieldType type,
-    const std::u16string& value,
-    VerificationStatus status) {
-  value_ = value;
-}
-
-std::u16string AttributeInstance::GetInfo(const AutofillType& type,
-                                          const std::string& app_locale) const {
-  return value_;
-}
-
-VerificationStatus AttributeInstance::GetVerificationStatus(
-    FieldType type) const {
-  return VerificationStatus::kNoStatus;
-}
-
-bool AttributeInstance::SetInfoWithVerificationStatus(
-    const AutofillType& type,
-    const std::u16string& value,
-    const std::string& app_locale,
-    const VerificationStatus status) {
-  value_ = value;
-  return true;
-}
-
-FieldTypeSet AttributeInstance::GetSupportedTypes() const {
-  return {type_.field_type()};
-}
-
-bool operator==(const AttributeInstance& lhs, const AttributeInstance& rhs) {
-  return lhs.type_ == rhs.type_ && lhs.value_ == rhs.value_;
+std::u16string AttributeInstance::value() const {
+  return absl::visit(
+      base::Overloaded{[&](const NameInfo& name) {
+                         return name.GetRawInfo(GetTopLevelType());
+                       },
+                       [](const std::u16string& value) { return value; }},
+      info_);
 }
 
 std::u16string AttributeInstance::NormalizedValue() const {
   return AutofillProfileComparator::NormalizeForComparison(value());
+}
+
+std::u16string AttributeInstance::GetInfo(FieldType type) const {
+  type = GetNormalizedType(type);
+  if (type == UNKNOWN_TYPE) {
+    return u"";
+  }
+  return absl::visit(base::Overloaded{[&](const NameInfo& name) {
+                                        return name.GetRawInfo(type);
+                                      },
+                                      [&](const std::u16string& value) {
+                                        CHECK_EQ(type, type_.field_type());
+                                        return value;
+                                      }},
+                     info_);
+}
+
+VerificationStatus AttributeInstance::GetVerificationStatus(
+    FieldType type) const {
+  type = GetNormalizedType(type);
+  if (type == UNKNOWN_TYPE) {
+    return VerificationStatus::kNoStatus;
+  }
+  return absl::visit(base::Overloaded{[&](const NameInfo& name) {
+                                        return name.GetVerificationStatus(type);
+                                      },
+                                      [&](const std::u16string& value) {
+                                        CHECK_EQ(type, type_.field_type());
+                                        return VerificationStatus::kNoStatus;
+                                      }},
+                     info_);
+}
+
+void AttributeInstance::SetInfo(FieldType type, const std::u16string& value) {
+  SetInfoWithVerificationStatus(type, value, VerificationStatus::kNoStatus);
+}
+
+void AttributeInstance::SetInfoWithVerificationStatus(
+    FieldType type,
+    const std::u16string& value,
+    VerificationStatus status) {
+  type = GetNormalizedType(type);
+  if (type == UNKNOWN_TYPE) {
+    return;
+  }
+  absl::visit(base::Overloaded{[&](NameInfo& name) {
+                                 name.SetInfoWithVerificationStatus(
+                                     type, value, /*app_locale=*/"", status);
+                               },
+                               [&](std::u16string& old_value) {
+                                 CHECK_EQ(type, type_.field_type());
+                                 old_value = value;
+                               }},
+              info_);
+}
+
+FieldTypeSet AttributeInstance::GetSupportedTypes() const {
+  return absl::visit(base::Overloaded{[&](const NameInfo& name) {
+                                        return name.GetSupportedTypes();
+                                      },
+                                      [&](const std::u16string& value) {
+                                        return FieldTypeSet{type_.field_type()};
+                                      }},
+                     info_);
+}
+
+FieldType AttributeInstance::GetTopLevelType() const {
+  return absl::visit(
+      base::Overloaded{
+          [&](const NameInfo&) { return NAME_FULL; },
+          [&](const std::u16string&) { return type_.field_type(); }},
+      info_);
+}
+
+FieldType AttributeInstance::GetNormalizedType(FieldType info_type) const {
+  if (GetSupportedTypes().contains(info_type)) {
+    return info_type;
+  }
+  if (info_type == type_.field_type()) {
+    // In some cases, a field might have `AutofillField::Type()` being the one
+    // corresponding to a structured attribute (e.g., PASSPORT_NAME_TAG). This
+    // should not usually happen but for now can, only in case a field couldn't
+    // be classified by Autofill's logic but was classified by the ML model. In
+    // that case, we assume the type is the top level type of the attribute.
+    return GetTopLevelType();
+  }
+  // In case the field classification is totally unrelated to the
+  // attribute type classification, we return UKNOWN_TYPE to inform callers of
+  // that.
+  return UNKNOWN_TYPE;
+}
+
+void AttributeInstance::FinalizeInfo() {
+  absl::visit(
+      base::Overloaded{[&](NameInfo& name) { name.FinalizeAfterImport(); },
+                       [&](const std::u16string&) { return; }},
+      info_);
 }
 
 EntityInstance::EntityInstance(

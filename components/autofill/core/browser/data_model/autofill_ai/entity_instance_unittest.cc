@@ -30,6 +30,20 @@ TEST(AutofillEntityInstanceTest, Attributes) {
   }
 }
 
+// Tests that AttributeInstance can appropriately manage structured names.
+TEST(AutofillEntityInstanceTest, Attributes_StructuredName) {
+  AttributeInstance passport_name(
+      (AttributeType(AttributeTypeName::kPassportName)));
+  passport_name.SetInfoWithVerificationStatus(NAME_FULL, u"Some Name",
+                                              VerificationStatus::kObserved);
+  passport_name.FinalizeInfo();
+
+  // The value propagated correctly.
+  EXPECT_EQ(passport_name.GetInfo(NAME_FULL), u"Some Name");
+  EXPECT_EQ(passport_name.GetInfo(NAME_FIRST), u"Some");
+  EXPECT_EQ(passport_name.GetInfo(NAME_LAST), u"Name");
+}
+
 TEST(AutofillEntityInstanceTest,
      GetEntityMergeability_IdentiticalEntities_NoMergeableAttribute_IsASubset) {
   EntityInstance::EntityMergeability result =

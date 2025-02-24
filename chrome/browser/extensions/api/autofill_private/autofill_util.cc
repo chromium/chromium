@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -345,10 +346,14 @@ EntityInstance PrivateApiEntityInstanceToEntityInstance(
   for (const autofill_private::AttributeInstance&
            private_api_attribute_instance :
        private_api_entity_instance.attributes) {
-    AttributeType attribute_type(
+    autofill::AttributeType attribute_type(
         autofill::AttributeTypeName(private_api_attribute_instance.type));
-    attributes.emplace(std::move(attribute_type),
-                       base::UTF8ToUTF16(private_api_attribute_instance.value));
+    autofill::AttributeInstance attribute(attribute_type);
+    attribute.SetInfoWithVerificationStatus(
+        attribute.GetTopLevelType(),
+        base::UTF8ToUTF16(private_api_attribute_instance.value),
+        autofill::VerificationStatus::kUserVerified);
+    attributes.emplace(std::move(attribute));
   }
 
   EntityType entity_type(
