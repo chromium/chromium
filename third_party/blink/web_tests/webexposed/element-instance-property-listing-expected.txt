@@ -339,6 +339,7 @@ namespace http://www.w3.org/1999/xhtml
     property showPopover
     property slot
     property spellcheck
+    property startViewTransition
     property style
     property tabIndex
     property tagName
@@ -1593,6 +1594,7 @@ namespace http://www.w3.org/2000/svg
     property setPointerCapture
     property shadowRoot
     property slot
+    property startViewTransition
     property style
     property tabIndex
     property tagName

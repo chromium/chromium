@@ -2601,6 +2601,7 @@ interface Element : Node
     method setHTML
     method setHTMLUnsafe
     method setPointerCapture
+    method startViewTransition
     method toggleAttribute
     method webkitMatchesSelector
     method webkitRequestFullScreen
