@@ -23548,21 +23548,6 @@
             ]
         }
     ],
-    "TcpSocketIoCompletionPortWin": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TcpSocketIoCompletionPortWin"
-                    ]
-                }
-            ]
-        }
-    ],
     "TemplateUrlReconciliation": [
         {
             "platforms": [
