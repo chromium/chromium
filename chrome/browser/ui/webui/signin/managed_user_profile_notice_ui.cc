@@ -138,8 +138,9 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
   source->AddLocalizedString("linkDataText",
                              IDS_ENTERPRISE_PROFILE_WELCOME_LINK_DATA_CHECKBOX);
 
-  source->AddLocalizedString("profileDisclosureTitle",
-                             IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_TITLE);
+  source->AddLocalizedString(
+      "profileDisclosureTitle",
+      IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_WORK_TITLE);
   source->AddLocalizedString(
       "profileOidcDisclosureTitle",
       IDS_ENTERPRISE_WELCOME_PROFILE_OIDC_DISCLOSURE_TITLE);
@@ -178,16 +179,17 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
       "valuePropositionTitle",
       IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_SUGGESTED_TITLE);
   source->AddLocalizedString("valuePropSubtitle",
-                             IDS_ENTERPRISE_VALUE_PROPOSITION_SUBTITLE);
+                             IDS_ENTERPRISE_VALUE_PROPOSITION_WORK_SUBTITLE);
 
   source->AddLocalizedString(
       "separateBrowsingDataChoiceTitle",
-      IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE);
+      IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_WORK_CHOICE);
   source->AddLocalizedString(
       "separateBrowsingDataChoiceDetails",
       IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_DETAILS);
-  source->AddLocalizedString("mergeBrowsingDataChoiceTitle",
-                             IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE);
+  source->AddLocalizedString(
+      "mergeBrowsingDataChoiceTitle",
+      IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WORK_CHOICE);
   source->AddLocalizedString(
       "mergeBrowsingDataChoiceDetails",
       IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE_DETAILS);
@@ -211,6 +213,9 @@ void ManagedUserProfileNoticeUI::Initialize(
     std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
         create_param) {
   auto* profile = Profile::FromWebUI(web_ui());
+  bool is_school_account =
+      create_param->account_info.capabilities.can_use_edu_features() ==
+      signin::Tribool::kTrue;
   base::Value::Dict update_data;
   if (type ==
       ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation) {
@@ -273,15 +278,32 @@ void ManagedUserProfileNoticeUI::Initialize(
   }
 
   if (!create_param->account_info.IsManaged()) {
+    update_data.Set("valuePropSubtitle",
+                    l10n_util::GetStringUTF16(
+                        IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE));
     update_data.Set(
         "separateBrowsingDataTitle",
         l10n_util::GetStringUTF16(
             IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_CONSUMER_TITLE));
-  } else if (create_param->account_info.capabilities.can_use_edu_features() ==
-             signin::Tribool::kTrue) {
+  } else if (is_school_account) {
     update_data.Set("separateBrowsingDataTitle",
                     l10n_util::GetStringUTF16(
                         IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_SCHOOL_TITLE));
+    update_data.Set(
+        "profileDisclosureTitle",
+        l10n_util::GetStringUTF16(
+            IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SCHOOL_TITLE));
+    update_data.Set("valuePropSubtitle",
+                    l10n_util::GetStringUTF16(
+                        IDS_ENTERPRISE_VALUE_PROPOSITION_SCHOOL_SUBTITLE));
+    update_data.Set(
+        "mergeBrowsingDataChoiceTitle",
+        l10n_util::GetStringUTF16(
+            IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_SCHOOL_CHOICE));
+    update_data.Set(
+        "separateBrowsingDataChoiceTitle",
+        l10n_util::GetStringUTF16(
+            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_SCHOOL_CHOICE));
   }
 
   // Change the text so that the "(Recommended)" label is not shown when the
@@ -298,7 +320,9 @@ void ManagedUserProfileNoticeUI::Initialize(
     update_data.Set(
         "separateBrowsingDataChoiceTitle",
         l10n_util::GetStringUTF16(
-            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_NOT_RECOMMENDED));
+            is_school_account
+                ? IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_SCHOOL_NOT_RECOMMENDED
+                : IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_WORK_NOT_RECOMMENDED));
   }
 
   content::WebUIDataSource::Update(
