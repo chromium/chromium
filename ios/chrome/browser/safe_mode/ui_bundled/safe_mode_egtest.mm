@@ -153,13 +153,7 @@ void AssertTryAgainButtonOnPage() {
   [ChromeEarlGrey loadURL:GURL("chrome://about")];
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:GURL("chrome://about")];
-  // The best way to ensure the session is synced to disk is by triggering a
-  // background (which forces an immediate session save) and a terminate (which
-  // waits for the session save disk write). Alternatively this test could just
-  // wait 2-4 seconds.
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
-      disabled:{}
-      relaunchPolicy:ForceRelaunchByCleanShutdown];
+  [ChromeEarlGrey saveSessionImmediately];
   [SafeModeAppInterface setFailedStartupAttemptCount:2];
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
       disabled:{}
