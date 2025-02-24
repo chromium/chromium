@@ -848,6 +848,11 @@ void BluetoothAdapterFloss::AdapterClearedDevice(
   BLUETOOTH_LOG(EVENT) << __func__ << ": " << device_cleared;
 }
 
+void BluetoothAdapterFloss::AdapterKeyMissingDevice(
+    const FlossDeviceId& device) {
+  BLUETOOTH_LOG(EVENT) << __func__ << ": " << device;
+}
+
 void BluetoothAdapterFloss::AdapterDevicePropertyChanged(
     FlossAdapterClient::BtPropertyType prop_type,
     const FlossDeviceId& device) {

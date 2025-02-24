@@ -286,6 +286,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void AdapterDiscoveringChanged(bool state) override;
   void AdapterFoundDevice(const FlossDeviceId& device_found) override;
   void AdapterClearedDevice(const FlossDeviceId& device_found) override;
+  void AdapterKeyMissingDevice(const FlossDeviceId& device) override;
   void AdapterDevicePropertyChanged(
       FlossAdapterClient::BtPropertyType prop_type,
       const FlossDeviceId& device) override;
