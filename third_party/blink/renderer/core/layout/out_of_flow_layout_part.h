@@ -353,6 +353,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       const NodeInfo& node_info,
       const ComputedStyle& style,
       AnchorEvaluatorImpl&,
+      std::optional<wtf_size_t> option_index,
       bool try_fit_available_space,
       NonOverflowingScrollRange* out_scroll_range);
 

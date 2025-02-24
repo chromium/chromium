@@ -31,56 +31,43 @@ bool OutOfFlowData::SetPendingSuccessfulPositionFallback(
 
 bool OutOfFlowData::ApplyPendingSuccessfulPositionFallbackAndAnchorScrollShift(
     LayoutObject* layout_object) {
-  bool has_new_scroll_shift = false;
-  if (const auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
-    if (const AnchorPositionScrollData* scroll_data =
-            layout_box->GetAnchorPositionScrollData()) {
-      // An "anchor recalculation point" occurs an anchored element begins
-      // generating boxes. If no default scroll anchor scroll shift has been
-      // set, set it now, at the current scroll offset.
-      //
-      // TODO(crbug.com/373874012): Another "anchor recalculation point" is
-      // supposed to occur when position fallback styles changes, but it's
-      // unclear how this is useful, since recalculating when changing fallback
-      // styles will typically make us fit at the first fallback option again.
-      if (!default_anchor_scroll_shift_) {
-        default_anchor_scroll_shift_ = scroll_data->TotalOffset();
-        has_new_scroll_shift = true;
-      }
-    }
-  }
-
-  if (!new_successful_position_fallback_.IsEmpty()) {
-    last_successful_position_fallback_ = new_successful_position_fallback_;
-    new_successful_position_fallback_.Clear();
-    // Last attempt resulted in new successful fallback, which means the
-    // anchored element already has the correct layout.
-    return has_new_scroll_shift;
-  }
-
   if (!layout_object || !layout_object->IsOutOfFlowPositioned()) {
     // Element no longer renders as an OOF positioned. Clear last successful
     // position fallback, but no need for another layout since the previous
     // lifecycle update would not have applied a successful fallback.
-    last_successful_position_fallback_.Clear();
-    default_anchor_scroll_shift_.reset();
+    ResetAnchorData();
     return false;
   }
+
+  if (!new_successful_position_fallback_.IsEmpty()) {
+    // This is an anchor recalculation point, either because the box just got
+    // displayed, or because we switched to a different position option.
+    default_anchor_scroll_shift_ =
+        PotentialNextDefaultAnchorScrollShift(*To<LayoutBox>(layout_object));
+
+    last_successful_position_fallback_ = new_successful_position_fallback_;
+    new_successful_position_fallback_.Clear();
+    // Last attempt resulted in new successful fallback, which means the
+    // anchored element already has the correct layout.
+    return false;
+  }
+
   if (!last_successful_position_fallback_.IsEmpty() &&
       !base::ValuesEquivalent(
           last_successful_position_fallback_.position_try_fallbacks_.Get(),
           layout_object->StyleRef().GetPositionTryFallbacks().Get())) {
     // position-try-fallbacks changed which means the last successful fallback
     // is no longer valid. Clear and return true for a re-layout.
-    last_successful_position_fallback_.Clear();
+    ResetAnchorData();
     return true;
   }
-  return has_new_scroll_shift;
+  return false;
 }
 
-void OutOfFlowData::ClearLastSuccessfulPositionFallback() {
+void OutOfFlowData::ResetAnchorData() {
   last_successful_position_fallback_.Clear();
   new_successful_position_fallback_.Clear();
+  default_anchor_scroll_shift_ = PhysicalOffset();
 }
 
 bool OutOfFlowData::InvalidatePositionTryNames(
@@ -88,11 +75,27 @@ bool OutOfFlowData::InvalidatePositionTryNames(
   if (HasLastSuccessfulPositionFallback()) {
     if (last_successful_position_fallback_.position_try_fallbacks_
             ->HasPositionTryName(try_names)) {
-      ClearLastSuccessfulPositionFallback();
+      ResetAnchorData();
       return true;
     }
   }
   return false;
+}
+
+PhysicalOffset OutOfFlowData::PotentialNextDefaultAnchorScrollShift(
+    const LayoutBox& layout_box) const {
+  if (const AnchorPositionScrollData* scroll_data =
+          layout_box.GetAnchorPositionScrollData()) {
+    return scroll_data->TotalOffset();
+  }
+  return PhysicalOffset();
+}
+
+bool OutOfFlowData::HasStaleFallbackData(const LayoutBox& box) const {
+  return !last_successful_position_fallback_.IsEmpty() &&
+         !base::ValuesEquivalent(
+             last_successful_position_fallback_.position_try_fallbacks_.Get(),
+             box.StyleRef().GetPositionTryFallbacks().Get());
 }
 
 }  // namespace blink
