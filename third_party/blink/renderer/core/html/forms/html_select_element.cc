@@ -818,7 +818,7 @@ void HTMLSelectElement::ParseAttribute(
 }
 
 bool HTMLSelectElement::MayTriggerVirtualKeyboard() const {
-  return true;
+  return !IsAppearanceBaseButton(StyleUpdateBehavior::kDontUpdateStyle);
 }
 
 bool HTMLSelectElement::ShouldHaveFocusAppearance() const {
