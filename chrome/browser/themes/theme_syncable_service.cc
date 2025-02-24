@@ -13,6 +13,7 @@
 #include "base/base64.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/strings/stringprintf.h"
@@ -67,7 +68,7 @@ constexpr auto kThemePrefsInMigration =
 
 static_assert(
     kThemePrefsInMigration.size() ==
-        static_cast<size_t>(ThemePrefInMigration::kLastEntry) + 1,
+        static_cast<size_t>(ThemePrefInMigration::kMaxValue) + 1,
     "ThemePrefInMigration entry missing from kThemePrefsInMigration map.");
 
 bool IsTheme(const extensions::Extension* extension,
@@ -189,13 +190,19 @@ void MigrateSyncingThemePrefsToNonSyncingIfNeeded(PrefService* prefs) {
     prefs->ClearPref(prefs::kSyncingThemePrefsMigratedToNonSyncing);
     return;
   }
-  if (prefs->GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing)) {
+  const bool already_migrated =
+      prefs->GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing);
+  base::UmaHistogramBoolean("Theme.ThemePrefMigration.AlreadyMigrated",
+                            already_migrated);
+  if (already_migrated) {
     return;
   }
   for (const auto& [pref_in_migration, pref_names] : kThemePrefsInMigration) {
     if (const base::Value* value =
             prefs->GetUserPrefValue(pref_names.syncing_pref_name)) {
       prefs->Set(pref_names.non_syncing_pref_name, value->Clone());
+      base::UmaHistogramEnumeration("Theme.ThemePrefMigration.MigratedPref",
+                                    pref_in_migration);
     }
   }
 
@@ -234,6 +241,9 @@ class ThemeSyncableService::PrefServiceSyncableObserver
                                 ThemeService::kUserColorThemeID);
             }
             prefs_->Set(pref_names.non_syncing_pref_name, value->Clone());
+            base::UmaHistogramEnumeration(
+                "Theme.ThemePrefMigration.IncomingSyncingPrefApplied",
+                pref_in_migration);
             should_notify = true;
           }
         }

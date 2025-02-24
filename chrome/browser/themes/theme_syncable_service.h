@@ -28,14 +28,19 @@ namespace sync_pb {
 class ThemeSpecifics;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ThemePrefInMigration)
 enum class ThemePrefInMigration {
   kBrowserColorScheme,
   kUserColor,
   kBrowserColorVariant,
   kGrayscaleThemeEnabled,
   kNtpCustomBackgroundDict,
-  kLastEntry = kNtpCustomBackgroundDict
+  kMaxValue = kNtpCustomBackgroundDict
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:ThemePrefInMigration)
 
 std::string_view GetThemePrefNameInMigration(ThemePrefInMigration theme_pref);
 void MigrateSyncingThemePrefsToNonSyncingIfNeeded(PrefService* prefs);

@@ -1247,6 +1247,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync_user_events/user_event_service_impl.cc:SyncUserEventType) -->
 
+<!-- LINT.IfChange(ThemePrefInMigration) -->
+
+<enum name="ThemePrefInMigration">
+  <int value="0" label="kBrowserColorScheme"/>
+  <int value="1" label="kUserColor"/>
+  <int value="2" label="kBrowserColorVariant"/>
+  <int value="3" label="kGrayscaleThemeEnabled"/>
+  <int value="4" label="kNtpCustomBackgroundDict"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/themes/theme_syncable_service.h:ThemePrefInMigration) -->
+
 <!-- LINT.IfChange(TrustedVaultDegradedRecoverabilityValue) -->
 
 <enum name="TrustedVaultDegradedRecoverabilityValue">

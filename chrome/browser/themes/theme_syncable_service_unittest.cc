@@ -18,6 +18,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
+#include "base/task/current_thread.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
@@ -87,6 +89,13 @@ const base::FilePath::CharType kExtensionFilePath[] = FILE_PATH_LITERAL("/oo");
 #endif
 
 constexpr char kTestUrl[] = "https://www.foo.com";
+
+const char kThemePrefMigrationAlreadyMigratedHistogram[] =
+    "Theme.ThemePrefMigration.AlreadyMigrated";
+const char kThemePrefMigrationMigratedPrefHistogram[] =
+    "Theme.ThemePrefMigration.MigratedPref";
+const char kThemePrefMigrationIncomingSyncingPrefAppliedHistogram[] =
+    "Theme.ThemePrefMigration.IncomingSyncingPrefApplied";
 
 MATCHER_P2(DictionaryValuePtrHas, key, value, "") {
   return arg && arg->is_dict() &&
@@ -3587,11 +3596,55 @@ TEST_F(ThemePrefsMigrationTest, MigrateSyncingThemePrefsToNonSyncing) {
   pref_service_.SetInteger(prefs::kUserColorDoNotUse, SK_ColorBLUE);
   EXPECT_FALSE(pref_service_.HasPrefPath(prefs::kNonSyncingUserColorDoNotUse));
 
+  base::HistogramTester histogram_tester;
   MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
   EXPECT_TRUE(
       pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
   EXPECT_EQ(pref_service_.GetInteger(prefs::kNonSyncingUserColorDoNotUse),
             static_cast<int>(SK_ColorBLUE));
+  histogram_tester.ExpectUniqueSample(
+      kThemePrefMigrationAlreadyMigratedHistogram, false, 1);
+  histogram_tester.ExpectUniqueSample(kThemePrefMigrationMigratedPrefHistogram,
+                                      ThemePrefInMigration::kUserColor, 1);
+}
+
+TEST_F(ThemePrefsMigrationTest, MigrateSyncingNtpPrefToNonSyncing) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kMoveThemePrefsToSpecifics);
+
+  ASSERT_FALSE(
+      pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
+
+  pref_service_.SetInteger(prefs::kUserColorDoNotUse, SK_ColorBLUE);
+  EXPECT_FALSE(pref_service_.HasPrefPath(prefs::kNonSyncingUserColorDoNotUse));
+
+  pref_service_.SetDict(
+      prefs::kNtpCustomBackgroundDictDoNotUse,
+      base::Value::Dict()
+          .Set(kNtpCustomBackgroundURL, kTestUrl)
+          .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
+          .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
+          .Set(kNtpCustomBackgroundAttributionActionURL,
+               "attribution_action_url")
+          .Set(kNtpCustomBackgroundCollectionId, "collection_id")
+          .Set(kNtpCustomBackgroundResumeToken, "resume_token")
+          .Set(kNtpCustomBackgroundRefreshTimestamp,
+               static_cast<int>(1234567890))
+          .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED)));
+
+  base::HistogramTester histogram_tester;
+  MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
+  EXPECT_TRUE(
+      pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
+  EXPECT_EQ(pref_service_.GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+            static_cast<int>(SK_ColorBLUE));
+  histogram_tester.ExpectUniqueSample(
+      kThemePrefMigrationAlreadyMigratedHistogram, false, 1);
+  histogram_tester.ExpectBucketCount(kThemePrefMigrationMigratedPrefHistogram,
+                                     ThemePrefInMigration::kUserColor, 1);
+  histogram_tester.ExpectBucketCount(
+      kThemePrefMigrationMigratedPrefHistogram,
+      ThemePrefInMigration::kNtpCustomBackgroundDict, 1);
 }
 
 TEST_F(ThemePrefsMigrationTest,
@@ -3602,9 +3655,14 @@ TEST_F(ThemePrefsMigrationTest,
   ASSERT_FALSE(
       pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
 
+  base::HistogramTester histogram_tester;
   MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
   EXPECT_FALSE(
       pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
+  histogram_tester.ExpectTotalCount(kThemePrefMigrationAlreadyMigratedHistogram,
+                                    0);
+  histogram_tester.ExpectTotalCount(kThemePrefMigrationMigratedPrefHistogram,
+                                    0);
 }
 
 TEST_F(ThemePrefsMigrationTest,
@@ -3615,8 +3673,13 @@ TEST_F(ThemePrefsMigrationTest,
   pref_service_.SetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing, true);
   pref_service_.SetInteger(prefs::kUserColorDoNotUse, SK_ColorBLUE);
 
+  base::HistogramTester histogram_tester;
   MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
   EXPECT_FALSE(pref_service_.HasPrefPath(prefs::kNonSyncingUserColorDoNotUse));
+  histogram_tester.ExpectUniqueSample(
+      kThemePrefMigrationAlreadyMigratedHistogram, true, 1);
+  histogram_tester.ExpectTotalCount(kThemePrefMigrationMigratedPrefHistogram,
+                                    0);
 }
 
 TEST_F(ThemePrefsMigrationTest,
@@ -3739,6 +3802,8 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
           fake_change_processor_.get())));
 
   ASSERT_TRUE(prefs()->IsSyncing());
+
+  base::HistogramTester histogram_tester;
   ThemeSyncableService theme_syncable_service(profile_.get(), theme_service());
 
   // Syncing prefs were copied.
@@ -3750,6 +3815,18 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
             static_cast<int>(SK_ColorRED));
   EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
+
+  // The applied prefs were logged.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kThemePrefMigrationIncomingSyncingPrefAppliedHistogram),
+      testing::ElementsAre(
+          base::Bucket(
+              static_cast<int>(ThemePrefInMigration::kBrowserColorScheme), 1),
+          base::Bucket(static_cast<int>(ThemePrefInMigration::kUserColor), 1),
+          base::Bucket(
+              static_cast<int>(ThemePrefInMigration::kBrowserColorVariant),
+              1)));
 }
 
 // Verifies that syncing theme prefs are read when prefs sync starts.
@@ -3758,7 +3835,12 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
   ASSERT_TRUE(prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
 
   ASSERT_FALSE(prefs()->IsSyncing());
+  base::HistogramTester histogram_tester;
   ThemeSyncableService theme_syncable_service(profile_.get(), theme_service());
+
+  // No pref logged yet since prefs hasn't started syncing.
+  histogram_tester.ExpectTotalCount(
+      kThemePrefMigrationIncomingSyncingPrefAppliedHistogram, 0);
 
   // Start prefs sync.
   syncer::SyncableService* pref_sync_service =
@@ -3777,6 +3859,18 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
             static_cast<int>(SK_ColorRED));
   EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
+
+  // The applied prefs were logged.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kThemePrefMigrationIncomingSyncingPrefAppliedHistogram),
+      testing::ElementsAre(
+          base::Bucket(
+              static_cast<int>(ThemePrefInMigration::kBrowserColorScheme), 1),
+          base::Bucket(static_cast<int>(ThemePrefInMigration::kUserColor), 1),
+          base::Bucket(
+              static_cast<int>(ThemePrefInMigration::kBrowserColorVariant),
+              1)));
 }
 
 // Verifies that syncing theme prefs are not read if they have already been read
@@ -3786,6 +3880,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
   // Mark as already read.
   prefs()->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, false);
 
+  base::HistogramTester histogram_tester;
   ThemeSyncableService theme_syncable_service(profile_.get(), theme_service());
 
   // Start prefs sync.
@@ -3805,6 +3900,10 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTestWithFlagEnabled,
             static_cast<int>(SK_ColorRED));
   EXPECT_NE(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
+
+  // No pref logged.
+  histogram_tester.ExpectTotalCount(
+      kThemePrefMigrationIncomingSyncingPrefAppliedHistogram, 0);
 }
 
 // Verifies that the migration flag is set and (thus) syncing prefs are not read
