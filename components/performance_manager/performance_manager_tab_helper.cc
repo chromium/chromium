@@ -76,10 +76,7 @@ bool ConnectWindowOpenRelationshipIfExists(PerformanceManagerTabHelper* helper,
   if (!opener_frame_node)
     return false;
 
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&PageNodeImpl::SetOpenerFrameNode,
-                                base::Unretained(helper->primary_page_node()),
-                                base::Unretained(opener_frame_node)));
+  helper->primary_page_node()->SetOpenerFrameNode(opener_frame_node);
   return true;
 }
 
@@ -309,30 +306,18 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
     return;
   }
 
-  // Perform the swap in the graph.
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(
-                     [](FrameNodeImpl* old_frame, FrameNodeImpl* new_frame,
-                        GraphImpl* graph) {
-                       FrameNodeImpl::UpdateCurrentFrame(old_frame, new_frame,
-                                                         graph);
-                     },
-                     old_frame, new_frame));
+  FrameNodeImpl::UpdateCurrentFrame(old_frame, new_frame,
+                                    PerformanceManagerImpl::GetGraphImpl());
 }
 
 void PerformanceManagerTabHelper::OnVisibilityChanged(
     content::Visibility visibility) {
   const bool is_visible = visibility == content::Visibility::VISIBLE;
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&PageNodeImpl::SetIsVisible,
-                     base::Unretained(page_node_.get()), is_visible));
+  page_node_->SetIsVisible(is_visible);
 }
 
 void PerformanceManagerTabHelper::OnAudioStateChanged(bool audible) {
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&PageNodeImpl::SetIsAudible,
-                                base::Unretained(page_node_.get()), audible));
+  page_node_->SetIsAudible(audible);
 }
 
 void PerformanceManagerTabHelper::OnFrameAudioStateChanged(
@@ -348,9 +333,7 @@ void PerformanceManagerTabHelper::OnFrameAudioStateChanged(
     return;
   }
   auto* frame_node = frame_it->second.get();
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&FrameNodeImpl::SetIsAudible,
-                                base::Unretained(frame_node), is_audible));
+  frame_node->SetIsAudible(is_audible);
 }
 
 void PerformanceManagerTabHelper::
@@ -368,16 +351,8 @@ void PerformanceManagerTabHelper::
   }
   CHECK(render_frame_host->IsRenderFrameLive());
 
-  // Getting address of overloaded function.
-  void (FrameNodeImpl::*set_viewport_intersection_fn)(
-      const blink::mojom::ViewportIntersectionState&) =
-      &FrameNodeImpl::SetViewportIntersection;
-
   auto* frame_node = frame_it->second.get();
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(set_viewport_intersection_fn, base::Unretained(frame_node),
-                     viewport_intersection_state));
+  frame_node->SetViewportIntersection(viewport_intersection_state);
 }
 
 void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
@@ -393,14 +368,8 @@ void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
   }
   CHECK(render_frame_host->IsRenderFrameLive());
 
-  // Getting address of overloaded function.
-  void (FrameNodeImpl::*set_viewport_intersection_fn)(
-      blink::mojom::FrameVisibility) = &FrameNodeImpl::SetViewportIntersection;
-
   auto* frame_node = frame_it->second.get();
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(set_viewport_intersection_fn,
-                                base::Unretained(frame_node), visibility));
+  frame_node->SetViewportIntersection(visibility);
 }
 
 void PerformanceManagerTabHelper::OnFrameIsCapturingMediaStreamChanged(
@@ -413,10 +382,7 @@ void PerformanceManagerTabHelper::OnFrameIsCapturingMediaStreamChanged(
   }
 
   auto* frame_node = frame_it->second.get();
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&FrameNodeImpl::SetIsCapturingMediaStream,
-                     base::Unretained(frame_node), is_capturing_media_stream));
+  frame_node->SetIsCapturingMediaStream(is_capturing_media_stream);
 }
 
 void PerformanceManagerTabHelper::DidFinishNavigation(
@@ -440,14 +406,11 @@ void PerformanceManagerTabHelper::DidFinishNavigation(
   auto* frame_node = frame_it->second.get();
 
   // Notify the frame of the committed URL.
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&FrameNodeImpl::OnNavigationCommitted,
-                     base::Unretained(frame_node),
-                     render_frame_host->GetLastCommittedURL(),
-                     render_frame_host->GetLastCommittedOrigin(),
-                     navigation_handle->IsSameDocument(),
-                     navigation_handle->IsServedFromBackForwardCache()));
+  frame_node->OnNavigationCommitted(
+      render_frame_host->GetLastCommittedURL(),
+      render_frame_host->GetLastCommittedOrigin(),
+      navigation_handle->IsSameDocument(),
+      navigation_handle->IsServedFromBackForwardCache());
 
   if (!navigation_handle->IsInPrimaryMainFrame())
     return;
@@ -456,16 +419,12 @@ void PerformanceManagerTabHelper::DidFinishNavigation(
   // to the performance manager.
   OnMainFrameNavigation(navigation_handle->GetNavigationId());
 
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&PageNodeImpl::OnMainFrameNavigationCommitted,
-                     base::Unretained(page_node_.get()),
-                     navigation_handle->IsSameDocument(),
-                     navigation_committed_time,
-                     navigation_handle->GetNavigationId(),
-                     render_frame_host->GetLastCommittedURL(),
-                     navigation_handle->GetWebContents()->GetContentsMimeType(),
-                     GetNotificationPermissionStatusAndObserveChanges()));
+  page_node_->OnMainFrameNavigationCommitted(
+      navigation_handle->IsSameDocument(), navigation_committed_time,
+      navigation_handle->GetNavigationId(),
+      render_frame_host->GetLastCommittedURL(),
+      navigation_handle->GetWebContents()->GetContentsMimeType(),
+      GetNotificationPermissionStatusAndObserveChanges());
 }
 
 std::optional<blink::mojom::PermissionStatus> PerformanceManagerTabHelper::
@@ -511,10 +470,7 @@ std::optional<blink::mojom::PermissionStatus> PerformanceManagerTabHelper::
 
 void PerformanceManagerTabHelper::OnNotificationPermissionStatusChange(
     blink::mojom::PermissionStatus permission_status) {
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&PageNodeImpl::OnNotificationPermissionStatusChange,
-                     base::Unretained(page_node_.get()), permission_status));
+  page_node_->OnNotificationPermissionStatusChange(permission_status);
 }
 
 void PerformanceManagerTabHelper::
@@ -537,9 +493,7 @@ void PerformanceManagerTabHelper::FrameReceivedUserActivation(
     return;
   }
   auto* frame_node = frame_it->second.get();
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&FrameNodeImpl::SetHadUserActivation,
-                                base::Unretained(frame_node)));
+  frame_node->SetHadUserActivation();
 }
 
 void PerformanceManagerTabHelper::TitleWasSet(content::NavigationEntry* entry) {
@@ -552,9 +506,7 @@ void PerformanceManagerTabHelper::TitleWasSet(content::NavigationEntry* entry) {
     first_time_title_set_ = true;
     return;
   }
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&PageNodeImpl::OnTitleUpdated,
-                                base::Unretained(page_node_.get())));
+  page_node_->OnTitleUpdated();
 }
 
 void PerformanceManagerTabHelper::InnerWebContentsAttached(
@@ -575,11 +527,7 @@ void PerformanceManagerTabHelper::InnerWebContentsAttached(
   auto embedding_type = PageNode::EmbeddingType::kGuestView;
   DCHECK(frame);
 
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&PageNodeImpl::SetEmbedderFrameNodeAndEmbeddingType,
-                     base::Unretained(page), base::Unretained(frame),
-                     embedding_type));
+  page->SetEmbedderFrameNodeAndEmbeddingType(frame, embedding_type);
 }
 
 void PerformanceManagerTabHelper::WebContentsDestroyed() {
@@ -604,33 +552,22 @@ void PerformanceManagerTabHelper::DidUpdateFaviconURL(
     first_time_favicon_set_ = true;
     return;
   }
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&PageNodeImpl::OnFaviconUpdated,
-                                base::Unretained(page_node_.get())));
+  page_node_->OnFaviconUpdated();
 }
 
 void PerformanceManagerTabHelper::MediaPictureInPictureChanged(
     bool is_picture_in_picture) {
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&PageNodeImpl::SetHasPictureInPicture,
-                                base::Unretained(page_node_.get()),
-                                is_picture_in_picture));
+  page_node_->SetHasPictureInPicture(is_picture_in_picture);
 }
 
 void PerformanceManagerTabHelper::OnWebContentsFocused(
     content::RenderWidgetHost* render_widget_host) {
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&PageNodeImpl::SetIsFocused,
-                                base::Unretained(page_node_.get()),
-                                /*is_focused=*/true));
+  page_node_->SetIsFocused(/*is_focused=*/true);
 }
 
 void PerformanceManagerTabHelper::OnWebContentsLostFocus(
     content::RenderWidgetHost* render_widget_host) {
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&PageNodeImpl::SetIsFocused,
-                                base::Unretained(page_node_.get()),
-                                /*is_focused=*/false));
+  page_node_->SetIsFocused(/*is_focused=*/false);
 }
 
 void PerformanceManagerTabHelper::AboutToBeDiscarded(
@@ -639,11 +576,8 @@ void PerformanceManagerTabHelper::AboutToBeDiscarded(
 
   base::WeakPtr<PageNode> new_page_node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(new_contents);
-
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&PageNodeImpl::OnAboutToBeDiscarded,
-                     base::Unretained(page_node_.get()), new_page_node));
+  CHECK(new_page_node);
+  page_node_->OnAboutToBeDiscarded(new_page_node);
 }
 
 void PerformanceManagerTabHelper::BindDocumentCoordinationUnit(
@@ -652,10 +586,8 @@ void PerformanceManagerTabHelper::BindDocumentCoordinationUnit(
   auto it = frames_.find(render_frame_host);
   CHECK(it != frames_.end(), base::NotFatalUntil::M130);
 
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&FrameNodeImpl::Bind, base::Unretained(it->second.get()),
-                     std::move(receiver)));
+  auto* frame_node = it->second.get();
+  frame_node->Bind(std::move(receiver));
 }
 
 FrameNodeImpl* PerformanceManagerTabHelper::GetFrameNode(
@@ -677,10 +609,7 @@ void PerformanceManagerTabHelper::OnMainFrameNavigation(int64_t navigation_id) {
 
   ukm_source_id_ =
       ukm::ConvertToSourceId(navigation_id, ukm::SourceIdType::NAVIGATION_ID);
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&PageNodeImpl::SetUkmSourceId,
-                     base::Unretained(page_node_.get()), ukm_source_id_));
+  page_node_->SetUkmSourceId(ukm_source_id_);
 
   first_time_title_set_ = false;
   first_time_favicon_set_ = false;
