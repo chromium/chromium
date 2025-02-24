@@ -10,7 +10,6 @@ along with a detailed description for each histogram.
 
 For best practices on writing histogram descriptions, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
-
 Please follow the instructions in the OWNERS file in this directory to find a
 reviewer. If no OWNERS file exists, please consider signing up at
 go/reviewing-metrics (Googlers only), as all subdirectories are expected to
@@ -560,9 +559,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AppsCollections.DismissedReason"
-    enum="AppsCollectionsDismissedReason" expires_after="2025-03-15">
+    enum="AppsCollectionsDismissedReason" expires_after="2026-02-20">
   <owner>anasalazar@google.com</owner>
-  <owner>anooshree@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -2970,9 +2968,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.TimeDurationBetweenNewUserSessionActivationAndAppsCollectionShown"
-    units="ms" expires_after="2025-03-27">
+    units="ms" expires_after="2026-02-20">
   <owner>anasalazar@google.com</owner>
-  <owner>anooshree@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
