@@ -76,6 +76,340 @@ class InvalidTestDefinitionError(Error):
     """Raised on invalid test definition."""
 
 
+class _CanvasType(str, enum.Enum):
+    HTML_CANVAS = 'HtmlCanvas'
+    OFFSCREEN_CANVAS = 'OffscreenCanvas'
+    WORKER = 'Worker'
+
+
+class _TemplateType(str, enum.Enum):
+    REFERENCE = 'reference'
+    HTML_REFERENCE = 'html_reference'
+    CAIRO_REFERENCE = 'cairo_reference'
+    IMG_REFERENCE = 'img_reference'
+    TESTHARNESS = 'testharness'
+
+
+_REFERENCE_TEMPLATES = (_TemplateType.REFERENCE,
+                        _TemplateType.HTML_REFERENCE,
+                        _TemplateType.CAIRO_REFERENCE,
+                        _TemplateType.IMG_REFERENCE)
+
+
+_TestParams = Mapping[str, Any]
+_MutableTestParams = MutableMapping[str, Any]
+
+
+# All parameters that test definitions can specify to control test generation.
+# Some have defaults values, used if the test definition doesn't specify them.
+_TEST_DEFINITION_PARAMS = {
+    # Base parameters:
+
+    # Test name, which ultimately is used as filename. File variant dimension
+    # names (i.e. the 'file_variant_names' property below) are appended to this
+    # to produce unique filenames.
+    'name': None,
+    # The implementation of the test body. This should be JavaScript code,
+    # drawing on the canvas via the provided `canvas` and `ctx` objects.
+    # `canvas` will be an `HTMLCanvasElement` instance for 'HtmlCanvas' test
+    # type, else it will be an `OffscreenCanvas` instance. `ctx` will be a '2d'
+    # rendering context.
+    'code': None,
+    # Whether this test variant is enabled. This can be used to generate sparse
+    # variant grids, by making this parameter resolve to `True` only for certain
+    # combinations of variant dimensions, e.g.:
+    #   - enabled: {{ variant_names[1] in ['foo', 'bar'] }})
+    'enabled': 'true',
+    # Textual description for this test. This is used both as text in the
+    # generated HTML page, and as testharness.js test fixture description, for
+    # JavaScript tests (i.e. arguments to the `test()`, `async_test()` and
+    # `promise_test()` functions).
+    'desc': '',
+    # If specified, 'notes:' adds a `<p>` tag in the page showing this
+    # note.
+    'notes': '',
+    # Size of the canvas to use.
+    'size': (100, 50),
+
+    # Parameters controlling test runner execution:
+
+    # For reftests, specifies the tolerance in pixel difference allowed for the
+    # test to pass. By default, the test and reference must produce identical
+    # images. To allow a certain difference, specify as, for instance:
+    #   fuzzy: maxDifference=0-2; totalPixels=0-1234
+    # In this example, up to 1234 pixels can differ by at most a difference of
+    # 2 on a any color channels.
+    'fuzzy': None,
+    # Used to control the test timeout, in case the test takes too long to
+    # complete. For instance: `timeout: long`.
+    'timeout': None,
+
+    # Parameters controlling what type of tests should be generated:
+
+    # List of the canvas types for which the test should be generated. Defaults
+    # to generating the test for all types. Options are:
+    #  - 'HtmlCanvas': to test using an HTMLCanvasElement.
+    #  - 'Offscreen': to test using an OffscreenCanvas on the main thread.
+    #  - 'Worker': to test using an OffscreenCanvas in a worker.
+    'canvas_types': list(_CanvasType),
+    # Specifies the type of test fixture to generate.
+    #
+    # For testharness.js JavaScript tests, valid options are "sync", "async" or
+    # "promise", which produce standard `test()`, `async_test()` and
+    # `promise_test()` testharness fixtures respectively. For compatibility with
+    # old tests, leaving `test_type` unspecified produces a test using the
+    # legacy `_addTest` helper from canvas-tests.js. These are synchronous tests
+    # that can be made asynchronous by calling `deferTest()` and calling
+    # `t.done()` when the test completes.
+    #
+    # For reftests, generated tests are by default synchronous (if 'test_type'
+    # is not specified). Setting 'test_type' to "promise" makes it possible to
+    # use async/await syntax in the test body. In both cases, the test completes
+    # when the test body returns. Asynchronous APIs can be supported by wrapping
+    # them in promises awaiting on their completion.
+    'test_type': None,
+    # Causes the test generator to generate a reftest instead of a JavaScript
+    # test. Similarly to the `code:` parameter, 'reference:' should be set to
+    # JavaScript code drawing to a provided `canvas` object via a provided `ctx`
+    # 2D rendering context. The code generator will generate a reference HTML
+    # file that the test runner will use to validate the test result. Cannot be
+    # used in combination with 'html_reference:', 'cairo_reference:' or
+    # 'img_reference:'.
+    'reference': None,
+    # Similar to 'reference:', but the value is an HTML document instead of
+    # JavaScript drawing to a canvas. This is useful to use the DOM or an SVG
+    # drawing as a reference to compare the test result against. Cannot be used
+    # in combination with 'reference:', 'cairo_reference:' or 'img_reference:'.
+    'html_reference': None,
+    # Similar to 'reference:', but the value is Python code generating an image
+    # using the pycairo library. The Python code is provided with a `surface`
+    # and `cr` variable, instances of `cairo.ImageSurface` and `cairo.Context`
+    # respectively. Cannot be used in combination with 'reference:',
+    # 'html_reference:' or 'img_reference:'.
+    'cairo_reference': None,
+    # Similar to 'reference', but the value is the path to an image resource
+    # file to use as reference. When using 'cairo_reference:', the generated
+    # image path is assigned to 'img_reference:', for the template to use. A
+    # test could technically set 'img_reference:' directly, specifying a
+    # pre-generated image. This can be useful for plain and trivial images (e.g.
+    # '/images/green-100x50.png', but any non-trivial pre-generated image should
+    # be avoided because these can't easily be inspected and maintained if it
+    # needs to be revisited in the future. Cannot be used in combination with
+    # 'reference:', 'html_reference:' or 'cairo_reference:'.
+    'img_reference': None,
+
+    # Parameters adding HTML tags in the generated HTML files:
+
+    # Additional HTML attributes to pass to the '<canvas>' tag. e.g.:
+    #   canvas: 'style="font-size: 144px"'
+    'canvas': None,
+    # If specified, the 'attribute' string is used as extra parameter to
+    # `canvas.getContext()`. For instance, using:
+    #     attributes: '{alpha: False}'
+    # would create a context with:
+    #     canvas.getContext('2d', {alpha: false})
+    'attributes': None,
+    # List of image filenames to add `<img>` tag for. The same name is used as
+    # id, which can be used to get the img element from the test body.
+    'images': [],
+    # List of image filenames to add SVG `<image>` tag for. The same name is
+    # used as id, which can be used to get the image element from the test body.
+    'svgimages': [],
+    # List of custom fonts to load, by adding a `@font-face` CSS statement.
+    # Fonts a specified by their base filename, not their full path. For
+    # instance `fonts: ['CanvasTest']` would have the test load the font
+    # '/fonts/CanvasTest.ttf'
+    'fonts': [],
+    # By default, the fonts added to the CSS via 'fonts:' are used in the test
+    # HTML page in a hidden `<span>`, to make sure the fonts get loaded. The
+    # `<span>` tags can be omitted by setting `font_unused_in_dom: True`,
+    # allowing the test to validate what happens if the fonts aren't used in the
+    # page.
+    'font_unused_in_dom': False,
+    # Python code generating an expected image using the pycairo library. This
+    # expected image is included in the HTML test result page for
+    # HTMLCanvasElement JavaScript tests, only for informational purposes and
+    # for allowing manual visual verifications. It is NOT used by the test
+    # runner to automatically check for test success. To automate test
+    # validation, use a reftest instead, using the `reference`,
+    # `html_reference`, `cairo_reference` or `img_reference` config.
+    #
+    # The Python script must start with the (non-Pythonic) magic line: size x y
+    # Where x and y are the size of the image to generate. The remaining is
+    # standard Python code, where the variables `surface` and `cr` are
+    # respectively providing the `cairo.ImageSurface` and `cairo.Context`
+    # objects to use for drawing the image.
+    #
+    # 'expected' accepts two special values: 'green' and 'clear'. These
+    # respectively resolve to the images '/images/green-100x50.png' and
+    # '/images/clear-100x50.png'. The test definitions can alternatively pass an
+    # image filename explicitly by using `expected_img`.
+    'expected': None,
+    # When using the 'expected' option above, the name of the file that gets
+    # generated is stored in 'expected_img', for the template to use. Test
+    # definitions can alternatively specify a value for 'expected_img' directly,
+    # without using 'expected', by passing it a filename to an image resource,
+    # e.g. '/images/green-100x50.png'.
+    'expected_img': None,
+
+    # Test variants:
+
+    # List of dictionaries, defining the dimensions of a test variant grid. Each
+    # dictionary defines a variant dimension, with the dictionary keys
+    # corresponding to different variant names and the values corresponding to
+    # the parameters this variant should use.
+    #
+    # If only a single dictionary is provided, a different test will be
+    # generated for each entries of this dictionary. For instance, the following
+    # config will generate 2 tests:
+    #   - name: 2d.example
+    #     code: ctx.fillStyle = '{{ color }}';
+    #     variants:
+    #     - red: {color: '#F00'}
+    #       blue: {color: '#00F'}
+    #
+    #   Will generate:
+    #   1) '2d.example.red', with the code: `ctx.fillStyle = '#F00'`
+    #   2) '2d.example.blue', with the code: `ctx.fillStyle = '#00F'`
+    #
+    # If more than one dictionaries are provided, each dictionary corresponds to
+    # a dimension in a multi-dimensional variant grid. For instance, the
+    # following config will generate 4 tests (using `variant_names[0]` to avoid
+    # duplicating the same string in the variant name and parameter):
+    #   - name: 2d.grid
+    #     code: ctx.{{ variant_names[0] }} = '{{ color }}';
+    #     variants:
+    #     - fillStyle:
+    #       shadowColor:
+    #     - red: {color: '#F00'}
+    #       blue: {color: '#00F'}
+    #
+    #   Will generate:
+    #   1) '2d.grid.fillStyle.red', code: `ctx.fillStyle = '#F00';`
+    #   2) '2d.grid.fillStyle.blue', code: `ctx.fillStyle = '#00F';`
+    #   3) '2d.grid.shadowColor.red', code: `ctx.shadowColor = '#F00';`
+    #   4) '2d.grid.shadowColor.blue', code: `ctx.shadowColor = '#00F';`
+    #
+    # The parameters of a variant (e.g. the 'color' parameter in the example
+    # above) get merged over the base test parameter. For instance, a variant
+    # could have the property 'code:', which overrides the 'code:' property in
+    # the base test definition, if defined there:
+    #   - name: 2d.parameter-override
+    #     code: // Base code implementation.
+    #     variants:
+    #     - variant1:
+    #         code: // Overrides base code implementation.
+    'variants': None,
+    # By default, each variant is generated to a different file. By using
+    # 'variants_layout:', variants can be generated as multiple tests in the
+    # same test file. If specified, 'variants_layout:' must be a list the same
+    # length as the 'variants:' list, that is, as long as there are variant
+    # dimensions. Each item in the `variants_layout` list indicate how that
+    # particular variant dimension should be expanded. Possible values are:
+    #
+    # - multi_files
+    #   This the default behavior: the variants along this dimension get
+    #   generated to different files.
+    #
+    # - single_file
+    #   The variants in this dimension get rendered to the same file.
+    #
+    # If multiple dimensions are marked as 'single_file', these variants get
+    # laid-out in a grid whose width defaults to the number of variants in the
+    # first 'single_file' dimension (the grid width can be customized using
+    # 'grid_width:'). For instance:
+    #
+    # - name: grid-example
+    #   variants:
+    #   - A1:
+    #     A2:
+    #   - B1:
+    #     B2:
+    #   - C1:
+    #     C2:
+    #   - D1:
+    #     D2:
+    #   - E1:
+    #     E2:
+    #   variants_layout:
+    #     - single_file
+    #     - multi_files
+    #     - single_file
+    #     - multi_files
+    #     - single_file
+    #
+    # Because this test has 2 'multi_files' dimensions with two variants each, 4
+    # files would be generated:
+    #   - grid-example.B1.D1
+    #   - grid-example.B1.D2
+    #   - grid-example.B2.D1
+    #   - grid-example.B2.D2
+    #
+    # Then, the 3 'single_file' dimensions would produce 2x2x2 = 8 tests in each
+    # of these files. For JavaScript tests, each of these tests would be
+    # generated in sequence, each with their own `test()`, `async_test()` or
+    # `promise_test()` fixture. Reftests on the other hand would produce a 2x2x2
+    # grid, as follows:
+    #    A1.C1.E1     A2.C1.E1
+    #    A1.C2.E1     A2.C2.E1
+    #    A1.C1.E2     A2.C1.E2
+    #    A1.C2.E2     A2.C2.E2
+    'variants_layout': None,
+    # The width of the grid generated by the 'single_file' variant_layout. If
+    # not specified, the size of the first 'single_file' variant dimension
+    # is used as grid width.
+    'grid_width': None,
+    # If `True`, the file variant dimension names (i.e. the `file_variant_names`
+    # property below) get appended to the test name. Setting this to `False` is
+    # useful if a custom name format is desired, for instance:
+    #     name: my_test.{{ file_variant_name }}.tentative
+    'append_variants_to_name': True,
+}
+
+# Parameters automatically populated by the test generator. Test definitions
+# cannot manually specify a value for these, but they can be used in parameter
+# values using Jinja templating.
+_GENERATED_PARAMS = {
+    # Set to either 'HtmlCanvas', 'Offscreen' or 'Worker' when rendering
+    # templates for the corresponding canvas type. Test definitions can use this
+    # parameter in Jinja `if` conditions to generate different code for
+    # different canvas types.
+    'canvas_type': None,
+    # List holding the file variant dimension names. These get appended to
+    # 'name' to form the test file name.
+    'file_variant_names': [],
+    # List of this variant grid dimension names. This uniquely identifies a
+    # single variant in a variant grid file.
+    'grid_variant_names': [],
+    # List of this variant dimension names, including both file and grid
+    # dimensions.
+    'variant_names': [],
+    # Same as `file_variant_names`, but concatenated into a single string. This
+    # is a useful to easily identify a variant file.
+    'file_variant_name': '',
+    # Same as `grid_variant_names`, but concatenated into a single string. This
+    # is a useful to easily identify a variant in a grid.
+    'grid_variant_name': '',
+    # Same as `variant_names`, but concatenated into a single string. This is a
+    # useful shorthand for tests having a single variant dimension.
+    'variant_name': '',
+    # For reftests, this is the reference file name that the test file links to.
+    'reference_file_link': None,
+    # Numerical ID uniquely identifying this variant in a variant grid. This can
+    # be used in `id` HTML attributes to allow each variant in a variant grid
+    # to have uniquely identifiable HTML tags. For instance, an `html_reference`
+    # with SVG code could give each variant a uniquely identifiable `<filter>`
+    # tags by doing:
+    #     <filter id="my_filter{{ id }}">
+    'id': 0,
+    # The file name of the test file being generated.
+    'file_name': None,
+    # Set to one of the enum values in `_TemplateType`, identifying the template
+    # being used to generate the test.
+    'template_type': None,
+}
+
+
 def _double_quote_escape(string: str) -> str:
     return string.replace('\\', '\\\\').replace('"', '\\"')
 
@@ -210,29 +544,6 @@ def _expand_test_code(code: str) -> str:
 
     return code
 
-
-_TestParams = Mapping[str, Any]
-_MutableTestParams = MutableMapping[str, Any]
-
-
-class _CanvasType(str, enum.Enum):
-    HTML_CANVAS = 'HtmlCanvas'
-    OFFSCREEN_CANVAS = 'OffscreenCanvas'
-    WORKER = 'Worker'
-
-
-class _TemplateType(str, enum.Enum):
-    REFERENCE = 'reference'
-    HTML_REFERENCE = 'html_reference'
-    CAIRO_REFERENCE = 'cairo_reference'
-    IMG_REFERENCE = 'img_reference'
-    TESTHARNESS = 'testharness'
-
-
-_REFERENCE_TEMPLATES = (_TemplateType.REFERENCE,
-                        _TemplateType.HTML_REFERENCE,
-                        _TemplateType.CAIRO_REFERENCE,
-                        _TemplateType.IMG_REFERENCE)
 
 class MutableDictLoader(jinja2.BaseLoader):
     """Loads Jinja templates from a `dict` that can be updated.
@@ -511,37 +822,15 @@ class _Variant():
         """Create a _Variant from the specified params.
 
         Default values are added for certain parameters, if missing."""
-        params = {
-            'enabled': 'true',
-            'desc': '',
-            'size': (100, 50),
-            # Test name, which ultimately is used as filename. File variant
-            # dimension names (i.e. the 'file_variant_names' property below) are
-            # appended to this to produce unique filenames.
-            'name': '',
-            # List holding the the file variant dimension names.
-            'file_variant_names': [],
-            # List of this variant grid dimension names. This uniquely
-            # identifies a single variant in a variant grid file.
-            'grid_variant_names': [],
-            # List of this variant dimension names, including both file and grid
-            # dimensions.
-            'variant_names': [],
-            # Same as `file_variant_names`, but concatenated into a single
-            # string. This is a useful to easily identify a variant file.
-            'file_variant_name': '',
-            # Same as `grid_variant_names`, but concatenated into a single
-            # string. This is a useful to easily identify a variant in a grid.
-            'grid_variant_name': '',
-            # Same as `variant_names`, but concatenated into a single string.
-            # This is a useful shorthand for tests having a single variant
-            # dimension.
-            'variant_name': '',
-            'images': [],
-            'svgimages': [],
-            'fonts': [],
-        }
+        # Pick up all default values from the parameter definition constants,
+        # but drop all `None` values as they are only there as placeholders, to
+        # allow all parameters to be listed for documentation purposes.
+        params = {k: v
+                  for defaults in (_TEST_DEFINITION_PARAMS, _GENERATED_PARAMS)
+                  for k, v in defaults.items()
+                  if v is not None}
         params.update(test)
+
         if 'variants' in params:
             del params['variants']
         return _Variant(params)
