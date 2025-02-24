@@ -577,9 +577,16 @@ Node* PseudoElement::InnerNodeForHitTesting() {
 
 void PseudoElement::AccessKeyAction(
     SimulatedClickCreationScope creation_scope) {
-  // Even though pseudo elements can't use the accesskey attribute, assistive
-  // tech can still attempt to interact with pseudo elements if they are in
-  // the AX tree (usually due to their text/image content).
+  // If this is a pseudo element with activation behavior such as a
+  // ::scroll-marker or ::scroll-button, we should invoke it.
+  if (HasActivationBehavior()) {
+    DispatchSimulatedClick(nullptr, creation_scope);
+    return;
+  }
+
+  // Even though regular pseudo elements can't use the accesskey attribute,
+  // assistive tech can still attempt to interact with pseudo elements if
+  // they are in the AX tree (usually due to their text/image content).
   // Just pass this request to the originating element.
   DCHECK(UltimateOriginatingElement());
   UltimateOriginatingElement()->AccessKeyAction(creation_scope);
