@@ -135,6 +135,10 @@ export class TraceReportListElement extends CrLitElement {
     return this.notification_?.type || '';
   }
 
+  protected onRefreshTracesClick_(): Promise<void> {
+    return this.initializeList();
+  }
+
   protected async onDeleteAllTracesClick_(): Promise<void> {
     const {success} = await this.traceReportProxy_.handler.deleteAllTraces();
     if (!success) {
