@@ -26,6 +26,10 @@ namespace {
 const CGFloat kEnterpriseIconSpacing = 4.0;
 // The vertical space between labels.
 const CGFloat kLabelVerticalSpacing = 2.0;
+// The button padding.
+const CGFloat kButtonPadding = 8.0;
+// The button corner radius.
+const CGFloat kButtonCornerRadius = 15.0;
 
 // Returns a tinted version of the enterprise building icon.
 UIImage* GetEnterpriseIcon() {
@@ -58,14 +62,23 @@ UIImage* GetEnterpriseIcon() {
   BOOL _useLargeMargins;
   // The constraint for the top padding.
   NSLayoutConstraint* _topPaddingConstraint;
+  // Whether to add manage your account button.
+  BOOL _addManageYourAccountButton;
+  // Manage your account button.
+  UIButton* _button;
+  // Manage your account button action.
+  ProceduralBlock _manageYourAccountButtonAction;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
-                  avatarImage:(UIImage*)avatarImage
-                         name:(NSString*)name
-                        email:(NSString*)email
-              managementState:(ManagementState)managementState
-              useLargeMargins:(BOOL)useLargeMargins {
+                      avatarImage:(UIImage*)avatarImage
+                             name:(NSString*)name
+                            email:(NSString*)email
+                  managementState:(ManagementState)managementState
+                  useLargeMargins:(BOOL)useLargeMargins
+       addManageYourAccountButton:(BOOL)addManageYourAccountButton
+    manageYourAccountButtonAction:
+        (ProceduralBlock)manageYourAccountButtonAction {
   self = [super initWithFrame:frame];
   if (self) {
     CHECK(avatarImage);
@@ -74,6 +87,10 @@ UIImage* GetEnterpriseIcon() {
     _name = name ? name : email;
     _email = name ? email : nil;
     _useLargeMargins = useLargeMargins;
+    _addManageYourAccountButton = addManageYourAccountButton;
+    _manageYourAccountButtonAction = manageYourAccountButtonAction;
+    CHECK_EQ(_addManageYourAccountButton,
+             _manageYourAccountButtonAction != nil);
     _managed = managementState.is_profile_managed();
 
     self.isAccessibilityElement = YES;
@@ -171,10 +188,29 @@ UIImage* GetEnterpriseIcon() {
         [horizontalStack.trailingAnchor
             constraintLessThanOrEqualToAnchor:self.trailingAnchor
                                      constant:-kTableViewHorizontalSpacing],
-
-        [self.bottomAnchor constraintEqualToAnchor:horizontalStack.bottomAnchor
-                                          constant:bottomMargin],
       ]];
+
+      if (_addManageYourAccountButton) {
+        [self addButton];
+        [_button.topAnchor constraintEqualToAnchor:horizontalStack.bottomAnchor
+                                          constant:3 * kLabelVerticalSpacing]
+            .active = YES;
+        [self.bottomAnchor constraintEqualToAnchor:_button.bottomAnchor
+                                          constant:bottomMargin]
+            .active = YES;
+      } else {
+        [self.bottomAnchor constraintEqualToAnchor:horizontalStack.bottomAnchor
+                                          constant:bottomMargin]
+            .active = YES;
+      }
+    } else if (_addManageYourAccountButton) {
+      [self addButton];
+      [_button.topAnchor constraintEqualToAnchor:subtitleLabel.bottomAnchor
+                                        constant:3 * kLabelVerticalSpacing]
+          .active = YES;
+      [self.bottomAnchor constraintEqualToAnchor:_button.bottomAnchor
+                                        constant:bottomMargin]
+          .active = YES;
     } else {
       [self.bottomAnchor constraintEqualToAnchor:subtitleLabel.bottomAnchor
                                         constant:bottomMargin]
@@ -261,6 +297,59 @@ UIImage* GetEnterpriseIcon() {
       (_useLargeMargins ? kTableViewLargeVerticalSpacing : kTopLargePadding);
   _topPaddingConstraint.constant = topPadding - existingPadding;
   [self updateFrame];
+}
+
+#pragma mark Private
+
+// Executes `_manageYourAccountButtonAction` action when Manage your Account
+// button is tapped.
+- (void)buttonTapped:(id)sender {
+  CHECK(_addManageYourAccountButton);
+  if (_manageYourAccountButtonAction) {
+    _manageYourAccountButtonAction();
+  }
+}
+
+// Adds Manage your Account button.
+- (void)addButton {
+  _button = [UIButton buttonWithType:UIButtonTypeSystem];
+
+  UIButtonConfiguration* configuration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  configuration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kButtonPadding, 2 * kButtonPadding, kButtonPadding, 2 * kButtonPadding);
+  configuration.background.backgroundColor =
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+  configuration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+  configuration.background.cornerRadius = kButtonCornerRadius;
+
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
+      initWithString:
+          l10n_util::GetNSString(
+              IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_GOOGLE_ACCOUNT_ITEM)];
+  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
+  configuration.attributedTitle = string;
+
+  _button.configuration = configuration;
+  _button.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [_button addTarget:self
+                action:@selector(buttonTapped:)
+      forControlEvents:UIControlEventTouchUpInside];
+
+  [self addSubview:_button];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_button.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+    [_button.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:self.leadingAnchor
+                                    constant:kTableViewHorizontalSpacing],
+    [_button.trailingAnchor
+        constraintLessThanOrEqualToAnchor:self.trailingAnchor
+                                 constant:kTableViewHorizontalSpacing],
+  ]];
 }
 
 @end

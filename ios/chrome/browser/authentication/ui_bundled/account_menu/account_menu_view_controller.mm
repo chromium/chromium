@@ -625,12 +625,16 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)updatePrimaryAccount {
   _identityAccountView = [[CentralAccountView alloc]
-        initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)
-          avatarImage:self.dataSource.primaryAccountAvatar
-                 name:self.dataSource.primaryAccountUserFullName
-                email:self.dataSource.primaryAccountEmail
-      managementState:self.dataSource.managementState
-      useLargeMargins:NO];
+                      initWithFrame:CGRectMake(0, 0,
+                                               self.tableView.frame.size.width,
+                                               0)
+                        avatarImage:self.dataSource.primaryAccountAvatar
+                               name:self.dataSource.primaryAccountUserFullName
+                              email:self.dataSource.primaryAccountEmail
+                    managementState:self.dataSource.managementState
+                    useLargeMargins:NO
+         addManageYourAccountButton:NO
+      manageYourAccountButtonAction:nil];
   [_identityAccountView updateTopPadding:[self navigationBarHeight]];
   self.tableView.tableHeaderView = _identityAccountView;
   [self.tableView reloadData];
