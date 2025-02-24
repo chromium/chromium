@@ -255,10 +255,14 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     if (selection === ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY) {
       this.metricsBrowserProxy_.recordSettingsPageHistogram(
           PrivacyElementInteractions.THIRD_PARTY_COOKIES_BLOCK_IN_INCOGNITO);
+      this.metricsBrowserProxy_.recordAction(
+            'Settings.ThirdPartyCookies.Allow');
     } else {
       assert(selection === ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
       this.metricsBrowserProxy_.recordSettingsPageHistogram(
           PrivacyElementInteractions.THIRD_PARTY_COOKIES_BLOCK);
+      this.metricsBrowserProxy_.recordAction(
+            'Settings.ThirdPartyCookies.Block');
     }
 
     const currentThirdPartyCookieBlockingSetting =

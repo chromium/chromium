@@ -36342,6 +36342,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.ThirdPartyCookies.Allow">
+  <owner>mjenn@google.org</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded on user change to allow third-party cookies.
+  </description>
+</action>
+
+<action name="Settings.ThirdPartyCookies.Block">
+  <owner>mjenn@google.org</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded on user change to block third-party cookies.
+  </description>
+</action>
+
 <action name="Settings.TrackingProtection.OpenedFromPrivacyPage">
   <owner>alvingo@google.com</owner>
   <owner>koilos@google.com</owner>
