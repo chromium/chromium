@@ -420,11 +420,6 @@
   </style>
 </template>
 
-<!--
-  TODO(andruud): Add more tests for dynamic scoping when Issue 10954
-  resolves: https://github.com/w3c/csswg-drafts/issues/10954
--->
-
 <template data-name="Substitute local from outer scope">
   <style>
     @function --f() {
@@ -619,6 +614,51 @@
       --x: FAIL;
       --actual: --a();
       --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Inner function call should see resolved outer locals">
+  <style>
+    @function --a() {
+      --x: --b();
+      --y: var(--px);
+      result: var(--x);
+    }
+
+    @function --b() {
+      result: var(--y, FAIL);
+    }
+    #target {
+      --px: 10px;
+      --actual: --a();
+      --expected: 10px;
+    }
+  </style>
+</template>
+
+<!--
+     This the same test as the one above, but the *values* of --x and --y
+     are flipped, as are the references to those vars. If there is a bug
+     related to this behavior, it may be masked by "lucky" ordering of items
+     in a hash backing. Testing both ways ensures that at least one test
+     fails.
+-->
+<template data-name="Inner function call should see resolved outer locals (reverse)">
+  <style>
+    @function --a() {
+      --x: var(--px);
+      --y: --b();
+      result: var(--y);
+    }
+
+    @function --b() {
+      result: var(--x, FAIL);
+    }
+    #target {
+      --px: 10px;
+      --actual: --a();
+      --expected: 10px;
     }
   </style>
 </template>

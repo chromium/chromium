@@ -1517,12 +1517,11 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
     // Locals shadow arguments, which shadow custom properties
     // from the element.
 
-    // Ensure that any local variable with a matching name is applied
-    // (i.e. exists on function_context->locals).
-    // TODO(crbug.com/325504770): This may create cycles.
-    LookupAndApplyLocalVariable(var_name, resolver, context, *function_context);
     for (FunctionContext* frame = function_context; frame;
          frame = frame->parent) {
+      // Ensure that any local variable with a matching name is applied
+      // (i.e. exists on frame->locals).
+      LookupAndApplyLocalVariable(var_name, resolver, context, *frame);
       if (std::optional<const CSSValue*> local_variable =
               FindOrNullopt(frame->locals, var_name)) {
         return ResolveArgumentOrLocalInto(
