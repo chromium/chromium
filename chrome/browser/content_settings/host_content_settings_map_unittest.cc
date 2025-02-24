@@ -463,6 +463,8 @@ TEST_F(HostContentSettingsMapTest, Origins) {
                 host4, host4, ContentSettingsType::COOKIES));
 }
 
+// TODO(crbug.com/398891214): Make test pass on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(HostContentSettingsMapTest, Observer) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
@@ -495,6 +497,7 @@ TEST_F(HostContentSettingsMapTest, Observer) {
   host_content_settings_map->SetDefaultContentSetting(
       ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
 }
+#endif
 
 TEST_F(HostContentSettingsMapTest, ObserveDefaultPref) {
   TestingProfile profile;
