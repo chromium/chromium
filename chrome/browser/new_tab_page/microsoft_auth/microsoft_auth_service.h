@@ -17,6 +17,8 @@ class MicrosoftAuthServiceObserver;
 // Manages microsoft auth access token and its status for the Desktop NTP.
 class MicrosoftAuthService : public KeyedService {
  public:
+  enum class AuthState { kNone, kError, kSuccess };
+
   MicrosoftAuthService();
   ~MicrosoftAuthService() override;
 
@@ -24,7 +26,7 @@ class MicrosoftAuthService : public KeyedService {
   // Get the current access token. If the current access token is expired,
   // clear it, and return an empty string.
   std::string GetAccessToken();
-  virtual new_tab_page::mojom::AuthState GetAuthState();
+  virtual MicrosoftAuthService::AuthState GetAuthState();
   virtual void SetAuthStateError();
   virtual void SetAccessToken(new_tab_page::mojom::AccessTokenPtr access_token);
 
@@ -38,7 +40,7 @@ class MicrosoftAuthService : public KeyedService {
 
   new_tab_page::mojom::AccessTokenPtr access_token_ =
       new_tab_page::mojom::AccessToken::New();
-  new_tab_page::mojom::AuthState state_ = new_tab_page::mojom::AuthState::kNone;
+  AuthState state_ = AuthState::kNone;
   base::ObserverList<MicrosoftAuthServiceObserver> observers_;
 };
 

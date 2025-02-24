@@ -258,7 +258,7 @@ class MockFeaturePromoHelper : public NewTabPageFeaturePromoHelper {
 
 class MockMicrosoftAuthService : public MicrosoftAuthService {
  public:
-  MOCK_METHOD0(GetAuthState, new_tab_page::mojom::AuthState());
+  MOCK_METHOD0(GetAuthState, MicrosoftAuthService::AuthState());
   MOCK_METHOD(void, AddObserver, (MicrosoftAuthServiceObserver*), (override));
 };
 
@@ -921,7 +921,7 @@ TEST_F(NewTabPageHandlerTest, OnDoodleShared) {
 
 class NewTabPageHandlerMicrosoftAuthStateTest
     : public NewTabPageHandlerTest,
-      public ::testing::WithParamInterface<new_tab_page::mojom::AuthState> {
+      public ::testing::WithParamInterface<MicrosoftAuthService::AuthState> {
  public:
   NewTabPageHandlerMicrosoftAuthStateTest() {
     profile_->GetTestingPrefService()->SetManagedPref(
@@ -947,12 +947,12 @@ class NewTabPageHandlerMicrosoftAuthStateTest
     return *microsoft_auth_service_observer_;
   }
 
-  void SetAuthState(new_tab_page::mojom::AuthState state) {
+  void SetAuthState(MicrosoftAuthService::AuthState state) {
     ON_CALL(mock_microsoft_auth_service(), GetAuthState())
         .WillByDefault(testing::Return(state));
   }
 
-  new_tab_page::mojom::AuthState AuthState() const { return GetParam(); }
+  MicrosoftAuthService::AuthState AuthState() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -973,12 +973,12 @@ TEST_P(NewTabPageHandlerMicrosoftAuthStateTest, OnAuthStateUpdated) {
   const std::string auth_id = ntp_modules::kMicrosoftAuthenticationModuleId;
   base::Value::List expected_disabled_modules;
   switch (AuthState()) {
-    case new_tab_page::mojom::AuthState::kNone:
+    case MicrosoftAuthService::AuthState::kNone:
       break;
-    case new_tab_page::mojom::AuthState::kError:
+    case MicrosoftAuthService::AuthState::kError:
       expected_disabled_modules = std::move(auth_dependent_modules);
       break;
-    case new_tab_page::mojom::AuthState::kSuccess:
+    case MicrosoftAuthService::AuthState::kSuccess:
       expected_disabled_modules.Append(auth_id);
       break;
   }
@@ -993,7 +993,7 @@ TEST_P(NewTabPageHandlerMicrosoftAuthStateTest,
 
   handler_->UpdateModulesLoadable();
 
-  if (AuthState() == new_tab_page::mojom::AuthState::kNone) {
+  if (AuthState() == MicrosoftAuthService::AuthState::kNone) {
     EXPECT_CALL(mock_page_, SetModulesLoadable()).Times(0);
   } else {
     EXPECT_CALL(mock_page_, SetModulesLoadable()).Times(1);
@@ -1005,9 +1005,9 @@ TEST_P(NewTabPageHandlerMicrosoftAuthStateTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     NewTabPageHandlerMicrosoftAuthStateTest,
-    ::testing::Values(new_tab_page::mojom::AuthState::kNone,
-                      new_tab_page::mojom::AuthState::kError,
-                      new_tab_page::mojom::AuthState::kSuccess));
+    ::testing::Values(MicrosoftAuthService::AuthState::kNone,
+                      MicrosoftAuthService::AuthState::kError,
+                      MicrosoftAuthService::AuthState::kSuccess));
 
 TEST_F(NewTabPageHandlerTest, GetModulesIdNames) {
   std::vector<new_tab_page::mojom::ModuleIdNamePtr> modules_details;

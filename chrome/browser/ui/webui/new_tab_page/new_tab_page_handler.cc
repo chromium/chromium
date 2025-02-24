@@ -1720,7 +1720,7 @@ void NewTabPageHandler::SetModuleHidden(const std::string& module_id,
 }
 
 bool NewTabPageHandler::SyncMicrosoftModulesWithAuth() {
-  new_tab_page::mojom::AuthState state =
+  MicrosoftAuthService::AuthState state =
       microsoft_auth_service_->GetAuthState();
 
   const std::vector<std::string> auth_dependent_modules(
@@ -1730,13 +1730,13 @@ bool NewTabPageHandler::SyncMicrosoftModulesWithAuth() {
   std::vector<std::string> enabled_modules;
   std::vector<std::string> disabled_modules;
   switch (state) {
-    case new_tab_page::mojom::AuthState::kNone:
+    case MicrosoftAuthService::AuthState::kNone:
       break;
-    case new_tab_page::mojom::AuthState::kError:
+    case MicrosoftAuthService::AuthState::kError:
       enabled_modules.push_back(auth_id);
       disabled_modules = auth_dependent_modules;
       break;
-    case new_tab_page::mojom::AuthState::kSuccess:
+    case MicrosoftAuthService::AuthState::kSuccess:
       enabled_modules = auth_dependent_modules;
       disabled_modules.push_back(auth_id);
       break;
@@ -1751,7 +1751,7 @@ bool NewTabPageHandler::SyncMicrosoftModulesWithAuth() {
     SetModuleHidden(module_id, true);
   }
 
-  return state != new_tab_page::mojom::AuthState::kNone;
+  return state != MicrosoftAuthService::AuthState::kNone;
 }
 
 void NewTabPageHandler::ConnectToParentDocument(

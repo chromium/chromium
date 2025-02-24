@@ -14,12 +14,6 @@ enum AuthType {
 // Interfaces for inter-frame communication between chrome:// and its embedded
 // chrome-untrusted:// child document.
 
-enum AuthState {
-  kNone, // No valid access token but no error.
-  kError,
-  kSuccess,
-};
-
 // Implemented in JavaScript by the ntp-microsoft-auth document, represents the
 // embedded chrome-untrusted:// document.
 interface MicrosoftAuthUntrustedDocument {
