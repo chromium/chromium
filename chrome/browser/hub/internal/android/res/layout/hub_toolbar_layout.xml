@@ -38,7 +38,6 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:drawablePadding="16dp"
         android:minWidth="@dimen/min_touch_target_size"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"

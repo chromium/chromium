@@ -42,6 +42,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.animation.AnimationHandler;
+import org.chromium.ui.base.ViewUtils;
 
 import java.util.List;
 
@@ -106,7 +107,10 @@ public class HubToolbarView extends LinearLayout {
     void setActionButton(@Nullable FullButtonData buttonData, boolean showText) {
         ApplyButtonData.apply(buttonData, mActionButton);
         if (!showText) {
+            mActionButton.setCompoundDrawablePadding(0);
             mActionButton.setText(null);
+        } else {
+            mActionButton.setCompoundDrawablePadding(ViewUtils.dpToPx(getContext(), 16));
         }
     }
 
