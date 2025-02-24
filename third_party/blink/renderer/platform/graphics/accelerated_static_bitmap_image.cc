@@ -71,7 +71,9 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     viz::ReleaseCallback release_callback) {
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       std::move(shared_image), sync_token, shared_image_texture_id,
-      sk_image_info, ImageOrientationEnum::kDefault,
+      gfx::Size(sk_image_info.width(), sk_image_info.height()),
+      sk_image_info.colorType(), sk_image_info.alphaType(),
+      sk_image_info.refColorSpace(), ImageOrientationEnum::kDefault,
       std::move(context_provider_wrapper), context_thread_ref,
       std::move(context_task_runner), std::move(release_callback)));
 }
@@ -111,9 +113,11 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
       shared_gpu_context, shared_image);
 
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
-      std::move(shared_image), sync_token, 0u, sk_image_info,
-      ImageOrientationEnum::kDefault, shared_gpu_context,
-      base::PlatformThreadRef(),
+      std::move(shared_image), sync_token, 0u,
+      gfx::Size(sk_image_info.width(), sk_image_info.height()),
+      sk_image_info.colorType(), sk_image_info.alphaType(),
+      sk_image_info.refColorSpace(), ImageOrientationEnum::kDefault,
+      shared_gpu_context, base::PlatformThreadRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
       std::move(release_callback)));
 }
@@ -122,7 +126,10 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     GLuint shared_image_texture_id,
-    const SkImageInfo& sk_image_info,
+    gfx::Size size,
+    SkColorType sk_color_type,
+    SkAlphaType alpha_type,
+    sk_sp<SkColorSpace> sk_color_space,
     const ImageOrientation& orientation,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::PlatformThreadRef context_thread_ref,
@@ -130,7 +137,10 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     viz::ReleaseCallback release_callback)
     : StaticBitmapImage(orientation),
       shared_image_(std::move(shared_image)),
-      sk_image_info_(sk_image_info),
+      sk_image_info_(SkImageInfo::Make(gfx::SizeToSkISize(size),
+                                       sk_color_type,
+                                       alpha_type,
+                                       std::move(sk_color_space))),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       mailbox_ref_(
           base::MakeRefCounted<MailboxRef>(sync_token,
