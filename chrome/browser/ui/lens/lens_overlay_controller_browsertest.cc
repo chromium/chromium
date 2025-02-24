@@ -15,6 +15,7 @@
 
 #include <memory>
 
+#include "base/base64url.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -22,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/run_until.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
@@ -155,6 +157,7 @@ constexpr char kPdfDocument12KbFileName[] = "pdf/test-title.pdf";
 constexpr char kHelloWorldDataUri[] =
     "data:text/html,%3Ch1%3EHello%2C%20World%21%3C%2Fh1%3E";
 
+using ::base::test::EqualsProto;
 using ::testing::_;
 using State = LensOverlayController::State;
 using LensOverlayInvocationSource = lens::LensOverlayInvocationSource;
@@ -249,6 +252,16 @@ constexpr char kChromeSidePanelParameterKey[] = "gsc";
 constexpr char kLensRequestQueryParameter[] = "vsrid";
 
 constexpr char kResultsSearchBaseUrl[] = "https://www.google.com/search";
+
+std::string EncodeRequestId(const lens::LensOverlayRequestId& request_id) {
+  std::string serialized_request_id;
+  CHECK(request_id.SerializeToString(&serialized_request_id));
+  std::string encoded_request_id;
+  base::Base64UrlEncode(serialized_request_id,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_request_id);
+  return encoded_request_id;
+}
 
 // Opens the given URL in the given browser and waits for the first paint to
 // complete.
@@ -507,11 +520,16 @@ class LensOverlayControllerFake : public LensOverlayController {
       lens::LensOverlayInvocationSource invocation_source,
       bool use_dark_mode,
       lens::LensOverlayGen204Controller* gen204_controller) override {
+    url_callback_ = url_callback;
     auto fake_query_controller =
         std::make_unique<lens::TestLensOverlayQueryController>(
-            full_image_callback, url_callback, suggest_inputs_callback,
-            thumbnail_created_callback, variations_client, identity_manager,
-            profile, invocation_source, use_dark_mode, gen204_controller);
+            full_image_callback,
+            base::BindRepeating(
+                &LensOverlayControllerFake::RecordUrlResponseCallback,
+                base::Unretained(this)),
+            suggest_inputs_callback, thumbnail_created_callback,
+            variations_client, identity_manager, profile, invocation_source,
+            use_dark_mode, gen204_controller);
     // Set up the fake responses for the query controller.
     fake_query_controller->set_next_full_image_request_should_return_error(
         full_image_request_should_return_error_);
@@ -568,12 +586,22 @@ class LensOverlayControllerFake : public LensOverlayController {
     is_side_panel_loading_set_to_false_ = 0;
   }
 
+  // A url response callback that records the url sent to the callback.
+  void RecordUrlResponseCallback(lens::proto::LensOverlayUrlResponse response) {
+    last_search_url_ = response.url();
+    if (!url_callback_.is_null()) {
+      url_callback_.Run(response);
+    }
+  }
+
   void FlushForTesting() { fake_overlay_page_receiver_.FlushForTesting(); }
 
   int is_side_panel_loading_set_to_true_ = 0;
   int is_side_panel_loading_set_to_false_ = 0;
+  std::string last_search_url_;
   std::vector<std::string> ocr_response_words_;
   LensOverlayPageFake fake_overlay_page_;
+  lens::LensOverlayUrlResponseCallback url_callback_;
   bool full_image_request_should_return_error_ = false;
   bool is_screenshot_possible_ = true;
   mojo::Receiver<lens::mojom::LensPage> fake_overlay_page_receiver_{
@@ -4509,12 +4537,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       CorrectAnalyticsIdSentWithGen204s) {
+                       CorrectAnalyticsAndRequestIdSentWithGen204s) {
   WaitForPaint();
 
   // State should start in off.
   auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
+
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
   // When the overlay is bound, it should start the query flow which returns a
@@ -4538,9 +4569,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(
       fake_query_controller->last_latency_gen204_analytics_id().has_value());
 
+  // Objects request latency gen204 should have the same vsrid as the actual
+  // request.
+  EXPECT_THAT(
+      fake_query_controller->sent_full_image_request_id(),
+      EqualsProto(
+          fake_query_controller->last_latency_gen204_request_id().value()));
+
   std::string encoded_sent_objects_analytics_id = base32::Base32Encode(
       base::as_byte_span(
-          fake_query_controller->sent_request_id().analytics_id()),
+          fake_query_controller->sent_full_image_request_id().analytics_id()),
       base32::Base32EncodePolicy::OMIT_PADDING);
 
   // Log a copy text user task completion event.
@@ -4548,7 +4586,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       lens::mojom::UserAction::kCopyText);
 
   // The objects request and the task completion gen204 should have the same
-  // analytics id.
+  // analytics id and request id.
   EXPECT_EQ(fake_query_controller->last_user_action(),
             lens::mojom::UserAction::kCopyText);
   EXPECT_TRUE(fake_query_controller->last_task_completion_gen204_analytics_id()
@@ -4556,6 +4594,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(
       fake_query_controller->last_task_completion_gen204_analytics_id().value(),
       encoded_sent_objects_analytics_id);
+  EXPECT_THAT(
+      fake_query_controller->last_task_completion_gen204_request_id().value(),
+      EqualsProto(fake_query_controller->sent_full_image_request_id()));
 
   // Issue a text selection request and record the task completion.
   controller->IssueTextSelectionRequestForTesting("oranges", 20, 200);
@@ -4568,7 +4609,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       controller->GetSidePanelWebContentsForTesting()));
 
   // The objects request and the task completion gen204 should have the same
-  // analytics id.
+  // analytics id and request id.
   EXPECT_EQ(fake_query_controller->last_user_action(),
             lens::mojom::UserAction::kTextSelection);
   EXPECT_TRUE(fake_query_controller->last_task_completion_gen204_analytics_id()
@@ -4590,33 +4631,64 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // objects request.
   std::string encoded_sent_interaction_analytics_id = base32::Base32Encode(
       base::as_byte_span(
-          fake_query_controller->sent_request_id().analytics_id()),
+          fake_query_controller->sent_interaction_request_id().analytics_id()),
       base32::Base32EncodePolicy::OMIT_PADDING);
   EXPECT_NE(encoded_sent_interaction_analytics_id,
             encoded_sent_objects_analytics_id);
 
+  // Issue a delayed text gleams view start event. Normally, this would be sent
+  // as soon as the full image response is received, but it is possible that an
+  // interaction request and search page request is sent before the full image
+  // response is received, such as for the INJECTED_IMAGE case.
+  controller->RecordSemanticEventForTesting(
+      lens::mojom::SemanticEvent::kTextGleamsViewStart);
+
+  // There should be a semantic action for text view start, with a different
+  // request id than the objects or interaction request, as it instead
+  // corresponds to the search request.
+  EXPECT_EQ(fake_query_controller->last_semantic_event().value(),
+            lens::mojom::SemanticEvent::kTextGleamsViewStart);
+  EXPECT_THAT(
+      fake_query_controller->last_semantic_event_gen204_request_id().value(),
+      testing::Not(
+          EqualsProto(fake_query_controller->sent_full_image_request_id())));
+  EXPECT_THAT(
+      fake_query_controller->last_semantic_event_gen204_request_id().value(),
+      testing::Not(
+          EqualsProto(fake_query_controller->sent_interaction_request_id())));
+
+  std::string search_url_vsrid;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      GURL(fake_controller->last_search_url_), kLensRequestQueryParameter,
+      &search_url_vsrid));
+  EXPECT_EQ(EncodeRequestId(
+                fake_query_controller->last_semantic_event_gen204_request_id()
+                    .value()),
+            search_url_vsrid);
+
   // The interaction request and latency gen204 should have the same analytics
-  // id.
+  // and request id.
   EXPECT_EQ(fake_query_controller->latency_gen_204_counter(
                 lens::LensOverlayGen204Controller::LatencyType::
                     kInteractionRequestFetchLatency),
             1);
   EXPECT_EQ(encoded_sent_interaction_analytics_id,
             fake_query_controller->last_latency_gen204_analytics_id().value());
+  EXPECT_THAT(
+      fake_query_controller->sent_interaction_request_id(),
+      EqualsProto(
+          fake_query_controller->last_latency_gen204_request_id().value()));
 
   // Log a copy text user task completion event.
   controller->RecordUkmAndTaskCompletionForLensOverlayInteractionForTesting(
       lens::mojom::UserAction::kCopyText);
 
-  // The interaction request and the task completion gen204 should have the same
-  // analytics id.
-  EXPECT_EQ(fake_query_controller->last_user_action(),
-            lens::mojom::UserAction::kCopyText);
-  EXPECT_TRUE(fake_query_controller->last_task_completion_gen204_analytics_id()
-                  .has_value());
-  EXPECT_EQ(
-      fake_query_controller->last_task_completion_gen204_analytics_id().value(),
-      encoded_sent_interaction_analytics_id);
+  // The encoded vsrid in the task completion gen204 should match that of
+  // the search request.
+  EXPECT_EQ(EncodeRequestId(
+                fake_query_controller->last_semantic_event_gen204_request_id()
+                    .value()),
+            search_url_vsrid);
 
   // Issue a text selection request and record the task completion.
   content::TestNavigationObserver text_selection_observer(
@@ -4629,8 +4701,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // search query.
   text_selection_observer.Wait();
 
-  // The interaction request and the task completion gen204 should have the same
-  // analytics id.
+  // The encoded vsrid in the task completion gen204 should match that of
+  // the search request.
   EXPECT_EQ(fake_query_controller->last_user_action(),
             lens::mojom::UserAction::kTextSelection);
   EXPECT_TRUE(fake_query_controller->last_task_completion_gen204_analytics_id()
@@ -4638,6 +4710,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(
       fake_query_controller->last_task_completion_gen204_analytics_id().value(),
       encoded_sent_interaction_analytics_id);
+  EXPECT_THAT(
+      fake_query_controller->sent_interaction_request_id(),
+      testing::Not(EqualsProto(
+          fake_query_controller->last_task_completion_gen204_request_id()
+              .value())));
+  EXPECT_EQ(EncodeRequestId(
+                fake_query_controller->last_semantic_event_gen204_request_id()
+                    .value()),
+            search_url_vsrid);
 }
 
 class LensOverlayControllerBrowserStartQueryFlowOptimization
@@ -4691,7 +4772,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserStartQueryFlowOptimization,
       fake_query_controller->sent_full_image_objects_request().has_payload());
   EXPECT_EQ(fake_query_controller->last_sent_underlying_content_type(),
             lens::MimeType::kPlainText);
-  EXPECT_EQ(fake_query_controller->sent_request_id().sequence_id(), 1);
+  EXPECT_EQ(fake_query_controller->sent_full_image_request_id().sequence_id(),
+            1);
   EXPECT_EQ(fake_query_controller->sent_page_content_request_id().sequence_id(),
             1);
   EXPECT_FALSE(

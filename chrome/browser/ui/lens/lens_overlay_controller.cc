@@ -1176,6 +1176,11 @@ void LensOverlayController::
   RecordUkmAndTaskCompletionForLensOverlayInteraction(user_action);
 }
 
+void LensOverlayController::RecordSemanticEventForTesting(
+    lens::mojom::SemanticEvent event) {
+  RecordLensOverlaySemanticEvent(event);
+}
+
 void LensOverlayController::IssueSearchBoxRequestForTesting(
     const std::string& search_box_text,
     AutocompleteMatchType::Type match_type,

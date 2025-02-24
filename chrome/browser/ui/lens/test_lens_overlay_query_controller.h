@@ -79,8 +79,12 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return sent_client_logs_;
   }
 
-  const lens::LensOverlayRequestId& sent_request_id() const {
-    return sent_request_id_;
+  const lens::LensOverlayRequestId& sent_full_image_request_id() const {
+    return sent_full_image_request_id_;
+  }
+
+  const lens::LensOverlayRequestId& sent_interaction_request_id() const {
+    return sent_interaction_request_id_;
   }
 
   const lens::LensOverlayRequestId& sent_page_content_request_id() const {
@@ -143,6 +147,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return last_user_action_;
   }
 
+  const std::optional<lens::mojom::SemanticEvent>& last_semantic_event() const {
+    return last_semantic_event_;
+  }
+
   const int& num_full_image_requests_sent() const {
     return num_full_image_requests_sent_;
   }
@@ -173,13 +181,28 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return it == latency_gen_204_counter_.end() ? 0 : it->second;
   }
 
+  const std::optional<lens::LensOverlayRequestId>& last_latency_gen204_request_id()
+      const {
+    return last_latency_gen204_request_id_;
+  }
+
   const std::optional<std::string>& last_latency_gen204_analytics_id() const {
     return last_latency_gen204_analytics_id_;
+  }
+
+  const std::optional<lens::LensOverlayRequestId>&
+  last_semantic_event_gen204_request_id() const {
+    return last_semantic_event_gen204_request_id_;
   }
 
   const std::optional<std::string>& last_task_completion_gen204_analytics_id()
       const {
     return last_task_completion_gen204_analytics_id_;
+  }
+
+  const std::optional<lens::LensOverlayRequestId>&
+  last_task_completion_gen204_request_id() const {
+    return last_task_completion_gen204_request_id_;
   }
 
   void StartQueryFlow(
@@ -234,11 +257,17 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       base::TimeTicks start_time_ticks,
       std::string vit_query_param_value,
       std::optional<base::TimeDelta> cluster_info_latency,
-      std::optional<std::string> encoded_analytics_id) override;
+      std::optional<std::string> encoded_analytics_id,
+      std::optional<lens::LensOverlayRequestId> request_id) override;
 
   void SendTaskCompletionGen204IfEnabled(
       std::string encoded_analytics_id,
-      lens::mojom::UserAction user_action) override;
+      lens::mojom::UserAction user_action,
+      lens::LensOverlayRequestId request_id) override;
+
+  void SendSemanticEventGen204IfEnabled(
+      lens::mojom::SemanticEvent event,
+      std::optional<lens::LensOverlayRequestId> request_id) override;
 
   // The fake response to return for cluster info requests.
   lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response_;
@@ -265,8 +294,12 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   // The last client logs sent by the query controller.
   lens::LensOverlayClientLogs sent_client_logs_;
 
-  // The last request id sent by the query controller.
-  lens::LensOverlayRequestId sent_request_id_;
+  // The last request id sent by the query controller for a full image request.
+  lens::LensOverlayRequestId sent_full_image_request_id_;
+
+  // The last request id sent by the query controller for an interaction
+  // request.
+  lens::LensOverlayRequestId sent_interaction_request_id_;
 
   // The last request id sent by the query controller for a page content upload
   // request.
@@ -319,6 +352,9 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   // The last user action sent by the query controller.
   std::optional<lens::mojom::UserAction> last_user_action_;
 
+  // The last semantic event sent by the query controller.
+  std::optional<lens::mojom::SemanticEvent> last_semantic_event_;
+
   // The number of full image objects requests sent by the query controller.
   int num_full_image_requests_sent_ = 0;
 
@@ -341,11 +377,22 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   // The number of partial page content requests sent by the query controller.
   int num_partial_page_content_requests_sent_ = 0;
 
+  // The last encoded request id attached to a latency gen204 ping.
+  std::optional<lens::LensOverlayRequestId> last_latency_gen204_request_id_;
+
   // The last analytics id attached to a latency gen204 ping.
   std::optional<std::string> last_latency_gen204_analytics_id_;
 
   // The last analytics id attached to a task completion gen204 ping.
   std::optional<std::string> last_task_completion_gen204_analytics_id_;
+
+  // The last encoded request id attached to a task completion gen204 ping.
+  std::optional<lens::LensOverlayRequestId>
+      last_task_completion_gen204_request_id_;
+
+  // The last encoded request id attached to a semantic event gen204 ping.
+  std::optional<lens::LensOverlayRequestId>
+      last_semantic_event_gen204_request_id_;
 
   // Tracker for the number of latency request events sent by the query
   // controller.

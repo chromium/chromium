@@ -503,7 +503,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_FALSE(
       latest_suggest_inputs_.has_encoded_visual_search_interaction_log_data());
   ASSERT_EQ(latest_suggest_inputs_.search_session_id(), kTestSearchSessionId);
-  ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id()),
+  ASSERT_EQ(GetEncodedRequestId(query_controller.sent_full_image_request_id()),
             latest_suggest_inputs_.encoded_request_id());
   ASSERT_EQ(query_controller.latency_gen_204_counter(
                 LatencyType::kInvocationToInitialClusterInfoRequestSent),
@@ -1917,7 +1917,7 @@ TEST_F(LensOverlayQueryControllerTest,
   }));
 
   // The full image and page content requests should have the same request id.
-  ASSERT_EQ(query_controller.sent_request_id().sequence_id(), 1);
+  ASSERT_EQ(query_controller.sent_full_image_request_id().sequence_id(), 1);
   ASSERT_EQ(query_controller.sent_page_content_objects_request()
                 .request_context()
                 .request_id()
@@ -2131,7 +2131,7 @@ TEST_F(LensOverlayQueryControllerTest,
 
   ASSERT_TRUE(full_image_response_future.IsReady());
   std::string first_analytics_id =
-      query_controller.sent_request_id().analytics_id();
+      query_controller.sent_full_image_request_id().analytics_id();
   query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
                                     additional_search_query_params,
                                     std::nullopt);
@@ -2142,7 +2142,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(url_response_future.IsReady());
   ASSERT_TRUE(latest_suggest_inputs_.has_encoded_image_signals());
   std::string second_analytics_id =
-      query_controller.sent_request_id().analytics_id();
+      query_controller.sent_interaction_request_id().analytics_id();
 
   ASSERT_NE(second_analytics_id, first_analytics_id);
   ASSERT_EQ(GetAnalyticsIdFromUrl(url_response_future.Get().url()),

@@ -194,20 +194,31 @@ class LensOverlayQueryController {
       const UploadProgressCallback upload_progress_callback);
 
   // Sends a latency Gen204 ping if enabled, calculating the latency duration
-  // from the start time ticks and base::TimeTicks::Now().
+  // from the start time ticks and base::TimeTicks::Now(). The encoded request
+  // id is optional because not all latency events have an associated request
+  // id, such as the cluster info fetch.
   virtual void SendLatencyGen204IfEnabled(
       lens::LensOverlayGen204Controller::LatencyType latency_type,
       base::TimeTicks start_time_ticks,
       std::string vit_query_param_value,
       std::optional<base::TimeDelta> cluster_info_latency,
-      std::optional<std::string> encoded_analytics_id);
+      std::optional<std::string> encoded_analytics_id,
+      std::optional<lens::LensOverlayRequestId> request_id);
 
   // Sends a task completion Gen204 ping for certain user actions with
   // the given analytics id. Protected to allow overriding in tests to
-  // check the encoded analytics id.
+  // check the encoded analytics id and request id.
   virtual void SendTaskCompletionGen204IfEnabled(
       std::string encoded_analytics_id,
-      lens::mojom::UserAction user_action);
+      lens::mojom::UserAction user_action,
+      lens::LensOverlayRequestId request_id);
+
+  // Sends a semantic event Gen204 ping. Protected to allow overriding in tests
+  // to check the request id. The request id can be unset for events that
+  // do not have an associated request id (e.g. text gleam view end).
+  virtual void SendSemanticEventGen204IfEnabled(
+      lens::mojom::SemanticEvent event,
+      std::optional<lens::LensOverlayRequestId> request_id);
 
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
@@ -367,7 +378,8 @@ class LensOverlayQueryController {
                                  std::vector<std::string> headers);
 
   // Handles the endpoint fetch response for the page content request.
-  void PageContentResponseHandler(std::unique_ptr<EndpointResponse> response);
+  void PageContentResponseHandler(lens::LensOverlayRequestId request_id,
+                                  std::unique_ptr<EndpointResponse> response);
 
   // Handles the prgress of the page content upload request.
   void PageContentUploadProgressHandler(uint64_t position, uint64_t total);
@@ -387,6 +399,7 @@ class LensOverlayQueryController {
 
   // Handles the endpoint fetch response for the partial page content request.
   void PartialPageContentResponseHandler(
+      lens::LensOverlayRequestId request_id,
       std::unique_ptr<EndpointResponse> response);
 
   // Sends the interaction data, triggering async image cropping and fetching
@@ -468,7 +481,8 @@ class LensOverlayQueryController {
   // per query flow, if gen204 logging is enabled.
   void SendInitialLatencyGen204IfNotAlreadySent(
       lens::LensOverlayGen204Controller::LatencyType latency_type,
-      std::string vit_query_param_value);
+      std::string vit_query_param_value,
+      std::optional<lens::LensOverlayRequestId> request_id);
 
   // Creates an endpoint fetcher with the given request_headers to perform the
   // given request. Calls fetcher_created_callback when the EndpointFetcher is
@@ -518,18 +532,22 @@ class LensOverlayQueryController {
 
   // Callback for when the full image endpoint fetcher is created.
   void OnFullImageEndpointFetcherCreated(
+      lens::LensOverlayRequestId request_id,
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
 
   // Callback for when the page content endpoint fetcher is created.
   void OnPageContentEndpointFetcherCreated(
+      lens::LensOverlayRequestId request_id,
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
 
   // Callback for when the partial page content endpoint fetcher is created.
   void OnPartialPageContentEndpointFetcherCreated(
+      lens::LensOverlayRequestId request_id,
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
 
   // Callback for when the interaction endpoint fetcher is created.
   void OnInteractionEndpointFetcherCreated(
+      lens::LensOverlayRequestId request_id,
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
 
   // Returns whether or not the contextual search query should be sent now or
@@ -734,11 +752,19 @@ class LensOverlayQueryController {
   // The current gen204 id for logging, set on each overlay invocation.
   uint64_t gen204_id_ = 0;
 
+  // The latest request id. Updated on each full-image and interaction
+  // request. This may differ from the request id in the
+  // latest_interaction_request_data_ if the user makes a text-only query,
+  // because no interaction request is made in that case even though the request
+  // id is incremented.
+  lens::LensOverlayRequestId latest_request_id_;
+
   // The latest encoded analytics id. Updated on each full-image and
   // interaction request. This may differ from the analytics id in the
   // latest_interaction_request_data_ if the user makes a text-only query,
   // because no interaction request is made in that case even though the
-  // request id is incremented.
+  // request id is incremented. This is always equal to the analytics id in the
+  // latest_request_id_ field.
   std::string latest_encoded_analytics_id_;
 
   // The time it took from sending the cluster info request to receiving

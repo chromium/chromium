@@ -219,7 +219,7 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
       fake_server_response_code =
           google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR;
     }
-    sent_request_id_.CopyFrom(
+    sent_full_image_request_id_.CopyFrom(
         request->objects_request().request_context().request_id());
     disable_response = disable_next_objects_response_;
     disable_next_objects_response_ = false;
@@ -230,7 +230,7 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
     fake_server_response.mutable_interaction_response()->CopyFrom(
         fake_interaction_response_);
     fake_server_response_string = fake_server_response.SerializeAsString();
-    sent_request_id_.CopyFrom(
+    sent_interaction_request_id_.CopyFrom(
         request->interaction_request().request_context().request_id());
     num_interaction_requests_sent_++;
   } else {
@@ -268,19 +268,30 @@ void TestLensOverlayQueryController::SendLatencyGen204IfEnabled(
     base::TimeTicks start_time_ticks,
     std::string vit_query_param_value,
     std::optional<base::TimeDelta> cluster_info_latency,
-    std::optional<std::string> encoded_analytics_id) {
+    std::optional<std::string> encoded_analytics_id,
+    std::optional<lens::LensOverlayRequestId> request_id) {
   int counter = latency_gen_204_counter_.contains(latency_type)
                     ? latency_gen_204_counter_.at(latency_type)
                     : 0;
   latency_gen_204_counter_[latency_type] = counter + 1;
   last_latency_gen204_analytics_id_ = encoded_analytics_id;
+  last_latency_gen204_request_id_ = request_id;
 }
 
 void TestLensOverlayQueryController::SendTaskCompletionGen204IfEnabled(
     std::string encoded_analytics_id,
-    lens::mojom::UserAction user_action) {
+    lens::mojom::UserAction user_action,
+    lens::LensOverlayRequestId request_id) {
   last_user_action_ = user_action;
   last_task_completion_gen204_analytics_id_ = encoded_analytics_id;
+  last_task_completion_gen204_request_id_ =
+      std::make_optional<lens::LensOverlayRequestId>(request_id);
 }
 
+void TestLensOverlayQueryController::SendSemanticEventGen204IfEnabled(
+    lens::mojom::SemanticEvent event,
+    std::optional<lens::LensOverlayRequestId> request_id) {
+  last_semantic_event_ = event;
+  last_semantic_event_gen204_request_id_ = request_id;
+}
 }  // namespace lens
