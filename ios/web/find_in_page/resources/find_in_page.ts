@@ -11,7 +11,7 @@ import {CSS_CLASS_NAME_SELECT}
  * An example: wikipedia pages for the ipad.
  * @return {number} Width of the document body.
  */
-function getBodyWidth_(): number {
+function getBodyWidth(): number {
   const body = document.body;
   const documentElement = document.documentElement;
   return Math.max(
@@ -26,7 +26,7 @@ function getBodyWidth_(): number {
  * An example: wikipedia pages for the ipad.
  * @return {number} Height of the document body.
  */
-function getBodyHeight_(): number {
+function getBodyHeight(): number {
   const body = document.body;
   const documentElement = document.documentElement;
   return Math.max(
@@ -40,7 +40,7 @@ function getBodyHeight_(): number {
  * @param {Element} elem Element to check.
  * @return {boolean} Whether elem is visible or not.
  */
-function isElementVisible_(elem: HTMLElement): boolean {
+function isElementVisible(elem: HTMLElement): boolean {
   if (!elem) {
     return false;
   }
@@ -57,8 +57,8 @@ function isElementVisible_(elem: HTMLElement): boolean {
   // for now this function returns false if the element is scrolled outside the
   // viewable area of its ancestors.
   // TODO(crbug.com/40606656): handle scrolling within the DOM.
-  const bodyHeight = getBodyHeight_();
-  const bodyWidth = getBodyWidth_();
+  const bodyHeight = getBodyHeight();
+  const bodyWidth = getBodyWidth();
 
   while (elem && elem.nodeName.toUpperCase() !== 'BODY') {
     if (elem.style.display === 'none' || elem.style.visibility === 'hidden') {
@@ -147,7 +147,7 @@ class Match {
    */
   visible(): boolean {
     for (const node of this.nodes) {
-      if (!isElementVisible_(node)) {
+      if (!isElementVisible(node)) {
         return false;
       }
     }

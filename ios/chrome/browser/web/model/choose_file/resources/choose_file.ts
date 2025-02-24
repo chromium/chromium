@@ -106,13 +106,13 @@ function MultipleStringToAcceptType(acceptString: string): AcceptType {
   let acceptType = AcceptType.NoAccept;
   for (const accept of accepts) {
     const current = stringToAcceptType(accept);
-    if (acceptType == AcceptType.NoAccept ||
-        acceptType == AcceptType.UnknownAccept) {
+    if (acceptType === AcceptType.NoAccept ||
+        acceptType === AcceptType.UnknownAccept) {
       acceptType = current;
       continue;
     }
-    if (acceptType == current || current == AcceptType.UnknownAccept ||
-        current == AcceptType.NoAccept) {
+    if (acceptType === current || current === AcceptType.UnknownAccept ||
+        current === AcceptType.NoAccept) {
       continue;
     }
     // Types are different and neither is Unknown, so it is Mixed.
@@ -158,12 +158,12 @@ function isRFC2616TokenCharacter(ch: string): boolean {
 // Returns whether `mimeType` is a string which represents a valid MIME type.
 function isValidMIMEType(mimeType: string): boolean {
   const slashPosition = mimeType.indexOf('/');
-  if (slashPosition == -1 || slashPosition == mimeType.length - 1 ||
-      slashPosition == 0) {
+  if (slashPosition === -1 || slashPosition === mimeType.length - 1 ||
+      slashPosition === 0) {
     return false;
   }
   for (let i = 0; i < mimeType.length; i++) {
-    if (!isRFC2616TokenCharacter(mimeType[i]!) && i != slashPosition) {
+    if (!isRFC2616TokenCharacter(mimeType[i]!) && i !== slashPosition) {
       return false;
     }
   }
@@ -181,7 +181,7 @@ function isValidFileExtension(fileExtension: string): boolean {
       return false;
     }
   }
-  return fileExtension[0] == '.';
+  return fileExtension[0] === '.';
 }
 
 // Filters `acceptString` so it only contains valid MIME types.

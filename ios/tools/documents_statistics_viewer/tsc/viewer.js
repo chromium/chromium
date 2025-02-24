@@ -5,7 +5,7 @@
 // Returns a display string given the date & time specified in dateString.
 // Example format: 2023-04-30T14:20:10
 function getDateTimeDisplayString(dateString) {
-    if (!dateString || dateString.length == 0) {
+    if (!dateString || dateString.length === 0) {
         return '';
     }
     const date = new Date(dateString);
@@ -13,7 +13,7 @@ function getDateTimeDisplayString(dateString) {
 }
 // Returns a string representation of the size sizeInBytes.
 function getSizeDisplayString(sizeInBytes) {
-    if (!sizeInBytes || sizeInBytes == 0) {
+    if (!sizeInBytes || sizeInBytes === 0) {
         return '0 B';
     }
     if (sizeInBytes < 1024) {
@@ -61,7 +61,7 @@ function iconForFilename(filename) {
     if (!extension) {
         return '📄';
     }
-    if (extension == 'PDF') {
+    if (extension === 'PDF') {
         return '📋';
     }
     if (AUDIO_FORMATS.has(extension)) {
@@ -95,7 +95,7 @@ function sortItems(items, sorting) {
                 if (a.size < b.size) {
                     return -1;
                 }
-                else if (a.size == b.size) {
+                else if (a.size === b.size) {
                     return 0;
                 }
                 return 1;
@@ -109,7 +109,7 @@ function sortItems(items, sorting) {
                 if (b.size < a.size) {
                     return -1;
                 }
-                else if (a.size == b.size) {
+                else if (a.size === b.size) {
                     return 0;
                 }
                 return 1;
@@ -173,7 +173,7 @@ function createEntryRowForRoot(root, level = 0, parentPath = '') {
     let currentRootIncludesThisRow = true;
     if (window.location.hash) {
         const rootPath = decodeURIComponent(window.location.hash.substring(1));
-        currentRootIncludesThisRow = path.indexOf(rootPath) == 0;
+        currentRootIncludesThisRow = path.indexOf(rootPath) === 0;
     }
     let nextLevel = level;
     if (currentRootIncludesThisRow &&
@@ -226,7 +226,7 @@ function createEntryRowForRoot(root, level = 0, parentPath = '') {
         itemModified.classList.add('item_modified');
         itemModified.innerText = getDateTimeDisplayString(root.modified);
         itemRow.appendChild(itemModified);
-        if (parentPath.split('/').length % 2 == 1) {
+        if (parentPath.split('/').length % 2 === 1) {
             itemName.classList.add('grey_bg');
             itemSize.classList.add('grey_bg');
             itemAccessed.classList.add('grey_bg');
@@ -297,7 +297,7 @@ function reloadStatistics() {
 }
 // Recursively marks all directories in items as collapsed
 function collapseDirectories(items, parentPath = '') {
-    if (!items || items.length == 0) {
+    if (!items || items.length === 0) {
         return;
     }
     for (const item of items) {
@@ -306,12 +306,12 @@ function collapseDirectories(items, parentPath = '') {
             let currentRootIncludesThisItemAsChild = true;
             if (window.location.hash) {
                 const rootPath = decodeURIComponent(window.location.hash.substring(1));
-                if (path == rootPath) {
+                if (path === rootPath) {
                     // Don't collapse the top level item.
                     currentRootIncludesThisItemAsChild = false;
                 }
                 else {
-                    currentRootIncludesThisItemAsChild = path.indexOf(rootPath) == 0;
+                    currentRootIncludesThisItemAsChild = path.indexOf(rootPath) === 0;
                 }
             }
             if (currentRootIncludesThisItemAsChild) {

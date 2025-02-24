@@ -17,7 +17,7 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
 function onKeypressEvent(event : KeyboardEvent) : void {
   // Only forward events where the entered key has length 1, to avoid forwarding
   // special keys like "Enter".
-  if (event.isTrusted && event.key.length == 1) {
+  if (event.isTrusted && event.key.length === 1) {
     sendWebKitMessage(
         'PasswordProtectionTextEntered',
         {eventType: 'KeyPressed', text: event.key});

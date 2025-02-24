@@ -18,8 +18,8 @@ if (typeof navigator === 'object' && 'mediaDevices' in navigator &&
         if (constraints && typeof constraints === 'object') {
           // `constraints` may contain objects, so convert to a boolean in
           // `details` to ensure it can be sent using sendWebKitMessage.
-          details['audio'] = constraints['audio'] == true;
-          details['video'] = constraints['video'] == true;
+          details['audio'] = !!constraints['audio'];
+          details['video'] = !!constraints['video'];
         }
       }
     } catch (error) {

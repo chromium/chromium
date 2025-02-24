@@ -128,7 +128,7 @@ let searchStateIsClean_ = true;
  *     |allText_|.
  * @return {number} The index of the result in |sections_|.
  */
-function findFirstSectionEndsAfter_(index: number): number {
+function findFirstSectionEndsAfter(index: number): number {
   let left = sectionsIndex_;
   let right = sections_.length;
   while (left < right) {
@@ -153,7 +153,7 @@ function findFirstSectionEndsAfter_(index: number): number {
  * @return {undefined}
  */
 function processPartialMatchesInCurrentSection(): void {
-  if (partialMatches_.length == 0) {
+  if (partialMatches_.length === 0) {
     return;
   }
   const section = sections_[sectionsIndex_];
@@ -188,7 +188,7 @@ function processPartialMatchesInCurrentSection(): void {
     gCrWeb.findInPage.matches[partialMatch.matchId].nodes.push(newNode);
   }
   // Create the TEXT node for trailing non-matching string piece.
-  if (previousEnd != section.end) {
+  if (previousEnd !== section.end) {
     newNodes.push(
         oldNode.ownerDocument.createTextNode(oldNode.textContent.substring(
             previousEnd - section.begin, section.end - section.begin)));
@@ -204,7 +204,7 @@ function processPartialMatchesInCurrentSection(): void {
  * @return {Match} The currently selected Match. Returns undefined if no
  * currently selected match.
  */
-function getCurrentSelectedMatch_(): Match|undefined {
+function getCurrentSelectedMatch(): Match|undefined {
   if (selectedMatchIndex_ < 0) {
     return undefined;
   }
@@ -217,7 +217,7 @@ function getCurrentSelectedMatch_(): Match|undefined {
  * has taken too long.
  * @return {Number} of visible matches.
  */
-function countVisibleMatches_(timer: Timer|null): number {
+function countVisibleMatches(timer: Timer|null): number {
   const max = gCrWeb.findInPage.matches.length;
   const maxVisible = MAX_VISIBLE_ELEMENTS;
   let currentlyVisibleMatchCount = 0;
@@ -246,7 +246,7 @@ function countVisibleMatches_(timer: Timer|null): number {
  * Removes highlights of previous search and reset all global vars.
  * @return {undefined}
  */
-function cleanUp_(): void {
+function cleanUp(): void {
   for (const replacement of replacements_) {
     replacement.undoSwap();
   }
@@ -270,14 +270,14 @@ function cleanUp_(): void {
 /**
  * Scrolls to the position of the currently selected match.
  */
-function scrollToCurrentlySelectedMatch_(): void {
-  const match = getCurrentSelectedMatch_();
+function scrollToCurrentlySelectedMatch(): void {
+  const match = getCurrentSelectedMatch();
   if (!match) {
     return;
   }
 
   const nodes = match.nodes;
-  if (!nodes || nodes.length == 0) {
+  if (!nodes || nodes.length === 0) {
     return;
   }
 
@@ -292,7 +292,7 @@ function scrollToCurrentlySelectedMatch_(): void {
 /**
  * Enable find in page by adding the appropriate style element to the page.
  */
-function enable_(): void {
+function enable(): void {
   if (styleElement_) {
     // Already enabled.
     return;
@@ -322,7 +322,7 @@ function enable_(): void {
 /**
  * Removes the style element from the page.
  */
-function removeStyle_(): void {
+function removeStyle(): void {
   if (styleElement_) {
     const style = document.getElementById(CSS_STYLE_ID);
     if (style) {
@@ -343,13 +343,13 @@ function removeStyle_(): void {
 function findString(string: string, timeout: number): number {
   // Enable findInPage module if hasn't been done yet.
   if (!gCrWeb.findInPage.hasInitialized) {
-    enable_();
+    enable();
     gCrWeb.findInPage.hasInitialized = true;
   }
 
   if (!searchStateIsClean_) {
     // Clean up a previous run.
-    cleanUp_();
+    cleanUp();
   }
   if (!string) {
     // No searching for emptyness.
@@ -392,7 +392,7 @@ function findString(string: string, timeout: number): number {
  */
 function pumpSearch(timeout: number): number {
   // TODO(crbug.com/41420794): It would be better if this DCHECKed.
-  if (searchInProgress_ == false) {
+  if (!searchInProgress_) {
     return 0;
   }
 
@@ -408,7 +408,7 @@ function pumpSearch(timeout: number): number {
       // add all (reasonable) children
       for (let i = children.length - 1; i >= 0; --i) {
         const child = children[i];
-        if ((child.nodeType == 1 || child.nodeType == 3) &&
+        if ((child.nodeType === 1 || child.nodeType === 3) &&
             !IGNORE_NODE_NAMES.has(child.nodeName)) {
           gCrWeb.findInPage.stack.push(children[i]);
         }
@@ -416,7 +416,7 @@ function pumpSearch(timeout: number): number {
     }
 
     // Build up |allText_| and |sections_|.
-    if (node.nodeType == 3 && node.parentNode) {
+    if (node.nodeType === 3 && node.parentNode) {
       sections_.push(new Section(
           allText_.length, allText_.length + node.textContent.length, node));
       allText_ += node.textContent.toLowerCase();
@@ -440,7 +440,7 @@ function pumpSearch(timeout: number): number {
 
       // Find the Section where current Match starts.
       const oldSectionIndex = sectionsIndex_;
-      const newSectionIndex = findFirstSectionEndsAfter_(begin);
+      const newSectionIndex = findFirstSectionEndsAfter(begin);
       // If current Match starts at a new Section, process current Section and
       // move to the new Section.
       if (newSectionIndex > oldSectionIndex) {
@@ -490,7 +490,7 @@ function pumpSearch(timeout: number): number {
     }
   }
 
-  const visibleMatchCount = countVisibleMatches_(timer);
+  const visibleMatchCount = countVisibleMatches(timer);
 
   searchInProgress_ = false;
 
@@ -518,15 +518,15 @@ function selectAndScrollToVisibleMatch(index: number):
   }
 
   // Remove previous highlight.
-  let match = getCurrentSelectedMatch_();
+  let match = getCurrentSelectedMatch();
   if (match) {
     match.removeSelectHighlight();
   }
 
   // Recalculate total visible matches in case it has changed.
-  const visibleMatchCount = countVisibleMatches_(null);
+  const visibleMatchCount = countVisibleMatches(null);
 
-  if (visibleMatchCount == 0) {
+  if (visibleMatchCount === 0) {
     selectedMatchIndex_ = -1;
     selectedVisibleMatchIndex_ = -1;
     return {matches: visibleMatchCount, index: -1};
@@ -555,12 +555,12 @@ function selectAndScrollToVisibleMatch(index: number):
   selectedMatchIndex_ = total_match_index;
   selectedVisibleMatchIndex_ = index;
 
-  match = getCurrentSelectedMatch_();
+  match = getCurrentSelectedMatch();
   if (!match) {
     return {matches: visibleMatchCount, index: -1};
   }
   match.addSelectHighlight();
-  scrollToCurrentlySelectedMatch_();
+  scrollToCurrentlySelectedMatch();
 
   // Get string consisting of the text contents of the match nodes and the
   // nodes before and after them, if applicable.
@@ -603,8 +603,8 @@ function selectAndScrollToVisibleMatch(index: number):
  */
 function stop(): void {
   if (styleElement_) {
-    removeStyle_();
-    cleanUp_();
+    removeStyle();
+    cleanUp();
   }
   gCrWeb.findInPage.hasInitialized = false;
 }

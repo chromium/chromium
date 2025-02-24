@@ -125,7 +125,7 @@ class TextDecorator {
         }
         // If there is a space before the annotation, and if it is not carried
         // in the annotation text then the space disappears.
-        const needsPrecedingSpace = left > 0 && text[left - 1] == ' ';
+        const needsPrecedingSpace = left > 0 && text[left - 1] === ' ';
         replacements.push(new AnnotationsReplacement(
             run.annotationId, left, right, nodeText, annotation.type,
             annotation.text, annotation.data, needsPrecedingSpace));
@@ -225,7 +225,7 @@ class TextDecorator {
             if (!replacement.textContent) {
               continue;
             }
-            if (replacement.nodeType == Node.TEXT_NODE) {
+            if (replacement.nodeType === Node.TEXT_NODE) {
               this.decorateNode(
                   run, replacement as Text,
                   section.index + innerIndex - offset);

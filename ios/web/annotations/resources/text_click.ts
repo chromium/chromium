@@ -6,7 +6,7 @@
  * @fileoverview Handle tap on 'CHROME_ANNOTATION' elements.
  */
 
-import type {TextDecoration} from '//ios/web/annotations/resources/text_decoration';
+import type {TextDecoration} from '//ios/web/annotations/resources/text_decoration.js';
 import type {TaskTimer} from '//ios/web/annotations/resources/text_tasks.js';
 import {LiveTaskTimer} from '//ios/web/annotations/resources/text_tasks.js';
 

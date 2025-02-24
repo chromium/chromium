@@ -109,7 +109,7 @@ function isInDefaultState(element: Element): boolean {
 
   if (element instanceof HTMLSelectElement) {
     for (const option of element.options) {
-      if (option.selected != option.defaultSelected) {
+      if (option.selected !== option.defaultSelected) {
         return false;
       }
     }
@@ -306,7 +306,7 @@ document.addEventListener('submit', function(event) {
 function findOpenSearchLink(): void {
   const links = document.getElementsByTagName('link');
   for (const link of links) {
-    if (link.type == 'application/opensearchdescription+xml') {
+    if (link.type === 'application/opensearchdescription+xml') {
       sendWebKitMessage('SearchEngineMessage', {
         'command': 'openSearch',
         'pageUrl': document.URL,

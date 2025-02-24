@@ -10,7 +10,7 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
 
 declare type LogLevel = 'log' | 'debug' | 'info' | 'warn' | 'error';
 
-function sendConsoleMessage(log_level: LogLevel, originalArgs: unknown[]) {
+function sendConsoleMessage(logLevel: LogLevel, originalArgs: unknown[]) {
   let message;
   const slicedArgs = Array.prototype.slice.call(originalArgs);
   try {
@@ -19,7 +19,7 @@ function sendConsoleMessage(log_level: LogLevel, originalArgs: unknown[]) {
   }
   sendWebKitMessage('ConsoleMessageHandler', {
     'sender_frame': gCrWeb.message.getFrameId(),
-    'log_level': log_level,
+    'log_level': logLevel,
     'message': message,
     'url': document.location.href,
   });
