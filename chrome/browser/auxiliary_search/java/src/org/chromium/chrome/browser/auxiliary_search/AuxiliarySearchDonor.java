@@ -59,8 +59,16 @@ public class AuxiliarySearchDonor {
 
     /** Callback to set schema visibilities for package names. */
     interface SetDocumentClassVisibilityForPackageCallback {
-
+        /** TODO(https://397457989): Remove this API once the internal usages are removed. */
         void setDocumentClassVisibility(String packageName, String sha256Certificate);
+
+        /**
+         * @param schemaClass The class type of the schema to set visibility.
+         * @param packageName The package name of the app which can see the schema.
+         * @param sha256Certificate The sha256 signing key of the app.
+         */
+        void setDocumentClassVisibility(
+                Class<?> schemaClass, String packageName, String sha256Certificate);
     }
 
     @VisibleForTesting static final String SCHEMA = "builtin:GlobalSearchApplicationInfo";
@@ -228,27 +236,49 @@ public class AuxiliarySearchDonor {
                             .addDocumentClasses(WebPage.class);
             AuxiliarySearchControllerFactory.getInstance()
                     .setSchemaTypeVisibilityForPackage(
-                            (packageName, sha256Certificate) -> {
-                                try {
-                                    requestBuilder.setDocumentClassVisibilityForPackage(
+                            new SetDocumentClassVisibilityForPackageCallback() {
+                                @Override
+                                public void setDocumentClassVisibility(
+                                        String packageName, String sha256Certificate) {
+                                    setDocumentClassVisibilityImpl(
+                                            requestBuilder,
                                             WebPage.class,
-                                            /* visible= */ true,
-                                            new PackageIdentifier(
-                                                    packageName,
-                                                    new Signature(sha256Certificate)
-                                                            .toByteArray()));
-                                } catch (AppSearchException e) {
-                                    Log.i(
-                                            TAG,
-                                            "Failed to set document class visibility for package"
-                                                    + " %s.",
-                                            packageName);
+                                            packageName,
+                                            sha256Certificate);
+                                }
+
+                                @Override
+                                public void setDocumentClassVisibility(
+                                        Class<?> schemaClass,
+                                        String packageName,
+                                        String sha256Certificate) {
+                                    setDocumentClassVisibilityImpl(
+                                            requestBuilder,
+                                            schemaClass,
+                                            packageName,
+                                            sha256Certificate);
                                 }
                             });
             return requestBuilder.build();
         } catch (AppSearchException e) {
             Log.i(TAG, "Failed to add document when building SetSchemaRequest.");
             return null;
+        }
+    }
+
+    void setDocumentClassVisibilityImpl(
+            SetSchemaRequest.Builder requestBuilder,
+            Class<?> schemaClass,
+            String packageName,
+            String sha256Certificate) {
+        try {
+            requestBuilder.setDocumentClassVisibilityForPackage(
+                    schemaClass,
+                    /* visible= */ true,
+                    new PackageIdentifier(
+                            packageName, new Signature(sha256Certificate).toByteArray()));
+        } catch (AppSearchException e) {
+            Log.i(TAG, "Failed to set document class visibility for package" + " %s.", packageName);
         }
     }
 
