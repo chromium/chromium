@@ -438,6 +438,10 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (BOOL)conditionallyRespondsToSelector:(SEL)selector {
+  static std::unordered_set<SEL> methodSelectorsForActions = {
+      @selector(accessibilityPerformPress),
+  };
+
   static std::unordered_set<SEL> methodSelectorsForParameterizedAttributes = {
       @selector(accessibilityCellForColumn:row:),
       @selector(accessibilityRangeForIndex:),
@@ -456,6 +460,20 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     NSArray* attributes =
         [self internalAccessibilityParameterizedAttributeNames];
     if (![attributes containsObject:attribute]) {
+      return NO;
+    }
+  }
+
+  // See if the method is permitted by checking its corresponding action
+  // counterpart.
+  if (methodSelectorsForActions.find(selector) !=
+      methodSelectorsForActions.end()) {
+    NSString* selectorString = NSStringFromSelector(selector);
+    NSString* action =
+        [[AXPlatformNodeCocoa newAccessibilityAPIMethodToActionMap]
+            objectForKey:selectorString];
+    NSArray* actions = [self internalAccessibilityActionNames];
+    if (![actions containsObject:action]) {
       return NO;
     }
   }
