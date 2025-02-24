@@ -12,12 +12,6 @@ import("//third_party/libaom/libaom_test_srcs.gni")
 import("//third_party/libaom/options.gni")
 import("//third_party/nasm/nasm_assemble.gni")
 
-buildflag_header("libaom_buildflags") {
-  header = "libaom_buildflags.h"
-
-  flags = [ "ENABLE_LIBAOM=$enable_libaom" ]
-}
-
 # Sets the architecture name for building libaom.
 if (current_cpu == "x86") {
   cpu_arch_full = "ia32"
@@ -382,7 +376,6 @@ static_library("libaom") {
     deps += [ "//third_party/cpu_features:ndk_compat" ]
   }
   public_configs = [ ":libaom_public_config" ]
-  public_deps = [ ":libaom_buildflags" ]
 }
 
 static_library("libaomrc") {
