@@ -118,11 +118,10 @@ void TabManager::Start() {
   // TODO(sebmarchand): Remove the "IsAvailable" check, or merge the TM into the
   // PM. The TM and PM must always exist together.
   if (performance_manager::PerformanceManager::IsAvailable()) {
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindOnce([](performance_manager::Graph* graph) {
-          graph->PassToGraph(
-              std::make_unique<TabManagerResourceCoordinatorSignalObserver>());
-        }));
+    performance_manager::Graph* graph =
+        performance_manager::PerformanceManager::GetGraph();
+    graph->PassToGraph(
+        std::make_unique<TabManagerResourceCoordinatorSignalObserver>());
   }
 
   g_browser_process->resource_coordinator_parts()

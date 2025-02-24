@@ -625,24 +625,13 @@ TEST_F(SessionRestorePolicyTest, FeatureUsageSetUsedInBgBit) {
 
   // Indicates that |contents1_| might update its title while in background,
   // this should set the |used_in_bg_| bit.
-
-  base::RunLoop run_loop;
-  performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindOnce(
-                     [](base::WeakPtr<performance_manager::PageNode> page_node,
-                        base::OnceClosure closure) {
-                       EXPECT_TRUE(page_node);
-                       auto* impl =
-                           performance_manager::GetSiteDataImplForPageNode(
-                               page_node.get());
-                       EXPECT_TRUE(impl);
-                       impl->NotifyUpdatesTitleInBackground();
-                       std::move(closure).Run();
-                     },
-                     performance_manager::PerformanceManager::
-                         GetPrimaryPageNodeForWebContents(contents1_.get()),
-                     run_loop.QuitClosure()));
-  run_loop.Run();
+  base::WeakPtr<performance_manager::PageNode> page_node =
+      performance_manager::PerformanceManager::GetPrimaryPageNodeForWebContents(
+          contents1_.get());
+  EXPECT_TRUE(page_node);
+  auto* impl = performance_manager::GetSiteDataImplForPageNode(page_node.get());
+  EXPECT_TRUE(impl);
+  impl->NotifyUpdatesTitleInBackground();
 
   // Adding/Removing the tab for scoring will cause the callback to be called a
   // few times, ignore this.
@@ -673,27 +662,16 @@ TEST_F(SessionRestorePolicyTest, UnknownUsageSetUsedInBgBit) {
   CreatePolicy(true);
   WaitForFinalTabScores();
 
-  base::RunLoop run_loop;
-  performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<performance_manager::PageNode> page_node,
-             base::OnceClosure closure) {
-            EXPECT_TRUE(page_node);
-            auto* impl = performance_manager::GetSiteDataImplForPageNode(
-                page_node.get());
-            EXPECT_TRUE(impl);
-            performance_manager::SiteFeatureUsage title_feature_usage =
-                impl->UpdatesTitleInBackground();
-            EXPECT_EQ(
-                performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
-                title_feature_usage);
-            std::move(closure).Run();
-          },
-          performance_manager::PerformanceManager::
-              GetPrimaryPageNodeForWebContents(contents.get()),
-          run_loop.QuitClosure()));
-  run_loop.Run();
+  base::WeakPtr<performance_manager::PageNode> page_node =
+      performance_manager::PerformanceManager::GetPrimaryPageNodeForWebContents(
+          contents.get());
+  EXPECT_TRUE(page_node);
+  auto* impl = performance_manager::GetSiteDataImplForPageNode(page_node.get());
+  EXPECT_TRUE(impl);
+  performance_manager::SiteFeatureUsage title_feature_usage =
+      impl->UpdatesTitleInBackground();
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
+            title_feature_usage);
 
   auto iter = policy_->tab_data_.find(contents.get());
   EXPECT_TRUE(iter != policy_->tab_data_.end());
