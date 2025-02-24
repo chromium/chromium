@@ -106,6 +106,7 @@
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
+#include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
@@ -1572,6 +1573,10 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
           context,
           ShouldSuppressSuggestions(context.suppress_reason, log_manager()),
           !suggestions.empty())) {
+    if (payments::BnplManager* bnpl_manager =
+            client().GetPaymentsAutofillClient()->GetPaymentsBnplManager()) {
+      bnpl_manager->NotifyOfSuggestionGeneration(trigger_source);
+    }
     amount_extraction_manager_->TriggerCheckoutAmountExtraction();
   }
 

@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
@@ -13,6 +14,7 @@
 #include "components/autofill/core/browser/metrics/payments/amount_extraction_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -60,6 +62,11 @@ class AmountExtractionManagerTest : public testing::Test {
                 autofill_manager_->client().GetAutofillOptimizationGuide()),
             IsUrlEligibleForCheckoutAmountSearchForIssuerId)
         .WillByDefault(testing::Return(true));
+  }
+
+  void FakeCheckoutAmountReceived(const std::string& extracted_amount) {
+    amount_extraction_manager_->OnCheckoutAmountReceived(base::TimeTicks::Now(),
+                                                         extracted_amount);
   }
 
   void SetUpExtractLabeledTextNodeValue(const std::string& extracted_amount,
@@ -505,6 +512,34 @@ TEST_F(AmountExtractionManagerTest, ResponseBeforeTimeout) {
   task_environment_.RunUntilIdle();
 }
 
-#endif
+// This test checks that the BNPL manager will be notified when the amount
+// extraction receives a empty result.
+TEST_F(AmountExtractionManagerTest,
+       OnCheckoutAmountReceived_EmptyResult_BnplManagerNotified) {
+  MockBnplManager& bnpl_manager_ = autofill_client_->GetPaymentsAutofillClient()
+                                       ->CreateOrGetMockBnplManager();
+
+  EXPECT_CALL(bnpl_manager_,
+              OnAmountExtractionReturned(std::optional<uint64_t>()))
+      .Times(1);
+
+  FakeCheckoutAmountReceived("");
+}
+
+// This test checks that the BNPL manager will be notified when the amount
+// extraction receives a result with correct format.
+TEST_F(AmountExtractionManagerTest,
+       OnCheckoutAmountReceived_AmountInCorrectFormat_BnplManagerNotified) {
+  MockBnplManager& bnpl_manager_ = autofill_client_->GetPaymentsAutofillClient()
+                                       ->CreateOrGetMockBnplManager();
+
+  EXPECT_CALL(bnpl_manager_, OnAmountExtractionReturned(
+                                 std::optional<uint64_t>(123'450'000ULL)))
+      .Times(1);
+
+  FakeCheckoutAmountReceived("$ 123.45");
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace autofill::payments

@@ -11,6 +11,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/check_deref.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "components/autofill/core/browser/data_model/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -79,6 +80,14 @@ void BnplManager::NotifyOfSuggestionGeneration(
 void BnplManager::OnSuggestionsShown(
     base::span<const Suggestion> suggestions,
     UpdateSuggestionsCallback update_suggestions_callback) {
+  // Do not proceed to calling the barrier callback, if the suggestion list
+  // already contains a buy-now-pay-later-entry (which is triggered after
+  // updating the original suggestion list).
+  if (base::Contains(suggestions, SuggestionType::kBnplEntry,
+                     &Suggestion::type)) {
+    return;
+  }
+
   if (update_suggestions_barrier_callback_.has_value()) {
     update_suggestions_barrier_callback_->Run(SuggestionsShownResponse(
         std::vector<Suggestion>(std::begin(suggestions), std::end(suggestions)),

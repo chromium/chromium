@@ -1008,6 +1008,8 @@ static_library("test_support") {
     "payments/payments_requests/get_details_for_create_bnpl_payment_instrument_request_test_api.h",
     "payments/test/autofill_payments_test_utils.cc",
     "payments/test/autofill_payments_test_utils.h",
+    "payments/test/mock_bnpl_manager.cc",
+    "payments/test/mock_bnpl_manager.h",
     "payments/test/mock_iban_manager.cc",
     "payments/test/mock_iban_manager.h",
     "payments/test/mock_mandatory_reauth_manager.cc",
