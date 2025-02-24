@@ -50,17 +50,16 @@ Session::Session(Id id,
 Session::~Session() = default;
 
 // static
-std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params,
-                                                const GURL& fetcher_url) {
-  if (!fetcher_url.is_valid() || params.session_id.empty() ||
+std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params) {
+  if (!params.fetcher_url.is_valid() || params.session_id.empty() ||
       params.refresh_url.empty()) {
     return nullptr;
   }
 
-  if (!params.scope.origin.empty() && !fetcher_url.host().empty() &&
-      fetcher_url.host() != params.scope.origin &&
+  if (!params.scope.origin.empty() && !params.fetcher_url.host().empty() &&
+      params.fetcher_url.host() != params.scope.origin &&
       net::registry_controlled_domains::GetDomainAndRegistry(
-          fetcher_url,
+          params.fetcher_url,
           net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES) !=
           net::registry_controlled_domains::GetDomainAndRegistry(
               params.scope.origin,
@@ -76,16 +75,16 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params,
       params.refresh_url,
       base::UnescapeRule::PATH_SEPARATORS |
           base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
-  GURL candidate_refresh_endpoint = fetcher_url.Resolve(unescaped_path);
+  GURL candidate_refresh_endpoint = params.fetcher_url.Resolve(unescaped_path);
   if (!candidate_refresh_endpoint.is_valid() ||
       !IsSecure(candidate_refresh_endpoint) ||
       net::SchemefulSite(candidate_refresh_endpoint) !=
-          net::SchemefulSite(fetcher_url)) {
+          net::SchemefulSite(params.fetcher_url)) {
     return nullptr;
   }
-  std::unique_ptr<Session> session(
-      new Session(Id(params.session_id), url::Origin::Create(fetcher_url),
-                  std::move(candidate_refresh_endpoint)));
+  std::unique_ptr<Session> session(new Session(
+      Id(params.session_id), url::Origin::Create(params.fetcher_url),
+      std::move(candidate_refresh_endpoint)));
   for (const auto& spec : params.scope.specifications) {
     if (!spec.domain.empty() && !spec.path.empty()) {
       const auto inclusion_result =
@@ -100,7 +99,7 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params,
   for (const auto& cred : params.credentials) {
     if (!cred.name.empty() && !cred.attributes.empty()) {
       std::optional<CookieCraving> craving =
-          CookieCraving::Create(fetcher_url, cred.name, cred.attributes,
+          CookieCraving::Create(params.fetcher_url, cred.name, cred.attributes,
                                 base::Time::Now(), std::nullopt);
       if (craving) {
         session->cookie_cravings_.push_back(*craving);
@@ -110,6 +109,7 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params,
 
   session->set_creation_date(base::Time::Now());
   session->set_expiry_date(base::Time::Now() + kSessionTtl);
+  session->set_unexportable_key_id(std::move(params.key_id));
 
   return session;
 }

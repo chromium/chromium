@@ -9,11 +9,13 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/types/expected.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
+#include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_params.h"
 #include "net/http/http_response_headers.h"
 #include "net/log/net_log_source.h"
@@ -37,27 +39,11 @@ class RegistrationRequestParam;
 // instructions. It is also used for calling the refresh endpoint.
 class NET_EXPORT RegistrationFetcher {
  public:
-  struct NET_EXPORT RegistrationCompleteParams {
-    RegistrationCompleteParams(ParsedSessionParams params,
-                               unexportable_keys::UnexportableKeyId key_id,
-                               const GURL& url);
-    RegistrationCompleteParams(RegistrationCompleteParams&& other) noexcept;
-    RegistrationCompleteParams& operator=(
-        RegistrationCompleteParams&& other) noexcept;
-
-    ~RegistrationCompleteParams();
-
-    ParsedSessionParams params;
-    unexportable_keys::UnexportableKeyId key_id;
-    GURL url;
-  };
-
-  // Returning std::nullopt indicates that the fetch failed.
   using RegistrationCompleteCallback =
-      base::OnceCallback<void(std::optional<RegistrationCompleteParams>)>;
+      base::OnceCallback<void(base::expected<SessionParams, SessionError>)>;
 
   using FetcherType =
-      base::RepeatingCallback<std::optional<RegistrationCompleteParams>()>;
+      base::RepeatingCallback<base::expected<SessionParams, SessionError>()>;
 
   // TODO(kristianm): Add more parameters when the returned JSON is parsed.
   struct NET_EXPORT RegistrationTokenResult {

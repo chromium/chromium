@@ -45,7 +45,8 @@ class ScopedTestRegistrationFetcher {
       std::string_view origin_string);
 
   // Creates a `ScopedTestRegistrationFetcher` that always fails to register
-  static ScopedTestRegistrationFetcher CreateWithFailure();
+  static ScopedTestRegistrationFetcher CreateWithFailure(
+      std::string_view refresh_url_string);
 
   // Creates a `ScopedTestRegistrationFetcher` that always instructs
   // Chrome to terminate the session with given id and site.

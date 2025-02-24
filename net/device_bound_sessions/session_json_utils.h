@@ -8,7 +8,10 @@
 #include <optional>
 #include <vector>
 
+#include "base/types/expected.h"
+#include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_params.h"
+#include "url/gurl.h"
 
 namespace net::device_bound_sessions {
 
@@ -16,11 +19,13 @@ namespace net::device_bound_sessions {
 // https://github.com/WICG/dbsc/blob/main/README.md#session-registration-instructions-json
 
 // Parse the full JSON as a string. Returns:
-// - A SessionParams describing the session to be created on success
-// - A SessionTerminationParams describing the session to be terminated
-//   when the JSON contains "continue": false
-// - std::nullopt if parsing fails (e.g. invalid JSON)
-std::optional<ParsedSessionParams> ParseSessionInstructionJson(
+// - A `SessionParams` describing the session to be created on success
+// - A `SessionError` on all failures. If the JSON contains "continue":
+//   false, we will return a `kServerRequestedTermination` error, and
+//   `kInvalidSessionConfig` in other cases.
+base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
+    GURL fetcher_url,
+    unexportable_keys::UnexportableKeyId key_id,
     std::string_view response_json);
 
 }  // namespace net::device_bound_sessions

@@ -237,14 +237,10 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
       if (number_of_challenges_ < kMaxChallenges) {
         AttemptChallengeSigning();
         return;
-      } else if (session_identifier_.has_value()) {
-        SessionTerminationParams params{*session_identifier_};
-        RunCallbackAndDeleteSelf(
-            std::make_optional<RegistrationFetcher::RegistrationCompleteParams>(
-                std::move(params), key_id_, fetcher_endpoint_));
-        return;
       } else {
-        RunCallbackAndDeleteSelf(std::nullopt);
+        RunCallbackAndDeleteSelf(base::unexpected(SessionError{
+            SessionError::ErrorType::kTooManyChallenges,
+            net::SchemefulSite(fetcher_endpoint_), session_identifier_}));
         return;
       }
     }
@@ -276,14 +272,11 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
       if (number_of_signing_failures_ < kMaxSigningFailures) {
         AttemptChallengeSigning();
         return;
-      } else if (session_identifier_.has_value()) {
-        SessionTerminationParams params{*session_identifier_};
-        RunCallbackAndDeleteSelf(
-            std::make_optional<RegistrationFetcher::RegistrationCompleteParams>(
-                std::move(params), key_id_, fetcher_endpoint_));
-        return;
       } else {
-        RunCallbackAndDeleteSelf(std::nullopt);
+        RunCallbackAndDeleteSelf(base::unexpected(SessionError{
+            SessionError::ErrorType::kSigningError,
+            net::SchemefulSite(url::Origin::Create(fetcher_endpoint_)),
+            *session_identifier_}));
         return;
       }
     }
@@ -319,7 +312,10 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   void OnChallengeNeeded(
       std::optional<std::vector<SessionChallengeParam>> challenge_params) {
     if (!challenge_params || challenge_params->empty()) {
-      RunCallbackAndDeleteSelf(std::nullopt);
+      RunCallbackAndDeleteSelf(base::unexpected(SessionError{
+          SessionError::ErrorType::kInvalidSessionConfig,
+          net::SchemefulSite(url::Origin::Create(fetcher_endpoint_)),
+          *session_identifier_}));
       return;
     }
 
@@ -330,32 +326,29 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   }
 
   void OnResponseCompleted() {
-    if (!data_received_.empty()) {
-      std::optional<ParsedSessionParams> params =
-          ParseSessionInstructionJson(data_received_);
-      if (params) {
-        RunCallbackAndDeleteSelf(
-            std::make_optional<RegistrationFetcher::RegistrationCompleteParams>(
-                std::move(*params), key_id_, request_->url()));
-        return;
-      }
+    if (data_received_.empty()) {
+      RunCallbackAndDeleteSelf(base::unexpected(SessionError{
+          SessionError::ErrorType::kEndpointUnreachable,
+          net::SchemefulSite(url::Origin::Create(fetcher_endpoint_)),
+          session_identifier_}));
+      return;
     }
 
-    RunCallbackAndDeleteSelf(std::nullopt);
+    RunCallbackAndDeleteSelf(
+        ParseSessionInstructionJson(request_->url(), key_id_, data_received_));
   }
 
   // Running callback when fetching is complete or on error.
   // Deletes `this` afterwards.
   void RunCallbackAndDeleteSelf(
-      std::optional<RegistrationFetcher::RegistrationCompleteParams> params) {
-    AddNetLogResult(params);
-    std::move(callback_).Run(std::move(params));
+      base::expected<SessionParams, SessionError> params_or_error) {
+    AddNetLogResult(params_or_error);
+    std::move(callback_).Run(std::move(params_or_error));
     delete this;
   }
 
   void AddNetLogResult(
-      const std::optional<RegistrationFetcher::RegistrationCompleteParams>&
-          params) {
+      const base::expected<SessionParams, SessionError>& params_or_error) {
     if (!request_) {
       return;
     }
@@ -364,13 +357,15 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
                               : NetLogEventType::DBSC_REGISTRATION_RESULT;
     request_->net_log().AddEvent(result_event_type, [&]() {
       std::string result;
-      if (!params) {
-        result = "failed_continue";
-      } else if (std::holds_alternative<SessionParams>(params->params)) {
+      if (params_or_error.has_value()) {
         result = IsForRefreshRequest() ? "refreshed" : "registered";
-      } else if (std::holds_alternative<SessionTerminationParams>(
-                     params->params)) {
-        result = "session_ended";
+      } else {
+        const SessionError& error = params_or_error.error();
+        if (error.IsFatal()) {
+          result = "session_ended";
+        } else {
+          result = "failed_continue";
+        }
       }
 
       base::Value::Dict dict;
@@ -413,21 +408,6 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
 RegistrationFetcher::FetcherType* g_mock_fetcher = nullptr;
 
 }  // namespace
-
-RegistrationFetcher::RegistrationCompleteParams::RegistrationCompleteParams(
-    ParsedSessionParams params,
-    unexportable_keys::UnexportableKeyId key_id,
-    const GURL& url)
-    : params(std::move(params)), key_id(std::move(key_id)), url(url) {}
-
-RegistrationFetcher::RegistrationCompleteParams::RegistrationCompleteParams(
-    RegistrationFetcher::RegistrationCompleteParams&& other) noexcept = default;
-RegistrationFetcher::RegistrationCompleteParams&
-RegistrationFetcher::RegistrationCompleteParams::operator=(
-    RegistrationFetcher::RegistrationCompleteParams&& other) noexcept = default;
-
-RegistrationFetcher::RegistrationCompleteParams::~RegistrationCompleteParams() =
-    default;
 
 // static
 void RegistrationFetcher::StartCreateTokenAndFetch(
@@ -477,7 +457,10 @@ void RegistrationFetcher::StartFetchWithExistingKey(
   }
 
   if (!key_id.has_value()) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::unexpected(
+        SessionError{SessionError::ErrorType::kKeyError,
+                     net::SchemefulSite(request_params.registration_endpoint()),
+                     request_params.session_identifier()}));
     return;
   }
 

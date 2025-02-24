@@ -73,12 +73,13 @@ std::unique_ptr<Session> CreateSessionHelper(
   std::string cookie_attr = "Secure; Domain=" + GURL(url_string).host();
   std::vector<SessionParams::Credential> cookie_credentials(
       {SessionParams::Credential{"test_cookie", cookie_attr}});
-  SessionParams params{session_id, url_string, std::move(scope),
-                       std::move(cookie_credentials)};
-  std::unique_ptr<Session> session =
-      Session::CreateIfValid(params, GURL(url_string));
-  session->set_unexportable_key_id(GenerateNewKey(key_service));
-  return session;
+  SessionParams params{session_id,
+                       GURL(url_string),
+                       url_string,
+                       std::move(scope),
+                       std::move(cookie_credentials),
+                       GenerateNewKey(key_service)};
+  return Session::CreateIfValid(params);
 }
 
 proto::Session CreateSessionProto(
