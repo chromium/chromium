@@ -475,5 +475,9 @@ enum ContentSettingsType {
 
   // Content settings for access to the Controlled Frame API.
   CONTROLLED_FRAME,
+
+  // Website setting which is used for UnusedSitePermissionsService to
+  // store revoked notification permissions of disruptive sites.
+  REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
 };
 // LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue)

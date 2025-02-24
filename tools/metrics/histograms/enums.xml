@@ -2751,6 +2751,7 @@ Called by update_net_error_codes.py.-->
   <int value="131" label="Legacy cookie scope"/>
   <int value="132" label="Are suspicious notifications allowlisted by user"/>
   <int value="133" label="Controlled Frame"/>
+  <int value="134" label="Revoked disruptive notification permissions"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue) -->
