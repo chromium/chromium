@@ -425,6 +425,7 @@ class CheckingFlowRequirementsState : public ControllerState {
     if (!group_outcome.has_value()) {
       RecordJoinEvent(CollaborationServiceJoinEvent::kReadNewGroupFailed);
       HandleErrorWithType(ErrorInfo::Type::kInvalidUrl);
+      return;
     }
 
     RecordJoinEvent(CollaborationServiceJoinEvent::kReadNewGroupSuccess);
