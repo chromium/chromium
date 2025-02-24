@@ -460,7 +460,7 @@ TEST_F(DiskCachePerfTest, BlockfileHashes) {
 
 void DiskCachePerfTest::ResetAndEvictSystemDiskCache() {
   base::RunLoop().RunUntilIdle();
-  cache_.reset();
+  ResetCaches();
 
   // Flush all files in the cache out of system memory.
   const base::FilePath::StringType file_pattern = FILE_PATH_LITERAL("*");
