@@ -40,6 +40,7 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+#import "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 #import "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #import "ios/chrome/browser/optimization_guide/model/on_device_model_service_controller_ios.h"
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
@@ -173,9 +174,9 @@ OptimizationGuideService::OptimizationGuideService(
   }
 
   if (!off_the_record_) {
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
     PrefService* local_state = GetApplicationContext()->GetLocalState();
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
     // Create and startup the on-device model's state manager.
     on_device_model_state_manager_ =
         optimization_guide::OnDeviceModelComponentStateManager::CreateOrGet(
@@ -193,17 +194,20 @@ OptimizationGuideService::OptimizationGuideService(
         on_device_model_service_controller =
             GetApplicationContext()->GetOnDeviceModelServiceController(
                 on_device_model_state_manager_->GetWeakPtr());
+    on_device_asset_manager_ =
+        std::make_unique<optimization_guide::OnDeviceAssetManager>(
+            local_state, on_device_model_service_controller->GetWeakPtr(),
+            on_device_model_state_manager_->GetWeakPtr(), this);
     model_execution_manager_ =
         std::make_unique<optimization_guide::ModelExecutionManager>(
-            url_loader_factory, local_state, identity_manager,
-            std::move(on_device_model_service_controller), this,
-            on_device_model_state_manager_->GetWeakPtr(),
+            url_loader_factory, identity_manager,
+            std::move(on_device_model_service_controller),
             optimization_guide_logger_.get(), nullptr);
 #else   // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
     model_execution_manager_ =
         std::make_unique<optimization_guide::ModelExecutionManager>(
-            url_loader_factory, local_state, identity_manager, nullptr, this,
-            nullptr, optimization_guide_logger_.get(), nullptr);
+            url_loader_factory, identity_manager, nullptr,
+            optimization_guide_logger_.get(), nullptr);
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   }
 
