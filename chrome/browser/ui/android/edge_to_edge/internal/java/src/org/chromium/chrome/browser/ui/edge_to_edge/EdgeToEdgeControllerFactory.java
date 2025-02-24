@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
-import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.hasTappableBottomBar;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.hasTappableNavigationBar;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled;
 
@@ -145,8 +144,9 @@ public class EdgeToEdgeControllerFactory {
     public static boolean isSupportedConfiguration(Activity activity) {
         // Make sure we test SDK version before checking the Feature so Field Trials only collect
         // from qualifying devices.
-        if (!EdgeToEdgeFieldTrial.getBottomChinOverrides().isEnabledForManufacturerVersion())
+        if (!EdgeToEdgeFieldTrial.getBottomChinOverrides().isEnabledForManufacturerVersion()) {
             return false;
+        }
 
         // The root view's window insets is needed to determine if we are in gesture nav mode.
         if (activity == null
@@ -155,20 +155,12 @@ public class EdgeToEdgeControllerFactory {
             return false;
         }
 
-        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
-            return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
-                    && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
-                    && !BuildInfo.getInstance().isAutomotive
-                    // TODO(https://crbug.com/325356134) use UiUtils#isGestureNavigationMode
-                    // instead.
-                    && !hasTappableNavigationBar(activity.getWindow())
-                    && !sHas3ButtonNavBarForTesting;
-        }
         return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
                 && !BuildInfo.getInstance().isAutomotive
-                // TODO(https://crbug.com/325356134) use UiUtils#isGestureNavigationMode instead.
-                && !hasTappableBottomBar(activity.getWindow())
+                // TODO(https://crbug.com/325356134) Look into using UiUtils#isGestureNavigationMode
+                // instead.
+                && !hasTappableNavigationBar(activity.getWindow())
                 && !sHas3ButtonNavBarForTesting;
     }
 

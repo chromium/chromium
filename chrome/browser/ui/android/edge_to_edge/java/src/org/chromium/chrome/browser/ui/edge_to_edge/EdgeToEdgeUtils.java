@@ -150,7 +150,7 @@ public class EdgeToEdgeUtils {
         boolean eligible = true;
 
         // TODO(crbug.com/397756951): Replace with hasTappableNavigationBar()
-        if (hasTappableBottomBar(activity.getWindow())) {
+        if (hasTappableNavigationBar(activity.getWindow())) {
             eligible = false;
             RecordHistogram.recordEnumeratedHistogram(
                     INELIGIBLE_REASON_HISTOGRAM,
@@ -276,19 +276,6 @@ public class EdgeToEdgeUtils {
 
         NativePage nativePage = activeTab.getNativePage();
         return nativePage != null && nativePage.supportsEdgeToEdge();
-    }
-
-    /**
-     * @return whether the given window's insets indicate a tappable bottom bar.
-     */
-    @Deprecated
-    static boolean hasTappableBottomBar(Window window) {
-        var rootInsets = window.getDecorView().getRootWindowInsets();
-        assert rootInsets != null;
-        return WindowInsetsCompat.toWindowInsetsCompat(rootInsets)
-                        .getInsets(WindowInsetsCompat.Type.tappableElement())
-                        .bottom
-                != 0;
     }
 
     /**
