@@ -9244,6 +9244,7 @@ from previous Chrome versions.
       label="OmniboxRemoveExcessiveRecycledViewClearCalls:disabled"/>
   <int value="-1968729540" label="ArcExtendIntentAnrTimeout:enabled"/>
   <int value="-1966599581" label="LauncherKeyShortcutInBestMatch:enabled"/>
+  <int value="-1966458819" label="AutofillPaymentsFieldSwapping:disabled"/>
   <int value="-1966445414" label="StylusBatteryStatus:disabled"/>
   <int value="-1965587041" label="omnibox-tab-switch-suggestions"/>
   <int value="-1964730371"
@@ -17884,6 +17885,7 @@ from previous Chrome versions.
   <int value="1438157693" label="BlockTelephonyDevicePhoneMute:disabled"/>
   <int value="1438182104" label="PasswordGenerationSoftNudge:disabled"/>
   <int value="1438417722" label="MessagesForAndroidReaderMode:enabled"/>
+  <int value="1438814782" label="AutofillPaymentsFieldSwapping:enabled"/>
   <int value="1440618113" label="EnableNetworkingInDiagnosticsApp:disabled"/>
   <int value="1440881073" label="DesktopPWAsAppIconShortcutsMenuUI:enabled"/>
   <int value="1441764258" label="RelatedSearchesAllLanguage:disabled"/>

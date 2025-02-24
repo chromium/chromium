@@ -756,6 +756,12 @@ const char kAutofillMoreProminentPopupDescription[] =
     "If enabled Autofill's popup becomes more prominent, i.e. its shadow "
     "becomes more emphasized, position is also updated";
 
+const char kAutofillPaymentsFieldSwappingName[] =
+    "Swap credit card suggestions";
+const char kAutofillPaymentsFieldSwappingDescription[] =
+    "When enabled, swapping autofilled payment suggestions would result"
+    "in overriding all of the payments fields with the swapped profile data";
+
 const char kAutofillRemovePaymentsButterDropdownName[] =
     "Remove \"Show cards from your Google Account\" dropdown";
 const char kAutofillRemovePaymentsButterDropdownDescription[] =

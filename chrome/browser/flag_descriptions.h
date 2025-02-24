@@ -460,6 +460,9 @@ extern const char kAutofillSyncEwalletAccountsName[];
 extern const char kAutofillSyncEwalletAccountsDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+extern const char kAutofillPaymentsFieldSwappingName[];
+extern const char kAutofillPaymentsFieldSwappingDescription[];
+
 extern const char kAutofillUnmaskCardRequestTimeoutName[];
 extern const char kAutofillUnmaskCardRequestTimeoutDescription[];
 
