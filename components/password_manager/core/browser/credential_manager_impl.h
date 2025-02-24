@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/credential_manager_interface.h"
 #include "components/password_manager/core/browser/credential_manager_password_form_manager.h"
 #include "components/password_manager/core/browser/credential_manager_pending_prevent_silent_access_task.h"
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
@@ -34,21 +35,22 @@ using GetCallback =
 class CredentialManagerImpl
     : public CredentialManagerPendingPreventSilentAccessTaskDelegate,
       public CredentialManagerPendingRequestTaskDelegate,
-      public CredentialManagerPasswordFormManagerDelegate {
+      public CredentialManagerPasswordFormManagerDelegate,
+      public CredentialManagerInterface {
  public:
   explicit CredentialManagerImpl(PasswordManagerClient* client);
   CredentialManagerImpl(const CredentialManagerImpl&) = delete;
   CredentialManagerImpl& operator=(const CredentialManagerImpl&) = delete;
   ~CredentialManagerImpl() override;
 
-  void Store(const CredentialInfo& credential, StoreCallback callback);
-  void PreventSilentAccess(PreventSilentAccessCallback callback);
+  void Store(const CredentialInfo& credential, StoreCallback callback) override;
+  void PreventSilentAccess(PreventSilentAccessCallback callback) override;
   void Get(CredentialMediationRequirement mediation,
            int requested_credential_type_flags,
            const std::vector<GURL>& federations,
-           GetCallback callback);
+           GetCallback callback) override;
 
-  void ResetPendingRequest();
+  void ResetPendingRequest() override;
 
   // CredentialManagerPendingRequestTaskDelegate:
   // Exposed publicly for testing.
