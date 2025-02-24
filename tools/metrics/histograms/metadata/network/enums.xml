@@ -2866,6 +2866,16 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Internal error"/>
 </enum>
 
+<enum name="WiFiSecurityType">
+  <int value="0" label="Unmanaged Open"/>
+  <int value="1" label="Managed Open"/>
+  <int value="2" label="Unmanaged PSK"/>
+  <int value="3" label="Managed PSK"/>
+  <int value="4" label="Unmanaged Certificate"/>
+  <int value="5" label="Managed Certificate"/>
+  <int value="6" label="Unknown"/>
+</enum>
+
 <enum name="WiFiSessionTagState">
   <int value="0" label="Unknown"/>
   <int value="1" label="Unexpected"/>
