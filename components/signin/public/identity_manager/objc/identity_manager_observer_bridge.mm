@@ -78,6 +78,13 @@ void IdentityManagerObserverBridge::OnAccountsOnDeviceChanged() {
   }
 }
 
+void IdentityManagerObserverBridge::OnEndBatchOfPrimaryAccountChanges() {
+  if ([delegate_
+          respondsToSelector:@selector(onEndBatchOfPrimaryAccountChanges)]) {
+    [delegate_ onEndBatchOfPrimaryAccountChanges];
+  }
+}
+
 void IdentityManagerObserverBridge::OnIdentityManagerShutdown(
     IdentityManager* identity_manager) {
   if ([delegate_ respondsToSelector:@selector(onIdentityManagerShutdown:)]) {

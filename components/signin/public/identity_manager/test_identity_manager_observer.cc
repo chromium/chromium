@@ -112,6 +112,14 @@ TestIdentityManagerObserver::BatchChangeRecords() const {
   return batch_change_records_;
 }
 
+#if BUILDFLAG(IS_IOS)
+size_t
+TestIdentityManagerObserver::GetOnEndBatchOfPrimaryAccountChangesCalledCount()
+    const {
+  return on_end_batch_of_primary_account_changes_called_count_;
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 // IdentityManager::Observer:
 void TestIdentityManagerObserver::OnPrimaryAccountChanged(
     const PrimaryAccountChangeEvent& event) {
@@ -188,6 +196,12 @@ void TestIdentityManagerObserver::OnExtendedAccountInfoRemoved(
   was_called_account_removed_with_info_callback_ = true;
   account_from_account_removed_with_info_callback_ = info;
 }
+
+#if BUILDFLAG(IS_IOS)
+void TestIdentityManagerObserver::OnEndBatchOfPrimaryAccountChanges() {
+  ++on_end_batch_of_primary_account_changes_called_count_;
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 void TestIdentityManagerObserver::StartBatchOfRefreshTokenStateChanges() {
   EXPECT_FALSE(is_inside_batch_);
