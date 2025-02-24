@@ -149,7 +149,7 @@ void DelegatedFrameHost::CopyFromCompositingSurface(
 
   ui::Compositor::ScopedKeepSurfaceAliveCallback keep_surface_alive;
 
-  if (compositor_) {
+  if (compositor_ && CanCopyFromCompositingSurface()) {
     keep_surface_alive =
         compositor_->TakeScopedKeepSurfaceAliveCallback(surface_id);
   }
