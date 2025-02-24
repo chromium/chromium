@@ -160,6 +160,24 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PrefixMatching) {
                                                triggering_field_type));
 }
 
+// Tests that no prefix matching is performed if the attribute that would be
+// filled into the triggering field is obfuscated.
+TEST_F(AutofillAiSuggestionsTest,
+       GetFillingSuggestionNoPrefixMatchingForObfuscatedAttributes) {
+  autofill::EntityInstance passport =
+      MakePassportWithRandomGuid({.number = u"12345"});
+
+  autofill::FieldType triggering_field_type = autofill::PASSPORT_NUMBER;
+  std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
+      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY_TAG});
+
+  form->field(0)->set_value(u"12");
+
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(), {passport});
+  EXPECT_FALSE(suggestions.empty());
+}
+
 TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_LoyaltyCardEntity) {
   autofill::EntityInstance loyalty_card_entity =
       autofill::test::GetLoyaltyCardEntityInstance();

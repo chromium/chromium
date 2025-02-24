@@ -350,9 +350,10 @@ std::vector<Suggestion> CreateFillingSuggestions(
     const std::u16string normalized_triggering_field_content =
         autofill::AutofillProfileComparator::NormalizeForComparison(
             autofill_field->value(autofill::ValueSemantics::kCurrent));
-    // TODO(crbug.com/394011769): Do not prefix-match data that should be
-    // obfuscated.
-    if (!normalized_main_text.starts_with(
+    // Obfuscated types are not prefix matched to avoid that a webpage can
+    // use the existence of suggestions to guess a user's data.
+    if (!triggering_field_attribute_type->is_obfuscated() &&
+        !normalized_main_text.starts_with(
             normalized_triggering_field_content)) {
       continue;
     }
