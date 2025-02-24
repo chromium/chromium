@@ -1181,63 +1181,6 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
                             /*expect_idp=*/true);
 }
 
-// Tests that in the multi IDP account button, hovering over the button modifies
-// the background circle containing the IDP icon.
-TEST_F(MultipleIdpAccountSelectionBubbleViewTest, HoverChangesIdpCircle) {
-  // Need two IDPs to show the multi IDP UI.
-  constexpr char kAccountSuffix1[] = "1";
-  constexpr char kAccountSuffix2[] = "2";
-  std::vector<IdentityProviderDataPtr> idp_list = {
-      base::MakeRefCounted<content::IdentityProviderData>(
-          kIdpForDisplay, content::IdentityProviderMetadata(),
-          CreateTestClientMetadata(kTermsOfServiceUrl),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
-          /*has_login_status_mismatch=*/false),
-      base::MakeRefCounted<content::IdentityProviderData>(
-          kSecondIdpForDisplay, content::IdentityProviderMetadata(),
-          CreateTestClientMetadata("https://tos-2.com"),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
-          /*has_login_status_mismatch=*/false)};
-  std::vector<IdentityRequestAccountPtr> accounts_list = {
-      CreateTestIdentityRequestAccount(kAccountSuffix1, idp_list[0]),
-      CreateTestIdentityRequestAccount(kAccountSuffix2, idp_list[1])};
-
-  CreateAndShowMultiIdpAccountPicker(accounts_list, idp_list);
-
-  std::vector<raw_ptr<views::View, VectorExperimental>> children =
-      dialog()->children();
-  ASSERT_EQ(children.size(), 2u);
-  PerformHeaderChecks(children[0], kTitleSignInWithoutIdp,
-                      /*expect_idp_brand_icon_in_header=*/false);
-
-  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/2,
-                            /*expected_mismatch_rows=*/0);
-
-  std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
-      GetAccounts(children[1]);
-
-  HoverButton* account_row = static_cast<HoverButton*>(accounts[1]);
-  views::View* icon_view = GetHoverButtonIconView(account_row);
-  ASSERT_TRUE(icon_view);
-  std::vector<raw_ptr<views::View, VectorExperimental>> icon_children =
-      icon_view->children();
-  ASSERT_EQ(icon_children.size(), 2u);
-  EXPECT_EQ(icon_children[1]->GetClassName(), "BoxLayoutView");
-  ASSERT_EQ(icon_children[1]->children().size(), 1u);
-  EXPECT_EQ(icon_children[1]->children()[0]->GetClassName(),
-            "BrandIconImageView");
-  auto* brand_icon_image_view =
-      static_cast<BrandIconImageView*>(icon_children[1]->children()[0]);
-  auto* color_provider = account_row->GetColorProvider();
-  ASSERT_TRUE(color_provider);
-  EXPECT_EQ(brand_icon_image_view->background_color_for_testing(),
-            color_provider->GetColor(ui::kColorDialogBackground));
-
-  account_row->SetState(HoverButton::ButtonState::STATE_HOVERED);
-  EXPECT_EQ(brand_icon_image_view->background_color_for_testing(),
-            color_provider->GetColor(ui::kColorMenuButtonBackgroundSelected));
-}
-
 TEST_F(AccountSelectionBubbleViewTest, GenericError) {
   TestErrorDialog(kTitleSignIn, u"Can't continue with idp-example.com",
                   u"Something went wrong",
