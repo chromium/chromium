@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.text.format.DateUtils;
-import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -142,7 +141,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private Supplier<CustomTabActivityTabController> mTabController;
     @Mock private Supplier<CustomTabMinimizeDelegate> mMinimizeDelegateSupplier;
     @Mock private Supplier<CustomTabFeatureOverridesManager> mFeatureOverridesManagerSupplier;
-    @Mock private View mBaseChromeLayout;
     @Mock private Profile mProfile;
     @Mock private GoogleBottomBarCoordinator mGoogleBottomBarCoordinator;
     @Mock private ShoppingService mShoppingService;
@@ -212,7 +210,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         mTabController,
                         mMinimizeDelegateSupplier,
                         mFeatureOverridesManagerSupplier,
-                        mBaseChromeLayout,
                         mEdgeToEdgeManager) {
 
                     @Nullable
