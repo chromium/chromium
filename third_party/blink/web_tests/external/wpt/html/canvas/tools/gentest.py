@@ -751,6 +751,14 @@ class _OutputPaths:
         self.offscreen.mkdir(parents=True, exist_ok=True)
 
 
+def _check_reserved_params(test: _TestParams):
+    for param in _GENERATED_PARAMS:
+        if test.get(param) is not None:
+            raise InvalidTestDefinitionError(
+                f'Parameter "{param}:" is reserved and cannot be manually '
+                'specified in test definitions.')
+
+
 def _validate_test(test: _TestParams):
     for param in ['name', 'code']:
         if test.get(param) is None:
@@ -1438,6 +1446,7 @@ def generate_test_files(name_to_dir_file: str) -> None:
     used_variants = collections.defaultdict(set)
     for test in tests:
         print(test['name'])
+        _check_reserved_params(test)
         for grid in _get_variant_grids(test, jinja_env, params_template_loader):
             if not grid.enabled:
                 continue
