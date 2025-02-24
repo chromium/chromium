@@ -24,10 +24,6 @@ extern const char kReadingModeName[];
 
 namespace read_anything {
 
-// Used for text formatting correction in PDFs. This value should match the line
-// width limit in app.html.
-inline constexpr int kMaxLineWidth = 60;
-
 // Audio constants for Read Aloud feature.
 // Speech rate is a multiplicative scale where 1 is the baseline.
 inline constexpr double kReadAnythingDefaultSpeechRate = 1;
