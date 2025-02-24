@@ -1713,17 +1713,19 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
         // constructor.
         CHECK(sunfish_button);
         MaybeShowSunfishLauncherNudge(sunfish_button);
-        RecordSunfishSessionButtonVisibilityOnLauncherShown(
-            /*is_visible=*/sunfish_button->GetVisible());
       }
     }
 
     for (auto& observer : observers_)
       observer.OnAppListVisibilityChanged(real_visibility, display_id);
 
-    // Record whether the continue section is hidden by the user.
-    if (real_visibility)
+    if (real_visibility) {
+      // Record whether the continue section is hidden by the user.
       RecordHideContinueSectionMetric();
+
+      RecordSunfishSessionButtonVisibilityOnLauncherShown(
+          /*is_visible=*/GetSearchModel()->search_box()->show_sunfish_button());
+    }
 
     if (!home_launcher_animation_callback_.is_null())
       home_launcher_animation_callback_.Run(real_visibility);
