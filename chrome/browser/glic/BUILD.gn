@@ -98,6 +98,8 @@ source_set("impl") {
     "glic_ui.cc",
     "glic_vector_icon_manager.cc",
     "glic_view.cc",
+    "glic_widget.cc",
+    "glic_widget.h",
     "glic_window_animator.cc",
     "glic_window_animator.h",
     "glic_window_controller.cc",
