@@ -177,7 +177,12 @@ TEST_F(UniquePositionTest, DeserializeObsoleteGzippedPosition) {
   EXPECT_PRED_FORMAT2(Equals, kHugePosition, pos);
 }
 
-TEST_F(UniquePositionTest, UncompressTooLongRepeatingDigit) {
+#if BUILDFLAG(IS_FUCHSIA) && defined(ADDRESS_SANITIZER)
+#define MAYBE_UncompressTooLongRepeatingDigit DISABLED_UncompressTooLongRepeatingDigit
+#else
+#define MAYBE_UncompressTooLongRepeatingDigit UncompressTooLongRepeatingDigit
+#endif
+TEST_F(UniquePositionTest, MAYBE_UncompressTooLongRepeatingDigit) {
   // First 4 bytes represent the digit to expand, and the next 4 bytes is the
   // number of bytes.
   constexpr char kSerializedCstr[] = {'\x12', '\x12', '\x12', '\x12',
