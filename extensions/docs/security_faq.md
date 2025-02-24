@@ -447,6 +447,22 @@ field, and other binaries on a machine could launch the Native Messaging Host
 and communicate with it. Both of these are outside of Chrome's security model
 which [does not consider physically-local attacks to be security bugs][physically-local-attacks].
 
+### What is your stance on click-jacking using extensions?
+
+This depends on the attack. In general, these will *not* be considered security
+bugs due to the capabilities extensions have to control windows, including
+creating new windows and controlling windows' bounds and positions. This is core
+to a lot of extension functionality (like window / session managers), and, if
+you can control a window, you could always socially-engineer a user to click at
+a spot in the window right above another window, and then remove the
+socially-engineering window.
+
+We consider this acceptable because of the other controls and protections we
+have in place, including that the user has to install the extension and that
+extensions in the webstore undergo manual and automated review.
+
+Example: https://crbug.com/354625690.
+
 ### I've found a security bug in an extension. Is this a security bug in Chromium?
 
 This depends on the extension.
