@@ -3274,6 +3274,12 @@ bool FederatedAuthRequestImpl::OnResolve(
   if (!request_dialog_controller_) {
     return false;
   }
+
+  // IdentityProvider.resolve() is only allowed for continuation API.
+  if (dialog_type_ != kContinueOnPopup) {
+    return false;
+  }
+
   request_dialog_controller_->CloseModalDialog();
 
   MarkUserAsSignedIn(idp_config_url, account_id.value_or(account_id_));

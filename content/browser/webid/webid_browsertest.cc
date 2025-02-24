@@ -498,9 +498,8 @@ class WebIdIdPRegistryBrowserTest : public WebIdBrowserTest {
 class WebIdAuthzBrowserTest : public WebIdBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    std::vector<base::test::FeatureRef> features;
-    features.push_back(features::kFedCmAuthz);
-    scoped_feature_list_.InitWithFeatures(features, {});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kFedCmButtonMode, features::kFedCmAuthz}, {});
 
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
@@ -1674,6 +1673,68 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
   // Finally, wait for the promise to resolve and compare its result
   // to the expected token that was provided in the modal dialog.
   EXPECT_EQ(token, EvalJs(shell(), "result"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, IdpLoginCallsResolve) {
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+
+  // Mark us as signed out from this IdP.
+  GURL url{IdpRootUrl() + "/header/signout"};
+  EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url));
+
+  // This will be used for the login dialog.
+  Shell* modal = CreateBrowser();
+  auto config_url = GURL(BaseIdpUrl());
+
+  modal->LoadURL(config_url);
+  EXPECT_TRUE(WaitForLoadStop(modal->web_contents()));
+
+  auto mock = std::make_unique<
+      ::testing::NiceMock<MockIdentityRequestDialogController>>();
+  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
+
+  MockIdentityRequestDialogController* controller =
+      static_cast<MockIdentityRequestDialogController*>(
+          test_browser_client_->GetIdentityRequestDialogControllerForTests());
+
+  base::RunLoop modal_dialog_loop;
+  EXPECT_CALL(*controller, ShowModalDialog)
+      .WillOnce(WithArgs<0, 2>(
+          [&modal, &modal_dialog_loop](
+              const GURL& url,
+              content::IdentityRequestDialogController::DismissCallback cb) {
+            modal_dialog_loop.Quit();
+            return modal->web_contents();
+          }));
+  EXPECT_CALL(*controller, ShowLoadingDialog).WillOnce(Return(true));
+
+  // Now run the actual test.
+  std::string script = R"(
+      promise = navigator.credentials.get({
+        identity: {
+          providers: [{
+            configURL: ')" +
+                       BaseIdpUrl() + R"(',
+            clientId: 'client_id_1',
+            nonce: '12345',
+          }],
+          mode: 'active'
+        }
+      });
+    )";
+
+  // Initiate the FedCM call
+  EXPECT_TRUE(ExecJs(shell(), script, EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Wait for the popup window to open.
+  modal_dialog_loop.Run();
+
+  // IdentityProvider.resolve() should be ignored and not crash.
+  std::string expected_error =
+      "NotAllowedError: Not allowed to provide a token.";
+  EXPECT_EQ(
+      expected_error,
+      ExtractJsError(EvalJs(modal, R"(IdentityProvider.resolve('token'))")));
 }
 
 // Verify that an IdentityCredentialError exception is returned.
