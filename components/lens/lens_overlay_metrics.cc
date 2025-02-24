@@ -471,7 +471,7 @@ void RecordDocumentSizeBytes(lens::MimeType page_content_type,
 }
 
 void RecordPdfPageCount(uint32_t page_count) {
-  base::UmaHistogramCounts1000("Lens.Overlay.ByPageContentType.Pdf.PageCount",
+  base::UmaHistogramCounts10000("Lens.Overlay.ByPageContentType.Pdf.PageCount",
                                page_count);
 }
 
