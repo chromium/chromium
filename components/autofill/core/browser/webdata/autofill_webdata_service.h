@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_WEBDATA_SERVICE_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
@@ -15,6 +16,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/sync/base/data_type.h"
@@ -104,6 +106,10 @@ class AutofillWebDataService : public WebDataServiceBase {
   void RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
                                             base::Time delete_end);
   WebDataServiceBase::Handle GetEntityInstances(
+      WebDataServiceRequestCallback consumer);
+
+  // Retrieves LoyaltyCards from the database.
+  WebDataServiceBase::Handle GetLoyaltyCards(
       WebDataServiceRequestCallback consumer);
 
   // Schedules a task to count the number of unique autofill values contained
