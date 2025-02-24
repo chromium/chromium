@@ -508,7 +508,7 @@ public class EventForwarder {
      * as well.
      */
     public static boolean isTrackpadToMouseConversionEvent(MotionEvent event) {
-        if (isTrackpadEvent(event)) {
+        if (MotionEventUtils.isTrackpadEvent(event)) {
             // Click or click-and-drag.
             if (event.getAction() == MotionEvent.ACTION_BUTTON_RELEASE
                     || event.getButtonState() != 0) {
@@ -522,19 +522,6 @@ public class EventForwarder {
         }
 
         return false;
-    }
-
-    /**
-     * Returns true if a {@link MotionEvent} is detected to be a trackpad event. Note that {@link
-     * MotionEvent.TOOL_TYPE_FINGER} is used here along with {@link InputDevice.SOURCE_MOUSE}
-     * instead of {@link InputDevice.SOURCE_TOUCHPAD} because {@link InputDevice.SOURCE_TOUCHPAD} is
-     * used when an app captures the touchpad meaning that it gets access to the raw finger
-     * locations, dimensions etc. reported by the touchpad rather than those being used for pointer
-     * movements and gestures.
-     */
-    private static boolean isTrackpadEvent(MotionEvent event) {
-        return event.isFromSource(InputDevice.SOURCE_MOUSE)
-                && event.getToolType(0) == MotionEvent.TOOL_TYPE_FINGER;
     }
 
     /**
