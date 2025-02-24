@@ -278,13 +278,13 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
   // makes it identical to `passport`. The passport with
   // passport_a_without_an_expiry_date should be deduped because it is a
   // proper subset of `passport`.
-  EXPECT_THAT(suggestions, SizeIs(Ge(2)));
-  EXPECT_EQ(
-      suggestions[0].main_text.value,
-      GetEntityInstanceValueForFieldType(passport, triggering_field_type));
-  EXPECT_EQ(suggestions[1].main_text.value,
+  ASSERT_THAT(suggestions, SizeIs(Ge(2)));
+  EXPECT_EQ(suggestions[0].main_text.value,
             GetEntityInstanceValueForFieldType(another_persons_passport,
                                                triggering_field_type));
+  EXPECT_EQ(
+      suggestions[1].main_text.value,
+      GetEntityInstanceValueForFieldType(passport, triggering_field_type));
 }
 
 // Tests that an "Undo Autofill" suggestion is appended if the trigger field

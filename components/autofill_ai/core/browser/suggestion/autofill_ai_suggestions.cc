@@ -279,49 +279,19 @@ Suggestion CreateUndoSuggestion() {
 // Returns suggestions whose set of fields and values to be filled are not
 // subsets of another.
 std::vector<SuggestionWithMetadata> DedupeFillingSuggestions(
-    std::vector<SuggestionWithMetadata> suggestions_with_metadata) {
-  enum { kSubset, kEqual, kSupersetOrIncomparable };
-  auto fills_subset_of = [&](const SuggestionWithMetadata& a,
-                             const SuggestionWithMetadata& b) {
-    for (auto& [field_global_id, value_to_fill] : a.field_to_value) {
-      if (auto it = b.field_to_value.find(field_global_id);
-          it == b.field_to_value.end() || value_to_fill != it->second) {
-        return kSupersetOrIncomparable;
-      }
+    std::vector<SuggestionWithMetadata> s) {
+  for (auto it = s.cbegin(); it != s.cend();) {
+    // Erase `it` iff
+    // - `it` fills a proper subset of `jt` or
+    // - `it` fills the same values as `jt` and comes before `jt` in `s`.
+    bool erase_it = false;
+    for (auto jt = s.cbegin(); !erase_it && jt != s.cend(); ++jt) {
+      erase_it |= it != jt &&
+                  std::ranges::includes(jt->field_to_value, it->field_to_value);
     }
-    return b.field_to_value.size() > a.field_to_value.size() ? kSubset : kEqual;
-  };
-
-  // Remove those that are subsets of some other suggestion.
-  std::vector<SuggestionWithMetadata> deduped_suggestions;
-  std::set<size_t> duplicated_payloads_to_skip;
-  for (size_t i = 0; i < suggestions_with_metadata.size(); i++) {
-    if (duplicated_payloads_to_skip.contains(i)) {
-      continue;
-    }
-    bool is_proper_subset_of_another_suggestion = false;
-    for (size_t j = 0; j < suggestions_with_metadata.size(); j++) {
-      if (i == j) {
-        continue;
-      }
-      switch (fills_subset_of(suggestions_with_metadata[i],
-                              suggestions_with_metadata[j])) {
-        case kSubset:
-          is_proper_subset_of_another_suggestion = true;
-          break;
-        case kEqual:
-          duplicated_payloads_to_skip.insert(j);
-          break;
-        case kSupersetOrIncomparable:
-          break;
-      }
-    }
-    if (!is_proper_subset_of_another_suggestion) {
-      deduped_suggestions.push_back(suggestions_with_metadata[i]);
-    }
+    it = erase_it ? s.erase(it) : it + 1;
   }
-
-  return deduped_suggestions;
+  return s;
 }
 
 Suggestion::Icon GetSuggestionIcon(
