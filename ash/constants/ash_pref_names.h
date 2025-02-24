@@ -2594,6 +2594,12 @@ inline constexpr char kBirchUseCoral[] = "ash.birch.use_coral";
 
 // LINT.ThenChange(/chrome/browser/ui/ash/birch/birch_browsertest.cc)
 
+// An integer pref used by an admin policy to control the settings of
+// Gen AI Smart Grouping. See the policy at GenAISmartGroupingSettings.yaml.
+// Values are from the ash::coral_util::GenAISmartGroupingSettings enum.
+inline constexpr char kGenAISmartGroupingSettings[] =
+    "ash.gen_ai_smart_grouping_settings";
+
 // A string pref indicating class management tools availability. Valid values
 // are `disabled`, `student`, `teacher`.
 inline constexpr char kClassManagementToolsAvailabilitySetting[] =

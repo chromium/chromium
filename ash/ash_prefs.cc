@@ -16,6 +16,7 @@
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
+#include "ash/birch/coral_util.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_education_controller.h"
@@ -247,6 +248,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterTimePref(prefs::kInformedRestoreNudgeLastShown,
                                base::Time());
     registry->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
+    registry->RegisterIntegerPref(
+        prefs::kGenAISmartGroupingSettings,
+        base::to_underlying(coral_util::GenAISmartGroupingSettings::kAllowed));
   }
 }
 

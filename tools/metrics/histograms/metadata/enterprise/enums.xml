@@ -2206,6 +2206,7 @@ chromium-metrics-reviews@google.com.
   <int value="1333" label="ServiceWorkerToControlSrcdocIframeEnabled"/>
   <int value="1334" label="ProvisionManagedClientCertificateForBrowser"/>
   <int value="1335" label="GeminiSettings"/>
+  <int value="1336" label="GenAISmartGroupingSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

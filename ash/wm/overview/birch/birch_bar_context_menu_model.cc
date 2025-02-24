@@ -4,12 +4,17 @@
 
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 
+#include "ash/birch/coral_util.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/views/controls/menu/menu_types.h"
@@ -22,6 +27,11 @@ namespace {
 bool IsWeatherAllowedByGeolocation() {
   return SimpleGeolocationProvider::GetInstance()
       ->IsGeolocationUsageAllowedForSystem();
+}
+
+// Returns the pref service to use for Birch bar prefs.
+PrefService* GetPrefService() {
+  return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
 }
 
 }  // namespace
@@ -39,8 +49,12 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 
     if (features::IsCoralFeatureEnabled()) {
+      bool coral_enabled = coral_util::IsCoralAllowedByPolicy(GetPrefService());
       AddItem(base::to_underlying(CommandId::kCoralSuggestions),
               l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_BAR_MENU_ITEM));
+      auto coral_index = GetIndexOfCommandId(
+          base::to_underlying(CommandId::kCoralSuggestions));
+      SetEnabledAt(coral_index.value(), coral_enabled);
     }
 
     bool enabled = IsWeatherAllowedByGeolocation();

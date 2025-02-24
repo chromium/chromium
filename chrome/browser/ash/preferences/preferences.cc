@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "ash/birch/coral_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -603,6 +604,10 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kHMRConsentWindowDismissCount, 0);
 
   registry->RegisterIntegerPref(prefs::kGenAIPhotoEditingSettings, 0);
+
+  registry->RegisterIntegerPref(
+      prefs::kGenAISmartGroupingSettings,
+      base::to_underlying(coral_util::GenAISmartGroupingSettings::kAllowed));
 
   registry->RegisterBooleanPref(
       prefs::kLauncherResultEverLaunched, false,
