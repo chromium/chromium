@@ -602,11 +602,12 @@ GridSizingTree GridLayoutAlgorithm::BuildGridSizingTree(
 GridSizingTree GridLayoutAlgorithm::BuildGridSizingTreeIgnoringChildren()
     const {
   GridSizingTree sizing_tree;
-  BuildGridSizingSubtree(&sizing_tree, /*opt_oof_children=*/nullptr,
-                         /*opt_subgrid_data=*/kNoSubgriddedItemData,
-                         /*opt_parent_line_resolver=*/nullptr,
-                         /*must_invalidate_placement_cache=*/false,
-                         /*must_ignore_children=*/true);
+  BuildGridSizingSubtree(
+      &sizing_tree, /*opt_oof_children=*/nullptr,
+      /*opt_subgrid_data=*/SubgriddedItemData::NoSubgriddedItemData(),
+      /*opt_parent_line_resolver=*/nullptr,
+      /*must_invalidate_placement_cache=*/false,
+      /*must_ignore_children=*/true);
   return sizing_tree;
 }
 
@@ -1565,9 +1566,10 @@ void GridLayoutAlgorithm::InitializeTrackSizes(
 void GridLayoutAlgorithm::InitializeTrackSizes(
     const GridSizingTree& sizing_tree,
     const std::optional<GridTrackSizingDirection>& opt_track_direction) const {
-  InitializeTrackSizes(GridSizingSubtree(sizing_tree),
-                       /* opt_subgrid_data */ kNoSubgriddedItemData,
-                       opt_track_direction);
+  InitializeTrackSizes(
+      GridSizingSubtree(sizing_tree),
+      /* opt_subgrid_data */ SubgriddedItemData::NoSubgriddedItemData(),
+      opt_track_direction);
 }
 
 namespace {
@@ -1790,12 +1792,14 @@ void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
 
   ValidateMinMaxSizesCache(Node(), sizing_subtree, track_direction);
 
-  ComputeBaselineAlignment(sizing_tree.FinalizeTree(), sizing_subtree,
-                           /* opt_subgrid_data */ kNoSubgriddedItemData,
-                           track_direction, sizing_constraint);
+  ComputeBaselineAlignment(
+      sizing_tree.FinalizeTree(), sizing_subtree,
+      /* opt_subgrid_data */ SubgriddedItemData::NoSubgriddedItemData(),
+      track_direction, sizing_constraint);
 
   CompleteTrackSizingAlgorithm(
-      sizing_subtree, /* opt_subgrid_data */ kNoSubgriddedItemData,
+      sizing_subtree,
+      /* opt_subgrid_data */ SubgriddedItemData::NoSubgriddedItemData(),
       track_direction, sizing_constraint, opt_needs_additional_pass);
 }
 
@@ -1855,7 +1859,7 @@ void GridLayoutAlgorithm::CompleteFinalBaselineAlignment(
     const GridSizingTree& sizing_tree) const {
   ComputeBaselineAlignment(
       sizing_tree.FinalizeTree(), GridSizingSubtree(sizing_tree),
-      /* opt_subgrid_data */ kNoSubgriddedItemData,
+      /* opt_subgrid_data */ SubgriddedItemData::NoSubgriddedItemData(),
       /* opt_track_direction */ std::nullopt, SizingConstraint::kLayout);
 }
 
