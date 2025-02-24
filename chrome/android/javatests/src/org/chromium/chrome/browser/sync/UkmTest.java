@@ -45,6 +45,20 @@ public class UkmTest {
                 () -> UmaSessionStats.unSetMetricsAndCrashReportingForTesting());
     }
 
+    public void enableUkmUi(Tab normalTab) throws Exception {
+        mSyncTestRule.loadUrlInTab(
+                "chrome://chrome-urls/",
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                normalTab);
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                normalTab.getWebContents(),
+                "const app = document.body.querySelector('chrome-urls-app');"
+                        + "const btn = app.shadowRoot.querySelector('cr-button');"
+                        + "if (btn.textContent.includes('Enable')) {"
+                        + "  btn.click();"
+                        + "}");
+    }
+
     public String getElementContent(Tab normalTab, String elementId) throws Exception {
         mSyncTestRule.loadUrlInTab(
                 DEBUG_PAGE, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, normalTab);
@@ -77,6 +91,7 @@ public class UkmTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> UmaSessionStats.updateMetricsAndCrashReportingForTesting(false));
         Tab normalTab = mSyncTestRule.getActivity().getActivityTab();
+        enableUkmUi(normalTab);
         Assert.assertFalse("UKM Enabled:", isUkmEnabled(normalTab));
 
         // Enable consent, Sync still not enabled so UKM should be disabled.
@@ -106,6 +121,7 @@ public class UkmTest {
         // Enable a Syncing account.
         mSyncTestRule.setUpAccountAndEnableHistorySync();
         Tab normalTab = mSyncTestRule.getActivity().getActivityTab();
+        enableUkmUi(normalTab);
         Assert.assertTrue("UKM Enabled:", isUkmEnabled(normalTab));
 
         String clientId = getUkmClientId(normalTab);

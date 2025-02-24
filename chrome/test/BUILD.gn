@@ -1725,6 +1725,7 @@ if (is_android) {
       "//components/webapk:proto",
       "//components/webapps/browser",
       "//components/webapps/browser:test_support",
+      "//components/webui/chrome_urls",
       "//content/test:android_test_message_pump_support",
       "//testing/android/native_test:native_test_support",
     ]
