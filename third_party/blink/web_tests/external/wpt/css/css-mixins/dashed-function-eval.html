@@ -678,6 +678,20 @@
   </style>
 </template>
 
+<template data-name="Unknown var() in argument makes declaration IACVT">
+  <!-- Note: In the future, this may be changed to instead trigger
+             the default for --x. -->
+  <style>
+    @function --f(--x:1px) {
+      result: var(--x);
+    }
+    #target {
+      --actual: --f(var(--unknown));
+      /* --expected: <guaranteed-invalid> */
+    }
+  </style>
+</template>
+
 <!--
      {}-wrappers.
 
