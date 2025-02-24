@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -129,6 +130,10 @@ id<GREYMatcher> AddressesAndMoreNavBarTitle() {
       grey_text(l10n_util::GetNSString(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE)),
       grey_kindOfClass([UILabel class]),
       grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
+}
+
+id<GREYMatcher> SettingsToolbarEditButton() {
+  return grey_accessibilityID(kSettingsToolbarEditButtonId);
 }
 
 }  // namespace
@@ -836,6 +841,54 @@ id<GREYMatcher> AddressesAndMoreNavBarTitle() {
 
   [[EarlGrey selectElementWithMatcher:accountProfileFooterMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
+  [SigninEarlGrey signOut];
+}
+
+// Tests that when a incomplete local profile migration to account is cancelled,
+// the edit is disabled.
+- (void)testEditOnCancelIncompleteProfileMigrateToAccount {
+  if ([AutofillAppInterface isDynamicallyLoadFieldsOnInputEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the fields "
+                           @"are loaded dynamically on input.");
+  }
+
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [AutofillAppInterface saveExampleProfile];
+
+  [self
+      openEditProfile:
+          [NSString
+              stringWithFormat:@"%@, %@", kProfileLabel,
+                               l10n_util::GetNSString(
+                                   IDS_IOS_LOCAL_ADDRESS_ACCESSIBILITY_LABEL)]];
+  // Switch on edit mode.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+
+  // Change text of city to empty.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
+                                   IDS_IOS_AUTOFILL_CITY)]
+      performAction:grey_replaceText(@"")];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // Scroll to the bottom for ipad.
+    [self scrollDownWithMatcher:grey_accessibilityID(
+                                    kAutofillProfileEditTableViewId)];
+  }
+
+  [[EarlGrey selectElementWithMatcher:MigrateToAccountButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarEditButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
   [SigninEarlGrey signOut];
 }
 
