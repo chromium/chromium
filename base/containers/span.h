@@ -719,9 +719,17 @@ class GSL_POINTER span {
       return UNSAFE_BUFFERS(span<element_type, Count>(data() + Offset, Count));
     }
   }
-  constexpr auto subspan(
-      StrictNumeric<size_type> offset,
-      StrictNumeric<size_type> count = dynamic_extent) const {
+  constexpr auto subspan(StrictNumeric<size_type> offset) const {
+    CHECK_LE(size_type{offset}, extent);
+    const size_type remaining = extent - size_type{offset};
+    // SAFETY: `data()` points to at least `extent` elements, so `offset`
+    // specifies a valid element index or the past-the-end index, and
+    // `remaining` cannot index past-the-end elements.
+    return UNSAFE_BUFFERS(
+        span<element_type>(data() + size_type{offset}, remaining));
+  }
+  constexpr auto subspan(StrictNumeric<size_type> offset,
+                         StrictNumeric<size_type> count) const {
     CHECK_LE(size_type{offset}, extent);
     const size_type remaining = extent - size_type{offset};
     if (count == dynamic_extent) {
@@ -1151,9 +1159,17 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
     // no larger than the number of remaining valid elements.
     return UNSAFE_BUFFERS(span<element_type, Count>(data() + Offset, Count));
   }
-  constexpr auto subspan(
-      StrictNumeric<size_type> offset,
-      StrictNumeric<size_type> count = dynamic_extent) const {
+  constexpr auto subspan(StrictNumeric<size_type> offset) const {
+    CHECK_LE(size_type{offset}, size());
+    const size_type remaining = size() - size_type{offset};
+    // SAFETY: `data()` points to at least `size()` elements, so `offset`
+    // specifies a valid element index or the past-the-end index, and
+    // `remaining` cannot index past-the-end elements.
+    return UNSAFE_BUFFERS(
+        span<element_type>(data() + size_type{offset}, remaining));
+  }
+  constexpr auto subspan(StrictNumeric<size_type> offset,
+                         StrictNumeric<size_type> count) const {
     CHECK_LE(size_type{offset}, size());
     const size_type remaining = size() - size_type{offset};
     if (count == dynamic_extent) {
