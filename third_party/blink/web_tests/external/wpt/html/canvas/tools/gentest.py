@@ -1011,11 +1011,11 @@ def _get_variant_dimensions(params: _TestParams) -> List[_VariantDimension]:
                 variants:
                 - dimension1-variant1:
                     param: ...
-                    dimension1-variant2:
+                  dimension1-variant2:
                     param: ...
                 - dimension2-variant1:
                     param: ...
-                    dimension2-variant2:
+                  dimension2-variant2:
                     param: ..."""))
 
     variants_layout = params.get('variants_layout',
