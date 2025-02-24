@@ -232,4 +232,9 @@ found in the LICENSE file.
     <!-- Price change indicator dimens -->
     <dimen name="price_change_indicator_card_radius">8dp</dimen>
     <dimen name="price_change_indicator_card_height">24dp</dimen>
+
+    <!-- Loading Fullscreen dimens -->
+    <dimen name="left_right_padding">16dp</dimen>
+    <dimen name="top_bottom_padding">18dp</dimen>
+    <dimen name="text_bottom_padding">30dp</dimen>
 </resources>
