@@ -227,10 +227,22 @@ func loadMostVisitedSitesEntry(isPreview: Bool, avatar: Image? = nil, gaia: Stri
   if numberOfSecondsFromLastModificationToExpiration < numberOfSecondsSinceLastModification {
     return expiredEntry
   }
-
-  guard let data = sharedDefaults.object(forKey: "SuggestedItems") as? Data,
-    let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
-  else { return emptyEntry }
+  #if IOS_ENABLE_WIDGETS_FOR_MIM
+    guard let data = sharedDefaults.object(forKey: "SuggestedItemsForMIM") as? [String: Data]
+    else { return emptyEntry }
+    var unarchiverForAccount: NSKeyedUnarchiver?
+    for (key, value) in data {
+      if gaia == key {
+        unarchiverForAccount = try? NSKeyedUnarchiver(forReadingFrom: value)
+      }
+    }
+    guard let unarchiver = unarchiverForAccount
+    else { return emptyEntry }
+  #else
+    guard let data = sharedDefaults.object(forKey: "SuggestedItems") as? Data,
+      let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
+    else { return emptyEntry }
+  #endif
 
   unarchiver.requiresSecureCoding = false
 
