@@ -113,7 +113,7 @@ void ChangeContractForUnmanagedDevices(
 
 base::flat_map<std::string,
                base::RepeatingCallback<bool(const base::Value::Dict&)>>
-GetSignalsContract() {
+GetSignalsContract(bool is_av_signal_enabled) {
   base::flat_map<std::string,
                  base::RepeatingCallback<bool(const base::Value::Dict&)>>
       contract;
@@ -171,12 +171,13 @@ GetSignalsContract() {
       base::BindRepeating(VerifyIsSettingInteger, names::kScreenLockSecured);
 
 #if BUILDFLAG(IS_WIN)
-
-  // TODO(crbug.com/396369157): Change this to expect an integer value once the
-  // feature flag is on by default.
-  contract[names::kAntivirusState] =
-      base::BindRepeating(VerifyUnset, names::kAntivirusState);
-
+  if (is_av_signal_enabled) {
+    contract[names::kAntivirusState] =
+        base::BindRepeating(VerifyIsSettingInteger, names::kAntivirusState);
+  } else {
+    contract[names::kAntivirusState] =
+        base::BindRepeating(VerifyUnset, names::kAntivirusState);
+  }
   contract[names::kWindowsMachineDomain] =
       base::BindRepeating(VerifyOptionalString, names::kWindowsMachineDomain);
   contract[names::kWindowsUserDomain] =
@@ -248,10 +249,10 @@ GetSignalsContract() {
 #if BUILDFLAG(IS_CHROMEOS)
 base::flat_map<std::string,
                base::RepeatingCallback<bool(const base::Value::Dict&)>>
-GetSignalsContractForUnmanagedDevices() {
+GetSignalsContractForUnmanagedDevices(bool is_av_signal_enabled) {
   base::flat_map<std::string,
                  base::RepeatingCallback<bool(const base::Value::Dict&)>>
-      contract = GetSignalsContract();
+      contract = GetSignalsContract(is_av_signal_enabled);
 
   ChangeContractForUnmanagedDevices(contract);
   return contract;
