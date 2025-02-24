@@ -162,14 +162,13 @@ void ScrollMarkerPseudoElement::SetSelected(bool value,
 }
 
 void ScrollMarkerPseudoElement::AttachLayoutTree(AttachContext& context) {
-  CHECK(context.parent);
-  CHECK(context.parent->GetNode());
-
-  if (auto* group = DynamicTo<ScrollMarkerGroupPseudoElement>(
-          context.parent->GetNode())) {
-    SetScrollMarkerGroup(group);
-    PseudoElement::AttachLayoutTree(context);
-    return;
+  if (context.parent) {
+    if (auto* group = DynamicTo<ScrollMarkerGroupPseudoElement>(
+            context.parent->GetNode())) {
+      SetScrollMarkerGroup(group);
+      PseudoElement::AttachLayoutTree(context);
+      return;
+    }
   }
 
   // The layout box for these pseudo elements are attached to the
