@@ -305,6 +305,63 @@
   </style>
 </template>
 
+<template data-name="Default referencing another parameter">
+  <style>
+    @function --f(--x, --y: var(--x)) {
+      result: var(--x) var(--y);
+    }
+    #target {
+      --x: FAIL;
+      --y: FAIL;
+      --actual: --f(5px);
+      --expected: 5px 5px;
+    }
+  </style>
+</template>
+
+<template data-name="Default referencing another parameter, local interference">
+  <style>
+    @function --f(--x, --y: var(--x)) {
+      --x: 17px;
+      result: var(--x) var(--y);
+    }
+    #target {
+      --x: FAIL;
+      --y: FAIL;
+      --actual: --f(5px);
+      --expected: 17px 5px;
+    }
+  </style>
+</template>
+
+<template data-name="Default referencing another defaulted parameter">
+  <style>
+    @function --f(--x: 5px, --y: var(--x)) {
+      result: var(--x) var(--y);
+    }
+    #target {
+      --x: FAIL;
+      --y: FAIL;
+      --actual: --f();
+      --expected: 5px 5px;
+    }
+  </style>
+</template>
+
+<template data-name="Typed default with reference">
+  <style>
+    @function --f(--x: 5px, --y <length>: calc(var(--x) + 1px)) {
+      result: var(--x) var(--y);
+    }
+    #target {
+      --x: FAIL;
+      --y: FAIL;
+      --actual: --f();
+      --expected: 5px 6px;
+    }
+  </style>
+</template>
+
 <!-- Locals -->
 
 <template data-name="Unused local">

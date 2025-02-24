@@ -430,6 +430,14 @@ class CORE_EXPORT StyleCascade {
     // This is needed by the process that populates the `locals` map,
     // see "Application of Local Variables".
     const HeapHashMap<String, Member<const CSSValue>>& unresolved_locals;
+    // Despite local variables always being untyped in the API,
+    // FunctionContext (and the related evaluation code) supports
+    // typed locals. This is for the benefit of resolving defaulted arguments,
+    // which basically behave like typed locals in their own stack frame.
+    //
+    // When resolving some local (an entry in `unresolved_locals`),
+    // the corresponding type in this map (if any) will be applied.
+    const HashMap<String, const CSSSyntaxDefinition*> local_types;
 
     // Parent stack frame (for dynamic scoping).
     FunctionContext* parent = nullptr;
@@ -506,11 +514,11 @@ class CORE_EXPORT StyleCascade {
                                   const TokenSequence* fallback,
                                   TokenSequence& out);
 
-  const CSSValue* ResolveFunctionExpression(StringView expr,
-                                            const CSSSyntaxDefinition& type,
-                                            CascadeResolver& resolver,
-                                            const CSSParserContext& context,
-                                            FunctionContext* function_context);
+  const CSSValue* ResolveFunctionExpression(const CSSValue& unresolved,
+                                            const CSSSyntaxDefinition* type,
+                                            CascadeResolver&,
+                                            const CSSParserContext&,
+                                            FunctionContext*);
 
   // Application of Local Variables
   // ==============================
@@ -546,6 +554,7 @@ class CORE_EXPORT StyleCascade {
                                    FunctionContext&);
   const CSSValue* ResolveLocalVariable(const AtomicString& name,
                                        const CSSValue&,
+                                       const CSSSyntaxDefinition* type,
                                        CascadeResolver&,
                                        const CSSParserContext&,
                                        FunctionContext&);
