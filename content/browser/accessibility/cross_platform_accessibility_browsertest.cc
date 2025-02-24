@@ -2589,6 +2589,16 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       AccessibilityEventsImmediateRefresh) {
+  LoadInitialAccessibilityTreeFromHtmlFilePath(
+      "/accessibility/event/immediate-refresh.html");
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+  ASSERT_TRUE(waiter.WaitForNotification());
+}
+
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        NavigateInIframe) {
   LoadInitialAccessibilityTreeFromHtmlFilePath(
       "/accessibility/regression/iframe-navigation.html");
