@@ -223,7 +223,6 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
         Callback<Boolean> onCheckupFinishedCallback =
                 (errorOccurred) -> notifyLocalPasswordCountsChanged();
 
-        // TODO(crbug.com/388789824): Add one hour timeout logic between fetches.
         mLocalPasswordsFetchService.runPasswordCheckup(onCheckupFinishedCallback);
     }
 

@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.safety_hub;
 
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -13,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -22,7 +25,9 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelper;
@@ -31,176 +36,269 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.prefs.PrefService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 /** Unit tests for SafetyHubPasswordsFetchService. */
-@RunWith(ParameterizedRobolectricTestRunner.class)
-@Features.EnableFeatures({
-    ChromeFeatureList.SAFETY_HUB,
-    ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
-})
+@RunWith(Enclosed.class)
 public class SafetyHubPasswordsFetchServiceTest {
-    private static final String TEST_EMAIL_ADDRESS = "test@email.com";
+    @RunWith(ParameterizedRobolectricTestRunner.class)
+    @Batch(Batch.UNIT_TESTS)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
+    })
+    public static class SafetyHubPasswordsFetchServiceParamTests {
+        private static final String TEST_EMAIL_ADDRESS = "test@email.com";
 
-    /** Returns all possible combinations for test parameterization. */
-    @Parameters(name = "{0}, {1}")
-    public static Collection<Object[]> data() {
-        Collection<Object[]> data = new ArrayList<>();
-        for (boolean hasAccount : List.of(true, false)) {
-            for (boolean isLoginDbDeprecationEnabled : List.of(true, false)) {
-                data.add(new Object[] {hasAccount, isLoginDbDeprecationEnabled});
+        /** Returns all possible combinations for test parameterization. */
+        @Parameters(name = "{0}, {1}")
+        public static Collection<Object[]> data() {
+            Collection<Object[]> data = new ArrayList<>();
+            for (boolean hasAccount : List.of(true, false)) {
+                for (boolean isLoginDbDeprecationEnabled : List.of(true, false)) {
+                    data.add(new Object[] {hasAccount, isLoginDbDeprecationEnabled});
+                }
             }
+            return data;
         }
-        return data;
-    }
 
-    @Rule(order = -2)
-    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
+        @Rule(order = -2)
+        public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
-    @Rule public SafetyHubTestRule mSafetyHubTestRule = new SafetyHubTestRule();
+        @Rule public SafetyHubTestRule mSafetyHubTestRule = new SafetyHubTestRule();
 
-    @Mock private Callback<Boolean> mTaskFinishedCallback;
+        @Mock private Callback<Boolean> mTaskFinishedCallback;
 
-    @Parameter(0)
-    public boolean hasAccount;
+        @Parameter(0)
+        public boolean hasAccount;
 
-    @Parameter(1)
-    public boolean mIsLoginDbDeprecationEnabled;
+        @Parameter(1)
+        public boolean mIsLoginDbDeprecationEnabled;
 
-    private PrefService mPrefService;
-    private FakePasswordCheckupClientHelper mPasswordCheckupClientHelper;
-    private PasswordManagerHelper mPasswordManagerHelper;
+        private PrefService mPrefService;
+        private FakePasswordCheckupClientHelper mPasswordCheckupClientHelper;
+        private PasswordManagerHelper mPasswordManagerHelper;
 
-    @Before
-    public void setUp() {
-        // Needed because of BaseRobolectricTestRule.
-        MockitoAnnotations.openMocks(this);
+        @Before
+        public void setUp() {
+            // Needed because of BaseRobolectricTestRule.
+            MockitoAnnotations.openMocks(this);
 
-        if (mIsLoginDbDeprecationEnabled) {
-            FeatureOverrides.enable(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID);
-        } else {
-            FeatureOverrides.disable(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID);
+            if (mIsLoginDbDeprecationEnabled) {
+                FeatureOverrides.enable(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID);
+            } else {
+                FeatureOverrides.disable(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID);
+            }
+
+            mPrefService = mSafetyHubTestRule.getPrefService();
+            mPasswordCheckupClientHelper = mSafetyHubTestRule.getPasswordCheckupClientHelper();
+            mPasswordManagerHelper =
+                    PasswordManagerHelper.getForProfile(mSafetyHubTestRule.getProfile());
         }
-        mPrefService = mSafetyHubTestRule.getPrefService();
-        mPasswordCheckupClientHelper = mSafetyHubTestRule.getPasswordCheckupClientHelper();
-        mPasswordManagerHelper =
-                PasswordManagerHelper.getForProfile(mSafetyHubTestRule.getProfile());
+
+        private String getAccount() {
+            return hasAccount ? TEST_EMAIL_ADDRESS : null;
+        }
+
+        private String getBreachedPreference() {
+            return hasAccount
+                    ? Pref.BREACHED_CREDENTIALS_COUNT
+                    : Pref.LOCAL_BREACHED_CREDENTIALS_COUNT;
+        }
+
+        private String getWeakPreference() {
+            return hasAccount ? Pref.WEAK_CREDENTIALS_COUNT : Pref.LOCAL_WEAK_CREDENTIALS_COUNT;
+        }
+
+        private String getReusedPreference() {
+            return hasAccount ? Pref.REUSED_CREDENTIALS_COUNT : Pref.LOCAL_REUSED_CREDENTIALS_COUNT;
+        }
+
+        @Test
+        public void noPreferencesUpdated_whenUPMDisabled() {
+            mSafetyHubTestRule.setPasswordManagerAvailable(false, mIsLoginDbDeprecationEnabled);
+
+            new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, getAccount())
+                    .fetchPasswordsCount(mTaskFinishedCallback);
+
+            verify(mPrefService, never()).setInteger(eq(getBreachedPreference()), anyInt());
+            verify(mPrefService, never()).setInteger(eq(getWeakPreference()), anyInt());
+            verify(mPrefService, never()).setInteger(eq(getReusedPreference()), anyInt());
+            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred */ true));
+        }
+
+        @Test
+        public void noPreferencesUpdated_whenFetchFails() {
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+            mPasswordCheckupClientHelper.setError(new Exception());
+
+            new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, getAccount())
+                    .fetchPasswordsCount(mTaskFinishedCallback);
+
+            verify(mPrefService, never()).setInteger(eq(getBreachedPreference()), anyInt());
+            verify(mPrefService, never()).setInteger(eq(getWeakPreference()), anyInt());
+            verify(mPrefService, never()).setInteger(eq(getReusedPreference()), anyInt());
+            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred */ true));
+        }
+
+        @Test
+        public void somePreferencesUpdated_fetchFailsForOneCredentialType() {
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+            mPasswordCheckupClientHelper.setWeakCredentialsError(new Exception());
+            int breachedCredentialsCount = 5;
+            int reusedCredentialsCount = 3;
+            mPasswordCheckupClientHelper.setBreachedCredentialsCount(breachedCredentialsCount);
+            mPasswordCheckupClientHelper.setReusedCredentialsCount(reusedCredentialsCount);
+
+            new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, getAccount())
+                    .fetchPasswordsCount(mTaskFinishedCallback);
+
+            verify(mPrefService, never()).setInteger(eq(getWeakPreference()), anyInt());
+            verify(mPrefService, times(1))
+                    .setInteger(getBreachedPreference(), breachedCredentialsCount);
+            verify(mPrefService, times(1))
+                    .setInteger(getReusedPreference(), reusedCredentialsCount);
+            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred */ true));
+        }
+
+        @Test
+        public void preferencesUpdated_whenFetchSucceeds() {
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+            int breachedCredentialsCount = 5;
+            int weakCredentialsCount = 4;
+            int reusedCredentialsCount = 3;
+            mPasswordCheckupClientHelper.setBreachedCredentialsCount(breachedCredentialsCount);
+            mPasswordCheckupClientHelper.setWeakCredentialsCount(weakCredentialsCount);
+            mPasswordCheckupClientHelper.setReusedCredentialsCount(reusedCredentialsCount);
+
+            new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, getAccount())
+                    .fetchPasswordsCount(mTaskFinishedCallback);
+
+            verify(mPrefService, times(1))
+                    .setInteger(getBreachedPreference(), breachedCredentialsCount);
+            verify(mPrefService, times(1)).setInteger(getWeakPreference(), weakCredentialsCount);
+            verify(mPrefService, times(1))
+                    .setInteger(getReusedPreference(), reusedCredentialsCount);
+            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred */ false));
+        }
     }
 
-    private String getAccount() {
-        return hasAccount ? TEST_EMAIL_ADDRESS : null;
-    }
+    @RunWith(ParameterizedRobolectricTestRunner.class)
+    @Batch(Batch.UNIT_TESTS)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
+    })
+    public static class SafetyHubPasswordsFetchServiceSingleTests {
+        @Parameters
+        public static Collection<Object> data() {
+            return Arrays.asList(new Object[] {true, false});
+        }
 
-    private String getBreachedPreference() {
-        return hasAccount ? Pref.BREACHED_CREDENTIALS_COUNT : Pref.LOCAL_BREACHED_CREDENTIALS_COUNT;
-    }
+        @Parameter public boolean mIsLoginDbDeprecationEnabled;
 
-    private String getWeakPreference() {
-        return hasAccount ? Pref.WEAK_CREDENTIALS_COUNT : Pref.LOCAL_WEAK_CREDENTIALS_COUNT;
-    }
+        @Rule(order = -2)
+        public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
-    private String getReusedPreference() {
-        return hasAccount ? Pref.REUSED_CREDENTIALS_COUNT : Pref.LOCAL_REUSED_CREDENTIALS_COUNT;
-    }
+        @Rule public SafetyHubTestRule mSafetyHubTestRule = new SafetyHubTestRule();
 
-    @Test
-    public void noPreferencesUpdated_whenUPMDisabled() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(false, mIsLoginDbDeprecationEnabled);
+        @Mock private Callback<Boolean> mTaskFinishedCallback;
 
-        new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, getAccount())
-                .fetchPasswordsCount(mTaskFinishedCallback);
+        private PrefService mPrefService;
+        private FakePasswordCheckupClientHelper mPasswordCheckupClientHelper;
+        private PasswordManagerHelper mPasswordManagerHelper;
 
-        verify(mPrefService, never()).setInteger(eq(getBreachedPreference()), anyInt());
-        verify(mPrefService, never()).setInteger(eq(getWeakPreference()), anyInt());
-        verify(mPrefService, never()).setInteger(eq(getReusedPreference()), anyInt());
-        verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred */ true));
-    }
+        @Before
+        public void setUp() {
+            MockitoAnnotations.openMocks(this);
 
-    @Test
-    public void noPreferencesUpdated_whenFetchFails() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
-        mPasswordCheckupClientHelper.setError(new Exception());
+            if (mIsLoginDbDeprecationEnabled) {
+                FeatureOverrides.enable(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID);
+            } else {
+                FeatureOverrides.disable(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID);
+            }
 
-        new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, getAccount())
-                .fetchPasswordsCount(mTaskFinishedCallback);
+            mPrefService = mSafetyHubTestRule.getPrefService();
+            mPasswordCheckupClientHelper = mSafetyHubTestRule.getPasswordCheckupClientHelper();
+            mPasswordManagerHelper =
+                    PasswordManagerHelper.getForProfile(mSafetyHubTestRule.getProfile());
+            mockLastCheckTime(0);
+        }
 
-        verify(mPrefService, never()).setInteger(eq(getBreachedPreference()), anyInt());
-        verify(mPrefService, never()).setInteger(eq(getWeakPreference()), anyInt());
-        verify(mPrefService, never()).setInteger(eq(getReusedPreference()), anyInt());
-        verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred */ true));
-    }
+        private void mockLastCheckTime(long timeInMs) {
+            doReturn(timeInMs)
+                    .when(mPrefService)
+                    .getLong(Pref.LAST_TIME_IN_MS_LOCAL_PASSWORD_CHECK_COMPLETED);
+        }
 
-    @Test
-    public void somePreferencesUpdated_fetchFailsForOneCredentialType() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
-        mPasswordCheckupClientHelper.setWeakCredentialsError(new Exception());
-        int breachedCredentialsCount = 5;
-        int reusedCredentialsCount = 3;
-        mPasswordCheckupClientHelper.setBreachedCredentialsCount(breachedCredentialsCount);
-        mPasswordCheckupClientHelper.setReusedCredentialsCount(reusedCredentialsCount);
+        @Test
+        public void noPreferencesUpdated_whenCheckupFails() {
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+            mPasswordCheckupClientHelper.setError(new Exception());
 
-        new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, getAccount())
-                .fetchPasswordsCount(mTaskFinishedCallback);
+            new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, null)
+                    .runPasswordCheckup(mTaskFinishedCallback);
 
-        verify(mPrefService, never()).setInteger(eq(getWeakPreference()), anyInt());
-        verify(mPrefService, times(1))
-                .setInteger(getBreachedPreference(), breachedCredentialsCount);
-        verify(mPrefService, times(1)).setInteger(getReusedPreference(), reusedCredentialsCount);
-        verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred */ true));
-    }
+            verify(mPrefService, never())
+                    .setInteger(eq(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT), anyInt());
+            verify(mPrefService, never())
+                    .setInteger(eq(Pref.LOCAL_WEAK_CREDENTIALS_COUNT), anyInt());
+            verify(mPrefService, never())
+                    .setInteger(eq(Pref.LOCAL_REUSED_CREDENTIALS_COUNT), anyInt());
+            verify(mPrefService, never())
+                    .setLong(eq(Pref.LAST_TIME_IN_MS_LOCAL_PASSWORD_CHECK_COMPLETED), anyLong());
+            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred= */ true));
+        }
 
-    @Test
-    public void preferencesUpdated_whenFetchSucceeds() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
-        int breachedCredentialsCount = 5;
-        int weakCredentialsCount = 4;
-        int reusedCredentialsCount = 3;
-        mPasswordCheckupClientHelper.setBreachedCredentialsCount(breachedCredentialsCount);
-        mPasswordCheckupClientHelper.setWeakCredentialsCount(weakCredentialsCount);
-        mPasswordCheckupClientHelper.setReusedCredentialsCount(reusedCredentialsCount);
+        @Test
+        public void preferencesUpdated_whenCheckupSucceeds() {
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+            int breachedCredentialsCount = 5;
+            int weakCredentialsCount = 4;
+            int reusedCredentialsCount = 3;
+            mPasswordCheckupClientHelper.setBreachedCredentialsCount(breachedCredentialsCount);
+            mPasswordCheckupClientHelper.setWeakCredentialsCount(weakCredentialsCount);
+            mPasswordCheckupClientHelper.setReusedCredentialsCount(reusedCredentialsCount);
 
-        new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, getAccount())
-                .fetchPasswordsCount(mTaskFinishedCallback);
+            new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, null)
+                    .runPasswordCheckup(mTaskFinishedCallback);
 
-        verify(mPrefService, times(1))
-                .setInteger(getBreachedPreference(), breachedCredentialsCount);
-        verify(mPrefService, times(1)).setInteger(getWeakPreference(), weakCredentialsCount);
-        verify(mPrefService, times(1)).setInteger(getReusedPreference(), reusedCredentialsCount);
-        verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred */ false));
-    }
+            verify(mPrefService, times(1))
+                    .setInteger(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT, breachedCredentialsCount);
+            verify(mPrefService, times(1))
+                    .setInteger(Pref.LOCAL_WEAK_CREDENTIALS_COUNT, weakCredentialsCount);
+            verify(mPrefService, times(1))
+                    .setInteger(Pref.LOCAL_REUSED_CREDENTIALS_COUNT, reusedCredentialsCount);
+            verify(mPrefService, times(1))
+                    .setLong(eq(Pref.LAST_TIME_IN_MS_LOCAL_PASSWORD_CHECK_COMPLETED), anyLong());
+            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred= */ false));
+        }
 
-    @Test
-    public void noPreferencesUpdated_whenCheckupFails() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
-        mPasswordCheckupClientHelper.setError(new Exception());
+        @Test
+        public void countPreferencesUpdated_whenWithinCoolDownPeriod() {
+            mockLastCheckTime(TimeUtils.currentTimeMillis());
+            mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
+            int breachedCredentialsCount = 5;
+            int weakCredentialsCount = 4;
+            int reusedCredentialsCount = 3;
+            mPasswordCheckupClientHelper.setBreachedCredentialsCount(breachedCredentialsCount);
+            mPasswordCheckupClientHelper.setWeakCredentialsCount(weakCredentialsCount);
+            mPasswordCheckupClientHelper.setReusedCredentialsCount(reusedCredentialsCount);
 
-        new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, getAccount())
-                .runPasswordCheckup(mTaskFinishedCallback);
+            new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, null)
+                    .runPasswordCheckup(mTaskFinishedCallback);
 
-        verify(mPrefService, never()).setInteger(eq(getBreachedPreference()), anyInt());
-        verify(mPrefService, never()).setInteger(eq(getWeakPreference()), anyInt());
-        verify(mPrefService, never()).setInteger(eq(getReusedPreference()), anyInt());
-        verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred= */ true));
-    }
-
-    @Test
-    public void preferencesUpdated_whenCheckupSucceeds() {
-        mSafetyHubTestRule.setPasswordManagerAvailable(true, mIsLoginDbDeprecationEnabled);
-        int breachedCredentialsCount = 5;
-        int weakCredentialsCount = 4;
-        int reusedCredentialsCount = 3;
-        mPasswordCheckupClientHelper.setBreachedCredentialsCount(breachedCredentialsCount);
-        mPasswordCheckupClientHelper.setWeakCredentialsCount(weakCredentialsCount);
-        mPasswordCheckupClientHelper.setReusedCredentialsCount(reusedCredentialsCount);
-
-        new SafetyHubPasswordsFetchService(mPasswordManagerHelper, mPrefService, getAccount())
-                .runPasswordCheckup(mTaskFinishedCallback);
-
-        verify(mPrefService, times(1))
-                .setInteger(getBreachedPreference(), breachedCredentialsCount);
-        verify(mPrefService, times(1)).setInteger(getWeakPreference(), weakCredentialsCount);
-        verify(mPrefService, times(1)).setInteger(getReusedPreference(), reusedCredentialsCount);
-        verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred= */ false));
+            verify(mPrefService, never())
+                    .setInteger(eq(Pref.LOCAL_BREACHED_CREDENTIALS_COUNT), anyInt());
+            verify(mPrefService, never())
+                    .setInteger(eq(Pref.LOCAL_WEAK_CREDENTIALS_COUNT), anyInt());
+            verify(mPrefService, never())
+                    .setInteger(eq(Pref.LOCAL_REUSED_CREDENTIALS_COUNT), anyInt());
+            verify(mPrefService, never())
+                    .setLong(eq(Pref.LAST_TIME_IN_MS_LOCAL_PASSWORD_CHECK_COMPLETED), anyLong());
+            verify(mTaskFinishedCallback, times(1)).onResult(eq(/* errorOccurred= */ false));
+        }
     }
 }
