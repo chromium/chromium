@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package androidx.pdf.viewer.fragment
+
+import android.content.ActivityNotFoundException
 import android.content.ContentResolver
 import android.content.Context
 import android.content.res.Configuration
@@ -75,6 +78,7 @@ import androidx.pdf.widget.ZoomView.ZoomScroll
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.IOException
 import kotlinx.coroutines.launch
+
 /**
  * A Fragment that renders a PDF document.
  *
@@ -100,21 +104,27 @@ import kotlinx.coroutines.launch
  */
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 13)
 public open class PdfViewerFragment : Fragment() {
+
     // ViewModel to manage PdfLoader state
     private val viewModel: PdfLoaderViewModel by viewModels()
+
     /** Single access to the PDF document: loads contents asynchronously (bitmaps, text,...) */
     private var pdfLoader: PdfLoader? = null
+
     /** True when this Fragment's life-cycle is between [.onStart] and [.onStop]. */
     private var started = false
+
     /**
      * True when this Viewer is on-screen (but independent on whether it is actually started, so it
      * could be invisible, because obscured by another app). This value is controlled by [postEnter]
      * and [.exit].
      */
     private var onScreen = false
+
     /** Marks that [onEnter] must be run after [onCreateView]. */
     private var delayedEnter = false
     private var hasContents = false
+
     private var container: ViewGroup? = null
     private var viewState: ExposedValue<ViewState> =
         Observables.newExposedValueWithInitialValue(ViewState.NO_VIEW)
@@ -124,6 +134,7 @@ public open class PdfViewerFragment : Fragment() {
     private var selectionObserver: ValueObserver<PageSelection>? = null
     private var selectionActionMode: SelectionActionMode? = null
     private var localUri: Uri? = null
+
     private var fetcher: Fetcher? = null
     private var zoomScrollObserver: ValueObserver<ZoomScroll>? = null
     private var searchQueryObserver: ValueObserver<String>? = null
@@ -131,8 +142,10 @@ public open class PdfViewerFragment : Fragment() {
     private var pdfViewer: FrameLayout? = null
     private var findInFileView: FindInFileView? = null
     private var singleTapHandler: SingleTapHandler? = null
+
     /** Callbacks of PDF loading asynchronous tasks. */
     private var pdfLoaderCallbacks: PdfLoaderCallbacksImpl? = null
+
     /** A saved [.onContentsAvailable] runnable to be run after [.onCreateView]. */
     private var delayedContentsAvailable: Runnable? = null
     private var loadingView: LoadingView? = null
@@ -145,19 +158,23 @@ public open class PdfViewerFragment : Fragment() {
     private var isFileRestoring: Boolean = false
     private var isAnnotationIntentResolvable = false
     private var documentLoaded = false
+
     /**
      * Specify whether [documentUri] is updated before fragment went in STARTED state.
      *
      * If true, we'll trigger a loadFile() operation as soon as fragment reaches STARTED state.
      */
     private var pendingDocumentLoad: Boolean = false
+
     private var mEventCallback: EventCallback? = null
+
     private val mImmersiveModeRequester: ImmersiveModeRequester =
         object : ImmersiveModeRequester {
             override fun requestImmersiveModeChange(enterImmersive: Boolean) {
                 onRequestImmersiveMode(enterImmersive)
             }
         }
+
     /**
      * The URI of the PDF document to display defaulting to `null`.
      *
@@ -171,17 +188,20 @@ public open class PdfViewerFragment : Fragment() {
     public var documentUri: Uri? = null
         set(value) {
             field = value
+
             // Check if the uri is different from the previous one or restoring the same one
             isFileRestoring =
                 arguments?.let {
                     val savedUri = BundleCompat.getParcelable(it, KEY_DOCUMENT_URI, Uri::class.java)
                     savedUri?.equals(value) ?: false
                 } ?: false
+
             // Load file if it's a new URI or it's not loaded
             if (value != null && (!isFileRestoring || !documentLoaded)) {
                 loadFile(value)
             }
         }
+
     /**
      * Controls whether text search mode is active. Defaults to false.
      *
@@ -204,15 +224,19 @@ public open class PdfViewerFragment : Fragment() {
                 return
             }
             field = value
+
             // Clear selection
             pdfLoaderCallbacks?.selectionModel?.setSelection(null)
+
             arguments?.putBoolean(KEY_TEXT_SEARCH_ACTIVE, value)
             findInFileView?.setFindInFileView(value)
         }
+
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     public fun setEventCallback(eventCallback: EventCallback) {
         this.mEventCallback = eventCallback
     }
+
     /**
      * Indicates whether the toolbox should be visible.
      *
@@ -226,6 +250,7 @@ public open class PdfViewerFragment : Fragment() {
             (arguments ?: Bundle()).apply { putBoolean(KEY_TOOLBOX_VISIBILITY, value) }
             if (value) annotationButton?.show() else annotationButton?.hide()
         }
+
     /**
      * Called when the PDF view wants to enter or exit immersive mode based on user's interaction
      * with the content. Apps would typically hide their top bar or other navigational interface
@@ -239,6 +264,7 @@ public open class PdfViewerFragment : Fragment() {
         // Update toolbox visibility
         isToolboxVisible = !enterImmersive
     }
+
     /**
      * Invoked when the document has been fully loaded, processed, and the initial pages are
      * displayed within the viewing area. This callback signifies that the document is ready for
@@ -249,6 +275,7 @@ public open class PdfViewerFragment : Fragment() {
      * main thread.
      */
     public open fun onLoadDocumentSuccess() {}
+
     /**
      * Invoked when a problem arises during the loading process of the PDF document. This callback
      * provides details about the encountered error, allowing for appropriate error handling and
@@ -261,10 +288,12 @@ public open class PdfViewerFragment : Fragment() {
      * @param error [Throwable] that occurred during document loading.
      */
     @Suppress("UNUSED_PARAMETER") public open fun onLoadDocumentError(error: Throwable) {}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fetcher = Fetcher.build(requireContext(), 1)
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -272,6 +301,7 @@ public open class PdfViewerFragment : Fragment() {
     ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         this.container = container
+
         pdfViewer = inflater.inflate(R.layout.pdf_viewer_container, container, false) as FrameLayout
         pdfViewer?.isScrollContainer = true
         fastScrollView = pdfViewer?.findViewById(R.id.fast_scroll_view)
@@ -282,24 +312,29 @@ public open class PdfViewerFragment : Fragment() {
         findInFileView!!.setPaginatedView(paginatedView!!)
         findInFileView!!.setOnClosedButtonCallback { isTextSearchActive = false }
         annotationButton = pdfViewer?.findViewById(R.id.edit_fab)
+
         zoomView?.setMetricEventCallback(mEventCallback)
         findInFileView?.setOnVisibilityChangedListener { isVisible ->
             fastScrollView?.setScrubberVisibility(!isVisible)
         }
+
         // All views are inflated, update the view state.
         if (viewState.get() == ViewState.NO_VIEW || viewState.get() == ViewState.ERROR) {
             viewState.set(ViewState.VIEW_CREATED)
             // View Inflated, show loading view
             loadingView?.showLoadingView()
         }
+
         //  Restore documentLoaded state to determine if the document was successfully loaded
         //  before a potential configuration change or fragment replacement.
         documentLoaded = savedInstanceState?.getBoolean(KEY_DOCUMENT_LOADED) ?: false
+
         arguments?.let { args ->
             documentUri = BundleCompat.getParcelable(args, KEY_DOCUMENT_URI, Uri::class.java)
             isTextSearchActive = args.getBoolean(KEY_TEXT_SEARCH_ACTIVE)
             isToolboxVisible = args.getBoolean(KEY_TOOLBOX_VISIBILITY)
         }
+
         pdfLoaderCallbacks =
             PdfLoaderCallbacksImpl(
                 context = requireContext(),
@@ -330,6 +365,7 @@ public open class PdfViewerFragment : Fragment() {
                             onRequestImmersiveMode(false)
                         }
                     }
+
                     hideSpinner()
                     showPdfView()
                 },
@@ -340,19 +376,24 @@ public open class PdfViewerFragment : Fragment() {
                 },
                 eventCallback = mEventCallback
             )
+
         setUpEditFab()
         if (savedInstanceState != null) {
             paginatedView?.isConfigurationChanged = true
         }
+
         if (!hasContents && delayedContentsAvailable == null) {
             if (savedInstanceState != null) {
                 restoreContents(savedInstanceState)
             }
         }
+
         return pdfViewer
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         // Using lifecycleScope to collect the flow
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.pdfLoaderStateFlow.collect { loader ->
@@ -365,13 +406,16 @@ public open class PdfViewerFragment : Fragment() {
         // Add listener to adjust bottom margin for [FindInFile] view
         findInFileView?.let {
             val windowManager = activity?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
             ViewCompat.setWindowInsetsAnimationCallback(
                 it,
                 TranslateInsetsAnimationCallback(it, windowManager, container)
             )
         }
+
         loadPendingDocumentIfRequired()
     }
+
     private fun loadPendingDocumentIfRequired() {
         lifecycle.addObserver(
             object : DefaultLifecycleObserver {
@@ -386,10 +430,12 @@ public open class PdfViewerFragment : Fragment() {
             }
         )
     }
+
     override fun onStart() {
         delayedContentsAvailable?.run()
         super.onStart()
         started = true
+
         // Check if the document file exists, return early if not
         documentUri?.let {
             val fileExist = checkAndFetchFile(it, false)
@@ -402,6 +448,7 @@ public open class PdfViewerFragment : Fragment() {
             delayedEnter = false
         }
     }
+
     override fun onStop() {
         if (onScreen) {
             onExit()
@@ -409,21 +456,26 @@ public open class PdfViewerFragment : Fragment() {
         started = false
         super.onStop()
     }
+
     /** Called after this viewer enters the screen and becomes visible. */
     private fun onEnter() {
         participateInAccessibility(true)
+
         // This is necessary for password protected PDF documents. If the user failed to produce the
         // correct password, we want to prompt for the correct password every time the film strip
         // comes back to this viewer.
         if (!documentLoaded) {
             pdfLoader?.reconnect()
         }
+
         // Start Recording First Page Load Latency.
         mEventCallback?.onViewerVisible()
+
         if (paginatedView != null && paginatedView?.childCount!! > 0) {
             zoomView?.let { layoutHandler?.let { it1 -> it.loadPageAssets(it1, viewState) } }
         }
     }
+
     /** Called after this viewer exits the screen and becomes invisible to the user. */
     private fun onExit() {
         participateInAccessibility(false)
@@ -432,6 +484,7 @@ public open class PdfViewerFragment : Fragment() {
             pdfLoader?.disconnect()
         }
     }
+
     /**
      * Notifies this Viewer goes on-screen. Guarantees that [.onEnter] will be called now or when
      * the Viewer is started.
@@ -445,9 +498,11 @@ public open class PdfViewerFragment : Fragment() {
             delayedEnter = true
         }
     }
+
     private fun isStarted(): Boolean {
         return started
     }
+
     /**
      * Posts a [.onContentsAvailable] method to be run as soon as permitted (when this Viewer has
      * its view hierarchy built up and [onCreateView] has finished). It might run right now if the
@@ -455,6 +510,7 @@ public open class PdfViewerFragment : Fragment() {
      */
     private fun postContentsAvailable(contents: DisplayData) {
         Preconditions.checkState(delayedContentsAvailable == null, "Already waits for contents")
+
         if (isStarted()) {
             onContentsAvailable(contents)
             hasContents = true
@@ -470,8 +526,10 @@ public open class PdfViewerFragment : Fragment() {
             }
         }
     }
+
     private fun onContentsAvailable(contents: DisplayData) {
         fileData = contents
+
         // Update the PdfLoader in the ViewModel with the new DisplayData
         viewModel.updatePdfLoader(
             requireActivity().applicationContext,
@@ -482,6 +540,7 @@ public open class PdfViewerFragment : Fragment() {
         }
         setAnnotationIntentResolvability()
     }
+
     private fun setAnnotationIntentResolvability() {
         isAnnotationIntentResolvable =
             AnnotationUtils.resolveAnnotationIntent(requireContext(), documentUri!!)
@@ -491,6 +550,7 @@ public open class PdfViewerFragment : Fragment() {
             isAnnotationIntentResolvable
         )
     }
+
     /**
      * Sets PDF viewer content. Initializes/configures components based on provided data and saved
      * state.
@@ -505,13 +565,15 @@ public open class PdfViewerFragment : Fragment() {
                     showAnnotationButton && findInFileView!!.visibility != View.VISIBLE
                 if (
                     isAnnotationIntentResolvable &&
-                        state.getBoolean(KEY_ANNOTATION_BUTTON_VISIBILITY)
+                    state.getBoolean(KEY_ANNOTATION_BUTTON_VISIBILITY)
                 ) {
                     onRequestImmersiveMode(false)
                 }
             }
         }
+
         refreshContentAndModels(pdfLoader!!)
+
         savedState?.let { state ->
             if (isFileRestoring) {
                 state.containsKey(KEY_LAYOUT_REACH).let {
@@ -521,6 +583,7 @@ public open class PdfViewerFragment : Fragment() {
                         layoutHandler?.setInitialPageLayoutReachWithMax(layoutReach)
                     }
                 }
+
                 // Restore page selection from saved state if it exists
                 val savedSelection =
                     BundleCompat.getParcelable(state, KEY_PAGE_SELECTION, PageSelection::class.java)
@@ -528,10 +591,12 @@ public open class PdfViewerFragment : Fragment() {
             }
         }
     }
+
     private fun updateSelectionModel(updatedSelectionModel: PdfSelectionModel) {
         pdfLoaderCallbacks?.selectionModel = updatedSelectionModel
         zoomView?.setPdfSelectionModel(updatedSelectionModel)
         paginatedView?.selectionModel = updatedSelectionModel
+
         selectionActionMode =
             SelectionActionMode(requireActivity(), paginatedView!!, updatedSelectionModel)
         selectionHandles =
@@ -543,15 +608,18 @@ public open class PdfViewerFragment : Fragment() {
             )
         paginatedView?.selectionHandles = selectionHandles!!
     }
+
     private fun updatePageViewFactory(updatedPageViewFactory: PageViewFactory) {
         pageViewFactory = updatedPageViewFactory
         pdfLoaderCallbacks?.pageViewFactory = updatedPageViewFactory
         paginatedView?.pageViewFactory = updatedPageViewFactory
         paginatedView?.setMetricEventCallback(mEventCallback)
+
         selectionObserver =
             PageSelectionValueObserver(paginatedView!!, pageViewFactory!!, requireContext())
         pdfLoaderCallbacks?.selectionModel?.selection()?.addObserver(selectionObserver)
     }
+
     private fun updateSearchModel() {
         findInFileView?.searchModel?.let { model ->
             pdfLoaderCallbacks?.searchModel = model
@@ -560,6 +628,7 @@ public open class PdfViewerFragment : Fragment() {
             model.query().addObserver(searchQueryObserver)
         }
     }
+
     private fun updateSingleTapHandler(pdfLoader: PdfLoader, selectionModel: PdfSelectionModel) {
         singleTapHandler =
             SingleTapHandler(
@@ -574,6 +643,7 @@ public open class PdfViewerFragment : Fragment() {
                 mImmersiveModeRequester
             )
         singleTapHandler!!.setAnnotationIntentResolvable(isAnnotationIntentResolvable)
+
         pageViewFactory =
             PageViewFactory(
                 requireContext(),
@@ -586,17 +656,22 @@ public open class PdfViewerFragment : Fragment() {
             )
         updatePageViewFactory(pageViewFactory!!)
     }
+
     private fun refreshContentAndModels(pdfLoader: PdfLoader) {
         paginationModel = paginatedView!!.model
+
         paginatedView?.setPdfLoader(pdfLoader)
         findInFileView?.setPdfLoader(pdfLoader)
         pdfLoaderCallbacks?.pdfLoader = pdfLoader
+
         layoutHandler = LayoutHandler(pdfLoader)
         paginatedView?.model?.size?.let { layoutHandler!!.pageLayoutReach = it }
+
         val updatedSelectionModel = PdfSelectionModel(pdfLoader)
         updateSelectionModel(updatedSelectionModel)
         updateSingleTapHandler(pdfLoader, updatedSelectionModel)
         updateSearchModel()
+
         pdfLoaderCallbacks!!.layoutHandler = layoutHandler
         zoomScrollObserver =
             ZoomScrollValueObserver(
@@ -611,6 +686,7 @@ public open class PdfViewerFragment : Fragment() {
                 mImmersiveModeRequester
             )
         zoomView?.zoomScroll()?.addObserver(zoomScrollObserver)
+
         selectedMatchObserver =
             SelectedMatchValueObserver(
                 paginatedView!!,
@@ -620,7 +696,9 @@ public open class PdfViewerFragment : Fragment() {
                 requireContext()
             )
         findInFileView!!.searchModel.selectedMatch().addObserver(selectedMatchObserver)
+
         annotationButton?.let { findInFileView!!.setAnnotationButton(it, mImmersiveModeRequester) }
+
         fastScrollView?.setOnFastScrollActiveListener {
             annotationButton?.let { button ->
                 if (button.visibility == View.VISIBLE) {
@@ -629,6 +707,7 @@ public open class PdfViewerFragment : Fragment() {
             }
         }
     }
+
     /** Restores the contents of this Viewer when it is automatically restored by android. */
     private fun restoreContents(savedState: Bundle?) {
         pendingDocumentLoad = savedState?.getBoolean(KEY_PENDING_DOCUMENT_LOAD) ?: false
@@ -650,6 +729,7 @@ public open class PdfViewerFragment : Fragment() {
             }
         }
     }
+
     override fun onResume() {
         super.onResume()
         if (!documentLoaded || paginatedView?.isConfigurationChanged == true) {
@@ -661,36 +741,45 @@ public open class PdfViewerFragment : Fragment() {
         }
         if (
             isAnnotationIntentResolvable &&
-                annotationButton?.visibility != View.VISIBLE &&
-                findInFileView?.visibility != View.VISIBLE
+            annotationButton?.visibility != View.VISIBLE &&
+            findInFileView?.visibility != View.VISIBLE
         ) {
             annotationButton?.post { onRequestImmersiveMode(false) }
         }
     }
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         paginatedView?.isConfigurationChanged = true
     }
+
     private fun destroyContentModel() {
         pdfLoader?.cancelAll()
         paginationModel = null
+
         selectionHandles?.destroy()
         selectionHandles = null
+
         pdfLoaderCallbacks?.selectionModel = null
         selectionActionMode?.destroy()
+
         findInFileView?.searchModel?.let {
             it.selectedMatch().removeObserver(selectedMatchObserver!!)
             it.query().removeObserver(searchQueryObserver!!)
         }
         fastScrollView?.setOnFastScrollActiveListener(null)
+
         pdfLoaderCallbacks?.searchModel = null
+
         pdfLoader = null
         documentLoaded = false
     }
+
     private fun destroyView() {
         detachViewsAndObservers()
         zoomView = null
         paginatedView = null
+
         pdfLoader?.cancelAll()
         documentLoaded = false
         if (viewState.get() !== ViewState.NO_VIEW) {
@@ -712,10 +801,12 @@ public open class PdfViewerFragment : Fragment() {
             }
         }
     }
+
     private fun detachViewsAndObservers() {
         zoomScrollObserver?.let { zoomView?.zoomScroll()?.removeObserver(it) }
         paginatedView?.let { view -> view.removeAllViews() }
     }
+
     override fun onDestroyView() {
         destroyView()
         container = null
@@ -723,6 +814,7 @@ public open class PdfViewerFragment : Fragment() {
         super.onDestroyView()
         (zoomScrollObserver as? ZoomScrollValueObserver)?.clearAnnotationHandler()
     }
+
     override fun onDestroy() {
         super.onDestroy()
         if (pdfLoader != null) {
@@ -730,6 +822,7 @@ public open class PdfViewerFragment : Fragment() {
         }
         mEventCallback?.onViewerReset()
     }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.apply {
@@ -747,6 +840,7 @@ public open class PdfViewerFragment : Fragment() {
             putBoolean(KEY_DOCUMENT_LOADED, documentLoaded)
         }
     }
+
     private fun handleError(error: Throwable, showErrorView: Boolean = true) {
         // Report exception occurred while processing PDF to host
         onLoadDocumentError(error)
@@ -756,6 +850,7 @@ public open class PdfViewerFragment : Fragment() {
                 loadingView?.showErrorView(it)
             }
     }
+
     private fun resetViewsAndModels(fileUri: Uri) {
         if (pdfLoader != null) {
             pdfLoaderCallbacks?.uri = fileUri
@@ -765,6 +860,7 @@ public open class PdfViewerFragment : Fragment() {
         fastScrollView?.resetContents()
         findInFileView?.resetFindInFile()
     }
+
     private fun loadFile(fileUri: Uri) {
         // Early return if fragment is not in STARTED state
         if (!lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
@@ -774,21 +870,26 @@ public open class PdfViewerFragment : Fragment() {
         }
         // Update state as loadFile is triggered after in-or-after STARTED state
         pendingDocumentLoad = false
+
         arguments =
             Bundle().apply {
                 putParcelable(KEY_DOCUMENT_URI, fileUri)
                 putBoolean(KEY_TEXT_SEARCH_ACTIVE, false)
             }
+
         // Reset UI components and models before loading the file
         resetViewsAndModels(fileUri)
         detachViewsAndObservers()
+
         // Validate the file URI and attempt to load the file contents
         checkAndFetchFile(fileUri, true)
+
         if (localUri != null && localUri != fileUri) {
             onRequestImmersiveMode(true)
         }
         localUri = fileUri
     }
+
     private fun checkAndFetchFile(fileUri: Uri, performLoad: Boolean): Boolean {
         try {
             validateFileUri(fileUri)
@@ -806,23 +907,29 @@ public open class PdfViewerFragment : Fragment() {
             return false
         }
     }
+
     private fun handleFileNotAvailable(fileUri: Uri, error: Throwable) {
         // Reset views and models when file error occurs
         resetViewsAndModels(fileUri)
+
         // Hide fast scroll and show loading view to display error message
         fastScrollView?.visibility = View.GONE
         loadingView?.visibility = View.VISIBLE
+
         handleError(error)
     }
+
     private fun validateFileUri(fileUri: Uri) {
         if (!Uris.isContentUri(fileUri) && !Uris.isFileUri(fileUri)) {
             throw IllegalArgumentException("Only content and file uri is supported")
         }
     }
+
     private fun fetchFile(fileUri: Uri, performLoad: Boolean) {
         Preconditions.checkNotNull(fileUri)
         val fileName: String = getFileName(fileUri)
         val openable: FutureValue<Openable> = fetcher?.loadLocal(fileUri)!!
+
         openable[
             object : FutureValue.Callback<Openable> {
                 override fun available(value: Openable) {
@@ -831,27 +938,34 @@ public open class PdfViewerFragment : Fragment() {
                         viewerAvailable(fileUri, fileName, value)
                     }
                 }
+
                 override fun failed(thrown: Throwable) {
                     handleError(thrown)
                 }
+
                 override fun progress(progress: Float) {}
             }]
     }
+
     private fun getFileName(fileUri: Uri): String {
         val resolver: ContentResolver? = getResolver()
         return if (resolver != null) Uris.extractName(fileUri, resolver)
         else Uris.extractFileName(fileUri)
     }
+
     private fun getResolver(): ContentResolver? {
         if (activity != null) {
             return requireActivity().contentResolver
         }
         return null
     }
+
     private fun viewerAvailable(fileUri: Uri, fileName: String, openable: Openable) {
         val contents = DisplayData(fileUri, fileName, openable)
+
         startViewer(contents)
     }
+
     private fun startViewer(contents: DisplayData) {
         Preconditions.checkNotNull(contents)
         try {
@@ -861,6 +975,7 @@ public open class PdfViewerFragment : Fragment() {
             onLoadDocumentError(exception)
         }
     }
+
     /** Feed this Viewer with contents to be displayed. */
     private fun feed(contents: DisplayData?): PdfViewerFragment {
         if (contents != null) {
@@ -868,15 +983,18 @@ public open class PdfViewerFragment : Fragment() {
         }
         return this
     }
+
     /** Makes the views of this Viewer visible to TalkBack (in the swipe gesture circus) or not. */
     private fun participateInAccessibility(participate: Boolean) {
         view?.importantForAccessibility =
             if (participate) View.IMPORTANT_FOR_ACCESSIBILITY_YES
             else View.IMPORTANT_FOR_ACCESSIBILITY_NO
     }
+
     private fun setUpEditFab() {
         annotationButton?.setOnClickListener(View.OnClickListener { performEdit() })
     }
+
     private fun performEdit() {
         setAnnotationIntentResolvability()
         // TODO: Fix the behavior of immersiveMode to be independent of isAnnotationIntentResolvable
@@ -884,22 +1002,45 @@ public open class PdfViewerFragment : Fragment() {
             annotationButton?.hide()
             return
         }
-        val intent = AnnotationUtils.getAnnotationIntent(localUri!!)
-        intent.setData(localUri)
-        intent.putExtra(EXTRA_PDF_FILE_NAME, getFileName(localUri!!))
-        intent.putExtra(EXTRA_STARTING_PAGE, getStartingPageNumber())
-        startActivity(intent)
+        try {
+            val intent = AnnotationUtils.getAnnotationIntent(localUri!!)
+            intent.setData(localUri)
+            intent.putExtra(EXTRA_PDF_FILE_NAME, getFileName(localUri!!))
+            intent.putExtra(EXTRA_STARTING_PAGE, getStartingPageNumber())
+            startActivity(intent)
+        } catch (error: Exception) {
+            when (error) {
+                is ActivityNotFoundException,
+                is NullPointerException -> hideAnnotationButtonAndShowToast()
+                else -> throw error
+            }
+        }
     }
+
+    private fun hideAnnotationButtonAndShowToast() {
+        annotationButton?.hide()
+        // TODO: Uncomment the Toast after translation for string is completed.
+        /* Toast.makeText(
+            context,
+            context?.resources?.getString(R.string.cannot_edit_pdf),
+            Toast.LENGTH_SHORT
+        )
+        .show() */
+    }
+
     private fun getStartingPageNumber(): Int {
         // Return the page that is centered in the view.
         return paginationModel?.midPage ?: 0
     }
+
     private fun hideSpinner() {
         loadingView?.visibility = View.GONE
     }
+
     private fun showPdfView() {
         fastScrollView?.visibility = View.VISIBLE
     }
+
     private companion object {
         /** Key for saving page layout reach in bundles. */
         private const val KEY_LAYOUT_REACH: String = "plr"
