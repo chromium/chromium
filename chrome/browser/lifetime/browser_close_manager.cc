@@ -228,6 +228,7 @@ void BrowserCloseManager::CloseBrowsers() {
 
   while (!browser_list_copy.IsEmpty()) {
     Browser* browser = browser_list_copy.Pop();
+    browser->set_force_skip_warning_user_on_close(ignore_unload_handlers);
     browser->window()->Close();
     if (ignore_unload_handlers) {
       // This path is hit during logoff/power-down. It could be the case that
@@ -236,7 +237,6 @@ void BrowserCloseManager::CloseBrowsers() {
       // current site). Since we are attempting to end the session, we will
       // force skip these warnings and manually close all the tabs to make sure
       // the browser is destroyed and cleanup can happen.
-      browser->set_force_skip_warning_user_on_close(true);
       browser->tab_strip_model()->CloseAllTabs();
       browser->window()->DestroyBrowser();
       // Destroying the browser should have removed it from the browser list.

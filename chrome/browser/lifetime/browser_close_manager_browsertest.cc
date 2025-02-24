@@ -36,6 +36,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -925,6 +926,43 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   WaitForAllBrowsersToClose();
   EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
+}
+
+// Check that it is possible to restore a window with the last session after
+// ignoring unload handlers shutdown.
+IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
+                       PRE_RestoreWindowWithIgnoreUnload) {
+  ASSERT_NO_FATAL_FAILURE(
+      ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+          browser(), embedded_test_server()->GetURL("/beforeunload.html"),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP)));
+  PrepareForDialog(browser());
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title2.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  // Set silent exit to hit ignore unload handlers flow
+  browser_shutdown::OnShutdownStarting(
+      browser_shutdown::ShutdownType::kSilentExit);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&chrome::CloseAllBrowsers));
+  ui_test_utils::WaitForBrowserToClose(browser());
+  EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
+                       RestoreWindowWithIgnoreUnload) {
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(tab_restore_service);
+  TabRestoreServiceLoadWaiter waiter(tab_restore_service);
+  tab_restore_service->LoadTabsFromLastSession();
+  waiter.Wait();
+  ASSERT_TRUE(!tab_restore_service->entries().empty());
+  EXPECT_EQ(tab_restore_service->entries().front()->type,
+            sessions::tab_restore::Type::WINDOW);
 }
 
 // Mac has its own in-progress download prompt in app_controller_mac.mm, so
