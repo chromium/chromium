@@ -659,6 +659,18 @@ CreditCardCategoryBenefit GetActiveCreditCardCategoryBenefit() {
       /*expiry_time=*/GetArbitraryFutureTime());
 }
 
+CreditCardCategoryBenefit CreateCreditCardCategoryBenefit(
+    CreditCardBenefitBase::BenefitId benefit_id,
+    CreditCardBenefitBase::LinkedCardInstrumentId linked_card_instrument_id,
+    CreditCardCategoryBenefit::BenefitCategory benefit_category,
+    std::u16string benefit_description) {
+  return CreditCardCategoryBenefit(benefit_id, linked_card_instrument_id,
+                                   benefit_category,
+                                   std::move(benefit_description),
+                                   /*start_time=*/GetArbitraryPastTime(),
+                                   /*expiry_time=*/GetArbitraryFutureTime());
+}
+
 CreditCardMerchantBenefit GetActiveCreditCardMerchantBenefit() {
   return CreditCardMerchantBenefit(
       CreditCardBenefitBase::BenefitId("id3"),

@@ -134,7 +134,14 @@ class CreditCardCategoryBenefit : public CreditCardBenefitBase {
     kEntertainment = 4,
     kStreaming = 5,
     kGroceryStores = 6,
-    kMaxValue = kGroceryStores,
+    kAirMilesPartner = 7,
+    kAlcoholStores = 8,
+    kDrugstores = 9,
+    kOfficeSupplies = 10,
+    kRecurringBills = 11,
+    kTransit = 12,
+    kTravel = 13,
+    kWholesaleClubs = 14,
   };
 
   CreditCardCategoryBenefit(BenefitId benefit_id,

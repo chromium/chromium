@@ -163,10 +163,29 @@ GetBenefitCategoryForOptimizationType(
     case optimization_guide::proto::
         AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS:
       return CreditCardCategoryBenefit::BenefitCategory::kSubscription;
+    case optimization_guide::proto::BMO_CREDIT_CARD_AIR_MILES_PARTNER_BENEFITS:
+      return CreditCardCategoryBenefit::BenefitCategory::kAirMilesPartner;
+    case optimization_guide::proto::BMO_CREDIT_CARD_ALCOHOL_STORE_BENEFITS:
+      return CreditCardCategoryBenefit::BenefitCategory::kAlcoholStores;
+    case optimization_guide::proto::BMO_CREDIT_CARD_DRUGSTORE_BENEFITS:
+      return CreditCardCategoryBenefit::BenefitCategory::kDrugstores;
+    case optimization_guide::proto::BMO_CREDIT_CARD_OFFICE_SUPPLY_BENEFITS:
+      return CreditCardCategoryBenefit::BenefitCategory::kOfficeSupplies;
+    case optimization_guide::proto::BMO_CREDIT_CARD_RECURRING_BILL_BENEFITS:
+      return CreditCardCategoryBenefit::BenefitCategory::kRecurringBills;
+    case optimization_guide::proto::BMO_CREDIT_CARD_TRANSIT_BENEFITS:
+      return CreditCardCategoryBenefit::BenefitCategory::kTransit;
+    case optimization_guide::proto::BMO_CREDIT_CARD_TRAVEL_BENEFITS:
+      return CreditCardCategoryBenefit::BenefitCategory::kTravel;
+    case optimization_guide::proto::BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS:
+      return CreditCardCategoryBenefit::BenefitCategory::kWholesaleClubs;
+    case optimization_guide::proto::BMO_CREDIT_CARD_DINING_BENEFITS:
     case optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS:
       return CreditCardCategoryBenefit::BenefitCategory::kDining;
+    case optimization_guide::proto::BMO_CREDIT_CARD_GROCERY_BENEFITS:
     case optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS:
       return CreditCardCategoryBenefit::BenefitCategory::kGroceryStores;
+    case optimization_guide::proto::BMO_CREDIT_CARD_ENTERTAINMENT_BENEFITS:
     case optimization_guide::proto::
         CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS:
       return CreditCardCategoryBenefit::BenefitCategory::kEntertainment;
@@ -258,6 +277,32 @@ AutofillOptimizationGuide::AttemptToGetEligibleCreditCardBenefitCategory(
     issuer_optimization_types.push_back(
         optimization_guide::proto::
             AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS);
+  } else if (issuer_id == kBmoCardIssuerId &&
+             base::FeatureList::IsEnabled(
+                 features::
+                     kAutofillEnableAllowlistForBmoCardCategoryBenefits)) {
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_AIR_MILES_PARTNER_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_ALCOHOL_STORE_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_DINING_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_DRUGSTORE_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_ENTERTAINMENT_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_GROCERY_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_OFFICE_SUPPLY_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_RECURRING_BILL_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_TRANSIT_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_TRAVEL_BENEFITS);
+    issuer_optimization_types.push_back(
+        optimization_guide::proto::BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS);
   } else if (issuer_id == kCapitalOneCardIssuerId) {
     issuer_optimization_types.push_back(
         optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS);

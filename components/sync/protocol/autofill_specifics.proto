@@ -318,6 +318,14 @@ message CardBenefit {
     ENTERTAINMENT = 4;
     STREAMING = 5;
     GROCERY_STORES = 6;
+    AIR_MILES_PARTNER = 7;
+    ALCOHOL_STORES = 8;
+    DRUGSTORES = 9;
+    OFFICE_SUPPLIES = 10;
+    RECURRING_BILLS = 11;
+    TRANSIT = 12;
+    TRAVEL = 13;
+    WHOLESALE_CLUBS = 14;
   }
 
   // Proto containing data specific to a category benefit.

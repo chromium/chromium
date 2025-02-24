@@ -111,6 +111,22 @@ CategoryBenefitTypeFromBenefitCategory(
       return sync_pb::CardBenefit::STREAMING;
     case CreditCardCategoryBenefit::BenefitCategory::kGroceryStores:
       return sync_pb::CardBenefit::GROCERY_STORES;
+    case CreditCardCategoryBenefit::BenefitCategory::kAirMilesPartner:
+      return sync_pb::CardBenefit::AIR_MILES_PARTNER;
+    case CreditCardCategoryBenefit::BenefitCategory::kAlcoholStores:
+      return sync_pb::CardBenefit::ALCOHOL_STORES;
+    case CreditCardCategoryBenefit::BenefitCategory::kDrugstores:
+      return sync_pb::CardBenefit::DRUGSTORES;
+    case CreditCardCategoryBenefit::BenefitCategory::kOfficeSupplies:
+      return sync_pb::CardBenefit::OFFICE_SUPPLIES;
+    case CreditCardCategoryBenefit::BenefitCategory::kRecurringBills:
+      return sync_pb::CardBenefit::RECURRING_BILLS;
+    case CreditCardCategoryBenefit::BenefitCategory::kTransit:
+      return sync_pb::CardBenefit::TRANSIT;
+    case CreditCardCategoryBenefit::BenefitCategory::kTravel:
+      return sync_pb::CardBenefit::TRAVEL;
+    case CreditCardCategoryBenefit::BenefitCategory::kWholesaleClubs:
+      return sync_pb::CardBenefit::WHOLESALE_CLUBS;
     case CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory:
       return sync_pb::CardBenefit::CATEGORY_BENEFIT_TYPE_UNKNOWN;
   }
@@ -132,6 +148,22 @@ BenefitCategoryFromCategoryBenefitType(
       return CreditCardCategoryBenefit::BenefitCategory::kStreaming;
     case sync_pb::CardBenefit::GROCERY_STORES:
       return CreditCardCategoryBenefit::BenefitCategory::kGroceryStores;
+    case sync_pb::CardBenefit::AIR_MILES_PARTNER:
+      return CreditCardCategoryBenefit::BenefitCategory::kAirMilesPartner;
+    case sync_pb::CardBenefit::ALCOHOL_STORES:
+      return CreditCardCategoryBenefit::BenefitCategory::kAlcoholStores;
+    case sync_pb::CardBenefit::DRUGSTORES:
+      return CreditCardCategoryBenefit::BenefitCategory::kDrugstores;
+    case sync_pb::CardBenefit::OFFICE_SUPPLIES:
+      return CreditCardCategoryBenefit::BenefitCategory::kOfficeSupplies;
+    case sync_pb::CardBenefit::RECURRING_BILLS:
+      return CreditCardCategoryBenefit::BenefitCategory::kRecurringBills;
+    case sync_pb::CardBenefit::TRANSIT:
+      return CreditCardCategoryBenefit::BenefitCategory::kTransit;
+    case sync_pb::CardBenefit::TRAVEL:
+      return CreditCardCategoryBenefit::BenefitCategory::kTravel;
+    case sync_pb::CardBenefit::WHOLESALE_CLUBS:
+      return CreditCardCategoryBenefit::BenefitCategory::kWholesaleClubs;
     case sync_pb::CardBenefit::CATEGORY_BENEFIT_TYPE_UNKNOWN:
       return CreditCardCategoryBenefit::BenefitCategory::
           kUnknownBenefitCategory;
