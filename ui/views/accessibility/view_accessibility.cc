@@ -29,6 +29,14 @@
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/views/accessibility/view_ax_platform_node_delegate_win.h"
+#elif BUILDFLAG(IS_MAC)
+#include "ui/views/accessibility/view_ax_platform_node_delegate_mac.h"
+#elif BUILDFLAG(IS_LINUX)
+#include "ui/views/accessibility/view_ax_platform_node_delegate_auralinux.h"
+#endif
+
 namespace views {
 
 namespace {
@@ -74,13 +82,28 @@ bool IsValidRoleForViews(ax::mojom::Role role) {
          "initialization of the accessibility cache. Instead, set the "  \
          "attributes directly on `AXNodeData` parameter.";
 
-#if !BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
 // static
 std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
+  // With the feature enabled, the accessibility tree for Views is built using
+  // the `BrowserAccessibilityManager` owned by the `BrowserViewsAXManager`.
+  // ViewAccessibility is only used to managed the current accessibility state
+  // for a view.
+  if (::features::IsAccessibilityTreeForViewsEnabled()) {
+    // Cannot use std::make_unique because constructor is protected.
+    return base::WrapUnique(new ViewAccessibility(view));
+  }
+
+#if !BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
   // Cannot use std::make_unique because constructor is protected.
   return base::WrapUnique(new ViewAccessibility(view));
-}
+#elif BUILDFLAG(IS_WIN)
+  return ViewAXPlatformNodeDelegateWin::CreatePlatformSpecific(view);
+#elif BUILDFLAG(IS_MAC)
+  return ViewAXPlatformNodeDelegateMac::CreatePlatformSpecific(view);
+#elif BUILDFLAG(IS_LINUX)
+  return ViewAXPlatformNodeDelegateAuraLinux::CreatePlatformSpecific(view);
 #endif
+}
 
 ViewAccessibility::ViewAccessibility(View* view)
     : view_(view), focused_virtual_child_(nullptr) {

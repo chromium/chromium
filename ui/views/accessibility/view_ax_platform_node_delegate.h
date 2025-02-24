@@ -45,6 +45,8 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
     : public ViewAccessibility,
       public ui::AXPlatformNodeDelegate {
  public:
+  static std::unique_ptr<ViewAccessibility> CreatePlatformSpecific(View* view);
+
   ViewAXPlatformNodeDelegate(const ViewAXPlatformNodeDelegate&) = delete;
   ViewAXPlatformNodeDelegate& operator=(const ViewAXPlatformNodeDelegate&) =
       delete;

@@ -212,7 +212,8 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
 }  // namespace
 
 // static
-std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
+std::unique_ptr<ViewAccessibility>
+ViewAXPlatformNodeDelegate::CreatePlatformSpecific(View* view) {
   AuraLinuxApplication::GetInstance().RegisterWidget(view->GetWidget());
 
   auto result = std::make_unique<ViewAXPlatformNodeDelegateAuraLinux>(view);
