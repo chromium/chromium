@@ -16,9 +16,12 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#endif
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #endif
 
@@ -88,7 +91,7 @@ SafeBrowsingUIManager* TestSafeBrowsingService::CreateUIManager() {
   return SafeBrowsingService::CreateUIManager();
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 void TestSafeBrowsingService::SendDownloadReport(
     download::DownloadItem* download,
     ClientSafeBrowsingReportRequest::ReportType report_type,
@@ -128,7 +131,7 @@ void TestSafeBrowsingService::SetV4ProtocolConfig(
 bool TestSafeBrowsingService::CanCreateDatabaseManager() {
   return !use_v4_local_db_manager_;
 }
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 bool TestSafeBrowsingService::CanCreateDownloadProtectionService() {
   return false;
 }
@@ -148,7 +151,7 @@ SafeBrowsingDatabaseManager* TestSafeBrowsingService::CreateDatabaseManager() {
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 DownloadProtectionService*
 TestSafeBrowsingService::CreateDownloadProtectionService() {
   NOTIMPLEMENTED();

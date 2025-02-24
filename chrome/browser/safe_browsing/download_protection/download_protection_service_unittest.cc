@@ -43,8 +43,6 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_item_warning_data.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
@@ -64,12 +62,10 @@
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/safe_browsing/test_extension_event_observer.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/extensions/api/safe_browsing_private.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
 #include "chrome/common/safe_browsing/mock_binary_feature_extractor.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -111,7 +107,6 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
-#include "extensions/browser/test_event_router.h"
 #include "net/base/url_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -132,6 +127,14 @@
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
+#include "chrome/browser/safe_browsing/test_extension_event_observer.h"
+#include "chrome/common/extensions/api/safe_browsing_private.h"
+#include "extensions/browser/test_event_router.h"
+#endif
+
 using base::RunLoop;
 using content::BrowserThread;
 using content::FileSystemAccessWriteItem;
@@ -151,8 +154,10 @@ using ::testing::SaveArg;
 using ::testing::SizeIs;
 using ::testing::StrictMock;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 namespace OnDangerousDownloadOpened =
     extensions::api::safe_browsing_private::OnDangerousDownloadOpened;
+#endif
 
 namespace safe_browsing {
 
@@ -392,12 +397,14 @@ class DownloadProtectionServiceTestBase
     // Turn off binary sampling by default.
     SetBinarySamplingProbability(0.0);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     // |test_event_router_| is owned by KeyedServiceFactory.
     test_event_router_ = extensions::CreateAndUseTestEventRouter(profile());
     extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance()
         ->SetTestingFactory(
             profile(),
             base::BindRepeating(&BuildSafeBrowsingPrivateEventRouter));
+#endif
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
     enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
@@ -807,7 +814,9 @@ class DownloadProtectionServiceTestBase
   base::FilePath final_path_;
   std::string hash_;
   base::ScopedTempDir temp_dir_;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   raw_ptr<extensions::TestEventRouter, DanglingUntriaged> test_event_router_;
+#endif
   TestingProfileManager testing_profile_manager_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
@@ -3273,6 +3282,7 @@ TEST_F(DownloadProtectionServiceTest,
 
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(DownloadProtectionServiceTest, VerifyDangerousDownloadOpenedAPICall) {
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item,
@@ -3307,6 +3317,7 @@ TEST_F(DownloadProtectionServiceTest, VerifyDangerousDownloadOpenedAPICall) {
   EXPECT_EQ(1, test_event_router_->GetEventCount(
                    OnDangerousDownloadOpened::kEventName));
 }
+#endif
 
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadAllowlistedByPolicy) {
   AddDomainToEnterpriseAllowlist("example.com");

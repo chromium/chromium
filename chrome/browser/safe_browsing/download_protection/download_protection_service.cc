@@ -22,8 +22,6 @@
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
@@ -62,6 +60,11 @@
 #include "net/base/url_util.h"
 #include "net/cert/x509_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
+#endif
 
 using content::BrowserThread;
 using ReportThreatDetailsResult =
@@ -561,6 +564,7 @@ void DownloadProtectionService::AddReferrerChainToPPAPIClientDownloadRequest(
 void DownloadProtectionService::OnDangerousDownloadOpened(
     const download::DownloadItem* item,
     Profile* profile) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   std::string raw_digest_sha256 = item->GetHash();
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
@@ -609,6 +613,7 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
         base::HexEncode(raw_digest_sha256), item->GetMimeType(), /*scan_id*/ "",
         item->GetDangerType(), item->GetTotalBytes());
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 // static

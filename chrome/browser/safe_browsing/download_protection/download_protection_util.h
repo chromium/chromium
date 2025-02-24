@@ -172,7 +172,7 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
     const content::FileSystemAccessWriteItem& item,
     int user_gesture_limit);
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 // Returns true if dangerous download report should be sent.
 bool ShouldSendDangerousDownloadReport(
     download::DownloadItem* item,
