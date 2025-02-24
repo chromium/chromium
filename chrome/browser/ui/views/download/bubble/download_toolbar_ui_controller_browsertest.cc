@@ -6,9 +6,11 @@
 
 #include "base/files/file_path.h"
 #include "base/test/run_until.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_browsertest_utils.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -18,6 +20,10 @@
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -35,8 +41,8 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
  public:
   DownloadToolbarUIControllerBrowserTest() = default;
 
-  DownloadToolbarUIController* controller() {
-    return browser()->GetFeatures().download_toolbar_ui_controller();
+  DownloadToolbarUIController* controller(Browser* browser) {
+    return browser->GetFeatures().download_toolbar_ui_controller();
   }
 
   void SetUp() override {
@@ -45,16 +51,37 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
     DownloadTestBase::SetUp();
   }
 
+  void SetUpOnMainThread() override {
+    // OS integration is needed to be able to launch web applications. This
+    // override ensures OS integration doesn't leave any traces.
+    override_registration_ =
+        web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
+    DownloadTestBase::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    for (Profile* profile :
+         g_browser_process->profile_manager()->GetLoadedProfiles()) {
+      web_app::test::UninstallAllWebApps(profile);
+    }
+    override_registration_.reset();
+    DownloadTestBase::TearDownOnMainThread();
+  }
+
   PinnedToolbarActionsContainer* toolbar_container(Browser* browser) {
     return BrowserView::GetBrowserViewForBrowser(browser)
-        ->toolbar()
-        ->pinned_toolbar_actions_container();
+        ->toolbar_button_provider()
+        ->GetPinnedToolbarActionsContainer();
   }
 
   ToolbarButton* toolbar_button(Browser* browser) {
     return BrowserView::GetBrowserViewForBrowser(browser)
         ->toolbar_button_provider()
         ->GetDownloadButton();
+  }
+
+  WebAppFrameToolbarTestHelper& toolbar_helper() {
+    return web_app_frame_toolbar_helper_;
   }
 
  protected:
@@ -68,6 +95,11 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
+  // OS integration is needed to be able to launch web applications. This
+  // override ensures OS integration doesn't leave any traces.
+  std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
+      override_registration_;
+  WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 };
 
 // DownloadToolbarUIController and downloads toolbar button do not exist for
@@ -75,11 +107,11 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest, ShowHide) {
   EXPECT_EQ(toolbar_button(browser()), nullptr);
-  controller()->Show();
+  controller(browser())->Show();
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
   EXPECT_NE(toolbar_button(browser()), nullptr);
   EXPECT_TRUE(toolbar_button(browser())->GetVisible());
-  controller()->Hide();
+  controller(browser())->Hide();
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
   EXPECT_EQ(toolbar_button(browser()), nullptr);
 }
@@ -95,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   EXPECT_TRUE(toolbar_button(browser())->GetVisible());
   // Verify calling Hide does not change the visibility of the button when
   // pinned.
-  controller()->Hide();
+  controller(browser())->Hide();
   EXPECT_NE(toolbar_button(browser()), nullptr);
   EXPECT_TRUE(toolbar_button(browser())->GetVisible());
 }
@@ -112,10 +144,10 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   EXPECT_TRUE(toolbar_button(browser())->GetVisible());
   EXPECT_TRUE(toolbar_button(browser())->GetEnabled());
   // Disable the via the controller and verify the button's enabled state.
-  controller()->Disable();
+  controller(browser())->Disable();
   EXPECT_FALSE(toolbar_button(browser())->GetEnabled());
   // Enable the via the controller and verify the button's enabled state.
-  controller()->Enable();
+  controller(browser())->Enable();
   EXPECT_TRUE(toolbar_button(browser())->GetEnabled());
 }
 
@@ -131,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   EXPECT_NE(toolbar_button(browser()), nullptr);
   EXPECT_TRUE(toolbar_button(browser())->GetVisible());
   // Verify calling Hide does change the visibility of the button.
-  controller()->Hide();
+  controller(browser())->Hide();
   EXPECT_EQ(toolbar_button(browser()), nullptr);
 }
 
@@ -183,7 +215,46 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   EXPECT_NE(toolbar_button(browser()), nullptr);
   EXPECT_TRUE(toolbar_button(browser())->GetVisible());
   ClickButton(toolbar_button(browser()));
-  EXPECT_EQ(controller()->bubble_contents_for_testing()->VisiblePage(),
+  EXPECT_EQ(controller(browser())->bubble_contents_for_testing()->VisiblePage(),
+            DownloadBubbleContentsView::Page::kPrimary);
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
+                       ButtonPressWithRecentDownloadsInWebApp) {
+  // Create a web app and download from the web app.
+  const GURL app_url("https://test.org");
+  toolbar_helper().InstallAndLaunchWebApp(browser(), app_url);
+  ui_test_utils::DownloadURL(
+      toolbar_helper().app_browser(),
+      ui_test_utils::GetTestUrl(
+          base::FilePath().AppendASCII("downloads"),
+          base::FilePath().AppendASCII("a_zip_file.zip")));
+  views::test::WaitForAnimatingLayoutManager(
+      toolbar_container(toolbar_helper().app_browser()));
+  EXPECT_NE(toolbar_button(toolbar_helper().app_browser()), nullptr);
+  EXPECT_TRUE(toolbar_button(toolbar_helper().app_browser())->GetVisible());
+
+  // Make sure the bubble has shown and closed.
+  controller(toolbar_helper().app_browser())->ShowDetails();
+  controller(toolbar_helper().app_browser())->OpenPrimaryDialog();
+  EXPECT_EQ(controller(toolbar_helper().app_browser())
+                ->bubble_contents_for_testing()
+                ->VisiblePage(),
+            DownloadBubbleContentsView::Page::kPrimary);
+  controller(toolbar_helper().app_browser())
+      ->auto_close_bubble_timer_for_testing()
+      ->user_task()
+      .Run();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return controller(toolbar_helper().app_browser())
+               ->bubble_contents_for_testing() == nullptr;
+  }));
+
+  // Click the button and verify the bubble opens.
+  ClickButton(toolbar_button(toolbar_helper().app_browser()));
+  EXPECT_EQ(controller(toolbar_helper().app_browser())
+                ->bubble_contents_for_testing()
+                ->VisiblePage(),
             DownloadBubbleContentsView::Page::kPrimary);
 }
 
@@ -194,13 +265,16 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                      base::FilePath().AppendASCII("downloads"),
                      base::FilePath().AppendASCII("a_zip_file.zip")));
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
-  controller()->ShowDetails();
-  controller()->OpenPrimaryDialog();
-  EXPECT_EQ(controller()->bubble_contents_for_testing()->VisiblePage(),
+  controller(browser())->ShowDetails();
+  controller(browser())->OpenPrimaryDialog();
+  EXPECT_EQ(controller(browser())->bubble_contents_for_testing()->VisiblePage(),
             DownloadBubbleContentsView::Page::kPrimary);
-  controller()->auto_close_bubble_timer_for_testing()->user_task().Run();
+  controller(browser())
+      ->auto_close_bubble_timer_for_testing()
+      ->user_task()
+      .Run();
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return controller()->bubble_contents_for_testing() == nullptr;
+    return controller(browser())->bubble_contents_for_testing() == nullptr;
   }));
 }
 
@@ -211,9 +285,9 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                      base::FilePath().AppendASCII("downloads"),
                      base::FilePath().AppendASCII("a_zip_file.zip")));
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
-  controller()->ShowDetails();
-  controller()->OpenPrimaryDialog();
-  EXPECT_EQ(controller()->bubble_contents_for_testing()->VisiblePage(),
+  controller(browser())->ShowDetails();
+  controller(browser())->OpenPrimaryDialog();
+  EXPECT_EQ(controller(browser())->bubble_contents_for_testing()->VisiblePage(),
             DownloadBubbleContentsView::Page::kPrimary);
 }
 
@@ -244,15 +318,15 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
 
   offline_items_collection::ContentId content_id =
       OfflineItemUtils::GetContentIdForDownload(download_items[0].get());
-  controller()->OpenSecuritySubpage(content_id);
-  EXPECT_EQ(controller()->bubble_contents_for_testing()->VisiblePage(),
+  controller(browser())->OpenSecuritySubpage(content_id);
+  EXPECT_EQ(controller(browser())->bubble_contents_for_testing()->VisiblePage(),
             DownloadBubbleContentsView::Page::kSecurity);
-  EXPECT_EQ(controller()
+  EXPECT_EQ(controller(browser())
                 ->bubble_contents_for_testing()
                 ->security_view_for_testing()
                 ->content_id(),
             content_id);
-  controller()
+  controller(browser())
       ->bubble_contents_for_testing()
       ->ProcessSecuritySubpageButtonPress(content_id,
                                           DownloadCommands::Command::DISCARD);
@@ -260,33 +334,36 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        ProgressRingVisibleDuringDownload) {
-  controller()->Show();
+  controller(browser())->Show();
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
   EXPECT_NE(toolbar_button(browser()), nullptr);
   EXPECT_TRUE(toolbar_button(browser())->GetVisible());
-  EXPECT_FALSE(controller()->IsProgressRingInDownloadingStateForTesting());
+  EXPECT_FALSE(
+      controller(browser())->IsProgressRingInDownloadingStateForTesting());
   download::DownloadItem* download_item = CreateSlowTestDownload();
-  EXPECT_TRUE(controller()->IsProgressRingInDownloadingStateForTesting());
+  EXPECT_TRUE(
+      controller(browser())->IsProgressRingInDownloadingStateForTesting());
   download_item->Cancel(true);
-  EXPECT_FALSE(controller()->IsProgressRingInDownloadingStateForTesting());
+  EXPECT_FALSE(
+      controller(browser())->IsProgressRingInDownloadingStateForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        ProgressRingDormantState) {
-  EXPECT_FALSE(controller()->IsProgressRingInDormantStateForTesting());
+  EXPECT_FALSE(controller(browser())->IsProgressRingInDormantStateForTesting());
   download::DownloadItem* download_item = CreateSlowTestDownload();
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
   EXPECT_NE(toolbar_button(browser()), nullptr);
   EXPECT_TRUE(toolbar_button(browser())->GetVisible());
-  EXPECT_FALSE(controller()->IsProgressRingInDormantStateForTesting());
+  EXPECT_FALSE(controller(browser())->IsProgressRingInDormantStateForTesting());
   // Create another browser and set it as active so the button becomes dormant.
   Browser* extra_browser = CreateBrowser(browser()->profile());
   BrowserList::SetLastActive(extra_browser);
   views::test::WaitForAnimatingLayoutManager(toolbar_container(extra_browser));
 
-  EXPECT_TRUE(controller()->IsProgressRingInDormantStateForTesting());
+  EXPECT_TRUE(controller(browser())->IsProgressRingInDormantStateForTesting());
   download_item->Cancel(true);
-  EXPECT_FALSE(controller()->IsProgressRingInDormantStateForTesting());
+  EXPECT_FALSE(controller(browser())->IsProgressRingInDormantStateForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
@@ -295,14 +372,16 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
   EXPECT_NE(toolbar_button(browser()), nullptr);
   EXPECT_TRUE(toolbar_button(browser())->GetVisible());
-  EXPECT_TRUE(
-      controller()->GetImageBadgeForTesting()->GetImageModel().IsEmpty());
+  EXPECT_TRUE(controller(browser())
+                  ->GetImageBadgeForTesting()
+                  ->GetImageModel()
+                  .IsEmpty());
   download_item->Cancel(true);
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        ImageBadgeShowsForMultipleDownloads) {
-  controller()->Show();
+  controller(browser())->Show();
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
   EXPECT_NE(toolbar_button(browser()), nullptr);
   EXPECT_TRUE(toolbar_button(browser())->GetVisible());
@@ -331,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   EXPECT_EQ(2u, observer->NumDownloadsSeenInState(
                     download::DownloadItem::IN_PROGRESS));
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    auto* image_badge = controller()->GetImageBadgeForTesting();
+    auto* image_badge = controller(browser())->GetImageBadgeForTesting();
     return image_badge && !image_badge->GetImageModel().IsEmpty();
   }));
 

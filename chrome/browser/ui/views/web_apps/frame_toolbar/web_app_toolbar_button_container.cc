@@ -203,7 +203,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     // Extensions toolbar area with pinned extensions is lower priority than,
     // for example, the menu button or other toolbar buttons, and pinned
     // extensions should hide before other toolbar buttons.
-    constexpr int kLowPriorityFlexOrder = 2;
+    constexpr int kLowPriorityFlexOrder = 3;
     extensions_container_ =
         AddChildView(std::make_unique<ExtensionsToolbarContainer>(
             browser_view_->browser(), display_mode));
@@ -223,8 +223,13 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
                                static_cast<int>(HTCLIENT));
   }
 
+  // Pinned buttons are not shown in web apps but buttons can be shown
+  // ephemerally in this container and should have the same flex behavior as
+  // other toolbar buttons.
   pinned_toolbar_actions_container_ = AddChildView(
       std::make_unique<PinnedToolbarActionsContainer>(browser_view_));
+  views::SetHitTestComponent(pinned_toolbar_actions_container_,
+                             static_cast<int>(HTCLIENT));
 
   if (download::IsDownloadBubbleEnabled() &&
       !base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
