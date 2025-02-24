@@ -3167,6 +3167,15 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="ProcessMemoryAllocatorCustom2" separator=".">
   <suffix name="AXPlatformNodeCount"
       label="Count of accessibility nodes in the browser process."/>
+  <suffix name="AXPlatformWinDormantNodeCount"
+      label="Count of dormant accessibility platform nodes in the browser
+             process."/>
+  <suffix name="AXPlatformWinGhostNodeCount"
+      label="Count of ghost accessibility platform nodes in the browser
+             process."/>
+  <suffix name="AXPlatformWinLiveNodeCount"
+      label="Count of live accessibility platform nodes in the browser
+             process."/>
   <suffix name="ServiceDiscardableManager"
       label="Only counting memory used by the gpu discardable cache."/>
   <suffix name="ServiceDiscardableManager.AvgImageSize"

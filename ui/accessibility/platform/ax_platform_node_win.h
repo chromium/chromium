@@ -1217,6 +1217,15 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   static std::optional<PROPERTYID> MojoEventToUIAProperty(
       ax::mojom::Event event);
 
+  // Returns
+  // 1. The AXPlatformNodeBase instance count (expected to equal the dormant +
+  //    live counts).
+  // 2. The number of dormant platform nodes.
+  // 3. The number of live platform nodes.
+  // 4. The number of ghost platform nodes.
+  // See the comments in ax_platform_node_win.cc for descriptions of 2-4.
+  static std::tuple<size_t, size_t, size_t, size_t> GetCountsForTesting();
+
  protected:
   AXPlatformNodeWin();
 

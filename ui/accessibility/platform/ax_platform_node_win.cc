@@ -31,6 +31,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/memory_allocator_dump.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_provider.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/values.h"
 #include "base/win/enum_variant.h"
@@ -222,6 +226,20 @@ namespace ui {
 
 namespace {
 
+// The number of platform nodes that have been created but are not referenced
+// (e.g., by an accessibility tool).
+size_t g_dormant_node_count_ = 0;
+
+// The number of platform nodes that are actively referenced (e.g., by an
+// accessibility tool).
+size_t g_live_node_count_ = 0;
+
+// The number of platform nodes for which their delegate has called `Destroy()`,
+// yet live on after `Dispose()` has been called. This can happen if one or more
+// references to the node remain outstanding (e.g., due to an accessibility
+// tool holding references).
+size_t g_ghost_node_count_ = 0;
+
 typedef std::unordered_set<AXPlatformNodeWin*> AXPlatformNodeWinSet;
 // Set of all AXPlatformNodeWin objects that were the target of an
 // alert event.
@@ -255,6 +273,66 @@ template <typename T>
 void PatternProvider(AXPlatformNodeWin* node, IUnknown** result) {
   node->AddRef();
   *result = static_cast<T*>(node);
+}
+
+// Adds process-wide statistics about accessibility objects to traces.
+class AXPlatformNodeWinMemoryDumpProvider
+    : public base::trace_event::MemoryDumpProvider {
+ public:
+  AXPlatformNodeWinMemoryDumpProvider(
+      const AXPlatformNodeWinMemoryDumpProvider&) = delete;
+  AXPlatformNodeWinMemoryDumpProvider& operator=(
+      const AXPlatformNodeWinMemoryDumpProvider&) = delete;
+
+  // base::trace_event::MemoryDumpProvider:
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
+
+ private:
+  friend class base::NoDestructor<AXPlatformNodeWinMemoryDumpProvider>;
+
+  AXPlatformNodeWinMemoryDumpProvider(const size_t& dormant_node_count,
+                                      const size_t& live_node_count,
+                                      const size_t& ghost_node_count);
+
+  ~AXPlatformNodeWinMemoryDumpProvider() override = default;
+
+  const raw_ref<const size_t> dormant_node_count_;
+  const raw_ref<const size_t> live_node_count_;
+  const raw_ref<const size_t> ghost_node_count_;
+};
+
+bool AXPlatformNodeWinMemoryDumpProvider::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  pmd->CreateAllocatorDump("accessibility/ax_platform_win_dormant_node")
+      ->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
+                  *dormant_node_count_);
+  pmd->CreateAllocatorDump("accessibility/ax_platform_win_live_node")
+      ->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
+                  *live_node_count_);
+  pmd->CreateAllocatorDump("accessibility/ax_platform_win_ghost_node")
+      ->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
+                  *ghost_node_count_);
+  return true;
+}
+
+AXPlatformNodeWinMemoryDumpProvider::AXPlatformNodeWinMemoryDumpProvider(
+    const size_t& dormant_node_count,
+    const size_t& live_node_count,
+    const size_t& ghost_node_count)
+    : dormant_node_count_(dormant_node_count),
+      live_node_count_(live_node_count),
+      ghost_node_count_(ghost_node_count) {
+  // Skip this in tests that don't set up a task runner on the main thread.
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+        this, "AXPlatformNodeWin",
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
 }
 
 }  // namespace
@@ -330,15 +408,26 @@ AXPlatformNode* AXPlatformNode::FromNativeViewAccessible(
 // AXPlatformNodeWin
 //
 
-AXPlatformNodeWin::AXPlatformNodeWin() = default;
+AXPlatformNodeWin::AXPlatformNodeWin() {
+  // All nodes are born dormant and remain so until referenced by something
+  // other than their `AXPlatformNodeDelegate`; see `InternalAddRef()`.
+  ++g_dormant_node_count_;
+}
 
 AXPlatformNodeWin::~AXPlatformNodeWin() {
   TRACE_EVENT("accessibility", "~AXPlatformNodeWin",
               perfetto::TerminatingFlow::FromPointer(this));
+
+  // This node is no longer a ghost (it became one in `Dispose()`).
+  --g_ghost_node_count_;
+
   ClearOwnRelations();
 }
 
 void AXPlatformNodeWin::Init(AXPlatformNodeDelegate* delegate) {
+  static base::NoDestructor<AXPlatformNodeWinMemoryDumpProvider> dump_provider(
+      g_dormant_node_count_, g_live_node_count_, g_ghost_node_count_);
+
   AXPlatformNodeBase::Init(delegate);
 }
 
@@ -600,7 +689,20 @@ gfx::Vector2d AXPlatformNodeWin::CalculateUIAScrollPoint(
 
 void AXPlatformNodeWin::Dispose() {
   TRACE_EVENT("accessibility", "Dispose", perfetto::Flow::FromPointer(this));
-  Release();
+
+  // A node becomes a ghost upon disposal until its destruction, which happens
+  // only when the last reference is released.
+  ++g_ghost_node_count_;
+  if (Release() != 0) {
+    // Something other than the node's delegate retains one or more references,
+    // so the node has transitioned from alive to being a ghost and will remain
+    // so until its destruction when its final reference is released.
+    --g_live_node_count_;
+  } else {
+    // Nothing aside from the node's delegate retains any references, so the
+    // node was previously dormant (and has now been destroyed).
+    --g_dormant_node_count_;
+  }
 }
 
 void AXPlatformNodeWin::Destroy() {
@@ -7683,13 +7785,22 @@ bool AXPlatformNodeWin::ShouldHideChildrenForUIA() const {
 
 ULONG AXPlatformNodeWin::InternalAddRef() {
   // Instances of AXPlatformNodeWin hold a reference to themselves (acquired in
-  // `Create`; released in `Dispose`). When the refcount rises from 1 to 2
-  // before the node has been disposed, infer that the instance is being used
+  // `Create()` and released in `Dispose()`). When the refcount rises from 1 to
+  // 2 before the node has been disposed, infer that the instance is being used
   // for some COM-ish purpose; for example, being handed to an accessibility
   // tool via a WM_GETOBJECT message handler.
   const auto ref_count = SequenceAffineComObjectRoot::InternalAddRef();
-  if (delegate_ && ref_count == 2) {
-    OnReferenced();
+  if (delegate_) {
+    if (ref_count == 2) {
+      // This node is now referenced by something other than its delegate, so it
+      // has awoken from dormancy into life.
+      --g_dormant_node_count_;
+      ++g_live_node_count_;
+      OnReferenced();
+    }
+  } else {
+    // It is not possible for the refcount to go from 0 to 1 without a delegate.
+    CHECK_GT(ref_count, 1U);
   }
   return ref_count;
 }
@@ -7702,6 +7813,10 @@ ULONG AXPlatformNodeWin::InternalRelease() {
   // destruction.
   const auto ref_count = SequenceAffineComObjectRoot::InternalRelease();
   if (delegate_ && ref_count == 1) {
+    // This node is no longer being referenced by something other than its
+    // delegate, so it has slipped back to dormancy.
+    --g_live_node_count_;
+    ++g_dormant_node_count_;
     OnDereferenced();
   }
   return ref_count;
@@ -8014,6 +8129,13 @@ std::optional<PROPERTYID> AXPlatformNodeWin::MojoEventToUIAProperty(
     default:
       return std::nullopt;
   }
+}
+
+// static
+std::tuple<size_t, size_t, size_t, size_t>
+AXPlatformNodeWin::GetCountsForTesting() {
+  return {GetInstanceCountForTesting(), g_dormant_node_count_,
+          g_live_node_count_, g_ghost_node_count_};
 }
 
 // static

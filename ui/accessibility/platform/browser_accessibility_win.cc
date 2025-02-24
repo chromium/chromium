@@ -26,8 +26,8 @@ BrowserAccessibilityWin::BrowserAccessibilityWin(
   HRESULT hr = CComObject<BrowserAccessibilityComWin>::CreateInstance(
       &browser_accessibility_com_.AsEphemeralRawAddr());
   DCHECK(SUCCEEDED(hr));
-  browser_accessibility_com_->AddRef();
   browser_accessibility_com_->Init(this);
+  browser_accessibility_com_->AddRef();
 }
 
 BrowserAccessibilityWin::~BrowserAccessibilityWin() {
