@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/task/current_thread.h"
@@ -82,13 +81,11 @@ void ChromeBrowserMainPartsAndroid::PostProfileInit(Profile* profile,
       base::BindOnce(&android::Java_ChromeBackupWatcher_destroy,
                      base::android::AttachCurrentThread(), watcher));
 
-  if (base::FeatureList::IsEnabled(device::kWebAuthnRegisterForFcm)) {
-    // The GCM driver can be used at this point because the primary profile has
-    // been created. Register non-profile-specific things that use GCM so that
-    // no messages can be processed (and dropped) because the handler wasn't
-    // installed in time.
-    webauthn::authenticator::RegisterForCloudMessages();
-  }
+  // The GCM driver can be used at this point because the primary profile has
+  // been created. Register non-profile-specific things that use GCM so that no
+  // messages can be processed (and dropped) because the handler wasn't
+  // installed in time.
+  webauthn::authenticator::RegisterForCloudMessages();
 }
 
 int ChromeBrowserMainPartsAndroid::PreEarlyInitialization() {

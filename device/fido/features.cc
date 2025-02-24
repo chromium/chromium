@@ -172,9 +172,4 @@ BASE_FEATURE(kWebAuthnRemoteDesktopAllowedOriginsPolicy,
              "WebAuthenticationRemoteDesktopAllowedOriginsPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Deprecation switch. Default disabled in M135. Remove in or after M138.
-BASE_FEATURE(kWebAuthnRegisterForFcm,
-             "WebAuthenticationRegisterForFcm",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace device
