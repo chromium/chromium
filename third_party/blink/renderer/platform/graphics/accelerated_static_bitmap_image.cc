@@ -127,7 +127,7 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     GLuint shared_image_texture_id,
-    gfx::Size size,
+    const gfx::Size& size,
     SkColorType sk_color_type,
     SkAlphaType alpha_type,
     sk_sp<SkColorSpace> sk_color_space,

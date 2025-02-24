@@ -159,7 +159,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       scoped_refptr<gpu::ClientSharedImage>,
       const gpu::SyncToken&,
       GLuint shared_image_texture_id,
-      gfx::Size size,
+      const gfx::Size& size,
       SkColorType sk_color_type,
       SkAlphaType alpha_type,
       sk_sp<SkColorSpace> sk_color_space,
