@@ -316,9 +316,6 @@ const MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder()
 void OffscreenCanvasRenderingContext2D::WillDraw(
     const SkIRect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
-  // Call sites should ensure GetPaintCanvas() returns non-null before calling
-  // this.
-  DCHECK(GetPaintCanvas());
   dirty_rect_for_commit_.join(dirty_rect);
   GetCanvasPerformanceMonitor().DidDraw(draw_type);
   if (GetState().ShouldAntialias()) {
@@ -327,9 +324,10 @@ void OffscreenCanvasRenderingContext2D::WillDraw(
   } else {
     Host()->DidDraw(dirty_rect_for_commit_);
   }
-  if (!layer_count_) {
+  if (CanvasResourceProvider* provider = ResourceProvider();
+      layer_count_ == 0 && provider != nullptr) [[likely]] {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
-    GetCanvasResourceProvider()->FlushIfRecordingLimitExceeded();
+    provider->FlushIfRecordingLimitExceeded();
   }
 }
 
