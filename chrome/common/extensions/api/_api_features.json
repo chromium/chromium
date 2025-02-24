@@ -593,10 +593,6 @@
     "dependencies": ["permission:gcm"],
     "contexts": ["privileged_extension"]
   },
-  "sharedStoragePrivate": {
-    "dependencies": ["permission:sharedStoragePrivate"],
-    "contexts": ["privileged_extension"]
-  },
   "history": {
     "dependencies": ["permission:history"],
     "contexts": ["privileged_extension"]

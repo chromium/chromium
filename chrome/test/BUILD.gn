@@ -4454,7 +4454,6 @@ if (!is_android) {
           "../browser/extensions/api/platform_keys/platform_keys_test_base.cc",
           "../browser/extensions/api/platform_keys/platform_keys_test_base.h",
           "../browser/extensions/api/settings_private/settings_private_browsertest_chromeos.cc",
-          "../browser/extensions/api/shared_storage/shared_storage_private_apitest.cc",
           "../browser/extensions/api/system_display/system_display_chromeos_apitest.cc",
           "../browser/extensions/api/terminal/terminal_private_apitest.cc",
           "../browser/extensions/api/terminal/terminal_private_browsertest.cc",

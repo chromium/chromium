@@ -422,19 +422,6 @@
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
     ]
   },
-  // Used by gnubbyd on ChromeOS.  Stores small amounts of data in prefs.
-  // TODO(crbug.com/397817416): Consider removing this API.
-  "sharedStoragePrivate": {
-    "channel": "stable",
-    "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos"],
-    "allowlist": [
-      "6F9E349A0561C78A0D3F41496FE521C5151C7F71", // gnubbyd app stable
-      "C06709A259378015404ED20F75C7D08547E0F10B", // gnubbyd app dev
-      "57A1B95957F9EDB159FA9278BF87FE70DF62BED8", // ske stable
-      "05E9C7F02C6E55E1DE334A1B1EFD2D9A68F10E34"  // ske dev
-    ]
-  },
   "history": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]

@@ -130,7 +130,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermissionID::kSerial, "serial",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
-    {APIPermissionID::kSharedStoragePrivate, "sharedStoragePrivate"},
     {APIPermissionID::kSocket, "socket",
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning,
