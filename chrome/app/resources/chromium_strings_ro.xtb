@@ -28,6 +28,7 @@
 <translation id="1345251407431278948">S-a fixat! Poți să accesezi din nou Căutarea de imagini folosind noul buton din bara de instrumente</translation>
 <translation id="1356661055722410047">Nou! Poți traduce atât textul, cât și imaginile de pe ecran</translation>
 <translation id="1414495520565016063">V-ați conectat la Chromium!</translation>
+<translation id="1465192221147974788">Pentru a permite accesul la fereastră, permite înregistrarea ecranului pentru Chromium din Setări de sistem.</translation>
 <translation id="1478370723027452770">Primește ajutor pentru Chrome for Testing</translation>
 <translation id="1497802159252041924">Eroare la instalare: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Distribuie o filă Chromium</translation>
@@ -160,6 +161,7 @@
 <translation id="3130323860337406239">Chromium utilizează microfonul.</translation>
 <translation id="3137969841538672700">Trage pentru a căuta</translation>
 <translation id="3144188012276422546">Această filă folosește resurse suplimentare. Pentru a îmbunătăți performanța, permite-i browserului Chromium să le dezactiveze.</translation>
+<translation id="3149163023759831301">Pentru a permite accesul la ecran, permite înregistrarea ecranului pentru Chromium din Setări de sistem</translation>
 <translation id="3155163173539279776">Reporniți Chromium</translation>
 <translation id="3161522574479303604">Toate limbile</translation>
 <translation id="3179665906251668410">Deschide linkul într-o fereastră Chromium inco&amp;gnito</translation>
@@ -182,8 +184,10 @@
 <translation id="3474745554856756813">Astfel, se vor șterge <ph name="ITEMS_COUNT" /> elemente de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chromium ca <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> poate comuta între profilurile Chromium</translation>
 <translation id="3509308970982693815">Închideți toate ferestrele Chromium și încercați din nou.</translation>
+<translation id="3522404737534491619">Pentru a permite accesul la fereastră, permite înregistrarea ecranului pentru Chromium din Setări de sistem</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> s-a conectat deja.  Pentru a separa navigarea, conectează-te la Chromium în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">Pentru a-ți proteja confidențialitatea, ștergem automat categoriile de interese mai vechi de patru săptămâni. Pe măsură ce navighezi, o categorie de interese poate să reapară în listă. Sau poți elimina categoriile de interese pe care nu dorești ca Chromium să le ia în considerare.</translation>
+<translation id="3561853857681580870">Pentru a permite accesul la ecran, permite înregistrarea ecranului pentru Chromium din Setări de sistem.</translation>
 <translation id="3567254597502212821">istoricul tău de navigare, o evidență a site-urilor pe care le-ai accesat folosind Chromium pe acest dispozitiv;</translation>
 <translation id="3597003331831379823">Nu s-a putut rula configurarea cu privilegii de nivel superior. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3639635944603682591">Datele de navigare ale acestei persoane vor fi șterse de pe dispozitiv. Pentru a recupera datele, conectează-te la Chromium ca <ph name="USER_EMAIL" />.</translation>
@@ -281,6 +285,7 @@
 <translation id="4942295735032723435">Pentru a primi actualizările Chromium viitoare, vei avea nevoie de macOS 11 sau o versiune ulterioară. Acest computer folosește macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium este în modul fundal.</translation>
 <translation id="494490797786467921">Dă clic pentru a închide dialogul de conectare la Chromium</translation>
+<translation id="4950660488495335294">Cu ajutorul profilurilor Chromium, poți separa toate informațiile din Chromium. Creează profiluri pentru prieteni și familie sau pentru muncă și timp liber.</translation>
 <translation id="4987820182225656817">Invitații pot folosi Chromium fără a lăsa nicio urmă.</translation>
 <translation id="4994636714258228724">Adăugați-vă la Chromium</translation>
 <translation id="5123973130450702873">Chromium are nevoie de permisiune pentru a-ți urmări mâinile</translation>

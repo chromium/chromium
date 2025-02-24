@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1001534784610492198">O arquivo do instalador está danado ou non é válido. Volve descargar Google Chrome.</translation>
+<translation id="1018937009655463387">Para compartir a ventá, vai á configuración do sistema e activa a función de gravación de pantalla para Chrome.</translation>
 <translation id="1026101648481255140">Retomar instalación</translation>
 <translation id="102763973188675173">Personalizar e controlar Google Chrome. Hai unha actualización dispoñible.</translation>
 <translation id="1028061813283459617">Para eliminar os datos de navegación só deste dispositivo, pero non da túa Conta de Google, tes que <ph name="BEGIN_LINK" />pechar sesión en Chrome<ph name="END_LINK" />.</translation>
@@ -228,6 +229,7 @@
 <translation id="3941890832296813527">Erro de instalación: O nome de ficheiro do instalador non é válido ou non se admite.</translation>
 <translation id="3968962723676998462">Escribe a túa frase de acceso para usar e gardar os datos de Chrome na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="3973161977468201858">Google Chrome quere eliminar os teus datos do xestor de contrasinais de Google Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
+<translation id="400161754580828648">Para compartir a pantalla, vai á configuración do sistema e activa a función de gravación de pantalla para Chrome.</translation>
 <translation id="4022972681110646219">Traducir pantalla</translation>
 <translation id="4023601594785368013">Idioma orixinal: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">É necesario reiniciar Chrome OS para aplicar a actualización.</translation>
@@ -290,6 +292,7 @@
 <translation id="4828579605166583682">Google Chrome está tentando substituír os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="4842397268809523050">Chrome OS Flex non puido sincronizar os teus datos porque esta función non está dispoñible para o teu dominio.</translation>
 <translation id="4851866215237571846">A sesión está iniciada como <ph name="EXISTING_USER" />.  Se queres navegar de forma independente, inicia sesión en Chrome co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="4855026984605187434">Para compartir a pantalla, vai á configuración do sistema e activa a función de gravación de pantalla para Chrome</translation>
 <translation id="4873692836499071887">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar o sistema operativo macOS 11 ou unha versión posterior. Este ordenador ten macOS 10.15.</translation>
 <translation id="4873783916118289636">Revisa os controis clave de privacidade e seguranza en Chrome</translation>
 <translation id="4885446229353981848">Mostrar sempre atallo de Google Lens</translation>
@@ -342,6 +345,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5579324208890605088">Produciuse un erro de inicio do sistema: Executa o instalador como un usuario normal, non como persoa administradora.</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="5602351063754773347">Chrome recomenda que a quites. <ph name="BEGIN_LINK" />Máis información sobre as extensións admitidas<ph name="END_LINK" /></translation>
+<translation id="5649156266046089790">Cos perfís de Chrome podes separar todo o contido que teñas neste navegador. Crea perfís para os amigos e a familia ou ben crea un para o traballo e outro para o lecer.</translation>
 <translation id="5649680279845190972">Para obter as túas extensións e moito máis en todos os teus ordenadores, inicia sesión en Chrome</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> pode ser perigoso, así que Chrome bloqueouno.</translation>
 <translation id="566568153320186256">Chrome limita as actividades en segundo plano e os efectos visuais (o desprazamento suave, os fotogramas por segundo dos vídeos…) para aforrar batería. <ph name="BEGIN_LINK" />Máis información sobre Aforro de enerxía<ph name="END_LINK" /></translation>
@@ -576,6 +580,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8614913330719544658">Google Chrome non responde. Queres volver inicialo agora?</translation>
 <translation id="861702415419836452">Chrome necesita permiso de acceso á cámara co fin de crear un mapa 3D do que te rodea</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome reiniciarase en 1 minuto}other{Chrome reiniciarase en # minutos}}</translation>
+<translation id="8637932705841171563">Para compartir a ventá, vai á configuración do sistema e activa a función de gravación de pantalla para Chrome</translation>
 <translation id="8641606876632989680">Chrome enviarache unha notificación cando inicies sesión cun contrasinal vulnerado</translation>
 <translation id="8649026945479135076">É habitual que os sitios que visitas lembren o que che interesa para personalizar a experiencia que se che ofrece neles. Os sitios tamén poden almacenar con Chrome información sobre os teus intereses.</translation>
 <translation id="8669527147644353129">Axudante de Google Chrome</translation>

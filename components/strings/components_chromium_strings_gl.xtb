@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">Chromium bloqueou esta páxina</translation>
 <translation id="48558539577516920">Configura o teu firewall ou o teu antivirus para permitir o acceso
         de Chromium á rede.</translation>
+<translation id="4949828774841497663">Vai a Aplicacións &gt; Configuración do sistema &gt; Rede, selecciona a
+          rede activa, fai clic no botón Detalles e anula a selección de calquera proxy
+          que poida estar seleccionado.</translation>
 <translation id="580822234363523061">Accede ao
           menú de Chromium &gt;
           <ph name="SETTINGS_TITLE" />

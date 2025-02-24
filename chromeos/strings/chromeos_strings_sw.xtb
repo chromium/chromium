@@ -472,6 +472,7 @@
 <translation id="3226657629376379887">Menyu ya vitendo vya kuweka miundo</translation>
 <translation id="3227186760713762082">Gawanya thamani ya <ph name="CATEGORY_TEXT" /> kwa <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Kazi za kuchapisha zilizohifadhiwa kwa zaidi ya siku moja zitaondolewa</translation>
+<translation id="3248791727258378769">Hakuna manukuu yatakayotayarishwa</translation>
 <translation id="324961752321393509">Msimamizi wako haruhusu kufunga programu hii</translation>
 <translation id="3263941347294171263">Chomoa kisha uchomeke upya kebo ya <ph name="DEVICE_NAME" /> ili uendelee na mchakato wa kusasisha</translation>
 <translation id="3268178239013324452">Haijakamilika - Kifuniko kimefunguka</translation>
@@ -670,6 +671,7 @@
 <translation id="420283545744377356">Zima taswira ya skrini</translation>
 <translation id="4210636113897977670">Hifadhi na uondoke</translation>
 <translation id="4210659479607886331">mto wa theluji</translation>
+<translation id="4212169537710712814">Upakuaji wa mfumo wa unukuzi wa <ph name="LANGUAGE_NAME" /> umekamilika</translation>
 <translation id="42126664696688958">Hamisha</translation>
 <translation id="4213104098953699324">Kibodi yenye USB</translation>
 <translation id="4227825898293920515">Muda wa kutumia nenosiri utaisha baada ya <ph name="TIME" /></translation>
@@ -940,6 +942,7 @@
 <translation id="5431318178759467895">Rangi</translation>
 <translation id="5457599981699367932">Vinjari kama Mgeni</translation>
 <translation id="54609108002486618">Imedhibitiwa</translation>
+<translation id="5461608756903394951">Upakuaji wa mfumo wa unukuzi wa <ph name="LANGUAGE_NAME" /> unaendelea</translation>
 <translation id="5470776029649730099">turubai</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Umebakisha mara {0} ya kujaribu}other{Umebakisha mara {0} za kujaribu}}</translation>
 <translation id="5488280942828718790">rangi ya damu ya mzee</translation>
@@ -1191,6 +1194,7 @@
 <translation id="6595046262780525922">Ungependa kuwasha kipengele cha unukuzi na kupakua mfumo wa unukuzi?</translation>
 <translation id="6596816719288285829">Anwani ya IP</translation>
 <translation id="6599673642868607614">Asante kwa maoni yako. Maoni yako hutusaidia kuboresha hali ya Chromebook na yatakaguliwa na timu yetu. Kutokana na idadi kubwa ya ripoti, hatutaweza kukujibu.</translation>
+<translation id="6608043585557830684">Umezima kipengele cha unukuzi. Kiwashe kwenye Mipangilio au katika menyu ya <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Vitufe vya kipanya</translation>
 <translation id="6618744767048954150">Inakagua</translation>
 <translation id="6620487321149975369">Kazi za kuchapisha zitaonekana katika historia usipoziondoa mwenyewe</translation>

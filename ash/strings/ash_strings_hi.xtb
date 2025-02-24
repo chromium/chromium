@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">डेस्क 2</translation>
 <translation id="1546930421365146760">अपने एडमिन को Google Admin console में जाकर, इस डिवाइस को सेट अप करने के लिए कहें</translation>
 <translation id="1549512626801247439">डिवाइस के स्टोरेज का मैनेजमेंट</translation>
+<translation id="1549721333775633305">क्विक शेयर की सेटिंग दिखाएं. क्विक शेयर की सुविधा बंद है</translation>
 <translation id="1550406609415860283">उपलब्ध डिवाइस</translation>
 <translation id="1550523713251050646">ज़्यादा विकल्पों के लिए क्लिक करें</translation>
 <translation id="1555130319947370107">नीला</translation>
@@ -1475,6 +1476,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ऐक्टिवेट नहीं किया गया है.</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">चालू करें</translation>
+<translation id="5864691701242730005">क्विक शेयर की सेटिंग दिखाएं. <ph name="VISIBILITY" /> के लिए, 'किसको दिखे' सेटिंग चुनी गई</translation>
 <translation id="5864748620896638071"><ph name="BATTERY_PERCENTAGE" />% बैटरी बची है</translation>
 <translation id="5867217927013474703">नेटवर्क की जानकारी इकट्ठा की जा रही है</translation>
 <translation id="5867606971598166637">आपका सिस्टम एडमिन आपकी स्क्रीन पर नज़र रख रहा है</translation>
@@ -2263,6 +2265,7 @@
 <translation id="851660987304951246">कॉन्टेंट के बारे में तुरंत खास जानकारी पाने या सवाल पूछने के लिए, 'पढ़ने में मेरी मदद करें' सुविधा का इस्तेमाल करें</translation>
 <translation id="8517041960877371778">हो सकता है आपका <ph name="DEVICE_TYPE" /> चालू होने पर चार्ज नहीं होता हो.</translation>
 <translation id="8535393432370007982">रंग के हिसाब से लगाए गए क्रम को पहले जैसा करें</translation>
+<translation id="8536886494750559755">क्विक शेयर की सेटिंग दिखाएं. डिवाइस <ph name="TIME_REMAINING" /> तक सभी को दिखेगा</translation>
 <translation id="8539803091108018926">टेक्स्ट को क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="8541078764854166027">ऑटो फ़्रेमिंग</translation>
 <translation id="8542053257095774575">कोई डेस्क या टेंप्लेट सेव नहीं किया गया है</translation>

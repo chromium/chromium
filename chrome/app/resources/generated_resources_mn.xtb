@@ -1006,6 +1006,7 @@
 <translation id="1682696837763999627">Том хулганын курсор</translation>
 <translation id="1682867089915960590">Caret Browsing-г асаах уу?</translation>
 <translation id="1686550358074589746">Гулсуулан бичихийг идэвхжүүлэх</translation>
+<translation id="1686785653877010442">Сайт ихэвчлэн танд шуурхай мэдээ, чатын мессежийн талаар мэдэгдэхийн тулд мэдэгдэл илгээдэг.</translation>
 <translation id="168715261339224929">Хавчуургаа бүх төхөөрөмждөө авах бол синкийг асаана уу.</translation>
 <translation id="1688935057616748272">Үсэг бичих</translation>
 <translation id="1689333818294560261">Хоч</translation>
@@ -1017,7 +1018,6 @@
 <translation id="1692210323591458290">Бараан ягаан</translation>
 <translation id="1692713444215319269">Өнгө хувиргалт, томруулагч болон дэлгэцийн тохиргоо</translation>
 <translation id="169341880170235617">Таны табын бүлгийг одоо автоматаар хадгална</translation>
-<translation id="1694470329618537745">Энэ бүлгийн сүүлийн үеийн шинэчлэлт</translation>
 <translation id="1695487653372841667">Та Google-тэй ямар өгөгдөл хуваалцахыг хянах боломжтой. Та үүнийг Тохиргоонд хүссэн үедээ өөрчлөх боломжтой.</translation>
 <translation id="1695510246756136088">Интернэтэд холбогдох боломжгүй. Дахин оролдоно уу.</translation>
 <translation id="1696555181932908973">Та <ph name="SITE_ETLD_PLUS_ONE" />-д үргэлжлүүлэх бусад аргыг турших боломжтой.</translation>
@@ -1290,6 +1290,7 @@
 <translation id="1878885068166344708">Таныг фокусыг хөдөлгөх үед зүйлийг тодруулдаг. Фокусыг өөрчлөхийн тулд tab дээр дарах эсвэл зүйл сонгоно уу.</translation>
 <translation id="1879000426787380528">-р нэвтрэх</translation>
 <translation id="18802377548000045">Табууд том өргөнтэй болж агшина</translation>
+<translation id="1880618477732738742">Таны бүх вебсайт, өргөтгөлийн (энэ өргөтгөлийг оруулаад) геолокаци, микрофон, камер, күүки зэрэг онцлогуудад хандах эрхийг өөрчилж, олгох.</translation>
 <translation id="1880905663253319515">"<ph name="CERTIFICATE_NAME" />" сертификатыг устгах уу?</translation>
 <translation id="1881445033931614352">Гарын загвар</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Зүйл}other{# зүйл}}</translation>
@@ -3477,6 +3478,7 @@
 <translation id="3435738964857648380">Нууцлал</translation>
 <translation id="343578350365773421">Цаас дууссан</translation>
 <translation id="3435896845095436175">Идэвхжүүл</translation>
+<translation id="3437397693214267762">Outlook Календарь, SharePoint, OneDrive-н файлуудаа харна уу</translation>
 <translation id="3438633801274389918">Нинжа</translation>
 <translation id="3439153939049640737"><ph name="HOST" />-д таны микрофон руу нэвтрэхийг үргэлж зөвшөөрөх</translation>
 <translation id="3439970425423980614">PDF-ийг урьдчилан харах горимд нээж байна</translation>
@@ -7136,6 +7138,7 @@
     Бүх хавчуурга, файл болон бусад зүйлдээ хялбархан хандахын тулд бүртгэлээ ашиглана уу. Хэрэв танд бүртгэл байхгүй бол дараагийн дэлгэцэд нэгийг үүсгэх боломжтой.</translation>
 <translation id="6054138466019582920">Энэ хуудсыг Google-р хайх...</translation>
 <translation id="6054284857788651331">Саяхан хаасан табын бүлэг</translation>
+<translation id="6054819000749443354">Системийн тохиргоог нээх</translation>
 <translation id="6054961935262556546">Харагдцыг өөрчлөх</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 With RSA Encryption</translation>
 <translation id="6055544610007596637">Google Play Дэлгүүрээс өөрийн <ph name="DEVICE_TYPE" />-д аппууд суулгаарай</translation>
@@ -8701,7 +8704,6 @@
 <translation id="7189234443051076392">Tөхөөрөмждөө хангалттай зай гаргана уу</translation>
 <translation id="7189451821249468368">Танд энэ төхөөрөмжийг бүртгүүлэх хангалттай дэвшүүлэлт байхгүй байна. Нэмж худалдан авах бол борлуулалтын хэсэгтэй холбогдоно уу. Хэрэв та алдаа гарсны улмаас энэ мессежийг харж байна гэж бодож байвал тусламжтай холбогдоно уу.</translation>
 <translation id="7189965711416741966">Хурууны хээг нэмсэн</translation>
-<translation id="7190883804815364931">Энэ табын сүүлийн шинэчлэлт</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" />-г блоклох уу?</translation>
 <translation id="7191063546666816478">Зарим дэмжигдсэн холбоосыг <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> болон өөр <ph name="NUMBER_OF_OTHER_APPS" /> аппад нээх боломжтой хэвээр байна.</translation>
 <translation id="7191159667348037">Тодорхойгүй хэвлэгч (USB)</translation>
@@ -8958,6 +8960,7 @@
 <translation id="7380459290951585794">Таны утас ойрхон, түгжээг нь тайлсан, Bluetooth, Wi-Fi-г нь асаасан эсэхийг шалгана уу</translation>
 <translation id="7380622428988553498">Төхөөрөмжийн нэр буруу тэмдэгт агуулж байна</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" />-г шинэчилсэн</translation>
+<translation id="7382009635620830394">Хэрэв энэ картыг идэвхгүй болгосон бол таны SharePoint, OneDrive-н файл, Outlook Calendar зэрэг Microsoft-н картуудыг мөн идэвхгүй болгоно.</translation>
 <translation id="7382085868019811559">Одоогийн хөтчийн дэмжлэг (LBS) нь тодорхой URL-н загварыг тэдгээр сайтыг зохих ёсоор ажиллуулахад шаардлагатай уламжлалт онцлогуудыг дэмждэг хоёрдогч хөтчид нээгдэх боломжийг олгоно.</translation>
 <translation id="7382980704744807223">Сэжигтэй</translation>
 <translation id="738322632977123193">Байршуулах боломжгүй. Эдгээрийн аль нэг форматтай зургийг ашиглана уу: .jpg, .gif, .png, .bmp, .tif, .webp</translation>
@@ -10625,6 +10628,7 @@
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" />-г <ph name="MANAGER" />-с удирддаг. Та энэ имэйлийг нэмэлт бүртгэлээр нэмэх боломжгүй.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" /><ph name="USER_EMAIL" />-г ашиглахын тулд эхлээд өөрийн <ph name="DEVICE_TYPE" />-с гарна уу. Дараа нь нэвтрэлтийн дэлгэцийн доод хэсгээс Хүн нэмэхийг сонгоно уу.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Дээд мөрний түлхүүрийн функцийг сэлгэхийн тулд Хайлтын түлхүүрийг дарна уу</translation>
+<translation id="8549127125482561383">Хүсэлтийг хэрхэн харуулах вэ?</translation>
 <translation id="8549316893834449916">Та Chromebook- дээ нэвтрэхдээ Gmail, Драйв, YouTube болон бусад зүйлд нэвтрэхдээ ашигладаг Google Бүртгэлээ ашиглана.</translation>
 <translation id="8550239873869577759">Сэжигтэй файл татсан</translation>
 <translation id="8551388862522347954">Лиценз</translation>

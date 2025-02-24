@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
 <translation id="1009406586654360474">Buka Google Password Manager dan akses tetapan. Pilih “Import” dan tambahkan fail CSV yang mengandungi kata laluan anda yang telah dieksport.</translation>
+<translation id="1010283278930414892">Tiada kata laluan yang disimpan pada peranti ini</translation>
 <translation id="1011749477052068769">Alihkan ke sini</translation>
 <translation id="1014147525163127655">Tiada apa-apa kunci laluan untuk <ph name="ORIGIN" /> pada peranti ini</translation>
 <translation id="1016498331642356377">Cari menggunakan suara anda dengan pantas. Untuk mengedit pintasan ini, sentuh dan tahan.</translation>
@@ -142,6 +143,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="1568636008098739136">Dengar halaman ini. Untuk mengedit pintasan ini, sentuh dan tahan butang.</translation>
 <translation id="1571041387761170095">Tiada kata laluan lemah atau digunakan semula</translation>
 <translation id="1571304935088121812">Salin nama pengguna</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 kata laluan yang terjejas pada peranti ini}other{# kata laluan yang terjejas pada peranti ini}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> item yang dicadangkan dalam senarai di bawah.</translation>
 <translation id="1598163867407640634">Gunakan <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Apabila dihidupkan, gunakan dan simpan data dalam Google Account anda. Apabila dimatikan, data disimpan pada peranti ini sahaja.</translation>
@@ -163,6 +165,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="1724977129262658800">Buka kunci untuk mengedit kata laluan anda</translation>
 <translation id="1726477445370128854">Anda boleh menyemak imbas dan mencari dengan lebih pantas apabila Chrome mempramuat halaman yang diramal akan anda lawati</translation>
 <translation id="1728803206919861584">Simpan kunci laluan luar Inkognito?</translation>
+<translation id="1732514748744806741">Jika kata laluan anda terjejas, kami akan memberitahu anda</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 laman menghantar banyak pemberitahuan baru-baru ini}other{# laman menghantar banyak pemberitahuan baru-baru ini}}</translation>
 <translation id="1749561566933687563">Segerakkan penanda halaman anda</translation>
 <translation id="1750238553597293878">Kekal menggunakan kata laluan dalam Google Account anda</translation>
@@ -1334,6 +1337,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7022756207310403729">Buka dalam penyemak imbas</translation>
 <translation id="7025769836128625875">Ciri ini merupakan ciri AI percubaan dan tidak sentiasa betul. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="7029809446516969842">Kata laluan</translation>
+<translation id="7053256416619638731">Kukuhkan kata laluan anda pada peranti ini</translation>
 <translation id="7053983685419859001">Sekat</translation>
 <translation id="7054588988317389591">Dapatkan perihalan imej?</translation>
 <translation id="7057969023583258980">Buka sejarah penuh Chrome</translation>
@@ -1584,6 +1588,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8110024788458304985">Bantu kami memperbaik ciri dan prestasi Chrome</translation>
 <translation id="8110087112193408731">Tunjukkan aktiviti Chrome anda dalam Kesejahteraan Digital?</translation>
 <translation id="8118117428362942925">Jika anda memerlukan bantuan, minta daripada ibu/bapa anda (<ph name="PARENT_NAME" />)</translation>
+<translation id="8120286190326371840">Tiada kata laluan yang terjejas pada peranti ini</translation>
 <translation id="8122623268651408616">Mengisih mengikut tertib paling baharu</translation>
 <translation id="8127542551745560481">Edit halaman utama</translation>
 <translation id="8130309322784422030">Maklumat log masuk anda yang disimpan mungkin sudah lapuk</translation>

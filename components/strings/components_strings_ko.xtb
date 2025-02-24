@@ -2254,6 +2254,7 @@
 <translation id="4989809363548539747">이 플러그인은 지원되지 않습니다.</translation>
 <translation id="4990241977441916452">봉투 A2</translation>
 <translation id="4992066212339426712">음소거 해제</translation>
+<translation id="4994095017621319069">탭 그룹 1개를 더 이상 사용할 수 없음</translation>
 <translation id="4994348767896109801">이 설정, <ph name="BEGIN_LINK_1" />광고 주제<ph name="END_LINK_1" />, 내 <ph name="BEGIN_LINK_2" />쿠키 설정<ph name="END_LINK_2" />, 보고 있는 사이트의 광고 맞춤설정 여부 등 다양한 요인에 따라 나에게 표시되는 광고의 맞춤설정 여부가 달라질 수 있습니다. <ph name="BEGIN_LINK_3" />광고 개인 정보 보호 관리<ph name="END_LINK_3" />에 대해 자세히 알아보세요.</translation>
 <translation id="4995474875135717171">수정:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 사이트 검색과 기본 검색엔진 관리</translation>
@@ -3468,6 +3469,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}other{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}}</translation>
 <translation id="7153618581592392745">라벤더색</translation>
 <translation id="7156870133441232244">서버를 TLS 1.2 이상으로 업그레이드해야 합니다.</translation>
+<translation id="7156885531105222428">요청한 페이지를 애플리케이션에서 찾을 수 없습니다.</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> 기능을 사용하여 이 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}other{<ph name="FEATURE_NAME" /> 기능을 사용하여 이러한 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}}</translation>
 <translation id="7160999678034985039">작업을 저장하고 준비가 되면 업데이트를 시작하세요.</translation>
 <translation id="7162277662076933695">스마트 카드 리더</translation>
@@ -4254,6 +4256,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">차단된 URL 및 시스템 관리자가 설정한 기타 정책 목록을 확인하려면 &lt;strong&gt;chrome://policy&lt;/strong&gt;를 방문하세요.</translation>
 <translation id="8536234749087605613">봉투(창)</translation>
+<translation id="8538228968820006247">탭 그룹이 가득 차서 신규 회원은 링크를 통해 참여할 수 없습니다.</translation>
 <translation id="8539500321752640291">2개 권한을 허용하시겠습니까?</translation>
 <translation id="8541158209346794904">블루투스 기기</translation>
 <translation id="8541410041357371550">이 사이트는 Chrome에 저장된 내 광고 주제를 기반으로 더 관련성 있는 광고를 표시합니다.</translation>

@@ -472,6 +472,7 @@
 <translation id="3226657629376379887">Меню дзеянняў з макетам</translation>
 <translation id="3227186760713762082">Падзяліць значэнне "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Заданні друку, старэйшыя за 1 дзень, будуць выдалены</translation>
+<translation id="3248791727258378769">Расшыфроўка не будзе створана</translation>
 <translation id="324961752321393509">Ваш адміністратар не дазваляе закрываць гэту праграму</translation>
 <translation id="3263941347294171263">Каб працягнуць абнаўленне, адключыце і падключыце зноў прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3268178239013324452">Збой: дзверцы прынтара адкрыты</translation>
@@ -670,6 +671,7 @@
 <translation id="420283545744377356">Выключыць застаўку</translation>
 <translation id="4210636113897977670">Захаваць і выйсці</translation>
 <translation id="4210659479607886331">ледніковая рака</translation>
+<translation id="4212169537710712814">Мадэль расшыфроўкі мовы "<ph name="LANGUAGE_NAME" />" спампавана</translation>
 <translation id="42126664696688958">Экспартаваць</translation>
 <translation id="4213104098953699324">Клавіятура з USB</translation>
 <translation id="4227825898293920515">Тэрмін дзеяння пароля заканчваецца праз <ph name="TIME" /></translation>
@@ -940,6 +942,7 @@
 <translation id="5431318178759467895">Колер</translation>
 <translation id="5457599981699367932">Праглядаць як госць</translation>
 <translation id="54609108002486618">Пад кіраваннем</translation>
+<translation id="5461608756903394951">Спампоўваецца мадэль расшыфроўкі мовы "<ph name="LANGUAGE_NAME" />"</translation>
 <translation id="5470776029649730099">мешкавіна</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Засталася {0} спроба}one{Засталася {0} спроба}few{Засталося {0} спробы}many{Засталося {0} спроб}other{Засталося {0} спробы}}</translation>
 <translation id="5488280942828718790">пурпурны</translation>
@@ -1191,6 +1194,7 @@
 <translation id="6595046262780525922">Уключыць функцыю расшыфроўкі і спампаваць мадэль расшыфроўкі?</translation>
 <translation id="6596816719288285829">IP-адрас</translation>
 <translation id="6599673642868607614">Дзякуй за водгук. Ён дапаможа нам палепшыць работу Chromebook і будзе разгледжаны нашай камандай. Да нас звяртаецца вялікая колькасць людзей, і таму мы не зможам адправіць вам адказ.</translation>
+<translation id="6608043585557830684">Расшыфроўка выключана. Уключыць яе можна ў наладах ці ў меню <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Клавішы кіравання мышшу</translation>
 <translation id="6618744767048954150">Выконваецца</translation>
 <translation id="6620487321149975369">Заданні друку будуць паказвацца ў гісторыі, пакуль яны не будуць выдалены ўручную</translation>

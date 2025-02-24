@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">‏تم حظر هذه الصفحة بواسطة متصفّح Chromium.</translation>
 <translation id="48558539577516920">‏اسمح لـ Chromium بالدخول إلى الشبكة من خلال إعدادات جدار الحماية أو
         برنامج مكافحة الفيروسات.</translation>
+<translation id="4949828774841497663">‏يُرجى الانتقال إلى "التطبيقات" (Applications) &gt; "إعدادات النظام" (System Settings) &gt; "الشبكة" (Network)، ثم اختيار
+          الشبكة النشطة، والنقر على زر "التفاصيل…" (Details…‎) وإلغاء اختيار أي خوادم وكيلة
+          سبق اختيارها.</translation>
 <translation id="580822234363523061">‏انتقل إلى
           قائمة Chromium &gt;
           <ph name="SETTINGS_TITLE" />

@@ -473,6 +473,7 @@
 <translation id="3226657629376379887">लेआउट ऐक्शन मेन्यू</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> वैल्यू को <ph name="CONVERSION_RATE" /> से विभाजित करें</translation>
 <translation id="3246869037381808805">एक दिन से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
+<translation id="3248791727258378769">कोई ट्रांसक्रिप्ट नहीं बनाई जाएगी</translation>
 <translation id="324961752321393509">आपका एडमिन इस ऐप्लिकेशन को बंद करने की अनुमति नहीं देता</translation>
 <translation id="3263941347294171263">अपडेट की प्रोसेस जारी रखने के लिए, <ph name="DEVICE_NAME" /> को हटाएं और फिर से लगाएं</translation>
 <translation id="3268178239013324452">प्रिंट नहीं हो पाया - प्रिंटर का दरवाज़ा खुला है</translation>
@@ -672,6 +673,7 @@
 <translation id="420283545744377356">स्क्रीन सेवर बंद करें</translation>
 <translation id="4210636113897977670">सेव करें और बाहर निकलें</translation>
 <translation id="4210659479607886331">बर्फ़ीली नदी</translation>
+<translation id="4212169537710712814">बोले जा रहे शब्दों को टेक्स्ट में बदलने का <ph name="LANGUAGE_NAME" /> मॉडल डाउनलोड हो गया है</translation>
 <translation id="42126664696688958">निर्यात करें</translation>
 <translation id="4213104098953699324">यूएसबी कीबोर्ड</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> में पासवर्ड की समयसीमा खत्म हो जाएगी</translation>
@@ -942,6 +944,7 @@
 <translation id="5431318178759467895">रंग</translation>
 <translation id="5457599981699367932">मेहमान के रूप में ब्राउज़ करें</translation>
 <translation id="54609108002486618">प्रबंधित</translation>
+<translation id="5461608756903394951">बोले जा रहे शब्दों को टेक्स्ट में बदलने का <ph name="LANGUAGE_NAME" /> मॉडल डाउनलोड हो रहा है</translation>
 <translation id="5470776029649730099">बर्लैप</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{आप {0} बार और कोशिश कर सकते हैं}one{आप {0} बार और कोशिश कर सकते हैं}other{आप {0} बार और कोशिश कर सकते हैं}}</translation>
 <translation id="5488280942828718790">मजेंटा</translation>
@@ -1194,6 +1197,7 @@
 <translation id="6595046262780525922">क्या आपको बोले जा रहे शब्दों को टेक्स्ट में बदलने की सुविधा चालू करके, ट्रांसक्रिप्शन मॉडल डाउनलोड करना है?</translation>
 <translation id="6596816719288285829">आईपी पता</translation>
 <translation id="6599673642868607614">आपके सुझाव के लिए धन्यवाद. हमारी टीम आपकी शिकायत, राय या सुझाव की समीक्षा करेगी. इससे, हमें Chromebook इस्तेमाल करने के अनुभव को बेहतर बनाने में मदद मिलती है. फ़िलहाल, हमारे पास बहुत सारी रिपोर्ट आ रही हैं. इसलिए, हम जवाब नहीं दे पाएंगे.</translation>
+<translation id="6608043585557830684">बोले जा रहे शब्दों को टेक्स्ट में बदलने की सुविधा बंद है. सेटिंग या <ph name="THREE_DOTS_MENU_ICON" /> मेन्यू में जाकर, इसे चालू करें.</translation>
 <translation id="660846213831377756">माउस का काम करने वाले बटन</translation>
 <translation id="6618744767048954150">जांच चल रही है</translation>
 <translation id="6620487321149975369">प्रिंट की गई फ़ाइलें तब तक इतिहास में दिखेंगी, जब तक इन्हें मैन्युअल तरीके से हटा नहीं दिया जाता</translation>

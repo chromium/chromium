@@ -1021,7 +1021,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1692210323591458290">Violet foncé</translation>
 <translation id="1692713444215319269">Inversion des couleurs, loupe et paramètres d'affichage</translation>
 <translation id="169341880170235617">Vos groupes d'onglets sont désormais enregistrés automatiquement</translation>
-<translation id="1694470329618537745">Dernières modifications apportées à ce groupe</translation>
 <translation id="1695487653372841667">Vous pouvez définir quelles données sont partagées avec Google et modifier cela à tout moment dans les paramètres.</translation>
 <translation id="1695510246756136088">Impossible de se connecter à Internet. Réessayez.</translation>
 <translation id="1696555181932908973">Vous pouvez essayer d'autres méthodes afin de poursuivre sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -8694,7 +8693,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7189234443051076392">Assurez-vous de disposer de suffisamment d'espace sur votre appareil</translation>
 <translation id="7189451821249468368">Vous n'avez pas suffisamment de licences de mise à niveau pour enregistrer cet appareil. Veuillez contacter le service commercial pour en acheter d'autres. Si vous pensez que ce message s'affiche par erreur, veuillez contacter l'assistance technique.</translation>
 <translation id="7189965711416741966">Empreinte digitale ajoutée.</translation>
-<translation id="7190883804815364931">Dernière modification apportée à cet onglet</translation>
 <translation id="7190921792980745354">Bloquer <ph name="MEMBER_FULL_NAME" /> ?</translation>
 <translation id="7191063546666816478">Certains liens compatibles continueront à s'ouvrir dans <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> et <ph name="NUMBER_OF_OTHER_APPS" /> autres applis.</translation>
 <translation id="7191159667348037">Imprimante inconnue (USB)</translation>

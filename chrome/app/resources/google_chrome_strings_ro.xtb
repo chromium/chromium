@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="1001534784610492198">Arhiva programului de instalare este deteriorată sau nevalidă. Descarcă din nou Google Chrome.</translation>
+<translation id="1018937009655463387">Pentru a permite accesul la fereastră, permite înregistrarea ecranului pentru Chrome din Setări de sistem.</translation>
 <translation id="1026101648481255140">Reia instalarea</translation>
 <translation id="102763973188675173">Personalizează și controlează Google Chrome. Este disponibilă o actualizare.</translation>
 <translation id="1028061813283459617">Pentru a șterge datele de navigare doar de pe acest dispozitiv, dar nu și din Contul Google, <ph name="BEGIN_LINK" />deconectează-te de la Chrome<ph name="END_LINK" />.</translation>
@@ -224,6 +225,7 @@
 <translation id="3941890832296813527">Eroare la instalare: numele de fișier al programului de instalare nu este valid sau acceptat.</translation>
 <translation id="3968962723676998462">Introdu expresia de acces pentru a folosi și a salva datele Chrome în contul <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome dorește să șteargă datele din Managerul de parole Google. Introdu parola Windows pentru a permite acest lucru.</translation>
+<translation id="400161754580828648">Pentru a permite accesul la ecran, permite înregistrarea ecranului pentru Chrome din Setări de sistem.</translation>
 <translation id="4022972681110646219">Tradu ecranul</translation>
 <translation id="4023601594785368013">Limba originală: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Pentru a se aplica actualizarea, sistemul de operare Chrome trebuie să fie repornit.</translation>
@@ -286,6 +288,7 @@
 <translation id="4828579605166583682">Google Chrome încearcă să înlocuiască parolele existente. Introdu parola Windows pentru a permite acest lucru.</translation>
 <translation id="4842397268809523050">ChromeOS Flex nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> s-a conectat deja.  Pentru a separa navigarea, conectează-te la Chrome în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="4855026984605187434">Pentru a permite accesul la ecran, permite înregistrarea ecranului pentru Chrome din Setări de sistem</translation>
 <translation id="4873692836499071887">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de macOS 11 sau o versiune ulterioară. Acest computer folosește macOS 10.15.</translation>
 <translation id="4873783916118289636">Examinează cele mai importante opțiuni de confidențialitate și de securitate din Chrome</translation>
 <translation id="4885446229353981848">Afișează întotdeauna comanda rapidă Google Lens</translation>
@@ -334,6 +337,7 @@
 <translation id="5579324208890605088">Eroare la pornire: rulează programul de instalare ca utilizator obișnuit, nu ca administrator.</translation>
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
 <translation id="5602351063754773347">Chrome recomandă să o elimini. <ph name="BEGIN_LINK" />Află mai multe despre extensiile acceptate<ph name="END_LINK" /></translation>
+<translation id="5649156266046089790">Cu ajutorul profilurilor Chrome, poți separa toate informațiile din Chrome. Creează profiluri pentru prieteni și familie sau pentru muncă și timp liber.</translation>
 <translation id="5649680279845190972">Pentru a accesa extensiile și alte date pe toate computerele, conectează-te la Chrome</translation>
 <translation id="565744775970812598">Este posibil ca <ph name="FILE_NAME" /> să fie periculos, așadar Chrome l-a blocat.</translation>
 <translation id="566568153320186256">Chrome economisește energia bateriei limitând activitatea de fundal și efectele vizuale, cum ar fi derularea lină și ratele de cadre video. <ph name="BEGIN_LINK" />Află mai multe despre Economisirea energiei<ph name="END_LINK" /></translation>
@@ -568,6 +572,7 @@
 <translation id="8614913330719544658">Google Chrome nu mai răspunde. Îl repornești acum?</translation>
 <translation id="861702415419836452">Chrome are nevoie de permisiunea de a accesa camera foto pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se va relansa într-un minut}few{Chrome se va relansa în # minute}other{Chrome se va relansa în # de minute}}</translation>
+<translation id="8637932705841171563">Pentru a permite accesul la fereastră, permite înregistrarea ecranului pentru Chrome din Setări de sistem</translation>
 <translation id="8641606876632989680">Chrome te va anunța dacă te conectezi folosind o parolă compromisă</translation>
 <translation id="8649026945479135076">Se întâmplă frecvent ca site-urile pe care le accesezi să rețină lucrurile care te interesează, pentru a-ți personaliza experiența. În plus, site-urile pot stoca informații în Chrome despre interesele tale.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>

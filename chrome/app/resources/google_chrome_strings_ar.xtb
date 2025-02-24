@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
 <translation id="1001534784610492198">‏أرشيف المثبت تالف أو غير صالح. يُرجى تنزيل Google Chrome مرة أخرى.</translation>
+<translation id="1018937009655463387">‏لمشاركة النافذة، يجب السماح بتسجيل الشاشة في Chrome ضِمن "إعدادات النظام" (System Settings).</translation>
 <translation id="1026101648481255140">استئناف التثبيت</translation>
 <translation id="102763973188675173">‏تخصيص Google Chrome والتحكُّم فيه. هناك تحديث متوفر.</translation>
 <translation id="1028061813283459617">‏لحذف بيانات التصفّح من هذا الجهاز فقط والاحتفاظ بها في حسابك على Google، يُرجى <ph name="BEGIN_LINK" />تسجيل الخروج من Chrome<ph name="END_LINK" />.</translation>
@@ -226,6 +227,7 @@
 <translation id="3941890832296813527">خطأ في التثبيت: اسم ملف أداة التثبيت غير صالح أو غير متوافق.</translation>
 <translation id="3968962723676998462">‏يُرجى إدخال عبارة المرور لاستخدام بيانات Chrome وحفظها في حسابك (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="3973161977468201858">‏يريد متصفّح Google Chrome حذف بياناتك في "مدير كلمات المرور في Google". للسماح بذلك، يُرجى كتابة كلمة المرور المستخدَمة في Windows.</translation>
+<translation id="400161754580828648">‏لمشاركة شاشتك، يجب السماح بتسجيل الشاشة في Chrome ضِمن "إعدادات النظام" (System Settings).</translation>
 <translation id="4022972681110646219">ترجمة محتوى الشاشة</translation>
 <translation id="4023601594785368013">اللغة الأصلية: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">‏يجب إعادة تشغيل نظام التشغيل Chrome لتثبيت التحديث.</translation>
@@ -288,6 +290,7 @@
 <translation id="4828579605166583682">‏يحاول Google Chrome استبدال كلمات المرور الحالية. للسماح بذلك، يُرجى كتابة كلمة المرور المستخدَمة في Windows.</translation>
 <translation id="4842397268809523050">‏تعذَّر على ChromeOS Flex مزامنة البيانات لأنّ ميزة المزامنة غير متاحة لنطاقك.</translation>
 <translation id="4851866215237571846">‏سبق أن تم تسجيل الدخول إلى حساب "<ph name="EXISTING_USER" />".  للحصول على تجربة تصفّح منفصلة، سجِّل الدخول إلى Chrome في ملفك الشخصي باستخدام العنوان <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="4855026984605187434">‏لمشاركة شاشتك، يجب السماح بتسجيل الشاشة في Chrome ضِمن "إعدادات النظام" (System Settings)</translation>
 <translation id="4873692836499071887">‏للحصول على تحديثات Google Chrome في المستقبل، يجب استخدام جهاز يعمل بنظام التشغيل macOS 11 أو إصدار أحدث. ويعمل هذا الكمبيوتر بنظام التشغيل macOS 10.15.</translation>
 <translation id="4873783916118289636">‏يمكنك مراجعة العناصر الرئيسية للتحكّم في الخصوصية والأمان في Chrome.</translation>
 <translation id="4885446229353981848">‏إظهار اختصار "عدسة Google" دائمًا</translation>
@@ -338,6 +341,7 @@
 <translation id="5579324208890605088">خطأ في بدء التشغيل: يُرجى تشغيل أداة التثبيت بصفتك مستخدمًا عاديًا وليس بصفتك مشرفًا.</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5602351063754773347">‏ينصح متصفِّح Chrome بإزالة هذه الإضافة. <ph name="BEGIN_LINK" />مزيد من المعلومات عن الإضافات المتوافقة<ph name="END_LINK" /></translation>
+<translation id="5649156266046089790">‏باستخدام الملفات الشخصية على Chrome، يمكنك الفصل بين جميع بيانات Chrome. وبإمكانك إنشاء ملفات شخصية للأصدقاء والعائلة أو الفصل بين البيانات المرتبطة بالعمل وتلك المرتبطة بالأنشطة الترفيهية.</translation>
 <translation id="5649680279845190972">‏يمكنك تسجيل الدخول إلى Chrome للحصول على الإضافات وغيرها على جميع أجهزة الكمبيوتر الخاصة بك</translation>
 <translation id="565744775970812598">‏قد يكون ملف <ph name="FILE_NAME" /> ضارًا، لذلك فقد حظره Chrome.</translation>
 <translation id="566568153320186256">‏يحافظ Chrome على طاقة البطارية من خلال الحدّ من الأنشطة في الخلفية والتأثيرات المرئية، مثل التمرير السلس وعدد اللقطات في الثانية للفيديو. <ph name="BEGIN_LINK" />مزيد من المعلومات حول ميزة "توفير البطارية"<ph name="END_LINK" /></translation>
@@ -572,6 +576,7 @@
 <translation id="8614913330719544658">‏لا يستجيب Google Chrome. هل تريد إعادة التشغيل الآن؟</translation>
 <translation id="861702415419836452">‏يحتاج متصفِّح Chrome إلى إذن للوصول إلى الكاميرا من أجل إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك.</translation>
 <translation id="8625237574518804553">{0,plural, =1{‏ستتم إعادة تشغيل Chrome في غضون دقيقة واحدة}zero{‏ستتم إعادة تشغيل Chrome في غضون # دقيقة}two{‏ستتم إعادة تشغيل Chrome في غضون دقيقتين}few{‏ستتم إعادة تشغيل Chrome في غضون # دقائق}many{‏ستتم إعادة تشغيل Chrome في غضون # دقيقةً}other{‏ستتم إعادة تشغيل Chrome في غضون # دقيقة}}</translation>
+<translation id="8637932705841171563">‏لمشاركة النافذة، يجب السماح بتسجيل الشاشة في Chrome ضِمن "إعدادات النظام" (System Settings)</translation>
 <translation id="8641606876632989680">‏في حال تسجيل الدخول باستخدام كلمة مرور محتمَل تعرّضها للاختراق، سيرسل Chrome إشعارات إليك.</translation>
 <translation id="8649026945479135076">‏غالبًا ما تتذكّر المواقع الإلكترونية التي تزورها المحتوى الذي يهمك، وذلك من أجل تخصيص تجربتك. يمكن أيضًا أن تخزّن المواقع الإلكترونية معلومات عن اهتماماتك في متصفّح Chrome.</translation>
 <translation id="8669527147644353129">‏مساعد Google Chrome</translation>

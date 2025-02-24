@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">میز ۲</translation>
 <translation id="1546930421365146760">‏از سرپرستتان بخواهید این دستگاه را در کنسول Google Admin راه‌اندازی کند</translation>
 <translation id="1549512626801247439">مدیریت ذخیره‌سازی</translation>
+<translation id="1549721333775633305">نشان دادن تنظیمات «هم‌رسانی سریع». «هم‌رسانی سریع» غیرفعال شد</translation>
 <translation id="1550406609415860283">چند دستگاه دردسترس است</translation>
 <translation id="1550523713251050646">برای گزینه‌های بیشتر کلیک کنید</translation>
 <translation id="1555130319947370107">آبی</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> فعال نیست.</translation>
 <translation id="5860033963881614850">خاموش</translation>
 <translation id="5860491529813859533">روشن کردن</translation>
+<translation id="5864691701242730005">نشان دادن تنظیمات «هم‌رسانی سریع». رؤیت‌پذیری <ph name="VISIBILITY" /> انتخاب شد</translation>
 <translation id="5864748620896638071">باتری <ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="5867217927013474703">درحال جمع‌آوری اطلاعات شبکه</translation>
 <translation id="5867606971598166637">سرپرست سیستم شما بر صفحه‌هایتان نظارت دارد</translation>
@@ -2262,6 +2264,7 @@
 <translation id="851660987304951246">بااستفاده از «کمک گرفتن در خواندن» محتوا را سریع خلاصه کنید یا سؤال بپرسید</translation>
 <translation id="8517041960877371778">ممکن است وقتی <ph name="DEVICE_TYPE" /> شما خاموش است، شارژ نشود.</translation>
 <translation id="8535393432370007982">واگرد کردن مرتب‌سازی براساس رنگ</translation>
+<translation id="8536886494750559755">نشان دادن تنظیمات «هم‌رسانی سریع». نمایان برای همه به‌مدت <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">نوشتار در «بریده‌دان» کپی شد</translation>
 <translation id="8541078764854166027">قاب‌بندی دوربین</translation>
 <translation id="8542053257095774575">میز کار یا الگوی ذخیره‌شده‌ای ندارید</translation>

@@ -1008,6 +1008,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1682696837763999627">Cursor de rato grande</translation>
 <translation id="1682867089915960590">Queres activar a navegación por cursor de texto?</translation>
 <translation id="1686550358074589746">Activar escritura sen levantar o dedo</translation>
+<translation id="1686785653877010442">Os sitios adoitan enviar notificacións con noticias de última hora ou mensaxes de chat.</translation>
 <translation id="168715261339224929">Activa a sincronización para acceder aos marcadores desde todos os teus dispositivos.</translation>
 <translation id="1688935057616748272">Escribe unha letra</translation>
 <translation id="1689333818294560261">Alcume</translation>
@@ -1019,7 +1020,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1692210323591458290">Púrpura escuro</translation>
 <translation id="1692713444215319269">Configuración da pantalla, inversión da cor e lupa</translation>
 <translation id="169341880170235617">Agora os teus grupos de pestanas gárdanse automaticamente</translation>
-<translation id="1694470329618537745">Modificacións máis recentes deste grupo</translation>
 <translation id="1695487653372841667">Podes controlar os datos que se comparten con Google. Podes cambiar esta opción en calquera momento en Configuración.</translation>
 <translation id="1695510246756136088">Non hai conexión a Internet Téntao de novo.</translation>
 <translation id="1696555181932908973">Podes probar outras maneiras de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -1283,6 +1283,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1878885068166344708">Destácase un determinado elemento cando moves o enfoque. Para cambiar o enfoque, preme Tabulador ou selecciona un elemento.</translation>
 <translation id="1879000426787380528">Iniciar sesión como</translation>
 <translation id="18802377548000045">As pestanas redúcense a unha anchura considerable</translation>
+<translation id="1880618477732738742">Cambia o acceso e concédeo a funcións como xeolocalización, micrófono, cámara, cookies etc. para todos os sitios web e extensións, mesmo esta extensión.</translation>
 <translation id="1880905663253319515">Queres eliminar o certificado "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Deseño do teclado</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Elemento}other{# elementos}}</translation>
@@ -3467,6 +3468,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3435738964857648380">Seguranza</translation>
 <translation id="343578350365773421">Non hai papel</translation>
 <translation id="3435896845095436175">Activar</translation>
+<translation id="3437397693214267762">Consulta o calendario de Outlook e os ficheiros de Sharepoint e OneDrive</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Permitir sempre a <ph name="HOST" /> acceder ao teu micrófono</translation>
 <translation id="3439970425423980614">Abrindo PDF en vista previa</translation>
@@ -7127,6 +7129,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
     Úsaa para acceder facilmente aos teus marcadores, ficheiros e moito máis. Se non tes ningunha conta, podes crear unha na seguinte pantalla.</translation>
 <translation id="6054138466019582920">Buscar esta páxina con Google...</translation>
 <translation id="6054284857788651331">Grupo de pestanas pechado recentemente</translation>
+<translation id="6054819000749443354">Abrir configuración do sistema</translation>
 <translation id="6054961935262556546">Cambiar visibilidade</translation>
 <translation id="6055392876709372977">PKCS n.º 1 SHA-256 con cifrado RSA</translation>
 <translation id="6055544610007596637">Instala aplicacións para o teu dispositivo (<ph name="DEVICE_TYPE" />) desde Google Play Store</translation>
@@ -8692,7 +8695,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7189234443051076392">Asegúrate de que hai espazo suficiente no teu dispositivo</translation>
 <translation id="7189451821249468368">Non tes licenzas suficientes para inscribir este dispositivo. Ponte en contacto co departamento de vendas para comprar máis. Se cres que esta mensaxe apareceu por erro, ponte en contacto co servizo de asistencia.</translation>
 <translation id="7189965711416741966">Engadiuse a impresión dixital.</translation>
-<translation id="7190883804815364931">Última actualización desta pestana</translation>
 <translation id="7190921792980745354">Queres bloquear a <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Algunhas ligazóns compatibles seguirán abríndose nas aplicacións <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> e <ph name="NUMBER_OF_OTHER_APPS" /> máis.</translation>
 <translation id="7191159667348037">Impresora descoñecida (USB)</translation>
@@ -8949,6 +8951,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7380459290951585794">Asegúrate de ter o teléfono preto, desbloqueado e co Bluetooth e a wifi activados</translation>
 <translation id="7380622428988553498">O nome do dispositivo contén caracteres non válidos</translation>
 <translation id="7380768571499464492">Actualizouse a impresora <ph name="PRINTER_NAME" /></translation>
+<translation id="7382009635620830394">Se se desactiva esta tarxeta, tamén se desactivarán as tarxetas de Microsoft, como as de ficheiros de SharePoint e OneDrive, e o calendario de Outlook.</translation>
 <translation id="7382085868019811559">A función de compatibilidade con navegadores antigos permite que os URL que presentan determinados padróns se abran nun navegador secundario que sexa compatible coas funcións antigas necesarias para que estes sitios se executen de forma adecuada.</translation>
 <translation id="7382980704744807223">Descarga sospeitosa</translation>
 <translation id="738322632977123193">Non se puido cargar o ficheiro. Usa unha imaxe nun dos seguintes formatos: .jpg, .gif, .png, .bmp, .tif ou .webp</translation>
@@ -10618,6 +10621,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" />O enderezo <ph name="USER_EMAIL" /> está xestionado por <ph name="MANAGER" />. Non podes engadir este correo electrónico como conta adicional.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para usar <ph name="USER_EMAIL" />, primeiro pecha sesión no teu dispositivo (<ph name="DEVICE_TYPE" />). Despois, na parte inferior da pantalla de inicio de sesión, selecciona Engadir unha persoa.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Mantén premida a tecla da busca para cambiar o comportamento das teclas da fila superior</translation>
+<translation id="8549127125482561383">Como mostrar solicitudes</translation>
 <translation id="8549316893834449916">Usarás a túa Conta de Google (a mesma que utilizas para Gmail, Drive ou YouTube, entre outros servizos) para iniciar sesión no Chromebook.</translation>
 <translation id="8550239873869577759">Ficheiros sospeitoso descargado</translation>
 <translation id="8551388862522347954">Licenzas</translation>

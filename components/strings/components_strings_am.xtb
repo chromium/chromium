@@ -2253,6 +2253,7 @@
 <translation id="4989809363548539747">ይህ ተሰኪ አይደገፍም</translation>
 <translation id="4990241977441916452">ኤ2 ፖስታ</translation>
 <translation id="4992066212339426712">ድምጸ-ከል አንሳ</translation>
+<translation id="4994095017621319069">1 የትር ቡድን ከእንግዲህ አይገኝም</translation>
 <translation id="4994348767896109801">የሚያዩት ማስታወቂያ ግላዊነት የተላበሰ ይሁን አይሁን ይህ ቅንብር፣ <ph name="BEGIN_LINK_1" />የማስታወቂያ ርዕስ<ph name="END_LINK_1" />፣ የእርስዎ <ph name="BEGIN_LINK_2" />የኩኪ ቅንብሮች<ph name="END_LINK_2" /> እና እያዩት ያለው ጣቢያ ማስታወቂያዎች ግላዊነትን የተላበሱ የሚያደርግ ከሆነ ጨምሮ በብዙ ነገሮች ላይ የሚወሰን ሊሆን ይችላል። <ph name="BEGIN_LINK_3" />የእርስዎን የማስታወቂያ ግላዊነት ስለማስተዳደር<ph name="END_LINK_3" /> የበለጠ ይረዱ።</translation>
 <translation id="4995474875135717171">የተቀየረው፦</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ከዚያ የጣቢያ ፍለጋን እና ነባሪ የፍለጋ ፕሮግራምዎን ለማቀናበር ትርን ከዚያ አስገባን ይጫኑ</translation>
@@ -3467,6 +3468,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}one{<ph name="PAYMENT_METHOD_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}other{<ph name="PAYMENT_METHOD_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}}</translation>
 <translation id="7153618581592392745">ፈዘዝ ያለ ወይን ጠጅ</translation>
 <translation id="7156870133441232244">አገልጋዩ ወደ TLS 1.2 ወይም ከዚያ በኋላ ማላቅ አለበት።</translation>
+<translation id="7156885531105222428">የጠየቁት ገፅ በመተግበሪያው ውስጥ ሊገኝ አልቻለም</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{ይህንን ፋይል <ph name="FEATURE_NAME" /> በመጠቀም ለመላክ ፣ በመሳሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />) ያስለቅቁ}one{እነዚህን ፋይሎች <ph name="FEATURE_NAME" /> በመጠቀም ለመላክ ፣ በመሳሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />) ያስለቅቁ}other{እነዚህን ፋይሎች <ph name="FEATURE_NAME" /> በመጠቀም ለመላክ ፣ በመሳሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />) ያስለቅቁ}}</translation>
 <translation id="7160999678034985039">እባክዎ ሥራዎን ያስቀምጡ እና ዝግጁ ሲሆኑ ዝማኔውን ያስጀምሩ።</translation>
 <translation id="7162277662076933695">ዘመናዊ ካርድ አንባቢ</translation>
@@ -4254,6 +4256,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">የታገዱ የዩአርኤሎች ዝርዝር እና ሌሎች በሥርዓት አስተዳዳሪዎ አስገዳጅነት የተሰጣቸው መመሪያዎችን ለማየት &lt;strong&gt;chrome://policy&lt;/strong&gt;ን ይጎብኙ።</translation>
 <translation id="8536234749087605613">ደብዳቤ (መስኮት)</translation>
+<translation id="8538228968820006247">የትር ቡድንዎ ሙሉ ነው፣ አዲስ አባላት በአገናኙ መቀላቀል አይችሉም</translation>
 <translation id="8539500321752640291">2 ፈቃዶች ይፈቀዱ?</translation>
 <translation id="8541158209346794904">የብሉቱዝ መሣሪያ</translation>
 <translation id="8541410041357371550">ይህ ጣቢያ ይበልጥ አግባብነት ያላቸው ማስታወቂያዎችን ለእርስዎ ለማሳየት የእርስዎን የማስታወቂያ ርዕሶች ከChrome ያገኛል</translation>

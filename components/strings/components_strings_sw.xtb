@@ -2254,6 +2254,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4989809363548539747">Programu jalizi hii haitumiki</translation>
 <translation id="4990241977441916452">Bahasha ya ukubwa wa A2</translation>
 <translation id="4992066212339426712">Rejesha sauti</translation>
+<translation id="4994095017621319069">Kikundi 1 cha vichupo hakipatikani tena</translation>
 <translation id="4994348767896109801">Iwapo tangazo unaloona limewekewa mapendeleo hutegemea mambo mengi ikiwa ni pamoja na mipangilio hii, <ph name="BEGIN_LINK_1" />mada za matangazo<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />mipangilio yako ya vidakuzi<ph name="END_LINK_2" /> na iwapo tovuti unayoangalia huwekea matangazo mapendeleo. Pata maelezo zaidi kuhusu <ph name="BEGIN_LINK_3" />kudhibiti faragha yako ya matangazo<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Ilibadilishwa:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Bonyeza 'tab' kisha 'Enter' ili udhibiti utafutaji kwenye tovuti na mtambo wako chaguomsingi wa kutafuta</translation>
@@ -3468,6 +3469,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> na nyingine <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> na nyingine <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Urujuani</translation>
 <translation id="7156870133441232244">Seva inahitaji kupata toleo la TLS 1.2 au jipya zaidi.</translation>
+<translation id="7156885531105222428">Imeshindwa kupata ukurasa ulioomba kwenye programu</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Ili utume faili hii ukitumia kipengele cha <ph name="FEATURE_NAME" />, futa ili upate nafasi (<ph name="DISK_SPACE_SIZE" />) kwenye kifaa chako}other{Ili utume faili hizi ukitumia kipengele cha <ph name="FEATURE_NAME" />, futa ili upate nafasi (<ph name="DISK_SPACE_SIZE" />) kwenye kifaa chako}}</translation>
 <translation id="7160999678034985039">Tafadhali hifadhi kazi yako na uanzishe sasisho ukiwa tayari.</translation>
 <translation id="7162277662076933695">Kisomaji mahiri cha kadi</translation>
@@ -4251,6 +4253,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Tembelea &lt;strong&gt;chrome://policy&lt;/strong&gt; ili uone orodha ya URL zilizozuiwa na sera zingine zinazotekelezwa na msimamizi wako wa mfumo.</translation>
 <translation id="8536234749087605613">Bahasha (Yenye Kidirisha)</translation>
+<translation id="8538228968820006247">Kikundi chako cha vichupo kimejaa, washiriki wapya hawawezi kujiunga wakitumia kiungo hiki</translation>
 <translation id="8539500321752640291">Ungependa kuruhusu vipengele viwili vifikiwe?</translation>
 <translation id="8541158209346794904">Kifaa cha Bluetooth</translation>
 <translation id="8541410041357371550">Tovuti hii hupata mada zako za matangazo kutoka kwenye Chrome ili kukuonyesha matangazo yanayokufaa zaidi</translation>

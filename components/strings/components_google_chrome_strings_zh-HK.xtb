@@ -12,6 +12,7 @@
 <translation id="3512634283363927263">這些頁面的適用對象為 Chrome 開發人員，可能不會主動維護或測試。如要啟用，請前往 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />，按一下按鈕啟用偵錯頁面，再返回此頁面。</translation>
 <translation id="3875312571075912821">在防火牆或防毒軟件設定中允許 Chrome 存取
           網絡。</translation>
+<translation id="4949828774841497663">前往 [應用程式] &gt; [系統設定] &gt; [網絡]，選取有效的網絡，然後按一下「詳細資料…」按鈕，並取消選取任何可能已選取的 Proxy。</translation>
 <translation id="5005121315113832363">Chrome 已封鎖此頁面</translation>
 <translation id="6011049234605203654">前往
           [Chrome 選單] &gt;

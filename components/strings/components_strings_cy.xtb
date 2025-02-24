@@ -2254,6 +2254,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4989809363548539747">Ni chefnogir yr ategyn hwn</translation>
 <translation id="4990241977441916452">Amlen A2</translation>
 <translation id="4992066212339426712">Dad-dddistewi</translation>
+<translation id="4994095017621319069">Nid yw'r 1 grŵp tabiau ar gael bellach</translation>
 <translation id="4994348767896109801">Gall p'un a yw hysbyseb rydych yn ei gweld wedi'i phersonoleiddio ddibynnu ar lawer o bethau gan gynnwys y gosodiad hwn, <ph name="BEGIN_LINK_1" />pynciau hysbysebion<ph name="END_LINK_1" />, eich <ph name="BEGIN_LINK_2" />gosodiadau cwcis<ph name="END_LINK_2" />, ac os yw'r wefan rydych yn edrych arni yn personoleiddio hysbysebion. Dysgu rhagor am <ph name="BEGIN_LINK_3" />reoli eich preifatrwydd hysbysebion<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Addaswyd:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pwyswch Tab yna Enter i reoli chwilio gwefan a'ch peiriant chwilio diofyn</translation>
@@ -3467,6 +3468,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ac <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}two{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}few{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}many{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}other{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}}</translation>
 <translation id="7153618581592392745">Lafant</translation>
 <translation id="7156870133441232244">Dylai'r gweinydd uwchraddio i TLS 1.2 neu'n ddiweddarach.</translation>
+<translation id="7156885531105222428">Nid oedd modd dod o hyd i'r dudalen y gofynnoch amdani yn yr ap</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{I anfon y ffeil hon gan ddefnyddio <ph name="FEATURE_NAME" />, rhyddhewch le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}zero{I anfon y ffeiliau hyn gan ddefnyddio <ph name="FEATURE_NAME" />, rhyddhewch le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}two{I anfon y ffeiliau hyn gan ddefnyddio <ph name="FEATURE_NAME" />, rhyddhewch le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}few{I anfon y ffeiliau hyn gan ddefnyddio <ph name="FEATURE_NAME" />, rhyddhewch le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}many{I anfon y ffeiliau hyn gan ddefnyddio <ph name="FEATURE_NAME" />, rhyddhewch le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}other{I anfon y ffeiliau hyn gan ddefnyddio <ph name="FEATURE_NAME" />, rhyddhewch le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}}</translation>
 <translation id="7160999678034985039">Cadwch eich gwaith a dechreuwch y diweddariad pan fyddwch yn barod.</translation>
 <translation id="7162277662076933695">Darllenydd cerdyn clyfar</translation>
@@ -4254,6 +4256,7 @@ Manylion ychwanegol:
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Ewch i &lt;strong&gt;chrome://policy&lt;/strong&gt; i weld y rhestr o gyfeiriadau URL sydd wedi'u rhwystro a pholisïau eraill sy'n cael eu gweithredu gan eich gweinyddwr system.</translation>
 <translation id="8536234749087605613">Amlen (Ffenestr)</translation>
+<translation id="8538228968820006247">Mae eich grŵp tabiau yn llawn, ni all aelodau newydd ymuno â'r ddolen</translation>
 <translation id="8539500321752640291">Caniatáu 2 ganiatâd?</translation>
 <translation id="8541158209346794904">Dyfais Bluetooth</translation>
 <translation id="8541410041357371550">Mae'r wefan hon yn cael eich pynciau hysbysebion gan Chrome er mwyn dangos hysbysebion mwy perthnasol i chi</translation>

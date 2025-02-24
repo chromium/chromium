@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="1001534784610492198">安裝程式封存檔案已經損壞或無效，請再次下載 Google Chrome。</translation>
+<translation id="1018937009655463387">如要分享視窗內容，請前往「系統設定」允許 Chrome 螢幕錄影。</translation>
 <translation id="1026101648481255140">繼續安裝</translation>
 <translation id="102763973188675173">有可用的更新，歡迎自訂及控制 Google Chrome。</translation>
 <translation id="1028061813283459617">如果只要刪除這部裝置上的瀏覽資料，但保留 Google 帳戶中的資料，請<ph name="BEGIN_LINK" />登出 Chrome<ph name="END_LINK" />。</translation>
@@ -223,6 +224,7 @@
 <translation id="3941890832296813527">安裝錯誤：安裝程式檔案名稱無效或不受支援。</translation>
 <translation id="3968962723676998462">請輸入通關密語，才能將 Chrome 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chrome 資料</translation>
 <translation id="3973161977468201858">Google Chrome 要刪除 Google 密碼管理工具資料。如果允許，請輸入 Windows 密碼。</translation>
+<translation id="400161754580828648">如要分享螢幕內容，請前往「系統設定」允許 Chrome 螢幕錄影。</translation>
 <translation id="4022972681110646219">翻譯這個畫面</translation>
 <translation id="4023601594785368013">原文語言：<ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome OS 必須重新啟動，才能套用更新。</translation>
@@ -285,6 +287,7 @@
 <translation id="4828579605166583682">Google Chrome 正嘗試更換現有密碼。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="4842397268809523050">你的網域無法使用同步功能，因此 ChromeOS Flex 無法同步處理你的資料。</translation>
 <translation id="4851866215237571846">目前登入的帳戶為：<ph name="EXISTING_USER" />。如要分開保存你的瀏覽資料，請在 Chrome 中登入你的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。</translation>
+<translation id="4855026984605187434">如要分享螢幕內容，請前往「系統設定」允許 Chrome 螢幕錄影</translation>
 <translation id="4873692836499071887">如果之後要更新 Google Chrome，請使用 macOS 11 以上版本。這部電腦目前的版本為 macOS 10.15。</translation>
 <translation id="4873783916118289636">查看 Chrome 中最重要的隱私權和安全性控制項</translation>
 <translation id="4885446229353981848">一律顯示 Google 智慧鏡頭捷徑</translation>
@@ -335,6 +338,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5579324208890605088">啟動錯誤：請以一般使用者身分 (非系統管理員) 執行安裝程式。</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5602351063754773347">Chrome 建議你移除。<ph name="BEGIN_LINK" />進一步瞭解支援的擴充功能<ph name="END_LINK" /></translation>
+<translation id="5649156266046089790">你可以運用 Chrome 設定檔分隔各種 Chrome 資料，例如建立親朋好友各自的專屬設定檔，或是依工作和娛樂需要建立不同設定檔。</translation>
 <translation id="5649680279845190972">如要在所有電腦上使用你的擴充功能和其他資料，請登入 Chrome</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能不安全，因此遭到 Chrome 封鎖。</translation>
 <translation id="566568153320186256">Chrome 會限制背景活動和視覺效果 (例如順暢捲動和視訊畫面更新率)，以節省電池電力。<ph name="BEGIN_LINK" />進一步瞭解節能模式<ph name="END_LINK" /></translation>
@@ -569,6 +573,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8614913330719544658">Google Chrome 沒有回應，要立即重新啟動嗎？</translation>
 <translation id="861702415419836452">Chrome 需要取得攝影機權限，才能根據你的周遭環境建立 3D 地圖</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 將在 1 分鐘後重新啟動}other{Chrome 將在 # 分鐘後重新啟動}}</translation>
+<translation id="8637932705841171563">如要分享視窗內容，請前往「系統設定」允許 Chrome 螢幕錄影</translation>
 <translation id="8641606876632989680">如果你使用遭外洩的密碼登入帳戶，Chrome 會通知你</translation>
 <translation id="8649026945479135076">你造訪的網站通常都會記住你感興趣的項目，目的是打造個人化體驗。此外，網站也可以將你的興趣喜好相關資訊儲存在 Chrome 中。</translation>
 <translation id="8669527147644353129">Google Chrome 小幫手</translation>

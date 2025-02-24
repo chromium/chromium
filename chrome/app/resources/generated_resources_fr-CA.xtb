@@ -1021,7 +1021,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1692210323591458290">Violet foncé</translation>
 <translation id="1692713444215319269">Inversion des couleurs, loupe et paramètres d'affichage</translation>
 <translation id="169341880170235617">Vos groupes d'onglets sont maintenant automatiquement enregistrés</translation>
-<translation id="1694470329618537745">Dernières mises à jour de ce groupe</translation>
 <translation id="1695487653372841667">Vous pouvez contrôler les données qui sont partagées avec Google. Vous pouvez changer cette option en tout temps dans Paramètres.</translation>
 <translation id="1695510246756136088">Impossible de se connecter à Internet. Réessayez.</translation>
 <translation id="1696555181932908973">Vous pouvez essayer d'autres solutions pour continuer sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -8696,7 +8695,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7189234443051076392">Assurez-vous qu'il y a suffisamment d'espace sur votre appareil</translation>
 <translation id="7189451821249468368">Vous n'avez pas suffisamment de mises à niveau pour inscrire cet appareil. Veuillez communiquer avec le service commercial pour en acheter d'autres. Si vous pensez que ce message s'affiche par erreur, veuillez communiquer avec l'assistance technique.</translation>
 <translation id="7189965711416741966">Empreinte digitale ajoutée.</translation>
-<translation id="7190883804815364931">Dernière mise à jour de cet onglet</translation>
 <translation id="7190921792980745354">Bloquer <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Certains liens pris en charge continueront de s'ouvrir dans <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> et <ph name="NUMBER_OF_OTHER_APPS" /> autres applications.</translation>
 <translation id="7191159667348037">Imprimante inconnue (USB)</translation>

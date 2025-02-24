@@ -2258,6 +2258,7 @@ Del</translation>
 <translation id="4989809363548539747">הפלאגין הזה אינו נתמך</translation>
 <translation id="4990241977441916452">‏מעטפה – A2</translation>
 <translation id="4992066212339426712">ביטול השתקה</translation>
+<translation id="4994095017621319069">קבוצת כרטיסיות אחת לא זמינה יותר</translation>
 <translation id="4994348767896109801">‏יוצגו מודעות עם או בלי התאמה אישית בהתאם להגדרה הזו, ל<ph name="BEGIN_LINK_1" />נושאי המודעות<ph name="END_LINK_1" />, ל<ph name="BEGIN_LINK_2" />הגדרות קובצי ה-Cookie<ph name="END_LINK_2" />, למצב ההתאמה האישית של מודעות באתר (פעילה או מושבתת) ולגורמים נוספים. <ph name="BEGIN_LINK_3" />מידע נוסף על קביעת ההגדרות לפרטיות בפרסום<ph name="END_LINK_3" /></translation>
 <translation id="4995474875135717171">שונה בתאריך:</translation>
 <translation id="4995749490935861684">‏<ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לנהל את החיפוש באתר ואת מנוע החיפוש שבברירת מחדל</translation>
@@ -3473,6 +3474,7 @@ Del</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}two{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">לבנדר</translation>
 <translation id="7156870133441232244">‏יש לשדרג את השרת ל-TLS 1.2 ואילך.</translation>
+<translation id="7156885531105222428">לא הצלחנו למצוא את הדף שביקשת באפליקציה</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{כדי לשלוח את הקובץ הזה באמצעות <ph name="FEATURE_NAME" />, צריך לפנות מקום (<ph name="DISK_SPACE_SIZE" />) במכשיר.}one{כדי לשלוח את הקבצים האלה באמצעות <ph name="FEATURE_NAME" />, צריך לפנות מקום (<ph name="DISK_SPACE_SIZE" />) במכשיר.}two{כדי לשלוח את הקבצים האלה באמצעות <ph name="FEATURE_NAME" />, צריך לפנות מקום (<ph name="DISK_SPACE_SIZE" />) במכשיר.}other{כדי לשלוח את הקבצים האלה באמצעות <ph name="FEATURE_NAME" />, צריך לפנות מקום (<ph name="DISK_SPACE_SIZE" />) במכשיר.}}</translation>
 <translation id="7160999678034985039">עליך לשמור את העבודה ולהתחיל את העדכון אחרי ששמרת הכול.</translation>
 <translation id="7162277662076933695">קורא כרטיסים חכמים</translation>
@@ -4260,6 +4262,7 @@ Del</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">‏בכתובת &lt;strong&gt;chrome://policy&lt;/strong&gt; מוצגת רשימה של כתובות אתרים שנחסמו ותקנונים אחרים שנאכפים על ידי מנהל המערכת.</translation>
 <translation id="8536234749087605613">Envelope (Window)</translation>
+<translation id="8538228968820006247">קבוצת הכרטיסיות שלך מלאה. אי אפשר לצרף משתמשים חדשים באמצעות הקישור</translation>
 <translation id="8539500321752640291">לאשר את 2 ההרשאות?</translation>
 <translation id="8541158209346794904">‏מכשיר Bluetooth</translation>
 <translation id="8541410041357371550">‏האתר הזה מקבל מידע על נושאי המודעות שלך מ-Chrome כדי להציג לך מודעות רלוונטיות יותר</translation>

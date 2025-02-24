@@ -1017,7 +1017,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1692210323591458290">Dunkelviolett</translation>
 <translation id="1692713444215319269">Farbumkehr, Lupe und Anzeigeeinstellungen</translation>
 <translation id="169341880170235617">Deine Tabgruppen werden jetzt automatisch gespeichert</translation>
-<translation id="1694470329618537745">Letzte Aktualisierungen dieser Gruppe</translation>
 <translation id="1695487653372841667">Du legst selbst fest, auf welche Daten Google zugreifen kann. In den Einstellungen kannst du dies jederzeit ändern.</translation>
 <translation id="1695510246756136088">Keine Internetverbindung verfügbar. Versuche es noch einmal.</translation>
 <translation id="1696555181932908973">Du kannst andere Möglichkeiten zum Fortfahren auf <ph name="SITE_ETLD_PLUS_ONE" /> ausprobieren.</translation>
@@ -8684,7 +8683,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7189234443051076392">Achte darauf, dass auf deinem Gerät ausreichend Speicherplatz vorhanden ist</translation>
 <translation id="7189451821249468368">Du hast nicht genügend Upgrades zum Anmelden dieses Geräts. Weitere Upgrades kannst du beim Vertrieb erwerben. Wenn du glaubst, dass du diese Meldung fälschlicherweise erhalten hast, kontaktiere bitte den Support.</translation>
 <translation id="7189965711416741966">Fingerabdruck hinzugefügt.</translation>
-<translation id="7190883804815364931">Letzte Aktualisierung dieses Tabs</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> blockieren?</translation>
 <translation id="7191063546666816478">Einige unterstützte Links werden weiterhin in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> und <ph name="NUMBER_OF_OTHER_APPS" /> anderen Apps geöffnet.</translation>
 <translation id="7191159667348037">Unbekannter Drucker (USB)</translation>

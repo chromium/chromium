@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">لطفاً صبر کنید...</translation>
 <translation id="2740531572673183784">تأیید</translation>
 <translation id="2744221223678373668">اشتراک‌گذاری شده</translation>
+<translation id="2749164457515831917">پیشنهادها درهم شد</translation>
 <translation id="2751739896257479635">‏اصالت‌سنجی مرحله ۲ EAP</translation>
 <translation id="2754757901767760034">لامپ</translation>
 <translation id="2780756493585863768">‏پس‌زمینه‌های اخیر با بهره‌گیری از هوش مصنوعی Google ایجاد شده است</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">منوی کنش‌های طرح‌بندی</translation>
 <translation id="3227186760713762082">تقسیم مقدار <ph name="CATEGORY_TEXT" /> بر <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
+<translation id="3248791727258378769">ترانویسی ایجاد نخواهد شد</translation>
 <translation id="324961752321393509">سرپرستتان اجازه نمی‌دهد این برنامه را ببندید</translation>
 <translation id="3263941347294171263">برای ادامه فرایند به‌روزرسانی، کابل <ph name="DEVICE_NAME" /> را جدا و دوباره وصل کنید</translation>
 <translation id="3268178239013324452">انجام نشد - در باز است</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">انتخاب واحد دما</translation>
 <translation id="3661106764436337772">سریع‌تر و با اطمینان بیشتر بنویسید</translation>
 <translation id="3662461537616691585">شرابی و زرشکی</translation>
+<translation id="3664755900672940272">پیام‌واره‌های نمونه درهم شد</translation>
 <translation id="3668449597372804501">کاغذدیواری جریان ابر</translation>
 <translation id="3668570675727296296">تنظیمات زبان</translation>
 <translation id="3675132884790542448">خوک</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">خاموش کردن محافظ صفحه</translation>
 <translation id="4210636113897977670">ذخیره و خروج</translation>
 <translation id="4210659479607886331">یخ‌رود</translation>
+<translation id="4212169537710712814">مدل ترانویسی <ph name="LANGUAGE_NAME" /> بارگیری شد</translation>
 <translation id="42126664696688958">صادر کردن</translation>
 <translation id="4213104098953699324">‏صفحه‌کلید USB</translation>
 <translation id="4227825898293920515">گذرواژه <ph name="TIME" /> دیگر منقضی می‌شود</translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">رنگ</translation>
 <translation id="5457599981699367932">مرور کردن به‌عنوان یک مهمان</translation>
 <translation id="54609108002486618">مدیریت شده</translation>
+<translation id="5461608756903394951">مدل ترانویسی <ph name="LANGUAGE_NAME" /> درحال بارگیری است</translation>
 <translation id="5470776029649730099">کرباس</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} فرصت باقی مانده است}one{{0} فرصت باقی مانده است}other{{0} فرصت باقی مانده است}}</translation>
 <translation id="5488280942828718790">زرشکی</translation>
@@ -1191,6 +1196,7 @@
 <translation id="6595046262780525922">ترانویسی روشن شود و مدل ترانویسی بارگیری شود؟</translation>
 <translation id="6596816719288285829">‏نشانی IP</translation>
 <translation id="6599673642868607614">‏از بازخوردتان سپاس‌گزاریم. تیم ما بازخورد شما را مرور می‌کند و به‌کمک آن می‌توانیم تجربه استفاده از Chromebook را بهبود ببخشیم. به‌دلیل تعداد بالای گزارش‌ها، قادر به ارسال پاسخ نخواهیم بود.</translation>
+<translation id="6608043585557830684">ترانویسی خاموش است. آن را در «تنظیمات» یا در منو <ph name="THREE_DOTS_MENU_ICON" /> روشن کنید.</translation>
 <translation id="660846213831377756">کلیدهای موشواره</translation>
 <translation id="6618744767048954150">درحال اجرا</translation>
 <translation id="6620487321149975369">کارهای چاپ تا زمانی‌که به‌طور دستی برداشته نشوند در سابقه نشان داده می‌شوند</translation>
@@ -1279,6 +1285,7 @@
 <translation id="6975620886940770104">یک <ph name="GLOWSCAPES_LANDSCAPE" /> با <ph name="GLOWSCAPES_FEATURE" /> درخشان</translation>
 <translation id="6975981640379148271">کوالا</translation>
 <translation id="6977381486153291903">بازبینی سفت‌افزار</translation>
+<translation id="6978396562261420054">تصویر تولیدشده</translation>
 <translation id="6981982820502123353">دسترس‌پذیری</translation>
 <translation id="6982462588253070448">تپه شنی</translation>
 <translation id="7005833343836210400">دستگاه آفلاین است</translation>
@@ -1620,6 +1627,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">چای‌خانه</translation>
 <translation id="8538236298648811558">‏با بهره‌گیری از هوش مصنوعی Google</translation>
+<translation id="8543574988889671960">بار کردن مجدد برگه</translation>
 <translation id="8550364285433943656">برای بازی با کلیدهای صفحه‌کلید، کنترل‌ها را روی کنش‌های بازی قرار دهید</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ممکن است شرکت مخابراتی‌تان برای اتصال به شبکه خود به این گزینه نیاز داشته باشد. برای اطلاع از جزئیات با شرکت مخابراتی تماس بگیرید.</translation>

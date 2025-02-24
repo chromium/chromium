@@ -1020,7 +1020,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1692210323591458290">Porpra fosc</translation>
 <translation id="1692713444215319269">Inversió de colors, lupa i configuració de visualització</translation>
 <translation id="169341880170235617">Ara els grups de pestanyes es desen automàticament</translation>
-<translation id="1694470329618537745">Darreres actualitzacions d'aquest grup</translation>
 <translation id="1695487653372841667">Pots controlar les dades que es comparteixen amb Google. Pots canviar aquesta opció en qualsevol moment a Configuració.</translation>
 <translation id="1695510246756136088">No es pot connectar a Internet. Torna-ho a provar.</translation>
 <translation id="1696555181932908973">Pots provar altres maneres de continuar a <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -8688,7 +8687,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7189234443051076392">Comprova que hi hagi prou espai al dispositiu</translation>
 <translation id="7189451821249468368">No tens prou actualitzacions per inscriure aquest dispositiu. Contacta amb l'equip de vendes per comprar-ne més. Si creus que veus aquest missatge per error, posa't en contacte amb el servei d'assistència.</translation>
 <translation id="7189965711416741966">S'ha afegit l'empremta digital.</translation>
-<translation id="7190883804815364931">Darrera actualització d'aquesta pestanya</translation>
 <translation id="7190921792980745354">Vols bloquejar <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Alguns enllaços admesos es continuaran obrint a <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> i en <ph name="NUMBER_OF_OTHER_APPS" /> aplicacions més.</translation>
 <translation id="7191159667348037">Impressora desconeguda (USB)</translation>

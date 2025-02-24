@@ -1021,7 +1021,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1692210323591458290">Mörklila</translation>
 <translation id="1692713444215319269">Inställningar för inverterade färger, skärmförstoring och skärm</translation>
 <translation id="169341880170235617">Dina flikgrupper sparas nu automatiskt</translation>
-<translation id="1694470329618537745">Senaste uppdateringarna av den här gruppen</translation>
 <translation id="1695487653372841667">Du styr vilken data som delas med Google. Du kan när som helst ändra detta i inställningarna.</translation>
 <translation id="1695510246756136088">Det gick inte att ansluta till internet. Försök igen.</translation>
 <translation id="1696555181932908973">Du kan testa andra sätt att fortsätta på <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -8707,7 +8706,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7189234443051076392">Kontrollera att det finns tillräckligt mycket utrymme på enheten</translation>
 <translation id="7189451821249468368">Du har inte tillräckligt med uppgraderingar för att registrera enheten. Kontakta säljavdelningen om du vill köpa fler. Om du anser att detta meddelande visas på felaktig grund kontaktar du supporten.</translation>
 <translation id="7189965711416741966">Fingeravtrycket har lagts till.</translation>
-<translation id="7190883804815364931">Senaste uppdateringen av den här fliken</translation>
 <translation id="7190921792980745354">Vill du blockera <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Vissa länkar som stöds öppnas fortfarande i <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> och <ph name="NUMBER_OF_OTHER_APPS" /> andra appar.</translation>
 <translation id="7191159667348037">Okänd skrivare (USB)</translation>

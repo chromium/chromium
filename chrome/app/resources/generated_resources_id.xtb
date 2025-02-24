@@ -1010,6 +1010,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1682696837763999627">Kursor mouse besar</translation>
 <translation id="1682867089915960590">Aktifkan Penjelajahan dengan Keyboard?</translation>
 <translation id="1686550358074589746">Aktifkan ketik geser</translation>
+<translation id="1686785653877010442">Situs biasanya mengirim notifikasi untuk memberi tahu Anda tentang berita terbaru atau pesan chat.</translation>
 <translation id="168715261339224929">Agar bookmark tersedia di semua perangkat Anda, aktifkan sinkronisasi.</translation>
 <translation id="1688935057616748272">Ketik huruf</translation>
 <translation id="1689333818294560261">Nama panggilan</translation>
@@ -1021,7 +1022,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1692210323591458290">Ungu tua</translation>
 <translation id="1692713444215319269">Setelan inversi warna, kaca pembesar, dan layar</translation>
 <translation id="169341880170235617">Grup tab Anda kini disimpan secara otomatis</translation>
-<translation id="1694470329618537745">Pembaruan Terbaru untuk Grup ini</translation>
 <translation id="1695487653372841667">Anda dapat mengontrol jenis data yang dibagikan ke Google. Anda dapat mengubahnya kapan saja di Setelan.</translation>
 <translation id="1695510246756136088">Tidak dapat terhubung ke internet. Coba lagi.</translation>
 <translation id="1696555181932908973">Anda dapat mencoba cara lain untuk melanjutkan di <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -1294,6 +1294,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1878885068166344708">Item ditandai saat Anda memindahkan fokus. Tekan tab atau pilih item untuk mengubah fokus.</translation>
 <translation id="1879000426787380528">Login sebagai</translation>
 <translation id="18802377548000045">Tab dikecilkan ke lebar besar</translation>
+<translation id="1880618477732738742">Mengubah dan memberikan akses ke fitur seperti geolokasi, mikrofon, kamera, cookie, dll., untuk semua situs dan ekstensi Anda, termasuk ekstensi ini.</translation>
 <translation id="1880905663253319515">Hapus sertifikat "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Tata letak keyboard</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Item}other{# item}}</translation>
@@ -3481,6 +3482,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3435738964857648380">Keamanan</translation>
 <translation id="343578350365773421">Kehabisan kertas</translation>
 <translation id="3435896845095436175">Aktifkan</translation>
+<translation id="3437397693214267762">Lihat Kalender Outlook serta file SharePoint dan OneDrive Anda</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Selalu izinkan <ph name="HOST" /> mengakses mikrofon Anda</translation>
 <translation id="3439970425423980614">Membuka PDF dalam Pratinjau</translation>
@@ -7141,6 +7143,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
     Gunakan akun Anda untuk mengakses semua bookmark, file, dan lainnya dengan mudah. Jika Anda tidak memiliki akun, Anda dapat membuatnya di layar berikutnya.</translation>
 <translation id="6054138466019582920">Telusur&amp;i Halaman Ini dengan Google...</translation>
 <translation id="6054284857788651331">Grup Tab yang Baru Saja Ditutup</translation>
+<translation id="6054819000749443354">Buka Setelan Sistem</translation>
 <translation id="6054961935262556546">Ubah visibilitas</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 Dengan Enkripsi RSA</translation>
 <translation id="6055544610007596637">Instal aplikasi untuk <ph name="DEVICE_TYPE" /> dari Google Play Store</translation>
@@ -8707,7 +8710,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7189234443051076392">Pastikan ruang di perangkat Anda mencukupi</translation>
 <translation id="7189451821249468368">Anda tidak memiliki cukup upgrade untuk mendaftarkan perangkat ini. Hubungi pihak penjualan untuk membeli yang lainnya. Jika Anda yakin Anda tidak seharusnya mendapatkan pesan ini, hubungi dukungan.</translation>
 <translation id="7189965711416741966">Sidik jari ditambahkan.</translation>
-<translation id="7190883804815364931">Pembaruan Terakhir untuk Tab ini</translation>
 <translation id="7190921792980745354">Blokir <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Beberapa link yang didukung akan tetap dibuka di <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, dan <ph name="NUMBER_OF_OTHER_APPS" /> aplikasi lainnya.</translation>
 <translation id="7191159667348037">Printer Tidak Dikenal (USB)</translation>
@@ -8964,6 +8966,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7380459290951585794">Pastikan ponsel berada di dekat Anda, tidak terkunci, serta Bluetooth dan Wi-Fi aktif</translation>
 <translation id="7380622428988553498">Nama perangkat berisi karakter yang tidak valid</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> diupdate</translation>
+<translation id="7382009635620830394">Jika kartu ini dinonaktifkan, kartu Microsoft Anda seperti file SharePoint dan OneDrive serta Kalender Outlook juga akan dinonaktifkan.</translation>
 <translation id="7382085868019811559">Dukungan Browser Lama (LBS) memungkinkan pola URL tertentu dibuka di browser alternatif yang mendukung fitur lama dan diperlukan untuk menjalankan situs tersebut dengan benar.</translation>
 <translation id="7382980704744807223">Mencurigakan</translation>
 <translation id="738322632977123193">Tidak dapat mengupload. Gunakan gambar dengan salah satu format berikut: .jpg, .gif, .png, .bmp, .tif, atau .webp</translation>
@@ -10633,6 +10636,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> dikelola oleh <ph name="MANAGER" />. Anda tidak dapat menambahkan email ini sebagai akun tambahan.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Untuk menggunakan <ph name="USER_EMAIL" />, logout dari <ph name="DEVICE_TYPE" /> terlebih dahulu. Lalu, di bagian bawah layar login, pilih Tambahkan Pengguna.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Tahan tombol Penelusuran untuk mengalihkan perilaku tombol baris atas</translation>
+<translation id="8549127125482561383">Cara menampilkan permintaan</translation>
 <translation id="8549316893834449916">Anda akan menggunakan Akun Google Anda untuk login ke Chromebook. Akun tersebut sama dengan yang digunakan untuk Gmail, Drive, YouTube, dan lainnya.</translation>
 <translation id="8550239873869577759">File mencurigakan didownload</translation>
 <translation id="8551388862522347954">Lisensi</translation>

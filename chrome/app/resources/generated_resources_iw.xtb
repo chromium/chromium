@@ -1009,6 +1009,7 @@
 <translation id="1682696837763999627">סמן עכבר גדול</translation>
 <translation id="1682867089915960590">להפעיל את הגלישה באמצעות סמן הטקסט?</translation>
 <translation id="1686550358074589746">הפעלה של הקלדה בהחלקה</translation>
+<translation id="1686785653877010442">בדרך כלל, אתרים שולחים התראות כדי לאפשר לך להתעדכן במבזקי החדשות או לקבל הודעות בצ'אט.</translation>
 <translation id="168715261339224929">כדי שהסימניות שלך יופיעו בכל המכשירים, יש להפעיל סנכרון.</translation>
 <translation id="1688935057616748272">צריך להזין אות</translation>
 <translation id="1689333818294560261">כינוי</translation>
@@ -1020,7 +1021,6 @@
 <translation id="1692210323591458290">סגול כהה</translation>
 <translation id="1692713444215319269">היפוך צבעים, הגדלת התצוגה והגדרות התצוגה</translation>
 <translation id="169341880170235617">קבוצות הכרטיסיות נשמרות עכשיו אוטומטית</translation>
-<translation id="1694470329618537745">העדכונים האחרונים לגבי הקבוצה הזו</translation>
 <translation id="1695487653372841667">‏יש לך אפשרות להחליט איזה מידע ישותף עם Google. תמיד אפשר לשנות זאת ב'הגדרות'.</translation>
 <translation id="1695510246756136088">לא ניתן להתחבר לאינטרנט. אפשר לנסות שוב.</translation>
 <translation id="1696555181932908973">אפשר לנסות להמשיך בדרכים אחרות ב-<ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -1293,6 +1293,7 @@
 <translation id="1878885068166344708">‏הפריט מודגש כשמזיזים את המיקוד. כדי לשנות את המיקוד, מקישים על Tab או בוחרים פריט.</translation>
 <translation id="1879000426787380528">כניסה בתור</translation>
 <translation id="18802377548000045">הכרטיסיות יתכווצו לתצוגה רחבה</translation>
+<translation id="1880618477732738742">‏שינוי ומתן הרשאת גישה לתכונות כמו מיקום גיאוגרפי, מיקרופון, מצלמה, קובצי Cookie וכו', לכל האתרים והתוספים שלך, כולל התוסף הזה.</translation>
 <translation id="1880905663253319515">למחוק את האישור "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">פריסת המקלדת</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{פריט}one{# פריטים}two{# פריטים}other{# פריטים}}</translation>
@@ -3480,6 +3481,7 @@
 <translation id="3435738964857648380">אבטחה</translation>
 <translation id="343578350365773421">אין נייר</translation>
 <translation id="3435896845095436175">הפעלה</translation>
+<translation id="3437397693214267762">‏הצגת Outlook Calendar וקובצי SharePoint ו-OneDrive</translation>
 <translation id="3438633801274389918">נינג'ה</translation>
 <translation id="3439153939049640737">לאפשר תמיד ל-<ph name="HOST" /> לגשת למיקרופון שלך</translation>
 <translation id="3439970425423980614">‏פתיחת PDF בתצוגה מקדימה</translation>
@@ -7141,6 +7143,7 @@
     באמצעות החשבון, קל לגשת לכל הסימניות, הקבצים ועוד. אם אין לך חשבון, תהיה לך אפשרות ליצור חשבון במסך הבא.</translation>
 <translation id="6054138466019582920">‏חיפוש בדף הזה באמצעות Google…</translation>
 <translation id="6054284857788651331">קבוצת כרטיסיות שנסגרה לאחרונה</translation>
+<translation id="6054819000749443354">להגדרות המערכת</translation>
 <translation id="6054961935262556546">שינוי הרשאות הגישה</translation>
 <translation id="6055392876709372977">‏PKCS #1 SHA-256 עם הצפנת RSA</translation>
 <translation id="6055544610007596637">‏התקנת אפליקציות ל-<ph name="DEVICE_TYPE" /> מחנות Google Play</translation>
@@ -8711,7 +8714,6 @@
 <translation id="7189234443051076392">צריך לוודא שיש מספיק מקום פנוי במכשיר</translation>
 <translation id="7189451821249468368">אין לך מספיק שדרוגים כדי לרשום את המכשיר הזה. ניתן לרכוש עוד שדרוגים דרך מחלקת המכירות. אם לדעתך ההודעה הזו מוצגת לך בטעות, אפשר לפנות לתמיכה.</translation>
 <translation id="7189965711416741966">טביעת האצבע נוספה.</translation>
-<translation id="7190883804815364931">העדכון האחרון לכרטיסייה הזו</translation>
 <translation id="7190921792980745354">לחסום את <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">חלק מהקישורים הנתמכים ימשיכו להיפתח באפליקציות <ph name="APP_NAME" />,‏ <ph name="APP_NAME_2" />,‏ <ph name="APP_NAME_3" /> ובעוד <ph name="NUMBER_OF_OTHER_APPS" /> אפליקציות.</translation>
 <translation id="7191159667348037">‏מדפסת לא ידועה (USB)</translation>
@@ -8968,6 +8970,7 @@
 <translation id="7380459290951585794">‏חשוב לוודא שהטלפון נמצא בקרבת מקום, שהוא לא נעול ושה‑Bluetooth וה‑Wi‑Fi פועלים</translation>
 <translation id="7380622428988553498">שם המכשיר מכיל תווים לא חוקיים</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> עודכנה</translation>
+<translation id="7382009635620830394">‏אם הכרטיס הזה מושבת, גם הכרטיסים של Microsoft כמו SharePoint ו-OneDrive ו-Outlook Calendar יושבתו.</translation>
 <translation id="7382085868019811559">‏בעזרת התמיכה בדפדפן מדור קודם (LBS) אפשר לפתוח תבניות URL מסוימות בדפדפן חלופי שתומך בתכונות מדור קודם. התכונות האלה נחוצות לצורך הפעילות התקינה של האתרים האלה.</translation>
 <translation id="7382980704744807223">ההורדה חשודה</translation>
 <translation id="738322632977123193">‏לא ניתן להעלות את הקובץ. יש להעלות תמונה באחד מהפורמטים הבאים: ‎.jpg,‏ ‏‎.gif,‏ ‎.png,‏ ‎.bmp,‏ ‎.tif או ‎.webp</translation>
@@ -10639,6 +10642,7 @@
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" />החשבון <ph name="USER_EMAIL" /> מנוהל על ידי <ph name="MANAGER" />. אין לך אפשרות להוסיף את כתובת האימייל הזו כחשבון נוסף.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />כדי להשתמש בחשבון <ph name="USER_EMAIL" />, קודם צריך לצאת מ-<ph name="DEVICE_TYPE" />. לאחר מכן, יש לבחור באפשרות 'הוספת משתמש' בתחתית מסך ההתחברות.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">יש להחזיק את מקש החיפוש כדי לשנות את ההתנהגות של מקשי השורה העליונה</translation>
+<translation id="8549127125482561383">איך להציג בקשות</translation>
 <translation id="8549316893834449916">‏הכניסה אל Chromebook תתבצע באמצעות חשבון Google שלך – אותו חשבון שמשמש אותך ב-Gmail, ב-Drive, ב-YouTube ועוד.</translation>
 <translation id="8550239873869577759">בוצעה הורדה של קובץ חשוד</translation>
 <translation id="8551388862522347954">רישיונות</translation>

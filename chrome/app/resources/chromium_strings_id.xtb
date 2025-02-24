@@ -28,6 +28,7 @@
 <translation id="1345251407431278948">Disematkan. Anda dapat mengakses Penelusuran Gambar lagi dari tombol baru di toolbar</translation>
 <translation id="1356661055722410047">Baru! Anda dapat menerjemahkan teks dan gambar di layar</translation>
 <translation id="1414495520565016063">Anda sudah masuk ke Chromium!</translation>
+<translation id="1465192221147974788">Untuk membagikan jendela Anda, izinkan perekaman layar untuk Chromium di Setelan Sistem.</translation>
 <translation id="1478370723027452770">Dapatkan bantuan untuk Chrome for Testing</translation>
 <translation id="1497802159252041924">Error saat penginstalan: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Bagikan tab Chromium</translation>
@@ -160,6 +161,7 @@
 <translation id="3130323860337406239">Chromium menggunakan mikrofon Anda.</translation>
 <translation id="3137969841538672700">Tarik untuk menelusuri</translation>
 <translation id="3144188012276422546">Tab ini menggunakan resource tambahan. Untuk meningkatkan performa, izinkan Chromium menonaktifkannya.</translation>
+<translation id="3149163023759831301">Untuk membagikan layar Anda, izinkan perekaman layar untuk Chromium di Setelan Sistem</translation>
 <translation id="3155163173539279776">Luncurkan ulang Chromium</translation>
 <translation id="3161522574479303604">Semua bahasa</translation>
 <translation id="3179665906251668410">Buka Link di Jendela Sa&amp;maran Chromium</translation>
@@ -182,8 +184,10 @@
 <translation id="3474745554856756813">Tindakan ini akan menghapus <ph name="ITEMS_COUNT" /> item dari perangkat. Untuk mengambil data nanti, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> dapat membuat berpindah-pindah profil Chromium</translation>
 <translation id="3509308970982693815">Tutup semua jendela Chromium dan coba lagi.</translation>
+<translation id="3522404737534491619">Untuk membagikan jendela Anda, izinkan perekaman layar untuk Chromium di Setelan Sistem</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> sudah login.  Agar penjelajahan Anda tetap terpisah, login ke Chromium di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">Untuk melindungi privasi Anda, kami otomatis menghapus minat Anda yang tersimpan lebih dari 4 minggu. Saat Anda terus menjelajah, minat dapat kembali muncul di daftar. Atau Anda dapat menghapus minat yang tidak perlu dipertimbangkan oleh Chromium.</translation>
+<translation id="3561853857681580870">Untuk membagikan layar Anda, izinkan perekaman layar untuk Chromium di Setelan Sistem.</translation>
 <translation id="3567254597502212821">Histori penjelajahan Anda, catatan situs yang telah Anda buka menggunakan Chromium di perangkat ini.</translation>
 <translation id="3597003331831379823">Gagal menjalankan penyiapan dengan hak istimewa yang ditingkatkan. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3639635944603682591">Data browsing pengguna ini akan dihapus dari perangkat ini. Untuk memulihkan data, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
@@ -281,6 +285,7 @@
 <translation id="4942295735032723435">Untuk mendapatkan update Chromium berikutnya, Anda perlu macOS 11 atau yang lebih baru. Komputer ini menggunakan macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium berjalan di mode latar belakang.</translation>
 <translation id="494490797786467921">Klik untuk menutup dialog login Chromium</translation>
+<translation id="4950660488495335294">Dengan profil Chromium, Anda dapat memisahkan semua aktivitas Chromium Anda. Buat profil untuk teman dan keluarga, atau pisahkan antara aktivitas kerja dan hiburan.</translation>
 <translation id="4987820182225656817">Tamu dapat menggunakan Chromium tanpa meninggalkan apa pun.</translation>
 <translation id="4994636714258228724">Tambahkan diri Anda ke Chromium</translation>
 <translation id="5123973130450702873">Chromium memerlukan izin untuk melacak tangan Anda</translation>

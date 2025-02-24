@@ -2256,6 +2256,7 @@
 <translation id="4989809363548539747">هذا المكوِّن الإضافي غير مدعوم</translation>
 <translation id="4990241977441916452">‏ظرف A2</translation>
 <translation id="4992066212339426712">إعادة الصوت</translation>
+<translation id="4994095017621319069">مجموعة علامات تبويب واحدة لم تعُد متوفّرة</translation>
 <translation id="4994348767896109801">إنّ ظهور إعلانات مخصّصة لك يعتمد على عدة عوامل، منها هذا الإعداد و<ph name="BEGIN_LINK_1" />مواضيع الإعلانات<ph name="END_LINK_1" /> و<ph name="BEGIN_LINK_2" />إعدادات ملفات تعريف الارتباط<ph name="END_LINK_2" /> وما إذا كان الموقع الإلكتروني الذي تتصفّحه يخصِّص الإعلانات. تعرَّف على مزيد من المعلومات حول <ph name="BEGIN_LINK_3" />إدارة الخصوصية في عرض الإعلانات<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">آخر تعديل:</translation>
 <translation id="4995749490935861684">‏<ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لإدارة البحث في الموقع الإلكتروني ومحرّك البحث التلقائي.</translation>
@@ -3470,6 +3471,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> وطريقة دفع <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> أخرى}two{<ph name="PAYMENT_METHOD_PREVIEW" /> وطريقتا دفع <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> أخريان}few{<ph name="PAYMENT_METHOD_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> طرق دفع أخرى}many{<ph name="PAYMENT_METHOD_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> طريقة دفع أخرى}other{<ph name="PAYMENT_METHOD_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> طريقة دفع أخرى}}</translation>
 <translation id="7153618581592392745">بنفسجي فاتح</translation>
 <translation id="7156870133441232244">‏يجب ترقية الخادم إلى الإصدار 1.2 من طبقة النقل الآمنة (TLS) أو إصدار أحدث.</translation>
+<translation id="7156885531105222428">تعذَّر العثور على الصفحة التي طلبتها في التطبيق</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{لإرسال هذا الملف باستخدام (<ph name="FEATURE_NAME" />)، يجب إخلاء مساحة بحجم (<ph name="DISK_SPACE_SIZE" />) على جهازك.}zero{لإرسال هذه الملفات باستخدام (<ph name="FEATURE_NAME" />)، يجب إخلاء مساحة بحجم (<ph name="DISK_SPACE_SIZE" />) على جهازك.}two{لإرسال هذين الملفَين باستخدام (<ph name="FEATURE_NAME" />)، يجب إخلاء مساحة بحجم (<ph name="DISK_SPACE_SIZE" />) على جهازك.}few{لإرسال هذه الملفات باستخدام (<ph name="FEATURE_NAME" />)، يجب إخلاء مساحة بحجم (<ph name="DISK_SPACE_SIZE" />) على جهازك.}many{لإرسال هذه الملفات باستخدام (<ph name="FEATURE_NAME" />)، يجب إخلاء مساحة بحجم (<ph name="DISK_SPACE_SIZE" />) على جهازك.}other{لإرسال هذه الملفات باستخدام (<ph name="FEATURE_NAME" />)، يجب إخلاء مساحة بحجم (<ph name="DISK_SPACE_SIZE" />) على جهازك.}}</translation>
 <translation id="7160999678034985039">يُرجى حفظ عملك وبدء التحديث عند الاستعداد لذلك.</translation>
 <translation id="7162277662076933695">قارئ البطاقات الذكية</translation>
@@ -4259,6 +4261,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">‏انتقِل إلى &lt;strong&gt;chrome://policy&lt;/strong&gt; للاطّلاع على قائمة عناوين URL المحظورة والسياسات الأخرى التي يفرضها مشرف النظام.</translation>
 <translation id="8536234749087605613">ظرف (نافذة)</translation>
+<translation id="8538228968820006247">مجموعة علامات التبويب ممتلئة، ولا يمكن للأعضاء الجدد الانضمام باستخدام الرابط</translation>
 <translation id="8539500321752640291">هل تريد السماح بهذين الإذنين؟</translation>
 <translation id="8541158209346794904">جهاز بلوتوث</translation>
 <translation id="8541410041357371550">‏يتعرّف هذا الموقع الإلكتروني من خلال Chrome على مواضيع الإعلانات التي تهمّك، وذلك بهدف عرض إعلانات وثيقة الصلة باهتماماتك.</translation>

@@ -1010,6 +1010,7 @@
 <translation id="1682696837763999627">大型滑鼠游標</translation>
 <translation id="1682867089915960590">要開啟「鍵盤瀏覽」功能嗎？</translation>
 <translation id="1686550358074589746">啟用滑動輸入功能</translation>
+<translation id="1686785653877010442">網站通常會傳送通知，讓你掌握突發新聞或即時通訊訊息。</translation>
 <translation id="168715261339224929">如要將書籤同步到所有裝置，請開啟同步處理功能。</translation>
 <translation id="1688935057616748272">請輸入一個字母</translation>
 <translation id="1689333818294560261">暱稱</translation>
@@ -1021,7 +1022,6 @@
 <translation id="1692210323591458290">深紫色</translation>
 <translation id="1692713444215319269">色彩反轉、放大鏡和顯示設定</translation>
 <translation id="169341880170235617">系統現在會自動儲存分頁群組</translation>
-<translation id="1694470329618537745">此群組最近的更新</translation>
 <translation id="1695487653372841667">您可控制要與 Google 分享哪些資料。您隨時可以在「設定」中變更此設定。</translation>
 <translation id="1695510246756136088">無法連接互聯網，請再試一次。</translation>
 <translation id="1696555181932908973">你可嘗試在「<ph name="SITE_ETLD_PLUS_ONE" />」上透過其他方法繼續操作。</translation>
@@ -1294,6 +1294,7 @@
 <translation id="1878885068166344708">移動焦點時，系統會突顯項目。按下 Tab 鍵或選取項目即可變更焦點。</translation>
 <translation id="1879000426787380528">登入身分</translation>
 <translation id="18802377548000045">將分頁縮至大寬度</translation>
+<translation id="1880618477732738742">將地理位置、麥克風、相機、Cookie 等功能的存取權授予你所有的網站和擴充程式 (包括此擴充程式)，以及變更這些存取權。</translation>
 <translation id="1880905663253319515">要刪除憑證「<ph name="CERTIFICATE_NAME" />」嗎？</translation>
 <translation id="1881445033931614352">鍵盤版面配置</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{項目}other{# 個項目}}</translation>
@@ -3478,6 +3479,7 @@
 <translation id="3435738964857648380">安全性</translation>
 <translation id="343578350365773421">紙張用完</translation>
 <translation id="3435896845095436175">啟用</translation>
+<translation id="3437397693214267762">查看 Outlook 日曆、SharePoint 和 OneDrive 檔案</translation>
 <translation id="3438633801274389918">忍者</translation>
 <translation id="3439153939049640737">永遠允許 <ph name="HOST" /> 存取您的麥克風</translation>
 <translation id="3439970425423980614">正在預覽中開啟 PDF</translation>
@@ -7126,6 +7128,7 @@
     帳戶讓您輕鬆存取所有書籤、檔案及其他內容。如果沒有帳戶，請在下一個畫面建立。</translation>
 <translation id="6054138466019582920">使用 Google 搜尋此網頁…(&amp;C)</translation>
 <translation id="6054284857788651331">最近閂咗嘅分頁群組</translation>
+<translation id="6054819000749443354">開啟「系統設定」</translation>
 <translation id="6054961935262556546">變更分享設定</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 (使用 RSA 加密)</translation>
 <translation id="6055544610007596637">從 Google Play 商店安裝 <ph name="DEVICE_TYPE" /> 適用的應用程式</translation>
@@ -8692,7 +8695,6 @@
 <translation id="7189234443051076392">確保您的裝置上有足夠的儲存空間</translation>
 <translation id="7189451821249468368">您沒有足夠升級，無法註冊這部裝置。如要購買更多升級，請與銷售人員聯絡。如果您認為這則訊息有誤，請與支援團隊聯絡。</translation>
 <translation id="7189965711416741966">已加入指紋。</translation>
-<translation id="7190883804815364931">此分頁最近的更新</translation>
 <translation id="7190921792980745354">要封鎖<ph name="MEMBER_FULL_NAME" />嗎？</translation>
 <translation id="7191063546666816478">部分支援連結將仍會在 <ph name="APP_NAME" />、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" /> 和另外 <ph name="NUMBER_OF_OTHER_APPS" /> 個應用程式中開啟。</translation>
 <translation id="7191159667348037">不明打印機 (USB)</translation>
@@ -8949,6 +8951,7 @@
 <translation id="7380459290951585794">請確認您的手機在附近並已解鎖，且已開啟藍牙和 Wi-Fi</translation>
 <translation id="7380622428988553498">裝置名稱包含無效字元</translation>
 <translation id="7380768571499464492">已更新「<ph name="PRINTER_NAME" />」</translation>
+<translation id="7382009635620830394">如停用此資訊卡，你的 Microsoft 資訊卡 (例如 SharePoint、OneDrive 檔案以及 Outlook 日曆) 也會一併停用。</translation>
 <translation id="7382085868019811559">舊版瀏覽器支援 (LBS) 功能允許特定格式的網址在支援舊版功能的替代瀏覽器中開啟，以正確執行這些網站。</translation>
 <translation id="7382980704744807223">可疑</translation>
 <translation id="738322632977123193">無法上載。請使用以下其中一個格式的圖片：.jpg、.png、.bmp、.tif 或 .webp</translation>
@@ -10618,6 +10621,7 @@
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> 由 <ph name="MANAGER" /> 管理。您無法將此電郵新增為其他帳戶。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如要使用 <ph name="USER_EMAIL" />，請先登出 <ph name="DEVICE_TYPE" />，然後在登入畫面的底部選取 [新增使用者]。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">按住搜尋鍵即可切換最上排按鍵的執行動作</translation>
+<translation id="8549127125482561383">如何顯示要求</translation>
 <translation id="8549316893834449916">您將使用 Google 帳戶登入 Chromebook，Google 帳戶是您用於 Gmail、雲端硬碟、YouTube 和其他服務的帳戶。</translation>
 <translation id="8550239873869577759">下載咗可疑嘅檔案</translation>
 <translation id="8551388862522347954">授權</translation>

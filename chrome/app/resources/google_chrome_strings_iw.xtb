@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1001534784610492198">‏הארכיון של המתקין פגום או שאינו חוקי. יש להוריד שוב את Google Chrome.</translation>
+<translation id="1018937009655463387">‏כדי לשתף את החלון, צריך לאפשר הקלטת מסך ב-Chrome בקטע "הגדרות המערכת".</translation>
 <translation id="1026101648481255140">המשך בהתקנה</translation>
 <translation id="102763973188675173">‏כדי להתאים אישית את Google Chrome ולשלוט בו טוב יותר, יש להוריד את העדכון החדש.</translation>
 <translation id="1028061813283459617">‏כדי למחוק את נתוני הגלישה מהמכשיר הזה בלבד ועדיין לשמור אותם בחשבון שלך ב-Google, <ph name="BEGIN_LINK" />עליך לצאת מהחשבון ב-Chrome<ph name="END_LINK" />.</translation>
@@ -224,6 +225,7 @@
 <translation id="3941890832296813527">שגיאת התקנה: שם הקובץ של מנהל ההתקנה לא תקין או לא נתמך.</translation>
 <translation id="3968962723676998462">‏כדי להשתמש בנתונים של Chrome ולשמור אותם בחשבון <ph name="ACCOUNT_EMAIL" />, צריך להזין את ביטוי הסיסמה</translation>
 <translation id="3973161977468201858">‏‫Google Chrome רוצה למחוק את הנתונים שלך במנהל הסיסמאות של Google. כדי לאפשר זאת, צריך להזין את הסיסמה שלך ל-Windows.</translation>
+<translation id="400161754580828648">‏כדי לשתף את המסך, צריך לאפשר הקלטת מסך ב-Chrome בקטע "הגדרות המערכת".</translation>
 <translation id="4022972681110646219">תרגום המסך</translation>
 <translation id="4023601594785368013">שפה מקורית: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">‏יש להפעיל מחדש את ChromeOS כדי להחיל את העדכון.</translation>
@@ -286,6 +288,7 @@
 <translation id="4828579605166583682">‏Google Chrome מנסה להחליף סיסמאות קיימות. כדי לאפשר זאת, יש להזין את הסיסמה שלך ל-Windows.</translation>
 <translation id="4842397268809523050">‏לא ניתן היה לסנכרן את הנתונים שלך ב-ChromeOS Flex כי הסנכרון לא זמין בדומיין שלך.</translation>
 <translation id="4851866215237571846">‏כבר בוצעה כניסה לחשבון על ידי <ph name="EXISTING_USER" />.  כדי להפריד בין פעילויות הגלישה, עליך להיכנס ל-Chrome בפרופיל שלך עם האימייל <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="4855026984605187434">‏כדי לשתף את המסך, צריך לאפשר הקלטת מסך ב-Chrome בקטע "הגדרות המערכת"</translation>
 <translation id="4873692836499071887">‏כדי לקבל עדכונים של Google Chrome בעתיד, צריך להשתמש ב-macOS מגרסה 11 ואילך. במחשב הזה פועלת גרסה 10.15 של macOS.</translation>
 <translation id="4873783916118289636">‏בדיקה של אמצעי הבקרה החשובים ביותר על פרטיות ואבטחה ב-Chrome</translation>
 <translation id="4885446229353981848">‏תמיד להציג את קיצור הדרך ל-Google Lens</translation>
@@ -334,6 +337,7 @@
 <translation id="5579324208890605088">שגיאת הפעלה: יש להפעיל את מנהל ההתקנה כמשתמש רגיל ולא כאדמין.</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5602351063754773347">‏ההמלצה של Chrome היא להסיר אותו. <ph name="BEGIN_LINK" />מידע נוסף על תוספים נתמכים<ph name="END_LINK" /></translation>
+<translation id="5649156266046089790">‏פרופילים ב-Chrome עוזרים להפריד בין פריטי המידע ששומרים ב-Chrome. אפשר ליצור פרופילים שמיועדים לחברים ולבני משפחה או פרופילים נפרדים לעבודה ולבילויים בשעות הפנאי.</translation>
 <translation id="5649680279845190972">‏כדי לקבל גישה לתוספים ולנתונים נוספים בכל המחשבים, צריך להיכנס ל-Chrome</translation>
 <translation id="565744775970812598">‏<ph name="FILE_NAME" /> עלול להיות מסוכן, ולכן Chrome חסם אותו.</translation>
 <translation id="566568153320186256">‏‫Chrome חוסך בחיי הסוללה על ידי הגבלת הפעילות ברקע והאפקטים החזותיים, כמו גלילה חלקה וקצב פריימים של סרטונים. <ph name="BEGIN_LINK" />מידע נוסף על מצב חיסכון באנרגיה<ph name="END_LINK" /></translation>
@@ -568,6 +572,7 @@
 <translation id="8614913330719544658">‏Google Chrome אינו מגיב. להפעיל מחדש עכשיו?</translation>
 <translation id="861702415419836452">‏Chrome זקוק להרשאת גישה למצלמה כדי ליצור מפה תלת-ממדית של הסביבה שלך</translation>
 <translation id="8625237574518804553">{0,plural, =1{‏Chrome יופעל מחדש בעוד דקה}one{‏Chrome יופעל מחדש בעוד # דקות}two{‏Chrome יופעל מחדש בעוד # דקות}other{‏Chrome יופעל מחדש בעוד # דקות}}</translation>
+<translation id="8637932705841171563">‏כדי לשתף את החלון, צריך לאפשר הקלטת מסך ב-Chrome בקטע "הגדרות המערכת"</translation>
 <translation id="8641606876632989680">‏אם מערכת Chrome תזהה שנכנסת עם סיסמה שנחשפה, היא תתריע לך על כך</translation>
 <translation id="8649026945479135076">‏באתרים רבים נהוג לשמור את תחומי העניין שלך כדי להתאים אישית את חוויית הגלישה בהם. בנוסף, אתרים יכולים לשמור מידע ב-Chrome לגבי תחומי העניין שלך.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>

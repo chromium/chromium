@@ -30,6 +30,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1345251407431278948">Piniwyd! Gallwch gyrchu Chwilio Lluniau eto o'r botwm newydd ar y bar offer</translation>
 <translation id="1356661055722410047">Newydd! Gallwch gyfieithu testun a lluniau ar eich sgrîn</translation>
 <translation id="1414495520565016063">Rydych wedi mewngofnodi i Chromium!</translation>
+<translation id="1465192221147974788">I rannu'ch ffenestr, caniatewch recordio sgrîn ar gyfer Chromium yn y Gosodiadau System.</translation>
 <translation id="1478370723027452770">Cael help gyda Chrome for Testing</translation>
 <translation id="1497802159252041924">Gwall gosod: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Rhannu tab Chromium</translation>
@@ -162,6 +163,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3130323860337406239">Mae Chromium yn defnyddio'ch meicroffon.</translation>
 <translation id="3137969841538672700">Llusgwch i chwilio</translation>
 <translation id="3144188012276422546">Mae'r tab hwn yn defnyddio adnoddau ychwanegol. Er mwyn gwella eich perfformiad, gadewch i Chromium ei wneud yn anweithredol.</translation>
+<translation id="3149163023759831301">I rannu'ch sgrîn, caniatewch recordio sgrîn ar gyfer Chromium yn y Gosodiadau System</translation>
 <translation id="3155163173539279776">Ail-lansio Chromium</translation>
 <translation id="3161522574479303604">Pob iaith</translation>
 <translation id="3179665906251668410">Agor y Ddolen mewn Ffenestr Anhys&amp;bys Chromium</translation>
@@ -184,8 +186,10 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3474745554856756813">Bydd hyn yn dileu <ph name="ITEMS_COUNT" /> eitem o'r ddyfais hon. I adfer eich data yn nes ymlaen, mewngofnodwch i Chromium fel <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Gall <ph name="SHORTCUT" /> newid rhwng proffiliau Chromium</translation>
 <translation id="3509308970982693815">Caewch bob ffenestr Chromium a rhowch gynnig arall arni.</translation>
+<translation id="3522404737534491619">I rannu'ch ffenestr, caniatewch recordio sgrîn ar gyfer Chromium yn y Gosodiadau System</translation>
 <translation id="3530103706039034513">Mae <ph name="EXISTING_USER" /> eisoes wedi mewngofnodi.  I gadw'ch pori ar wahân, mewngofnodwch i Chromium yn eich proffil eich hun fel <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">Er mwyn amddiffyn eich preifatrwydd, rydym yn awtoddileu eich diddordebau sy'n hŷn na 4 wythnos. Wrth i chi barhau i bori, mae'n bosib y bydd diddordeb yn ymddangos ar y rhestr eto. Neu gallwch gael gwared ar ddiddordebau nad ydych am i Chromium eu hystyried.</translation>
+<translation id="3561853857681580870">I rannu'ch sgrîn, caniatewch recordio sgrîn ar gyfer Chromium yn y Gosodiadau System.</translation>
 <translation id="3567254597502212821">Eich hanes pori, cofnod o wefannau rydych wedi ymweld â nhw drwy ddefnyddio Chromium ar y ddyfais hon.</translation>
 <translation id="3597003331831379823">Wedi methu rhedeg gosod gyda breintiau uwch. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3639635944603682591">Bydd data pori’r unigolyn hwn yn cael eu dileu o’r ddyfais hon. I adfer y data, mewngofnodwch i Chromium fel <ph name="USER_EMAIL" />.</translation>
@@ -283,6 +287,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4942295735032723435">I gael diweddariadau Chromium yn y dyfodol, bydd angen macOS 11 neu'n hwyrach arnoch. Mae'r cyfrifiadur hwn yn defnyddio macOS 10.15.</translation>
 <translation id="4943838377383847465">Mae Chromium yn y modd cefndir.</translation>
 <translation id="494490797786467921">Cliciwch i gau'r deialog mewngofnodi Chromium</translation>
+<translation id="4950660488495335294">Gallwch wahanu eich holl bethau Chromium gyda phroffiliau Chromium. Creu proffiliau ar gyfer eich ffrindiau a'ch teulu, neu rannu rhwng gwaith a hwyl.</translation>
 <translation id="4987820182225656817">Gall gwesteion ddefnyddio Chromium heb adael unrhyw beth ar ôl.</translation>
 <translation id="4994636714258228724">Ychwanegu eich hun at Chromium</translation>
 <translation id="5123973130450702873">Mae angen caniatâd i olrhain eich dwylo ar Chromium</translation>

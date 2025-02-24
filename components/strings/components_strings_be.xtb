@@ -2254,6 +2254,7 @@
 <translation id="4989809363548539747">Гэта ўбудова не падтрымліваецца</translation>
 <translation id="4990241977441916452">Канверт A2</translation>
 <translation id="4992066212339426712">Уключыць гук</translation>
+<translation id="4994095017621319069">1 група ўкладак больш не даступная</translation>
 <translation id="4994348767896109801">Персаналізацыя рэкламы, якую вы бачыце, залежыць ад мноства фактараў, у тым ліку ад гэтай налады, <ph name="BEGIN_LINK_1" />тэм рэкламы<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />налад файлаў cookie<ph name="END_LINK_2" /> і ад таго, ці персаналізуецца рэклама на сайце, які вы праглядаеце. <ph name="BEGIN_LINK_3" />Даведацца больш пра кіраванне прыватнасцю ў рэкламе<ph name="END_LINK_3" /></translation>
 <translation id="4995474875135717171">Зменены:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб кіраваць пошукам па сайце і стандартнай пошукавай сістэмай, націсніце Tab, затым Enter</translation>
@@ -3466,6 +3467,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Бледна-ліловы</translation>
 <translation id="7156870133441232244">Сервер патрабуе абнаўлення пратакола TLS да версіі 1.2 або навейшай.</translation>
+<translation id="7156885531105222428">Запытаную вамі старонку не ўдалося знайсці ў праграме</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Каб адправіць гэты файл з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}one{Каб адправіць гэтыя файлы з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}few{Каб адправіць гэтыя файлы з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}many{Каб адправіць гэтыя файлы з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}other{Каб адправіць гэтыя файлы з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}}</translation>
 <translation id="7160999678034985039">Захавайце працу і пачніце абнаўленне, калі будзеце гатовыя.</translation>
 <translation id="7162277662076933695">Кардрыдар для разумных картак</translation>
@@ -4254,6 +4256,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Каб прагледзець спіс заблакіраваных URL-адрасоў і іншыя палітыкі, якімі кіруе сістэмны адміністратар, наведайце &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>
 <translation id="8536234749087605613">Канверт з акенцам</translation>
+<translation id="8538228968820006247">Новыя карыстальнікі не могуць далучыцца да групы ўкладак па спасылцы, бо група запоўнена</translation>
 <translation id="8539500321752640291">Даць 2 дазволы?</translation>
 <translation id="8541158209346794904">Прылада Bluetooth</translation>
 <translation id="8541410041357371550">Гэты сайт выкарыстоўвае тэмы рэкламы з Chrome, каб паказваць вам больш рэлевантную рэкламу</translation>

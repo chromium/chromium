@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">እባክዎ ይጠብቁ...</translation>
 <translation id="2740531572673183784">እሺ</translation>
 <translation id="2744221223678373668">የተጋራ</translation>
+<translation id="2749164457515831917">ጥቆማዎች ተበውዘዋል</translation>
 <translation id="2751739896257479635">EAP የክፍል 2 ማረጋገጥ</translation>
 <translation id="2754757901767760034">ፋኖስ</translation>
 <translation id="2780756493585863768">በGoogle ሰው ሠራሽ አስተውሎት የተጎላበቱ የቅርብ ጊዜ ዳራዎች</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">የአቀማመጥ እርምጃዎች ምናሌ</translation>
 <translation id="3227186760713762082">የ<ph name="CATEGORY_TEXT" /> እሴቱን በ<ph name="CONVERSION_RATE" /> ያካፍሉት</translation>
 <translation id="3246869037381808805">ከ1 ቀን በላይ ዕድሜ ያላቸው የህትመት ሥራዎች ይወገዳሉ</translation>
+<translation id="3248791727258378769">ምንም ጽሑፍ ግልባጭ አይፈጠርም</translation>
 <translation id="324961752321393509">አስተዳዳሪዎ ይህን መተግበሪያ መዝጋትን አይፈቅድም</translation>
 <translation id="3263941347294171263">የማዘመን ሂደቱን ለመቀጠል <ph name="DEVICE_NAME" />ን ይንቀሉ እና እንደገና ይሰኩት</translation>
 <translation id="3268178239013324452">አልተሳካም - በር ክፍት ነው</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">የሙቀት መጠን አሃድ ይምረጡ</translation>
 <translation id="3661106764436337772">በፍጥነት እና በበለጠ በራስ መተማመን ይጻፉ</translation>
 <translation id="3662461537616691585">በርገንዲ እና ማሩን</translation>
+<translation id="3664755900672940272">የናሙና ጥያቄዎች ተበውዘዋል</translation>
 <translation id="3668449597372804501">የደመና ፍሰት ልጣፍ</translation>
 <translation id="3668570675727296296">የቋንቋ ቅንብሮች</translation>
 <translation id="3675132884790542448">አሳማዎች</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">የማያ ገፅ ማቆያን አጥፋ</translation>
 <translation id="4210636113897977670">አስቀምጥ እና ውጣ</translation>
 <translation id="4210659479607886331">የበረዶ ወንዝ</translation>
+<translation id="4212169537710712814">የ<ph name="LANGUAGE_NAME" /> ወደ ጽሑፍ ግልባጭ ሞዴል ውርድ ተጠናቋል</translation>
 <translation id="42126664696688958">ወደ ውጭ ላክ</translation>
 <translation id="4213104098953699324">የዩኤስቢ ቁልፍ ሰሌዳ</translation>
 <translation id="4227825898293920515">የይለፍ ቃል በ <ph name="TIME" /> ውስጥ አገልግሎት ጊዜው ያበቃል</translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">ቀለም</translation>
 <translation id="5457599981699367932">እንደ እንግዳ ያስሱ</translation>
 <translation id="54609108002486618">የተቀናበረ</translation>
+<translation id="5461608756903394951">የ<ph name="LANGUAGE_NAME" /> ወደ ጽሑፍ ግልባጭ ሞዴል ውርድ በሂደት ላይ</translation>
 <translation id="5470776029649730099">በርላፕ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ሙከራ ቀርቷል}one{{0} ሙከራዎች ቀርተዋል}other{{0} ሙከራዎች ቀርተዋል}}</translation>
 <translation id="5488280942828718790">ማጀንታ</translation>
@@ -1191,6 +1196,7 @@
 <translation id="6595046262780525922">የጽሑፍ ግልባጭ ይብራ እና የጽሑፍ ግልባጭ ሞዴል ይውረድ?</translation>
 <translation id="6596816719288285829">IP አድራሻ</translation>
 <translation id="6599673642868607614">ስለግብረመልስዎ እናመሰግናለን። የእርስዎ ግብረመልስ የChromebook ተሞክሮን እንድናሻሽል ያግዘናል እና በቡድናችን የሚገመገም ይሆናል። ብዙ ቁጥር ባላቸው ሪፖርቶች ምክንያት መልስ መላክ አንችልም።</translation>
+<translation id="6608043585557830684">ወደ ጽሑፍ ግልባጭ ጠፍቷል። በቅንብሮች ውስጥ ወይም በ<ph name="THREE_DOTS_MENU_ICON" /> ምናሌው ውስጥ ያብሩ።</translation>
 <translation id="660846213831377756">የመዳፊት ቁልፎች</translation>
 <translation id="6618744767048954150">በማሄድ ላይ</translation>
 <translation id="6620487321149975369">የህትመት ስራዎች በሰው ካልተወገዱ በቀር በታሪክ ውስጥ ይታያሉ</translation>
@@ -1279,6 +1285,7 @@
 <translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" /> ከሚያንጸባርቅ <ph name="GLOWSCAPES_FEATURE" /> ጋር</translation>
 <translation id="6975981640379148271">ኮዋላዎች</translation>
 <translation id="6977381486153291903">የጽኑ ትዕዛዝ ክለሳ</translation>
+<translation id="6978396562261420054">የመነጨ ምስል</translation>
 <translation id="6981982820502123353">ተደራሽነት</translation>
 <translation id="6982462588253070448">የአሸዋ ክምር</translation>
 <translation id="7005833343836210400">መሣሪያ ከመስመር ውጭ ነው</translation>

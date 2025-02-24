@@ -40,6 +40,7 @@
 <translation id="4360991593054037559">Sila masukkan nilai yang sah. Dua nilai sah yang terdekat ialah <ph name="VALID_VALUE_LOW" /> dan <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Butiran</translation>
 <translation id="4664250907885839816">Bahagian selepas '<ph name="ATSIGN" />' tidak boleh mengandungi simbol '<ph name="INVALIDCHARACTER" />'.</translation>
+<translation id="4703271465972936359">Runut Audio</translation>
 <translation id="4718048029184481307">Memainkan video dalam gambar dalam gambar</translation>
 <translation id="4812940957355064477">Sila masukkan nombor.</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> dipilih</translation>
@@ -57,6 +58,7 @@
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5630795885300617244">Ketik dua kali ke kiri atau kanan untuk melangkau 10s</translation>
 <translation id="57838592816432529">Redam</translation>
+<translation id="5868587040512539609">Runut Video</translation>
 <translation id="588258955323874662">Skrin penuh</translation>
 <translation id="5888666972993069672">Sekarang menghantar ke <ph name="DEVICE_FRIENDLY_NAME" /></translation>
 <translation id="5939518447894949180">Tetapkan semula</translation>
@@ -66,6 +68,7 @@
 <translation id="6484738902856791350">Cetak cantik</translation>
 <translation id="6550675742724504774">Pilihan</translation>
 <translation id="6643016212128521049">Kosongkan</translation>
+<translation id="6661136971638885481">Runut #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Lain-lain...</translation>
 <translation id="6709093583001123835">Nilai mestilah <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Mutu main balik teruk</translation>

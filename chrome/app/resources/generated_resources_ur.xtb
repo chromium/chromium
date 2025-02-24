@@ -1009,6 +1009,7 @@
 <translation id="1682696837763999627">بڑا ماؤس کرسر</translation>
 <translation id="1682867089915960590">کیرٹ براؤزنگ آن کریں؟</translation>
 <translation id="1686550358074589746">گلائیڈ ٹائپنگ فعال کریں</translation>
+<translation id="1686785653877010442">سائٹس عام طور پر آپ کو اہم خبروں یا چیٹ پیغامات کے بارے میں اطلاع دینے کیلئے اطلاعات بھیجتی ہیں۔</translation>
 <translation id="168715261339224929">اپنے تمام آلات پر اپنے بُک مارکس حاصل کرنے کیلئے، مطابقت پذیری آن کریں۔</translation>
 <translation id="1688935057616748272">ایک حرف ٹائپ کریں</translation>
 <translation id="1689333818294560261">عرفی نام</translation>
@@ -1020,7 +1021,6 @@
 <translation id="1692210323591458290">گہرا جامنی</translation>
 <translation id="1692713444215319269">رنگوں کی تقلیب، میگنیفائر، اور ڈسپلے کی ترتیبات</translation>
 <translation id="169341880170235617">آپ کے ٹیب گروپس اب خودکار طور پر محفوظ ہو جاتے ہیں</translation>
-<translation id="1694470329618537745">اس گروپ کی تازہ ترین اپڈیٹس</translation>
 <translation id="1695487653372841667">‏آپ یہ کنٹرول کر سکتے ہیں کہ Google کے ساتھ کون سے ڈیٹا کا اشتراک کیا جائے۔ آپ اسے ترتیبات میں کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
 <translation id="1695510246756136088">انٹرنیٹ سے منسلک نہیں کیا جا سکتا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="1696555181932908973">آپ <ph name="SITE_ETLD_PLUS_ONE" /> پر جاری رکھنے کے لیے دوسرے طریقے آزما سکتے ہیں۔</translation>
@@ -1284,6 +1284,7 @@
 <translation id="1878885068166344708">فوکس منتقل کرنے پر آئٹم کو نمایاں کیا جاتا ہے۔ فوکس تبدیل کرنے کے لیے، ٹیب دبائیں یا کوئی آئٹم منتخب کریں۔</translation>
 <translation id="1879000426787380528">سائن ان کریں بطور</translation>
 <translation id="18802377548000045">ٹیبز کی چوڑائی بڑھ جاتی ہے</translation>
+<translation id="1880618477732738742">اس ایکسٹینشن سمیت، اپنی تمام ویب سائٹس اور ایکسٹینشنز کیلئے جغرافیائی مقام، مائیکروفون، کیمرے اور کوکیز وغیرہ جیسی خصوصیات کو تبدیل کریں اور رسائی فراہم کریں۔</translation>
 <translation id="1880905663253319515">سرٹیفکیٹ "<ph name="CERTIFICATE_NAME" />" حذف کریں؟</translation>
 <translation id="1881445033931614352">کی بورڈ لے آؤٹ</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{آئٹم}other{# آئٹمز}}</translation>
@@ -3468,6 +3469,7 @@
 <translation id="3435738964857648380">سیکیورٹی</translation>
 <translation id="343578350365773421">کاغذ ختم ہو گیا</translation>
 <translation id="3435896845095436175">فعال کریں</translation>
+<translation id="3437397693214267762">‏اپنا Outlook کیلنڈر اور SharePoint اور OneDrive کی فائلز دیکھیں</translation>
 <translation id="3438633801274389918">ننجا</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> کو اپنے مائیکرو فون تک ہمیشہ رسائی حاصل کرنے کی اجازت دیں</translation>
 <translation id="3439970425423980614">‏PDF کو پیش منظر میں کھولا جا رہا ہے</translation>
@@ -7125,6 +7127,7 @@
     اپنے تمام بُک مارکس اور فائلز وغیرہ تک آسانی سے رسائی حاصل کرنے کیلئے اپنے اکاؤنٹ کا استعمال کریں۔ اگر آپ کے پاس اکاؤنٹ نہیں ہے تو آپ اگلی اسکرین پر ایک اکاؤنٹ تخلیق کر سکتے ہیں۔</translation>
 <translation id="6054138466019582920">‏Google کے ساتھ یہ صفحہ تلاش کریں...</translation>
 <translation id="6054284857788651331">حال ہی میں بند ٹیب گروپ</translation>
+<translation id="6054819000749443354">سسٹم کی ترتیبات کھولیں</translation>
 <translation id="6054961935262556546">نظر آنے کو تبدیل کریں</translation>
 <translation id="6055392876709372977">‏PKCS #1 SHA-256 مع RSA مرموز کاری</translation>
 <translation id="6055544610007596637">‏Google Play اسٹور سے اپنے <ph name="DEVICE_TYPE" /> کے لیے ایپس انسٹال کریں</translation>
@@ -8690,7 +8693,6 @@
 <translation id="7189234443051076392">یقینی بنائیں کہ آپ کے آلہ پر کافی جگہ ہے</translation>
 <translation id="7189451821249468368">آپ کے پاس اس آلے کا اندراج کرنے کیلئے کافی اپ گریڈز نہیں ہیں۔ براہ کرم مزید خریداری کیلئے سیلز سے رابطہ کریں۔ اگر آپ کو یقین ہے کہ آپ کو یہ پیغام غلطی سے نظر آ رہا ہے تو براہ کرم سپورٹ سے رابطہ کریں۔</translation>
 <translation id="7189965711416741966">فنگر پرنٹ شامل ہو گیا۔</translation>
-<translation id="7190883804815364931">اس ٹیب میں آخری اپ ڈیٹ</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> کو مسدود کریں؟</translation>
 <translation id="7191063546666816478">کچھ تعاون یافتہ لنکس اب بھی <ph name="APP_NAME" />، <ph name="APP_NAME_2" />، <ph name="APP_NAME_3" /> اور دیگر <ph name="NUMBER_OF_OTHER_APPS" /> میں کھلیں گے۔</translation>
 <translation id="7191159667348037">‏نامعلوم پرنٹر (USB)</translation>
@@ -8947,6 +8949,7 @@
 <translation id="7380459290951585794">‏یقینی بنائیں کہ آپ کا فون قریب ہے، غیر مقفل ہے اور اس میں بلوٹوتھ اور Wi-Fi آن ہیں</translation>
 <translation id="7380622428988553498">آلے کے نام میں غلط حروف شامل ہیں</translation>
 <translation id="7380768571499464492">اپ ڈیٹ کردہ <ph name="PRINTER_NAME" /></translation>
+<translation id="7382009635620830394">‏اگر یہ کارڈ غیر فعال ہے تو SharePoint اور OneDrive فائلز اور Outlook کیلنڈر جیسے آپ کے Microsoft کارڈز بھی غیر فعال ہو جائیں گے۔</translation>
 <translation id="7382085868019811559">‏پرانے براؤزر کیلئے سپورٹ (LBS) مخصوص URLs پیٹرن کو متبادل براؤزر میں کھولنے کی اجازت دیتا ہے جو ان سائٹس کو صحیح طریقے سے چلانے کے لیے درکار پرانی خصوصیات کی سپورٹ کرتا ہے۔</translation>
 <translation id="7382980704744807223">مشکوک</translation>
 <translation id="738322632977123193">‏اپ لوڈ نہیں کر سکتے۔ تصویر کا استعمال ان میں سے کسی ایک فارمیٹ میں کریں: jpg, .gif, .png, .bmp, .tif. یا webp.</translation>
@@ -10616,6 +10619,7 @@
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> <ph name="MANAGER" /> کے زیر انتظام ہے۔ آپ اس ای میل کو اضافی اکاؤنٹ کے طور پر شامل نہیں کر سکتے۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" /><ph name="USER_EMAIL" /> استعمال کرنے کے لیے، پہلے اپنے<ph name="DEVICE_TYPE" /> سے سائن آؤٹ کریں۔ پھر لاگ ان اسکرین کے نیچے، فرد شامل کریں کو منتخب کریں۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">سر فہرست قطار کی کلیدوں کے برتاؤ کو سوئچ کرنے کیلئے تلاش کی کلید کو دبائے رہیں</translation>
+<translation id="8549127125482561383">درخواستیں دکھانے کا طریقہ</translation>
 <translation id="8549316893834449916">‏آپ اپنے Google اکاؤنٹ کو اپنے Chromebook میں سائن ان کرنے کیلئے استعمال کریں گے - وہی اکاؤنٹ جسے آپ Gmail, Drive, YouTube اور بہت کچھ کے لئے استعمال کرتے ہیں۔</translation>
 <translation id="8550239873869577759">مشکوک فائل ڈاؤن لوڈ ہو گئی</translation>
 <translation id="8551388862522347954">لائسنسز</translation>

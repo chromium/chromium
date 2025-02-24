@@ -13,6 +13,9 @@
 <translation id="3512634283363927263">Te strani so namenjene razvijalcem za Chrome in morda niso aktivno vzdrževane ali preizkušane. Če jih želite omogočiti, odprite <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite gumb, da omogočite strani za odpravljanje napak, in se znova pomaknite na to stran.</translation>
 <translation id="3875312571075912821">V nastavitvah požarnega zidu ali protivirusnega programa omogočite Chromu dostop do
         omrežja.</translation>
+<translation id="4949828774841497663">Odprite »Aplikacije &gt; Sistemske nastavitve &gt; Omrežje«, izberite
+          aktivno omrežje, kliknite gumb »Podrobnosti …« in počistite vse strežnike proxy,
+          ki so morda izbrani.</translation>
 <translation id="5005121315113832363">To stran je blokiral Chrome.</translation>
 <translation id="6011049234605203654">Odprite
           Chromov meni &gt;

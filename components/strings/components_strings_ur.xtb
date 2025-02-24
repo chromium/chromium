@@ -2255,6 +2255,7 @@
 <translation id="4989809363548539747">یہ پلگ ان تعاون یافتہ نہیں ہے</translation>
 <translation id="4990241977441916452">‏A2 لفافہ</translation>
 <translation id="4992066212339426712">آواز چلائیں</translation>
+<translation id="4994095017621319069">اب 1 ٹیب گروپ دستیاب نہیں ہے</translation>
 <translation id="4994348767896109801">آپ جو اشتہار دیکھتے ہیں آیا وہ ذاتی نوعیت کا ہے اس کا انحصار بہت سی چیزوں پر ہو سکتا ہے بشمول یہ ترتیب، <ph name="BEGIN_LINK_1" />اشتہار کے موضوعات<ph name="END_LINK_1" />، آپ کی <ph name="BEGIN_LINK_2" />کوکی کی ترتیبات<ph name="END_LINK_2" /> اور آیا آپ جو سائٹ دیکھ رہے ہیں وہ اشتہارات کو ذاتی نوعیت کا بناتی ہے۔ <ph name="BEGIN_LINK_3" />اپنے اشتہار کی رازداری کا نظم کرنے<ph name="END_LINK_3" /> کے بارے میں مزید جانیں۔</translation>
 <translation id="4995474875135717171">ترمیم کردہ:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />، سائٹ کی تلاش اور اپنے ڈیفالٹ سرچ انجن کا نظم کرنے کے لیے ٹیب پھر اینٹر دبائیں</translation>
@@ -3469,6 +3470,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> مزید}other{<ph name="PAYMENT_METHOD_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> مزید}}</translation>
 <translation id="7153618581592392745">ارغوانی</translation>
 <translation id="7156870133441232244">‏سرور TLS 1.2 یا اس نئے ورژن پر اپ گریڈ ہونا چاہیے۔</translation>
+<translation id="7156885531105222428">آپ نے جس صفحے کی درخواست کی ہے، اسے ایپلیکیشن میں تلاش نہیں کیا جا سکا</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> کا استعمال کرتے ہوئے اس فائل کو بھیجنے کے لیے، اپنے آلے پر (<ph name="DISK_SPACE_SIZE" />) اسپیس خالی کریں}other{<ph name="FEATURE_NAME" /> کا استعمال کرتے ہوئے اس فائلز کو بھیجنے کے لیے، اپنے آلے پر (<ph name="DISK_SPACE_SIZE" />) اسپیس خالی کریں}}</translation>
 <translation id="7160999678034985039">براہ کرم اپنا کام محفوظ کریں اور جب آپ تیار ہوں تو اپ ڈیٹ شروع کریں۔</translation>
 <translation id="7162277662076933695">اسمارٹ کارڈ ریڈر</translation>
@@ -4256,6 +4258,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">‏مسدود کردہ URLs کی فہرست اور اپنے سسٹم کے منتظم کے ذریعے نافذ کردہ دیگر پالیسیاں دیکھنے کے لیے &lt;strong&gt;chrome://policy&lt;/strong&gt; ملاحظہ کریں۔</translation>
 <translation id="8536234749087605613">لفافہ (ونڈو)</translation>
+<translation id="8538228968820006247">آپ کا ٹیب گروپ بھرا ہوا ہے، نئے اراکین لنک کی مدد سے شامل نہیں ہو سکتے</translation>
 <translation id="8539500321752640291">2 اجازتیں دیں؟</translation>
 <translation id="8541158209346794904">بلوٹوتھ آلہ</translation>
 <translation id="8541410041357371550">‏یہ سائٹ آپ کو مزید متعلقہ اشتہارات دکھانے کے لیے Chrome سے آپ کے اشتہار کے موضوعات موصول کرتی ہے</translation>

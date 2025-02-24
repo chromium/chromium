@@ -894,7 +894,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4895540042460820904">Ilifunguliwa Mara ya Mwisho</translation>
 <translation id="4896467949657706481">Vichupo vilifungwa; uliondolewa kwenye akaunti</translation>
 <translation id="490709372351071121">Inatafuta hali ya kifurushi</translation>
-<translation id="4908869848243824489">Dokezo kutoka Google</translation>
 <translation id="4913626501929406101">Unaweza kushiriki nakala ya nenosiri lako kwa usalama na mtu aliye katika kikundi cha familia yako. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Kubali</translation>
 <translation id="4936354130727646074">Usihamishe</translation>
@@ -977,6 +976,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="5250371859659394278">Kutoka chanzo kisichojulikana</translation>
 <translation id="5271265092610673171">{count,plural, =1{Sehemu ambayo sharti ijazwe iko tupu. Ijaze kabla ya kuhifadhi.}other{Baadhi ya sehemu ambazo sharti zijazwe ziko tupu. Zijaze kabla ya kuhifadhi.}}</translation>
 <translation id="5271549068863921519">Hifadhi nenosiri</translation>
+<translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) angependa ujiunge na kikundi cha vichupo. Yeyote aliye na kiungo anaweza kubadilisha vichupo vyote, kwa hivyo jiunge kwa uangalifu. Muda wa kutumia kiungo huisha baada ya saa 48.</translation>
 <translation id="5279214046729249716">Ndiyo, itenganishe</translation>
 <translation id="5279600392753459966">Zuia zote</translation>
 <translation id="5282340693022193851">Ili upate arifa za ufuatiliaji wa bei, washa arifa kwenye Mipangilio yako ya iOS.</translation>

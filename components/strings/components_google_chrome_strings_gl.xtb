@@ -12,6 +12,9 @@
 <translation id="3512634283363927263">Estas páxinas están pensadas para os programadores de Chrome, polo que é posible que non se manteñan nin proben activamente. Para habilitalas, vai a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, fai clic no botón para activar as páxinas de depuración e, a continuación, volve a esta páxina.</translation>
 <translation id="3875312571075912821">Configura o teu firewall ou o teu antivirus para permitir o acceso
           de Chrome á rede.</translation>
+<translation id="4949828774841497663">Vai a Aplicacións &gt; Configuración do sistema &gt; Rede, selecciona a
+          rede activa, fai clic no botón Detalles e anula a selección de calquera proxy
+          que poida estar seleccionado.</translation>
 <translation id="5005121315113832363">Chrome bloqueou esta páxina</translation>
 <translation id="6011049234605203654">Accede ao
           menú de Chrome &gt;

@@ -473,6 +473,7 @@
 <translation id="3226657629376379887">লে’আউট সম্পৰ্কীয় কাৰ্যৰ মেনু</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />ৰ মানটোক <ph name="CONVERSION_RATE" />ৰে হৰণ কৰক</translation>
 <translation id="3246869037381808805">১ দিনতকৈ পুৰণি প্ৰিণ্ট কাৰ্যসমূহ আঁতৰোৱা হ’ব</translation>
+<translation id="3248791727258378769">কোনো ট্ৰেন্সক্ৰিপ্ট সৃষ্টি কৰা নহ’ব</translation>
 <translation id="324961752321393509">আপোনাৰ প্ৰশাসকে এই এপ্‌টো বন্ধ কৰিবলৈ অনুমতি নিদিয়ে</translation>
 <translation id="3263941347294171263">আপডে’ট প্ৰক্ৰিয়াটো অব্যাহত ৰাখিবলৈ <ph name="DEVICE_NAME" />ৰ পাৱাৰ কে’বলডাল আনপ্লাগ কৰি পুনৰ প্লাগ কৰক</translation>
 <translation id="3268178239013324452">বিফল হৈছে - দুৱাৰ খোল খাই আছে</translation>
@@ -672,6 +673,7 @@
 <translation id="420283545744377356">স্ক্ৰীন ছেভাৰ অফ কৰক</translation>
 <translation id="4210636113897977670">ছেভ কৰক আৰু বাহিৰ হওক</translation>
 <translation id="4210659479607886331">বৰফৰ পৰা উৎপত্তি হোৱা নদী</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" />ৰ ট্ৰেন্সক্ৰিপশ্বন মডেল ডাউনল’ড কৰাটো সম্পূৰ্ণ হ’ল</translation>
 <translation id="42126664696688958">ৰপ্তানি কৰক</translation>
 <translation id="4213104098953699324">ইউএছবি কীব’ৰ্ড</translation>
 <translation id="4227825898293920515">পাছৱর্ডৰ ম্যাদ উকলাৰ সময় <ph name="TIME" /></translation>
@@ -942,6 +944,7 @@
 <translation id="5431318178759467895">ৰং</translation>
 <translation id="5457599981699367932">অতিথি হিচাপে ব্ৰাউজ কৰক</translation>
 <translation id="54609108002486618">পৰিচালিত</translation>
+<translation id="5461608756903394951"><ph name="LANGUAGE_NAME" />ৰ ট্ৰেন্সক্ৰিপশ্বন মডেল ডাউনল’ড কৰি থকা হৈছে</translation>
 <translation id="5470776029649730099">বাৰ্লেপ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} টা প্ৰয়াস বাকী আছে}one{{0} টা প্ৰয়াস বাকী আছে}other{{0} টা প্ৰয়াস বাকী আছে}}</translation>
 <translation id="5488280942828718790">মেজেণ্টা</translation>
@@ -1193,6 +1196,7 @@
 <translation id="6595046262780525922">ট্ৰেন্সক্ৰিপশ্বন অন কৰিব আৰু ট্ৰেন্সক্ৰিপশ্বন মডেল ডাউনল’ড কৰিবনে?</translation>
 <translation id="6596816719288285829">আইপি ঠিকনা</translation>
 <translation id="6599673642868607614">আপোনাৰ মতামতৰ বাবে ধন্যবাদ। আপোনাৰ মতামতে আমাক Chromebook ব্যৱহাৰৰ অভিজ্ঞতা উন্নত কৰাত সহায় কৰে আৰু আমাৰ দলে সেয়া পৰ্যালোচনা কৰিব। ৰিপ’ৰ্টৰ সংখ্যা বেছি হোৱাৰ বাবে আমি কোনো প্ৰত্যুত্তৰ পঠিয়াব নোৱাৰিম।</translation>
+<translation id="6608043585557830684">ট্ৰেন্সক্ৰিপশ্বন অফ আছে। সেয়া ছেটিঙত বা <ph name="THREE_DOTS_MENU_ICON" />ৰ মেনুত অন কৰক।</translation>
 <translation id="660846213831377756">মাউছ কীসমূহ</translation>
 <translation id="6618744767048954150">চলি আছে</translation>
 <translation id="6620487321149975369">প্ৰিণ্টিঙৰ কামসমূহ মেনুৱেলভাৱে আঁতৰাই নিদিয়ালৈকে সেইসমূহ ইতিহাসত দেখা পোৱা যাব</translation>
@@ -1623,6 +1627,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">চাহৰ দোকান</translation>
 <translation id="8538236298648811558">Google AIৰ দ্বাৰা সঞ্চালিত</translation>
+<translation id="8543574988889671960">টেব পুনৰ ল’ড কৰক</translation>
 <translation id="8550364285433943656">আপোনাৰ কীব’ৰ্ডৰ কীসমূহেৰে খেলিবলৈ গে’মৰ কাৰ্যত নিয়ন্ত্ৰণ ৰাখক</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">আপোনাৰ বাহকৰ নেটৱৰ্কৰ সৈতে সংযুক্ত হ’বলৈ সেইটোক এই বিকল্পটোৰ আৱশ্যক হ’ব পাৰে। সবিশেষৰ বাবে আপোনাৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>

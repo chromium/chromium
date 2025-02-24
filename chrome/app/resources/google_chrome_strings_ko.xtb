@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1001534784610492198">설치 프로그램 보관 파일이 손상되었거나 올바르지 않습니다. Chrome을 다시 다운로드하세요.</translation>
+<translation id="1018937009655463387">창을 공유하려면 시스템 설정에서 Chrome의 화면 녹화를 허용하세요.</translation>
 <translation id="1026101648481255140">설치 다시 시작</translation>
 <translation id="102763973188675173">Chrome을 맞춤설정하고 제어하세요. 업데이트가 출시되었습니다.</translation>
 <translation id="1028061813283459617">이 기기에서만 인터넷 사용 기록을 삭제하고 Google 계정에서는 유지하려면 <ph name="BEGIN_LINK" />Chrome에서 로그아웃<ph name="END_LINK" />하세요.</translation>
@@ -227,6 +228,7 @@
 <translation id="3941890832296813527">설치 오류: 설치 프로그램 파일 이름이 잘못되었거나 지원되지 않습니다.</translation>
 <translation id="3968962723676998462"><ph name="ACCOUNT_EMAIL" /> 계정에서 Chrome 데이터를 사용하고 저장하려면 비밀번호를 입력하세요</translation>
 <translation id="3973161977468201858">Google Chrome에서 Google 비밀번호 관리자 데이터를 삭제하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
+<translation id="400161754580828648">화면을 공유하려면 시스템 설정에서 Chrome의 화면 녹화를 허용하세요.</translation>
 <translation id="4022972681110646219">화면 번역</translation>
 <translation id="4023601594785368013">원본 언어, <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">업데이트를 적용하려면 ChromeOS를 다시 시작해야 합니다.</translation>
@@ -289,6 +291,7 @@
 <translation id="4828579605166583682">Chrome에서 기존 비밀번호를 교체하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="4842397268809523050">도메인에 대한 동기화가 허용되지 않아 ChromeOS Flex에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다.  방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chrome에 로그인하세요.</translation>
+<translation id="4855026984605187434">화면을 공유하려면 시스템 설정에서 Chrome의 화면 녹화를 허용하세요.</translation>
 <translation id="4873692836499071887">향후 Chrome 업데이트를 받으려면 macOS 11 이상이 필요합니다. 이 컴퓨터에서는 macOS 10.15를 사용 중입니다.</translation>
 <translation id="4873783916118289636">Chrome의 주요 개인 정보 보호 및 보안 제어 기능을 검토합니다.</translation>
 <translation id="4885446229353981848">Google 렌즈 바로가기 항상 표시</translation>
@@ -341,6 +344,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5579324208890605088">시작 오류: 관리자가 아닌 일반 사용자로 설치 프로그램을 실행하세요.</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5602351063754773347">Chrome에서 삭제할 것을 권장합니다. <ph name="BEGIN_LINK" />지원되는 확장 프로그램에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="5649156266046089790">Chrome 프로필을 사용하면 모든 Chrome 데이터를 분리할 수 있습니다. 친구와 가족을 위한 프로필을 만들거나 업무용과 개인용 프로필을 구분하세요</translation>
 <translation id="5649680279845190972">모든 컴퓨터에서 확장 프로그램 등을 사용하려면 Chrome에 로그인하세요.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" />은(는) 위험할 수 있으므로 Chrome에서 차단했습니다.</translation>
 <translation id="566568153320186256">Chrome은 부드러운 스크롤 및 동영상 프레임 속도 같은 시각적 효과와 백그라운드 활동을 제한하여 배터리 전원을 절약합니다. <ph name="BEGIN_LINK" />에너지 절약 모드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
@@ -575,6 +579,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8614913330719544658">Chrome이 응답하지 않습니다. 다시 시작하시겠습니까?</translation>
 <translation id="861702415419836452">Chrome에서 주변 3D 지도를 만들려면 카메라 액세스 권한이 필요합니다.</translation>
 <translation id="8625237574518804553">{0,plural, =1{1분 후 Chrome이 다시 시작됩니다}other{#분 후 Chrome이 다시 시작됩니다}}</translation>
+<translation id="8637932705841171563">창을 공유하려면 시스템 설정에서 Chrome의 화면 녹화를 허용하세요.</translation>
 <translation id="8641606876632989680">유출된 비밀번호로 로그인하면 Chrome에서 알림을 표시함</translation>
 <translation id="8649026945479135076">방문하는 사이트에서는 일반적으로 사용 경험을 개인화하기 위해 내가 관심을 보인 항목을 기억합니다. 또한 사이트에서는 내 관심분야에 관한 정보를 Chrome에 저장할 수 있습니다.</translation>
 <translation id="8669527147644353129">Chrome 도우미</translation>

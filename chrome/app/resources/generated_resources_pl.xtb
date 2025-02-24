@@ -1023,7 +1023,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1692210323591458290">Ciemnofioletowy</translation>
 <translation id="1692713444215319269">Odwrócenie kolorów, lupa i ustawienia wyświetlania</translation>
 <translation id="169341880170235617">Grupy kart są teraz zapisywane automatycznie</translation>
-<translation id="1694470329618537745">Najnowsze zmiany w tej grupie</translation>
 <translation id="1695487653372841667">Możesz określić, jakie dane są udostępniane Google. Możesz to zmienić w dowolnym momencie w Ustawieniach.</translation>
 <translation id="1695510246756136088">Nie udało się połączyć z internetem. Spróbuj jeszcze raz.</translation>
 <translation id="1696555181932908973">Możesz wypróbować inne sposoby logowania na konto <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -8679,7 +8678,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7189234443051076392">Upewnij się, że masz wystarczająco dużo miejsca na urządzeniu</translation>
 <translation id="7189451821249468368">Nie masz wystarczającej liczby licencji, by zarejestrować to urządzenie. Aby dokupić licencje, skontaktuj się z działem sprzedaży. Jeśli uważasz, że widzisz tę wiadomość z powodu błędu, skontaktuj się z zespołem pomocy.</translation>
 <translation id="7189965711416741966">Odcisk palca dodany.</translation>
-<translation id="7190883804815364931">Ostatnia aktualizacja tej karty</translation>
 <translation id="7190921792980745354">Zablokować użytkownika <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Niektóre obsługiwane linki nadal będą się otwierać w aplikacjach <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> i <ph name="NUMBER_OF_OTHER_APPS" /> innych.</translation>
 <translation id="7191159667348037">Nieznana drukarka (USB)</translation>

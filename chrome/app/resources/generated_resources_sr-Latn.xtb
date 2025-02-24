@@ -1020,7 +1020,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1692210323591458290">Tamnoljubičasta</translation>
 <translation id="1692713444215319269">Podešavanja inverzije boja, lupe i ekrana</translation>
 <translation id="169341880170235617">Grupe kartica se sada automatski čuvaju</translation>
-<translation id="1694470329618537745">Najnovije promene u ovoj grupi</translation>
 <translation id="1695487653372841667">Možete da kontrolišete koji podaci se dele sa Google-om. Ovo možete da promenite u svakom trenutku u Podešavanjima.</translation>
 <translation id="1695510246756136088">Ne možete da se povežete na internet. Probajte ponovo.</translation>
 <translation id="1696555181932908973">Možete da probate druge načine da biste nastavili na <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -8699,7 +8698,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7189234443051076392">Proverite da li na uređaju ima dovoljno prostora</translation>
 <translation id="7189451821249468368">Nemate dovoljno nadogradnji da biste registrovali ovaj uređaj. Obratite se sektoru prodaje da biste kupili još licenci. Ako smatrate da se ova poruka prikazuje greškom, obratite se podršci.</translation>
 <translation id="7189965711416741966">Dodali ste otisak prsta.</translation>
-<translation id="7190883804815364931">Poslednja promena ove kartice</translation>
 <translation id="7190921792980745354">Želite da blokirate korisnika <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Neki podržani linkovi će se i dalje otvarati u aplikacijama <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> i još <ph name="NUMBER_OF_OTHER_APPS" />.</translation>
 <translation id="7191159667348037">Nepoznat štampač (USB)</translation>

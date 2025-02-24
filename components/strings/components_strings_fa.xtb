@@ -2254,6 +2254,7 @@
 <translation id="4989809363548539747">این افزایه پشتیبانی نمی‌شود</translation>
 <translation id="4990241977441916452">پاکت آ۲</translation>
 <translation id="4992066212339426712">باصدا کردن</translation>
+<translation id="4994095017621319069">‫۱ گروه برگه دیگر دردسترس نیست</translation>
 <translation id="4994348767896109801">اینکه آیا آگهی‌ای که می‌بینید شخصی‌سازی شده است یا نه به عوامل زیادی بستگی دارد، ازجمله این تنظیم، <ph name="BEGIN_LINK_1" />موضوع‌های آگهی<ph name="END_LINK_1" />، <ph name="BEGIN_LINK_2" />تنظیمات کوکی<ph name="END_LINK_2" /> شما، و اینکه سایتی که مشاهده می‌کنید آگهی‌ها را شخصی‌سازی می‌کند یا نه. درباره <ph name="BEGIN_LINK_3" />مدیریت حریم خصوصی آگهی<ph name="END_LINK_3" /> بیشتر بدانید.</translation>
 <translation id="4995474875135717171">اصلاح‌شده در:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت جستجوی سایت و موتور جستجوی پیش‌فرض، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
@@ -3468,6 +3469,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش دیگر}one{<ph name="PAYMENT_METHOD_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش دیگر}other{<ph name="PAYMENT_METHOD_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش دیگر}}</translation>
 <translation id="7153618581592392745">نیلی کم‌رنگ</translation>
 <translation id="7156870133441232244">‏سرور باید به «امنیت لایه انتقال» (TLS) نسخه ۱.۲ یا بالاتر ارتقا داده شود.</translation>
+<translation id="7156885531105222428">صفحه درخواستی‌تان در این برنامه پیدا نشد</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{برای ارسال این فایل بااستفاده از <ph name="FEATURE_NAME" />، مقداری فضا (<ph name="DISK_SPACE_SIZE" />) در دستگاهتان آزاد کنید}one{برای ارسال این فایل‌ها بااستفاده از <ph name="FEATURE_NAME" />، مقداری فضا (<ph name="DISK_SPACE_SIZE" />) در دستگاهتان آزاد کنید}other{برای ارسال این فایل‌ها بااستفاده از <ph name="FEATURE_NAME" />، مقداری فضا (<ph name="DISK_SPACE_SIZE" />) در دستگاهتان آزاد کنید}}</translation>
 <translation id="7160999678034985039">لطفاً کارتان را ذخیره کنید و وقتی آماده شدید، به‌روزرسانی را شروع کنید.</translation>
 <translation id="7162277662076933695">کارت‌خوان هوشمند</translation>
@@ -4255,6 +4257,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">‏برای دیدن فهرست نشانی‌های وب مسدودشده و دیگر خط‌مشی‌های اعمال‌شده توسط سرپرست سیستم، از &lt;strong&gt;chrome://policy&lt;/strong&gt; بازدید کنید.</translation>
 <translation id="8536234749087605613">پاکت (پنجره‌دار)</translation>
+<translation id="8538228968820006247">گروه برگه شما پر است، اعضای جدید نمی‌توانند ازطریق پیوند به آن بپیوندند</translation>
 <translation id="8539500321752640291">۲ اجازه داده شود؟</translation>
 <translation id="8541158209346794904">دستگاه بلوتوث</translation>
 <translation id="8541410041357371550">‏این سایت موضوع‌های آگهی را از Chrome می‌گیرد تا آگهی‌های مرتبط‌تری به شما نشان دهد</translation>

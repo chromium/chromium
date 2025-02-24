@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">ডেস্ক ২</translation>
 <translation id="1546930421365146760">আপোনাৰ প্ৰশাসকক Google প্ৰশাসকৰ কনছ’লত এই ডিভাইচটো ছেট আপ কৰিবলৈ কওক</translation>
 <translation id="1549512626801247439">ষ্ট’ৰেজ মেনেজমেণ্ট</translation>
+<translation id="1549721333775633305">Quick Shareৰ ছেটিং দেখুৱাওক। Quick Share অক্ষম কৰা হৈছে</translation>
 <translation id="1550406609415860283">ডিভাইচ উপলব্ধ</translation>
 <translation id="1550523713251050646">অধিক বিকল্পৰ বাবে ক্লিক কৰক</translation>
 <translation id="1555130319947370107">নীলা</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> সক্ৰিয় কৰা হোৱা নাই।</translation>
 <translation id="5860033963881614850">অফ আছে</translation>
 <translation id="5860491529813859533">অন কৰক</translation>
+<translation id="5864691701242730005">Quick Shareৰ ছেটিং দেখুৱাওক। <ph name="VISIBILITY" />ৰ দৃশ্যমানতা বাছনি কৰা হৈছে</translation>
 <translation id="5864748620896638071">বেটাৰী <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">নেটৱৰ্কৰ তথ্য সংগ্ৰহ কৰি থকা হৈছে</translation>
 <translation id="5867606971598166637">আপোনাৰ ছিষ্টেমৰ প্ৰশাসকে আপোনাৰ স্ক্ৰীন নিৰীক্ষণ কৰি আছে</translation>
@@ -2262,6 +2264,7 @@
 <translation id="851660987304951246">দ্ৰুতভাৱে সমলৰ সাৰাংশ পাবলৈ বা প্ৰশ্ন সুধিবলৈ হেল্প মী ৰীড সুবিধাটো ব্যৱহাৰ কৰক</translation>
 <translation id="8517041960877371778">আপোনাৰ <ph name="DEVICE_TYPE" /> অন কৰি থোৱা অৱস্থাত চার্জ নহ'ব পাৰে।</translation>
 <translation id="8535393432370007982">ৰং অনুসৰি সজোৱাটো আনডু কৰক</translation>
+<translation id="8536886494750559755">Quick Shareৰ ছেটিং দেখুৱাওক। <ph name="TIME_REMAINING" />লৈ সকলোৰে বাবে দৃশ্যমান</translation>
 <translation id="8539803091108018926">ক্লিপব’ৰ্ডলৈ পাঠ প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="8541078764854166027">কেমেৰা ফ্ৰে’মিং</translation>
 <translation id="8542053257095774575">ছেভ কৰি থোৱা কোনো ডেস্ক অথবা টেম্পলে’ট নাই</translation>

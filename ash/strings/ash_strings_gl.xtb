@@ -176,6 +176,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1546492247443594934">Escritorio 2</translation>
 <translation id="1546930421365146760">Pídelle ao teu administrador que configure este dispositivo na consola de administración de Google</translation>
 <translation id="1549512626801247439">xestión do almacenamento</translation>
+<translation id="1549721333775633305">Mostrar a configuración de Quick Share. Quick Share está desactivado</translation>
 <translation id="1550406609415860283">Hai dispositivos dispoñibles</translation>
 <translation id="1550523713251050646">Fai clic para ver máis opcións</translation>
 <translation id="1555130319947370107">Azul</translation>
@@ -1475,6 +1476,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5856638668464565213">Rede <ph name="NETWORK_NAME" /> non activada.</translation>
 <translation id="5860033963881614850">Non</translation>
 <translation id="5860491529813859533">Activar</translation>
+<translation id="5864691701242730005">Mostrar a configuración de Quick Share. Visibilidade seleccionada: <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071">Batería: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5867217927013474703">Recompilando información da rede</translation>
 <translation id="5867606971598166637">A persoa que administra o sistema está supervisando as túas pantallas</translation>
@@ -2263,6 +2265,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="851660987304951246">Usa Axúdame a ler para resumir con rapidez o contido ou facer preguntas</translation>
 <translation id="8517041960877371778">É posible que o teu <ph name="DEVICE_TYPE" /> non cargue mentres estea acendido.</translation>
 <translation id="8535393432370007982">Desfacer orde de clasificación por cor</translation>
+<translation id="8536886494750559755">Mostrar a configuración de Quick Share. Visible para todos durante <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Copiouse o texto no portapapeis</translation>
 <translation id="8541078764854166027">Zoom automát.</translation>
 <translation id="8542053257095774575">Non hai modelos nin escritorios gardados</translation>

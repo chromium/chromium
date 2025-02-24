@@ -2254,6 +2254,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4989809363548539747">Ta vtičnik ni podprt</translation>
 <translation id="4990241977441916452">Kuverta A2</translation>
 <translation id="4992066212339426712">Vklopi zvok</translation>
+<translation id="4994095017621319069">1 skupina zavihkov ni več na voljo</translation>
 <translation id="4994348767896109801">Ali je oglas, ki je prikazan, osebno prilagojen, je lahko odvisno od več dejavnikov, vključno s to nastavitvijo, <ph name="BEGIN_LINK_1" />temami oglasov<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />nastavitvami piškotkov<ph name="END_LINK_2" /> in od tega, ali spletno mesto, ki si ga ogledujete, osebno prilagaja oglase. Preberite več o <ph name="BEGIN_LINK_3" />upravljanju zasebnosti pri oglaševanju<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Spremenjeno:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati iskanje po spletnem mestu in privzeti iskalnik</translation>
@@ -3468,6 +3469,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}two{<ph name="PAYMENT_METHOD_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Svetlo vijolična</translation>
 <translation id="7156870133441232244">Nadgradite strežnik na standard TLS 1.2 ali novejši.</translation>
+<translation id="7156885531105222428">Strani, ki ste jo zahtevali, v aplikaciji ni mogoče najti</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Če želite poslati to datoteko s funkcijo <ph name="FEATURE_NAME" />, sprostite prostor v napravi (<ph name="DISK_SPACE_SIZE" />)}one{Če želite poslati te datoteke s funkcijo <ph name="FEATURE_NAME" />, sprostite prostor v napravi (<ph name="DISK_SPACE_SIZE" />)}two{Če želite poslati te datoteke s funkcijo <ph name="FEATURE_NAME" />, sprostite prostor v napravi (<ph name="DISK_SPACE_SIZE" />)}few{Če želite poslati te datoteke s funkcijo <ph name="FEATURE_NAME" />, sprostite prostor v napravi (<ph name="DISK_SPACE_SIZE" />)}other{Če želite poslati te datoteke s funkcijo <ph name="FEATURE_NAME" />, sprostite prostor v napravi (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="7160999678034985039">Shranite delo in začnite posodobitev, ko boste pripravljeni.</translation>
 <translation id="7162277662076933695">Bralnik pametnih kartic</translation>
@@ -4255,6 +4257,7 @@ Dodatne podrobnosti:
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Na &lt;strong&gt;chrome://policy&lt;/strong&gt; si lahko ogledate seznam blokiranih URL-jev in drugih pravilnikov, ki jih uveljavlja skrbnik sistema.</translation>
 <translation id="8536234749087605613">Envelope (Window)</translation>
+<translation id="8538228968820006247">Vaša skupina zavihkov je polna. Novi člani se ne morejo pridružiti s povezavo.</translation>
 <translation id="8539500321752640291">Želite odobriti dve dovoljenji?</translation>
 <translation id="8541158209346794904">Naprava Bluetooth</translation>
 <translation id="8541410041357371550">To spletno mesto pridobi vaše teme oglasov iz Chroma, da vam prikaže ustreznejše oglase.</translation>

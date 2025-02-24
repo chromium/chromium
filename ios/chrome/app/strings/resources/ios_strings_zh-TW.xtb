@@ -894,7 +894,6 @@
 <translation id="4895540042460820904">上次開啟日期</translation>
 <translation id="4896467949657706481">系統已關閉分頁並將你登出</translation>
 <translation id="490709372351071121">正在取得包裹狀態</translation>
-<translation id="4908869848243824489">Google 探索</translation>
 <translation id="4913626501929406101">你可以安全地分享密碼副本給家庭群組的成員。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4936354130727646074">一律不移動</translation>
@@ -977,6 +976,7 @@
 <translation id="5250371859659394278">來源不明</translation>
 <translation id="5271265092610673171">{count,plural, =1{必填欄位沒有內容，請先填寫再儲存。}other{部分必填欄位沒有內容，請先填寫再儲存。}}</translation>
 <translation id="5271549068863921519">儲存密碼</translation>
+<translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 邀請你加入分頁群組。知道連結的使用者都可以編輯所有分頁，請謹慎考慮是否加入。連結將在 48 小時後失效。</translation>
 <translation id="5279214046729249716">是，請保留</translation>
 <translation id="5279600392753459966">全部封鎖</translation>
 <translation id="5282340693022193851">如要接收價格追蹤通知，請在 iOS 設定中開啟通知。</translation>
@@ -1944,6 +1944,7 @@
 <translation id="963102227019621224">網路和應用程式活動</translation>
 <translation id="966593914872420832">語音搜尋</translation>
 <translation id="968653181266955408">接收內容通知</translation>
+<translation id="972084300091883657">{COUNT,plural, =0{加入<ph name="OWNER_NAME" />的分頁群組}=1{加入<ph name="OWNER_NAME" />和另外 {COUNT} 人的分頁群組}other{加入<ph name="OWNER_NAME" />和另外 {COUNT} 人的分頁群組}}</translation>
 <translation id="973493300226275298">追蹤產品在多個網路商店中的價格。如果產品降價，系統會透過快訊通知你。</translation>
 <translation id="973788791897303708">這個分頁群組已額滿</translation>
 <translation id="976392601789283511">重新開啟最近關閉的分頁</translation>

@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">שולחן עבודה 2</translation>
 <translation id="1546930421365146760">‏צריך לבקש מהאדמין להגדיר את המכשיר במסוף Google Admin</translation>
 <translation id="1549512626801247439">ניהול האחסון</translation>
+<translation id="1549721333775633305">הצגת ההגדרות של "שיתוף מהיר". השיתוף המהיר מושבת</translation>
 <translation id="1550406609415860283">המכשירים הזמינים</translation>
 <translation id="1550523713251050646">יש ללחוץ לקבלת אפשרויות נוספות</translation>
 <translation id="1555130319947370107">כחול</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213">הרשת <ph name="NETWORK_NAME" /> לא מופעלת.</translation>
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5860491529813859533">הפעלה</translation>
+<translation id="5864691701242730005">הצגת ההגדרות של "שיתוף מהיר". נבחרה חשיפה של <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071">סוללה: %<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="5867217927013474703">מתבצע איסוף של פרטי הרשת</translation>
 <translation id="5867606971598166637">האדמין עוקב אחר המסכים שלך</translation>
@@ -2264,6 +2266,7 @@
 <translation id="851660987304951246">כדאי להשתמש בכלי 'עזרה בקריאה' כדי לסכם תוכן או לשאול שאלות במהירות</translation>
 <translation id="8517041960877371778">ייתכן שה-<ph name="DEVICE_TYPE" /> לא ייטען כשהוא פועל.</translation>
 <translation id="8535393432370007982">ביטול של סדר המיון לפי צבע</translation>
+<translation id="8536886494750559755">הצגת ההגדרות של "שיתוף מהיר". במצב גלוי לכולם למשך <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">הטקסט הועתק ללוח</translation>
 <translation id="8541078764854166027">הפריים במצלמה</translation>
 <translation id="8542053257095774575">אין תבניות או שולחנות עבודה וירטואליים שמורים</translation>

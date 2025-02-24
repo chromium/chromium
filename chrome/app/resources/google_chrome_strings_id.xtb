@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1001534784610492198">Arsip instalatur rusak atau tidak valid. Download kembali Google Chrome.</translation>
+<translation id="1018937009655463387">Untuk membagikan jendela Anda, izinkan perekaman layar untuk Chrome di Setelan Sistem.</translation>
 <translation id="1026101648481255140">Lanjutkan Penginstalan</translation>
 <translation id="102763973188675173">Sesuaikan dan kontrol Google Chrome. Update tersedia.</translation>
 <translation id="1028061813283459617">Untuk menghapus data penjelajahan hanya dari perangkat ini dan tetap menyimpannya di Akun Google Anda, <ph name="BEGIN_LINK" />logout dari Chrome<ph name="END_LINK" />.</translation>
@@ -224,6 +225,7 @@
 <translation id="3941890832296813527">Error penginstalan: Nama file penginstal tidak valid atau tidak didukung.</translation>
 <translation id="3968962723676998462">Masukkan frasa sandi untuk menggunakan dan menyimpan data Chrome di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome ingin menghapus data Pengelola Sandi Google Anda. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
+<translation id="400161754580828648">Untuk membagikan layar Anda, izinkan perekaman layar untuk Chrome di Setelan Sistem.</translation>
 <translation id="4022972681110646219">Terjemahkan layar</translation>
 <translation id="4023601594785368013">Bahasa asli: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">ChromeOS harus dimulai ulang untuk menerapkan update.</translation>
@@ -286,6 +288,7 @@
 <translation id="4828579605166583682">Google Chrome mencoba mengganti sandi yang ada. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="4842397268809523050">ChromeOS Flex tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> sudah login.  Agar penjelajahan Anda tetap terpisah, login ke Chrome di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="4855026984605187434">Untuk membagikan layar Anda, izinkan perekaman layar untuk Chrome di Setelan Sistem</translation>
 <translation id="4873692836499071887">Untuk mendapatkan update Google Chrome berikutnya, Anda memerlukan macOS 11 atau yang lebih baru. Komputer ini menggunakan macOS 10.15.</translation>
 <translation id="4873783916118289636">Meninjau kontrol privasi dan keamanan utama di Chrome</translation>
 <translation id="4885446229353981848">Selalu tampilkan pintasan Google Lens</translation>
@@ -334,6 +337,7 @@
 <translation id="5579324208890605088">Error saat sistem dimulai: jalankan penginstal sebagai pengguna biasa, bukan sebagai administrator.</translation>
 <translation id="5596627076506792578">Opsi lainnya</translation>
 <translation id="5602351063754773347">Chrome merekomendasikan agar Anda menghapusnya. <ph name="BEGIN_LINK" />Pelajari lebih lanjut ekstensi yang didukung<ph name="END_LINK" /></translation>
+<translation id="5649156266046089790">Dengan profil Chrome, Anda dapat memisahkan semua data Chrome Anda. Buat profil untuk teman dan keluarga, atau pisahkan antara aktivitas kerja dan hiburan.</translation>
 <translation id="5649680279845190972">Untuk mendapatkan ekstensi dan yang lainnya di semua komputer Anda, login ke Chrome</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> mungkin berbahaya, sehingga Chrome memblokirnya.</translation>
 <translation id="566568153320186256">Chrome akan menghemat daya baterai dengan membatasi aktivitas latar belakang dan efek visual, seperti scroll yang lancar dan kecepatan frame video. <ph name="BEGIN_LINK" />Pelajari lebih lanjut Penghemat Energi<ph name="END_LINK" /></translation>
@@ -568,6 +572,7 @@
 <translation id="8614913330719544658">Google Chrome tidak merespons. Luncurkan ulang sekarang?</translation>
 <translation id="861702415419836452">Chrome memerlukan izin untuk mengakses kamera guna membuat peta 3D untuk area di sekeliling Anda.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome akan diluncurkan ulang dalam 1 menit}other{Chrome akan diluncurkan ulang dalam # menit}}</translation>
+<translation id="8637932705841171563">Untuk membagikan jendela Anda, izinkan perekaman layar untuk Chrome di Setelan Sistem</translation>
 <translation id="8641606876632989680">Chrome akan memberi tahu Anda saat Anda login dengan sandi yang telah dibobol</translation>
 <translation id="8649026945479135076">Situs yang Anda buka biasanya mengingat hal-hal yang Anda minati agar dapat mempersonalisasi pengalaman Anda. Situs juga dapat menyimpan informasi tentang minat Anda ke Chrome.</translation>
 <translation id="8669527147644353129">Pembantu Google Chrome</translation>

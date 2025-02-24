@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="1001534784610492198">Архів програми встановлення недійсний або пошкоджений. Завантажте Google Chrome знову.</translation>
+<translation id="1018937009655463387">Щоб показувати своє вікно, у системних параметрах дозвольте Chrome записувати відео з екрана.</translation>
 <translation id="1026101648481255140">Продовжити встановлення</translation>
 <translation id="102763973188675173">Налаштуйте й контролюйте Google Chrome. Доступне оновлення.</translation>
 <translation id="1028061813283459617">Щоб видалити дані вебперегляду лише на цьому пристрої, але зберегти їх в обліковому записі Google, <ph name="BEGIN_LINK" />вийдіть із Chrome<ph name="END_LINK" />.</translation>
@@ -224,6 +225,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="3941890832296813527">Сталася помилка. Назва файлу програми встановлення недійсна або не підтримується.</translation>
 <translation id="3968962723676998462">Щоб використовувати й зберігати дані Chrome в обліковому записі <ph name="ACCOUNT_EMAIL" />, введіть парольну фразу</translation>
 <translation id="3973161977468201858">Google Chrome хоче видалити ваші дані в Google Менеджері паролів. Щоб дозволити це, введіть пароль Windows.</translation>
+<translation id="400161754580828648">Щоб показувати свій екран, у системних параметрах дозвольте Chrome записувати відео з екрана.</translation>
 <translation id="4022972681110646219">Перекласти вміст екрана</translation>
 <translation id="4023601594785368013">Мова оригіналу: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Щоб застосувати це оновлення, потрібно перезапустити ОС Chrome.</translation>
@@ -286,6 +288,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4828579605166583682">Google Chrome намагається замінити наявні паролі. Щоб дозволити це, введіть пароль Windows.</translation>
 <translation id="4842397268809523050">ОС Chrome Flex не змогла синхронізувати дані, оскільки ця функція недоступна для вашого домену.</translation>
 <translation id="4851866215237571846">Ви вже ввійшли в обліковий запис <ph name="EXISTING_USER" />.  Щоб переглядати вебсторінки окремо, увійдіть у свій профіль у Chrome як <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="4855026984605187434">Щоб показувати свій екран, у системних параметрах дозвольте Chrome записувати відео з екрана</translation>
 <translation id="4873692836499071887">Щоб отримувати майбутні оновлення Google Chrome, потрібна операційна система macOS 11 або новішої версії. На цьому комп’ютері встановлено macOS 10.15.</translation>
 <translation id="4873783916118289636">Перевірте основні елементи керування конфіденційністю та безпекою в Chrome</translation>
 <translation id="4885446229353981848">Завжди показувати ярлик Google Об’єктива</translation>
@@ -334,6 +337,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5579324208890605088">Помилка: запустіть програму встановлення як звичайний користувач, а не з правами адміністратора.</translation>
 <translation id="5596627076506792578">Інші опції</translation>
 <translation id="5602351063754773347">Chrome радить вилучити його. <ph name="BEGIN_LINK" />Докладніше про підтримувані розширення.<ph name="END_LINK" /></translation>
+<translation id="5649156266046089790">Створюйте різні профілі Chrome для різних цілей (наприклад, робочий і особистий) та для різних людей (як-от друзів і членів сім’ї).</translation>
 <translation id="5649680279845190972">Щоб отримати доступ до своїх розширень і інших даних на всіх комп’ютерах, увійдіть у Chrome</translation>
 <translation id="565744775970812598">Файл <ph name="FILE_NAME" /> може бути небезпечним, тому Chrome заблокував його.</translation>
 <translation id="566568153320186256">Chrome зберігає заряд акумулятора, обмежуючи фонову активність і візуальні ефекти, як-от плавне прокручування й частоту кадрів відео. <ph name="BEGIN_LINK" />Докладніше про режим енергозбереження.<ph name="END_LINK" /></translation>
@@ -568,6 +572,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8614913330719544658">Google Chrome не відповідає. Перезапустити зараз?</translation>
 <translation id="861702415419836452">Chrome потрібен дозвіл на використання камери, щоб створити 3D-карту вашого оточення</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome перезапуститься через 1 хвилину}one{Chrome перезапуститься через # хвилину}few{Chrome перезапуститься через # хвилини}many{Chrome перезапуститься через # хвилин}other{Chrome перезапуститься через # хвилини}}</translation>
+<translation id="8637932705841171563">Щоб показувати своє вікно, у системних параметрах дозвольте Chrome записувати відео з екрана</translation>
 <translation id="8641606876632989680">Chrome сповістить, коли ви ввійдете в обліковий запис за допомогою зламаного пароля</translation>
 <translation id="8649026945479135076">Зазвичай сайти, які ви відвідуєте, запам’ятовують, що вас цікавить, щоб персоналізувати для вас оголошення. Також сайти можуть зберігати в Chrome інформацію про ваші інтереси.</translation>
 <translation id="8669527147644353129">Помічник Google Chrome</translation>

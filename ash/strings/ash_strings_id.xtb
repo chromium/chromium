@@ -176,6 +176,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1546492247443594934">Halaman kerja 2</translation>
 <translation id="1546930421365146760">Minta administrator Anda untuk menyiapkan perangkat ini di konsol Google Admin</translation>
 <translation id="1549512626801247439">pengelolaan penyimpanan</translation>
+<translation id="1549721333775633305">Tampilkan setelan Quick Share. Quick Share dinonaktifkan</translation>
 <translation id="1550406609415860283">Perangkat tersedia</translation>
 <translation id="1550523713251050646">Klik untuk opsi lainnya</translation>
 <translation id="1555130319947370107">Biru</translation>
@@ -1474,6 +1475,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> tidak diaktifkan.</translation>
 <translation id="5860033963881614850">Nonaktif</translation>
 <translation id="5860491529813859533">Aktifkan</translation>
+<translation id="5864691701242730005">Tampilkan setelan Quick Share. Visibilitas <ph name="VISIBILITY" /> dipilih</translation>
 <translation id="5864748620896638071">Baterai <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Mengumpulkan informasi jaringan</translation>
 <translation id="5867606971598166637">Administrator sistem memantau layar Anda</translation>
@@ -2262,6 +2264,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="851660987304951246">Gunakan Bantu baca untuk mengajukan pertanyaan atau meringkas konten dengan cepat</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> Anda mungkin tidak diisi daya saat dinyalakan.</translation>
 <translation id="8535393432370007982">Urungkan tata urutan menurut warna</translation>
+<translation id="8536886494750559755">Tampilkan setelan Quick Share. Dapat dilihat oleh semua orang selama <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Teks disalin ke Papan Klip</translation>
 <translation id="8541078764854166027">Framing kamera</translation>
 <translation id="8542053257095774575">Tidak ada desktop atau template tersimpan</translation>

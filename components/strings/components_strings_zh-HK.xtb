@@ -2253,6 +2253,7 @@
 <translation id="4989809363548539747">系統不支援此外掛程式</translation>
 <translation id="4990241977441916452">A2 信封</translation>
 <translation id="4992066212339426712">取消靜音</translation>
+<translation id="4994095017621319069">1 個分頁群組已無法使用</translation>
 <translation id="4994348767896109801">上網時是否看到個人化廣告取決於多項因素，包括此設定、<ph name="BEGIN_LINK_1" />廣告主題<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie 設定<ph name="END_LINK_2" />，以及網站是否顯示個人化廣告。進一步瞭解如何<ph name="BEGIN_LINK_3" />管理廣告私隱權<ph name="END_LINK_3" />。</translation>
 <translation id="4995474875135717171">修改日期：</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以管理站內搜尋同預設搜尋引擎</translation>
@@ -3467,6 +3468,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方法}other{<ph name="PAYMENT_METHOD_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方法}}</translation>
 <translation id="7153618581592392745">淡紫色</translation>
 <translation id="7156870133441232244">伺服器應升級至 TLS 1.2 或以上版本。</translation>
+<translation id="7156885531105222428">應用程式中找不到你要求的頁面</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{如要使用「<ph name="FEATURE_NAME" />」傳送此檔案，請騰出裝置空間 (<ph name="DISK_SPACE_SIZE" />)}other{如要使用「<ph name="FEATURE_NAME" />」傳送這些檔案，請騰出裝置空間 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="7160999678034985039">請儲存目前的工作，並在儲存好之後開始更新。</translation>
 <translation id="7162277662076933695">智能讀卡器</translation>
@@ -4254,6 +4256,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">請前往 &lt;strong&gt;chrome://policy&lt;/strong&gt; 查看被封鎖的網址清單，以及由系統管理員強制執行的其他政策。</translation>
 <translation id="8536234749087605613">信封 (開窗)</translation>
+<translation id="8538228968820006247">分頁群組已滿，新成員無法透過連結加入</translation>
 <translation id="8539500321752640291">要允許 2 項權限嗎？</translation>
 <translation id="8541158209346794904">藍牙裝置</translation>
 <translation id="8541410041357371550">此網站會從 Chrome 中取得您的廣告主題，向您顯示更相關的廣告</translation>

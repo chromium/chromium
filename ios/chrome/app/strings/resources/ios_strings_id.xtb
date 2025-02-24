@@ -894,7 +894,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4895540042460820904">Terakhir Dibuka</translation>
 <translation id="4896467949657706481">Tab ditutup; Anda telah logout</translation>
 <translation id="490709372351071121">Mendapatkan status paket</translation>
-<translation id="4908869848243824489">Discover oleh Google</translation>
 <translation id="4913626501929406101">Anda dapat membagikan salinan sandi Anda dengan aman kepada seseorang dalam grup keluarga Anda. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Terima</translation>
 <translation id="4936354130727646074">Jangan pindahkan</translation>
@@ -977,6 +976,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5250371859659394278">Dari sumber tidak dikenal</translation>
 <translation id="5271265092610673171">{count,plural, =1{Kolom wajib diisi masih kosong. Isi kolom sebelum menyimpan.}other{Beberapa kolom wajib diisi masih kosong. Isi kolom sebelum menyimpan.}}</translation>
 <translation id="5271549068863921519">Simpan sandi</translation>
+<translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ingin Anda bergabung ke grup tab. Siapa saja yang memiliki link ini dapat mengedit semua tab. Harap bergabung dengan hati-hati. Masa berlaku link akan berakhir setelah 48 jam.</translation>
 <translation id="5279214046729249716">Ya, pisahkan</translation>
 <translation id="5279600392753459966">Blokir semua</translation>
 <translation id="5282340693022193851">Untuk mendapatkan notifikasi pemantauan harga, aktifkan notifikasi di Setelan iOS.</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
 <translation id="1001534784610492198">Mae'r archif gosodwr wedi'i lygru neu'n annilys. Lawrlwythwch Google Chrome eto.</translation>
+<translation id="1018937009655463387">I rannu'ch ffenestr, caniatewch recordio sgrîn ar gyfer Chrome yn y Gosodiadau System.</translation>
 <translation id="1026101648481255140">Parhau i Osod</translation>
 <translation id="102763973188675173">Personoleiddio a rheoli Google Chrome. Mae diweddariad ar gael.</translation>
 <translation id="1028061813283459617">I ddileu data pori o'r ddyfais hon yn unig, tra'n eu cadw yn eich Cyfrif Google, <ph name="BEGIN_LINK" />allgofnodwch o Chrome<ph name="END_LINK" />.</translation>
@@ -228,6 +229,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3941890832296813527">Gwall gosod: Mae enw ffeil y gosodwr yn annilys neu heb ei gefnogi.</translation>
 <translation id="3968962723676998462">Rhowch eich cyfrin-ymadrodd i'w ddefnyddio a chadwch ddata Chrome yn eich cyfrif, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Mae Google Chrome eisiau dileu eich data Rheolwr Cyfrineiriau Google. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
+<translation id="400161754580828648">I rannu'ch sgrîn, caniatewch recordio sgrîn ar gyfer Chrome yn y Gosodiadau System.</translation>
 <translation id="4022972681110646219">Cyfieithu'r sgrîn</translation>
 <translation id="4023601594785368013">Iaith wreiddiol: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Mae angen ailgychwyn ChromeOS i gymhwyso'r diweddariad.</translation>
@@ -290,6 +292,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4828579605166583682">Mae Google Chrome yn ceisio disodli cyfrineiriau presennol. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="4842397268809523050">Nid oedd ChromeOS Flex yn gallu cysoni eich data gan nad yw Cysoni ar gael ar gyfer eich parth.</translation>
 <translation id="4851866215237571846">Mae <ph name="EXISTING_USER" /> eisoes wedi mewngofnodi.  I gadw'ch pori ar wahân, mewngofnodwch i Chrome yn eich proffil eich hun fel <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="4855026984605187434">I rannu'ch sgrîn, caniatewch recordio sgrîn ar gyfer Chrome yn y Gosodiadau System</translation>
 <translation id="4873692836499071887">I gael diweddariadau Google Chrome yn y dyfodol, bydd angen macOS 11 neu'n hwyrach arnoch. Mae'r cyfrifiadur hwn yn defnyddio macOS 10.15.</translation>
 <translation id="4873783916118289636">Adolygu rheolyddion diogelwch a phreifatrwydd allweddol yn Chrome</translation>
 <translation id="4885446229353981848">Dangos llwybr byr Google Lens bob amser</translation>
@@ -342,6 +345,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="5579324208890605088">Gwall cychwyn: rhedeg y gosodwr fel defnyddiwr arferol, nid fel gweinyddwr.</translation>
 <translation id="5596627076506792578">Rhagor o ddewisiadau</translation>
 <translation id="5602351063754773347">Mae Chrome yn argymell eich bod yn ei dynnu. <ph name="BEGIN_LINK" />Dysgu rhagor am estyniadau a gefnogir<ph name="END_LINK" /></translation>
+<translation id="5649156266046089790">Gallwch wahanu eich holl bethau Chrome gyda phroffiliau Chrome. Creu proffiliau ar gyfer eich ffrindiau a'ch teulu, neu rannu rhwng gwaith a hwyl.</translation>
 <translation id="5649680279845190972">I gael eich estyniadau a rhagor ar eich holl gyfrifiaduron, mewngofnodwch i Chrome</translation>
 <translation id="565744775970812598">Gallai <ph name="FILE_NAME" /> fod yn beryglus, felly mae Chrome wedi ei rwystro.</translation>
 <translation id="566568153320186256">Bydd Chrome yn arbed pŵer batri drwy gyfyngu ar weithgarwch cefndir ac effeithiau gweledol, megis sgrolio llyfn a chyfraddau ffrâm fideo. <ph name="BEGIN_LINK" />Dysgu rhagor am yr Arbedwr Ynni<ph name="END_LINK" /></translation>
@@ -576,6 +580,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="8614913330719544658">Nid yw Google Chrome yn ymateb. Ail-lansio nawr?</translation>
 <translation id="861702415419836452">Mae angen caniatâd ar Chrome i gael mynediad at eich camera i greu map 3D o'ch amgylchoedd</translation>
 <translation id="8625237574518804553">{0,plural, =1{Bydd Chrome yn ail-lansio mewn 1 funud}zero{Bydd Chrome yn ail-lansio mewn # munud}two{Bydd Chrome yn ail-lansio mewn # funud}few{Bydd Chrome yn ail-lansio mewn # munud}many{Bydd Chrome yn ail-lansio mewn # munud}other{Bydd Chrome yn ail-lansio mewn # munud}}</translation>
+<translation id="8637932705841171563">I rannu'ch ffenestr, caniatewch recordio sgrîn ar gyfer Chrome yn y Gosodiadau System</translation>
 <translation id="8641606876632989680">Bydd Chrome yn eich hysbysu pan fyddwch yn mewngofnodi gyda chyfrinair sydd dan fygythiad</translation>
 <translation id="8649026945479135076">Mae'n gyffredin i wefannau y byddwch yn ymweld â nhw gofio pethau y mae gennych ddiddordeb ynddynt, i bersonoleiddio'ch profiad. Gall gwefannau hefyd storio gwybodaeth am eich diddordebau gyda Chrome.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>

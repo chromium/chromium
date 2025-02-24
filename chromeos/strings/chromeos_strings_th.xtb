@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">แมว</translation>
 <translation id="5907649332524363701">สีเต็มแป้นพิมพ์</translation>
 <translation id="5908813850962688338">การติดตั้งการอัปเดตนี้จะใช้เวลาสักครู่ โปรดเสียบปลั๊กและเปิดอุปกรณ์ไว้ขณะดาวน์โหลดการอัปเดต อุปกรณ์อาจรีบูตตัวเองหลายครั้งและแสดงหน้าจอสีดำในระหว่างกระบวนการนี้ ระบบจะแจ้งให้คุณรีสตาร์ทอุปกรณ์เพื่อให้การติดตั้งเสร็จสมบูรณ์</translation>
+<translation id="5915794087373112615">ครูจะดูหน้าจอของคุณใน <ph name="NUM_SECONDS" /> วินาที</translation>
 <translation id="5916084858004523819">ห้ามใช้</translation>
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{สแกนไฟล์และบันทึกไว้ใน <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> เรียบร้อยแล้ว}other{สแกนไฟล์และบันทึกไว้ใน <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> เรียบร้อยแล้ว}}</translation>
@@ -1524,6 +1525,7 @@
 <translation id="8054112564438735763">เบจ</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" />สี<ph name="CHARACTERS_COLOR" />บนพื้นหลังสี<ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">เชื่อมต่อไมค์เพื่อเริ่มบันทึกเสียง</translation>
 <translation id="8067126283828232460">เชื่อมต่อ APN แล้ว</translation>
 <translation id="8067208048261192356">น้ำตาล</translation>
 <translation id="8067224607978179455">ลบ<ph name="ACTION_NAME" /></translation>
@@ -1627,6 +1629,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ร้านน้ำชา</translation>
 <translation id="8538236298648811558">ทำงานด้วย AI ของ Google</translation>
+<translation id="8543574988889671960">โหลดแท็บซ้ำ</translation>
 <translation id="8550364285433943656">วางตัวควบคุมสำหรับการดำเนินการในเกมเพื่อเล่นด้วยแป้นต่างๆ บนแป้นพิมพ์</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ผู้ให้บริการอาจกำหนดให้ใช้ตัวเลือกนี้เพื่อให้เชื่อมต่อเครือข่ายของตนได้ โปรดติดต่อสอบถามรายละเอียดจากผู้ให้บริการ</translation>

@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">კატები</translation>
 <translation id="5907649332524363701">კლავიშების ფერი</translation>
 <translation id="5908813850962688338">ამ განახლების ინსტალაციას რამდენიმე წუთი დასჭირდება. დატოვეთ მოწყობილობა ელკვების წყაროსთან მიერთებული და ჩართეთ, როცა განახლება ჩამოიტვირთება. თქვენი მოწყობილობა შეიძლება რამდენიმეჯერ თავისით გადაიტვირთოს და პროცესში შავი ეკრანი აჩვენოს. ინსტალაციის დასრულებისას მოგეთხოვებათ მოწყობილობის გადატვირთვა.</translation>
+<translation id="5915794087373112615">თქვენი მასწავლებელი თქვენს ეკრანს ნახავს <ph name="NUM_SECONDS" /> წამში</translation>
 <translation id="5916084858004523819">აკრძალული</translation>
 <translation id="5916664084637901428">ჩართვა</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{თქვენი ფაილი წარმატებით დასკანირდა და შეინახა საქაღალდეში <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{თქვენი ფაილები წარმატებით დასკანირდა და შეინახა საქაღალდეში <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1524,6 +1525,7 @@
 <translation id="8054112564438735763">ჩალისფერი</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" />, <ph name="CHARACTERS_BACKGROUND" /> ფონი</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">დააკავშირეთ მიკროფონი ჩაწერის დასაწყებად</translation>
 <translation id="8067126283828232460">APN დაკავშირებულია.</translation>
 <translation id="8067208048261192356">ყავისფერი</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" />-ის წაშლა</translation>
@@ -1627,6 +1629,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ჩაის სახლი</translation>
 <translation id="8538236298648811558">უზრუნველყოფილია Google-ის ხელოვნური ინტელექტის მიერ</translation>
+<translation id="8543574988889671960">ჩანართის გადატვირთვა</translation>
 <translation id="8550364285433943656">გამოიყენეთ მართვის საშუალებები თამაშში განსაზღვრული მოქმედებებისთვის, კლავიატურით რომ ითამაშოთ</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">შესაძლოა, ეს ვარიანტი თქვენს ოპერატორს სჭირდებოდეს, თავის ქსელთან დაკავშირების საშუალება რომ მოგცეთ. დეტალური ინფორმაციისთვის მიმართეთ ოპერატორს.</translation>

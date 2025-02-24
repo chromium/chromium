@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">데스크 2</translation>
 <translation id="1546930421365146760">관리자에게 Google 관리 콘솔에서 이 기기를 설정해달라고 요청하세요.</translation>
 <translation id="1549512626801247439">저장용량 관리</translation>
+<translation id="1549721333775633305">Quick Share 설정을 표시합니다. Quick Share가 사용 중지되었습니다.</translation>
 <translation id="1550406609415860283">사용 가능한 기기</translation>
 <translation id="1550523713251050646">더 많은 옵션을 확인하려면 클릭하세요.</translation>
 <translation id="1555130319947370107">파란색</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> 네트워크가 활성화되지 않음.</translation>
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5860491529813859533">사용</translation>
+<translation id="5864691701242730005">Quick Share 설정을 표시합니다. <ph name="VISIBILITY" /> 공개 상태가 선택되었습니다.</translation>
 <translation id="5864748620896638071">배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">네트워크 정보 수집 중</translation>
 <translation id="5867606971598166637">시스템 관리자가 화면을 모니터링하고 있습니다.</translation>
@@ -2262,6 +2264,7 @@
 <translation id="851660987304951246">콘텐츠를 빠르게 요약하거나 질문하려면 읽기 지원을 사용하세요</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" />이(가) 켜져 있는 동안에는 충전되지 않을 수 있습니다.</translation>
 <translation id="8535393432370007982">색상별 정렬 순서 실행취소</translation>
+<translation id="8536886494750559755">Quick Share 설정을 표시합니다. <ph name="TIME_REMAINING" /> 동안 모든 사용자에게 공개됩니다.</translation>
 <translation id="8539803091108018926">텍스트가 클립보드에 복사됨</translation>
 <translation id="8541078764854166027">카메라 프레이밍</translation>
 <translation id="8542053257095774575">저장된 데스크 또는 템플릿 없음</translation>

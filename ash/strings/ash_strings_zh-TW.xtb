@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">桌面 2</translation>
 <translation id="1546930421365146760">請與系統管理員聯絡，要求對方在 Google 管理控制台中設定這部裝置</translation>
 <translation id="1549512626801247439">儲存空間管理</translation>
+<translation id="1549721333775633305">顯示「快速分享」設定。「快速分享」功能已停用</translation>
 <translation id="1550406609415860283">有可用的裝置</translation>
 <translation id="1550523713251050646">按一下即可查看更多選項</translation>
 <translation id="1555130319947370107">藍色</translation>
@@ -1471,6 +1472,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> 尚未啟用。</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860491529813859533">啟用</translation>
+<translation id="5864691701242730005">顯示「快速分享」設定。目前選取「<ph name="VISIBILITY" />」瀏覽權限</translation>
 <translation id="5864748620896638071">電池電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">正在收集網路資訊</translation>
 <translation id="5867606971598166637">系統管理員正在監控你的畫面</translation>
@@ -2258,6 +2260,7 @@
 <translation id="851660987304951246">使用「幫我讀」功能，快速總結內容或提問</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> 在開啟時可能無法充電。</translation>
 <translation id="8535393432370007982">復原依顏色排列順序</translation>
+<translation id="8536886494750559755">顯示「快速分享」設定。所有人在 <ph name="TIME_REMAINING" />內都能看見這部裝置</translation>
 <translation id="8539803091108018926">已將文字複製到剪貼簿</translation>
 <translation id="8541078764854166027">相機取景</translation>
 <translation id="8542053257095774575">沒有已儲存的桌面或範本</translation>
