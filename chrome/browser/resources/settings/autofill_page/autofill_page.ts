@@ -114,10 +114,12 @@ export class SettingsAutofillPageElement extends
 
   override connectedCallback() {
     super.connectedCallback();
-    EntityDataManagerProxyImpl.getInstance().loadEntityInstances().then(
-        entities => {
-          this.userHasAutofillAiEntries_ = entities.length > 0;
-        });
+    if (loadTimeData.getBoolean('autofillAiFeatureEnabled')) {
+      EntityDataManagerProxyImpl.getInstance().loadEntityInstances().then(
+          entities => {
+            this.userHasAutofillAiEntries_ = entities.length > 0;
+          });
+    }
   }
 
   /**

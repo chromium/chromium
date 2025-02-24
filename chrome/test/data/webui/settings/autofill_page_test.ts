@@ -12,7 +12,7 @@ import {AutofillManagerImpl, EntityDataManagerProxyImpl, PaymentsManagerImpl} fr
 import {resetRouterForTesting} from 'chrome://settings/settings.js';
 import type {CrLinkRowElement, SettingsAutofillPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, OpenWindowProxyImpl, PasswordManagerImpl, SettingsPluralStringProxyImpl, PasswordManagerPage} from 'chrome://settings/settings.js';
-import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -392,7 +392,7 @@ suite('AutofillAiRedirectTest', function() {
 
     // Enable the Autofill AI feature so that the route is defined.
     loadTimeData.overrideValues({
-      autofillAiEnabled: true,
+      autofillAiFeatureEnabled: true,
     });
 
     resetRouterForTesting();
@@ -412,5 +412,32 @@ suite('AutofillAiRedirectTest', function() {
     await flushTasks();
 
     assertEquals(routes.AUTOFILL, Router.getInstance().getCurrentRoute());
+  });
+});
+
+// This suite simulates that the private API will always throw an error, which
+// happens when the feature is disabled. This is done by not instantiating the
+// `EntityDataManagerProxyImpl`.
+suite('AutofillAiFeatureDisabledAndPrivateApiThrowsError', function() {
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      autofillAiFeatureEnabled: false,
+    });
+  });
+
+  test('AutofillAiHiddenWithoutErrors', async function() {
+    // Make sure the button is not displayed even if the user is eligible for
+    // Autofill with Ai.
+    loadTimeData.overrideValues({
+      userEligibleForAutofillAi: true,
+    });
+    const element = document.createElement('settings-autofill-page');
+    document.body.appendChild(element);
+    await flushTasks();
+
+    const autofillAiManagerButton =
+        element.shadowRoot!.querySelector('#autofillAiManagerButton');
+    assertFalse(!!autofillAiManagerButton);
   });
 });
