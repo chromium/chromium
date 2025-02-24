@@ -17,15 +17,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_BYTE_STREAM_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_BYTE_STREAM_SOURCE_H_
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
@@ -53,9 +49,11 @@ class SVGPathByteStreamSource {
   DataType ReadType() {
     ByteType<DataType> data;
     size_t type_size = sizeof(ByteType<DataType>);
-    DCHECK_LE(stream_current_ + type_size, stream_end_);
-    memcpy(data.bytes, &*stream_current_, type_size);
-    stream_current_ += type_size;
+    UNSAFE_TODO({
+      DCHECK_LE(stream_current_ + type_size, stream_end_);
+      memcpy(data.bytes, &*stream_current_, type_size);
+      stream_current_ += type_size;
+    });
     return data.value;
   }
 
