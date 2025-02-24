@@ -22,6 +22,7 @@
 #include "media/base/mock_media_log.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder_config.h"
+#include "media/gpu/chromeos/default_video_frame_converter.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -204,7 +205,7 @@ class VideoDecoderPipelineTest
             std::numeric_limits<int>::max()),
         gpu::GpuDriverBugWorkarounds(),
         base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(pool),
-        /*frame_converter=*/nullptr,
+        DefaultFrameConverter::Create(),
         VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
         std::make_unique<MockMediaLog>(),
         // This callback needs to be configured in the individual tests.

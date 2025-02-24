@@ -25,6 +25,7 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_transformation.h"
 #include "media/filters/dav1d_video_decoder.h"
+#include "media/gpu/chromeos/default_video_frame_converter.h"
 #include "media/gpu/test/video_bitstream.h"
 #include "media/gpu/test/video_decode_accelerator_test_suite.h"
 #include "media/gpu/test/video_frame_file_writer.h"
@@ -164,8 +165,7 @@ class VideoDecoderTest : public ::testing::Test {
     std::unique_ptr<VideoDecoder> decoder = VideoDecoderPipeline::Create(
         gpu::GpuDriverBugWorkarounds(),
         base::SingleThreadTaskRunner::GetCurrentDefault(),
-        std::move(frame_pool),
-        /*frame_converter=*/nullptr,
+        std::move(frame_pool), DefaultFrameConverter::Create(),
         VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
         std::make_unique<NullMediaLog>(),
         /*oop_video_decoder=*/{},

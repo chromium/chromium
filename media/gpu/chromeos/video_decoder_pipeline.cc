@@ -324,7 +324,7 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForTesting(
   auto* pipeline = new VideoDecoderPipeline(
       std::move(decoder_reservation), gpu::GpuDriverBugWorkarounds(),
       std::move(client_task_runner), std::make_unique<PlatformVideoFramePool>(),
-      /*frame_converter=*/nullptr,
+      DefaultFrameConverter::Create(),
       VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
       std::move(media_log), std::move(create_decoder_function_cb),
       /*uses_oop_video_decoder=*/false,
@@ -445,8 +445,7 @@ VideoDecoderPipeline::VideoDecoderPipeline(
               ? client_task_runner_
               : GetDecoderTaskRunner(in_video_decoder_process)),
       main_frame_pool_(std::move(frame_pool)),
-      frame_converter_(frame_converter ? std::move(frame_converter)
-                                       : DefaultFrameConverter::Create()),
+      frame_converter_(std::move(frame_converter)),
       renderable_fourccs_(std::move(renderable_fourccs)),
       media_log_(std::move(media_log)),
       create_decoder_function_cb_(std::move(create_decoder_function_cb)),
@@ -457,6 +456,7 @@ VideoDecoderPipeline::VideoDecoderPipeline(
   DETACH_FROM_SEQUENCE(decoder_sequence_checker_);
   DCHECK(main_frame_pool_);
   DCHECK(client_task_runner_);
+  CHECK(frame_converter_);
   DVLOGF(2);
 
   decoder_weak_this_ = decoder_weak_this_factory_.GetWeakPtr();
