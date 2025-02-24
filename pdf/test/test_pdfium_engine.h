@@ -97,6 +97,11 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   bool ReadLoadedBytes(uint32_t length, void* buffer) override;
 
+  MOCK_METHOD(void,
+              RequestThumbnail,
+              (int, float, SendThumbnailCallback),
+              (override));
+
 #if BUILDFLAG(ENABLE_PDF_INK2)
   MOCK_METHOD(gfx::Size, GetThumbnailSize, (int, float), (override));
 

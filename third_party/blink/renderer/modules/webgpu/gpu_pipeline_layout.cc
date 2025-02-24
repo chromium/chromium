@@ -8,39 +8,21 @@
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
 // static
 GPUPipelineLayout* GPUPipelineLayout::Create(
-    ScriptState* script_state,
     GPUDevice* device,
     const GPUPipelineLayoutDescriptor* webgpu_desc) {
   DCHECK(device);
   DCHECK(webgpu_desc);
 
-  v8::Isolate* isolate = script_state->GetIsolate();
   size_t bind_group_layout_count = webgpu_desc->bindGroupLayouts().size();
 
   std::unique_ptr<wgpu::BindGroupLayout[]> bind_group_layouts =
       bind_group_layout_count != 0 ? AsDawnType(webgpu_desc->bindGroupLayouts())
                                    : nullptr;
-  // TODO(crbug.com/377836524): Remove WebGPUAllowNullInPipelineLayoutEntries
-  // and the check here once the feature is safely landed.
-  if (!RuntimeEnabledFeatures::
-          WebGPUAllowNullInPipelineLayoutEntriesEnabled()) {
-    for (const auto& bind_group_layout : webgpu_desc->bindGroupLayouts()) {
-      if (bind_group_layout == nullptr) {
-        ExceptionState exception_state(isolate);
-        exception_state.ThrowTypeError(
-            "Null bind group layout in PipelineLayoutDescriptor requires the "
-            "WebGPUAllowNullInPipelineLayoutEntries Blink feature.");
-        return nullptr;
-      }
-    }
-  }
 
   wgpu::PipelineLayoutDescriptor dawn_desc = {
       .bindGroupLayoutCount = bind_group_layout_count,

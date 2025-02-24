@@ -232,7 +232,6 @@
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ash/system_web_apps/apps/media_app/media_app_guest_ui_config.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
-#include "chrome/browser/extensions/api/shared_storage/shared_storage_private_api.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_handler_impl.h"
@@ -1083,6 +1082,7 @@ inline constexpr char kUserMicrophoneCaptionLanguageCode[] =
 // Deprecated 02/2025.
 constexpr char kScannerFeedbackEnabled[] = "ash.scanner.feedback_enabled";
 constexpr char kHmrFeedbackAllowed[] = "settings.mahi_feedback_allowed";
+constexpr char kSharedStorage[] = "shared_storage";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1527,6 +1527,7 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 02/2025.
   registry->RegisterBooleanPref(kScannerFeedbackEnabled, true);
   registry->RegisterBooleanPref(kHmrFeedbackAllowed, true);
+  registry->RegisterDictionaryPref(kSharedStorage);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -1973,9 +1974,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   RegisterAnimationPolicyPrefs(registry);
   extensions::ActivityLog::RegisterProfilePrefs(registry);
   extensions::AudioAPI::RegisterUserPrefs(registry);
-#if BUILDFLAG(IS_CHROMEOS)
-  extensions::shared_storage::RegisterProfilePrefs(registry);
-#endif  // BUILDFLAG(IS_CHROMEOS)
   // TODO(devlin): This would be more inline with the other calls here if it
   // were nested in either a class or separate namespace with a simple
   // Register[Profile]Prefs() name.
@@ -2793,6 +2791,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 02/2025.
   profile_prefs->ClearPref(kScannerFeedbackEnabled);
   profile_prefs->ClearPref(kHmrFeedbackAllowed);
+  profile_prefs->ClearPref(kSharedStorage);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

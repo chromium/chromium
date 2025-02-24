@@ -10,6 +10,7 @@
 #include "pdf/buildflags.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_ink_ids.h"
+#include "pdf/ui/thumbnail.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
@@ -82,6 +83,12 @@ class PdfInkModuleClient {
 
   // Asks the client to post `message`.
   virtual void PostMessage(base::Value::Dict message) {}
+
+  // Asks the client to update the page thumbnail for `page_index`. Note that
+  // this is the regular page thumbnail, and not the thumbnail with the Ink
+  // strokes.
+  virtual void RequestThumbnail(int page_index,
+                                SendThumbnailCallback callback) {}
 
   // Notifies that a stroke has been added to the page at `page_index`.
   // Provides an `id` that identifies the `stroke` object.  The `id` can be

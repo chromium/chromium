@@ -1213,9 +1213,6 @@ inline constexpr char kSystemProxyUserTrafficHostAndPort[] =
 inline constexpr char kEduCoexistenceArcMigrationCompleted[] =
     "account_manager.edu_coexistence_arc_migration_completed";
 
-// Dictionary pref for shared extension storage for device pin.
-inline constexpr char kSharedStorage[] = "shared_storage";
-
 // An int64 pref. This is the timestamp, microseconds after epoch, that
 // indicates the end of the most recent OS Settings Search survey cycle.
 inline constexpr char kHatsOsSettingsSearchSurveyCycleEndTs[] =

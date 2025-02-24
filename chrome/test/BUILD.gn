@@ -1689,7 +1689,6 @@ if (is_android) {
       "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
       "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
       "//components/qr_code_generator:bitmap_generator",
-      "//components/safe_browsing/content/browser:client_side_detection",
       "//components/safe_browsing/content/browser:client_side_detection_service",
       "//components/safe_browsing/content/common:interfaces",
       "//components/safe_browsing/content/renderer/phishing_classifier:phishing_classifier",
@@ -1857,6 +1856,11 @@ if (is_android) {
         "//chrome/test/data/extensions/",
         "//extensions/test/data/",
       ]
+    }
+
+    if (safe_browsing_mode != 0) {
+      deps +=
+          [ "//components/safe_browsing/content/browser:client_side_detection" ]
     }
   }
 
@@ -2386,7 +2390,6 @@ if (!is_android) {
       "//components/resources",
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/content/browser",
-      "//components/safe_browsing/content/browser:client_side_detection",
       "//components/safe_browsing/content/browser:client_side_detection_images_cache",
       "//components/safe_browsing/content/browser:client_side_detection_service",
       "//components/safe_browsing/content/browser:safe_browsing_service",
@@ -3712,7 +3715,10 @@ if (!is_android) {
     }
 
     if (safe_browsing_mode != 0) {
-      deps += [ "//components/safe_browsing/content/common/proto:download_file_types_proto" ]
+      deps += [
+        "//components/safe_browsing/content/browser:client_side_detection",
+        "//components/safe_browsing/content/common/proto:download_file_types_proto",
+      ]
     }
 
     if (is_linux) {
@@ -4454,7 +4460,6 @@ if (!is_android) {
           "../browser/extensions/api/platform_keys/platform_keys_test_base.cc",
           "../browser/extensions/api/platform_keys/platform_keys_test_base.h",
           "../browser/extensions/api/settings_private/settings_private_browsertest_chromeos.cc",
-          "../browser/extensions/api/shared_storage/shared_storage_private_apitest.cc",
           "../browser/extensions/api/system_display/system_display_chromeos_apitest.cc",
           "../browser/extensions/api/terminal/terminal_private_apitest.cc",
           "../browser/extensions/api/terminal/terminal_private_browsertest.cc",
@@ -6696,7 +6701,6 @@ test("unit_tests") {
     "//components/resources",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser",
-    "//components/safe_browsing/content/browser:client_side_detection",
     "//components/safe_browsing/content/browser:client_side_detection_images_cache",
     "//components/safe_browsing/content/browser:client_side_detection_service",
     "//components/safe_browsing/content/browser/notification_content_detection",
@@ -9191,6 +9195,8 @@ test("unit_tests") {
 
     if (safe_browsing_mode == 1) {
       sources += [ "../browser/extensions/blocklist_unittest.cc" ]
+      deps +=
+          [ "//components/safe_browsing/content/browser:client_side_detection" ]
     }
   }
 

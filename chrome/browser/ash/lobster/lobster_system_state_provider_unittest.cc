@@ -4,14 +4,29 @@
 
 #include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
 
+#include <memory>
+#include <string>
+
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
+#include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/variations/service/test_variations_service.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,6 +55,7 @@ class InputMethodManagerFake
   void SetState(scoped_refptr<InputMethodManager::State> state) override {
     state_ = state;
   }
+
   class TestState : public ash::input_method::MockInputMethodManager::State {
    public:
     explicit TestState(const std::string& id)
@@ -71,20 +87,55 @@ class InputMethodManagerFake
 
 class LobsterSystemStateProviderBaseTest : public testing::Test {
  public:
-  LobsterSystemStateProviderBaseTest() : system_state_provider_(&profile_) {
+  LobsterSystemStateProviderBaseTest()
+      : system_state_provider_(&pref_,
+                               identity_test_environment_.identity_manager()),
+        metrics_enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {
+    // Sets up InputMethodManager
     InputMethodManagerFake::Initialize(new InputMethodManagerFake);
+
+    RegisterSystemStateProviderPrefs();
+
+    // Sets up test variations service
+    variations::TestVariationsService::RegisterPrefs(
+        local_state_pref()->registry());
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        local_state_pref(), &metrics_enabled_state_provider_,
+        /*backup_registry_key=*/std::wstring(),
+        /*user_data_dir=*/base::FilePath(),
+        metrics::StartupVisibility::kUnknown);
+    variations_service_ = std::make_unique<variations::TestVariationsService>(
+        local_state_pref(), metrics_state_manager_.get());
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(
+        variations_service_.get());
   }
+
   ~LobsterSystemStateProviderBaseTest() override {
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
+    variations_service_.reset();
     InputMethodManagerFake::Shutdown();
   }
 
+  void RegisterSystemStateProviderPrefs() {
+    pref_.registry()->RegisterIntegerPref(
+        ash::prefs::kOrcaConsentStatus,
+        static_cast<int>(chromeos::editor_menu::EditorConsentStatus::kUnset));
+    pref_.registry()->RegisterBooleanPref(ash::prefs::kLobsterEnabled, true);
+  }
+
+  void SetUpEligibleHardware() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ash::features::kLobster,
+                              ash::features::kFeatureManagementLobster},
+        /*disabled_features=*/{});
+  }
+
   void SetConsentStatus(chromeos::editor_menu::EditorConsentStatus status) {
-    profile_.GetPrefs()->SetInteger(ash::prefs::kOrcaConsentStatus,
-                                    static_cast<int>(status));
+    pref_.SetInteger(ash::prefs::kOrcaConsentStatus, static_cast<int>(status));
   }
 
   void SetSettingsToggle(bool enabled) {
-    profile_.GetPrefs()->SetBoolean(ash::prefs::kLobsterEnabled, enabled);
+    pref_.SetBoolean(ash::prefs::kLobsterEnabled, enabled);
   }
 
   void SetOnlineStatus(bool is_online) {
@@ -102,6 +153,21 @@ class LobsterSystemStateProviderBaseTest : public testing::Test {
                 active_ime_id)));
   }
 
+  void SetCountryCode(const std::string& country_code) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        variations::switches::kVariationsOverrideCountry, country_code);
+  }
+
+  void SetAccountCapabilityValue(bool satisfied) {
+    AccountInfo account =
+        identity_test_environment_.MakePrimaryAccountAvailable(
+            "someone@gmail.com", signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account.capabilities);
+    mutator.set_can_use_manta_service(satisfied);
+    signin::UpdateAccountInfoForAccount(
+        identity_test_environment_.identity_manager(), account);
+  }
+
   ash::LobsterSystemState GetSystemState(
       const ash::LobsterTextInputContext& text_input_context) {
     return system_state_provider_.GetSystemState(text_input_context);
@@ -114,24 +180,97 @@ class LobsterSystemStateProviderBaseTest : public testing::Test {
         /*support_image_insertion=*/true);
   }
 
- private:
+  TestingPrefServiceSimple* local_state_pref() { return &local_state_pref_; }
+
+ protected:
   content::BrowserTaskEnvironment task_environment_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::test::MockNetworkChangeNotifier> network_notifier_;
-  TestingProfile profile_;
+  TestingPrefServiceSimple local_state_pref_;
+  TestingPrefServiceSimple pref_;
+  signin::IdentityTestEnvironment identity_test_environment_;
   LobsterSystemStateProvider system_state_provider_;
+  std::unique_ptr<variations::TestVariationsService> variations_service_;
+  metrics::TestEnabledStateProvider metrics_enabled_state_provider_;
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
 };
+
+class LobsterSystemStateProviderGeolocationTest
+    : public LobsterSystemStateProviderBaseTest,
+      public ::testing::WithParamInterface<std::tuple<
+          /*country_code=*/std::string,
+          /*expected_lobster_status=*/ash::LobsterStatus>> {
+ public:
+  void SetUp() override {
+    SetUpEligibleHardware();
+    SetConsentStatus(chromeos::editor_menu::EditorConsentStatus::kApproved);
+    SetSettingsToggle(/*enabled=*/true);
+    SetOnlineStatus(/*is_online=*/true);
+    SetActiveIme("xkb:us::eng");
+    SetAccountCapabilityValue(true);
+    SetCountryCode(std::get<0>(GetParam()));
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LobsterSystemStateProviderGeolocationTest,
+    testing::Values(
+        std::make_tuple(/*country_code=*/"au", ash::LobsterStatus::kEnabled),
+        std::make_tuple(/*country_code=*/"us", ash::LobsterStatus::kEnabled),
+        std::make_tuple(/*country_code=*/"hk", ash::LobsterStatus::kBlocked)));
+
+TEST_P(LobsterSystemStateProviderGeolocationTest, ChecksTheSystemStateStatus) {
+  EXPECT_EQ(GetSystemState(GetValidTextInputContext()).status,
+            std::get<1>(GetParam()));
+}
+
+class LobsterSystemStateProviderAccountCapabilityTest
+    : public LobsterSystemStateProviderBaseTest,
+      public ::testing::WithParamInterface<std::tuple<
+          /*satisfied=*/bool,
+          /*expected_lobster_status=*/ash::LobsterStatus>> {
+ public:
+  void SetUp() override {
+    SetUpEligibleHardware();
+    SetConsentStatus(chromeos::editor_menu::EditorConsentStatus::kApproved);
+    SetSettingsToggle(/*enabled=*/true);
+    SetOnlineStatus(/*is_online=*/true);
+    SetActiveIme("xkb:us::eng");
+    SetCountryCode("au");
+    SetAccountCapabilityValue(/*satisfied=*/std::get<0>(GetParam()));
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LobsterSystemStateProviderAccountCapabilityTest,
+    testing::Values(
+        std::make_tuple(/*satisfied=*/true, ash::LobsterStatus::kEnabled),
+        std::make_tuple(/*satisfied=*/false, ash::LobsterStatus::kBlocked), ));
+
+TEST_P(LobsterSystemStateProviderAccountCapabilityTest,
+       ChecksTheSystemStateStatus) {
+  EXPECT_EQ(GetSystemState(GetValidTextInputContext()).status,
+            std::get<1>(GetParam()));
+}
 
 class LobsterSystemStateProviderTextInputFieldTest
     : public LobsterSystemStateProviderBaseTest,
       public ::testing::WithParamInterface<std::tuple<
           /*input_field_type=*/ui::TextInputType,
-          /*expected_lobster_status*/ ash::LobsterStatus>> {
+          /*expected_lobster_status=*/ash::LobsterStatus>> {
  public:
   void SetUp() override {
+    SetUpEligibleHardware();
     SetConsentStatus(chromeos::editor_menu::EditorConsentStatus::kApproved);
     SetSettingsToggle(/*enabled=*/true);
     SetOnlineStatus(/*is_online=*/true);
     SetActiveIme("xkb:us::eng");
+    SetCountryCode("au");
+    SetAccountCapabilityValue(true);
   }
 };
 
@@ -184,13 +323,16 @@ class LobsterSystemStateProviderNetworkStatusTest
     : public LobsterSystemStateProviderBaseTest,
       public ::testing::WithParamInterface<std::tuple<
           /*is_online=*/bool,
-          /*expected_lobster_status*/ ash::LobsterStatus>> {
+          /*expected_lobster_status=*/ash::LobsterStatus>> {
  public:
   void SetUp() override {
+    SetUpEligibleHardware();
     SetConsentStatus(chromeos::editor_menu::EditorConsentStatus::kApproved);
     SetSettingsToggle(/*enabled=*/true);
     SetOnlineStatus(/*is_online=*/std::get<0>(GetParam()));
     SetActiveIme("xkb:us::eng");
+    SetCountryCode("au");
+    SetAccountCapabilityValue(true);
   }
 };
 
@@ -198,8 +340,8 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     LobsterSystemStateProviderNetworkStatusTest,
     testing::Values(
-        std::make_tuple(/*is_online*/ true, ash::LobsterStatus::kEnabled),
-        std::make_tuple(/*is_online*/ false, ash::LobsterStatus::kBlocked), ));
+        std::make_tuple(/*is_online=*/true, ash::LobsterStatus::kEnabled),
+        std::make_tuple(/*is_online=*/false, ash::LobsterStatus::kBlocked), ));
 
 TEST_P(LobsterSystemStateProviderNetworkStatusTest,
        ChecksTheSystemStateStatus) {
@@ -211,13 +353,16 @@ class LobsterSystemStateProviderImeTest
     : public LobsterSystemStateProviderBaseTest,
       public ::testing::WithParamInterface<std::tuple<
           /*ime=*/std::string,
-          /*expected_lobster_status*/ ash::LobsterStatus>> {
+          /*expected_lobster_status=*/ash::LobsterStatus>> {
  public:
   void SetUp() override {
+    SetUpEligibleHardware();
     SetConsentStatus(chromeos::editor_menu::EditorConsentStatus::kApproved);
     SetSettingsToggle(/*enabled=*/true);
     SetOnlineStatus(/*is_online=*/true);
     SetActiveIme(std::get<0>(GetParam()));
+    SetCountryCode("au");
+    SetAccountCapabilityValue(true);
   }
 };
 

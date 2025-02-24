@@ -2727,8 +2727,9 @@ class NavigationCapturingTestWithAppBInNewBrowserWindow
   }
 };
 
+// TODO(crbug.com/398704258): Re-enable this test
 IN_PROC_BROWSER_TEST_P(NavigationCapturingTestWithAppBInNewBrowserWindow,
-                       CheckLinkCaptureCombinations) {
+                       DISABLED_CheckLinkCaptureCombinations) {
   RunTest();
 }
 

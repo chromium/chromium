@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/lobster/lobster_image_provider_from_snapper.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
@@ -53,7 +54,8 @@ LobsterService::LobsterService(
               image_provider_.get(),
               &candidate_id_generator_))),
       resizer_(std::make_unique<LobsterCandidateResizer>(image_fetcher_.get())),
-      system_state_provider_(profile),
+      system_state_provider_(profile->GetPrefs(),
+                             IdentityManagerFactory::GetForProfile(profile)),
       announcer_(
           std::make_unique<LobsterLiveRegionAnnouncer>(kAnnouncementViewName)) {
   if (profile != nullptr) {

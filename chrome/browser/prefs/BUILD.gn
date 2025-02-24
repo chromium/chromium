@@ -205,7 +205,6 @@ source_set("impl") {
       "//chrome/browser/chromeos/upload_office_to_cloud",
       "//chrome/browser/extensions/api/document_scan:profile_prefs_registry_util",
       "//chrome/browser/extensions/api/enterprise_platform_keys:enterprise_platform_keys_registry_util",
-      "//chrome/browser/extensions/api/shared_storage",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/policy:onc",
       "//chrome/browser/policy:system_features_disable_list",

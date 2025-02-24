@@ -93,7 +93,6 @@ group("api_implementations") {
         "//chrome/browser/extensions/api/input_ime",
         "//chrome/browser/extensions/api/platform_keys",
         "//chrome/browser/extensions/api/quick_unlock_private",
-        "//chrome/browser/extensions/api/shared_storage",
         "//chrome/browser/extensions/api/terminal",
       ]
     }
@@ -167,6 +166,7 @@ source_set("keyed_service_factories") {
   deps = [
     ":api_implementations",
     "//chrome/common:buildflags",
+    "//components/safe_browsing:buildflags",
     "//extensions/buildflags",
     "//pdf:buildflags",
     "//printing/buildflags",

@@ -128,7 +128,6 @@ class GPUDevice final : public EventTarget,
       const GPUBindGroupLayoutDescriptor* descriptor,
       ExceptionState& exception_state);
   GPUPipelineLayout* createPipelineLayout(
-      ScriptState* script_state,
       const GPUPipelineLayoutDescriptor* descriptor);
 
   GPUShaderModule* createShaderModule(

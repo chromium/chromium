@@ -573,7 +573,6 @@ static_library("ui") {
     "//components/renderer_context_menu",
     "//components/resources",
     "//components/safe_browsing/content/browser",
-    "//components/safe_browsing/content/browser:client_side_detection",
     "//components/safe_browsing/content/browser/password_protection",
     "//components/safe_browsing/content/browser/web_ui",
     "//components/safe_browsing/core/browser/db:database_manager",
@@ -5540,6 +5539,7 @@ static_library("ui") {
 
   if (safe_browsing_mode > 0) {
     deps += [
+      "//components/safe_browsing/content/browser:client_side_detection",
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
     ]
   }

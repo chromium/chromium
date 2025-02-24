@@ -243,9 +243,13 @@ source_set("v4_store") {
   sources = [
     "hash_prefix_map.cc",
     "hash_prefix_map.h",
-    "v4_store.cc",
-    "v4_store.h",
   ]
+  if (safe_browsing_mode != 0 || is_ios) {
+    sources += [
+      "v4_store.cc",
+      "v4_store.h",
+    ]
+  }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 

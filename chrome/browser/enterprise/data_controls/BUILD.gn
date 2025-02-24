@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enterprise_data_controls)
@@ -56,9 +57,13 @@ source_set("data_controls") {
       "desktop_data_controls_dialog_factory.h",
       "dlp_reporting_manager.cc",
       "dlp_reporting_manager.h",
-      "reporting_service.cc",
-      "reporting_service.h",
     ]
+    if (safe_browsing_mode != 0) {
+      sources += [
+        "reporting_service.cc",
+        "reporting_service.h",
+      ]
+    }
     deps += [
       "//components/constrained_window",
       "//components/reporting/client:report_queue",

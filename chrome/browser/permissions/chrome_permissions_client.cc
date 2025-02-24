@@ -25,7 +25,6 @@
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
-#include "chrome/browser/permissions/contextual_notification_permission_ui_selector.h"
 #include "chrome/browser/permissions/origin_keyed_permission_action_service_factory.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
@@ -104,6 +103,7 @@
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/permissions/contextual_notification_permission_ui_selector.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
@@ -412,8 +412,10 @@ std::vector<std::unique_ptr<permissions::PermissionUiSelector>>
 ChromePermissionsClient::CreatePermissionUiSelectors(
     content::BrowserContext* browser_context) {
   std::vector<std::unique_ptr<permissions::PermissionUiSelector>> selectors;
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   selectors.emplace_back(
       std::make_unique<ContextualNotificationPermissionUiSelector>());
+#endif
   selectors.emplace_back(std::make_unique<PrefBasedQuietPermissionUiSelector>(
       Profile::FromBrowserContext(browser_context)));
   selectors.emplace_back(std::make_unique<PredictionBasedPermissionUiSelector>(

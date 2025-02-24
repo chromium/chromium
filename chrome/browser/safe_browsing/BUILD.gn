@@ -11,8 +11,6 @@ static_library("safe_browsing") {
   sources = [
     "chrome_controller_client.cc",
     "chrome_controller_client.h",
-    "chrome_safe_browsing_tab_observer_delegate.cc",
-    "chrome_safe_browsing_tab_observer_delegate.h",
     "url_checker_delegate_impl.cc",
     "url_checker_delegate_impl.h",
   ]
@@ -51,7 +49,6 @@ static_library("safe_browsing") {
     "//components/resources:components_resources_grit",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser",
-    "//components/safe_browsing/content/browser:client_side_detection",
     "//components/safe_browsing/content/browser:client_side_detection_service",
     "//components/safe_browsing/content/browser/notification_content_detection:notification_content_detection",
     "//components/safe_browsing/content/browser/triggers:suspicious_site_trigger",
@@ -125,6 +122,8 @@ static_library("safe_browsing") {
       "chrome_safe_browsing_blocking_page_factory.h",
       "chrome_safe_browsing_local_state_delegate.cc",
       "chrome_safe_browsing_local_state_delegate.h",
+      "chrome_safe_browsing_tab_observer_delegate.cc",
+      "chrome_safe_browsing_tab_observer_delegate.h",
       "chrome_ui_manager_delegate.cc",
       "chrome_ui_manager_delegate.h",
       "chrome_user_population_helper.cc",

@@ -2518,9 +2518,9 @@ Called by update_extension_histograms.py.-->
   <int value="1657" label="BOOKMARKMANAGERPRIVATE_OPENINNEWTAB"/>
   <int value="1658" label="BOOKMARKMANAGERPRIVATE_OPENINNEWWINDOW"/>
   <int value="1659" label="WMDESKSPRIVATE_REMOVEDESK"/>
-  <int value="1660" label="SHAREDSTORAGEPRIVATE_GET"/>
-  <int value="1661" label="SHAREDSTORAGEPRIVATE_SET"/>
-  <int value="1662" label="SHAREDSTORAGEPRIVATE_REMOVE"/>
+  <int value="1660" label="DELETED_SHAREDSTORAGEPRIVATE_GET"/>
+  <int value="1661" label="DELETED_SHAREDSTORAGEPRIVATE_SET"/>
+  <int value="1662" label="DELETED_SHAREDSTORAGEPRIVATE_REMOVE"/>
   <int value="1663" label="FILEMANAGERPRIVATEINTERNAL_GETDLPMETADATA"/>
   <int value="1664" label="WMDESKSPRIVATE_GETALLDESKS"/>
   <int value="1665" label="AUTOTESTPRIVATE_FORCEAUTOTHEMEMODE"/>
@@ -3166,7 +3166,7 @@ Called by update_extension_permission.py.-->
   <int value="235" label="kSpeechRecognitionPrivate"/>
   <int value="236" label="kChromeOSDiagnostics"/>
   <int value="237" label="kChromeOSTelemetrySerialNumber"/>
-  <int value="238" label="kSharedStoragePrivate"/>
+  <int value="238" label="kDeleted_SharedStoragePrivate"/>
   <int value="239" label="kEnterpriseRemoteApps"/>
   <int value="240" label="kOffscreen"/>
   <int value="241" label="kSidePanel"/>

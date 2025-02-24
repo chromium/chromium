@@ -339,6 +339,12 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     plugin_->client_->PostMessage(std::move(message));
   }
 
+  void RequestThumbnail(int page_index,
+                        SendThumbnailCallback callback) override {
+    plugin_->engine_->RequestThumbnail(page_index, plugin_->device_scale_,
+                                       std::move(callback));
+  }
+
   void StrokeAdded(int page_index,
                    InkStrokeId id,
                    const ink::Stroke& stroke) override {
