@@ -422,8 +422,6 @@ ContentSetting PermissionUtil::PermissionStatusToContentSetting(
     default:
       return CONTENT_SETTING_BLOCK;
   }
-
-  NOTREACHED();
 }
 
 blink::mojom::PermissionStatus PermissionUtil::ContentSettingToPermissionStatus(

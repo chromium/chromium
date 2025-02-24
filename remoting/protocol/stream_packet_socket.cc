@@ -271,8 +271,6 @@ int StreamPacketSocket::SetOption(rtc::Socket::Option option, int value) {
       NOTIMPLEMENTED() << "Unexpected socket option: " << option;
       return -1;
   }
-
-  NOTREACHED();
 }
 
 int StreamPacketSocket::GetError() const {

@@ -1789,8 +1789,6 @@ Superellipse StyleBuilderConverter::ConvertCornerShape(
   const auto& superellipse = To<cssvalue::CSSSuperellipseValue>(value);
   return Superellipse(
       superellipse.Param().ComputeNumber(state.CssToLengthConversionData()));
-
-  NOTREACHED();
 }
 
 LayoutUnit StyleBuilderConverter::ConvertLayoutUnit(

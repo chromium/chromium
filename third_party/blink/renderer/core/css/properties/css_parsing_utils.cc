@@ -5926,7 +5926,6 @@ bool IsSupportedKeywordTech(CSSValueID keyword) {
     default:
       return false;
   }
-  NOTREACHED();
 }
 
 bool IsSupportedKeywordFormat(CSSValueID keyword) {
