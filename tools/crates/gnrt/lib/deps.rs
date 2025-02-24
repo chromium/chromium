@@ -51,9 +51,6 @@ pub struct Package {
     /// The build script's absolute path, or `None` if the package does not use
     /// one.
     pub build_script: Option<PathBuf>,
-    /// The path in the dependency graph to this package. This is intended for
-    /// human consumption when debugging missing packages.
-    pub dependency_path: Vec<String>,
     /// What privilege group the crate is a part of.
     pub group: Group,
     /// Whether the source is a local path. Is `false` if cargo resolved this
@@ -202,7 +199,6 @@ pub fn collect_dependencies(
         dep_graph: &dep_graph,
         root: fake_root,
         visited: HashSet::new(),
-        path: Vec::new(),
         dependencies: HashMap::new(),
     };
 
@@ -364,8 +360,6 @@ struct TraversalState<'a> {
     root: &'a cargo_metadata::PackageId,
     /// Set of packages already visited by `explore_node`.
     visited: HashSet<&'a cargo_metadata::PackageId>,
-    /// The path of package IDs to the current node. For human consumption.
-    path: Vec<String>,
     /// The final set of dependencies.
     dependencies: HashMap<&'a cargo_metadata::PackageId, Package>,
 }
@@ -380,7 +374,7 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
 
     // Helper to insert a placeholder `Dependency` into a map. We fill in the
     // fields later.
-    let init_dep = |path| Package {
+    let init_dep = || Package {
         package_name: String::new(),
         version: Version::new(0, 0, 0),
         description: None,
@@ -393,13 +387,10 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
         lib_target: None,
         bin_targets: Vec::new(),
         build_script: None,
-        dependency_path: path,
         group: Group::Safe,
         is_local: false,
         is_toplevel_dep: false,
     };
-
-    state.path.push(node.id.repr.clone());
 
     // Each node contains a list of enabled features plus a list of
     // dependencies. Each dependency has a platform filter if applicable.
@@ -413,7 +404,7 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
 
         // Merge this with the existing entry for the dep.
         let dep: &mut Package =
-            state.dependencies.entry(dep_edge.pkg).or_insert_with(|| init_dep(state.path.clone()));
+            state.dependencies.entry(dep_edge.pkg).or_insert_with(|| init_dep());
         let info: &mut PerKindInfo = dep
             .dependency_kinds
             .entry(dep_edge.kind)
@@ -421,12 +412,10 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
         info.platforms.add(dep_edge.target);
     }
 
-    state.path.pop();
-
     // Initialize the dependency entry for this node's package if it's not our
     // fake root.
     if &node.id != state.root {
-        state.dependencies.entry(&node.id).or_insert_with(|| init_dep(state.path.clone()));
+        state.dependencies.entry(&node.id).or_insert_with(|| init_dep());
     }
 }
 
