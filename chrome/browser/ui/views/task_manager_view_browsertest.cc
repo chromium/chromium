@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/task_manager/task_manager_tester.h"
 #include "chrome/browser/ui/browser.h"
@@ -154,14 +155,25 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, AllColumnsHaveSortable) {
 // In the case of no settings stored in the user preferences local store, test
 // that the task manager table starts with the default columns visibility as
 // stored in |kColumns|.
-IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, TableStartsWithDefaultColumns) {
+IN_PROC_BROWSER_TEST_F(TaskManagerViewTest,
+                       TableStartsWithDefaultSortAndColumns) {
   ASSERT_NO_FATAL_FAILURE(ClearStoredColumnSettings());
 
   chrome::ShowTaskManager(browser());
   views::TableView* table = GetTable();
   ASSERT_TRUE(table);
 
-  EXPECT_FALSE(table->GetIsSorted());
+  // Table should be sorted on the CPU column by default in descending order.
+  if (base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
+    EXPECT_TRUE(table->GetIsSorted());
+    EXPECT_EQ(table->sort_descriptors().size(), 1u);
+    EXPECT_EQ(table->sort_descriptors()[0].column_id,
+              IDS_TASK_MANAGER_CPU_COLUMN);
+    EXPECT_FALSE(table->sort_descriptors()[0].ascending);
+  } else {
+    EXPECT_FALSE(table->GetIsSorted());
+  }
+
   for (size_t i = 0; i < kColumnsSize; ++i) {
     EXPECT_EQ(kColumns[i].default_visibility,
               table->IsColumnVisible(kColumns[i].id));
@@ -179,8 +191,10 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, ColumnsSettingsAreRestored) {
   views::TableView* table = GetTable();
   ASSERT_TRUE(table);
 
+  // Table should be sorted on the CPU column by default in descending order.
+  EXPECT_EQ(table->GetIsSorted(),
+            base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh));
   // Toggle the visibility of all columns.
-  EXPECT_FALSE(table->GetIsSorted());
   for (size_t i = 0; i < kColumnsSize; ++i) {
     EXPECT_EQ(kColumns[i].default_visibility,
               table->IsColumnVisible(kColumns[i].id));
@@ -240,7 +254,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, HideAllColumnsAndRestored) {
   views::TableView* table = GetTable();
   ASSERT_TRUE(table);
 
-  EXPECT_FALSE(table->GetIsSorted());
+  EXPECT_EQ(table->GetIsSorted(),
+            base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh));
 
   // hide all visible columns except IDS_TASK_MANAGER_TASK_COLUMN
   int task_column_index = -1;
