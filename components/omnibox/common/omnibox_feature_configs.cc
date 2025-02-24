@@ -91,7 +91,7 @@ RealboxContextualAndTrendingSuggestions::
 // static
 BASE_FEATURE(SearchAggregatorProvider::kSearchAggregatorProvider,
              "SearchAggregatorProvider",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 SearchAggregatorProvider::SearchAggregatorProvider() {
   enabled = base::FeatureList::IsEnabled(kSearchAggregatorProvider);
