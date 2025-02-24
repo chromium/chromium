@@ -647,6 +647,13 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
       .property_like_name = property_like_name,
       .source_location = {.url = location->Url(),
                           .char_position = location->CharPosition()}};
+
+  if (RuntimeEnabledFeatures::LongAnimationFrameSourceLineColumnEnabled()) {
+    pending_script_info_->source_location.line_number =
+        location->LineNumber() + 1;
+    pending_script_info_->source_location.column_number =
+        location->ColumnNumber() + 1;
+  }
 }
 
 void AnimationFrameTimingMonitor::Will(

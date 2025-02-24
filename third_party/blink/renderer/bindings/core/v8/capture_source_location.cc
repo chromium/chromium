@@ -66,6 +66,13 @@ std::unique_ptr<SourceLocation> CapturePartialSourceLocationFromStack(
     script_position = stack_frame->GetSourcePosition();
     v8::Local<v8::String> script_name = stack_frame->GetScriptNameOrSourceURL();
     script_url = ToCoreStringWithNullCheck(isolate, script_name);
+
+    if (RuntimeEnabledFeatures::LongAnimationFrameSourceLineColumnEnabled()) {
+      v8::Location location = stack_frame->GetLocation();
+      return std::make_unique<SourceLocation>(script_url, script_position,
+                                              location.GetLineNumber(),
+                                              location.GetColumnNumber());
+    }
   }
   return std::make_unique<SourceLocation>(script_url, script_position);
 }
