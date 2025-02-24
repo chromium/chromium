@@ -107,7 +107,8 @@ void GlicFocusedTabManager::PrimaryPageChanged(content::Page& page) {
 }
 
 void GlicFocusedTabManager::PanelStateChanged(
-    const glic::mojom::PanelState& panel_state) {
+    const glic::mojom::PanelState& panel_state,
+    Browser*) {
   MaybeUpdateFocusedTab();
 }
 

@@ -37,10 +37,11 @@ class GlicButton::GlicPanelStateObserver
       : glic_button_(glic_button),
         glic_window_controller_(glic_window_controller) {
     glic_window_controller_->AddStateObserver(this);
-    PanelStateChanged(glic_window_controller_->GetPanelState());
+    PanelStateChanged(glic_window_controller_->GetPanelState(), nullptr);
   }
 
-  void PanelStateChanged(const mojom::PanelState& panel_state) override {
+  void PanelStateChanged(const mojom::PanelState& panel_state,
+                         Browser*) override {
     UpdateIconToState(panel_state);
   }
 

@@ -13,6 +13,7 @@ interface PageElementTypes {
   focusedFavicon: HTMLImageElement;
   focusedUrl: HTMLInputElement;
   contextAccessIndicator: HTMLInputElement;
+  panelActiveCheckbox: HTMLInputElement;
   syncCookiesBn: HTMLButtonElement;
   testLogsBn: HTMLButtonElement;
   syncCookieStatus: HTMLSpanElement;
@@ -94,6 +95,9 @@ class WebClient implements GlicWebClient {
         updatePermissionSwitch(permission, enabled);
       });
     }
+    browser.panelActive?.().subscribe((active) => {
+      $.panelActiveCheckbox.checked = active;
+    });
   }
 
   async notifyPanelWillOpen(panelState: PanelState):

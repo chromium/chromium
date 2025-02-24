@@ -115,6 +115,10 @@ class WebClientImpl implements WebClientInterface {
         },
         transfer);
   }
+  notifyPanelActiveChange(panelActive: boolean): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyPanelActiveChanged', {panelActive});
+  }
 }
 
 // Handles all requests to the host.
@@ -152,6 +156,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         build: chromeVersion[2] || 0,
         patch: chromeVersion[3] || 0,
       },
+      panelIsActive: initialState.panelIsActive,
     };
   }
 

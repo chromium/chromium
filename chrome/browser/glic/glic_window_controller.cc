@@ -1163,7 +1163,8 @@ void GlicWindowController::NotifyIfPanelStateChanged() {
   auto new_state = ComputePanelState();
   if (new_state != panel_state_) {
     panel_state_ = new_state;
-    state_observers_.Notify(&StateObserver::PanelStateChanged, panel_state_);
+    state_observers_.Notify(&StateObserver::PanelStateChanged, panel_state_,
+                            attached_browser_);
   }
 }
 

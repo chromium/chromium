@@ -36,6 +36,7 @@ export declare interface HostRequestTypes {
       panelState: PanelState,
       focusedTab: TabDataPrivate|undefined,
       chromeVersion: ChromeVersion,
+      panelIsActive: boolean,
     },
   };
   // This message is sent after the client returns successfully from
@@ -235,6 +236,12 @@ export declare interface WebClientRequestTypes {
   glicWebClientNotifyFocusedTabChanged: {
     request: {
       focusedTab: TabDataPrivate|undefined,
+    },
+    response: void,
+  };
+  glicWebClientNotifyPanelActiveChanged: {
+    request: {
+      panelActive: boolean,
     },
     response: void,
   };

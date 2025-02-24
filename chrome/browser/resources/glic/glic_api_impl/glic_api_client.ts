@@ -116,6 +116,10 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
         convertTabDataFromPrivate(payload.focusedTab);
     this.host.getFocusedTabState().assignAndSignal(tabData);
   }
+
+  glicWebClientNotifyPanelActiveChanged(payload: {panelActive: boolean}): void {
+    this.host.panelActiveValue.assignAndSignal(payload.panelActive);
+  }
 }
 
 class GlicBrowserHostImpl implements GlicBrowserHost {
@@ -132,6 +136,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private permissionStateLocation = ObservableValueImpl.withNoValue<boolean>();
   private permissionStateTabContext =
       ObservableValueImpl.withNoValue<boolean>();
+  panelActiveValue = ObservableValueImpl.withNoValue<boolean>();
   private metrics: GlicBrowserHostMetricsImpl;
 
   constructor(private webClient: GlicWebClient, windowProxy: WindowProxy) {
@@ -168,6 +173,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.permissionStateTabContext.assignAndSignal(
         state.tabContextPermissionEnabled);
     this.chromeVersion = state.chromeVersion;
+    this.panelActiveValue.assignAndSignal(state.panelIsActive);
   }
 
   webClientInitialized(success: boolean) {
@@ -274,6 +280,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   getPanelState(): ObservableValueImpl<PanelState> {
     return this.panelState;
+  }
+
+  panelActive(): ObservableValueImpl<boolean> {
+    return this.panelActiveValue;
   }
 
   getFocusedTabState(): ObservableValueImpl<TabData|undefined> {
