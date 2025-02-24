@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/toolbar/ui_bundled/banner_promo_view.h"
 
-#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -12,6 +11,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -68,12 +68,12 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
   // is called before the button appears for the first time as well.
   closeButtonConfiguration.contentInsets = NSDirectionalEdgeInsetsZero;
   closeButtonConfiguration.buttonSize = UIButtonConfigurationSizeSmall;
-  closeButtonConfiguration.accessibilityLabel =
-      l10n_util::GetNSString(IDS_CLOSE);
   UIButton* closeButton =
       [UIButton buttonWithConfiguration:closeButtonConfiguration
                           primaryAction:[UIAction actionWithHandler:handler]];
   closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  closeButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_BANNER_PROMO_CLOSE_BUTTON_ACCESSIBILITY_LABEL);
   closeButton.accessibilityIdentifier = kCloseButtonAccessibilityIdentifier;
   closeButton.pointerInteractionEnabled = YES;
   closeButton.configurationUpdateHandler = ^(UIButton* button) {
@@ -122,6 +122,7 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
+    _text.accessibilityTraits |= UIAccessibilityTraitButton;
 
     _logoView = [[UIView alloc] init];
     _logoView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -159,7 +160,7 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
         initWithArrangedSubviews:@[ _logoView, _text, _closeButton ]];
     _contentsStackView.translatesAutoresizingMaskIntoConstraints = NO;
     _contentsStackView.spacing = kContentSpacing;
-    _contentsStackView.alignment = UIStackViewAlignmentCenter;
+    _contentsStackView.alignment = UIStackViewAlignmentFill;
 
     [self addSubview:_contentsStackView];
 
