@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -37,7 +36,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/text/bytes_formatting.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
 namespace {
@@ -114,26 +112,6 @@ CreateExtensionAppPermissionMessage(
   }
   return app_management::mojom::ExtensionAppPermissionMessage::New(
       base::UTF16ToUTF8(message.message()), std::move(submessages));
-}
-
-std::optional<std::string> MaybeFormatBytes(std::optional<uint64_t> bytes) {
-  if (bytes.has_value()) {
-    // ui::FormatBytes requires a non-negative signed integer. In general, we
-    // expect that converting from unsigned to signed int here should always
-    // yield a positive value, since overflowing into negative would require an
-    // implausibly large app (2^63 bytes ~= 9 exabytes).
-    int64_t signed_bytes = static_cast<int64_t>(bytes.value());
-    if (signed_bytes < 0) {
-      // TODO(crbug.com/40063212): Investigate ARC apps which have negative data
-      // sizes.
-      LOG(ERROR) << "Invalid app size: " << signed_bytes;
-      base::debug::DumpWithoutCrashing();
-      return std::nullopt;
-    }
-    return base::UTF16ToUTF8(ui::FormatBytes(signed_bytes));
-  }
-
-  return std::nullopt;
 }
 
 }  // namespace
@@ -259,12 +237,6 @@ void AppManagementPageHandlerChromeOs::GetOverlappingPreferredApps(
   std::move(callback).Run(std::move(app_ids).extract());
 }
 
-void AppManagementPageHandlerChromeOs::UpdateAppSize(
-    const std::string& app_id) {
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-  proxy->UpdateAppSize(app_id);
-}
-
 void AppManagementPageHandlerChromeOs::SetWindowMode(
     const std::string& app_id,
     apps::WindowMode window_mode) {
@@ -344,9 +316,6 @@ app_management::mojom::AppPtr AppManagementPageHandlerChromeOs::CreateApp(
 
   proxy->AppRegistryCache().ForOneApp(
       app_id, [this, &app](const apps::AppUpdate& update) {
-        app->app_size = MaybeFormatBytes(update.AppSizeInBytes());
-        app->data_size = MaybeFormatBytes(update.DataSizeInBytes());
-
         app->resize_locked = update.ResizeLocked().value_or(false);
         app->hide_resize_locked = !update.ResizeLocked().has_value();
 

@@ -482,4 +482,62 @@ suite('AppSettingsAppTest', () => {
     keyDownOn(appContentDialogElement, 0, undefined, 'Tab');
     assertEquals(getDeepActiveElement(), closeButton);
   });
+
+  test('IwaFieldsShownForIwa', async () => {
+    const appOptions = {
+      type: AppType.kWeb,
+      version: '0.1.2',
+      publisherId:
+          'isolated-app://amoiebz32b7o24tilu257xne2yf3nkblkploanxzm7ebeglseqpfeaacai',
+      appSize: '378 KB',
+      dataSize: '0 B',
+    };
+
+    // Add IWA and make it the currently selected app.
+    await fakeHandler().setApp(createApp('iwa', appOptions));
+    await fakeHandler().flushPipesForTesting();
+    await reloadPage();
+
+    const appVersionItem =
+        appSettingsApp.shadowRoot.querySelector('#appVersion');
+    assertTrue(!!appVersionItem);
+    const appVersion = appVersionItem.querySelector('.app-detail');
+    assertTrue(!!appVersion);
+    assertEquals('0.1.2', appVersion.children[1]!.textContent!.trim());
+
+    const appSizeItem = appSettingsApp.shadowRoot.querySelector('#appSize');
+    assertTrue(!!appSizeItem);
+    const appSize = appSizeItem.querySelector('.app-detail');
+    assertTrue(!!appSize);
+    assertEquals('378 KB', appSize.children[1]!.textContent!.trim());
+
+    const appDataSizeItem =
+        appSettingsApp.shadowRoot.querySelector('#dataSize');
+    assertTrue(!!appDataSizeItem);
+    const dataSize = appDataSizeItem.querySelector('.app-detail');
+    assertTrue(!!dataSize);
+    assertEquals('0 B', dataSize.children[1]!.textContent!.trim());
+  });
+
+  test('IwaFieldsHiddenForPwa', async () => {
+    const appOptions = {
+      type: AppType.kWeb,
+    };
+
+    // Add PWA and make it the currently selected app.
+    await fakeHandler().setApp(createApp('pwa', appOptions));
+    await fakeHandler().flushPipesForTesting();
+    await reloadPage();
+
+    const appVersionItem =
+        appSettingsApp.shadowRoot.querySelector('#appVersion');
+    assertFalse(!!appVersionItem);
+
+    const appSizeItem = appSettingsApp.shadowRoot.querySelector('#appSize');
+    assertFalse(!!appSizeItem);
+
+    const appDataSizeItem =
+        appSettingsApp.shadowRoot.querySelector('#dataSize');
+    assertFalse(!!appDataSizeItem);
+  });
 });
