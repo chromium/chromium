@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -100,6 +101,22 @@ class LanguageDetectionModelServiceDisabledBrowserTest
     InProcessBrowserTest::SetUp();
   }
 
+  void TestLanguageDetectionAvailable(Browser* browser,
+                                      const std::string_view result) {
+    ASSERT_EQ(EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+                     base::StringPrintf(R"(
+        (async () => {
+            try {
+            return await ai.languageDetector.availability();
+            } catch (e) {
+            return e.toString();
+            }
+            })();
+        )", ))
+                  .ExtractString(),
+              result);
+  }
+
   ~LanguageDetectionModelServiceDisabledBrowserTest() override = default;
 
   const GURL& english_url() const { return english_url_; }
@@ -114,6 +131,14 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceDisabledBrowserTest,
                        LanguageDetectionModelServiceDisabled) {
   EXPECT_FALSE(LanguageDetectionModelServiceFactory::GetForProfile(
       browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceDisabledBrowserTest,
+                       Availability_ModelUnavailable) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), english_url()));
+
+  // Language detection is not available when the model service is disabled.
+  TestLanguageDetectionAvailable(browser(), "unavailable");
 }
 
 class LanguageDetectionModelServiceWithoutOptimizationGuideBrowserTest
@@ -572,6 +597,29 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   // Requesting one more now should give a valid file because the queue has been
   // emptied.
   ASSERT_TRUE(RequestAndWaitForModelFile()->IsValid());
+}
+
+// Tests the behavior of availability().
+IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest, Availability) {
+  base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
+  ASSERT_TRUE(language_detection_model_service());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), english_url()));
+
+  // Language detection is not readily available until the model is downloaded.
+  TestLanguageDetectionAvailable(browser(), "downloadable");
+
+  ModelFileGetter getter(*language_detection_model_service());
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->OverrideTargetModelForTesting(
+          optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+          optimization_guide::TestModelInfoBuilder()
+              .SetModelFilePath(model_file_path())
+              .Build());
+
+  getter.RequestModelFile();
+  auto model_file = getter.WaitForModelFile();
+
+  TestLanguageDetectionAvailable(browser(), "available");
 }
 
 }  // namespace
