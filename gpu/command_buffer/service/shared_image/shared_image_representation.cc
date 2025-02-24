@@ -71,7 +71,9 @@ GLTextureImageRepresentationBase::BeginScopedAccess(
     GLenum mode,
     AllowUnclearedAccess allow_uncleared) {
   if (allow_uncleared != AllowUnclearedAccess::kYes && !IsCleared()) {
-    LOG(ERROR) << "Attempt to access an uninitialized SharedImage";
+    LOG(ERROR)
+        << "Attempt to access an uninitialized SharedImage. debug_label: "
+        << debug_label();
     return nullptr;
   }
 
@@ -316,13 +318,16 @@ SkiaGaneshImageRepresentation::BeginScopedWriteAccess(
     AllowUnclearedAccess allow_uncleared,
     bool use_sk_surface) {
   if (allow_uncleared != AllowUnclearedAccess::kYes && !IsCleared()) {
-    LOG(ERROR) << "Attempt to write to an uninitialized SharedImage";
+    LOG(ERROR)
+        << "Attempt to write to an uninitialized SharedImage. debug_label: "
+        << debug_label();
     return nullptr;
   }
 
   if (surface_origin() != kTopLeft_GrSurfaceOrigin) {
-    LOG(ERROR)
-        << "Skia write access is only allowed for top left origin surfaces.";
+    LOG(ERROR) << "Skia write access is only allowed for top left origin "
+                  "surfaces. debug_label: "
+               << debug_label();
     return nullptr;
   }
 
@@ -564,13 +569,16 @@ SkiaGraphiteImageRepresentation::BeginScopedWriteAccess(
     AllowUnclearedAccess allow_uncleared,
     bool use_sk_surface) {
   if (allow_uncleared != AllowUnclearedAccess::kYes && !IsCleared()) {
-    LOG(ERROR) << "Attempt to write to an uninitialized SharedImage";
+    LOG(ERROR)
+        << "Attempt to write to an uninitialized SharedImage. debug_label: "
+        << debug_label();
     return nullptr;
   }
 
   if (surface_origin() != kTopLeft_GrSurfaceOrigin) {
-    LOG(ERROR)
-        << "Skia write access is only allowed for top left origin surfaces.";
+    LOG(ERROR) << "Skia write access is only allowed for top left origin "
+                  "surfaces. debug_label: "
+               << debug_label();
     return nullptr;
   }
 
@@ -707,9 +715,9 @@ SkiaGraphiteImageRepresentation::BeginScopedReadAccess(
     auto cr = ClearedRect();
     LOG(ERROR) << base::StringPrintf(
         "Attempt to read from an uninitialized SharedImage. "
-        "Initialized region: (%d, %d, %d, %d) Size: (%d, %d)",
+        "Initialized region: (%d, %d, %d, %d) Size: (%d, %d) Debug Label: %s",
         cr.x(), cr.y(), cr.width(), cr.height(), size().width(),
-        size().height());
+        size().height(), debug_label());
     return nullptr;
   }
 
@@ -781,7 +789,9 @@ OverlayImageRepresentation::ScopedReadAccess::~ScopedReadAccess() {
 std::unique_ptr<OverlayImageRepresentation::ScopedReadAccess>
 OverlayImageRepresentation::BeginScopedReadAccess() {
   if (!IsCleared()) {
-    LOG(ERROR) << "Attempt to read from an uninitialized SharedImage";
+    LOG(ERROR)
+        << "Attempt to read from an uninitialized SharedImage. debug_label: "
+        << debug_label();
     return nullptr;
   }
 
@@ -841,7 +851,9 @@ DawnImageRepresentation::BeginScopedAccess(wgpu::TextureUsage usage,
                                            AllowUnclearedAccess allow_uncleared,
                                            const gfx::Rect& update_rect) {
   if (allow_uncleared != AllowUnclearedAccess::kYes && !IsCleared()) {
-    LOG(ERROR) << "Attempt to access an uninitialized SharedImage";
+    LOG(ERROR)
+        << "Attempt to access an uninitialized SharedImage. debug_label: "
+        << debug_label();
     return nullptr;
   }
 
