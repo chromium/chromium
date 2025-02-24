@@ -625,7 +625,14 @@ void ZeroSuggestProvider::OnPrefetchURLLoadComplete(
     // If the app is currently in the background state, do not parse and store
     // ZPS prefetch responses. This helps to conserve CPU cycles on iOS while in
     // the background state.
-    if (!client()->in_background_state()) {
+    // If `kZeroSuggestPrefetchingOnSRPCounterfactual` has been enabled, we also
+    // ignore any ZPS prefetch response on SRP, ensuring that ZPS prefetching
+    // is essentially a no-op in this case.
+    if (!client()->in_background_state() &&
+        !(OmniboxFieldTrial::kZeroSuggestPrefetchingOnSRPCounterfactual.Get() &&
+          input.current_page_classification() ==
+              metrics::OmniboxEventProto::SRP_ZPS_PREFETCH &&
+          result_type == ResultType::kRemoteSendURL)) {
       SearchSuggestionParser::Results unused_results;
       StoreRemoteResponse(SearchSuggestionParser::ExtractJsonData(
                               source, std::move(response_body)),
