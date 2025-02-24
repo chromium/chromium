@@ -29,6 +29,9 @@ class MessagingBackendDatabase {
 
   // Delete messages with uuids.
   virtual void Delete(const std::vector<std::string>& message_uuids) = 0;
+
+  // Delete all messages from the database.
+  virtual void DeleteAllData() = 0;
 };
 
 }  // namespace collaboration::messaging

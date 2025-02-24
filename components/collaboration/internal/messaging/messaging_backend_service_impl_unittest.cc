@@ -1462,6 +1462,23 @@ TEST_F(MessagingBackendServiceImplTest, TestRemoveMessages) {
                   .empty());
 }
 
+TEST_F(MessagingBackendServiceImplTest, TestSyncDisabled) {
+  CreateAndInitializeService();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+  base::Uuid uuid1 = base::Uuid::GenerateRandomV4();
+  auto message1 = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::TAB_ADDED,
+      DirtyType::kDotAndChip, base::Time::Now());
+  message1.set_uuid(uuid1.AsLowercaseString());
+  AddMessage(message1);
+
+  EXPECT_TRUE(HasDirtyMessages());
+  tg_notifier_observer_->OnSyncDisabled();
+  EXPECT_FALSE(HasDirtyMessages());
+}
+
 TEST_F(MessagingBackendServiceImplTest, TestGetMessagesForTab) {
   CreateAndInitializeService();
 

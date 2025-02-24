@@ -582,6 +582,10 @@ void MessagingBackendServiceImpl::OnTabGroupChangeNotifierInitialized() {
   std::move(data_sharing_flush_callback_).Run();
 }
 
+void MessagingBackendServiceImpl::OnSyncDisabled() {
+  store_->RemoveAllMessages();
+}
+
 void MessagingBackendServiceImpl::OnTabGroupAdded(
     const tab_groups::SavedTabGroup& added_group,
     tab_groups::TriggerSource source) {

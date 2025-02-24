@@ -19,6 +19,8 @@ class EmptyMessagingBackendDatabase : public MessagingBackendDatabase {
   void Update(const collaboration_pb::Message& message) override;
 
   void Delete(const std::vector<std::string>& message_uuids) override;
+
+  void DeleteAllData() override;
 };
 
 }  // namespace collaboration::messaging

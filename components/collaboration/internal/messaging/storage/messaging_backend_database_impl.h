@@ -31,6 +31,8 @@ class MessagingBackendDatabaseImpl : public MessagingBackendDatabase {
 
   void Delete(const std::vector<std::string>& message_uuids) override;
 
+  void DeleteAllData() override;
+
   void SetShutdownCallbackForTesting(base::OnceClosure shutdown_callback);
 
   std::optional<collaboration_pb::Message> GetMessageForTesting(

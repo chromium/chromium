@@ -82,6 +82,7 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
 
   // TabGroupChangeNotifier::Observer.
   void OnTabGroupChangeNotifierInitialized() override;
+  void OnSyncDisabled() override;
   void OnTabGroupAdded(const tab_groups::SavedTabGroup& added_group,
                        tab_groups::TriggerSource source) override;
   void OnTabGroupRemoved(tab_groups::SavedTabGroup removed_group,
