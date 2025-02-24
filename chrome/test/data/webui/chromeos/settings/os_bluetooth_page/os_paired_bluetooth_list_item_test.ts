@@ -167,13 +167,13 @@ suite('<os-settings-paired-bluetooth-list-item>', () => {
         const leftBudBatteryPercentage = 19;
         const caseBatteryPercentage = 29;
         const rightBudBatteryPercentage = 39;
-        device.deviceProperties.batteryInfo!.leftBudInfo = {
+        device.deviceProperties.batteryInfo.leftBudInfo = {
           batteryPercentage: leftBudBatteryPercentage,
         };
-        device.deviceProperties.batteryInfo!.caseInfo = {
+        device.deviceProperties.batteryInfo.caseInfo = {
           batteryPercentage: caseBatteryPercentage,
         };
-        device.deviceProperties.batteryInfo!.rightBudInfo = {
+        device.deviceProperties.batteryInfo.rightBudInfo = {
           batteryPercentage: rightBudBatteryPercentage,
         };
         pairedBluetoothListItem.set('device', {...device});

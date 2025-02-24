@@ -108,12 +108,12 @@ suite('<settings-per-device-keyboard>', () => {
     assertEquals(
         500,
         perDeviceKeyboardPage.shadowRoot!
-            .querySelector<SettingsSliderElement>('#delaySlider')!.pref!.value);
+            .querySelector<SettingsSliderElement>('#delaySlider')!.pref.value);
     assertEquals(
         500,
         perDeviceKeyboardPage.shadowRoot!
             .querySelector<SettingsSliderElement>(
-                '#repeatRateSlider')!.pref!.value);
+                '#repeatRateSlider')!.pref.value);
 
     // Test interaction with the settings-slider's underlying cr-slider.
     pressAndReleaseKeyOn(
@@ -142,7 +142,7 @@ suite('<settings-per-device-keyboard>', () => {
     assertEquals(
         1500,
         perDeviceKeyboardPage.shadowRoot!
-            .querySelector<SettingsSliderElement>('#delaySlider')!.pref!.value);
+            .querySelector<SettingsSliderElement>('#delaySlider')!.pref.value);
     perDeviceKeyboardPage.set(
         'prefs.settings.language.xkb_auto_repeat_interval_r2.value', 2000);
     await flushTasks();
@@ -150,7 +150,7 @@ suite('<settings-per-device-keyboard>', () => {
         2000,
         perDeviceKeyboardPage.shadowRoot!
             .querySelector<SettingsSliderElement>(
-                '#repeatRateSlider')!.pref!.value);
+                '#repeatRateSlider')!.pref.value);
 
     // Test sliders round to nearest value when prefs change.
     perDeviceKeyboardPage.set(
@@ -159,7 +159,7 @@ suite('<settings-per-device-keyboard>', () => {
     assertEquals(
         500,
         perDeviceKeyboardPage.shadowRoot!
-            .querySelector<SettingsSliderElement>('#delaySlider')!.pref!.value);
+            .querySelector<SettingsSliderElement>('#delaySlider')!.pref.value);
     perDeviceKeyboardPage.set(
         'prefs.settings.language.xkb_auto_repeat_interval_r2.value', 45);
     await flushTasks();
@@ -167,7 +167,7 @@ suite('<settings-per-device-keyboard>', () => {
         50,
         perDeviceKeyboardPage.shadowRoot!
             .querySelector<SettingsSliderElement>(
-                '#repeatRateSlider')!.pref!.value);
+                '#repeatRateSlider')!.pref.value);
 
     perDeviceKeyboardPage.set(
         'prefs.settings.language.xkb_auto_repeat_enabled_r2.value', false);

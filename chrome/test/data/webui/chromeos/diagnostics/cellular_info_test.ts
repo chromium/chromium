@@ -46,7 +46,7 @@ suite('cellularInfoTestSuite', function() {
     assert(cellularInfoElement);
 
     const cellularTypeProps = Object.assign(
-        {}, fakeCellularNetwork!.typeProperties!.cellular, {networkTechnology});
+        {}, fakeCellularNetwork.typeProperties!.cellular, {networkTechnology});
     cellularInfoElement.network = Object.assign({}, fakeCellularNetwork, {
       typeProperties:
           {cellular: cellularTypeProps, ethernet: undefined, wifi: undefined},
@@ -62,38 +62,36 @@ suite('cellularInfoTestSuite', function() {
       assert(cellularInfoElement);
       assertDataPointHasExpectedHeaderAndValue(
           cellularInfoElement, '#ipAddress',
-          cellularInfoElement!.i18n('networkIpAddressLabel'),
-          `${fakeCellularNetwork!.ipConfig!.ipAddress}`);
+          cellularInfoElement.i18n('networkIpAddressLabel'),
+          `${fakeCellularNetwork.ipConfig!.ipAddress}`);
       assertDataPointHasExpectedHeaderAndValue(
           cellularInfoElement, '#technology',
-          cellularInfoElement!.i18n('networkTechnologyLabel'),
-          `${
-              fakeCellularNetwork!.typeProperties!.cellular!
-                  .networkTechnology}`);
+          cellularInfoElement.i18n('networkTechnologyLabel'),
+          `${fakeCellularNetwork.typeProperties!.cellular!.networkTechnology}`);
       assertDataPointHasExpectedHeaderAndValue(
           cellularInfoElement, '#roaming',
-          cellularInfoElement!.i18n('networkRoamingStateLabel'),
-          cellularInfoElement!.i18n('networkRoamingStateRoaming'));
+          cellularInfoElement.i18n('networkRoamingStateLabel'),
+          cellularInfoElement.i18n('networkRoamingStateRoaming'));
       assertDataPointHasExpectedHeaderAndValue(
           cellularInfoElement, '#signalStrength',
-          cellularInfoElement!.i18n('networkSignalStrengthLabel'),
+          cellularInfoElement.i18n('networkSignalStrengthLabel'),
           getSignalStrength(
-              fakeCellularNetwork!.typeProperties!.cellular!.signalStrength));
+              fakeCellularNetwork.typeProperties!.cellular!.signalStrength));
       assertDataPointHasExpectedHeaderAndValue(
           cellularInfoElement, '#simLocked',
-          cellularInfoElement!.i18n('networkSimLockStatusLabel'),
-          cellularInfoElement!.i18n(
+          cellularInfoElement.i18n('networkSimLockStatusLabel'),
+          cellularInfoElement.i18n(
               'networkSimLockedText',
               getLockType(
-                  fakeCellularNetwork!.typeProperties!.cellular!.lockType)));
+                  fakeCellularNetwork.typeProperties!.cellular!.lockType)));
       assertDataPointHasExpectedHeaderAndValue(
           cellularInfoElement, '#iccid',
-          cellularInfoElement!.i18n('networkIccidLabel'),
-          `${fakeCellularNetwork!.typeProperties!.cellular!.iccid}`);
+          cellularInfoElement.i18n('networkIccidLabel'),
+          `${fakeCellularNetwork.typeProperties!.cellular!.iccid}`);
       assertDataPointHasExpectedHeaderAndValue(
           cellularInfoElement, '#eid',
-          cellularInfoElement!.i18n('networkEidLabel'),
-          `${fakeCellularNetwork!.typeProperties!.cellular!.eid}`);
+          cellularInfoElement.i18n('networkEidLabel'),
+          `${fakeCellularNetwork.typeProperties!.cellular!.eid}`);
     });
   });
 

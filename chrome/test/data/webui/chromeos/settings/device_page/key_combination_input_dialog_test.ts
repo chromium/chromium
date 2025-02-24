@@ -32,7 +32,7 @@ suite('<key-combination-input-dialog>', () => {
 
   function initializeDialog() {
     dialog = document.createElement(KeyCombinationInputDialogElement.is);
-    dialog.set('buttonRemappingList', fakeMice[0]!.settings!.buttonRemappings);
+    dialog.set('buttonRemappingList', fakeMice[0]!.settings.buttonRemappings);
     dialog.set('remappingIndex', 2);
     dialog.addEventListener('button-remapping-changed', function() {
       buttonRemappingChangedEventCount++;

@@ -120,11 +120,11 @@ suite('CrComponentsActivationCodePageTest', function() {
     // Mock camera on
     activationCodePage.showNoProfilesFound = true;
     assertEquals(
-        description.innerText!.trim(),
+        description.innerText.trim(),
         loadTimeData.getString('scanQRCodeNoProfilesFound'));
     activationCodePage.showNoProfilesFound = false;
     assertEquals(
-        description.innerText!.trim(), loadTimeData.getString('scanQRCode'));
+        description.innerText.trim(), loadTimeData.getString('scanQRCode'));
 
     // Clearing devices to test without camera
     assertTrue(!!mediaDevices);
@@ -132,11 +132,11 @@ suite('CrComponentsActivationCodePageTest', function() {
       await resolveEnumeratedDevicesPromise();
     activationCodePage.showNoProfilesFound = true;
     assertEquals(
-        description.innerText!.trim(),
+        description.innerText.trim(),
         loadTimeData.getString('enterActivationCodeNoProfilesFound'));
     activationCodePage.showNoProfilesFound = false;
     assertEquals(
-        description.innerText!.trim(),
+        description.innerText.trim(),
         loadTimeData.getString('enterActivationCode'));
   });
 
@@ -615,7 +615,7 @@ suite('CrComponentsActivationCodePageTest', function() {
       assertTrue(!!inputSubtitle);
       assertEquals(inputSubtitle.hidden, isInputInvalid);
       assertEquals(
-          inputSubtitle.innerText!.trim(),
+          inputSubtitle.innerText.trim(),
           loadTimeData.getString('scanQrCodeInputSubtitle'));
     };
 

@@ -49,7 +49,7 @@ suite('<customize-buttons-subsection>', () => {
         'actionList', [...fakeGraphicsTabletButtonActions]);
     customizeButtonsSubsection.set(
         'buttonRemappingList',
-        [...fakeGraphicsTablets[0]!.settings!.penButtonRemappings]);
+        [...fakeGraphicsTablets[0]!.settings.penButtonRemappings]);
     document.body.appendChild(customizeButtonsSubsection);
     return await flushTasks();
   }

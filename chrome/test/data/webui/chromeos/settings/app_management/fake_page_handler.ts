@@ -30,7 +30,7 @@ export class FakePageHandler implements PageHandlerInterface {
       let isManaged = false;
 
       if (options && options[permissionType]) {
-        const opts = options[permissionType]!;
+        const opts = options[permissionType];
         permissionValue = opts.value ? getTriStatePermissionValue(opts.value) :
                                        permissionValue;
         isManaged = opts.isManaged || isManaged;

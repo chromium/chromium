@@ -32,7 +32,7 @@ suite('enterprise_reporting', function() {
     installer = installer ||
         (clazz as unknown as {setInstance: Installer<T>}).setInstance;
     const mock = TestMock.fromClass(clazz);
-    installer!(mock);
+    installer(mock);
     return mock;
   }
 

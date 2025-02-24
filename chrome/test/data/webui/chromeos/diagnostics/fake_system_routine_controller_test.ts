@@ -38,7 +38,7 @@ suite('fakeSystemRoutineContollerTestSuite', function() {
         assertEquals(expectedType, resultInfo.type);
 
         if (resultInfo.result.hasOwnProperty('simpleResult')) {
-          assertEquals(expectedResult, resultInfo.result!.simpleResult);
+          assertEquals(expectedResult, resultInfo.result.simpleResult);
 
           // Can't have both simpleResult and powerResult
           assertFalse(resultInfo.result.hasOwnProperty('powerResult'));
@@ -46,7 +46,7 @@ suite('fakeSystemRoutineContollerTestSuite', function() {
 
         if (resultInfo.result.hasOwnProperty('powerResult')) {
           assertEquals(
-              expectedResult, resultInfo.result!.powerResult!.simpleResult);
+              expectedResult, resultInfo.result.powerResult!.simpleResult);
           // Can't have both simpleResult and powerResult
 
           assertFalse(resultInfo.result.hasOwnProperty('simpleResult'));
@@ -84,7 +84,7 @@ suite('fakeSystemRoutineContollerTestSuite', function() {
         assertTrue(controller.isRoutineInProgressForTesting());
         assertFalse(wasRun);
         assertEquals(expectedType, resultInfo.type);
-        assertEquals(expectedResult, resultInfo.result!.simpleResult);
+        assertEquals(expectedResult, resultInfo.result.simpleResult);
 
         // Mark that the test completed.
         wasRun = true;

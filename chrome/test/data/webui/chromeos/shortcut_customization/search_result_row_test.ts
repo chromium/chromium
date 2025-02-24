@@ -57,7 +57,7 @@ suite('searchResultRowTest', function() {
     searchResultRowElement = initSearchResultRowElement();
     await flush();
     const searchResultTextElement =
-        searchResultRowElement!.shadowRoot!.querySelector('#description');
+        searchResultRowElement.shadowRoot!.querySelector('#description');
     assertTrue(!!searchResultTextElement);
 
     searchResultRowElement.searchResult = SnapWindowLeftSearchResult;

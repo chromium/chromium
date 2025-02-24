@@ -150,7 +150,7 @@ suite('<settings-input-method-options-page>', () => {
     const autoCorrectToggleButton = options[0]!.querySelector('cr-toggle');
     assertTrue(!!autoCorrectToggleButton);
     assertEquals(false, autoCorrectToggleButton.checked);
-    autoCorrectToggleButton!.click();
+    autoCorrectToggleButton.click();
     await waitAfterNextRender(autoCorrectToggleButton);
     assertEquals(true, autoCorrectToggleButton.checked);
     assertEquals(

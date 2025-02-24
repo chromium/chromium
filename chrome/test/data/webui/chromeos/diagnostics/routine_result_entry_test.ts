@@ -86,7 +86,7 @@ suite('routineResultEntryTestSuite', function() {
         routineResultEntryElement.shadowRoot!.querySelector<HTMLElement>(
             '#routine');
     assert(name);
-    return name!.textContent!.trim();
+    return name.textContent!.trim();
   }
 
   /**

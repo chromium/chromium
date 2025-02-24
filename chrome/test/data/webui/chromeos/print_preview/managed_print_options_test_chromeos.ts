@@ -297,11 +297,11 @@ suite('ManagedPrintOptionsTest', () => {
     // Verify that the destination actually supports at least two values for
     // each of the tested setting. Otherwise the setting will be hidden in the
     // print preview and `setByDestinationPolicy` will be set to false.
-    assertGE(capabilities!.media_size!.option.length, 2);
-    assertGE(capabilities!.media_type!.option.length, 2);
-    assertGE(capabilities!.duplex!.option.length, 2);
-    assertGE(capabilities!.color!.option.length, 2);
-    assertGE(capabilities!.dpi!.option.length, 2);
+    assertGE(capabilities.media_size!.option.length, 2);
+    assertGE(capabilities.media_type!.option.length, 2);
+    assertGE(capabilities.duplex!.option.length, 2);
+    assertGE(capabilities.color!.option.length, 2);
+    assertGE(capabilities.dpi!.option.length, 2);
 
     testDestination1.applyAllowedManagedPrintOptions();
     initializeModel();

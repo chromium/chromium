@@ -81,7 +81,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
-        breadcrumbContainer!, [breadcrumbElement.i18n('wallpaperLabel')]);
+        breadcrumbContainer, [breadcrumbElement.i18n('wallpaperLabel')]);
 
     // current breadcrumbs Home > Wallpaper.
     // remain in the same page when Wallpaper is clicked on.
@@ -93,7 +93,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
-        breadcrumbContainer!, [breadcrumbElement.i18n('wallpaperLabel')]);
+        breadcrumbContainer, [breadcrumbElement.i18n('wallpaperLabel')]);
   });
 
   test('click home button goes back to root page', async () => {
@@ -115,7 +115,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     });
 
     const homeButton =
-        breadcrumbElement!.shadowRoot!.getElementById('homeButton');
+        breadcrumbElement.shadowRoot!.getElementById('homeButton');
     homeButton!.click();
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.ROOT, path);
@@ -128,7 +128,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     await waitAfterNextRender(breadcrumbElement);
 
     assertTrue(
-        !breadcrumbElement!.shadowRoot!.getElementById('backButton'),
+        !breadcrumbElement.shadowRoot!.getElementById('backButton'),
         'no back button');
   });
 
@@ -149,8 +149,8 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
-        breadcrumbContainer!,
-        [breadcrumbElement.i18n('wallpaperLabel'), collection!.name]);
+        breadcrumbContainer,
+        [breadcrumbElement.i18n('wallpaperLabel'), collection.name]);
 
     const original = PersonalizationRouterElement.instance;
     const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {
@@ -167,7 +167,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     // current breadcrumbs: Home > Wallpaper > Zero
     // navigate to Wallpaper subpage when Wallpaper breadcrumb is clicked on.
     const wallpaperBreadcrumb =
-        breadcrumbElement!.shadowRoot!.getElementById('breadcrumb0');
+        breadcrumbElement.shadowRoot!.getElementById('breadcrumb0');
     wallpaperBreadcrumb!.click();
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.COLLECTIONS, path);
@@ -222,7 +222,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     // navigate to Google Photos subpage when Google Photos breadcrumb is
     // clicked on.
     const googlePhotoBreadcrumb =
-        breadcrumbElement!.shadowRoot!.getElementById('breadcrumb1');
+        breadcrumbElement.shadowRoot!.getElementById('breadcrumb1');
     googlePhotoBreadcrumb!.click();
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.GOOGLE_PHOTOS_COLLECTION, path);
@@ -261,7 +261,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     // current breadcrumbs: Home > Wallpaper > Google Photos
     // navigate to Wallpaper subpage when Wallpaper breadcrumb is clicked on.
     const wallpaperBreadcrumb =
-        breadcrumbElement!.shadowRoot!.getElementById('breadcrumb0');
+        breadcrumbElement.shadowRoot!.getElementById('breadcrumb0');
     wallpaperBreadcrumb!.click();
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.COLLECTIONS, path);
@@ -301,7 +301,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     // current breadcrumbs: Home > Wallpaper > My Images
     // navigate to Wallpaper subpage when Wallpaper breadcrumb is clicked on.
     const wallpaperBreadcrumb =
-        breadcrumbElement!.shadowRoot!.getElementById('breadcrumb0');
+        breadcrumbElement.shadowRoot!.getElementById('breadcrumb0');
     wallpaperBreadcrumb!.click();
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.COLLECTIONS, path);
@@ -318,7 +318,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
-        breadcrumbContainer!, [breadcrumbElement.i18n('screensaverLabel')]);
+        breadcrumbContainer, [breadcrumbElement.i18n('screensaverLabel')]);
 
     // current breadcrumbs Home > Screensaver.
     // remain in the same page when Screensaver is clicked on.
@@ -330,7 +330,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
-        breadcrumbContainer!, [breadcrumbElement.i18n('screensaverLabel')]);
+        breadcrumbContainer, [breadcrumbElement.i18n('screensaverLabel')]);
   });
 
   test(
@@ -368,7 +368,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         // navigate to ambient subpage when Screensaver breadcrumb is clicked
         // on.
         const screensaverBreadcrumb =
-            breadcrumbElement!.shadowRoot!.getElementById('breadcrumb0');
+            breadcrumbElement.shadowRoot!.getElementById('breadcrumb0');
         screensaverBreadcrumb!.click();
         const [path, queryParams] = await goToRoutePromise;
         assertEquals(Paths.AMBIENT, path);
@@ -410,7 +410,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         // navigate to ambient subpage when Screensaver breadcrumb is clicked
         // on.
         const screensaverBreadcrumb =
-            breadcrumbElement!.shadowRoot!.getElementById('breadcrumb0');
+            breadcrumbElement.shadowRoot!.getElementById('breadcrumb0');
         screensaverBreadcrumb!.click();
         const [path, queryParams] = await goToRoutePromise;
         assertEquals(Paths.AMBIENT, path);
@@ -479,7 +479,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     // current breadcrumbs: Home > Wallpaper > Sea Pen > Park
     // navigate to Sea Pen subpage when Sea Pen breadcrumb is clicked on.
     const seaPenBreadcrumb =
-        breadcrumbElement!.shadowRoot!.getElementById('breadcrumb1');
+        breadcrumbElement.shadowRoot!.getElementById('breadcrumb1');
     seaPenBreadcrumb!.click();
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.SEA_PEN_COLLECTION, path);
@@ -519,7 +519,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         // current breadcrumbs: Home > Wallpaper > Sea Pen > Park
         // navigate to Sea Pen subpage when Sea Pen breadcrumb is clicked on.
         const seaPenBreadcrumb =
-            breadcrumbElement!.shadowRoot!.getElementById('breadcrumb1');
+            breadcrumbElement.shadowRoot!.getElementById('breadcrumb1');
         seaPenBreadcrumb!.click();
         const [path, queryParams] = await goToRoutePromise;
         assertEquals(Paths.SEA_PEN_COLLECTION, path);
@@ -580,13 +580,13 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     const dropdownMenu =
         breadcrumbElement.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!dropdownMenu);
-    assertTrue(dropdownMenu!.open, 'the action menu should be open');
+    assertTrue(dropdownMenu.open, 'the action menu should be open');
     const allMenuItems = dropdownMenu.querySelectorAll('button');
     assertTrue(allMenuItems.length > 1);
     const selectedElement =
         dropdownMenu.querySelectorAll('button[aria-checked=\'true\']');
     assertEquals(1, selectedElement.length);
-    assertEquals('Airbrushed', (selectedElement[0] as HTMLElement)!.innerText);
+    assertEquals('Airbrushed', (selectedElement[0] as HTMLElement).innerText);
   });
 
   test('navigates with SeaPen dropdown', async () => {
@@ -617,7 +617,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
       };
     });
 
-    template!.click();
+    template.click();
 
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.SEA_PEN_RESULTS, path);
@@ -646,8 +646,8 @@ suite('PersonalizationBreadcrumbElementTest', function() {
 
     // Get all 4 breadcrumbs.
     let allBreadcrumbs =
-        Array.from(breadcrumbElement.shadowRoot!.querySelectorAll(
-            '.selectable')) as HTMLElement[];
+        Array.from(breadcrumbElement.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.selectable'));
     assertEquals(4, allBreadcrumbs.length);
 
     // Check initial tab indices.
@@ -677,8 +677,8 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     await waitAfterNextRender(breadcrumbElement);
 
     // There should now be 3 breadcrumbs.
-    allBreadcrumbs = Array.from(breadcrumbElement.shadowRoot!.querySelectorAll(
-                         '.selectable')) as HTMLElement[];
+    allBreadcrumbs = Array.from(
+        breadcrumbElement.shadowRoot!.querySelectorAll('.selectable'));
     assertEquals(3, allBreadcrumbs.length);
 
     // And tabindex for first breadcrumb should be 0.

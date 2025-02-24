@@ -58,7 +58,7 @@ suite('actionToolbarTest', function() {
     actionToolbar.pageIndex = expectedPageIndex;
     const removePageEvent: Promise<CustomEvent<number>> =
         eventToPromise('show-remove-page-dialog', actionToolbar);
-    strictQuery('#removePageIcon', actionToolbar.shadowRoot!, HTMLElement)
+    strictQuery('#removePageIcon', actionToolbar.shadowRoot, HTMLElement)
         .click();
     pageIndexFromEvent = (await removePageEvent).detail;
 
@@ -75,7 +75,7 @@ suite('actionToolbarTest', function() {
     actionToolbar.pageIndex = expectedPageIndex;
     const rescanPageEvent: Promise<CustomEvent<number>> =
         eventToPromise('show-rescan-page-dialog', actionToolbar);
-    strictQuery('#rescanPageIcon', actionToolbar.shadowRoot!, HTMLElement)
+    strictQuery('#rescanPageIcon', actionToolbar.shadowRoot, HTMLElement)
         .click();
     pageIndexFromEvent = (await rescanPageEvent).detail;
 

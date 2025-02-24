@@ -43,9 +43,9 @@ suite('cr-dialog', function() {
     const inner = document.body.querySelector<CrDialogElement>('#inner');
     assertTrue(!!inner);
 
-    outer!.showModal();
-    inner!.showModal();
-    return [outer!, inner!];
+    outer.showModal();
+    inner.showModal();
+    return [outer, inner];
   }
 
   setup(function() {
@@ -209,7 +209,7 @@ suite('cr-dialog', function() {
     const otherButton =
         document.body.querySelector<HTMLElement>('#other-button');
     assertTrue(!!otherButton);
-    simulateEnterOnButton(otherButton!);
+    simulateEnterOnButton(otherButton);
     assertEquals(0, clickedCounter);
 
     // Enter keys on the close icon in the top-right corner should be ignored.
@@ -350,8 +350,8 @@ suite('cr-dialog', function() {
     assertTrue(!!bottomShadow);
 
     return flushTasks().then(() => {
-      assertFalse(topShadow!.classList.contains('has-shadow'));
-      assertFalse(bottomShadow!.classList.contains('has-shadow'));
+      assertFalse(topShadow.classList.contains('has-shadow'));
+      assertFalse(bottomShadow.classList.contains('has-shadow'));
     });
   });
 
@@ -390,29 +390,29 @@ suite('cr-dialog', function() {
       observerCount++;
       switch (observerCount) {
         case 1:  // Triggered when scrolled to bottom.
-          assertFalse(bottomShadow!.classList.contains('has-shadow'));
-          assertTrue(topShadow!.classList.contains('has-shadow'));
-          bodyContainer!.scrollTop = 0;
+          assertFalse(bottomShadow.classList.contains('has-shadow'));
+          assertTrue(topShadow.classList.contains('has-shadow'));
+          bodyContainer.scrollTop = 0;
           break;
         case 2:  // Triggered when scrolled back to top.
-          assertTrue(bottomShadow!.classList.contains('has-shadow'));
-          assertFalse(topShadow!.classList.contains('has-shadow'));
-          bodyContainer!.scrollTop = 2;
+          assertTrue(bottomShadow.classList.contains('has-shadow'));
+          assertFalse(topShadow.classList.contains('has-shadow'));
+          bodyContainer.scrollTop = 2;
           break;
         case 3:  // Triggered when finally scrolling to middle.
-          assertTrue(bottomShadow!.classList.contains('has-shadow'));
-          assertTrue(topShadow!.classList.contains('has-shadow'));
+          assertTrue(bottomShadow.classList.contains('has-shadow'));
+          assertTrue(topShadow.classList.contains('has-shadow'));
           observer.disconnect();
           done();
           break;
       }
     });
-    observer.observe(topShadow!, {attributes: true});
-    observer.observe(bottomShadow!, {attributes: true});
+    observer.observe(topShadow, {attributes: true});
+    observer.observe(bottomShadow, {attributes: true});
 
     // Height is normally set via CSS, but mixin doesn't work with innerHTML.
-    bodyContainer!.style.height = '60px';  // Element has "min-height: 60px".
-    bodyContainer!.scrollTop = 100;
+    bodyContainer.style.height = '60px';  // Element has "min-height: 60px".
+    bodyContainer.scrollTop = 100;
   });
 
   test('dialog `open` attribute updated when Escape is pressed', function() {

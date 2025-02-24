@@ -109,7 +109,7 @@ suite('AvatarListElementTest', function() {
     await waitAfterNextRender(avatarListElement);
 
     assertEquals(
-        null, avatarListElement!.shadowRoot!.getElementById('openCamera'),
+        null, avatarListElement.shadowRoot!.getElementById('openCamera'),
         'open camera button does not exist');
 
     testPersonalizationStore.data.user.isCameraPresent = true;
@@ -117,7 +117,7 @@ suite('AvatarListElementTest', function() {
     await waitAfterNextRender(avatarListElement);
 
     assertTrue(
-        !!avatarListElement!.shadowRoot!.getElementById('openCamera'),
+        !!avatarListElement.shadowRoot!.getElementById('openCamera'),
         'open camera button exists');
   });
 
@@ -132,7 +132,7 @@ suite('AvatarListElementTest', function() {
         'avatar-camera element should not be open');
 
     const openCameraButton =
-        avatarListElement!.shadowRoot!.getElementById('openCamera')!;
+        avatarListElement.shadowRoot!.getElementById('openCamera')!;
     openCameraButton.click();
 
     await waitAfterNextRender(avatarListElement);
@@ -176,16 +176,16 @@ suite('AvatarListElementTest', function() {
     await waitAfterNextRender(avatarListElement);
 
     assertTrue(
-        !!avatarListElement!.shadowRoot!.getElementById('openCamera'),
+        !!avatarListElement.shadowRoot!.getElementById('openCamera'),
         'open camera button exists');
     assertTrue(
-        !!avatarListElement!.shadowRoot!.getElementById('openVideo'),
+        !!avatarListElement.shadowRoot!.getElementById('openVideo'),
         'open video button exists');
     assertTrue(
-        !!avatarListElement!.shadowRoot!.getElementById('openFolder'),
+        !!avatarListElement.shadowRoot!.getElementById('openFolder'),
         'open folder button exists');
     assertTrue(
-        !!avatarListElement!.shadowRoot!.getElementById('profileImage'),
+        !!avatarListElement.shadowRoot!.getElementById('profileImage'),
         'select profile image button exists');
   });
 
@@ -200,16 +200,16 @@ suite('AvatarListElementTest', function() {
     await waitAfterNextRender(avatarListElement);
 
     assertTrue(
-        !avatarListElement!.shadowRoot!.getElementById('openCamera'),
+        !avatarListElement.shadowRoot!.getElementById('openCamera'),
         'open camera button does not exist');
     assertTrue(
-        !avatarListElement!.shadowRoot!.getElementById('openVideo'),
+        !avatarListElement.shadowRoot!.getElementById('openVideo'),
         'open video button does not exist');
     assertTrue(
-        !avatarListElement!.shadowRoot!.getElementById('openFolder'),
+        !avatarListElement.shadowRoot!.getElementById('openFolder'),
         'open folder button does not exist');
     assertTrue(
-        !avatarListElement!.shadowRoot!.getElementById('profileImage'),
+        !avatarListElement.shadowRoot!.getElementById('profileImage'),
         'select profile button does not exist');
   });
 });

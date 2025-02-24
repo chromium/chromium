@@ -26,9 +26,9 @@ suite('SeaPenRouterElementTest', function() {
                             .querySelector<SeaPenIntroductionDialogElement>(
                                 SeaPenIntroductionDialogElement.is);
     assertTrue(!!introDialog, 'dialog element must exist to click button');
-    const button = introDialog!.shadowRoot!.getElementById('close');
+    const button = introDialog.shadowRoot!.getElementById('close');
     assertTrue(!!button, `close button must exist`);
-    button!.click();
+    button.click();
     await waitAfterNextRender(routerElement!);
   }
 
@@ -117,7 +117,7 @@ suite('SeaPenRouterElementTest', function() {
     assertTrue(!!inputElement, 'input text box exists');
 
     // Set a freeform query.
-    inputElement!.value = 'a cool castle';
+    inputElement.value = 'a cool castle';
 
     // Start freeform query search.
     seaPenInputQuery.shadowRoot!.getElementById('searchButton')!.click();
@@ -135,14 +135,14 @@ suite('SeaPenRouterElementTest', function() {
     // Sea Pen images should be present and visible as the search activates
     // Results tab.
     const seaPenImagesElement =
-        seaPenFreeformElement!.shadowRoot!.querySelector<HTMLElement>(
+        seaPenFreeformElement.shadowRoot!.querySelector<HTMLElement>(
             SeaPenImagesElement.is);
     assertTrue(!!seaPenImagesElement, 'sea-pen-images is available');
     assertFalse(seaPenImagesElement.hidden, 'sea-pen-images is visible');
 
     // Recent images element is no longer available.
     assertFalse(
-        !!seaPenFreeformElement!.shadowRoot!.querySelector(
+        !!seaPenFreeformElement.shadowRoot!.querySelector(
             SeaPenRecentWallpapersElement.is),
         'sea-pen-recent-wallpapers is not shown in Results tab');
   });
@@ -279,7 +279,7 @@ suite('SeaPenRouterElementTest', function() {
     const chips =
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
     const chip = chips[0] as HTMLElement;
-    chip!.click();
+    chip.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const seaPenOptionsElement =
@@ -556,7 +556,7 @@ suite('SeaPenRouterElementTest', function() {
             'sea-pen-images should have pointer-events');
 
         assertEquals(
-            'none', window.getComputedStyle(seaPenImages, '::after')!.content,
+            'none', window.getComputedStyle(seaPenImages, '::after').content,
             'sea-pen-images has no after style content ');
 
         // Click on a chip in sea-pen-template-query. This should disable
@@ -564,17 +564,17 @@ suite('SeaPenRouterElementTest', function() {
         const chips =
             seaPenTemplateQuery.shadowRoot!.querySelectorAll('.chip-text');
         const chip = chips[0] as HTMLElement;
-        chip!.click();
+        chip.click();
         await waitAfterNextRender(routerElement);
 
         // an overlay shadow displays for sea-pen-images.
         assertEquals(
-            '""', window.getComputedStyle(seaPenImages, '::after')!.content,
+            '""', window.getComputedStyle(seaPenImages, '::after').content,
             'after style content should match');
 
         // Click on the prior selected chip again. Chip state should be cleared
         // and pointer events are enabled again for sea-pen-images.
-        chip!.click();
+        chip.click();
         await waitAfterNextRender(routerElement);
 
         assertEquals(
@@ -583,7 +583,7 @@ suite('SeaPenRouterElementTest', function() {
 
         // The overlay shadow is no longer shown.
         assertEquals(
-            'none', window.getComputedStyle(seaPenImages, '::after')!.content,
+            'none', window.getComputedStyle(seaPenImages, '::after').content,
             'sea-pen-images no longer has after style content');
       });
 });

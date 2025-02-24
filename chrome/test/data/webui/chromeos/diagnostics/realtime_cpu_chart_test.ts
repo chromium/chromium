@@ -93,7 +93,7 @@ suite('realtimeCpuChartTestSuite', function() {
     const system = 30;
     return initializeRealtimeCpuChart(user, system).then(() => {
       assert(realtimeCpuChartElement);
-      const svg = realtimeCpuChartElement!.shadowRoot!.querySelector('#chart');
+      const svg = realtimeCpuChartElement.shadowRoot!.querySelector('#chart');
       assert(svg);
       const boundary =
           realtimeCpuChartElement.shadowRoot!.querySelector('#defClip>rect');

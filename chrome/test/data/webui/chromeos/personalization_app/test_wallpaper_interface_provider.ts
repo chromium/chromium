@@ -155,8 +155,8 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
 
     this.albumId = '';
 
-    this.collectionId = this.collections_![0]!.id;
-    this.timeOfDayCollectionId = this.collections_![3]!.id;
+    this.collectionId = this.collections_[0]!.id;
+    this.timeOfDayCollectionId = this.collections_[3]!.id;
   }
 
   private collections_: WallpaperCollection[]|null;

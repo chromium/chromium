@@ -41,13 +41,13 @@ suite('<borealis-installer-error-dialog>', () => {
   function assertHidden(id: string): void {
     const element = shadowRoot().getElementById(id);
     assertTrue(element != null);
-    assertTrue(element!.hidden);
+    assertTrue(element.hidden);
   }
 
   function assertNotHidden(id: string): void {
     const element = shadowRoot().getElementById(id);
     assertTrue(element != null);
-    assertFalse(element!.hidden);
+    assertFalse(element.hidden);
   }
 
   test('Buttons', () => {

@@ -125,7 +125,7 @@ suite('batteryStatusCardTestSuite', function() {
                   .tooltipText,
               loadTimeData.getString('currentNowTooltipText'));
           dx_utils.assertElementContainsText(
-              batteryStatusElement!.shadowRoot!.querySelector(
+              batteryStatusElement.shadowRoot!.querySelector(
                   '#batteryStatusChipInfo'),
               `${fakeBatteryHealth[0]!.chargeFullDesignMilliampHours}`);
           const barChart =

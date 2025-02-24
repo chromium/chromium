@@ -14,7 +14,7 @@ const ACTIVE_CATEGORY_BUTTON = 'category-button-active';
 
 function isCategoryButtonActive(element: Element|null|undefined) {
   assert(element, 'category button element should not be null.');
-  return element!.classList.contains(ACTIVE_CATEGORY_BUTTON);
+  return element.classList.contains(ACTIVE_CATEGORY_BUTTON);
 }
 
 function categoryGroupSelector(category: string) {
@@ -114,8 +114,9 @@ export function categoryTestSuite(category: string) {
           for (let idx = 0; idx < allGroups.length; ++idx) {
             const group = allGroups[idx];
             const actualFirstGroupName =
-                (group!.shadowRoot!.querySelector('#heading-left')!.innerHTML
-                     .trim())!.replace('&amp;', '&');
+                (group!.shadowRoot!.querySelector(
+                                       '#heading-left')!.innerHTML.trim())
+                    .replace('&amp;', '&');
             const expectedFirstGroupName = groupElements[idx + 1]!.name;
             assertEquals(expectedFirstGroupName, actualFirstGroupName);
             assertEquals(
@@ -142,7 +143,7 @@ export function categoryTestSuite(category: string) {
                     assertEquals(expectedName, event.detail.name);
                     resolve();
                   }));
-          firstButton!.click();
+          firstButton.click();
           await flush();
           await waitWithTimeout(
               buttonClickPromise, 1000,
@@ -193,7 +194,7 @@ export function categoryTestSuite(category: string) {
                     resolve();
                   }));
 
-          recentlyUsedButton!.click();
+          recentlyUsedButton.click();
           await waitWithTimeout(
               buttonClickPromise, 1000,
               `Clicking at recently used ${category} buttons does not ` +

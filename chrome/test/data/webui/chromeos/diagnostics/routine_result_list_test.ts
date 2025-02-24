@@ -89,7 +89,7 @@ suite('routineResultListTestSuite', function() {
                     .hidden);
     routineResultListElement.hidden = true;
     flushTasks();
-    assertTrue(routineResultListElement!.hidden);
+    assertTrue(routineResultListElement.hidden);
     assert(routineResultListElement);
     assertTrue(strictQuery(
                    '#resultListContainer', routineResultListElement.shadowRoot,

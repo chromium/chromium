@@ -116,28 +116,28 @@ suite('shortcutCustomizationAppTest', function() {
 
   function getManager(): AcceleratorLookupManager {
     assertTrue(!!manager);
-    return manager as AcceleratorLookupManager;
+    return manager;
   }
 
   function getPage(): ShortcutCustomizationAppElement {
     assertTrue(!!page);
-    return page as ShortcutCustomizationAppElement;
+    return page;
   }
 
   function getSubsections(category: AcceleratorCategory):
       NodeListOf<AcceleratorSubsectionElement> {
     const navPanel =
         getPage().shadowRoot!.querySelector('navigation-view-panel');
-    const navBody = navPanel!!.shadowRoot!.querySelector('#navigationBody');
+    const navBody = navPanel!.shadowRoot!.querySelector('#navigationBody');
     const subPageId = `category-${category}`;
     const subPage = navBody!.querySelector(`#${subPageId}`);
     assertTrue(!!subPage, `Expected subpage with id ${subPageId} to exist.`);
-    return subPage!.shadowRoot!.querySelectorAll('accelerator-subsection');
+    return subPage.shadowRoot!.querySelectorAll('accelerator-subsection');
   }
 
   function getLinkEl(): HTMLLinkElement {
     assertTrue(!!linkEl);
-    return linkEl as HTMLLinkElement;
+    return linkEl;
   }
 
   async function openDialogForAcceleratorInSubsection(subsectionIndex: number) {
@@ -180,19 +180,19 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Grab the first accelerator from second subsection.
     const dialogAccels =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+        editDialog.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
     // Expect only 1 accelerator initially.
-    assertEquals(1, dialogAccels!.length);
+    assertEquals(1, dialogAccels.length);
 
     // Click on add button.
-    editDialog!.shadowRoot!
+    editDialog.shadowRoot!
         .querySelector<CrButtonElement>('#addAcceleratorButton')!.click();
 
     await flushTasks();
 
     const editElement =
-        editDialog!.shadowRoot!.querySelector<AcceleratorEditViewElement>(
+        editDialog.shadowRoot!.querySelector<AcceleratorEditViewElement>(
             '#pendingAccelerator');
     assertTrue(!!editElement);
     // Assert no error has occurred prior to pressing a shortcut.
@@ -232,7 +232,7 @@ suite('shortcutCustomizationAppTest', function() {
     const expectedLayouts =
         getManager().getSubcategories(AcceleratorCategory.kWindowsAndDesks);
     // Two subsections for this category based on the data in fake_data.ts.
-    assertEquals(expectedLayouts!.size, actualSubsections!.length);
+    assertEquals(expectedLayouts!.size, actualSubsections.length);
 
     const keyIterator = expectedLayouts!.keys();
     // Assert subsection title matches expected value from fake lookup.
@@ -244,7 +244,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Asert 2 accelerators are loaded for first subcategory.
     assertEquals(
         (expectedLayouts!.get(expectedFirstSubcat) as LayoutInfo[]).length,
-        actualSubsections[0]!.accelRowDataArray!.length);
+        actualSubsections[0]!.accelRowDataArray.length);
 
     // Assert subsection title matches expected value from fake lookup.
     const expectedSecondSubcat: AcceleratorSubcategory =
@@ -262,7 +262,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Assert 2 accelerators are loaded for the second subcategory.
     assertEquals(
         (expectedLayouts!.get(expectedSecondSubcat) as LayoutInfo[]).length,
-        actualSubsections[1]!.accelRowDataArray!.length);
+        actualSubsections[1]!.accelRowDataArray.length);
   });
 
   test('LoadFakeBrowserPage', async () => {
@@ -291,7 +291,7 @@ suite('shortcutCustomizationAppTest', function() {
     const actualSubsections = getSubsections(AcceleratorCategory.kBrowser);
     const expectedLayouts =
         getManager().getSubcategories(AcceleratorCategory.kBrowser);
-    assertEquals(expectedLayouts!.size, actualSubsections!.length);
+    assertEquals(expectedLayouts!.size, actualSubsections.length);
 
     const keyIterator = expectedLayouts!.keys().next();
     // Assert subsection names match name lookup.
@@ -301,7 +301,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Assert lock icon displayed next to every subcategories under Browser
     // category.
     for (const subsection of actualSubsections) {
-      const lockIcon = subsection!.shadowRoot!.querySelector<IronIconElement>(
+      const lockIcon = subsection.shadowRoot!.querySelector<IronIconElement>(
           '.lock-icon-container');
       assertTrue(isVisible(lockIcon));
     }
@@ -371,7 +371,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Click done button.
     const doneButton =
-        strictQuery('#doneButton', editDialog!.shadowRoot, CrButtonElement);
+        strictQuery('#doneButton', editDialog.shadowRoot, CrButtonElement);
     doneButton.click();
 
     // Wait until dialog is closed to make sure onDialogClose() is triggered.
@@ -393,12 +393,11 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Grab the first accelerator from the second subsection.
     const editView =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+        editDialog.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view')[0] as AcceleratorEditViewElement;
 
     // Click on edit button.
-    editView!.shadowRoot!.querySelector<CrButtonElement>(
-                             '#editButton')!.click();
+    editView.shadowRoot!.querySelector<CrButtonElement>('#editButton')!.click();
 
     await flushTasks();
 
@@ -443,7 +442,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     await flushTasks();
     const updatedEditView =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+        editDialog.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view')[0] as AcceleratorEditViewElement;
     assertFalse(updatedEditView.hasError);
     assertEquals(
@@ -461,13 +460,13 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Grab the first accelerator from second subsection.
     const dialogAccels =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+        editDialog.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
     // Expect only 1 accelerator initially.
-    assertEquals(1, dialogAccels!.length);
+    assertEquals(1, dialogAccels.length);
 
     // Click on add button.
-    editDialog!.shadowRoot!
+    editDialog.shadowRoot!
         .querySelector<CrButtonElement>('#addAcceleratorButton')!.click();
 
     await flushTasks();
@@ -476,7 +475,7 @@ suite('shortcutCustomizationAppTest', function() {
         UserAction.kStartAddAccelerator, provider.getLatestRecordedAction());
 
     const editElement =
-        editDialog!.shadowRoot!.querySelector<AcceleratorEditViewElement>(
+        editDialog.shadowRoot!.querySelector<AcceleratorEditViewElement>(
             '#pendingAccelerator');
     assertTrue(!!editElement);
 
@@ -562,7 +561,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Click done button.
     const doneButton =
-        strictQuery('#doneButton', editDialog!.shadowRoot, CrButtonElement);
+        strictQuery('#doneButton', editDialog.shadowRoot, CrButtonElement);
     doneButton.click();
 
     // Wait until dialog is closed to make sure onDialogClose() is triggered.
@@ -588,13 +587,13 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(undefined, provider.getLastRecordedSubactions());
 
     // Click on add button.
-    editDialog!.shadowRoot!
+    editDialog.shadowRoot!
         .querySelector<CrButtonElement>('#addAcceleratorButton')!.click();
 
     await flushTasks();
 
     const editElement =
-        editDialog!.shadowRoot!.querySelector<AcceleratorEditViewElement>(
+        editDialog.shadowRoot!.querySelector<AcceleratorEditViewElement>(
             '#pendingAccelerator');
     editElement!.shadowRoot!.querySelector<CrButtonElement>(
                                 '#cancelButton')!.click();
@@ -618,7 +617,7 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(undefined, provider.getLastRecordedSubactions());
 
     // Click on add button.
-    editDialog!.shadowRoot!
+    editDialog.shadowRoot!
         .querySelector<CrButtonElement>('#addAcceleratorButton')!.click();
 
     await flushTasks();
@@ -630,7 +629,7 @@ suite('shortcutCustomizationAppTest', function() {
     provider.setFakeAddAcceleratorResult(fakeResult);
 
     const editElement =
-        editDialog!.shadowRoot!.querySelector<AcceleratorEditViewElement>(
+        editDialog.shadowRoot!.querySelector<AcceleratorEditViewElement>(
             '#pendingAccelerator');
 
     const keyEvent: KeyEvent = {
@@ -665,7 +664,7 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(undefined, provider.getLastRecordedSubactions());
 
     // Click on add button.
-    editDialog!.shadowRoot!
+    editDialog.shadowRoot!
         .querySelector<CrButtonElement>('#addAcceleratorButton')!.click();
 
     await flushTasks();
@@ -706,7 +705,7 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(undefined, provider.getLastRecordedSubactions());
 
     // Click on add button.
-    editDialog!.shadowRoot!
+    editDialog.shadowRoot!
         .querySelector<CrButtonElement>('#addAcceleratorButton')!.click();
 
     await flushTasks();
@@ -754,7 +753,7 @@ suite('shortcutCustomizationAppTest', function() {
     assertTrue(!!editDialog);
 
     // Click on add button.
-    editDialog!.shadowRoot!
+    editDialog.shadowRoot!
         .querySelector<CrButtonElement>('#addAcceleratorButton')!.click();
     await flushTasks();
 
@@ -818,7 +817,7 @@ suite('shortcutCustomizationAppTest', function() {
     assertTrue(!!editDialog);
 
     // Click on add button.
-    editDialog!.shadowRoot!
+    editDialog.shadowRoot!
         .querySelector<CrButtonElement>('#addAcceleratorButton')!.click();
     await flushTasks();
 
@@ -933,10 +932,10 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Grab the first accelerator from second subsection.
     const dialogAccels =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+        editDialog.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
     // Expect only 1 accelerator initially.
-    assertEquals(1, dialogAccels!.length);
+    assertEquals(1, dialogAccels.length);
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
@@ -950,7 +949,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Click on remove button.
     const editView = dialogAccels[0] as AcceleratorEditViewElement;
     const deleteButton =
-        editView!.shadowRoot!.querySelector<CrButtonElement>('#deleteButton');
+        editView.shadowRoot!.querySelector<CrButtonElement>('#deleteButton');
     assertTrue(!!deleteButton);
     deleteButton.click();
 
@@ -1188,11 +1187,11 @@ suite('shortcutCustomizationAppTest', function() {
     let editDialog = getPage().shadowRoot!.querySelector('#editDialog');
     assertTrue(!!editDialog);
     const dialogAccels =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+        editDialog.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
 
     // Expect only 1 accelerator initially.
-    assertEquals(1, dialogAccels!.length);
+    assertEquals(1, dialogAccels.length);
 
     // Update shortcut: Create Desk - [search shift +] and [search a].
     const testUpdatedAcceleratorConfig: MojoAcceleratorConfig = {
@@ -1258,7 +1257,7 @@ suite('shortcutCustomizationAppTest', function() {
       assertTrue(!!editDialog);
       // Verify the number of dialog accelerators is expected.
       const updatedDialogAccels =
-          editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+          editDialog.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
               'accelerator-edit-view');
       assertEquals(expectedLength, updatedDialogAccels.length);
     };

@@ -231,9 +231,9 @@ suite('fileAttachmentTestSuite', () => {
     assertEquals('fake.zip', getElementContent('#selectedFileName'));
     const attachedFile = await page!.getAttachedFile();
     // Verify the fileData field.
-    assertEquals(100, attachedFile!.fileData!.bytes!.length);
+    assertEquals(100, attachedFile!.fileData.bytes!.length);
     // Verify the fileName field.
-    assertEquals('fake.zip', attachedFile!.fileName!.path!.path);
+    assertEquals('fake.zip', attachedFile!.fileName.path.path);
   });
 
   // Test that chosen file can' exceed 10MB.

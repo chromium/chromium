@@ -54,7 +54,7 @@ suite('cr-icon-button', function() {
   test('iron-icon children svg and img elements have role set to none', () => {
     button.ironIcon = 'cr:clear';
     assertTrue(!!button.shadowRoot);
-    const ironIcons = button.shadowRoot!.querySelectorAll('iron-icon');
+    const ironIcons = button.shadowRoot.querySelectorAll('iron-icon');
     assertEquals(1, ironIcons.length);
     const iconChildren = ironIcons[0]!.shadowRoot!.querySelectorAll('svg, img');
     assertEquals(1, iconChildren.length);

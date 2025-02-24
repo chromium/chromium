@@ -14,7 +14,7 @@ import {isHidden, replaceBody} from '../../app_management/test_util.js';
 
 suite('<app-language-selection-item>', () => {
   const listItemId = '#listItem';
-  const ironIconTag = 'iron-icon' as const;
+  const ironIconTag = 'iron-icon';
   let appLanguageSelectionItem: AppLanguageSelectionItemElement;
 
   setup(() => {

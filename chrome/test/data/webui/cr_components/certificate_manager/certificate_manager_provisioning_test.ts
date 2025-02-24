@@ -178,8 +178,8 @@ suite('CertificateManagerProvisioningTests', function() {
               certProvisioningList.shadowRoot!.querySelector(dialogId);
           assertTrue(!!dialog);
           const whenDialogClosed = eventToPromise('close', dialog);
-          dialog.$.dialog.shadowRoot!.querySelector<HTMLElement>(
-                                         '#close')!.click();
+          dialog.$.dialog.shadowRoot.querySelector<HTMLElement>(
+                                        '#close')!.click();
           return whenDialogClosed;
         })
         .then(() => {

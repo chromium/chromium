@@ -100,7 +100,7 @@ suite('<settings-per-device-touchpad-subsection>', () => {
     updatedTouchpads = await provider.getConnectedTouchpadSettings();
     assertEquals(
         updatedTouchpads[0]!.settings.sensitivity,
-        touchpadSensitivitySlider.pref!.value);
+        touchpadSensitivitySlider.pref.value);
 
     const touchpadHapticClickSensitivitySlider =
         subsection.shadowRoot!.querySelector<SettingsSliderElement>(
@@ -114,7 +114,7 @@ suite('<settings-per-device-touchpad-subsection>', () => {
     updatedTouchpads = await provider.getConnectedTouchpadSettings();
     assertEquals(
         updatedTouchpads[0]!.settings.hapticSensitivity,
-        touchpadHapticClickSensitivitySlider.pref!.value);
+        touchpadHapticClickSensitivitySlider.pref.value);
 
     const touchpadHapticFeedbackToggleButton =
         subsection.shadowRoot!.querySelector<CrToggleElement>(
@@ -164,14 +164,14 @@ suite('<settings-per-device-touchpad-subsection>', () => {
             '#touchpadSensitivity');
     assertEquals(
         fakeTouchpads[0]!.settings.sensitivity,
-        touchpadSensitivitySlider!.pref!.value);
+        touchpadSensitivitySlider!.pref.value);
     let touchpadHapticClickSensitivitySlider =
         subsection.shadowRoot!.querySelector<SettingsSliderElement>(
             '#touchpadHapticClickSensitivity');
     assertTrue(isVisible(touchpadHapticClickSensitivitySlider));
     assertEquals(
         fakeTouchpads[0]!.settings.hapticSensitivity,
-        touchpadHapticClickSensitivitySlider!.pref!.value);
+        touchpadHapticClickSensitivitySlider!.pref.value);
     let touchpadHapticFeedbackToggleButton =
         subsection.shadowRoot!.querySelector<CrToggleElement>(
             '#touchpadHapticFeedbackToggle');
@@ -205,7 +205,7 @@ suite('<settings-per-device-touchpad-subsection>', () => {
         subsection.shadowRoot!.querySelector('#touchpadSensitivity');
     assertEquals(
         fakeTouchpads[1]!.settings.sensitivity,
-        touchpadSensitivitySlider!.pref!.value);
+        touchpadSensitivitySlider!.pref.value);
     touchpadHapticClickSensitivitySlider =
         subsection.shadowRoot!.querySelector('#touchpadHapticClickSensitivity');
     assertFalse(isVisible(touchpadHapticClickSensitivitySlider));

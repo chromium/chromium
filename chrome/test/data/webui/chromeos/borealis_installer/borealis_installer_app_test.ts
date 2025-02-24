@@ -102,8 +102,7 @@ suite('<borealis-installer-app>', () => {
     await flushTasks();
 
     assertEquals(
-        getDeepActiveElement(),
-        shadowRoot().querySelector('#installLaunch')!);
+        getDeepActiveElement(), shadowRoot().querySelector('#installLaunch'));
     assertEquals(
         shadowRoot().querySelector('#installLaunch')!.textContent!.trim(),
         'Open Steam');

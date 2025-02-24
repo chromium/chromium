@@ -326,7 +326,7 @@ suite('DestinationDialogCrosTest', function() {
         assertFalse(printerSetupInfo.hidden);
         assertEquals(
             PrinterSetupInfoMessageType.NO_PRINTERS,
-            printerSetupInfo!.messageType);
+            printerSetupInfo.messageType);
 
         // Destination list should be hidden if there are no valid destinations.
         const destinationList =

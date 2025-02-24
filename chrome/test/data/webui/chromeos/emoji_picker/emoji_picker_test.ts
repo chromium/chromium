@@ -84,7 +84,7 @@ suite('<emoji-picker>', () => {
         const emojiButton = await waitForCondition(
             () => findEmojiFirstButton('[data-group="0"] > emoji-group'),
             'wait for emoji-group to render');
-        emojiButton!.click();
+        emojiButton.click();
 
         const recentlyUsed = await waitForCondition(
             () => findEmojiFirstButton(
@@ -92,7 +92,7 @@ suite('<emoji-picker>', () => {
             'wait for recently used to exists');
 
         // check text is correct.
-        const recentText = recentlyUsed!.innerText;
+        const recentText = recentlyUsed.innerText;
         assertTrue(recentText.includes(String.fromCodePoint(128512)));
       });
 
@@ -103,7 +103,7 @@ suite('<emoji-picker>', () => {
         const emojiButton = await waitForCondition(
             () => findEmojiFirstButton('[data-group="0"] > emoji-group'),
             'wait for emoji group to render');
-        emojiButton!.click();
+        emojiButton.click();
 
         await waitForCondition(
             () => findEmojiFirstButton(
@@ -122,7 +122,7 @@ suite('<emoji-picker>', () => {
         () => findInEmojiPicker(
             '[data-group="0"] > emoji-group', 'button[data-index="2"]'),
         'wait for emoji group to render'));
-    emojiButton!.click();
+    emojiButton.click();
 
     // wait until emoji exists in recently used section.
     const recentlyUsed = (await waitForCondition(
@@ -131,7 +131,7 @@ suite('<emoji-picker>', () => {
         'wait for recently used to render'));
 
     // check variants class is applied
-    assertTrue(recentlyUsed!.classList.contains('has-variants'));
+    assertTrue(recentlyUsed.classList.contains('has-variants'));
   });
 
   test(
@@ -142,7 +142,7 @@ suite('<emoji-picker>', () => {
             () => findInEmojiPicker(
                 '[data-group="0"] > emoji-group', 'button[data-index="0"]'),
             'ensure all emoji rendered'));
-        emojiButton!.click();
+        emojiButton.click();
 
         const recentlyUsed = (await waitForCondition(
             () => findEmojiFirstButton(
@@ -150,7 +150,7 @@ suite('<emoji-picker>', () => {
             'wait for recently used to contain correct emoji'));
 
         // check variants class is not applied
-        assertFalse(recentlyUsed!.classList.contains('has-variants'));
+        assertFalse(recentlyUsed.classList.contains('has-variants'));
       });
 
   test(
@@ -160,7 +160,7 @@ suite('<emoji-picker>', () => {
         const emojiButton = await waitForCondition(
             () => findEmojiFirstButton('[data-group="0"] > emoji-group'),
             'ensure emoji picker fully rendered');
-        emojiButton!.click();
+        emojiButton.click();
 
         // Wait to ensure recents has a chance to render if we have a bug.
         await timeout(1000);
@@ -176,7 +176,7 @@ suite('<emoji-picker>', () => {
         () => findInEmojiPicker(
             '[data-group="0"] > emoji-group', 'button[data-index="1"]'),
         'ensure all emoji rendered'));
-    emojiButton!.click();
+    emojiButton.click();
 
     (await waitForCondition(
         () =>
@@ -291,7 +291,7 @@ suite('<emoji-picker>', () => {
       // ensure variants are positioned before we get bounding rectangle.
       await waitWithTimeout(
           variantsPromise, 1000, 'did not receive emoji variants event.');
-      const variantsRect = variants!.getBoundingClientRect();
+      const variantsRect = variants.getBoundingClientRect();
       const pickerRect = emojiPicker.getBoundingClientRect();
 
       assertLT(pickerRect.left, variantsRect.left);
@@ -308,12 +308,12 @@ suite('<emoji-picker>', () => {
       dispatchMouseEvent(coupleEmojiButton.querySelector('button')!, 2);
       const variants2 = await waitForCondition(
           () => findEmojiVariants(coupleEmojiButton),
-          'ensure that correct emoji is rendered')!;
+          'ensure that correct emoji is rendered');
       // ensure variants are positioned before we get bounding rectangle.
       await waitWithTimeout(
           variantsPromise2, 1000,
           'did not receive second emoji variants event.');
-      const variantsRect2 = variants2!.getBoundingClientRect();
+      const variantsRect2 = variants2.getBoundingClientRect();
 
       assertLT(pickerRect.left, variantsRect2.left);
       assertLT(variantsRect2.right, pickerRect.right);
@@ -340,12 +340,12 @@ suite('<emoji-picker>', () => {
     });
     test('finds no results for garbage search', async () => {
       const search = findInEmojiPicker('emoji-search') as EmojiSearch;
-      search!.setSearchQuery('THIS string should not match anything');
+      search.setSearchQuery('THIS string should not match anything');
 
       await waitForCondition(
           () => findInEmojiPicker('emoji-search', '.no-result'),
           'wait for no results');
-      assertEquals(search!.getNumSearchResults(), 0);
+      assertEquals(search.getNumSearchResults(), 0);
     });
   });
 });

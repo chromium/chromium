@@ -17,8 +17,8 @@ suite('PrintPreviewCrosApp', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     resetDataManagersAndProviders();
-    element = document.createElement(PrintPreviewCrosAppElement.is) as
-        PrintPreviewCrosAppElement;
+    element = document.createElement(PrintPreviewCrosAppElement.is);
+    PrintPreviewCrosAppElement;
     assertTrue(!!element);
     document.body.append(element);
   });

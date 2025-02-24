@@ -1827,7 +1827,7 @@ suite('<settings-internet-detail-subpage>', () => {
           apnTypes: [],
           source: ApnSource.kModb,
         };
-        cellularNetwork.typeProperties.cellular!.connectedApn!.accessPointName =
+        cellularNetwork.typeProperties.cellular!.connectedApn.accessPointName =
             apnName;
         cellularNetwork.typeProperties.cellular!.iccid = testIccid;
         mojoApi.setManagedPropertiesForTest(cellularNetwork);
@@ -1910,7 +1910,7 @@ suite('<settings-internet-detail-subpage>', () => {
               apnTypes: [],
               source: ApnSource.kModb,
             };
-            cellularNetwork.typeProperties.cellular!.connectedApn!
+            cellularNetwork.typeProperties.cellular!.connectedApn
                 .accessPointName = apnName;
             cellularNetwork.typeProperties.cellular!.iccid = testIccid;
             mojoApi.setManagedPropertiesForTest(cellularNetwork);

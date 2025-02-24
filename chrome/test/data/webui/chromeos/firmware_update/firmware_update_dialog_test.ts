@@ -48,7 +48,7 @@ suite('FirmwareUpdateDialogTest', () => {
   function clickDoneButton(): Promise<void> {
     assert(updateDialogElement?.shadowRoot);
     const button = strictQuery(
-        '#updateDoneButton', updateDialogElement?.shadowRoot, CrButtonElement)!;
+        '#updateDoneButton', updateDialogElement?.shadowRoot, CrButtonElement);
     button.click();
     return flushTasks();
   }
@@ -130,7 +130,7 @@ suite('FirmwareUpdateDialogTest', () => {
 
     // Dialog closes when the "Restart Later" button is clicked.
     const restart_later_button = strictQuery(
-        '#restartLaterButton', updateDialogElement?.shadowRoot, HTMLElement)!;
+        '#restartLaterButton', updateDialogElement?.shadowRoot, HTMLElement);
     restart_later_button.click();
     flushTasks();
     assertFalse(
@@ -248,7 +248,7 @@ suite('FirmwareUpdateDialogTest', () => {
     assert(updateDialogElement?.shadowRoot);
     // Start update.
     await setInstallationProgress(/*percentage*/ 1, UpdateState.kUpdating);
-    assertTrue(getUpdateDialog()!.open);
+    assertTrue(getUpdateDialog().open);
 
     // Check dialog contents
     assertEquals(

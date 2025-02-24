@@ -38,7 +38,7 @@ suite('KeyboardBacklightElementTest', function() {
     const labelContainer = keyboardBacklightElement.shadowRoot!.getElementById(
         'keyboardBacklightLabel');
     assertTrue(!!labelContainer, 'keyboard backlight label should be shown.');
-    const text = labelContainer!.querySelector('p');
+    const text = labelContainer.querySelector('p');
     assertTrue(!!text);
     assertEquals(
         keyboardBacklightElement.i18n('keyboardBacklightTitle'),
@@ -51,8 +51,8 @@ suite('KeyboardBacklightElementTest', function() {
     const selectorContainer =
         colorSelectorElement.shadowRoot!.getElementById('selector');
     assertTrue(!!selectorContainer);
-    const colorContainers = selectorContainer!.querySelectorAll('.selectable');
-    assertEquals(9, colorContainers!.length);
+    const colorContainers = selectorContainer.querySelectorAll('.selectable');
+    assertEquals(9, colorContainers.length);
   });
 
   test('sets backlight color when a color preset is clicked', async () => {
@@ -65,8 +65,8 @@ suite('KeyboardBacklightElementTest', function() {
     const selectorContainer =
         colorSelectorElement.shadowRoot!.getElementById('selector');
     assertTrue(!!selectorContainer);
-    const colorContainers = selectorContainer!.querySelectorAll('.selectable');
-    assertEquals(9, colorContainers!.length);
+    const colorContainers = selectorContainer.querySelectorAll('.selectable');
+    assertEquals(9, colorContainers.length);
 
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(
@@ -234,13 +234,13 @@ suite('KeyboardBacklightElementTest', function() {
     const selectorContainer =
         colorSelectorElement.shadowRoot!.getElementById('selector');
     assertTrue(!!selectorContainer);
-    const colorContainers = selectorContainer!.querySelectorAll('.selectable');
-    assertEquals(9, colorContainers!.length);
+    const colorContainers = selectorContainer.querySelectorAll('.selectable');
+    assertEquals(9, colorContainers.length);
     const wallpaperColorIcon =
         colorContainers[8]!.querySelector<HTMLElement>('color-icon');
     assertTrue(!!wallpaperColorIcon);
     assertEquals('Wallpaper color', wallpaperColorIcon.ariaLabel);
-    assertEquals(0, selectorContainer!.querySelectorAll('.divider').length);
+    assertEquals(0, selectorContainer.querySelectorAll('.divider').length);
     assertTrue(!!colorSelectorElement?.shadowRoot!.getElementById(
         'wallpaperColorDescription'));
   });
@@ -262,13 +262,13 @@ suite('KeyboardBacklightElementTest', function() {
             colorSelectorElement.shadowRoot!.getElementById('selector');
         assertTrue(!!selectorContainer);
         const colorContainers =
-            selectorContainer!.querySelectorAll('.selectable');
-        assertEquals(9, colorContainers!.length);
+            selectorContainer.querySelectorAll('.selectable');
+        assertEquals(9, colorContainers.length);
         const wallpaperColorIcon =
             colorContainers[0]!.querySelector<HTMLElement>('color-icon');
         assertTrue(!!wallpaperColorIcon);
         assertEquals('Wallpaper color', wallpaperColorIcon.ariaLabel);
-        assertEquals(1, selectorContainer!.querySelectorAll('.divider').length);
+        assertEquals(1, selectorContainer.querySelectorAll('.divider').length);
         assertFalse(!!keyboardBacklightElement?.shadowRoot!.getElementById(
             'wallpaperColorDescription'));
       });
@@ -282,7 +282,7 @@ suite('KeyboardBacklightElementTest', function() {
         keyboardBacklightElement.shadowRoot!.getElementById(
             'zoneCustomizationButton');
     assertTrue(!!customizationButton);
-    customizationButton!.click();
+    customizationButton.click();
     await waitAfterNextRender(keyboardBacklightElement);
     const zoneCustomizationElement =
         keyboardBacklightElement.shadowRoot!.querySelector(
@@ -291,6 +291,6 @@ suite('KeyboardBacklightElementTest', function() {
     const zoneTabs =
         zoneCustomizationElement.shadowRoot!.querySelectorAll('.zone-tab');
     assertEquals(
-        5, zoneTabs!.length, '5 zones should display in customization dialog');
+        5, zoneTabs.length, '5 zones should display in customization dialog');
   });
 });

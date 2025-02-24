@@ -34,7 +34,7 @@ suite('PdfViewerTest', function() {
         'is-print-preview'));
 
     function verifyElement(id: string) {
-      const element = viewer!.shadowRoot!.querySelector(`viewer-${id}`);
+      const element = viewer!.shadowRoot.querySelector(`viewer-${id}`);
       assertTrue(!!element);
       if (id === 'zoom-toolbar') {
         assertEquals('zoomToolbar', element.id);
@@ -48,18 +48,18 @@ suite('PdfViewerTest', function() {
     ['zoom-toolbar', 'page-indicator'].forEach(id => verifyElement(id));
 
     // Should also have the sizer and content divs
-    assertTrue(!!viewer.shadowRoot!.querySelector('#sizer'));
-    assertTrue(!!viewer.shadowRoot!.querySelector('#content'));
+    assertTrue(!!viewer.shadowRoot.querySelector('#sizer'));
+    assertTrue(!!viewer.shadowRoot.querySelector('#content'));
 
     // These elements don't exist in Print Preview's viewer.
     ['viewer-pdf-toolbar', 'viewer-form-warning'].forEach(
-        name => assertFalse(!!viewer.shadowRoot!.querySelector(name)));
+        name => assertFalse(!!viewer.shadowRoot.querySelector(name)));
 
     // The error dialog only appears when it is needed.
-    assertFalse(!!viewer.shadowRoot!.querySelector('viewer-error-dialog'));
+    assertFalse(!!viewer.shadowRoot.querySelector('viewer-error-dialog'));
     viewer.showErrorDialog = true;
     await waitAfterNextRender(viewer);
-    assertTrue(!!viewer.shadowRoot!.querySelector('viewer-error-dialog'));
+    assertTrue(!!viewer.shadowRoot.querySelector('viewer-error-dialog'));
   });
 
   test('PageIndicator', async () => {

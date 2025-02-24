@@ -46,8 +46,7 @@ suite('<file-handler-page>', () => {
     });
 
     // Creates and attaches the <file-handler-page> element to the DOM tree.
-    fileHandlerPageApp =
-        document.createElement('file-handler-page') as FileHandlerPageElement;
+    fileHandlerPageApp = document.createElement('file-handler-page');
     container.appendChild(fileHandlerPageApp);
     await fileHandlerPageApp.initDynamicContent;
   }

@@ -78,9 +78,7 @@ suite('<nearby-share-confirm-page>', () => {
             .filter(k => Number.isInteger(TransferStatus[k]));
     for (const key of keys) {
       if (!nonErrorStates.hasOwnProperty(key)) {
-        nearbyShareConfirmPage.set(
-            'transferStatus',
-            TransferStatus[key as keyof typeof TransferStatus]);
+        nearbyShareConfirmPage.set('transferStatus', TransferStatus[key]);
         await flushTasks();
         assert(
             nearbyShareConfirmPage.shadowRoot!.querySelector(

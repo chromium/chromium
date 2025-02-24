@@ -260,11 +260,11 @@ suite('DynamicColorElementTest', function() {
     assertTrue(!!dynamicColorElement);
     await showColorSchemeButtons();
     const colorSchemeButtons = getColorSchemeButtons();
-    (colorSchemeButtons[0] as HTMLElement)!.focus();
+    (colorSchemeButtons[0] as HTMLElement).focus();
 
     for (let i = 1; i <= 3; ++i) {
       dispatchKeydown(getActiveElement(dynamicColorElement), 'ArrowRight');
-      await waitForActiveElement(colorSchemeButtons[i]!, dynamicColorElement!);
+      await waitForActiveElement(colorSchemeButtons[i]!, dynamicColorElement);
       assertEquals(0, getActiveElement(dynamicColorElement).tabIndex);
       assertEquals(
           'iron-selected', getActiveElement(dynamicColorElement).className);
@@ -272,7 +272,7 @@ suite('DynamicColorElementTest', function() {
 
     for (let i = 2; i >= 0; --i) {
       dispatchKeydown(getActiveElement(dynamicColorElement), 'ArrowLeft');
-      await waitForActiveElement(colorSchemeButtons[i]!, dynamicColorElement!);
+      await waitForActiveElement(colorSchemeButtons[i]!, dynamicColorElement);
       assertEquals(0, getActiveElement(dynamicColorElement).tabIndex);
       assertEquals(
           'iron-selected', getActiveElement(dynamicColorElement).className);
@@ -284,7 +284,7 @@ suite('DynamicColorElementTest', function() {
     assertTrue(!!dynamicColorElement);
     await showStaticColorButtons();
     const staticColorButtons = getStaticColorButtons();
-    (staticColorButtons![0] as HTMLElement)!.focus();
+    (staticColorButtons[0] as HTMLElement).focus();
 
     for (let i = 1; i <= 3; ++i) {
       dispatchKeydown(getActiveElement(dynamicColorElement), 'ArrowRight');
@@ -295,8 +295,7 @@ suite('DynamicColorElementTest', function() {
     }
 
     for (let i = 2; i >= 0; --i) {
-      dispatchKeydown(
-          (getActiveElement(dynamicColorElement) as HTMLElement), 'ArrowLeft');
+      dispatchKeydown((getActiveElement(dynamicColorElement)), 'ArrowLeft');
       await waitForActiveElement(staticColorButtons[i]!, dynamicColorElement);
       assertEquals(0, getActiveElement(dynamicColorElement).tabIndex);
       assertEquals(

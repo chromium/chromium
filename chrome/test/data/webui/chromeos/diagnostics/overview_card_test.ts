@@ -87,9 +87,9 @@ suite('overviewCardTestSuite', function() {
     assert(overviewElement);
     const versionInfo = loadTimeData.getStringF(
         'versionInfo',
-        fakeSystemInfoWithoutBoardName!.versionInfo!.fullVersionString);
+        fakeSystemInfoWithoutBoardName.versionInfo.fullVersionString);
     assertEquals(
-        versionInfo[0]!.toUpperCase() + versionInfo!.slice(1),
+        versionInfo[0]!.toUpperCase() + versionInfo.slice(1),
         strictQuery('#deviceInfo', overviewElement.shadowRoot, HTMLSpanElement)
             .textContent);
   });

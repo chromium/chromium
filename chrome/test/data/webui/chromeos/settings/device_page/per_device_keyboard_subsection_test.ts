@@ -86,7 +86,7 @@ suite('<settings-per-device-keyboard-subsection>', () => {
         subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#externalTopRowAreFunctionKeysButton');
     assert(externalTopRowAreFunctionKeysButton);
-    externalTopRowAreFunctionKeysButton!.click();
+    externalTopRowAreFunctionKeysButton.click();
     await flushTasks();
     let updatedKeyboards = await provider.getConnectedKeyboardSettings();
     assertEquals(
@@ -473,18 +473,18 @@ suite('<settings-per-device-keyboard-subsection>', () => {
     const secondAdjustedBrightness = 20.5;
 
     // Verify initial brightness is set correctly when observer is registered.
-    assertEquals(initialBrightness, slider.pref!.value);
+    assertEquals(initialBrightness, slider.pref.value);
 
     // Simulate a keyboard brightness change and verify the slider updates
     // accordingly.
     provider.sendKeyboardBrightnessChange(firstAdjustedBrightness);
     await flushTasks();
-    assertEquals(firstAdjustedBrightness, slider.pref!.value);
+    assertEquals(firstAdjustedBrightness, slider.pref.value);
 
     // Simulate another keyboard brightness change.
     provider.sendKeyboardBrightnessChange(secondAdjustedBrightness);
     await flushTasks();
-    assertEquals(secondAdjustedBrightness, slider.pref!.value);
+    assertEquals(secondAdjustedBrightness, slider.pref.value);
   });
 
   test('observe keyboard ambient light sensor enabled change', async () => {

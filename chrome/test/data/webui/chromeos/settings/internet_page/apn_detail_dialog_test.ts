@@ -260,8 +260,8 @@ suite('<apn-detail-dialog>', () => {
              optionNodes: NodeListOf<HTMLOptionElement>) => {
               for (const [idx, expectedText] of expectedTextArray.entries()) {
                 assertTrue(!!optionNodes[idx]);
-                assertTrue(!!optionNodes[idx]!.text);
-                assertEquals(expectedText, optionNodes[idx]!.text);
+                assertTrue(!!optionNodes[idx].text);
+                assertEquals(expectedText, optionNodes[idx].text);
               }
             };
         const authTypeDropDown =

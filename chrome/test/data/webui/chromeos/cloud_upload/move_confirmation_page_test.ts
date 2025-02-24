@@ -56,9 +56,7 @@ suite('<move-confirmation-page>', () => {
 
     // Creates and attaches the <move-confirmation-page> element to the DOM
     // tree.
-    moveConfirmationPageApp =
-        document.createElement('move-confirmation-page') as
-        MoveConfirmationPageElement;
+    moveConfirmationPageApp = document.createElement('move-confirmation-page');
     container.appendChild(moveConfirmationPageApp);
 
     // Initialise dialog
@@ -534,7 +532,7 @@ suite('<move-confirmation-page>', () => {
       officeMoveConfirmationShownForDrive: true,
     });
     // Title.
-    const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title')!;
+    const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title');
     assertTrue(titleElement.innerText.includes('Google Drive'));
 
     // Body.
@@ -565,7 +563,7 @@ suite('<move-confirmation-page>', () => {
       officeMoveConfirmationShownForOneDrive: true,
     });
     // Title.
-    const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title')!;
+    const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title');
     assertTrue(titleElement.innerText.includes('Microsoft OneDrive'));
 
     // Body.
@@ -596,12 +594,12 @@ suite('<move-confirmation-page>', () => {
       officeMoveConfirmationShownForDrive: true,
     });
     // Title.
-    const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title')!;
+    const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title');
     assertTrue(titleElement.innerText.includes('Move'));
 
     // Button.
     const actionButton =
-        moveConfirmationPageApp.$<HTMLElement>('.action-button')!;
+        moveConfirmationPageApp.$<HTMLElement>('.action-button');
     assertEquals('Move and open', actionButton.innerText);
   });
 
@@ -622,12 +620,12 @@ suite('<move-confirmation-page>', () => {
       officeMoveConfirmationShownForDrive: true,
     });
     // Title.
-    const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title')!;
+    const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title');
     assertTrue(titleElement.innerText.includes('Copy'));
 
     // Button.
     const actionButton =
-        moveConfirmationPageApp.$<HTMLElement>('.action-button')!;
+        moveConfirmationPageApp.$<HTMLElement>('.action-button');
     assertEquals('Copy and open', actionButton.innerText);
   });
 

@@ -259,7 +259,7 @@ suite('PreviewGenerationTest', function() {
   /** Validate changing the paper size updates the preview. */
   test('MediaSize', function() {
     const mediaSizeCapability =
-        getCddTemplate('FooDevice').capabilities!.printer!.media_size!;
+        getCddTemplate('FooDevice').capabilities!.printer.media_size!;
     const letterOption = mediaSizeCapability.option[0]!;
     const squareOption = mediaSizeCapability.option[1]!;
     return initialize()
@@ -571,12 +571,12 @@ suite('PreviewGenerationTest', function() {
               page.shadowRoot!.querySelector('print-preview-sidebar')!
                   .shadowRoot!.querySelector(
                       'print-preview-destination-settings')!;
-          assertEquals('FooDevice', destinationSettings.destination!.id);
+          assertEquals('FooDevice', destinationSettings.destination.id);
           assertEquals('FooDevice', originalTicket.deviceName);
           const barDestination =
               new Destination('BarDevice', DestinationOrigin.LOCAL, 'BarName');
           const capabilities = getCddTemplate(barDestination.id).capabilities!;
-          capabilities.printer!.media_size = {
+          capabilities.printer.media_size = {
             option: [
               {
                 name: 'ISO_A4',

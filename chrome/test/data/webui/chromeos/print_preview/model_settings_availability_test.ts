@@ -49,20 +49,20 @@ suite('ModelSettingsAvailabilityTest', function() {
     // Set max copies to 1.
     let caps = getCddTemplate(model.destination.id).capabilities!;
     const copiesCap = {max: 1};
-    caps.printer!.copies = copiesCap;
+    caps.printer.copies = copiesCap;
     model.set('destination.capabilities', caps);
     assertFalse(model.settings.copies.available);
 
     // Set max copies to 2 (> 1).
     caps = getCddTemplate(model.destination.id).capabilities!;
     copiesCap.max = 2;
-    caps.printer!.copies = copiesCap;
+    caps.printer.copies = copiesCap;
     model.set('destination.capabilities', caps);
     assertTrue(model.settings.copies.available);
 
     // Remove copies capability.
     caps = getCddTemplate(model.destination.id).capabilities!;
-    delete caps.printer!.copies;
+    delete caps.printer.copies;
     model.set('destination.capabilities', caps);
     assertFalse(model.settings.copies.available);
 
@@ -78,7 +78,7 @@ suite('ModelSettingsAvailabilityTest', function() {
 
     // Remove collate capability.
     let capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.collate;
+    delete capabilities.printer.collate;
     model.set('destination.capabilities', capabilities);
 
     // Copies is no longer available.
@@ -102,7 +102,7 @@ suite('ModelSettingsAvailabilityTest', function() {
      {option: [{type: 'LANDSCAPE', is_default: true}]},
     ].forEach(layoutCap => {
       const capabilities = getCddTemplate(model.destination.id).capabilities!;
-      capabilities.printer!.page_orientation = layoutCap;
+      capabilities.printer.page_orientation = layoutCap;
       // Layout section should now be hidden.
       model.set('destination.capabilities', capabilities);
       assertFalse(model.settings.layout.available);
@@ -176,7 +176,7 @@ suite('ModelSettingsAvailabilityTest', function() {
        expectedValue: true,
      }].forEach(capabilityAndValue => {
       const capabilities = getCddTemplate(model.destination.id).capabilities!;
-      capabilities.printer!.color = capabilityAndValue.colorCap;
+      capabilities.printer.color = capabilityAndValue.colorCap;
       model.set('destination.capabilities', capabilities);
       assertFalse(model.settings.color.available);
       assertEquals(
@@ -214,7 +214,7 @@ suite('ModelSettingsAvailabilityTest', function() {
        expectedValue: true,
      }].forEach(capabilityAndValue => {
       const capabilities = getCddTemplate(model.destination.id).capabilities!;
-      capabilities.printer!.color = capabilityAndValue.colorCap;
+      capabilities.printer.color = capabilityAndValue.colorCap;
       model.set('destination.capabilities', capabilities);
       assertEquals(
           capabilityAndValue.expectedValue, model.settings.color.value);
@@ -234,7 +234,7 @@ suite('ModelSettingsAvailabilityTest', function() {
 
     // Remove capability.
     const capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.media_size;
+    delete capabilities.printer.media_size;
 
     // Section should now be hidden.
     model.set('destination.capabilities', capabilities);
@@ -282,7 +282,7 @@ suite('ModelSettingsAvailabilityTest', function() {
 
     // Remove the only media size with a borderless variant.
     const capabilities = getCddTemplate(model.destination.id).capabilities!;
-    capabilities.printer!.media_size!.option.splice(1, 1);
+    capabilities.printer.media_size!.option.splice(1, 1);
     model.set('destination.capabilities', capabilities);
     assertFalse(model.settings.borderless.available);
   });
@@ -305,7 +305,7 @@ suite('ModelSettingsAvailabilityTest', function() {
 
     // Remove media type capability.
     const capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.media_type;
+    delete capabilities.printer.media_type;
     model.set('destination.capabilities', capabilities);
     assertFalse(model.settings.mediaType.available);
   });
@@ -348,7 +348,7 @@ suite('ModelSettingsAvailabilityTest', function() {
 
     // Remove capability.
     capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.dpi;
+    delete capabilities.printer.dpi;
 
     // Section should now be hidden.
     model.set('destination.capabilities', capabilities);
@@ -357,7 +357,7 @@ suite('ModelSettingsAvailabilityTest', function() {
     // Does not show up for only 1 option. Unavailable value should be set to
     // the only available option.
     capabilities = getCddTemplate(model.destination.id).capabilities!;
-    capabilities.printer!.dpi!.option.pop();
+    capabilities.printer.dpi!.option.pop();
     model.set('destination.capabilities', capabilities);
     assertFalse(model.settings.dpi.available);
     assertEquals(200, model.settings.dpi.unavailableValue.horizontal_dpi);
@@ -493,7 +493,7 @@ suite('ModelSettingsAvailabilityTest', function() {
 
     // Small paper sizes
     const capabilities = getCddTemplate(model.destination.id).capabilities!;
-    capabilities.printer!.media_size = {
+    capabilities.printer.media_size = {
       'option': [
         {
           'name': 'SmallLabel',
@@ -517,14 +517,14 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertTrue(model.settings.headerFooter.available);
 
     model.set(
-        'settings.mediaSize.value', capabilities.printer.media_size!.option[0]);
+        'settings.mediaSize.value', capabilities.printer.media_size.option[0]);
 
     // Header/footer should not be available for small label
     assertFalse(model.settings.headerFooter.available);
 
     // Reset to big label.
     model.set(
-        'settings.mediaSize.value', capabilities.printer.media_size!.option[1]);
+        'settings.mediaSize.value', capabilities.printer.media_size.option[1]);
     assertTrue(model.settings.headerFooter.available);
 
     // Header/footer is never available for PDFs.
@@ -559,14 +559,14 @@ suite('ModelSettingsAvailabilityTest', function() {
 
     // Remove duplex capability.
     let capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.duplex;
+    delete capabilities.printer.duplex;
     model.set('destination.capabilities', capabilities);
     assertFalse(model.settings.duplex.available);
     assertFalse(model.settings.duplexShortEdge.available);
 
     // Set a duplex capability with only 1 type, no duplex.
     capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.duplex;
+    delete capabilities.printer.duplex;
     capabilities.printer.duplex = {
       option: [{type: DuplexType.NO_DUPLEX, is_default: true}],
     };
@@ -576,7 +576,7 @@ suite('ModelSettingsAvailabilityTest', function() {
 
     // Set a duplex capability with 2 types, long edge and no duplex.
     capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.duplex;
+    delete capabilities.printer.duplex;
     capabilities.printer.duplex = {
       option: [
         {type: DuplexType.NO_DUPLEX},
@@ -656,13 +656,13 @@ suite('ModelSettingsAvailabilityTest', function() {
 
     // Remove pin capability.
     let capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.pin;
+    delete capabilities.printer.pin;
     model.set('destination.capabilities', capabilities);
     assertFalse(model.settings.pin.available);
 
     // Set not supported pin capability.
     capabilities = getCddTemplate(model.destination.id).capabilities!;
-    capabilities.printer!.pin!.supported = false;
+    capabilities.printer.pin!.supported = false;
     model.set('destination.capabilities', capabilities);
     assertFalse(model.settings.pin.available);
     assertFalse(model.settings.pin.setFromUi);

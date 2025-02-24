@@ -83,7 +83,7 @@ suite('<app-management-app-details-item>', () => {
     const infoIconTooltip =
         appDetailsItem.shadowRoot!.querySelector('cr-tooltip-icon');
     assertTrue(!!infoIconTooltip);
-    assertEquals(publisherId, infoIconTooltip.tooltipText!.trim());
+    assertEquals(publisherId, infoIconTooltip.tooltipText.trim());
   });
 
   test('Android type', async () => {
@@ -260,7 +260,7 @@ suite('<app-management-app-details-item>', () => {
     const version =
         appDetailsItem.shadowRoot!.querySelector<HTMLElement>('#version');
     assertTrue(!!version);
-    assertEquals('Version: 13.1.52', version.innerText!.trim());
+    assertEquals('Version: 13.1.52', version.innerText.trim());
   });
 
   test('Android type storage', async () => {

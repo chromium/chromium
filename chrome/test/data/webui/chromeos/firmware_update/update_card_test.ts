@@ -30,8 +30,7 @@ suite('UpdateCardTest', () => {
     assertFalse(!!updateCardElement);
 
     // Add the update card to the DOM.
-    updateCardElement =
-        document.createElement('update-card') as UpdateCardElement;
+    updateCardElement = document.createElement('update-card');
     assertTrue(!!updateCardElement);
     updateCardElement.update = update;
     document.body.appendChild(updateCardElement);
@@ -44,7 +43,7 @@ suite('UpdateCardTest', () => {
     const name =
         strictQuery('#name', updateCardElement.shadowRoot, HTMLElement);
     assertTrue(!!name);
-    return name!.innerText;
+    return name.innerText;
   }
 
   function getVersionText(): string {
@@ -52,13 +51,13 @@ suite('UpdateCardTest', () => {
     const version =
         strictQuery('#version', updateCardElement.shadowRoot, HTMLElement);
     assertTrue(!!version);
-    return version!.innerText;
+    return version.innerText;
   }
 
   function getPriorityTextElement(): HTMLSpanElement {
     assert(updateCardElement);
     return strictQuery(
-        '#priorityText', updateCardElement.shadowRoot, HTMLSpanElement)!;
+        '#priorityText', updateCardElement.shadowRoot, HTMLSpanElement);
   }
 
   test('UpdateCardPopulated', () => {

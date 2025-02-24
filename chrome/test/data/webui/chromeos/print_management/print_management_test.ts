@@ -1210,10 +1210,10 @@ suite('PrinterSetupInfoTest', () => {
   function getElementTextContent(selector: string): string {
     assertTrue(!!printerSetupInfoElement);
     const element =
-        querySelector<HTMLElement>(printerSetupInfoElement!, selector);
+        querySelector<HTMLElement>(printerSetupInfoElement, selector);
     assertTrue(!!element);
 
-    return element!.textContent?.trim() ?? '';
+    return element.textContent?.trim() ?? '';
   }
 
   /**
@@ -1223,7 +1223,7 @@ suite('PrinterSetupInfoTest', () => {
   function getLocalizedString(localizationKey: string): string {
     assertTrue(!!printerSetupInfoElement);
 
-    return printerSetupInfoElement!.i18n(localizationKey);
+    return printerSetupInfoElement.i18n(localizationKey);
   }
 
   // Verify core elements of element rendered.

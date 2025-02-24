@@ -23,8 +23,8 @@ suite('DestinationRow', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     resetDataManagersAndProviders();
-    element = document.createElement(DestinationRowElement.is) as
-        DestinationRowElement;
+    element = document.createElement(DestinationRowElement.is);
+    DestinationRowElement;
     element.destination = PDF_DESTINATION;
     assertTrue(!!element);
     document.body.append(element);
@@ -42,7 +42,7 @@ suite('DestinationRow', () => {
     const textElement: HTMLElement =
         strictQuery<HTMLElement>(selector, element.shadowRoot, HTMLElement);
     assert(textElement.textContent);
-    return textElement.textContent!.trim();
+    return textElement.textContent.trim();
   }
 
   // Verify the element can be rendered.

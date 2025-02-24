@@ -133,7 +133,7 @@ suite('emoji-search', () => {
         findInEmojiPicker('emoji-search', 'emoji-group[category="symbol"]')!
             .shadowRoot!.querySelectorAll('.emoji-button');
     assertEquals(
-        emojiResults!.length,
+        emojiResults.length,
         4,  // normal, italic, bold and san-serif bold
     );
   });

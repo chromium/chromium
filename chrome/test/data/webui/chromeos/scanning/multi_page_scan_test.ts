@@ -112,8 +112,8 @@ suite('multiPageScanTest', function() {
   // scan.
   test('cancelButtonShowsWhileCanceling', () => {
     assert(multiPageScan);
-    const cancelButton = strictQuery(
-        '#cancelButton', multiPageScan.shadowRoot, CrButtonElement)!;
+    const cancelButton =
+        strictQuery('#cancelButton', multiPageScan.shadowRoot, CrButtonElement);
 
     // Cancel button should be visible and disabled.
     multiPageScan.appState = AppState.MULTI_PAGE_CANCELING;

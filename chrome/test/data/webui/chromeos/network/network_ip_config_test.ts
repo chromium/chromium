@@ -114,7 +114,7 @@ suite('NetworkIpConfigTest', () => {
     const propertyList =
         ipConfig.shadowRoot!.querySelector('network-property-list-mojo');
     assertTrue(!!propertyList);
-    assertFalse(propertyList!.disabled);
+    assertFalse(propertyList.disabled);
   });
 
   test('Disabled UI state', () => {

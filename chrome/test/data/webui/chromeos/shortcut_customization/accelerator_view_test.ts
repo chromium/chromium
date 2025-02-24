@@ -76,33 +76,32 @@ suite('acceleratorViewTest', function() {
   function getPendingKeyElement(shortcutInputElement: ShortcutInputElement):
       ShortcutInputKeyElement {
     return strictQuery(
-        '#pendingKey', shortcutInputElement!.shadowRoot,
+        '#pendingKey', shortcutInputElement.shadowRoot,
         ShortcutInputKeyElement);
   }
 
   function getCtrlElement(shortcutInputElement: ShortcutInputElement):
       ShortcutInputKeyElement {
     return strictQuery(
-        '#ctrlKey', shortcutInputElement!.shadowRoot, ShortcutInputKeyElement);
+        '#ctrlKey', shortcutInputElement.shadowRoot, ShortcutInputKeyElement);
   }
 
   function getShiftElement(shortcutInputElement: ShortcutInputElement):
       ShortcutInputKeyElement {
     return strictQuery(
-        '#shiftKey', shortcutInputElement!.shadowRoot, ShortcutInputKeyElement);
+        '#shiftKey', shortcutInputElement.shadowRoot, ShortcutInputKeyElement);
   }
 
   function getAltElement(shortcutInputElement: ShortcutInputElement):
       ShortcutInputKeyElement {
     return strictQuery(
-        '#altKey', shortcutInputElement!.shadowRoot, ShortcutInputKeyElement);
+        '#altKey', shortcutInputElement.shadowRoot, ShortcutInputKeyElement);
   }
 
   function getSearchElement(shortcutInputElement: ShortcutInputElement):
       ShortcutInputKeyElement {
     return strictQuery(
-        '#searchKey', shortcutInputElement!.shadowRoot,
-        ShortcutInputKeyElement);
+        '#searchKey', shortcutInputElement.shadowRoot, ShortcutInputKeyElement);
   }
 
   function getLockIcon(): HTMLElement {
@@ -146,7 +145,7 @@ suite('acceleratorViewTest', function() {
     await flush();
 
     const shortcutInput = strictQuery(
-        'shortcut-input', viewElement!.shadowRoot, ShortcutInputElement);
+        'shortcut-input', viewElement.shadowRoot, ShortcutInputElement);
 
     let ctrlKey = getCtrlElement(shortcutInput);
     let altKey = getAltElement(shortcutInput);
@@ -265,7 +264,7 @@ suite('acceleratorViewTest', function() {
     await flushTasks();
 
     const shortcutInput = strictQuery(
-        'shortcut-input', viewElement!.shadowRoot, ShortcutInputElement);
+        'shortcut-input', viewElement.shadowRoot, ShortcutInputElement);
 
     const ctrlKey = getCtrlElement(shortcutInput);
     const altKey = getAltElement(shortcutInput);
@@ -466,7 +465,7 @@ suite('acceleratorViewTest', function() {
     await flush();
 
     const shortcutInput = strictQuery(
-        'shortcut-input', viewElement!.shadowRoot, ShortcutInputElement);
+        'shortcut-input', viewElement.shadowRoot, ShortcutInputElement);
     const pendingKey = getPendingKeyElement(shortcutInput);
 
     const fakeResult: AcceleratorResultData = {
@@ -644,7 +643,7 @@ suite('acceleratorViewTest', function() {
     assertEquals(ViewState.EDIT, viewElement.viewState);
 
     const shortcutInput = strictQuery(
-        'shortcut-input', viewElement!.shadowRoot, ShortcutInputElement);
+        'shortcut-input', viewElement.shadowRoot, ShortcutInputElement);
 
     let ctrlKey = getCtrlElement(shortcutInput);
     let altKey = getAltElement(shortcutInput);

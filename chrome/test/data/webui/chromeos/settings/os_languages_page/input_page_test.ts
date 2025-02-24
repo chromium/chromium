@@ -661,7 +661,7 @@ suite('<os-settings-input-page>', () => {
       assertTrue(!!inputPage.get('lastUsedImeAccelerator_'));
       assertEquals(
           (inputPage.get('lastUsedImeAccelerator_'))!.keyDisplay,
-          updatedLastUsedImeAccelerator!.keyDisplay);
+          updatedLastUsedImeAccelerator.keyDisplay);
 
       let element =
           inputPage.shadowRoot!.querySelector('keyboard-shortcut-banner');

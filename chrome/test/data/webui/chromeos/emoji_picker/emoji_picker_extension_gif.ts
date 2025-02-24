@@ -17,7 +17,7 @@ const CATEGORY_LIST = ['emoji', 'symbol', 'emoticon', 'gif'];
 
 function isCategoryButtonActive(element: HTMLElement|null|undefined) {
   assert(element, 'category button element should not be null.');
-  return element!.classList.contains(ACTIVE_CATEGORY_BUTTON);
+  return element.classList.contains(ACTIVE_CATEGORY_BUTTON);
 }
 
 function categoryGroupSelector(category: string) {
@@ -66,11 +66,11 @@ export function gifTestSuite(category: string) {
               .shadowRoot!.querySelector('cr-icon-button');
       if (categoryIndex === 0) {
         assertTrue(
-            isCategoryButtonActive(categoryButton!),
+            isCategoryButtonActive(categoryButton),
             'First button must be active.');
       } else {
         assertFalse(
-            isCategoryButtonActive(categoryButton!),
+            isCategoryButtonActive(categoryButton),
             'All buttons must be inactive except the first one.');
       }
     });
@@ -137,7 +137,7 @@ export function gifTestSuite(category: string) {
                     assertEquals(expectedName, event.detail.name);
                     resolve();
                   }));
-          firstButton!.click();
+          firstButton.click();
           await flush();
           await waitWithTimeout(
               buttonClickPromise, 1000,
@@ -333,8 +333,7 @@ export function gifTestSuite(category: string) {
                   emojiPicker.activeInfiniteGroupId!,
                   ));
 
-          const gifResults1 =
-              group!.shadowRoot!.querySelectorAll('emoji-image');
+          const gifResults1 = group.shadowRoot!.querySelectorAll('emoji-image');
           assertEquals(gifResults1.length, 6);
 
           scrollToBottom();
@@ -345,9 +344,8 @@ export function gifTestSuite(category: string) {
                   12,
               'Wait for emoji picker to scroll and render new gifs.');
 
-          const gifResults2 =
-              group!.shadowRoot!.querySelectorAll('emoji-image');
-          assertEquals(gifResults2!.length, 12);
+          const gifResults2 = group.shadowRoot!.querySelectorAll('emoji-image');
+          assertEquals(gifResults2.length, 12);
         });
 
     test('Appended GIFs are displayed in the correct order', async () => {
@@ -368,7 +366,7 @@ export function gifTestSuite(category: string) {
           emojiPicker.activeInfiniteGroupId!,
           ));
 
-      const gifResults1 = group!.shadowRoot!.querySelectorAll('emoji-image');
+      const gifResults1 = group.shadowRoot!.querySelectorAll('emoji-image');
       assertEquals(gifResults1.length, 6);
 
       scrollToBottom();
@@ -379,12 +377,12 @@ export function gifTestSuite(category: string) {
               group?.shadowRoot?.querySelectorAll('emoji-image').length === 12,
           'Wait for Emoji Picker to scroll and render new GIFs.');
 
-      const gifResults2 = group!.shadowRoot!.querySelectorAll('emoji-image');
+      const gifResults2 = group.shadowRoot!.querySelectorAll('emoji-image');
       assertEquals(gifResults2.length, 12);
 
       // Check display is correct.
       const leftColResults =
-          group!.shadowRoot!.querySelectorAll<HTMLImageElement>(
+          group.shadowRoot!.querySelectorAll<HTMLImageElement>(
               'div.left-column > emoji-image');
       assertEquals(leftColResults.length, 6);
       assertEmojiImageAlt(leftColResults[0], 'Trending Left 1');
@@ -395,7 +393,7 @@ export function gifTestSuite(category: string) {
       assertEmojiImageAlt(leftColResults[5], 'Trending Left 6');
 
       const rightColResults =
-          group!.shadowRoot!.querySelectorAll<HTMLImageElement>(
+          group.shadowRoot!.querySelectorAll<HTMLImageElement>(
               'div.right-column > emoji-image');
       assertEquals(rightColResults.length, 6);
       assertEmojiImageAlt(rightColResults[0], 'Trending Right 1');
@@ -498,7 +496,7 @@ export function gifTestSuite(category: string) {
           category, emojiPicker.activeInfiniteGroupId!))!.shadowRoot!
                                   .querySelectorAll<HTMLImageElement>(
                                       'div.right-column > emoji-image');
-      assertEquals(rightColResults!.length, 6);
+      assertEquals(rightColResults.length, 6);
       assertEmojiImageAlt(rightColResults[0], 'Right 1');
       assertEmojiImageAlt(rightColResults[1], 'Right 2');
       assertEmojiImageAlt(rightColResults[2], 'Right 3');

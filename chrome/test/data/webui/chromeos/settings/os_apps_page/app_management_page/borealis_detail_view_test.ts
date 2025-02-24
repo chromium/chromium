@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import type {AppManagementBorealisDetailViewElement, AppManagementPinToShelfItemElement} from 'chrome://os-settings/lazy_load.js';
-import type {AppManagementToggleRowElement, CrToggleElement} from 'chrome://os-settings/os_settings.js';
+import type {AppManagementToggleRowElement} from 'chrome://os-settings/os_settings.js';
 import {AppManagementStore, Router, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
 import type {App, Permission} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppType, PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
@@ -34,8 +34,7 @@ suite('<app-management-borealis-detail-view>', () => {
   async function clickToggle(permissionType: PermissionTypeIndex):
       Promise<void> {
     const toggleRow =
-        getPermissionToggleByType(borealisDetailView, permissionType) as
-        AppManagementToggleRowElement;
+        getPermissionToggleByType(borealisDetailView, permissionType);
     toggleRow.click();
     await fakeHandler.flushPipesForTesting();
   }
@@ -90,22 +89,20 @@ suite('<app-management-borealis-detail-view>', () => {
   test('Toggle permissions', async () => {
     const checkToggle = async (permissionType: PermissionTypeIndex) => {
       assertTrue(getPermissionBoolByType(permissionType));
-      let toggle = getPermissionCrToggleByType(
-                       borealisDetailView, permissionType) as CrToggleElement;
+      let toggle =
+          getPermissionCrToggleByType(borealisDetailView, permissionType);
       assertTrue(toggle.checked);
 
       // Toggle off.
       await clickToggle(permissionType);
       assertFalse(getPermissionBoolByType(permissionType));
-      toggle = getPermissionCrToggleByType(
-                   borealisDetailView, permissionType) as CrToggleElement;
+      toggle = getPermissionCrToggleByType(borealisDetailView, permissionType);
       assertFalse(toggle.checked);
 
       // Toggle on.
       await clickToggle(permissionType);
       assertTrue(getPermissionBoolByType(permissionType));
-      toggle = getPermissionCrToggleByType(
-                   borealisDetailView, permissionType) as CrToggleElement;
+      toggle = getPermissionCrToggleByType(borealisDetailView, permissionType);
       assertTrue(toggle.checked);
     };
 

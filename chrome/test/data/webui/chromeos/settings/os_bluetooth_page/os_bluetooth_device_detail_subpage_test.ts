@@ -263,7 +263,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertNull(getTrueWirelessImages());
 
     // Try again with all 3 True Wireless images.
-    device.deviceProperties.imageInfo!.trueWirelessImages!.rightBudImageUrl =
+    device.deviceProperties.imageInfo.trueWirelessImages!.rightBudImageUrl =
         fakeUrl;
     bluetoothConfig.updatePairedDevice(device);
     await flushTasks();

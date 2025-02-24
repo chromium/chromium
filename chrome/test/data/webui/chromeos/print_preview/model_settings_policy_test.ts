@@ -116,7 +116,7 @@ suite('ModelSettingsPolicyTest', function() {
       setupModel();
       // Remove color capability.
       const capabilities = getCddTemplate(model.destination.id).capabilities!;
-      capabilities.printer!.color = subtestParams.colorCap;
+      capabilities.printer.color = subtestParams.colorCap;
       const policies = {
         color: {
           allowedMode: subtestParams.colorPolicy,
@@ -272,7 +272,7 @@ suite('ModelSettingsPolicyTest', function() {
       setupModel();
       // Remove duplex capability.
       const capabilities = getCddTemplate(model.destination.id).capabilities!;
-      capabilities.printer!.duplex = subtestParams.duplexCap;
+      capabilities.printer.duplex = subtestParams.duplexCap;
       const policies = {
         duplex: {
           allowedMode: subtestParams.duplexPolicy,
@@ -379,7 +379,7 @@ suite('ModelSettingsPolicyTest', function() {
       loadTimeData.overrideValues({isEnterpriseManaged: true});
       // Remove pin capability.
       const capabilities = getCddTemplate(model.destination.id).capabilities!;
-      capabilities.printer!.pin = subtestParams.pinCap;
+      capabilities.printer.pin = subtestParams.pinCap;
       const policies = {
         pin: {
           allowedMode: subtestParams.pinPolicy,
