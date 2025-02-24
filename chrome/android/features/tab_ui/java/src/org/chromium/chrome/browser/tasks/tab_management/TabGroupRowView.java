@@ -41,6 +41,7 @@ import java.time.Clock;
 public class TabGroupRowView extends LinearLayout {
     private TabGroupFaviconCluster mTabGroupFaviconCluster;
     private View mColorView;
+    private View mMenuLayout;
     private TextView mTitleTextView;
     private TextView mSubtitleTextView;
     private FrameLayout mImageTilesContainer;
@@ -60,6 +61,7 @@ public class TabGroupRowView extends LinearLayout {
         mSubtitleTextView = findViewById(R.id.tab_group_subtitle);
         mImageTilesContainer = findViewById(R.id.image_tiles_container);
         mListMenuButton = findViewById(R.id.more);
+        mMenuLayout = findViewById(R.id.tab_group_menu);
 
         setTouchDelegate(getListMenuItemTouchDelegate());
     }
@@ -128,8 +130,10 @@ public class TabGroupRowView extends LinearLayout {
             @Nullable Runnable openRunnable,
             @Nullable Runnable deleteRunnable,
             @Nullable Runnable leaveRunnable) {
-        setOnClickListener(openRunnable == null ? null : v -> openRunnable.run());
         mListMenuButton.setDelegate(() -> getListMenu(openRunnable, deleteRunnable, leaveRunnable));
+        boolean shouldMenuBeVisible =
+                openRunnable != null || deleteRunnable != null || leaveRunnable != null;
+        mMenuLayout.setVisibility(shouldMenuBeVisible ? VISIBLE : GONE);
     }
 
     void setSharedImageTilesView(@Nullable SharedImageTilesView sharedImageTilesView) {
@@ -173,5 +177,9 @@ public class TabGroupRowView extends LinearLayout {
         } else if (textId == R.string.leave_tab_group_menu_item && leaveRunnable != null) {
             leaveRunnable.run();
         }
+    }
+
+    public void setRowClickRunnable(@Nullable Runnable runnable) {
+        setOnClickListener(runnable == null ? null : v -> runnable.run());
     }
 }

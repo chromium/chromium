@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DISPLAY_AS_SHARED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ROW_CLICK_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TIMESTAMP_EVENT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
@@ -38,6 +39,8 @@ public class TabGroupRowViewBinder {
                     model.get(OPEN_RUNNABLE),
                     model.get(DELETE_RUNNABLE),
                     model.get(LEAVE_RUNNABLE));
+        } else if (propertyKey == ROW_CLICK_RUNNABLE) {
+            view.setRowClickRunnable(model.get(ROW_CLICK_RUNNABLE));
         } else if (propertyKey == SHARED_IMAGE_TILES_VIEW) {
             view.setSharedImageTilesView(model.get(SHARED_IMAGE_TILES_VIEW));
         }
