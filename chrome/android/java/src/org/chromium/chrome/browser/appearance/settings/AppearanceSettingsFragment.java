@@ -14,6 +14,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
@@ -21,6 +22,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         implements CustomDividerFragment {
 
+    public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
     public static final String PREF_UI_THEME = "ui_theme";
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
@@ -29,6 +31,22 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.appearance_settings));
         SettingsUtils.addPreferencesFromResource(this, R.xml.appearance_preferences);
+
+        // LINT.IfChange(InitPrefToolbarShortcut)
+        new AdaptiveToolbarStatePredictor(
+                        getContext(),
+                        getProfile(),
+                        /* androidPermissionDelegate= */ null,
+                        /* behavior= */ null)
+                .recomputeUiState(
+                        uiState -> {
+                            // Don't show toolbar shortcut settings if disabled from finch.
+                            if (!uiState.canShowUi) {
+                                getPreferenceScreen()
+                                        .removePreference(findPreference(PREF_TOOLBAR_SHORTCUT));
+                            }
+                        });
+        // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/settings/MainSettings.java:InitPrefToolbarShortcut)
 
         // LINT.IfChange(InitPrefUiTheme)
         findPreference(PREF_UI_THEME)

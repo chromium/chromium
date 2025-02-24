@@ -288,6 +288,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         if (!ChromeFeatureList.sAndroidAppearanceSettings.isEnabled()) {
             removePreferenceIfPresent(PREF_APPEARANCE);
 
+            // LINT.IfChange(InitPrefToolbarShortcut)
             new AdaptiveToolbarStatePredictor(
                             getContext(),
                             getProfile(),
@@ -300,6 +301,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                                     removePreferenceIfPresent(PREF_TOOLBAR_SHORTCUT);
                                 }
                             });
+            // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/appearance/settings/AppearanceSettingsFragment.java:InitPrefToolbarShortcut)
 
             // LINT.IfChange(InitPrefUiTheme)
             findPreference(PREF_UI_THEME)
