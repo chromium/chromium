@@ -7,11 +7,8 @@ package org.chromium.base;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
-import org.jni_zero.NativeLibraryLoadedStatus;
-import org.jni_zero.NativeLibraryLoadedStatus.NativeLibraryLoadedStatusProvider;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -22,7 +19,6 @@ public class JNIUtils {
     private static final String TAG = "JNIUtils";
     private static @Nullable ClassLoader sJniClassLoader;
     private static boolean sBadClassLoaderUsed;
-    private static boolean sHasBeenCalled;
 
     /**
      * Returns a ClassLoader which can load Java classes from the specified split.
@@ -31,10 +27,6 @@ public class JNIUtils {
      */
     @CalledByNative
     private static ClassLoader getSplitClassLoader(@JniType("std::string") String splitName) {
-        if (!sHasBeenCalled) {
-            overwriteNativeLibraryLoadedStatus();
-            sHasBeenCalled = true;
-        }
         if (!splitName.isEmpty()) {
             boolean isInstalled = BundleUtils.isIsolatedSplitInstalled(splitName);
             Log.i(TAG, "Init JNI Classloader for %s. isInstalled=%b", splitName, isInstalled);
@@ -56,23 +48,6 @@ public class JNIUtils {
             return JNIUtils.class.getClassLoader();
         }
         return sJniClassLoader;
-    }
-
-    private static void overwriteNativeLibraryLoadedStatus() {
-        // There exist some race conditions where native can call into Java before LibraryLoader is
-        // aware that it's allowed. This is a convenient location, as the first "real" native to
-        // Java call, where we can know for sure that the native library is operating and that, even
-        // though LibraryLoader doesn't know it yet, it's safe to call into the native library.
-        // crbug.com/398057788 is the reason for this.
-        if (BuildConfig.ENABLE_ASSERTS) {
-            NativeLibraryLoadedStatus.setProvider(
-                    new NativeLibraryLoadedStatusProvider() {
-                        @Override
-                        public boolean areNativeMethodsReady() {
-                            return true;
-                        }
-                    });
-        }
     }
 
     /**

@@ -110,7 +110,6 @@ if (enable_java_templates && is_android) {
       "java/src/org/jni_zero/CheckDiscard.java",
       "java/src/org/jni_zero/JniStaticTestMocker.java",
       "java/src/org/jni_zero/JniTestInstanceHolder.java",
-      "java/src/org/jni_zero/NativeLibraryLoadedStatus.java",
       "java/src/org/jni_zero/internal/NullUnmarked.java",
       "java/src/org/jni_zero/internal/Nullable.java",
     ]

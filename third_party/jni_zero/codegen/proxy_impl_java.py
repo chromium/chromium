@@ -23,7 +23,6 @@ class _Context:
     imports = jni_obj.GetClassesToBeImported() + [
         java_types.JavaClass('org/jni_zero/CheckDiscard'),
         java_types.JavaClass('org/jni_zero/JniTestInstanceHolder'),
-        java_types.JavaClass('org/jni_zero/NativeLibraryLoadedStatus'),
         java_types.JavaClass('org/jni_zero/internal/NullUnmarked'),
         java_types.JavaClass('org/jni_zero/internal/Nullable'),
     ]
@@ -76,7 +75,6 @@ public static {ctx.interface_name} get() {{
   if (holder != null && holder.value != null) {{
     return ({ctx.interface_name}) holder.value;
   }}
-  NativeLibraryLoadedStatus.checkLoaded();
   return new {ctx.proxy_class.name}();
 }}
 

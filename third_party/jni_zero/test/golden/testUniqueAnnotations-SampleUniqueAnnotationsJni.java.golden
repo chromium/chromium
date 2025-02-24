@@ -6,7 +6,6 @@ package org.jni_zero;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.GEN_JNI;
 import org.jni_zero.JniTestInstanceHolder;
-import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.SampleUniqueAnnotations;
 import org.jni_zero.internal.NullUnmarked;
 import org.jni_zero.internal.Nullable;
@@ -21,7 +20,6 @@ class SampleUniqueAnnotationsJni implements SampleUniqueAnnotations.Natives {
     if (holder != null && holder.value != null) {
       return (SampleUniqueAnnotations.Natives) holder.value;
     }
-    NativeLibraryLoadedStatus.checkLoaded();
     return new SampleUniqueAnnotationsJni();
   }
 

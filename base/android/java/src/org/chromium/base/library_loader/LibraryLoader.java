@@ -16,8 +16,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
-import org.jni_zero.NativeLibraryLoadedStatus;
-import org.jni_zero.NativeLibraryLoadedStatus.NativeLibraryLoadedStatusProvider;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.BaseSwitches;
@@ -419,15 +417,6 @@ public class LibraryLoader {
     protected LibraryLoader() {
         if (DEBUG) {
             logLinkerUsed();
-        }
-        if (BuildConfig.ENABLE_ASSERTS) {
-            NativeLibraryLoadedStatus.setProvider(
-                    new NativeLibraryLoadedStatusProvider() {
-                        @Override
-                        public boolean areNativeMethodsReady() {
-                            return isMainDexLoaded();
-                        }
-                    });
         }
     }
 
