@@ -12,8 +12,7 @@
 #include "components/manta/proto/manta.pb.h"
 #include "ui/gfx/geometry/size.h"
 
-inline constexpr std::string_view kTemplateIdTag =
-    "chromeos_wallpaper_template_id";
+inline constexpr std::string_view kTemplateIdTag = "template_id";
 
 namespace wallpaper_handlers {
 
