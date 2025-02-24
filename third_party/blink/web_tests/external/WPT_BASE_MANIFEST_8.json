@@ -644649,6 +644649,16 @@
          }
         ]
        ],
+       "on-dialog-disconnect.html": [
+        "355906ec37da82eafc8685ba702239344ec81575",
+        [
+         null,
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ]
+       ],
        "on-dialog-invalid-behavior.html": [
         "01ef53d1c07d60d6cfc820f6b1264bb899bd34df",
         [
@@ -644670,6 +644680,16 @@
        ],
        "on-popover-behavior.html": [
         "7462ce6159a8fead0c12a8e12a03368ad23b749e",
+        [
+         null,
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ]
+       ],
+       "on-popover-disconnect.html": [
+        "092032be335b8fb2034adb0d798cd0918174dc42",
         [
          null,
          {
