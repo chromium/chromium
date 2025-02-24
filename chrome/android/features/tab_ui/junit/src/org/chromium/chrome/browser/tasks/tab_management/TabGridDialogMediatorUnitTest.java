@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -78,6 +79,7 @@ import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServi
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -103,6 +105,7 @@ import org.chromium.chrome.browser.tabmodel.TabUiUnitTestUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.collaboration.CollaborationService;
@@ -120,6 +123,8 @@ import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -191,6 +196,8 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private Tracker mTracker;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
@@ -233,6 +240,7 @@ public class TabGridDialogMediatorUnitTest {
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
         mockPersistentMessages(/* added= */ 1, /* navigated= */ 2, /* removed= */ 3);
+        TrackerFactory.setTrackerForTests(mTracker);
 
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
 
@@ -1838,6 +1846,39 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
+    public void testBottomSheetTriggered() {
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.TAB_GROUP_SHARE_NOTICE_FEATURE))
+                .thenReturn(true);
+        resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+
+        mMediator.onReset(tabGroup);
+        ShadowLooper.runUiThreadTasks();
+
+        // We expect 2 invocations due to the #resetForDataSharing call.
+        verify(mBottomSheetController, times(2)).requestShowContent(any(), eq(true));
+        verify(mTracker, times(2))
+                .shouldTriggerHelpUi(FeatureConstants.TAB_GROUP_SHARE_NOTICE_FEATURE);
+    }
+
+    @Test
+    public void testBottomSheetNotTriggered() {
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.TAB_GROUP_SHARE_NOTICE_FEATURE))
+                .thenReturn(false);
+
+        resetForDataSharing(/* isShared= */ false, GROUP_MEMBER1);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+
+        mMediator.onReset(tabGroup);
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+        verify(mTracker, never()).shouldTriggerHelpUi(anyString());
+    }
+
+    @Test
     public void testCollaborationActivityMessageCard_Click() {
         when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
                 .thenReturn(false);
@@ -1878,6 +1919,7 @@ public class TabGridDialogMediatorUnitTest {
                         mRecyclerViewPositionSupplier,
                         withAnimSource ? mAnimationSourceViewProvider : null,
                         mSnackbarManager,
+                        mBottomSheetController,
                         mSharedImageTilesCoordinator,
                         mDataSharingTabManager,
                         /* componentName= */ "",
@@ -1924,6 +1966,7 @@ public class TabGridDialogMediatorUnitTest {
         setupSyncedGroup(isShared);
 
         mMediator.onReset(tabGroup);
+        ShadowLooper.runUiThreadTasks();
         verify(mDataSharingService, atLeastOnce())
                 .addObserver(mDataSharingServiceObserverCaptor.capture());
         DataSharingService.Observer observer = mDataSharingServiceObserverCaptor.getValue();

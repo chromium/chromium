@@ -190,6 +190,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             this::getRecyclerViewPosition,
                             animationSourceViewProvider,
                             mSnackbarManager,
+                            mBottomSheetController,
                             mSharedImageTilesCoordinator,
                             dataSharingTabManager,
                             mComponentName,

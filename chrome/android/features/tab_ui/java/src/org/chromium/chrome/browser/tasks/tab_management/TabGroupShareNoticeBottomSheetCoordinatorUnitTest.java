@@ -67,8 +67,10 @@ public class TabGroupShareNoticeBottomSheetCoordinatorUnitTest {
     public void testHideContent() {
         mCoordinator.requestShowContent();
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
+
         TabGroupShareNoticeBottomSheetCoordinatorDelegate delegate = mCoordinator.initDelegate();
         delegate.hide(StateChangeReason.INTERACTION_COMPLETE);
+
         verify(mBottomSheetController)
                 .hideContent(
                         any(TabGroupShareNoticeBottomSheetView.class),
@@ -89,5 +91,14 @@ public class TabGroupShareNoticeBottomSheetCoordinatorUnitTest {
                 .thenReturn(false);
         mCoordinator.requestShowContent();
         verify(mBottomSheetController, never()).addObserver(any());
+    }
+
+    @Test
+    public void testMarkHasReadNotice() {
+        TabGroupShareNoticeBottomSheetCoordinatorDelegate delegate = mCoordinator.initDelegate();
+        delegate.onSheetClosed();
+
+        verify(mTracker).notifyEvent("tab_group_share_notice_dismissed");
+        verify(mTracker).dismissed(FeatureConstants.TAB_GROUP_SHARE_NOTICE_FEATURE);
     }
 }

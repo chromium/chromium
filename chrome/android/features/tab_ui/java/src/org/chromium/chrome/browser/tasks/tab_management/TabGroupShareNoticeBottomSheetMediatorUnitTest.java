@@ -18,8 +18,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupShareNoticeBottomSheetCoordinator.TabGroupShareNoticeBottomSheetCoordinatorDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 
 /** Unit tests for {@link TabGroupShareNoticeBottomSheetMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -27,43 +28,44 @@ public class TabGroupShareNoticeBottomSheetMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private TabGroupShareNoticeBottomSheetCoordinatorDelegate mDelegate;
-    @Mock private Tracker mTracker;
     private TabGroupShareNoticeBottomSheetMediator mMediator;
 
     @Before
     public void setUp() {
-        mMediator =
-                new TabGroupShareNoticeBottomSheetMediator(
-                        mBottomSheetController, mDelegate, mTracker);
-        when(mTracker.shouldTriggerHelpUi(FeatureConstants.TAB_GROUP_SHARE_NOTICE_FEATURE))
-                .thenReturn(true);
+        mMediator = new TabGroupShareNoticeBottomSheetMediator(mBottomSheetController, mDelegate);
         when(mDelegate.requestShowContent()).thenReturn(true);
     }
 
     @Test
-    public void testDisplayNotice() {
+    public void testRequestShowContent() {
         mMediator.requestShowContent();
         verify(mDelegate).requestShowContent();
     }
 
     @Test
-    public void testShouldNotDisplayNotice() {
-        when(mTracker.shouldTriggerHelpUi(FeatureConstants.TAB_GROUP_SHARE_NOTICE_FEATURE))
-                .thenReturn(false);
-        mMediator.requestShowContent();
-        verify(mDelegate, never()).requestShowContent();
-    }
-
-    @Test
     public void testHide() {
-        mMediator.hide(BottomSheetController.StateChangeReason.SWIPE);
-        verify(mDelegate).hide(BottomSheetController.StateChangeReason.SWIPE);
+        mMediator.hide(StateChangeReason.SWIPE);
+        verify(mDelegate).hide(StateChangeReason.SWIPE);
     }
 
     @Test
-    public void testMarkHasReadNotice() {
-        mMediator.markHasReadNotice();
-        verify(mTracker).notifyEvent("tab_group_share_notice_dismissed");
-        verify(mTracker).dismissed(FeatureConstants.TAB_GROUP_SHARE_NOTICE_FEATURE);
+    public void testObserver_OnSheetClosed() {
+        BottomSheetObserver bottomSheetObserver = mMediator.getBottomSheetObserver();
+        bottomSheetObserver.onSheetClosed(StateChangeReason.SWIPE);
+        verify(mDelegate).onSheetClosed();
+    }
+
+    @Test
+    public void testObserver_OnSheetHidden() {
+        BottomSheetObserver bottomSheetObserver = mMediator.getBottomSheetObserver();
+        bottomSheetObserver.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.SWIPE);
+        verify(mDelegate).onSheetClosed();
+    }
+
+    @Test
+    public void testObserver_OnSheetNotHidden() {
+        BottomSheetObserver bottomSheetObserver = mMediator.getBottomSheetObserver();
+        bottomSheetObserver.onSheetStateChanged(SheetState.HALF, StateChangeReason.SWIPE);
+        verify(mDelegate, never()).onSheetClosed();
     }
 }

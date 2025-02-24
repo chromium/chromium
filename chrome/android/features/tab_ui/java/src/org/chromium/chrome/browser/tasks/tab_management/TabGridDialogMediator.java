@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
@@ -208,6 +209,7 @@ public class TabGridDialogMediator
     private final AnimationSourceViewProvider mAnimationSourceViewProvider;
     private final DialogHandler mTabGridDialogHandler;
     private final @Nullable SnackbarManager mSnackbarManager;
+    private final @NonNull BottomSheetController mBottomSheetController;
     private final @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private final DataSharingTabManager mDataSharingTabManager;
     private final String mComponentName;
@@ -245,6 +247,7 @@ public class TabGridDialogMediator
             Supplier<RecyclerViewPosition> recyclerViewPositionSupplier,
             AnimationSourceViewProvider animationSourceViewProvider,
             @Nullable SnackbarManager snackbarManager,
+            @NonNull BottomSheetController bottomSheetController,
             @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator,
             @NonNull DataSharingTabManager dataSharingTabManager,
             String componentName,
@@ -261,6 +264,7 @@ public class TabGridDialogMediator
         mAnimationSourceViewProvider = animationSourceViewProvider;
         mTabGridDialogHandler = new DialogHandler();
         mSnackbarManager = snackbarManager;
+        mBottomSheetController = bottomSheetController;
         mSharedImageTilesCoordinator = sharedImageTilesCoordinator;
         mDataSharingTabManager = dataSharingTabManager;
         mComponentName = componentName;
@@ -639,6 +643,8 @@ public class TabGridDialogMediator
 
             mDialogController.prepareDialog();
             mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
+
+            requestShowBottomSheet();
         } else if (isVisible()) {
             mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
         }
@@ -682,6 +688,20 @@ public class TabGridDialogMediator
 
         if (currentTab != null) {
             filter.setTabGroupColor(currentTab.getRootId(), selectedColor);
+        }
+    }
+
+    private void requestShowBottomSheet() {
+        if (mTransitiveSharedGroupObserver != null) {
+            @Nullable
+            String collaborationId =
+                    mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get();
+            if (TabShareUtils.isCollaborationIdValid(collaborationId)) {
+                TabGroupShareNoticeBottomSheetCoordinator bottomSheetCoordinator =
+                        new TabGroupShareNoticeBottomSheetCoordinator(
+                                mBottomSheetController, mActivity, mOriginalProfile);
+                bottomSheetCoordinator.requestShowContent();
+            }
         }
     }
 
