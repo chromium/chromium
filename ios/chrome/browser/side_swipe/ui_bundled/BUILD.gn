@@ -6,6 +6,7 @@ source_set("ui_bundled") {
   sources = [
     "card_side_swipe_view.h",
     "card_side_swipe_view.mm",
+    "card_swipe_view_delegate.h",
     "horizontal_pan_gesture_handler.h",
     "side_swipe_constants.h",
     "side_swipe_consumer.h",
@@ -20,6 +21,7 @@ source_set("ui_bundled") {
     "side_swipe_navigation_view.mm",
     "side_swipe_snapshot_navigation_view.h",
     "side_swipe_snapshot_navigation_view.mm",
+    "side_swipe_tab_delegate.h",
     "side_swipe_ui_controller+Testing.h",
     "side_swipe_ui_controller.h",
     "side_swipe_ui_controller.mm",

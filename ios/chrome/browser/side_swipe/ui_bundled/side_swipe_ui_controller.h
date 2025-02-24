@@ -10,12 +10,18 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_constants.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_consumer.h"
 
+@protocol CardSwipeViewDelegate;
 class FullscreenController;
 @class LayoutGuideCenter;
-@protocol SideSwipeNavigationDelegate;
-@protocol SideSwipeUIControllerDelegate;
+@protocol SideSwipeInteracting;
 @protocol SideSwipeMutator;
+@protocol SideSwipeTabDelegate;
+@protocol SideSwipeNavigationDelegate;
 @protocol SideSwipeToolbarInteracting;
+@protocol SideSwipeToolbarSnapshotProviding;
+@protocol SideSwipeUIControllerDelegate;
+@protocol TabStripHighlighting;
+class WebStateList;
 
 // Controls how an edge gesture is processed, either as tab change or a page
 // change.  For tab changes two full screen CardSideSwipeView views are dragged
@@ -23,7 +29,10 @@ class FullscreenController;
 // screen and a UIView<HorizontalPanGestureHandler> is shown in the remaining
 // space.
 @interface SideSwipeUIController
-    : NSObject <UIGestureRecognizerDelegate, SideSwipeConsumer>
+    : NSObject <SideSwipeConsumer, UIGestureRecognizerDelegate>
+
+// Whether or not a side swipe is currently being performed.
+@property(nonatomic, assign) BOOL inSwipe;
 
 // The view controller's delegate
 @property(nonatomic, weak) id<SideSwipeUIControllerDelegate>
@@ -35,6 +44,9 @@ class FullscreenController;
 // The navigation delegate.
 @property(nonatomic, weak) id<SideSwipeNavigationDelegate> navigationDelegate;
 
+// The tabs delegate.
+@property(nonatomic, weak) id<SideSwipeTabDelegate> tabsDelegate;
+
 // The layout guide center to use to reference the contextual panel.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
@@ -42,10 +54,31 @@ class FullscreenController;
 @property(nonatomic, weak) id<SideSwipeToolbarInteracting>
     toolbarInteractionHandler;
 
+// Delegate for tab strip highlighting.
+@property(nonatomic, weak) id<TabStripHighlighting> tabStripDelegate;
+
+// Snapshot provider for top and bottom toolbars.
+@property(nonatomic, weak) id<SideSwipeToolbarSnapshotProviding>
+    toolbarSnapshotProvider;
+
+// The card swipe delegate.
+@property(nonatomic, weak) id<CardSwipeViewDelegate> cardSwipeViewDelegate;
+
 @property(nonatomic, assign) FullscreenController* fullscreenController;
+
+// Initializer.
+- (instancetype)initWithFullscreenController:
+                    (FullscreenController*)fullscreenController
+                                webStateList:(WebStateList*)webStateList;
+
+// Disconnects the view controller.
+- (void)disconnect;
 
 // Set up swipe gesture recognizers.
 - (void)addHorizontalGesturesToView:(UIView*)view;
+
+// Stops any active side swipe animation.
+- (void)stopSideSwipeAnimation;
 
 // Enable or disable the side swipe gesture recognizer.
 - (void)setEnabled:(BOOL)enabled;
@@ -53,6 +86,9 @@ class FullscreenController;
 // Performs an animation that simulates a swipe with `swipeType` in `direction`.
 - (void)animateSwipe:(SwipeType)swipeType
          inDirection:(UISwipeGestureRecognizerDirection)direction;
+
+// Whether or not a side swipe is in progress.
+- (BOOL)isSideSwipeInProgress;
 
 // Prepares the view for a slide-in overlay navigation transition in the
 // specified direction.

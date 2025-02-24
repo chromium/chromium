@@ -7,7 +7,6 @@
 #import <WebKit/WebKit.h>
 
 #import "base/i18n/rtl.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -84,15 +83,9 @@ class SideSwipeMediatorTest : public PlatformTest {
 
     browser_->GetWebStateList()->InsertWebState(std::move(original_web_state));
 
-    FullscreenController* fullscreen_controller =
-        FullscreenController::FromBrowser(browser_.get());
     side_swipe_mediator_ = [[SideSwipeMediator alloc]
-        initWithFullscreenController:fullscreen_controller
-                        webStateList:browser_->GetWebStateList()];
+        initWithWebStateList:browser_->GetWebStateList()];
 
-    view_ = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 240)];
-
-    [side_swipe_mediator_ addHorizontalGesturesToView:view_];
     fake_swipe_ui_controller_ = [[FakeSideSwipeUIController alloc] init];
     side_swipe_mediator_.consumer = fake_swipe_ui_controller_;
   }
