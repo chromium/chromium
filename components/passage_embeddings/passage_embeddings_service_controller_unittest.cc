@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/passage_embeddings/passage_embeddings_service_controller.h"
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -13,7 +15,6 @@
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
-#include "components/passage_embeddings/passage_embeddings_service_controller.h"
 #include "components/passage_embeddings/passage_embeddings_test_util.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -159,7 +160,7 @@ class FakeEmbedder : public TestEmbedder, public EmbedderMetadataObserver {
 
 }  // namespace
 
-class MlEmbedderTest : public testing::Test {
+class PassageEmbeddingsServiceControllerTest : public testing::Test {
  public:
   void SetUp() override {
     service_controller_ =
@@ -188,7 +189,7 @@ class MlEmbedderTest : public testing::Test {
   std::unique_ptr<FakePassageEmbeddingsServiceController> service_controller_;
 };
 
-TEST_F(MlEmbedderTest, ReceivesValidModelInfo) {
+TEST_F(PassageEmbeddingsServiceControllerTest, ReceivesValidModelInfo) {
   EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(
       *GetBuilderWithValidModelInfo().Build()));
   auto metadata = embedder_metadata_future()->Take();
@@ -201,7 +202,7 @@ TEST_F(MlEmbedderTest, ReceivesValidModelInfo) {
                                        EmbeddingsModelInfoStatus::kValid, 1);
 }
 
-TEST_F(MlEmbedderTest, ReceivesEmptyModelInfo) {
+TEST_F(PassageEmbeddingsServiceControllerTest, ReceivesEmptyModelInfo) {
   EXPECT_FALSE(service_controller_->MaybeUpdateModelInfo({}));
   EXPECT_FALSE(embedder_metadata_future()->IsReady());
 
@@ -210,7 +211,8 @@ TEST_F(MlEmbedderTest, ReceivesEmptyModelInfo) {
                                        EmbeddingsModelInfoStatus::kEmpty, 1);
 }
 
-TEST_F(MlEmbedderTest, ReceivesModelInfoWithInvalidModelMetadata) {
+TEST_F(PassageEmbeddingsServiceControllerTest,
+       ReceivesModelInfoWithInvalidModelMetadata) {
   optimization_guide::proto::Any metadata_any;
   metadata_any.set_type_url("not a valid type url");
   metadata_any.set_value("not a valid serialized metadata");
@@ -226,7 +228,8 @@ TEST_F(MlEmbedderTest, ReceivesModelInfoWithInvalidModelMetadata) {
       kModelInfoMetricName, EmbeddingsModelInfoStatus::kInvalidMetadata, 1);
 }
 
-TEST_F(MlEmbedderTest, ReceivesModelInfoWithoutModelMetadata) {
+TEST_F(PassageEmbeddingsServiceControllerTest,
+       ReceivesModelInfoWithoutModelMetadata) {
   optimization_guide::TestModelInfoBuilder builder =
       GetBuilderWithValidModelInfo();
   builder.SetModelMetadata(std::nullopt);
@@ -239,7 +242,8 @@ TEST_F(MlEmbedderTest, ReceivesModelInfoWithoutModelMetadata) {
       kModelInfoMetricName, EmbeddingsModelInfoStatus::kNoMetadata, 1);
 }
 
-TEST_F(MlEmbedderTest, ReceivesModelInfoWithoutAdditionalFiles) {
+TEST_F(PassageEmbeddingsServiceControllerTest,
+       ReceivesModelInfoWithoutAdditionalFiles) {
   base::FilePath test_data_dir;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir);
   optimization_guide::TestModelInfoBuilder builder =
@@ -256,7 +260,7 @@ TEST_F(MlEmbedderTest, ReceivesModelInfoWithoutAdditionalFiles) {
       1);
 }
 
-TEST_F(MlEmbedderTest, ReceivesEmptyPassages) {
+TEST_F(PassageEmbeddingsServiceControllerTest, ReceivesEmptyPassages) {
   EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(
       *GetBuilderWithValidModelInfo().Build()));
 
@@ -270,7 +274,7 @@ TEST_F(MlEmbedderTest, ReceivesEmptyPassages) {
   EXPECT_TRUE(embeddings.empty());
 }
 
-TEST_F(MlEmbedderTest, ReturnsEmbeddings) {
+TEST_F(PassageEmbeddingsServiceControllerTest, ReturnsEmbeddings) {
   EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(
       *GetBuilderWithValidModelInfo().Build()));
 
@@ -286,7 +290,8 @@ TEST_F(MlEmbedderTest, ReturnsEmbeddings) {
   EXPECT_EQ(embeddings[1].Dimensions(), kEmbeddingsModelOutputSize);
 }
 
-TEST_F(MlEmbedderTest, ReturnsModelUnavailableErrorIfModelInfoNotValid) {
+TEST_F(PassageEmbeddingsServiceControllerTest,
+       ReturnsModelUnavailableErrorIfModelInfoNotValid) {
   optimization_guide::TestModelInfoBuilder builder =
       GetBuilderWithValidModelInfo();
   builder.SetModelMetadata(std::nullopt);
@@ -304,7 +309,7 @@ TEST_F(MlEmbedderTest, ReturnsModelUnavailableErrorIfModelInfoNotValid) {
   EXPECT_TRUE(embeddings.empty());
 }
 
-TEST_F(MlEmbedderTest, ReturnsExecutionFailure) {
+TEST_F(PassageEmbeddingsServiceControllerTest, ReturnsExecutionFailure) {
   EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(
       *GetBuilderWithValidModelInfo().Build()));
 
@@ -319,7 +324,7 @@ TEST_F(MlEmbedderTest, ReturnsExecutionFailure) {
   EXPECT_TRUE(embeddings.empty());
 }
 
-TEST_F(MlEmbedderTest, EmbedderRunningStatus) {
+TEST_F(PassageEmbeddingsServiceControllerTest, EmbedderRunningStatus) {
   EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(
       *GetBuilderWithValidModelInfo().Build()));
   {
