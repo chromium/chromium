@@ -94,6 +94,13 @@ void MultiProfileSignOutForProfile(
     signin_metrics::ProfileSignout signout_source,
     base::OnceClosure signout_completion_closure);
 
+// Returns whether the sign-in fullscreen promo migration is done.
+bool IsFullscreenSigninPromoManagerMigrationDone();
+
+// Log to UserDefaults when the sign-in fullscreen promo impressions migration
+// is done.
+void LogFullscreenSigninPromoManagerMigrationDone();
+
 }  // namespace signin
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_SIGNIN_UTILS_H_

@@ -488,4 +488,14 @@ void MultiProfileSignOutForProfile(
   }
 }
 
+bool IsFullscreenSigninPromoManagerMigrationDone() {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  return [defaults boolForKey:kFullscreenSigninPromoManagerMigrationDone];
+}
+
+void LogFullscreenSigninPromoManagerMigrationDone() {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setBool:YES forKey:kFullscreenSigninPromoManagerMigrationDone];
+}
+
 }  // namespace signin
