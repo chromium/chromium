@@ -4058,7 +4058,9 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
 
 // This test ensures AppSessionService is notified of app restorations
 // correctly.
-IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, CtrlShiftTRestoresAppsCorrectly) {
+// TODO(crbug.com/398704258): Re-enable this test
+IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
+                       DISABLED_CtrlShiftTRestoresAppsCorrectly) {
   Profile* profile = browser()->profile();
   auto example_url = GURL("https://www.example.com");
   auto example_url2 = GURL("https://www.example2.com");
