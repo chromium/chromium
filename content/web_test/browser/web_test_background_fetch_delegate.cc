@@ -22,6 +22,7 @@
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/download/public/background_service/features.h"
+#include "components/download/public/background_service/url_loader_factory_getter.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/keyed_service/core/simple_key_map.h"
 #include "content/public/browser/background_fetch_description.h"
@@ -58,6 +59,30 @@ class TestBlobContextGetterFactory : public download::BlobContextGetterFactory {
       download::BlobContextGetterCallback callback) override {
     auto blob_context_getter = browser_context_->GetBlobStorageContext();
     std::move(callback).Run(blob_context_getter);
+  }
+
+  raw_ptr<content::BrowserContext> browser_context_;
+};
+
+// Provides URLLoaderFactory from a BrowserContext.
+class TestURLLoaderFactoryGetter : public download::URLLoaderFactoryGetter {
+ public:
+  TestURLLoaderFactoryGetter(content::BrowserContext* browser_context)
+      : browser_context_(browser_context) {}
+
+  TestURLLoaderFactoryGetter(const TestURLLoaderFactoryGetter&) = delete;
+  TestURLLoaderFactoryGetter& operator=(const TestURLLoaderFactoryGetter&) =
+      delete;
+
+  ~TestURLLoaderFactoryGetter() override = default;
+
+ private:
+  // download::URLLoaderFactoryGetter implementation.
+  void RetrieveURLLoaderFactory(
+      download::URLLoaderFactoryGetterCallback callback) override {
+    auto url_loader_factory = browser_context_->GetDefaultStoragePartition()
+                                  ->GetURLLoaderFactoryForBrowserProcess();
+    std::move(callback).Run(url_loader_factory);
   }
 
   raw_ptr<content::BrowserContext> browser_context_;
@@ -273,16 +298,14 @@ void WebTestBackgroundFetchDelegate::CreateDownloadJob(
       base::test::ScopedFeatureList download_service_configuration;
       download_service_configuration.InitAndEnableFeatureWithParameters(
           download::kDownloadServiceFeature, {{"start_up_delay_ms", "0"}});
-      auto* url_loader_factory = browser_context_->GetDefaultStoragePartition()
-                                     ->GetURLLoaderFactoryForBrowserProcess()
-                                     .get();
       SimpleFactoryKey* simple_key =
           SimpleKeyMap::GetInstance()->GetForBrowserContext(browser_context_);
       download_service_ = download::BuildInMemoryDownloadService(
           simple_key, std::move(clients), GetNetworkConnectionTracker(),
           base::FilePath(),
           std::make_unique<TestBlobContextGetterFactory>(browser_context_),
-          GetIOThreadTaskRunner({}), url_loader_factory);
+          GetIOThreadTaskRunner({}),
+          std::make_unique<TestURLLoaderFactoryGetter>(browser_context_));
     }
   }
 }
