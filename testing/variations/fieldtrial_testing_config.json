@@ -2314,6 +2314,26 @@
             ]
         }
     ],
+    "AutofillIncludeSelectOptionsInCrowdsourcing": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "ios",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillIncludeSelectOptionsInCrowdsourcing"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillIncludeUrlInCrowdsourcing": [
         {
             "platforms": [

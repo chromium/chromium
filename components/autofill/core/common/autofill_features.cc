@@ -301,6 +301,13 @@ BASE_FEATURE(kAutofillIncludeMaxLengthInCrowdsourcing,
              "AutofillIncludeMaxLengthInCrowdsourcing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, we include a <select>'s first, second, and last <option> in
+// crowdsourcing votes.
+// TODO(crbug.com/393999140): Clean up when launched.
+BASE_FEATURE(kAutofillIncludeSelectOptionsInCrowdsourcing,
+             "AutofillIncludeSelectOptionsInCrowdsourcing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, we include a `FormData`'s URL in crowdsourcing votes.
 // TODO(crbug.com/385043924): Clean up when launched.
 BASE_FEATURE(kAutofillIncludeUrlInCrowdsourcing,
