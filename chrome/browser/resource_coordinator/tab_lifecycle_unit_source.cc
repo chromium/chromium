@@ -131,8 +131,8 @@ void TabLifecycleUnitSource::Start() {
   // TODO(sebmarchand): Remove the "IsAvailable" check, or merge the TM into the
   // PM. The TM and PM must always exist together.
   if (performance_manager::PerformanceManager::IsAvailable()) {
-    performance_manager::PerformanceManager::PassToGraph(
-        FROM_HERE, std::make_unique<TabLifecycleStateObserver>());
+    performance_manager::PerformanceManager::GetGraph()->PassToGraph(
+        std::make_unique<TabLifecycleStateObserver>());
   }
 }
 

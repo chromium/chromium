@@ -140,6 +140,10 @@ extern NSString* const kSigninPromoViewDisplayCountKey;
 // TODO(crbug.com/40831586): Need to merge with kSigninPromoViewDisplayCountKey.
 // Exposed for testing.
 extern NSString* const kDisplayedSSORecallPromoCountKey;
+// Key in NSUserDefaults containing a boolean indicating whether the sign-in
+// fullscreen promo migration to the promo manager has been completed.
+// TODO(crbug.com/396111171): Post migration clean up.
+extern NSString* const kFullscreenSigninPromoManagerMigrationDone;
 // Name of the UMA SSO Recall histogram.
 extern const char* const kUMASSORecallPromoAction;
 // Name of the histogram recording how many accounts were available on the

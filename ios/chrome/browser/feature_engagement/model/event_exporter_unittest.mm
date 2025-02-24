@@ -4,14 +4,25 @@
 
 #import "ios/chrome/browser/feature_engagement/model/event_exporter.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feature_engagement/test/test_tracker.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -31,10 +42,21 @@ class EventExporterTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
+    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
+    account_manager_service_ =
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     ClearDefaultBrowserPromoData();
+    ClearSigninInteractions();
   }
   void TearDown() override {
     ClearDefaultBrowserPromoData();
+    ClearSigninInteractions();
     PlatformTest::TearDown();
   }
 
@@ -56,6 +78,12 @@ class EventExporterTest : public PlatformTest {
           base::RunLoop().RunUntilIdle();
           return callback_called;
         }));
+  }
+
+  void ClearSigninInteractions() {
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    [defaults removeObjectForKey:kSigninPromoViewDisplayCountKey];
+    [defaults removeObjectForKey:kFullscreenSigninPromoManagerMigrationDone];
   }
 
   int GetExportEventsCount() { return export_events_.size(); }
@@ -87,6 +115,9 @@ class EventExporterTest : public PlatformTest {
   std::unique_ptr<feature_engagement::Tracker> tracker_;
   std::vector<feature_engagement::TrackerEventExporter::EventData>
       export_events_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<ChromeAccountManagerService> account_manager_service_;
 };
 
 TEST_F(EventExporterTest, TestFRETimestampMigration) {
@@ -432,4 +463,31 @@ TEST_F(EventExporterTest, TestNonModalMigrationInteractionConditionNotMet) {
 
   EXPECT_FALSE(tracker_->WouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature));
+}
+
+TEST_F(EventExporterTest, TestSigninFullscreenPromoImpressionsMigration) {
+  // No events to export.
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 0);
+
+  // Check when there is 2 sign-in fullscreen promo, it should create 2 event to
+  // export.
+  ClearSigninInteractions();
+
+  const base::Version version_1_0("1.0");
+  FakeSystemIdentity* fake_identity1 = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentityManager::FromSystemIdentityManager(
+      GetApplicationContext()->GetSystemIdentityManager())
+      ->AddIdentity(fake_identity1);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
+  signin::RecordUpgradePromoSigninStarted(
+      identity_manager_, account_manager_service_, version_1_0);
+
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 2);
+
+  // Check that exporting second time will not have any events.
+  RequestExportEventsAndVerifyCallback();
+  EXPECT_EQ(GetExportEventsCount(), 0);
 }

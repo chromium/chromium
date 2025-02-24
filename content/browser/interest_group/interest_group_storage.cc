@@ -3141,174 +3141,167 @@ bool UpgradeDB(sql::Database& db,
   // Whether to vacuum the database after the upgrade. The vacuum must happen
   // after the transaction is committed.
   bool vacuum_db_post_upgrade = false;
-  {
-    sql::Transaction transaction(&db);
-    if (!transaction.Begin()) {
-      return false;
-    }
-    switch (db_version) {
-      case 6:
-        if (!UpgradeV6SchemaToV7(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 7:
-        if (!UpgradeV7SchemaToV8(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 8:
-        if (!UpgradeV8SchemaToV9(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 9:
-        if (!UpgradeV9SchemaToV10(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 10:
-        if (!UpgradeV10SchemaToV11(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 11:
-        if (!UpgradeV11SchemaToV12(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 12:
-        if (!UpgradeV12SchemaToV13(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 13:
-        if (!UpgradeV13SchemaToV14(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 14:
-        if (!UpgradeV14SchemaToV15(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 15:
-        if (!UpgradeV15SchemaToV16(db, meta_table, pass_key)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 16:
-        if (!UpgradeV16SchemaToV17(db, meta_table, pass_key)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 17:
-        if (!UpgradeV17SchemaToV18(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 18:
-        if (!UpgradeV18SchemaToV19(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 19:
-        if (!UpgradeV19SchemaToV20(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 20:
-        if (!UpgradeV20SchemaToV21(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 21:
-        if (!UpgradeV21SchemaToV22(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 22:
-        if (!UpgradeV22SchemaToV23(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 23:
-        if (!UpgradeV23SchemaToV24(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 24:
-        if (!UpgradeV24SchemaToV25(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 25:
-        vacuum_db_post_upgrade = true;
-        [[fallthrough]];
-      case 26:
-        vacuum_db_post_upgrade = true;
-        if (!UpgradeV26SchemaToV27(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 27:
-        if (!UpgradeV27SchemaToV28(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 28:
-        // v29 adds a new field in the IG.ads structure, and so doesn't require
-        // any changes to the InterestGroup table. Existing data is
-        // forwards-compatible because `FromInterestGroupAdValue` correctly
-        // handles the lack of a value for
-        // `selectable_buyer_and_seller_reporting_ids`.
-        [[fallthrough]];
-      case 29:
-        vacuum_db_post_upgrade = true;
-        if (!UpgradeV29SchemaToV30(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 30:
-        // Conversion is a no-op, just bookkeeping for a proto change.
-        [[fallthrough]];
-      case 31:
-        if (!UpgradeV31SchemaToV32(db, meta_table)) {
-          return false;
-        }
-        [[fallthrough]];
-      case 32:
-        if (!UpgradeV32SchemaToV33(db, meta_table)) {
-          return false;
-        }
-        if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
-          return false;
-        }
-    }
-    bool committed = transaction.Commit();
-    if (!committed) {
-      return false;
-    }
-    if (vacuum_db_post_upgrade) {
-      const bool vacuum_result = VacuumDB(db);
-      if (vacuum_result) {
-        base::UmaHistogramEnumeration(
-            "Storage.InterestGroup.VacuumResult",
-            InterestGroupStorageVacuumResult::kSucceeded);
-      } else {
-        DLOG(ERROR) << "Failed to vacuum: " << db.GetErrorMessage();
-        base::UmaHistogramEnumeration(
-            "Storage.InterestGroup.VacuumResult",
-            InterestGroupStorageVacuumResult::kFailed);
+  sql::Transaction transaction(&db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+  switch (db_version) {
+    case 6:
+      if (!UpgradeV6SchemaToV7(db, meta_table)) {
+        return false;
       }
+      [[fallthrough]];
+    case 7:
+      if (!UpgradeV7SchemaToV8(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 8:
+      if (!UpgradeV8SchemaToV9(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 9:
+      if (!UpgradeV9SchemaToV10(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 10:
+      if (!UpgradeV10SchemaToV11(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 11:
+      if (!UpgradeV11SchemaToV12(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 12:
+      if (!UpgradeV12SchemaToV13(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 13:
+      if (!UpgradeV13SchemaToV14(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 14:
+      if (!UpgradeV14SchemaToV15(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 15:
+      if (!UpgradeV15SchemaToV16(db, meta_table, pass_key)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 16:
+      if (!UpgradeV16SchemaToV17(db, meta_table, pass_key)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 17:
+      if (!UpgradeV17SchemaToV18(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 18:
+      if (!UpgradeV18SchemaToV19(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 19:
+      if (!UpgradeV19SchemaToV20(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 20:
+      if (!UpgradeV20SchemaToV21(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 21:
+      if (!UpgradeV21SchemaToV22(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 22:
+      if (!UpgradeV22SchemaToV23(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 23:
+      if (!UpgradeV23SchemaToV24(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 24:
+      if (!UpgradeV24SchemaToV25(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 25:
+      vacuum_db_post_upgrade = true;
+      [[fallthrough]];
+    case 26:
+      vacuum_db_post_upgrade = true;
+      if (!UpgradeV26SchemaToV27(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 27:
+      if (!UpgradeV27SchemaToV28(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 28:
+      // v29 adds a new field in the IG.ads structure, and so doesn't require
+      // any changes to the InterestGroup table. Existing data is
+      // forwards-compatible because `FromInterestGroupAdValue` correctly
+      // handles the lack of a value for
+      // `selectable_buyer_and_seller_reporting_ids`.
+      [[fallthrough]];
+    case 29:
+      vacuum_db_post_upgrade = true;
+      if (!UpgradeV29SchemaToV30(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 30:
+      // Conversion is a no-op, just bookkeeping for a proto change.
+      [[fallthrough]];
+    case 31:
+      if (!UpgradeV31SchemaToV32(db, meta_table)) {
+        return false;
+      }
+      [[fallthrough]];
+    case 32:
+      if (!UpgradeV32SchemaToV33(db, meta_table)) {
+        return false;
+      }
+      if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
+        return false;
+      }
+  }
+  bool committed = transaction.Commit();
+  if (!committed) {
+    return false;
+  }
+  if (vacuum_db_post_upgrade) {
+    const bool vacuum_result = VacuumDB(db);
+    if (vacuum_result) {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.VacuumResult",
+          InterestGroupStorageVacuumResult::kSucceeded);
+    } else {
+      DLOG(ERROR) << "Failed to vacuum: " << db.GetErrorMessage();
+      base::UmaHistogramEnumeration("Storage.InterestGroup.VacuumResult",
+                                    InterestGroupStorageVacuumResult::kFailed);
     }
-
-    return true;
   }
 
-  // Only versions 6 up to the current version should have passed
-  // RazeIfIncompatible.
-  NOTREACHED();
+  return true;
 }
 
 bool RemoveJoinHistory(sql::Database& db,

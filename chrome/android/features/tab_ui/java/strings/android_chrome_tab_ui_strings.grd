@@ -725,6 +725,45 @@
           other {Created <ph name="NUM_YEARS_MANY">%d<ex>2</ex></ph> years ago}
         }
       </message>
+      <message name="IDS_TAB_GROUPS_UPDATED_AGO_NOW" desc="A subtitle on a row for a tab group. Explains the group was updated less than a minute ago.">
+        Updated just now
+      </message>
+      <message name="IDS_TAB_GROUPS_UPDATED_AGO_MINUTES" desc="A subtitle on a row for a tab group. Explains how many minutes ago the group was updated.">
+        {NUM_MINS, plural,
+          =1 {Updated <ph name="NUM_MINS_ONE">%d<ex>1</ex></ph> minute ago}
+          other {Updated <ph name="NUM_MINS_MANY">%d<ex>2</ex></ph> minutes ago}
+        }
+      </message>
+      <message name="IDS_TAB_GROUPS_UPDATED_AGO_HOURS" desc="A subtitle on a row for a tab group. Explains how many hours ago the group was updated.">
+        {NUM_HOURS, plural,
+          =1 {Updated <ph name="NUM_HOURS_ONE">%d<ex>1</ex></ph> hour ago}
+          other {Updated <ph name="NUM_HOURS_MANY">%d<ex>2</ex></ph> hours ago}
+        }
+      </message>
+      <message name="IDS_TAB_GROUPS_UPDATED_AGO_DAYS" desc="A subtitle on a row for a tab group. Explains how many days ago the group was updated.">
+        {NUM_DAYS, plural,
+          =1 {Updated <ph name="NUM_DAYS_ONE">%d<ex>1</ex></ph> day ago}
+          other {Updated <ph name="NUM_DAYS_MANY">%d<ex>2</ex></ph> days ago}
+        }
+      </message>
+      <message name="IDS_TAB_GROUPS_UPDATED_AGO_WEEKS" desc="A subtitle on a row for a tab group. Explains how many weeks ago the group was updated.">
+        {NUM_WEEKS, plural,
+          =1 {Updated <ph name="NUM_WEEKS_ONE">%d<ex>1</ex></ph> week ago}
+          other {Updated <ph name="NUM_WEEKS_MANY">%d<ex>2</ex></ph> weeks ago}
+        }
+      </message>
+      <message name="IDS_TAB_GROUPS_UPDATED_AGO_MONTHS" desc="A subtitle on a row for a tab group. Explains how many months ago the group was updated.">
+              {NUM_MONTHS, plural,
+                =1 {Updated <ph name="NUM_MONTHS_ONE">%d<ex>1</ex></ph> month ago}
+                other {Updated <ph name="NUM_MONTHS_MANY">%d<ex>2</ex></ph> months ago}
+              }
+            </message>
+      <message name="IDS_TAB_GROUPS_UPDATED_AGO_YEARS" desc="A subtitle on a row for a tab group. Explains how many years ago the group was updated.">
+        {NUM_MONTHS, plural,
+          =1 {Updated <ph name="NUM_YEARS_ONE">%d<ex>1</ex></ph> year ago}
+          other {Updated <ph name="NUM_YEARS_MANY">%d<ex>2</ex></ph> years ago}
+        }
+      </message>
       <message name="IDS_PLUS_HIDDEN_TAB_COUNT" desc="A string to show how many other tabs are contained in a tab group who's favicons are not shown. [CHAR_LIMIT=5]">
         +<ph name="HIDDEN_TABS_COUNT">%1$s<ex>3</ex></ph>
       </message>

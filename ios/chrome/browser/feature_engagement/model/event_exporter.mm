@@ -9,6 +9,9 @@
 #import "base/apple/foundation_util.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
 
 namespace {
@@ -76,6 +79,20 @@ void EventExporter::ExportEvents(ExportEventsCallback callback) {
       }
     }
     LogNonModalPromoMigrationDone();
+  }
+
+  // Migrate the sign-in fullscreen promo display events.
+  // TODO(crbug.com/396111171): Post migration clean up.
+  if (IsFullscreenSigninPromoManagerMigrationEnabled() &&
+      !signin::IsFullscreenSigninPromoManagerMigrationDone()) {
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    NSInteger count = [defaults integerForKey:kSigninPromoViewDisplayCountKey];
+    for (NSInteger i = 0; i < count; ++i) {
+      events_to_migrate.emplace_back(
+          feature_engagement::events::kIOSSigninFullscreenPromoTrigger,
+          DaysSinceTime(base::Time::Now()));
+    }
+    signin::LogFullscreenSigninPromoManagerMigrationDone();
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

@@ -28,7 +28,7 @@ public class TabGroupRowProperties {
     // First is the user title, second is the number of tabs.
     public static final ReadableObjectPropertyKey<Pair<String, Integer>> TITLE_DATA =
             new ReadableObjectPropertyKey<>();
-    public static final ReadableObjectPropertyKey<Long> CREATION_MILLIS =
+    public static final ReadableObjectPropertyKey<TabGroupTimeAgo> TIMESTAMP_EVENT =
             new ReadableObjectPropertyKey<>();
     public static final ReadableObjectPropertyKey<Runnable> OPEN_RUNNABLE =
             new ReadableObjectPropertyKey<>();
@@ -47,11 +47,11 @@ public class TabGroupRowProperties {
         DISPLAY_AS_SHARED,
         COLOR_INDEX,
         TITLE_DATA,
-        CREATION_MILLIS,
+        TIMESTAMP_EVENT,
         OPEN_RUNNABLE,
         DELETE_RUNNABLE,
         LEAVE_RUNNABLE,
         SHARED_IMAGE_TILES_VIEW,
-        DESTROYABLE
+        DESTROYABLE,
     };
 }

@@ -30,8 +30,8 @@ void EnterpriseMemoryLimitEvaluator::Start() {
               weak_ptr_factory_.GetWeakPtr()),
           base::SequencedTaskRunner::GetCurrentDefault());
   observer_ = observer.get();
-  performance_manager::PerformanceManager::PassToGraph(FROM_HERE,
-                                                       std::move(observer));
+  performance_manager::PerformanceManager::GetGraph()->PassToGraph(
+      std::move(observer));
 }
 
 std::unique_ptr<EnterpriseMemoryLimitEvaluator::GraphObserver>
@@ -53,16 +53,9 @@ void EnterpriseMemoryLimitEvaluator::Stop() {
   // Start by invalidating all the WeakPtrs that have been served, this will
   // invalidate the callback owned by the observer.
   weak_ptr_factory_.InvalidateWeakPtrs();
-  // It's safe to pass |observer_| as Unretained, it's merely used as a key.
-  performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindOnce(
-                     [](performance_manager::GraphOwned* observer,
-                        performance_manager::Graph* graph) {
-                       // This will destroy the observer since TakeFromGraph
-                       // returns a unique_ptr.
-                       graph->TakeFromGraph(observer);
-                     },
-                     base::Unretained(observer_)));
+
+  // This will destroy the observer since TakeFromGraph returns a unique_ptr.
+  performance_manager::PerformanceManager::GetGraph()->TakeFromGraph(observer_);
   observer_ = nullptr;
 }
 

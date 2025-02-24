@@ -447,5 +447,17 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyIframesWithPreflights) {
   TestPolicyMap(expected);
 }
 
+TEST(PrivateNetworkAccessUtilTest, DerivePolicyLocalNetworkAccess) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLocalNetworkAccessChecks);
+
+  std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
+  for (auto& entry : expected) {
+    entry.second =
+        entry.first.is_web_secure_context ? Policy::kAllow : Policy::kBlock;
+  }
+  TestPolicyMap(expected);
+}
+
 }  // namespace
 }  // namespace content

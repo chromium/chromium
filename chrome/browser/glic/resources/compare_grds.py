@@ -79,9 +79,10 @@ if __name__ == '__main__':
     a = ET.parse(args.lhs)
     b = ET.parse(args.rhs)
     result = compare(a.getroot(), b.getroot())
+    # Always delete the stamp to create with a new timestamp.
+    if os.path.exists(args.stamp):
+        os.remove(args.stamp)
     if result != 0:
-        if os.path.exists(args.stamp):
-            os.remove(args.stamp)
         print(result)
     else:
         with open(args.stamp, 'a') as _:

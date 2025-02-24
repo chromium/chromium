@@ -357,9 +357,14 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
 
   __weak __typeof(self) weakSelf = self;
   [UIView animateWithDuration:kBannerPromoAnimationDuration.InSecondsF()
-                   animations:^{
-                     [weakSelf showBannerPromoAnimationBlock];
-                   }];
+      animations:^{
+        [weakSelf showBannerPromoAnimationBlock];
+      }
+      completion:^(BOOL success) {
+        if (success) {
+          [weakSelf showBannerPromoCompletionBlock];
+        }
+      }];
 }
 
 // Helper method to actually do the animation to show the banner promo.
@@ -367,6 +372,11 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   [self.view showBannerPromo];
   [self.toolbarHeightDelegate toolbarsHeightChanged];
   [self.view.superview layoutIfNeeded];
+}
+
+- (void)showBannerPromoCompletionBlock {
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  self.view.bannerPromo);
 }
 
 - (void)hideBannerPromo {

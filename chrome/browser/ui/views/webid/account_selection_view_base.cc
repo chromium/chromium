@@ -220,6 +220,59 @@ gfx::ImageSkia CreateCircleCroppedImage(const gfx::ImageSkia& original_image,
       image_size);
 }
 
+// Returns an image consisting of `base_image` with `badge_image` being badged
+// towards its bottom right corner. `badge_offset` is used to determine how much
+// bigger the badged image should be with respect to the base image. A
+// transparent circular circle is cut out from the bottom right corner of the
+// output image, of size `badge_radius`. The following are prerequisites for
+// invoking this method:
+// * `base_image` and `badge_image` need to be square images.
+// * `badge_radius` needs to be at least half of the width of `badge_image`.
+//    That is, the diameter of the transparent cutout needs to be larger than
+//    the size of `badge_image`.
+gfx::ImageSkia CreateBadgedImageSkia(const gfx::ImageSkia& base_image,
+                                     const gfx::ImageSkia& badge_image,
+                                     int badge_offset,
+                                     int badge_radius) {
+  // Get the underlying SkBitmaps.
+  const SkBitmap* base_bitmap = base_image.bitmap();
+  const SkBitmap* badge_bitmap = badge_image.bitmap();
+
+  DCHECK_EQ(base_image.width(), base_image.height());
+  DCHECK_EQ(badge_image.width(), badge_image.height());
+
+  int base_size = base_image.width();
+  int badge_size = badge_image.width();
+
+  SkBitmap result_bitmap;
+  int total_size = base_size + badge_offset;
+  result_bitmap.allocN32Pixels(total_size, total_size);
+
+  SkCanvas canvas(result_bitmap);
+  canvas.drawImage(base_bitmap->asImage(), 0, 0);
+
+  // Calculate badge position.
+  int badge_diameter = badge_radius * 2;
+  int badge_outer = badge_diameter - badge_size;
+  CHECK_GE(badge_outer, 0);
+  int last_position = total_size - 1;
+  SkScalar badge_start = last_position - badge_diameter + badge_outer / 2.0f;
+
+  // Create a paint for "punching out" the background.
+  SkPaint clear_paint;
+  clear_paint.setAntiAlias(true);
+  clear_paint.setBlendMode(SkBlendMode::kDstOut);
+
+  // Calculate badge center position. We'll use a center for the circle.
+  SkScalar badge_center = last_position - badge_radius;
+
+  // "Punch out" the area around the badge, then draw the badge.
+  canvas.drawCircle(badge_center, badge_center, badge_radius, clear_paint);
+  canvas.drawImage(badge_bitmap->asImage(), badge_start, badge_start);
+
+  return gfx::ImageSkia::CreateFrom1xBitmap(result_bitmap);
+}
+
 class AccountImageView : public views::ImageView {
   METADATA_HEADER(AccountImageView, views::ImageView)
 
@@ -232,7 +285,8 @@ class AccountImageView : public views::ImageView {
 
   // Check image and set it on AccountImageView.
   void SetAccountImage(const content::IdentityRequestAccount& account,
-                       int image_size) {
+                       int image_size,
+                       std::optional<gfx::ImageSkia> idp_image = std::nullopt) {
     if (account.decoded_picture.IsEmpty()) {
       std::u16string letter =
           AccountSelectionViewBase::GetInitialLetterAsUppercase(account.name);
@@ -246,6 +300,14 @@ class AccountImageView : public views::ImageView {
         avatar_ = gfx::ImageSkiaOperations::CreateTransparentImage(
             avatar_, kDisabledAvatarOpacity);
       }
+    }
+    if (idp_image && idp_image->width() == idp_image->height() &&
+        idp_image->width() >=
+            kLargeAvatarBadgeSize / kMaskableWebIconSafeZoneRatio) {
+      gfx::ImageSkia cropped_idp_image =
+          CreateCircleCroppedImage(*idp_image, kLargeAvatarBadgeSize);
+      avatar_ = CreateBadgedImageSkia(avatar_, cropped_idp_image,
+                                      kIdpBadgeOffset, kIdpBorderRadius);
     }
     SetImage(ui::ImageModel::FromImageSkia(avatar_));
   }
@@ -303,11 +365,9 @@ void AccountHoverButtonSecondaryView::SetDisabledOpacity() {
 
 BrandIconImageView::BrandIconImageView(int image_size,
                                        bool should_circle_crop,
-                                       std::optional<SkColor> background_color,
                                        base::RepeatingClosure on_image_set)
     : image_size_(image_size),
       should_circle_crop_(should_circle_crop),
-      background_color_(background_color),
       on_image_set_(std::move(on_image_set)) {}
 
 BrandIconImageView::~BrandIconImageView() = default;
@@ -318,33 +378,18 @@ void BrandIconImageView::CropAndSetImage(const gfx::Image& image) {
     return;
   }
   const gfx::ImageSkia& original_image = image.AsImageSkia();
-  cropped_idp_image_ =
+  gfx::ImageSkia cropped_idp_image =
       should_circle_crop_
           ? CreateCircleCroppedImage(original_image, image_size_)
           : gfx::ImageSkiaOperations::CreateResizedImage(
                 original_image, skia::ImageOperations::RESIZE_BEST,
                 gfx::Size(image_size_, image_size_));
-  SetImage(ui::ImageModel::FromImageSkia(
-      background_color_
-          ? gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-                kIdpBorderRadius, *background_color_, cropped_idp_image_)
-          : cropped_idp_image_));
+  SetImage(ui::ImageModel::FromImageSkia(cropped_idp_image));
 
   if (!on_image_set_) {
     return;
   }
   std::move(on_image_set_).Run();
-}
-
-void BrandIconImageView::OnBackgroundColorUpdated(
-    const SkColor& background_color) {
-  if (!background_color_) {
-    return;
-  }
-  background_color_ = background_color;
-  SetImage(ui::ImageModel::FromImageSkia(
-      gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-          kIdpBorderRadius, *background_color_, cropped_idp_image_)));
 }
 
 BEGIN_METADATA(BrandIconImageView)
@@ -358,7 +403,6 @@ AccountHoverButton::AccountHoverButton(
     std::unique_ptr<views::View> secondary_view,
     bool add_vertical_label_spacing,
     const std::u16string& footer,
-    BrandIconImageView* brand_icon_image_view,
     int button_position)
     : HoverButton(base::BindRepeating(&AccountHoverButton::OnPressed,
                                       base::Unretained(this)),
@@ -369,53 +413,7 @@ AccountHoverButton::AccountHoverButton(
                   add_vertical_label_spacing,
                   footer),
       callback_(std::move(callback)),
-      brand_icon_image_view_(brand_icon_image_view),
       button_position_(button_position) {}
-
-void AccountHoverButton::StateChanged(ButtonState old_state) {
-  // If there is an IDP icon within the account button, the IDP icon was
-  // created using a background circle with the color of the background. When
-  // the button state changes, the color of the background may change, so we
-  // recreate the background circle.
-  HoverButton::StateChanged(old_state);
-  if (brand_icon_image_view_) {
-    ui::ColorProvider* provider =
-        brand_icon_image_view_->parent()->GetColorProvider();
-    if (provider) {
-      ui::ColorId color_id;
-      switch (GetState()) {
-        case ButtonState::STATE_NORMAL: {
-          color_id = ui::kColorDialogBackground;
-          break;
-        }
-        case ButtonState::STATE_HOVERED:
-        case ButtonState::STATE_PRESSED: {
-          color_id = ui::kColorMenuButtonBackgroundSelected;
-          break;
-        }
-        case ButtonState::STATE_DISABLED:
-        default: {
-          color_id = ui::kColorDialogBackground;
-          return;
-        }
-      }
-      brand_icon_image_view_->OnBackgroundColorUpdated(
-          provider->GetColor(color_id));
-    }
-  }
-}
-
-void AccountHoverButton::OnThemeChanged() {
-  HoverButton::OnThemeChanged();
-  if (brand_icon_image_view_) {
-    ui::ColorProvider* provider =
-        brand_icon_image_view_->parent()->GetColorProvider();
-    if (provider) {
-      brand_icon_image_view_->OnBackgroundColorUpdated(
-          provider->GetColor(ui::kColorDialogBackground));
-    }
-  }
-}
 
 void AccountHoverButton::OnPressed(const ui::Event& event) {
   // We do not disable the button which has been clicked because otherwise,
@@ -531,53 +529,20 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     account_email_style = views::style::STYLE_DISABLED;
   }
 
-  std::unique_ptr<views::View> avatar_view;
   auto account_image_view = std::make_unique<AccountImageView>();
   account_image_view->SetImageSize({avatar_size, avatar_size});
   CHECK(clickable_position || !should_include_idp);
   const content::IdentityProviderData& idp_data = *account->identity_provider;
   if (clickable_position) {
-    BrandIconImageView* brand_icon_image_view_ptr = nullptr;
     if (should_include_idp) {
-      account_image_view->SetAccountImage(*account, avatar_size);
-      // Introduce a border so that the IDP image is a bit past the account
-      // image.
-      account_image_view->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-          /*top=*/0, /*left=*/0, /*bottom=*/kIdpBadgeOffset,
-          /*right=*/kIdpBadgeOffset)));
-      // Put `account_image_view` into a FillLayout `background_container`.
-      std::unique_ptr<views::View> background_container =
-          std::make_unique<views::View>();
-      background_container->SetUseDefaultFillLayout(true);
-      background_container->AddChildView(std::move(account_image_view));
-
-      // Put brand icon image view into a BoxLayout container.
-      std::unique_ptr<views::BoxLayoutView> icon_container =
-          std::make_unique<views::BoxLayoutView>();
-      icon_container->SetMainAxisAlignment(views::LayoutAlignment::kEnd);
-      icon_container->SetCrossAxisAlignment(views::LayoutAlignment::kEnd);
-
-      SkColor background_color =
-          owner_->web_contents()->GetColorProvider().GetColor(
-              ui::kColorDialogBackground);
-      std::unique_ptr<BrandIconImageView> brand_icon_image_view =
-          std::make_unique<BrandIconImageView>(
-              kLargeAvatarBadgeSize, /*should_circle_crop=*/true,
-              background_color);
-      brand_icon_image_view_ptr = brand_icon_image_view.get();
-      brand_icon_image_view_ptr->CropAndSetImage(
-          idp_data.idp_metadata.brand_decoded_icon);
-
-      icon_container->AddChildView(std::move(brand_icon_image_view));
-
-      // Put BoxLayout container into FillLayout container to stack the views.
-      // This stacks the IDP icon on top of the background image.
-      background_container->AddChildView(std::move(icon_container));
-
-      avatar_view = std::move(background_container);
+      account_image_view->SetImageSize(
+          {avatar_size + kIdpBadgeOffset, avatar_size + kIdpBadgeOffset});
+      account_image_view->SetAccountImage(
+          *account, avatar_size,
+          std::make_optional<gfx::ImageSkia>(
+              idp_data.idp_metadata.brand_decoded_icon.AsImageSkia()));
     } else {
       account_image_view->SetAccountImage(*account, avatar_size);
-      avatar_view = std::move(account_image_view);
     }
 
     std::u16string footer = u"";
@@ -595,7 +560,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     auto row = std::make_unique<AccountHoverButton>(
         base::BindRepeating(&FedCmAccountSelectionView::OnAccountSelected,
                             base::Unretained(owner_), account),
-        std::move(avatar_view),
+        std::move(account_image_view),
         /*title=*/account->is_filtered_out ? base::UTF8ToUTF16(account->email)
                                            : base::UTF8ToUTF16(account->name),
         /*subtitle=*/account->is_filtered_out
@@ -604,8 +569,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
         /*secondary_view=*/
         is_modal_dialog ? std::make_unique<AccountHoverButtonSecondaryView>()
                         : nullptr,
-        /*add_vertical_label_spacing=*/true, footer, brand_icon_image_view_ptr,
-        *clickable_position);
+        /*add_vertical_label_spacing=*/true, footer, *clickable_position);
     row->SetProperty(views::kElementIdentifierKey,
                      kFedCmAccountChooserDialogAccountElementId);
 

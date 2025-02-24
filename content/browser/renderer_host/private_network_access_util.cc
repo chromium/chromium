@@ -74,6 +74,13 @@ Policy DerivePrivateNetworkRequestPolicy(
 }
 
 Policy DerivePolicyForNonSecureContext(AddressSpace ip_address_space) {
+  if (base::FeatureList::IsEnabled(features::kLocalNetworkAccessChecks)) {
+    // TODO(crbug.com/395895368): Add new LNA specific policy
+    // TODO(crbug.com/395895368): figure out how this interacts with https
+    // upgrades.
+    return Policy::kBlock;
+  }
+
   switch (ip_address_space) {
     case AddressSpace::kUnknown:
       // Requests from the `unknown` address space are controlled separately
@@ -109,6 +116,11 @@ Policy DerivePolicyForNonSecureContext(AddressSpace ip_address_space) {
 }
 
 Policy DerivePolicyForSecureContext(AddressSpace ip_address_space) {
+  if (base::FeatureList::IsEnabled(features::kLocalNetworkAccessChecks)) {
+    // TODO(crbug.com/395895368): Add new V2 specific policy
+    return Policy::kAllow;
+  }
+
   // The goal is to eliminate occurrences of this case as much as possible,
   // before removing this special case.
   if (ip_address_space == AddressSpace::kUnknown) {
@@ -168,7 +180,11 @@ Policy DerivePrivateNetworkRequestPolicy(
                       ? DerivePolicyForSecureContext(ip_address_space)
                       : DerivePolicyForNonSecureContext(ip_address_space);
 
-  return ApplyFeatureStateToPolicy(feature_state, policy);
+  if (base::FeatureList::IsEnabled(features::kLocalNetworkAccessChecks)) {
+    return policy;
+  } else {
+    return ApplyFeatureStateToPolicy(feature_state, policy);
+  }
 }
 
 network::mojom::ClientSecurityStatePtr DeriveClientSecurityState(

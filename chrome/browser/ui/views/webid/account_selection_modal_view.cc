@@ -751,8 +751,7 @@ AccountSelectionModalView::CreateIdpIconView() {
   // Create IDP brand icon image view.
   std::unique_ptr<BrandIconImageView> idp_brand_icon_image_view =
       std::make_unique<BrandIconImageView>(
-          kModalIdpIconSize, /*should_circle_crop=*/true,
-          /*background_color=*/std::nullopt, on_image_set);
+          kModalIdpIconSize, /*should_circle_crop=*/true, on_image_set);
   idp_brand_icon_image_view->SetImageSize(
       gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
   idp_brand_icon_image_view->SetVisible(/*visible=*/false);
@@ -780,8 +779,7 @@ AccountSelectionModalView::CreateCombinedIconsView() {
   // Create IDP brand icon image view.
   std::unique_ptr<BrandIconImageView> idp_brand_icon_image_view =
       std::make_unique<BrandIconImageView>(
-          kModalCombinedIconSize, /*should_circle_crop=*/true,
-          /*background_color=*/std::nullopt, on_image_set);
+          kModalCombinedIconSize, /*should_circle_crop=*/true, on_image_set);
   combined_icons_idp_brand_icon_ = idp_brand_icon_image_view.get();
   idp_brand_icon_image_view->SetImageSize(
       gfx::Size(kModalCombinedIconSize, kModalCombinedIconSize));
@@ -796,8 +794,7 @@ AccountSelectionModalView::CreateCombinedIconsView() {
   // Create RP brand icon image view.
   std::unique_ptr<BrandIconImageView> rp_brand_icon_image_view =
       std::make_unique<BrandIconImageView>(
-          kModalCombinedIconSize, /*should_circle_crop=*/true,
-          /*background_color=*/std::nullopt, on_image_set);
+          kModalCombinedIconSize, /*should_circle_crop=*/true, on_image_set);
   combined_icons_rp_brand_icon_ = rp_brand_icon_image_view.get();
   rp_brand_icon_image_view->SetImageSize(
       gfx::Size(kModalCombinedIconSize, kModalCombinedIconSize));

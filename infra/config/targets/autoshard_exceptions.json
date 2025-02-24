@@ -127,18 +127,18 @@
         "android-oreo-x86-rel": {
             "content_browsertests": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": 102,
-                    "estimated_bot_hour_delta": 1.87,
-                    "prev_avg_pending_time_sec": 20.6,
+                    "avg_num_builds_per_peak_hour": 96,
+                    "estimated_bot_hour_delta": 56.91,
+                    "prev_avg_pending_time_sec": 18.7,
                     "prev_p50_pending_time_sec": 2.0,
-                    "prev_p90_pending_time_sec": 66.0,
-                    "prev_percentile_duration_minutes": 16.22,
-                    "prev_shard_count": 70,
-                    "simulated_max_shard_duration": 14.95,
-                    "test_overhead_min": 0.18333333333333332,
+                    "prev_p90_pending_time_sec": 63.0,
+                    "prev_percentile_duration_minutes": 16.57,
+                    "prev_shard_count": 76,
+                    "simulated_max_shard_duration": 14.88,
+                    "test_overhead_min": 3.2333333333333334,
                     "try_builder": "android-x86-rel"
                 },
-                "shards": 76
+                "shards": 87
             },
             "content_unittests": {
                 "debug": {
@@ -172,18 +172,18 @@
             },
             "webkit_unit_tests": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": 41,
-                    "estimated_bot_hour_delta": 1.12,
-                    "prev_avg_pending_time_sec": 32.9,
+                    "avg_num_builds_per_peak_hour": 96,
+                    "estimated_bot_hour_delta": -2.29,
+                    "prev_avg_pending_time_sec": 22.7,
                     "prev_p50_pending_time_sec": 1.0,
-                    "prev_p90_pending_time_sec": 120.0,
-                    "prev_percentile_duration_minutes": 16.04,
-                    "prev_shard_count": 6,
-                    "simulated_max_shard_duration": 13.98,
-                    "test_overhead_min": 1.6333333333333333,
+                    "prev_p90_pending_time_sec": 70.0,
+                    "prev_percentile_duration_minutes": 12.96,
+                    "prev_shard_count": 7,
+                    "simulated_max_shard_duration": 14.88,
+                    "test_overhead_min": 1.4333333333333333,
                     "try_builder": "android-x86-rel"
                 },
-                "shards": 7
+                "shards": 6
             },
             "webview_instrumentation_test_apk": {
                 "debug": {
@@ -472,18 +472,18 @@
             },
             "components_unittests": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": 84,
-                    "estimated_bot_hour_delta": 1.4,
-                    "prev_avg_pending_time_sec": 15.7,
+                    "avg_num_builds_per_peak_hour": 93,
+                    "estimated_bot_hour_delta": 1.71,
+                    "prev_avg_pending_time_sec": 20.9,
                     "prev_p50_pending_time_sec": 0.0,
-                    "prev_p90_pending_time_sec": 62.0,
-                    "prev_percentile_duration_minutes": 28.38,
-                    "prev_shard_count": 1,
-                    "simulated_max_shard_duration": 14.69,
-                    "test_overhead_min": 1.0,
+                    "prev_p90_pending_time_sec": 81.0,
+                    "prev_percentile_duration_minutes": 16.16,
+                    "prev_shard_count": 2,
+                    "simulated_max_shard_duration": 11.14,
+                    "test_overhead_min": 1.1,
                     "try_builder": "linux-rel"
                 },
-                "shards": 2
+                "shards": 3
             },
             "headless_shell_wpt_tests": {
                 "debug": {

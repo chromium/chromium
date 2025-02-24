@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CLUSTER_DATA;
@@ -50,6 +49,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -59,6 +59,8 @@ import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.time.Clock;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,7 +74,6 @@ public class TabGroupRowViewUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock TabGroupTimeAgoResolver mTimeAgoResolver;
     @Mock Runnable mRunnable;
     @Mock Drawable mDrawable;
     @Mock FaviconResolver mFaviconResolver;
@@ -109,7 +110,6 @@ public class TabGroupRowViewUnitTest {
         mSubtitleTextView = mTabGroupRowView.findViewById(R.id.tab_group_subtitle);
         mImageTilesContainer = mTabGroupRowView.findViewById(R.id.image_tiles_container);
         mListMenuButton = mTabGroupRowView.findViewById(R.id.more);
-        mTabGroupRowView.setTimeAgoResolverForTesting(mTimeAgoResolver);
 
         PropertyModelChangeProcessor.create(
                 mPropertyModel, mTabGroupRowView, TabGroupRowViewBinder::bind);
@@ -161,14 +161,24 @@ public class TabGroupRowViewUnitTest {
 
     @Test
     public void testSetCreationMillis() {
-        long creationMillis = 123L;
-        String timeAgo = "Created just now";
-        when(mTimeAgoResolver.resolveTimeAgoText(creationMillis)).thenReturn(timeAgo);
+        long creationMillis = Clock.system(ZoneId.systemDefault()).millis();
+        String timeAgoText = "Created just now";
 
-        remakeWithProperty(TabGroupRowProperties.CREATION_MILLIS, creationMillis);
+        TabGroupTimeAgo timeAgo = new TabGroupTimeAgo(creationMillis, TimestampEvent.CREATED);
+        remakeWithProperty(TabGroupRowProperties.TIMESTAMP_EVENT, timeAgo);
 
-        verify(mTimeAgoResolver).resolveTimeAgoText(creationMillis);
-        assertEquals(timeAgo, mSubtitleTextView.getText());
+        assertEquals(timeAgoText, mSubtitleTextView.getText());
+    }
+
+    @Test
+    public void testSetUpdateMillis() {
+        long creationMillis = Clock.system(ZoneId.systemDefault()).millis();
+        String timeAgoText = "Updated just now";
+
+        TabGroupTimeAgo timeAgo = new TabGroupTimeAgo(creationMillis, TimestampEvent.UPDATED);
+        remakeWithProperty(TabGroupRowProperties.TIMESTAMP_EVENT, timeAgo);
+
+        assertEquals(timeAgoText, mSubtitleTextView.getText());
     }
 
     @Test

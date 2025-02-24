@@ -92,7 +92,6 @@ class BrandIconImageView : public views::ImageView {
   BrandIconImageView(
       int image_size,
       bool should_circle_crop,
-      std::optional<SkColor> background_color = std::nullopt,
       base::RepeatingClosure on_image_set = base::DoNothing());
   BrandIconImageView(const BrandIconImageView&) = delete;
   BrandIconImageView& operator=(const BrandIconImageView&) = delete;
@@ -100,21 +99,9 @@ class BrandIconImageView : public views::ImageView {
 
   void CropAndSetImage(const gfx::Image& image);
 
-  // If this image uses a background circle, updates its color.
-  void OnBackgroundColorUpdated(const SkColor& background_color);
-
-  std::optional<SkColor> background_color_for_testing() const {
-    return background_color_;
-  }
-
  private:
   int image_size_;
   bool should_circle_crop_;
-  // The color of a background circle used to encapsulate the brand icon. Set
-  // when this object is used as a badge for an account icon. When set, this
-  // should be the background color of the dialog.
-  std::optional<SkColor> background_color_;
-  gfx::ImageSkia cropped_idp_image_;
   base::RepeatingClosure on_image_set_;
 
   base::WeakPtrFactory<BrandIconImageView> weak_ptr_factory_{this};
@@ -129,14 +116,11 @@ class AccountHoverButton : public HoverButton {
                      std::unique_ptr<views::View> secondary_view,
                      bool add_vertical_label_spacing,
                      const std::u16string& footer,
-                     BrandIconImageView* brand_icon_image_view,
                      int button_position);
   AccountHoverButton(const AccountHoverButton&) = delete;
   AccountHoverButton& operator=(const AccountHoverButton&) = delete;
   ~AccountHoverButton() override = default;
 
-  void StateChanged(ButtonState old_state) override;
-  void OnThemeChanged() override;
   void OnPressed(const ui::Event& event);
   bool HasBeenClicked();
 
@@ -150,8 +134,6 @@ class AccountHoverButton : public HoverButton {
 
  private:
   PressedCallback callback_;
-  // Owned by its views::BoxLayoutView container.
-  raw_ptr<BrandIconImageView> brand_icon_image_view_;
   // The order of this account button relative to other account buttons in
   // the dialog (e.g. 0 is the topmost account, 1 the one below it, etc.). Used
   // to record a metric when the button is clicked.

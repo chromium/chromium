@@ -78,7 +78,8 @@ TEST_F(ManagedProfileRequiredPageTest, UnknownManager) {
   base::Value::Dict load_time_data = test_page.GetLoadTimeDataForTesting();
   EXPECT_EQ(
       base::UTF8ToUTF16(*load_time_data.FindString("heading")),
-      l10n_util::GetStringUTF16(IDS_MANAGED_PROFILE_INTERSTITIAL_HEADING));
+      l10n_util::GetStringUTF16(
+          IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_TITLE));
 
   EXPECT_EQ(base::UTF8ToUTF16(*load_time_data.FindString("primaryParagraph")),
             l10n_util::GetStringFUTF16(
@@ -94,7 +95,8 @@ TEST_F(ManagedProfileRequiredPageTest, KnownManager) {
   base::Value::Dict load_time_data = test_page.GetLoadTimeDataForTesting();
   EXPECT_EQ(
       base::UTF8ToUTF16(*load_time_data.FindString("heading")),
-      l10n_util::GetStringUTF16(IDS_MANAGED_PROFILE_INTERSTITIAL_HEADING));
+      l10n_util::GetStringUTF16(
+          IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_TITLE));
 
   EXPECT_EQ(base::UTF8ToUTF16(*load_time_data.FindString("primaryParagraph")),
             l10n_util::GetStringFUTF16(

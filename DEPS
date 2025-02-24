@@ -284,7 +284,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'fdf194e36193ed76abe21153360fd502f05f105d',
+  'v8_revision': '0b690fda664f3dd483c6a5787a77c2fbe2de59d9',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -292,7 +292,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
-  'swiftshader_revision': '2407a54c9b2932e1e322dcfdd9f90d0879461eda',
+  'swiftshader_revision': 'c4a6f30bbe1feb48de836f5b2bbfb13b959163b7',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'dadaaf7144f3de7f05101c802f9acda6f5ba43e2',
+  'devtools_frontend_revision': '75fdad289e9a64ac670a0afa7b1b93d5c2e886d2',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1123,7 +1123,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + 'ac7d051ca08f8782e0b90cab06a92114ffdee8e1',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '8240d975f676b81bb39e936337f986a71547368a',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1452,7 +1452,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '4b210892ad798f755833d277385e4c863aabbb09',
+    '228c0c5ac3fadb8180304d231dec0b3a2e280569',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1917,7 +1917,7 @@ deps = {
   # Tools used when building Chrome for Chrome OS. This affects both the Simple
   # Chrome workflow, as well as the chromeos-chrome ebuild.
   'src/third_party/chromite': {
-      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + 'f220bbd3d92693db4a51c2d5e5d0575f231127e2',
+      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '3f64f8dbc0b42904e3bc14c3336c31343e75d2a7',
       'condition': 'checkout_chromeos',
   },
 

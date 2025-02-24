@@ -7,6 +7,7 @@
 #include <deque>
 #include <memory>
 #include <optional>
+#include <set>
 #include <vector>
 
 #include "base/containers/linked_list.h"
@@ -905,15 +906,19 @@ void HostResolverManager::Job::OnMdnsTaskComplete() {
   DCHECK(mdns_task_);
   // TODO(crbug.com/40577881): Consider adding MDNS-specific logging.
 
-  HostCache::Entry results = mdns_task_->GetResults();
+  std::set<std::unique_ptr<HostResolverInternalResult>> results =
+      mdns_task_->GetResults();
+  HostCache::Entry legacy_results(results, base::Time::Now(),
+                                  tick_clock_->NowTicks(),
+                                  HostCache::Entry::SOURCE_UNKNOWN);
 
-  if (ContainsIcannNameCollisionIp(results.ip_endpoints())) {
+  if (ContainsIcannNameCollisionIp(legacy_results.ip_endpoints())) {
     CompleteRequestsWithError(ERR_ICANN_NAME_COLLISION, TaskType::MDNS);
     return;
   }
   // MDNS uses a separate cache, so skip saving result to cache.
   // TODO(crbug.com/40611558): Consider merging caches.
-  CompleteRequestsWithoutCache(results, std::nullopt /* stale_info */,
+  CompleteRequestsWithoutCache(legacy_results, /*stale_info=*/std::nullopt,
                                TaskType::MDNS);
 }
 

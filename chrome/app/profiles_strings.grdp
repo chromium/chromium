@@ -632,17 +632,20 @@
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_LINK_DATA_CHECKBOX" desc="Label of the checkbox on the enterprise profile welcome screen that allows a user to link existing data to the new profile. The label informs the user that a profile will be created.">
       Add existing browsing data to managed profile
     </message>
-    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_TITLE" desc="Title of the dialog disclaiming information about the profile they are about to create.">
-      About this profile
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SCHOOL_TITLE" desc="Title of the dialog disclaiming information about the school profile they are about to create.">
+      About school profiles
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_WORK_TITLE" desc="Title of the dialog disclaiming information about the work profile they are about to create.">
+      About work profiles
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_OIDC_DISCLOSURE_TITLE" desc="Title of the dialog disclaiming information about the profile they are about to create.">
       Set up a new profile
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SUBTITLE" desc="Subtitle of the dialog disclaiming information about the profile they are about to create.">
-      This profile is managed by your organization, which can view some information, including
+      Your profile is managed by your organization, which can view some information, including
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_KNOWN_DOMAIN_SUBTITLE" desc="Subtitle of the dialog disclaiming information about the profile they are about to create.">
-      This profile is managed by <ph name="PROFILE_MANAGER">$1<ex>example.com</ex></ph>, which can view some information, including
+      Your profile is managed by <ph name="PROFILE_MANAGER">$1<ex>example.com</ex></ph>, which can view some information, including
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_INFORMATION_TITLE" desc="Title of a section disclaiming to the user what their organization can do with their profile information.">
       Profile information
@@ -651,7 +654,7 @@
       Device information
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_DEVICE_INFORMATION_DETAILS" desc="Paragraph section disclaiming to the user what their organization can do with their device information.">
-      To make sure this device can be used safely, your organization can see information about its operating system, browser, and settings, and what software is installed on the device.
+      To make sure this device can be used safely, your organization can see information about its operating system, browser, and settings, and what software is installed on the device
     </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_PROCESSING_SUBTITLE" desc="Subtitle of a section telling the user that a work profile is being created for them.">
       Setting up your profile ...
@@ -686,32 +689,47 @@
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_NO_SIGNIN_SUBTITLE" desc="Subtitle of a section telling the user that there was an error while creating their work profile.">
       Contact your administrator for more information
     </message>
-    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
+    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
       Sign in to get your passwords and more on all your devices
     </message>
+    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_SCHOOL_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile for school.">
+      Set up a school profile to save and use your passwords and more in your account
+    </message>
+    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_WORK_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile for work.">
+      Set up a work profile to save and use your passwords and more in your account
+    </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_WORK_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the work profile they will create or keep it separate.">
-      Keep existing browsing data separate from your work profile?
+      Do you want to create a new profile for work?
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_SCHOOL_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the school profile they will create or keep it separate.">
-      Keep existing browsing data separate from your school profile?
+      Do you want to create a new profile for school?
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_CONSUMER_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the new profile they will create or keep it separate.">
       Keep existing browsing data separate from this new profile?
     </message>
-    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
-      Yes, keep it separate (recommended)
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_SCHOOL_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
+      Yes, keep my data separate from school (recommended)
     </message>
-    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_NOT_RECOMMENDED" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
-      Yes, keep it separate
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_WORK_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
+      Yes, keep my data separate from work (recommended)
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_SCHOOL_NOT_RECOMMENDED" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
+      Yes, keep my data separate from school
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_WORK_NOT_RECOMMENDED" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
+      Yes, keep my data separate from work
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user separate their existing data from a newly created personal profile.">
-      Your existing browsing data will remain in the existing profile. This new profile will not contain any previous browsing data.
+      Data that is saved only on this device will remain in the existing profile
     </message>
-    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created work profile.">
-      No, move it into this new profile
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WORK_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created work profile.">
+      No, continue to work in this profile
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_SCHOOL_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created school profile.">
+      No, continue to use for school in this profile
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
-      This includes bookmarks, extensions and your browsing history of sites.
+      You currently have bookmarks, extensions, and your browsing history of sites. Your organization will be able to see and manage this data
     </message>
 
     <!-- Supervised user profile signin IPH -->

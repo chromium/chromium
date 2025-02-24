@@ -73,8 +73,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "internal/scheduling_embedder_unittest.cc",
-    "ml_embedder_unittest.cc",
     "passage_embedder_model_observer_unittest.cc",
+    "passage_embeddings_service_controller_unittest.cc",
   ]
 
   deps = [

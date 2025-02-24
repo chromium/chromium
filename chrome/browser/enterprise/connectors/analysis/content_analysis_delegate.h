@@ -35,6 +35,7 @@ namespace enterprise_connectors {
 
 class ContentAnalysisDialog;
 class FilesRequestHandler;
+class PagePrintRequestHandler;
 
 // A BinaryUploadService::Request implementation that gets the data to scan
 // from a string.  This class is public to allow testing.
@@ -284,7 +285,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   static void SetOnAckAllRequestsCallbackForTesting(
       OnAckAllRequestsCallback callback);
 
-  void SetPageWarningForTesting(ContentAnalysisResponse page_response);
+  void SetPageWarningForTesting();
 
   // ContentAnalysisInfo:
   const AnalysisSettings& settings() const override;
@@ -310,8 +311,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
                              ContentAnalysisResponse response);
   void ImageRequestCallback(safe_browsing::BinaryUploadService::Result result,
                             ContentAnalysisResponse response);
-  void PageRequestCallback(safe_browsing::BinaryUploadService::Result result,
-                           ContentAnalysisResponse response);
+  void PageRequestCallback(RequestHandlerResult result);
 
   // Callback called after all files are scanned by the FilesRequestHandler.
   void FilesRequestCallback(std::vector<RequestHandlerResult> results);
@@ -386,8 +386,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
   virtual void UploadImageForDeepScanning(
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
-  virtual void UploadPageForDeepScanning(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
 
   // Updates the tab modal dialog to show the scanning results. Returns false if
   // the UI was not enabled to indicate no action was taken. Virtual to override
@@ -414,10 +412,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   // Send an acknowledgement to the service provider of the final result
   // for the requests of this ContentAnalysisDelegate instance.
   void AckAllRequests();
-
-  void FinishLargeDataRequestEarly(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
-      safe_browsing::BinaryUploadService::Result result);
 
   // Returns the BinaryUploadService used to upload content for deep scanning.
   // Virtual to override in tests.
@@ -462,11 +456,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
 
   // Set to true if the printed page got a DLP warning verdict.
   bool page_warning_ = false;
-  ContentAnalysisResponse page_response_;
-
-  // Stores the scanned page's size since it moves from `data_` to be uploaded.
-  // TODO(crbug.com/40839522): Move to PageRequestHandler.
-  int64_t page_size_bytes_ = 0;
 
   // Set to true once the scan of text has completed.  If the scan request has
   // no text requiring deep scanning, this is set to true immediately.
@@ -509,19 +498,26 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   // Always nullptr for non-file content scanning.
   std::unique_ptr<FilesRequestHandler> files_request_handler_;
 
+  // Responsible for managing the scan of printed pages.
+  // Always nullptr for non-print content scanning.
+  std::unique_ptr<PagePrintRequestHandler> page_print_request_handler_;
+
   // A mapping of request tokens to ack final actions for all requests that make
   // up the user action represented by this ContentAnalysisDelegate.
   std::map<std::string, ContentAnalysisAcknowledgement::FinalAction>
       final_actions_;
 
-  // Results returned from files_request_handler_.
+  // Results returned from `files_request_handler_`.
   std::vector<RequestHandlerResult> files_request_results_;
 
-  // Result updated in StringRequestCallback().
+  // Result updated in `StringRequestCallback()`.
   RequestHandlerResult string_request_result_;
 
-  // Result updated in ImageRequestCallback().
+  // Result updated in `ImageRequestCallback()`.
   RequestHandlerResult image_request_result_;
+
+  // Result updated in `PageRequestCallback()`.
+  RequestHandlerResult page_print_request_result_;
 
   // Indicate that `callback_` is currently being called. This is almost always
   // false, but in some cases UI thread tasks can run while `callback_` is not

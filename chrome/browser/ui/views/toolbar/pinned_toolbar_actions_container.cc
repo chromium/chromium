@@ -142,7 +142,7 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
   // Initialize the pinned action buttons.
   action_view_controller_ = std::make_unique<views::ActionViewController>();
 
-  model_->MaybeMigrateChromeLabsPinnedState();
+  model_->MaybeMigrateExistingPinnedStates();
 
   UpdateViews();
 }

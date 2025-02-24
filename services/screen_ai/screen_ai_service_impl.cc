@@ -12,13 +12,16 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/compiler_specific.h"
+#include "base/cpu.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "components/crash/core/common/crash_key.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "services/screen_ai/proto/chrome_screen_ai.pb.h"
 #include "services/screen_ai/proto/main_content_extractor_proto_convertor.h"
@@ -99,6 +102,18 @@ ui::AXNodeID ComputeMainNode(
   ui::AXNode* main = front->GetLowestCommonAncestor(*back);
   return main->id();
 }
+
+#if !BUILDFLAG(USE_FAKE_SCREEN_AI)
+void SetCPUInstructionSetCrashKey() {
+#if defined(ARCH_CPU_X86_FAMILY)
+  base::CPU();
+  // Report cpu micro architecture in case of crash.
+  static crash_reporter::CrashKeyString<3> cpu_info("intel_micro_architecture");
+  cpu_info.Set(
+      base::StringPrintf("%i", base::CPU().GetIntelMicroArchitecture()));
+#endif
+}
+#endif
 
 }  // namespace
 
@@ -192,6 +207,9 @@ void ScreenAIService::LoadLibrary(const base::FilePath& library_path) {
   library_ = std::make_unique<ScreenAILibraryWrapperFake>();
 #else
   library_ = std::make_unique<ScreenAILibraryWrapperImpl>();
+
+  // TODO(crbug.com/381256355): Remove when the library is SSE3 compatible.
+  SetCPUInstructionSetCrashKey();
 #endif
 
   bool load_sucessful = library_->Load(library_path);

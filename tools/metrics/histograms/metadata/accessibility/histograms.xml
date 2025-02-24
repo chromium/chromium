@@ -2962,6 +2962,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.DeviceCompatible" enum="Boolean"
+    expires_after="2026-02-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records if ScreenAI library is compatible with the device. The metric is
+    recorded when component updater or DLC downloader check if the library
+    should be downloaded.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.DlcInstallResult"
     enum="DlcInstallResult" expires_after="2025-06-22">
   <owner>rhalavati@chromium.org</owner>
