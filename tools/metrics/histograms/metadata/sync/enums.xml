@@ -717,6 +717,7 @@ chromium-metrics-reviews@google.com.
       label="OfficeMoveConfirmationShownForCloudToDriveSyncable"/>
   <int value="100322"
       label="OfficeMoveConfirmationShownForCloudToOneDriveSyncable"/>
+  <int value="100323" label="PinnedCastMigrationComplete"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

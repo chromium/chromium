@@ -236,17 +236,21 @@ bool PinnedToolbarActionsModel::IsDefault() const {
   return action_are_default && home_is_default && forward_is_default;
 }
 
-void PinnedToolbarActionsModel::MaybeMigrateChromeLabsPinnedState() {
-  if (!features::IsToolbarPinningEnabled()) {
+void PinnedToolbarActionsModel::MaybeMigrateExistingPinnedStates() {
+  if (!features::IsToolbarPinningEnabled() || !CanUpdate()) {
     return;
   }
-  if (pref_service_->GetBoolean(prefs::kPinnedChromeLabsMigrationComplete)) {
-    return;
-  }
-
-  if (CanUpdate()) {
+  if (!pref_service_->GetBoolean(prefs::kPinnedChromeLabsMigrationComplete)) {
     UpdatePinnedState(kActionShowChromeLabs, true);
     pref_service_->SetBoolean(prefs::kPinnedChromeLabsMigrationComplete, true);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kPinnedCastButton) &&
+      !pref_service_->GetBoolean(prefs::kPinnedCastMigrationComplete)) {
+    bool previously_pinned =
+        pref_service_->GetBoolean(prefs::kShowCastIconInToolbar);
+    UpdatePinnedState(kActionRouteMedia, previously_pinned);
+    pref_service_->SetBoolean(prefs::kPinnedCastMigrationComplete, true);
   }
 }
 

@@ -385,6 +385,7 @@ enum {
   kOfficeMoveConfirmationShownForLocalToOneDriveSyncable = 100320,
   kOfficeMoveConfirmationShownForCloudToDriveSyncable = 100321,
   kOfficeMoveConfirmationShownForCloudToOneDriveSyncable = 100322,
+  kPinnedCastMigrationComplete = 100323,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -548,6 +549,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
     {prefs::kPinnedChromeLabsMigrationComplete,
      {syncable_prefs_ids::kPinnedChromeLabsMigrationComplete,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kPinnedCastMigrationComplete,
+     {syncable_prefs_ids::kPinnedCastMigrationComplete, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
