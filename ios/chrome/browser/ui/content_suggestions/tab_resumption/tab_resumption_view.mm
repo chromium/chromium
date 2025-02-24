@@ -191,9 +191,11 @@ void SetFallbackImageToImageView(UIImageView* image_view,
          setPriceDrop:_item.shopCardData.priceDrop->current_price
         previousPrice:_item.shopCardData.priceDrop->previous_price];
     [labelStackView addArrangedSubview:_priceNotificationsChip];
+    self.accessibilityLabel = _item.shopCardData.accessibilityString;
+  } else {
+    self.accessibilityLabel =
+        [accessibilityLabel componentsJoinedByString:@","];
   }
-
-  self.accessibilityLabel = [accessibilityLabel componentsJoinedByString:@","];
 
   [self addSubview:_containerStackView];
   AddSameConstraints(_containerStackView, self);
