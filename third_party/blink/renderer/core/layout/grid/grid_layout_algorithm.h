@@ -19,7 +19,7 @@ class ConstraintSpace;
 struct GridItemPlacementData;
 
 enum class GridItemContributionType;
-enum class SizingConstraint { kLayout, kMinContent, kMaxContent };
+enum class SizingConstraint;
 
 using GridItemDataPtrVector = Vector<GridItemData*, 16>;
 using GridSetPtrVector = Vector<GridSet*, 16>;

@@ -298,6 +298,20 @@ void GridTrackSizingAlgorithm::ComputeUsedTrackSizes(
   // If any track still has an infinite growth limit (i.e. it had no items
   // placed in it), set its growth limit to its base size before maximizing.
   track_collection->SetIndefiniteGrowthLimitsToBaseSize();
+
+  // 3. If the free space is positive, distribute it equally to the base sizes
+  // of all tracks, freezing tracks as they reach their growth limits (and
+  // continuing to grow the unfrozen tracks as needed).
+  MaximizeTracks(track_collection);
+
+  // 4. This step sizes flexible tracks using the largest value it can assign to
+  // an 'fr' without exceeding the available space.
+  // if (track_collection.HasFlexibleTrack()) {
+  //   ExpandFlexibleTracks(sizing_subtree, track_direction, sizing_constraint);
+  // }
+
+  // 5. Stretch tracks with an 'auto' max track sizing function.
+  StretchAutoTracks(track_collection);
 }
 
 // Helpers for the track sizing algorithm.
@@ -972,6 +986,122 @@ void GridTrackSizingAlgorithm::ResolveIntrinsicTrackSizes(
         contribution_size, current_group_begin, reordered_grid_items_end,
         GridItemContributionType::kForMaxContentMinimums,
         /*is_group_spanning_flex_track=*/true, track_collection);
+  }
+}
+
+// https://drafts.csswg.org/css-grid-2/#algo-grow-tracks
+void GridTrackSizingAlgorithm::MaximizeTracks(
+    GridSizingTrackCollection* track_collection) const {
+  DCHECK(track_collection);
+
+  const auto free_space = DetermineFreeSpace(*track_collection);
+  if (!free_space) {
+    return;
+  }
+
+  GridSetPtrVector sets_to_grow;
+  sets_to_grow.ReserveInitialCapacity(track_collection->GetSetCount());
+  for (auto set_iterator = track_collection->GetSetIterator();
+       !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
+    sets_to_grow.push_back(&set_iterator.CurrentSet());
+  }
+
+  DistributeExtraSpaceToSetsEqually(
+      free_space, GridItemContributionType::kForFreeSpace, &sets_to_grow);
+
+  for (auto* set : sets_to_grow) {
+    set->IncreaseBaseSize(set->BaseSize() + set->item_incurred_increase);
+  }
+
+  // TODO(ethavar): If this would cause the grid to be larger than the grid
+  // container’s inner size as limited by its 'max-width/height', then redo this
+  // step, treating the available grid space as equal to the grid container’s
+  // inner size when it’s sized to its 'max-width/height'.
+}
+
+// https://drafts.csswg.org/css-grid-2/#algo-stretch
+void GridTrackSizingAlgorithm::StretchAutoTracks(
+    GridSizingTrackCollection* track_collection) const {
+  DCHECK(track_collection);
+
+  const bool is_for_columns = track_collection->Direction() == kForColumns;
+  const auto& content_alignment =
+      is_for_columns ? columns_alignment_ : rows_alignment_;
+
+  // Stretching 'auto' tracks should only occur if the container has a 'stretch'
+  // (or default) content distribution in the respective axis.
+  if (content_alignment.Distribution() != ContentDistributionType::kStretch &&
+      (content_alignment.Distribution() != ContentDistributionType::kDefault ||
+       content_alignment.GetPosition() != ContentPosition::kNormal)) {
+    return;
+  }
+
+  // Expand tracks that have an 'auto' max track sizing function by dividing any
+  // remaining positive, definite free space equally amongst them.
+  GridSetPtrVector sets_to_grow;
+  for (auto set_iterator = track_collection->GetSetIterator();
+       !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
+    auto& set = set_iterator.CurrentSet();
+    if (set.track_size.HasAutoMaxTrackBreadth() &&
+        !set.track_size.IsFitContent()) {
+      sets_to_grow.push_back(&set);
+    }
+  }
+
+  if (sets_to_grow.empty()) {
+    return;
+  }
+
+  // If free space is indefinite, but the grid container has a definite min
+  // size, use that size to calculate the free space for this step instead.
+  auto free_space = DetermineFreeSpace(*track_collection);
+  if (free_space == kIndefiniteSize) {
+    free_space = is_for_columns ? min_available_size_.inline_size
+                                : min_available_size_.block_size;
+
+    DCHECK_NE(free_space, kIndefiniteSize);
+    free_space -= track_collection->TotalTrackSize();
+  }
+
+  if (free_space <= 0) {
+    return;
+  }
+
+  DistributeExtraSpaceToSetsEqually(free_space,
+                                    GridItemContributionType::kForFreeSpace,
+                                    &sets_to_grow, &sets_to_grow);
+  for (auto* set : sets_to_grow) {
+    set->IncreaseBaseSize(set->BaseSize() + set->item_incurred_increase);
+  }
+}
+
+// TODO(ikilpatrick): Determine if other uses of this method need to respect
+// `min_available_size_` similar to `StretchAutoTracks`.
+LayoutUnit GridTrackSizingAlgorithm::DetermineFreeSpace(
+    const GridSizingTrackCollection& track_collection) const {
+  const bool is_for_columns = track_collection.Direction() == kForColumns;
+
+  // https://drafts.csswg.org/css-sizing-3/#auto-box-sizes: both min-content and
+  // max-content block sizes are the size of the content after layout.
+  switch (is_for_columns ? sizing_constraint_ : SizingConstraint::kLayout) {
+    case SizingConstraint::kLayout: {
+      auto free_space = is_for_columns ? available_size_.inline_size
+                                       : available_size_.block_size;
+
+      if (free_space != kIndefiniteSize) {
+        // If tracks consume more space than the grid container has available,
+        // clamp the free space to zero as there's no more room left to grow.
+        free_space = (free_space - track_collection.TotalTrackSize())
+                         .ClampNegativeToZero();
+      }
+      return free_space;
+    }
+    case SizingConstraint::kMaxContent:
+      // If sizing under a max-content constraint, the free space is infinite.
+      return kIndefiniteSize;
+    case SizingConstraint::kMinContent:
+      // If sizing under a min-content constraint, the free space is zero.
+      return LayoutUnit();
   }
 }
 
