@@ -9,7 +9,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_future.h"
 #include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
 #include "components/autofill/core/browser/test_utils/passes_data_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -36,13 +35,13 @@ class PassesDataManagerTest : public testing::Test {
         helper_->autofill_webdata_service());
   }
 
-  PassesTable& passes_table() { return *passes_table_; }
+  AutofillWebDataServiceTestHelper& helper() { return *helper_; }
 
-  std::vector<LoyaltyCard> GetLoyaltyCards() {
-    base::test::TestFuture<std::vector<LoyaltyCard>> cards;
-    passes_data_manager_->GetLoyaltyCards(cards.GetCallback());
-    return cards.Get();
+  AutofillWebDataService& webdata_service() {
+    return *helper().autofill_webdata_service();
   }
+
+  PassesTable& passes_table() { return *passes_table_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -51,14 +50,8 @@ class PassesDataManagerTest : public testing::Test {
   std::unique_ptr<PassesDataManager> passes_data_manager_;
 };
 
-// Tests that the `PassesDataManager` returns an empty vector of loyalty cards
-// before any loyalty cards are added to the database.
-TEST_F(PassesDataManagerTest, InitiallyEmpty) {
-  EXPECT_THAT(GetLoyaltyCards(), IsEmpty());
-}
-
 // Tests that the `PassseDataManager` correctly loads loyalty cards from the
-// database.
+// database in the constructor.
 TEST_F(PassesDataManagerTest, GetLoyaltyCards) {
   const LoyaltyCard card1 = test::CreateLoyaltyCard();
   const LoyaltyCard card2 = test::CreateLoyaltyCard2();
@@ -66,7 +59,12 @@ TEST_F(PassesDataManagerTest, GetLoyaltyCards) {
   passes_table().AddOrUpdateLoyaltyCard(card1);
   passes_table().AddOrUpdateLoyaltyCard(card2);
 
-  EXPECT_THAT(GetLoyaltyCards(), UnorderedElementsAre(card1, card2));
+  PassesDataManager passses_data_manager(&webdata_service());
+  EXPECT_THAT(passses_data_manager.GetLoyaltyCards(), IsEmpty());
+
+  helper().WaitUntilIdle();
+  EXPECT_THAT(passses_data_manager.GetLoyaltyCards(),
+              UnorderedElementsAre(card1, card2));
 }
 
 }  // namespace

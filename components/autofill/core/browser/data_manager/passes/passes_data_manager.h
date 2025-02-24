@@ -8,44 +8,48 @@
 #include <string_view>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/webdata/common/web_data_service_base.h"
 
 namespace autofill {
 
 // Loads non-payments data types coming from the Google Wallet like loyalty
 // cards.
 //
-// These operations are asynchronous; this is similar to
-// `AutocompleteHistoryManager` and unlike `AddressDataManager`.
-//
 // A shared instance of this service is created for regular and off-the-record
 // profiles. Future modifications to this service must make sure that no data is
 // persisted for the off-the-record profile.
-//
-// TODO: crbug.com/393123618 - make the loading API synchronous.
 class PassesDataManager : public KeyedService {
  public:
-  using LoadCallback = base::OnceCallback<void(std::vector<LoyaltyCard>)>;
-
   explicit PassesDataManager(
       scoped_refptr<AutofillWebDataService> webdata_service);
   PassesDataManager(const PassesDataManager&) = delete;
   PassesDataManager& operator=(const PassesDataManager&) = delete;
   ~PassesDataManager() override;
 
-  // Retrieves the loyalty cards from the database and calls `cb` asynchronously
-  // with the result.
+  // Returns the cached loyalty cards from the database.
   //
-  // It is guaranteed that `cb` is called eventually; if the query is
-  // unsuccessful, `cb` is called with an empty vector.
-  void GetLoyaltyCards(LoadCallback cb);
+  // The cache is populated asynchronously after the construction of this
+  // `PassesDataManager`. Returns an empty span until the population is
+  // finished.
+  base::span<const LoyaltyCard> GetLoyaltyCards() const;
 
  private:
+  void LoadLoyaltyCards();
+
   const scoped_refptr<AutofillWebDataService> webdata_service_;
+
+  // The ongoing `LoadLoyaltyCards()` query.
+  WebDataServiceBase::Handle pending_query_{};
+
+  // The result of the last successful `LoadLoyaltyCards()` query.
+  std::vector<LoyaltyCard> loyalty_cards_;
+
+  base::WeakPtrFactory<PassesDataManager> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
