@@ -167,7 +167,7 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
         // By marking the notification as "shown" locally, we differentiate between settings applied
         // via sync and those directly configured by the user on this device, thus avoiding
         // redundant or misleading notifications.
-        getSafeBrowsingBridge().setSafeBrowsingSettingSetLocallyPref(true);
+        getSafeBrowsingBridge().enableSafeBrowsingSettingSetLocallyPref();
         return true;
     }
 
