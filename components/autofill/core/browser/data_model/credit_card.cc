@@ -281,8 +281,6 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
       return IDR_AUTOFILL_METADATA_CC_VISA;
     case Suggestion::Icon::kCardGeneric:
       return IDR_AUTOFILL_METADATA_CC_GENERIC;
-    case Suggestion::Icon::kAutofillAi:
-
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kClear:
     case Suggestion::Icon::kCode:

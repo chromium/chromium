@@ -20,7 +20,6 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_icon_image_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
@@ -116,7 +115,6 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kCardGeneric:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GENERIC);
     case Suggestion::Icon::kAccount:
-    case Suggestion::Icon::kAutofillAi:
     case Suggestion::Icon::kBnpl:
     case Suggestion::Icon::kClear:
     case Suggestion::Icon::kCode:
@@ -369,9 +367,6 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
       return ImageModelFromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(icon_id));
     }
-    // A special case handled in `GetIconImageView()`.
-    case Suggestion::Icon::kAutofillAi:
-      NOTREACHED();
   }
   NOTREACHED();
 }
@@ -417,10 +412,8 @@ std::unique_ptr<views::ImageView> GetIconImageView(
                                    suggestion.HasDeactivatedStyle());
   }
   std::unique_ptr<views::ImageView> icon_image_view =
-      (suggestion.icon == Suggestion::Icon::kAutofillAi)
-          ? autofill_ai::CreateSmallAutofillAiIconImageView()
-          : ConvertModelToImageView(GetIconImageModelFromIcon(suggestion.icon),
-                                    suggestion.HasDeactivatedStyle());
+      ConvertModelToImageView(GetIconImageModelFromIcon(suggestion.icon),
+                              suggestion.HasDeactivatedStyle());
   base::UmaHistogramTimes(kHistogramGetImageViewByName,
                           base::TimeTicks::Now() - start_time);
 
