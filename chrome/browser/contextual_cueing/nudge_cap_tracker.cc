@@ -14,12 +14,9 @@ NudgeCapTracker::NudgeCapTracker(NudgeCapTracker&& source)
 NudgeCapTracker::~NudgeCapTracker() = default;
 
 void NudgeCapTracker::CueingNudgeShown() {
-  if (!cap_count_) {
-    return;
-  }
-  CHECK(recent_nudge_timestamps_.size() <= cap_count_);
+  CHECK(cap_count_ == 0 || recent_nudge_timestamps_.size() <= cap_count_);
 
-  if (recent_nudge_timestamps_.size() == cap_count_) {
+  if (cap_count_ > 0 && recent_nudge_timestamps_.size() == cap_count_) {
     recent_nudge_timestamps_.pop();
   }
   recent_nudge_timestamps_.push(base::TimeTicks::Now());
@@ -37,6 +34,13 @@ bool NudgeCapTracker::CanShowNudge() const {
       base::TimeTicks::Now() - recent_nudge_timestamps_.front();
   CHECK(time_diff.is_positive());
   return time_diff > duration_;
+}
+
+std::optional<base::TimeTicks> NudgeCapTracker::GetMostRecentNudgeTime() const {
+  if (recent_nudge_timestamps_.empty()) {
+    return std::nullopt;
+  }
+  return recent_nudge_timestamps_.back();
 }
 
 }  // namespace contextual_cueing

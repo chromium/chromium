@@ -7131,6 +7131,19 @@ be describing additional metrics about the same event.
       The interaction the user had with the contextual cueing nudge.
     </summary>
   </metric>
+  <metric name="NudgeLatencyAfterPageLoad">
+    <summary>
+      The amount of time it takes to display a nudge. This time is measured in
+      milliseconds, and measured from page load to when the nudge is shown.
+    </summary>
+  </metric>
+  <metric name="NudgeShownDuration">
+    <summary>
+      The amount of time in milliseconds that a nudge is shown for, before user
+      takes action on the nudge. Bucketed using
+      GetExponentialBucketMinForUserTiming().
+    </summary>
+  </metric>
 </event>
 
 <event name="Conversions.ClientBounce">

@@ -11,6 +11,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
@@ -24,10 +25,16 @@ void LogNudgeInteractionHistogram(
 }
 
 void LogNudgeInteractionUKM(ukm::SourceId source_id,
-                            contextual_cueing::NudgeInteraction interaction) {
+                            contextual_cueing::NudgeInteraction interaction,
+                            base::TimeTicks document_available_time,
+                            base::TimeTicks nudge_shown_time) {
   auto* ukm_recorder = ukm::UkmRecorder::Get();
   ukm::builders::ContextualCueing_NudgeInteraction(source_id)
       .SetNudgeInteraction(static_cast<int64_t>(interaction))
+      .SetNudgeShownDuration(ukm::GetExponentialBucketMinForUserTiming(
+          (base::TimeTicks::Now() - nudge_shown_time).InMilliseconds()))
+      .SetNudgeLatencyAfterPageLoad(
+          (nudge_shown_time - document_available_time).InMilliseconds())
       .Record(ukm_recorder->Get());
 }
 
@@ -117,25 +124,34 @@ bool ContextualCueingService::IsNudgeBlockedByBackoffRule() const {
 void ContextualCueingService::OnNudgeActivity(
     const GURL& url,
     ukm::SourceId source_id,
+    base::TimeTicks document_available_time,
     tabs::GlicNudgeActivity activity) {
+  std::optional<base::TimeTicks> nudge_time =
+      recent_nudge_tracker_.GetMostRecentNudgeTime();
   switch (activity) {
     case tabs::GlicNudgeActivity::kNudgeShown:
       CueingNudgeShown(url);
       break;
     case tabs::GlicNudgeActivity::kNudgeClicked:
       CueingNudgeClicked();
-      LogNudgeInteractionUKM(source_id, NudgeInteraction::kClicked);
+      CHECK(nudge_time);
+      LogNudgeInteractionUKM(source_id, NudgeInteraction::kClicked,
+                             document_available_time, *nudge_time);
       break;
     case tabs::GlicNudgeActivity::kNudgeDismissed:
       CueingNudgeDismissed();
-      LogNudgeInteractionUKM(source_id, NudgeInteraction::kDismissed);
+      CHECK(nudge_time);
+      LogNudgeInteractionUKM(source_id, NudgeInteraction::kDismissed,
+                             document_available_time, *nudge_time);
       break;
     case tabs::GlicNudgeActivity::kNudgeNotShownWebContents:
       LogNudgeInteractionHistogram(NudgeInteraction::kNudgeNotShownWebContents);
       break;
     case tabs::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged:
       LogNudgeInteractionHistogram(NudgeInteraction::kIgnoredTabChange);
-      LogNudgeInteractionUKM(source_id, NudgeInteraction::kIgnoredTabChange);
+      CHECK(nudge_time);
+      LogNudgeInteractionUKM(source_id, NudgeInteraction::kIgnoredTabChange,
+                             document_available_time, *nudge_time);
       break;
       // TODO: b/395169951 - Make sure UKM called for ignored nudges due to
       // navigation changes.

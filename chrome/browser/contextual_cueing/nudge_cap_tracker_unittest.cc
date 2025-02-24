@@ -41,4 +41,16 @@ TEST_F(ContextualCueingNudgeCapTracker, Basic) {
   EXPECT_TRUE(tracker.CanShowNudge());
 }
 
+TEST_F(ContextualCueingNudgeCapTracker, GetMostRecentTime) {
+  NudgeCapTracker tracker(3, base::Hours(24));
+  EXPECT_EQ(tracker.GetMostRecentNudgeTime(), std::nullopt);
+
+  tracker.CueingNudgeShown();
+  task_environment_.FastForwardBy(base::Minutes(1));
+  tracker.CueingNudgeShown();
+  task_environment_.FastForwardBy(base::Minutes(1));
+  tracker.CueingNudgeShown();
+  EXPECT_EQ(tracker.GetMostRecentNudgeTime(), base::TimeTicks::Now());
+}
+
 }  // namespace contextual_cueing
