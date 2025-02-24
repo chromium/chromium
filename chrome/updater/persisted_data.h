@@ -87,6 +87,10 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
   std::string GetAPKey(const std::string& id) const;
   void SetAPKey(const std::string& id, const std::string& value);
 
+  // These functions access the `lang` for the specified id.
+  std::string GetLang(const std::string& id);
+  void SetLang(const std::string& id, const std::string& lang);
+
   // This function sets any non-empty field in the registration request object
   // into the persistent data store.
   void RegisterApp(const RegistrationRequest& rq);

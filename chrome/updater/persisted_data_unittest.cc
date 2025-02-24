@@ -111,6 +111,7 @@ TEST(PersistedDataTest, RemoveAppId) {
 
   RegistrationRequest data;
   data.app_id = "someappid";
+  data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
   data.version = base::Version("1.0");
@@ -120,6 +121,7 @@ TEST(PersistedDataTest, RemoveAppId) {
   metadata->RegisterApp(data);
 
   data.app_id = "someappid2";
+  data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
   data.version = base::Version("2.0");
@@ -144,6 +146,7 @@ TEST(PersistedDataTest, RegisterApp_SetFirstActive) {
 
   RegistrationRequest data;
   data.app_id = "someappid";
+  data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
   data.version = base::Version("1.0");
@@ -237,15 +240,17 @@ TEST(PersistedDataTest, SetEulaRequired) {
 class PersistedDataRegistrationRequestTest : public ::testing::Test {
 #if BUILDFLAG(IS_WIN)
  protected:
-  void SetUp() override { DeleteBrandCodeValueInRegistry(); }
-  void TearDown() override { DeleteBrandCodeValueInRegistry(); }
+  void SetUp() override { DeleteValuesInRegistry(); }
+  void TearDown() override { DeleteValuesInRegistry(); }
 
  private:
-  void DeleteBrandCodeValueInRegistry() {
-    base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
-                      GetAppClientStateKey(L"someappid").c_str(),
-                      Wow6432(KEY_SET_VALUE))
-        .DeleteValue(kRegValueBrandCode);
+  void DeleteValuesInRegistry() {
+    for (const auto value : {kRegValueBrandCode, kRegValueLang}) {
+      base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                        GetAppClientStateKey(L"someappid").c_str(),
+                        Wow6432(KEY_SET_VALUE))
+          .DeleteValue(value);
+    }
   }
 #endif
 };
@@ -258,6 +263,7 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequest) {
 
   RegistrationRequest data;
   data.app_id = "someappid";
+  data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
   data.version = base::Version("1.0");
@@ -274,6 +280,7 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequest) {
   EXPECT_EQ(FILE_PATH_LITERAL("some/file/path"),
             metadata->GetExistenceCheckerPath("someappid").value());
   EXPECT_STREQ("arandom-ap=likethis", metadata->GetAP("someappid").c_str());
+  EXPECT_EQ("somelang", metadata->GetLang("someappid"));
   EXPECT_STREQ("somebrand", metadata->GetBrandCode("someappid").c_str());
 #if BUILDFLAG(IS_WIN)
   EXPECT_EQ(
@@ -309,6 +316,7 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequestPartial) {
 
   RegistrationRequest data;
   data.app_id = "someappid";
+  data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
   data.version = base::Version("1.0");
@@ -321,6 +329,7 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequestPartial) {
   EXPECT_EQ(FILE_PATH_LITERAL("some/file/path"),
             metadata->GetExistenceCheckerPath("someappid").value());
   EXPECT_STREQ("arandom-ap=likethis", metadata->GetAP("someappid").c_str());
+  EXPECT_EQ("somelang", metadata->GetLang("someappid"));
   EXPECT_STREQ("somebrand", metadata->GetBrandCode("someappid").c_str());
 
   RegistrationRequest data2;
@@ -332,6 +341,7 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequestPartial) {
   EXPECT_EQ(FILE_PATH_LITERAL("some/file/path"),
             metadata->GetExistenceCheckerPath(data.app_id).value());
   EXPECT_STREQ("different_ap", metadata->GetAP(data.app_id).c_str());
+  EXPECT_EQ("somelang", metadata->GetLang("someappid"));
   EXPECT_STREQ("somebrand", metadata->GetBrandCode(data.app_id).c_str());
 
   RegistrationRequest data3;
@@ -345,6 +355,7 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequestPartial) {
   EXPECT_EQ(FILE_PATH_LITERAL(""),
             metadata->GetExistenceCheckerPath("someappid3").value());
   EXPECT_STREQ("", metadata->GetAP("someappid3").c_str());
+  EXPECT_EQ("", metadata->GetLang("someappid3"));
   EXPECT_STREQ("somebrand", metadata->GetBrandCode("someappid3").c_str());
 }
 
