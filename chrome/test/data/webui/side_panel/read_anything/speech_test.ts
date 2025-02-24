@@ -78,9 +78,6 @@ suite('Speech', () => {
     chrome.readingMode.onConnected = () => {};
 
     app = await createApp();
-    // skip highlighting for these tests as we're just focused on what's spoken
-    // and the fake speech synthesis causes problems here
-    app.highlightCurrentGranularity = () => {};
     chrome.readingMode.setContentForTesting(axTree, leafIds);
     speechSynthesis = new FakeSpeechSynthesis();
     app.synth = speechSynthesis;

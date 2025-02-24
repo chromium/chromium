@@ -26,7 +26,6 @@ const HighlightMenuBase = WebUiListenerMixin(PolymerElement);
 
 // Stores and propagates the data for the highlight menu.
 export class HighlightMenu extends HighlightMenuBase {
-  // TODO(b/362203467): Apply this setting to the app UI.
   private options_: Array<MenuStateItem<number>> = [
     {
       title: loadTimeData.getString('autoHighlightTitle'),
