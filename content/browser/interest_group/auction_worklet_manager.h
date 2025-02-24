@@ -117,6 +117,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
     virtual std::optional<std::string> GetCookieDeprecationLabel() = 0;
 
     virtual void GetBiddingAndAuctionServerKey(
+        const url::Origin& scope_origin,
         const std::optional<url::Origin>& coordinator,
         base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
                                                std::string>)> callback) = 0;

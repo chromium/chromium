@@ -723,7 +723,8 @@ class AuctionProcessManagerTest
   TrustedSignalsCacheImpl trusted_signals_cache_{
       /*url_loader_factory=*/nullptr,
       base::BindRepeating(
-          [](const std::optional<url::Origin>& coordinator,
+          [](const url::Origin& scope_origin,
+             const std::optional<url::Origin>& coordinator,
              base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
                                                     std::string>)> callback) {
             std::move(callback).Run(

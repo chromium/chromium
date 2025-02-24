@@ -1829,12 +1829,13 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
     CHECK(coordinator_key_callback_);
     std::move(coordinator_key_callback_)
         .Run(BiddingAndAuctionServerKey{"key whose value does not matter",
-                                        /*id=*/42});
+                                        /*id=*/"42"});
   }
 
  private:
   // Expects only to see requests for `kCoordinatorOrigin`.
   void GetCoordinatorKeyCallback(
+      const url::Origin& scope_origin,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
@@ -2900,6 +2901,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     return std::nullopt;
   }
   void GetBiddingAndAuctionServerKey(
+      const url::Origin& scope_origin,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
                                              std::string>)> callback) override {
