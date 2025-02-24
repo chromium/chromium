@@ -38,6 +38,8 @@
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "net/base/mock_network_change_notifier.h"
+#include "net/base/network_change_notifier.h"
 
 namespace {
 
@@ -989,6 +991,49 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerTranslatePromoTest,
 
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}
+
+class LensPreselectionBubbleInteractiveUiTest
+    : public LensOverlayControllerCUJTest {
+ public:
+  LensPreselectionBubbleInteractiveUiTest() = default;
+  ~LensPreselectionBubbleInteractiveUiTest() override = default;
+  LensPreselectionBubbleInteractiveUiTest(
+      const LensPreselectionBubbleInteractiveUiTest&) = delete;
+  void operator=(const LensPreselectionBubbleInteractiveUiTest&) = delete;
+
+  auto SetConnectionOffline() {
+    return Do(base::BindLambdaForTesting([&]() {
+      // Set the network connection type to being offline.
+      scoped_mock_network_change_notifier =
+          std::make_unique<net::test::ScopedMockNetworkChangeNotifier>();
+      scoped_mock_network_change_notifier->mock_network_change_notifier()
+          ->SetConnectionType(net::NetworkChangeNotifier::CONNECTION_NONE);
+    }));
+  }
+
+  void TearDownOnMainThread() override {
+    scoped_mock_network_change_notifier.reset();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  raw_ptr<views::Widget> preselection_widget_;
+  std::unique_ptr<net::test::ScopedMockNetworkChangeNotifier>
+      scoped_mock_network_change_notifier;
+};
+
+// This tests the following CUJ:
+//  (1) User opens the Lens Overlay while offline..
+//  (2) The user presses the exit button in the preselection bubble.
+//  (3) The overlay should close.
+IN_PROC_BROWSER_TEST_F(LensPreselectionBubbleInteractiveUiTest,
+                       PermissionBubbleOffline) {
+  RunTestSequence(EnsureNotPresent(kLensPreselectionBubbleExitButtonElementId),
+                  SetConnectionOffline(), OpenLensOverlay(),
+                  WaitForShow(kLensPreselectionBubbleExitButtonElementId),
+                  PressButton(kLensPreselectionBubbleExitButtonElementId),
+                  WaitForHide(LensOverlayController::kOverlayId));
 }
 
 }  // namespace

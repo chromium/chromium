@@ -105,8 +105,8 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/native_widget.h"
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -598,6 +598,22 @@ void LensOverlayController::ShowUI(
   fullscreen_observation_.Observe(tab_->GetBrowserWindowInterface()
                                       ->GetExclusiveAccessManager()
                                       ->fullscreen_controller());
+
+  // The preselection widget can cover top Chrome in immersive fullscreen.
+  // Observer the reveal state to hide the widget when top Chrome is shown.
+  immersive_mode_observer_.Observe(
+      tab_->GetBrowserWindowInterface()->GetImmersiveModeController());
+
+#if BUILDFLAG(IS_MAC)
+  // Add observer to listen for changes in the always show toolbar state,
+  // since that requires the preselection bubble to rerender to show properly.
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      prefs::kShowFullscreenToolbar,
+      base::BindRepeating(
+          &LensOverlayController::CloseAndReshowPreselectionBubble,
+          base::Unretained(this)));
+#endif  // BUILDFLAG(IS_MAC)
 
   NotifyUserEducationAboutOverlayUsed();
 
@@ -2135,26 +2151,34 @@ void LensOverlayController::CloseUIPart2(
   selected_region_thumbnail_uri_.clear();
   pending_region_.reset();
   fullscreen_observation_.Reset();
+  immersive_mode_observer_.Reset();
   lens_overlay_blur_layer_delegate_.reset();
   overlay_searchbox_handler_.reset();
   last_navigation_time_.reset();
   side_panel_should_show_error_page_ = false;
   side_panel_result_status_ = lens::SidePanelResultStatus::kUnknown;
+#if BUILDFLAG(IS_MAC)
+  pref_change_registrar_.Reset();
+#endif  // BUILDFLAG(IS_MAC)
 
+  // Cleanup all of the lens overlay related views. Not doing so will result
+  // in dangling pointers when the browser closes. Note the trailing `T` on
+  // the method name -- this removes `overlay_view_` and returns a unique_ptr
+  // to it which we then discard. Without the `T`, it returns nothing and
+  // frees nothing. Since technically the views are owned by
+  // contents_web_view, we need to release our reference using std::exchange
+  // to avoid a dangling pointer which throws an error when DCHECK is on.
   if (overlay_view_) {
-    // Remove and delete the overlay view and web view. Not doing so will result
-    // in dangling pointers when the browser closes. Note the trailing `T` on
-    // the method name -- this removes `overlay_view_` and returns a unique_ptr
-    // to it which we then discard.  Without the `T`, it returns nothing and
-    // frees nothing. Since technically the views are owned by
-    // contents_web_view, we need to release our reference using std::exchange
-    // to avoid a dangling pointer which throws an error when DCHECK is on.
-    overlay_view_->RemoveChildViewT(std::exchange(overlay_web_view_, nullptr));
+    overlay_web_view_ = nullptr;
+    preselection_widget_anchor_ = nullptr;
+    overlay_view_->RemoveAllChildViews();
+    // TODO(crbug.com/398310157): Adding and removing the Lens overlay view can
+    // cause different behavior if other features of the browser are also
+    // modifying the view hierarchy. The Lens overlay view should be added to
+    // the browser view and stay there unconditionally to avoid this.
     overlay_view_->parent()->RemoveChildViewT(
         std::exchange(overlay_view_, nullptr));
   }
-  overlay_web_view_ = nullptr;
-  overlay_view_ = nullptr;
 
   lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
 
@@ -2317,18 +2341,26 @@ void LensOverlayController::InitializeOverlayUI(
 }
 
 std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
-  // Create a flex layout host view to make sure the web view covers the entire
-  // tab.
-  std::unique_ptr<views::FlexLayoutView> host_view =
-      std::make_unique<views::FlexLayoutView>();
+  // Create a fill layout host view to make sure the web view and the
+  // preselection anchor covers the entire view as it is resized.
+  std::unique_ptr<views::View> host_view = std::make_unique<views::View>();
+  host_view->SetLayoutManager(std::make_unique<views::FillLayout>());
+  host_view->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
+  // Setup a preselection anchor view. Usually bubbles are anchored to top
+  // chrome, but top chrome is not always visible when our overlay is visible.
+  // Instead of anchroing to top chrome, we anchor to this view because 1) it
+  // always exists when the overlay exists and 2) it is before the WebView in
+  // the view hierarchy and therefore will receive focus first when tabbing from
+  // top chrome.
+  std::unique_ptr<views::View> anchor_view = std::make_unique<views::View>();
+  anchor_view->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+  preselection_widget_anchor_ = host_view->AddChildView(std::move(anchor_view));
+
+  // Create the web view.
   std::unique_ptr<views::WebView> web_view = std::make_unique<views::WebView>(
       tab_->GetContents()->GetBrowserContext());
   content::WebContents* web_view_contents = web_view->GetWebContents();
-  web_view->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
   web_view->SetProperty(views::kElementIdentifierKey, kOverlayId);
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
       web_view_contents, SK_ColorTRANSPARENT);
@@ -2457,6 +2489,40 @@ void LensOverlayController::OnFindResultAvailable(
     return;
   }
   CloseUIAsync(lens::LensOverlayDismissalSource::kFindInPageInvoked);
+}
+
+void LensOverlayController::OnImmersiveRevealStarted() {
+  // The toolbar has began to reveal. If the overlay is showing, hide the
+  // preselection bubble to ensure it doesn't cover with the toolbar UI.
+  if (IsOverlayShowing()) {
+    HidePreselectionBubble();
+  }
+}
+
+void LensOverlayController::OnImmersiveRevealEnded() {
+  // The toolbar is no longer revealed. If the overlay is showing, reshow the
+  // preselection bubble to ensure it doesn't cover with the toolbar UI.
+  if (IsOverlayShowing()) {
+    ShowPreselectionBubble();
+  }
+}
+
+void LensOverlayController::OnImmersiveFullscreenEntered() {
+  // The browser entered immersive fullscreen. If the overlay is showing, call
+  // close and reopen the preselection bubble to ensure it respositions
+  // correctly.
+  if (IsOverlayShowing()) {
+    CloseAndReshowPreselectionBubble();
+  }
+}
+
+void LensOverlayController::OnImmersiveFullscreenExited() {
+  // The browser exited immersive fullscreen. If the overlay is showing, call
+  // close and reopen the preselection bubble to ensure it respositions
+  // correctly.
+  if (IsOverlayShowing()) {
+    CloseAndReshowPreselectionBubble();
+  }
 }
 
 const GURL& LensOverlayController::GetPageURL() const {
@@ -2958,11 +3024,32 @@ void LensOverlayController::ClosePreselectionBubble() {
 }
 
 void LensOverlayController::ShowPreselectionBubble() {
-  auto* anchor_view = tab_->GetBrowserWindowInterface()->TopContainer();
+#if BUILDFLAG(IS_MAC)
+  // On Mac, the kShowFullscreenToolbar pref is used to determine whether the
+  // toolbar is always shown. This causes the toolbar to never unreveal, meaning
+  // the preselection bubble will never be shown. Check for this case and show
+  // the preselection bubble if needed.
+  const bool always_show_toolbar =
+      pref_service_->GetBoolean(prefs::kShowFullscreenToolbar);
+#else
+  const bool always_show_toolbar = false;
+#endif  // BUILDFLAG(IS_MAC)
+
+  if (!always_show_toolbar && tab_->GetBrowserWindowInterface()
+                                  ->GetImmersiveModeController()
+                                  ->IsRevealed()) {
+    // If the immersive mode controller is revealing top chrome, do not show
+    // the preselection bubble. The bubble will be shown once the reveal
+    // finishes.
+    return;
+  }
+
   if (!preselection_widget_) {
+    CHECK(preselection_widget_anchor_);
+    // Setup the preselection widget.
     preselection_widget_ = views::BubbleDialogDelegateView::CreateBubble(
         std::make_unique<lens::LensPreselectionBubble>(
-            weak_factory_.GetWeakPtr(), anchor_view,
+            weak_factory_.GetWeakPtr(), preselection_widget_anchor_,
             net::NetworkChangeNotifier::IsOffline(),
             /*exit_clicked_callback=*/
             base::BindRepeating(
@@ -2978,16 +3065,35 @@ void LensOverlayController::ShowPreselectionBubble() {
         views::kWidgetIdentifierKey,
         const_cast<void*>(kLensOverlayPreselectionWidgetIdentifier));
     preselection_widget_observer_.Observe(preselection_widget_);
+    // When in fullscreen, top Chrome may cover this widget on Mac. Set the
+    // z-order to floating UI element to ensure the widget is above the top
+    // Chrome.
+    preselection_widget_->SetZOrderLevel(ui::ZOrderLevel::kFloatingUIElement);
     // Setting the parent allows focus traversal out of the preselection widget.
     preselection_widget_->SetFocusTraversableParent(
-        anchor_view->GetWidget()->GetFocusTraversable());
-    preselection_widget_->SetFocusTraversableParentView(anchor_view);
+        preselection_widget_anchor_->GetWidget()->GetFocusTraversable());
+    preselection_widget_->SetFocusTraversableParentView(
+        preselection_widget_anchor_);
   }
+
   auto* bubble_view = static_cast<lens::LensPreselectionBubble*>(
       preselection_widget_->widget_delegate());
   bubble_view->SetCanActivate(true);
+
+  // The bubble position is dependent on if top chrome is showing. Resize the
+  // bubble to ensure the correct position is used.
+  bubble_view->SizeToContents();
   // Show inactive so that the overlay remains active.
   preselection_widget_->ShowInactive();
+}
+
+void LensOverlayController::CloseAndReshowPreselectionBubble() {
+  // If the preselection bubble is already closed, do not reshow it.
+  if (!preselection_widget_) {
+    return;
+  }
+  ClosePreselectionBubble();
+  ShowPreselectionBubble();
 }
 
 void LensOverlayController::HidePreselectionBubble() {

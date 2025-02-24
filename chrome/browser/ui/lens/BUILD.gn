@@ -53,6 +53,7 @@ source_set("lens") {
     "//chrome/browser/themes",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/views/frame:immersive_mode_controller",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/webui/searchbox",
     "//chrome/browser/ui/webui/top_chrome",
@@ -257,7 +258,6 @@ source_set("interactive_ui_tests") {
   sources = [
     "lens_overlay_controller_interactive_uitest.cc",
     "lens_permission_bubble_controller_interactive_uitest.cc",
-    "lens_preselection_bubble_interactive_uitest.cc",
   ]
   deps = [
     ":lens",

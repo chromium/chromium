@@ -159,6 +159,10 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     browser_view_->OnImmersiveRevealStarted();
     browser_view_->InvalidateLayout();
 
+    for (Observer& observer : observers_) {
+      observer.OnImmersiveFullscreenEntered();
+    }
+
     views::NativeWidgetMacNSWindowHost* overlay_host =
         views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
             browser_view_->overlay_widget()->GetNativeWindow());
@@ -415,8 +419,7 @@ bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
   const void* widget_identifier =
       child->GetNativeWindowProperty(views::kWidgetIdentifierKey);
   if (widget_identifier ==
-          constrained_window::kConstrainedWindowWidgetIdentifier ||
-      widget_identifier == kLensOverlayPreselectionWidgetIdentifier
+          constrained_window::kConstrainedWindowWidgetIdentifier
 #if BUILDFLAG(ENABLE_GLIC)
       || widget_identifier == glic::kGlicWidgetIdentifier
 #endif
@@ -451,7 +454,19 @@ bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
 
 void ImmersiveModeControllerMac::OnImmersiveModeToolbarRevealChanged(
     bool is_revealed) {
+  if (is_revealed_ == is_revealed) {
+    return;
+  }
   is_revealed_ = is_revealed;
+
+  // Notify observers that immersive reveal has started.
+  for (Observer& observer : observers_) {
+    if (is_revealed) {
+      observer.OnImmersiveRevealStarted();
+    } else {
+      observer.OnImmersiveRevealEnded();
+    }
+  }
 }
 
 void ImmersiveModeControllerMac::OnImmersiveModeMenuBarRevealChanged(

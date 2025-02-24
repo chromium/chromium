@@ -144,25 +144,29 @@ void LensPreselectionBubble::SetLabelText(int string_id) {
 
 gfx::Rect LensPreselectionBubble::GetBubbleBounds() {
   views::View* anchor_view = GetAnchorView();
-  if (anchor_view) {
-    const gfx::Size bubble_size =
-        GetWidget()->GetContentsView()->GetPreferredSize();
-    const gfx::Rect anchor_bounds = anchor_view->GetBoundsInScreen();
-    const int x =
-        anchor_bounds.x() + (anchor_bounds.width() - bubble_size.width()) / 2;
-    // Take bubble out of its original bounds to cross "line of death". However,
-    // if there is no line of death, we set the bubble to below the top of the
-    // screen. On Mac, the |bottom| of |anchor_bounds| can be negative so set
-    // the appropriate minY based on whether the top container is showing (has a
-    // height > 0).
-    const int minY = anchor_bounds.height() > 0
-                         ? anchor_bounds.bottom() - bubble_size.height() / 2
-                         : kPreselectionBubbleMinY;
-    const int y =
-        std::max(minY, anchor_bounds.bottom() - bubble_size.height() / 2);
-    return gfx::Rect(x, y, bubble_size.width(), bubble_size.height());
+  if (!anchor_view) {
+    return gfx::Rect();
   }
-  return gfx::Rect();
+
+  const bool is_tab_strip_visible = lens_overlay_controller_->GetTabInterface()
+                                        ->GetBrowserWindowInterface()
+                                        ->IsTabStripVisible();
+  const gfx::Size bubble_size =
+      GetWidget()->GetContentsView()->GetPreferredSize();
+  const gfx::Rect anchor_bounds = anchor_view->GetBoundsInScreen();
+
+  const int x =
+      anchor_bounds.x() + (anchor_bounds.width() - bubble_size.width()) / 2;
+  // Take bubble out of its original bounds to cross "line of death". Since, the
+  // preselection bubble is anchored to the overlay, the line of death is above
+  // the top of the anchor bounds. However, if not tab strip is visible, and
+  // therefore there is no line of death to cross, we instead want to set the
+  // preselection bubble to be kPreselectionBubbleMinY from the top of the
+  // overlay.
+  const int y = is_tab_strip_visible
+                    ? anchor_bounds.y() - bubble_size.height() / 2
+                    : anchor_bounds.y() + kPreselectionBubbleMinY;
+  return gfx::Rect(x, y, bubble_size.width(), bubble_size.height());
 }
 
 void LensPreselectionBubble::OnThemeChanged() {

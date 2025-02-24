@@ -72,6 +72,7 @@ source_set("download") {
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/hats:hats",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/frame:immersive_mode_controller",
     "//components/autofill/content/browser:browser",
     "//components/constrained_window:constrained_window",
     "//components/feature_engagement/public:feature_constants",
