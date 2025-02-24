@@ -498,6 +498,7 @@ after discussions on the right group.
     </sender>
     <sender name="Payments">
       <annotation id="payments_sync_cards"/>
+      <annotation id="payments_autofill"/>
     </sender>
   </group>
   <group name="K-Anonymity Service" hidden="true">
