@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "components/data_sharing/public/server_environment.h"
 
 namespace data_sharing::features {
 
@@ -17,6 +18,10 @@ BASE_DECLARE_FEATURE(kDataSharingFeature);
 // Join only feature flag for data sharing. Enabled partial data sharing related
 // functionalities.
 BASE_DECLARE_FEATURE(kDataSharingJoinOnly);
+
+// Feature flag for server environment configuration based on string> By default
+// autopush server environment is set.
+BASE_DECLARE_FEATURE(kDataSharingNonProductionEnvironment);
 
 extern const base::FeatureParam<std::string> kDataSharingURL;
 extern const base::FeatureParam<std::string> kLearnMoreSharedTabGroupPageURL;

@@ -39,6 +39,7 @@ static_library("features") {
   sources = [
     "features.cc",
     "features.h",
+    "server_environment.h",
   ]
 
   public_deps = [ "//base" ]
@@ -90,6 +91,7 @@ if (is_android) {
       "data_sharing_network_loader.h",
       "data_sharing_service.h",
       "group_data.h",
+      "server_environment.h",
     ]
   }
 

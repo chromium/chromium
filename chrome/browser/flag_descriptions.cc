@@ -338,6 +338,11 @@ const char kDataSharingJoinOnlyName[] = "Data Sharing Join Only";
 const char kDataSharingJoinOnlyDescription[] =
     "Enabled Data Sharing Joining flow related UI and features.";
 
+const char kDataSharingNonProductionEnvironmentName[] =
+    "Data Sharing server environment";
+const char kDataSharingNonProductionEnvironmentDescription[] =
+    "Sets data sharing server environment.";
+
 const char kDbdRevampDesktopName[] = "Revamped Delete Browsing Data dialog";
 const char kDbdRevampDesktopDescription[] =
     "Enables a revamped Delete Browsing Data dialog on Desktop. This includes "

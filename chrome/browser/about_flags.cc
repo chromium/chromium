@@ -10962,6 +10962,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDataSharingJoinOnlyDescription, kOsAll,
      FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingJoinOnly)},
 
+    {"data-sharing-non-production-environment",
+     flag_descriptions::kDataSharingNonProductionEnvironmentName,
+     flag_descriptions::kDataSharingNonProductionEnvironmentDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         data_sharing::features::kDataSharingNonProductionEnvironment)},
+
     {"history-sync-alternative-illustration",
      flag_descriptions::kHistorySyncAlternativeIllustrationName,
      flag_descriptions::kHistorySyncAlternativeIllustrationDescription, kOsAll,
