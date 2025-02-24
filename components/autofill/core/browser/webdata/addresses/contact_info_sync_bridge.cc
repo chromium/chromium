@@ -18,6 +18,7 @@
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
+#include "components/webdata/common/web_database.h"
 
 namespace autofill {
 
@@ -100,6 +101,8 @@ std::optional<syncer::ModelError>
 ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
+
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     switch (change->type()) {
       case syncer::EntityChange::ACTION_DELETE:
@@ -141,7 +144,15 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
       }
     }
   }
+
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
   web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
+
   // False positives can occur here if an update doesn't change the profile.
   // Since such false positives are fine, and since AutofillTable's API
   // currently doesn't provide a way to detect such cases, we don't distinguish.
@@ -226,11 +237,21 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
 
 void ContactInfoSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
+
   if (!GetAutofillTable()->RemoveAllAutofillProfiles(kAccountRecordTypes)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to delete profiles from table."});
   }
+
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
   web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
+
   // False positives can occur here if there were no profiles to begin with.
   web_data_backend_->NotifyOnAutofillChangedBySync(syncer::CONTACT_INFO);
 }

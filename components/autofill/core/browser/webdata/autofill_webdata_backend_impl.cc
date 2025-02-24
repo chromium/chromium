@@ -192,6 +192,9 @@ WebDatabase* AutofillWebDataBackendImpl::GetDatabase() {
 }
 
 void AutofillWebDataBackendImpl::CommitChanges() {
+  DCHECK(web_database_backend_->database()
+             ->GetSQLConnection()
+             ->HasActiveTransactions());
   web_database_backend_->database()->CommitTransaction();
   web_database_backend_->database()->BeginTransaction();
 }

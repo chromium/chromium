@@ -18,6 +18,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
+#include "components/webdata/common/web_database.h"
 
 namespace autofill {
 
@@ -90,6 +91,8 @@ AutofillWalletUsageDataSyncBridge::ApplyIncrementalSyncChanges(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PaymentsAutofillTable* table = GetAutofillTable();
 
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
+
   // Only Virtual Card Usage Data is currently supported.
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     switch (change->type()) {
@@ -127,7 +130,14 @@ AutofillWalletUsageDataSyncBridge::ApplyIncrementalSyncChanges(
 
   // Commit the transaction to make sure the data and the metadata with the
   // new progress marker is written down.
+
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
   web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
 
   // False positives can occur here if an update doesn't change the profile.
   // Since such false positives are fine, and since PaymentsAutofillTable's API
@@ -176,12 +186,22 @@ std::string AutofillWalletUsageDataSyncBridge::GetStorageKey(
 
 void AutofillWalletUsageDataSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
+
   PaymentsAutofillTable* table = GetAutofillTable();
   if (table && !table->RemoveAllVirtualCardUsageData()) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to delete usage data from table."});
   }
+
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
   web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
+
   web_data_backend_->NotifyOnAutofillChangedBySync(
       syncer::AUTOFILL_WALLET_USAGE);
 }

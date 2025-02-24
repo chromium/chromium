@@ -26,6 +26,7 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/webdata/common/web_database.h"
 
 using sync_pb::AutofillProfileSpecifics;
 using syncer::EntityData;
@@ -102,6 +103,8 @@ std::optional<syncer::ModelError> AutofillProfileSyncBridge::MergeFullSyncData(
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
+
   AutofillProfileInitialSyncDifferenceTracker initial_sync_tracker(
       GetAutofillTable());
 
@@ -125,7 +128,14 @@ std::optional<syncer::ModelError> AutofillProfileSyncBridge::MergeFullSyncData(
   RETURN_IF_ERROR(
       FlushSyncTracker(std::move(metadata_change_list), &initial_sync_tracker));
 
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
   web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
+
   return std::nullopt;
 }
 
@@ -134,6 +144,8 @@ AutofillProfileSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
 
   AutofillProfileSyncDifferenceTracker tracker(GetAutofillTable());
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
@@ -157,7 +169,14 @@ AutofillProfileSyncBridge::ApplyIncrementalSyncChanges(
 
   RETURN_IF_ERROR(FlushSyncTracker(std::move(metadata_change_list), &tracker));
 
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
   web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
+
   return std::nullopt;
 }
 
