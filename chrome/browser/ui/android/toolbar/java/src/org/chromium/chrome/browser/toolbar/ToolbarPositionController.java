@@ -85,6 +85,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final BottomControlsLayer mProgressBarLayer;
 
     @ControlsPosition private int mCurrentPosition;
+    private int mHairlineHeight;
 
     /**
      * @param browserControlsSizer {@link BrowserControlsSizer}, used to manipulate position of the
@@ -132,6 +133,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mContext = context;
         mCurrentPosition = mBrowserControlsSizer.getControlsPosition();
 
+        mHairlineHeight =
+                context.getResources().getDimensionPixelSize(R.dimen.toolbar_hairline_height);
         mIsNtpShowingSupplier.addObserver((showing) -> updateCurrentPosition());
         mIsTabSwitcherFinishedShowingSupplier.addObserver((showing) -> updateCurrentPosition());
         mIsOmniboxFocusedSupplier.addObserver((focused) -> updateCurrentPosition());
@@ -379,9 +382,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         FrameLayout.LayoutParams toolbarLayoutParams =
                 mControlContainer.mutateToolbarLayoutParams();
         toolbarLayoutParams.topMargin =
-                mCurrentPosition == ControlsPosition.BOTTOM
-                        ? mControlContainer.getToolbarHairlineHeight()
-                        : 0;
+                mCurrentPosition == ControlsPosition.BOTTOM ? mHairlineHeight : 0;
     }
 
     @VisibleForTesting
