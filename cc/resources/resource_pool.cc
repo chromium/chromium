@@ -65,14 +65,13 @@ void ResourcePool::InUsePoolResource::InstallGpuBacking(
     bool use_gpu_rasterization,
     std::string_view debug_label) const {
   auto backing = std::make_unique<ResourcePool::Backing>();
-  backing->overlay_candidate = is_overlay_candidate;
 
   gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                    gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
   if (use_gpu_rasterization) {
     flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   }
-  if (backing->overlay_candidate) {
+  if (is_overlay_candidate) {
     flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
   backing->set_shared_image(sii->CreateSharedImage(
@@ -386,7 +385,6 @@ bool ResourcePool::PrepareForExport(
   viz::TransferableResource::MetadataOverride overrides;
   overrides.size = resource->size();
   overrides.format = resource->format();
-  overrides.is_overlay_candidate = backing->overlay_candidate;
   transferable =
       viz::TransferableResource::Make(backing->shared_image(), resource_source,
                                       backing->mailbox_sync_token, overrides);

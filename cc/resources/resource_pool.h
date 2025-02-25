@@ -70,7 +70,6 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
     gpu::SyncToken mailbox_sync_token;
 
-    bool overlay_candidate = false;
     // For resources that are modified directly on the gpu, outside the command
     // stream, a fence must be used to know when the backing is not in use and
     // may be returned to and reused by the pool.
