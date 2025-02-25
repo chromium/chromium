@@ -129,6 +129,14 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="NOT_ADDED_DOWNLOAD_NOT_DANGEROUS"/>
 </enum>
 
+<enum name="DownloadAppleWalletOrderFileUI">
+  <int value="0" label="Warning alert is presented"/>
+  <int value="1"
+      label="Warning alert is dismissed without presenting a SFSafariView"/>
+  <int value="2"
+      label="Warning alert is dismissed with presenting a SFSafariView"/>
+</enum>
+
 <enum name="DownloadARModelState">
   <int value="0" label="Created">
     AR model download was created but not yet started.

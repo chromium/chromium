@@ -436,6 +436,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.IOSDownloadAppleWalletOrderFileUI"
+    enum="DownloadAppleWalletOrderFileUI" expires_after="2026-02-10">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Result when the warning alert is presented before downloading a .order file
+    on iOS. Values indicate if the user has continued the download workflow
+    after the presentation of the warning alert. The histogram will be emitted
+    once upon presentation of the alert, and a second time when the user
+    dismisses the alert by performing one of the alert actions.
+  </summary>
+</histogram>
+
 <histogram name="Download.IOSDownloadARModelState.USDZ"
     enum="DownloadARModelState" expires_after="2025-09-18">
   <owner>sdefresne@chromium.org</owner>

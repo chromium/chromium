@@ -11,6 +11,7 @@ namespace testing {
 
 extern const char kCalendarFilePath[];
 extern const char kMobileConfigFilePath[];
+extern const char kAppleWalletOrderFilePath[];
 extern const char kPkPassFilePath[];
 extern const char kBundledPkPassFilePath[];
 extern const char kSemiValidBundledPkPassFilePath[];

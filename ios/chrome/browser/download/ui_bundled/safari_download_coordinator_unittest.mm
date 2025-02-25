@@ -59,6 +59,15 @@ base::FilePath GetCalendarFilePath() {
   return file_path;
 }
 
+// Returns the absolute path for the .order file in the test data directory.
+base::FilePath GetAppleWalletOrderFilePath() {
+  base::FilePath file_path;
+  base::PathService::Get(base::DIR_ASSETS, &file_path);
+  file_path =
+      file_path.Append(FILE_PATH_LITERAL(testing::kAppleWalletOrderFilePath));
+  return file_path;
+}
+
 class SafariDownloadCoordinatorTest : public PlatformTest {
  protected:
   SafariDownloadCoordinatorTest() {
@@ -191,6 +200,42 @@ TEST_F(SafariDownloadCoordinatorTest, InvalidCalendarFile) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadCalendarFileUI,
+      static_cast<base::HistogramBase::Sample32>(
+          SafariDownloadFileUI::kWarningAlertIsPresented),
+      0);
+}
+
+// Tests presenting an UI alert before downloading a valid .order file.
+TEST_F(SafariDownloadCoordinatorTest, ValidAppleWalletOrderFile) {
+  base::FilePath path = GetAppleWalletOrderFilePath();
+  NSURL* fileURL =
+      [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
+
+  [tab_helper()->delegate() presentAppleWalletOrderAlertFromURL:fileURL];
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return [base_view_controller_.presentedViewController class] ==
+           [UIAlertController class];
+  }));
+
+  histogram_tester_.ExpectUniqueSample(
+      kUmaDownloadAppleWalletOrderFileUI,
+      static_cast<base::HistogramBase::Sample32>(
+          SafariDownloadFileUI::kWarningAlertIsPresented),
+      1);
+}
+
+// Tests attempting to download an invalid .order file.
+TEST_F(SafariDownloadCoordinatorTest, InvalidAppleWalletOrderFile) {
+  [tab_helper()->delegate() presentAppleWalletOrderAlertFromURL:nil];
+
+  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return [base_view_controller_.presentedViewController class] ==
+           [UIAlertController class];
+  }));
+
+  histogram_tester_.ExpectUniqueSample(
+      kUmaDownloadAppleWalletOrderFileUI,
       static_cast<base::HistogramBase::Sample32>(
           SafariDownloadFileUI::kWarningAlertIsPresented),
       0);

@@ -34,7 +34,10 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
     result->set_content(
         "<a id='mobileconfig' href='/mobileconfig'>Mobileconfig</a>"
         "<br>"
-        "<a id='calendar' href='/calendar'>Calendar</a>");
+        "<a id='calendar' href='/calendar'>Calendar</a>"
+        "<br>"
+        "<a id='apple-wallet-order' href='/apple-wallet-order'>Apple Wallet "
+        "Order</a>");
   } else if (request.GetURL().path() == "/mobileconfig") {
     result->AddCustomHeader("Content-Type", kMobileConfigurationType);
     result->set_content(
@@ -43,6 +46,10 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
     result->AddCustomHeader("Content-Type", kCalendarMimeType);
     result->set_content(
         testing::GetTestFileContents(testing::kCalendarFilePath));
+  } else if (request.GetURL().path() == "/apple-wallet-order") {
+    result->AddCustomHeader("Content-Type", kAppleWalletOrderMimeType);
+    result->set_content(
+        testing::GetTestFileContents(testing::kAppleWalletOrderFilePath));
   }
 
   return result;
@@ -175,4 +182,51 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
                      IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE))]
       assertWithMatcher:grey_nil()];
 }
+
+// Tests that the correct warning alert is shown and when tapping 'Open' a
+// SFSafariViewController is presented.
+- (void)testAppleWalletOrderDownloadAndContinue {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Apple Wallet Order"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"apple-wallet-order"];
+
+  GREYAssert(WaitForWarningAlert(l10n_util::GetNSString(
+                 IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_MESSAGE)),
+             @"The warning alert did not show up");
+  // Tap on 'Open' to present the SFSafariViewController.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_DOWNLOAD_WALLET_ORDER_OPEN))]
+      performAction:grey_tap()];
+
+  // Verify SFSafariViewController is presented.
+  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(@"SFSafariView")]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that a warning alert is shown and when tapping 'Cancel' the alert is
+// dismissed without presenting a SFSafariViewController.
+- (void)testAppleWalletOrderDownloadAndCancel {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Apple Wallet Order"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"apple-wallet-order"];
+
+  GREYAssert(WaitForWarningAlert(l10n_util::GetNSString(
+                 IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_MESSAGE)),
+             @"The warning alert did not show up");
+
+  // Tap on 'Cancel' to dismiss the warning alert.
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
+      performAction:grey_tap()];
+
+  // Verify SFSafariViewController is not presented.
+  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(@"SFSafariView")]
+      assertWithMatcher:grey_nil()];
+  // Verify the warning alert is dismissed.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_DOWNLOAD_WALLET_ORDER_FILE_WARNING_TITLE))]
+      assertWithMatcher:grey_nil()];
+}
+
 @end

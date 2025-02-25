@@ -35,6 +35,7 @@ char kAmazonKindleBookMimeType[] = "application/vnd.amazon.ebook";
 char kBinaryDataMimeType[] = "application/octet-stream";
 char kBitTorrentMimeType[] = "application/x-bittorrent";
 char kJavaArchiveMimeType[] = "application/java-archive";
+char kAppleWalletOrderMimeType[] = "application/vnd.apple.finance.order";
 char kAACAudioMimeType[] = "audio/aac";
 char kAbiWordDocumentMimeType[] = "application/x-abiword";
 char kArchiveDocumentMimeType[] = "application/x-freearc";
