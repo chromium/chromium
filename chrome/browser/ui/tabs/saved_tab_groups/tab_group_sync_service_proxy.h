@@ -14,6 +14,7 @@
 #include "components/saved_tab_groups/internal/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "url/gurl.h"
 
@@ -80,7 +81,8 @@ class TabGroupSyncServiceProxy : public TabGroupSyncService,
                               base::OnceClosure on_complete_cb) override;
   void OnTabGroupUnShareComplete(const LocalTabGroupID& local_group_id,
                                  bool success) override;
-  void OnCollaborationRemoved(const std::string& collaboration_id) override;
+  void OnCollaborationRemoved(
+      const syncer::CollaborationId& collaboration_id) override;
 
   std::vector<SavedTabGroup> GetAllGroups() const override;
   std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) const override;

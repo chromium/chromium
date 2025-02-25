@@ -14,6 +14,7 @@
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
@@ -344,7 +345,8 @@ void CollaborationServiceImpl::OnCollaborationGroupRemoved(
     data_sharing::DataSharingService::PeopleGroupActionOutcome result) {
   if (result ==
       data_sharing::DataSharingService::PeopleGroupActionOutcome::kSuccess) {
-    tab_group_sync_service_->OnCollaborationRemoved(group_id.value());
+    tab_group_sync_service_->OnCollaborationRemoved(
+        syncer::CollaborationId(group_id.value()));
     std::move(callback).Run(/*success=*/true);
     return;
   }

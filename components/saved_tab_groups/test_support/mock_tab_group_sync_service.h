@@ -69,7 +69,7 @@ class MockTabGroupSyncService : public TabGroupSyncService {
               AboutToUnShareTabGroup,
               (const LocalTabGroupID&, base::OnceClosure));
   MOCK_METHOD(void, OnTabGroupUnShareComplete, (const LocalTabGroupID&, bool));
-  MOCK_METHOD(void, OnCollaborationRemoved, (const std::string&));
+  MOCK_METHOD(void, OnCollaborationRemoved, (const syncer::CollaborationId&));
 
   MOCK_METHOD(std::vector<SavedTabGroup>, GetAllGroups, (), (const));
   MOCK_METHOD(std::optional<SavedTabGroup>,

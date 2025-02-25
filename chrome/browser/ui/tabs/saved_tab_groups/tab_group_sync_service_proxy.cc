@@ -210,7 +210,7 @@ void TabGroupSyncServiceProxy::OnTabGroupUnShareComplete(
 }
 
 void TabGroupSyncServiceProxy::OnCollaborationRemoved(
-    const std::string& collaboration_id) {
+    const syncer::CollaborationId& collaboration_id) {
   NOTIMPLEMENTED();
 }
 

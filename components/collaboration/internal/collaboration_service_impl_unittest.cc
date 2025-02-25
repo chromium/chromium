@@ -225,7 +225,8 @@ TEST_F(CollaborationServiceImplTest, SigninStatusChanges) {
 
 TEST_F(CollaborationServiceImplTest, DeleteGroup) {
   data_sharing::GroupId group_id = data_sharing::GroupId(kGroupId);
-  EXPECT_CALL(mock_tab_group_sync_service_, OnCollaborationRemoved(kGroupId));
+  EXPECT_CALL(mock_tab_group_sync_service_,
+              OnCollaborationRemoved(syncer::CollaborationId(kGroupId)));
   EXPECT_CALL(mock_data_sharing_service_, DeleteGroup(group_id, _))
       .WillOnce(Invoke(
           [](const data_sharing::GroupId&,
@@ -249,7 +250,8 @@ TEST_F(CollaborationServiceImplTest, DeleteGroup) {
 
 TEST_F(CollaborationServiceImplTest, LeaveGroup) {
   data_sharing::GroupId group_id = data_sharing::GroupId(kGroupId);
-  EXPECT_CALL(mock_tab_group_sync_service_, OnCollaborationRemoved(kGroupId));
+  EXPECT_CALL(mock_tab_group_sync_service_,
+              OnCollaborationRemoved(syncer::CollaborationId(kGroupId)));
   EXPECT_CALL(mock_data_sharing_service_, LeaveGroup(group_id, _))
       .WillOnce(Invoke(
           [](const data_sharing::GroupId&,

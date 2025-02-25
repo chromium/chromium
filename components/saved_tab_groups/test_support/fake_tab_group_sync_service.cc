@@ -17,6 +17,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/sync/base/collaboration_id.h"
 
 namespace tab_groups {
 
@@ -251,7 +252,7 @@ void FakeTabGroupSyncService::OnTabGroupUnShareComplete(
 }
 
 void FakeTabGroupSyncService::OnCollaborationRemoved(
-    const std::string& collaboration_id) {
+    const syncer::CollaborationId& collaboration_id) {
   // No op.
 }
 

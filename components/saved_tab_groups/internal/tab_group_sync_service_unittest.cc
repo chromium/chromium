@@ -2206,7 +2206,8 @@ TEST_F(TabGroupSyncServiceTest, OnCollaborationRemoved) {
   ASSERT_TRUE(shared_group->is_shared_tab_group());
   ASSERT_EQ(tab_group_sync_service_->GetAllGroups().size(), 3u);
 
-  tab_group_sync_service_->OnCollaborationRemoved(kCollaborationId);
+  tab_group_sync_service_->OnCollaborationRemoved(
+      syncer::CollaborationId(kCollaborationId));
   shared_group = tab_group_sync_service_->GetGroup(local_group_id_1_);
   EXPECT_TRUE(shared_group->is_shared_tab_group());
   EXPECT_TRUE(shared_group->is_hidden());
