@@ -35,6 +35,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
 #include "base/i18n/rtl.h"
 #include "base/notreached.h"
@@ -893,6 +894,10 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   virtual void SetLinkPreviewTriggererForTesting(
       std::unique_ptr<WebLinkPreviewTriggerer> trigger);
+
+  virtual base::ScopedClosureRunner CreateScopedClientNavigationThrottler() {
+    return {};
+  }
 };
 
 }  // namespace blink
