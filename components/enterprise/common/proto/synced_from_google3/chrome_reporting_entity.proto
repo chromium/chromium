@@ -89,7 +89,13 @@ message Event {
     // An extension was used.
     ExtensionTelemetryEvent extension_telemetry_event = 116;
 
-    // Next ID: 117
+    // A URL was visited.
+    UrlNavigationEvent url_navigation_event = 117;
+
+    // Suspicious URL was visited.
+    SuspiciousURLEvent suspicious_url_event = 118;
+
+    // Next ID: 119
   }
 }
 
@@ -112,6 +118,12 @@ message Device {
   // On Chrome OS, this will be set with the Enterprise machine ID, and on other
   // platforms, it will be the machine name.
   string name = 5;
+
+  // Optional. The device's fully qualified domain name.
+  string device_fqdn = 6;
+
+  // Optional. The name of the network (SSID) the device is connected to.
+  string network_name = 7;
 }
 
 // Describes the managed or unmanaged Chrome browser.
