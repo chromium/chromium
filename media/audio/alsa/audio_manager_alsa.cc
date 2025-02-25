@@ -43,7 +43,7 @@ static const int kDefaultSampleRate = 48000;
 // real devices, we remove them from the list to avoiding duplicate counting.
 // In addition, note that we support no more than 2 channels for recording,
 // hence surround devices are not stored in the list.
-const auto kInvalidAudioInputDevices = std::to_array<const char*>({
+constexpr auto kInvalidAudioInputDevices = std::to_array<const char*>({
     "default",
     "dmix",
     "null",
