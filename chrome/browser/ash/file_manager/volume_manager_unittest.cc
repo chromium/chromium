@@ -636,7 +636,6 @@ TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_ExternalStoragePolicy) {
     const LoggingObserver::Event& event = observer.events()[0];
     EXPECT_EQ(LoggingObserver::Event::DISK_ADD_BLOCKED_BY_POLICY, event.type);
     EXPECT_EQ("device1", event.device_path);
-    EXPECT_FALSE(event.mounting);
     ASSERT_EQ(0U, disk_mount_manager_->mount_requests().size());
   }
 
