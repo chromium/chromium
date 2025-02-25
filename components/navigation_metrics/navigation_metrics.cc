@@ -39,7 +39,7 @@ const char kMainFrameProfileTypeDifferentPage[] =
 
 namespace {
 
-const auto kSchemeNames = std::to_array<const char*>({
+constexpr auto kSchemeNames = std::to_array<const char*>({
     "unknown",
     url::kHttpScheme,
     url::kHttpsScheme,

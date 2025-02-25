@@ -12,7 +12,7 @@ namespace captive_portal {
 
 namespace {
 
-const auto kCaptivePortalResultNames = std::to_array<const char*>({
+constexpr auto kCaptivePortalResultNames = std::to_array<const char*>({
     "InternetConnected",
     "NoResponse",
     "BehindCaptivePortal",
