@@ -1,3 +1,0 @@
-ci/Android WebView O (dbg)
-ci/Android WebView P (dbg)
-ci/android-webview-13-x64-hostside-rel
