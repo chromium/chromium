@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
+
 #include "base/feature_list.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {

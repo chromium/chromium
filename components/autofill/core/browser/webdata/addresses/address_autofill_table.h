@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/webdata/common/web_database_table.h"
 

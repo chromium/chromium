@@ -32,7 +32,7 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
@@ -75,9 +75,10 @@ using SaveCardOfferUserDecision =
 // Otherwise, returns |name|.
 //
 // Note that a better way to do this would be to use SplitName from
-// src/components/autofill/core/browser/data_model/contact_info.cc. However, for
-// now we want the logic of which variations of names are considered to be the
-// same to exactly match the logic applied on the Payments server.
+// src/components/autofill/core/browser/data_model/addresses/contact_info.cc.
+// However, for now we want the logic of which variations of names are
+// considered to be the same to exactly match the logic applied on the Payments
+// server.
 std::u16string RemoveMiddleInitial(const std::u16string& name) {
   std::vector<std::u16string_view> parts =
       base::SplitStringPiece(name, base::kWhitespaceUTF16,

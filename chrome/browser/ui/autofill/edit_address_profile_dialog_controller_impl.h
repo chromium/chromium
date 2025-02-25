@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"

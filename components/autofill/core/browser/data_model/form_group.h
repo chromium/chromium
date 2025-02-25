@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 
 namespace autofill {
 

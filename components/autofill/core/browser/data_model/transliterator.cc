@@ -14,7 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_model/address.h"
+#include "components/autofill/core/browser/data_model/addresses/address.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {

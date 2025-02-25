@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
 
 #if BUILDFLAG(IS_ANDROID)
