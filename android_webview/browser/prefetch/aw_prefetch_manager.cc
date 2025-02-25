@@ -110,7 +110,8 @@ void AwPrefetchManager::StartPrefetchRequest(
 
     if (prefetch_handle) {
       // Check if we are trying to exceed the limit.
-      if (all_prefetches_.size() >= static_cast<uint>(max_prefetches_)) {
+      while (!all_prefetches_.empty() &&
+             all_prefetches_.size() >= static_cast<uint>(max_prefetches_)) {
         // Now remove the oldest prefetch, making it out of scope should trigger
         // the destructor which handles the reset needed.
         all_prefetches_.pop_front();
