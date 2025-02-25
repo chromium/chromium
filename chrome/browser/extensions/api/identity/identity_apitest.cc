@@ -570,17 +570,10 @@ class MockQueuedMintRequest : public IdentityMintRequestQueue::Request {
 
 class IdentityTestWithSignin : public AsyncExtensionBrowserTest {
  public:
-  void SetUpInProcessBrowserTestFixture() override {
-    AsyncExtensionBrowserTest::SetUpInProcessBrowserTestFixture();
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    AsyncExtensionBrowserTest::SetUpBrowserContextKeyedServices(context);
 
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &IdentityTestWithSignin::OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
 
@@ -635,8 +628,6 @@ class IdentityTestWithSignin : public AsyncExtensionBrowserTest {
 
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
-
-  base::CallbackListSubscription create_services_subscription_;
 };
 
 class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {

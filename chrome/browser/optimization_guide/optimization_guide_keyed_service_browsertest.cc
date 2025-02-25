@@ -241,6 +241,14 @@ class OptimizationGuideKeyedServiceBrowserTest
     InProcessBrowserTest::SetUp();
   }
 
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    OptimizationGuideKeyedServiceDisabledBrowserTest::
+        SetUpBrowserContextKeyedServices(context);
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
   void SetUpOnMainThread() override {
     OptimizationGuideKeyedServiceDisabledBrowserTest::SetUpOnMainThread();
 
@@ -265,22 +273,6 @@ class OptimizationGuideKeyedServiceBrowserTest
             browser()->profile());
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&OptimizationGuideKeyedServiceBrowserTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
-  }
-
-  virtual void OnWillCreateBrowserContextServices(
-      content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-  }
-
-  base::CallbackListSubscription create_services_subscription_;
   void TearDownOnMainThread() override {
     EXPECT_TRUE(https_server_->ShutdownAndWaitUntilComplete());
 
@@ -492,10 +484,10 @@ class DogfoodOptimizationGuideKeyedServiceBrowserTest
 
   ~DogfoodOptimizationGuideKeyedServiceBrowserTest() override = default;
 
-  void OnWillCreateBrowserContextServices(
+  void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
-    OptimizationGuideKeyedServiceBrowserTest::
-        OnWillCreateBrowserContextServices(context);
+    OptimizationGuideKeyedServiceBrowserTest::SetUpBrowserContextKeyedServices(
+        context);
     SetIsDogfoodClient(true);
   }
 };

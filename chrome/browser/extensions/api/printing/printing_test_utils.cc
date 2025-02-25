@@ -158,7 +158,7 @@ PrintingTestHelper::PrintingTestHelper() {
   create_services_subscription_ =
       BrowserContextDependencyManager::GetInstance()
           ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-              &PrintingTestHelper::OnWillCreateBrowserContextServices,
+              &PrintingTestHelper::SetUpBrowserContextKeyedServices,
               base::Unretained(this)));
 }
 
@@ -200,7 +200,7 @@ void PrintingTestHelper::AddAvailablePrinter(
       .SetPrinterNameForSubsequentContexts(printer_id);
 }
 
-void PrintingTestHelper::OnWillCreateBrowserContextServices(
+void PrintingTestHelper::SetUpBrowserContextKeyedServices(
     content::BrowserContext* context) {
   ash::CupsPrintJobManagerFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&BuildFakeCupsPrintJobManagerWithDocDone));

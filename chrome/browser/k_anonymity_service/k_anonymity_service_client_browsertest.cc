@@ -50,15 +50,6 @@ std::unique_ptr<net::test_server::HttpResponse> MakeTrustTokenResponse(
   return ret;
 }
 
-void OnCreateBrowserContextServices(content::BrowserContext* context) {
-  // Sets all required testing factories to have control over identity
-  // environment during test. Effectively, this substitutes the real identity
-  // environment with identity test environment, taking care to fulfill all
-  // required dependencies.
-  IdentityTestEnvironmentProfileAdaptor::
-      SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-}
-
 // Uses an embedded test server to act like a fake K-anonymity service for all
 // of the endpoints.
 class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
@@ -306,11 +297,15 @@ class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
 class KAnonymityServiceClientBrowserTest
     : public MixinBasedInProcessBrowserTest {
  public:
-  void SetUpInProcessBrowserTestFixture() override {
-    subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&OnCreateBrowserContextServices));
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    MixinBasedInProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+    // Sets all required testing factories to have control over identity
+    // environment during test. Effectively, this substitutes the real identity
+    // environment with identity test environment, taking care to fulfill all
+    // required dependencies.
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
   void SetUpOnMainThread() override {
@@ -335,7 +330,6 @@ class KAnonymityServiceClientBrowserTest
   TestKAnonymityServiceMixin k_anon_service_{&mixin_host_};
 
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
-  base::CallbackListSubscription subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(KAnonymityServiceClientBrowserTest, TestJoin) {
