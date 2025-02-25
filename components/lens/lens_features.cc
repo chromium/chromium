@@ -336,13 +336,13 @@ constexpr base::FeatureParam<bool> kHoldContextualQueriesUntilAck{
     &kLensOverlayContextualSearchbox, "hold-csb-queries-until-ack", true};
 
 constexpr base::FeatureParam<bool> kZstdCompressPdfBytes{
-    &kLensOverlayContextualSearchbox, "ztsd-compress-pdf-bytes", false};
-
-constexpr base::FeatureParam<bool> kPageContentUploadRequestIdFix{
-    &kLensOverlayContextualSearchbox, "page-content-request-id-fix", false};
+    &kLensOverlayContextualSearchbox, "zstd-compress-pdf-bytes", true};
 
 constexpr base::FeatureParam<int> kZstdCompressionLevel{
     &kLensOverlayContextualSearchbox, "zstd-compression-level", 3};
+
+constexpr base::FeatureParam<bool> kPageContentUploadRequestIdFix{
+    &kLensOverlayContextualSearchbox, "page-content-request-id-fix", false};
 
 constexpr base::FeatureParam<std::string> kTranslateEndpointUrl{
     &kLensOverlayTranslateLanguages, "translate-endpoint-url",
