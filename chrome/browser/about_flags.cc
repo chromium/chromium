@@ -9595,6 +9595,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupPaneAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(tab_groups::kTabGroupPaneAndroid)},
 
+    {"tab-group-parity-bottom-sheet-android",
+     flag_descriptions::kTabGroupParityBottomSheetAndroidName,
+     flag_descriptions::kTabGroupParityBottomSheetAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabGroupParityBottomSheetAndroid)},
+
     {"tab-strip-context-menu-android",
      flag_descriptions::kTabStripContextMenuAndroidName,
      flag_descriptions::kTabStripContextMenuAndroidDescription, kOsAndroid,
