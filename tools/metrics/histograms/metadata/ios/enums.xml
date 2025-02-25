@@ -725,13 +725,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Obsolete - Loading Started"/>
 </enum>
 
-<enum name="IOSParcelTrackingOptInActionOnPrompt">
-  <int value="0" label="AskEveryTime"/>
-  <int value="1" label="AlwaysTrack"/>
-  <int value="2" label="NoThanks"/>
-  <int value="3" label="SwipeToDismiss"/>
-</enum>
-
 <enum name="IOSParcelTrackingOptInStatus">
   <int value="0" label="Never Track"/>
   <int value="1" label="Always Track"/>

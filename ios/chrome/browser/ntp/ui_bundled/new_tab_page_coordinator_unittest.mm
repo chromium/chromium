@@ -43,7 +43,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
-#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -318,8 +317,6 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     snackbar_commands_handler_mock_ =
         OCMProtocolMock(@protocol(SnackbarCommands));
     fakebox_focuser_handler_mock_ = OCMProtocolMock(@protocol(FakeboxFocuser));
-    parcel_tracking_commands_handler_mock_ =
-        OCMProtocolMock(@protocol(ParcelTrackingOptInCommands));
     [browser_.get()->GetCommandDispatcher()
         startDispatchingToTarget:application_handler_mock_
                      forProtocol:@protocol(ApplicationCommands)];
@@ -335,9 +332,6 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     [browser_.get()->GetCommandDispatcher()
         startDispatchingToTarget:fakebox_focuser_handler_mock_
                      forProtocol:@protocol(FakeboxFocuser)];
-    [browser_.get()->GetCommandDispatcher()
-        startDispatchingToTarget:parcel_tracking_commands_handler_mock_
-                     forProtocol:@protocol(ParcelTrackingOptInCommands)];
   }
 
   // Dynamically calls a selector on an object.
@@ -402,7 +396,6 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   id omnibox_commands_handler_mock_;
   id snackbar_commands_handler_mock_;
   id fakebox_focuser_handler_mock_;
-  id parcel_tracking_commands_handler_mock_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

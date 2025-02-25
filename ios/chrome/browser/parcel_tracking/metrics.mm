@@ -9,25 +9,6 @@
 
 namespace parcel_tracking {
 
-const char kOptInPromptActionHistogramName[] =
-    "IOS.ParcelTracking.OptIn.ActionOnPrompt";
-
-const char kOptInPromptDisplayedHistogramName[] =
-    "IOS.ParcelTracking.OptIn.Displayed";
-
-// Name of the histogram that logs when packages are tracked from an infobar.
-const char kTrackedFromInfobarHistogramName[] =
-    "IOS.ParcelTracking.Tracked.Infobar";
-
-// Name of the histogram that logs when packages are tracked from Auto Track.
-const char kTrackedFromAutoTrackHistogramName[] =
-    "IOS.ParcelTracking.Tracked.AutoTrack";
-
-// Name of the histogram that logs when packages are tracked from long press
-// menu.
-const char kTrackedFromLongPressHistogramName[] =
-    "IOS.ParcelTracking.Tracked.LongPress";
-
 // Name of the histogram that logs when packages are untracked from an infobar
 // modal.
 const char kUntrackedFromInfobarHistogramName[] =
@@ -37,27 +18,6 @@ const char kUntrackedFromInfobarHistogramName[] =
 // stack module.
 const char kUntrackedFromMagicStackHistogramName[] =
     "IOS.ParcelTracking.Untracked.MagicStack";
-
-void RecordParcelsTracked(TrackingSource tracking_source,
-                          int number_of_parcels) {
-  switch (tracking_source) {
-    case TrackingSource::kInfobar:
-      base::UmaHistogramCounts100(kTrackedFromInfobarHistogramName,
-                                  number_of_parcels);
-      break;
-    case TrackingSource::kLongPress:
-      base::UmaHistogramCounts100(kTrackedFromLongPressHistogramName,
-                                  number_of_parcels);
-      break;
-    case TrackingSource::kAutoTrack:
-      base::UmaHistogramCounts100(kTrackedFromAutoTrackHistogramName,
-                                  number_of_parcels);
-      break;
-    case TrackingSource::kMagicStackModule:
-      // Package cannot be tracked this way.
-      break;
-  }
-}
 
 void RecordParcelsUntracked(TrackingSource tracking_source,
                             int number_of_parcels) {

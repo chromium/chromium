@@ -21,7 +21,6 @@
 
 @protocol CRWWebViewHandlerDelegate;
 @protocol MiniMapCommands;
-@protocol ParcelTrackingOptInCommands;
 @protocol UnitConversionCommands;
 @class UIViewController;
 
@@ -43,14 +42,6 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
 
   // Sets the MiniMapCommands that can display mini maps.
   void SetMiniMapCommands(id<MiniMapCommands> mini_map_handler);
-
-  // Sets the ParcelTrackingOptInCommands that can display the parcel tracking
-  // opt-in prompt.
-  //
-  // TODO(crbug.com/391002352): Remove function entirely, as Parcel Tracking has
-  // been turned down.
-  void SetParcelTrackingOptInCommands(
-      id<ParcelTrackingOptInCommands> parcel_tracking_handler);
 
   // Sets the UnitConversionCommands that can display unit conversion.
   void SetUnitConversionCommands(

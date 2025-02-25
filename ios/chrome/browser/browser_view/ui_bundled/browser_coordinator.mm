@@ -131,8 +131,6 @@
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_coordinator.h"
 #import "ios/chrome/browser/page_info/ui_bundled/requirements/page_info_presentation.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_infobar_delegate.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_step.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_breach_coordinator.h"
@@ -201,7 +199,6 @@
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
-#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
@@ -339,7 +336,6 @@ enum class ToolbarKind {
     OverscrollActionsControllerDelegate,
     PageInfoCommands,
     PageInfoPresentation,
-    ParcelTrackingOptInCommands,
     ParentAccessCommands,
     PasswordBreachCommands,
     PasswordControllerDelegate,
@@ -1022,7 +1018,6 @@ enum class ToolbarKind {
     @protocol(WebContentCommands),
     @protocol(DefaultBrowserGenericPromoCommands),
     @protocol(MiniMapCommands),
-    @protocol(ParcelTrackingOptInCommands),
     @protocol(ParentAccessCommands),
     @protocol(ReminderNotificationsCommands),
     @protocol(UnitConversionCommands),
@@ -3005,40 +3000,6 @@ enum class ToolbarKind {
   if (FollowBrowserAgent::FromBrowser(self.browser)) {
     FollowBrowserAgent::FromBrowser(self.browser)->ClearUIProviders();
   }
-}
-
-#pragma mark - ParcelTrackingOptInCommands
-
-- (void)showParcelTrackingInfobarWithParcels:
-            (NSArray<CustomTextCheckingResult*>*)parcels
-                                     forStep:(ParcelTrackingStep)step {
-  web::WebState* activeWebState = self.activeWebState;
-  if (!activeWebState) {
-    return;
-  }
-  ProfileIOS* profile = self.browser->GetProfile();
-  if (!commerce::IsParcelTrackingEligible(
-          commerce::ShoppingServiceFactory::GetForProfile(profile)
-              ->GetAccountChecker())) {
-    return;
-  }
-  if (step == ParcelTrackingStep::kNewPackageTracked) {
-    feature_engagement::Tracker* engagementTracker =
-        feature_engagement::TrackerFactory::GetForProfile(profile);
-    engagementTracker->NotifyEvent(feature_engagement::events::kParcelTracked);
-  }
-  std::unique_ptr<ParcelTrackingInfobarDelegate> delegate =
-      std::make_unique<ParcelTrackingInfobarDelegate>(
-          activeWebState, step, parcels,
-          HandlerForProtocol(self.dispatcher, ApplicationCommands),
-          HandlerForProtocol(self.dispatcher, ParcelTrackingOptInCommands));
-  infobars::InfoBarManager* infobar_manager =
-      InfoBarManagerImpl::FromWebState(activeWebState);
-
-  std::unique_ptr<infobars::InfoBar> infobar = std::make_unique<InfoBarIOS>(
-      InfobarType::kInfobarTypeParcelTracking, std::move(delegate));
-  infobar_manager->AddInfoBar(std::move(infobar),
-                              /*replace_existing=*/true);
 }
 
 #pragma mark - ParentAccessCommands
