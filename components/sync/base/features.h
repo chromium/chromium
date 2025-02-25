@@ -25,6 +25,9 @@ inline constexpr base::FeatureParam<int>
         &kDeferredSyncStartupCustomDelay,
         "DeferredSyncStartupCustomDelayInSeconds", 1};
 
+// Enables syncing of Loyalty Cards coming from Google Wallet.
+BASE_DECLARE_FEATURE(kSyncAutofillLoyaltyCard);
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls whether to show a batch upload card in Android unified settings
 // panel.

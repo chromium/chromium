@@ -895,6 +895,7 @@ chromium-metrics-reviews@google.com.
   <int value="66" label="Product Comparison"/>
   <int value="67" label="Cookies"/>
   <int value="68" label="Plus Address Settings"/>
+  <int value="69" label="Autofill Loyalty Card"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/base/data_type.h:SyncDataTypes) -->

@@ -48,7 +48,7 @@ class SyncServiceFactoryTest : public PlatformTest {
  protected:
   // Returns the collection of default datatypes.
   syncer::DataTypeSet DefaultDatatypes() {
-    static_assert(53 == syncer::GetNumDataTypes(),
+    static_assert(54 == syncer::GetNumDataTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
@@ -96,6 +96,9 @@ class SyncServiceFactoryTest : public PlatformTest {
     // controller gets instantiated for the type.
     if (syncer::IsWebauthnCredentialSyncEnabled()) {
       datatypes.Put(syncer::WEBAUTHN_CREDENTIAL);
+    }
+    if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
+      datatypes.Put(syncer::AUTOFILL_LOYALTY_CARD);
     }
     return datatypes;
   }

@@ -721,7 +721,7 @@ VISIT_PROTO_FIELDS(
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
-  static_assert(53 == GetNumDataTypes(),
+  static_assert(54 == GetNumDataTypes(),
                 "When adding a new protocol type, you will likely need to add "
                 "it here as well.");
   VISIT(encrypted);
@@ -730,6 +730,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(app_setting);
   VISIT(arc_package);
   VISIT(autofill);
+  VISIT(autofill_loyalty_card);
   VISIT(autofill_offer);
   VISIT(autofill_profile);
   VISIT(autofill_wallet);
@@ -1989,6 +1990,10 @@ VISIT_PROTO_FIELDS(
   VISIT(title);
   VISIT_ENUM(color);
   VISIT(is_collapsed);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::AutofillLoyaltyCardSpecifics& proto) {
+  // TODO(crbug.com/393119606): In CL #2, VISIT fields added to specifics.
 }
 
 }  // namespace syncer

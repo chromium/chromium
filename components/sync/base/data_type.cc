@@ -15,11 +15,11 @@ namespace syncer {
 
 namespace {
 
-static_assert(53 == syncer::GetNumDataTypes(),
+static_assert(54 == syncer::GetNumDataTypes(),
               "When adding a new type, update enum SyncDataTypes in enums.xml "
               "and suffix SyncDataType in histograms.xml.");
 
-static_assert(53 == syncer::GetNumDataTypes(),
+static_assert(54 == syncer::GetNumDataTypes(),
               "When adding a new type, follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
               "integration-checklist/");
@@ -106,6 +106,8 @@ constexpr kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
         {sync_pb::EntitySpecifics::kCookieFieldNumber, COOKIES},
         {sync_pb::EntitySpecifics::kPlusAddressSettingFieldNumber,
          PLUS_ADDRESS_SETTING},
+        {sync_pb::EntitySpecifics::kAutofillLoyaltyCardFieldNumber,
+         AUTOFILL_LOYALTY_CARD},
         // ---- Control Types ----
         {sync_pb::EntitySpecifics::kNigoriFieldNumber, NIGORI},
     });
@@ -273,6 +275,9 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
     case PLUS_ADDRESS_SETTING:
       specifics->mutable_plus_address_setting();
       break;
+    case AUTOFILL_LOYALTY_CARD:
+      specifics->mutable_autofill_loyalty_card();
+      break;
   }
 }
 
@@ -393,6 +398,8 @@ int GetSpecificsFieldNumberFromDataType(DataType data_type) {
       return sync_pb::EntitySpecifics::kCookieFieldNumber;
     case PLUS_ADDRESS_SETTING:
       return sync_pb::EntitySpecifics::kPlusAddressSettingFieldNumber;
+    case AUTOFILL_LOYALTY_CARD:
+      return sync_pb::EntitySpecifics::kAutofillLoyaltyCardFieldNumber;
     case NIGORI:
       return sync_pb::EntitySpecifics::kNigoriFieldNumber;
   }
@@ -411,7 +418,7 @@ void internal::GetDataTypeSetFromSpecificsFieldNumberListHelper(
 }
 
 DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(53 == syncer::GetNumDataTypes(),
+  static_assert(54 == syncer::GetNumDataTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark()) {
@@ -570,6 +577,9 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   if (specifics.has_plus_address_setting()) {
     return PLUS_ADDRESS_SETTING;
   }
+  if (specifics.has_autofill_loyalty_card()) {
+    return AUTOFILL_LOYALTY_CARD;
+  }
 
   // This client version doesn't understand `specifics`.
   DVLOG(1) << "Unknown datatype in sync proto.";
@@ -577,7 +587,7 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
 }
 
 DataTypeSet EncryptableUserTypes() {
-  static_assert(53 == syncer::GetNumDataTypes(),
+  static_assert(54 == syncer::GetNumDataTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   DataTypeSet encryptable_user_types = UserTypes();
@@ -721,6 +731,8 @@ const char* DataTypeToDebugString(DataType data_type) {
       return "Cookies";
     case PLUS_ADDRESS_SETTING:
       return "Plus Address Setting";
+    case AUTOFILL_LOYALTY_CARD:
+      return "Autofill Loyalty Card";
     case NIGORI:
       return "Encryption Keys";
   }
@@ -834,6 +846,8 @@ const char* DataTypeToHistogramSuffix(DataType data_type) {
       return "COOKIE";
     case PLUS_ADDRESS_SETTING:
       return "PLUS_ADDRESS_SETTING";
+    case AUTOFILL_LOYALTY_CARD:
+      return "AUTOFILL_LOYALTY_CARD";
     case NIGORI:
       return "NIGORI";
   }
@@ -947,6 +961,8 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kCookies;
     case PLUS_ADDRESS_SETTING:
       return DataTypeForHistograms::kPlusAddressSettings;
+    case AUTOFILL_LOYALTY_CARD:
+      return DataTypeForHistograms::kAutofillLoyaltyCard;
     case NIGORI:
       return DataTypeForHistograms::kNigori;
   }
@@ -1077,6 +1093,8 @@ const char* DataTypeToStableLowerCaseString(DataType data_type) {
       return "cookies";
     case PLUS_ADDRESS_SETTING:
       return "plus_address_setting";
+    case AUTOFILL_LOYALTY_CARD:
+      return "autofill_loyalty_card";
     case NIGORI:
       return "nigori";
   }

@@ -1079,7 +1079,7 @@ void SyncTest::ExcludeDataTypesFromCheckForDataTypeFailures(
 // enabled by default, e.g. HISTORY requires a dedicated opt-in via
 // SyncUserSettings::SetSelectedTypes().
 syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
-  static_assert(53 == syncer::GetNumDataTypes(),
+  static_assert(54 == syncer::GetNumDataTypes(),
                 "Add new types below if they can run in transport mode");
   // Only some types will run by default in transport mode (i.e. without their
   // own separate opt-in).
@@ -1135,6 +1135,9 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::SESSIONS);
     allowed_types.Put(syncer::PRODUCT_COMPARISON);
     allowed_types.Put(syncer::SAVED_TAB_GROUP);
+  }
+  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
+    allowed_types.Put(syncer::AUTOFILL_LOYALTY_CARD);
   }
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
