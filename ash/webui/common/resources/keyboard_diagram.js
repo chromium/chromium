@@ -40,6 +40,7 @@ export const PhysicalLayout = {
   CHROME_OS_DELL_ENTERPRISE_WILCO: 'dell-enterprise-wilco',
   CHROME_OS_DELL_ENTERPRISE_DRALLION: 'dell-enterprise-drallion',
   SPLIT_MODIFIER: 'split-modifier',
+  ACER_SPLIT_MODIFIER_WITH_NUMPAD: 'acer-split-modifier-with-numpad',
 };
 
 /**
