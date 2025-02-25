@@ -28,7 +28,7 @@ struct ModifierMaskAndKeyCode {
   ui::KeyboardCode key_code;
 };
 
-const auto kModifiers = std::to_array<ModifierMaskAndKeyCode>({
+constexpr auto kModifiers = std::to_array<ModifierMaskAndKeyCode>({
     {kShiftKeyModifierMask, ui::VKEY_SHIFT},
     {kControlKeyModifierMask, ui::VKEY_CONTROL},
     {kAltKeyModifierMask, ui::VKEY_MENU},
@@ -40,7 +40,7 @@ const auto kModifiers = std::to_array<ModifierMaskAndKeyCode>({
 // the W3C spec (https://w3c.github.io/webdriver/#dfn-normalised-key-value),
 // and are in the Unicode Private Use Area. All other keys have their code
 // points defined by the Unicode standard.
-const auto kSpecialWebDriverKeys = std::to_array<ui::KeyboardCode>({
+constexpr auto kSpecialWebDriverKeys = std::to_array<ui::KeyboardCode>({
     ui::VKEY_UNKNOWN,  // \uE000
     ui::VKEY_CANCEL,   // \uE001
     ui::VKEY_HELP,         ui::VKEY_BACK,    ui::VKEY_TAB,
@@ -172,7 +172,7 @@ bool KeyCodeFromShorthandKey(char16_t key_utf16,
 // The code point starts at \uE000 and must increase by 1 with each row,
 // with placeholders (empty strings) used for unassigned code points.
 const int kNormalisedKeyValueBase = 0xE000;
-const auto kNormalisedKeyValue = std::to_array<const char*>({
+constexpr auto kNormalisedKeyValue = std::to_array<const char*>({
     "Unidentified",  // \uE000
     "Cancel",        // \uE001
     "Help",          // \uE002

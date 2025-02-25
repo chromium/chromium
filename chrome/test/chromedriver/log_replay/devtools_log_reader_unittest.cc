@@ -19,7 +19,7 @@
 
 namespace {
 // Log files to test the reader against
-const auto kTestDataPath = std::to_array<const char*>({
+constexpr auto kTestDataPath = std::to_array<const char*>({
     "chrome",
     "test",
     "chromedriver",
