@@ -1252,6 +1252,7 @@ TEST_F(FaviconBackendTest, GetFaviconsForUrlFallbackToHost) {
               {gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE)});
 
   {
+    base::HistogramTester histogram_tester;
     // Querying for the http URL with `fallback_to_host`=false returns nothing.
     std::vector<favicon_base::FaviconRawBitmapResult> bitmap_results_out =
         backend_->GetFaviconsForUrl(page_url_http,
@@ -1268,9 +1269,12 @@ TEST_F(FaviconBackendTest, GetFaviconsForUrlFallbackToHost) {
 
     ASSERT_EQ(1u, bitmap_results_out.size());
     EXPECT_EQ(icon_url3, bitmap_results_out[0].icon_url);
+    histogram_tester.ExpectBucketCount("Favicons.FallbackToHostSuccess", true,
+                                       1);
   }
 
   {
+    base::HistogramTester histogram_tester;
     // Querying for a URL with non HTTP/HTTPS scheme returns nothing even if
     // `fallback_to_host` is true.
     std::vector<favicon_base::FaviconRawBitmapResult> bitmap_results_out =
@@ -1285,6 +1289,8 @@ TEST_F(FaviconBackendTest, GetFaviconsForUrlFallbackToHost) {
         {kSmallEdgeSize}, true);
 
     EXPECT_TRUE(bitmap_results_out.empty());
+    histogram_tester.ExpectBucketCount("Favicons.FallbackToHostSuccess", true,
+                                       0);
   }
 }
 
