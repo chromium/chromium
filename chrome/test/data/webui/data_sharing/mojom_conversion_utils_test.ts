@@ -30,6 +30,7 @@ suite('MojomConversionUtilsTest', () => {
         avatarUrl,
         givenName,
       }],
+      formerMembers: [],
     });
 
     const expectedGroupData: GroupData = {

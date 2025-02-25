@@ -12322,14 +12322,23 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <!-- /errors and warnings -->
 
       <!-- Delete Last Tab Dialog -->
+        <message name="IDS_DATA_SHARING_DELETE_LAST_DIALOG_HEADER" desc="Header of the dialog for confirming the owner deleting the last tab of the shared group.">
+          Keep tab group?
+        </message>
         <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_BODY" desc="Description for the confirming the owner deleting the last tab of the shared group. [ICU_Syntax]">
           {NUM_GROUPS, plural, =1 {Keep this group to add tabs later, or delete it if you no longer need it.} other {Keep these groups to add tabs later, or delete them if you no longer need them.}}
+        </message>
+        <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_BODY_SINGULAR" desc="Description for the confirming the owner deleting the last tab of the shared group in singular form.">
+          Keep this group to add tabs later, or delete it if you no longer need it.
         </message>
         <message name="IDS_DATA_SHARING_OWNER_DELETE_LAST_TAB_BODY_2" desc="More description for the confirming the owner deleting the last tab of the shared group.">
           If you delete it, everyone will immediately lose access to the "<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group, and it will be deleted from all devices.
         </message>
         <message name="IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_BODY" desc="Description for the confirming the member deleting the last tab of one or more shared groups. [ICU_Syntax]">
           {NUM_GROUPS, plural, =1 {Keep this group to add tabs later, or leave it if you no longer want access to it} other {Keep these groups to add tabs later, or leave them if you no longer want access to them}}
+        </message>
+        <message name="IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_BODY_SINGULAR" desc="Description for the confirming the member deleting the last tab of one or more shared groups in singular form.">
+          Keep this group to add tabs later, or leave it if you no longer want access to it.
         </message>
       <!-- /Delete Last Tab Dialog -->
 
@@ -12417,6 +12426,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name ="IDS_DATA_SHARING_LEAVE_GROUP" desc="Text of menu item to leave the group">
           Leave group
+        </message>
+        <message name ="IDS_DATA_SHARING_KEEP_GROUP" desc="Text of button to keep the group">
+          Keep group
+        </message>
+        <message name ="IDS_DATA_SHARING_DELETE_GROUP" desc="Text of button item to delete the group">
+          Delete group
         </message>
         <message name ="IDS_DATA_SHARING_LOADING" desc="Alt text of the loading indicator for the data sharing dialog.">
           Loading
