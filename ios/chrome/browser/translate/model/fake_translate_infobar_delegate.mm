@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/translate/model/fake_translate_infobar_delegate.h"
 
-#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/translate/core/browser/mock_translate_client.h"
 #import "components/translate/core/browser/mock_translate_infobar_delegate.h"
 #import "components/translate/core/browser/mock_translate_ranker.h"
@@ -64,14 +63,11 @@ bool FakeTranslateInfoBarDelegate::IsTranslatableLanguageByPrefs() const {
 }
 
 FakeTranslateInfoBarDelegateFactory::FakeTranslateInfoBarDelegateFactory() {
-  pref_service_ =
-      std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-  language::LanguagePrefs::RegisterProfilePrefs(pref_service_->registry());
-  translate::TranslatePrefs::RegisterProfilePrefs(pref_service_->registry());
-  pref_service_->registry()->RegisterBooleanPref(
+  language::LanguagePrefs::RegisterProfilePrefs(pref_service_.registry());
+  translate::TranslatePrefs::RegisterProfilePrefs(pref_service_.registry());
+  pref_service_.registry()->RegisterBooleanPref(
       translate::prefs::kOfferTranslateEnabled, true);
-  client_ =
-      std::make_unique<MockTranslateClient>(&driver_, pref_service_.get());
+  client_ = std::make_unique<MockTranslateClient>(&driver_, &pref_service_);
   ranker_ = std::make_unique<MockTranslateRanker>();
   language_model_ = std::make_unique<MockLanguageModel>();
   manager_ = std::make_unique<translate::TranslateManager>(

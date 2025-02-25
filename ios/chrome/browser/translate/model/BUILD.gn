@@ -72,6 +72,7 @@ source_set("unit_tests") {
     "chrome_ios_translate_client_unittest.mm",
     "translate_service_ios_unittest.cc",
   ]
+  public_deps = [ "//components/sync_preferences:test_support" ]
   deps = [
     ":model",
     ":public",
@@ -85,7 +86,6 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:prediction",
     "//components/prefs",
     "//components/prefs:test_support",
-    "//components/sync_preferences:test_support",
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//components/translate/core/language_detection",
