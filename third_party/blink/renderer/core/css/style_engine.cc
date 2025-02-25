@@ -4468,6 +4468,21 @@ const CounterStyle& StyleEngine::FindCounterStyleAcrossScopes(
   return CounterStyle::GetDecimal();
 }
 
+std::pair<StyleRuleFunction*, const TreeScope*>
+StyleEngine::FindFunctionAcrossScopes(const AtomicString& name,
+                                      const TreeScope* tree_scope) const {
+  for (const TreeScope* s = tree_scope; s; s = s->ParentTreeScope()) {
+    if (ScopedStyleResolver* scoped_resolver = s->GetScopedStyleResolver()) {
+      if (StyleRuleFunction* function =
+              scoped_resolver->FunctionForName(name)) {
+        return {function, s};
+      }
+    }
+  }
+  // TODO(crbug.com/398554840): User origin.
+  return {nullptr, nullptr};
+}
+
 void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(injected_user_style_sheets_);

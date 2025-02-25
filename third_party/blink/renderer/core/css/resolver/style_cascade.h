@@ -349,42 +349,57 @@ class CORE_EXPORT StyleCascade {
   // Here, to resolve 'width', the computed value of --y must be known. In
   // other words, we must first Apply '--y'. Hence, resolving 'width' will
   // Apply '--y' as a side-effect. (This process would then continue to '--x').
+  //
+  // The TreeScope provided to a Resolve* function is the TreeScope
+  // of the declaration holding the value being processed. For a given "tree"
+  // of Resolve* calls, the TreeScope may vary. For example, ResolveRevertLayer
+  // resolves its reverted-to value using the TreeScope of the declaration
+  // holding that value.
 
   const CSSValue* Resolve(const CSSProperty&,
                           const CSSValue&,
+                          const TreeScope*,
                           CascadePriority,
                           CascadeOrigin&,
                           CascadeResolver&);
   const CSSValue* ResolveSubstitutions(const CSSProperty&,
                                        const CSSValue&,
+                                       const TreeScope*,
                                        CascadeResolver&);
   const CSSValue* ResolveCustomProperty(const CSSProperty&,
                                         const CSSUnparsedDeclarationValue&,
+                                        const TreeScope*,
                                         CascadeResolver&);
   const CSSValue* ResolveVariableReference(const CSSProperty&,
                                            const CSSUnparsedDeclarationValue&,
+                                           const TreeScope*,
                                            CascadeResolver&);
   const CSSValue* ResolvePendingSubstitution(const CSSProperty&,
                                              const CSSPendingSubstitutionValue&,
+                                             const TreeScope*,
                                              CascadeResolver&);
   const CSSValue* ResolveRevert(const CSSProperty&,
                                 const CSSValue&,
+                                const TreeScope*,
                                 CascadeOrigin&,
                                 CascadeResolver&);
   const CSSValue* ResolveRevertLayer(const CSSProperty&,
+                                     const TreeScope*,
                                      CascadePriority,
                                      CascadeOrigin&,
                                      CascadeResolver&);
   const CSSValue* ResolveFlipRevert(const CSSProperty&,
                                     const CSSFlipRevertValue&,
+                                    const TreeScope*,
                                     CascadePriority,
                                     CascadeOrigin&,
                                     CascadeResolver&);
   const CSSValue* ResolveMathFunction(const CSSProperty&,
                                       const CSSMathFunctionValue&,
-                                      CascadePriority);
+                                      const TreeScope*);
 
   CSSVariableData* ResolveVariableData(CSSVariableData*,
+                                       const TreeScope*,
                                        const CSSParserContext&,
                                        FunctionContext*,
                                        CascadeResolver&);
@@ -415,6 +430,9 @@ class CORE_EXPORT StyleCascade {
     STACK_ALLOCATED();
 
    public:
+    // The TreeScope owning the corresponding function rule.
+    const TreeScope* tree_scope = nullptr;
+
     // The values within `arguments` and `locals` are the values used
     // to substitute var() functions that refer to arguments and local
     // variables (respectively).
@@ -452,41 +470,49 @@ class CORE_EXPORT StyleCascade {
   // [1] https://drafts.csswg.org/css-variables/#invalid-at-computed-value-time
 
   bool ResolveTokensInto(CSSParserTokenStream&,
+                         const TreeScope*,
                          CascadeResolver&,
                          const CSSParserContext&,
                          FunctionContext*,
                          CSSParserTokenType stop_type,
                          TokenSequence&);
   bool ResolveVarInto(CSSParserTokenStream&,
+                      const TreeScope*,
                       CascadeResolver&,
                       const CSSParserContext&,
                       FunctionContext*,
                       TokenSequence&);
   bool ResolveEnvInto(CSSParserTokenStream&,
+                      const TreeScope*,
                       CascadeResolver&,
                       const CSSParserContext&,
                       TokenSequence&);
   bool ResolveAttrInto(CSSParserTokenStream&,
+                       const TreeScope*,
                        CascadeResolver&,
                        const CSSParserContext&,
                        FunctionContext*,
                        TokenSequence&);
   bool ResolveAutoBaseInto(CSSParserTokenStream&,
+                           const TreeScope*,
                            CascadeResolver&,
                            const CSSParserContext&,
                            TokenSequence&);
   bool ResolveIfInto(CSSParserTokenStream&,
+                     const TreeScope*,
                      CascadeResolver&,
                      const CSSParserContext&,
                      FunctionContext*,
                      TokenSequence&);
 
-  bool EvalIfCondition(CSSParserTokenStream& stream,
-                       CascadeResolver& resolver,
-                       const CSSParserContext& context,
+  bool EvalIfCondition(CSSParserTokenStream&,
+                       const TreeScope*,
+                       CascadeResolver&,
+                       const CSSParserContext&,
                        FunctionContext*,
                        bool& is_attr_tainted);
   KleeneValue EvalIfStyleFeature(const MediaQueryFeatureExpNode&,
+                                 const TreeScope*,
                                  CascadeResolver&,
                                  const CSSParserContext& context,
                                  FunctionContext*,
@@ -502,12 +528,14 @@ class CORE_EXPORT StyleCascade {
   // resolve arguments given to this function. See comment within the
   // definition.
   bool ResolveFunctionInto(StringView function_name,
+                           const TreeScope*,
                            CSSParserTokenStream& stream,
                            CascadeResolver& resolver,
                            const CSSParserContext& context,
                            FunctionContext* function_context,
                            TokenSequence& out);
   bool ResolveArgumentOrLocalInto(const CSSValue* value,
+                                  const TreeScope*,
                                   CSSParserTokenStream& stream,
                                   CascadeResolver& resolver,
                                   const CSSParserContext& context,
@@ -515,6 +543,7 @@ class CORE_EXPORT StyleCascade {
                                   TokenSequence& out);
 
   const CSSValue* ResolveFunctionExpression(const CSSValue& unresolved,
+                                            const TreeScope*,
                                             const CSSSyntaxDefinition* type,
                                             CascadeResolver&,
                                             const CSSParserContext&,
@@ -621,6 +650,7 @@ class CORE_EXPORT StyleCascade {
   bool TreatAsRevertLayer(CascadePriority) const;
 
   const Document& GetDocument() const;
+  const TreeScope* GetTreeScope(CascadePriority) const;
   const CSSProperty& ResolveSurrogate(const CSSProperty& surrogate);
 
   void CountUse(WebFeature);

@@ -640,6 +640,14 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   const CounterStyle& FindCounterStyleAcrossScopes(const AtomicString&,
                                                    const TreeScope*) const;
 
+  // Resolve a tree-scoped reference to a @function rule.
+  //
+  // https://drafts.csswg.org/css-mixins-1/#function-rule
+  // https://drafts.csswg.org/css-scoping-1/#css-tree-scoped-reference
+  std::pair<StyleRuleFunction*, const TreeScope*> FindFunctionAcrossScopes(
+      const AtomicString& name,
+      const TreeScope*) const;
+
   const CascadeLayerMap* GetUserCascadeLayerMap() const {
     return user_cascade_layer_map_.Get();
   }
