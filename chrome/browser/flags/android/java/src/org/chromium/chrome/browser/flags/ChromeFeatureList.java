@@ -201,6 +201,8 @@ public abstract class ChromeFeatureList {
             "AutofillAllowNonHttpActivation";
     public static final String AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS =
             "AutofillEnableCardBenefitsForAmericanExpress";
+    public static final String AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO =
+            "AutofillEnableCardBenefitsForBmo";
     public static final String AUTOFILL_ENABLE_CARD_PRODUCT_NAME = "AutofillEnableCardProductName";
     public static final String AUTOFILL_ENABLE_LOCAL_IBAN = "AutofillEnableLocalIban";
     public static final String AUTOFILL_ENABLE_SERVER_IBAN = "AutofillEnableServerIban";
