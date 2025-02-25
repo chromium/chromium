@@ -431,8 +431,9 @@ void DidGetExecutionReadyClient(
 
 }  // namespace
 
-void FocusWindowClient(ServiceWorkerClient* service_worker_client,
-                       ClientCallback callback) {
+void FocusWindowClient(
+    ServiceWorkerClient* service_worker_client,
+    blink::mojom::ServiceWorkerHost::FocusClientCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(service_worker_client->IsContainerForWindowClient());
 
@@ -443,17 +444,16 @@ void FocusWindowClient(ServiceWorkerClient* service_worker_client,
       WebContents::FromRenderFrameHost(render_frame_host));
 
   if (!render_frame_host || !web_contents) {
-    std::move(callback).Run(nullptr);
+    auto result = blink::mojom::FocusResult::NewErrorCode(
+        blink::mojom::FocusError::CLIENT_NOT_FOUND);
+    std::move(callback).Run(std::move(result));
     return;
   }
 
-  // Avoid focusing on inactive pages.
-  // TODO(crbug.com/40193903): Running the callback with nullptr
-  // results in NotFoundError whereas TypeError should be invoked
-  // according to the specification.
-  // https://w3c.github.io/ServiceWorker/#client-focus
   if (!render_frame_host->IsActive()) {
-    std::move(callback).Run(nullptr);
+    auto result = blink::mojom::FocusResult::NewErrorCode(
+        blink::mojom::FocusError::CLIENT_INACTIVE);
+    std::move(callback).Run(std::move(result));
     return;
   }
 
@@ -473,7 +473,8 @@ void FocusWindowClient(ServiceWorkerClient* service_worker_client,
       GetWindowClientInfo(service_worker_client->creation_url(), rfh_id,
                           service_worker_client->create_time(),
                           service_worker_client->client_uuid());
-  std::move(callback).Run(std::move(info));
+  auto result = blink::mojom::FocusResult::NewClient(std::move(info));
+  std::move(callback).Run(std::move(result));
 }
 
 void OpenWindow(const GURL& url,

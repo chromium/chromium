@@ -1839,7 +1839,9 @@ void ServiceWorkerVersion::PostMessageToClient(
 void ServiceWorkerVersion::FocusClient(const std::string& client_uuid,
                                        FocusClientCallback callback) {
   if (!context_) {
-    std::move(callback).Run(nullptr /* client */);
+    auto result = blink::mojom::FocusResult::NewErrorCode(
+        blink::mojom::FocusError::CLIENT_NOT_FOUND);
+    std::move(callback).Run(std::move(result));
     return;
   }
   ServiceWorkerClient* service_worker_client =
@@ -1847,7 +1849,9 @@ void ServiceWorkerVersion::FocusClient(const std::string& client_uuid,
           client_uuid);
   if (!service_worker_client) {
     // The client may already have been closed, just fail.
-    std::move(callback).Run(nullptr /* client */);
+    auto result = blink::mojom::FocusResult::NewErrorCode(
+        blink::mojom::FocusError::CLIENT_NOT_FOUND);
+    std::move(callback).Run(std::move(result));
     return;
   }
   if (service_worker_client->GetUrlForScopeMatch().DeprecatedGetOriginAsURL() !=
