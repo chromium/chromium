@@ -1429,7 +1429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.DeleteUndecryptableLoginsReturnValue"
-    enum="DeleteCorruptedPasswordsResult" expires_after="2025-06-22">
+    enum="DeleteCorruptedPasswordsResult" expires_after="2025-08-24">
   <owner>vasilii@chromium.org</owner>
   <owner>kazinova@google.com</owner>
   <summary>
@@ -2162,7 +2162,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.LocalUpmActivationError{UserType}"
-    enum="LocalUpmActivationError" expires_after="2025-06-22">
+    enum="LocalUpmActivationError" expires_after="2025-08-24">
   <owner>ioanap@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
@@ -2190,7 +2190,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.LocalUpmActivationStatus"
-    enum="UseUpmLocalAndSeparateStoresState" expires_after="2025-06-22">
+    enum="UseUpmLocalAndSeparateStoresState" expires_after="2025-08-24">
   <owner>ioanap@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
@@ -3635,7 +3635,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.PotentialBestMatchFormType"
-    enum="PasswordManagerMatchedFormType" expires_after="2025-06-22">
+    enum="PasswordManagerMatchedFormType" expires_after="2025-08-24">
   <owner>sygiet@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>

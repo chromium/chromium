@@ -1039,7 +1039,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.CctAccountMismatch" enum="CctAccountMismatchType"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>samarchehade@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -2867,7 +2867,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SyncPromo.{Action}.Count.{AccessPoint}"
-    units="bookmarks" expires_after="2025-06-22">
+    units="bookmarks" expires_after="2025-08-24">
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -2913,7 +2913,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.TokenBinding.BoundTokenPrevalence"
-    enum="TokenBindingBoundTokenPrevalence" expires_after="2025-06-22">
+    enum="TokenBindingBoundTokenPrevalence" expires_after="2025-08-24">
   <owner>alexilin@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
