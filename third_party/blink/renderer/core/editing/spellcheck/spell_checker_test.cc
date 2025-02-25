@@ -79,6 +79,26 @@ TEST_F(SpellCheckerTest, AdvancedToNextMisspellingWrapSearchNoCrash) {
   GetSpellChecker().AdvanceToNextMisspelling(false);
 }
 
+// https://issues.chromium.org/issues/398288325
+TEST_F(SpellCheckerTest, AdvanceToNextMisspellingWithCrossEditableNoCrash) {
+  SetBodyContent(
+      "<div contenteditable>"
+      "<div contenteditable='false'>"
+      "<div contenteditable id='div'>"
+      "</div></div></div>");
+  Element* div = GetElementById("div");
+  div->Focus();
+  UpdateAllLifecyclePhasesForTest();
+  // Do not crash in AdvanceToNextMisspelling.
+  GetSpellChecker().AdvanceToNextMisspelling(false);
+  // in design mode
+  GetDocument().setDesignMode("on");
+  div->Focus();
+  UpdateAllLifecyclePhasesForTest();
+  // Do not crash in AdvanceToNextMisspelling.
+  GetSpellChecker().AdvanceToNextMisspelling(false);
+}
+
 TEST_F(SpellCheckerTest, SpellCheckDoesNotCauseUpdateLayout) {
   SetBodyContent("<input>");
   auto* input =

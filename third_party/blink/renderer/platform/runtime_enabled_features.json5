@@ -3412,6 +3412,10 @@
       status: "stable"
     },
     {
+      name: "PrevOrNextCandidateIsEditingRootChild",
+      status: "stable",
+    },
+    {
       // Controls whether Private Aggregation's "maxContributions" field is
       // enabled for Shared Storage callers. If disabled, the field will be
       // ignored. https://chromestatus.com/feature/5189366316793856
