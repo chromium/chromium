@@ -127,6 +127,9 @@ constexpr base::TimeDelta kImageSearchRequestStartDelay = base::Seconds(1);
 // button cannot fit inside.
 constexpr int kSmallRegionEdgeLength = 20;
 
+// The number of focusable points for the search results panel.
+constexpr int kSearchResultsPanelFocusCount = 2;
+
 void WaitForImageCapturedForSearch(PerformCaptureType expected_capture_type) {
   base::test::TestFuture<void> image_captured_future;
   CaptureModeTestApi().SetOnImageCapturedForSearchCallback(
@@ -2223,8 +2226,6 @@ TEST_F(SunfishTest, PanelStackingOrder) {
             panel_window->parent());
 }
 
-// TODO: crbug.com/380887729 - Update this test when keyboard navigation is
-// added for the search results panel.
 // Tests that keyboard navigation works properly when in a Sunfish session.
 TEST_F(SunfishTest, KeyboardNavigationSunfishSession) {
   auto* controller = CaptureModeController::Get();
@@ -2248,6 +2249,16 @@ TEST_F(SunfishTest, KeyboardNavigationSunfishSession) {
             session_test_api.GetCurrentFocusGroup());
 
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500));
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_TRUE(controller->search_results_panel_widget());
+
+  // Pressing tab should now focus the highlightable views in the search results
+  // panel.
+  for (int i = 0; i < kSearchResultsPanelFocusCount; ++i) {
+    SendKey(ui::VKEY_TAB, event_generator);
+    ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kSearchResultsPanel,
+              session_test_api.GetCurrentFocusGroup());
+  }
 
   // Pressing tab should now focus on the region adjustment points and their
   // center.

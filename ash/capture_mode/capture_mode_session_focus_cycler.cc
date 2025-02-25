@@ -22,6 +22,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
+#include "ash/capture_mode/search_results_panel.h"
 #include "ash/shell.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
@@ -41,6 +42,8 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -273,6 +276,32 @@ void CaptureModeSessionFocusCycler::HighlightableView::
   needs_highlight_path_ = true;
 }
 
+void CaptureModeSessionFocusCycler::HighlightableView::SetUpFocusPredicate(
+    views::View* view) {
+  // If the view has a preset focus ring, use it instead of creating a new
+  // one.
+  auto* preset_focus_ring = views::FocusRing::Get(view);
+  focus_ring_ = preset_focus_ring ? preset_focus_ring
+                                  : StyleUtil::SetUpFocusRingForView(view);
+
+  // Use a custom focus predicate, as the default one checks if `view` actually
+  // has focus, whereas we want to check for pseudo focus if a session is active
+  // and direct focus (i.e., not clicked with the mouse) otherwise.
+  focus_ring_->SetHasFocusPredicate(base::BindRepeating(
+      [](const HighlightableView* highlightable, const views::View* view) {
+        // If the session is active, we only need to check if the
+        // `HighlightableView` has focus.
+        const bool directly_focused =
+            view->GetFocusManager()->focus_change_reason() ==
+            views::FocusManager::FocusChangeReason::kDirectFocusChange;
+        return CaptureModeController::Get()->IsActive()
+                   ? (view->GetVisible() && highlightable->has_focus_)
+                   : (view->GetVisible() && view->HasFocus() &&
+                      !directly_focused);
+      },
+      base::Unretained(this)));
+}
+
 void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
   has_focus_ = true;
 
@@ -283,18 +312,7 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
   // for children of HighlightableView, so it will not replace any other style
   // of FocusRing.
   if (!focus_ring_) {
-    // If the view has a preset focus ring, use it instead of creating a new
-    // one.
-    auto* preset_focus_ring = views::FocusRing::Get(view);
-    focus_ring_ = preset_focus_ring ? preset_focus_ring
-                                    : StyleUtil::SetUpFocusRingForView(view);
-    // Use a custom focus predicate as the default one checks if |view| actually
-    // has focus which won't be happening since our widgets are not activatable.
-    focus_ring_->SetHasFocusPredicate(base::BindRepeating(
-        [](const HighlightableView* highlightable, const views::View* view) {
-          return view->GetVisible() && highlightable->has_focus_;
-        },
-        base::Unretained(this)));
+    SetUpFocusPredicate(view);
   }
 
   if (needs_highlight_path_) {
@@ -302,6 +320,12 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
       focus_ring_->SetPathGenerator(std::move(path_generator));
     }
     needs_highlight_path_ = false;
+  }
+
+  // Request actual focus for the textfield so users can interact with it and
+  // make multimodal searches.
+  if (auto* textfield = views::AsViewClass<views::Textfield>(view)) {
+    textfield->RequestFocus();
   }
 
   focus_ring_->DeprecatedLayoutImmediately();
@@ -315,6 +339,15 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
 
 void CaptureModeSessionFocusCycler::HighlightableView::PseudoBlur() {
   has_focus_ = false;
+
+  // If the view is focused, set the stored focus view to nullptr before
+  // clearing it, so focus doesn't jump to another view.
+  views::View* view = GetView();
+  views::FocusManager* focus_manager = view->GetFocusManager();
+  if (focus_manager && focus_manager->GetFocusedView() == view) {
+    focus_manager->SetStoredFocusView(nullptr);
+    focus_manager->ClearFocus();
+  }
 
   if (!focus_ring_)
     return;
@@ -839,10 +872,9 @@ bool CaptureModeSessionFocusCycler::IsGroupAvailable(FocusGroup group) const {
       return session_->action_container_view_ &&
              !session_->action_container_view_->GetFocusableViews().empty();
     }
-    case FocusGroup::kSearchResultsPanel:
-      // TODO: crbug.com/380887729 - Update this behavior so the search results
-      // panel views can be properly focused.
-      return false;
+    case FocusGroup::kSearchResultsPanel: {
+      return CaptureModeController::Get()->IsSearchResultsPanelVisible();
+    }
   }
 }
 
@@ -957,10 +989,17 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       }
       break;
     }
-    case FocusGroup::kSearchResultsPanel:
-      // TODO: crbug.com/380887729 - Update this behavior so the search results
-      // panel views can be properly focused.
+    case FocusGroup::kSearchResultsPanel: {
+      auto* search_results_panel_widget =
+          CaptureModeController::Get()->search_results_panel_widget();
+      if (search_results_panel_widget &&
+          search_results_panel_widget->IsVisible()) {
+        items = CaptureModeController::Get()
+                    ->GetSearchResultsPanel()
+                    ->GetHighlightableItems();
+      }
       break;
+    }
   }
   return items;
 }
@@ -1034,6 +1073,12 @@ bool CaptureModeSessionFocusCycler::FindFocusedViewAndUpdateFocusIndex(
 void CaptureModeSessionFocusCycler::UpdateA11yAnnotation() {
   std::vector<views::Widget*> a11y_widgets;
 
+  // Add the search results panel if it exists.
+  if (auto* panel_widget =
+          CaptureModeController::Get()->search_results_panel_widget()) {
+    a11y_widgets.push_back(panel_widget);
+  }
+
   // If the bar widget is not available, then this is called while shutting
   // down the capture mode session.
   views::Widget* bar_widget = session_->capture_mode_bar_widget_.get();
@@ -1045,6 +1090,14 @@ void CaptureModeSessionFocusCycler::UpdateA11yAnnotation() {
       capture_label_view && capture_label_view->IsViewInteractable() &&
       capture_label_view->GetWidget()->IsVisible()) {
     a11y_widgets.push_back(capture_label_view->GetWidget());
+  }
+
+  // Add the action container widget if it exists and it contains action
+  // buttons.
+  if (auto* action_container_widget = session_->action_container_widget_.get();
+      action_container_widget && session_->action_container_view_ &&
+      !session_->action_container_view_->children().empty()) {
+    a11y_widgets.push_back(action_container_widget);
   }
 
   // Add the recording type widget if it exists.

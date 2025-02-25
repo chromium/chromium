@@ -1721,13 +1721,6 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
     return;
   }
 
-  // If the results panel is visible, focused, and interactable, let it handle
-  // key events.
-  if (controller_->IsSearchResultsPanelVisible() &&
-      controller_->GetSearchResultsPanel()->HasFocus()) {
-    return;
-  }
-
   // If the consent disclaimer is visible, let it handle key events.
   if (disclaimer_) {
     // The action button may still have a focus ring when we switch focus to the
@@ -1785,6 +1778,16 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
     }
 
     case ui::VKEY_RETURN: {
+      // If the search results panel is visible, and the textfield has
+      // pseudo focus or the panel is actually focused, we will let the search
+      // results panel handle key events (i.e., pressing Enter/Return to make a
+      // multimodal search).
+      if (controller_->IsSearchResultsPanelVisible() &&
+          (controller_->GetSearchResultsPanel()->IsTextfieldPseudoFocused() ||
+           controller_->GetSearchResultsPanel()->HasFocus())) {
+        return;
+      }
+
       event->StopPropagation();
       if (!is_in_count_down) {
         // Pressing enter while an item is focused should behave exactly like

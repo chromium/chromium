@@ -26,10 +26,12 @@
 #include "ui/display/tablet_state.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_types.h"
@@ -135,6 +137,10 @@ class SunfishSearchBoxView : public views::View,
       return false;
     }
 
+    if (!textfield_->HasFocus()) {
+      return false;
+    }
+
     if (event.type() == ui::EventType::kKeyPressed &&
         event.key_code() == ui::VKEY_RETURN) {
       CaptureModeController::Get()->SendMultimodalSearch(
@@ -227,6 +233,21 @@ SearchResultsPanel::SearchResultsPanel() {
   layer()->SetIsFastRoundedCorner(true);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+
+  // Install highlightable views for when a Sunfish session is active and the
+  // `CaptureModeSessionFocusCycler` is handling focus.
+  CaptureModeSessionFocusCycler::HighlightHelper::Install(close_button_);
+  CaptureModeSessionFocusCycler::HighlightHelper::Install(
+      search_box_view_->textfield_);
+
+  // Set up the focus predicate for the focusable views now, so they will have
+  // the correct behavior before `CaptureModeSessionFocusCycler::PseudoFocus()`
+  // is called on them.
+  CaptureModeSessionFocusCycler::HighlightHelper::Get(close_button_)
+      ->SetUpFocusPredicate(close_button_);
+  CaptureModeSessionFocusCycler::HighlightHelper::Get(
+      search_box_view_->textfield_)
+      ->SetUpFocusPredicate(search_box_view_->textfield_);
 }
 
 SearchResultsPanel::~SearchResultsPanel() = default;
@@ -251,6 +272,14 @@ views::Textfield* SearchResultsPanel::GetSearchBoxTextfield() const {
   return search_box_view_->textfield_;
 }
 
+std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
+SearchResultsPanel::GetHighlightableItems() const {
+  return {
+      CaptureModeSessionFocusCycler::HighlightHelper::Get(close_button_.get()),
+      CaptureModeSessionFocusCycler::HighlightHelper::Get(
+          search_box_view_->textfield_.get())};
+}
+
 void SearchResultsPanel::Navigate(const GURL& url) {
   search_results_view_->Navigate(url);
 }
@@ -270,6 +299,20 @@ void SearchResultsPanel::RefreshStackingOrder(aura::Window* new_root) {
   aura::Window* new_parent = GetParentContainer(
       new_root ? new_root : native_window->GetRootWindow(), !!new_root);
   views::Widget::ReparentNativeView(native_window, new_parent);
+}
+
+bool SearchResultsPanel::IsTextfieldPseudoFocused() const {
+  return CaptureModeSessionFocusCycler::HighlightHelper::Get(
+             search_box_view_->textfield_)
+      ->has_focus();
+}
+
+void SearchResultsPanel::AddedToWidget() {
+  GetFocusManager()->AddFocusChangeListener(this);
+}
+
+void SearchResultsPanel::RemovedFromWidget() {
+  GetFocusManager()->RemoveFocusChangeListener(this);
 }
 
 bool SearchResultsPanel::HasFocus() const {
@@ -304,6 +347,26 @@ void SearchResultsPanel::OnDisplayMetricsChanged(
     return;
   }
   RefreshPanelBounds();
+}
+
+void SearchResultsPanel::OnWillChangeFocus(View* focused_before,
+                                           View* focused_now) {}
+
+void SearchResultsPanel::OnDidChangeFocus(View* focused_before,
+                                          View* focused_now) {
+  // Update the focus ring of the previously focused view, if available.
+  if (focused_before) {
+    if (views::FocusRing* before_ring = views::FocusRing::Get(focused_before)) {
+      before_ring->SchedulePaint();
+    }
+  }
+
+  // Update the focus ring of the newly focused view, if available.
+  if (focused_now) {
+    if (views::FocusRing* now_ring = views::FocusRing::Get(focused_now)) {
+      now_ring->SchedulePaint();
+    }
+  }
 }
 
 void SearchResultsPanel::OnCloseButtonPressed() {
