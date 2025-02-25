@@ -128,9 +128,9 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
 
   // These fields are for use on the worker thread.
   raw_ptr<base::WaitableEvent> shutdown_event_;
-  gfx::Size resource_size_;
-  viz::SharedImageFormat format_;
-  gfx::ColorSpace resource_color_space_;
+  const gfx::Size resource_size_;
+  const viz::SharedImageFormat format_;
+  const gfx::ColorSpace resource_color_space_;
 };
 
 }  // namespace
