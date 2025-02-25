@@ -11502,7 +11502,6 @@ interface XRSystem : EventTarget
     method constructor
     method isSessionSupported
     method requestSession
-    method supportsSession
     setter ondevicechange
 interface XRTransientInputHitTestResult
     attribute @@toStringTag

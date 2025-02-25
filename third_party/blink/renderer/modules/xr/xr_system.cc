@@ -371,12 +371,10 @@ const char* XRSystem::CheckInlineSessionRequestAllowed(
 
 XRSystem::PendingSupportsSessionQuery::PendingSupportsSessionQuery(
     ScriptPromiseResolverBase* resolver,
-    device::mojom::blink::XRSessionMode session_mode,
-    bool throw_on_unsupported)
+    device::mojom::blink::XRSessionMode session_mode)
     : resolver_(resolver),
       mode_(session_mode),
-      trace_id_(base::trace_event::GetNextGlobalTraceId()),
-      throw_on_unsupported_(throw_on_unsupported) {
+      trace_id_(base::trace_event::GetNextGlobalTraceId()) {
   TRACE_EVENT("xr", "PendingSupportsSessionQuery::PendingSupportsSessionQuery",
               "session_mode", session_mode, perfetto::Flow::Global(trace_id_));
 }
@@ -391,18 +389,8 @@ void XRSystem::PendingSupportsSessionQuery::Resolve(
   TRACE_EVENT("xr", "PendingSupportsSessionQuery::Resolve", "supported",
               supported, perfetto::TerminatingFlow::Global(trace_id_));
 
-  if (throw_on_unsupported_) {
-    if (supported) {
-      resolver_->DowncastTo<IDLUndefined>()->Resolve();
-    } else {
-      DVLOG(2) << __func__ << ": session is unsupported - throwing exception";
-      RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
-                             kSessionNotSupported, exception_state);
-    }
-  } else {
-    static_cast<ScriptPromiseResolver<IDLBoolean>*>(resolver_.Get())
-        ->Resolve(supported);
-  }
+  static_cast<ScriptPromiseResolver<IDLBoolean>*>(resolver_.Get())
+      ->Resolve(supported);
 }
 
 void XRSystem::PendingSupportsSessionQuery::RejectWithDOMException(
@@ -901,17 +889,6 @@ void XRSystem::SetFramesThrottled(const XRSession* session, bool throttled) {
   }
 }
 
-ScriptPromise<IDLUndefined> XRSystem::supportsSession(
-    ScriptState* script_state,
-    const V8XRSessionMode& mode,
-    ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
-      script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
-  InternalIsSessionSupported(resolver, mode, exception_state, true);
-  return promise;
-}
-
 ScriptPromise<IDLBoolean> XRSystem::isSessionSupported(
     ScriptState* script_state,
     const V8XRSessionMode& mode,
@@ -919,7 +896,64 @@ ScriptPromise<IDLBoolean> XRSystem::isSessionSupported(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
-  InternalIsSessionSupported(resolver, mode, exception_state, false);
+
+  if (!GetExecutionContext()) {
+    // Reject if the context is inaccessible.
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kNavigatorDetachedError);
+    return promise;  // Promise will be rejected by generated bindings
+  }
+
+  DisableBackForwardCache();
+
+  device::mojom::blink::XRSessionMode session_mode =
+      V8EnumToSessionMode(mode.AsEnum());
+  PendingSupportsSessionQuery* query =
+      MakeGarbageCollected<PendingSupportsSessionQuery>(resolver, session_mode);
+
+  if (session_mode == device::mojom::blink::XRSessionMode::kImmersiveAr &&
+      !IsImmersiveArAllowed()) {
+    DVLOG(2) << __func__
+             << ": Immersive AR session is only supported if WebXRARModule "
+                "feature is enabled by a runtime feature and web settings";
+    query->Resolve(false);
+    return promise;
+  }
+
+  if (session_mode == device::mojom::blink::XRSessionMode::kInline) {
+    // inline sessions are always supported.
+    query->Resolve(true);
+    return promise;
+  }
+
+  if (!GetExecutionContext()->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kWebXr,
+          ReportOptions::kReportOnFailure)) {
+    // Only allow the call to be made if the appropriate permissions policy is
+    // in place.
+    query->RejectWithSecurityError(kFeaturePolicyBlocked, &exception_state);
+    return promise;
+  }
+
+  // If TryEnsureService() doesn't set |service_|, then we don't have any WebXR
+  // hardware, so we need to reject as being unsupported.
+  TryEnsureService();
+  if (!service_.is_bound()) {
+    query->Resolve(false, &exception_state);
+    return promise;
+  }
+
+  device::mojom::blink::XRSessionOptionsPtr session_options =
+      device::mojom::blink::XRSessionOptions::New();
+  session_options->mode = query->mode();
+  session_options->trace_id = query->TraceId();
+
+  outstanding_support_queries_.insert(query);
+  service_->SupportsSession(
+      std::move(session_options),
+      WTF::BindOnce(&XRSystem::OnSupportsSessionReturned, WrapPersistent(this),
+                    WrapPersistent(query)));
+
   return promise;
 }
 
@@ -949,69 +983,6 @@ void XRSystem::AddWebXrInternalsMessage(const String& message) {
     webxr_internals_renderer_listener_->OnConsoleLog(
         std::move(xr_logging_statistics));
   }
-}
-
-void XRSystem::InternalIsSessionSupported(ScriptPromiseResolverBase* resolver,
-                                          const V8XRSessionMode& mode,
-                                          ExceptionState& exception_state,
-                                          bool throw_on_unsupported) {
-  if (!GetExecutionContext()) {
-    // Reject if the context is inaccessible.
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kNavigatorDetachedError);
-    return;  // Promise will be rejected by generated bindings
-  }
-
-  DisableBackForwardCache();
-
-  device::mojom::blink::XRSessionMode session_mode =
-      V8EnumToSessionMode(mode.AsEnum());
-  PendingSupportsSessionQuery* query =
-      MakeGarbageCollected<PendingSupportsSessionQuery>(resolver, session_mode,
-                                                        throw_on_unsupported);
-
-  if (session_mode == device::mojom::blink::XRSessionMode::kImmersiveAr &&
-      !IsImmersiveArAllowed()) {
-    DVLOG(2) << __func__
-             << ": Immersive AR session is only supported if WebXRARModule "
-                "feature is enabled by a runtime feature and web settings";
-    query->Resolve(false);
-    return;
-  }
-
-  if (session_mode == device::mojom::blink::XRSessionMode::kInline) {
-    // inline sessions are always supported.
-    query->Resolve(true);
-    return;
-  }
-
-  if (!GetExecutionContext()->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kWebXr,
-          ReportOptions::kReportOnFailure)) {
-    // Only allow the call to be made if the appropriate permissions policy is
-    // in place.
-    query->RejectWithSecurityError(kFeaturePolicyBlocked, &exception_state);
-    return;
-  }
-
-  // If TryEnsureService() doesn't set |service_|, then we don't have any WebXR
-  // hardware, so we need to reject as being unsupported.
-  TryEnsureService();
-  if (!service_.is_bound()) {
-    query->Resolve(false, &exception_state);
-    return;
-  }
-
-  device::mojom::blink::XRSessionOptionsPtr session_options =
-      device::mojom::blink::XRSessionOptions::New();
-  session_options->mode = query->mode();
-  session_options->trace_id = query->TraceId();
-
-  outstanding_support_queries_.insert(query);
-  service_->SupportsSession(
-      std::move(session_options),
-      WTF::BindOnce(&XRSystem::OnSupportsSessionReturned, WrapPersistent(this),
-                    WrapPersistent(query)));
 }
 
 void XRSystem::RequestSessionInternal(
