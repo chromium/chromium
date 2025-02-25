@@ -4679,12 +4679,6 @@
       name: "VideoTrackGeneratorInWorker",
     },
     {
-      // This is a kill switch for a fix where viewport changes did not update
-      // the text autosizer, see: crbug.com/359910401.
-      name: "ViewportChangesUpdateTextAutosizing",
-      status: "stable",
-    },
-    {
       name: "ViewportHeightClientHintHeader",
       status: "stable",
     },

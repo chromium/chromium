@@ -1142,10 +1142,6 @@ TEST_F(TextAutosizerSimTest, CrossSiteUseCounter) {
 }
 
 TEST_F(TextAutosizerSimTest, ViewportChangesUpdateAutosizing) {
-  if (!RuntimeEnabledFeatures::ViewportChangesUpdateTextAutosizingEnabled()) {
-    GTEST_SKIP();
-  }
-
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
   main_resource.Complete(R"HTML(
