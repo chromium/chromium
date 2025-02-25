@@ -26,6 +26,9 @@ from datetime import datetime
 #   google-api-python-client \
 #   google-auth-httplib2 \
 #   google-auth-oauthlib
+#
+# In addition when invoking evaluate_patches.py you can pass an optional integer
+# argument which will set the limit of patches to evaluate. Default is 100.
 # ```
 
 from google.auth.transport.requests import Request
@@ -225,6 +228,8 @@ run("autoninja -C out/linux", "Failed to build the project.")
 # Create and evaluate patches
 try:
     patch_limit = 100
+    if len(sys.argv) > 1:
+        patch_limit = int(sys.argv[1])
     for patch in patches:
         # Limit the number of patches to evaluate. We don't want to spent too
         # many resources on this.
