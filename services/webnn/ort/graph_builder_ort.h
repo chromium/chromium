@@ -231,6 +231,8 @@ class GraphBuilderOrt {
       const mojom::Reshape& reshape);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddReverseOperation(
       const mojom::Reverse& reverse);
+  void AddScatterElementsOperation(
+      const mojom::ScatterElements& scatter_elements);
   void AddScatterNDOperation(const mojom::ScatterND& scatter_nd);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddSliceOperation(
       const mojom::Slice& slice);

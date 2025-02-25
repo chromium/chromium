@@ -109,6 +109,7 @@ constexpr char kOpTypeReduceSumSquare[] = "ReduceSumSquare";
 constexpr char kOpTypeRelu[] = "Relu";
 constexpr char kOpTypeResample2d[] = "Resize";
 constexpr char kOpTypeReshape[] = "Reshape";
+constexpr char kOpTypeScatterElements[] = "ScatterElements";
 constexpr char kOpTypeScatterND[] = "ScatterND";
 constexpr char kOpTypeSigmoid[] = "Sigmoid";
 constexpr char kOpTypeSlice[] = "Slice";
@@ -2101,6 +2102,54 @@ GraphBuilderOrt::AddReverseOperation(const mojom::Reverse& reverse) {
                       ends, steps);
 }
 
+void GraphBuilderOrt::AddScatterElementsOperation(
+    const mojom::ScatterElements& scatter_elements) {
+  const std::string node_name =
+      GenerateNextOperationName(scatter_elements.label);
+  const std::string input_name =
+      GetOperandNameById(scatter_elements.input_operand_id);
+  const std::string indices_name =
+      GetOperandNameById(scatter_elements.indices_operand_id);
+  const std::string updates_name =
+      GetOperandNameById(scatter_elements.updates_operand_id);
+  const std::string output_name =
+      GetOperandNameById(scatter_elements.output_operand_id);
+
+  std::string cast_indices_name;
+  const OperandDataType indices_data_type =
+      GetOperand(scatter_elements.indices_operand_id).descriptor.data_type();
+
+  // ONNX ScatterElements only supports int32 and int64 indices.
+  switch (indices_data_type) {
+    case OperandDataType::kInt32:
+    case OperandDataType::kInt64: {
+      cast_indices_name = indices_name;
+      break;
+    }
+    case OperandDataType::kUint32: {
+      cast_indices_name = GenerateNextOperandName();
+      AppendCast(
+          indices_name, cast_indices_name,
+          ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64);
+      break;
+    }
+    default:
+      NOTREACHED() << "[WebNN] ScatterElements only supports int32, uint32 and "
+                      "int64 indices.";
+  }
+
+  ScopedOrtOpAttrPtr attr_axis = model_builder_.CreateAttribute(
+      /*name=*/"axis", base::checked_cast<int64_t>(scatter_elements.axis));
+  std::array<OrtOpAttr*, 1> attributes = {attr_axis.Release()};
+
+  std::array<const char*, 3> input_names = {
+      input_name.c_str(), cast_indices_name.c_str(), updates_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  model_builder_.AddNode(kOpTypeScatterElements, node_name, input_names,
+                         output_names, attributes);
+}
+
 void GraphBuilderOrt::AddScatterNDOperation(
     const mojom::ScatterND& scatter_nd) {
   const std::string node_name = GenerateNextOperationName(scatter_nd.label);
@@ -2464,6 +2513,10 @@ GraphBuilderOrt::BuildModel() {
         RETURN_IF_ERROR(AddReverseOperation(*operation->get_reverse()));
         break;
       }
+      case mojom::Operation::Tag::kScatterElements: {
+        AddScatterElementsOperation(*operation->get_scatter_elements());
+        break;
+      }
       case mojom::Operation::Tag::kScatterNd: {
         AddScatterNDOperation(*operation->get_scatter_nd());
         break;
@@ -2517,7 +2570,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kQuantizeLinear:
-      case mojom::Operation::Tag::kScatterElements:
         return NewNotSupportedError("op is not supported.");
     }
   }

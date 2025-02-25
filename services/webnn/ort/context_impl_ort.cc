@@ -202,8 +202,11 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*reverse_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
-       /*scatter_elements_input=*/{},
-       /*scatter_elements_indices=*/{},
+       /*scatter_elements_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kNonScalarMaxRank},
+       /*scatter_elements_indices=*/
+       {DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
+        kNonScalarMaxRank},
        /*scatter_nd_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kNonScalarMaxRank},
        /*scatter_nd_indices=*/
