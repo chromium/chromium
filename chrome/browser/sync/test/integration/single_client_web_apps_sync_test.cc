@@ -503,10 +503,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
+  mojom::UserDisplayMode user_display_mode =
+      (GetExpectedInstallState() ==
+       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION)
+          ? mojom::UserDisplayMode::kStandalone
+          : mojom::UserDisplayMode::kBrowser;
+
   EXPECT_EQ(registrar_unsafe().GetInstallState(app_id),
             GetExpectedInstallState());
-  EXPECT_EQ(registrar_unsafe().GetAppUserDisplayMode(app_id),
-            mojom::UserDisplayMode::kStandalone);
+  EXPECT_EQ(user_display_mode,
+            registrar_unsafe().GetAppUserDisplayMode(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InvalidStartUrl) {

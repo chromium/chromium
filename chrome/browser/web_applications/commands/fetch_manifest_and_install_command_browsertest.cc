@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   EXPECT_EQ(proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
             provider().registrar_unsafe().GetInstallState(app_id));
   EXPECT_EQ(provider().registrar_unsafe().GetAppUserDisplayMode(app_id).value(),
-            mojom::UserDisplayMode::kStandalone);
+            mojom::UserDisplayMode::kBrowser);
 
   EXPECT_FALSE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
 

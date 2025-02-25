@@ -499,8 +499,7 @@ bool WebAppRegistrar::IsSystemApp(const webapps::AppId& app_id) const {
 DisplayMode WebAppRegistrar::GetAppEffectiveDisplayMode(
     const webapps::AppId& app_id) const {
   if (!IsInstallState(app_id,
-                      {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+                      {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return DisplayMode::kBrowser;
   }
 
@@ -1554,6 +1553,10 @@ std::optional<mojom::UserDisplayMode> WebAppRegistrar::GetAppUserDisplayMode(
   auto* web_app = GetAppById(app_id);
   if (web_app == nullptr) {
     return std::nullopt;
+  }
+
+  if (GetInstallState(app_id) != proto::INSTALLED_WITH_OS_INTEGRATION) {
+    return mojom::UserDisplayMode::kBrowser;
   }
 
   return web_app->user_display_mode();
