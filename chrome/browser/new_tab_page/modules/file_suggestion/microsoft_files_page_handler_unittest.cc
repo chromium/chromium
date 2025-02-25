@@ -8,6 +8,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
@@ -37,6 +38,15 @@ const char kDocIconUrl[] =
     "item-types/16/docx.png";
 
 const char kNonInsightsRequestUrl[] = "https://graph.microsoft.com/v1.0/$batch";
+
+const char kRequestResultHistogramName[] =
+    "NewTabPage.MicrosoftFiles.RequestResult";
+
+const char kResponseResultHistogramName[] =
+    "NewTabPage.MicrosoftFiles.ResponseResult";
+
+const char kThrottlingTimeHistogramName[] =
+    "NewTabPage.MicrosoftFiles.ThrottlingWaitTime";
 
 }  // namespace
 
@@ -79,6 +89,7 @@ class MicrosoftFilesPageHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
   }
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
@@ -87,6 +98,7 @@ class MicrosoftFilesPageHandlerTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<MicrosoftFilesPageHandler> handler_;
+  base::HistogramTester histogram_tester_;
 };
 
 class MicrosoftFilesPageHandlerTestForTrending
@@ -229,6 +241,10 @@ TEST_F(MicrosoftFilesPageHandlerTestForTrending, GetTrendingFiles) {
               base::StringPrintf(kBaseWebUrl, base::NumberToString(i)));
     EXPECT_EQ(suggestion->icon_url, kDocIconUrl);
   }
+
+  histogram_tester().ExpectBucketCount(
+      kRequestResultHistogramName, MicrosoftFilesRequestResult::kSuccess, 1);
+  histogram_tester().ExpectBucketCount(kResponseResultHistogramName, 5, 1);
 }
 
 TEST_F(MicrosoftFilesPageHandlerTestForTrending,
@@ -244,6 +260,10 @@ TEST_F(MicrosoftFilesPageHandlerTestForTrending,
       future.Get();
 
   EXPECT_EQ(suggestions.size(), 0u);
+
+  histogram_tester().ExpectBucketCount(
+      kRequestResultHistogramName, MicrosoftFilesRequestResult::kJsonParseError,
+      1);
 }
 
 TEST_F(MicrosoftFilesPageHandlerTestForTrending,
@@ -253,7 +273,7 @@ TEST_F(MicrosoftFilesPageHandlerTestForTrending,
   handler().GetFiles(future.GetCallback());
 
   // The `title` property is missing.
-  std::string response = R"(
+  std::string response = R"({
     "value": [
       {
         "id": "0",
@@ -276,6 +296,11 @@ TEST_F(MicrosoftFilesPageHandlerTestForTrending,
       future.Get();
 
   EXPECT_EQ(suggestions.size(), 0u);
+
+  histogram_tester().ExpectBucketCount(
+      kRequestResultHistogramName, MicrosoftFilesRequestResult::kContentError,
+      1);
+  histogram_tester().ExpectBucketCount(kResponseResultHistogramName, 1, 1);
 }
 
 // Verifies that prefs are accurately set on dismissal and restoring of module.
@@ -432,6 +457,10 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights, GetNonInsightsFiles) {
               base::StringPrintf(kBaseWebUrl, base::NumberToString(i)));
     EXPECT_EQ(suggestion->icon_url, kDocIconUrl);
   }
+
+  histogram_tester().ExpectBucketCount(
+      kRequestResultHistogramName, MicrosoftFilesRequestResult::kSuccess, 1);
+  histogram_tester().ExpectBucketCount(kResponseResultHistogramName, 4, 1);
 }
 
 TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
@@ -494,6 +523,10 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
       future.Get();
 
   EXPECT_EQ(suggestions.size(), 1u);
+
+  histogram_tester().ExpectBucketCount(
+      kRequestResultHistogramName, MicrosoftFilesRequestResult::kSuccess, 1);
+  histogram_tester().ExpectBucketCount(kResponseResultHistogramName, 1, 1);
 }
 
 // Microsoft Graph API recently used or shared files endpoints may return
@@ -538,6 +571,10 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
       future.Get();
 
   EXPECT_EQ(suggestions.size(), 0u);
+
+  histogram_tester().ExpectBucketCount(
+      kRequestResultHistogramName, MicrosoftFilesRequestResult::kSuccess, 1);
+  histogram_tester().ExpectBucketCount(kResponseResultHistogramName, 1, 1);
 }
 
 // Verifies files aren't created for recent suggestions if there is
@@ -596,6 +633,11 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
       future.Get();
 
   EXPECT_EQ(suggestions.size(), 0u);
+
+  histogram_tester().ExpectBucketCount(
+      kRequestResultHistogramName, MicrosoftFilesRequestResult::kContentError,
+      1);
+  histogram_tester().ExpectBucketCount(kResponseResultHistogramName, 1, 1);
 }
 
 // Verifies files are not created for shared suggestions if there is
@@ -642,6 +684,11 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
       future.Get();
 
   EXPECT_EQ(suggestions.size(), 0u);
+
+  histogram_tester().ExpectBucketCount(
+      kRequestResultHistogramName, MicrosoftFilesRequestResult::kContentError,
+      1);
+  histogram_tester().ExpectBucketCount(kResponseResultHistogramName, 1, 1);
 }
 
 // Verifies that a "Retry-After" header is parsed and the earliest next retry
@@ -680,6 +727,11 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights, HandleThrottlingError) {
   EXPECT_EQ(profile().GetPrefs()->GetTime(
                 prefs::kNtpMicrosoftFilesModuleRetryAfterTime),
             base::Time::Now() + base::Seconds(20));
+
+  histogram_tester().ExpectBucketCount(
+      kRequestResultHistogramName,
+      MicrosoftFilesRequestResult::kThrottlingError, 1);
+  histogram_tester().ExpectTotalCount(kThrottlingTimeHistogramName, 1);
 }
 
 // Ensures requests aren't made until after the specified wait time when
@@ -883,4 +935,50 @@ TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
                                         std::move(head), "", status);
 
   EXPECT_EQ(future.Get().size(), 0u);
+
+  histogram_tester().ExpectBucketCount(
+      kRequestResultHistogramName, MicrosoftFilesRequestResult::kAuthError, 1);
+}
+
+// Ensures that for the recent & shared experiment arm, the response should have
+// a dictionary for each request.
+TEST_F(MicrosoftFilesPageHandlerTestForNonInsights,
+       NoFilesOnMissingResponseValue) {
+  base::test::TestFuture<std::vector<file_suggestion::mojom::FilePtr>> future;
+
+  // Missing the second dictionary for shared files.
+  std::string response =
+      R"({
+    "responses" : [
+    {
+    "id": "recent",
+    "body": {
+      "value": [
+      {
+        "id": "1",
+        "name": "Document 1.docx",
+        "webUrl": "https://foo.com/document1.docx",
+        "file": {
+          "mimeType": "application/vnd.)"
+      R"(openxmlformats-officedocument.wordprocessingml.document"
+        },
+        "fileSystemInfo": {
+          "lastAccessedDateTime": "2024-01-07T19:13:00Z"
+        },
+        "lastModifiedDateTime": "2024-01-07T19:13:00Z"
+      }
+      ]
+    }
+    }]})";
+
+  handler().GetFiles(future.GetCallback());
+
+  test_url_loader_factory().SimulateResponseForPendingRequest(
+      kNonInsightsRequestUrl, response);
+
+  EXPECT_EQ(future.Get().size(), 0u);
+
+  histogram_tester().ExpectBucketCount(
+      kRequestResultHistogramName, MicrosoftFilesRequestResult::kContentError,
+      1);
 }

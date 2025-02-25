@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
@@ -23,6 +24,21 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 
 class MicrosoftAuthService;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MicrosoftFilesRequestResult {
+  // Success parsing necessary file data from the response.
+  kSuccess = 0,
+  kNetworkError = 1,
+  kJsonParseError = 2,
+  // Error retrieving all the expected file data from the response.
+  kContentError = 3,
+  kThrottlingError = 4,
+  // Unauthorized error.
+  kAuthError = 5,
+  kMaxValue = kAuthError,
+};
 
 class MicrosoftFilesPageHandler
     : public file_suggestion::mojom::MicrosoftFilesPageHandler {
