@@ -26,7 +26,7 @@ namespace {
 // Type names corresponding to MCSProtoTags. Useful for identifying what type
 // of MCS protobuf is contained within a google::protobuf::MessageLite object.
 // WARNING: must match the order in MCSProtoTag.
-const auto kProtoNames = std::to_array<const char*>({
+constexpr auto kProtoNames = std::to_array<const char*>({
     "mcs_proto.HeartbeatPing",
     "mcs_proto.HeartbeatAck",
     "mcs_proto.LoginRequest",
