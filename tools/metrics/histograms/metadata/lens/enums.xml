@@ -104,6 +104,9 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Toolbar button"/>
   <int value="4" label="Find in page dialog button"/>
   <int value="5" label="Omnibox button"/>
+  <int value="6" label="LVF Shutter Button"/>
+  <int value="7" label="LVF Gallery"/>
+  <int value="8" label="Context Menu"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/capture_mode/lens_overlay_url_builder.h"
 
 #include "base/base64url.h"
+#include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "chrome/browser/browser_process.h"
 #include "components/language/core/common/language_util.h"
@@ -228,6 +229,10 @@ GURL AppendInvocationSourceParamToURL(
     case lens::LensOverlayInvocationSource::kOmnibox:
       param_value = kInvocationSourceOmniboxIcon;
       break;
+    case lens::LensOverlayInvocationSource::kLVFShutterButton:
+    case lens::LensOverlayInvocationSource::kLVFGallery:
+    case lens::LensOverlayInvocationSource::kContextMenu:
+      NOTREACHED() << "Invocation source not supported.";
   }
   return net::AppendOrReplaceQueryParameter(
       url_to_modify, kInvocationSourceParameterKey, param_value);
