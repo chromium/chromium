@@ -310,9 +310,9 @@ void DiscardsUI::BindInterface(
     mojo::PendingReceiver<discards::mojom::SiteDataProvider> receiver) {
   if (performance_manager::PerformanceManager::IsAvailable()) {
     // Forward the interface receiver directly to the service.
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindOnce(&SiteDataProviderImpl::CreateAndBind,
-                                  std::move(receiver), profile_id_));
+    SiteDataProviderImpl::CreateAndBind(
+        std::move(receiver), profile_id_,
+        performance_manager::PerformanceManager::GetGraph());
   }
 }
 
@@ -320,8 +320,8 @@ void DiscardsUI::BindInterface(
     mojo::PendingReceiver<discards::mojom::GraphDump> receiver) {
   if (performance_manager::PerformanceManager::IsAvailable()) {
     // Forward the interface receiver directly to the service.
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindOnce(&DiscardsGraphDumpImpl::CreateAndBind,
-                                  std::move(receiver)));
+    DiscardsGraphDumpImpl::CreateAndBind(
+        std::move(receiver),
+        performance_manager::PerformanceManager::GetGraph());
   }
 }

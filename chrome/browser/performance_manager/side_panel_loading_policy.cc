@@ -13,18 +13,16 @@
 namespace performance_manager::execution_context_priority {
 
 void MarkAsSidePanel(content::WebContents* web_contents) {
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<PageNode> page_node, Graph* graph) {
-            CHECK(page_node);
-            auto* voter = graph->GetRegisteredObjectAs<
-                execution_context_priority::SidePanelLoadingVoter>();
-            CHECK(voter);
+  base::WeakPtr<PageNode> page_node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents);
+  CHECK(page_node);
 
-            voter->MarkAsSidePanel(page_node.get());
-          },
-          PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents)));
+  Graph* graph = PerformanceManager::GetGraph();
+  auto* voter = graph->GetRegisteredObjectAs<
+      execution_context_priority::SidePanelLoadingVoter>();
+  CHECK(voter);
+
+  voter->MarkAsSidePanel(page_node.get());
 }
 
 }  // namespace performance_manager::execution_context_priority
