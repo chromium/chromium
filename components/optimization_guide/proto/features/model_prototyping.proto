@@ -6,6 +6,8 @@ syntax = "proto3";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/features/forms_classifications.proto";
+
 import "components/optimization_guide/proto/features/forms_predictions.proto";
 
 import "components/optimization_guide/proto/features/common_quality_data.proto";
@@ -136,7 +138,7 @@ message ConversationTurn {
 
 // All the information collected from the browser along with the user input
 // (for features like Compose).
-// NEXT ID: 15
+// NEXT ID: 17
 message BrowserCollectedInformation {
   // The page context of the page the model is acting on.
   PageContext page_context = 1;
@@ -185,6 +187,11 @@ message BrowserCollectedInformation {
   // For example, some requests only include foreground tab data,
   // whereas others include all profile data.
   ModelPrototypingCollectionSpecifier collection_specifier = 14;
+
+  // Autofill AI type request and response.
+  AutofillAiTypeRequest autofill_ai_type_request = 15;
+
+  AutofillAiTypeResponse autofill_ai_type_response = 16;
 }
 
 message HistoryQueryResult {
