@@ -29,7 +29,7 @@ namespace ui {
 
 namespace {
 
-const auto kSubsystems = std::to_array<const char*>({
+constexpr auto kSubsystems = std::to_array<const char*>({
     "input",
     "drm",
 });
