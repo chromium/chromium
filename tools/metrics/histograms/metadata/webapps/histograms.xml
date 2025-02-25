@@ -160,10 +160,10 @@ chromium-metrics-reviews@google.com.
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
-    Records the display mode (as defined in the Web App Manifest spec) at the
-    launch of a desktop web app installed NOT using &quot;Create
-    Shortcut...&quot;. This is only recorded if the launch was to a browwer tab
-    context, not a standalone window.
+    Records the display mode specified in the manifest at the launch of a
+    desktop web app installed NOT using &quot;Create Shortcut...&quot;. This is
+    only recorded if the launch was to a browser tab context, not a standalone
+    window.
   </summary>
 </histogram>
 
@@ -228,10 +228,9 @@ chromium-metrics-reviews@google.com.
   <owner>peter@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
-    Records the display mode (as defined in the Web App Manifest spec) at the
-    launch of the Added to Home screen or installed Web App (including WebAPKs).
-    This is only recorded if the launch was to a windowed context, not a browser
-    tab.
+    Records the display mode at the launch of the Added to Home screen or
+    installed Web App (including WebAPKs). This is only recorded if the launch
+    was to a windowed context, not a browser tab.
   </summary>
 </histogram>
 

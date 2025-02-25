@@ -266,9 +266,10 @@ class WebAppBrowserTest : public WebAppBrowserTestBase {
     return https_server()->GetURL("app.com", path);
   }
 
-  bool HasMinimalUiButtons(DisplayMode display_mode,
+  bool HasMinimalUiButtons(DisplayMode install_display_mode,
                            std::optional<DisplayMode> display_override_mode,
-                           bool open_as_window) {
+                           bool open_as_window,
+                           DisplayMode expected_launch_display) {
     static int index = 0;
 
     base::HistogramTester tester;
@@ -277,7 +278,7 @@ class WebAppBrowserTest : public WebAppBrowserTestBase {
     auto web_app_info =
         WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
     web_app_info->scope = app_url;
-    web_app_info->display_mode = display_mode;
+    web_app_info->display_mode = install_display_mode;
     web_app_info->user_display_mode = open_as_window
                                           ? mojom::UserDisplayMode::kStandalone
                                           : mojom::UserDisplayMode::kBrowser;
@@ -289,9 +290,8 @@ class WebAppBrowserTest : public WebAppBrowserTestBase {
     Browser* app_browser = LaunchWebAppBrowser(app_id);
     DCHECK(app_browser->is_type_app());
     DCHECK(app_browser->app_controller());
-    tester.ExpectUniqueSample(
-        kLaunchWebAppDisplayModeHistogram,
-        display_override_mode ? *display_override_mode : display_mode, 1);
+    tester.ExpectUniqueSample(kLaunchWebAppDisplayModeHistogram,
+                              expected_launch_display, 1);
 
     content::WebContents* const web_contents =
         app_browser->tab_strip_model()->GetActiveWebContents();
@@ -695,27 +695,87 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, AppLastLaunchTime) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WithMinimalUiButtons) {
-  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kBrowser, std::nullopt,
-                                  /*open_as_window=*/true));
-  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kMinimalUi, std::nullopt,
-                                  /*open_as_window=*/true));
+  EXPECT_TRUE(
+      HasMinimalUiButtons(DisplayMode::kBrowser, std::nullopt,
+                          /*open_as_window=*/true,
+                          /*expected_launch_display=*/DisplayMode::kMinimalUi));
+  EXPECT_TRUE(
+      HasMinimalUiButtons(DisplayMode::kMinimalUi, std::nullopt,
+                          /*open_as_window=*/true,
+                          /*expected_launch_display=*/DisplayMode::kMinimalUi));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WithoutMinimalUiButtons) {
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kStandalone, std::nullopt,
-                                   /*open_as_window=*/true));
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kFullscreen, std::nullopt,
-                                   /*open_as_window=*/true));
+  EXPECT_FALSE(HasMinimalUiButtons(
+      DisplayMode::kStandalone, std::nullopt,
+      /*open_as_window=*/true,
+      /*expected_launch_display=*/DisplayMode::kStandalone));
+  EXPECT_FALSE(HasMinimalUiButtons(
+      DisplayMode::kFullscreen, std::nullopt,
+      /*open_as_window=*/true,
+      /*expected_launch_display=*/DisplayMode::kStandalone));
 
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kStandalone, std::nullopt,
-                                   /*open_as_window=*/false));
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kFullscreen, std::nullopt,
-                                   /*open_as_window=*/false));
+  EXPECT_FALSE(
+      HasMinimalUiButtons(DisplayMode::kStandalone, std::nullopt,
+                          /*open_as_window=*/false,
+                          /*expected_launch_display=*/DisplayMode::kBrowser));
+  EXPECT_FALSE(
+      HasMinimalUiButtons(DisplayMode::kFullscreen, std::nullopt,
+                          /*open_as_window=*/false,
+                          /*expected_launch_display=*/DisplayMode::kBrowser));
 
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kBrowser, std::nullopt,
-                                   /*open_as_window=*/false));
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kMinimalUi, std::nullopt,
-                                   /*open_as_window=*/false));
+  EXPECT_FALSE(
+      HasMinimalUiButtons(DisplayMode::kBrowser, std::nullopt,
+                          /*open_as_window=*/false,
+                          /*expected_launch_display=*/DisplayMode::kBrowser));
+  EXPECT_FALSE(
+      HasMinimalUiButtons(DisplayMode::kMinimalUi, std::nullopt,
+                          /*open_as_window=*/false,
+                          /*expected_launch_display=*/DisplayMode::kBrowser));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
+                       WithMinimalUiButtons_DisplayOverride) {
+  EXPECT_TRUE(
+      HasMinimalUiButtons(DisplayMode::kStandalone, DisplayMode::kMinimalUi,
+                          /*open_as_window=*/true,
+                          /*expected_launch_display=*/DisplayMode::kMinimalUi));
+
+  EXPECT_TRUE(
+      HasMinimalUiButtons(DisplayMode::kMinimalUi, DisplayMode::kFullscreen,
+                          /*open_as_window=*/true,
+                          /*expected_launch_display=*/DisplayMode::kMinimalUi));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
+                       WithoutMinimalUiButtons_DisplayOverride) {
+  EXPECT_FALSE(HasMinimalUiButtons(
+      DisplayMode::kStandalone, DisplayMode::kBrowser,
+      /*open_as_window=*/true,
+      /*expected_launch_display=*/DisplayMode::kStandalone));
+
+  EXPECT_FALSE(HasMinimalUiButtons(
+      DisplayMode::kMinimalUi, DisplayMode::kStandalone,
+      /*open_as_window=*/true,
+      /*expected_launch_display=*/DisplayMode::kStandalone));
+
+  EXPECT_FALSE(
+      HasMinimalUiButtons(DisplayMode::kMinimalUi, DisplayMode::kStandalone,
+                          /*open_as_window=*/false,
+                          /*expected_launch_display=*/DisplayMode::kBrowser));
+  EXPECT_FALSE(
+      HasMinimalUiButtons(DisplayMode::kMinimalUi, DisplayMode::kFullscreen,
+                          /*open_as_window=*/false,
+                          /*expected_launch_display=*/DisplayMode::kBrowser));
+
+  EXPECT_FALSE(
+      HasMinimalUiButtons(DisplayMode::kStandalone, DisplayMode::kBrowser,
+                          /*open_as_window=*/false,
+                          /*expected_launch_display=*/DisplayMode::kBrowser));
+  EXPECT_FALSE(
+      HasMinimalUiButtons(DisplayMode::kStandalone, DisplayMode::kMinimalUi,
+                          /*open_as_window=*/false,
+                          /*expected_launch_display=*/DisplayMode::kBrowser));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DisplayOverride) {
@@ -733,42 +793,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DisplayOverride) {
   ASSERT_EQ(2u, app_display_mode_override.size());
   EXPECT_EQ(DisplayMode::kMinimalUi, app_display_mode_override[0]);
   EXPECT_EQ(DisplayMode::kStandalone, app_display_mode_override[1]);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
-                       WithMinimalUiButtons_DisplayOverride) {
-  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kStandalone,
-                                  DisplayMode::kMinimalUi,
-                                  /*open_as_window=*/true));
-
-  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kMinimalUi,
-                                  DisplayMode::kFullscreen,
-                                  /*open_as_window=*/true));
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
-                       WithoutMinimalUiButtons_DisplayOverride) {
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kStandalone,
-                                   DisplayMode::kBrowser,
-                                   /*open_as_window=*/true));
-
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kMinimalUi,
-                                   DisplayMode::kStandalone,
-                                   /*open_as_window=*/true));
-
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kMinimalUi,
-                                   DisplayMode::kStandalone,
-                                   /*open_as_window=*/false));
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kMinimalUi,
-                                   DisplayMode::kFullscreen,
-                                   /*open_as_window=*/false));
-
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kStandalone,
-                                   DisplayMode::kBrowser,
-                                   /*open_as_window=*/false));
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kStandalone,
-                                   DisplayMode::kMinimalUi,
-                                   /*open_as_window=*/false));
 }
 
 // Tests that desktop PWAs open out-of-scope links with a custom toolbar.
