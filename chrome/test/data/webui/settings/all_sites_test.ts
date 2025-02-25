@@ -1098,6 +1098,12 @@ suite('EnableRelatedWebsiteSets', function() {
 
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
+  function createPage() {
+    testElement = document.createElement('all-sites');
+    assertTrue(!!testElement);
+    document.body.appendChild(testElement);
+  }
+
   suiteSetup(function() {
     CrSettingsPrefs.setInitialized();
 
@@ -1119,9 +1125,7 @@ suite('EnableRelatedWebsiteSets', function() {
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
-    testElement = document.createElement('all-sites');
-    assertTrue(!!testElement);
-    document.body.appendChild(testElement);
+    createPage();
   });
 
   teardown(function() {
@@ -1259,6 +1263,9 @@ suite('EnableRelatedWebsiteSets', function() {
         overflowMenu.querySelectorAll<HTMLElement>('.dropdown-item');
     assertEquals('', testElement.filter);
     // Click show related sites.
+    assertTrue(!!menuItems[0]);
+    assertEquals(loadTimeData.getString('allSitesShowRwsButton'),
+        menuItems[0].innerText.trim());
     menuItems[0]!.click();
     // Check the overflow menu is now closed.
     assertFalse(overflowMenu.open);
@@ -1289,7 +1296,7 @@ suite('EnableRelatedWebsiteSets', function() {
 
   test(
       'site entry related website set information updated on site deletion',
-      async function() {
+      function() {
         TEST_RWS_SITE_GROUPS.forEach(siteGroup => {
           testElement.siteGroupMap.set(
               siteGroup.groupingKey, structuredClone(siteGroup));
@@ -1299,9 +1306,8 @@ suite('EnableRelatedWebsiteSets', function() {
         let siteEntries =
             testElement.$.listContainer.querySelectorAll('site-entry');
         assertEquals(testElement.$.allSitesList.items!.length, 2);
-        await browserProxy.whenCalled('getRwsMembershipLabel');
         assertEquals(
-            '· 2 sites in google.com\'s group',
+            '· ' + loadTimeData.getString('allSitesRwsMembershipLabel'),
             siteEntries[1]!.$.rwsMembership.innerText.trim());
 
         // Remove first site group.
@@ -1309,11 +1315,43 @@ suite('EnableRelatedWebsiteSets', function() {
         siteEntries =
             testElement.$.listContainer.querySelectorAll('site-entry');
         assertEquals(testElement.$.allSitesList.items!.length, 1);
-        await browserProxy.whenCalled('getRwsMembershipLabel');
         assertEquals(
-            '· 1 site in google.com\'s group',
+            '· ' + loadTimeData.getString('allSitesRwsMembershipLabel'),
             siteEntries[1]!.$.rwsMembership.innerText.trim());
       });
+
+      // TODO(crbug.com/396463421): Remove once RelatedWebsiteSetsUi launched.
+      test(
+        'site entry RWS information updated on site deletion when RWS UI V2 disabled',
+        async function() {
+          loadTimeData.overrideValues({
+            isRelatedWebsiteSetsV2UiEnabled: false,
+          });
+          await createPage();
+          TEST_RWS_SITE_GROUPS.forEach(siteGroup => {
+            testElement.siteGroupMap.set(
+                siteGroup.groupingKey, structuredClone(siteGroup));
+          });
+          testElement.forceListUpdateForTesting();
+          flush();
+          let siteEntries =
+              testElement.$.listContainer.querySelectorAll('site-entry');
+          assertEquals(testElement.$.allSitesList.items!.length, 2);
+          await browserProxy.whenCalled('getRwsMembershipLabel');
+          assertEquals(
+              '· 2 sites in google.com\'s group',
+              siteEntries[1]!.$.rwsMembership.innerText.trim());
+
+          // Remove first site group.
+          removeSiteViaOverflowMenu('action-button');
+          siteEntries =
+              testElement.$.listContainer.querySelectorAll('site-entry');
+          assertEquals(testElement.$.allSitesList.items!.length, 1);
+          await browserProxy.whenCalled('getRwsMembershipLabel');
+          assertEquals(
+              '· 1 site in google.com\'s group',
+              siteEntries[1]!.$.rwsMembership.innerText.trim());
+        });
 
   test(
       'site entry related website set constant member count on origin deletion',

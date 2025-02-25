@@ -148,6 +148,12 @@ export class AllSitesElement extends AllSitesElementBase {
         readOnly: true,
       },
 
+      isRelatedWebsiteSetsV2UiEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isRelatedWebsiteSetsV2UiEnabled'),
+      },
+
       /**
        * Stores the last selected item in the All Sites list.
        */
@@ -200,6 +206,7 @@ export class AllSitesElement extends AllSitesElementBase {
   private totalUsage_: string;
   private metricsBrowserProxy: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+  private isRelatedWebsiteSetsV2UiEnabled_: boolean;
 
   override ready() {
     super.ready();
@@ -586,6 +593,12 @@ export class AllSitesElement extends AllSitesElementBase {
     return loadTimeData.getStringF(
         'siteSettingsRelatedWebsiteSetsLearnMore', rwsOwner);
   }
+
+  private getShowRwsButtonLabel_() {
+    return this.i18n(this.isRelatedWebsiteSetsV2UiEnabled_ ?
+      'allSitesShowRwsButton' : 'relatedWebsiteSetsShowRelatedSitesButton');
+  }
+
   /**
    * Selects the appropriate string to display for clear button based on whether
    * a filter is applied.
