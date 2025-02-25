@@ -131,7 +131,7 @@ const base::FeatureParam<int> kMockAnswererStatus(&kHistoryEmbeddings,
 
 const base::FeatureParam<bool> kEnableImagesForResults(&kHistoryEmbeddings,
                                                        "EnableImagesForResults",
-                                                       false);
+                                                       true);
 
 const base::FeatureParam<bool> kOmniboxScoped(&kHistoryEmbeddings,
                                               "OmniboxScoped",
