@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/strings/stringize_macros.h"
+#include "remoting/base/instance_identity_token_getter.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/protobuf_http_client.h"
 #include "remoting/host/host_details.h"
@@ -35,11 +36,13 @@ using UpdateRemoteAccessHostRequest =
 CloudHeartbeatServiceClient::CloudHeartbeatServiceClient(
     const std::string& directory_id,
     OAuthTokenGetter* oauth_token_getter,
+    InstanceIdentityTokenGetter* instance_identity_token_getter,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : directory_id_(directory_id),
       client_(CloudServiceClient::CreateForChromotingRobotAccount(
           oauth_token_getter,
-          url_loader_factory)) {}
+          url_loader_factory)),
+      instance_identity_token_getter_(instance_identity_token_getter) {}
 
 CloudHeartbeatServiceClient::~CloudHeartbeatServiceClient() = default;
 

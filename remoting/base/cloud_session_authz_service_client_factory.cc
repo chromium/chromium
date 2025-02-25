@@ -13,6 +13,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/cloud_service_client.h"
+#include "remoting/base/instance_identity_token_getter.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/duration.pb.h"
@@ -40,6 +41,7 @@ class CloudSessionAuthzServiceClient : public SessionAuthzServiceClient {
  public:
   CloudSessionAuthzServiceClient(
       OAuthTokenGetter* oauth_token_getter,
+      InstanceIdentityTokenGetter* instance_identity_token_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   CloudSessionAuthzServiceClient(const CloudSessionAuthzServiceClient&) =
@@ -72,16 +74,19 @@ class CloudSessionAuthzServiceClient : public SessionAuthzServiceClient {
       std::unique_ptr<ReauthorizeHostResponse> response);
 
   std::unique_ptr<CloudServiceClient> client_;
+  const raw_ptr<InstanceIdentityTokenGetter> instance_identity_token_getter_;
 
   base::WeakPtrFactory<CloudSessionAuthzServiceClient> weak_factory_{this};
 };
 
 CloudSessionAuthzServiceClient::CloudSessionAuthzServiceClient(
     OAuthTokenGetter* oauth_token_getter,
+    InstanceIdentityTokenGetter* instance_identity_token_getter,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : client_(CloudServiceClient::CreateForChromotingRobotAccount(
           oauth_token_getter,
-          url_loader_factory)) {}
+          url_loader_factory)),
+      instance_identity_token_getter_(instance_identity_token_getter) {}
 
 CloudSessionAuthzServiceClient::~CloudSessionAuthzServiceClient() = default;
 
@@ -198,8 +203,10 @@ void CloudSessionAuthzServiceClient::OnReauthorizeHostResponse(
 
 CloudSessionAuthzServiceClientFactory::CloudSessionAuthzServiceClientFactory(
     OAuthTokenGetter* oauth_token_getter,
+    InstanceIdentityTokenGetter* instance_identity_token_getter,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : oauth_token_getter_(oauth_token_getter),
+      instance_identity_token_getter_(instance_identity_token_getter),
       url_loader_factory_(url_loader_factory) {}
 
 CloudSessionAuthzServiceClientFactory::
@@ -207,8 +214,9 @@ CloudSessionAuthzServiceClientFactory::
 
 std::unique_ptr<SessionAuthzServiceClient>
 CloudSessionAuthzServiceClientFactory::Create() {
-  return std::make_unique<CloudSessionAuthzServiceClient>(oauth_token_getter_,
-                                                          url_loader_factory_);
+  return std::make_unique<CloudSessionAuthzServiceClient>(
+      oauth_token_getter_, instance_identity_token_getter_,
+      url_loader_factory_);
 }
 
 AuthenticationMethod CloudSessionAuthzServiceClientFactory::method() {
