@@ -47,7 +47,9 @@ GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   webui::SetupWebUIDataSource(source, kGlicFreResources, IDR_GLIC_FRE_FRE_HTML);
 
   // Set up FRE URL via cli flag, or default to the finch param value.
-  source->AddString("glicFreURL", GetFreURL().spec());
+  source->AddString(
+      "glicFreURL",
+      GetFreURL(Profile::FromBrowserContext(browser_context)).spec());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicFreUI)
