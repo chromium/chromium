@@ -90,7 +90,7 @@
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
@@ -506,8 +506,7 @@ void DoSafeBrowsingCheckOnUIThread(
     std::unique_ptr<content::FileSystemAccessWriteItem> item,
     safe_browsing::CheckDownloadCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // Download Protection Service is not supported on Android.
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   safe_browsing::SafeBrowsingService* sb_service =
       g_browser_process->safe_browsing_service();
   if (!sb_service || !sb_service->download_protection_service() ||
@@ -539,7 +538,7 @@ void DoSafeBrowsingCheckOnUIThread(
       std::move(item), std::move(callback));
 #else
   std::move(callback).Run(safe_browsing::DownloadCheckResult::UNKNOWN);
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 }
 
 ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult

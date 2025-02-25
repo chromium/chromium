@@ -370,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserSlowLoadTest, WaitUntilLoaded) {
   EXPECT_TRUE(IsUsageIndicatorVisible(browser()));
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, SafeBrowsing) {
   safe_browsing::FileTypePoliciesTestOverlay policies;
   std::unique_ptr<safe_browsing::DownloadFileTypeConfig> file_type_config =
