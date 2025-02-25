@@ -22,10 +22,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
+#include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-forward.h"
-#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-forward.h"
+#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 namespace features {
 
@@ -112,6 +113,25 @@ class AILanguageModel : public AIContextBoundObject,
     std::deque<ContextItem> context_items_;
   };
 
+  // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
+  class MultimodalResponder : on_device_model::mojom::StreamingResponder {
+   public:
+    explicit MultimodalResponder(
+        mojo::PendingRemote<blink::mojom::ModelStreamingResponder> responder);
+    ~MultimodalResponder() override;
+    mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
+    BindRemote();
+    // on_device_model::mojom::StreamingResponder:
+    void OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) override;
+    void OnComplete(
+        on_device_model::mojom::ResponseSummaryPtr summary) override;
+
+   private:
+    mojo::Receiver<on_device_model::mojom::StreamingResponder> receiver_{this};
+    mojo::Remote<blink::mojom::ModelStreamingResponder> responder_;
+    std::string current_response_;
+  };
+
   AILanguageModel(
       std::unique_ptr<
           optimization_guide::OptimizationGuideModelExecutor::Session> session,
@@ -194,6 +214,9 @@ class AILanguageModel : public AIContextBoundObject,
 
   mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote_;
   mojo::Receiver<blink::mojom::AILanguageModel> receiver_;
+
+  // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
+  std::vector<std::unique_ptr<MultimodalResponder>> multimodal_responders_;
 
   base::WeakPtrFactory<AILanguageModel> weak_ptr_factory_{this};
 };
