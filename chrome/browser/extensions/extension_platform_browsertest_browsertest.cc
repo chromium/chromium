@@ -15,5 +15,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionPlatformBrowserTest, NavigateToURLInNewTab) {
   EXPECT_EQ(GetTabCount(), 2);
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionPlatformBrowserTest, OpenAndCloseTab) {
+  ASSERT_EQ(GetTabCount(), 1);
+  content::WebContents* web_contents1 = GetActiveWebContents();
+
+  // Open a new tab.
+  EXPECT_TRUE(NavigateToURLInNewTab(GURL("about:blank")));
+  EXPECT_EQ(GetTabCount(), 2);
+  content::WebContents* web_contents2 = GetActiveWebContents();
+  ASSERT_TRUE(web_contents2);
+
+  // Close the new tab.
+  CloseTabForWebContents(web_contents2);
+  EXPECT_EQ(GetTabCount(), 1);
+
+  // The first tab is active.
+  EXPECT_EQ(web_contents1, GetActiveWebContents());
+}
+
 }  // namespace
 }  // namespace extensions

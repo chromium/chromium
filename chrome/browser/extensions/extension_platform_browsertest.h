@@ -91,6 +91,9 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   // Returns whether the tab at `index` is selected.
   bool IsTabSelected(int index);
 
+  // Closes the tab associated with `web_contents`.
+  void CloseTabForWebContents(content::WebContents* web_contents);
+
   // Waits until `script` calls "chrome.test.sendScriptResult(result)",
   // where `result` is a serializable value, and returns `result`. Fails
   // the test and returns an empty base::Value if `extension_id` isn't

@@ -1474,6 +1474,9 @@ source_set("platform_browser_tests") {
       "../browser/extensions/error_console/error_console_test_observer.cc",
       "../browser/extensions/error_console/error_console_test_observer.h",
       "../browser/extensions/extension_incognito_apitest.cc",
+      "../browser/extensions/extension_install_prompt_browsertest.cc",
+      "../browser/extensions/extension_install_prompt_test_helper.cc",
+      "../browser/extensions/extension_install_prompt_test_helper.h",
       "../browser/extensions/extension_override_apitest.cc",
       "../browser/extensions/extension_platform_browsertest_browsertest.cc",
       "../browser/extensions/sandboxed_pages_apitest.cc",
@@ -4247,9 +4250,6 @@ if (!is_android) {
         "../browser/extensions/extension_geolocation_apitest.cc",
         "../browser/extensions/extension_get_views_apitest.cc",
         "../browser/extensions/extension_icon_source_apitest.cc",
-        "../browser/extensions/extension_install_prompt_browsertest.cc",
-        "../browser/extensions/extension_install_prompt_test_helper.cc",
-        "../browser/extensions/extension_install_prompt_test_helper.h",
         "../browser/extensions/extension_install_ui_browsertest.cc",
         "../browser/extensions/extension_l10n_browsertest.cc",
         "../browser/extensions/extension_loading_browsertest.cc",
@@ -8720,6 +8720,7 @@ test("unit_tests") {
   # Unit tests that run on Win/Mac/Linux and Android desktop.
   if (enable_extensions_core) {
     sources += [
+      "../browser/extensions/extension_install_prompt_unittest.cc",
       "../browser/extensions/install_tracker_unittest.cc",
       "../common/extensions/chrome_manifest_url_handlers_unittest.cc",
       "../common/extensions/manifest_handlers/automation_unittest.cc",
@@ -8893,7 +8894,6 @@ test("unit_tests") {
       "../browser/extensions/extension_error_controller_unittest.cc",
       "../browser/extensions/extension_error_ui_default_unittest.cc",
       "../browser/extensions/extension_garbage_collector_unittest.cc",
-      "../browser/extensions/extension_install_prompt_unittest.cc",
       "../browser/extensions/extension_management_unittest.cc",
       "../browser/extensions/extension_migrator_unittest.cc",
       "../browser/extensions/extension_navigation_throttle_unittest.cc",

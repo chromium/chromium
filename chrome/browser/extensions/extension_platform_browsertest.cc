@@ -29,6 +29,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #else
@@ -338,10 +339,7 @@ Profile* ExtensionPlatformBrowserTest::GetOrCreateIncognitoProfile() {
 content::WebContents* ExtensionPlatformBrowserTest::PlatformOpenURLOffTheRecord(
     Profile* profile,
     const GURL& url) {
-#if !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  Browser* otr_browser = OpenURLOffTheRecord(profile, url);
-  return otr_browser->tab_strip_model()->GetActiveWebContents();
-#else
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   // Android doesn't have an OpenURLOffTheRecord() helper so we roll our own.
   Profile* incognito_profile =
       this->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
@@ -358,16 +356,15 @@ content::WebContents* ExtensionPlatformBrowserTest::PlatformOpenURLOffTheRecord(
   // load.
   (void)content::NavigateToURL(web_contents, url);
   return web_contents;
+#else
+  Browser* otr_browser = OpenURLOffTheRecord(profile, url);
+  return otr_browser->tab_strip_model()->GetActiveWebContents();
 #endif
 }
 
 content::RenderFrameHost* ExtensionPlatformBrowserTest::NavigateToURLInNewTab(
     const GURL& url) {
-#if !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  return ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-#else
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   // Navigate and block until navigation finishes.
   android_ui_test_utils::OpenUrlInNewTab(profile(), GetActiveWebContents(),
                                          url);
@@ -375,26 +372,52 @@ content::RenderFrameHost* ExtensionPlatformBrowserTest::NavigateToURLInNewTab(
   // Mimic BROWSER_TEST_WAIT_FOR_LOAD_STOP like above.
   content::WaitForLoadStop(new_web_contents);
   return content::ConvertToRenderFrameHost(new_web_contents);
+#else
+  return ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 #endif
 }
 
 int ExtensionPlatformBrowserTest::GetTabCount() {
-#if !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  return browser()->tab_strip_model()->count();
-#else
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   TabModel* tab_model =
       TabModelList::GetTabModelForWebContents(GetActiveWebContents());
   return tab_model->GetTabCount();
+#else
+  return browser()->tab_strip_model()->count();
 #endif
 }
 
 bool ExtensionPlatformBrowserTest::IsTabSelected(int index) {
-#if !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  return browser()->tab_strip_model()->IsTabSelected(index);
-#else
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   TabModel* tab_model =
       TabModelList::GetTabModelForWebContents(GetActiveWebContents());
   return tab_model->GetActiveIndex() == index;
+#else
+  return browser()->tab_strip_model()->IsTabSelected(index);
+#endif
+}
+
+void ExtensionPlatformBrowserTest::CloseTabForWebContents(
+    content::WebContents* web_contents) {
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents);
+  CHECK(tab_model);
+  for (int index = 0; index < tab_model->GetTabCount(); ++index) {
+    if (tab_model->GetWebContentsAt(index) == web_contents) {
+      tab_model->CloseTabAt(index);
+      return;
+    }
+  }
+  NOTREACHED() << "WebContents not found";
+#else
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  CHECK(browser);
+  int index = browser->tab_strip_model()->GetIndexOfWebContents(web_contents);
+  CHECK_GE(index, 0) << "WebContents not found";
+  return browser->tab_strip_model()->CloseWebContentsAt(
+      index, TabCloseTypes::CLOSE_NONE);
 #endif
 }
 
