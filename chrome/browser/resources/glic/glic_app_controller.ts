@@ -9,6 +9,8 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import {WebUiState} from './glic.mojom-webui.js';
 import type {PageInterface} from './glic.mojom-webui.js';
 import type {ApiHostEmbedder} from './glic_api_impl/glic_api_host.js';
+import {exceptionFromTransferable} from './glic_api_impl/request_types.js';
+import type {TransferableException} from './glic_api_impl/request_types.js';
 import type {PageType, WebviewDelegate} from './webview.js';
 import {WebviewController} from './webview.js';
 
@@ -355,10 +357,23 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     }
   }
 
+  // Called when the web client completes initialization.
+  webClientInitializationDone(
+      success: boolean, exception: TransferableException|undefined): void {
+    if (success) {
+      this.showGuest();
+    } else {
+      if (exception) {
+        console.error(exceptionFromTransferable(exception));
+      }
+      this.setState(WebUiState.kError);
+    }
+  }
+
   // This may also be called when the panel is re-opened by webui after being
   // hidden, such as when an error panel is shown.
   // This will do nothing if the app is not in kReady state.
-  showGuest(): void {
+  private showGuest(): void {
     if (this.state === WebUiState.kReady) {
       this.showPanel('guestPanel');
     }

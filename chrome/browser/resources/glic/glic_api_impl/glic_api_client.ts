@@ -6,8 +6,8 @@ import type {AnnotatedPageData, ChromeVersion, DraggableArea, FocusedTabCandidat
 
 import {replaceProperties} from './conversions.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
-import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClientRequestTypes} from './request_types.js';
-import {ImageAlphaType, ImageColorType} from './request_types.js';
+import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientRequestTypes} from './request_types.js';
+import {ImageAlphaType, ImageColorType, newTransferableException} from './request_types.js';
 
 
 // Web client side of the Glic API.
@@ -20,13 +20,17 @@ export class GlicHostRegistryImpl implements GlicHostRegistry {
     const host = new GlicBrowserHostImpl(webClient, this.windowProxy);
     await host.webClientCreated();
     let success = false;
+    let exception: TransferableException|undefined;
     try {
       await webClient.initialize(host);
       success = true;
     } catch (e) {
       console.warn(e);
+      if (e instanceof Error) {
+        exception = newTransferableException(e);
+      }
     }
-    host.webClientInitialized(success);
+    host.webClientInitialized(success, exception);
   }
 }
 
@@ -189,8 +193,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     }
   }
 
-  webClientInitialized(success: boolean) {
-    this.sender.requestNoResponse('glicBrowserWebClientInitialized', {success});
+  webClientInitialized(
+      success: boolean, exception: TransferableException|undefined) {
+    this.sender.requestNoResponse(
+        'glicBrowserWebClientInitialized', {success, exception});
   }
 
   async handleRawRequest(type: string, payload: any):
