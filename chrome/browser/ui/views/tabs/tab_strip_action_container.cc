@@ -349,9 +349,6 @@ std::unique_ptr<glic::GlicButton> TabStripActionContainer::CreateGlicButton(
               IDR_GLIC_BUTTON_VECTOR_ICON),
           l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP));
 
-  glic_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_GLIC_PROMO_TITLE));
-  glic_button->GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_GLIC_PROMO_TITLE));
   glic_button->SetProperty(views::kCrossAxisAlignmentKey,
                            views::LayoutAlignment::kCenter);
 
