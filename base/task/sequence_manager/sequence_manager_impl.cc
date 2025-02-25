@@ -121,8 +121,10 @@ void ReclaimMemoryFromQueue(internal::TaskQueueImpl* queue, LazyNow* lazy_now) {
   // will still be valid but the work queues will have been removed by
   // TaskQueueImpl::UnregisterTaskQueue.
   if (queue->delayed_work_queue()) {
-    queue->delayed_work_queue()->RemoveAllCanceledTasksFromFront();
-    queue->immediate_work_queue()->RemoveAllCanceledTasksFromFront();
+    queue->delayed_work_queue()->RemoveCancelledTasks(
+        WorkQueue::RemoveCancelledTasksPolicy::kFront);
+    queue->immediate_work_queue()->RemoveCancelledTasks(
+        WorkQueue::RemoveCancelledTasksPolicy::kFront);
   }
 }
 
@@ -617,7 +619,8 @@ SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
     }
 
     // If the head task was canceled, remove it and run the selector again.
-    if (work_queue->RemoveAllCanceledTasksFromFront()) [[unlikely]] {
+    if (work_queue->RemoveCancelledTasks(
+            WorkQueue::RemoveCancelledTasksPolicy::kFront)) [[unlikely]] {
       continue;
     }
 
@@ -1114,8 +1117,10 @@ bool SequenceManagerImpl::IsIdleForTesting() {
 
   // Make sure that canceled tasks don't affect the return value.
   for (internal::TaskQueueImpl* queue : main_thread_only().active_queues) {
-    queue->delayed_work_queue()->RemoveAllCanceledTasksFromFront();
-    queue->immediate_work_queue()->RemoveAllCanceledTasksFromFront();
+    queue->delayed_work_queue()->RemoveCancelledTasks(
+        WorkQueue::RemoveCancelledTasksPolicy::kFront);
+    queue->immediate_work_queue()->RemoveCancelledTasks(
+        WorkQueue::RemoveCancelledTasksPolicy::kFront);
   }
 
   return !main_thread_only().selector.GetHighestPendingPriority().has_value();

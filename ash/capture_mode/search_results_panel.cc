@@ -40,8 +40,8 @@ namespace {
 
 inline constexpr int kPanelCornerRadius = 16;
 const std::u16string kSearchBoxPlaceholderText = u"Add to your search";
-inline constexpr int kPanelPaddingSize = 16;
-inline constexpr gfx::Insets kPanelPadding = gfx::Insets(kPanelPaddingSize);
+inline constexpr gfx::Insets kPanelPadding =
+    gfx::Insets(capture_mode::kPanelPaddingSize);
 inline constexpr int kHeaderIconSize = 20;
 inline constexpr int kSearchBoxHeight = 48;
 inline constexpr int kSearchBoxRadius = 24;
@@ -105,9 +105,8 @@ class SunfishSearchBoxView : public views::View,
     SetBackground(views::CreateThemedRoundedRectBackground(
         cros_tokens::kCrosSysSystemOnBase1, kSearchBoxRadius));
 
-    SetPreferredSize(gfx::Size(
-        capture_mode::kSearchResultsPanelWidth - 2 * kPanelPaddingSize,
-        kSearchBoxHeight));
+    SetPreferredSize(gfx::Size(capture_mode::kSearchResultsPanelWebViewWidth,
+                               kSearchBoxHeight));
 
     image_view_->SetPaintToLayer();
     image_view_->layer()->SetFillsBoundsOpaquely(false);
@@ -321,7 +320,7 @@ void SearchResultsPanel::RefreshPanelBounds() {
   // screen. On zoom out, the widget should return to its preferred size.
   gfx::Rect widget_bounds_in_screen(
       widget->GetWindowBoundsInScreen().origin(),
-      gfx::Size(capture_mode::kSearchResultsPanelWidth,
+      gfx::Size(capture_mode::kSearchResultsPanelTotalWidth,
                 capture_mode::kSearchResultsPanelHeight));
 
   // Adjust the preferred size and bounds based on the current display.

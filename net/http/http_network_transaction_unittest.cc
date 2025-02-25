@@ -464,7 +464,7 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
             /*ssl_client_context=*/nullptr,
             /*socket_performance_watcher_factory=*/nullptr,
             /*network_quality_estimator=*/nullptr,
-            /*net_log=*/nullptr,
+            /*net_log=*/NetLog::Get(),
             /*websocket_endpoint_lock_manager=*/nullptr,
             /*http_server_properties=*/nullptr,
             /*alpn_protos=*/nullptr,
@@ -20870,7 +20870,7 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
-  // Two requests on the first connection.
+  // Two requests on the first H2 connection.
   spdy::SpdySerializedFrame req1(
       spdy_util_.ConstructSpdyGet("https://www.example.org", 1, LOWEST));
   spdy_util_.UpdateWithStreamDestruction(1);
@@ -20884,7 +20884,8 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
       CreateMockWrite(rst, 6),
   };
 
-  // The first one succeeds, the second gets error 421 Misdirected Request.
+  // The first request succeeds, the second request gets error 421 Misdirected
+  // Request. The first H2 connection remains available after getting 421.
   spdy::SpdySerializedFrame resp1(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
   spdy::SpdySerializedFrame body1(spdy_util_.ConstructSpdyDataFrame(1, true));
@@ -20892,8 +20893,10 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
   response_headers[spdy::kHttp2StatusHeader] = "421";
   spdy::SpdySerializedFrame resp2(
       spdy_util_.ConstructSpdyReply(3, std::move(response_headers)));
-  MockRead reads1[] = {CreateMockRead(resp1, 1), CreateMockRead(body1, 2),
-                       CreateMockRead(resp2, 4), MockRead(ASYNC, 0, 5)};
+  MockRead reads1[] = {
+      CreateMockRead(resp1, 1), CreateMockRead(body1, 2),
+      CreateMockRead(resp2, 4),
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING, 5) /* stalls forever */};
 
   MockConnect connect1(ASYNC, OK, peer_addr);
   SequencedSocketData data1(connect1, reads1, writes1);
@@ -20901,7 +20904,7 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
 
   AddSSLSocketData();
 
-  // Retry the second request on a second connection.
+  // Retry the second request on the second H2 connection.
   SpdyTestUtil spdy_util2(/*use_priority_header=*/true);
   spdy::SpdySerializedFrame req3(
       spdy_util2.ConstructSpdyGet("https://mail.example.org", 1, LOWEST));
@@ -20936,7 +20939,8 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
   HttpNetworkTransaction trans1(DEFAULT_PRIORITY, session.get());
 
   TestCompletionCallback callback;
-  rv = trans1.Start(&request1, callback.callback(), NetLogWithSource());
+  rv = trans1.Start(&request1, callback.callback(),
+                    NetLogWithSource::Make(NetLogSourceType::URL_REQUEST));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());
@@ -20961,7 +20965,7 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
 
   RecordingNetLogObserver net_log_observer;
   rv = trans2.Start(&request2, callback.callback(),
-                    NetLogWithSource::Make(NetLogSourceType::NONE));
+                    NetLogWithSource::Make(NetLogSourceType::URL_REQUEST));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());

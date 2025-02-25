@@ -35,6 +35,8 @@ type InitializeResult =
 type MantisResult = import('./mantis_processor.mojom-webui.js').MantisResult;
 type MantisSafetyClassifierVerdict =
     import('./mantis_processor.mojom-webui.js').SafetyClassifierVerdict;
+type Uuid =
+    import('//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js').Uuid;
 
 /**
  * Wraps an HTML File object (or a mock, or media loaded through another means).
@@ -304,7 +306,7 @@ declare interface ClientApiDelegate {
    * Loads Mantis' assets from DLC and initializes the processor for subsequent
    * queries.
    */
-  initializeMantis(): Promise<InitializeResult>;
+  initializeMantis(dlcId: Uuid): Promise<InitializeResult>;
   /**
    * Performs image segmentation on the image based on the prior selection.
    * The `image` and `selection` are byte arrays containing the encoded

@@ -41,6 +41,7 @@ class MagicBoostStateAsh : public chromeos::MagicBoostState,
   void AsyncWriteHMREnabled(bool enabled) override;
   void ShouldIncludeOrcaInOptIn(
       base::OnceCallback<void(bool)> callback) override;
+  bool ShouldIncludeOrcaInOptInSync() override;
   void DisableOrcaFeature() override;
   void DisableLobsterSettings() override;
 

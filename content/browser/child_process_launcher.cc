@@ -299,8 +299,9 @@ bool RenderProcessPriority::is_background() const {
     return *priority_override == base::Process::Priority::kBestEffort;
   }
 #endif
-  return !visible && !has_media_stream && !boost_for_pending_views &&
-         !has_foreground_service_worker && !boost_for_loading;
+  return !visible && !has_media_stream && !has_immersive_xr_session &&
+         !boost_for_pending_views && !has_foreground_service_worker &&
+         !boost_for_loading;
 }
 
 base::Process::Priority RenderProcessPriority::GetProcessPriority() const {

@@ -34,7 +34,6 @@
 namespace ash {
 namespace {
 
-using ::base::test::ErrorIs;
 using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
 using ::base::test::ValueIs;
@@ -68,9 +67,30 @@ TEST(ScannerSessionTest, FetchActionsForImageReturnsErrorWhenDelegateErrors) {
   base::test::TestFuture<ScannerSession::FetchActionsResponse> future;
   session.FetchActionsForImage(nullptr, future.GetCallback());
 
-  EXPECT_THAT(
-      future.Take(),
-      ErrorIs(l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC)));
+  ScannerSession::FetchActionsResponse response = future.Take();
+  EXPECT_EQ(response.error().error_message,
+            l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC));
+  EXPECT_TRUE(response.error().can_try_again);
+}
+
+TEST(ScannerSessionTest,
+     FetchActionsForImageReturnsErrorForUnsupportedLanguage) {
+  FakeScannerProfileScopedDelegate delegate;
+  EXPECT_CALL(delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          nullptr,
+          manta::MantaStatus{
+              .status_code = manta::MantaStatusCode::kUnsupportedLanguage}));
+  ScannerSession session(&delegate);
+
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> future;
+  session.FetchActionsForImage(nullptr, future.GetCallback());
+
+  ScannerSession::FetchActionsResponse response = future.Take();
+  EXPECT_EQ(
+      response.error().error_message,
+      l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_UNSUPPORTED_LANGUAGE));
+  EXPECT_FALSE(response.error().can_try_again);
 }
 
 TEST(ScannerSessionTest,

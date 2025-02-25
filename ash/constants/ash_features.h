@@ -879,7 +879,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShowBluetoothDebugLogToggle);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShowLiveCaptionInVideoConferenceTray);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kShowPlayInDemoMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShowSharingUserInLauncherContinueSection);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kShowSpatialAudioToggle);
@@ -1433,8 +1432,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsSearchCustomizableShortcutsInLauncherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFeatureAwareDeviceDemoModeEnabled();
-// TODO(michaelpg): Remove after M71 branch to re-enable Play Store by default.
-COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldShowPlayStoreInDemoMode();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool UseMixedFileLauncherContinueSection();
 
 // Keep alphabetized.

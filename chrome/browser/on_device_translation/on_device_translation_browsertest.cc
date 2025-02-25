@@ -77,8 +77,7 @@ constexpr std::string_view kOriginTrialToken =
 
 // Sets the path of the mock library to the command line.
 void SetMockLibraryPathToCommandLine(base::CommandLine* command_line) {
-  command_line->AppendSwitchPath("translate-kit-binary-path",
-                                 GetMockLibraryPath());
+  command_line->AppendSwitchPath(kTranslateKitBinaryPath, GetMockLibraryPath());
 }
 
 // Writes fake dictionary data to a file and sets the path of the file to the

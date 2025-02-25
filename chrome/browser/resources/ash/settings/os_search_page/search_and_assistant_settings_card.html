@@ -120,7 +120,6 @@
       </div>
 <if expr="_google_chrome">
       <div class="sub-item">
-        <!-- TODO(b:348516125): add the learn more link -->
         <template is="dom-if" if="[[isLobsterSettingsToggleVisible_]]">
           <settings-toggle-button id="lobsterToggle"
               class="hr"
@@ -128,7 +127,9 @@
               pref="{{prefs.settings.lobster_enabled}}"
               label="$i18n{enableLobster}"
               sub-label="$i18n{enableLobsterDesc}"
-              deep-link-focus-id$="[[Setting.kLobsterOnOff]]">
+              deep-link-focus-id$="[[Setting.kLobsterOnOff]]"
+              learn-more-url="$i18n{lobsterLearnMoreUrl}"
+              >
           </settings-toggle-button>
         </template>
       </div>

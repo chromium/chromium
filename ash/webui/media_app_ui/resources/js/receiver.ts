@@ -7,6 +7,7 @@
 import './sandboxed_load_time_data.js';
 
 import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import type {Url as MojoUrl} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertCast, MessagePipe} from '//system_apps/message_pipe.js';
@@ -443,12 +444,9 @@ const DELEGATE: ClientApiDelegate = {
   async isMantisAvailable() {
     return isMantisAvailable();
   },
-  async initializeMantis() {
+  async initializeMantis(dlcId: Uuid) {
     mantisUntrustedService?.$.close();
-    // TODO(crbug.com/395511579): Make the dlcUuid a parameter of
-    // initializeMantis.
-    const dlcUuid = null;
-    const response = await connectToMantisUntrustedService(dlcUuid);
+    const response = await connectToMantisUntrustedService(dlcId);
     if (response.error) {
       return response.error;
     }

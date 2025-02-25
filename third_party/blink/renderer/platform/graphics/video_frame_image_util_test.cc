@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/test/test_context_provider.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/shared_image_video_frame_test_utils.h"
@@ -94,7 +95,17 @@ void TestOrientation(scoped_refptr<media::VideoFrame> frame,
 
 }  // namespace
 
-TEST(VideoFrameImageUtilTest, VideoTransformationToFromImageOrientation) {
+class VideoFrameImageUtilTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+  }
+
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
+};
+
+TEST_F(VideoFrameImageUtilTest, VideoTransformationToFromImageOrientation) {
   for (int i = static_cast<int>(ImageOrientationEnum::kMinValue);
        i <= static_cast<int>(ImageOrientationEnum::kMaxValue); ++i) {
     auto blink_orientation = static_cast<ImageOrientationEnum>(i);
@@ -105,7 +116,7 @@ TEST(VideoFrameImageUtilTest, VideoTransformationToFromImageOrientation) {
   }
 }
 
-TEST(VideoFrameImageUtilTest, WillCreateAcceleratedImagesFromVideoFrame) {
+TEST_F(VideoFrameImageUtilTest, WillCreateAcceleratedImagesFromVideoFrame) {
   // I420A isn't a supported zero copy format.
   {
     auto alpha_frame = media::VideoFrame::CreateTransparentFrame(kTestSize);
@@ -114,28 +125,28 @@ TEST(VideoFrameImageUtilTest, WillCreateAcceleratedImagesFromVideoFrame) {
 
   // Software RGB frames aren't supported.
   {
-    auto cpu_frame =
-        CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
-                        media::VideoFrame::STORAGE_OWNED_MEMORY,
-                        media::PIXEL_FORMAT_XRGB, base::TimeDelta());
+    auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
+                                     media::VideoFrame::STORAGE_OWNED_MEMORY,
+                                     media::PIXEL_FORMAT_XRGB,
+                                     base::TimeDelta(), test_sii_.get());
     EXPECT_FALSE(WillCreateAcceleratedImagesFromVideoFrame(cpu_frame.get()));
   }
 
   // GpuMemoryBuffer frames aren't supported.
   {
-    auto cpu_frame =
-        CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
-                        media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-                        media::PIXEL_FORMAT_XRGB, base::TimeDelta());
+    auto cpu_frame = CreateTestFrame(
+        kTestSize, gfx::Rect(kTestSize), kTestSize,
+        media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER, media::PIXEL_FORMAT_XRGB,
+        base::TimeDelta(), test_sii_.get());
     EXPECT_FALSE(WillCreateAcceleratedImagesFromVideoFrame(cpu_frame.get()));
   }
 
   // Single mailbox shared images should be supported on most platforms.
   {
-    auto shared_image_frame =
-        CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
-                        media::VideoFrame::STORAGE_OPAQUE,
-                        media::PIXEL_FORMAT_XRGB, base::TimeDelta());
+    auto shared_image_frame = CreateTestFrame(
+        kTestSize, gfx::Rect(kTestSize), kTestSize,
+        media::VideoFrame::STORAGE_OPAQUE, media::PIXEL_FORMAT_XRGB,
+        base::TimeDelta(), test_sii_.get());
     EXPECT_TRUE(shared_image_frame->HasSharedImage());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
     EXPECT_FALSE(
@@ -149,12 +160,12 @@ TEST(VideoFrameImageUtilTest, WillCreateAcceleratedImagesFromVideoFrame) {
 
 // Some platforms don't support zero copy images.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
-TEST(VideoFrameImageUtilTest, CreateImageFromVideoFrameZeroCopy) {
+TEST_F(VideoFrameImageUtilTest, CreateImageFromVideoFrameZeroCopy) {
   ScopedFakeGpuContext fake_context(/*disable_imagebitmap=*/false);
-  auto shared_image_frame =
-      CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
-                      media::VideoFrame::STORAGE_OPAQUE,
-                      media::PIXEL_FORMAT_XRGB, base::TimeDelta());
+  auto shared_image_frame = CreateTestFrame(
+      kTestSize, gfx::Rect(kTestSize), kTestSize,
+      media::VideoFrame::STORAGE_OPAQUE, media::PIXEL_FORMAT_XRGB,
+      base::TimeDelta(), test_sii_.get());
   EXPECT_TRUE(shared_image_frame->HasSharedImage());
 
   auto image = CreateImageFromVideoFrame(shared_image_frame);
@@ -163,11 +174,12 @@ TEST(VideoFrameImageUtilTest, CreateImageFromVideoFrameZeroCopy) {
 }
 #endif
 
-TEST(VideoFrameImageUtilTest, CreateImageFromVideoFrameSoftwareFrame) {
+TEST_F(VideoFrameImageUtilTest, CreateImageFromVideoFrameSoftwareFrame) {
   base::test::SingleThreadTaskEnvironment task_environment_;
   auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
-                                   media::PIXEL_FORMAT_XRGB, base::TimeDelta());
+                                   media::PIXEL_FORMAT_XRGB, base::TimeDelta(),
+                                   test_sii_.get());
   auto image = CreateImageFromVideoFrame(cpu_frame);
   EXPECT_FALSE(image->IsTextureBacked());
 
@@ -175,21 +187,23 @@ TEST(VideoFrameImageUtilTest, CreateImageFromVideoFrameSoftwareFrame) {
   task_environment_.RunUntilIdle();
 }
 
-TEST(VideoFrameImageUtilTest, CreateImageFromVideoFrameGpuMemoryBufferFrame) {
+TEST_F(VideoFrameImageUtilTest, CreateImageFromVideoFrameGpuMemoryBufferFrame) {
   base::test::SingleThreadTaskEnvironment task_environment_;
   auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
                                    media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-                                   media::PIXEL_FORMAT_NV12, base::TimeDelta());
+                                   media::PIXEL_FORMAT_NV12, base::TimeDelta(),
+                                   test_sii_.get());
   auto image = CreateImageFromVideoFrame(cpu_frame);
   ASSERT_FALSE(image->IsTextureBacked());
   task_environment_.RunUntilIdle();
 }
 
-TEST(VideoFrameImageUtilTest, CreateImageFromVideoFrameTextureFrame) {
+TEST_F(VideoFrameImageUtilTest, CreateImageFromVideoFrameTextureFrame) {
   base::test::SingleThreadTaskEnvironment task_environment_;
   auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
                                    media::VideoFrame::STORAGE_OPAQUE,
-                                   media::PIXEL_FORMAT_NV12, base::TimeDelta());
+                                   media::PIXEL_FORMAT_NV12, base::TimeDelta(),
+                                   test_sii_.get());
   auto image = CreateImageFromVideoFrame(cpu_frame);
 
   // An unaccelerated image can't be created from a texture based VideoFrame
@@ -198,27 +212,30 @@ TEST(VideoFrameImageUtilTest, CreateImageFromVideoFrameTextureFrame) {
   task_environment_.RunUntilIdle();
 }
 
-TEST(VideoFrameImageUtilTest,
-     CreateAcceleratedImageFromVideoFrameBasicSoftwareFrame) {
+TEST_F(VideoFrameImageUtilTest,
+       CreateAcceleratedImageFromVideoFrameBasicSoftwareFrame) {
   ScopedFakeGpuContext fake_context(/*disable_imagebitmap=*/false);
   auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
-                                   media::PIXEL_FORMAT_XRGB, base::TimeDelta());
+                                   media::PIXEL_FORMAT_XRGB, base::TimeDelta(),
+                                   test_sii_.get());
   auto image = CreateImageFromVideoFrame(cpu_frame);
   ASSERT_TRUE(image->IsTextureBacked());
 }
 
-TEST(VideoFrameImageUtilTest, CreateAcceleratedImageFromGpuMemoryBufferFrame) {
+TEST_F(VideoFrameImageUtilTest,
+       CreateAcceleratedImageFromGpuMemoryBufferFrame) {
   ScopedFakeGpuContext fake_context(/*disable_imagebitmap=*/false);
   auto gmb_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
                                    media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-                                   media::PIXEL_FORMAT_NV12, base::TimeDelta());
+                                   media::PIXEL_FORMAT_NV12, base::TimeDelta(),
+                                   test_sii_.get());
   auto image = CreateImageFromVideoFrame(gmb_frame);
   ASSERT_TRUE(image->IsTextureBacked());
   TestOrientation(gmb_frame, /*expect_broken_tagging=*/true);
 }
 
-TEST(VideoFrameImageUtilTest, CreateAcceleratedImageFromTextureFrame) {
+TEST_F(VideoFrameImageUtilTest, CreateAcceleratedImageFromTextureFrame) {
   ScopedFakeGpuContext fake_context(/*disable_imagebitmap=*/false);
 
   auto texture_frame = media::CreateSharedImageRGBAFrame(
@@ -230,7 +247,7 @@ TEST(VideoFrameImageUtilTest, CreateAcceleratedImageFromTextureFrame) {
   TestOrientation(texture_frame, /*expect_broken_tagging=*/true);
 }
 
-TEST(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
+TEST_F(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
   ScopedFakeGpuContext fake_context(/*disable_imagebitmap=*/false);
   auto* raster_context_provider = fake_context.raster_context_provider();
   ASSERT_TRUE(raster_context_provider);
@@ -257,7 +274,7 @@ TEST(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
   ASSERT_FALSE(provider->Recorder().HasRecordedDrawOps());
 }
 
-TEST(VideoFrameImageUtilTest, SoftwareCreateResourceProviderForVideoFrame) {
+TEST_F(VideoFrameImageUtilTest, SoftwareCreateResourceProviderForVideoFrame) {
   // Creating a provider with a null viz::RasterContextProvider should result in
   // a non-accelerated provider being created.
   auto provider = CreateResourceProviderForVideoFrame(kTestInfo, nullptr);
@@ -265,7 +282,8 @@ TEST(VideoFrameImageUtilTest, SoftwareCreateResourceProviderForVideoFrame) {
   EXPECT_FALSE(provider->IsAccelerated());
 }
 
-TEST(VideoFrameImageUtilTest, AcceleratedCreateResourceProviderForVideoFrame) {
+TEST_F(VideoFrameImageUtilTest,
+       AcceleratedCreateResourceProviderForVideoFrame) {
   ScopedFakeGpuContext fake_context(/*disable_imagebitmap=*/false);
   ASSERT_TRUE(SharedGpuContext::IsGpuCompositingEnabled());
 
@@ -290,7 +308,7 @@ TEST(VideoFrameImageUtilTest, AcceleratedCreateResourceProviderForVideoFrame) {
   }
 }
 
-TEST(VideoFrameImageUtilTest, WorkaroundCreateResourceProviderForVideoFrame) {
+TEST_F(VideoFrameImageUtilTest, WorkaroundCreateResourceProviderForVideoFrame) {
   ScopedFakeGpuContext fake_context(/*disable_imagebitmap=*/true);
   ASSERT_TRUE(SharedGpuContext::IsGpuCompositingEnabled());
 
@@ -307,11 +325,12 @@ TEST(VideoFrameImageUtilTest, WorkaroundCreateResourceProviderForVideoFrame) {
   }
 }
 
-TEST(VideoFrameImageUtilTest, DestRectWithoutCanvasResourceProvider) {
+TEST_F(VideoFrameImageUtilTest, DestRectWithoutCanvasResourceProvider) {
   base::test::SingleThreadTaskEnvironment task_environment_;
   auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
-                                   media::PIXEL_FORMAT_XRGB, base::TimeDelta());
+                                   media::PIXEL_FORMAT_XRGB, base::TimeDelta(),
+                                   test_sii_.get());
 
   // A CanvasResourceProvider must be provided with a custom destination rect.
   auto image = CreateImageFromVideoFrame(cpu_frame, true, nullptr, nullptr,
@@ -320,11 +339,12 @@ TEST(VideoFrameImageUtilTest, DestRectWithoutCanvasResourceProvider) {
   task_environment_.RunUntilIdle();
 }
 
-TEST(VideoFrameImageUtilTest, CanvasResourceProviderTooSmallForDestRect) {
+TEST_F(VideoFrameImageUtilTest, CanvasResourceProviderTooSmallForDestRect) {
   base::test::SingleThreadTaskEnvironment task_environment_;
   auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
-                                   media::PIXEL_FORMAT_XRGB, base::TimeDelta());
+                                   media::PIXEL_FORMAT_XRGB, base::TimeDelta(),
+                                   test_sii_.get());
 
   auto provider = CreateResourceProviderForVideoFrame(
       SkImageInfo::MakeN32Premul(16, 16), nullptr);
@@ -337,11 +357,12 @@ TEST(VideoFrameImageUtilTest, CanvasResourceProviderTooSmallForDestRect) {
   task_environment_.RunUntilIdle();
 }
 
-TEST(VideoFrameImageUtilTest, CanvasResourceProviderDestRect) {
+TEST_F(VideoFrameImageUtilTest, CanvasResourceProviderDestRect) {
   base::test::SingleThreadTaskEnvironment task_environment_;
   auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
-                                   media::PIXEL_FORMAT_XRGB, base::TimeDelta());
+                                   media::PIXEL_FORMAT_XRGB, base::TimeDelta(),
+                                   test_sii_.get());
 
   auto provider = CreateResourceProviderForVideoFrame(
       SkImageInfo::MakeN32Premul(128, 128), nullptr);

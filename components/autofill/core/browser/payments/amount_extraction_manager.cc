@@ -165,7 +165,8 @@ void AmountExtractionManager::OnCheckoutAmountReceived(
 void AmountExtractionManager::OnTimeoutReached() {
   search_request_pending_ = false;
   weak_ptr_factory_.InvalidateWeakPtrs();
-  // Add timeout metrics here.
+  autofill_metrics::LogAmountExtractionResult(
+      autofill_metrics::AmountExtractionResult::kTimeout);
   // TODO(crbug.com/378517983): Add BNPL flow action logic here.
 }
 

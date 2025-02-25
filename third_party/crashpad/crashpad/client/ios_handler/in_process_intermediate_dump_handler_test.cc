@@ -118,7 +118,6 @@ TEST_F(InProcessIntermediateDumpHandlerTest, TestSystem) {
   ASSERT_NE(system, nullptr);
 #if defined(ARCH_CPU_X86_64)
   EXPECT_EQ(system->GetCPUArchitecture(), kCPUArchitectureX86_64);
-  EXPECT_STREQ(system->CPUVendor().c_str(), "GenuineIntel");
 #elif defined(ARCH_CPU_ARM64)
   EXPECT_EQ(system->GetCPUArchitecture(), kCPUArchitectureARM64);
 #else

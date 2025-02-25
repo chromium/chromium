@@ -422,8 +422,9 @@ template("build_webui") {
       deps = invoker.ts_deps
     }
 
+    definitions = [ "//tools/typescript/definitions/strings.d.ts" ]
     if (defined(invoker.ts_definitions)) {
-      definitions = invoker.ts_definitions
+      definitions += invoker.ts_definitions
     }
 
     if (defined(invoker.ts_path_mappings)) {

@@ -24,19 +24,34 @@ namespace blink {
 namespace {
 
 void DidFocus(ScriptPromiseResolver<ServiceWorkerWindowClient>* resolver,
-              mojom::blink::ServiceWorkerClientInfoPtr client) {
+              mojom::blink::FocusResultPtr result) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed()) {
     return;
   }
 
-  if (!client) {
-    resolver->Reject(ServiceWorkerError::GetException(
-        resolver, mojom::blink::ServiceWorkerErrorType::kNotFound,
-        "The client was not found."));
-    return;
+  switch (result->which()) {
+    case mojom::blink::FocusResult::Tag::kErrorCode: {
+      switch (result->get_error_code()) {
+        case mojom::blink::FocusError::CLIENT_NOT_FOUND:
+          resolver->Reject(ServiceWorkerError::GetException(
+              resolver, mojom::blink::ServiceWorkerErrorType::kNotFound,
+              "The client was not found."));
+          return;
+
+        case mojom::blink::FocusError::CLIENT_INACTIVE:
+          ScriptState::Scope scope(resolver->GetScriptState());
+          resolver->Reject(V8ThrowException::CreateTypeError(
+              resolver->GetScriptState()->GetIsolate(),
+              "The client is inactive."));
+          return;
+      }
+    }
+    case mojom::blink::FocusResult::Tag::kClient:
+      resolver->Resolve(MakeGarbageCollected<ServiceWorkerWindowClient>(
+          *result->get_client()));
+      return;
   }
-  resolver->Resolve(MakeGarbageCollected<ServiceWorkerWindowClient>(*client));
 }
 
 void DidNavigateOrOpenWindow(

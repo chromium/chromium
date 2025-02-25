@@ -526,6 +526,12 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyAlwaysCreateCore;
 // Context won't proxy traffic using IP Protection.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyOnlyInIncognito;
 
+// Maximum report body size (KB) to include in serialized reports. Bodies
+// exceeding this are omitted when kExcludeLargeBodyReports is enabled.  Use
+// Reporting.ReportBodySize UMA histogram to monitor report body sizes and
+// inform this value.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kMaxReportBodySizeKB);
+
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
 // false. This is needed as a workaround to set this value to true on Android
 // but not on WebView (until crbug.com/1430082 has been fixed).
@@ -707,6 +713,11 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
 // Enables sending the CORS Origin header on the POST request for Reporting API
 // report uploads.
 NET_EXPORT BASE_DECLARE_FEATURE(kReportingApiCorsOriginHeader);
+
+// Enables exclusion of reports having large body during serialized reports.
+// When enabled, report bodies exceeding kMaxReportBodySizeKB are omitted. This
+// helps prevent excessively large reports json stringification.
+NET_EXPORT BASE_DECLARE_FEATURE(kExcludeLargeBodyReports);
 
 #if BUILDFLAG(IS_ANDROID)
 // If enabled, Android OS's certificate verification (CertVerifyProcAndroid) is

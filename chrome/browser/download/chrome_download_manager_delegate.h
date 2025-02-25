@@ -39,7 +39,7 @@
 #include "chrome/browser/download/android/download_message_bridge.h"
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #endif
@@ -171,7 +171,7 @@ class ChromeDownloadManagerDelegate
 
   DownloadPrefs* download_prefs() { return download_prefs_.get(); }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   // The state of a safebrowsing check.
   class SafeBrowsingState : public DownloadCompletionBlocker {
    public:
@@ -194,7 +194,7 @@ class ChromeDownloadManagerDelegate
   // Callback function after scanning completes for a save package.
   void CheckSavePackageScanningDone(uint32_t download_id,
                                     safe_browsing::DownloadCheckResult result);
-#endif  // FULL_SAFE_BROWSING
+#endif  // SAFE_BROWSING_DOWNLOAD_PROTECTION
 
   base::WeakPtr<ChromeDownloadManagerDelegate> GetWeakPtr();
 
@@ -217,7 +217,7 @@ class ChromeDownloadManagerDelegate
   virtual bool IsOpenInBrowserPreferredForFile(const base::FilePath& path);
 
  protected:
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   virtual safe_browsing::DownloadProtectionService*
       GetDownloadProtectionService();
 #endif
@@ -346,6 +346,8 @@ class ChromeDownloadManagerDelegate
   // multiple downloads are associated with the same file path.
   bool IsMostRecentDownloadItemAtFilePath(download::DownloadItem* download);
 
+  // TODO(crbug.com/397407934): Enable ephemeral warning cancellation on
+  // Android.
 #if !BUILDFLAG(IS_ANDROID)
   // Cancels a download if it's still an ephemeral warning (and has not been
   // acted on by the user).

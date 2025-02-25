@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -465,13 +464,13 @@ IN_PROC_BROWSER_TEST_F(IpProtectionBrowserTestIncognitoOnlyModeEnabled,
 class IpProtectionCoreHostIdentityBrowserTest
     : public IpProtectionCoreHostBrowserTest {
  public:
-  IpProtectionCoreHostIdentityBrowserTest() {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&IpProtectionCoreHostIdentityBrowserTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
+  IpProtectionCoreHostIdentityBrowserTest() = default;
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    IpProtectionCoreHostBrowserTest::SetUpBrowserContextKeyedServices(context);
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
   void SetUpOnMainThread() override {
@@ -506,16 +505,9 @@ class IpProtectionCoreHostIdentityBrowserTest
         ->ClearPrimaryAccount();
   }
 
- protected:
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-  }
-
  private:
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_adaptor_;
-  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,

@@ -1317,7 +1317,7 @@ DownloadUIModel::BubbleStatusTextBuilder::GetInterruptedStatusText(
   return l10n_util::GetStringUTF16(string_id);
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 void DownloadUIModel::CompleteSafeBrowsingScan() {}
 void DownloadUIModel::ReviewScanningVerdict(
     content::WebContents* web_contents) {}

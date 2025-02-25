@@ -22,7 +22,6 @@ import "chromeos/crosapi/mojom/cros_display_config.mojom";
 import "chromeos/crosapi/mojom/debug_interface.mojom";
 import "chromeos/crosapi/mojom/desk.mojom";
 import "chromeos/crosapi/mojom/desk_profiles.mojom";
-import "chromeos/crosapi/mojom/desk_template.mojom";
 import "chromeos/crosapi/mojom/device_attributes.mojom";
 import "chromeos/crosapi/mojom/device_local_account_extension_service.mojom";
 import "chromeos/crosapi/mojom/device_oauth2_token_service.mojom";
@@ -190,9 +189,7 @@ interface Crosapi {
   [MinVersion=122] BindDeskProfileObserver@124(
       pending_receiver<DeskProfileObserver> receiver);
 
-  // Binds the desk template factory interface.
-  // Added in M101.
-  [MinVersion=68] BindDeskTemplate@71(pending_receiver<DeskTemplate> receiver);
+  // BindDeskTemplate@71 was removed.
 
   // Binds the device attributes service which is used by enterprise extension
   // APIs to query information about the device.

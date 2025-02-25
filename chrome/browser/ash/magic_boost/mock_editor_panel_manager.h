@@ -44,6 +44,7 @@ class MockEditorPanelManager : public input_method::EditorPanelManager {
               (override));
   MOCK_METHOD(void, OnConsentApproved, (), (override));
   MOCK_METHOD(void, OnMagicBoostPromoCardDeclined, (), (override));
+  MOCK_METHOD(bool, ShouldOptInEditor, (), (override));
 };
 
 }  // namespace ash

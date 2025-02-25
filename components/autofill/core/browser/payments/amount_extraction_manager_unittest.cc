@@ -52,7 +52,7 @@ class AmountExtractionManagerTest : public testing::Test {
   void SetUp() override {
     autofill_client_ = std::make_unique<TestAutofillClient>();
     mock_autofill_driver_ =
-        std::make_unique<testing::StrictMock<MockAutofillDriver>>(
+        std::make_unique<testing::NiceMock<MockAutofillDriver>>(
             autofill_client_.get());
     autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
         mock_autofill_driver_.get());
@@ -69,8 +69,8 @@ class AmountExtractionManagerTest : public testing::Test {
                                                          extracted_amount);
   }
 
-  void SetUpExtractLabeledTextNodeValue(const std::string& extracted_amount,
-                                        int latency_ms = 0) {
+  void SetUpCheckoutAmountExtractionCall(const std::string& extracted_amount,
+                                         int latency_ms = 0) {
     auto extract_action =
         [=, this](const std::u16string& /*amount_pattern*/,
                   const std::u16string& /*keyword_pattern*/,
@@ -86,8 +86,7 @@ class AmountExtractionManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestAutofillClient> autofill_client_;
-  std::unique_ptr<testing::StrictMock<MockAutofillDriver>>
-      mock_autofill_driver_;
+  std::unique_ptr<testing::NiceMock<MockAutofillDriver>> mock_autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> autofill_manager_;
   std::unique_ptr<AmountExtractionManager> amount_extraction_manager_;
   std::unique_ptr<MockAmountExtractionManager> mock_amount_extraction_manager_;
@@ -358,11 +357,9 @@ TEST_F(AmountExtractionManagerTest,
   constexpr int kDefaultAmountExtractionLatencyMs = 200;
   constexpr std::string kExtractedAmount = "123.45";
   base::HistogramTester histogram_tester;
-
-  SetUpExtractLabeledTextNodeValue(
+  SetUpCheckoutAmountExtractionCall(
       /*extracted_amount=*/kExtractedAmount,
       /*latency_ms=*/kDefaultAmountExtractionLatencyMs);
-
   EXPECT_CALL(
       *mock_autofill_driver_,
       ExtractLabeledTextNodeValue(
@@ -388,11 +385,9 @@ TEST_F(AmountExtractionManagerTest,
        TriggerCheckoutAmountExtraction_Failure_Metric) {
   constexpr int kDefaultAmountExtractionLatencyMs = 200;
   base::HistogramTester histogram_tester;
-
-  SetUpExtractLabeledTextNodeValue(
+  SetUpCheckoutAmountExtractionCall(
       /*extracted_amount=*/"",
       /*latency_ms=*/kDefaultAmountExtractionLatencyMs);
-
   EXPECT_CALL(
       *mock_autofill_driver_,
       ExtractLabeledTextNodeValue(
@@ -418,11 +413,9 @@ TEST_F(AmountExtractionManagerTest,
 TEST_F(AmountExtractionManagerTest, AmountExtractionResult_Metric_Successful) {
   constexpr std::string kExtractedAmount = "123.45";
   base::HistogramTester histogram_tester;
-
-  SetUpExtractLabeledTextNodeValue(
+  SetUpCheckoutAmountExtractionCall(
       /*extracted_amount=*/kExtractedAmount,
       /*latency_ms=*/0);
-
   EXPECT_CALL(
       *mock_autofill_driver_,
       ExtractLabeledTextNodeValue(
@@ -445,11 +438,9 @@ TEST_F(AmountExtractionManagerTest, AmountExtractionResult_Metric_Successful) {
 TEST_F(AmountExtractionManagerTest,
        AmountExtractionResult_Metric_AmountNotFound) {
   base::HistogramTester histogram_tester;
-
-  SetUpExtractLabeledTextNodeValue(
+  SetUpCheckoutAmountExtractionCall(
       /*extracted_amount=*/"",
       /*latency_ms=*/0);
-
   EXPECT_CALL(
       *mock_autofill_driver_,
       ExtractLabeledTextNodeValue(
@@ -466,6 +457,27 @@ TEST_F(AmountExtractionManagerTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.AmountExtraction.Result",
       autofill::autofill_metrics::AmountExtractionResult::kAmountNotFound, 1);
+}
+
+TEST_F(AmountExtractionManagerTest, AmountExtractionResult_Metric_Timeout) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(*mock_autofill_driver_, ExtractLabeledTextNodeValue)
+      .WillByDefault(
+          [this](const std::u16string&, const std::u16string&, uint32_t,
+                 base::OnceCallback<void(const std::string&)>&& callback) {
+            task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
+                FROM_HERE, base::BindOnce(std::move(callback), "123"),
+                AmountExtractionManager::kAmountExtractionWaitTime +
+                    base::Milliseconds(100));
+          });
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+  task_environment_.FastForwardBy(
+      AmountExtractionManager::kAmountExtractionWaitTime);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AmountExtraction.Result",
+      autofill::autofill_metrics::AmountExtractionResult::kTimeout, 1);
 }
 
 TEST_F(AmountExtractionManagerTest, TimeoutExpiresBeforeResponse) {

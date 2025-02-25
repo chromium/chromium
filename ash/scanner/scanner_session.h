@@ -6,6 +6,7 @@
 #define ASH_SCANNER_SCANNER_SESSION_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -32,8 +33,18 @@ class ScannerProfileScopedDelegate;
 // SunfishSession.
 class ASH_EXPORT ScannerSession {
  public:
+  // Contains data about an error that may have occurred while fetching actions
+  // during a Scanner session.
+  struct FetchError {
+    // The error message to show.
+    std::u16string error_message;
+    // Whether the user can try the same query again after encountering this
+    // error.
+    bool can_try_again = false;
+  };
+
   using FetchActionsResponse =
-      base::expected<std::vector<ScannerActionViewModel>, std::u16string>;
+      base::expected<std::vector<ScannerActionViewModel>, FetchError>;
   // Callback used to receive the actions returned from a FetchActions call.
   using FetchActionsCallback =
       base::OnceCallback<void(FetchActionsResponse response)>;

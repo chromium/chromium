@@ -14,6 +14,8 @@ static_library("test_support") {
     "kiosk_logged_in_browser_test_mixin.h",
     "public_account_logged_in_browser_test_mixin.cc",
     "public_account_logged_in_browser_test_mixin.h",
+    "regular_logged_in_browser_test_mixin.cc",
+    "regular_logged_in_browser_test_mixin.h",
   ]
 
   deps = [

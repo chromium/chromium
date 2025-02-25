@@ -569,14 +569,14 @@ gfx::Rect CalculateSearchResultPanelScreenBounds(
       work_area_in_screen.x() + capture_mode::kPanelWorkAreaSpacing,
       work_area_in_screen.bottom() - capture_mode::kSearchResultsPanelHeight -
           capture_mode::kPanelWorkAreaSpacing,
-      capture_mode::kSearchResultsPanelWidth,
+      capture_mode::kSearchResultsPanelTotalWidth,
       capture_mode::kSearchResultsPanelHeight);
 
   // If the region would then intersect with the panel, attempt to place the
   // panel on the right.
   if (bounds.Intersects(captured_region_in_screen)) {
     bounds.set_x(work_area_in_screen.right() -
-                 capture_mode::kSearchResultsPanelWidth -
+                 capture_mode::kSearchResultsPanelTotalWidth -
                  capture_mode::kPanelWorkAreaSpacing);
 
     // If the region would still intersect with the panel, choose the side with

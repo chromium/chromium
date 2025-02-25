@@ -102,6 +102,8 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   virtual void ShouldIncludeOrcaInOptIn(
       base::OnceCallback<void(bool)> callback) {}
 
+  virtual bool ShouldIncludeOrcaInOptInSync() = 0;
+
   // Marks Orca consent status as rejected and disable the feature.
   virtual void DisableOrcaFeature() = 0;
 

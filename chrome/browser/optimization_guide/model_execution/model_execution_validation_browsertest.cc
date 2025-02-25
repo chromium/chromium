@@ -51,23 +51,6 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    identity_test_env_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
-    host_resolver()->AddRule("*", "127.0.0.1");
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&ModelExecutionValidationBrowserTestBase::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
-  }
-
   void SetUpCommandLine(base::CommandLine* cmd) override {
     cmd->AppendSwitchASCII(
         switches::kOptimizationGuideServiceModelExecutionURL,
@@ -76,6 +59,21 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
                 GURL(kOptimizationGuideServiceModelExecutionDefaultURL).host(),
                 "/")
             .spec());
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
+    host_resolver()->AddRule("*", "127.0.0.1");
   }
 
   void TearDownOnMainThread() override {
@@ -130,11 +128,6 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
     return std::move(response);
   }
 
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-  }
-
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> model_execution_server_;
   base::HistogramTester histogram_tester_;
@@ -146,7 +139,6 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
   // Identity test support.
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-  base::CallbackListSubscription create_services_subscription_;
 };
 
 class ModelExecutionValidationBrowserTest

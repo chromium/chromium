@@ -32,6 +32,19 @@ import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+// Enum to represent the service worker focus error.
+enum FocusError {
+  CLIENT_NOT_FOUND,
+  CLIENT_INACTIVE
+};
+
+// The result of a FocusClient request. On success, |client| tells service worker client
+// information of the focused window. Otherwise, |error_code| describes the failure.
+union FocusResult {
+  ServiceWorkerClientInfo client;
+  FocusError error_code;
+};
+
 // Host for a running service worker execution context. Implemented in the
 // browser process. The service worker running in the renderer process uses this
 // interface to ask the browser process to do operations needed for
@@ -83,10 +96,7 @@ interface ServiceWorkerHost {
 
   // Corresponds to WindowClient#focus(). Requests the browser to focus the
   // client with |client_uuid|.
-  // On success, |client| contains service worker client information of the
-  // focused window.
-  // Otherwise, |client| is null.
-  FocusClient(string client_uuid) => (ServiceWorkerClientInfo? client);
+  FocusClient(string client_uuid) => (FocusResult result);
 
   // Corresponds to WindowClient#navigate(). Requests the browser to navigate
   // the client with |client_uuid| to |url|.

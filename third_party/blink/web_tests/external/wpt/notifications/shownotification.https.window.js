@@ -46,6 +46,20 @@ promise_test(async t => {
 promise_test(async t => {
   t.add_cleanup(closeAllNotifications);
   await Promise.all([
+    registration.showNotification("thunder", { tag: "moz" }),
+    registration.showNotification("bird", { tag: "moz" }),
+  ]);
+  const notifications = await registration.getNotifications({ tag: "moz" });
+  assert_equals(
+    notifications.length,
+    1,
+    "Should return only the latest notification"
+  );
+}, "fetching same-tagged notification by tag filter");
+
+promise_test(async t => {
+  t.add_cleanup(closeAllNotifications);
+  await Promise.all([
     registration.showNotification("thunder"),
     registration.showNotification("bird"),
     registration.showNotification("supernova"),

@@ -181,15 +181,6 @@ class FFmpegDemuxerTest : public testing::Test {
     InitializeDemuxerInternal(expected_pipeline_status, base::Time());
   }
 
-  void SeekOnVideoTrackChangePassthrough(
-      base::TimeDelta time,
-      base::OnceCallback<void(const std::vector<DemuxerStream*>&)> cb,
-      const std::vector<DemuxerStream*>& streams) {
-    // The tests can't access private methods directly because gtest uses
-    // some magic macros that break the 'friend' declaration.
-    demuxer_->SeekOnVideoTrackChange(time, std::move(cb), streams);
-  }
-
   MOCK_METHOD2(OnReadDoneCalled, void(int, int64_t));
 
   struct ReadExpectation {
@@ -1775,19 +1766,6 @@ TEST_F(FFmpegDemuxerTest, MultitrackMemoryUsage) {
   // With newly enabled demuxer streams the amount of memory used by the demuxer
   // is much higher.
   EXPECT_EQ(GetExpectedMemoryUsage(896, 156011), demuxer_->GetMemoryUsage());
-}
-
-TEST_F(FFmpegDemuxerTest, SeekOnVideoTrackChangeWontSeekIfEmpty) {
-  // We only care about video tracks.
-  CreateDemuxer("bear-320x240-video-only.webm");
-  InitializeDemuxer();
-  std::vector<DemuxerStream*> streams;
-  base::RunLoop loop;
-
-  SeekOnVideoTrackChangePassthrough(
-      base::TimeDelta(), base::BindOnce(QuitLoop, loop.QuitClosure()), streams);
-
-  loop.Run();
 }
 
 }  // namespace media

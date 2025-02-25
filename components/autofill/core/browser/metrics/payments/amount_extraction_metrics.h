@@ -31,7 +31,9 @@ enum class AmountExtractionResult {
   kSuccessful = 0,
   // The amount extraction result was empty.
   kAmountNotFound = 1,
-  kMaxValue = kAmountNotFound,
+  // The amount extraction reached the timeout.
+  kTimeout = 2,
+  kMaxValue = kTimeout,
 };
 
 void LogAmountExtractionComponentInstallationResult(

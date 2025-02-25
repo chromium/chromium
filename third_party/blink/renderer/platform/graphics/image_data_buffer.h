@@ -29,6 +29,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_DATA_BUFFER_H_
 
 #include <memory>
+
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -36,8 +38,8 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -56,11 +58,10 @@ class PLATFORM_EXPORT ImageDataBuffer {
                    const double& quality,
                    Vector<unsigned char>* encoded_image) const;
 
-  const unsigned char* Pixels() const;
+  base::span<const uint8_t> PixelData() const;
   const gfx::Size& size() const { return size_; }
   int Height() const { return size_.height(); }
   int Width() const { return size_.width(); }
-  size_t ComputeByteSize() const { return pixmap_.computeByteSize(); }
 
  private:
   ImageDataBuffer(const SkPixmap&);

@@ -49,7 +49,7 @@
 #include "ui/base/l10n/time_format.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #endif
 
@@ -130,7 +130,7 @@ downloads::mojom::TailoredWarningType GetTailoredWarningType(
 }
 
 downloads::mojom::SafeBrowsingState GetSafeBrowsingState(Profile* profile) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   safe_browsing::SafeBrowsingState state =
       safe_browsing::GetSafeBrowsingState(*profile->GetPrefs());
   switch (state) {

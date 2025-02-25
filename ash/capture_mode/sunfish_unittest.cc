@@ -740,7 +740,8 @@ TEST_F(SunfishTest, CaptureBarView) {
 TEST_F(SunfishTest, DragSearchResultsPanel) {
   auto widget = SearchResultsPanel::CreateWidget(Shell::GetPrimaryRootWindow(),
                                                  /*is_active=*/false);
-  widget->SetBounds(gfx::Rect(100, 100, capture_mode::kSearchResultsPanelWidth,
+  widget->SetBounds(gfx::Rect(100, 100,
+                              capture_mode::kSearchResultsPanelTotalWidth,
                               capture_mode::kSearchResultsPanelHeight));
   widget->Show();
 
@@ -1851,7 +1852,7 @@ TEST_F(SunfishTest, PanelBounds) {
   // Define the known possible coordinates of the search results panel.
   const int left_x = work_area.x() + capture_mode::kPanelWorkAreaSpacing;
   const int right_x = work_area.right() -
-                      capture_mode::kSearchResultsPanelWidth -
+                      capture_mode::kSearchResultsPanelTotalWidth -
                       capture_mode::kPanelWorkAreaSpacing;
   const int default_y = work_area.bottom() -
                         capture_mode::kSearchResultsPanelHeight -
@@ -1863,7 +1864,7 @@ TEST_F(SunfishTest, PanelBounds) {
 
   // By default, the panel should appear on the left side.
   gfx::Rect target_bounds(left_x, default_y,
-                          capture_mode::kSearchResultsPanelWidth,
+                          capture_mode::kSearchResultsPanelTotalWidth,
                           capture_mode::kSearchResultsPanelHeight);
   EXPECT_EQ(controller->GetSearchResultsPanel()->GetBoundsInScreen(),
             target_bounds);
@@ -3000,6 +3001,38 @@ TEST_F(ScannerTest,
   // Action buttons should be shown.
   EXPECT_FALSE(error_view->GetVisible());
   EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(2));
+}
+
+// Tests that the try again button is not shown when an unsupported language
+// error occurs.
+TEST_F(ScannerTest, CannotTryAgainIfUnsupportedLanguageDetected) {
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillRepeatedly(WithArg<1>(InvokeFuture(fetch_actions_future)));
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+
+  // Simulate an unsupported language error.
+  fetch_actions_future.Take().Run(
+      nullptr,
+      manta::MantaStatus{.status_code =
+                             manta::MantaStatusCode::kUnsupportedLanguage});
+
+  // An error view should be shown without a try again link.
+  const CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  ActionButtonContainerView::ErrorView* error_view =
+      session_test_api.GetActionContainerErrorView();
+  ASSERT_TRUE(error_view);
+  EXPECT_TRUE(error_view->GetVisible());
+  EXPECT_FALSE(error_view->try_again_link()->GetVisible());
 }
 
 // Tests that action buttons for a stale Scanner request are not added to a new

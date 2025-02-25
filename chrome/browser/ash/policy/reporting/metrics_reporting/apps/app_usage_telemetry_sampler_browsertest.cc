@@ -35,7 +35,6 @@
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/app_constants/constants.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -143,16 +142,10 @@ class AppUsageTelemetrySamplerBrowserTest
     test_ukm_recorder_ = std::make_unique<::ukm::TestAutoSetUkmRecorder>();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    ::policy::DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
-    create_sync_service_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &AppUsageTelemetrySamplerBrowserTest::SetUpSyncService,
-                base::Unretained(this)));
-  }
-
-  void SetUpSyncService(::content::BrowserContext* context) {
+  void SetUpBrowserContextKeyedServices(
+      ::content::BrowserContext* context) override {
+    ::policy::DevicePolicyCrosBrowserTest::SetUpBrowserContextKeyedServices(
+        context);
     SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         context, base::BindRepeating([](::content::BrowserContext* context)
                                          -> std::unique_ptr<KeyedService> {
@@ -272,7 +265,6 @@ class AppUsageTelemetrySamplerBrowserTest
   ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
   ::ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
 
-  base::CallbackListSubscription create_sync_service_subscription_;
   std::unique_ptr<::ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 

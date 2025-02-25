@@ -47,7 +47,7 @@ deps = {
       '9719c1e1e676814c456b55f5f070eabad6709d31',
   'crashpad/third_party/mini_chromium/mini_chromium':
       Var('chromium_git') + '/chromium/mini_chromium@' +
-      '12ef786772d9a73751e2d0f3ef9c792b09c386b5',
+      'a7df8840eb84b532d9ee4f477763f7c47181dfca',
   'crashpad/third_party/libfuzzer/src':
       Var('chromium_git') + '/chromium/llvm-project/compiler-rt/lib/fuzzer.git@' +
       'fda403cf93ecb8792cb1d061564d89a6553ca020',
@@ -126,15 +126,18 @@ deps = {
     'condition': 'checkout_fuchsia and host_os == "linux"',
     'dep_type': 'cipd'
   },
-  'crashpad/third_party/windows/clang/windows-amd64': {
-    'packages': [
+  'crashpad/third_party/windows/clang/win-amd64': {
+    'bucket': 'chromium-browser-clang',
+    'objects': [
       {
-        'package': 'fuchsia/third_party/clang/windows-amd64',
-        'version': 'XiBHLTa8HHj9lYwC-ArymS75s792s0_ANNvLOfsILqMC',
+        'object_name': 'Win/clang-llvmorg-20-init-17108-g29ed6000-2.tar.xz',
+        'sha256sum': '1c71efd923a91480480d4f31c2fd5f1369e01e14f15776a9454abbce0bc13548',
+        'size_bytes': 46357580,
+        'generation': 1737590897363452,
       },
     ],
     'condition': 'checkout_win and host_os == "win"',
-    'dep_type': 'cipd'
+    'dep_type': 'gcs',
   },
   'crashpad/third_party/fuchsia-gn-sdk': {
     'packages': [

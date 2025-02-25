@@ -365,6 +365,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     result->display_name = base::UTF16ToUTF8(entry->GetGAIAName());
     result->email = base::UTF16ToUTF8(entry->GetUserName());
     result->given_name = base::UTF16ToUTF8(entry->GetGAIAGivenName());
+    result->local_profile_name =
+        base::UTF16ToUTF8(entry->GetLocalProfileName());
     policy::ManagementService* management_service =
         policy::ManagementServiceFactory::GetForProfile(profile_);
     result->is_managed = management_service && management_service->IsManaged();

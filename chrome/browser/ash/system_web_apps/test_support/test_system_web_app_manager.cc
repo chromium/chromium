@@ -73,15 +73,14 @@ TestSystemWebAppManagerCreator::TestSystemWebAppManagerCreator(
     : callback_(std::move(callback)) {
   create_services_subscription_ =
       BrowserContextDependencyManager::GetInstance()
-          ->RegisterCreateServicesCallbackForTesting(
-              base::BindRepeating(&TestSystemWebAppManagerCreator::
-                                      OnWillCreateBrowserContextServices,
-                                  base::Unretained(this)));
+          ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+              &TestSystemWebAppManagerCreator::SetUpBrowserContextKeyedServices,
+              base::Unretained(this)));
 }
 
 TestSystemWebAppManagerCreator::~TestSystemWebAppManagerCreator() = default;
 
-void TestSystemWebAppManagerCreator::OnWillCreateBrowserContextServices(
+void TestSystemWebAppManagerCreator::SetUpBrowserContextKeyedServices(
     content::BrowserContext* context) {
   SystemWebAppManagerFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(

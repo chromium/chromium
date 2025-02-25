@@ -216,6 +216,9 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 // The weird ternary is to still generate an "is not contextually convertible to
 // 'bool' when provided weird parameters (regardless of ANALYZER_ASSUME_TRUE's
 // implementation). See base/check_nocompile.nc.
+//
+// The lambda is here to here permit the compiler to out-of-line much of the
+// CHECK-failure path and optimize better for the fast path.
 #define LOGGING_CHECK_FUNCTION_IMPL(check_stream, condition) \
   switch (0)                                                 \
   case 0:                                                    \
@@ -223,7 +226,7 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
     if (ANALYZER_ASSUME_TRUE((condition) ? true : false))    \
       [[likely]];                                            \
     else                                                     \
-      (check_stream)
+      [&]() { return (check_stream); }()
 
 // A helper macro like LOGGING_CHECK_FUNCTION_IMPL above but discarding any
 // log-stream parameters rather than evaluate them on failure.

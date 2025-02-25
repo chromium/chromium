@@ -37,6 +37,10 @@ extern const char kChromeUIFocusModePlayerURL[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kHelpMeReadWriteLearnMoreURL[];
 
+// "Learn more" URL for Lobster feature on ChromeOS.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kLobsterLearnMoreURL[];
+
 // The URL for additional help that is given when Linux export/import fails.
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLinuxExportImportHelpURL[];
 

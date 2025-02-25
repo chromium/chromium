@@ -4,6 +4,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+    "convert_to_webrtc_video_frame_buffer_test\.cc": [
+        "+gpu/command_buffer/client/test_shared_image_interface.h",
+    ],
     "webrtc_video_frame_adapter\.cc": [
         "+gpu/command_buffer/client/client_shared_image.h",
         "+gpu/command_buffer/client/gpu_memory_buffer_manager.h",
@@ -13,6 +16,9 @@ specific_include_rules = {
         "+gpu/command_buffer/common/shared_image_usage.h",
         "+media/renderers/video_frame_rgba_to_yuva_converter.h",
         "+cc/trees/raster_context_provider_wrapper.h",
+    ],
+    "webrtc_video_frame_adapter_test\.cc": [
+        "+gpu/command_buffer/client/test_shared_image_interface.h",
     ],
     "webrtc_video_frame_adapter\.h": [
         "+components/viz/common/gpu/raster_context_provider.h",

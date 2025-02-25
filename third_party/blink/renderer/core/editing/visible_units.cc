@@ -185,19 +185,32 @@ static PositionType CanonicalPosition(const PositionType& position) {
     return next.IsNotNull() ? next : prev;
 
   Node* const next_node = next.AnchorNode();
+  Node* next_editing_root = RootEditableElementOf(next);
   Node* const prev_node = prev.AnchorNode();
+  Node* prev_editing_root = RootEditableElementOf(prev);
   const bool prev_is_in_same_editable_element =
-      prev_node && RootEditableElementOf(prev) == editing_root;
+      prev_node && prev_editing_root == editing_root;
   const bool next_is_in_same_editable_element =
-      next_node && RootEditableElementOf(next) == editing_root;
+      next_node && next_editing_root == editing_root;
   if (prev_is_in_same_editable_element && !next_is_in_same_editable_element)
     return prev;
 
   if (next_is_in_same_editable_element && !prev_is_in_same_editable_element)
     return next;
 
-  if (!next_is_in_same_editable_element && !prev_is_in_same_editable_element)
+  if (!next_is_in_same_editable_element && !prev_is_in_same_editable_element) {
+    // `prev/next_editing_root` is a child node of `editing_root`.
+    if (RuntimeEnabledFeatures::
+            PrevOrNextCandidateIsEditingRootChildEnabled() &&
+        editing_root) {
+      if (editing_root->contains(next_editing_root)) {
+        return next;
+      } else if (editing_root->contains(prev_editing_root)) {
+        return prev;
+      }
+    }
     return PositionType();
+  }
 
   // The new position should be in the same block flow element. Favor that.
   const bool next_is_same_original_block = InSameBlock(node, next_node);

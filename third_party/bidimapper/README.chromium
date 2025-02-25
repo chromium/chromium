@@ -10,6 +10,7 @@ License File: LICENSE
 Shipped: yes
 Security Critical: no
 CPEPrefix: unknown
+License Android Compatible: yes
 
 Description:
 WebDriver BiDi implementation for ChromeDriver.

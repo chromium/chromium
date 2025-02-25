@@ -105,7 +105,7 @@ class PrintingTestHelper {
  private:
   // Creates test factories for ash::TestCupsPrintJobManager and
   // ash::FakeCupsPrintersManager.
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context);
+  void SetUpBrowserContextKeyedServices(content::BrowserContext* context);
 
   raw_ptr<Profile> profile_ = nullptr;
 

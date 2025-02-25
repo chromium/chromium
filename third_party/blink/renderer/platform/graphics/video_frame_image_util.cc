@@ -45,7 +45,11 @@ bool CanUseZeroCopyImages(const media::VideoFrame& frame) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
   return false;
 #else
-  return frame.HasSharedImage() &&
+  // A VF created from MappableSI will have a mappable shared image but might
+  // not be intended for rendering in the tests.
+  // |frame.IsTexturableForTesting()| here checks whether the tests have
+  // explicitly marked the VF as non texturable or not.
+  return frame.HasSharedImage() && frame.IsTexturableForTesting() &&
          (frame.format() == media::PIXEL_FORMAT_ARGB ||
           frame.format() == media::PIXEL_FORMAT_XRGB ||
           frame.format() == media::PIXEL_FORMAT_ABGR ||
@@ -253,7 +257,11 @@ bool DrawVideoFrameIntoResourceProvider(
   DCHECK(resource_provider);
   DCHECK(gfx::Rect(resource_provider->Size()).Contains(dest_rect));
 
-  if (frame->HasSharedImage()) {
+  // A VF created from MappableSI will have a mappable shared image but might
+  // not be intended for rendering in the tests.
+  // |frame.IsTexturableForTesting()| here checks whether the tests have
+  // explicitly marked the VF as non texturable or not.
+  if (frame->HasSharedImage() && frame->IsTexturableForTesting()) {
     if (!raster_context_provider) {
       DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
                      "RasterContextProvider.";

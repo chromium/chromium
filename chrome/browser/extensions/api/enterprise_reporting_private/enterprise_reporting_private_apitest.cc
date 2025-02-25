@@ -184,21 +184,11 @@ class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
   }
 
  protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
-
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&EnterpriseReportingPrivateApiTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    extensions::ExtensionApiTest::SetUpBrowserContextKeyedServices(context);
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-
     ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                                      &test_url_loader_factory_));
@@ -242,8 +232,6 @@ class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
       identity_test_env_profile_adaptor_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
-
-  base::CallbackListSubscription create_services_subscription_;
 
 #if !BUILDFLAG(IS_CHROMEOS)
   policy::FakeBrowserDMTokenStorage browser_dm_token_storage_;

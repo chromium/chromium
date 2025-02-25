@@ -120,10 +120,10 @@ class DownloadsListTracker
                            CreateDownloadData_ReferrerUrlFormatting_VeryLong);
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest, RenamingProgress);
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
                            CreateDownloadData_SafeBrowsing);
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 
   struct StartTimeComparator {
     bool operator()(const download::DownloadItem* a,

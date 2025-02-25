@@ -291,12 +291,15 @@ void HostResolverManager::Job::AddServiceEndpointRequest(
                    request->parameters().is_speculative);
 
   service_endpoint_requests_.Append(request);
+  auto [_, inserted] = added_service_endpoint_requests_.insert(request);
+  CHECK(inserted);
 
   UpdatePriority();
 }
 
 void HostResolverManager::Job::CancelServiceEndpointRequest(
     ServiceEndpointRequestImpl* request) {
+  CHECK(!service_endpoint_requests_.empty());
   CancelRequestCommon(request->priority(), request->net_log());
 
   if (num_active_requests() > 0) {
@@ -387,13 +390,13 @@ bool HostResolverManager::Job::ServeFromHosts() {
 }
 
 void HostResolverManager::Job::OnAddedToJobMap(JobMap::iterator iterator) {
-  DCHECK(!self_iterator_);
+  CHECK(!self_iterator_);
   CHECK(iterator != resolver_->jobs_.end(), base::NotFatalUntil::M130);
   self_iterator_ = iterator;
 }
 
 void HostResolverManager::Job::OnRemovedFromJobMap() {
-  DCHECK(self_iterator_);
+  CHECK(self_iterator_);
   self_iterator_ = std::nullopt;
 }
 

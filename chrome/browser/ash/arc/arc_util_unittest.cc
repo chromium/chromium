@@ -643,19 +643,6 @@ TEST_F(ChromeArcUtilTest, ArcStartModeDefaultDemoMode) {
   EXPECT_TRUE(IsPlayStoreAvailable());
 }
 
-TEST_F(ChromeArcUtilTest, ArcStartModeDefaultDemoModeWithoutPlayStore) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(ash::features::kShowPlayInDemoMode,
-                                    false /* disabled */);
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->InitFromArgv({"", "--arc-availability=installed"});
-  cros_settings_test_helper_.InstallAttributes()->SetDemoMode();
-  ScopedLogIn login(GetFakeUserManager(),
-                    AccountId::FromUserEmail("public_user@gmail.com"),
-                    user_manager::UserType::kPublicAccount);
-  EXPECT_FALSE(IsPlayStoreAvailable());
-}
-
 TEST_F(ChromeArcUtilTest, ArcStartModeWithoutPlayStore) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->InitFromArgv(

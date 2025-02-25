@@ -30,6 +30,7 @@ class ArcIconCacheDelegateProvider;
 class ArcPlayStoreEnabledPreferenceHandler;
 class ArcServiceManager;
 class ArcSessionManager;
+class ArcSessionRunner;
 class ArcVmDataMigrationNotifier;
 class BrowserUrlOpener;
 
@@ -71,6 +72,15 @@ class ArcServiceLauncher {
 
   // Ensure all ARC keyed service factories are properly initialised.
   static void EnsureFactoriesBuilt();
+
+  // Specifies ArcSessionRunner to be passed into ArcSessionManager on its
+  // creation. Must be called before ArcServiceLauncher is created,
+  // and must not be called twice in a sequence.
+  // On creating ArcServiceLauncher, the instance will be passed to
+  // ArcSessionManager and it owns the instance. Otherwise, the specified
+  // instance will be detected as leaked.
+  static void SetArcSessionRunnerForTesting(
+      std::unique_ptr<ArcSessionRunner> arc_session_runner);
 
  private:
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)

@@ -17,7 +17,6 @@
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/browsing_topics/epoch_topics.h"
 #include "components/browsing_topics/test_util.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -436,13 +435,14 @@ class BrowsingTopicsInternalsBrowserTest
   }
 
   // BrowserTestBase::SetUpInProcessBrowserTestFixture
-  void SetUpInProcessBrowserTestFixture() override {
-    subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&BrowsingTopicsInternalsBrowserTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    browsing_topics::BrowsingTopicsServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            context, base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+              return std::make_unique<FixedBrowsingTopicsService>();
+            }));
   }
 
   FixedBrowsingTopicsService* fixed_browsing_topics_service() {
@@ -452,21 +452,6 @@ class BrowsingTopicsInternalsBrowserTest
   }
 
  protected:
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    browsing_topics::BrowsingTopicsServiceFactory::GetInstance()
-        ->SetTestingFactory(
-            context, base::BindRepeating(&BrowsingTopicsInternalsBrowserTest::
-                                             CreateFixedBrowsingTopicsService,
-                                         base::Unretained(this)));
-  }
-
-  std::unique_ptr<KeyedService> CreateFixedBrowsingTopicsService(
-      content::BrowserContext* context) {
-    return std::make_unique<FixedBrowsingTopicsService>();
-  }
-
-  base::CallbackListSubscription subscription_;
-
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

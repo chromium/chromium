@@ -28,6 +28,16 @@ static inline String ImplicitNamedGridLineForSide(const String& line_name,
                           : "-end");
 }
 
+GridLineResolver::GridLineResolver(const ComputedStyle& parent_style,
+                                   wtf_size_t auto_repetitions)
+    : style_(&parent_style) {
+  DCHECK(parent_style.IsDisplayMasonryBox());
+
+  (parent_style.MasonryTrackSizingDirection() == kForColumns)
+      ? column_auto_repetitions_ = auto_repetitions
+      : row_auto_repetitions_ = auto_repetitions;
+}
+
 GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
                                    const GridLineResolver& parent_line_resolver,
                                    GridArea subgrid_area,

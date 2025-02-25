@@ -496,7 +496,7 @@ class DownloadUIModel {
   virtual bool IsEphemeralWarning() const;
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   // Complete the Safe Browsing scan early.
   virtual void CompleteSafeBrowsingScan();
 

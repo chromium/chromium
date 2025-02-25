@@ -18,9 +18,8 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 
   void ComputeGeometry(const MasonryLayoutAlgorithm& algorithm) {
     wtf_size_t start_offset;
-    GridLineResolver line_resolver(algorithm.Style(),
-                                   /*column_auto_repetitions=*/0,
-                                   /*row_auto_repetitions=*/0);
+    const GridLineResolver line_resolver(algorithm.Style(),
+                                         /*auto_repetitions=*/0);
     virtual_masonry_items_ =
         algorithm.VirtualMasonryItems(line_resolver, &start_offset);
 
@@ -151,8 +150,7 @@ TEST_F(MasonryLayoutAlgorithmTest, CollectMasonryItemGroups) {
   MasonryNode node(GetLayoutBoxByElementId("masonry"));
 
   wtf_size_t start_offset;
-  GridLineResolver line_resolver(node.Style(), /*column_auto_repetitions=*/0,
-                                 /*row_auto_repetitions=*/0);
+  const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
   const auto item_groups = node.CollectItemGroups(line_resolver, &start_offset);
 
   EXPECT_EQ(item_groups.size(), 4u);

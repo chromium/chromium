@@ -202,6 +202,16 @@ void EditorPanelManagerImpl::OnMagicBoostPromoCardDeclined() {
   OnPromoCardDeclined();
 }
 
+bool EditorPanelManagerImpl::ShouldOptInEditor() {
+  chromeos::editor_menu::EditorMode editor_panel_mode =
+      delegate_->GetEditorMode();
+  chromeos::editor_menu::EditorConsentStatus consent_status =
+      delegate_->GetConsentStatus();
+
+  return editor_panel_mode != chromeos::editor_menu::EditorMode::kHardBlocked &&
+         consent_status == chromeos::editor_menu::EditorConsentStatus::kUnset;
+}
+
 void EditorPanelManagerImpl::SetEditorClientForTesting(
     mojo::PendingRemote<orca::mojom::EditorClient> client_for_testing) {
   editor_client_remote_.Bind(std::move(client_for_testing));

@@ -134,15 +134,20 @@ constexpr base::TimeDelta kDaemonWaitTimeoutSec = base::Seconds(30);
 
 // `ChromeBrowserMainPartsAsh` owns.
 ArcServiceLauncher* g_arc_service_launcher = nullptr;
+ArcSessionRunner* g_arc_session_runner_for_testing = nullptr;
 
 std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
     ArcBridgeService* arc_bridge_service,
     version_info::Channel channel,
     ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager) {
   auto delegate = std::make_unique<AdbSideloadingAvailabilityDelegateImpl>();
-  auto runner = std::make_unique<ArcSessionRunner>(
-      base::BindRepeating(ArcSession::Create, arc_bridge_service, channel,
-                          scheduler_configuration_manager, delegate.get()));
+  std::unique_ptr<ArcSessionRunner> runner(
+      std::exchange(g_arc_session_runner_for_testing, nullptr));
+  if (!runner) {
+    runner = std::make_unique<ArcSessionRunner>(
+        base::BindRepeating(ArcSession::Create, arc_bridge_service, channel,
+                            scheduler_configuration_manager, delegate.get()));
+  }
   return std::make_unique<ArcSessionManager>(std::move(runner),
                                              std::move(delegate));
 }
@@ -534,6 +539,14 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   GpuArcVideoKeyedService::EnsureFactoryBuilt();
   input_overlay::ArcInputOverlayManager::EnsureFactoryBuilt();
   ArcChromeFeatureFlagsBridge::EnsureFactoryBuilt();
+}
+
+// static
+void ArcServiceLauncher::SetArcSessionRunnerForTesting(
+    std::unique_ptr<ArcSessionRunner> arc_session_runner) {
+  CHECK(!g_arc_session_runner_for_testing);
+  CHECK(!g_arc_service_launcher);
+  g_arc_session_runner_for_testing = arc_session_runner.release();
 }
 
 }  // namespace arc

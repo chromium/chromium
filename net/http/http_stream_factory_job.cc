@@ -311,8 +311,9 @@ void HttpStreamFactory::Job::SetPriority(RequestPriority priority) {
 
 bool HttpStreamFactory::Job::HasAvailableSpdySession() const {
   return !using_quic_ && CanUseExistingSpdySession() &&
-         session_->spdy_session_pool()->HasAvailableSession(spdy_session_key_,
-                                                            is_websocket_);
+         session_->spdy_session_pool()->HasAvailableSession(
+             spdy_session_key_,
+             /*enable_ip_based_pooling=*/true, is_websocket_);
 }
 
 bool HttpStreamFactory::Job::HasAvailableQuicSession() const {

@@ -1578,10 +1578,15 @@ void CaptureModeSession::OnScannerActionsFetched(
   }
 
   if (!actions_response.has_value()) {
-    action_container_view_->ShowErrorView(
-        actions_response.error(),
-        base::BindRepeating(&CaptureModeSession::OnScannerTryAgainPressed,
-                            weak_ptr_factory_.GetWeakPtr()));
+    if (actions_response.error().can_try_again) {
+      action_container_view_->ShowErrorView(
+          actions_response.error().error_message,
+          base::BindRepeating(&CaptureModeSession::OnScannerTryAgainPressed,
+                              weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      action_container_view_->ShowErrorView(
+          actions_response.error().error_message);
+    }
     UpdateActionContainerWidget();
     return;
   }

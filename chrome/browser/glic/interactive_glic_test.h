@@ -145,13 +145,11 @@ class InteractiveGlicTestT : public T {
 
   ~InteractiveGlicTestT() override = default;
 
-  void SetUpInProcessBrowserTestFixture() override {
-    T::SetUpInProcessBrowserTestFixture();
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &InteractiveGlicTestT<T>::OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    T::SetUpBrowserContextKeyedServices(context);
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
   void SetUpOnMainThread() override {
@@ -194,11 +192,6 @@ class InteractiveGlicTestT : public T {
 
     glic_test_environment_ =
         std::make_unique<glic::GlicTestEnvironment>(browser->profile());
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
   // Ensures that the WebContents for some combination of glic host and contents
@@ -359,7 +352,6 @@ class InteractiveGlicTestT : public T {
 
   base::test::ScopedFeatureList features_;
 
-  base::CallbackListSubscription create_services_subscription_;
   std::unique_ptr<glic::GlicTestEnvironment> glic_test_environment_;
   std::map<std::string, std::string> mock_glic_query_params_;
 };

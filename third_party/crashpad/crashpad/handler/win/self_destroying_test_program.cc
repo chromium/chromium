@@ -24,11 +24,17 @@
 namespace crashpad {
 namespace {
 
+// Without this, clang optimizes away the _alloca below, which in turn
+// makes the VirtualFree() crash with an access violation.
+#if defined(__clang__)
+#pragma clang optimize off
+#endif
+
 // We VirtualFree a region in ourselves (the stack) to confirm that the
 // exception reporter captures as much as possible in the minidump and doesn't
 // abort. __debugbreak() immediately after doing so because the process is
 // clearly in a very broken state at this point.
-bool FreeOwnStackAndBreak() {
+__declspec(noinline) bool FreeOwnStackAndBreak() {
   ProcessReaderWin process_reader;
   if (!process_reader.Initialize(GetCurrentProcess(),
                                  ProcessSuspensionState::kRunning)) {
@@ -45,7 +51,7 @@ bool FreeOwnStackAndBreak() {
 
   // Push the stack up a bit so that hopefully the crash handler can succeed,
   // but won't be able to read the base of the stack.
-  _alloca(16384);
+  [[maybe_unused]] volatile void* do_not_optimize_away = _alloca(16384);
 
   // We can't succeed at MEM_RELEASEing this memory, but MEM_DECOMMIT is good
   // enough to make it inaccessible.
@@ -63,7 +69,7 @@ bool FreeOwnStackAndBreak() {
   return true;
 }
 
-int SelfDestroyingMain(int argc, wchar_t* argv[]) {
+__declspec(noinline) int SelfDestroyingMain(int argc, wchar_t* argv[]) {
   if (argc != 2) {
     fprintf(stderr, "Usage: %ls <server_pipe_name>\n", argv[0]);
     return EXIT_FAILURE;
@@ -82,6 +88,10 @@ int SelfDestroyingMain(int argc, wchar_t* argv[]) {
   // otherwise returned before here.
   return EXIT_SUCCESS;
 }
+
+#if defined(__clang__)
+#pragma clang optimize on
+#endif
 
 }  // namespace
 }  // namespace crashpad

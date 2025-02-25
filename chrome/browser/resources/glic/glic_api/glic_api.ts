@@ -817,6 +817,8 @@ export declare interface UserProfileInfo {
   displayName: string;
   /** The given name for this profile. */
   givenName?: string;
+  /** The local profile name, which can be customized by the user. */
+  localProfileName?: string;
   /** The profile email. */
   email: string;
   /** Whether the profile or the browser is managed. */

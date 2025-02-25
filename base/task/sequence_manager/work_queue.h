@@ -34,6 +34,14 @@ class WorkQueueSets;
 // throttling mechanisms.
 class BASE_EXPORT WorkQueue {
  public:
+  enum class RemoveCancelledTasksPolicy {
+    // Removes cancelled tasks at the front of the queue. This is most efficient
+    // as it doesn't traverse all tasks in the queue.
+    kFront,
+    // Removes all cancelled tasks. This requires traversing all the queue.
+    kAll
+  };
+
   using QueueType = internal::TaskQueueImpl::WorkQueueType;
 
   // Note |task_queue| can be null if queue_type is kNonNestable.
@@ -111,9 +119,9 @@ class BASE_EXPORT WorkQueue {
   // pretends to be empty as far as the WorkQueueSets is concerned.
   Task TakeTaskFromWorkQueue();
 
-  // Removes all canceled tasks from the head of the list. Returns true if any
-  // tasks were removed.
-  bool RemoveAllCanceledTasksFromFront();
+  // Removes cancelled tasks from the queue. Returns true if any tasks were
+  // removed.
+  bool RemoveCancelledTasks(RemoveCancelledTasksPolicy policy);
 
   const char* name() const { return name_; }
 

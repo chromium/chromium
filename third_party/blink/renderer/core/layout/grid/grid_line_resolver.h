@@ -24,7 +24,7 @@ class GridPosition;
 
 // This is a utility class with all the code related to grid items positions
 // resolution.
-class GridLineResolver {
+class CORE_EXPORT GridLineResolver {
   DISALLOW_NEW();
 
  public:
@@ -34,6 +34,9 @@ class GridLineResolver {
       : style_(&grid_style),
         column_auto_repetitions_(column_auto_repetitions),
         row_auto_repetitions_(row_auto_repetitions) {}
+
+  GridLineResolver(const ComputedStyle& parent_style,
+                   wtf_size_t auto_repetitions);
 
   // Subgrids need to map named lines from every parent grid. This constructor
   // should be used exclusively by subgrids to differentiate such scenario.

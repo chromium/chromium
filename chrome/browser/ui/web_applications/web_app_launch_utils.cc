@@ -770,7 +770,7 @@ void RecordAppWindowLaunchMetric(Profile* profile,
   }
 
   DisplayMode display =
-      provider->registrar_unsafe().GetEffectiveDisplayModeFromManifest(app_id);
+      provider->registrar_unsafe().GetAppEffectiveDisplayMode(app_id);
   if (display != DisplayMode::kUndefined) {
     DCHECK_LT(DisplayMode::kUndefined, display);
     DCHECK_LE(display, DisplayMode::kMaxValue);
@@ -805,6 +805,8 @@ void RecordAppTabLaunchMetric(Profile* profile,
     return;
   }
 
+  // Measure the display mode that was specified in the manifest if this app was
+  // set to open in a standalone window.
   DisplayMode display =
       provider->registrar_unsafe().GetEffectiveDisplayModeFromManifest(app_id);
   if (display != DisplayMode::kUndefined) {
