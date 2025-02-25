@@ -18,6 +18,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.DialogTitle;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -72,6 +73,10 @@ public class TabGroupVisualDataDialogManager {
     private String mDefaultGroupTitle;
     private ColorPickerCoordinator mColorPickerCoordinator;
     private @TabGroupColorId int mDefaultColorId;
+
+    // If non-null, it means TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE was triggered and needs to
+    // be marked as dismissed when the dialog is hidden.
+    private @Nullable Tracker mTracker;
 
     /**
      * The manager responsible for handling trigger logic for tab group visual data modal dialogs.
@@ -175,6 +180,11 @@ public class TabGroupVisualDataDialogManager {
         if (mModalDialogManagerObserver != null) {
             mModalDialogManager.removeObserver(mModalDialogManagerObserver);
         }
+
+        if (mTracker != null) {
+            mTracker.dismissed(FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
+            mTracker = null;
+        }
     }
 
     /** Get the current group title that is displayed in the modal dialog. */
@@ -238,6 +248,7 @@ public class TabGroupVisualDataDialogManager {
                     && ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()
                     && tracker.shouldTriggerHelpUi(
                             FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE)) {
+                mTracker = tracker;
                 descriptionView.setVisibility(View.VISIBLE);
                 SyncService syncService = SyncServiceFactory.getForProfile(profile);
                 boolean syncingTabGroups =

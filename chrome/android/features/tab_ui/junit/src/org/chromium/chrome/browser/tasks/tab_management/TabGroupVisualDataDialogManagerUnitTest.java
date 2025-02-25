@@ -159,6 +159,9 @@ public class TabGroupVisualDataDialogManagerUnitTest {
                         .findViewById(R.id.visual_data_dialog_description);
         Assert.assertEquals(View.GONE, description.getVisibility());
         verify(mTracker, never()).notifyEvent(eq(TAB_GROUP_CREATION_DIALOG_SHOWN));
+
+        mTabGroupVisualDataDialogManager.hideDialog();
+        verify(mTracker, never()).dismissed(eq(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE));
     }
 
     @Test
@@ -188,6 +191,9 @@ public class TabGroupVisualDataDialogManagerUnitTest {
                         .getString(R.string.tab_group_creation_dialog_description_text_sync_off),
                 description.getText());
         verify(mTracker).notifyEvent(eq(TAB_GROUP_CREATION_DIALOG_SHOWN));
+
+        mTabGroupVisualDataDialogManager.hideDialog();
+        verify(mTracker).dismissed(eq(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE));
     }
 
     @Test
@@ -218,5 +224,8 @@ public class TabGroupVisualDataDialogManagerUnitTest {
                         .getString(R.string.tab_group_creation_dialog_description_text_sync_on),
                 description.getText());
         verify(mTracker).notifyEvent(eq(TAB_GROUP_CREATION_DIALOG_SHOWN));
+
+        mTabGroupVisualDataDialogManager.hideDialog();
+        verify(mTracker).dismissed(eq(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE));
     }
 }
