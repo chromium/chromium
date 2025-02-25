@@ -28,6 +28,9 @@ class VolumeManagerObserver {
   // Fired when a new disk is added.
   virtual void OnDiskAdded(const ash::disks::Disk& disk, bool mounting) {}
 
+  // Fired when an attempt to add a disk is blocked by policy.
+  virtual void OnDiskAddBlockedByPolicy(const std::string& device_path) {}
+
   // Fired when a disk is removed.
   virtual void OnDiskRemoved(const ash::disks::Disk& disk) {}
 
