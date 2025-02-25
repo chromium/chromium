@@ -20,7 +20,7 @@ GetDetailsForCreateBnplPaymentInstrumentRequest::
         GetDetailsForCreateBnplPaymentInstrumentRequestDetails request_details,
         bool full_sync_enabled,
         base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
-                                std::u16string context_token,
+                                std::string context_token,
                                 std::unique_ptr<base::Value::Dict>)> callback)
     : request_details_(request_details),
       full_sync_enabled_(full_sync_enabled),
@@ -67,7 +67,7 @@ GetDetailsForCreateBnplPaymentInstrumentRequest::GetRequestContent() {
 void GetDetailsForCreateBnplPaymentInstrumentRequest::ParseResponse(
     const base::Value::Dict& response) {
   if (const std::string* context_token = response.FindString("context_token")) {
-    context_token_ = base::UTF8ToUTF16(*context_token);
+    context_token_ = std::move(*context_token);
   }
 
   if (const base::Value::Dict* legal_message_value =

@@ -201,7 +201,8 @@ void TestPaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
 
 BnplManager* TestPaymentsAutofillClient::GetPaymentsBnplManager() {
   if (!bnpl_manager_) {
-    bnpl_manager_ = std::make_unique<BnplManager>(this);
+    bnpl_manager_ = std::make_unique<BnplManager>(
+        &static_cast<TestAutofillClient&>(client_.get()));
   }
 
   return bnpl_manager_.get();
@@ -293,7 +294,8 @@ void TestPaymentsAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
 
 MockBnplManager& TestPaymentsAutofillClient::CreateOrGetMockBnplManager() {
   if (!bnpl_manager_) {
-    bnpl_manager_ = std::make_unique<testing::NiceMock<MockBnplManager>>(this);
+    bnpl_manager_ = std::make_unique<testing::NiceMock<MockBnplManager>>(
+        &static_cast<TestAutofillClient&>(client_.get()));
   }
 
   return static_cast<MockBnplManager&>(*bnpl_manager_.get());

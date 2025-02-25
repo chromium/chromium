@@ -81,7 +81,7 @@ TEST_F(GetDetailsForCreateBnplPaymentInstrumentRequestTest,
 
   ParseResponse(response);
 
-  EXPECT_EQ(test_api(*GetRequest()).get_context_token(), u"some token");
+  EXPECT_EQ(test_api(*GetRequest()).get_context_token(), "some token");
   EXPECT_TRUE(test_api(*GetRequest()).get_legal_message());
   EXPECT_TRUE(IsResponseComplete());
 }

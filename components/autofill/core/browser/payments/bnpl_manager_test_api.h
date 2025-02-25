@@ -50,6 +50,8 @@ class BnplManagerTestApi {
     return bnpl_manager_->ongoing_flow_state_.get();
   }
 
+  void OnTosDialogAccepted() { bnpl_manager_->OnTosDialogAccepted(); }
+
  private:
   const raw_ref<BnplManager> bnpl_manager_;
 };

@@ -223,7 +223,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
       const GetDetailsForCreateBnplPaymentInstrumentRequestDetails&
           request_details,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult result,
-                              std::u16string context_token,
+                              std::string context_token,
                               std::unique_ptr<base::Value::Dict>)> callback);
 
   // The user has indicated that they would like to create a BNPL payment
