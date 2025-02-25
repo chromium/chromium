@@ -231,8 +231,7 @@ struct LogicalLineItem {
 
   // Data to create a text fragment from.
   // |inline_item| is null only for ellipsis items.
-  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
-  const InlineItem* inline_item = nullptr;
+  Member<const InlineItem> inline_item;
   Member<const ShapeResultView> shape_result;
   TextOffsetRange text_offset;
 
