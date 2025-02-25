@@ -15,6 +15,8 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
+#include "content/public/browser/host_zoom_map.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/webview.h"
@@ -39,6 +41,19 @@ const GURL GetPacpUrl(
   return supervised_user::GetParentAccessURLForDesktop(
       g_browser_process->GetApplicationLocale(), blocked_url, filtering_reason);
 }
+
+// Override the default zoom level for the parent approval dialog.
+// Its size should align with native UI elements, rather than web content.
+void OverrideZoomFactor(content::WebContents* web_contents,
+                        const GURL& pacp_url) {
+  CHECK(web_contents);
+  double zoom_factor = 1;
+  content::HostZoomMap* zoom_map =
+      content::HostZoomMap::GetForWebContents(web_contents);
+  zoom_map->SetZoomLevelForHost(pacp_url.host(),
+                                blink::ZoomFactorToZoomLevel(zoom_factor));
+}
+
 }  // namespace
 
 DialogContentLoadWithTimeoutObserver::DialogContentLoadWithTimeoutObserver(
@@ -185,6 +200,7 @@ void ParentAccessView::Initialize(const GURL& pacp_url, int corner_radius) {
   // Loads the PACP widget's url. This creates the new web_contents of the
   // dialog.
   web_view_->LoadInitialURL(pacp_url);
+
   // Allows dismissing the dialog via the `Escape` button.
   web_view_->set_allow_accelerators(true);
   web_view_->SetProperty(views::kElementIdentifierKey,
@@ -199,6 +215,7 @@ void ParentAccessView::Initialize(const GURL& pacp_url, int corner_radius) {
 
   corner_radius_ = corner_radius;
   is_initialized_ = true;
+  OverrideZoomFactor(GetWebViewContents(), pacp_url);
 }
 
 void ParentAccessView::ShowNativeView() {
