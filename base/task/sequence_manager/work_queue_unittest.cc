@@ -39,6 +39,19 @@ struct Cancelable {
   WeakPtrFactory<Cancelable> weak_ptr_factory{this};
 };
 
+void ExpectAllTasksValid(const WorkQueue& queue) {
+  for (const auto& task : queue.tasks_) {
+    EXPECT_FALSE(task.task.is_null());
+  }
+}
+
+void ExpectAllTasksValidAndNotCancelled(const WorkQueue& queue) {
+  for (const auto& task : queue.tasks_) {
+    EXPECT_FALSE(task.task.is_null());
+    EXPECT_FALSE(task.task.IsCancelled());
+  }
+}
+
 }  // namespace
 
 class WorkQueueTest : public testing::Test {
@@ -513,7 +526,8 @@ TEST_F(WorkQueueTest, InsertFenceAfterEnqueuing) {
   EXPECT_FALSE(work_queue_->GetFrontTaskOrder());
 }
 
-TEST_F(WorkQueueTest, RemoveAllCanceledTasksFromFront) {
+// Call RemoveCancelledTasks with cancelled and non-cancelled tasks.
+TEST_F(WorkQueueTest, RemoveCancelledTasks_Front) {
   {
     Cancelable cancelable;
     work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
@@ -523,15 +537,23 @@ TEST_F(WorkQueueTest, RemoveAllCanceledTasksFromFront) {
     work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
         4, cancelable.weak_ptr_factory.GetWeakPtr()));
     work_queue_->Push(FakeTaskWithEnqueueOrder(5));
+    work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+        6, cancelable.weak_ptr_factory.GetWeakPtr()));
   }
-  EXPECT_TRUE(work_queue_->RemoveAllCanceledTasksFromFront());
+  EXPECT_TRUE(work_queue_->RemoveCancelledTasks(
+      WorkQueue::RemoveCancelledTasksPolicy::kFront));
 
   std::optional<TaskOrder> task_order = work_queue_->GetFrontTaskOrder();
   EXPECT_TRUE(task_order);
   EXPECT_EQ(5ull, task_order->enqueue_order());
+  // The cancelled task at the end of the queue is not removed (it's behind a
+  // non-cancelled task and the policy is to only remove from the front),
+  EXPECT_EQ(2ull, work_queue_->Size());
+  ExpectAllTasksValid(*work_queue_);
 }
 
-TEST_F(WorkQueueTest, RemoveAllCanceledTasksFromFrontTasksNotCanceled) {
+// Same as RemoveCancelledTasks_Front, but with kAll policy.
+TEST_F(WorkQueueTest, RemoveCancelledTasks_All) {
   {
     Cancelable cancelable;
     work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
@@ -541,15 +563,102 @@ TEST_F(WorkQueueTest, RemoveAllCanceledTasksFromFrontTasksNotCanceled) {
     work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
         4, cancelable.weak_ptr_factory.GetWeakPtr()));
     work_queue_->Push(FakeTaskWithEnqueueOrder(5));
-    EXPECT_FALSE(work_queue_->RemoveAllCanceledTasksFromFront());
-
-    std::optional<TaskOrder> task_order = work_queue_->GetFrontTaskOrder();
-    EXPECT_TRUE(task_order);
-    EXPECT_EQ(2ull, task_order->enqueue_order());
+    work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+        6, cancelable.weak_ptr_factory.GetWeakPtr()));
   }
+  EXPECT_TRUE(work_queue_->RemoveCancelledTasks(
+      WorkQueue::RemoveCancelledTasksPolicy::kAll));
+
+  std::optional<TaskOrder> task_order = work_queue_->GetFrontTaskOrder();
+  EXPECT_TRUE(task_order);
+  EXPECT_EQ(5ull, task_order->enqueue_order());
+  // All cancelled tasks are removed.
+  EXPECT_EQ(1ull, work_queue_->Size());
+  ExpectAllTasksValidAndNotCancelled(*work_queue_);
 }
 
-TEST_F(WorkQueueTest, RemoveAllCanceledTasksFromFrontQueueBlockedByFence) {
+// Call RemoveCancelledTasks with only cancelled tasks.
+TEST_F(WorkQueueTest, RemoveCancelledTasks_Front_BecomeEmpty) {
+  {
+    Cancelable cancelable;
+    work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+        2, cancelable.weak_ptr_factory.GetWeakPtr()));
+    work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+        3, cancelable.weak_ptr_factory.GetWeakPtr()));
+  }
+  EXPECT_EQ(work_queue_.get(), GetOldestQueueInSet(0));
+  EXPECT_TRUE(work_queue_->RemoveCancelledTasks(
+      WorkQueue::RemoveCancelledTasksPolicy::kFront));
+
+  std::optional<TaskOrder> task_order = work_queue_->GetFrontTaskOrder();
+  EXPECT_FALSE(task_order);
+  EXPECT_EQ(0ull, work_queue_->Size());
+  // The queue is empty and should have been removed from the WorkQueueSets.
+  EXPECT_EQ(nullptr, GetOldestQueueInSet(0));
+}
+
+// Same as RemoveCancelledTasks_Front_BecomeEmpty, but with kAll policy.
+TEST_F(WorkQueueTest, RemoveCancelledTasks_All_BecomeEmpty) {
+  {
+    Cancelable cancelable;
+    work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+        2, cancelable.weak_ptr_factory.GetWeakPtr()));
+    work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+        3, cancelable.weak_ptr_factory.GetWeakPtr()));
+  }
+  EXPECT_EQ(work_queue_.get(), GetOldestQueueInSet(0));
+  EXPECT_TRUE(work_queue_->RemoveCancelledTasks(
+      WorkQueue::RemoveCancelledTasksPolicy::kAll));
+
+  std::optional<TaskOrder> task_order = work_queue_->GetFrontTaskOrder();
+  EXPECT_FALSE(task_order);
+  EXPECT_EQ(0ull, work_queue_->Size());
+  // The queue is empty and should have been removed from the WorkQueueSets.
+  EXPECT_EQ(nullptr, GetOldestQueueInSet(0));
+}
+
+// Call RemoveCancelledTasks with no cancelled tasks.
+TEST_F(WorkQueueTest, RemoveCancelledTasks_Front_NotCanceled) {
+  Cancelable cancelable;
+  work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+      2, cancelable.weak_ptr_factory.GetWeakPtr()));
+  work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+      3, cancelable.weak_ptr_factory.GetWeakPtr()));
+  work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+      4, cancelable.weak_ptr_factory.GetWeakPtr()));
+  work_queue_->Push(FakeTaskWithEnqueueOrder(5));
+  EXPECT_FALSE(work_queue_->RemoveCancelledTasks(
+      WorkQueue::RemoveCancelledTasksPolicy::kFront));
+
+  std::optional<TaskOrder> task_order = work_queue_->GetFrontTaskOrder();
+  EXPECT_TRUE(task_order);
+  EXPECT_EQ(2ull, task_order->enqueue_order());
+  EXPECT_EQ(4ull, work_queue_->Size());
+  ExpectAllTasksValidAndNotCancelled(*work_queue_);
+}
+
+// Same as RemoveCancelledTasks_Front_NotCanceled, but with kAll policy.
+TEST_F(WorkQueueTest, RemoveCancelledTasks_All_NotCanceled) {
+  Cancelable cancelable;
+  work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+      2, cancelable.weak_ptr_factory.GetWeakPtr()));
+  work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+      3, cancelable.weak_ptr_factory.GetWeakPtr()));
+  work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+      4, cancelable.weak_ptr_factory.GetWeakPtr()));
+  work_queue_->Push(FakeTaskWithEnqueueOrder(5));
+  EXPECT_FALSE(work_queue_->RemoveCancelledTasks(
+      WorkQueue::RemoveCancelledTasksPolicy::kAll));
+
+  std::optional<TaskOrder> task_order = work_queue_->GetFrontTaskOrder();
+  EXPECT_TRUE(task_order);
+  EXPECT_EQ(2ull, task_order->enqueue_order());
+  EXPECT_EQ(4ull, work_queue_->Size());
+  ExpectAllTasksValidAndNotCancelled(*work_queue_);
+}
+
+// Call RemoveCancelledTasks when the queue is blocked by a fence.
+TEST_F(WorkQueueTest, RemoveCancelledTasks_Front_QueueBlockedByFence) {
   {
     Cancelable cancelable;
     work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
@@ -559,14 +668,45 @@ TEST_F(WorkQueueTest, RemoveAllCanceledTasksFromFrontQueueBlockedByFence) {
     work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
         4, cancelable.weak_ptr_factory.GetWeakPtr()));
     work_queue_->Push(FakeTaskWithEnqueueOrder(5));
+    work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+        6, cancelable.weak_ptr_factory.GetWeakPtr()));
   }
 
   EXPECT_FALSE(work_queue_->InsertFence(Fence::BlockingFence()));
   EXPECT_TRUE(work_queue_->BlockedByFence());
 
-  EXPECT_TRUE(work_queue_->RemoveAllCanceledTasksFromFront());
+  EXPECT_TRUE(work_queue_->RemoveCancelledTasks(
+      WorkQueue::RemoveCancelledTasksPolicy::kFront));
 
   EXPECT_FALSE(work_queue_->GetFrontTaskOrder());
+  EXPECT_EQ(2ull, work_queue_->Size());
+  ExpectAllTasksValid(*work_queue_);
+}
+
+// Same as RemoveCancelledTasks_Front_QueueBlockedByFence, but with kAll policy.
+TEST_F(WorkQueueTest, RemoveCancelledTasks_All_QueueBlockedByFence) {
+  {
+    Cancelable cancelable;
+    work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+        2, cancelable.weak_ptr_factory.GetWeakPtr()));
+    work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+        3, cancelable.weak_ptr_factory.GetWeakPtr()));
+    work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+        4, cancelable.weak_ptr_factory.GetWeakPtr()));
+    work_queue_->Push(FakeTaskWithEnqueueOrder(5));
+    work_queue_->Push(FakeCancelableTaskWithEnqueueOrder(
+        6, cancelable.weak_ptr_factory.GetWeakPtr()));
+  }
+
+  EXPECT_FALSE(work_queue_->InsertFence(Fence::BlockingFence()));
+  EXPECT_TRUE(work_queue_->BlockedByFence());
+
+  EXPECT_TRUE(work_queue_->RemoveCancelledTasks(
+      WorkQueue::RemoveCancelledTasksPolicy::kAll));
+
+  EXPECT_FALSE(work_queue_->GetFrontTaskOrder());
+  EXPECT_EQ(1ull, work_queue_->Size());
+  ExpectAllTasksValidAndNotCancelled(*work_queue_);
 }
 
 TEST_F(WorkQueueTest, CollectTasksOlderThan) {

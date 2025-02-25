@@ -228,7 +228,7 @@ Task WorkQueue::TakeTaskFromWorkQueue() {
   return pending_task;
 }
 
-bool WorkQueue::RemoveAllCanceledTasksFromFront() {
+bool WorkQueue::RemoveCancelledTasks(RemoveCancelledTasksPolicy policy) {
   if (!work_queue_sets_) {
     return false;
   }
@@ -238,8 +238,7 @@ bool WorkQueue::RemoveAllCanceledTasksFromFront() {
   // without accessing |this|.
   absl::InlinedVector<Task, 8> tasks_to_delete;
 
-  while (!tasks_.empty()) {
-    const auto& pending_task = tasks_.front();
+  for (auto& pending_task : tasks_) {
 #if DCHECK_IS_ON()
     // Checking if a task is cancelled can trip DCHECK/CHECK failures out of the
     // control of the SequenceManager code, so provide a task trace for easier
@@ -251,29 +250,47 @@ bool WorkQueue::RemoveAllCanceledTasksFromFront() {
     TaskAnnotator::SetCurrentTaskForThread(base::PassKey<WorkQueue>(),
                                            &pending_task);
 #endif
-    if (pending_task.task && !pending_task.IsCanceled()) {
+    CHECK(pending_task.task, base::NotFatalUntil::M140);
+
+    if (pending_task.task.IsCancelled()) {
+      tasks_to_delete.push_back(std::move(pending_task));
+    } else if (policy == RemoveCancelledTasksPolicy::kFront) {
+      // Stop iterating when encountering a non-cancelled tasks and the policy
+      // is to remove only from the front.
       break;
     }
-    tasks_to_delete.push_back(std::move(tasks_.front()));
-    tasks_.pop_front();
   }
-  if (!tasks_to_delete.empty()) {
-    if (tasks_.empty()) {
-      // NB delayed tasks are inserted via Push, no don't need to reload those.
-      if (queue_type_ == QueueType::kImmediate) {
-        // Short-circuit the queue reload so that OnPopMinQueueInSet does the
-        // right thing.
-        task_queue_->TakeImmediateIncomingQueueTasks(&tasks_);
-      }
-    }
-    // If we have a valid |heap_handle_| (i.e. we're not blocked by a fence or
-    // disabled) then |work_queue_sets_| needs to be told.
-    if (heap_handle_.IsValid()) {
-      work_queue_sets_->OnQueuesFrontTaskChanged(this);
-    }
-    task_queue_->TraceQueueSize();
+
+  if (tasks_to_delete.empty()) {
+    return false;
   }
-  return !tasks_to_delete.empty();
+
+  if (policy == RemoveCancelledTasksPolicy::kFront) {
+    tasks_.erase(tasks_.begin(),
+                 tasks_.begin() + base::checked_cast<std::ptrdiff_t>(
+                                      tasks_to_delete.size()));
+  } else {
+    DCHECK_EQ(policy, RemoveCancelledTasksPolicy::kAll);
+    std::erase_if(tasks_, [](const Task& task) { return task.task.is_null(); });
+  }
+
+  if (tasks_.empty()) {
+    // NB delayed tasks are inserted via Push, no don't need to reload those.
+    if (queue_type_ == QueueType::kImmediate) {
+      // Short-circuit the queue reload so that OnPopMinQueueInSet does the
+      // right thing.
+      task_queue_->TakeImmediateIncomingQueueTasks(&tasks_);
+    }
+  }
+
+  // If we have a valid |heap_handle_| (i.e. we're not blocked by a fence or
+  // disabled) then |work_queue_sets_| needs to be told.
+  if (heap_handle_.IsValid()) {
+    work_queue_sets_->OnQueuesFrontTaskChanged(this);
+  }
+  task_queue_->TraceQueueSize();
+
+  return true;
 }
 
 void WorkQueue::AssignToWorkQueueSets(WorkQueueSets* work_queue_sets) {
