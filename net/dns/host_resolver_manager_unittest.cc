@@ -5251,7 +5251,7 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
               testing::Pointee(testing::ElementsAre(ExpectEndpointResult(
                   testing::ElementsAre(CreateExpected("127.0.0.1", 80))))));
   EXPECT_THAT(response_ipv4.request()->GetDnsAliasResults(),
-              testing::Pointee(testing::IsEmpty()));
+              testing::Pointee(ElementsAre("nx_ipv4")));
 
   ResolveHostResponseHelper response_ipv6(resolver_->CreateRequest(
       HostPortPair("nx_ipv6", 80), NetworkAnonymizationKey(),
@@ -5263,7 +5263,7 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
               testing::Pointee(testing::ElementsAre(ExpectEndpointResult(
                   testing::ElementsAre(CreateExpected("::1", 80))))));
   EXPECT_THAT(response_ipv6.request()->GetDnsAliasResults(),
-              testing::Pointee(testing::IsEmpty()));
+              testing::Pointee(ElementsAre("nx_ipv6")));
 
   ResolveHostResponseHelper response_both(resolver_->CreateRequest(
       HostPortPair("nx_both", 80), NetworkAnonymizationKey(),
@@ -5278,7 +5278,7 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
           ExpectEndpointResult(testing::UnorderedElementsAre(
               CreateExpected("::1", 80), CreateExpected("127.0.0.1", 80))))));
   EXPECT_THAT(response_both.request()->GetDnsAliasResults(),
-              testing::Pointee(testing::IsEmpty()));
+              testing::Pointee(ElementsAre("nx_both")));
 
   // Requests with specified DNS query type.
   HostResolver::ResolveHostParameters parameters;
@@ -5295,7 +5295,7 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
               testing::Pointee(testing::ElementsAre(ExpectEndpointResult(
                   testing::ElementsAre(CreateExpected("127.0.0.1", 80))))));
   EXPECT_THAT(response_specified_ipv4.request()->GetDnsAliasResults(),
-              testing::Pointee(testing::IsEmpty()));
+              testing::Pointee(ElementsAre("nx_ipv4")));
 
   parameters.dns_query_type = DnsQueryType::AAAA;
   ResolveHostResponseHelper response_specified_ipv6(resolver_->CreateRequest(
@@ -5309,7 +5309,7 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
               testing::Pointee(testing::ElementsAre(ExpectEndpointResult(
                   testing::ElementsAre(CreateExpected("::1", 80))))));
   EXPECT_THAT(response_specified_ipv6.request()->GetDnsAliasResults(),
-              testing::Pointee(testing::IsEmpty()));
+              testing::Pointee(ElementsAre("nx_ipv6")));
 }
 
 TEST_F(HostResolverManagerDnsTest,
