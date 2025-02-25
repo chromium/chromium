@@ -114,13 +114,16 @@ class CloudServiceClient {
 
   void GenerateIceConfig(GenerateIceConfigCallback callback);
 
-  void GenerateHostToken(GenerateHostTokenCallback callback);
+  void GenerateHostToken(std::string_view instance_identity_token,
+                         GenerateHostTokenCallback callback);
 
   void VerifySessionToken(const std::string& session_token,
+                          std::string_view instance_identity_token,
                           VerifySessionTokenCallback callback);
 
   void ReauthorizeHost(const std::string& session_reauth_token,
                        const std::string& session_id,
+                       std::string_view instance_identity_token,
                        ReauthorizeHostCallback callback);
 
   void CancelPendingRequests();

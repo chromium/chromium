@@ -391,12 +391,16 @@ void CloudServiceClient::UpdateRemoteAccessHost(
                  std::move(callback));
 }
 
-void CloudServiceClient::GenerateHostToken(GenerateHostTokenCallback callback) {
+void CloudServiceClient::GenerateHostToken(
+    std::string_view instance_identity_token,
+    GenerateHostTokenCallback callback) {
   constexpr char path[] = "/v1alpha/sessionAuthz:generateHostToken";
 
+  auto request = std::make_unique<GenerateHostTokenRequest>();
+  request->set_instance_identity_token(instance_identity_token);
+
   ExecuteRequest(kGenerateHostTokenTrafficAnnotation, path, /*api_key=*/"",
-                 net::HttpRequestHeaders::kPostMethod,
-                 std::make_unique<GenerateHostTokenRequest>(),
+                 net::HttpRequestHeaders::kPostMethod, std::move(request),
                  std::move(callback));
 }
 
@@ -411,11 +415,13 @@ void CloudServiceClient::GenerateIceConfig(GenerateIceConfigCallback callback) {
 
 void CloudServiceClient::VerifySessionToken(
     const std::string& session_token,
+    std::string_view instance_identity_token,
     VerifySessionTokenCallback callback) {
   constexpr char path[] = "/v1alpha/sessionAuthz:verifySessionToken";
 
   auto request = std::make_unique<VerifySessionTokenRequest>();
   request->set_session_token(session_token);
+  request->set_instance_identity_token(instance_identity_token);
 
   ExecuteRequest(kVerifySessionTokenTrafficAnnotation, path, /*api_key=*/"",
                  net::HttpRequestHeaders::kPostMethod, std::move(request),
@@ -425,12 +431,14 @@ void CloudServiceClient::VerifySessionToken(
 void CloudServiceClient::ReauthorizeHost(
     const std::string& session_reauth_token,
     const std::string& session_id,
+    std::string_view instance_identity_token,
     ReauthorizeHostCallback callback) {
   constexpr char path[] = "/v1alpha/sessionAuthz:reauthorizeHost";
 
   auto request = std::make_unique<ReauthorizeHostRequest>();
   request->set_session_reauth_token(session_reauth_token);
   request->set_session_id(session_id);
+  request->set_instance_identity_token(instance_identity_token);
 
   ExecuteRequest(kReauthorizeHostTrafficAnnotation, path, /*api_key=*/"",
                  net::HttpRequestHeaders::kPostMethod, std::move(request),
