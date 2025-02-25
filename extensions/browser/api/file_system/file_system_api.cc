@@ -167,7 +167,7 @@ bool GetFileTypesFromAcceptOption(
 // response to a chrome.fileSystem.chooseEntry() call.
 constexpr char kLastChooseEntryDirectory[] = "last_choose_file_directory";
 
-const auto kGraylistedPaths = std::to_array<int>({
+constexpr auto kGraylistedPaths = std::to_array<int>({
     base::DIR_HOME,
 #if BUILDFLAG(IS_WIN)
     base::DIR_PROGRAM_FILES,
