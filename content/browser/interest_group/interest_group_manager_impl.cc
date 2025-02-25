@@ -756,14 +756,16 @@ void InterestGroupManagerImpl::UpdateInterestGroupPriorityOverrides(
 
 void InterestGroupManagerImpl::SetBiddingAndAuctionServerKeys(
     const url::Origin& coordinator,
-    std::string serialized_keys,
+    const std::vector<BiddingAndAuctionServerKey>& keys,
     base::Time expiration) {
-  caching_storage_.SetBiddingAndAuctionServerKeys(
-      coordinator, std::move(serialized_keys), expiration);
+  caching_storage_.SetBiddingAndAuctionServerKeys(coordinator, keys,
+                                                  expiration);
 }
 void InterestGroupManagerImpl::GetBiddingAndAuctionServerKeys(
     const url::Origin& coordinator,
-    base::OnceCallback<void(std::pair<base::Time, std::string>)> callback) {
+    base::OnceCallback<
+        void(std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>)>
+        callback) {
   caching_storage_.GetBiddingAndAuctionServerKeys(coordinator,
                                                   std::move(callback));
 }
@@ -919,11 +921,10 @@ void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
 }
 
 void InterestGroupManagerImpl::GetBiddingAndAuctionServerKey(
-    const url::Origin& seller,
     const std::optional<url::Origin>& coordinator,
     base::OnceCallback<void(
         base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
-  ba_key_fetcher_.GetOrFetchKey(seller, coordinator, std::move(callback));
+  ba_key_fetcher_.GetOrFetchKey(coordinator, std::move(callback));
 }
 
 void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(

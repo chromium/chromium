@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
@@ -42,38 +41,7 @@ inline constexpr char kBiddingAndAuctionAWSCoordinatorKeyURL[] =
 
 struct BiddingAndAuctionServerKey {
   std::string key;  // bytes containing the key.
-  std::string id;   // key id corresponding to this key.
-};
-
-// This class abstracts the set of keys. This makes code accessing the keys more
-// generic to ease the transition as we consider alternative key scopes.
-// See https://github.com/WICG/turtledove/issues/1334 for details.
-class CONTENT_EXPORT BiddingAndAuctionKeySet {
- public:
-  explicit BiddingAndAuctionKeySet(
-      std::vector<BiddingAndAuctionServerKey> keys);
-  ~BiddingAndAuctionKeySet();
-
-  BiddingAndAuctionKeySet(BiddingAndAuctionKeySet&& keyset);
-  BiddingAndAuctionKeySet& operator=(BiddingAndAuctionKeySet&& keyset);
-
-  // Returns true if we have any keys in this Keyset.
-  bool HasKeys() const;
-
-  // Returns a random key from the set of keys for this coordinator. If keys are
-  // scoped by origin, the provided `scoped_origin` is used to select the the
-  // keyset to select from.
-  std::optional<BiddingAndAuctionServerKey> GetRandomKey(
-      const url::Origin& scoped_origin) const;
-
-  // Convert Keyset to binary Protobuf for storage.
-  std::string AsBinaryProto() const;
-  // Create a Keyset from binary Protobuf.
-  static std::optional<BiddingAndAuctionKeySet> FromBinaryProto(
-      std::string key_blob);
-
- private:
-  std::vector<BiddingAndAuctionServerKey> keys_;
+  uint8_t id;       // key id corresponding to this key.
 };
 
 // BiddingAndAuctionServerKeyFetcher manages fetching and caching of the public
@@ -104,23 +72,10 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
 
   // GetOrFetchKey provides a key in the callback if necessary. If the key is
   // immediately available then the callback may be called synchronously.
-  void GetOrFetchKey(const url::Origin& scope_origin,
-                     const std::optional<url::Origin>& maybe_coordinator,
+  void GetOrFetchKey(const std::optional<url::Origin>& maybe_coordinator,
                      BiddingAndAuctionServerKeyFetcherCallback callback);
 
  private:
-  struct CallbackQueueItem {
-    CallbackQueueItem(BiddingAndAuctionServerKeyFetcherCallback callback,
-                      url::Origin scope_origin);
-    ~CallbackQueueItem();
-
-    CallbackQueueItem(CallbackQueueItem&& item);
-    CallbackQueueItem& operator=(CallbackQueueItem&& item);
-
-    BiddingAndAuctionServerKeyFetcherCallback callback;
-    url::Origin scope_origin;
-  };
-
   struct PerCoordinatorFetcherState {
     PerCoordinatorFetcherState();
     ~PerCoordinatorFetcherState();
@@ -129,14 +84,13 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
     PerCoordinatorFetcherState& operator=(PerCoordinatorFetcherState&& state);
 
     GURL key_url;
-    uint8_t version;
 
     // queue_ contains callbacks waiting for a key to be fetched over the
     // network.
-    base::circular_deque<CallbackQueueItem> queue;
+    base::circular_deque<BiddingAndAuctionServerKeyFetcherCallback> queue;
 
     // keys_ contains a list of keys received from the server (if any).
-    std::optional<BiddingAndAuctionKeySet> keyset;
+    std::vector<BiddingAndAuctionServerKey> keys;
 
     // expiration_ contains the expiration time for any keys that are cached by
     // this object.
@@ -154,13 +108,13 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
 
   // Fetch keys for a particular coordinator, first checking if the key is
   // in the database.
-  void FetchKeys(const url::Origin& scope_origin,
-                 const url::Origin& coordinator,
+  void FetchKeys(const url::Origin& coordinator,
                  PerCoordinatorFetcherState& state,
                  BiddingAndAuctionServerKeyFetcherCallback callback);
 
-  void OnFetchKeysFromDatabaseComplete(const url::Origin& coordinator,
-                                       std::pair<base::Time, std::string> keys);
+  void OnFetchKeysFromDatabaseComplete(
+      const url::Origin& coordinator,
+      std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>> keys);
 
   void FetchKeysFromNetwork(const url::Origin& coordinator);
 
@@ -175,9 +129,10 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
   void OnParsedKeys(url::Origin coordinator,
                     data_decoder::DataDecoder::ValueOrError result);
 
-  void CacheKeysAndRunAllCallbacks(const url::Origin& coordinator,
-                                   BiddingAndAuctionKeySet keyset,
-                                   base::Time expiration);
+  void CacheKeysAndRunAllCallbacks(
+      const url::Origin& coordinator,
+      const std::vector<BiddingAndAuctionServerKey>& keys,
+      base::Time expiration);
 
   void FailAllCallbacks(url::Origin coordinator);
 

@@ -295,14 +295,13 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
   // Callback to handle coordinator key requests by the base
   // TrustedSignalsCacheImpl class.
   void GetCoordinatorKey(
-      const url::Origin& scope_origin,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
     switch (get_coordinator_key_mode_) {
       case GetCoordinatorKeyMode::kSync:
         std::move(callback).Run(BiddingAndAuctionServerKey{
-            /*key=*/coordinator->Serialize(), /*id=*/"01"});
+            /*key=*/coordinator->Serialize(), /*id=*/1});
         break;
       case GetCoordinatorKeyMode::kAsync:
         // This should be safe, as the base class guards this callback with a
@@ -311,7 +310,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
             FROM_HERE,
             base::BindOnce(std::move(callback),
                            BiddingAndAuctionServerKey{
-                               /*key=*/coordinator->Serialize(), /*id=*/"01"}));
+                               /*key=*/coordinator->Serialize(), /*id=*/1}));
         break;
       case GetCoordinatorKeyMode::kSyncFail:
         std::move(callback).Run(base::unexpected(std::string(kKeyFetchFailed)));
@@ -1566,7 +1565,7 @@ TYPED_TEST(TrustedSignalsCacheTest, HandleDestroyedWithoutStartingFetch) {
     if (test_case != TestCase::kCancelBeforeCoordinatorKeyCallback) {
       callback = this->trusted_signals_cache_->WaitForCoordinatorKeyCallback();
       if (test_case == TestCase::kCancelAfterCoordinatorKeyCallback) {
-        std::move(callback).Run(BiddingAndAuctionServerKey{"key", /*id=*/"01"});
+        std::move(callback).Run(BiddingAndAuctionServerKey{"key", /*id=*/1});
       }
     }
 
@@ -1588,7 +1587,7 @@ TYPED_TEST(TrustedSignalsCacheTest, HandleDestroyedWithoutStartingFetch) {
     if (test_case ==
         TestCase::kCancelDuringCoordinatorKeyCallbackAndInvokeCallback) {
       // Invoking the GetCoordinatorKeyCallback late should not crash.
-      std::move(callback).Run(BiddingAndAuctionServerKey{"key", /*id=*/"01"});
+      std::move(callback).Run(BiddingAndAuctionServerKey{"key", /*id=*/1});
     }
   }
 }
@@ -3301,7 +3300,7 @@ TYPED_TEST(TrustedSignalsCacheTest, CancelledDuringGetCoordinatorKey) {
         this->trusted_signals_cache_->WaitForCoordinatorKeyCallback();
     handle.reset();
     if (invoke_callback) {
-      std::move(callback).Run(BiddingAndAuctionServerKey{"key", /*id=*/"01"});
+      std::move(callback).Run(BiddingAndAuctionServerKey{"key", /*id=*/1});
     }
 
     // Let any pending async callbacks complete.
@@ -3350,9 +3349,9 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // Invoke both callbacks, with the usual key (the serialized
         // coordinator).
         std::move(callback1).Run(BiddingAndAuctionServerKey{
-            /*key=*/params1.coordinator.Serialize(), /*id=*/"01"});
+            /*key=*/params1.coordinator.Serialize(), /*id=*/1});
         std::move(callback2).Run(BiddingAndAuctionServerKey{
-            /*key=*/params2.coordinator.Serialize(), /*id=*/"01"});
+            /*key=*/params2.coordinator.Serialize(), /*id=*/1});
 
         auto fetches = this->WaitForSignalsFetches(2);
 
@@ -3387,7 +3386,7 @@ TYPED_TEST(TrustedSignalsCacheTest,
         EXPECT_NE(handle1->compression_group_token(),
                   handle2->compression_group_token());
         std::move(callback1).Run(BiddingAndAuctionServerKey{
-            /*key=*/params1.coordinator.Serialize(), /*id=*/"01"});
+            /*key=*/params1.coordinator.Serialize(), /*id=*/1});
 
         auto fetch = this->WaitForSignalsFetch();
 
@@ -3420,7 +3419,7 @@ TYPED_TEST(TrustedSignalsCacheTest,
                   handle2->compression_group_token());
         EXPECT_NE(partition_id1, partition_id2);
         std::move(callback1).Run(BiddingAndAuctionServerKey{
-            /*key=*/params1.coordinator.Serialize(), /*id=*/"01"});
+            /*key=*/params1.coordinator.Serialize(), /*id=*/1});
 
         auto fetch = this->WaitForSignalsFetch();
 
@@ -3448,7 +3447,7 @@ TYPED_TEST(TrustedSignalsCacheTest,
                   handle2->compression_group_token());
         EXPECT_EQ(partition_id1, partition_id2);
         std::move(callback1).Run(BiddingAndAuctionServerKey{
-            /*key=*/params1.coordinator.Serialize(), /*id=*/"01"});
+            /*key=*/params1.coordinator.Serialize(), /*id=*/1});
 
         auto fetch = this->WaitForSignalsFetch();
 
@@ -3482,7 +3481,7 @@ TYPED_TEST(TrustedSignalsCacheTest,
 
   auto callback = this->trusted_signals_cache_->WaitForCoordinatorKeyCallback();
   std::move(callback).Run(BiddingAndAuctionServerKey{
-      /*key=*/this->kCoordinator.Serialize(), /*id=*/"01"});
+      /*key=*/this->kCoordinator.Serialize(), /*id=*/1});
 
   // No fetch should have been started yet.
   EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 0u);
