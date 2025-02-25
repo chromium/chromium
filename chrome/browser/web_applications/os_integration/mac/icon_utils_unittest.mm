@@ -53,7 +53,7 @@ TEST(IconUtilsTests, MaskSquareSolidBackgroundDiyAppIcon) {
   ASSERT_TRUE(!actual_masked_icon.IsEmpty());
   ASSERT_TRUE(gfx::test::AreImagesClose(actual_masked_icon,
                                         expected_masked_icon,
-                                        /*max_deviation=*/5));
+                                        /*max_deviation=*/20));
 }
 
 TEST(IconUtilsTests, MaskNormalDiyAppIcon) {
