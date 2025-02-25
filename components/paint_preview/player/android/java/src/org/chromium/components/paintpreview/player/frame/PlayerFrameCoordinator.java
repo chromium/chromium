@@ -4,6 +4,8 @@
 
 package org.chromium.components.paintpreview.player.frame;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -11,11 +13,12 @@ import android.util.Size;
 import android.view.ViewConfiguration;
 import android.widget.OverScroller;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.paintpreview.player.OverscrollHandler;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 import org.chromium.components.paintpreview.player.PlayerGestureListener;
@@ -26,9 +29,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Sets up the view and the logic behind it for a Paint Preview frame. */
+@NullMarked
 public class PlayerFrameCoordinator {
     private PlayerFrameMediator mMediator;
-    private PlayerFrameScaleController mScaleController;
+    private @Nullable PlayerFrameScaleController mScaleController;
     private PlayerFrameScrollController mScrollController;
     private PlayerFrameView mView;
     private List<PlayerFrameCoordinator> mSubFrames = new ArrayList<>();
@@ -131,12 +135,13 @@ public class PlayerFrameCoordinator {
     }
 
     public PlayerFrameViewport getViewportForAccessibility() {
-        if (mMediator == null) return null;
+        // This will never happen because mMediator is not nullable
+        if (mMediator == null) return assumeNonNull(null);
 
         return mMediator.getViewport();
     }
 
-    public PlayerFrameCoordinator getSubFrameForAccessibility(int index) {
+    public @Nullable PlayerFrameCoordinator getSubFrameForAccessibility(int index) {
         if (index > mSubFrames.size()) return null;
 
         return mSubFrames.get(index);
@@ -150,7 +155,7 @@ public class PlayerFrameCoordinator {
         mMediator.onTap(x, y, isAbsolute);
     }
 
-    public void scrollToMakeRectVisibleForAccessibility(Rect rect) {
+    public void scrollToMakeRectVisibleForAccessibility(@Nullable Rect rect) {
         mScrollController.scrollToMakeRectVisibleForAccessibility(rect);
     }
 
@@ -173,7 +178,7 @@ public class PlayerFrameCoordinator {
         return mMediator.checkRequiredBitmapsLoadedForTest();
     }
 
-    PlayerFrameScaleController getScaleControllerForTest() {
+    @Nullable PlayerFrameScaleController getScaleControllerForTest() {
         return mScaleController;
     }
 

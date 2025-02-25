@@ -4,6 +4,8 @@
 
 package org.chromium.components.installedapp;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -11,7 +13,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
@@ -28,6 +29,8 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -47,6 +50,7 @@ import java.util.Collections;
  * installed_app_provider.mojom
  */
 @JNINamespace("installedapp")
+@NullMarked
 public class InstalledAppProviderImpl implements InstalledAppProvider {
     @VisibleForTesting public static final String ASSET_STATEMENTS_KEY = "asset_statements";
     private static final String ASSET_STATEMENT_FIELD_TARGET = "target";
@@ -111,7 +115,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     // May be overridden in tests.
     private PackageManagerDelegate mPackageManagerDelegate;
     private boolean mIsInTest;
-    @Nullable private final InstantAppProvider mInstantAppProvider;
+    private final @Nullable InstantAppProvider mInstantAppProvider;
 
     public InstalledAppProviderImpl(
             BrowserContextHandle browserContextHandle,
@@ -203,7 +207,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
                 PostTask.postTask(
                         TaskTraits.BEST_EFFORT_MAY_BLOCK,
                         () -> checkPlayApp(resultHolder, taskIdx, app, frameUrl));
-            } else if (isWebApk(app) && app.url.equals(manifestUrl.url)) {
+            } else if (isWebApk(app) && manifestUrl.url.equals(app.url)) {
                 relatedAppType = RelatedAppType.OWN_WEBAPK;
                 // The website wants to check whether its own WebAPK is installed.
                 PostTask.postTask(
@@ -257,6 +261,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     @WorkerThread
     private void checkInstantApp(
             ResultHolder resultHolder, int taskIdx, RelatedApplication app, GURL frameUrl) {
+        assumeNonNull(app.id);
         int delayMs = calculateDelayForPackageMs(app.id);
 
         if (mInstantAppProvider != null
@@ -275,6 +280,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     @WorkerThread
     private void checkPlayApp(
             ResultHolder resultHolder, int taskIdx, RelatedApplication app, GURL frameUrl) {
+        assumeNonNull(app.id);
         int delayMs = calculateDelayForPackageMs(app.id);
 
         if (!isAppInstalledAndAssociatedWithOrigin(app.id, frameUrl, mPackageManagerDelegate)) {
@@ -289,6 +295,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     @WorkerThread
     private void checkWebApkInstalled(
             ResultHolder resultHolder, int taskIdx, RelatedApplication app) {
+        assumeNonNull(app.url);
         int delayMs = calculateDelayForPackageMs(app.url);
 
         if (!isWebApkInstalled(app.url)) {
@@ -304,6 +311,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     @UiThread
     private void checkWebApk(
             ResultHolder resultHolder, int taskIdx, RelatedApplication app, Url manifestUrl) {
+        assumeNonNull(app.url);
         int delayMs = calculateDelayForPackageMs(app.url);
 
         InstalledAppProviderImplJni.get()
@@ -495,7 +503,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
      *         could be because: the JSON string was invalid, there was no "target" field, this was
      *         not a web asset, there was no "site" field, or the "site" field was invalid.
      */
-    private static GURL getSiteForWebAsset(JSONObject statement) {
+    private static @Nullable GURL getSiteForWebAsset(JSONObject statement) {
         JSONObject target;
         try {
             // Ignore the "relation" field and allow an asset with any relation to this origin.
@@ -543,7 +551,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     }
 
     private static void postResultOnUiThread(
-            ResultHolder resultHolder, RelatedApplication app, int taskIdx, int delayMs) {
+            ResultHolder resultHolder, @Nullable RelatedApplication app, int taskIdx, int delayMs) {
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT, () -> resultHolder.onResult(app, taskIdx, delayMs));
     }

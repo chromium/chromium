@@ -5,16 +5,19 @@
 package org.chromium.components.paintpreview.player;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /**
  * Records metrics and handles player-wide (as opposed to per-frame) logic related to touch
  * gestures.
  */
+@NullMarked
 public class PlayerGestureListener {
     private Runnable mUserInteractionCallback;
     private LinkClickHandler mLinkClickHandler;
-    private PlayerUserFrustrationDetector mUserFrustrationDetector;
+    private @Nullable PlayerUserFrustrationDetector mUserFrustrationDetector;
 
     public PlayerGestureListener(
             LinkClickHandler linkClickHandler,
@@ -34,7 +37,7 @@ public class PlayerGestureListener {
      * @param url The GURL of the tapped link. If there are no links in the tapped region, this will
      *            be null.
      */
-    public void onTap(GURL url) {
+    public void onTap(@Nullable GURL url) {
         if (url != null && mLinkClickHandler != null) {
             mLinkClickHandler.onLinkClicked(url);
             PlayerUserActionRecorder.recordLinkClick();
