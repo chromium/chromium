@@ -52,6 +52,7 @@ LoginDbDeprecationPasswordExporter::~LoginDbDeprecationPasswordExporter() =
 void LoginDbDeprecationPasswordExporter::Start(
     scoped_refptr<PasswordStoreInterface> password_store,
     base::OnceClosure export_cleanup_calback) {
+  password_store_ = password_store;
   export_cleanup_callback_ = std::move(export_cleanup_calback);
   start_time_ = base::Time::Now();
   password_store->GetAutofillableLogins(weak_factory_.GetWeakPtr());
@@ -132,6 +133,8 @@ void LoginDbDeprecationPasswordExporter::OnExportCompleteWithResult(
   if (result == LoginDbDeprecationExportResult::kSuccess) {
     LogExportLatency(base::Time::Now() - start_time_);
     pref_service_->SetBoolean(prefs::kUpmUnmigratedPasswordsExported, true);
+    password_store_->RemoveLoginsCreatedBetween(FROM_HERE, base::Time(),
+                                                base::Time::Max());
   } else if (result == LoginDbDeprecationExportResult::kNoPasswords) {
     // Nothing to export, so the export can be marked as done.
     pref_service_->SetBoolean(

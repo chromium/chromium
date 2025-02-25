@@ -74,6 +74,9 @@ class LoginDbDeprecationPasswordExporter
   // or before it starts if the passwords to export could not be fetched.
   void OnExportCompleteWithResult(LoginDbDeprecationExportResult result);
 
+  // Used to delete the passwords after successful export.
+  scoped_refptr<PasswordStoreInterface> password_store_;
+
   // Callback to invoke when ALL the export operations finished. It will clean
   // up `this`.
   base::OnceClosure export_cleanup_callback_;
