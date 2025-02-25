@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -631,15 +630,12 @@ class ConsolidatedConsentScreenArcEnabledParameterizedTest
     ConsolidatedConsentScreenArcEnabledTestBase::SetUp();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
     ConsolidatedConsentScreenArcEnabledTestBase::
-        SetUpInProcessBrowserTestFixture();
-    subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &ConsolidatedConsentScreenArcEnabledParameterizedTest::
-                    OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
+        SetUpBrowserContextKeyedServices(context);
+    ConsentAuditorFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildFakeConsentAuditor));
   }
 
   bool IsPhEnabled() { return is_ph_enabled_; }
@@ -683,17 +679,11 @@ class ConsolidatedConsentScreenArcEnabledParameterizedTest
   }
 
  protected:
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    ConsentAuditorFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildFakeConsentAuditor));
-  }
-
   bool is_ph_enabled_;
   bool accept_backup_restore_;
   bool accept_location_service_;
 
   base::test::ScopedFeatureList feature_list_;
-  base::CallbackListSubscription subscription_;
 };
 
 // Tests that clicking on "Accept" button records the expected consents.

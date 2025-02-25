@@ -886,17 +886,9 @@ class MockFloatingSsoSyncBridge : public FloatingSsoSyncBridge {
 
 class FloatingSsoWithMockedBridgeTest : public FloatingSsoTest {
  public:
-  void SetUpInProcessBrowserTestFixture() override {
-    FloatingSsoTest::SetUpInProcessBrowserTestFixture();
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&FloatingSsoWithMockedBridgeTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    FloatingSsoTest::SetUpBrowserContextKeyedServices(context);
     FloatingSsoServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindOnce([](content::BrowserContext* context)
                                     -> std::unique_ptr<KeyedService> {
@@ -964,9 +956,6 @@ class FloatingSsoWithMockedBridgeTest : public FloatingSsoTest {
     return static_cast<testing::NiceMock<MockFloatingSsoSyncBridge>&>(
         *floating_sso_service().GetBridgeForTesting());
   }
-
- private:
-  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(FloatingSsoWithMockedBridgeTest,

@@ -17,7 +17,6 @@
 #include "ash/test/test_widget_builder.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -254,16 +253,9 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
     InteractiveAshTest::TearDownOnMainThread();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&CampaignsManagerInteractiveUiTest::
-                                        OnWillCreateBrowserContextServices,
-                                    weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InteractiveAshTest::SetUpBrowserContextKeyedServices(context);
     feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(CreateMockTracker));
   }
@@ -326,7 +318,6 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
   bool InTabletMode() { return display::Screen::GetScreen()->InTabletMode(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::CallbackListSubscription create_services_subscription_;
   base::HistogramTester histogram_tester_;
   ui::ScopedAnimationDurationScaleMode animation_duration_;
   std::unique_ptr<TestCampaignsManagerObserver> observer_;

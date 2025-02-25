@@ -18,7 +18,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -122,19 +121,16 @@ class CloudUploadPromptPrefsHandlerTest
   CloudUploadPromptPrefsHandlerTest() = default;
   ~CloudUploadPromptPrefsHandlerTest() override = default;
 
-  void SetUpInProcessBrowserTestFixture() override {
-    CloudUploadPromptPrefsHandlerTestBase::SetUpInProcessBrowserTestFixture();
-    subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating([](content::BrowserContext* context) {
-                  SyncServiceFactory::GetInstance()->SetTestingFactory(
-                      context,
-                      base::BindRepeating([](content::BrowserContext*)
-                                              -> std::unique_ptr<KeyedService> {
-                        return std::make_unique<syncer::TestSyncService>();
-                      }));
-                }));
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    CloudUploadPromptPrefsHandlerTestBase::SetUpBrowserContextKeyedServices(
+        context);
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindOnce(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
+            }));
   }
 
   // Sets the cloud upload policy, based on the `CloudProvider` parameter, to
@@ -174,9 +170,6 @@ class CloudUploadPromptPrefsHandlerTest
   const std::string& local_pref() { return std::get<1>(GetParam()); }
 
   const std::string& syncable_pref() { return std::get<2>(GetParam()); }
-
- private:
-  base::CallbackListSubscription subscription_;
 };
 
 // Tests that local prefs are synced when the corresponding Google Workspace or

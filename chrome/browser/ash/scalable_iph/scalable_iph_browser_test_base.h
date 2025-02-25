@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -57,6 +56,8 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   // CustomizableTestEnvBrowserTestBase:
   void SetUp() override;
   void SetUpInProcessBrowserTestFixture() override;
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override;
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
@@ -168,10 +169,9 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
 
   chromeos::network_config::FakeCrosNetworkConfig fake_cros_network_config_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  base::CallbackListSubscription subscription_;
+  MockTrackerFactoryMethod mock_tracker_factory_method_;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_ = nullptr;
   raw_ptr<test::MockScalableIphDelegate> mock_delegate_ = nullptr;
-  bool mock_tracker_enabled_ = false;
 };
 
 }  // namespace ash
