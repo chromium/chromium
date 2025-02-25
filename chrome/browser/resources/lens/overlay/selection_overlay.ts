@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './object_layer.js';
+import './simplified_text_layer.js';
 import './text_layer.js';
 import './region_selection.js';
 import './post_selection_renderer.js';
@@ -82,6 +83,8 @@ export interface SelectedRegionContextMenuData {
   selectionStartIndex: number;
   // The end selection index of the detected text, or -1 if none.
   selectionEndIndex: number;
+  // The text selection that the context menu commands will act on.
+  text?: string;
 }
 
 export interface SelectionOverlayElement {
@@ -188,7 +191,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       },
       simplifiedSelectionEnabled: {
         type: Boolean,
-        value: loadTimeData.getBoolean('simplifiedSelectionEnabled'),
+        value: () => loadTimeData.getBoolean('simplifiedSelectionEnabled'),
         reflectToAttribute: true,
       },
       darkenExtraScrim: {
@@ -267,6 +270,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // Whether the shimmer is currently focused on a segmentation mask.
   private shimmerOnSegmentation: boolean = false;
   private shimmerFadeOutComplete: boolean = true;
+  private simplifiedSelectionEnabled: boolean;
   // The text selection layer rendered on the selection overlay if it exists.
   private textSelectionLayer?: TextLayerElement;
 
@@ -382,6 +386,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           this.showDetectedTextContextMenuOptions =
               this.detectedTextStartIndex !== -1 &&
               this.detectedTextEndIndex !== -1;
+          this.highlightedText = e.detail.text ?? this.highlightedText;
           this.setShowSelectedRegionContextMenu(
               (!this.suppressCopyAndSaveAsImage &&
                (this.enableCopyAsImage || this.enableSaveAsImage)) ||
@@ -402,6 +407,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.eventTracker_.add(
         document, 'hide-selected-region-context-menu', () => {
           this.setShowSelectedRegionContextMenu(false);
+          this.textSelectionStartIndex = -1;
+          this.textSelectionEndIndex = -1;
           this.detectedTextStartIndex = -1;
           this.detectedTextEndIndex = -1;
         });
@@ -953,17 +960,36 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         toPercent(contextMenuY)} + 12px)`;
   }
 
+  // This handles the copying of currently selected text on the overlay. This
+  // differs from handleCopyDetectedText() since text must be selected in order
+  // to copy.
   private handleCopy() {
-    if (this.textSelectionStartIndex < 0 || this.textSelectionEndIndex < 0) {
+    this.copyText(
+        this.textSelectionStartIndex, this.textSelectionEndIndex,
+        this.highlightedText);
+  }
+
+  // This handles the copying of detected text on the overlay within a selected
+  // region. This differs from handleCopy() since text does not need to be
+  // selected to support this copy.
+  private handleCopyDetectedText() {
+    this.copyText(
+        this.detectedTextStartIndex, this.detectedTextEndIndex,
+        this.highlightedText);
+  }
+
+  private copyText(textStartIndex: number, textEndIndex: number, text: string) {
+    if (textStartIndex < 0 || textEndIndex < 0) {
       return;
     }
-    this.browserProxy.handler.copyText(this.highlightedText);
+    this.browserProxy.handler.copyText(text);
     recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kCopyText);
     this.dispatchEvent(new CustomEvent('text-copied', {
       bubbles: true,
       composed: true,
     }));
     this.setShowSelectedTextContextMenu(false);
+    this.setShowSelectedRegionContextMenu(false);
   }
 
   private handleSelectText() {
@@ -1056,8 +1082,14 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       // If the context menu was not being shown earlier, but will be now, log
       // the shown context menu options.
       if (this.showDetectedTextContextMenuOptions) {
+        // If simplified selection is enabled, select text in region context
+        // menu option is not shown. Instead, a copy text in region context menu
+        // option is shown.
         recordContextMenuOptionShown(
-            INVOCATION_SOURCE, ContextMenuOption.SELECT_TEXT_IN_REGION);
+            INVOCATION_SOURCE,
+            this.simplifiedSelectionEnabled ?
+                ContextMenuOption.COPY_TEXT_IN_REGION :
+                ContextMenuOption.SELECT_TEXT_IN_REGION);
         if (this.showTranslateContextMenuItem) {
           recordContextMenuOptionShown(
               INVOCATION_SOURCE, ContextMenuOption.TRANSLATE_TEXT_IN_REGION);
@@ -1166,6 +1198,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   handleCopyForTesting() {
     this.handleCopy();
+  }
+
+  handleCopyDetectedTextForTesting() {
+    this.handleCopyDetectedText();
   }
 
   handleTranslateForTesting() {

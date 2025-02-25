@@ -36,6 +36,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Translate text in region"/>
   <int value="4" label="Copy as image"/>
   <int value="5" label="Save as image"/>
+  <int value="6" label="Copy text in region"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/lens/overlay/metrics_utils.ts:ContextMenuOption) -->
