@@ -942,7 +942,9 @@ class ParserTest(unittest.TestCase):
                                 ast.Name('a'), None, None,
                                 ast.Typename(ast.Identifier('string')))),
                         # TODO(crbug.com/40841428): put in an actual return.
-                        None)))
+                        ast.ResultResponse(ast.Typename(ast.Identifier('bool')),
+                                           ast.Typename(
+                                               ast.Identifier('bool'))))))
         ])
     self.assertEqual(parser.Parse(source4, "my_file.mojom"), expected4)
 
