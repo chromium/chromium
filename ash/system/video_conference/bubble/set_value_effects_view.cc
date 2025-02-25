@@ -154,7 +154,7 @@ class AnimatedImageButton : public TabSliderButton {
 
   // Update label and image color on selected state changed.
   void OnSelectedChanged() override {
-    label_->SetEnabledColorId(GetColorIdOnButtonState());
+    label_->SetEnabledColor(GetColorIdOnButtonState());
     // `SchedulePaint()` will result in the `gfx::VectorIcon` for `image_view_`
     // getting re-generated with the proper color.
     SchedulePaint();
@@ -218,7 +218,7 @@ SetValueEffectSlider::SetValueEffectSlider(
     label->SetAutoColorReadabilityEnabled(false);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label);
-    label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
 
     auto* spacer_view =
         label_container->AddChildView(std::make_unique<views::View>());

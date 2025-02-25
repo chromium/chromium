@@ -113,8 +113,7 @@ void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
     live_feed_container_->SetVisible(false);
     no_devices_found_label_->SetVisible(true);
     device_name_label_->SetText(no_devices_found_combobox_text_);
-    device_name_label_->SetEnabledColorId(
-        ui::ColorIds::kColorSysOnSurfaceSubtle);
+    device_name_label_->SetEnabledColor(ui::ColorIds::kColorSysOnSurfaceSubtle);
     device_name_label_->SetVisible(true);
     device_selector_combobox_->SetVisible(false);
     AnnounceDynamicChangeIfNeeded(no_devices_found_label_->GetText());
@@ -158,7 +157,7 @@ void MediaViewControllerBase::UpdateDeviceNameLabel() {
   CHECK(index);
   device_name_label_->SetText(
       device_selector_combobox_->GetModel()->GetItemAt(index.value()));
-  device_name_label_->SetEnabledColorId(ui::ColorIds::kColorSysOnSurface);
+  device_name_label_->SetEnabledColor(ui::ColorIds::kColorSysOnSurface);
 }
 
 void MediaViewControllerBase::AnnounceDynamicChangeIfNeeded(

@@ -47,9 +47,9 @@ void FormatVisibilityRow(ash::HoverHighlightView* visibility_row,
   visibility_row->AddIconAndLabel(
       ui::ImageModel::FromVectorIcon(vector_icon, /*color_id=*/color_id),
       label);
-  visibility_row->text_label()->SetEnabledColorId(color_id);
+  visibility_row->text_label()->SetEnabledColor(color_id);
   visibility_row->SetSubText(sublabel);
-  visibility_row->sub_text_label()->SetEnabledColorId(color_id);
+  visibility_row->sub_text_label()->SetEnabledColor(color_id);
   visibility_row->AddRightIcon(ui::ImageModel::FromVectorIcon(
                                    ash::kHollowCheckCircleIcon,
                                    /*color_id=*/cros_tokens::kCrosSysOnSurface),
@@ -201,7 +201,7 @@ void NearbyShareDetailedViewImpl::CreateIsEnabledContainer() {
                     : l10n_util::GetStringUTF16(
                           IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_OFF),
       /*start_inset=*/0);
-  toggle_row_->text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  toggle_row_->text_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
                                         *toggle_row_->text_label());
 
@@ -312,9 +312,9 @@ void NearbyShareDetailedViewImpl::FormatEveryoneRow(
       ui::ImageModel::FromVectorIcon(kQuickSettingsQuickShareEveryoneIcon,
                                      /*color_id=*/color_id),
       GetEveryoneLabel());
-  everyone_row_->text_label()->SetEnabledColorId(color_id);
+  everyone_row_->text_label()->SetEnabledColor(color_id);
   everyone_row_->SetSubText(GetEveryoneSublabel());
-  everyone_row_->sub_text_label()->SetEnabledColorId(color_id);
+  everyone_row_->sub_text_label()->SetEnabledColor(color_id);
   auto toggle_switch = std::make_unique<Switch>(
       base::BindRepeating(&NearbyShareDetailedViewImpl::OnEveryoneToggleClicked,
                           weak_factory_.GetWeakPtr()));

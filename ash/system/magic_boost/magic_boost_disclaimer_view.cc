@@ -224,7 +224,7 @@ MagicBoostDisclaimerView::MagicBoostDisclaimerView(
                                   TypographyProvider::Get()
                                       ->ResolveTypographyToken(
                                           TypographyToken::kCrosDisplay7))
-                              .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                              .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
                               .SetHorizontalAlignment(
                                   gfx::HorizontalAlignment::ALIGN_LEFT)
                               .SetID(magic_boost::ViewId::DisclaimerViewTitle)

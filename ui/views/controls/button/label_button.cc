@@ -160,7 +160,7 @@ void LabelButton::SetTextColorId(ButtonState for_state, ui::ColorId color_id) {
   if (for_state == STATE_DISABLED) {
     label_->SetDisabledColorId(color_id);
   } else if (for_state == GetState()) {
-    label_->SetEnabledColorId(color_id);
+    label_->SetEnabledColor(color_id);
   }
   explicitly_set_colors_[for_state] = true;
 }
@@ -724,7 +724,7 @@ void LabelButton::ResetLabelEnabledColor() {
     } else if (auto color_id = color_variant->GetColorId()) {
       // Omitting the check that the new color id differs from the existing
       // color id, because the setter already does that check.
-      label_->SetEnabledColorId(*color_id);
+      label_->SetEnabledColor(*color_id);
     }
   }
 }

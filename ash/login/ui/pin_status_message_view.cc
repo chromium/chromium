@@ -72,7 +72,7 @@ PinStatusMessageView::PinStatusMessageView(OnPinUnlock on_pin_unlock)
   message_->SetSubpixelRenderingEnabled(false);
   message_->SetAutoColorReadabilityEnabled(false);
   message_->SetMultiLine(true);
-  message_->SetEnabledColorId(kColorAshTextColorPrimary);
+  message_->SetEnabledColor(kColorAshTextColorPrimary);
   message_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   message_->GetViewAccessibility().SetName(
       std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);

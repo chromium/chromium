@@ -113,7 +113,7 @@ RefreshBannerView::RefreshBannerView(MahiUiController* ui_controller)
                       manager ? manager->GetContentTitle()
                               : base::EmptyString16()))
                   .SetAutoColorReadabilityEnabled(false)
-                  .SetEnabledColorId(
+                  .SetEnabledColor(
                       cros_tokens::kCrosSysSystemOnPrimaryContainer)
                   .SetFontList(
                       TypographyProvider::Get()->ResolveTypographyToken(

@@ -92,7 +92,7 @@ SearchResultListView::SearchResultListView(
   title_label_->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
                                         *title_label_);
-  title_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  title_label_->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
 
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(

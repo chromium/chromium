@@ -86,7 +86,7 @@ gfx::Size OptionButtonBase::GetMinimumSize() const {
 }
 
 void OptionButtonBase::SetLabelColorId(ui::ColorId color_id) {
-  label()->SetEnabledColorId(color_id);
+  label()->SetEnabledColor(color_id);
 }
 
 void OptionButtonBase::Layout(PassKey) {

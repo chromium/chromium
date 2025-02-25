@@ -109,7 +109,7 @@ std::unique_ptr<views::Label> CreateAnnotationLabel() {
   auto label = views::Builder<views::Label>()
                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                    .SetElideBehavior(gfx::NO_ELIDE)
-                   .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
+                   .SetEnabledColor(ui::kColorLabelForegroundSecondary)
                    .Build();
   label->SetFontList(label->font_list().DeriveWithSizeDelta(kFontSizeDelta));
   return label;
@@ -224,9 +224,8 @@ void CandidateView::StateChanged(ButtonState old_state) {
   Button::StateChanged(old_state);
   int text_style = GetState() == STATE_DISABLED ? views::style::STYLE_DISABLED
                                                 : views::style::STYLE_PRIMARY;
-  shortcut_label_->SetEnabledColorId(
-      views::TypographyProvider::Get().GetColorId(views::style::CONTEXT_LABEL,
-                                                  text_style));
+  shortcut_label_->SetEnabledColor(views::TypographyProvider::Get().GetColorId(
+      views::style::CONTEXT_LABEL, text_style));
   if (GetState() == STATE_PRESSED) {
     SetHighlighted(true);
   }

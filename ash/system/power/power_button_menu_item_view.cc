@@ -59,7 +59,7 @@ PowerButtonMenuItemView::PowerButtonMenuItemView(
   title_->SetLineHeight(kLineHeight);
   title_->SetMultiLine(true);
   title_->SetMaxLines(2);
-  title_->SetEnabledColorId(cros_tokens::kTextColorPrimary);
+  title_->SetEnabledColor(cros_tokens::kTextColorPrimary);
   GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
   GetViewAccessibility().SetName(std::u16string(title_->GetText()),
                                  ax::mojom::NameFrom::kAttribute);

@@ -74,7 +74,7 @@ ContextualNudge::ContextualNudge(views::View* anchor,
   label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   label_->SetBackgroundColor(SK_ColorTRANSPARENT);
   label_->SetBorder(views::CreateEmptyBorder(margins));
-  label_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
+  label_->SetEnabledColor(cros_tokens::kCrosSysSecondary);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
                                         *label_);
 

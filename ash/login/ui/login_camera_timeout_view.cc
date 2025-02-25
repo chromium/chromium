@@ -43,7 +43,7 @@ views::Label* CreateLabel(const std::u16string& text, const int font_delta) {
       {views::Label::GetDefaultFontList().DeriveWithSizeDelta(font_delta)});
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetEnabledColorId(kColorAshTextColorPrimary);
+  label->SetEnabledColor(kColorAshTextColorPrimary);
   label->SetSubpixelRenderingEnabled(false);
   return label;
 }

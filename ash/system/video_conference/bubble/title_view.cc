@@ -67,14 +67,14 @@ TitleView::TitleView(base::OnceClosure close_bubble_callback) {
           .SetImageSize(kIconSize)
           .Build());
 
-  auto* title_label = title_column->AddChildView(
-      views::Builder<views::Label>()
-          .SetText(
-              l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_BUBBLE_TITLE))
-          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .SetEnabledColorId(kColorAshTextColorPrimary)
-          .SetAutoColorReadabilityEnabled(false)
-          .Build());
+  auto* title_label =
+      title_column->AddChildView(views::Builder<views::Label>()
+                                     .SetText(l10n_util::GetStringUTF16(
+                                         IDS_ASH_VIDEO_CONFERENCE_BUBBLE_TITLE))
+                                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                                     .SetEnabledColor(kColorAshTextColorPrimary)
+                                     .SetAutoColorReadabilityEnabled(false)
+                                     .Build());
 
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
                                         *title_label);

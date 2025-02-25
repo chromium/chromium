@@ -211,7 +211,7 @@ class ImeTitleView : public views::BoxLayoutView {
     title_label->SetBorder(
         views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, 1, 0)));
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    title_label->SetEnabledColorId(kColorAshTextColorPrimary);
+    title_label->SetEnabledColor(kColorAshTextColorPrimary);
     title_label->SetAutoColorReadabilityEnabled(false);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
                                           *title_label);
@@ -685,7 +685,7 @@ void ImeMenuTray::UpdateTrayImageOrLabelColor(bool is_image) {
     return;
   }
 
-  label_->SetEnabledColorId(color_id);
+  label_->SetEnabledColor(color_id);
 }
 
 BEGIN_METADATA(ImeMenuTray)

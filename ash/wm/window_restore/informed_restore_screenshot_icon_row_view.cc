@@ -96,7 +96,7 @@ InformedRestoreScreenshotIconRowView::InformedRestoreScreenshotIconRowView(
               .SetText(u"+" + base::FormatNumber(elements_size - num_icon))
               .SetPreferredSize(
                   informed_restore::kScreenshotIconRowImageViewSize)
-              .SetEnabledColorId(cros_tokens::kCrosSysOnPrimaryContainer)
+              .SetEnabledColor(cros_tokens::kCrosSysOnPrimaryContainer)
               .SetBackground(views::CreateThemedRoundedRectBackground(
                   cros_tokens::kCrosSysPrimaryContainer,
                   informed_restore::kScreenshotIconRowIconSize / 2.0))

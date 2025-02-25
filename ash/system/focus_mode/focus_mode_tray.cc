@@ -114,9 +114,9 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
     task_title_ = AddChildView(std::make_unique<views::Label>());
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *task_title_);
-    task_title_->SetEnabledColorId(is_network_connected
-                                       ? cros_tokens::kCrosSysOnSurface
-                                       : cros_tokens::kCrosSysDisabled);
+    task_title_->SetEnabledColor(is_network_connected
+                                     ? cros_tokens::kCrosSysOnSurface
+                                     : cros_tokens::kCrosSysDisabled);
     task_title_->SetText(title);
     task_title_->SetCustomTooltipText(title);
     task_title_->SetBorder(views::CreateEmptyBorder(kTaskTitleLabelInsets));
@@ -156,7 +156,7 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
         TypographyProvider::Get()
             ->ResolveTypographyToken(TypographyToken::kCrosButton2)
             .DeriveWithStyle(gfx::Font::FontStyle::STRIKE_THROUGH));
-    task_title_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
+    task_title_->SetEnabledColor(cros_tokens::kCrosSysSecondary);
   }
 
  private:

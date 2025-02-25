@@ -161,7 +161,7 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
     auto label = std::make_unique<FadeLabelView>(kHoverCardLabelMaxLines,
                                                  context, text_style);
     if (color_id) {
-      label->SetEnabledColorId(color_id.value());
+      label->SetEnabledColor(color_id.value());
     }
     label->SetProperty(views::kMarginsKey, insets);
     label->SetProperty(

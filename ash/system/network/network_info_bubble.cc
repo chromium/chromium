@@ -89,7 +89,7 @@ NetworkInfoBubble::NetworkInfoBubble(base::WeakPtr<Delegate> delegate,
   }
   std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
       info_text.empty() ? ComputeInfoText() : info_text);
-  label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label);
   label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   label->SetID(kNetworkInfoBubbleLabelViewId);
@@ -157,10 +157,10 @@ std::u16string NetworkInfoBubble::ComputeInfoText() {
     address_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
     address_label->SetSelectable(true);
 
-    title_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    title_label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *title_label);
-    address_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    address_label->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
                                           *address_label);
     container->AddChildView(title_label.release());

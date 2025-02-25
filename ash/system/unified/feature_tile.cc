@@ -410,9 +410,9 @@ void FeatureTile::UpdateColors() {
     UpdateIconButtonFocusRingColor();
   }
 
-  label_->SetEnabledColorId(foreground_color);
+  label_->SetEnabledColor(foreground_color);
   if (sub_label_) {
-    sub_label_->SetEnabledColorId(foreground_optional_color);
+    sub_label_->SetEnabledColor(foreground_optional_color);
   }
   if (drill_in_arrow_) {
     UpdateDrillInArrowColor();

@@ -383,7 +383,7 @@ void ContentSettingBubbleContents::Init() {
     auto message_label = std::make_unique<views::Label>(
         bubble_content.message, views::style::CONTEXT_LABEL,
         views::style::STYLE_BODY_3);
-    message_label->SetEnabledColorId(kColorActivityIndicatorForeground);
+    message_label->SetEnabledColor(kColorActivityIndicatorForeground);
     message_label->SetMultiLine(true);
     message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     rows.push_back({std::move(message_label), LayoutRowType::DEFAULT});

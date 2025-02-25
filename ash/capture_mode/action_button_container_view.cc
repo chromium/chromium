@@ -119,7 +119,7 @@ ActionButtonContainerView::ErrorView::ErrorView()
   AddChildView(
       views::Builder<views::Label>()
           .CopyAddressTo(&error_label_)
-          .SetEnabledColorId(cros_tokens::kCrosSysSecondary)
+          .SetEnabledColor(cros_tokens::kCrosSysSecondary)
           .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
               TypographyToken::kCrosAnnotation1))
           .Build());
@@ -131,7 +131,7 @@ ActionButtonContainerView::ErrorView::ErrorView()
               IDS_ASH_SCANNER_ERROR_TRY_AGAIN_LINK_TEXT))
           .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
               TypographyToken::kCrosButton2))
-          .SetEnabledColorId(cros_tokens::kCrosSysPrimary)
+          .SetEnabledColor(cros_tokens::kCrosSysPrimary)
           .SetForceUnderline(false)
           .SetProperty(views::kMarginsKey, kErrorViewTryAgainLinkPadding)
           .SetVisible(false)

@@ -55,7 +55,7 @@ std::unique_ptr<views::Label> CreateErrorLabel(const std::u16string& error,
       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
       .SetBorder(views::CreateEmptyBorder(
           gfx::Insets::TLBR(kErrorLabelTopPadding, 0, 0, 0)))
-      .SetEnabledColorId(ui::kColorAlertHighSeverity)
+      .SetEnabledColor(ui::kColorAlertHighSeverity)
       .Build();
 }
 

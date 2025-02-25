@@ -32,7 +32,6 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/examples/examples_color_id.h"
-#include "ui/views/examples/examples_themed_label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/layout_provider.h"
@@ -94,12 +93,12 @@ FadingView::FadingView() {
               .SetOrientation(BoxLayout::Orientation::kVertical)
               .SetMainAxisAlignment(BoxLayout::MainAxisAlignment::kCenter)
               .SetBetweenChildSpacing(kSpacing)
-              .AddChild(Builder<ThemedLabel>()
+              .AddChild(Builder<Label>()
                             .SetText(u"Working...")
                             .SetTextContext(style::CONTEXT_DIALOG_TITLE)
                             .SetTextStyle(style::STYLE_PRIMARY)
                             .SetVerticalAlignment(gfx::ALIGN_MIDDLE)
-                            .SetEnabledColorId(
+                            .SetEnabledColor(
                                 ExamplesColorIds::
                                     kColorFadeAnimationExampleForeground)))
       .BuildChildren();

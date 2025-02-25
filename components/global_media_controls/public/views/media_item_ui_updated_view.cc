@@ -142,7 +142,7 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   source_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   source_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
   source_label_->SetElideBehavior(gfx::ELIDE_HEAD);
-  source_label_->SetEnabledColorId(
+  source_label_->SetEnabledColor(
       media_color_theme_.secondary_foreground_color_id);
   favicon_source->SetFlexForView(source_label_, 1);
 
@@ -190,15 +190,14 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       views::style::STYLE_BODY_2_BOLD));
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
-  title_label_->SetEnabledColorId(
-      media_color_theme_.primary_foreground_color_id);
+  title_label_->SetEnabledColor(media_color_theme_.primary_foreground_color_id);
 
   artist_label_ = metadata_column->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_LABEL,
       views::style::STYLE_BODY_2));
   artist_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   artist_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
-  artist_label_->SetEnabledColorId(
+  artist_label_->SetEnabledColor(
       media_color_theme_.primary_foreground_color_id);
 
   // |play_pause_button_container| inside |metadata_row| holds the play pause
@@ -222,7 +221,7 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       progress_row->AddChildView(std::make_unique<views::Label>(
           std::u16string(), views::style::CONTEXT_LABEL,
           views::style::STYLE_BODY_5));
-  current_timestamp_label_->SetEnabledColorId(
+  current_timestamp_label_->SetEnabledColor(
       media_color_theme_.secondary_foreground_color_id);
 
   // Create the previous track button.
@@ -285,7 +284,7 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       progress_row->AddChildView(std::make_unique<views::Label>(
           std::u16string(), views::style::CONTEXT_LABEL,
           views::style::STYLE_BODY_5));
-  duration_timestamp_label_->SetEnabledColorId(
+  duration_timestamp_label_->SetEnabledColor(
       media_color_theme_.secondary_foreground_color_id);
 
   // Add the device selector view below the |progress_row| if there is one.

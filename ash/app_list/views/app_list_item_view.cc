@@ -659,7 +659,7 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
           ? TypographyToken::kCrosAnnotation1
           : TypographyToken::kCrosButton2,
       *title);
-  title->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  title->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
 
   icon_background_ = AddChildView(std::make_unique<views::View>());
   icon_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);

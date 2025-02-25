@@ -124,7 +124,7 @@ void VerticalDateView::UpdateText() {
 }
 
 void VerticalDateView::UpdateIconAndLabelColorId(ui::ColorId color_id) {
-  text_label_->SetEnabledColorId(color_id);
+  text_label_->SetEnabledColor(color_id);
   icon_->SetImage(
       ui::ImageModel::FromVectorIcon(kCalendarBackgroundIcon, color_id));
 }
@@ -197,7 +197,7 @@ void TimeView::UpdateClockLayout(ClockLayout clock_layout) {
 void TimeView::SetTextColorId(ui::ColorId color_id,
                               bool auto_color_readability_enabled) {
   auto set_color_id = [&](views::Label* label) {
-    label->SetEnabledColorId(color_id);
+    label->SetEnabledColor(color_id);
     label->SetAutoColorReadabilityEnabled(auto_color_readability_enabled);
   };
 

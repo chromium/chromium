@@ -133,9 +133,8 @@ class VIEWS_EXPORT Label : public View,
   // readable over the current background color, if auto color readability is
   // enabled.
   SkColor GetEnabledColor() const;
-  virtual void SetEnabledColor(SkColor color);
-  std::optional<ui::ColorId> GetEnabledColorId() const;
-  void SetEnabledColorId(std::optional<ui::ColorId> enabled_color_id);
+  virtual void SetEnabledColor(ui::ColorVariant color);
+  std::optional<ui::ColorVariant> GetRequestedEnabledColor() const;
 
   // Gets/Sets the background color. This won't be explicitly drawn, but the
   // label will force the text color to be readable over it.
@@ -519,7 +518,8 @@ class VIEWS_EXPORT Label : public View,
   // not in use.
   mutable gfx::Range stored_selection_range_ = gfx::Range::InvalidRange();
 
-  SkColor requested_enabled_color_ = gfx::kPlaceholderColor;
+  std::optional<ui::ColorVariant> requested_enabled_color_;
+  std::optional<SkColor> resolved_enabled_color_;
   SkColor actual_enabled_color_ = gfx::kPlaceholderColor;
 
   std::optional<ui::ColorVariant> requested_background_color_;
@@ -529,10 +529,7 @@ class VIEWS_EXPORT Label : public View,
   SkColor actual_selection_text_color_ = gfx::kPlaceholderColor;
   SkColor selection_background_color_ = gfx::kPlaceholderColor;
 
-  std::optional<ui::ColorId> enabled_color_id_;
-
   // Set to true once the corresponding setter is invoked.
-  bool enabled_color_set_ = false;
   bool selection_text_color_set_ = false;
   bool selection_background_color_set_ = false;
 
@@ -573,11 +570,10 @@ VIEW_BUILDER_PROPERTY(std::u16string, Text)
 VIEW_BUILDER_PROPERTY(int, TextStyle)
 VIEW_BUILDER_PROPERTY(int, TextContext)
 VIEW_BUILDER_PROPERTY(bool, AutoColorReadabilityEnabled)
-VIEW_BUILDER_PROPERTY(SkColor, EnabledColor)
+VIEW_BUILDER_PROPERTY(ui::ColorVariant, EnabledColor)
 VIEW_BUILDER_PROPERTY(ui::ColorVariant, BackgroundColor)
 VIEW_BUILDER_PROPERTY(SkColor, SelectionTextColor)
 VIEW_BUILDER_PROPERTY(SkColor, SelectionBackgroundColor)
-VIEW_BUILDER_PROPERTY(ui::ColorId, EnabledColorId)
 VIEW_BUILDER_PROPERTY(const gfx::ShadowValues&, Shadows)
 VIEW_BUILDER_PROPERTY(bool, SubpixelRenderingEnabled)
 VIEW_BUILDER_PROPERTY(bool, SkipSubpixelRenderingOpacityCheck)

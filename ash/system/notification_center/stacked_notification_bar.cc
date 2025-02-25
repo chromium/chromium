@@ -242,7 +242,7 @@ StackedNotificationBar::StackedNotificationBar(
 
   message_center::MessageCenter::Get()->AddObserver(this);
 
-  count_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  count_label_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
                                         *count_label_);
 

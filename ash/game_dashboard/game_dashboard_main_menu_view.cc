@@ -351,10 +351,10 @@ class FeatureHeader : public views::View {
                                      : cros_tokens::kCrosSysDisabled;
     icon_view_->SetImage(ui::ImageModel::FromVectorIcon(*vector_icon_, color_id,
                                                         /*icon_size=*/20));
-    title_->SetEnabledColorId(color_id);
-    sub_title_->SetEnabledColorId(is_enabled
-                                      ? cros_tokens::kCrosSysOnSurfaceVariant
-                                      : cros_tokens::kCrosSysDisabled);
+    title_->SetEnabledColor(color_id);
+    sub_title_->SetEnabledColor(is_enabled
+                                    ? cros_tokens::kCrosSysOnSurfaceVariant
+                                    : cros_tokens::kCrosSysDisabled);
   }
 
   void UpdateSubtitle(const std::u16string& text) {
@@ -1383,7 +1383,7 @@ void GameDashboardMainMenuView::AddWelcomeDialogSettingsRow() {
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_SETTINGS_WELCOME_DIALOG_TITLE)));
   feature_title->SetAutoColorReadabilityEnabled(false);
-  feature_title->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  feature_title->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   feature_title->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
       TypographyToken::kCrosTitle2));
   feature_title->SetHorizontalAlignment(gfx::ALIGN_LEFT);

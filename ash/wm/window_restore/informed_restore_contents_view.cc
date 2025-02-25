@@ -267,7 +267,7 @@ void InformedRestoreContentsView::OnSettingsButtonPressed() {
   context_label->SetBorder(views::CreateEmptyBorder(kContextMenuLabelInsets));
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
                                         *context_label);
-  context_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  context_label->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
   container->AddChildView(std::move(context_label));
 
   // Set the label container's a11y name to be the same as the label text so
@@ -364,7 +364,7 @@ void InformedRestoreContentsView::CreateChildViews() {
               // Title.
               views::Builder<views::Label>()
                   .SetAccessibleRole(ax::mojom::Role::kHeading)
-                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                  .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                   .SetMultiLine(true)
                   .SetText(l10n_util::GetStringUTF16(title_message_id))
@@ -374,7 +374,7 @@ void InformedRestoreContentsView::CreateChildViews() {
                   })),
               // Description.
               views::Builder<views::Label>()
-                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                  .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                   .SetMultiLine(true)
                   .SetText(l10n_util::GetStringUTF16(description_message_id))

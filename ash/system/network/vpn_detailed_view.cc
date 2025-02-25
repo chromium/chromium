@@ -190,7 +190,7 @@ class VPNListProviderEntry : public views::Button {
     // Add the VPN label with the provider name.
     views::Label* label = TrayPopupUtils::CreateDefaultLabel();
     label->SetText(base::UTF8ToUTF16(name));
-    label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label);
 

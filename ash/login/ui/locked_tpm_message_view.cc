@@ -61,7 +61,7 @@ LockedTpmMessageView::LockedTpmMessageView() {
       kLockScreenAlertIcon, kColorAshIconColorPrimary, kIconSizeDp));
 
   message_warning_ = CreateLabel();
-  message_warning_->SetEnabledColorId(kColorAshTextColorPrimary);
+  message_warning_->SetEnabledColor(kColorAshTextColorPrimary);
 
   message_description_ = CreateLabel();
 
@@ -69,7 +69,7 @@ LockedTpmMessageView::LockedTpmMessageView() {
   std::u16string message_description =
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_POD_TPM_LOCKED_ISSUE_DESCRIPTION);
   message_description_->SetText(message_description);
-  message_description_->SetEnabledColorId(kColorAshTextColorPrimary);
+  message_description_->SetEnabledColor(kColorAshTextColorPrimary);
 }
 
 LockedTpmMessageView::~LockedTpmMessageView() = default;

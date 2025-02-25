@@ -245,8 +245,8 @@ class DragImageItemChipView : public DragImageItemView {
     // `this` is never added to widget, enabled color id will never be resolved.
     // Thus we need to manually resolve it and set the color as the enabled
     // color for the label.
-    if (auto enabled_color_id = label->GetEnabledColorId()) {
-      label->SetEnabledColor(color_provider()->GetColor(*enabled_color_id));
+    if (auto enabled_color = label->GetRequestedEnabledColor()) {
+      label->SetEnabledColor(enabled_color->ConvertToSkColor(color_provider()));
     }
 
     label->SetElideBehavior(gfx::ElideBehavior::ELIDE_MIDDLE);

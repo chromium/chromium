@@ -684,7 +684,7 @@ void CalendarView::CreateCalendarTitleRow() {
 
   auto* title_label = TrayPopupUtils::CreateDefaultLabel();
   title_label->SetText(l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_TITLE));
-  title_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  title_label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosTitle1,
                                              *title_label);
   tri_view_->AddView(TriView::Container::CENTER, title_label);

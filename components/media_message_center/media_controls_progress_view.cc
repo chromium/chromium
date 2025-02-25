@@ -170,8 +170,8 @@ void MediaControlsProgressView::SetTextColor(SkColor color) {
 }
 
 void MediaControlsProgressView::SetTextColorId(ui::ColorId color_id) {
-  progress_time_->SetEnabledColorId(color_id);
-  duration_->SetEnabledColorId(color_id);
+  progress_time_->SetEnabledColor(color_id);
+  duration_->SetEnabledColor(color_id);
 }
 
 bool MediaControlsProgressView::OnMousePressed(const ui::MouseEvent& event) {

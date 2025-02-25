@@ -210,7 +210,7 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
                        .Build());
   ash::TypographyProvider::Get()->StyleLabel(
       ash::TypographyToken::kCrosDisplay7, *title_label);
-  title_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  title_label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
 
   const raw_ptr<views::Label> body_label = AddChildView(
       views::Builder<views::Label>()  // Body
@@ -227,7 +227,7 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
           .Build());
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody1,
                                              *body_label);
-  body_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  body_label->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
 
   AddChildView(
       views::Builder<ash::PillButton>()  // Close button

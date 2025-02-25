@@ -158,7 +158,7 @@ views::Builder<views::FlexLayoutView> CreateTextBubbleBuilder(
               .SetTooltipText(text)
               .SetHorizontalAlignment(is_question ? gfx::ALIGN_RIGHT
                                                   : gfx::ALIGN_LEFT)
-              .SetEnabledColorId(
+              .SetEnabledColor(
                   is_question ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                               : cros_tokens::kCrosSysOnSurface)
               .SetAutoColorReadabilityEnabled(false)

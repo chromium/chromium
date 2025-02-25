@@ -23,7 +23,6 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/examples/example_combobox_model.h"
 #include "ui/views/examples/examples_color_id.h"
-#include "ui/views/examples/examples_themed_label.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -100,11 +99,10 @@ void LabelExample::CreateExampleView(View* container) {
   label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   container->AddChildView(std::move(label));
 
-  auto themed_label = std::make_unique<ThemedLabel>();
+  auto themed_label = std::make_unique<Label>();
   themed_label->SetText(u"A left-aligned blue label.");
   themed_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  themed_label->SetEnabledColorId(
-      ExamplesColorIds::kColorLabelExampleBlueLabel);
+  themed_label->SetEnabledColor(ExamplesColorIds::kColorLabelExampleBlueLabel);
   container->AddChildView(std::move(themed_label));
 
   label = std::make_unique<Label>(u"Password!");

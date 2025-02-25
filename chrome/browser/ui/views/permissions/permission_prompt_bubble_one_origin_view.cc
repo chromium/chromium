@@ -247,7 +247,7 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
 #endif
 
   label->SetTextStyle(views::style::STYLE_BODY_3);
-  label->SetEnabledColorId(kColorPermissionPromptRequestText);
+  label->SetEnabledColor(kColorPermissionPromptRequestText);
 
   if (index == 0u) {
     constexpr int kPermissionBodyTopMargin = 10;

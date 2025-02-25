@@ -320,7 +320,7 @@ UserConsentView::UserConsentView(
                       GetConfiguredLabelBuilder(use_refreshed_design_,
                                                 /*is_first_line=*/true)
                           .CopyAddressTo(&title_)
-                          .SetEnabledColorId(ui::kColorLabelForeground)
+                          .SetEnabledColor(ui::kColorLabelForeground)
                           .SetProperty(views::kMarginsKey, kLabelMargin)
                           .SetProperty(
                               views::kFlexBehaviorKey,
@@ -336,7 +336,7 @@ UserConsentView::UserConsentView(
                                   ? kDescriptionRefreshedMessageId
                                   : kDescriptionMessageId))
                           .SetMultiLine(true)
-                          .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
+                          .SetEnabledColor(ui::kColorLabelForegroundSecondary)
                           .SetProperty(views::kMarginsKey, kLabelMargin)
                           .SetProperty(
                               views::kFlexBehaviorKey,

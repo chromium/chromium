@@ -197,7 +197,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
                              std::make_unique<views::Label>(
                                  title, views::style::CONTEXT_DIALOG_TITLE,
                                  views::style::STYLE_HEADLINE_4))
-                             .SetEnabledColorId(kColorPageInfoForeground)
+                             .SetEnabledColor(kColorPageInfoForeground)
                              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                              .SetID(VIEW_ID_PAGE_INFO_SUBPAGE_TITLE));
 
@@ -208,7 +208,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
                 subtitle, views::style::CONTEXT_LABEL,
                 views::style::STYLE_BODY_4,
                 gfx::DirectionalityMode::DIRECTIONALITY_AS_URL))
-            .SetEnabledColorId(kColorPageInfoSubtitleForeground)
+            .SetEnabledColor(kColorPageInfoSubtitleForeground)
             .SetHorizontalAlignment(gfx::ALIGN_LEFT)
             .SetAllowCharacterBreak(true)
             .SetMultiLine(true));

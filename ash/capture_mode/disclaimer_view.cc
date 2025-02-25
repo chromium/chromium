@@ -164,7 +164,7 @@ DisclaimerView::DisclaimerView(
                           .SetFontList(
                               TypographyProvider::Get()->ResolveTypographyToken(
                                   TypographyToken::kCrosDisplay7))
-                          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                          .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
                           .SetHorizontalAlignment(
                               gfx::HorizontalAlignment::ALIGN_LEFT)
                           .SetText(GetTextTitle())

@@ -319,26 +319,26 @@ void EditorMenuView::AddTitleContainer() {
     auto* title = title_container_->AddChildView(std::make_unique<views::Label>(
         GetEditorMenuWriteCardTitle(), views::style::CONTEXT_DIALOG_TITLE,
         views::style::STYLE_HEADLINE_5));
-    title->SetEnabledColorId(ui::kColorSysOnSurface);
+    title->SetEnabledColor(ui::kColorSysOnSurface);
   } else if (text_and_image_mode_ == TextAndImageMode::kEditorRewriteOnly ||
              text_and_image_mode_ ==
                  TextAndImageMode::kEditorRewriteAndLobster) {
     auto* title = title_container_->AddChildView(std::make_unique<views::Label>(
         GetEditorMenuRewriteCardTitle(), views::style::CONTEXT_DIALOG_TITLE,
         views::style::STYLE_HEADLINE_5));
-    title->SetEnabledColorId(ui::kColorSysOnSurface);
+    title->SetEnabledColor(ui::kColorSysOnSurface);
   } else if (text_and_image_mode_ ==
              TextAndImageMode::kLobsterWithNoSelectedText) {
     auto* title = title_container_->AddChildView(std::make_unique<views::Label>(
         GetEditorMenuLobsterTitle(), views::style::CONTEXT_DIALOG_TITLE,
         views::style::STYLE_HEADLINE_5));
-    title->SetEnabledColorId(ui::kColorSysOnSurface);
+    title->SetEnabledColor(ui::kColorSysOnSurface);
   } else if (text_and_image_mode_ ==
              TextAndImageMode::kLobsterWithSelectedText) {
     auto* title = title_container_->AddChildView(std::make_unique<views::Label>(
         GetEditorMenuRewriteCardTitle(), views::style::CONTEXT_DIALOG_TITLE,
         views::style::STYLE_HEADLINE_5));
-    title->SetEnabledColorId(ui::kColorSysOnSurface);
+    title->SetEnabledColor(ui::kColorSysOnSurface);
   }
 
   auto* badge =

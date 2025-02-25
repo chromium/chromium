@@ -418,7 +418,7 @@ void CardUnmaskPromptViews::InitIfNecessary() {
               views::Builder<views::Label>()
                   .CopyAddressTo(&overlay_label_)
                   .SetBackgroundColor(ui::kColorDialogBackground)
-                  .SetEnabledColorId(ui::kColorThrobber)
+                  .SetEnabledColor(ui::kColorThrobber)
                   .SetText(l10n_util::GetStringUTF16(
                       IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_IN_PROGRESS)))
           .Build());

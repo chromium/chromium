@@ -79,7 +79,7 @@ SharesheetTargetButton::SharesheetTargetButton(
   auto* label =
       label_view->AddChildView(std::make_unique<views::Label>(display_name));
   label->SetID(SharesheetViewID::TARGET_LABEL_VIEW_ID);
-  label->SetEnabledColorId(cros_tokens::kTextColorSecondary);
+  label->SetEnabledColor(cros_tokens::kTextColorSecondary);
 
   bubble_utils::ApplyStyle(label, TypographyToken::kCrosButton1);
   SetLabelProperties(label);
@@ -89,7 +89,7 @@ SharesheetTargetButton::SharesheetTargetButton(
       secondary_display_name != display_name) {
     auto* secondary_label = label_view->AddChildView(
         std::make_unique<views::Label>(secondary_display_name));
-    secondary_label->SetEnabledColorId(cros_tokens::kTextColorSecondary);
+    secondary_label->SetEnabledColor(cros_tokens::kTextColorSecondary);
 
     bubble_utils::ApplyStyle(secondary_label, TypographyToken::kCrosBody2);
     SetLabelProperties(secondary_label);

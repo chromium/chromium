@@ -822,7 +822,7 @@ std::unique_ptr<views::View> MahiPanelView::CreateHeaderRow() {
               .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
               .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
                   TypographyToken::kCrosButton1))
-              .SetEnabledColorId(cros_tokens::kCrosSysOnSurface),
+              .SetEnabledColor(cros_tokens::kCrosSysOnSurface),
           // Experimental badge
           views::Builder<views::View>(
               std::make_unique<chromeos::ExperimentBadge>())

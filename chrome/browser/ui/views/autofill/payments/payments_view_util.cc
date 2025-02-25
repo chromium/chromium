@@ -233,7 +233,7 @@ std::unique_ptr<views::View> CreateProgressBarWithTextView(
               views::Builder<views::Throbber>().CopyAddressTo(&throbber),
               views::Builder<views::Label>()
                   .SetText(progress_bar_text)
-                  .SetEnabledColorId(ui::kColorThrobber))
+                  .SetEnabledColor(ui::kColorThrobber))
           .Build();
   throbber->Start();
   return result;

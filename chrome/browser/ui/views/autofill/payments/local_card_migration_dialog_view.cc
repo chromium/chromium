@@ -124,7 +124,7 @@ std::unique_ptr<views::BoxLayoutView> CreateTipTextContainer(
           .SetText(tip_message)
           .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
           .SetTextStyle(views::style::STYLE_SECONDARY)
-          .SetEnabledColorId(kColorPaymentsFeedbackTipForeground)
+          .SetEnabledColor(kColorPaymentsFeedbackTipForeground)
           .SetMultiLine(true)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SizeToFit(provider->GetDistanceMetric(

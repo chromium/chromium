@@ -61,7 +61,7 @@ class LocaleItemView : public views::Button {
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
     views::Label* iso_code_label = TrayPopupUtils::CreateDefaultLabel();
-    iso_code_label->SetEnabledColorId(
+    iso_code_label->SetEnabledColor(
         static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface));
     iso_code_label->SetAutoColorReadabilityEnabled(false);
     iso_code_label->SetText(base::i18n::ToUpper(
@@ -74,7 +74,7 @@ class LocaleItemView : public views::Button {
 
     auto* display_name_view = TrayPopupUtils::CreateDefaultLabel();
     display_name_view->SetText(display_name);
-    display_name_view->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    display_name_view->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *display_name_view);
     display_name_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);

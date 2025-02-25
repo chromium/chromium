@@ -48,7 +48,7 @@ std::unique_ptr<views::Label> CreateTextLabel(
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(alignment);
   TypographyProvider::Get()->StyleLabel(token, *label);
-  label->SetEnabledColorId(color_id);
+  label->SetEnabledColor(color_id);
   label->SetText(text);
   label->SetMultiLine(allow_multiline);
   label->SetMaxLines(allow_multiline ? 2 : 1);

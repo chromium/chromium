@@ -232,7 +232,7 @@ void EditorMenuPromoCardView::AddTitle(views::View* main_view) {
       views::style::STYLE_HEADLINE_5));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetMultiLine(true);
-  title_->SetEnabledColorId(ui::kColorSysOnSurface);
+  title_->SetEnabledColor(ui::kColorSysOnSurface);
 }
 
 void EditorMenuPromoCardView::AddDescription(views::View* main_view) {
@@ -241,7 +241,7 @@ void EditorMenuPromoCardView::AddDescription(views::View* main_view) {
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_3));
   description_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   description_->SetMultiLine(true);
-  description_->SetEnabledColorId(ui::kColorSysOnSurfaceSubtle);
+  description_->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);
   description_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(views::LayoutProvider::Get()->GetDistanceMetric(

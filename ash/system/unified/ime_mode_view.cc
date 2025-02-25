@@ -67,9 +67,9 @@ void ImeModeView::HandleLocaleChange() {
 void ImeModeView::UpdateLabelOrImageViewColor(bool active) {
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
-  label()->SetEnabledColorId(active
-                                 ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                                 : cros_tokens::kCrosSysOnSurface);
+  label()->SetEnabledColor(active
+                               ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                               : cros_tokens::kCrosSysOnSurface);
 }
 
 void ImeModeView::Update() {

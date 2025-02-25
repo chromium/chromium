@@ -250,7 +250,7 @@ void CardUnmaskOtpInputDialogViews::CreateHiddenProgressView() {
       views::Builder<views::Label>()
           .SetText(controller_ ? controller_->GetProgressLabel() : u"")
           .SetMultiLine(true)
-          .SetEnabledColorId(ui::kColorThrobber)
+          .SetEnabledColor(ui::kColorThrobber)
           .Build());
 }
 

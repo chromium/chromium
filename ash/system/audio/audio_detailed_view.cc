@@ -255,7 +255,7 @@ void AudioDetailedView::AddAudioSubHeader(views::View* container,
                                           const int text_id) {
   auto* sub_header_label_ = TrayPopupUtils::CreateDefaultLabel();
   sub_header_label_->SetText(l10n_util::GetStringUTF16(text_id));
-  sub_header_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  sub_header_label_->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
   sub_header_label_->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
                                         *sub_header_label_);
@@ -301,7 +301,7 @@ void AudioDetailedView::CreateLiveCaptionView() {
   live_caption_view_->AddViewAndLabel(
       std::move(toggle_icon),
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION));
-  live_caption_view_->text_label()->SetEnabledColorId(
+  live_caption_view_->text_label()->SetEnabledColor(
       cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
                                         *live_caption_view_->text_label());
@@ -351,7 +351,7 @@ std::unique_ptr<TriView> AudioDetailedView::CreateNbsWarningView() {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO_NBS_MESSAGE));
   label->SetMultiLine(/*multi_line=*/true);
   label->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  label->SetEnabledColorId(kColorAshTextColorWarning);
+  label->SetEnabledColor(kColorAshTextColorWarning);
   label->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label);
 
@@ -379,7 +379,7 @@ AudioDetailedView::CreateNoiseCancellationToggleRow(const AudioDevice& device) {
           IDS_ASH_STATUS_TRAY_AUDIO_INPUT_NOISE_CANCELLATION));
   views::Label* noise_cancellation_label =
       noise_cancellation_view->text_label();
-  noise_cancellation_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  noise_cancellation_label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                         *noise_cancellation_label);
 
@@ -433,7 +433,7 @@ AudioDetailedView::CreateStyleTransferToggleRow(const AudioDevice& device) {
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_AUDIO_INPUT_STYLE_TRANSFER));
   views::Label* style_transfer_label = style_transfer_view->text_label();
-  style_transfer_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  style_transfer_label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                         *style_transfer_label);
 

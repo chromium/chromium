@@ -150,7 +150,7 @@ PageInfoMerchantTrustContentView::CreateReviewsSummarySection() {
       views::style::STYLE_BODY_4));
   summary_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   summary_label_->SetMultiLine(true);
-  summary_label_->SetEnabledColorId(kColorPageInfoSubtitleForeground);
+  summary_label_->SetEnabledColor(kColorPageInfoSubtitleForeground);
 
   return container;
 }

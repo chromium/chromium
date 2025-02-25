@@ -306,7 +306,7 @@ void RichAnswersView::AddGoogleSearchLink() {
       &RichAnswersView::OnGoogleSearchLinkClicked, weak_factory_.GetWeakPtr()));
   search_link_label->SetFontList(GetFontList(TypographyToken::kCrosButton2));
   search_link_label->SetForceUnderline(false);
-  search_link_label->SetEnabledColorId(ui::kColorSysPrimary);
+  search_link_label->SetEnabledColor(ui::kColorSysPrimary);
 }
 
 void RichAnswersView::OnGoogleSearchLinkClicked() {

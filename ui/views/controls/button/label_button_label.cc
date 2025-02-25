@@ -35,7 +35,7 @@ void LabelButtonLabel::SetDisabledColorId(std::optional<ui::ColorId> color_id) {
   }
   requested_disabled_color_ = color_id.value();
   if (!GetEnabled()) {
-    Label::SetEnabledColorId(color_id.value());
+    Label::SetEnabledColor(color_id.value());
   }
 }
 
@@ -44,7 +44,7 @@ std::optional<ui::ColorId> LabelButtonLabel::GetDisabledColorId() const {
                                    : std::nullopt;
 }
 
-void LabelButtonLabel::SetEnabledColor(SkColor color) {
+void LabelButtonLabel::SetEnabledColor(ui::ColorVariant color) {
   requested_enabled_color_ = color;
   if (GetEnabled()) {
     Label::SetEnabledColor(color);
@@ -57,7 +57,7 @@ void LabelButtonLabel::SetEnabledColorId(std::optional<ui::ColorId> color_id) {
   }
   requested_enabled_color_ = color_id.value();
   if (GetEnabled()) {
-    Label::SetEnabledColorId(color_id.value());
+    Label::SetEnabledColor(color_id.value());
   }
 }
 
@@ -80,18 +80,14 @@ void LabelButtonLabel::SetColorForEnableState() {
       GetEnabled() ? requested_enabled_color_ : requested_disabled_color_;
 
   if (color_variant) {
-    if (auto color = color_variant->GetSkColor()) {
-      Label::SetEnabledColor(*color);
-    } else {
-      Label::SetEnabledColorId(*color_variant->GetColorId());
-    }
+    Label::SetEnabledColor(*color_variant);
   } else {
     // Get default color Id.
     const ui::ColorId default_color_id = TypographyProvider::Get().GetColorId(
         GetTextContext(),
         GetEnabled() ? style::STYLE_PRIMARY : style::STYLE_DISABLED);
     // Set default color Id.
-    Label::SetEnabledColorId(default_color_id);
+    Label::SetEnabledColor(default_color_id);
   }
 }
 

@@ -311,7 +311,7 @@ std::unique_ptr<TriView> TrayDetailedView::CreateTitleTriView(int string_id) {
 
   auto* title_label = TrayPopupUtils::CreateDefaultLabel();
   title_label->SetText(l10n_util::GetStringUTF16(string_id));
-  title_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  title_label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosTitle1,
                                              *title_label);
   tri_view->AddView(TriView::Container::CENTER, title_label);

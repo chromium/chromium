@@ -88,7 +88,7 @@ void SavedDeskDialogController::ShowUnsupportedAppsDialog(
   label_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                         *label_view);
-  label_view->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  label_view->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   label_view->SetText(l10n_util::GetStringUTF16(
       IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_HEADER));
   unsupported_apps_view->AddChildView(std::move(label_view));

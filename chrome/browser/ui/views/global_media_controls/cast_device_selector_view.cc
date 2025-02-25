@@ -91,13 +91,13 @@ IssueHoverButton::IssueHoverButton(PressedCallback callback,
       std::make_unique<views::Label>(device_name, views::style::CONTEXT_LABEL,
                                      views::style::STYLE_BODY_2));
   device_name_label_->SetCanProcessEventsWithinSubtree(false);
-  device_name_label_->SetEnabledColorId(device_name_color_id);
+  device_name_label_->SetEnabledColor(device_name_color_id);
 
   status_text_label_ = label_column->AddChildView(
       std::make_unique<views::Label>(status_text, views::style::CONTEXT_LABEL,
                                      views::style::STYLE_BODY_4));
   status_text_label_->SetCanProcessEventsWithinSubtree(false);
-  status_text_label_->SetEnabledColorId(status_text_color_id);
+  status_text_label_->SetEnabledColor(status_text_color_id);
 }
 
 gfx::Size IssueHoverButton::CalculatePreferredSize(

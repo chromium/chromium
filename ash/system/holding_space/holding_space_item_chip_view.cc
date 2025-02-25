@@ -625,22 +625,22 @@ void HoldingSpaceItemChipView::UpdateLabels() {
 
   // Primary.
   primary_label_->SetText(item()->GetText());
-  primary_label_->SetEnabledColorId(selected() && multiselect
-                                        ? kColorAshMultiSelectTextColor
-                                        : kColorAshTextColorPrimary);
+  primary_label_->SetEnabledColor(selected() && multiselect
+                                      ? kColorAshMultiSelectTextColor
+                                      : kColorAshTextColorPrimary);
 
   // Secondary.
   secondary_label_->SetText(
       item()->secondary_text().value_or(std::u16string()));
 
   if (selected() && multiselect) {
-    secondary_label_->SetEnabledColorId(kColorAshMultiSelectTextColor);
+    secondary_label_->SetEnabledColor(kColorAshMultiSelectTextColor);
   } else if (const std::optional<HoldingSpaceColorVariant>& color_variant =
                  item()->secondary_text_color_variant()) {
     // Handle the case where the `color_variant` is set.
     std::visit(base::Overloaded{
                    [&](const ui::ColorId& color_id) {
-                     secondary_label_->SetEnabledColorId(color_id);
+                     secondary_label_->SetEnabledColor(color_id);
                    },
                    [&](const HoldingSpaceColors& colors) {
                      secondary_label_->SetEnabledColor(
@@ -652,7 +652,7 @@ void HoldingSpaceItemChipView::UpdateLabels() {
                *color_variant);
   } else {
     // Use the default color.
-    secondary_label_->SetEnabledColorId(kColorAshTextColorSecondary);
+    secondary_label_->SetEnabledColor(kColorAshTextColorSecondary);
   }
 
   secondary_label_->SetVisible(!secondary_label_->GetText().empty());

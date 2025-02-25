@@ -99,7 +99,7 @@ AuthHeaderView::AuthHeaderView(const AccountId& account_id,
                                   views::style::STYLE_PRIMARY);
   title_label_->SetMultiLine(true);
   title_label_->SizeToFit(kTitleLineWidthDp);
-  title_label_->SetEnabledColorId(kTitleColorId);
+  title_label_->SetEnabledColor(kTitleColorId);
   title_label_->SetFontList(
       TypographyProvider::Get()->ResolveTypographyToken(kTitleFont));
   title_label_->GetViewAccessibility().SetRole(ax::mojom::Role::kTitleBar);
@@ -115,7 +115,7 @@ AuthHeaderView::AuthHeaderView(const AccountId& account_id,
       description, views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
   description_label_->SetMultiLine(true);
   description_label_->SizeToFit(kDescriptionLineWidthDp);
-  description_label_->SetEnabledColorId(kDescriptionColorId);
+  description_label_->SetEnabledColor(kDescriptionColorId);
   description_label_->SetFontList(
       TypographyProvider::Get()->ResolveTypographyToken(kDescriptionFont));
   decorate_label(description_label_);
@@ -140,7 +140,7 @@ gfx::Size AuthHeaderView::CalculatePreferredSize(
 
 void AuthHeaderView::SetErrorTitle(const std::u16string& error_str) {
   title_label_->SetText(error_str);
-  title_label_->SetEnabledColorId(kTitleErrorColorId);
+  title_label_->SetEnabledColor(kTitleErrorColorId);
   NotifyTitleChanged(error_str);
   title_label_->GetViewAccessibility().SetName(error_str);
   title_label_->NotifyAccessibilityEventDeprecated(
@@ -152,7 +152,7 @@ void AuthHeaderView::SetErrorTitle(const std::u16string& error_str) {
 void AuthHeaderView::RestoreTitle() {
   if (title_label_->GetText() != title_str_) {
     title_label_->SetText(title_str_);
-    title_label_->SetEnabledColorId(kTitleColorId);
+    title_label_->SetEnabledColor(kTitleColorId);
     NotifyTitleChanged(title_str_);
   }
 }

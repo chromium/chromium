@@ -767,16 +767,17 @@ TEST_F(LabelButtonTest, SetEnabledTextColorIds) {
   ASSERT_NE(ui::kColorLabelForeground, ui::kColorAccent);
 
   // Initially the test should have the normal colors.
-  EXPECT_EQ(button()->label()->GetEnabledColorId(), ui::kColorLabelForeground);
+  EXPECT_EQ(button()->label()->GetRequestedEnabledColor(),
+            ui::kColorLabelForeground);
 
   // Setting the enabled text colors should replace the label's enabled color.
   button()->SetEnabledTextColorIds(ui::kColorAccent);
-  EXPECT_EQ(button()->label()->GetEnabledColorId(), ui::kColorAccent);
+  EXPECT_EQ(button()->label()->GetRequestedEnabledColor(), ui::kColorAccent);
 
   // Toggle dark mode. This should not replace the enabled text color as it's
   // been manually overridden above.
   UseDarkColors();
-  EXPECT_EQ(button()->label()->GetEnabledColorId(), ui::kColorAccent);
+  EXPECT_EQ(button()->label()->GetRequestedEnabledColor(), ui::kColorAccent);
   EXPECT_EQ(button()->label()->GetEnabledColor(),
             button()->GetColorProvider()->GetColor(ui::kColorAccent));
 }

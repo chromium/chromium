@@ -38,7 +38,7 @@ class VIEWS_EXPORT LabelButtonLabel : public Label {
   std::optional<ui::ColorId> GetDisabledColorId() const;
 
   // Label:
-  void SetEnabledColor(SkColor color) override;
+  void SetEnabledColor(ui::ColorVariant color) override;
 
   // Sets/Gets the explicit enabled color with color_id.
   void SetEnabledColorId(std::optional<ui::ColorId> color_id);

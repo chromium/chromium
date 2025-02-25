@@ -392,8 +392,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   description_label->SetMultiLine(true);
   description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   description_label->SetTextStyle(views::style::STYLE_BODY_3);
-  description_label->SetEnabledColorId(
-      kColorDesktopMediaPickerDescriptionLabel);
+  description_label->SetEnabledColor(kColorDesktopMediaPickerDescriptionLabel);
   description_label_ = AddChildView(std::move(description_label));
 
   std::vector<std::pair<std::u16string, std::unique_ptr<View>>> panes;

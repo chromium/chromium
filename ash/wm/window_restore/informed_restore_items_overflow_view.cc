@@ -88,7 +88,7 @@ InformedRestoreItemsOverflowView::InformedRestoreItemsOverflowView(
               // display.
               .SetText(base::FormatNumber(num_elements - kOverflowMaxThreshold))
               .SetPreferredSize(kOverflowCountPreferredSize)
-              .SetEnabledColorId(cros_tokens::kCrosSysOnPrimaryContainer)
+              .SetEnabledColor(cros_tokens::kCrosSysOnPrimaryContainer)
               .SetBackground(views::CreateThemedRoundedRectBackground(
                   cros_tokens::kCrosSysPrimaryContainer,
                   kOverflowCountBackgroundRounding))
@@ -139,7 +139,7 @@ InformedRestoreItemsOverflowView::InformedRestoreItemsOverflowView(
   views::Label* remaining_windows_label;
   AddChildView(views::Builder<views::Label>()
                    .CopyAddressTo(&remaining_windows_label)
-                   .SetEnabledColorId(informed_restore::kItemTextColorId)
+                   .SetEnabledColor(informed_restore::kItemTextColorId)
                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                    .SetText(l10n_util::GetStringFUTF16Int(
                        IDS_ASH_INFORMED_RESTORE_WINDOW_OVERFLOW_COUNT,

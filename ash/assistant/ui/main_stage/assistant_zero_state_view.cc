@@ -137,7 +137,7 @@ void AssistantZeroStateView::InitLayout() {
   greeting_label_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_PROMPT_DEFAULT));
   greeting_label_->SetBackgroundColor(kColorAshAssistantBgPlate);
-  greeting_label_->SetEnabledColorId(kColorAshAssistantTextColorPrimary);
+  greeting_label_->SetEnabledColor(kColorAshAssistantTextColorPrimary);
 
   // Spacer.
   spacer_ = AddChildView(std::make_unique<views::View>());

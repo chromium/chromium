@@ -685,7 +685,7 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
     zoom_label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
     zoom_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         0, kZoomLabelHorizontalPadding, 0, kZoomLabelHorizontalPadding)));
-    zoom_label->SetEnabledColorId(ui::kColorMenuItemForeground);
+    zoom_label->SetEnabledColor(ui::kColorMenuItemForeground);
 
     // Need to set a font list for the zoom label width calculations.
     zoom_label->SetFontList(MenuConfig::instance().font_list);
@@ -1509,7 +1509,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
           item->AddChildView(
               views::Builder<views::Label>()
                   .SetText(upgrade_substring_text)
-                  .SetEnabledColorId(
+                  .SetEnabledColor(
                       ui::kColorAppMenuUpgradeRowSubstringForeground)
                   .SetEnabled(true)
                   .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(

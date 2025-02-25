@@ -100,7 +100,7 @@ void ChannelIndicatorView::OnThemeChanged() {
     label()->SetBackground(views::CreateThemedRoundedRectBackground(
         channel_indicator_utils::GetBgColorJelly(channel_),
         kIndicatorBgCornerRadius));
-    label()->SetEnabledColorId(
+    label()->SetEnabledColor(
         channel_indicator_utils::GetFgColorJelly(channel_));
   }
 }
@@ -176,8 +176,7 @@ void ChannelIndicatorView::SetImageOrText() {
   label()->SetBackground(views::CreateThemedRoundedRectBackground(
       channel_indicator_utils::GetBgColorJelly(channel_),
       kIndicatorBgCornerRadius));
-  label()->SetEnabledColorId(
-      channel_indicator_utils::GetFgColorJelly(channel_));
+  label()->SetEnabledColor(channel_indicator_utils::GetFgColorJelly(channel_));
 
   label()->SetText(l10n_util::GetStringUTF16(
       channel_indicator_utils::GetChannelNameStringResourceID(

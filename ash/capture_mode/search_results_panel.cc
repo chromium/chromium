@@ -193,7 +193,7 @@ SearchResultsPanel::SearchResultsPanel() {
                   .SetFontList(
                       TypographyProvider::Get()->ResolveTypographyToken(
                           TypographyToken::kCrosTitle1))
-                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurface),
+                  .SetEnabledColor(cros_tokens::kCrosSysOnSurface),
               // Close Button, aligned to the right by setting a
               // `FlexSpecification` with unbounded maximum flex size and
               // `LayoutAlignment::kEnd`.

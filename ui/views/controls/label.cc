@@ -29,6 +29,7 @@
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_elider.h"
@@ -242,33 +243,23 @@ SkColor Label::GetEnabledColor() const {
   return actual_enabled_color_;
 }
 
-void Label::SetEnabledColor(SkColor color) {
-  if (enabled_color_set_ && requested_enabled_color_ == color) {
+void Label::SetEnabledColor(ui::ColorVariant color) {
+  if (requested_enabled_color_ == color) {
     return;
   }
 
-  enabled_color_set_ = true;
   requested_enabled_color_ = color;
-  enabled_color_id_.reset();
-  RecalculateColors();
+  if (GetWidget()) {
+    UpdateColorsFromTheme();
+  } else {
+    RecalculateColors();
+  }
+
   OnPropertyChanged(&requested_enabled_color_, kPropertyEffectsPaint);
 }
 
-std::optional<ui::ColorId> Label::GetEnabledColorId() const {
-  return enabled_color_id_;
-}
-
-void Label::SetEnabledColorId(std::optional<ui::ColorId> enabled_color_id) {
-  if (enabled_color_id_ == enabled_color_id) {
-    return;
-  }
-
-  enabled_color_id_ = enabled_color_id;
-  if (GetWidget()) {
-    UpdateColorsFromTheme();
-    enabled_color_set_ = true;
-  }
-  OnPropertyChanged(&enabled_color_id_, kPropertyEffectsPaint);
+std::optional<ui::ColorVariant> Label::GetRequestedEnabledColor() const {
+  return requested_enabled_color_;
 }
 
 SkColor Label::GetBackgroundColor() const {
@@ -1439,8 +1430,16 @@ SkColor Label::GetForegroundColor(SkColor foreground,
 }
 
 void Label::RecalculateColors() {
+  SkColor enabled_color = gfx::kPlaceholderColor;
+  if (resolved_enabled_color_) {
+    enabled_color = resolved_enabled_color_.value();
+  } else if (requested_enabled_color_ &&
+             requested_enabled_color_->GetSkColor()) {
+    enabled_color = *requested_enabled_color_->GetSkColor();
+  }
+
   actual_enabled_color_ =
-      GetForegroundColor(requested_enabled_color_, resolved_background_color_);
+      GetForegroundColor(enabled_color, resolved_background_color_);
   // Using GetResultingPaintColor() here allows non-opaque selection backgrounds
   // to still participate in auto color readability, assuming
   // |background_color_| is itself opaque.
@@ -1458,7 +1457,7 @@ void Label::ApplyTextColors() const {
     return;
   }
 
-  display_text_->SetColor(actual_enabled_color_);
+  display_text_->SetColor(GetEnabledColor());
   display_text_->set_selection_color(actual_selection_text_color_);
   display_text_->set_selection_background_focused_color(
       selection_background_color_);
@@ -1469,12 +1468,14 @@ void Label::ApplyTextColors() const {
 
 void Label::UpdateColorsFromTheme() {
   ui::ColorProvider* color_provider = GetColorProvider();
-  if (enabled_color_id_.has_value()) {
-    requested_enabled_color_ = color_provider->GetColor(*enabled_color_id_);
-  } else if (!enabled_color_set_) {
+
+  if (requested_enabled_color_) {
+    resolved_enabled_color_ =
+        requested_enabled_color_->ConvertToSkColor(color_provider);
+  } else {
     const std::optional<SkColor> cascading_color =
         GetCascadingProperty(this, kCascadingLabelEnabledColor);
-    requested_enabled_color_ =
+    resolved_enabled_color_ =
         cascading_color.value_or(GetColorProvider()->GetColor(
             TypographyProvider::Get().GetColorId(text_context_, text_style_)));
   }

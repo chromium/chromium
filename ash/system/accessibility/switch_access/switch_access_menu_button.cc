@@ -53,7 +53,7 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
                        .SetText(label_text)
                        .SetTextContext(views::style::CONTEXT_BUTTON)
                        .SetAutoColorReadabilityEnabled(false)
-                       .SetEnabledColorId(kColorAshTextColorPrimary)
+                       .SetEnabledColor(kColorAshTextColorPrimary)
                        .SetMultiLine(true)
                        .SetMaximumWidth(kLabelMaxWidthDip))
       .BuildChildren();

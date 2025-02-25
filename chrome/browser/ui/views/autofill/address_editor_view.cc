@@ -141,7 +141,7 @@ void AddressEditorView::CreateEditorView() {
     validation_error_ =
         AddChildView(views::Builder<views::Label>()
                          .SetMultiLine(true)
-                         .SetEnabledColorId(ui::kColorAlertHighSeverity)
+                         .SetEnabledColor(ui::kColorAlertHighSeverity)
                          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                          .Build());
   }

@@ -20,7 +20,7 @@ ClipboardHistoryLabel::ClipboardHistoryLabel(const std::u16string& text,
     : views::Label(text) {
   SetAutoColorReadabilityEnabled(false);
   SetElideBehavior(elide_behavior);
-  SetEnabledColorId(cros_tokens::kTextColorPrimary);
+  SetEnabledColor(cros_tokens::kTextColorPrimary);
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
   SetMaxLines(max_lines);
 

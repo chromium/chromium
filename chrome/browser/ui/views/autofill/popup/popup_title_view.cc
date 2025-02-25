@@ -30,7 +30,7 @@ PopupTitleView::PopupTitleView(std::u16string_view title) {
       views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
   AddChildView(views::Builder<views::Label>()
                    .SetText(base::ToUpperASCII(title))
-                   .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
+                   .SetEnabledColor(ui::kColorLabelForegroundSecondary)
                    .SetTextStyle(views::style::STYLE_CAPTION_BOLD)
                    .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                    .Build());
