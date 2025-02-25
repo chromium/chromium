@@ -2274,7 +2274,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
         initHub();
 
-        XrUtils.getInstance().init(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            XrUtils.getInstance().init(this);
+        }
     }
 
     @Override

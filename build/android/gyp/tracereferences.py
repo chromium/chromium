@@ -19,42 +19,45 @@ import action_helpers  # build_utils adds //build to sys.path.
 _DUMP_DIR_NAME = 'r8inputs_tracerefs'
 
 _SUPPRESSION_PATTERN = '|'.join([
-  # Summary contains warning count, which our filtering makes wrong.
-  r'Warning: Tracereferences found',
+    # Summary contains warning count, which our filtering makes wrong.
+    r'Warning: Tracereferences found',
+    r'dalvik\.system',
+    r'libcore\.io',
+    r'sun\.misc\.Unsafe',
 
-  r'dalvik\.system',
-  r'libcore\.io',
-  r'sun\.misc\.Unsafe',
+    # Explicictly guarded by try (NoClassDefFoundError) in Flogger's
+    # PlatformProvider.
+    r'com\.google\.common\.flogger\.backend\.google\.GooglePlatform',
+    r'com\.google\.common\.flogger\.backend\.system\.DefaultPlatform',
 
-  # Explicictly guarded by try (NoClassDefFoundError) in Flogger's
-  # PlatformProvider.
-  r'com\.google\.common\.flogger\.backend\.google\.GooglePlatform',
-  r'com\.google\.common\.flogger\.backend\.system\.DefaultPlatform',
+    # TODO(agrieve): Exclude these only when use_jacoco_coverage=true.
+    r'java\.lang\.instrument\.ClassFileTransformer',
+    r'java\.lang\.instrument\.IllegalClassFormatException',
+    r'java\.lang\.instrument\.Instrumentation',
+    r'java\.lang\.management\.ManagementFactory',
+    r'javax\.management\.MBeanServer',
+    r'javax\.management\.ObjectInstance',
+    r'javax\.management\.ObjectName',
+    r'javax\.management\.StandardMBean',
 
-  # TODO(agrieve): Exclude these only when use_jacoco_coverage=true.
-  r'java\.lang\.instrument\.ClassFileTransformer',
-  r'java\.lang\.instrument\.IllegalClassFormatException',
-  r'java\.lang\.instrument\.Instrumentation',
-  r'java\.lang\.management\.ManagementFactory',
-  r'javax\.management\.MBeanServer',
-  r'javax\.management\.ObjectInstance',
-  r'javax\.management\.ObjectName',
-  r'javax\.management\.StandardMBean',
+    # Explicitly guarded by try (NoClassDefFoundError) in Firebase's
+    # KotlinDetector: com.google.firebase.platforminfo.KotlinDetector.
+    r'kotlin\.KotlinVersion',
 
-  # Explicitly guarded by try (NoClassDefFoundError) in Firebase's
-  # KotlinDetector: com.google.firebase.platforminfo.KotlinDetector.
-  r'kotlin\.KotlinVersion',
+    # Not sure why these two are missing, but they do not seem important.
+    r'ResultIgnorabilityUnspecified',
+    r'kotlin\.DeprecationLevel',
 
-  # Not sure why these two are missing, but they do not seem important.
-  r'ResultIgnorabilityUnspecified',
-  r'kotlin\.DeprecationLevel',
+    # Assume missing android.* / java.* references are OS APIs that are not in
+    # android.jar. Not in the above list so as to not match parameter types.
+    # E.g. Missing method void android.media.MediaRouter2$RouteCallback
+    # E.g. Missing class android.util.StatsEvent$Builder
+    r'Missing method \S+ android\.',
+    r'Missing class android\.',
 
-  # Assume missing android.* / java.* references are OS APIs that are not in
-  # android.jar. Not in the above list so as to not match parameter types.
-  # E.g. Missing method void android.media.MediaRouter2$RouteCallback
-  # E.g. Missing class android.util.StatsEvent$Builder
-  r'Missing method \S+ android\.',
-  r'Missing class android\.',
+    # The follow classes are from Android XR system libraries and used on
+    # immersive environment.
+    r'Missing class com.google.ar.imp.core\.',
 ])
 
 
