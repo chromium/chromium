@@ -63,7 +63,7 @@ const char kTestChromeSchema[] = R"(
       }
     })";
 
-const auto kTestPolicyDetails = std::to_array<PolicyDetails>({
+constexpr auto kTestPolicyDetails = std::to_array<PolicyDetails>({
     // is_deprecated is_future is_device_policy id  max_external_data_size
     {false, false, kProfile, kTestPolicy1Id, 0},
     {false, false, kProfile, kTestPolicy2Id, 0},
