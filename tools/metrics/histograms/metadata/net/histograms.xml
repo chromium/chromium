@@ -5497,6 +5497,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.Reporting.FilteredReportsCount"
+    enum="NetReportingUploadHeaderType" expires_after="2026-02-21">
+  <owner>ricea@chromium.org</owner>
+  <owner>patilmayur@microsoft.com</owner>
+  <owner>src/net/reporting/OWNERS</owner>
+  <summary>
+    This metric is recorded each time a report upload attempt is made, when the
+    reports are serialized to JSON. It reflects the size of the report list
+    after filtering based on the report body size. Reports with bodies exceeding
+    kMaxReportBodySizeKB are excluded when the kExcludeLargeBodyReports feature
+    is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Net.Reporting.HeaderType" enum="NetReportingHeaderType"
     expires_after="2025-06-22">
   <owner>rodneyding@google.com</owner>
@@ -5507,6 +5521,43 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired from 2023-02-18 to 2024-04-09; data may
     be missing.
+  </summary>
+</histogram>
+
+<histogram name="Net.Reporting.ReportBodySize"
+    enum="NetReportingUploadHeaderType" expires_after="2026-02-21">
+  <owner>ricea@chromium.org</owner>
+  <owner>patilmayur@microsoft.com</owner>
+  <owner>src/net/reporting/OWNERS</owner>
+  <summary>
+    Records the estimated memory usage, in kb, of the report body for each
+    report being considered for upload to the Reporting API. This metric is
+    recorded for all reports, before any filtering based on body size.
+  </summary>
+</histogram>
+
+<histogram name="Net.Reporting.ReportsCount"
+    enum="NetReportingUploadHeaderType" expires_after="2026-02-21">
+  <owner>ricea@chromium.org</owner>
+  <owner>patilmayur@microsoft.com</owner>
+  <owner>src/net/reporting/OWNERS</owner>
+  <summary>
+    Counts the total number of reports initially considered for serialization
+    and upload to the Reporting API. This metric reflects the size of the report
+    list before any filtering based on size of report body.
+  </summary>
+</histogram>
+
+<histogram name="Net.Reporting.ReportTotalSize"
+    enum="NetReportingUploadHeaderType" expires_after="2026-02-21">
+  <owner>ricea@chromium.org</owner>
+  <owner>patilmayur@microsoft.com</owner>
+  <owner>src/net/reporting/OWNERS</owner>
+  <summary>
+    Records the estimated memory usage, in kb, of the complete serialized JSON
+    payload containing the reports being prepared for upload to the Reporting
+    API. This metric reflects the size of the JSON after filtering based on
+    report body size.
   </summary>
 </histogram>
 

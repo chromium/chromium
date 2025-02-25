@@ -477,6 +477,16 @@ const base::FeatureParam<bool> kIpPrivacyOnlyInIncognito{
     /*name=*/"IpPrivacyOnlyInIncognito",
     /*default_value=*/false};
 
+BASE_FEATURE(kExcludeLargeBodyReports,
+             "ExcludeLargeReportBodies",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(size_t,
+                   kMaxReportBodySizeKB,
+                   &kExcludeLargeBodyReports,
+                   "max_report_body_size_kb",
+                   1024);
+
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
 // NetworkChangeNotifier::AreNetworkHandlesSupported).
