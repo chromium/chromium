@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/test/providers/mini_map/test_mini_map.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/common/features.h"
@@ -91,8 +90,6 @@ class MiniMapCoordinatorTest : public PlatformTest {
         OCMStrictProtocolMock(@protocol(SettingsCommands));
     mock_mini_map_command_handler_ =
         OCMStrictProtocolMock(@protocol(MiniMapCommands));
-    mock_snackbar_command_handler_ =
-        OCMStrictProtocolMock(@protocol(SnackbarCommands));
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:mock_application_command_handler_
@@ -102,8 +99,6 @@ class MiniMapCoordinatorTest : public PlatformTest {
                      forProtocol:@protocol(SettingsCommands)];
     [dispatcher startDispatchingToTarget:mock_mini_map_command_handler_
                              forProtocol:@protocol(MiniMapCommands)];
-    [dispatcher startDispatchingToTarget:mock_snackbar_command_handler_
-                             forProtocol:@protocol(SnackbarCommands)];
 
     root_view_controller_ = [[UIViewController alloc] init];
     scoped_window_.Get().rootViewController = root_view_controller_;
@@ -117,7 +112,6 @@ class MiniMapCoordinatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY(mock_application_command_handler_);
     EXPECT_OCMOCK_VERIFY(mock_application_settings_command_handler_);
     EXPECT_OCMOCK_VERIFY(mock_mini_map_command_handler_);
-    EXPECT_OCMOCK_VERIFY(mock_snackbar_command_handler_);
     ios::provider::test::SetMiniMapControllerFactory(nil);
     PlatformTest::TearDown();
   }
@@ -151,7 +145,6 @@ class MiniMapCoordinatorTest : public PlatformTest {
   id mock_application_command_handler_;
   id mock_application_settings_command_handler_;
   id mock_mini_map_command_handler_;
-  id mock_snackbar_command_handler_;
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_ = nil;
 };
@@ -451,17 +444,11 @@ TEST_F(MiniMapCoordinatorTest, TestFooterButtons) {
       presentMapsWithPresentingViewController:[OCMArg any]]);
   SetupCoordinator(NO, MiniMapMode::kMap);
 
-  OCMExpect([mock_snackbar_command_handler_
-      showSnackbarWithMessage:[OCMArg any]
-                   buttonText:[OCMArg any]
-                messageAction:[OCMArg any]
-             completionAction:[OCMArg any]]);
-
-  histogram_tester.ExpectBucketCount("IOS.MiniMap.Outcome", 5, 0);
+  OCMExpect([mock_application_settings_command_handler_
+      showContentsSettingsFromViewController:[OCMArg any]]);
+  histogram_tester.ExpectBucketCount("IOS.MiniMap.Outcome", 3, 0);
   left_button_block(nil);
-  histogram_tester.ExpectBucketCount("IOS.MiniMap.Outcome", 5, 1);
-  EXPECT_FALSE(
-      profile_->GetPrefs()->GetBoolean(prefs::kDetectAddressesEnabled));
+  histogram_tester.ExpectBucketCount("IOS.MiniMap.Outcome", 3, 1);
 
   OCMExpect([mock_application_command_handler_
       showReportAnIssueFromViewController:[OCMArg any]
