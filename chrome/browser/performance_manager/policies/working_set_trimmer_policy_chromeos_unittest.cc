@@ -208,8 +208,7 @@ class MockWorkingSetTrimmerPolicyChromeOS
   // Mock methods related to ARCVM process trimming.
   MOCK_METHOD1(TrimArcVmProcesses,
                void(base::MemoryPressureListener::MemoryPressureLevel));
-  MOCK_METHOD4(OnTrimArcVmProcesses,
-               void(mechanism::ArcVmReclaimType, bool, int, int));
+  MOCK_METHOD2(OnTrimArcVmProcesses, void(mechanism::ArcVmReclaimType, bool));
   MOCK_METHOD2(OnArcVmTrimEnded, void(mechanism::ArcVmReclaimType, bool));
   MOCK_METHOD0(GetTrimmer, mechanism::WorkingSetTrimmerChromeOS*(void));
 
@@ -241,12 +240,9 @@ class MockWorkingSetTrimmerPolicyChromeOS
   }
 
   void DefaultOnTrimArcVmProcesses(mechanism::ArcVmReclaimType reclaim_type,
-                                   bool is_first_trim_post_boot,
-                                   int pages_per_minute,
-                                   int max_pages_per_iteration) {
+                                   bool is_first_trim_post_boot) {
     WorkingSetTrimmerPolicyChromeOS::OnTrimArcVmProcesses(
-        reclaim_type, is_first_trim_post_boot, pages_per_minute,
-        max_pages_per_iteration);
+        reclaim_type, is_first_trim_post_boot);
   }
 
   void DefaultOnArcVmTrimEnded(mechanism::ArcVmReclaimType reclaim_type,
@@ -312,12 +308,9 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
 
   void DefaultOnTrimArcVmProcessesAndQuit(
       mechanism::ArcVmReclaimType reclaim_type,
-      bool is_first_trim_post_boot,
-      int pages_per_minute,
-      int max_pages_per_iteration) {
-    policy()->DefaultOnTrimArcVmProcesses(reclaim_type, is_first_trim_post_boot,
-                                          pages_per_minute,
-                                          max_pages_per_iteration);
+      bool is_first_trim_post_boot) {
+    policy()->DefaultOnTrimArcVmProcesses(reclaim_type,
+                                          is_first_trim_post_boot);
     run_loop()->Quit();
   }
 
@@ -844,9 +837,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimOnlyIfEnabled) {
 
   EXPECT_CALL(*policy(),
               OnTrimArcVmProcesses(mechanism::ArcVmReclaimType::kReclaimNone,
-                                   kNotFirstReclaimPostBoot,
-                                   params().trim_arcvm_pages_per_minute,
-                                   params().trim_arcvm_max_pages_per_iteration))
+                                   kNotFirstReclaimPostBoot))
       .Times(Exactly(1))
       .WillOnce(Invoke(this, &WorkingSetTrimmerPolicyChromeOSTest::
                                  DefaultOnTrimArcVmProcessesAndQuit));
@@ -858,9 +849,6 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimOnlyIfEnabled) {
 // Builds a list of expectations for a memory pressure event that results in
 // no reclaim.
 void WorkingSetTrimmerPolicyChromeOSTest::ExpectNoReclaim() {
-  auto config_pages_per_minute = policy()->params().trim_arcvm_pages_per_minute;
-  auto config_max_pages = policy()->params().trim_arcvm_max_pages_per_iteration;
-
   // Enforces all EXPECT_CALLS to occur in the order they are stated below.
   InSequence serialize_expected_calls;
 
@@ -868,8 +856,7 @@ void WorkingSetTrimmerPolicyChromeOSTest::ExpectNoReclaim() {
 
   EXPECT_CALL(*policy(),
               OnTrimArcVmProcesses(mechanism::ArcVmReclaimType::kReclaimNone,
-                                   kNotFirstReclaimPostBoot,
-                                   config_pages_per_minute, config_max_pages))
+                                   kNotFirstReclaimPostBoot))
       .Times(Exactly(1))
       .WillOnce(Invoke(this, &WorkingSetTrimmerPolicyChromeOSTest::
                                  DefaultOnTrimArcVmProcessesAndQuit));
@@ -883,8 +870,6 @@ void WorkingSetTrimmerPolicyChromeOSTest::ExpectNoReclaim() {
 void WorkingSetTrimmerPolicyChromeOSTest::ExpectFullReclaim(
     bool is_first_reclaim,
     int computed_page_limit) {
-  auto config_pages_per_minute = policy()->params().trim_arcvm_pages_per_minute;
-  auto config_max_pages = policy()->params().trim_arcvm_max_pages_per_iteration;
   mechanism::ArcVmReclaimType full_reclaim =
       mechanism::ArcVmReclaimType::kReclaimAll;
 
@@ -896,9 +881,7 @@ void WorkingSetTrimmerPolicyChromeOSTest::ExpectFullReclaim(
 
   // 2. The intermediate forwarding operation. Checking that parameters are
   //    carried forward.
-  EXPECT_CALL(*policy(),
-              OnTrimArcVmProcesses(full_reclaim, is_first_reclaim,
-                                   config_pages_per_minute, config_max_pages))
+  EXPECT_CALL(*policy(), OnTrimArcVmProcesses(full_reclaim, is_first_reclaim))
       .Times(Exactly(1));
 
   // 3. The call to the underlying trimmer. Validate the computed page limit.
@@ -923,11 +906,10 @@ void WorkingSetTrimmerPolicyChromeOSTest::ExpectDropPageCaches() {
 
   // 2. The intermediate forwarding operation. Checking that parameters are
   //    carried forward.
-  EXPECT_CALL(*policy(),
-              OnTrimArcVmProcesses(
-                  mechanism::ArcVmReclaimType::kReclaimGuestPageCaches,
-                  /*is_first_reclaim=*/true,
-                  /*config_pages_per_minute=*/_, /*config_max_pages=*/_))
+  EXPECT_CALL(
+      *policy(),
+      OnTrimArcVmProcesses(mechanism::ArcVmReclaimType::kReclaimGuestPageCaches,
+                           /*is_first_reclaim=*/true))
       .Times(Exactly(1));
 
   // 3. The call to the underlying trimmer. Validate the computed page limit.
@@ -1099,9 +1081,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
   EXPECT_CALL(*policy(), TrimArcVmProcesses).Times(Exactly(1));
   EXPECT_CALL(*policy(),
               OnTrimArcVmProcesses(mechanism::ArcVmReclaimType::kReclaimAll,
-                                   kNotFirstReclaimPostBoot,
-                                   params().trim_arcvm_pages_per_minute,
-                                   params().trim_arcvm_max_pages_per_iteration))
+                                   kNotFirstReclaimPostBoot))
       .Times(Exactly(1))
       .WillOnce(Invoke(this, &WorkingSetTrimmerPolicyChromeOSTest::
                                  DefaultOnTrimArcVmProcessesAndQuit));
@@ -1136,9 +1116,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
   EXPECT_CALL(*policy(), TrimArcVmProcesses).Times(Exactly(1));
   EXPECT_CALL(*policy(),
               OnTrimArcVmProcesses(mechanism::ArcVmReclaimType::kReclaimAll,
-                                   kNotFirstReclaimPostBoot,
-                                   params().trim_arcvm_pages_per_minute,
-                                   params().trim_arcvm_max_pages_per_iteration))
+                                   kNotFirstReclaimPostBoot))
       .Times(Exactly(1))
       .WillOnce(Invoke(this, &WorkingSetTrimmerPolicyChromeOSTest::
                                  DefaultOnTrimArcVmProcessesAndQuit));
@@ -1162,9 +1140,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimProcessesIneligible) {
   EXPECT_CALL(*policy(), TrimArcVmProcesses).Times(Exactly(1));
   EXPECT_CALL(*policy(),
               OnTrimArcVmProcesses(mechanism::ArcVmReclaimType::kReclaimNone,
-                                   kNotFirstReclaimPostBoot,
-                                   params().trim_arcvm_pages_per_minute,
-                                   params().trim_arcvm_max_pages_per_iteration))
+                                   kNotFirstReclaimPostBoot))
       .Times(Exactly(1))
       .WillOnce(Invoke(this, &WorkingSetTrimmerPolicyChromeOSTest::
                                  DefaultOnTrimArcVmProcessesAndQuit));
@@ -1180,9 +1156,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimProcessesIneligible) {
   EXPECT_CALL(*policy(), TrimArcVmProcesses).Times(Exactly(1));
   EXPECT_CALL(*policy(),
               OnTrimArcVmProcesses(mechanism::ArcVmReclaimType::kReclaimNone,
-                                   kNotFirstReclaimPostBoot,
-                                   params().trim_arcvm_pages_per_minute,
-                                   params().trim_arcvm_max_pages_per_iteration))
+                                   kNotFirstReclaimPostBoot))
       .Times(Exactly(1))
       .WillOnce(Invoke(this, &WorkingSetTrimmerPolicyChromeOSTest::
                                  DefaultOnTrimArcVmProcessesAndQuit));
@@ -1210,9 +1184,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
   EXPECT_CALL(
       *policy(),
       OnTrimArcVmProcesses(mechanism::ArcVmReclaimType::kReclaimGuestPageCaches,
-                           kNotFirstReclaimPostBoot,
-                           params().trim_arcvm_pages_per_minute,
-                           params().trim_arcvm_max_pages_per_iteration))
+                           kNotFirstReclaimPostBoot))
       .Times(Exactly(1))
       .WillOnce(Invoke(this, &WorkingSetTrimmerPolicyChromeOSTest::
                                  DefaultOnTrimArcVmProcessesAndQuit));
@@ -1232,9 +1204,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest,
   EXPECT_CALL(*policy(), TrimArcVmProcesses).Times(Exactly(1));
   EXPECT_CALL(*policy(),
               OnTrimArcVmProcesses(mechanism::ArcVmReclaimType::kReclaimAll,
-                                   kNotFirstReclaimPostBoot,
-                                   params().trim_arcvm_pages_per_minute,
-                                   params().trim_arcvm_max_pages_per_iteration))
+                                   kNotFirstReclaimPostBoot))
       .Times(Exactly(1))
       .WillOnce(Invoke(this, &WorkingSetTrimmerPolicyChromeOSTest::
                                  DefaultOnTrimArcVmProcessesAndQuit));
@@ -1260,9 +1230,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimProcessesForceTrim) {
   EXPECT_CALL(*policy(), TrimArcVmProcesses).Times(Exactly(1));
   EXPECT_CALL(*policy(),
               OnTrimArcVmProcesses(mechanism::ArcVmReclaimType::kReclaimNone,
-                                   kNotFirstReclaimPostBoot,
-                                   params().trim_arcvm_pages_per_minute,
-                                   params().trim_arcvm_max_pages_per_iteration))
+                                   kNotFirstReclaimPostBoot))
       .Times(Exactly(1))
       .WillOnce(Invoke(this, &WorkingSetTrimmerPolicyChromeOSTest::
                                  DefaultOnTrimArcVmProcessesAndQuit));
@@ -1278,9 +1246,7 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimProcessesForceTrim) {
   EXPECT_CALL(*policy(), TrimArcVmProcesses).Times(Exactly(1));
   EXPECT_CALL(*policy(),
               OnTrimArcVmProcesses(mechanism::ArcVmReclaimType::kReclaimAll,
-                                   kNotFirstReclaimPostBoot,
-                                   params().trim_arcvm_pages_per_minute,
-                                   params().trim_arcvm_max_pages_per_iteration))
+                                   kNotFirstReclaimPostBoot))
       .Times(Exactly(1))
       .WillOnce(Invoke(this, &WorkingSetTrimmerPolicyChromeOSTest::
                                  DefaultOnTrimArcVmProcessesAndQuit));
