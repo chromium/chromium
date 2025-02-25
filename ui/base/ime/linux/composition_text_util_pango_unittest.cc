@@ -44,7 +44,7 @@ struct TestData {
   const ImeTextSpan ime_text_spans[10];
 };
 
-const auto kTestData = std::to_array<TestData>({
+constexpr auto kTestData = std::to_array<TestData>({
     // Normal case
     {"One Two Three",
      {{PANGO_ATTR_UNDERLINE, PANGO_UNDERLINE_SINGLE, 0, 3},

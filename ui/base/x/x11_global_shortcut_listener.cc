@@ -21,7 +21,7 @@ namespace {
 // exact modifiers, we need to grab all key combinations including zero or more
 // of the following: Num lock, Caps lock and Scroll lock.  So that we can make
 // sure the behavior of global shortcuts is consistent on all platforms.
-const auto kModifiersMasks = std::to_array<x11::ModMask>({
+constexpr auto kModifiersMasks = std::to_array<x11::ModMask>({
     {},                  // No additional modifier.
     x11::ModMask::c_2,   // Num lock
     x11::ModMask::Lock,  // Caps lock
