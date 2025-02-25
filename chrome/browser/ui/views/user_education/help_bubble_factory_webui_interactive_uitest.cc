@@ -11,6 +11,7 @@
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -27,6 +28,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
@@ -35,6 +37,7 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "components/user_education/webui/tracked_element_webui.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -79,6 +82,12 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
  public:
   HelpBubbleFactoryWebUIInteractiveUiTest() = default;
   ~HelpBubbleFactoryWebUIInteractiveUiTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    g_browser_process->local_state()->SetBoolean(
+        chrome_urls::kInternalOnlyUisEnabled, true);
+  }
 
   // Opens the side panel and instruments the Read Later WebContents as
   // kReadLaterWebContentsElementId.

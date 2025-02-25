@@ -510,7 +510,9 @@ void PasswordManager::RegisterProfilePrefs(
                                 false);
   registry->RegisterBooleanPref(prefs::kAccountStoreMigratedToOSCryptAsync,
                                 false);
-  registry->RegisterBooleanPref(prefs::kAutomaticPasskeyUpgrades, true);
+  registry->RegisterBooleanPref(
+      prefs::kAutomaticPasskeyUpgrades, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 // static

@@ -36,9 +36,7 @@ enum class MiniMapOutcome {
   kReportedAnIssue = 2,
   kOpenedSettings = 3,
   kOpenedQuery = 4,
-  kUserDisabled = 5,
-  kUserDisabledThenSettings = 6,
-  kMaxValue = kUserDisabledThenSettings,
+  kMaxValue = kOpenedQuery,
 };
 
 }  // namespace
@@ -161,28 +159,6 @@ enum class MiniMapOutcome {
 - (void)userOpenedQueryFromMiniMap {
   base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
                                 MiniMapOutcome::kOpenedQuery);
-}
-
-- (void)userDisabledSettingFromMiniMap {
-  base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
-                                MiniMapOutcome::kUserDisabled);
-  if (!self.prefService) {
-    return;
-  }
-  self.prefService->SetBoolean(prefs::kDetectAddressesEnabled, false);
-
-  if (self.webState) {
-    auto* manager =
-        web::AnnotationsTextManager::FromWebState(self.webState.get());
-    if (manager) {
-      manager->RemoveDecorationsWithType(kDecorationAddress);
-    }
-  }
-}
-
-- (void)userOpenedSettingsFromDisableConfirmation {
-  base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
-                                MiniMapOutcome::kUserDisabledThenSettings);
 }
 
 @end

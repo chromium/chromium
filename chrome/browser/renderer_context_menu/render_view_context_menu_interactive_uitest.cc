@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -208,6 +209,9 @@ class ContextMenuFencedFrameTest : public ContextMenuUiTest {
         "content/test/data");
     embedded_https_test_server().SetSSLConfig(
         net::EmbeddedTestServer::CERT_TEST_NAMES);
+
+    override_registration_ =
+        web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
   }
 
   void RunTest(FencedFrameContextMenuTestCase& test_case) {
@@ -466,12 +470,21 @@ class ContextMenuFencedFrameTest : public ContextMenuUiTest {
     web_app::test::InstallWebApp(browser()->profile(), std::move(web_app_info));
   }
 
+  void CleanupWebApps() {
+    web_app::test::UninstallAllWebApps(browser()->profile());
+    override_registration_.reset();
+  }
+
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
     return fenced_frame_test_helper_;
   }
 
  private:
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+  // OS integration is needed to be able to launch web applications. This
+  // override ensures OS integration doesn't leave any traces.
+  std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
+      override_registration_;
 };
 
 // Check which commands are present after opening the context menu for a
@@ -789,6 +802,7 @@ IN_PROC_BROWSER_TEST_F(
       .is_in_nested_iframe = false};
 
   RunTest(test_case);
+  CleanupWebApps();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -804,6 +818,7 @@ IN_PROC_BROWSER_TEST_F(
       .is_in_nested_iframe = true};
 
   RunTest(test_case);
+  CleanupWebApps();
 }
 
 IN_PROC_BROWSER_TEST_F(

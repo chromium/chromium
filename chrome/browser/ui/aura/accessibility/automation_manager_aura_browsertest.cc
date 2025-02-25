@@ -292,21 +292,21 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
   view1->GetViewAccessibility().SetName("view1",
                                         ax::mojom::NameFrom::kAttribute);
   view1->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  widget->GetRootView()->AddChildView(view1);
+  widget->GetRootView()->AddChildViewRaw(view1);
   views::AXAuraObjWrapper* wrapper1 = cache_ptr->GetOrCreate(view1);
   views::View* view2 = new views::View();
   view2->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   view2->GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   view2->GetViewAccessibility().SetName("view2",
                                         ax::mojom::NameFrom::kAttribute);
-  widget->GetRootView()->AddChildView(view2);
+  widget->GetRootView()->AddChildViewRaw(view2);
   views::AXAuraObjWrapper* wrapper2 = cache_ptr->GetOrCreate(view2);
   views::View* view3 = new views::View();
   view3->GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   view3->GetViewAccessibility().SetName("view3",
                                         ax::mojom::NameFrom::kAttribute);
   view3->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  widget->GetRootView()->AddChildView(view3);
+  widget->GetRootView()->AddChildViewRaw(view3);
   views::AXAuraObjWrapper* wrapper3 = cache_ptr->GetOrCreate(view3);
 
   // Focus view1, then block until we get an accessibility event that
@@ -624,13 +624,13 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, EventFromAction) {
   view1->GetViewAccessibility().SetName("view1",
                                         ax::mojom::NameFrom::kAttribute);
   view1->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  widget->GetRootView()->AddChildView(view1);
+  widget->GetRootView()->AddChildViewRaw(view1);
   views::View* view2 = new views::View();
   view2->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   view2->GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   view2->GetViewAccessibility().SetName("view2",
                                         ax::mojom::NameFrom::kAttribute);
-  widget->GetRootView()->AddChildView(view2);
+  widget->GetRootView()->AddChildViewRaw(view2);
   views::AXAuraObjWrapper* wrapper2 = cache_ptr->GetOrCreate(view2);
 
   // Focus view1, simulating the non-accessibility action, block until we get an

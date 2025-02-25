@@ -140,6 +140,17 @@ bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
     return false;
   }
 
+  // Don't run provider in non-keyword mode if query length is less than
+  // the minimum length.
+  if (!input.InKeywordMode() &&
+      static_cast<int>(input.text().length()) <
+          omnibox_feature_configs::SearchAggregatorProvider::Get()
+              .min_query_length) {
+    // Clear old matches if the query length goes below `min_query_length`.
+    matches_.clear();
+    return false;
+  }
+
   // TODO(crbug.com/380642693): Add backoff check.
   return true;
 }
@@ -179,16 +190,34 @@ void EnterpriseSearchAggregatorProvider::RequestCompleted(
   DCHECK(!done_);
   DCHECK_EQ(loader_.get(), source);
 
-  bool updated_matches = false;
   if (response_code == 200) {
-    updated_matches = UpdateResults(SearchSuggestionParser::ExtractJsonData(
-        source, std::move(response_body)));
+    const std::string& json_data = SearchSuggestionParser::ExtractJsonData(
+        source, std::move(response_body));
+    std::optional<base::Value::Dict> value =
+        base::JSONReader::ReadDict(json_data, base::JSON_ALLOW_TRAILING_COMMAS);
+    UpdateResults(value, response_code);
   } else {
-    // Clear matches for any response that is an error.
     // TODO(crbug.com/380642693): Add backoff if needed. This could be done by
     // tracking the number of consecutive errors and only clearing matches if
     // the number of errors exceeds a certain threshold. Or verifying backoff
     // conditions from the server-side team.
+    UpdateResults(std::nullopt, response_code);
+  }
+}
+
+void EnterpriseSearchAggregatorProvider::UpdateResults(
+    const std::optional<base::Value::Dict>& response_value,
+    const int response_code) {
+  bool updated_matches = false;
+
+  if (response_value.has_value()) {
+    // Clear old matches if received a successful response, even if the response
+    // is empty.
+    matches_.clear();
+    ParseEnterpriseSearchAggregatorSearchResults(response_value.value());
+    updated_matches = true;
+  } else if (response_code != 200) {
+    // Clear matches for any response that is an error.
     matches_.clear();
     updated_matches = true;
   }
@@ -198,38 +227,18 @@ void EnterpriseSearchAggregatorProvider::RequestCompleted(
   NotifyListeners(/*updated_matches=*/updated_matches);
 }
 
-bool EnterpriseSearchAggregatorProvider::UpdateResults(
-    const std::string& json_data) {
-  std::optional<base::Value::Dict> response =
-      base::JSONReader::ReadDict(json_data, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!response) {
-    return false;
-  }
-
-  // Clear old matches if received a successful response, even if the response
-  // is empty.
-  matches_.clear();
-
-  // Fill `matches_` with the new server matches.
-  ParseEnterpriseSearchAggregatorSearchResults(
-      base::Value(std::move(*response)));
-
-  return !matches_.empty();
-}
-
 void EnterpriseSearchAggregatorProvider::
-    ParseEnterpriseSearchAggregatorSearchResults(const base::Value& root_val) {
-  CHECK(root_val.is_dict());
+    ParseEnterpriseSearchAggregatorSearchResults(
+        const base::Value::Dict& root_val) {
   const TemplateURL* template_url =
       template_url_service_->GetEnterpriseSearchAggregatorEngine();
 
   // Parse the results.
-  const base::Value::List* queryResults =
-      root_val.GetDict().FindList("querySuggestions");
+  const base::Value::List* queryResults = root_val.FindList("querySuggestions");
   const base::Value::List* peopleResults =
-      root_val.GetDict().FindList("peopleSuggestions");
+      root_val.FindList("peopleSuggestions");
   const base::Value::List* contentResults =
-      root_val.GetDict().FindList("contentSuggestions");
+      root_val.FindList("contentSuggestions");
 
   ParseResultList(queryResults, template_url,
                   /*suggestion_type=*/SuggestionType::QUERY,

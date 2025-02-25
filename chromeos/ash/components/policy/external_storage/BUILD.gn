@@ -4,11 +4,8 @@
 
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
-source_set("external_storage") {
-  visibility = [
-    ":unit_tests",
-    "//chromeos/ash/components/policy",
-  ]
+component("external_storage") {
+  output_name = "chromeos_ash_components_policy_external_storage"
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POLICY_IMPL" ]
 
   public = [
@@ -46,5 +43,21 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//testing/gtest",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  public = [ "test_support.h" ]
+
+  sources = [ "test_support.cc" ]
+
+  public_deps = [ ":external_storage" ]
+
+  deps = [
+    "//base",
+    "//chromeos/components/disks:prefs",
+    "//components/prefs",
   ]
 }

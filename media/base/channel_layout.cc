@@ -14,7 +14,7 @@
 
 namespace media {
 
-const auto kLayoutToChannels = std::to_array<int>({
+constexpr auto kLayoutToChannels = std::to_array<int>({
     0,  // CHANNEL_LAYOUT_NONE
     0,  // CHANNEL_LAYOUT_UNSUPPORTED
     1,  // CHANNEL_LAYOUT_MONO

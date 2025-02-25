@@ -4,7 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_type.h"
-#import "components/autofill/core/browser/data_model/autofill_profile.h"
+#import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/utils/nsobject_description_utils.h"

@@ -566,8 +566,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="User reported an issue"/>
   <int value="3" label="User opened settings"/>
   <int value="4" label="User opened a query"/>
-  <int value="5" label="User disabled detection"/>
-  <int value="6" label="User opened settings from disable confirmation"/>
 </enum>
 
 <enum name="IOSMultiWindowConfiguration">
@@ -725,13 +723,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Same Document Web Navigation"/>
   <int value="2" label="Page Load Navigation"/>
   <int value="3" label="Obsolete - Loading Started"/>
-</enum>
-
-<enum name="IOSParcelTrackingOptInActionOnPrompt">
-  <int value="0" label="AskEveryTime"/>
-  <int value="1" label="AlwaysTrack"/>
-  <int value="2" label="NoThanks"/>
-  <int value="3" label="SwipeToDismiss"/>
 </enum>
 
 <enum name="IOSParcelTrackingOptInStatus">

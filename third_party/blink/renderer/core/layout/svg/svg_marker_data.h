@@ -22,7 +22,7 @@
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_path_consumer.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 

@@ -24,7 +24,7 @@ enum class RuleInvalidationDataVisitorType;
 //
 // In addition to complete invalidation (where we just throw up our
 // hands and invalidate everything) and :has() (which is described in
-// detail below), we have fundamentally four types of invalidation.
+// detail below), we have fundamentally five types of invalidation.
 // All will be described for a class selector, but apply equally to
 // id etc.:
 //
@@ -44,7 +44,24 @@ enum class RuleInvalidationDataVisitorType;
 //     (a selector of the form .c ~ .d or .c + .d exists).
 //     We represent this by storing .d in c's sibling invalidation set.
 //
-//   - nth-child invalidation: Described immediately below.
+//   - Universal sibling invalidation: Described below.
+//
+//   - nth-child invalidation: Described below.
+//
+// The universal sibling invalidation set is used in cases where compounds left
+// of sibling combinators don't have any simple selectors for which we create
+// invalidation sets. This includes the following cases:
+//   - Tag names to the left of sibling combinators. We do not index
+//     invalidation sets on tag names since elements do not change tag names
+//     dynamically. However, a selector such as "div + span" necessitates an
+//     invalidation on <span> elements when a preceding <div> is added/removed.
+//   - Negated selectors to the left of sibling combinators. For example,
+//     ":not(.a) + .b" necessitates an invalidation on ".b" when a preceding
+//     element not having class "a" is added/removed.
+//   - Universal selectors to the left of sibling combinators. For example,
+//     "* + .a" necessitates an invalidation on ".a" when it gains or loses a
+//     preceding sibling.
+// For more detail, see https://crrev.com/1f82047b13f02be39b8104b6afda0615e60a7cee.
 //
 // nth-child invalidation deals with peculiarities for :nth-child()
 // and related selectors (such as :only-of-type). We have a couple
@@ -121,11 +138,13 @@ class CORE_EXPORT RuleInvalidationData {
       const QualifiedName& attribute_name,
       unsigned min_direct_adjacent) const;
 
-  // TODO: Document.
   void CollectUniversalSiblingInvalidationSet(
       InvalidationLists&,
       unsigned min_direct_adjacent) const;
+
   void CollectNthInvalidationSet(InvalidationLists&) const;
+
+  // TODO: Document.
   void CollectPartInvalidationSet(InvalidationLists&) const;
 
   // Quick tests for whether we need to consider :has() invalidation.

@@ -9,14 +9,6 @@
 
 namespace parcel_tracking {
 
-// Name of the histogram that records the action taken by the user after the
-// Parcel Tracking Opt-In prompt is presented.
-extern const char kOptInPromptActionHistogramName[];
-
-// Name of the histogram that logs when the Parcel Tracking Opt-In prompt is
-// presented.
-extern const char kOptInPromptDisplayedHistogramName[];
-
 // Interactions with the Parcel Tracking Opt-In prompt. This is mapped to
 // the IOSParcelTrackingOptInActionOnPrompt enum in enums.xml for metrics.
 enum class OptInPromptActionType {
@@ -26,11 +18,6 @@ enum class OptInPromptActionType {
   kSwipeToDismiss = 3,
   kMaxValue = kSwipeToDismiss,
 };
-
-// Logs number of parcels tracked to the histogram corresponding to
-// `tracking_source`.
-void RecordParcelsTracked(TrackingSource tracking_source,
-                          int number_of_parcels);
 
 // Logs number of parcels untracked to the histogram corresponding to
 // `tracking_source`.

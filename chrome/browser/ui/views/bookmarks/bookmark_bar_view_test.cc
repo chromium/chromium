@@ -1837,7 +1837,7 @@ class BookmarkBarViewTest20 : public BookmarkBarViewEventTestBase {
     layout->SetIgnoreDefaultMainAxisMargins(true)
         .SetCollapseMargins(true)
         .SetDefault(views::kMarginsKey, gfx::Insets::VH(0, 2));
-    container_view->AddChildView(bb_view_.get());
+    container_view->AddChildViewRaw(bb_view_.get());
     bb_view_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,

@@ -172,6 +172,8 @@ source_set("test_support") {
     "glic_test_util.h",
     "interactive_glic_test.cc",
     "interactive_glic_test.h",
+    "interactive_test_util.cc",
+    "interactive_test_util.h",
   ]
   deps = [
     ":glic",

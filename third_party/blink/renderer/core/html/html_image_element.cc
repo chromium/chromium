@@ -406,7 +406,8 @@ void HTMLImageElement::ParseAttribute(
   } else if (name == html_names::kSharedstoragewritableAttr &&
              RuntimeEnabledFeatures::SharedStorageAPIEnabled(
                  GetExecutionContext())) {
-    if (!GetExecutionContext()->IsSecureContext()) {
+    auto* execution_context = GetExecutionContext();
+    if (!execution_context || !execution_context->IsSecureContext()) {
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kError,

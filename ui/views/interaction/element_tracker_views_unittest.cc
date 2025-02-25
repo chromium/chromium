@@ -1284,7 +1284,7 @@ TEST_F(ElementTrackerTwoWidgetTest, ViewMovedToDifferentWidgetGeneratesEvents) {
   EXPECT_EQ(0, shown2.event_count());
   EXPECT_EQ(0, hidden2.event_count());
   // Move to second widget.
-  view2->AddChildView(button);
+  view2->AddChildViewRaw(button);
   EXPECT_EQ(1, shown.event_count());
   EXPECT_EQ(1, hidden.event_count());
   EXPECT_EQ(1, shown2.event_count());
@@ -1433,7 +1433,7 @@ TEST_F(ElementTrackerTwoWidgetTest, OverrideContextCallbackCollapsesContexts) {
   EXPECT_EQ(1, shown.event_count());
   EXPECT_EQ(0, hidden.event_count());
   // Move to second widget.
-  view2->AddChildView(button);
+  view2->AddChildViewRaw(button);
   EXPECT_EQ(2, shown.event_count());
   EXPECT_EQ(1, hidden.event_count());
   // Destroy the second widget.
@@ -1467,7 +1467,7 @@ TEST_F(ElementTrackerTwoWidgetTest,
   EXPECT_EQ(0, shown2.event_count());
   EXPECT_EQ(0, hidden2.event_count());
   // Move to second widget.
-  view2->AddChildView(button);
+  view2->AddChildViewRaw(button);
   EXPECT_EQ(1, shown.event_count());
   EXPECT_EQ(1, hidden.event_count());
   EXPECT_EQ(1, shown2.event_count());

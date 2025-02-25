@@ -265,14 +265,15 @@ source_set("browser_tests") {
   }
 }
 
-if (!is_android) {
-  source_set("interactive_ui_tests") {
-    testonly = true
+source_set("interactive_ui_tests") {
+  testonly = true
 
-    sources = [
+  sources = [ "cr_elements/cr_elements_focus_test.cc" ]
+
+  if (!is_android) {
+    sources += [
       "bookmarks/bookmarks_focus_test.cc",
       "cr_components/cr_components_interactive_test.cc",
-      "cr_elements/cr_elements_focus_test.cc",
       "downloads/downloads_focus_test.cc",
       "history/history_focus_test.cc",
       "new_tab_page/new_tab_page_focus_test.cc",
@@ -282,47 +283,50 @@ if (!is_android) {
       "support_tool/support_tool_focus_test.cc",
       "tab_search/tab_search_focus_test.cc",
     ]
+  }
 
-    if (enable_webui_tab_strip) {
-      sources += [ "tab_strip/tab_strip_focus_test.cc" ]
-    }
+  if (enable_webui_tab_strip) {
+    sources += [ "tab_strip/tab_strip_focus_test.cc" ]
+  }
 
-    if (enable_extensions) {
-      sources += [ "extensions/extensions_focus_test.cc" ]
-    }
+  if (enable_extensions) {
+    sources += [ "extensions/extensions_focus_test.cc" ]
+  }
 
-    if (enable_print_preview && !is_chromeos) {
-      sources += [ "print_preview/print_preview_focus_test.cc" ]
-    }
+  if (enable_print_preview && !is_chromeos) {
+    sources += [ "print_preview/print_preview_focus_test.cc" ]
+  }
 
-    if (chrome_root_store_cert_management_ui) {
-      sources += [ "cr_components/certificate_manager/certificate_manager_component_interactive_test.cc" ]
-    }
+  if (chrome_root_store_cert_management_ui) {
+    sources += [ "cr_components/certificate_manager/certificate_manager_component_interactive_test.cc" ]
+  }
 
-    if (is_chromeos) {
-      sources += [
-        "chromeos/ash_common/cr_elements/ash_common_cr_elements_focus_test.cc",
-        "chromeos/print_preview/print_preview_focus_test.cc",
-        "chromeos/settings/os_settings_focus_test.cc",
-      ]
-    }
+  if (is_chromeos) {
+    sources += [
+      "chromeos/ash_common/cr_elements/ash_common_cr_elements_focus_test.cc",
+      "chromeos/print_preview/print_preview_focus_test.cc",
+      "chromeos/settings/os_settings_focus_test.cc",
+    ]
+  }
 
-    data = [ "//chrome/test/data/" ]
+  data = [ "//chrome/test/data/" ]
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    deps = [
-      "//chrome/test:test_support",
+  deps = [ "//chrome/test:test_support" ]
+
+  if (!is_android) {
+    deps += [
       "//components/history_clusters/core",
       "//components/password_manager/content/common",
       "//components/power_bookmarks/core:features",
       "//components/search",
     ]
+  }
 
-    if (enable_compose) {
-      sources += [ "compose/compose_focus_test.cc" ]
-      deps += [ "//components/compose/core/browser:features" ]
-    }
+  if (enable_compose) {
+    sources += [ "compose/compose_focus_test.cc" ]
+    deps += [ "//components/compose/core/browser:features" ]
   }
 }
 
@@ -377,6 +381,7 @@ webui_ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "chai_assert.ts",
+    "keyboard_mock_interactions.ts",
     "mocha_adapter_simple.ts",
     "test_browser_proxy.ts",
     "test_util.ts",
@@ -387,7 +392,6 @@ webui_ts_library("build_ts") {
       "chrome_timeticks_test.ts",
       "fake_chrome_event.ts",
       "fake_settings_private.ts",
-      "keyboard_mock_interactions.ts",
       "metrics_test_support.ts",
       "mock_controller.ts",
       "mocked_metrics_reporter.ts",

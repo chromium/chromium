@@ -42,7 +42,7 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
 
   bool IsDisabledFormControl() const override;
   String DefaultToolTip() const override;
-  HTMLSelectElement* OwnerSelectElement() const;
+  HTMLSelectElement* OwnerSelectElement(bool skip_check = false) const;
 
   String GroupLabelText() const;
   HTMLDivElement& OptGroupLabelElement() const;

@@ -190,7 +190,7 @@ public class AndroidPaymentAppFinderUnitTest {
                         packageManagerDelegate,
                         mDelegate,
                         /* factory= */ null);
-        finder.bypassIsReadyToPayServiceInTest();
+        AndroidPaymentAppFinder.bypassIsReadyToPayServiceInTest();
         finder.findAndroidPaymentApps();
         return mDelegate;
     }

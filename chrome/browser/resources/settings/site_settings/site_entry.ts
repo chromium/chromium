@@ -92,6 +92,12 @@ export class SiteEntryElement extends SiteEntryElementBase {
         value: '',
       },
 
+      isRelatedWebsiteSetsV2UiEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isRelatedWebsiteSetsV2UiEnabled'),
+      },
+
       /**
        * Mock preference used to power managed policy icon for related website
        * sets.
@@ -164,6 +170,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
   private cookiesNum_: string[];
   sortMethod?: SortMethod;
   private rwsEnterprisePref_: chrome.settingsPrivate.PrefObject;
+  private isRelatedWebsiteSetsV2UiEnabled_: boolean;
 
   private button_: Element|null = null;
   private eventTracker_: EventTracker = new EventTracker();
@@ -353,10 +360,13 @@ export class SiteEntryElement extends SiteEntryElementBase {
     if (!this.siteGroup.rwsOwner) {
       this.rwsMembershipLabel_ = '';
     } else {
-      this.browserProxy
-          .getRwsMembershipLabel(
-              this.siteGroup.rwsNumMembers!, this.siteGroup.rwsOwner)
-          .then(label => this.rwsMembershipLabel_ = label);
+      if (this.isRelatedWebsiteSetsV2UiEnabled_) {
+        this.rwsMembershipLabel_ = this.i18n('allSitesRwsMembershipLabel');
+      } else {
+        this.browserProxy.getRwsMembershipLabel(
+            this.siteGroup.rwsNumMembers!, this.siteGroup.rwsOwner)
+            .then(label => this.rwsMembershipLabel_ = label);
+      }
     }
   }
 

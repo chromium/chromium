@@ -3427,22 +3427,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.ParcelTracking.OptIn.ActionOnPrompt"
-    enum="IOSParcelTrackingOptInActionOnPrompt" expires_after="2025-06-08">
-  <owner>hiramahmood@google.com</owner>
-  <owner>thegreenfrog@chromium.org</owner>
-  <summary>Logs a user's action on the Parcel Tracking Opt-In prompt.</summary>
-</histogram>
-
-<histogram name="IOS.ParcelTracking.OptIn.Displayed" enum="Boolean"
-    expires_after="2025-06-08">
-  <owner>hiramahmood@google.com</owner>
-  <owner>thegreenfrog@chromium.org</owner>
-  <summary>
-    Logs each time when the Parcel Tracking Opt-In prompt is displayed.
-  </summary>
-</histogram>
-
 <histogram name="IOS.ParcelTracking.OptInStatus"
     enum="IOSParcelTrackingOptInStatus" expires_after="2025-07-06">
   <owner>hiramahmood@google.com</owner>
@@ -3453,22 +3437,6 @@ chromium-metrics-reviews@google.com.
     not yet interacted with the opt-in prompt, new users on M127 will log
     StatusNotSet, while users before M127 will log AskToTrack.
   </summary>
-</histogram>
-
-<histogram name="IOS.ParcelTracking.Tracked.{Source}" units="count"
-    expires_after="2025-07-06">
-  <owner>hiramahmood@google.com</owner>
-  <owner>thegreenfrog@chromium.org</owner>
-  <summary>Logs number of packages tracked from {Source}.</summary>
-  <token key="Source">
-    <variant name="AutoTrack"
-        summary="Recorded when package(s) are tracked automatically."/>
-    <variant name="Infobar"
-        summary="Recorded when package(s) are tracked from an infobar."/>
-    <variant name="LongPress"
-        summary="Recorded when package(s) are tracked from long pressing on a
-                 package number."/>
-  </token>
 </histogram>
 
 <histogram name="IOS.ParcelTracking.Untracked.{Source}" units="count"

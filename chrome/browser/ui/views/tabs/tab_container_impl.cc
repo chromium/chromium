@@ -288,7 +288,7 @@ void TabContainerImpl::ReturnTabSlotView(TabSlotView* view) {
 
   const gfx::Rect bounds_in_tab_container_coords = gfx::ToEnclosingRect(
       ConvertRectToTarget(view->parent(), this, gfx::RectF(view->bounds())));
-  AddChildView(view);
+  AddChildViewRaw(view);
   view->SetBoundsRect(bounds_in_tab_container_coords);
 
   Tab* tab = views::AsViewClass<Tab>(view);

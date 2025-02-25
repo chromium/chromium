@@ -14,15 +14,18 @@ import type {BrowserProxy} from './browser_proxy.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import {SemanticEvent} from './lens.mojom-webui.js';
 import {recordLensOverlaySemanticEvent} from './metrics_utils.js';
+import type {GestureEvent} from './selection_utils.js';
 import {getCss} from './simplified_text_layer.css.js';
 import {getHtml} from './simplified_text_layer.html.js';
 import type {Line, Paragraph, Text, Word} from './text.mojom-webui.js';
-import {getTextSeparator, isWordRenderable} from './text_rendering.js';
+import type {TextLayerBase} from './text_layer_base.js';
+import {getTextSeparator, isWordRenderable, translateWords} from './text_rendering.js';
 
 /*
  * Element responsible for highlighting and selection text.
  */
-export class SimplifiedTextLayerElement extends CrLitElement {
+export class SimplifiedTextLayerElement extends CrLitElement implements
+    TextLayerBase {
   static get is() {
     return 'lens-simplified-text-layer';
   }
@@ -35,6 +38,8 @@ export class SimplifiedTextLayerElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  // The content language received from OnTextReceived.
+  private contentLanguage: string;
   // The words received in this layer.
   private receivedWords: Word[] = [];
   // An array that corresponds 1:1 to receivedWords, where paragraphNumbers[i]
@@ -92,6 +97,40 @@ export class SimplifiedTextLayerElement extends CrLitElement {
     this.eventTracker_.removeAll();
   }
 
+  handleRightClick(_event: PointerEvent): boolean {
+    // Do nothing. Gestures are currently not used in this layer.
+    return false;
+  }
+
+  handleGestureStart(_event: GestureEvent): boolean {
+    // Do nothing. Gestures are currently not used in this layer.
+    return false;
+  }
+
+  handleGestureDrag(_event: GestureEvent) {
+    // Do nothing. Gestures are currently not used in this layer.
+  }
+
+  handleGestureEnd() {
+    // Do nothing. Gestures are currently not used in this layer.
+  }
+
+  cancelGesture() {
+    // Do nothing. Gestures are currently not used in this layer.
+  }
+
+  selectAndSendWords(_selectionStartIndex: number, _selectionEndIndex: number) {
+    // Do nothing. The simplified text layer does not support selecting words.
+  }
+
+  selectAndTranslateWords(startIndex: number, endIndex: number) {
+    // This layer does not support selection of text. So just translate the
+    // words.
+    translateWords(
+        this.getRegionText(), this.contentLanguage, startIndex, endIndex,
+        this.browserProxy);
+  }
+
   private detectTextInRegion(box: CenterRotatedBox) {
     // If we are still waiting for the text, hide the context menu.
     if (!this.textReceivedTimeoutElapsedOrCleared) {
@@ -121,6 +160,8 @@ export class SimplifiedTextLayerElement extends CrLitElement {
     this.lines = [];
     this.paragraphs = [];
     let paragraphNumber = 0;
+
+    this.contentLanguage = text.contentLanguage ?? '';
 
     // If there was already text, log a text gleam render end event.
     if (this.receivedWords.length > 0) {
@@ -187,6 +228,10 @@ export class SimplifiedTextLayerElement extends CrLitElement {
           return word.plainText + separator;
         })
         .join('');
+  }
+
+  getElementForTesting(): Element {
+    return this;
   }
 }
 

@@ -62,12 +62,14 @@ class PageHandler : public DevToolsDomainHandler,
                     public RenderWidgetHostObserver,
                     public download::DownloadItem::Observer {
  public:
-  PageHandler(EmulationHandler* emulation_handler,
-              BrowserHandler* browser_handler,
-              bool allow_unsafe_operations,
-              bool is_trusted,
-              std::optional<url::Origin> navigation_initiator_origin,
-              bool may_read_local_files);
+  PageHandler(
+      EmulationHandler* emulation_handler,
+      BrowserHandler* browser_handler,
+      bool allow_unsafe_operations,
+      bool is_trusted,
+      std::optional<url::Origin> navigation_initiator_origin,
+      bool may_read_local_files,
+      base::RepeatingCallback<void(std::string)> prepare_for_reload_callback);
 
   PageHandler(const PageHandler&) = delete;
   PageHandler& operator=(const PageHandler&) = delete;
@@ -113,6 +115,7 @@ class PageHandler : public DevToolsDomainHandler,
       const BackForwardCacheCanStoreTreeResult* tree_result);
 
   void IsPrerenderingAllowed(bool& is_allowed);
+  void ReadyToCommitNavigation(NavigationRequest* navigation_request);
 
   Response Enable(
       std::optional<bool> enable_file_chooser_opened_event) override;
@@ -270,6 +273,9 @@ class PageHandler : public DevToolsDomainHandler,
       pending_downloads_;
 
   bool is_prerendering_allowed_ = true;
+  base::RepeatingCallback<void(std::string)> prepare_for_reload_callback_;
+  bool have_pending_reload_ = false;
+  std::string pending_script_to_evaluate_on_load_;
 
   base::WeakPtrFactory<PageHandler> weak_factory_{this};
 };

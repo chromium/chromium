@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -58,12 +59,14 @@ void LaunchWebAppCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
     return;
   }
 
+  const WebApp* current_app = lock_->registrar().GetAppById(params_.app_id);
+  CHECK(current_app);
+
   bool is_standalone_launch =
       params_.container == apps::LaunchContainer::kLaunchContainerWindow ||
       (launch_setting_ ==
            LaunchWebAppWindowSetting::kOverrideWithWebAppConfig &&
-       lock_->registrar().GetAppUserDisplayMode(params_.app_id) !=
-           mojom::UserDisplayMode::kBrowser);
+       current_app->user_display_mode() != mojom::UserDisplayMode::kBrowser);
 
   GetMutableDebugValue().Set("is_standalone_launch", is_standalone_launch);
   if (is_standalone_launch) {

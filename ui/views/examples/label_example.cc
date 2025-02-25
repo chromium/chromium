@@ -244,7 +244,7 @@ Combobox* LabelExample::AddCombobox(View* parent,
   combobox->SetSelectedIndex(0);
   combobox->GetViewAccessibility().SetName(name);
   combobox->SetCallback(base::BindRepeating(function, base::Unretained(this)));
-  return parent->AddChildView(std::move(combobox));
+  return parent->AddChildViewRaw(std::move(combobox));
 }
 
 void LabelExample::AlignmentChanged() {

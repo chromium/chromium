@@ -712,10 +712,11 @@ void ExtensionInstallDialogView::CreateContents() {
         section.header, views::style::CONTEXT_DIALOG_BODY_TEXT);
     header_label->SetMultiLine(true);
     header_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    extension_info_container->AddChildView(header_label);
+    extension_info_container->AddChildViewRaw(header_label);
 
     if (section.contents_view) {
-      extension_info_container->AddChildView(section.contents_view.release());
+      extension_info_container->AddChildViewRaw(
+          section.contents_view.release());
     }
   }
 
@@ -737,7 +738,7 @@ void ExtensionInstallDialogView::CreateContents() {
   scroll_view_->ClipHeightTo(
       0, provider->GetDistanceMetric(
              views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
-  AddChildView(scroll_view_.get());
+  AddChildViewRaw(scroll_view_.get());
 }
 
 void ExtensionInstallDialogView::ContentsChanged(

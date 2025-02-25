@@ -483,7 +483,7 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
   EXPECT_EQ(description, registrar().GetAppDescription(app_id));
   EXPECT_EQ(theme_color, registrar().GetAppThemeColor(app_id));
   EXPECT_EQ(start_url, registrar().GetAppStartUrl(app_id));
-  EXPECT_EQ(mojom::UserDisplayMode::kStandalone,
+  EXPECT_EQ(mojom::UserDisplayMode::kBrowser,
             registrar().GetAppUserDisplayMode(app_id));
 
   {
@@ -506,6 +506,8 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
     ASSERT_TRUE(future.Wait());
     EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
               registrar().GetInstallState(app_id));
+    EXPECT_EQ(mojom::UserDisplayMode::kStandalone,
+              registrar().GetAppUserDisplayMode(app_id));
   }
 
   {
@@ -1409,6 +1411,7 @@ TEST_F(WebAppRegistrarTest_TabStrip, TabbedAppNewTabUrl) {
 
   web_app->SetDisplayMode(DisplayMode::kTabbed);
   web_app->SetTabStrip(tab_strip);
+  web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   RegisterAppUnsafe(std::move(web_app));
 
   EXPECT_EQ(registrar().GetAppNewTabUrl(app_id), new_tab_url);
@@ -1472,6 +1475,8 @@ TEST_F(WebAppRegistrarTest, InnerAndOuterScopeIntentPicker) {
       test::CreateWebApp(GURL("https://abc.com"), WebAppManagement::kPolicy);
   outer_web_app->SetName("ABC_Outer");
   outer_web_app->SetScope(GURL("https://abc.com/"));
+  outer_web_app->SetInstallState(
+      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   const webapps::AppId outer_app_id = outer_web_app->app_id();
   RegisterAppUnsafe(std::move(outer_web_app));
 
@@ -1479,6 +1484,8 @@ TEST_F(WebAppRegistrarTest, InnerAndOuterScopeIntentPicker) {
                                           WebAppManagement::kDefault);
   inner_web_app->SetName("ABC_Inner");
   inner_web_app->SetScope(GURL("https://abc.com/inner"));
+  inner_web_app->SetInstallState(
+      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   const webapps::AppId inner_app_id = inner_web_app->app_id();
   RegisterAppUnsafe(std::move(inner_web_app));
 

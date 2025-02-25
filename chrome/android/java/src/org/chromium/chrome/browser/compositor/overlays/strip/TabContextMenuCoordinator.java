@@ -34,6 +34,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 
+import java.util.List;
+
 /**
  * A coordinator for the context menu on the tab strip by long-pressing on a tab. It is responsible
  * for creating a list of menu items, setting up the menu, and displaying the menu.
@@ -121,6 +123,9 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
             if (menuId == R.id.add_to_tab_group) {
                 recordUserAction("AddToTabGroup");
             } else if (menuId == R.id.remove_from_tab_group) {
+                tabGroupModelFilter
+                        .getTabUngrouper()
+                        .ungroupTabs(List.of(tab), /* trailing= */ true, /* allowDialog= */ true);
                 recordUserAction("RemoveFromTabGroup");
             } else if (menuId == R.id.share_tab) {
                 recordUserAction("ShareTab");
@@ -159,12 +164,14 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                 BrowserUiListMenuUtils.buildMenuListItem(
                         R.string.add_tab_to_group, R.id.add_to_tab_group, /* startIconId= */ 0));
 
-        // Show the option to remove the tab from its group iff the tab is already in a group.
-        itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItem(
-                        R.string.remove_tab_from_group,
-                        R.id.remove_from_tab_group,
-                        /* startIconId= */ 0));
+        if (tab.getTabGroupId() != null) {
+            // Show the option to remove the tab from its group iff the tab is already in a group.
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItem(
+                            R.string.remove_tab_from_group,
+                            R.id.remove_from_tab_group,
+                            /* startIconId= */ 0));
+        }
 
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItem(

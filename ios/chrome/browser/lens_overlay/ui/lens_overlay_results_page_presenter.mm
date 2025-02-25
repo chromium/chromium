@@ -25,6 +25,19 @@ const CGFloat kPreferredCornerRadius = 14.0;
 // released.
 const CGFloat kThresholdHeightForClosingSheet = 200.0f;
 
+// The threshold from the medium detent when the visible area can get obstructed
+// by the bottom sheet presentation.
+const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
+
+// The percentage of the previous movement of the bottom sheet that should be
+// added as compensation to the next one in order to reduce the visual motion
+// delay.
+const CGFloat kCompensationPercentageOfPreviousMovement = 0.7;
+
+// The movement amount (in points) from which it is worth compensating to match
+// the delay induced by the sampling of the `CADisplayLink`.
+const CGFloat kPreviousMovementCompensationThreshold = 2.0;
+
 }  // namespace
 
 @interface LensOverlayResultsPagePresenter () <LensOverlayPanTrackerDelegate,
@@ -49,6 +62,12 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
 
   /// Tracks whether the user is currently the view behind the sheet
   LensOverlayPanTracker* _basePanTracker;
+
+  /// The constraint corresponding to the bottom offset of the visible area.
+  NSLayoutConstraint* _visibleAreaBottomConstraint;
+
+  /// The previous recorded height for the bottom sheet.
+  CGFloat _lastRecordedSheetPresentationHeight;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -58,6 +77,7 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
   if (self) {
     _baseViewController = baseViewController;
     _resultViewController = resultViewController;
+    _visibleAreaLayoutGuide = [[UILayoutGuide alloc] init];
   }
 
   return self;
@@ -85,6 +105,28 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
     _delegate = delegate;
     _displayLink.paused = delegate == nil;
   }
+}
+
+- (void)setUpVisibleAreaLayoutGuideIfNeeded {
+  // If it's a reveal the layout guide it's already set up.
+  if ([_baseViewController.view.layoutGuides
+          containsObject:_visibleAreaLayoutGuide]) {
+    return;
+  }
+
+  [_baseViewController.view addLayoutGuide:_visibleAreaLayoutGuide];
+
+  _visibleAreaBottomConstraint = [_visibleAreaLayoutGuide.bottomAnchor
+      constraintEqualToAnchor:_baseViewController.view.bottomAnchor];
+  [NSLayoutConstraint activateConstraints:@[
+    _visibleAreaBottomConstraint,
+    [_visibleAreaLayoutGuide.topAnchor
+        constraintEqualToAnchor:_baseViewController.view.topAnchor],
+    [_visibleAreaLayoutGuide.leftAnchor
+        constraintEqualToAnchor:_baseViewController.view.leftAnchor],
+    [_visibleAreaLayoutGuide.rightAnchor
+        constraintEqualToAnchor:_baseViewController.view.rightAnchor],
+  ]];
 }
 
 - (void)presentResultsPageAnimated:(BOOL)animated
@@ -144,6 +186,7 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
   __block NSSet<UIGestureRecognizer*>* panRecognizersBeforePresenting =
       [self panGestureRecognizersOnWindow];
 
+  [self setUpVisibleAreaLayoutGuideIfNeeded];
   __weak __typeof(self) weakSelf = self;
   [_baseViewController
       presentViewController:_resultViewController
@@ -175,6 +218,7 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
 
 - (void)hideBottomSheet {
   [_displayLink invalidate];
+  [self sheetPresentationHeightChanged:0];
   [_windowPanTracker stopTracking];
   [_basePanTracker stopTracking];
   _detentsManager = nil;
@@ -230,6 +274,21 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
   CGFloat containerHeight = _baseViewController.view.frame.size.height;
   CGFloat currentSheetHeight = containerHeight - newFrame.origin.y;
 
+  // To keep in sync external animation, emply the approximated layer that is
+  // currently being displayed onscreen as it accurately keeps track of the
+  // bottom sheet positon throughout the animations (e.g. when the user finishes
+  // dragging the sheet).
+  CGRect presentationLayerFrame =
+      _resultViewController.view.layer.presentationLayer.frame;
+  CGRect presentationLayerConvertedFrame =
+      [_resultViewController.view.layer.presentationLayer
+          convertRect:presentationLayerFrame
+              toLayer:_baseViewController.view.layer];
+  CGFloat presentationLayerHeight =
+      containerHeight - presentationLayerConvertedFrame.origin.y;
+
+  [self sheetPresentationHeightChanged:presentationLayerHeight];
+
   // Trigger the Lens UI exit flow when the release occurs below the threshold,
   // allowing the overlay animation to run concurrently with the sheet dismissal
   // one.
@@ -240,9 +299,38 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
       sheetClosedThresholdReached && !userTouchesTheScreen;
   if (shouldDestroyLensUI) {
     [_displayLink invalidate];
+    [self sheetPresentationHeightChanged:0];
     [_windowPanTracker stopTracking];
     [self.delegate onResultsPageWillInitiateGestureDrivenDismiss];
   }
+}
+
+- (void)sheetPresentationHeightChanged:(CGFloat)sheetHeight {
+  // Monitoring using `CADisplayLink` provides accurate frame updates during
+  // bottom sheet release animations, but its sampling introduces a delay
+  // between the layout guide update and the sheet movement.
+  // To mitigate this at high panning speeds (when the difference is higher than
+  // `kPreviousMovementCompensationThreshold`, we apply a proportional
+  // compensation based on the difference from the last reported height.
+
+  CGFloat motionSmoothenFactor = 0.0;
+  CGFloat previousMovement =
+      _lastRecordedSheetPresentationHeight != 0
+          ? sheetHeight - _lastRecordedSheetPresentationHeight
+          : 0;
+  if (ABS(previousMovement) >= kPreviousMovementCompensationThreshold) {
+    motionSmoothenFactor =
+        previousMovement * kCompensationPercentageOfPreviousMovement;
+  }
+
+  CGFloat estimatedMediumDetentHeight =
+      _detentsManager.estimatedMediumDetentHeight;
+  CGFloat maximumOffset =
+      estimatedMediumDetentHeight + kVisibleAreaMediumDetentThreshold;
+  CGFloat bottomOffset = MIN(sheetHeight, maximumOffset) + motionSmoothenFactor;
+
+  _visibleAreaBottomConstraint.constant = -bottomOffset;
+  _lastRecordedSheetPresentationHeight = sheetHeight;
 }
 
 - (void)adjustSelectionOcclusionInsets {

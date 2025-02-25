@@ -218,9 +218,9 @@ TEST_F(NativeViewHostTest, ViewHierarchyChangedForHostParent) {
 
   // Add two children views.
   View* view0 = new View;
-  toplevel()->GetRootView()->AddChildView(view0);
+  toplevel()->GetRootView()->AddChildViewRaw(view0);
   View* view1 = new View;
-  toplevel()->GetRootView()->AddChildView(view1);
+  toplevel()->GetRootView()->AddChildViewRaw(view1);
 
   // To each child view, add a child widget.
   ViewHierarchyChangedTestHost* host0 = new ViewHierarchyChangedTestHost;
@@ -239,7 +239,7 @@ TEST_F(NativeViewHostTest, ViewHierarchyChangedForHostParent) {
   // Add view0 back to top level, expect 1 parent change.
   host0->ResetParentChanges();
   EXPECT_EQ(0, host0->num_parent_changes());
-  toplevel()->GetRootView()->AddChildView(view0);
+  toplevel()->GetRootView()->AddChildViewRaw(view0);
   EXPECT_EQ(1, host0->num_parent_changes());
 
   // Reparent view0 to view1, expect no parent change because the old and new
@@ -248,7 +248,7 @@ TEST_F(NativeViewHostTest, ViewHierarchyChangedForHostParent) {
   host1->ResetParentChanges();
   EXPECT_EQ(0, host0->num_parent_changes());
   EXPECT_EQ(0, host1->num_parent_changes());
-  view1->AddChildView(view0);
+  view1->AddChildViewRaw(view0);
   EXPECT_EQ(0, host0->num_parent_changes());
   EXPECT_EQ(0, host1->num_parent_changes());
 
@@ -256,12 +256,12 @@ TEST_F(NativeViewHostTest, ViewHierarchyChangedForHostParent) {
   // Then, reparent view1 to contents view of child0.
   // Expect 2 parent changes because the old parent belongs to the toplevel
   // widget whereas the new parent belongs to the 1st child widget.
-  toplevel()->GetRootView()->AddChildView(view0);
+  toplevel()->GetRootView()->AddChildViewRaw(view0);
   host0->ResetParentChanges();
   host1->ResetParentChanges();
   EXPECT_EQ(0, host0->num_parent_changes());
   EXPECT_EQ(0, host1->num_parent_changes());
-  child0->GetContentsView()->AddChildView(view1);
+  child0->GetContentsView()->AddChildViewRaw(view1);
   EXPECT_EQ(0, host0->num_parent_changes());
   EXPECT_EQ(2, host1->num_parent_changes());
 }

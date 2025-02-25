@@ -47,7 +47,7 @@ WebAppContentSettingsContainer::WebAppContentSettingsContainer(
     image_view->disable_animation();
     views::SetHitTestComponent(image_view.get(), static_cast<int>(HTCLIENT));
     content_setting_views_.push_back(image_view.get());
-    AddChildView(image_view.release());
+    AddChildViewRaw(image_view.release());
   }
 }
 

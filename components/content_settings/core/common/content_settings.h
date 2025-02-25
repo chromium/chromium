@@ -115,6 +115,7 @@ enum class SettingSource {
   kSupervised,
   kInstalledWebApp,
   kTpcdGrant,
+  kTest,
 };
 
 // |SettingInfo| provides meta data for content setting values. |source|
@@ -156,9 +157,10 @@ constexpr SettingSource GetSettingSourceFromProviderType(
     case ProviderType::kOneTimePermissionProvider:
     case ProviderType::kPrefProvider:
     case ProviderType::kDefaultProvider:
+      return SettingSource::kUser;
     case ProviderType::kProviderForTests:
     case ProviderType::kOtherProviderForTests:
-      return SettingSource::kUser;
+      return SettingSource::kTest;
     case content_settings::ProviderType::kNone:
       return SettingSource::kNone;
   }

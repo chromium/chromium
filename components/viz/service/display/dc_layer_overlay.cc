@@ -538,11 +538,9 @@ void FromDrawQuad(const DisplayResourceProvider* resource_provider,
   dc_layer.hdr_metadata = resource_provider->GetHDRMetadata(quad->resource_id);
 
   dc_layer.protected_video_type = quad->protected_video_type;
-  // Both color space and protected_video_type are hard-coded for stream video.
+  // protected_video_type is hard-coded for stream video.
   // TODO(crbug.com/40878556): Consider using quad->protected_video_type.
   if (quad->is_stream_video) {
-    dc_layer.color_space = gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
-                                           gfx::ColorSpace::TransferID::BT709);
     dc_layer.protected_video_type = gfx::ProtectedVideoType::kHardwareProtected;
   }
   dc_layer.possible_video_fullscreen_letterboxing =

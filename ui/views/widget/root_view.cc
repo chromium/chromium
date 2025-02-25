@@ -348,7 +348,7 @@ void RootView::SetContentsView(View* contents_view) {
   if (!children().empty()) {
     RemoveAllChildViews();
   }
-  AddChildView(contents_view);
+  AddChildViewRaw(contents_view);
 }
 
 View* RootView::GetContentsView() {

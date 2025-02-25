@@ -8,6 +8,7 @@ include_rules = [
   "+components/security_state/core",
   "+components/webxr/android",
   "+content/public/android",
+  "+device/vr/public",
   "+third_party/jni_zero",
   "+ui/android",
   "+ui/strings/grit/ui_strings.h",

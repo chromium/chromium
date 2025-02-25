@@ -391,7 +391,8 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session) {
       session->GetClient()->AllowUnsafeOperations(),
       session->GetClient()->IsTrusted(),
       session->GetClient()->GetNavigationInitiatorOrigin(),
-      session->GetClient()->MayReadLocalFiles());
+      session->GetClient()->MayReadLocalFiles(),
+      session->MakePrepareForReloadCallback());
   session->CreateAndAddHandler<protocol::SecurityHandler>();
   if (!frame_tree_node_ || !frame_tree_node_->parent()) {
     DevToolsSession* root_session = session->GetRootSession();
@@ -456,8 +457,12 @@ void RenderFrameDevToolsAgentHost::ReadyToCommitNavigation(
     return;
   }
   NavigationRequest* request = NavigationRequest::From(navigation_handle);
-  for (auto* tracing : protocol::TracingHandler::ForAgentHost(this))
+  for (auto* tracing : protocol::TracingHandler::ForAgentHost(this)) {
     tracing->ReadyToCommitNavigation(request);
+  }
+  for (auto* page : protocol::PageHandler::ForAgentHost(this)) {
+    page->ReadyToCommitNavigation(request);
+  }
 
   if (request->frame_tree_node() != frame_tree_node_) {
     if (ShouldForceCreation() && request->GetRenderFrameHost() &&

@@ -42,9 +42,9 @@ MigratableCardView::MigratableCardView(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI)));
 
-  AddChildView(GetMigratableCardDescriptionView(migratable_credit_card,
-                                                should_show_checkbox)
-                   .release());
+  AddChildViewRaw(GetMigratableCardDescriptionView(migratable_credit_card,
+                                                   should_show_checkbox)
+                      .release());
 
   checkbox_uncheck_text_container_ =
       AddChildView(views::Builder<views::View>()
@@ -158,9 +158,10 @@ MigratableCardView::GetMigratableCardDescriptionView(
           migratable_credit_card.credit_card().network())));
   card_image->GetViewAccessibility().SetName(
       migratable_credit_card.credit_card().NetworkForDisplay());
-  card_network_and_last_four_digits->AddChildView(card_image.release());
-  card_network_and_last_four_digits->AddChildView(card_description.release());
-  migratable_card_description_view->AddChildView(
+  card_network_and_last_four_digits->AddChildViewRaw(card_image.release());
+  card_network_and_last_four_digits->AddChildViewRaw(
+      card_description.release());
+  migratable_card_description_view->AddChildViewRaw(
       card_network_and_last_four_digits.release());
 
   std::unique_ptr<views::Label> card_expiration =
@@ -170,13 +171,13 @@ MigratableCardView::GetMigratableCardDescriptionView(
           views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
   card_expiration->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
   card_expiration->SetMultiLine(true);
-  migratable_card_description_view->AddChildView(card_expiration.release());
+  migratable_card_description_view->AddChildViewRaw(card_expiration.release());
 
   // If card is not successfully uploaded we show the invalid card
   // label and the trash can icon.
   if (migratable_credit_card.migration_status() ==
       MigratableCreditCard::MigrationStatus::FAILURE_ON_UPLOAD) {
-    migratable_card_description_view->AddChildView(new views::Label(
+    migratable_card_description_view->AddChildViewRaw(new views::Label(
         l10n_util::GetStringUTF16(
             IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_LABEL_INVALID_CARDS),
         views::style::CONTEXT_LABEL, ChromeTextStyle::STYLE_RED));

@@ -5,7 +5,7 @@
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"

@@ -35,6 +35,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -3355,12 +3356,24 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ(browser2_groups[0], group);
 }
 
+// Detachable tabs are not supported for PWAs on Mac so these tests don't apply.
+#if !BUILDFLAG(IS_MAC)
 using DetachTabWithUrlControlledByWebApp = DetachToBrowserTabDragControllerTest;
-
 // Test tearing off a tab displaying a url controlled by a web app.
 // The kTearOffWebAppTabOpensWebAppWindow experiment determines whether the new
 // browser window will be a normal browser window or an app window.
 IN_PROC_BROWSER_TEST_P(DetachTabWithUrlControlledByWebApp, TearOffWebApp) {
+  // OS integration is needed to be able to launch web applications. This
+  // override ensures OS integration doesn't leave any traces.
+  std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
+      override_registration;
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    override_registration =
+        web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
+  }
+
   // Install tabbed web app.
   auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://www.example.com"));
@@ -3410,8 +3423,14 @@ IN_PROC_BROWSER_TEST_P(DetachTabWithUrlControlledByWebApp, TearOffWebApp) {
             std::get<1>(GetParam()) ? Browser::TYPE_APP : Browser::TYPE_NORMAL);
 }
 
-// Detachable tabs are not supported for PWAs on Mac so these tests don't apply.
-#if !BUILDFLAG(IS_MAC)
+INSTANTIATE_TEST_SUITE_P(
+    TabDragging,
+    DetachTabWithUrlControlledByWebApp,
+    ::testing::Combine(
+        /*kSplitTabStrip=*/::testing::Bool(),
+        /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Bool(),
+        /*input_source=*/::testing::Values("mouse")));
+
 class DetachToBrowserTabDragControllerTestWithTabbedWebApp
     : public DetachToBrowserTabDragControllerTest {
  public:
@@ -5508,11 +5527,3 @@ INSTANTIATE_TEST_SUITE_P(
         /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Values(false),
         /*input_source=*/::testing::Values("mouse")));
 #endif
-
-INSTANTIATE_TEST_SUITE_P(
-    TabDragging,
-    DetachTabWithUrlControlledByWebApp,
-    ::testing::Combine(
-        /*kSplitTabStrip=*/::testing::Bool(),
-        /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Bool(),
-        /*input_source=*/::testing::Values("mouse")));

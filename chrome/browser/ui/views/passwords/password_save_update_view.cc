@@ -135,7 +135,7 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
     // `accessibility_alert_` to inform screen readers about that change.
     accessibility_alert_ =
         root_view->AddChildView(std::make_unique<views::View>());
-    AddChildView(accessibility_alert_.get());
+    AddChildViewRaw(accessibility_alert_.get());
   }
 
   {

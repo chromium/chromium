@@ -67,8 +67,6 @@ def main(argv):
             driver, group, 'div.policy.row > div.messages').text)
         break
 
-  except Exception as error:
-    print(error)
   finally:
     driver.quit()
 

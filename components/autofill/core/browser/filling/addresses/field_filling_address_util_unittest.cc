@@ -14,7 +14,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_normalizer_impl.h"
 #include "components/autofill/core/browser/field_types.h"

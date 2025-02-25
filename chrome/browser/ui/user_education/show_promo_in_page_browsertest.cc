@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -20,8 +21,10 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -50,7 +53,17 @@ ShowPromoInPage::Params GetDefaultParams() {
 
 }  // namespace
 
-using ShowPromoInPageBrowserTest = InteractiveBrowserTest;
+class ShowPromoInPageBrowserTest : public InteractiveBrowserTest {
+ public:
+  ShowPromoInPageBrowserTest() = default;
+  ~ShowPromoInPageBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    g_browser_process->local_state()->SetBoolean(
+        chrome_urls::kInternalOnlyUisEnabled, true);
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInNewPage) {
   base::MockCallback<ShowPromoInPage::Callback> bubble_shown;

@@ -283,7 +283,7 @@ TEST_F(RootViewTest, EventHandlersNotResetWhenReparented) {
   // Reparent the child within the hierarchy and expect that it's still the
   // mouse handler.
   View* other_parent = state.AddChildView(std::make_unique<View>());
-  other_parent->AddChildView(event_handler);
+  other_parent->AddChildViewRaw(event_handler);
   EXPECT_EQ(event_handler, root_view->gesture_handler_for_testing());
 }
 
@@ -358,11 +358,11 @@ TEST_F(RootViewTest, ContextMenuFromLongPress) {
 
   View* gesture_handling_child_view = new GestureHandlingView;
   gesture_handling_child_view->SetBoundsRect(gfx::Rect(10, 10));
-  parent_view->AddChildView(gesture_handling_child_view);
+  parent_view->AddChildViewRaw(gesture_handling_child_view);
 
   View* other_child_view = new View;
   other_child_view->SetBoundsRect(gfx::Rect(20, 0, 10, 10));
-  parent_view->AddChildView(other_child_view);
+  parent_view->AddChildViewRaw(other_child_view);
 
   // |parent_view| should not show a context menu as a result of a long press on
   // |gesture_handling_child_view|.
@@ -428,11 +428,11 @@ TEST_F(RootViewTest, ContextMenuFromLongPressOnDisabledView) {
 
   View* gesture_handling_child_view = new GestureHandlingView;
   gesture_handling_child_view->SetBoundsRect(gfx::Rect(10, 10));
-  parent_view->AddChildView(gesture_handling_child_view);
+  parent_view->AddChildViewRaw(gesture_handling_child_view);
 
   View* other_child_view = new View;
   other_child_view->SetBoundsRect(gfx::Rect(20, 0, 10, 10));
-  parent_view->AddChildView(other_child_view);
+  parent_view->AddChildViewRaw(other_child_view);
 
   // |parent_view| should not show a context menu as a result of a long press on
   // |gesture_handling_child_view|.

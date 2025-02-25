@@ -29,6 +29,7 @@ void OptionListIterator::Advance(HTMLOptionElement* previous) {
       // these options aren't notified like this, they won't have the correct
       // value for OwnerSelectElement yet. We can update it to the correct
       // value here.
+      // TODO(crbug.com/398887837): Remove this.
       previous->SetOwnerSelectElement(const_cast<HTMLSelectElement*>(&select_));
     } else {
       DCHECK_EQ(previous->OwnerSelectElement(), select_);
@@ -47,8 +48,11 @@ void OptionListIterator::Advance(HTMLOptionElement* previous) {
         current = ElementTraversal::NextSkippingChildren(*current, &select_);
       } else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(current)) {
         // optgroup->OwnerSelectElement() might be null because this method may
-        // be called before InsertedInto is called on the optgroup.
-        if (optgroup->OwnerSelectElement() == select_ ||
+        // be called before InsertedInto is called on the optgroup. Like the
+        // same check for option elements above, we have to skip DCHECKs inside
+        // the call to OwnerSelectElement.
+        // TODO(crbug.com/398887837): Remove the skip_check parameter.
+        if (optgroup->OwnerSelectElement(/*skip_check=*/true) == select_ ||
             HTMLSelectElement::NearestAncestorSelectNoNesting(*optgroup) ==
                 select_) {
           current = ElementTraversal::Next(*current, &select_);

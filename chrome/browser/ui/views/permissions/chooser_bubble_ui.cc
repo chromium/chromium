@@ -128,7 +128,7 @@ ChooserBubbleUiViewDelegate::ChooserBubbleUiViewDelegate(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   device_chooser_content_view_ =
       new DeviceChooserContentView(this, std::move(chooser_controller));
-  AddChildView(device_chooser_content_view_.get());
+  AddChildViewRaw(device_chooser_content_view_.get());
 
   SetExtraView(device_chooser_content_view_->CreateExtraView());
 

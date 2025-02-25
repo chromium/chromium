@@ -6,16 +6,26 @@
 
 #import <UIKit/UIKit.h>
 
+#import <memory>
+#import <optional>
+
+#import "base/functional/callback_forward.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/browser/web_signin_tracker.h"
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -35,9 +45,14 @@ const FakeSystemIdentity* kDefaultIdentity = [FakeSystemIdentity fakeIdentity1];
 const FakeSystemIdentity* kNonDefaultIdentity =
     [FakeSystemIdentity fakeIdentity2];
 
-class ConsistencyPromoSigninMediatorTest : public PlatformTest {
+class ConsistencyPromoSigninMediatorTest
+    : public PlatformTest,
+      public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        switches::kEnableIdentityInAuthError,
+        ShouldEnableIdentityInAuthErrorFlag());
     PlatformTest::SetUp();
     GetSystemIdentityManager()->AddIdentity(kDefaultIdentity);
     GetSystemIdentityManager()->AddIdentity(kNonDefaultIdentity);
@@ -75,11 +90,14 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetForProfile(profile_.get());
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile_.get());
+    AccountReconcilor* account_reconcilor =
+        ios::AccountReconcilorFactory::GetForProfile(profile_.get());
     ConsistencyPromoSigninMediator* mediator =
         [[ConsistencyPromoSigninMediator alloc]
             initWithAccountManagerService:chrome_account_manager_service
                     authenticationService:auth_service
                           identityManager:identity_manager
+                        accountReconcilor:account_reconcilor
                           userPrefService:GetPrefService()
                               accessPoint:access_point];
     mediator.delegate = mediator_delegate_mock_;
@@ -88,6 +106,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
 
   void SimulateCookieFetchSuccess(ConsistencyPromoSigninMediator* mediator,
                                   id<SystemIdentity> identity) {
+    CHECK(!ShouldEnableIdentityInAuthErrorFlag());
     gaia::ListedAccount account;
     account.id = CoreAccountId::FromGaiaId(GaiaId(identity.gaiaID));
     signin::AccountsInCookieJarInfo cookie_jar_info(
@@ -100,6 +119,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   }
 
   void SimulateCookieFetchError(ConsistencyPromoSigninMediator* mediator) {
+    CHECK(!ShouldEnableIdentityInAuthErrorFlag());
     signin::AccountsInCookieJarInfo cookie_jar_info(
         /*accounts_are_fresh=*/false,
         /*accounts=*/{});
@@ -111,6 +131,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   }
 
   void SimulateCookieFetchTimeout() {
+    CHECK(!ShouldEnableIdentityInAuthErrorFlag());
     task_environment_.AdvanceClock(base::Seconds(30));
   }
 
@@ -138,13 +159,46 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
                                       }]]);
   }
 
+  void ExpectWebSigninTrackerCreationAndCaptureCallback() {
+    if (!ShouldEnableIdentityInAuthErrorFlag()) {
+      // WebSigninTracker is not created in the legacy flow.
+      return;
+    }
+    OCMExpect(
+        [mediator_delegate_mock_
+            trackWebSigninWithIdentityManager:static_cast<
+                                                  signin::IdentityManager*>(
+                                                  [OCMArg anyPointer])
+                            accountReconcilor:static_cast<AccountReconcilor*>(
+                                                  [OCMArg anyPointer])
+                                signinAccount:CoreAccountId()
+                                 withCallback:
+                                     static_cast<base::RepeatingCallback<void(
+                                         signin::WebSigninTracker::Result)>*>(
+                                         [OCMArg anyPointer])
+                                  withTimeout:std::nullopt])
+        .ignoringNonObjectArgs()
+        .andDo(^(NSInvocation* invocation) {
+          [invocation retainArguments];
+          const base::RepeatingCallback<void(signin::WebSigninTracker::Result)>*
+              callbackPtr = nullptr;
+          [invocation getArgument:&callbackPtr atIndex:5];
+          captured_callback_ = *callbackPtr;
+        });
+  }
+
+  bool ShouldEnableIdentityInAuthErrorFlag() { return GetParam(); }
+
  protected:
   AuthenticationFlow* authentication_flow_ =
       OCMStrictClassMock([AuthenticationFlow class]);
   id<ConsistencyPromoSigninMediatorDelegate> mediator_delegate_mock_ =
       OCMStrictProtocolMock(@protocol(ConsistencyPromoSigninMediatorDelegate));
+  base::RepeatingCallback<void(signin::WebSigninTracker::Result)>
+      captured_callback_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   // Needed for test profile.
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -153,7 +207,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
 };
 
 // Tests start and cancel by user.
-TEST_F(ConsistencyPromoSigninMediatorTest, StartAndStopForCancel) {
+TEST_P(ConsistencyPromoSigninMediatorTest, StartAndStopForCancel) {
   base::HistogramTester histogram_tester;
 
   ConsistencyPromoSigninMediator* mediator =
@@ -174,7 +228,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest, StartAndStopForCancel) {
 }
 
 // Tests start and interrupt.
-TEST_F(ConsistencyPromoSigninMediatorTest, StartAndStopForInterrupt) {
+TEST_P(ConsistencyPromoSigninMediatorTest, StartAndStopForInterrupt) {
   base::HistogramTester histogram_tester;
 
   ConsistencyPromoSigninMediator* mediator =
@@ -195,7 +249,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest, StartAndStopForInterrupt) {
 }
 
 // Tests start and sign-in with default identity.
-TEST_F(ConsistencyPromoSigninMediatorTest,
+TEST_P(ConsistencyPromoSigninMediatorTest,
        SigninCoordinatorResultSuccessWithDefaultIdentity) {
   base::HistogramTester histogram_tester;
   GetPrefService()->SetInteger(prefs::kSigninWebSignDismissalCount, 1);
@@ -203,6 +257,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
   ExpectAuthFlowStartAndSetResult(
       kDefaultIdentity, signin_metrics::AccessPoint::kWebSignin,
       SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  ExpectWebSigninTrackerCreationAndCaptureCallback();
 
   ConsistencyPromoSigninMediator* mediator =
       BuildConsistencyPromoSigninMediator(
@@ -213,7 +268,12 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
       consistencyPromoSigninMediatorSignInDone:mediator
                                   withIdentity:kDefaultIdentity]);
 
-  SimulateCookieFetchSuccess(mediator, kDefaultIdentity);
+  if (ShouldEnableIdentityInAuthErrorFlag()) {
+    CHECK(captured_callback_);
+    captured_callback_.Run(signin::WebSigninTracker::Result::kSuccess);
+  } else {
+    SimulateCookieFetchSuccess(mediator, kDefaultIdentity);
+  }
 
   [mediator disconnectWithResult:SigninCoordinatorResultSuccess];
 
@@ -232,7 +292,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
 }
 
 // Tests start and sign-in with secondary identity.
-TEST_F(ConsistencyPromoSigninMediatorTest,
+TEST_P(ConsistencyPromoSigninMediatorTest,
        SigninCoordinatorResultSuccessWithSecondaryIdentity) {
   base::HistogramTester histogram_tester;
   GetPrefService()->SetInteger(prefs::kSigninWebSignDismissalCount, 1);
@@ -240,6 +300,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
   ExpectAuthFlowStartAndSetResult(
       kNonDefaultIdentity, signin_metrics::AccessPoint::kWebSignin,
       SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  ExpectWebSigninTrackerCreationAndCaptureCallback();
 
   ConsistencyPromoSigninMediator* mediator =
       BuildConsistencyPromoSigninMediator(
@@ -250,7 +311,12 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
       consistencyPromoSigninMediatorSignInDone:mediator
                                   withIdentity:kNonDefaultIdentity]);
 
-  SimulateCookieFetchSuccess(mediator, kNonDefaultIdentity);
+  if (ShouldEnableIdentityInAuthErrorFlag()) {
+    CHECK(captured_callback_);
+    captured_callback_.Run(signin::WebSigninTracker::Result::kSuccess);
+  } else {
+    SimulateCookieFetchSuccess(mediator, kNonDefaultIdentity);
+  }
 
   [mediator disconnectWithResult:SigninCoordinatorResultSuccess];
 
@@ -267,7 +333,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
 }
 
 // Tests start and sign-in with an added identity.
-TEST_F(ConsistencyPromoSigninMediatorTest,
+TEST_P(ConsistencyPromoSigninMediatorTest,
        SigninCoordinatorResultSuccessWithAddedIdentity) {
   base::HistogramTester histogram_tester;
 
@@ -279,6 +345,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
   ExpectAuthFlowStartAndSetResult(
       kDefaultIdentity, signin_metrics::AccessPoint::kWebSignin,
       SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  ExpectWebSigninTrackerCreationAndCaptureCallback();
 
   [mediator signinWithAuthenticationFlow:authentication_flow_];
 
@@ -286,7 +353,12 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
       consistencyPromoSigninMediatorSignInDone:mediator
                                   withIdentity:kDefaultIdentity]);
 
-  SimulateCookieFetchSuccess(mediator, kDefaultIdentity);
+  if (ShouldEnableIdentityInAuthErrorFlag()) {
+    CHECK(captured_callback_);
+    captured_callback_.Run(signin::WebSigninTracker::Result::kSuccess);
+  } else {
+    SimulateCookieFetchSuccess(mediator, kDefaultIdentity);
+  }
 
   [mediator disconnectWithResult:SigninCoordinatorResultSuccess];
 
@@ -305,7 +377,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
 // Tests the case where browser sign-in succeeds but the request to fetch
 // cookies comes back with an error, causing the user to be signed out from the
 // browser too.
-TEST_F(ConsistencyPromoSigninMediatorTest, CookiesError) {
+TEST_P(ConsistencyPromoSigninMediatorTest, CookiesError) {
   base::HistogramTester histogram_tester;
 
   ConsistencyPromoSigninMediator* mediator =
@@ -315,6 +387,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest, CookiesError) {
   ExpectAuthFlowStartAndSetResult(
       kDefaultIdentity, signin_metrics::AccessPoint::kWebSignin,
       SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  ExpectWebSigninTrackerCreationAndCaptureCallback();
 
   [mediator signinWithAuthenticationFlow:authentication_flow_];
 
@@ -329,7 +402,12 @@ TEST_F(ConsistencyPromoSigninMediatorTest, CookiesError) {
         error_wait_loop->Quit();
       });
 
-  SimulateCookieFetchError(mediator);
+  if (ShouldEnableIdentityInAuthErrorFlag()) {
+    CHECK(captured_callback_);
+    captured_callback_.Run(signin::WebSigninTracker::Result::kOtherError);
+  } else {
+    SimulateCookieFetchError(mediator);
+  }
 
   error_wait_loop->Run();
 
@@ -354,7 +432,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest, CookiesError) {
 
 // Tests the case where browser sign-in succeeds but cookies never arrive on
 // time, causing the user to be signed out from the browser too.
-TEST_F(ConsistencyPromoSigninMediatorTest, CookiesTimeout) {
+TEST_P(ConsistencyPromoSigninMediatorTest, CookiesTimeout) {
   base::HistogramTester histogram_tester;
 
   ConsistencyPromoSigninMediator* mediator =
@@ -364,6 +442,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest, CookiesTimeout) {
   ExpectAuthFlowStartAndSetResult(
       kDefaultIdentity, signin_metrics::AccessPoint::kWebSignin,
       SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  ExpectWebSigninTrackerCreationAndCaptureCallback();
 
   [mediator signinWithAuthenticationFlow:authentication_flow_];
 
@@ -378,7 +457,12 @@ TEST_F(ConsistencyPromoSigninMediatorTest, CookiesTimeout) {
         error_wait_loop->Quit();
       });
 
-  SimulateCookieFetchTimeout();
+  if (ShouldEnableIdentityInAuthErrorFlag()) {
+    CHECK(captured_callback_);
+    captured_callback_.Run(signin::WebSigninTracker::Result::kTimeout);
+  } else {
+    SimulateCookieFetchTimeout();
+  }
 
   error_wait_loop->Run();
 
@@ -402,7 +486,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest, CookiesTimeout) {
 }
 
 // Tests the case where browser sign-in fails.
-TEST_F(ConsistencyPromoSigninMediatorTest, AuthFlowError) {
+TEST_P(ConsistencyPromoSigninMediatorTest, AuthFlowError) {
   base::HistogramTester histogram_tester;
 
   ConsistencyPromoSigninMediator* mediator =
@@ -448,7 +532,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest, AuthFlowError) {
 
 // Tests start and sign-in with default identity from Settings access point, and
 // then update the cookies. Related to crrev.com/1471140.
-TEST_F(ConsistencyPromoSigninMediatorTest, SigninWithoutCookies) {
+TEST_P(ConsistencyPromoSigninMediatorTest, SigninWithoutCookies) {
   base::HistogramTester histogram_tester;
   GetPrefService()->SetInteger(prefs::kSigninWebSignDismissalCount, 1);
 
@@ -479,5 +563,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest, SigninWithoutCookies) {
       "Signin.AccountConsistencyPromoAction.SignedInWithDefaultAccount",
       signin_metrics::AccessPoint::kSettings, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(, ConsistencyPromoSigninMediatorTest, testing::Bool());
 
 }  // namespace

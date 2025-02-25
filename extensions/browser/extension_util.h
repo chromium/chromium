@@ -55,6 +55,9 @@ bool IsIncognitoEnabled(const ExtensionId& extension_id,
 bool CanCrossIncognito(const Extension* extension,
                        content::BrowserContext* context);
 
+// Returns true if prompting for external extensions is enabled.
+bool IsPromptingEnabled();
+
 #if BUILDFLAG(IS_ANDROID)
 // This is a workaround to ensure ExtensionSystem is initialized properly for
 // incognito profile in split mode on Android.

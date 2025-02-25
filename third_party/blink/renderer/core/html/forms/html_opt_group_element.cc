@@ -200,10 +200,13 @@ String HTMLOptGroupElement::LabelAttributeText() const {
   return item_text;
 }
 
-HTMLSelectElement* HTMLOptGroupElement::OwnerSelectElement() const {
+HTMLSelectElement* HTMLOptGroupElement::OwnerSelectElement(
+    bool skip_check) const {
   if (HTMLSelectElement::SelectParserRelaxationEnabled(this)) {
-    DCHECK_EQ(owner_select_,
-              HTMLSelectElement::NearestAncestorSelectNoNesting(*this));
+    if (!skip_check) {
+      DCHECK_EQ(owner_select_,
+                HTMLSelectElement::NearestAncestorSelectNoNesting(*this));
+    }
     return owner_select_;
   } else {
     return DynamicTo<HTMLSelectElement>(parentNode());

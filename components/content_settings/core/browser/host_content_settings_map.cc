@@ -78,27 +78,10 @@ struct ProviderNamesSourceMapEntry {
   content_settings::SettingSource provider_source;
 };
 
-const ProviderType kFirstProvider = ProviderType::kWebuiAllowlistProvider;
-const ProviderType kFirstUserModifiableProvider =
-    ProviderType::kNotificationAndroidProvider;
-
-// Ensure that kFirstUserModifiableProvider is actually the highest
-// precedence user modifiable provider.
-constexpr bool FirstUserModifiableProviderIsHighestPrecedence() {
-  int i = static_cast<int>(ProviderType::kMinValue);
-  for (; i != static_cast<int>(kFirstUserModifiableProvider); ++i) {
-    if (content_settings::GetSettingSourceFromProviderType(
-            static_cast<ProviderType>(i)) == SettingSource::kUser) {
-      return false;
-    }
-  }
-  return content_settings::GetSettingSourceFromProviderType(
-             static_cast<ProviderType>(i)) == SettingSource::kUser;
+bool IsUserModifiableProvider(ProviderType provider_type) {
+  return content_settings::GetSettingSourceFromProviderType(provider_type) ==
+         SettingSource::kUser;
 }
-
-static_assert(FirstUserModifiableProviderIsHighestPrecedence(),
-              "kFirstUserModifiableProvider is not the highest precedence user "
-              "modifiable provider.");
 
 bool SchemeCanBeAllowlisted(const std::string& scheme) {
   return scheme == content_settings::kChromeDevToolsScheme ||
@@ -432,7 +415,7 @@ ContentSetting HostContentSettingsMap::GetUserModifiableContentSetting(
       content_type));
   const base::Value value =
       GetWebsiteSettingInternal(primary_url, secondary_url, content_type,
-                                kFirstUserModifiableProvider, nullptr);
+                                ProviderFilter::kUserModifiable, nullptr);
   return content_settings::ValueToContentSetting(value);
 }
 
@@ -572,8 +555,8 @@ content_settings::PatternPair HostContentSettingsMap::GetNarrowestPatterns(
   // the existing rule is more specific, than change the existing rule instead
   // of creating a new rule that would be hidden behind the existing rule->
   content_settings::SettingInfo info;
-  GetWebsiteSettingInternal(primary_url, secondary_url, type, kFirstProvider,
-                            &info);
+  GetWebsiteSettingInternal(primary_url, secondary_url, type,
+                            ProviderFilter::kAny, &info);
   if (info.source != SettingSource::kUser) {
     // Return an invalid pattern if the current setting is not a user setting
     // and thus can't be changed.
@@ -1022,14 +1005,14 @@ base::Value HostContentSettingsMap::GetWebsiteSetting(
   }
 
   return GetWebsiteSettingInternal(primary_url, secondary_url, content_type,
-                                   kFirstProvider, info);
+                                   ProviderFilter::kAny, info);
 }
 
 base::Value HostContentSettingsMap::GetWebsiteSettingInternal(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    ProviderType first_provider_to_search,
+    ProviderFilter provider_filter,
     content_settings::SettingInfo* info) const {
   UsedContentSettingsProviders();
   ContentSettingsPattern* primary_pattern = nullptr;
@@ -1043,15 +1026,18 @@ base::Value HostContentSettingsMap::GetWebsiteSettingInternal(
 
   // The list of |content_settings_providers_| is ordered according to their
   // precedence.
-  auto it = content_settings_providers_.lower_bound(first_provider_to_search);
-  for (; it != content_settings_providers_.end(); ++it) {
+  for (const auto& [provider_type, provider] : content_settings_providers_) {
+    if (provider_filter == ProviderFilter::kUserModifiable &&
+        !IsUserModifiableProvider(provider_type)) {
+      continue;
+    }
     base::Value value = GetContentSettingValueAndPatterns(
-        it->second.get(), primary_url, secondary_url, content_type,
+        provider.get(), primary_url, secondary_url, content_type,
         is_off_the_record_, primary_pattern, secondary_pattern, metadata);
     if (!value.is_none()) {
       if (info)
         info->source =
-            content_settings::GetSettingSourceFromProviderType(it->first);
+            content_settings::GetSettingSourceFromProviderType(provider_type);
       return value;
     }
   }
@@ -1265,7 +1251,7 @@ void HostContentSettingsMap::DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
   }
 
   for (const auto& entry : expired_entries) {
-    const bool is_user_modifiable = entry.source > kFirstUserModifiableProvider;
+    const bool is_user_modifiable = IsUserModifiableProvider(entry.source);
 
     if (is_user_modifiable) {
       static_cast<content_settings::UserModifiableProvider*>(

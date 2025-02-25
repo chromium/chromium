@@ -132,7 +132,6 @@ source_set("parcel_tracking") {
     "//components/prefs/ios",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/parcel_tracking:opt_in_status",
-    "//ios/chrome/browser/parcel_tracking:util",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",

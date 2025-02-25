@@ -53,12 +53,14 @@
 #include "remoting/base/cpu_utils.h"
 #include "remoting/base/errors.h"
 #include "remoting/base/host_settings.h"
+#include "remoting/base/instance_identity_token_getter.h"
 #include "remoting/base/is_google_email.h"
 #include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/oauth_token_getter_proxy.h"
 #include "remoting/base/rsa_key_pair.h"
+#include "remoting/base/service_urls.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/host_exit_codes.h"
@@ -482,6 +484,9 @@ class HostProcess : public ConfigWatcher::Delegate,
   // Must outlive |signal_strategy_| and |ftl_signaling_connector_|.
   std::unique_ptr<OAuthTokenGetterImpl> oauth_token_getter_;
 
+  // Must outlive |heartbeat_sender_| and |host_|.
+  std::unique_ptr<InstanceIdentityTokenGetter> instance_identity_token_getter_;
+
   // Must outlive |signal_strategy_| and |heartbeat_sender_|.
   std::unique_ptr<ZombieHostDetector> zombie_host_detector_;
 
@@ -875,9 +880,14 @@ void HostProcess::CreateAuthenticatorFactory() {
       local_certificate, key_pair_);
   if (is_cloud_host_) {
     CHECK(require_session_authorization_);
+    // |instance_identity_token_getter_| is initialized when we configured the
+    // heartbeat sender to target Cloud APIs, the expectation is that it will
+    // be initialized well before the point we need it for session authz.
+    CHECK(instance_identity_token_getter_);
     auth_config->AddSessionAuthzAuth(
         base::MakeRefCounted<CloudSessionAuthzServiceClientFactory>(
-            oauth_token_getter_.get(), context_->url_loader_factory()));
+            oauth_token_getter_.get(), instance_identity_token_getter_.get(),
+            context_->url_loader_factory()));
   } else if (require_session_authorization_ ||
              (is_corp_host_ && !allow_pin_auth_.value_or(false))) {
     auth_config->AddSessionAuthzAuth(
@@ -1711,8 +1721,16 @@ void HostProcess::InitializeSignaling() {
   // HeartbeatSender.
   std::unique_ptr<HeartbeatServiceClient> service_client;
   if (is_cloud_host_) {
+    // Initialize |instance_identity_token_getter_| so it can be used to
+    // generate tokens for calling the private Remoting Cloud API.
+    instance_identity_token_getter_ =
+        std::make_unique<InstanceIdentityTokenGetter>(
+            ServiceUrls::GetInstance()->remoting_cloud_private_endpoint(),
+            context_->url_loader_factory());
+
     service_client = std::make_unique<CloudHeartbeatServiceClient>(
-        host_id_, oauth_token_getter_.get(), context_->url_loader_factory());
+        host_id_, oauth_token_getter_.get(),
+        instance_identity_token_getter_.get(), context_->url_loader_factory());
     // TODO: joedow - Implement CorpHeartbeatServiceClient.
     // } else if (is_corp_host_) {
     //   service_client = std::make_unique<CorpHeartbeatServiceClient>(
@@ -1996,6 +2014,7 @@ void HostProcess::OnHostOfflineReasonAck(bool success) {
   HOST_LOG << "SendHostOfflineReason " << (success ? "succeeded." : "failed.");
   heartbeat_sender_.reset();
   oauth_token_getter_.reset();
+  instance_identity_token_getter_.reset();
   ftl_signaling_connector_.reset();
   ftl_echo_message_listener_.reset();
   signal_strategy_.reset();

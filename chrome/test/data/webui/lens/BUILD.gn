@@ -18,6 +18,7 @@ build_webui_tests("build") {
     "overlay/overlay_more_options_button_test.ts",
     "overlay/overlay_screenshot_test.ts",
     "overlay/overlay_show_translate_promo_test.ts",
+    "overlay/simplified_selection_test.ts",
     "overlay/overlay_theme_test.ts",
     "overlay/performance_tracker_test.ts",
     "overlay/post_selection_renderer_test.ts",

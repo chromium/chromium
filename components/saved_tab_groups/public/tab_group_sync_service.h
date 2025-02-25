@@ -20,6 +20,7 @@
 #include "components/saved_tab_groups/proto/url_restriction.pb.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -269,7 +270,8 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // deletion happens in the server in response to the collaboration group
   // deletion. This trickles back to the sync bridge thereby removing the tab
   // group from the model.
-  virtual void OnCollaborationRemoved(const std::string& collaboration_id) = 0;
+  virtual void OnCollaborationRemoved(
+      const syncer::CollaborationId& collaboration_id) = 0;
 
   // Accessor methods.
   virtual std::vector<SavedTabGroup> GetAllGroups() const = 0;

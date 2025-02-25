@@ -20,7 +20,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_polygon_element.h"
 
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 
 namespace blink {
 

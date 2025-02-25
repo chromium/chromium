@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckPwaWindowCreated) {
 IN_PROC_BROWSER_TEST_F(WebAppIntegration,
                        PreinstalledWebAppCreateShortcutFlow) {
   helper_.InstallPreinstalledApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
   helper_.CheckPlatformShortcutNotExists(Site::kStandalone);
   helper_.CreateShortcutsFromList(Site::kStandalone);
   helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, PreinstalledWebAppInstallAfterFlow) {
   helper_.InstallPreinstalledApp(Site::kStandalone);
-  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
   helper_.CheckPlatformShortcutNotExists(Site::kStandalone);
   helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
   helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);

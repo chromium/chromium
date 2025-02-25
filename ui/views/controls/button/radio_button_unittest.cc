@@ -57,9 +57,9 @@ class RadioButtonTest : public ViewsTestBase {
 
 TEST_F(RadioButtonTest, Basics) {
   RadioButton* button1 = new RadioButton(u"Blah", kGroup);
-  button_container().AddChildView(button1);
+  button_container().AddChildViewRaw(button1);
   RadioButton* button2 = new RadioButton(u"Blah", kGroup);
-  button_container().AddChildView(button2);
+  button_container().AddChildViewRaw(button2);
 
   button1->SetChecked(true);
   EXPECT_TRUE(button1->GetChecked());
@@ -72,9 +72,9 @@ TEST_F(RadioButtonTest, Basics) {
 
 TEST_F(RadioButtonTest, Focus) {
   RadioButton* button1 = new RadioButton(u"Blah", kGroup);
-  button_container().AddChildView(button1);
+  button_container().AddChildViewRaw(button1);
   RadioButton* button2 = new RadioButton(u"Blah", kGroup);
-  button_container().AddChildView(button2);
+  button_container().AddChildViewRaw(button2);
 
   // Tabbing through only focuses the checked button.
   button1->SetChecked(true);
@@ -103,11 +103,11 @@ TEST_F(RadioButtonTest, Focus) {
 TEST_F(RadioButtonTest, FocusOnClick) {
   RadioButton* button1 = new RadioButton(std::u16string(), kGroup);
   button1->SetSize(gfx::Size(10, 10));
-  button_container().AddChildView(button1);
+  button_container().AddChildViewRaw(button1);
   button1->SetChecked(true);
   RadioButton* button2 = new RadioButton(std::u16string(), kGroup);
   button2->SetSize(gfx::Size(10, 10));
-  button_container().AddChildView(button2);
+  button_container().AddChildViewRaw(button2);
 
   const gfx::Point point(1, 1);
   const ui::MouseEvent event(ui::EventType::kMousePressed, point, point,

@@ -12,7 +12,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"

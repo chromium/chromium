@@ -53,6 +53,10 @@ bool IsAndroidHub(OEP::PageClassification classification) {
   return classification == OEP::ANDROID_HUB;
 }
 
+bool IsWebUISearchbox(OEP::PageClassification classification) {
+  return classification == OEP::NTP_REALBOX || IsLensSearchbox(classification);
+}
+
 void CheckObsoletePageClass(OEP::PageClassification classification) {
   CHECK(classification != OEP::OBSOLETE_INSTANT_NTP &&
         classification !=

@@ -81,7 +81,7 @@ DownloadInProgressDialogView::DownloadInProgressDialogView(
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
   message_label->SetMultiLine(true);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(message_label.release());
+  AddChildViewRaw(message_label.release());
 }
 
 DownloadInProgressDialogView::~DownloadInProgressDialogView() = default;

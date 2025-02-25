@@ -30,8 +30,17 @@ chromium-metrics-reviews@google.com.
 
 <enum name="GlicEntryPointImpression">
   <int value="0" label="User has not completed fre."/>
-  <int value="1" label="User has completed fre and glic is enabled."/>
-  <int value="2" label="User has completed fre and glic is disabled."/>
+  <int value="1"
+      label="User has completed fre, browser entry point is enabled, and os
+             entry point is disabled."/>
+  <int value="2"
+      label="User has completed fre, browser entry point is disabled, and os
+             entry point is enabled."/>
+  <int value="3"
+      label="User has completed fre, both browser and os entry points are
+             enabled."/>
+  <int value="4"
+      label="User has completed fre, neither entry point is enabled"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.cc:EntryPointImpression) -->

@@ -117,6 +117,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
       _regionalCapabilitiesService;
   // Observer to keep track of the syncing status.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
+  raw_ptr<signin::IdentityManager> _identityManager;
+  id<SystemIdentity> _signedInIdentity;
 }
 
 // Synthesized from NewTabPageMutator.
@@ -150,6 +152,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
+    _identityManager = identityManager;
     _identityObserverBridge =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
@@ -164,6 +167,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     _prefService = prefService;
     _regionalCapabilitiesService = regionalCapabilitiesService;
     _isSafeMode = isSafeMode;
+    _signedInIdentity =
+        _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   }
   return self;
 }
@@ -193,6 +198,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   _syncObserver.reset();
   _syncService = nullptr;
   _regionalCapabilitiesService = nullptr;
+  _identityManager = nullptr;
   self.feedControlDelegate = nil;
 }
 
@@ -257,6 +263,9 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     // Listening to `onExtendedAccountInfoUpdated` instead.
     return;
   }
+  if (![identity isEqual:_signedInIdentity]) {
+    return;
+  }
   [self handleIdentityUpdated];
 }
 
@@ -277,26 +286,19 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
-- (void)onPrimaryAccountChanged:
-    (const signin::PrimaryAccountChangeEvent&)event {
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
-    case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      if (self.authService->IsAccountSwitchInProgress()) {
-        break;
-      }
-      [[fallthrough]];
-    case signin::PrimaryAccountChangeEvent::Type::kSet:
-      [self updateAccountImage];
-      [self updateAccountErrorBadge];
-      break;
-    case signin::PrimaryAccountChangeEvent::Type::kNone:
-      break;
-  }
+- (void)onEndBatchOfPrimaryAccountChanges {
+  _signedInIdentity =
+      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  [self updateAccountImage];
+  [self updateAccountErrorBadge];
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
   if (!IsUseAccountListFromIdentityManagerEnabled()) {
     // Listening to `identityUpdated` instead.
+    return;
+  }
+  if (info.gaia != GaiaId(_signedInIdentity.gaiaID)) {
     return;
   }
   [self handleIdentityUpdated];
@@ -328,15 +330,13 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 // not signed in.
 - (void)updateAccountImage {
   // Fetches user's identity from Authentication Service.
-  id<SystemIdentity> identity =
-      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (identity) {
+  if (_signedInIdentity) {
     // Only show an avatar if the user is signed in.
     UIImage* image = self.accountManagerService->GetIdentityAvatarWithIdentity(
-        identity, IdentityAvatarSize::SmallSize);
+        _signedInIdentity, IdentityAvatarSize::SmallSize);
     [self.imageUpdater updateAccountImage:image
-                                     name:identity.userFullName
-                                    email:identity.userEmail];
+                                     name:_signedInIdentity.userFullName
+                                    email:_signedInIdentity.userEmail];
   } else {
     [self.imageUpdater setSignedOutAccountImage];
     signin_metrics::LogSignInOffered(
@@ -407,14 +407,13 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
           switches::kEnableErrorBadgeOnIdentityDisc)) {
     return;
   }
-  id<SystemIdentity> identity =
-      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   BOOL primaryIdentityHasError =
-      identity && _syncService->GetUserActionableError() !=
-                      syncer::SyncService::UserActionableError::kNone;
-  [self.headerConsumer updateADPBadgeWithErrorFound:primaryIdentityHasError
-                                               name:identity.userFullName
-                                              email:identity.userEmail];
+      _signedInIdentity && _syncService->GetUserActionableError() !=
+                               syncer::SyncService::UserActionableError::kNone;
+  [self.headerConsumer
+      updateADPBadgeWithErrorFound:primaryIdentityHasError
+                              name:_signedInIdentity.userFullName
+                             email:_signedInIdentity.userEmail];
 }
 
 - (void)handleIdentityUpdated {

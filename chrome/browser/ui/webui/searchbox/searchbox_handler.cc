@@ -702,6 +702,7 @@ void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
     autocomplete_input.set_lens_overlay_suggest_inputs(*suggest_inputs);
   }
 
+  edit_model()->SetAutocompleteInput(autocomplete_input);
   omnibox_controller()->StartAutocomplete(autocomplete_input);
 }
 

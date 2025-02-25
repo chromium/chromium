@@ -951,8 +951,8 @@ void CompoundTabContainer::TransferTabBetweenContainers(int from_model_index,
       &from_container, this,
       gfx::RectF(
           from_container.GetTabAtModelIndex(from_container_index)->bounds()));
-  Tab* const tab =
-      AddChildView(from_container.RemoveTabFromViewModel(from_container_index));
+  Tab* const tab = AddChildViewRaw(
+      from_container.RemoveTabFromViewModel(from_container_index));
   tab->SetBoundsRect(ToEnclosingRect(initial_tab_bounds));
 
   // Let `to_container` update its layout data structures.

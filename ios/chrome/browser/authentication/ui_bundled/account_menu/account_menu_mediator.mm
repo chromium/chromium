@@ -64,7 +64,14 @@
   // The authentication flow,
   AuthenticationFlow* _authenticationFlow;
   // This object is set iff an account switch is in progress.
+  // DEPRECATED. This should be removed once all the UI has been migrated to the
+  // new API.
+  // Replaced by `_accountSwitchingBatchClosureRunner`.
   base::ScopedClosureRunner _accountSwitchInProgress;
+  // The lifetime of this ScopedClosureRunner denotes a batch of primary account
+  // changes. UI listens to batched changes to avoid visual artifacts during an
+  // account switch.
+  base::ScopedClosureRunner _accountSwitchingBatchClosureRunner;
 
   // The list of identities to display and their index in the table view’s
   // identities section
@@ -124,6 +131,7 @@
 
 - (void)disconnect {
   _accountSwitchInProgress.RunAndReset();
+  _accountSwitchingBatchClosureRunner.RunAndReset();
   _signinCompletionIdentity = nil;
   _blockUpdates = YES;
   _accountManagerService = nullptr;
@@ -342,6 +350,8 @@
 
   _accountSwitchInProgress =
       _authenticationService->DeclareAccountSwitchInProgress();
+  _accountSwitchingBatchClosureRunner =
+      _identityManager->StartBatchOfPrimaryAccountChanges();
   [self.delegate signOutFromTargetRect:targetRect
                              forSwitch:YES
                             completion:^(BOOL success) {
@@ -465,6 +475,7 @@
     // User had not signed-out. Allow to interact with the UI.
     self.userInteractionsBlocked = NO;
     _accountSwitchInProgress.RunAndReset();
+    _accountSwitchingBatchClosureRunner.RunAndReset();
     [self restartUpdates];
     return;
   }
@@ -484,6 +495,7 @@
   CHECK(_authenticationFlow);
   _authenticationFlow = nil;
   _accountSwitchInProgress.RunAndReset();
+  _accountSwitchingBatchClosureRunner.RunAndReset();
   BOOL success =
       result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;
   if (success) {

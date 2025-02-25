@@ -9,6 +9,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/profile_statistics_common.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -76,8 +78,11 @@ class ManagedUserProfileNoticeUI : public content::WebUIController {
   ManagedUserProfileNoticeHandler* GetHandlerForTesting();
 
  private:
+  void UpdateBrowsingDataStringWithCounts(profiles::ProfileCategoryStats stats);
+
   // Stored for tests.
   raw_ptr<ManagedUserProfileNoticeHandler> handler_ = nullptr;
+  base::WeakPtrFactory<ManagedUserProfileNoticeUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

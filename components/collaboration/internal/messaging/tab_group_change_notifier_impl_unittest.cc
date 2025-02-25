@@ -17,6 +17,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -129,7 +130,7 @@ class TabGroupChangeNotifierImplTest : public testing::Test {
     tab_group_sync_service_ =
         std::make_unique<tab_groups::MockTabGroupSyncService>();
     notifier_ = std::make_unique<TabGroupChangeNotifierImpl>(
-        tab_group_sync_service_.get());
+        tab_group_sync_service_.get(), identity_test_env_.identity_manager());
     AddNotifierObserver();
   }
 
@@ -222,6 +223,7 @@ class TabGroupChangeNotifierImplTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
 
   std::unique_ptr<tab_groups::MockTabGroupSyncService> tab_group_sync_service_;
   std::unique_ptr<TabGroupChangeNotifierImpl> notifier_;

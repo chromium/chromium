@@ -1163,7 +1163,7 @@ void ScrollView::SetControlVisibility(View* control, bool should_show) {
   }
   if (should_show) {
     if (!control->GetVisible()) {
-      AddChildView(control);
+      AddChildViewRaw(control);
       control->SetVisible(true);
     }
   } else {

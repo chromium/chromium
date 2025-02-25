@@ -3204,7 +3204,7 @@ class AnimatingLayoutManagerRootViewTest : public AnimatingLayoutManagerTest {
   void SetUp() override {
     AnimatingLayoutManagerTest::SetUp();
     root_view_ = std::make_unique<View>();
-    root_view_->AddChildView(view());
+    root_view_->AddChildViewRaw(view());
   }
 
   View* root_view() { return root_view_.get(); }

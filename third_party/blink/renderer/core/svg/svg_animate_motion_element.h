@@ -22,7 +22,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ANIMATE_MOTION_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/svg/svg_animation_element.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 
 namespace blink {
 

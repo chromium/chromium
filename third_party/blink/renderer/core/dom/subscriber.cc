@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/subscriber.h"
 
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_callback.h"

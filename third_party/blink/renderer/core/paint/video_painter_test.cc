@@ -258,7 +258,9 @@ class VideoPaintPreviewTest : public testing::Test,
 
 INSTANTIATE_PAINT_TEST_SUITE_P(VideoPaintPreviewTest);
 
-TEST_P(VideoPaintPreviewTest, URLIsRecordedWhenPaintingPreview) {
+// TODO(crbug.com/398893942): This test is flaky on Win and Linux, when this
+// fails it doesn't find any records with cc::ImageType::kGIF.
+TEST_P(VideoPaintPreviewTest, DISABLED_URLIsRecordedWhenPaintingPreview) {
   // Insert a <video> and allow it to begin loading. The image was taken from
   // the RFC for the data URI scheme https://tools.ietf.org/html/rfc2397.
   SetBodyInnerHTML(R"HTML(
@@ -285,7 +287,9 @@ TEST_P(VideoPaintPreviewTest, URLIsRecordedWhenPaintingPreview) {
   EXPECT_EQ(1U, CountImagesOfType(record, cc::ImageType::kGIF));
 }
 
-TEST_P(VideoPaintPreviewTest, PosterFlagToggleFrameCapture) {
+// TODO(crbug.com/398893942): This test is flaky on Win and Linux, when this
+// fails it doesn't find any records with cc::ImageType::kGIF.
+TEST_P(VideoPaintPreviewTest, DISABLED_PosterFlagToggleFrameCapture) {
   // Insert a <video> and allow it to begin loading. The image was taken from
   // the RFC for the data URI scheme https://tools.ietf.org/html/rfc2397.
   SetBodyInnerHTML(R"HTML(

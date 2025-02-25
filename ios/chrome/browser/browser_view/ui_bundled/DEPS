@@ -71,6 +71,7 @@ include_rules = [
   "+ios/chrome/browser/reading_list/model/reading_list_browser_agent.h",
   "+ios/chrome/browser/reading_list/ui_bundled",
   "+ios/chrome/browser/recent_tabs/ui_bundled",
+  "+ios/chrome/browser/reminder_notifications/coordinator/reminder_notifications_coordinator.h",
   "+ios/chrome/browser/sad_tab/ui_bundled/sad_tab_coordinator.h",
   "+ios/chrome/browser/safe_browsing/ui_bundled/safe_browsing_coordinator.h",
   "+ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h",

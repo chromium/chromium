@@ -4,8 +4,16 @@
 
 package org.chromium.android_webview.payments;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.InvalidPaymentRequest;
+import org.chromium.components.payments.MojoPaymentRequestGateKeeper;
+import org.chromium.components.payments.OriginSecurityChecker;
 import org.chromium.components.payments.PaymentFeatureList;
+import org.chromium.components.payments.PaymentRequestService;
+import org.chromium.components.payments.PaymentRequestServiceUtil;
+import org.chromium.components.payments.SslValidityChecker;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -20,6 +28,43 @@ import org.chromium.services.service_manager.InterfaceFactory;
  */
 public class AwPaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
     private final RenderFrameHost mRenderFrameHost;
+
+    private class AwPaymentRequestDelegate implements PaymentRequestService.Delegate {
+        @Override
+        public BrowserPaymentRequest createBrowserPaymentRequest(
+                PaymentRequestService paymentRequestService) {
+            return new AwPaymentRequestService(paymentRequestService);
+        }
+
+        @Override
+        public boolean isOffTheRecord() {
+            // WebView does not have a concept of "off the record" or "incognito" mode.
+            return false;
+        }
+
+        @Override
+        public String getInvalidSslCertificateErrorMessage() {
+            WebContents liveWebContents =
+                    PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
+            if (liveWebContents == null) return null;
+            if (!OriginSecurityChecker.isSchemeCryptographic(
+                    liveWebContents.getLastCommittedUrl())) {
+                return null;
+            }
+            return SslValidityChecker.getInvalidSslCertificateErrorMessage(liveWebContents);
+        }
+
+        @Override
+        public boolean prefsCanMakePayment() {
+            return true;
+        }
+
+        @Override
+        @Nullable
+        public String getTwaPackageName() {
+            return null;
+        }
+    }
 
     /**
      * Builds a factory for PaymentRequest.
@@ -53,7 +98,16 @@ public class AwPaymentRequestFactory implements InterfaceFactory<PaymentRequest>
             return new InvalidPaymentRequest();
         }
 
-        // TODO(crbug.com/381849264): Add WebView specific implementation for PaymentRequest.
-        return new InvalidPaymentRequest();
+        return new MojoPaymentRequestGateKeeper(
+                (client, onClosed) ->
+                        new PaymentRequestService(
+                                mRenderFrameHost,
+                                client,
+                                onClosed,
+                                new AwPaymentRequestDelegate(),
+                                // Do not support payment apps implemented in C++, e.g., service
+                                // workers and Secure Payment Confirmation (SPC), because these apps
+                                // require UI:
+                                /* paymentAppServiceBridgeSupplier= */ null));
     }
 }

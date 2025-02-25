@@ -14,7 +14,9 @@ mojom("mojom") {
 
   if (safe_browsing_mode == 1) {
     sources += [ "safe_archive_analyzer.mojom" ]
-    enabled_features += [ "full_safe_browsing" ]
+
+    # This is equivalent to SAFE_BROWSING_DOWNLOAD_PROTECTION && !IS_ANDROID.
+    enabled_features += [ "safe_browsing_desktop_download_protection" ]
   }
 
   public_deps = [

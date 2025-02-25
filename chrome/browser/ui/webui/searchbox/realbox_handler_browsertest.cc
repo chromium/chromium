@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,26 +24,37 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
+#include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/tab_switch_action.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/omnibox/browser/omnibox_controller.h"
+#include "components/omnibox/browser/omnibox_metrics_provider.h"
+#include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -205,7 +217,7 @@ class RealboxSearchPreloadBrowserTest : public SearchPrefetchBaseBrowserTest {
     std::string search_terms = "prerender";
     AddNewSuggestionRule(input_query, {search_terms}, /*prefetch_index=*/0,
                          /*prerender_index=*/0);
-    auto [search_url, _] = GetSearchPrefetchAndNonPrefetch(search_terms);
+    auto [search_url, prefetch] = GetSearchPrefetchAndNonPrefetch(search_terms);
     // Fake a WebUI input.
     remote_page_handler->QueryAutocomplete(
         base::ASCIIToUTF16(input_query),
@@ -304,4 +316,98 @@ IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadWithoutSearchStatsBrowserTest,
   // The prefetch should match the prerender.
   EXPECT_TRUE(IsSearchDestinationMatch(GetCanonicalSearchURL(prefetch_url),
                                        browser()->profile(), prerender_url));
+}
+
+class RealboxHandlerTest : public InProcessBrowserTest {
+ public:
+  RealboxHandlerTest() = default;
+
+  RealboxHandlerTest(const RealboxHandlerTest&) = delete;
+  RealboxHandlerTest& operator=(const RealboxHandlerTest&) = delete;
+  ~RealboxHandlerTest() override = default;
+
+ protected:
+  testing::NiceMock<MockSearchboxPage> page_;
+  std::unique_ptr<RealboxHandler> handler_;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    handler_ = std::make_unique<RealboxHandler>(
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+        browser()->profile(),
+        /*web_contents=*/browser()->tab_strip_model()->GetActiveWebContents(),
+        /*metrics_reporter=*/nullptr,
+        /*omnibox_controller=*/nullptr);
+    handler_->SetPage(page_.BindAndGetRemote());
+  }
+
+  void TearDownOnMainThread() override { handler_.reset(); }
+};
+
+IN_PROC_BROWSER_TEST_F(RealboxHandlerTest, RealboxUpdatesEditModelInput) {
+  // Stop observing the AutocompleteController instance which will be destroyed.
+  handler_->autocomplete_controller_observation_.Reset();
+
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  auto client = std::make_unique<MockAutocompleteProviderClient>();
+  client->set_template_url_service(template_url_service);
+  // Set a mock AutocompleteController.
+  auto autocomplete_controller =
+      std::make_unique<testing::NiceMock<MockAutocompleteController>>(
+          std::move(client), AutocompleteClassifier::DefaultOmniboxProviders());
+  raw_ptr<testing::NiceMock<MockAutocompleteController>>
+      autocomplete_controller_ = autocomplete_controller.get();
+  handler_->omnibox_controller()->SetAutocompleteControllerForTesting(
+      std::move(autocomplete_controller));
+  // Set a mock OmniboxEditModel.
+  auto omnibox_edit_model =
+      std::make_unique<testing::NiceMock<MockOmniboxEditModel>>(
+          handler_->omnibox_controller(),
+          /*view=*/nullptr);
+  raw_ptr<testing::NiceMock<MockOmniboxEditModel>> omnibox_edit_model_ =
+      omnibox_edit_model.get();
+  handler_->omnibox_controller()->SetEditModelForTesting(
+      std::move(omnibox_edit_model));
+
+  ACMatches matches;
+  for (size_t i = 0; i < 4; ++i) {
+    AutocompleteMatch match(nullptr, 1000, false,
+                            AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+    match.keyword = u"match";
+    match.allowed_to_be_default_match = true;
+    matches.push_back(match);
+  }
+  const GURL url = GURL("http://kong-foo.com");
+  matches[2].destination_url = url;
+  matches[2].provider = handler_->omnibox_controller()
+                            ->autocomplete_controller()
+                            ->search_provider();
+  AutocompleteResult* result = &handler_->omnibox_controller()
+                                    ->autocomplete_controller()
+                                    ->published_result_;
+  result->AppendMatches(matches);
+
+  AutocompleteInput input;
+  EXPECT_CALL(*autocomplete_controller_, Start(_))
+      .Times(2)
+      .WillRepeatedly(DoAll(SaveArg<0>(&input)));
+
+  handler_->QueryAutocomplete(u"", /*prevent_inline_autocomplete=*/false);
+
+  EXPECT_EQ(input.focus_type(), metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  handler_->OpenAutocompleteMatch(2, url, true, 1, false, false, false, false);
+
+  // Assert that the input gets correctly updated for the realbox.
+  EXPECT_TRUE(omnibox_edit_model_->GetInputForTesting().IsZeroSuggest());
+  EXPECT_EQ(u"", omnibox_edit_model_->GetInputForTesting().text());
+
+  handler_->QueryAutocomplete(u"match", /*prevent_inline_autocomplete=*/false);
+
+  // Assert that the input text gets correctly updated for the realbox.
+  EXPECT_EQ(u"match", omnibox_edit_model_->GetInputForTesting().text());
+
+  testing::Mock::VerifyAndClearExpectations(omnibox_edit_model_);
+  testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);
 }

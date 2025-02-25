@@ -5,8 +5,67 @@
 import {hexColorToSkColor} from '//resources/js/color_utils.js';
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens-overlay/geometry.mojom-webui.js';
+import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import type {Line, Paragraph, Text, TranslatedLine, TranslatedParagraph, Word} from 'chrome-untrusted://lens-overlay/text.mojom-webui.js';
 import {Alignment, WritingDirection} from 'chrome-untrusted://lens-overlay/text.mojom-webui.js';
+import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+
+import {normalizeBoxInElement} from './selection_utils.js';
+
+/**
+ * Adds empty text to the `callbackRouterRemote` provided.
+ */
+export async function addEmptyTextToPage(callbackRouterRemote: LensPageRemote) {
+  const text = createText([]);
+  callbackRouterRemote.textReceived(text);
+  await flushTasks();
+}
+
+/**
+ * Adds generic text to the `callbackRouterRemote` provided.
+ */
+export async function addGenericWordsToPage(
+    callbackRouterRemote: LensPageRemote, element: Element) {
+  const text = createText([
+    createParagraph([
+      createLine([
+        createWord(
+            'hello',
+            normalizeBoxInElement(
+                {x: 20, y: 20, width: 30, height: 10}, element)),
+        createWord(
+            'there',
+            normalizeBoxInElement(
+                {x: 50, y: 20, width: 50, height: 10}, element)),
+      ]),
+    ]),
+    createParagraph([
+      createLine([
+        createWord(
+            'test',
+            normalizeBoxInElement(
+                {x: 80, y: 20, width: 30, height: 10}, element)),
+      ]),
+    ]),
+  ]);
+  callbackRouterRemote.textReceived(text);
+  await flushTasks();
+}
+
+export function getHighlightedNodesForTesting(textLayerElement: Element):
+    NodeListOf<Element> {
+  return textLayerElement.shadowRoot!.querySelectorAll('.highlighted-line');
+}
+
+export function getWordNodesForTesting(textLayerElement: Element):
+    NodeListOf<Element> {
+  return textLayerElement.shadowRoot!.querySelectorAll('.word');
+}
+
+export function getTranslatedWordNodesForTesting(textLayerElement: Element):
+    NodeListOf<Element> {
+  return textLayerElement.shadowRoot!.querySelectorAll('.translated-word');
+}
 
 export function createText(paragraphs: Paragraph[]): Text {
   return {

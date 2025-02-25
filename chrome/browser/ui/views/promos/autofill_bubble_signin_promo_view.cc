@@ -75,7 +75,7 @@ AutofillBubbleSignInPromoView::AutofillBubbleSignInPromoView(
 
   signin::RecordSignInPromoShown(access_point, profile);
 
-  bubble_sign_in_promo_view_ = AddChildView(new BubbleSignInPromoView(
+  bubble_sign_in_promo_view_ = AddChildViewRaw(new BubbleSignInPromoView(
       profile, dice_sign_in_promo_delegate_.get(), access_point));
 }
 

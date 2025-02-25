@@ -5219,6 +5219,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.TabOpenedForRedirect" enum="Boolean"
+    expires_after="2026-02-24">
+  <owner>nafisabedin@google.com</owner>
+  <owner>mthiesse@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records whether the tab was opened by an external app only to redirect to
+    another external app. This indicates that Chrome came from the background,
+    or was started, to act as an intermediate link redirector between the two
+    apps.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabStrip.PlaceholderStripLeftoverTabsCount"
     units="tabs" expires_after="2025-02-09">
   <owner>nemco@google.com</owner>

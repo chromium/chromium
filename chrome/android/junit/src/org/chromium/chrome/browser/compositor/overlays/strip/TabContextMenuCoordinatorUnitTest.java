@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -23,6 +25,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -36,6 +39,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
+import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator.OnItemClickedCallback;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -51,12 +55,15 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 /** Unit tests for {@link TabContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.DATA_SHARING})
 public class TabContextMenuCoordinatorUnitTest {
     private static final int TAB_ID = 1;
+    private static final int TAB_OUTSIDE_OF_GROUP_ID = 2;
+    private static final Token TAB_GROUP_ID = Token.createRandom();
     private static final String COLLABORATION_ID = "CollaborationId";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -69,10 +76,12 @@ public class TabContextMenuCoordinatorUnitTest {
     private OnItemClickedCallback<Integer> mOnItemClickedCallback;
     private MockTabModel mTabModel;
     private final SavedTabGroup mSavedTabGroup = new SavedTabGroup();
-    @Mock private Tab mTab;
+    @Mock private Tab mTab1;
+    @Mock private Tab mTabOutsideOfGroup;
     @Mock private TabRemover mTabRemover;
     @Mock private View mMenuView;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabUngrouper mTabUngrouper;
     @Mock private Profile mProfile;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private ModalDialogManager mModalDialogManager;
@@ -100,10 +109,14 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mWeakReferenceActivity.get()).thenReturn(activity);
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModel.isIncognito()).thenReturn(false);
-        when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab);
+        when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab1);
+        when(mTabModel.getTabById(TAB_OUTSIDE_OF_GROUP_ID)).thenReturn(mTabOutsideOfGroup);
         mTabModel.setTabRemoverForTesting(mTabRemover);
         mTabModel.setTabCreatorForTesting(mTabCreator);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabOutsideOfGroup.getTabGroupId()).thenReturn(null);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mProfile.isOffTheRecord()).thenReturn(true);
         mSavedTabGroup.collaborationId = COLLABORATION_ID;
         mOnItemClickedCallback =
@@ -126,7 +139,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
-    public void testListMenuItems() {
+    public void testListMenuItems_tabInGroup() {
         var modelList = new ModelList();
         mTabContextMenuCoordinator.buildMenuActionItems(modelList, TAB_ID);
 
@@ -158,5 +171,40 @@ public class TabContextMenuCoordinatorUnitTest {
                 R.string.close_tab, modelList.get(3).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.close_tab, modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testListMenuItems_tabOutsideOfGroup() {
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.buildMenuActionItems(modelList, TAB_OUTSIDE_OF_GROUP_ID);
+
+        assertEquals("Number of items in the list menu is incorrect", 3, modelList.size());
+
+        // List item 1
+        assertEquals(
+                R.string.add_tab_to_group,
+                modelList.get(0).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.add_to_tab_group,
+                modelList.get(0).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 2
+        assertEquals(R.string.share, modelList.get(1).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.share_tab, modelList.get(1).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 3
+        assertEquals(
+                R.string.close_tab, modelList.get(2).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(2).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testRemoveFromGroup() {
+        mOnItemClickedCallback.onClick(R.id.remove_from_tab_group, TAB_ID, COLLABORATION_ID);
+        verify(mTabUngrouper, times(1)).ungroupTabs(List.of(mTab1), true, true);
     }
 }

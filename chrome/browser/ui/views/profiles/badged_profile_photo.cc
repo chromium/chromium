@@ -132,7 +132,7 @@ BadgedProfilePhoto::BadgedProfilePhoto(BadgeType badge_type,
   profile_photo_view->SetImage(
       ui::ImageModel::FromImage(profile_photo_circular));
   profile_photo_view->SizeToPreferredSize();
-  AddChildView(profile_photo_view);
+  AddChildViewRaw(profile_photo_view);
 
   if (badge_type != BADGE_TYPE_NONE) {
     AddChildView(std::make_unique<BadgeView>(badge_type));

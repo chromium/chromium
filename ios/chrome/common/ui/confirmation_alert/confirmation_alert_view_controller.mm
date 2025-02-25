@@ -145,6 +145,7 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
     _activityIndicatorColor = [UIColor colorNamed:kSolidWhiteColor];
     _confirmationButtonColor = [UIColor colorNamed:kBlue100Color];
     _confirmationCheckmarkColor = [UIColor colorNamed:kBlue700Color];
+    _imageBackgroundColor = [UIColor colorNamed:kBackgroundColor];
   }
   return self;
 }
@@ -677,7 +678,7 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 
   UIView* frameView = [[UIView alloc] init];
   frameView.translatesAutoresizingMaskIntoConstraints = NO;
-  frameView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  frameView.backgroundColor = _imageBackgroundColor;
   frameView.layer.cornerRadius = kFaviconCornerRadius;
   frameView.layer.shadowOffset =
       CGSizeMake(kFaviconShadowOffsetX, kFaviconShadowOffsetY);

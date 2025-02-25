@@ -74,6 +74,7 @@
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
@@ -866,7 +867,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
         feature_engagement::events::kIOSOverflowMenuSetTabReminderTapped);
   }
 
-  // TODO(crbug.com/389912106): Display the new 'Set a Reminder' UI.
+  [self showSetTabReminderUI];
 }
 
 - (OverflowMenuAction*)newClearBrowsingDataAction {
@@ -2314,6 +2315,16 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (void)startAIPrototype {
   [self dismissMenu];
   [self.applicationHandler openAIMenu];
+}
+
+// Opens the "Set a reminder" screen for the user's current tab.
+- (void)showSetTabReminderUI {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  [self dismissMenu];
+  [self.reminderNotificationsHandler
+      showSetTabReminderUI:SetTabReminderEntryPoint::kOverflowMenu];
 }
 
 #pragma mark - Destinations Handlers

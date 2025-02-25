@@ -1456,6 +1456,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="orientation" label=""/>
   <suffix name="protocol_handlers" label=""/>
   <suffix name="screenshots" label=""/>
+  <suffix name="share_target" label=""/>
   <suffix name="short_name" label=""/>
   <suffix name="start_url" label=""/>
   <affected-histogram name="Manifest.HasProperty"/>

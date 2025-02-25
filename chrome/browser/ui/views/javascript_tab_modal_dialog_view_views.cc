@@ -136,7 +136,7 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
   }
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  AddChildView(message_box_view_.get());
+  AddChildViewRaw(message_box_view_.get());
 
   constrained_window::ShowWebModalDialogViews(this, parent_web_contents);
 }

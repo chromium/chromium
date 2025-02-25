@@ -167,16 +167,16 @@ void CreateOpaqueQuadAt(DisplayResourceProvider* resource_provider,
   color_quad->SetNew(shared_quad_state, rect, rect, color, false);
 }
 
-TextureDrawQuad* CreateFullscreenCandidateYUVTextureQuad(
+TextureDrawQuad* CreateYUVTextureQuadAt(
     DisplayResourceProvider* parent_resource_provider,
     ClientResourceProvider* child_resource_provider,
     RasterContextProvider* child_context_provider,
     const SharedQuadState* shared_quad_state,
     AggregatedRenderPass* render_pass,
+    const gfx::Rect& rect,
     const gfx::ColorSpace& color_space = gfx::ColorSpace(),
     const gfx::HDRMetadata& hdr_metadata = gfx::HDRMetadata(),
     SharedImageFormat format = SinglePlaneFormat::kRGBA_8888) {
-  gfx::Rect rect = render_pass->output_rect;
   gfx::Size resource_size_in_pixels = rect.size();
   bool is_overlay_candidate = true;
   ResourceId resource_id =
@@ -197,6 +197,21 @@ TextureDrawQuad* CreateFullscreenCandidateYUVTextureQuad(
   overlay_quad->is_video_frame = true;
 
   return overlay_quad;
+}
+
+TextureDrawQuad* CreateFullscreenCandidateYUVTextureQuad(
+    DisplayResourceProvider* parent_resource_provider,
+    ClientResourceProvider* child_resource_provider,
+    RasterContextProvider* child_context_provider,
+    const SharedQuadState* shared_quad_state,
+    AggregatedRenderPass* render_pass,
+    const gfx::ColorSpace& color_space = gfx::ColorSpace(),
+    const gfx::HDRMetadata& hdr_metadata = gfx::HDRMetadata(),
+    SharedImageFormat format = SinglePlaneFormat::kRGBA_8888) {
+  return CreateYUVTextureQuadAt(
+      parent_resource_provider, child_resource_provider, child_context_provider,
+      shared_quad_state, render_pass, render_pass->output_rect, color_space,
+      hdr_metadata, format);
 }
 
 AggregatedRenderPassDrawQuad* CreateRenderPassDrawQuadAt(
@@ -373,12 +388,11 @@ TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingWorkaround) {
               ->set_has_auto_hdr_video_processor_support_for_testing(true);
         }
 
-        auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+        CreateYUVTextureQuadAt(
             resource_provider_.get(), child_resource_provider_.get(),
             child_provider_.get(), pass->shared_quad_state_list.back(),
-            pass.get(), color_space, hdr_metadata, format);
-        video_quad->rect = gfx::Rect(0, 0, 10, 10) + video_rect_offset;
-        video_quad->visible_rect = gfx::Rect(0, 0, 10, 10) + video_rect_offset;
+            pass.get(), gfx::Rect(0, 0, 10, 10) + video_rect_offset,
+            color_space, hdr_metadata, format);
 
         OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
         OverlayProcessorInterface::FilterOperationsMap
@@ -579,11 +593,10 @@ TEST_F(DCLayerOverlayProcessorTest, DamageRectWithoutVideoDamage) {
     SharedQuadState* second_shared_state =
         pass->CreateAndAppendSharedQuadState();
     second_shared_state->overlay_damage_index = 1;
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    video_quad->rect = gfx::Rect(0, 0, 200, 200);
-    video_quad->visible_rect = video_quad->rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(0, 0, 200, 200));
 
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
     OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
@@ -619,11 +632,10 @@ TEST_F(DCLayerOverlayProcessorTest, DamageRectWithoutVideoDamage) {
     SharedQuadState* second_shared_state =
         pass->CreateAndAppendSharedQuadState();
     second_shared_state->overlay_damage_index = 1;
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    video_quad->rect = gfx::Rect(0, 0, 200, 200);
-    video_quad->visible_rect = video_quad->rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(0, 0, 200, 200));
 
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
     OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
@@ -807,12 +819,10 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
     auto pass = CreateRenderPass();
 
     // Create a video YUV quad with rounded corner, nothing on top.
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect rect(0, 0, 256, 256);
-    video_quad->rect = rect;
-    video_quad->visible_rect = rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(0, 0, 256, 256));
     pass->shared_quad_state_list.back()->overlay_damage_index = 0;
     // Rounded corners
     pass->shared_quad_state_list.back()->mask_filter_info =
@@ -862,12 +872,10 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
                        gfx::Rect(0, 0, 32, 32), SkColors::kRed);
 
     // Create a video YUV quad with rounded corners below the red solid quad.
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect rect(0, 0, 256, 256);
-    video_quad->rect = rect;
-    video_quad->visible_rect = rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(0, 0, 256, 256));
     pass->shared_quad_state_list.back()->overlay_damage_index = 1;
     // Rounded corners
     pass->shared_quad_state_list.back()->mask_filter_info =
@@ -917,12 +925,10 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
                        gfx::Rect(0, 0, 32, 32), SkColors::kRed);
 
     // Create a video YUV quad with rounded corners below the red solid quad.
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect rect(0, 0, 256, 256);
-    video_quad->rect = rect;
-    video_quad->visible_rect = rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(0, 0, 256, 256));
     pass->shared_quad_state_list.back()->overlay_damage_index = 0;
     // Rounded corners
     pass->shared_quad_state_list.back()->mask_filter_info =
@@ -977,20 +983,16 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleYUVOverlays) {
                        pass->shared_quad_state_list.back(), pass.get(),
                        gfx::Rect(0, 0, 256, 256), SkColors::kWhite);
 
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    auto* video_quad = CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect rect(10, 10, 80, 80);
-    video_quad->rect = rect;
-    video_quad->visible_rect = rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(10, 10, 80, 80));
     pass->shared_quad_state_list.back()->overlay_damage_index = 1;
 
-    auto* second_video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    auto* second_video_quad = CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect second_rect(100, 100, 120, 120);
-    second_video_quad->rect = second_rect;
-    second_video_quad->visible_rect = second_rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(100, 100, 120, 120));
     pass->shared_quad_state_list.back()->overlay_damage_index = 2;
 
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -1170,12 +1172,10 @@ TEST_F(DCLayerOverlayProcessorTest, VideoCapture) {
                        gfx::Rect(0, 0, 32, 32), SkColors::kRed);
 
     // Create a video YUV quad below the red solid quad.
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect rect(0, 0, 256, 256);
-    video_quad->rect = rect;
-    video_quad->visible_rect = rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(0, 0, 256, 256));
     pass->shared_quad_state_list.back()->overlay_damage_index = 1;
 
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -1204,12 +1204,10 @@ TEST_F(DCLayerOverlayProcessorTest, VideoCapture) {
                        gfx::Rect(0, 0, 32, 32), SkColors::kRed);
 
     // Create a video YUV quad below the red solid quad.
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect rect(0, 0, 256, 256);
-    video_quad->rect = rect;
-    video_quad->visible_rect = rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(0, 0, 256, 256));
     pass->shared_quad_state_list.back()->overlay_damage_index = 0;
 
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -1265,13 +1263,10 @@ TEST_F(DCLayerOverlayProcessorTest, VideoCaptureOnIsolatedRenderPass) {
         root_pass.get(), gfx::Rect(0, 0, 32, 32), SkColors::kRed);
 
     // Create a video YUV quad below the red solid quad.
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), root_pass->shared_quad_state_list.back(),
-        root_pass.get());
-    gfx::Rect rect(0, 0, 256, 256);
-    video_quad->rect = rect;
-    video_quad->visible_rect = rect;
+        root_pass.get(), gfx::Rect(0, 0, 256, 256));
     root_pass->shared_quad_state_list.back()->overlay_damage_index = 0;
     root_pass->damage_rect = gfx::Rect(0, 0, 256, 256);
     pass_list.push_back(std::move(root_pass));
@@ -1331,11 +1326,10 @@ void DCLayerOverlayProcessorTest::TestRenderPassRootTransform(bool is_overlay) {
                          kOpaqueRect, SkColors::kWhite);
     }
 
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    video_quad->rect = gfx::Rect(kVideoRect);
-    video_quad->visible_rect = video_quad->rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(kVideoRect));
 
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
     OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
@@ -1404,16 +1398,14 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleRenderPassesOneOverlay) {
 
       if (id == 1) {
         // Create an overlay quad in the first render pass.
-        auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
-            resource_provider_.get(), child_resource_provider_.get(),
-            child_provider_.get(), pass->shared_quad_state_list.back(),
-            pass.get());
         gfx::Rect quad_rect_in_quad_space =
             pass->transform_to_root_target
                 .InverseMapRect(quad_rect_in_root_space)
                 .value();
-        video_quad->rect = quad_rect_in_quad_space;
-        video_quad->visible_rect = quad_rect_in_quad_space;
+        CreateYUVTextureQuadAt(
+            resource_provider_.get(), child_resource_provider_.get(),
+            child_provider_.get(), pass->shared_quad_state_list.back(),
+            pass.get(), quad_rect_in_quad_space);
         pass->shared_quad_state_list.back()->overlay_damage_index = id - 1;
       } else {
         // Create a quad that's not an overlay.
@@ -1516,12 +1508,10 @@ TEST_F(DCLayerOverlayProcessorTest,
           pass->transform_to_root_target
               .InverseMapRect(video_rect_in_root_space)
               .value();
-      auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+      CreateYUVTextureQuadAt(
           resource_provider_.get(), child_resource_provider_.get(),
           child_provider_.get(), pass->shared_quad_state_list.back(),
-          pass.get());
-      video_quad->rect = video_rect_in_render_pass_space;
-      video_quad->visible_rect = video_rect_in_render_pass_space;
+          pass.get(), video_rect_in_render_pass_space);
 
       surface_damage_rect_list.emplace_back(video_rect_in_root_space);
       render_pass_overlay_data_map[pass.get()].damage_rect = output_rect;
@@ -1576,21 +1566,17 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleYUVOverlaysIntersected) {
     auto pass = CreateRenderPass();
 
     // Video 1: Topmost video.
-    auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    auto* video_quad = CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect rect(150, 150, 50, 50);
-    video_quad->rect = rect;
-    video_quad->visible_rect = rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(150, 150, 50, 50));
     pass->shared_quad_state_list.back()->overlay_damage_index = 1;
 
     // Video 2: Intersected with and under the 1st video.
-    auto* second_video_quad = CreateFullscreenCandidateYUVTextureQuad(
+    auto* second_video_quad = CreateYUVTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-    gfx::Rect second_rect(100, 100, 120, 120);
-    second_video_quad->rect = second_rect;
-    second_video_quad->visible_rect = second_rect;
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        gfx::Rect(100, 100, 120, 120));
     pass->shared_quad_state_list.back()->overlay_damage_index = 2;
 
     // Background.

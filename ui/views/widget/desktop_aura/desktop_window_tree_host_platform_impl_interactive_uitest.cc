@@ -666,7 +666,7 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, InputMethodFocus) {
   // Provide an accessible name so that accessibility paint checks pass.
   textfield->GetViewAccessibility().SetName(u"test");
   textfield->SetBounds(0, 0, 200, 20);
-  widget->GetRootView()->AddChildView(textfield.get());
+  widget->GetRootView()->AddChildViewRaw(textfield.get());
   widget->ShowInactive();
   textfield->RequestFocus();
 

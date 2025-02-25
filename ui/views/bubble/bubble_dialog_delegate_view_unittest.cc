@@ -67,7 +67,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
                                  BubbleBorder::NO_SHADOW,
                                  true) {
     view_->SetFocusBehavior(FocusBehavior::ALWAYS);
-    AddChildView(view_.get());
+    AddChildViewRaw(view_.get());
   }
   ~TestBubbleDialogDelegateView() override = default;
   TestBubbleDialogDelegateView(const TestBubbleDialogDelegateView&) = delete;

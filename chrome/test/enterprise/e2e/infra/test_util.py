@@ -103,27 +103,21 @@ def create_chrome_webdriver(chrome_options=None, incognito=False, prefs=None):
 def sign_in(driver: webdriver.Chrome, account: str, password: str):
   """Sign into the given browser as a managed user.
 
-  Note: This function will return with the new signed-in window selected.
-      Existing tabs belonging to the previous profile will be closed.
+  Note: This function will navigate the current tab away from its initial URL.
+      All other tabs will remain unaffected.
   """
   if not _UI_TEST:
     raise Exception(
         "not running inside a UI test, which is required for sign-in")
-  original_tabs = set(driver.window_handles)
+  # Start sign-in from the "New Tab Page" (NTP) so that the login page opens
+  # in-place instead of in a new tab.
+  driver.get("chrome://newtab")
   app = pywinauto.Application(backend="uia")
   app.connect(title_re=".*Chrome|.*Chromium")
   old_window = app.top_window()
   old_window.child_window(title="You", control_type="Button").click()
   old_window.child_window(
       title="Sign in to Chrome", control_type="Button").click()
-
-  # Clicking "Sign in to Chrome" opens a new tab with the login page. Although
-  # the login page has focus, `chromedriver` doesn't consider it selected
-  # until we send the command to do so.
-  wait = WebDriverWait(driver, 10)
-  wait.until(EC.new_window_is_opened(original_tabs))
-  (login_tab,) = set(driver.window_handles) - original_tabs
-  driver.switch_to.window(login_tab)
 
   for (selector, value) in [("input[type=email]", account),
                             ("input[type=password]", password)]:
@@ -134,30 +128,18 @@ def sign_in(driver: webdriver.Chrome, account: str, password: str):
         (By.XPATH, '//button//*[text()="Next"]'))
     _fill_form_with_retries(driver, condition, lambda element: element.click())
 
-  # Dismiss "Your organization will manage this profile" dialog.
+  # Dismiss "Your organization will manage this profile" dialog. Merge with the
+  # existing unsynced profile to avoid opening another window (one for each
+  # profile).
+  merge_profiles = old_window.child_window(
+      title="Add existing browsing data to managed profile",
+      auto_id="checkbox",
+      control_type="CheckBox")
+  merge_profiles.wait("exists ready")
+  merge_profiles.click_input()
   continue_button = old_window.child_window(
       title="Continue", auto_id="proceed-button", control_type="Button")
-  continue_button.wait("exists ready")
   continue_button.click()
-  # There should be two OS windows open at this point:
-  # 1. Original window: The original tabs, plus the tab used to sign in.
-  # 2. Signed-in window: A new tab, and a "Sync is disabled by your
-  #    administrator" dialog that counts as a WebDriver browsing context.
-  #
-  # Close OS window (1), but only after (2) fully appears. Otherwise,
-  # `chromedriver` will destroy the entire session too early.
-  wait.until(EC.number_of_windows_to_be(len(original_tabs) + 3))
-  old_window.close()
-  wait.until(EC.number_of_windows_to_be(2))
-  # Connect to the new window and dismiss the message about sync.
-  app.connect(title_re=".*Chrome|.*Chromium")
-  app.top_window().child_window(
-      title="Continue", auto_id="confirmButton", control_type="Button").click()
-
-  # `chromedriver` still points to the closed window, so switch to the new
-  # signed-in window.
-  wait.until(EC.number_of_windows_to_be(1))
-  driver.switch_to.window(driver.window_handles[0])
 
 
 def _fill_form_with_retries(driver: webdriver.Chrome,

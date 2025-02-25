@@ -26,16 +26,16 @@ const int kAudioSamplesPerAudioBlock = 256;
 const int kAudioSamplePerAc3SyncFrame = 6 * kAudioSamplesPerAudioBlock;
 // Number of audio blocks per E-AC3 synchronization frame, indexed by
 // numblkscod.
-const auto kBlocksPerSyncFrame = std::to_array<int>({1, 2, 3, 6});
+constexpr auto kBlocksPerSyncFrame = std::to_array<int>({1, 2, 3, 6});
 // Sample rates, indexed by fscod.
-const auto kSampleRate = std::to_array<int>({48000, 44100, 32000});
+constexpr auto kSampleRate = std::to_array<int>({48000, 44100, 32000});
 // Nominal bitrates in kbps, indexed by frmsizecod / 2.
-const auto kBitrate = std::to_array<int>({
+constexpr auto kBitrate = std::to_array<int>({
     32,  40,  48,  56,  64,  80,  96,  112, 128, 160,
     192, 224, 256, 320, 384, 448, 512, 576, 640,
 });
 // 16-bit words per synchronization frame, indexed by frmsizecod.
-const auto kSyncFrameSizeInWordsFor44kHz = std::to_array<int>({
+constexpr auto kSyncFrameSizeInWordsFor44kHz = std::to_array<int>({
     69,  70,  87,  88,  104, 105, 121,  122,  139,  140,  174,  175,  208,
     209, 243, 244, 278, 279, 348, 349,  417,  418,  487,  488,  557,  558,
     696, 697, 835, 836, 975, 976, 1114, 1115, 1253, 1254, 1393, 1394,

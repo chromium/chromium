@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/autofill/core/browser/data_model/autofill_profile.h"
+#import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 
 // Protocol for handling context-specific behaviours in relation to

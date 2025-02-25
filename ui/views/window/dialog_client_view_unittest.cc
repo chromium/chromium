@@ -298,7 +298,7 @@ TEST_F(DialogClientViewTest, SetupFocusChain) {
   View* dummy_view = new StaticSizedView(gfx::Size(200, 200));
   dummy_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   delegate()->GetContentsView()->SetFocusBehavior(View::FocusBehavior::NEVER);
-  delegate()->GetContentsView()->AddChildView(dummy_view);
+  delegate()->GetContentsView()->AddChildViewRaw(dummy_view);
   EXPECT_EQ(dummy_view, FocusableViewAfter(client_view()->cancel_button()));
   EXPECT_EQ(extra_view, FocusableViewAfter(dummy_view));
   EXPECT_EQ(client_view()->cancel_button(), FocusableViewAfter(extra_view));

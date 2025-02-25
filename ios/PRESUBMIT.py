@@ -414,6 +414,21 @@ def _CheckNewColorIntroduction(input_api, output_api):
 
     return output
 
+def _CheckStyleESLint(input_api, output_api):
+  results = []
+
+  try:
+    import sys
+    old_sys_path = sys.path[:]
+    cwd = input_api.PresubmitLocalPath()
+    sys.path += [input_api.os_path.join(cwd, '..', 'tools')]
+    from web_dev_style import presubmit_support
+    results += presubmit_support.CheckStyleESLint(input_api, output_api)
+  finally:
+    sys.path = old_sys_path
+
+  return results
+
 def CheckChange(input_api, output_api):
     results = []
     results.extend(_CheckBugInToDo(input_api, output_api))
@@ -426,6 +441,7 @@ def CheckChange(input_api, output_api):
     results.extend(_CheckOrderedStringFile(input_api, output_api))
     results.extend(_CheckNotUsingNSUserDefaults(input_api, output_api))
     results.extend(_CheckNewColorIntroduction(input_api, output_api))
+    results.extend(_CheckStyleESLint(input_api, output_api))
     return results
 
 def CheckChangeOnUpload(input_api, output_api):

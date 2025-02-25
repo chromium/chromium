@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "remoting/base/protobuf_http_client.h"
@@ -99,6 +100,7 @@ class CloudServiceClient {
       ProvisionGceInstanceCallback callback);
 
   void SendHeartbeat(const std::string& directory_id,
+                     std::string_view instance_identity_token,
                      SendHeartbeatCallback callback);
 
   void UpdateRemoteAccessHost(const std::string& directory_id,
@@ -107,17 +109,21 @@ class CloudServiceClient {
                               std::optional<std::string> offline_reason,
                               std::optional<std::string> os_name,
                               std::optional<std::string> os_version,
+                              std::string_view instance_identity_token,
                               UpdateRemoteAccessHostCallback callback);
 
   void GenerateIceConfig(GenerateIceConfigCallback callback);
 
-  void GenerateHostToken(GenerateHostTokenCallback callback);
+  void GenerateHostToken(std::string_view instance_identity_token,
+                         GenerateHostTokenCallback callback);
 
   void VerifySessionToken(const std::string& session_token,
+                          std::string_view instance_identity_token,
                           VerifySessionTokenCallback callback);
 
   void ReauthorizeHost(const std::string& session_reauth_token,
                        const std::string& session_id,
+                       std::string_view instance_identity_token,
                        ReauthorizeHostCallback callback);
 
   void CancelPendingRequests();

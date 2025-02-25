@@ -40,8 +40,9 @@ chromium-metrics-reviews@google.com.
     Recorded every 15 minutes, but only if the glic feature flag is enabled.
     This is a rough estimate of whether a user is seeing an impression of glic
     entry points. The entry point is shown if fre has not been completed, or if
-    fre has been completed and glic is enabled. The entry point is not shown if
-    fre is completed and glic is disabled.
+    fre has been completed and glic is enabled and pinned to the tabstrip. The
+    entry point is not shown if fre is completed and glic is either disabled or
+    unpinned from the tabstrip.
   </summary>
 </histogram>
 
@@ -338,17 +339,6 @@ chromium-metrics-reviews@google.com.
   <owner>erikchen@chromium.org</owner>
   <summary>
     Recorded when a session ends. The number of responses during that session.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Settings.TogglePinning" enum="BooleanEnabled"
-    expires_after="2026-01-15">
-  <owner>charlesmeng@chromium.org</owner>
-  <owner>chrome-performance-ui-sea@google.com</owner>
-  <summary>
-    After the user interacts with the tabstrip context menu or glic button
-    context menu to toggle glic pinning, logs a boolean that reflects whether
-    glic pinning is enabled.
   </summary>
 </histogram>
 

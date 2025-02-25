@@ -8,9 +8,11 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/wm/system_panel_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
@@ -27,7 +29,8 @@ class SunfishSearchBoxView;
 // Container for the search results view and other UI such as the search box,
 // close button, etc.
 class ASH_EXPORT SearchResultsPanel : public SystemPanelView,
-                                      public display::DisplayObserver {
+                                      public display::DisplayObserver,
+                                      public views::FocusChangeListener {
   METADATA_HEADER(SearchResultsPanel, SystemPanelView)
 
  public:
@@ -44,6 +47,9 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView,
 
   views::Textfield* GetSearchBoxTextfield() const;
 
+  std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
+  GetHighlightableItems() const;
+
   // Sets the search box URL, image thumbnail, and text.
   virtual void Navigate(const GURL& url);
   virtual void SetSearchBoxImage(const gfx::ImageSkia& image);
@@ -54,6 +60,14 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView,
   // panel will be re-stacked on its native window's root window.
   void RefreshStackingOrder(aura::Window* new_root);
 
+  // Returns true if the `CaptureModeSessionFocusCycler::HighlightHelper` for
+  // this view has focus, otherwise returns false.
+  bool IsTextfieldPseudoFocused() const;
+
+  // views::View:
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+
   // SystemPanelView:
   bool HasFocus() const override;
 
@@ -61,6 +75,10 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView,
   void OnDisplayTabletStateChanged(display::TabletState state) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
+
+  // views::FocusChangeListener:
+  void OnWillChangeFocus(View* focused_before, View* focused_now) override;
+  void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
  private:
   void OnCloseButtonPressed();

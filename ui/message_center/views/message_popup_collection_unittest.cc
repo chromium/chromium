@@ -142,7 +142,7 @@ class MockMessagePopupView : public MessagePopupView {
             MessageCenter::Get()->FindVisibleNotificationById(id)->title())) {
     auto* view = new views::View;
     view->SetPreferredSize(gfx::Size(GetNotificationWidth(), init_height));
-    AddChildView(view);
+    AddChildViewRaw(view);
   }
 
   ~MockMessagePopupView() override = default;

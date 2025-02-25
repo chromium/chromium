@@ -303,6 +303,18 @@ void BrowserAccessibilityStateImpl::OnScreenReaderStopped() {
       base::Seconds(kDisableAccessibilitySupportDelaySecs));
 }
 
+void BrowserAccessibilityStateImpl::SetKnownScreenReaderAppActive(
+    bool is_active) {
+  // Currently only meaningful on macOS, for VoiceOver detection.
+  // Other platforms detect specific, known screen reader apps in the
+  // OS-specific subclass.
+  NOTREACHED();
+}
+
+bool BrowserAccessibilityStateImpl::IsKnownScreenReaderAppActive() {
+  return false;
+}
+
 void BrowserAccessibilityStateImpl::EnableAccessibility() {
   if (!allow_ax_mode_changes_) {
     return;

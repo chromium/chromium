@@ -53,6 +53,9 @@ class GURL;
 // Whether the current mode is translate.
 @property(nonatomic, readonly) BOOL translateFilterActive;
 
+// The layout guide that demarcates the start of the unobstructed area.
+@property(nonatomic) UILayoutGuide* visibleAreaLayoutGuide;
+
 // Sets the delegate for `ChromeLensOverlay`.
 - (void)setLensOverlayDelegate:(id<ChromeLensOverlayDelegate>)delegate;
 

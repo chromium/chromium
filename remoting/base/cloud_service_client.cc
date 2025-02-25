@@ -335,11 +335,13 @@ void CloudServiceClient::ProvisionGceInstance(
 }
 
 void CloudServiceClient::SendHeartbeat(const std::string& directory_id,
+                                       std::string_view instance_identity_token,
                                        SendHeartbeatCallback callback) {
   constexpr char path[] = "/v1alpha/access:sendHeartbeat";
 
   auto request = std::make_unique<SendHeartbeatRequest>();
   request->set_directory_id(directory_id);
+  request->set_instance_identity_token(instance_identity_token);
 
   ExecuteRequest(kSendHeartbeatTrafficAnnotation, path, /*api_key=*/"",
                  net::HttpRequestHeaders::kPostMethod, std::move(request),
@@ -353,6 +355,7 @@ void CloudServiceClient::UpdateRemoteAccessHost(
     std::optional<std::string> offline_reason,
     std::optional<std::string> os_name,
     std::optional<std::string> os_version,
+    std::string_view instance_identity_token,
     UpdateRemoteAccessHostCallback callback) {
   constexpr char path[] = "/v1alpha/access:updateRemoteAccessHost";
 
@@ -381,18 +384,23 @@ void CloudServiceClient::UpdateRemoteAccessHost(
     host->mutable_operating_system_info()->set_name(*os_name);
     host->mutable_operating_system_info()->set_version(*os_version);
   }
+  host->set_instance_identity_token(instance_identity_token);
 
   ExecuteRequest(kUpdateRemoteAccessHostTrafficAnnotation, path, /*api_key=*/"",
                  net::HttpRequestHeaders::kPatchMethod, std::move(host),
                  std::move(callback));
 }
 
-void CloudServiceClient::GenerateHostToken(GenerateHostTokenCallback callback) {
+void CloudServiceClient::GenerateHostToken(
+    std::string_view instance_identity_token,
+    GenerateHostTokenCallback callback) {
   constexpr char path[] = "/v1alpha/sessionAuthz:generateHostToken";
 
+  auto request = std::make_unique<GenerateHostTokenRequest>();
+  request->set_instance_identity_token(instance_identity_token);
+
   ExecuteRequest(kGenerateHostTokenTrafficAnnotation, path, /*api_key=*/"",
-                 net::HttpRequestHeaders::kPostMethod,
-                 std::make_unique<GenerateHostTokenRequest>(),
+                 net::HttpRequestHeaders::kPostMethod, std::move(request),
                  std::move(callback));
 }
 
@@ -407,11 +415,13 @@ void CloudServiceClient::GenerateIceConfig(GenerateIceConfigCallback callback) {
 
 void CloudServiceClient::VerifySessionToken(
     const std::string& session_token,
+    std::string_view instance_identity_token,
     VerifySessionTokenCallback callback) {
   constexpr char path[] = "/v1alpha/sessionAuthz:verifySessionToken";
 
   auto request = std::make_unique<VerifySessionTokenRequest>();
   request->set_session_token(session_token);
+  request->set_instance_identity_token(instance_identity_token);
 
   ExecuteRequest(kVerifySessionTokenTrafficAnnotation, path, /*api_key=*/"",
                  net::HttpRequestHeaders::kPostMethod, std::move(request),
@@ -421,12 +431,14 @@ void CloudServiceClient::VerifySessionToken(
 void CloudServiceClient::ReauthorizeHost(
     const std::string& session_reauth_token,
     const std::string& session_id,
+    std::string_view instance_identity_token,
     ReauthorizeHostCallback callback) {
   constexpr char path[] = "/v1alpha/sessionAuthz:reauthorizeHost";
 
   auto request = std::make_unique<ReauthorizeHostRequest>();
   request->set_session_reauth_token(session_reauth_token);
   request->set_session_id(session_id);
+  request->set_instance_identity_token(instance_identity_token);
 
   ExecuteRequest(kReauthorizeHostTrafficAnnotation, path, /*api_key=*/"",
                  net::HttpRequestHeaders::kPostMethod, std::move(request),

@@ -137,7 +137,7 @@ class TabStripTestBase : public ChromeViewsTestBase {
             views::kFlexBehaviorKey,
             views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                      views::MaximumFlexSizeRule::kPreferred));
-    tab_strip_parent->AddChildView(tab_strip_.get());
+    tab_strip_parent->AddChildViewRaw(tab_strip_.get());
     // The tab strip is free to use all of the space in its parent view, since
     // there are no sibling controls such as the NTB in the test context.
     tab_strip_->SetAvailableWidthCallback(base::BindRepeating(

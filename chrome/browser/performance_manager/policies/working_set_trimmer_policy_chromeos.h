@@ -130,37 +130,15 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
   // from ARCVM, and do that when it is. These are virtual for testing.
   virtual void TrimArcVmProcesses(
       base::MemoryPressureListener::MemoryPressureLevel level);
-
-  // The functions below form a chain of callbacks that carry along
-  // a WeakPtr to an instance of WorkingSetTrimmerPolicyChromeOS.
-  // That instance can be destroyed at any point in the chain.
-  // The following constraints apply:
-  // - The WeakPtr is built on the PM thread, so it can only be
-  //   checked for validity or dereferenced in the PM thread.
-  // - For member functions, there is an automatic pointer check inside
-  //   BindOnce at invocation, if the "this" is a WeakPtr.
-  // Because of the combination of constraints above, the methods that
-  // execute on threads other than the PM thread must be made static,
-  // and they must not use the WeakPtr except to pass it down the chain.
-  static void TrimArcVmProcessesOnUIThread(
-      base::MemoryPressureListener::MemoryPressureLevel level,
-      features::TrimOnMemoryPressureParams params,
-      base::WeakPtr<WorkingSetTrimmerPolicyChromeOS> ptr);
   virtual void OnTrimArcVmProcesses(mechanism::ArcVmReclaimType reclaim_type,
-                                    bool is_first_trim_post_boot,
-                                    int pages_per_minute,
-                                    int max_pages_per_iteration);
+                                    bool is_first_trim_post_boot);
   virtual void OnArcVmTrimStarting();
-  static void DoTrimArcVmOnUIThread(
-      base::WeakPtr<WorkingSetTrimmerPolicyChromeOS> ptr,
-      mechanism::WorkingSetTrimmerChromeOS* trimmer,
-      mechanism::ArcVmReclaimType reclaim_type,
-      int page_limit);
-  static void OnTrimArcVmWorkingSetOnUIThread(
-      base::WeakPtr<WorkingSetTrimmerPolicyChromeOS> ptr,
-      mechanism::ArcVmReclaimType reclaim_type,
-      bool success,
-      const std::string& failure_reason);
+  void DoTrimArcVm(mechanism::WorkingSetTrimmerChromeOS* trimmer,
+                   mechanism::ArcVmReclaimType reclaim_type,
+                   int page_limit);
+  void OnTrimArcVmWorkingSet(mechanism::ArcVmReclaimType reclaim_type,
+                             bool success,
+                             const std::string& failure_reason);
   virtual void OnArcVmTrimEnded(mechanism::ArcVmReclaimType reclaim_type,
                                 bool success);
 

@@ -84,7 +84,7 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
     views::View* root_view = widget_->GetRootView();
     root_view->SetBoundsRect(gfx::Rect(0, 0, 500, 500));
     result_view_->SetBoundsRect(gfx::Rect(0, 0, 100, 100));
-    root_view->AddChildView(result_view_.get());
+    root_view->AddChildViewRaw(result_view_.get());
 
     // Start by not hovering over the result view.
     FakeMouseEvent(ui::EventType::kMouseMoved, 0, 200, 200);

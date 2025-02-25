@@ -168,7 +168,7 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338972492
+    @DisabledTest(message = "https://crbug.com/338972492")
     public void testCloseChromeAtHistoryStackHead() {
         loadNewTabPage();
         AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
@@ -307,7 +307,7 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisabledTest(message = "https://crbug.com/338972492")
     public void testNoIncorrectEdgeSwipes() {
         // Perform only correct swipes, should not see any incorrect edge swipe histograms.
         HistogramWatcher histogramWatcher =
@@ -328,7 +328,7 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338972492
+    @DisabledTest(message = "https://crbug.com/338972492")
     public void testSwipeNavigateOnNativePage() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -444,6 +444,7 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/338972492")
     public void testSwipeAfterTabDestroy() {
         mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
         ThreadUtils.runOnUiThreadBlocking(currentTab()::destroy);

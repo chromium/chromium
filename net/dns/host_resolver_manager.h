@@ -56,6 +56,7 @@ namespace net {
 
 class DnsClient;
 class DnsProbeRunner;
+class HostResolverInternalResult;
 class IPAddress;
 class MDnsClient;
 class ClientSocketFactory;
@@ -396,8 +397,8 @@ class NET_EXPORT HostResolverManager
 
   // Iff we have a DnsClient with a valid DnsConfig and we're not about to
   // attempt a system lookup, then try to resolve the query using the HOSTS
-  // file.
-  std::optional<HostCache::Entry> ServeFromHosts(
+  // file. Returns empty set if HOSTS lookup not attempted.
+  std::set<std::unique_ptr<HostResolverInternalResult>> ServeFromHosts(
       std::string_view hostname,
       DnsQueryTypeSet query_types,
       bool default_family_due_to_no_ipv6,

@@ -142,11 +142,19 @@ void DCompPresenter::Present(SwapCompletionCallback completion_callback,
   base::expected<void, CommitError> result =
       layer_tree_->CommitAndClearPendingOverlays(std::move(pending_overlays_));
   if (!result.has_value()) {
-    SCOPED_CRASH_KEY_NUMBER("gpu", "DCompPresenter.SWAP_FAILED.reason",
-                            static_cast<int>(result.error().reason));
-    SCOPED_CRASH_KEY_NUMBER("gpu", "DCompPresenter.SWAP_FAILED.hr?",
-                            static_cast<int>(result.error().hr.value_or(S_OK)));
-    base::debug::DumpWithoutCrashing();
+    const HRESULT device_removed_reason =
+        gl::GetDirectCompositionD3D11Device()->GetDeviceRemovedReason();
+    if (SUCCEEDED(device_removed_reason)) {
+      SCOPED_CRASH_KEY_NUMBER("gpu", "DCompPresenter.SWAP_FAILED.reason",
+                              static_cast<int>(result.error().reason));
+      SCOPED_CRASH_KEY_NUMBER(
+          "gpu", "DCompPresenter.SWAP_FAILED.hr?",
+          static_cast<int>(result.error().hr.value_or(S_OK)));
+      base::debug::DumpWithoutCrashing();
+    } else {
+      // Ignore device removed cases as they don't usually indicate a problem
+      // originating from viz.
+    }
 
     std::move(completion_callback)
         .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_FAILED));

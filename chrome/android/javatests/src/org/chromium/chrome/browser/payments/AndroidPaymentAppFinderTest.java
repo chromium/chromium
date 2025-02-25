@@ -1705,7 +1705,7 @@ public class AndroidPaymentAppFinderTest
                                     mPackageManager,
                                     /* factoryDelegate= */ this,
                                     /* factory= */ null);
-                    finder.bypassIsReadyToPayServiceInTest();
+                    AndroidPaymentAppFinder.bypassIsReadyToPayServiceInTest();
                     if (appStorePackageName != null) {
                         assert appStorePaymentMethod != null;
                         assert appStorePaymentMethod.isValid();

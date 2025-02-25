@@ -3321,7 +3321,11 @@ even if they fit the naming pattern. -->
   </summary>
   <token key="ScreenReader">
     <variant name="Android.ScreenReader" summary="Android (e.g. Talkback)"/>
-    <variant name="Mac.ScreenReader" summary="MacOS (e.g. VoiceOver)"/>
+    <variant name="Mac.ScreenReader"
+        summary="This tracks to the screen reader AXMode flag on Mac, which
+                 can actually be turned on by any assistive technology"/>
+    <variant name="Mac.VoiceOver"
+        summary="This tracks VoiceOver screen reader usage specifically"/>
     <variant name="WinJAWS" summary="Windows, specifically JAWS."/>
     <variant name="WinNarrator" summary="Windows, specifically Narrator."/>
     <variant name="WinNVDA" summary="Windows, specifically NVDA"/>

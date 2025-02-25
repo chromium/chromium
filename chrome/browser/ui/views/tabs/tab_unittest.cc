@@ -259,7 +259,7 @@ class AlertIndicatorButtonTest : public ChromeViewsTestBase {
             views::kFlexBehaviorKey,
             views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                      views::MaximumFlexSizeRule::kUnbounded));
-    parent->AddChildView(tab_strip_.get());
+    parent->AddChildViewRaw(tab_strip_.get());
 
     widget_ =
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);

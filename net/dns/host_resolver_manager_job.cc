@@ -377,12 +377,18 @@ void HostResolverManager::Job::OnEvicted() {
 
 bool HostResolverManager::Job::ServeFromHosts() {
   DCHECK_GT(num_active_requests(), 0u);
-  std::optional<HostCache::Entry> results = resolver_->ServeFromHosts(
-      key_.host.GetHostnameWithoutBrackets(), key_.query_types,
-      key_.flags & HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6, tasks_);
-  if (results) {
+  std::set<std::unique_ptr<HostResolverInternalResult>> results =
+      resolver_->ServeFromHosts(
+          key_.host.GetHostnameWithoutBrackets(), key_.query_types,
+          key_.flags & HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6, tasks_);
+  if (!results.empty() && std::ranges::any_of(results, [](const auto& result) {
+        return result->type() == HostResolverInternalResult::Type::kData;
+      })) {
+    HostCache::Entry legacy_results(results, base::Time::Now(),
+                                    tick_clock_->NowTicks(),
+                                    HostCache::Entry::SOURCE_HOSTS);
     // This will destroy the Job.
-    CompleteRequests(results.value(), base::TimeDelta(), true /* allow_cache */,
+    CompleteRequests(legacy_results, base::TimeDelta(), true /* allow_cache */,
                      true /* secure */, TaskType::HOSTS);
     return true;
   }

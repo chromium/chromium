@@ -313,7 +313,8 @@ class EnterpriseSearchManagerProviderInjectionTest
                         const std::string& search_url,
                         const std::string& suggest_url,
                         const std::string& icon_url,
-                        bool require_shortcut) {
+                        bool require_shortcut,
+                        int min_query_length) {
     scoped_config_.Get().enabled = enabled;
     scoped_config_.Get().name = name;
     scoped_config_.Get().shortcut = shortcut;
@@ -321,6 +322,7 @@ class EnterpriseSearchManagerProviderInjectionTest
     scoped_config_.Get().suggest_url = suggest_url;
     scoped_config_.Get().icon_url = icon_url;
     scoped_config_.Get().require_shortcut = require_shortcut;
+    scoped_config_.Get().min_query_length = min_query_length;
   }
 
   void InitScopedConfig(bool enabled, bool require_shortcut) {
@@ -382,7 +384,8 @@ TEST_P(EnterpriseSearchManagerProviderInjectionTest, Verify) {
         /*search_url=*/"https://www.mocked.com/q={searchTerms}",
         /*suggest_url=*/"https://www.mocked.com/ac",
         /*icon_url=*/"https://www.mocked.com/favicon.ico",
-        /*require_shortcut=*/true);
+        /*require_shortcut=*/true,
+        /*min_query_length=*/4);
 
     EXPECT_TRUE(scoped_config_.Get().enabled);
     EXPECT_EQ(

@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/signin/core/browser/account_reconcilor.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_promo_signin_mediator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_navigation_controller.h"
@@ -93,6 +94,8 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
                                               [OCMArg anyPointer])
                           identityManager:reinterpret_cast<
                                               signin::IdentityManager*>(
+                                              [OCMArg anyPointer])
+                        accountReconcilor:reinterpret_cast<AccountReconcilor*>(
                                               [OCMArg anyPointer])
                           userPrefService:reinterpret_cast<PrefService*>(
                                               [OCMArg anyPointer])

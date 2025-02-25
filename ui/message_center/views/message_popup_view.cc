@@ -42,7 +42,7 @@ MessagePopupView::MessagePopupView(MessageView* message_view,
   if (!message_view_->IsManuallyExpandedOrCollapsed()) {
     message_view_->SetExpanded(message_view_->IsAutoExpandingAllowed());
   }
-  AddChildView(message_view_.get());
+  AddChildViewRaw(message_view_.get());
 
   SetNotifyEnterExitOnChild(true);
 

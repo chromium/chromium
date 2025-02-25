@@ -71,8 +71,7 @@ namespace {
                                                                               \
    private:                                                                   \
     virtual void TestBodyOnGpu();                                             \
-    GTEST_INTERNAL_ATTRIBUTE_MAYBE_UNUSED                                     \
-        static ::testing::TestInfo* const test_info_;                         \
+    [[maybe_unused]] static ::testing::TestInfo* const test_info_;            \
   };                                                                          \
                                                                               \
   ::testing::TestInfo* const GTEST_TEST_CLASS_NAME_(test_suite_name,          \

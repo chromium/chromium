@@ -20,8 +20,7 @@
 #include "ui/webui/webui_util.h"
 
 UserEducationInternalsUIConfig::UserEducationInternalsUIConfig()
-    : DefaultWebUIConfig(content::kChromeUIScheme,
-                         chrome::kChromeUIUserEducationInternalsHost) {}
+    : DefaultInternalWebUIConfig(chrome::kChromeUIUserEducationInternalsHost) {}
 
 UserEducationInternalsUI::UserEducationInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),

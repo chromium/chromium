@@ -32,7 +32,6 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/persistence/site_data/feature_usage.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -153,29 +152,22 @@ class SiteDataCacheFacadeBrowserTest : public InProcessBrowserTest {
     const url::Origin origin = embedded_test_server()->GetOrigin(site);
 
     // Look up the reader and writer for `origin`.
-    std::unique_ptr<SiteDataReader> reader;
-    std::unique_ptr<SiteDataWriter> writer;
-    RunInGraph([&](base::OnceClosure quit_closure) {
-      // Remember to quit the RunLoop on early return.
-      base::ScopedClosureRunner quit_on_exit(std::move(quit_closure));
+    auto* factory = SiteDataCacheFactory::GetInstance();
+    ASSERT_TRUE(factory);
+    SiteDataCacheInspector* inspector =
+        factory->GetInspectorForBrowserContext(browser_context_id);
+    ASSERT_TRUE(inspector);
+    SiteDataCache* cache = inspector->GetDataCache();
+    ASSERT_TRUE(cache);
+    std::unique_ptr<SiteDataReader> reader = cache->GetReaderForOrigin(origin);
+    ASSERT_TRUE(reader);
+    std::unique_ptr<SiteDataWriter> writer = cache->GetWriterForOrigin(origin);
+    ASSERT_TRUE(writer);
 
-      auto* factory = SiteDataCacheFactory::GetInstance();
-      ASSERT_TRUE(factory);
-      SiteDataCacheInspector* inspector =
-          factory->GetInspectorForBrowserContext(browser_context_id);
-      ASSERT_TRUE(inspector);
-      SiteDataCache* cache = inspector->GetDataCache();
-      ASSERT_TRUE(cache);
-      reader = cache->GetReaderForOrigin(origin);
-      ASSERT_TRUE(reader);
-      writer = cache->GetWriterForOrigin(origin);
-      ASSERT_TRUE(writer);
-
-      // Wait until the reader finishes asynchronously loading data.
-      // The reader and writer can't be destroyed inside the callback, so exit
-      // the runloop and start a new one when it fires.
-      reader->RegisterDataLoadedCallback(quit_on_exit.Release());
-    });
+    // Wait until the reader finishes asynchronously loading data.
+    base::RunLoop run_loop;
+    reader->RegisterDataLoadedCallback(run_loop.QuitClosure());
+    run_loop.Run();
 
     EXPECT_EQ(reader->UpdatesTitleInBackground(),
               expected_updates_title_in_background);

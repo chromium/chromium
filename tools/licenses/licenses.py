@@ -412,7 +412,6 @@ KNOWN_NON_IOS_LIBRARIES = set([
     os.path.join('third_party', 'flot'),
     os.path.join('third_party', 'gtk+'),
     os.path.join('third_party', 'iaccessible2'),
-    os.path.join('third_party', 'iccjpeg'),
     os.path.join('third_party', 'isimpledom'),
     os.path.join('third_party', 'jsoncpp'),
     os.path.join('third_party', 'khronos'),

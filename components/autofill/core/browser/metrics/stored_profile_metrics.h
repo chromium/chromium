@@ -10,7 +10,7 @@
 #include <string_view>
 #include <vector>
 
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 
 namespace autofill::autofill_metrics {

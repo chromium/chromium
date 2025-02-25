@@ -55,7 +55,7 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
 
     notification_header_view_ =
         new NotificationHeaderView(views::Button::PressedCallback());
-    container->AddChildView(notification_header_view_.get());
+    container->AddChildViewRaw(notification_header_view_.get());
 
     widget_.Show();
   }

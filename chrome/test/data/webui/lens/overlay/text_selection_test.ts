@@ -9,7 +9,7 @@ import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js
 import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import {UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
-import type {TextLayerElement} from 'chrome-untrusted://lens-overlay/text_layer.js';
+import type {TextLayerBase} from 'chrome-untrusted://lens-overlay/text_layer_base.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
@@ -17,7 +17,7 @@ import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_sup
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {simulateClick, simulateDrag} from '../utils/selection_utils.js';
-import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
+import {createLine, createParagraph, createText, createWord, getHighlightedNodesForTesting, getWordNodesForTesting} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
@@ -80,7 +80,7 @@ suite('TextSelection', function() {
     await addWords();
   });
 
-  function getTextSelectionLayer(): TextLayerElement {
+  function getTextSelectionLayer(): TextLayerBase {
     return selectionOverlayElement.getTextSelectionLayerForTesting()!;
   }
 
@@ -138,11 +138,13 @@ suite('TextSelection', function() {
   }
 
   function getRenderedWords(): NodeListOf<Element> {
-    return getTextSelectionLayer().getWordNodesForTesting();
+    return getWordNodesForTesting(
+        getTextSelectionLayer().getElementForTesting());
   }
 
   function getHighlightedLines(): NodeListOf<Element> {
-    return getTextSelectionLayer().getHighlightedNodesForTesting();
+    return getHighlightedNodesForTesting(
+        getTextSelectionLayer().getElementForTesting());
   }
 
   test('verify that text renders on the page', () => {

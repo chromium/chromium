@@ -39,6 +39,7 @@
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/sync/base/account_pref_utils.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -651,12 +652,19 @@ void TabGroupSyncServiceImpl::OnTabGroupUnShareComplete(
 }
 
 void TabGroupSyncServiceImpl::OnCollaborationRemoved(
-    const std::string& collaboration_id) {
-  CollaborationId collab(collaboration_id);
+    const syncer::CollaborationId& collaboration_id) {
   for (const SavedTabGroup& group : model_->saved_tab_groups()) {
     if (group.collaboration_id().has_value() &&
-        group.collaboration_id().value() == collab) {
+        group.collaboration_id().value() == collaboration_id) {
       model_->SetGroupHidden(group.saved_guid());
+
+      // Clean up the originating saved tab group.
+      if (group.originating_tab_group_guid().has_value()) {
+        const SavedTabGroup* originating_group =
+            model_->Get(group.originating_tab_group_guid().value());
+        CHECK(!originating_group || !originating_group->local_group_id());
+        RemoveGroup(group.originating_tab_group_guid().value());
+      }
     }
   }
 }

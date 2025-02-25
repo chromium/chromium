@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/span.h"
 #include "base/metrics/histogram_macros.h"

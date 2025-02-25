@@ -5,7 +5,7 @@
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

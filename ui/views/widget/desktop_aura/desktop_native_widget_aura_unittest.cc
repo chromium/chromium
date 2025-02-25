@@ -304,15 +304,15 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_ReorderDoesntRecomputeOcclusion) {
   // Create child views.
   View* host_view1 = new View();
   w1->GetNativeView()->SetProperty(kHostViewKey, host_view1);
-  contents_view->AddChildView(host_view1);
+  contents_view->AddChildViewRaw(host_view1);
 
   View* host_view2 = new View();
   w2->GetNativeView()->SetProperty(kHostViewKey, host_view2);
-  contents_view->AddChildView(host_view2);
+  contents_view->AddChildViewRaw(host_view2);
 
   View* host_view3 = new View();
   w3->GetNativeView()->SetProperty(kHostViewKey, host_view3);
-  contents_view->AddChildView(host_view3);
+  contents_view->AddChildViewRaw(host_view3);
 
   // Reorder child views. Expect occlusion to only be recomputed once.
   aura::test::WindowOcclusionTrackerTestApi window_occlusion_tracker_test_api(

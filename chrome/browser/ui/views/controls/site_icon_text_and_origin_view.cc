@@ -81,7 +81,7 @@ SiteIconTextAndOriginView::SiteIconTextAndOriginView(
 
   auto icon_view = std::make_unique<views::ImageView>();
   icon_view->SetImage(ui::ImageModel::FromImageSkia(icon));
-  AddChildView(icon_view.release());
+  AddChildViewRaw(icon_view.release());
 
   std::u16string current_title =
       NormalizeSuggestedTitle(GetTrimmedTitle(initial_title));

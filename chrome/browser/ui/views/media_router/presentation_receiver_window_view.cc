@@ -203,9 +203,9 @@ void PresentationReceiverWindowView::Init() {
   box_owner->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
   auto* box = SetLayoutManager(std::move(box_owner));
-  AddChildView(location_bar_view_.get());
+  AddChildViewRaw(location_bar_view_.get());
   box->SetFlexForView(location_bar_view_, 0);
-  AddChildView(web_view);
+  AddChildViewRaw(web_view);
   box->SetFlexForView(web_view, 1);
 
   location_bar_view_->Init();

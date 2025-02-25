@@ -9,6 +9,8 @@
 
 @implementation TestLensOverlayController
 
+@synthesize visibleAreaLayoutGuide = _visibleAreaLayoutGuide;
+
 - (void)setLensOverlayDelegate:(id<ChromeLensOverlayDelegate>)delegate {
   // NO-OP
 }

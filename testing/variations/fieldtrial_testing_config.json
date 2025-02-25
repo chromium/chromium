@@ -24554,6 +24554,24 @@
             ]
         }
     ],
+    "UserEducationExperienceVersion2Point5": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UserEducationExperienceVersion2Point5"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8CodeFlushing": [
         {
             "platforms": [
@@ -26791,24 +26809,6 @@
                     "name": "Disabled",
                     "enable_features": [
                         "CredentialProviderPerformanceImprovements"
-                    ]
-                }
-            ]
-        }
-    ],
-    "kUserEducationExperienceVersion2Point5": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "kUserEducationExperienceVersion2Point5"
                     ]
                 }
             ]

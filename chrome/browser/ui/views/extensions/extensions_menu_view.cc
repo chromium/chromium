@@ -336,7 +336,7 @@ void ExtensionsMenuView::InsertMenuItem(ExtensionMenuItemView* menu_item) {
   // Add the view at the end. Note that this *doesn't* insert the item at the
   // correct spot or ensure the view is visible; it's assumed that any callers
   // will handle those separately.
-  section->menu_items->AddChildView(menu_item);
+  section->menu_items->AddChildViewRaw(menu_item);
 }
 
 void ExtensionsMenuView::UpdateSectionVisibility() {

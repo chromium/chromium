@@ -14,6 +14,8 @@
   BOOL _started;
 }
 
+@synthesize visibleAreaLayoutGuide = _visibleAreaLayoutGuide;
+
 - (instancetype)init {
   self = [super init];
   if (self) {

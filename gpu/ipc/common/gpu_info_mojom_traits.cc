@@ -92,7 +92,7 @@ bool EnumTraits<gpu::mojom::SkiaBackendType, gpu::SkiaBackendType>::FromMojom(
       *out = gpu::SkiaBackendType::kGraphiteDawnD3D12;
       return true;
   }
-  return false;
+  NOTREACHED() << "Invalid SkiaBackendType: " << input;
 }
 
 // static
@@ -424,6 +424,8 @@ gpu::mojom::ImageDecodeAcceleratorType EnumTraits<
     case gpu::ImageDecodeAcceleratorType::kUnknown:
       return gpu::mojom::ImageDecodeAcceleratorType::kUnknown;
   }
+  NOTREACHED() << "Invalid ImageDecodeAcceleratorType: "
+               << static_cast<int>(image_type);
 }
 
 // static
@@ -458,6 +460,8 @@ EnumTraits<gpu::mojom::ImageDecodeAcceleratorSubsampling,
     case gpu::ImageDecodeAcceleratorSubsampling::k444:
       return gpu::mojom::ImageDecodeAcceleratorSubsampling::k444;
   }
+  NOTREACHED() << "Invalid ImageDecodeAcceleratorSubsampling: "
+               << static_cast<int>(subsampling);
 }
 
 // static
@@ -505,6 +509,7 @@ EnumTraits<gpu::mojom::OverlaySupport, gpu::OverlaySupport>::ToMojom(
     case gpu::OverlaySupport::kSoftware:
       return gpu::mojom::OverlaySupport::SOFTWARE;
   }
+  NOTREACHED() << "Invalid OverlaySupport: " << static_cast<int>(support);
 }
 
 bool EnumTraits<gpu::mojom::OverlaySupport, gpu::OverlaySupport>::FromMojom(
@@ -513,18 +518,18 @@ bool EnumTraits<gpu::mojom::OverlaySupport, gpu::OverlaySupport>::FromMojom(
   switch (input) {
     case gpu::mojom::OverlaySupport::NONE:
       *out = gpu::OverlaySupport::kNone;
-      break;
+      return true;
     case gpu::mojom::OverlaySupport::DIRECT:
       *out = gpu::OverlaySupport::kDirect;
-      break;
+      return true;
     case gpu::mojom::OverlaySupport::SCALING:
       *out = gpu::OverlaySupport::kScaling;
-      break;
+      return true;
     case gpu::mojom::OverlaySupport::SOFTWARE:
       *out = gpu::OverlaySupport::kSoftware;
-      break;
+      return true;
   }
-  return true;
+  NOTREACHED() << "Invalid OverlaySupport: " << input;
 }
 
 bool StructTraits<gpu::mojom::OverlayInfoDataView, gpu::OverlayInfo>::Read(

@@ -57,7 +57,6 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
-#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -185,11 +184,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         OCMProtocolMock(@protocol(SnackbarCommands));
     [dispatcher startDispatchingToTarget:mockSnackbarCommandHandler
                              forProtocol:@protocol(SnackbarCommands)];
-    id mockParcelTrackingCommandHandler =
-        OCMProtocolMock(@protocol(ParcelTrackingOptInCommands));
-    [dispatcher
-        startDispatchingToTarget:mockParcelTrackingCommandHandler
-                     forProtocol:@protocol(ParcelTrackingOptInCommands)];
     id mockContextualSheetCommandHandler =
         OCMProtocolMock(@protocol(ContextualSheetCommands));
     [dispatcher startDispatchingToTarget:mockContextualSheetCommandHandler

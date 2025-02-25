@@ -1204,6 +1204,11 @@ TEST_F(HostContentSettingsMapTest, GetUserModifiableContentSetting) {
                                        url, url, ContentSettingsType::COOKIES));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             map->GetContentSetting(url, url, ContentSettingsType::COOKIES));
+
+  // TODO(crbug.com/399110601) Add test that
+  // HostContentSettingsMapTest::GetUserModifiableContentSetting() ignores the
+  // relative int value of the providers when determining whether a provider is
+  // user-modifiable.
 }
 
 // For a single Unicode encoded pattern, check if it gets converted to punycode

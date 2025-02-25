@@ -14,11 +14,11 @@ import androidx.core.app.NotificationManagerCompat;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.PackageManagerUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.webxr.WebXrAndroidFeatureMap;
+import org.chromium.device.vr.XrFeatureStatus;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.ContextualNotificationPermissionRequester;
 import org.chromium.ui.permissions.PermissionCallback;
@@ -90,15 +90,15 @@ public class PermissionUtil {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
     }
 
-    private static boolean hasImmersiveFeature() {
-        return PackageManagerUtils.hasSystemFeature(PackageManagerUtils.XR_IMMERSIVE_FEATURE_NAME);
-    }
-
-    private static boolean isOpenXrSupportEnabled() {
+    private static boolean openXrNeedsAdditionalPermissions() {
         // OpenXR only requires additional permissions after Android 14.
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-                && hasImmersiveFeature()
+                && XrFeatureStatus.isXrDevice()
                 && WebXrAndroidFeatureMap.isOpenXrEnabled();
+    }
+
+    public static boolean handTrackingNeedsAdditionalPermissions() {
+        return XrFeatureStatus.isXrDevice() && WebXrAndroidFeatureMap.isHandTrackingEnabled();
     }
 
     /**
@@ -124,17 +124,17 @@ public class PermissionUtil {
             case ContentSettingsType.MEDIASTREAM_CAMERA:
                 return Arrays.copyOf(CAMERA_PERMISSIONS, CAMERA_PERMISSIONS.length);
             case ContentSettingsType.AR:
-                if (isOpenXrSupportEnabled()) {
+                if (openXrNeedsAdditionalPermissions()) {
                     return Arrays.copyOf(OPENXR_PERMISSIONS, OPENXR_PERMISSIONS.length);
                 }
                 return Arrays.copyOf(CAMERA_PERMISSIONS, CAMERA_PERMISSIONS.length);
             case ContentSettingsType.VR:
-                if (isOpenXrSupportEnabled()) {
+                if (openXrNeedsAdditionalPermissions()) {
                     return Arrays.copyOf(OPENXR_PERMISSIONS, OPENXR_PERMISSIONS.length);
                 }
                 return EMPTY_PERMISSIONS;
             case ContentSettingsType.HAND_TRACKING:
-                if (hasImmersiveFeature() && WebXrAndroidFeatureMap.isHandTrackingEnabled()) {
+                if (handTrackingNeedsAdditionalPermissions()) {
                     return Arrays.copyOf(
                             HAND_TRACKING_PERMISSIONS, HAND_TRACKING_PERMISSIONS.length);
                 }

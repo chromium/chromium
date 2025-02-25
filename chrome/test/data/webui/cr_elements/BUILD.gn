@@ -13,6 +13,7 @@ build_webui_tests("build") {
     "cr_ripple_mixin_test.ts",
     "cr_ripple_test.ts",
     "cr_splitter_test.ts",
+    "cr_tabs_test.ts",
     "cr_tree_test.ts",
   ]
 
@@ -59,7 +60,6 @@ build_webui_tests("build") {
       "cr_search_field_test.ts",
       "cr_selectable_mixin_test.ts",
       "cr_slider_test.ts",
-      "cr_tabs_test.ts",
       "cr_textarea_focus_test.ts",
       "cr_toast_manager_test.ts",
       "cr_toast_test.ts",

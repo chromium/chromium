@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service_factory.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_util.h"
@@ -62,11 +61,6 @@ void AnnotationsTabHelper::SetBaseViewController(
 void AnnotationsTabHelper::SetMiniMapCommands(
     id<MiniMapCommands> mini_map_handler) {
   mini_map_handler_ = mini_map_handler;
-}
-
-void AnnotationsTabHelper::SetParcelTrackingOptInCommands(
-    id<ParcelTrackingOptInCommands> parcel_tracking_handler) {
-  NOTREACHED();
 }
 
 void AnnotationsTabHelper::SetUnitConversionCommands(

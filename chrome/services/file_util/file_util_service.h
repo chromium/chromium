@@ -30,7 +30,7 @@ class FileUtilService : public chrome::mojom::FileUtilService {
       mojo::PendingReceiver<chrome::mojom::ZipFileCreator> receiver) override;
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   void BindSafeArchiveAnalyzer(
       mojo::PendingReceiver<chrome::mojom::SafeArchiveAnalyzer> receiver)
       override;

@@ -36,6 +36,10 @@
 class SettingsBrowserTest : public WebUIMochaBrowserTest {
  protected:
   SettingsBrowserTest() { set_test_loader_host(chrome::kChromeUISettingsHost); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi};
 };
 
 using SettingsTest = SettingsBrowserTest;

@@ -129,6 +129,8 @@ class AuctionV8DevToolsSession::IOSession
                        std::vector<uint8_t>(message.begin(), message.end())));
   }
 
+  void UnpauseAndTerminate() override { NOTREACHED(); }
+
  private:
   IOSession(scoped_refptr<DebugCommandQueue> debug_command_queue,
             RunDispatch v8_thread_dispatch)
@@ -253,6 +255,11 @@ void AuctionV8DevToolsSession::DispatchProtocolCommand(
         cbor_message.characters8(), cbor_message.length()));
     fallback_dispatcher_.Dispatch(dispatchable).Run();
   }
+}
+
+void AuctionV8DevToolsSession::UnpauseAndTerminate() {
+  // This is currently only invoked for frame targets.
+  NOTREACHED();
 }
 
 void AuctionV8DevToolsSession::sendResponse(

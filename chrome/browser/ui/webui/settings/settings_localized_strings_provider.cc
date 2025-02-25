@@ -3407,7 +3407,9 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       {"siteSettingsNoSmartCardReadersFound",
        IDS_SITE_SETTINGS_NO_SMART_CARD_READERS_FOUND},
       {"siteSettingsResetSmartCardConfirmation",
-       IDS_SITE_SETTINGS_RESET_SMART_CARD_CONFIRMATION}};
+       IDS_SITE_SETTINGS_RESET_SMART_CARD_CONFIRMATION},
+      {"allSitesShowRwsButton", IDS_ALL_SITES_SHOW_RWS_BUTTON},
+      {"allSitesRwsMembershipLabel", IDS_ALL_SITES_RWS_LABEL}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   // Tracking protection learn more links.

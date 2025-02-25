@@ -863,10 +863,10 @@ void CaptionBubble::Init() {
       std::move(left_header_container_layout));
 
   left_header_container_ =
-      header_container->AddChildView(std::move(left_header_container));
-  header_container->AddChildView(std::move(right_header_container));
-  header_container_ = AddChildView(std::move(header_container));
-  AddChildView(std::move(content_container));
+      header_container->AddChildViewRaw(std::move(left_header_container));
+  header_container->AddChildViewRaw(std::move(right_header_container));
+  header_container_ = AddChildViewRaw(std::move(header_container));
+  AddChildViewRaw(std::move(content_container));
 
   if (caption_bubble_settings_->IsLiveTranslateFeatureEnabled() ||
       base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {

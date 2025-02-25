@@ -53,7 +53,7 @@ struct PlaybackSpeed {
   const double playback_rate;
 };
 
-const auto kPlaybackSpeeds = std::to_array<PlaybackSpeed>({
+constexpr auto kPlaybackSpeeds = std::to_array<PlaybackSpeed>({
     {IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_0_25X_TITLE, 0.25},
     {IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_0_5X_TITLE, 0.5},
     {IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_0_75X_TITLE, 0.75},

@@ -284,11 +284,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '3215df76cfc3a63d63075976cdd766d10aaf6f32',
+  'v8_revision': '562a3c4fd8cc10a412fe6e60ed9ba498ad690883',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'f439541ffa0123a9b2027f77f548e8fad16c4d5e',
+  'angle_revision': '99032263ecdbab24092808b3567bc149b7d65e53',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -364,7 +364,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling fuzztest
   # and whatever else without interference from each other.
-  'fuzztest_revision': 'c7651e47efd1df4eb3eaf729a1562520973b6f8c',
+  'fuzztest_revision': '313a52217cccb2c3454981cde7dc05fda245ebcb',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling domato
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'a463b44d6bec23e638b2e06840390b84fe724bfb',
+  'devtools_frontend_revision': 'aebc1982893843d74953777ab5e370da493e9f21',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -503,7 +503,7 @@ vars = {
   'libcxx_revision':       'cdc82e180c610aaa7153301fea4d6b4005da9f22',
 
   # GN CIPD package version.
-  'gn_version': 'git_revision:ed1abc107815210dc66ec439542bee2f6cbabc00',
+  'gn_version': 'git_revision:f98b6d7275c2e823e0983fa7f874facfe6980778',
 
   # ninja CIPD package.
   'ninja_package': 'infra/3pp/tools/ninja/',
@@ -1123,7 +1123,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + 'f5e7f00a2a4c78a5ad125b9d448969623102c73e',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '4c80e915354f5db2a1c18ee04b1eb46a74b8fdfa',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1172,8 +1172,8 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_mac_universal_prod',
-          # 129.0.6651.0
-          'version': 'IrAigaqukp1GbaksroZcR3Jo0oOYKg9kzatjzNNbXKQC',
+          # 135.0.7023.0
+          'version': '-Ku_vv9W1rxG-W7I1lIenWsKHFcTIZCZ_qifqHbUvxQC',
         },
       ],
   },
@@ -1452,7 +1452,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '9d3b479e8938d5ce71426decfa4ec024c7c6044b',
+    '5f9cf57a42c7929c5927b68946b2c577ef133c13',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1917,7 +1917,7 @@ deps = {
   # Tools used when building Chrome for Chrome OS. This affects both the Simple
   # Chrome workflow, as well as the chromeos-chrome ebuild.
   'src/third_party/chromite': {
-      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '3f64f8dbc0b42904e3bc14c3336c31343e75d2a7',
+      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '117b98aed20ec482df16b8f4ff92ae4203d3692b',
       'condition': 'checkout_chromeos',
   },
 
@@ -2817,7 +2817,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '0ca9b1cb8cff87111f62dbefff953c0131150983',
+    Var('webrtc_git') + '/src.git' + '@' + '48f271fba90d4a6d8699e813cd049014de502523',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -4556,7 +4556,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '3ee7062626bdc8af255ba31c3a375ed583abc124',
+        'e2c9b4c8a6be5631d83fe0e62f22bdcbd50a91f8',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

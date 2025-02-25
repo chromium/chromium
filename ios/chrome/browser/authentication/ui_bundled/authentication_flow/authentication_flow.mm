@@ -256,7 +256,14 @@ void RecordIOSIdentityAvailableInProfile(
   // `YES` if the user is signed in and there are unsynced data in the current
   // profile.
   std::optional<BOOL> _hasUnsyncedData;
+  // DEPRECATED. This should be removed once all the UI has been migrated to the
+  // new API.
+  // Replaced by `_accountSwitchingBatchClosureRunner`.
   base::ScopedClosureRunner _accountSwitchInProgress;
+  // The lifetime of this ScopedClosureRunner denotes a batch of primary account
+  // changes. UI listens to batched changes to avoid visual artifacts during an
+  // account switch.
+  base::ScopedClosureRunner _accountSwitchingBatchClosureRunner;
 }
 
 @synthesize handlingError = _handlingError;
@@ -692,6 +699,10 @@ void RecordIOSIdentityAvailableInProfile(
   }
   _accountSwitchInProgress =
       authenticationService->DeclareAccountSwitchInProgress();
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
+  _accountSwitchingBatchClosureRunner =
+      identityManager->StartBatchOfPrimaryAccountChanges();
   [_performer signOutProfile:profile];
 }
 
@@ -751,6 +762,7 @@ void RecordIOSIdentityAvailableInProfile(
   DCHECK(_signInCompletion)
       << "`completeSignInWithResult` should not be called twice.";
   _accountSwitchInProgress.RunAndReset();
+  _accountSwitchingBatchClosureRunner.RunAndReset();
   signin_metrics::SigninAccountType accountType =
       (_identityToSignInHostedDomain.length > 0)
           ? signin_metrics::SigninAccountType::kManaged
@@ -774,6 +786,7 @@ void RecordIOSIdentityAvailableInProfile(
     [_performer signOutImmediatelyFromProfile:profile];
   }
   _accountSwitchInProgress.RunAndReset();
+  _accountSwitchingBatchClosureRunner.RunAndReset();
   SigninCoordinatorResult result;
   switch (_cancelationReason) {
     case CancelationReason::kFailed:

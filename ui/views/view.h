@@ -451,6 +451,12 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // for new code.
   template <typename T>
   T* AddChildView(T* view) {
+    return AddChildViewRaw(view);
+  }
+  // TODO(crbug.com/40485510): Migration AddChildView => AddChildViewRaw in
+  // progress. When finished, AddChildView will be removed.
+  template <typename T>
+  T* AddChildViewRaw(T* view) {
     CHECK_CLASS_HAS_METADATA(T)
     AddChildViewAtImpl(view, children_.size());
     return view;

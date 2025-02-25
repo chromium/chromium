@@ -185,6 +185,11 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
                                   const ExtensionId& extension_id,
                                   disable_reason::DisableReason disable_reason);
 
+  // Helper to get the disable reasons for an installed (or upgraded) extension.
+  // Returning an empty set indicates that we should enable this extension
+  // initially.
+  DisableReasonSet GetDisableReasonsOnInstalled(const Extension* extension);
+
   // Attempts to enable all disabled extensions which the only disabled reason
   // is reloading.
   void EnabledReloadableExtensions();

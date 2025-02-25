@@ -126,6 +126,7 @@ enum {
   kFacilitatedPaymentsEwallet = 80,
   kAutofillBnplEnabled = 81,
   kAutofillHasSeenBnpl = 82,
+  kAutomaticPasskeyUpgrades = 83,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -208,6 +209,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
          {syncable_prefs_ids::kCredentialsEnableService,
           syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
           MergeBehavior::kNone}},
+        {password_manager::prefs::kAutomaticPasskeyUpgrades,
+         {syncable_prefs_ids::kAutomaticPasskeyUpgrades, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
         {password_manager::prefs::kPasswordDismissCompromisedAlertEnabled,
          {syncable_prefs_ids::kPasswordDismissCompromisedAlertEnabled,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},

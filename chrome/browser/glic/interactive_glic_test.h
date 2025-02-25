@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/interactive_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
@@ -31,65 +32,13 @@
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
-#include "ui/base/interaction/polling_state_observer.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
-namespace base {
-// Set up a custom |ScopedObservationTrait| for
-// |GlicWindowController::WebUiStateObserver|.
-template <>
-struct ScopedObservationTraits<glic::GlicWindowController,
-                               glic::GlicWindowController::WebUiStateObserver> {
-  static void AddObserver(
-      glic::GlicWindowController* controller,
-      glic::GlicWindowController::WebUiStateObserver* observer) {
-    controller->AddWebUiStateObserver(observer);
-  }
-  static void RemoveObserver(
-      glic::GlicWindowController* controller,
-      glic::GlicWindowController::WebUiStateObserver* observer) {
-    controller->RemoveWebUiStateObserver(observer);
-  }
-};
-}  // namespace base
 
 namespace glic::test {
 
-namespace internal {
-
-// Observes `controller` for changes to state().
-class GlicWindowControllerStateObserver
-    : public ui::test::PollingStateObserver<GlicWindowController::State> {
- public:
-  explicit GlicWindowControllerStateObserver(
-      const GlicWindowController& controller);
-  ~GlicWindowControllerStateObserver() override;
-};
-
-DECLARE_STATE_IDENTIFIER_VALUE(GlicWindowControllerStateObserver,
-                               kGlicWindowControllerState);
-
-// Observers the glic app internal state.
-class GlicAppStateObserver : public ui::test::ObservationStateObserver<
-                                 mojom::WebUiState,
-                                 GlicWindowController,
-                                 GlicWindowController::WebUiStateObserver> {
- public:
-  explicit GlicAppStateObserver(GlicWindowController* controller);
-  ~GlicAppStateObserver() override;
-  // GlicWindowController::WebUiStateObserver
-  void WebUiStateChanged(mojom::WebUiState state) override;
-};
-
-DECLARE_STATE_IDENTIFIER_VALUE(GlicAppStateObserver, kGlicAppState);
-
-}  // namespace internal
-
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicContentsElementId);
 extern const InteractiveBrowserTestApi::DeepQuery kPathToMockGlicCloseButton;
 extern const InteractiveBrowserTestApi::DeepQuery kPathToGuestPanel;
 
@@ -242,7 +191,6 @@ class InteractiveGlicTestT : public T {
     Api::AddDescriptionPrefix(steps, "WaitForAndInstrumentGlic");
     return steps;
   }
-
   // Activate one of the glic entrypoints.
   // If `instrument_glic_contents` is true both the host and contents will be
   // instrumented (see `WaitForAndInstrumentGlic()`) else only the host will be

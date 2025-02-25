@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_TYPES_H_
 
 #include "cc/paint/paint_flags.h"
+#include "third_party/blink/renderer/platform/geometry/path_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPathTypes.h"
@@ -158,18 +159,6 @@ enum GradientSpreadMethod {
   kSpreadMethodRepeat
 };
 
-enum LineCap {
-  kButtCap = SkPaint::kButt_Cap,
-  kRoundCap = SkPaint::kRound_Cap,
-  kSquareCap = SkPaint::kSquare_Cap
-};
-
-enum LineJoin {
-  kMiterJoin = SkPaint::kMiter_Join,
-  kRoundJoin = SkPaint::kRound_Join,
-  kBevelJoin = SkPaint::kBevel_Join
-};
-
 enum TextPaintOrder { kFillStroke, kStrokeFill };
 
 enum TextDrawingMode {
@@ -177,11 +166,6 @@ enum TextDrawingMode {
   kTextModeStroke = 1 << 1,
 };
 typedef unsigned TextDrawingModeFlags;
-
-enum WindRule {
-  RULE_NONZERO = static_cast<int>(SkPathFillType::kWinding),
-  RULE_EVENODD = static_cast<int>(SkPathFillType::kEvenOdd)
-};
 
 // Reasons for requesting that recorded PaintOps be flushed. Used in code
 // loosely related to 2d canvas rendering contexts.

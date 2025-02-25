@@ -606,7 +606,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
 
     for (TabSlotView* dragged_view : views) {
       CHECK_NE(dragged_view->parent(), this, base::NotFatalUntil::M128);
-      AddChildView(dragged_view);
+      AddChildViewRaw(dragged_view);
       dragged_view->set_dragging(true);
     }
 

@@ -321,7 +321,7 @@ TEST_F(ButtonTest, HoverStatePreservedOnDescendantViewHierarchyChange) {
 
   EXPECT_EQ(Button::STATE_HOVERED, button()->GetState());
   Label* child = new Label(std::u16string());
-  button()->AddChildView(child);
+  button()->AddChildViewRaw(child);
   delete child;
   EXPECT_EQ(Button::STATE_HOVERED, button()->GetState());
 }
