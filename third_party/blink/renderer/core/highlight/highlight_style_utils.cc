@@ -529,14 +529,8 @@ HighlightStyleUtils::HighlightPaintingStyle(
 
   if (pseudo_style) {
     highlight_style.stroke_width = pseudo_style->TextStrokeWidth();
-    // TODO(crbug.com/1164461) For now, don't paint text shadows for ::highlight
-    // because some details of how this will be standardized aren't yet
-    // settled. Once the final standardization and implementation of highlight
-    // text-shadow behavior is complete, remove the following check.
-    if (pseudo != kPseudoIdHighlight) {
-      highlight_style.shadow =
-          uses_text_as_clip ? nullptr : pseudo_style->TextShadow();
-    }
+    highlight_style.shadow =
+        uses_text_as_clip ? nullptr : pseudo_style->TextShadow();
     std::optional<AppliedTextDecoration> selection_decoration =
         SelectionTextDecoration(document, originating_style, *pseudo_style);
     if (selection_decoration) {
