@@ -3703,7 +3703,7 @@
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 個帳戶使用相同的密碼}other{{COUNT} 個帳戶使用相同的密碼}}</translation>
 <translation id="3605515937536882518">表單值已更新</translation>
 <translation id="3605780360466892872">小員工</translation>
-<translation id="3607671391978830431">供子女使用</translation>
+<translation id="3607671391978830431">供孩子使用</translation>
 <translation id="3607799000129481474"><ph name="SITE" /> 想驗證身分</translation>
 <translation id="3608460311600621471">請提供列印這項資料的原因：</translation>
 <translation id="3608730769702025110">步驟 4 之 3：查看個人識別資訊</translation>
@@ -4601,7 +4601,7 @@
 <translation id="42126664696688958">匯出</translation>
 <translation id="4213540068152645535">無法變更密碼</translation>
 <translation id="42137655013211669">伺服器禁止存取這個資源。</translation>
-<translation id="4213918571089943508">子女的 Google 帳戶</translation>
+<translation id="4213918571089943508">孩子的 Google 帳戶</translation>
 <translation id="4214192212360095377">立即關閉</translation>
 <translation id="4214313983951846766">{NUM_TABS,plural, =0{沒有閒置分頁}=1{查看 1 個閒置分頁}other{查看 # 個閒置分頁}}</translation>
 <translation id="4217571870635786043">語音輸入</translation>
