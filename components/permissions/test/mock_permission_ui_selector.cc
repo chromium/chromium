@@ -16,3 +16,17 @@ bool MockPermissionUiSelector::IsPermissionRequestSupported(
   return request_type == permissions::RequestType::kNotifications ||
          request_type == permissions::RequestType::kGeolocation;
 }
+
+std::optional<permissions::PermissionUmaUtil::PredictionGrantLikelihood>
+MockPermissionUiSelector::PredictedGrantLikelihoodForUKM() {
+  return last_request_grant_likelihood_;
+}
+
+std::optional<permissions::PermissionRequestRelevance>
+MockPermissionUiSelector::PermissionRequestRelevanceForUKM() {
+  return last_permission_request_relevance_;
+}
+
+std::optional<bool> MockPermissionUiSelector::WasSelectorDecisionHeldback() {
+  return was_decision_held_back_;
+}

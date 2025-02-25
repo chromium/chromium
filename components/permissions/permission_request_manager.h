@@ -239,6 +239,15 @@ class PermissionRequestManager
     return prediction_grant_likelihood_;
   }
 
+  std::optional<bool> was_decision_held_back_for_testing() const {
+    return was_decision_held_back_;
+  }
+
+  std::optional<PermissionRequestRelevance>
+  permission_request_relevance_for_testing() const {
+    return permission_request_relevance_;
+  }
+
   std::optional<permissions::PermissionPromptDisposition>
   current_request_prompt_disposition_for_testing() const {
     return current_request_prompt_disposition_;
