@@ -11,6 +11,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
+#import "ios/chrome/common/ui/util/background_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -97,6 +98,8 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   NSLayoutConstraint* _omniboxTypingShieldHiddenBottomConstraint;
   // View containing the leading and trailing buttons.
   UIView* _contentView;
+  // The view used as the background for the content view.
+  UIView* _backgroundView;
   // Whether we are using the large accessory view.
   BOOL _largeAccessoryViewEnabled;
   // Whether the current form factor is a tablet.
@@ -240,7 +243,14 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 
   _contentView = [[UIView alloc] init];
   _contentView.translatesAutoresizingMaskIntoConstraints = NO;
-  _contentView.backgroundColor = [self contentBackgroundColor];
+  if (_largeAccessoryViewEnabled) {
+    _backgroundView = PrimaryBackgroundBlurView();
+    _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_contentView addSubview:_backgroundView];
+    AddSameConstraints(_backgroundView, _contentView);
+  } else {
+    _contentView.backgroundColor = [self contentBackgroundColor];
+  }
   [self addSubview:_contentView];
   AddSameConstraintsToSides(
       self, _contentView,
