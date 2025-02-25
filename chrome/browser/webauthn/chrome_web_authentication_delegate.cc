@@ -581,8 +581,9 @@ void ChromeWebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
     std::move(callback).Run(*tpm_available_);
     return;
   }
+  base::Time tpm_check_start_time = base::Time::Now();
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
       base::BindOnce([]() -> bool {
         std::unique_ptr<crypto::UnexportableKeyProvider> provider =
             GetWebAuthnUnexportableKeyProvider();
@@ -596,8 +597,11 @@ void ChromeWebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
       }),
       base::BindOnce(
           [](base::OnceCallback<void(bool)> callback,
+             base::Time tpm_check_start_time,
              base::WeakPtr<ChromeWebAuthenticationDelegate> webauthn_delegate,
              bool available) {
+            FIDO_LOG(DEBUG) << "Checking for TPM availability took "
+                            << (base::Time::Now() - tpm_check_start_time);
             if (webauthn_delegate) {
               webauthn_delegate->tpm_available_ = available;
             }
@@ -607,5 +611,6 @@ void ChromeWebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
             }
             std::move(callback).Run(available);
           },
-          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
+          std::move(callback), tpm_check_start_time,
+          weak_ptr_factory_.GetWeakPtr()));
 }
