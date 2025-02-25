@@ -40,7 +40,7 @@ constexpr size_t kQIndexRange = 256;
 // libva is the only user of high bit depth VP9 formats and only supports
 // 10 bits per component, see https://github.com/01org/libva/issues/137.
 // TODO(mcasas): Add the 12 bit versions of these tables.
-const auto kDcQLookup = std::to_array<std::array<const int16_t, kQIndexRange>>({
+constexpr auto kDcQLookup = std::to_array<std::array<const int16_t, kQIndexRange>>({
     {
         4,    8,    8,    9,    10,   11,   12,   12,  13,   14,   15,   16,
         17,   18,   19,   19,   20,   21,   22,   23,  24,   25,   26,   26,
@@ -91,7 +91,7 @@ const auto kDcQLookup = std::to_array<std::array<const int16_t, kQIndexRange>>({
    }
 });
 
-const auto kAcQLookup = std::to_array<std::array<const int16_t, kQIndexRange>>({
+constexpr auto kAcQLookup = std::to_array<std::array<const int16_t, kQIndexRange>>({
     {
         4,    8,    9,    10,   11,   12,   13,   14,   15,   16,   17,   18,
         19,   20,   21,   22,   23,   24,   25,   26,   27,   28,   29,   30,
