@@ -215,7 +215,13 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
         break;
       }
       case mojom::CreateContextOptions::Device::kGpu: {
-        openvino_device_type = "GPU";
+        bool use_gpu_fp32 = base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kWebNNOrtUseOVGpuFP32);
+        // "GPU" will use FP16 inference precision by default. Notice that the
+        // "GPU_FP32" may be deprecated in the future.
+        // TODO(https://github.com/shiyi9801/chromium/issues/159): Set the
+        // inference precision or execution mode for GPU separately.
+        openvino_device_type = use_gpu_fp32 ? "GPU_FP32" : "GPU";
         break;
       }
       case mojom::CreateContextOptions::Device::kNpu: {

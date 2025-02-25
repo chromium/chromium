@@ -42,6 +42,11 @@ inline constexpr char kWebNNOrtUseOpenvino[] = "webnn-ort-use-openvino";
 // Disable CPU fallback for OpenVINO EP.
 inline constexpr char kWebNNOrtDisableCpuFallback[] =
     "webnn-ort-disable-cpu-fallback";
+
+// For GPU, OV EP will use FP16 inference precision by default, this switch will
+// force OV EP to use FP32 inference precision to get better accuracy, but it
+// may result in decreased performance.
+inline constexpr char kWebNNOrtUseOVGpuFP32[] = "webnn-ort-use-ov-gpu-fp32";
 #endif  // BUILDFLAG(WEBNN_USE_ORT)
 
 }  // namespace switches
