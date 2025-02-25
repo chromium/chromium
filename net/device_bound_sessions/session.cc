@@ -84,7 +84,7 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params) {
   }
   std::unique_ptr<Session> session(new Session(
       Id(params.session_id), url::Origin::Create(params.fetcher_url),
-      std::move(candidate_refresh_endpoint)));
+      candidate_refresh_endpoint));
   for (const auto& spec : params.scope.specifications) {
     if (!spec.domain.empty() && !spec.path.empty()) {
       const auto inclusion_result =
@@ -95,6 +95,12 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params) {
                                                   spec.path);
     }
   }
+
+  // Sessions should never include the refresh endpoint, since that would
+  // prevent them from ever refreshing when a cookie expires.
+  session->inclusion_rules_.AddUrlRuleIfValid(
+      SessionInclusionRules::InclusionResult::kExclude,
+      candidate_refresh_endpoint.host(), candidate_refresh_endpoint.path());
 
   for (const auto& cred : params.credentials) {
     if (!cred.name.empty() && !cred.attributes.empty()) {
