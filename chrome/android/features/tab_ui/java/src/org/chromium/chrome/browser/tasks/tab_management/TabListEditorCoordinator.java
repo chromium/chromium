@@ -112,6 +112,11 @@ class TabListEditorCoordinator {
          */
         boolean isVisible();
 
+        /**
+         * @return Whether the TabListEditor needs to be cleaned up.
+         */
+        boolean needsCleanUp();
+
         /** Sets the toolbar title when no items are selected. */
         void setToolbarTitle(String title);
 
@@ -174,6 +179,7 @@ class TabListEditorCoordinator {
                 @Override
                 public void hide() {
                     mTabListEditorMediator.hide();
+                    mNeedsCleanUp = true;
                 }
 
                 @Override
@@ -186,6 +192,11 @@ class TabListEditorCoordinator {
                 @Override
                 public boolean isVisible() {
                     return mTabListEditorMediator.isVisible();
+                }
+
+                @Override
+                public boolean needsCleanUp() {
+                    return mNeedsCleanUp;
                 }
 
                 @Override
@@ -248,6 +259,7 @@ class TabListEditorCoordinator {
     private TabListCoordinator mTabListCoordinator;
     private PropertyModelChangeProcessor mTabListEditorLayoutChangeProcessor;
     private @TabActionState int mTabActionState;
+    private boolean mNeedsCleanUp;
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     /**
@@ -327,6 +339,7 @@ class TabListEditorCoordinator {
                             desktopWindowStateManager);
             mTabListEditorMediator.setNavigationProvider(
                     new TabListEditorNavigationProvider(activity, mTabListEditorController));
+            mNeedsCleanUp = false;
         }
     }
 
@@ -375,6 +388,7 @@ class TabListEditorCoordinator {
             mEdgeToEdgePadAdjuster.destroy();
             mEdgeToEdgePadAdjuster = null;
         }
+        mNeedsCleanUp = false;
     }
 
     /**

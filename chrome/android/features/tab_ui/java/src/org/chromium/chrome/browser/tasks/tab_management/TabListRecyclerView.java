@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
@@ -40,6 +42,8 @@ class TabListRecyclerView extends RecyclerView
     @Nullable private RecyclerView.ItemAnimator mDisabledAnimatorHolder;
 
     private final RunOnNextLayoutDelegate mRunOnNextLayoutDelegate;
+    private final @NonNull ObservableSupplierImpl<Boolean> mIsAnimatorRunningSupplier =
+            new ObservableSupplierImpl<>();
 
     private TabListItemAnimator mTabListItemAnimator;
 
@@ -98,9 +102,17 @@ class TabListRecyclerView extends RecyclerView
 
     void setupCustomItemAnimator() {
         if (mTabListItemAnimator == null) {
-            mTabListItemAnimator = new TabListItemAnimator();
+            mTabListItemAnimator = new TabListItemAnimator(mIsAnimatorRunningSupplier);
             setItemAnimator(mTabListItemAnimator);
         }
+    }
+
+    /**
+     * Returns a boolean indicating whether any animator in {@link TabListItemAnimator} is running.
+     */
+    @Nullable
+    ObservableSupplier<Boolean> getIsAnimatorRunningSupplier() {
+        return mIsAnimatorRunningSupplier;
     }
 
     /**
