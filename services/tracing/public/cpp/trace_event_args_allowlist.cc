@@ -50,7 +50,7 @@ const char* const kTopLevelIpcRunTaskAllowedArgs[] = {"chrome_task_annotator",
 const char* const kMemoryPressureEventsAllowedArgs[] = {
     "chrome_memory_pressure_notification", nullptr};
 
-const auto kEventArgsAllowlist = std::to_array<AllowlistEntry>({
+constexpr auto kEventArgsAllowlist = std::to_array<AllowlistEntry>({
     // Args recorded in perfetto protos and exported by trace processor JSON
     // exporter:
 
