@@ -386,8 +386,6 @@ void SetFeatureFlags() {
     SetV8FlagsFormatted("--scavenger-max-new-space-capacity-mb=%i",
                         features::kV8ScavengerMaxCapacity.Get());
   }
-  SetV8FlagsIfOverridden(features::kV8SeparateGCPhases, "--separate-gc-phases",
-                         "--no-separate-gc-phases");
   SetV8FlagsIfOverridden(features::kV8Sparkplug, "--sparkplug",
                          "--no-sparkplug");
   SetV8FlagsIfOverridden(features::kV8Turbofan, "--turbofan", "--no-turbofan");

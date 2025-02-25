@@ -24912,27 +24912,6 @@
             ]
         }
     ],
-    "V8SeparateGCPhases": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8SeparateGCPhases"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8SideStepTransitions": [
         {
             "platforms": [

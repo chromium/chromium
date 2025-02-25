@@ -59,7 +59,6 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kV8PerContextMarkingWorklist);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ReduceConcurrentMarkingTasks);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ScavengerHigherCapacity);
 GIN_EXPORT extern const base::FeatureParam<int> kV8ScavengerMaxCapacity;
-GIN_EXPORT BASE_DECLARE_FEATURE(kV8SeparateGCPhases);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ShortBuiltinCalls);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8SideStepTransitions);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8SingleThreadedGCInBackground);
