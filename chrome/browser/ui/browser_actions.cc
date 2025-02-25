@@ -276,6 +276,11 @@ void BrowserActions::InitializeBrowserActions() {
               },
               base::Unretained(browser)))
           .SetActionId(kActionShowMemorySaverChip)
+          // Tooltip is not needed since it will be dynamically set. But for
+          // accessibility propose during testing, it should be set. The feature
+          // logic will override it subsequently.
+          .SetTooltipText(
+              l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_CHIP_LABEL))
           // Text properties aren't needed here; they are set dynamically.
           .SetImage(ui::ImageModel::FromVectorIcon(
               kPerformanceSpeedometerIcon, ui::kColorIcon,

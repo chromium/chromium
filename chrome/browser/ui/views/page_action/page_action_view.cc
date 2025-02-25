@@ -18,12 +18,16 @@
 
 namespace page_actions {
 
-PageActionView::PageActionView(actions::ActionItem* action_item,
-                               const PageActionViewParams& params)
+PageActionView::PageActionView(
+    actions::ActionItem* action_item,
+    const PageActionViewParams& params,
+    base::RepeatingCallback<void(actions::ActionId, bool)>
+        chip_state_changed_callback)
     : IconLabelBubbleView(gfx::FontList(), params.icon_label_bubble_delegate),
       action_item_(action_item->GetAsWeakPtr()),
       icon_size_(params.icon_size),
-      icon_insets_(params.icon_insets) {
+      icon_insets_(params.icon_insets),
+      chip_state_changed_callback_(chip_state_changed_callback) {
   CHECK(action_item_->GetActionId().has_value());
 
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(true);
@@ -67,6 +71,14 @@ void PageActionView::UpdateStyle(bool is_suggestion_chip) {
   SetUseTonalColorsWhenExpanded(is_suggestion_chip);
   SetBackgroundVisibility(is_suggestion_chip ? BackgroundVisibility::kAlways
                                              : BackgroundVisibility::kNever);
+
+  // Only trigger the chip state changed callback if there's an actual change
+  // in the suggestion chip's visibility. This prevents unnecessary updates and
+  // reordering logic in the container when the chip state remains unchanged.
+  if (showing_suggestion_chip_ != is_suggestion_chip) {
+    showing_suggestion_chip_ = is_suggestion_chip;
+    chip_state_changed_callback_.Run(GetActionId(), showing_suggestion_chip_);
+  }
 }
 
 void PageActionView::OnPageActionModelWillBeDeleted(
@@ -187,8 +199,6 @@ bool PageActionView::OnMousePressed(const ui::MouseEvent& event) {
   if (observation_.IsObserving()) {
     skip_action_invocation_ =
         observation_.GetSource()->GetActionItemIsShowingBubble();
-    LOG(WARNING) << "[CG] *** skip_action_invocation_: "
-                 << skip_action_invocation_;
   }
   return IconLabelBubbleView::OnMousePressed(event);
 }
