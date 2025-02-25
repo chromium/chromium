@@ -4,14 +4,13 @@
 
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 
-#include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_platform_browsertest.h"
 #include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/script_injection_tracker.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
@@ -22,7 +21,7 @@
 
 namespace extensions {
 
-class PermissionsUpdaterBrowserTest : public ExtensionBrowserTest {
+class PermissionsUpdaterBrowserTest : public ExtensionPlatformBrowserTest {
  public:
   PermissionsUpdaterBrowserTest() = default;
   PermissionsUpdaterBrowserTest(const PermissionsUpdaterBrowserTest&) = delete;
@@ -31,20 +30,18 @@ class PermissionsUpdaterBrowserTest : public ExtensionBrowserTest {
   ~PermissionsUpdaterBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    ExtensionBrowserTest::SetUpOnMainThread();
+    ExtensionPlatformBrowserTest::SetUpOnMainThread();
 
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(embedded_test_server());
   }
-
-  // Returns the current active web contents.
-  content::WebContents* GetActiveWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that updating the permissions of a disabled extension doesn't update
 // the renderer.
+// TODO(crbug.com/391921606): Port to desktop Android after chrome.scripting
+// API is ported.
 IN_PROC_BROWSER_TEST_F(PermissionsUpdaterBrowserTest,
                        UpdatePermissions_DisabledExtension) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -87,15 +84,16 @@ IN_PROC_BROWSER_TEST_F(PermissionsUpdaterBrowserTest,
   ASSERT_TRUE(script_loaded_listener.WaitUntilSatisfied());
 
   // Step 2: Navigate to a.com.
+  content::WebContents* web_contents = GetActiveWebContents();
   GURL optional_url = embedded_test_server()->GetURL("a.com", "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), optional_url));
+  ASSERT_TRUE(content::NavigateToURL(web_contents, optional_url));
+  content::WaitForLoadStop(web_contents);
 
   // Verify extension's active permissions don't include a.com and renderer
   // hasn't injected the extension's script.
   EXPECT_FALSE(extension->permissions_data()
                    ->active_permissions()
                    .HasEffectiveAccessToURL(optional_url));
-  content::WebContents* web_contents = GetActiveWebContents();
   EXPECT_EQ(base::Value(),
             content::EvalJs(web_contents, "window.didInjectContentScript"));
   EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
@@ -119,5 +117,6 @@ IN_PROC_BROWSER_TEST_F(PermissionsUpdaterBrowserTest,
   EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
       *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
