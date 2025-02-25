@@ -576,11 +576,6 @@ class ExtensionService : public ExtensionServiceInterface,
                                 const std::string& install_parameter,
                                 base::Value::Dict ruleset_install_prefs);
 
-  // Helper to get the disable reasons for an installed (or upgraded) extension.
-  // Returning an empty set indicates that we should enable this extension
-  // initially.
-  DisableReasonSet GetDisableReasonsOnInstalled(const Extension* extension);
-
   // Manages the blocklisted extensions, intended as callback from
   // Blocklist::GetBlocklistedIDs.
   void ManageBlocklist(const Blocklist::BlocklistStateMap& blocklisted_ids);

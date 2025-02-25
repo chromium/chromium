@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/external_install_error.h"
 #include "components/version_info/version_info.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/feature_switch.h"
@@ -72,10 +73,6 @@ void ExternalInstallManager::Shutdown() {
   errors_.clear();
 }
 
-bool ExternalInstallManager::IsPromptingEnabled() {
-  return FeatureSwitch::prompt_for_external_extensions()->IsEnabled();
-}
-
 void ExternalInstallManager::AddExternalInstallError(const Extension* extension,
                                                      bool is_new_profile) {
   // Error already exists or has been previously shown.
@@ -116,8 +113,9 @@ void ExternalInstallManager::RemoveExternalInstallError(
 
 void ExternalInstallManager::UpdateExternalExtensionAlert() {
   // If the feature is not enabled do nothing.
-  if (!IsPromptingEnabled())
+  if (!util::IsPromptingEnabled()) {
     return;
+  }
 
   // Look for any extensions that were disabled because of being unacknowledged
   // external extensions.
@@ -239,8 +237,9 @@ void ExternalInstallManager::OnExtensionUninstalled(
 
 bool ExternalInstallManager::IsUnacknowledgedExternalExtension(
     const Extension& extension) const {
-  if (!IsPromptingEnabled())
+  if (!util::IsPromptingEnabled()) {
     return false;
+  }
 
   DisableReasonSet disable_reasons =
       extension_prefs_->GetDisableReasons(extension.id());

@@ -382,6 +382,64 @@ void ExtensionRegistrar::EnabledReloadableExtensions() {
   }
 }
 
+DisableReasonSet ExtensionRegistrar::GetDisableReasonsOnInstalled(
+    const Extension* extension) {
+  bool is_update_from_same_type = false;
+  {
+    const Extension* existing_extension =
+        registry_->GetInstalledExtension(extension->id());
+    is_update_from_same_type =
+        existing_extension &&
+        existing_extension->manifest()->type() == extension->manifest()->type();
+  }
+  disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
+  // Extensions disabled by management policy should always be disabled, even
+  // if it's force-installed.
+  if (extension_system_->management_policy()->MustRemainDisabled(
+          extension, &disable_reason)) {
+    // A specified reason is required to disable the extension.
+    DCHECK(disable_reason != disable_reason::DISABLE_NONE);
+    return {disable_reason};
+  }
+
+  // Extensions installed by policy can't be disabled. So even if a previous
+  // installation disabled the extension, make sure it is now enabled.
+  if (extension_system_->management_policy()->MustRemainEnabled(extension,
+                                                                nullptr)) {
+    return {};
+  }
+
+  // An already disabled extension should inherit the disable reasons and
+  // remain disabled.
+  if (extension_prefs_->IsExtensionDisabled(extension->id())) {
+    DisableReasonSet disable_reasons =
+        extension_prefs_->GetDisableReasons(extension->id());
+    // If an extension was disabled without specified reason, presume it's
+    // disabled by user.
+    return disable_reasons.empty()
+               ? DisableReasonSet({disable_reason::DISABLE_USER_ACTION})
+               : disable_reasons;
+  }
+
+  if (util::IsPromptingEnabled()) {
+    // External extensions are initially disabled. We prompt the user before
+    // enabling them. Hosted apps are excepted because they are not dangerous
+    // (they need to be launched by the user anyway). We also don't prompt for
+    // extensions updating; this is because the extension will be disabled from
+    // the initial install if it is supposed to be, and this allows us to turn
+    // this on for other platforms without disabling already-installed
+    // extensions.
+    if (extension->GetType() != Manifest::TYPE_HOSTED_APP &&
+        Manifest::IsExternalLocation(extension->location()) &&
+        !extension_prefs_->IsExternalExtensionAcknowledged(extension->id()) &&
+        !is_update_from_same_type) {
+      return {disable_reason::DISABLE_EXTERNAL_EXTENSION};
+    }
+  }
+
+  return {};
+}
+
 void ExtensionRegistrar::RemoveComponentExtension(
     const std::string& extension_id) {
   scoped_refptr<const Extension> extension(

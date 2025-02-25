@@ -36,9 +36,6 @@ class ExternalInstallManager : public ExtensionRegistryObserver {
   // Called when the associated profile will be destroyed.
   void Shutdown();
 
-  // Returns true if prompting for external extensions is enabled.
-  static bool IsPromptingEnabled();
-
   // Removes the error associated with a given extension.
   void RemoveExternalInstallError(const std::string& extension_id);
 
