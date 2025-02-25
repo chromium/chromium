@@ -36,6 +36,9 @@ void TabModelObserver::TabPendingClosure(TabAndroid* tab) {}
 
 void TabModelObserver::TabClosureUndone(TabAndroid* tab) {}
 
+void TabModelObserver::OnTabCloseUndone(
+    const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs) {}
+
 void TabModelObserver::TabClosureCommitted(TabAndroid* tab) {}
 
 void TabModelObserver::AllTabsPendingClosure(

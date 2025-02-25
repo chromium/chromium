@@ -53,6 +53,10 @@ class TabModelObserver {
   // TabModel.
   virtual void TabPendingClosure(TabAndroid* tab);
 
+  // Called when all |tabs| closure is undone.
+  virtual void OnTabCloseUndone(
+      const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs);
+
   // Called when a |tab| closure is undone.
   virtual void TabClosureUndone(TabAndroid* tab);
 
