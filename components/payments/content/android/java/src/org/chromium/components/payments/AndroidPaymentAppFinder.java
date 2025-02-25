@@ -67,6 +67,11 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     public static final String META_DATA_NAME_OF_SUPPORTED_DELEGATIONS =
             "org.chromium.payment_supported_delegations";
 
+    private static PackageManagerDelegate sPackageManagerDelegateForTest;
+    private static PaymentManifestDownloader sDownloaderForTest;
+    private static boolean sBypassIsReadyToPayServiceInTest;
+    private static AndroidIntentLauncher sAndroidIntentLauncherForTest;
+
     private final Set<GURL> mUrlPaymentMethods = new HashSet<>();
     private final PaymentManifestDownloader mDownloader;
     private final PaymentManifestWebDataService mWebDataService;
@@ -150,7 +155,36 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     private int mPendingVerifiersCount;
     private int mPendingIsReadyToPayQueries;
     private int mPendingResourceUsersCount;
-    private boolean mBypassIsReadyToPayServiceInTest;
+
+    /**
+     * @param delegate The package manager delegate to use in testing.
+     */
+    @VisibleForTesting
+    public static void setPackageManagerDelegateForTest(PackageManagerDelegate delegate) {
+        sPackageManagerDelegateForTest = delegate;
+    }
+
+    /**
+     * @param downloader The downloader to use in testing.
+     */
+    @VisibleForTesting
+    public static void setDownloaderForTest(PaymentManifestDownloader downloader) {
+        sDownloaderForTest = downloader;
+    }
+
+    /** Do not open a connection to the IS_READY_TO_PAY service in testing. */
+    @VisibleForTesting
+    public static void bypassIsReadyToPayServiceInTest() {
+        sBypassIsReadyToPayServiceInTest = true;
+    }
+
+    /**
+     * @param launcher The Android intent launcher for testing.
+     */
+    @VisibleForTesting
+    public static void setAndroidIntentLauncherForTest(AndroidIntentLauncher launcher) {
+        sAndroidIntentLauncherForTest = launcher;
+    }
 
     /**
      * Builds a finder for native Android payment apps.
@@ -160,9 +194,9 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
      * @param parser The manifest parser.
      * @param packageManagerDelegate The package information retriever.
      * @param factoryDelegate The merchant requested data and the asynchronous delegate to be
-     *         invoked (on the UI thread) when all Android payment apps have been found.
+     *     invoked (on the UI thread) when all Android payment apps have been found.
      * @param factory The factory to be used in the delegate.onDoneCreatingPaymentApps(factory)
-     *         call.
+     *     call.
      */
     public AndroidPaymentAppFinder(
             PaymentManifestWebDataService webDataService,
@@ -178,10 +212,21 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
             assert method.isValid();
         }
 
-        mDownloader = downloader;
+        if (sDownloaderForTest == null) {
+            mDownloader = downloader;
+        } else {
+            mDownloader = sDownloaderForTest;
+        }
+
         mWebDataService = webDataService;
         mParser = parser;
-        mPackageManagerDelegate = packageManagerDelegate;
+
+        if (sPackageManagerDelegateForTest == null) {
+            mPackageManagerDelegate = packageManagerDelegate;
+        } else {
+            mPackageManagerDelegate = sPackageManagerDelegateForTest;
+        }
+
         mFactory = factory;
         assert mFactoryDelegate.getParams() != null;
         mIsOffTheRecord = mFactoryDelegate.getParams().isOffTheRecord();
@@ -599,7 +644,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         mPendingIsReadyToPayQueries = mValidApps.size();
         for (Map.Entry<String, AndroidPaymentApp> entry : mValidApps.entrySet()) {
             AndroidPaymentApp app = entry.getValue();
-            if (mBypassIsReadyToPayServiceInTest) app.bypassIsReadyToPayServiceInTest();
+            if (sBypassIsReadyToPayServiceInTest) app.bypassIsReadyToPayServiceInTest();
             app.maybeQueryIsReadyToPayService(
                     filterMethodDataForApp(
                             mFactoryDelegate.getParams().getMethodData(),
@@ -612,11 +657,6 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                             app.getInstrumentMethodNames()),
                     this::onIsReadyToPayResponse);
         }
-    }
-
-    @VisibleForTesting
-    public void bypassIsReadyToPayServiceInTest() {
-        mBypassIsReadyToPayServiceInTest = true;
     }
 
     private static Map<String, PaymentMethodData> filterMethodDataForApp(
@@ -688,7 +728,9 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                                     META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME);
             app =
                     new AndroidPaymentApp(
-                            mFactoryDelegate.getAndroidIntentLauncher(),
+                            sAndroidIntentLauncherForTest == null
+                                    ? mFactoryDelegate.getAndroidIntentLauncher()
+                                    : sAndroidIntentLauncherForTest,
                             mFactoryDelegate.getDialogController(),
                             packageName,
                             resolveInfo.activityInfo.name,
