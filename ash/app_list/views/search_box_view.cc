@@ -1272,6 +1272,17 @@ void SearchBoxView::SunfishButtonPressed() {
     view_delegate_->DismissAppList();
   }
 
+  if (!IsSunfishSessionAllowed()) {
+    // The Sunfish-session allowed state changed between when the launcher was
+    // shown and when the the button was clicked. Hide the Sunfish-session
+    // button immediately for tablet mode.
+    AppListModelProvider::Get()
+        ->search_model()
+        ->search_box()
+        ->SetShowSunfishButton(false);
+    return;
+  }
+
   // If the user presses the button, there is no need to show the nudge anymore,
   // so set the pref to its limit.
   SetSunfishLauncherNudgeShownCount(capture_mode::kSunfishNudgeMaxShownCount);

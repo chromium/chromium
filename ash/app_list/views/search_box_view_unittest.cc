@@ -27,11 +27,15 @@
 #include "ash/capture_mode/base_capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/scanner/scanner_enterprise_policy.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -1506,6 +1510,42 @@ TEST_P(SunfishLauncherButtonTest, ButtonVisibility) {
     ASSERT_EQ(BehaviorType::kSunfish,
               session->active_behavior()->behavior_type());
   }
+}
+
+TEST_P(SunfishLauncherButtonTest,
+       SunfishSessionTurnedDisallowedWhileButtonShown) {
+  if (!IsSunfishEnabled()) {
+    // TODO: crbug.com/356877313: Consider unparametizing these tests.
+    GTEST_SKIP() << "skip if not enabled";
+  }
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  // Only control Sunfish policy in this test, not Scanner, for simplicity.
+  prefs->SetInteger(prefs::kScannerEnterprisePolicyAllowed,
+                    static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+  const HomeButton* home_button =
+      GetPrimaryShelf()->navigation_widget()->GetHomeButton();
+  EXPECT_FALSE(home_button->IsShowingAppList());
+
+  LeftClickOn(home_button);
+
+  ASSERT_TRUE(home_button->IsShowingAppList());
+  auto* sunfish_button =
+      GetAppListTestHelper()->GetBubbleSearchBoxView()->sunfish_button();
+  ASSERT_TRUE(sunfish_button);
+  ASSERT_TRUE(sunfish_button->GetVisible());
+  auto* test_capture_mode_delegate = static_cast<TestCaptureModeDelegate*>(
+      CaptureModeController::Get()->delegate_for_testing());
+  test_capture_mode_delegate->set_is_search_allowed_by_policy(false);
+  ASSERT_TRUE(sunfish_button->GetVisible());
+
+  // The app list will contain the sunfish launcher button next to the search
+  // field.
+  LeftClickOn(sunfish_button);
+
+  auto* session = CaptureModeController::Get()->capture_mode_session();
+  EXPECT_FALSE(session);
+  EXPECT_FALSE(sunfish_button->GetVisible());
 }
 
 TEST_P(SunfishLauncherButtonTest, TabletModeAppList) {
