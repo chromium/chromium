@@ -18658,6 +18658,25 @@
             ]
         }
     ],
+    "ProtectedAudienceUseNonTransientNIKForSeller": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeUseNonTransientNIKForSeller"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProtectedAudiencesEnableBandAKAnonEnforcement": [
         {
             "platforms": [

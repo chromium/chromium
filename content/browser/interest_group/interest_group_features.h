@@ -45,6 +45,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeStoreBandAKeysInDB);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeUseKVv2SignalsCache);
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeUseNonTransientNIKForSeller);
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeUsePreconnectCache);
 
 }  // namespace features

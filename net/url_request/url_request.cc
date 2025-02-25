@@ -28,6 +28,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_delegate.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/base/upload_data_stream.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -506,12 +507,21 @@ void URLRequest::set_isolation_info(const IsolationInfo& isolation_info,
   bool is_main_frame_navigation = isolation_info.IsMainFrameRequest() ||
                                   force_main_frame_for_same_site_cookies();
 
-  cookie_partition_key_ = CookiePartitionKey::FromNetworkIsolationKey(
-      isolation_info.network_isolation_key(), isolation_info.site_for_cookies(),
-      net::SchemefulSite(redirect_info_new_url.has_value()
-                             ? redirect_info_new_url.value()
-                             : url_chain_.back()),
-      is_main_frame_navigation);
+  if (isolation_info.GetNetworkIsolationPartition() ==
+      NetworkIsolationPartition::kGeneral) {
+    cookie_partition_key_ = CookiePartitionKey::FromNetworkIsolationKey(
+        isolation_info.network_isolation_key(),
+        isolation_info.site_for_cookies(),
+        net::SchemefulSite(redirect_info_new_url.has_value()
+                               ? redirect_info_new_url.value()
+                               : url_chain_.back()),
+        is_main_frame_navigation);
+  } else {
+    // Support for creating a CookiePartitionKey from IsolationInfos with
+    // special NetworkIsolationPartition is not implemented. The original use
+    // cases for special NetworkIsolationPartitions disallow cookies.
+    cookie_partition_key_ = std::nullopt;
+  }
 }
 
 void URLRequest::set_isolation_info_from_network_anonymization_key(
@@ -573,6 +583,12 @@ void URLRequest::set_allow_credentials(bool allow_credentials) {
 
 void URLRequest::Start() {
   DCHECK(delegate_);
+
+  // We do not support credentials with a non-general
+  // NetworkIsolationPartition.
+  CHECK(isolation_info_.GetNetworkIsolationPartition() ==
+            NetworkIsolationPartition::kGeneral ||
+        !allow_credentials());
 
   if (status_ != OK)
     return;

@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/escape.h"
@@ -33,6 +34,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -54,6 +56,20 @@ net::IsolationInfo CreateBidderIsolationInfo(const url::Origin& bidder_origin) {
   return net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
                                     bidder_origin, bidder_origin,
                                     net::SiteForCookies());
+}
+
+// Helper to create the IsolationInfo used for trusted seller signals requests.
+net::IsolationInfo CreateTrustedSellerSignalsIsolationInfo(
+    const url::Origin& top_frame_origin,
+    const url::Origin& seller_origin) {
+  if (base::FeatureList::IsEnabled(
+          features::kFledgeUseNonTransientNIKForSeller)) {
+    return net::IsolationInfo::Create(
+        net::IsolationInfo::RequestType::kOther, top_frame_origin,
+        seller_origin, net::SiteForCookies(), /*nonce=*/std::nullopt,
+        net::NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+  }
+  return net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
 }
 
 }  // namespace
@@ -88,10 +104,11 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
       is_for_seller_(is_for_seller),
       force_reload_(force_reload),
       client_security_state_(std::move(client_security_state)),
-      isolation_info_(
-          is_for_seller
-              ? net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt)
-              : CreateBidderIsolationInfo(url::Origin::Create(script_url))),
+      isolation_info_(is_for_seller ? CreateTrustedSellerSignalsIsolationInfo(
+                                          top_frame_origin,
+                                          url::Origin::Create(script_url))
+                                    : CreateBidderIsolationInfo(
+                                          url::Origin::Create(script_url))),
       owner_frame_tree_node_id_(frame_tree_node_id),
       script_url_(script_url),
       wasm_url_(wasm_url),
