@@ -127,7 +127,7 @@ class LoggingObserver : public VolumeManagerObserver {
       PARTITION_COMPLETED,
       RENAME_STARTED,
       RENAME_COMPLETED
-    } type;
+    } type{};
 
     // Available on DEVICE_ADDED, DEVICE_REMOVED, VOLUME_MOUNTED,
     // VOLUME_UNMOUNTED, FORMAT_STARTED, FORMAT_COMPLETED. PARTITION_STARTED,
@@ -142,14 +142,14 @@ class LoggingObserver : public VolumeManagerObserver {
     std::string volume_id;
 
     // Available on DISK_ADDED.
-    bool mounting;
+    bool mounting = false;
 
     // Available on VOLUME_MOUNTED and VOLUME_UNMOUNTED.
-    ash::MountError mount_error;
+    ash::MountError mount_error{};
 
     // Available on FORMAT_STARTED and FORMAT_COMPLETED, PARTITION_STARTED,
     // PARTITION_COMPLETED.
-    bool success;
+    bool success = false;
   };
 
   LoggingObserver() = default;
