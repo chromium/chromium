@@ -1610,12 +1610,6 @@
   }
 }
 
-// Update the state, to take into account that the menu coordinator is stopped.
-- (void)accountMenuCoordinatorIsStopped {
-  CHECK(_showAccountMenuInProgress);
-  _showAccountMenuInProgress = NO;
-}
-
 // Update the state, to take into account that the account menu coordinator is
 // stopped.
 - (void)showAccountMenuDidFinish {
