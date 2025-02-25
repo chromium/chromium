@@ -145,6 +145,8 @@ struct UserProfileInfo {
   skia.mojom.BitmapN32? avatar_icon;
   // The user's full name for display purposes.
   string display_name;
+  // The local name for the Chrome profile.
+  string local_profile_name;
   // The user's email.
   string email;
   // The user's given name.
