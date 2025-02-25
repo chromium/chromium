@@ -41,8 +41,6 @@ static_library("crosapi") {
     "debug_interface_registerer_ash.h",
     "desk_profiles_ash.cc",
     "desk_profiles_ash.h",
-    "desk_template_ash.cc",
-    "desk_template_ash.h",
     "device_attributes_ash.cc",
     "device_attributes_ash.h",
     "device_local_account_extension_service_ash.cc",

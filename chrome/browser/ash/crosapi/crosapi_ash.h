@@ -53,7 +53,6 @@ class ClipboardHistoryAsh;
 class ContentProtectionAsh;
 class DebugInterfaceRegistererAsh;
 class DeskProfilesAsh;
-class DeskTemplateAsh;
 class DeviceAttributesAsh;
 class DeviceLocalAccountExtensionServiceAsh;
 class DeviceOAuth2TokenServiceAsh;
@@ -146,8 +145,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DebugInterfaceRegisterer> receiver) override;
   void BindDeskProfileObserver(
       mojo::PendingReceiver<mojom::DeskProfileObserver> receiver) override;
-  void BindDeskTemplate(
-      mojo::PendingReceiver<mojom::DeskTemplate> receiver) override;
   void BindDeviceAttributes(
       mojo::PendingReceiver<mojom::DeviceAttributes> receiver) override;
   void BindDeviceLocalAccountExtensionService(
@@ -316,8 +313,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   DeskProfilesAsh* desk_profiles_ash() { return desk_profiles_ash_.get(); }
 
-  DeskTemplateAsh* desk_template_ash() { return desk_template_ash_.get(); }
-
   DeviceAttributesAsh* device_attributes_ash() {
     return device_attributes_ash_.get();
   }
@@ -458,7 +453,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ContentProtectionAsh> content_protection_ash_;
   std::unique_ptr<DebugInterfaceRegistererAsh> debug_interface_registerer_ash_;
   std::unique_ptr<DeskProfilesAsh> desk_profiles_ash_;
-  std::unique_ptr<DeskTemplateAsh> desk_template_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<DeviceLocalAccountExtensionServiceAsh>
       device_local_account_extension_service_ash_;

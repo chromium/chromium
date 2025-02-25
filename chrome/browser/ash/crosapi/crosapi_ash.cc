@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/crosapi/content_protection_ash.h"
 #include "chrome/browser/ash/crosapi/debug_interface_registerer_ash.h"
 #include "chrome/browser/ash/crosapi/desk_profiles_ash.h"
-#include "chrome/browser/ash/crosapi/desk_template_ash.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/device_local_account_extension_service_ash.h"
 #include "chrome/browser/ash/crosapi/device_oauth2_token_service_ash.h"
@@ -165,7 +164,6 @@ CrosapiAsh::CrosapiAsh()
       debug_interface_registerer_ash_(
           std::make_unique<DebugInterfaceRegistererAsh>()),
       desk_profiles_ash_(std::make_unique<DeskProfilesAsh>()),
-      desk_template_ash_(std::make_unique<DeskTemplateAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       device_local_account_extension_service_ash_(
           std::make_unique<DeviceLocalAccountExtensionServiceAsh>()),
@@ -330,11 +328,6 @@ void CrosapiAsh::BindDebugInterfaceRegisterer(
 void CrosapiAsh::BindDeskProfileObserver(
     mojo::PendingReceiver<mojom::DeskProfileObserver> receiver) {
   desk_profiles_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindDeskTemplate(
-    mojo::PendingReceiver<mojom::DeskTemplate> receiver) {
-  desk_template_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindDeviceAttributes(
