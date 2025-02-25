@@ -57,16 +57,31 @@ class TabListModel extends ModelList {
     }
 
     /**
-     * Convert the given tab ID to an index to match during partial updates.
+     * Lookup the position of a tab by its tab ID.
+     *
      * @param tabId The tab ID to search for.
-     * @return The index within the model {@link org.chromium.ui.modelutil.SimpleList}.
+     * @return The index within the model list or {@link TabModel.INVALID_TAB_INDEX}.
      */
-    public int indexFromId(int tabId) {
+    public int indexFromTabId(int tabId) {
         for (int i = 0; i < size(); i++) {
             PropertyModel model = get(i).model;
             if (model.get(CARD_TYPE) == TAB && model.get(TAB_ID) == tabId) return i;
         }
         return TabModel.INVALID_TAB_INDEX;
+    }
+
+    /**
+     * Lookup a {@link PropertyModel} for the tab by its ID.
+     *
+     * @param tabId The tab ID to search for.
+     * @return The property model in the model list or null.
+     */
+    public @Nullable PropertyModel getModelFromTabId(int tabId) {
+        for (int i = 0; i < size(); i++) {
+            PropertyModel model = get(i).model;
+            if (model.get(CARD_TYPE) == TAB && model.get(TAB_ID) == tabId) return model;
+        }
+        return null;
     }
 
     /** Returns the property model of the first tab card or null if one does not exist. */
@@ -257,7 +272,7 @@ class TabListModel extends ModelList {
             Tab curTab = tabModel.getTabAt(i);
             // Group should be contiguous.
             assert tabs.contains(curTab);
-            int index = indexFromId(curTab.getId());
+            int index = indexFromTabId(curTab.getId());
             if (index != TabModel.INVALID_TAB_INDEX && desIndex == TabModel.INVALID_TAB_INDEX) {
                 desIndex = index;
             } else if (index != TabModel.INVALID_TAB_INDEX
