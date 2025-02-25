@@ -1739,8 +1739,8 @@ void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
 }
 
 bool HttpStreamPool::AttemptManager::HasAvailableSpdySession() const {
-  return spdy_session_pool()->HasAvailableSession(spdy_session_key(),
-                                                  /*is_websocket=*/false);
+  return spdy_session_pool()->HasAvailableSession(
+      spdy_session_key(), IsIpBasedPoolingEnabled(), /*is_websocket=*/false);
 }
 
 void HttpStreamPool::AttemptManager::CreateSpdyStreamAndNotify(
@@ -1943,7 +1943,6 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
 
   const auto reuse_type = StreamSocketHandle::SocketReuseType::kUnused;
   if (stream_socket->GetNegotiatedProtocol() == NextProto::kProtoHTTP2) {
-    CHECK(!HasAvailableSpdySession());
     std::unique_ptr<HttpStreamPoolHandle> handle = group_->CreateHandle(
         std::move(stream_socket), reuse_type, std::move(connect_timing));
     base::WeakPtr<SpdySession> spdy_session;

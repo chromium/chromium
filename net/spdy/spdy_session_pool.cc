@@ -235,7 +235,8 @@ SpdySessionPool::FindMatchingIpSessionForServiceEndpoint(
     const SpdySessionKey& key,
     const ServiceEndpoint& service_endpoint,
     const std::set<std::string>& dns_aliases) {
-  CHECK(!HasAvailableSession(key, /*is_websocket=*/false));
+  CHECK(!HasAvailableSession(key, /*enable_ip_based_pooling=*/true,
+                             /*is_websocket=*/false));
   CHECK(key.socket_tag() == SocketTag());
 
   base::WeakPtr<SpdySession> session =
@@ -248,10 +249,15 @@ SpdySessionPool::FindMatchingIpSessionForServiceEndpoint(
 }
 
 bool SpdySessionPool::HasAvailableSession(const SpdySessionKey& key,
+                                          bool enable_ip_based_pooling,
                                           bool is_websocket) const {
-  const auto it = available_sessions_.find(key);
-  return it != available_sessions_.end() &&
-         (!is_websocket || it->second->support_websocket());
+  auto it = available_sessions_.find(key);
+  if (it == available_sessions_.end() ||
+      (is_websocket && !it->second->support_websocket())) {
+    return false;
+  }
+
+  return enable_ip_based_pooling ? true : key == it->second->spdy_session_key();
 }
 
 base::WeakPtr<SpdySession> SpdySessionPool::RequestSession(

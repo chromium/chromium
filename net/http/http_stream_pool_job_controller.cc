@@ -249,7 +249,8 @@ int HttpStreamPool::JobController::Preconnect(
   SpdySessionKey spdy_session_key =
       origin_stream_key_.CalculateSpdySessionKey();
   bool had_spdy_session = spdy_session_pool()->HasAvailableSession(
-      spdy_session_key, /*is_websocket=*/false);
+      spdy_session_key, /*enable_ip_based_pooling=*/true,
+      /*is_websocket=*/false);
   if (pool_->FindAvailableSpdySession(origin_stream_key_, spdy_session_key,
                                       /*enable_ip_based_pooling=*/true)) {
     net_log_.AddEvent(
