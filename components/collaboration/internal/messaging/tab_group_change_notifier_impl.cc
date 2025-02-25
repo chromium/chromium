@@ -15,6 +15,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace collaboration::messaging {
 
@@ -48,22 +49,46 @@ std::vector<tab_groups::SavedTabGroupTab> GetAddedTabs(
 
 std::vector<tab_groups::SavedTabGroupTab> GetRemovedTabs(
     const tab_groups::SavedTabGroup& before,
-    const tab_groups::SavedTabGroup& after) {
+    const tab_groups::SavedTabGroup& after,
+    tab_groups::TriggerSource source,
+    const signin::IdentityManager* identity_manager) {
   std::vector<tab_groups::SavedTabGroupTab> removed_tabs;
   const std::map<base::Uuid, tab_groups::SavedTabGroup::RemovedTabMetadata>&
       removed_tabs_metadata = after.last_removed_tabs_metadata();
+
+  // Find current signed-in user gaia.
+  GaiaId account_gaia;
+  if (source == tab_groups::TriggerSource::LOCAL) {
+    CoreAccountInfo account =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    if (!account.IsEmpty()) {
+      account_gaia = account.gaia;
+    }
+  }
+
   for (const tab_groups::SavedTabGroupTab& tab : before.saved_tabs()) {
     if (!after.ContainsTab(tab.saved_tab_guid())) {
       removed_tabs.emplace_back(tab);
 
-      if (auto it = removed_tabs_metadata.find(tab.saved_tab_guid());
-          it != removed_tabs_metadata.end()) {
-        // Copy over metadata for the removed tabs from SavedTabGroup.
-        const tab_groups::SavedTabGroup::RemovedTabMetadata& metadata =
-            it->second;
-        removed_tabs.back().SetUpdatedByAttribution(metadata.removed_by);
-        removed_tabs.back().SetUpdateTimeWindowsEpochMicros(
-            metadata.removal_time);
+      // Update user attributions for tab removal since they are still pointing
+      // to the last update.
+      if (source == tab_groups::TriggerSource::LOCAL) {
+        // If it's a local tab removal, it must by by the current signed-in
+        // user.
+        removed_tabs.back().SetUpdatedByAttribution(account_gaia);
+        removed_tabs.back().SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+      } else {
+        // For remote tab removals, find the removed by attributions cached on
+        // the SavedTabGroup.
+        if (auto it = removed_tabs_metadata.find(tab.saved_tab_guid());
+            it != removed_tabs_metadata.end()) {
+          // Copy over metadata for the removed tabs from SavedTabGroup.
+          const tab_groups::SavedTabGroup::RemovedTabMetadata& metadata =
+              it->second;
+          removed_tabs.back().SetUpdatedByAttribution(metadata.removed_by);
+          removed_tabs.back().SetUpdateTimeWindowsEpochMicros(
+              metadata.removal_time);
+        }
       }
     }
   }
@@ -100,8 +125,10 @@ std::vector<tab_groups::SavedTabGroupTab> GetUpdatedTabs(
 }  // namespace
 
 TabGroupChangeNotifierImpl::TabGroupChangeNotifierImpl(
-    tab_groups::TabGroupSyncService* tab_group_sync_service)
-    : tab_group_sync_service_(tab_group_sync_service) {}
+    tab_groups::TabGroupSyncService* tab_group_sync_service,
+    signin::IdentityManager* identity_manager)
+    : tab_group_sync_service_(tab_group_sync_service),
+      identity_manager_(identity_manager) {}
 
 TabGroupChangeNotifierImpl::~TabGroupChangeNotifierImpl() = default;
 
@@ -439,7 +466,7 @@ void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
   }
 
   std::vector<tab_groups::SavedTabGroupTab> removed_tabs =
-      GetRemovedTabs(before, after);
+      GetRemovedTabs(before, after, source, identity_manager_);
   if (removed_tabs.size() > 0) {
     for (auto& observer : observers_) {
       for (auto& tab : removed_tabs) {

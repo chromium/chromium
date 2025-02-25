@@ -68,8 +68,8 @@ MessagingBackendServiceFactory::BuildServiceInstanceFor(
   auto* data_sharing_service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  auto tab_group_change_notifier =
-      std::make_unique<TabGroupChangeNotifierImpl>(tab_group_sync_service);
+  auto tab_group_change_notifier = std::make_unique<TabGroupChangeNotifierImpl>(
+      tab_group_sync_service, identity_manager);
   auto data_sharing_change_notifier =
       std::make_unique<DataSharingChangeNotifierImpl>(data_sharing_service);
 

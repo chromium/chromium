@@ -19,6 +19,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace collaboration::messaging {
 
@@ -28,7 +29,8 @@ namespace collaboration::messaging {
 class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
  public:
   explicit TabGroupChangeNotifierImpl(
-      tab_groups::TabGroupSyncService* tab_group_sync_service);
+      tab_groups::TabGroupSyncService* tab_group_sync_service,
+      signin::IdentityManager* identity_manager);
   ~TabGroupChangeNotifierImpl() override;
 
   // TabGroupChangeNotifier.
@@ -94,6 +96,9 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
 
   // The TabGroupSyncService that is the source of the updates.
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
+
+  // Service providing information about sign in.
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   base::ScopedObservation<tab_groups::TabGroupSyncService,
                           tab_groups::TabGroupSyncService::Observer>
