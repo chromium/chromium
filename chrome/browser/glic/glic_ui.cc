@@ -69,6 +69,7 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
                                            ContentSettingsType::GEOLOCATION);
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
+  const bool is_glic_dev = command_line->HasSwitch(::switches::kGlicDev);
 
   // Set up guest URL via cli flag or default to finch param value.
   source->AddString("glicGuestURL", GetGuestURL().spec());
@@ -76,7 +77,12 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   // Set up loading notice timeout values.
   source->AddInteger("preLoadingTimeMs", features::kGlicPreLoadingTimeMs.Get());
   source->AddInteger("minLoadingTimeMs", features::kGlicMinLoadingTimeMs.Get());
-  source->AddInteger("maxLoadingTimeMs", features::kGlicMaxLoadingTimeMs.Get());
+  int max_loading_time_ms = features::kGlicMaxLoadingTimeMs.Get();
+  if (is_glic_dev) {
+    // Bump up timeout value, as dev server may be slow.
+    max_loading_time_ms *= 10;
+  }
+  source->AddInteger("maxLoadingTimeMs", max_loading_time_ms);
   source->AddBoolean("simulateNoConnection", simulate_no_connection_);
 
   source->AddResourcePath("glic_logo.svg", IDR_GLIC_LOGO);
@@ -100,7 +106,7 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   }
   source->AddString("glicAllowedOrigins", allowed_origins);
 
-  bool skip_origin_check = command_line->HasSwitch(::switches::kGlicDev);
+  const bool skip_origin_check = is_glic_dev;
   source->AddBoolean("glicSkipOriginCheck", skip_origin_check);
 
   source->AddBoolean("enableDebug",
