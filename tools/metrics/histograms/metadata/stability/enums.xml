@@ -575,6 +575,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="13"
       label="CPMD_BAD_ORIGIN_GENERATION_AVAILABLE_FOR_FORM_OBSOLETE"/>
   <int value="14" label="CPMD_BAD_ORIGIN_PRERENDERING"/>
+  <int value="15" label="CPMD_BAD_ORIGIN_NO_GENERATED_PASSWORD_TO_EDIT"/>
 </enum>
 
 <enum name="BooleanHasPossibleExplanation">

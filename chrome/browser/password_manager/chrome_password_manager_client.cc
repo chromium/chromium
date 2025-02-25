@@ -1570,6 +1570,10 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
   if (!password_manager::bad_message::CheckFrameNotPrerendering(rfh)) {
     return;
   }
+  if (!password_manager::bad_message::CheckGeneratedPassword(rfh,
+                                                             password_value)) {
+    return;
+  }
   auto* driver =
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
           rfh);
@@ -1593,7 +1597,7 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
       popup_controller_, element_bounds_in_screen_space, ui_data,
       driver->AsWeakPtr(), observer_, web_contents(),
       password_generation_driver_receivers_.GetCurrentTargetFrame());
-  DCHECK(!password_value.empty());
+  CHECK(!password_value.empty());
   popup_controller_->UpdateGeneratedPassword(password_value);
   popup_controller_->Show(
       PasswordGenerationPopupController::kEditGeneratedPassword);
