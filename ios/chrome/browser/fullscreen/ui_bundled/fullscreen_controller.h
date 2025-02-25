@@ -33,11 +33,13 @@ class FullscreenController : public base::SupportsUserData::Data {
   // ChromeBroadcaster.
   virtual ChromeBroadcaster* broadcaster() = 0;
 
+  // Getter and setter for the toolbarUIState.
+  virtual ToolbarUIState* GetToolbarUIState() const = 0;
+  virtual void SetToolbarUIState(ToolbarUIState* toolbar_ui_state) = 0;
+
   // Adds and removes FullscreenControllerObservers.
   virtual void AddObserver(FullscreenControllerObserver* observer) = 0;
   virtual void RemoveObserver(FullscreenControllerObserver* observer) = 0;
-
-  virtual void SetToolbarUIState(ToolbarUIState* toolbar_ui_state) = 0;
 
   // FullscreenController can be disabled when a feature requires that the
   // toolbar be fully visible.  Since there are multiple reasons fullscreen

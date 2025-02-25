@@ -23,6 +23,7 @@ source_set("test") {
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/fullscreen/ui_bundled:internal",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
+    "//ios/chrome/browser/toolbar/ui_bundled/fullscreen",
     "//testing/gtest",
   ]
 }

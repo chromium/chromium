@@ -3,4 +3,5 @@ include_rules = [
   "+ios/chrome/browser/broadcaster/ui_bundled",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/omnibox",
+  "+ios/chrome/browser/toolbar/ui_bundled/fullscreen",
 ]

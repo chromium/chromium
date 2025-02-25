@@ -43,6 +43,7 @@ class TestFullscreenController : public FullscreenController {
   void ExitForceFullscreenMode() override;
   void ResizeHorizontalViewport() override;
   void SetToolbarUIState(ToolbarUIState* toolbarUIState) override;
+  ToolbarUIState* GetToolbarUIState() const override;
 
   // Calls FullscreenViewportInsetRangeChanged() on observers.
   void OnFullscreenViewportInsetRangeChanged(UIEdgeInsets min_viewport_insets,
@@ -67,6 +68,7 @@ class TestFullscreenController : public FullscreenController {
   ChromeBroadcaster* broadcaster_ = nil;
   // The observers.
   base::ObserverList<FullscreenControllerObserver, true> observers_;
+  ToolbarUIState* toolbar_ui_state_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_TEST_TEST_FULLSCREEN_CONTROLLER_H_
