@@ -93,22 +93,6 @@ class CORE_EXPORT InspectorPageAgent final
     kOtherResource
   };
 
-  class CORE_EXPORT PageReloadScriptInjection {
-   private:
-    String script_to_evaluate_on_load_once_;
-    String target_url_for_active_script_;
-    InspectorAgentState::String pending_script_to_evaluate_on_load_once_;
-    InspectorAgentState::String target_url_for_pending_script_;
-
-   public:
-    explicit PageReloadScriptInjection(InspectorAgentState&);
-
-    void clear();
-    void SetPending(String script, const KURL& target_url);
-    void PromoteToLoadOnce();
-    String GetScriptForInjection(const KURL& target_url);
-  };
-
   static bool CachedResourceContent(const Resource*,
                                     String* result,
                                     bool* base64_encoded,
@@ -126,7 +110,8 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorPageAgent(InspectedFrames*,
                      Client*,
                      InspectorResourceContentLoader*,
-                     v8_inspector::V8InspectorSession*);
+                     v8_inspector::V8InspectorSession*,
+                     const String& script_to_evaluate_on_load);
   InspectorPageAgent(const InspectorPageAgent&) = delete;
   InspectorPageAgent& operator=(const InspectorPageAgent&) = delete;
 
@@ -356,7 +341,8 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorAgentState::Integer standard_font_size_;
   InspectorAgentState::Integer fixed_font_size_;
   InspectorAgentState::Bytes script_font_families_cbor_;
-  PageReloadScriptInjection script_injection_on_load_;
+  String script_injection_on_load_once_;
+  String pending_script_injection_on_load_;
 };
 
 }  // namespace blink

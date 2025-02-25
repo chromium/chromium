@@ -197,14 +197,17 @@ void DevToolsSession::AttachToAgent(blink::mojom::DevToolsAgent* agent,
       receiver_.BindNewEndpointAndPassRemote(),
       session_.BindNewEndpointAndPassReceiver(),
       io_session_.BindNewPipeAndPassReceiver(), session_state_cookie_.Clone(),
-      client_->UsesBinaryProtocol(), client_->IsTrusted(), session_id_,
-      IsWaitingForDebuggerOnStart());
+      script_to_evaluate_on_load_, client_->UsesBinaryProtocol(),
+      client_->IsTrusted(), session_id_, IsWaitingForDebuggerOnStart());
   session_.set_disconnect_handler(base::BindOnce(
       &DevToolsSession::MojoConnectionDestroyed, base::Unretained(this)));
 
   // Set cookie to an empty struct to reattach next time instead of attaching.
   if (!session_state_cookie_)
     session_state_cookie_ = blink::mojom::DevToolsSessionState::New();
+
+  // Only use script_to_evaluate_on_load_ once.
+  script_to_evaluate_on_load_.clear();
 
   // We're attaching to a new agent while suspended; therefore, messages that
   // have been sent previously either need to be terminated or re-sent once we
@@ -482,6 +485,7 @@ void DevToolsSession::ResumeSendingMessagesToAgent() {
 void DevToolsSession::ClearPendingMessages(bool did_crash) {
   for (auto it = pending_messages_.begin(); it != pending_messages_.end();) {
     const PendingMessage& message = *it;
+    // TODO(caseq): remove when non-RenderDocument code paths are gone.
     if (message.method == "Page.reload") {
       ++it;
       continue;
@@ -638,6 +642,11 @@ void DevToolsSession::AddObserver(ChildObserver* obs) {
 
 void DevToolsSession::RemoveObserver(ChildObserver* obs) {
   child_observers_.RemoveObserver(obs);
+}
+
+void DevToolsSession::PrepareForReload(std::string script_to_evaluate_on_load) {
+  script_to_evaluate_on_load_ = std::move(script_to_evaluate_on_load);
+  io_session_->UnpauseAndTerminate();
 }
 
 }  // namespace content

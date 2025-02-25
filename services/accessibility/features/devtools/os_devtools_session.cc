@@ -80,6 +80,8 @@ class OSDevToolsSession::IOSession : public blink::mojom::DevToolsSession {
                        std::vector<uint8_t>(message.begin(), message.end())));
   }
 
+  void UnpauseAndTerminate() override { NOTREACHED(); }
+
  private:
   IOSession(const scoped_refptr<DebugCommandQueue> debug_command_queue,
             DispatchCallback v8_thread_dispatch)
@@ -198,6 +200,10 @@ void OSDevToolsSession::DispatchProtocolCommand(
         cbor_message.characters8(), cbor_message.length()));
     fallback_dispatcher_.Dispatch(dispatchable).Run();
   }
+}
+
+void OSDevToolsSession::UnpauseAndTerminate() {
+  NOTREACHED();
 }
 
 void OSDevToolsSession::sendResponse(

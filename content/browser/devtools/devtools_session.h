@@ -129,6 +129,11 @@ class DevToolsSession : public protocol::FrontendChannel,
   void AddObserver(ChildObserver* obs);
   void RemoveObserver(ChildObserver* obs);
 
+  base::RepeatingCallback<void(std::string)> MakePrepareForReloadCallback() {
+    return base::BindRepeating(&DevToolsSession::PrepareForReload,
+                               base::Unretained(this));
+  }
+
  private:
   struct PendingMessage {
     int call_id;
@@ -211,6 +216,7 @@ class DevToolsSession : public protocol::FrontendChannel,
         std::is_same<T, protocol::WebAuthnHandler>>;
   }
   void AddHandler(std::unique_ptr<protocol::DevToolsDomainHandler> handler);
+  void PrepareForReload(std::string script_to_evaluate_on_load);
 
   const raw_ptr<DevToolsAgentHostClient> client_;
   const raw_ptr<DevToolsSession> root_session_ = nullptr;
@@ -239,13 +245,13 @@ class DevToolsSession : public protocol::FrontendChannel,
   // any of the waiting for response messages have been handled.
   // |session_state_cookie_| is nullptr before first attach.
   blink::mojom::DevToolsSessionStatePtr session_state_cookie_;
+  std::string script_to_evaluate_on_load_;
 
   base::flat_map<std::string, raw_ptr<DevToolsSession, CtnExperimental>>
       child_sessions_;
   base::OnceClosure runtime_resume_;
   raw_ptr<DevToolsExternalAgentProxyDelegate> proxy_delegate_ = nullptr;
   base::ObserverList<ChildObserver, true, false> child_observers_;
-
   base::WeakPtrFactory<DevToolsSession> weak_factory_{this};
 };
 

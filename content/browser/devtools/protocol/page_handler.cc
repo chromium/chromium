@@ -464,12 +464,14 @@ struct PageHandler::PendingScreenshotRequest {
   gfx::Size requested_image_size;
 };
 
-PageHandler::PageHandler(EmulationHandler* emulation_handler,
-                         BrowserHandler* browser_handler,
-                         bool allow_unsafe_operations,
-                         bool is_trusted,
-                         std::optional<url::Origin> navigation_initiator_origin,
-                         bool may_read_local_files)
+PageHandler::PageHandler(
+    EmulationHandler* emulation_handler,
+    BrowserHandler* browser_handler,
+    bool allow_unsafe_operations,
+    bool is_trusted,
+    std::optional<url::Origin> navigation_initiator_origin,
+    bool may_read_local_files,
+    base::RepeatingCallback<void(std::string)> prepare_for_reload_callback)
     : DevToolsDomainHandler(Page::Metainfo::domainName),
       allow_unsafe_operations_(allow_unsafe_operations),
       is_trusted_(is_trusted),
@@ -484,7 +486,8 @@ PageHandler::PageHandler(EmulationHandler* emulation_handler,
       frames_in_flight_(0),
       host_(nullptr),
       emulation_handler_(emulation_handler),
-      browser_handler_(browser_handler) {
+      browser_handler_(browser_handler),
+      prepare_for_reload_callback_(std::move(prepare_for_reload_callback)) {
 #if BUILDFLAG(IS_ANDROID)
   constexpr auto kScreencastPixelFormat = media::PIXEL_FORMAT_I420;
 #else
@@ -696,13 +699,27 @@ void PageHandler::Reload(std::optional<bool> bypassCache,
     }
   }
 
-  // It is important to fallback before triggering reload, so that
-  // renderer could prepare beforehand.
-  callback->fallThrough();
-  outermost_main_frame->frame_tree()->controller().Reload(
-      bypassCache.value_or(false) ? ReloadType::BYPASSING_CACHE
-                                  : ReloadType::NORMAL,
-      false);
+  const auto reload_type = bypassCache.value_or(false)
+                               ? ReloadType::BYPASSING_CACHE
+                               : ReloadType::NORMAL;
+  NavigationController& navigation_controller =
+      outermost_main_frame->frame_tree()->controller();
+  // For RenderDocument, the path is different: we don't fall through to the
+  // renderer and process `scriptToEvaluateOnLoad` in the browser instead.
+  const bool handle_reload_on_browser_side =
+      outermost_main_frame->ShouldChangeRenderFrameHostOnSameSiteNavigation();
+  if (handle_reload_on_browser_side) {
+    have_pending_reload_ = true;
+    pending_script_to_evaluate_on_load_ =
+        script_to_evaluate_on_load.value_or("");
+    navigation_controller.Reload(reload_type, false);
+    callback->sendSuccess();
+  } else {
+    // It is important to fallback before triggering reload, so that
+    // renderer could prepare beforehand.
+    callback->fallThrough();
+    navigation_controller.Reload(reload_type, false);
+  }
 }
 
 static network::mojom::ReferrerPolicy ParsePolicyFromString(
@@ -2293,6 +2310,20 @@ Response PageHandler::AddCompilationCache(const std::string& url,
 
 void PageHandler::IsPrerenderingAllowed(bool& is_allowed) {
   is_allowed &= is_prerendering_allowed_;
+}
+
+void PageHandler::ReadyToCommitNavigation(
+    NavigationRequest* navigation_request) {
+  if (navigation_request->GetReloadType() == ReloadType::NONE) {
+    // Disregard pending reload if the navigation being committed is not a
+    // reload.
+    have_pending_reload_ = false;
+    pending_script_to_evaluate_on_load_.clear();
+  } else if (have_pending_reload_) {
+    prepare_for_reload_callback_.Run(
+        std::move(pending_script_to_evaluate_on_load_));
+    have_pending_reload_ = false;
+  }
 }
 
 Response PageHandler::SetPrerenderingAllowed(bool is_allowed) {

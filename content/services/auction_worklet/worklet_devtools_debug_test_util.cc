@@ -51,7 +51,8 @@ TestDevToolsAgentClient::TestDevToolsAgentClient(
   agent_->AttachDevToolsSession(receiver_.BindNewEndpointAndPassRemote(),
                                 session_.BindNewEndpointAndPassReceiver(),
                                 io_session_.BindNewPipeAndPassReceiver(),
-                                nullptr, use_binary_protocol_,
+                                nullptr, /*script_to_evaluate_on_load*/ "",
+                                use_binary_protocol_,
                                 /*client_is_trusted=*/true, session_id_,
                                 /*session_waits_for_debugger=*/false);
 }
