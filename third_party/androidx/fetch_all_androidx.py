@@ -184,16 +184,15 @@ def _generate_version_map_str(bom_path):
     return '\n'.join(sorted(version_lines))
 
 
-def _process_build_gradle(template_path,
-                          output_path,
-                          androidx_repository_url,
-                          version_overrides_str=''):
+def _process_build_gradle(template_path, output_path, androidx_repository_url,
+                          version_overrides_str):
     """Generates build.gradle from template.
 
     Args:
       template_path: Path to build.gradle.template.
       output_path: Path to build.gradle.
       androidx_repository_url: URL of the maven repository.
+      version_override_str: An optional list of pinned versions.
     """
     content = pathlib.Path(template_path).read_text()
     content = content.replace('{{androidx_repository_url}}',
@@ -264,6 +263,11 @@ def main():
         action='store_true',
         help='If passed then we will not try rolling the '
         'latest androidx but use the currently rolled version.')
+    parser.add_argument(
+        '--use-bom',
+        action='store_true',
+        help='If passed then we will use the existing bill_of_materials.json '
+        'instead of resolving the latest androidx.')
     args, extra_args = parser.parse_known_args()
 
     logging.basicConfig(
@@ -287,6 +291,11 @@ def main():
         # Prepend '0' to version to avoid conflicts with previous version format.
         version = 'cr-0' + version
 
+    if args.use_bom:
+        version_map_str = _generate_version_map_str(_BOM_PATH)
+    else:
+        version_map_str = ''
+
     if os.path.exists(_CIPD_PATH):
         shutil.rmtree(_CIPD_PATH)
     os.mkdir(_CIPD_PATH)
@@ -294,7 +303,7 @@ def main():
     _process_build_gradle(
         os.path.join(_ANDROIDX_PATH, 'build.gradle.template'),
         os.path.join(_CIPD_PATH, 'build.gradle'),
-        androidx_snapshot_repository_url)
+        androidx_snapshot_repository_url, version_map_str)
     shutil.copyfile(os.path.join(_ANDROIDX_PATH, 'BUILD.gn.template'),
                     os.path.join(_CIPD_PATH, 'BUILD.gn'))
 
