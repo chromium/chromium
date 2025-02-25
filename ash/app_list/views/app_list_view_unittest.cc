@@ -16,6 +16,7 @@
 
 #include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/model/app_list_test_model.h"
+#include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
@@ -1285,7 +1286,8 @@ TEST_F(AppListViewFocusTest, SelectionGoesIntoFolderIfSelected) {
 
 // Exercises ButtonFocusSkipper with only the Assistant button.
 TEST_F(AppListViewFocusTest, DownAndUpArrowSkipsAssistantButton) {
-  search_model()->search_box()->SetShowSunfishButton(false);
+  search_model()->search_box()->SetSunfishButtonVisibility(
+      SearchBoxModel::SunfishButtonVisibility::kHidden);
   search_model()->search_box()->SetShowAssistantButton(true);
 
   Show();
@@ -1321,7 +1323,8 @@ TEST_F(AppListViewFocusTest, DownAndUpArrowSkipsAssistantButton) {
 
 // Exercises ButtonFocusSkipper with only the Sunfish button.
 TEST_F(AppListViewFocusTest, DownAndUpArrowSkipsSunfishButton) {
-  search_model()->search_box()->SetShowSunfishButton(true);
+  search_model()->search_box()->SetSunfishButtonVisibility(
+      SearchBoxModel::SunfishButtonVisibility::kShownWithSunfishIcon);
   search_model()->search_box()->SetShowAssistantButton(false);
 
   Show();
@@ -1357,7 +1360,8 @@ TEST_F(AppListViewFocusTest, DownAndUpArrowSkipsSunfishButton) {
 
 // Exercises ButtonFocusSkipper with both Sunfish and Assistant buttons.
 TEST_F(AppListViewFocusTest, DownAndUpArrowSkipsSunfishAndAssistantButtons) {
-  search_model()->search_box()->SetShowSunfishButton(true);
+  search_model()->search_box()->SetSunfishButtonVisibility(
+      SearchBoxModel::SunfishButtonVisibility::kShownWithSunfishIcon);
   search_model()->search_box()->SetShowAssistantButton(true);
 
   Show();

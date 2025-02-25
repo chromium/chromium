@@ -20,6 +20,13 @@ class SearchBoxModelObserver;
 // influences the search box behavior.
 class APP_LIST_MODEL_EXPORT SearchBoxModel {
  public:
+  // How the Sunfish-session button should appear in the search box.
+  enum class SunfishButtonVisibility {
+    kHidden = 0,
+    kShownWithScannerIcon = 1,
+    kShownWithSunfishIcon = 2,
+  };
+
   SearchBoxModel();
   SearchBoxModel(const SearchBoxModel&) = delete;
   SearchBoxModel& operator=(const SearchBoxModel&) = delete;
@@ -37,8 +44,10 @@ class APP_LIST_MODEL_EXPORT SearchBoxModel {
     return assistant_new_entry_point_name_;
   }
 
-  void SetShowSunfishButton(bool show);
-  bool show_sunfish_button() const { return show_sunfish_button_; }
+  void SetSunfishButtonVisibility(SunfishButtonVisibility show);
+  SunfishButtonVisibility sunfish_button_visibility() const {
+    return sunfish_button_visibility_;
+  }
 
   void SetWouldTriggerIph(bool would_trigger_iph);
   bool would_trigger_iph() const { return would_trigger_iph_; }
@@ -54,7 +63,8 @@ class APP_LIST_MODEL_EXPORT SearchBoxModel {
   bool show_assistant_button_ = false;
   bool show_assistant_new_entry_point_button_ = false;
   std::string assistant_new_entry_point_name_;
-  bool show_sunfish_button_ = false;
+  SunfishButtonVisibility sunfish_button_visibility_ =
+      SunfishButtonVisibility::kHidden;
 
   // `would_trigger_iph_` indicates whether we should START showing an IPH or
   // not. This can be set to false while an IPH is being shown and the IPH

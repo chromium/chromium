@@ -1495,10 +1495,18 @@ TEST_P(SunfishLauncherButtonTest, ButtonVisibility) {
   ASSERT_EQ(sunfish_button->GetVisible(), IsSunfishEnabled());
 
   if (IsSunfishEnabled()) {
-    // `SetShowSunfishButton` should control the visibility of the button.
-    GetSearchModel()->search_box()->SetShowSunfishButton(false);
+    // `SetSunfishButtonVisibility` should control the visibility of the button.
+    GetSearchModel()->search_box()->SetSunfishButtonVisibility(
+        SearchBoxModel::SunfishButtonVisibility::kHidden);
     EXPECT_FALSE(sunfish_button->GetVisible());
-    GetSearchModel()->search_box()->SetShowSunfishButton(true);
+    GetSearchModel()->search_box()->SetSunfishButtonVisibility(
+        SearchBoxModel::SunfishButtonVisibility::kShownWithScannerIcon);
+    EXPECT_TRUE(sunfish_button->GetVisible());
+    GetSearchModel()->search_box()->SetSunfishButtonVisibility(
+        SearchBoxModel::SunfishButtonVisibility::kHidden);
+    EXPECT_FALSE(sunfish_button->GetVisible());
+    GetSearchModel()->search_box()->SetSunfishButtonVisibility(
+        SearchBoxModel::SunfishButtonVisibility::kShownWithSunfishIcon);
     EXPECT_TRUE(sunfish_button->GetVisible());
 
     // The app list will contain the sunfish launcher button next to the search

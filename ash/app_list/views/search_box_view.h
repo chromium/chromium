@@ -261,7 +261,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void SearchEngineChanged() override;
   void ShowAssistantChanged() override;
   void ShowAssistantNewEntryPointChanged() override;
-  void ShowSunfishChanged() override;
+  void SunfishButtonVisibilityChanged() override;
 
   // Updates the visibility of an IPH view.
   // If `can_show_iph` is false, delete the IPH view if it is visible.

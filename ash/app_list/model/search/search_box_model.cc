@@ -59,13 +59,14 @@ void SearchBoxModel::SetShowAssistantNewEntryPointButton(
   }
 }
 
-void SearchBoxModel::SetShowSunfishButton(bool show) {
-  if (show_sunfish_button_ == show) {
+void SearchBoxModel::SetSunfishButtonVisibility(
+    SearchBoxModel::SunfishButtonVisibility show) {
+  if (sunfish_button_visibility_ == show) {
     return;
   }
-  show_sunfish_button_ = show;
+  sunfish_button_visibility_ = show;
   for (SearchBoxModelObserver& observer : observers_) {
-    observer.ShowSunfishChanged();
+    observer.SunfishButtonVisibilityChanged();
   }
 }
 
