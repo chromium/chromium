@@ -11,12 +11,12 @@
 class GURL;
 
 namespace ash {
-class MultiCaptureServiceClient;
+class MultiCaptureService;
 }  // namespace ash
 
 namespace crosapi {
 
-// Forwards multi capture events to multi_capture_client_.
+// Forwards multi capture events to the multi capture service in ash.
 class MultiCaptureServiceAsh : public mojom::MultiCaptureService {
  public:
   // Relies on ash::Shell::Get()->multi_capture_service_client() returning
@@ -40,8 +40,6 @@ class MultiCaptureServiceAsh : public mojom::MultiCaptureService {
       IsMultiCaptureAllowedForAnyOriginOnMainProfileCallback callback) override;
 
  private:
-  ash::MultiCaptureServiceClient* GetMultiCaptureClient();
-
   mojo::ReceiverSet<mojom::MultiCaptureService>
       multi_capture_service_receiver_set_;
 };

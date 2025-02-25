@@ -50,8 +50,7 @@ ScreenCaptureTrayItemView::ScreenCaptureTrayItemView(Shelf* shelf)
 
   SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_ADMIN_SCREEN_CAPTURE));
 
-  multi_capture_service_client_observation_.Observe(
-      Shell::Get()->multi_capture_service_client());
+  multi_capture_observation_.Observe(Shell::Get()->multi_capture_service());
   Refresh();
 }
 
@@ -108,8 +107,8 @@ void ScreenCaptureTrayItemView::MultiCaptureStopped(const std::string& label) {
   }
 }
 
-void ScreenCaptureTrayItemView::MultiCaptureServiceClientDestroyed() {
-  multi_capture_service_client_observation_.Reset();
+void ScreenCaptureTrayItemView::MultiCaptureServiceDestroyed() {
+  multi_capture_observation_.Reset();
 }
 
 BEGIN_METADATA(ScreenCaptureTrayItemView)

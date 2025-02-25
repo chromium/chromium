@@ -175,10 +175,6 @@ void TestShellDelegate::BindMultiDeviceSetup(
     multidevice_setup_binder_.Run(std::move(receiver));
 }
 
-void TestShellDelegate::BindMultiCaptureService(
-    mojo::PendingReceiver<video_capture::mojom::MultiCaptureService> receiver) {
-}
-
 void TestShellDelegate::SetCanGoBack(bool can_go_back) {
   can_go_back_ = can_go_back;
 }

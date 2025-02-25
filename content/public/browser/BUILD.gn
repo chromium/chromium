@@ -707,8 +707,6 @@ source_set("browser_sources") {
   if (is_chromeos) {
     sources += [
       "chromeos/delegate_to_browser_gpu_service_accelerator_factory.h",
-      "chromeos/multi_capture_service.cc",
-      "chromeos/multi_capture_service.h",
       "lock_screen_storage.h",
       "smart_card_delegate.h",
       "tts_controller_delegate.cc",

@@ -10,18 +10,13 @@
 #include "ash/ash_export.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_capture/public/mojom/multi_capture_service.mojom.h"
 #include "url/origin.h"
 
 namespace ash {
 
-// Client of the MultiCaptureService mojo interface. Receives events about
-// multi captures being started / stopped and forwards it to ash clients to
-// show usage indicators.
-class ASH_EXPORT MultiCaptureServiceClient
-    : public video_capture::mojom::MultiCaptureServiceClient {
+// Receives events about multi captures being started / stopped and forwards it
+// to ash clients to show usage indicators.
+class ASH_EXPORT MultiCaptureService {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -43,36 +38,28 @@ class ASH_EXPORT MultiCaptureServiceClient
         const std::string& app_id,
         const std::string& app_short_name) = 0;
     virtual void MultiCaptureStopped(const std::string& label) = 0;
-    virtual void MultiCaptureServiceClientDestroyed() = 0;
+    virtual void MultiCaptureServiceDestroyed() = 0;
 
    protected:
     ~Observer() override = default;
   };
 
-  explicit MultiCaptureServiceClient(
-      mojo::PendingRemote<video_capture::mojom::MultiCaptureService>
-          multi_capture_service);
-  ~MultiCaptureServiceClient() override;
-  MultiCaptureServiceClient(const MultiCaptureServiceClient&) = delete;
-  MultiCaptureServiceClient& operator=(const MultiCaptureServiceClient&) =
-      delete;
+  MultiCaptureService();
+  virtual ~MultiCaptureService();
+  MultiCaptureService(const MultiCaptureService&) = delete;
+  MultiCaptureService& operator=(const MultiCaptureService&) = delete;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // video_capture::mojom::MultiCaptureService:
-  void MultiCaptureStarted(const std::string& label,
-                           const url::Origin& origin) override;
-  void MultiCaptureStartedFromApp(const std::string& label,
-                                  const std::string& app_id,
-                                  const std::string& app_short_name) override;
-  void MultiCaptureStopped(const std::string& label) override;
+  void NotifyMultiCaptureStarted(const std::string& label,
+                                 const url::Origin& origin);
+  void NotifyMultiCaptureStartedFromApp(const std::string& label,
+                                        const std::string& app_id,
+                                        const std::string& app_short_name);
+  void NotifyMultiCaptureStopped(const std::string& label);
 
  private:
-  mojo::Remote<video_capture::mojom::MultiCaptureService>
-      multi_capture_service_;
-  mojo::Receiver<video_capture::mojom::MultiCaptureServiceClient>
-      multi_capture_service_observer_receiver_{this};
   base::ObserverList<Observer> observers_;
 };
 
