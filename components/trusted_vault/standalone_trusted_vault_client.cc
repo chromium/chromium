@@ -23,6 +23,8 @@
 #include "components/trusted_vault/command_line_switches.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/standalone_trusted_vault_backend.h"
+#include "components/trusted_vault/standalone_trusted_vault_storage.h"
+#include "components/trusted_vault/standalone_trusted_vault_storage_impl.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
 #include "components/trusted_vault/trusted_vault_connection_impl.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
@@ -242,22 +244,6 @@ class BackendDelegate : public StandaloneTrustedVaultBackend::Delegate {
   const base::RepeatingClosure notify_state_changed_cb_;
 };
 
-constexpr base::FilePath::CharType kChromeSyncTrustedVaultFilename[] =
-    FILE_PATH_LITERAL("trusted_vault.pb");
-constexpr base::FilePath::CharType kPasskeysTrustedVaultFilename[] =
-    FILE_PATH_LITERAL("passkeys_trusted_vault.pb");
-
-base::FilePath GetBackendFilePath(const base::FilePath& base_dir,
-                                  SecurityDomainId security_domain) {
-  switch (security_domain) {
-    case SecurityDomainId::kChromeSync:
-      return base_dir.Append(kChromeSyncTrustedVaultFilename);
-    case SecurityDomainId::kPasskeys:
-      return base_dir.Append(kPasskeysTrustedVaultFilename);
-  }
-  NOTREACHED();
-}
-
 }  // namespace
 
 StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
@@ -280,7 +266,9 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
   }
 
   backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      security_domain, GetBackendFilePath(base_dir, security_domain),
+      security_domain,
+      std::make_unique<StandaloneTrustedVaultStorageImpl>(base_dir,
+                                                          security_domain),
       std::make_unique<BackendDelegate>(
           base::BindPostTaskToCurrentDefault(
               base::BindRepeating(&StandaloneTrustedVaultClient::
