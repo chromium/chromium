@@ -349,8 +349,9 @@ ContentSetting CookieSettings::GetContentSetting(
     const GURL& secondary_url,
     ContentSettingsType content_type,
     content_settings::SettingInfo* info) const {
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-      "ContentSettings.GetContentSetting.Network.Duration");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS_SUBSAMPLED(
+      "ContentSettings.GetContentSetting.Network.Duration",
+      base::ShouldRecordSubsampledMetric(0.001));
 
   if (content_type == ContentSettingsType::TPCD_METADATA_GRANTS) {
     if (tpcd_metadata_manager_) {

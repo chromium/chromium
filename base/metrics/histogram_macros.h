@@ -312,6 +312,14 @@ enum class ScopedHistogramTiming {
   INTERNAL_SCOPED_UMA_HISTOGRAM_TIMER_EXPANDER( \
       name, ScopedHistogramTiming::kMicrosecondTimes, __COUNTER__)
 
+// Similar scoped histogram timer, but only records the time if the condition
+// is satisfied. The `should_sample` field takes a boolean and is intended to be
+// used with base::MetricsSubSampler or base::ShouldRecordSubsampledMetric().
+#define SCOPED_UMA_HISTOGRAM_TIMER_MICROS_SUBSAMPLED(name, should_sample) \
+  INTERNAL_SCOPED_UMA_HISTOGRAM_TIMER_SUBSAMPLED_EXPANDER(                \
+      name, should_sample, ScopedHistogramTiming::kMicrosecondTimes,      \
+      __COUNTER__)
+
 //------------------------------------------------------------------------------
 // Memory histograms.
 

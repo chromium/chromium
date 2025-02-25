@@ -12,6 +12,7 @@
 #include <atomic>
 #include <limits>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/time/time.h"
@@ -184,6 +185,7 @@ bool MetricsSubSampler::ShouldSample(double probability) const {
     return false;
   }
 
+  DCHECK(probability >= 0 && probability <= 1);
   return generator_.RandDouble() < probability;
 }
 

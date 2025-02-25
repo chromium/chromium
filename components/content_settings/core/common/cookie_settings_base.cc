@@ -671,8 +671,9 @@ CookieSettingsBase::GetCookieSettingInternal(
     const GURL& first_party_url,
     net::CookieSettingOverrides overrides,
     SettingInfo* info) const {
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-      "ContentSettings.GetCookieSettingInternal.Duration");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS_SUBSAMPLED(
+      "ContentSettings.GetCookieSettingInternal.Duration",
+      base::ShouldRecordSubsampledMetric(0.1));
 
   // Apply http and https exceptions to ws and wss schemes.
   std::reference_wrapper<const GURL> url = request_url;
