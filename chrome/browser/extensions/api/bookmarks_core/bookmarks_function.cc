@@ -7,12 +7,14 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api_watcher.h"
 #include "chrome/browser/extensions/bookmarks/bookmarks_error_constants.h"
+#include "chrome/browser/extensions/bookmarks/bookmarks_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -59,10 +61,14 @@ const BookmarkNode* BookmarksFunction::GetBookmarkNodeFromId(
     return nullptr;
   }
 
-  const BookmarkNode* node = bookmarks::GetBookmarkNodeByID(
-      BookmarkModelFactory::GetForBrowserContext(GetProfile()), id);
-  if (!node) {
+  BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(GetProfile());
+  const BookmarkNode* node = bookmarks::GetBookmarkNodeByID(model, id);
+  if (!node || (base::FeatureList::IsEnabled(
+                    kEnforceBookmarkVisibilityOnExtensionsAPI) &&
+                !model->IsNodeVisible(*node))) {
     *error = bookmarks_errors::kNoNodeError;
+    return nullptr;
   }
 
   return node;
@@ -75,7 +81,11 @@ bool BookmarksFunction::EditBookmarksEnabled() {
 
 bool BookmarksFunction::CanBeModified(const BookmarkNode* node,
                                       std::string* error) {
-  if (!node) {
+  BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(GetProfile());
+  if (!node || (base::FeatureList::IsEnabled(
+                    kEnforceBookmarkVisibilityOnExtensionsAPI) &&
+                !model->IsNodeVisible(*node))) {
     *error = bookmarks_errors::kNoParentError;
     return false;
   }
@@ -83,6 +93,7 @@ bool BookmarksFunction::CanBeModified(const BookmarkNode* node,
     *error = bookmarks_errors::kModifySpecialError;
     return false;
   }
+
   ManagedBookmarkService* managed = GetManagedBookmarkService();
   if (bookmarks::IsDescendantOf(node, managed->managed_node())) {
     *error = bookmarks_errors::kModifyManagedError;

@@ -85,6 +85,14 @@ class ExtensionBookmarksTest : public testing::Test {
     node2_ = model_->AddURL(folder_, 0, u"Digg", GURL("http://reddit.com"));
     model_->SetNodeMetaInfo(node2_, "some_key2", "some_value2");
     model_->AddURL(folder_, 0, u"CNet", GURL("http://cnet.com"));
+
+    // Add a URL to the mobile node so that it is not hidden.
+    model_->AddURL(model_->mobile_node(), 0, u"Mobile bookmark",
+                   GURL("http://www.mobile.com"));
+
+    // Add a URL to the managed node so that it is not hidden.
+    model_->AddURL(managed_->managed_node(), 0, u"Managed bookmark",
+                   GURL("http://www.managed.com"));
   }
 
   // A simple wrapper to get a single BookmarkTreeNode from a BookmarkNode (with
@@ -110,7 +118,7 @@ TEST_F(ExtensionBookmarksTest, GetFullTreeFromRoot) {
       GetBookmarkTreeNode(model_, managed_, model_->root_node(),
                           /*recurse=*/true,
                           /*only_folders=*/false);
-  ASSERT_EQ(2U, tree.children->size());
+  ASSERT_EQ(4U, tree.children->size());
 }
 
 TEST_F(ExtensionBookmarksTest, GetTreeFromOtherPermanentNode) {
@@ -197,6 +205,9 @@ TEST_F(ExtensionBookmarksTest, GetAccountPermanentNodes) {
   base::test::ScopedFeatureList features{
       syncer::kSyncEnableBookmarksInTransportMode};
   model_->CreateAccountPermanentFolders();
+  // Add a URL to the mobile node so that it is not hidden.
+  model_->AddURL(model_->account_mobile_node(), 0, u"Mobile bookmark",
+                 GURL("http://www.mobile.com"));
 
   EXPECT_THAT(
       GetSingleBookmarkTreeNode(model_->account_bookmark_bar_node()),
@@ -253,6 +264,9 @@ TEST_F(ExtensionBookmarksTest,
   base::test::ScopedFeatureList features{
       syncer::kSyncEnableBookmarksInTransportMode};
   model_->CreateAccountPermanentFolders();
+  // Add a URL to the mobile node so that it is not hidden.
+  model_->AddURL(model_->account_mobile_node(), 0, u"Mobile bookmark",
+                 GURL("http://www.mobile.com"));
 
   // Check that local permanent nodes are not syncing.
   EXPECT_FALSE(GetSingleBookmarkTreeNode(model_->bookmark_bar_node()).syncing);
