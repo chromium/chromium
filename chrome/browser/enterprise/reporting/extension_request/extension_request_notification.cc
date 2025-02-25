@@ -35,7 +35,7 @@ constexpr char kChromeWebstoreUrl[] =
 
 // The elements order of array below must match the order in enum
 // ExtensionRequestNotification::NotifyType.
-const auto kNotificationIds = std::to_array<const char*>({
+constexpr auto kNotificationIds = std::to_array<const char*>({
     kApprovedNotificationId,
     kRejectedNotificationId,
     kInstalledNotificationId,
