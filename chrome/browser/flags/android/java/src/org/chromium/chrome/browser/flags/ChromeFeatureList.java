@@ -1204,6 +1204,26 @@ public abstract class ChromeFeatureList {
                     newIntCachedFeatureParam(
                             COLLECT_ANDROID_FRAME_TIMELINE_METRICS, "delayed_start_ms", 3000);
 
+    /***
+     * Feature parameter for TabState deprecation which indicates that legacy TabState
+     * files should be deleted after restore if they have been migrated to FlatBuffer.
+     */
+    public static final BooleanCachedFeatureParam sDeleteMigratedLegacyTabStateFilesAfterRestore =
+            newBooleanCachedFeatureParam(
+                    LEGACY_TAB_STATE_DEPRECATION, "delete_migrated_files_after_restore", false);
+
+    /** Batch size for number of legacy TabState files that should be deleted in a batch. */
+    public static final IntCachedFeatureParam sDeleteLegacyTabStateFilesBatchSize =
+            newIntCachedFeatureParam(
+                    LEGACY_TAB_STATE_DEPRECATION, "delete_legacy_tabstate_files_batch_size", 5);
+
+    /** Maximum number of legacy TabState files that can be deleted per session. */
+    public static final IntCachedFeatureParam sMaxLegacyTabStateFilesDeletedPerSession =
+            newIntCachedFeatureParam(
+                    LEGACY_TAB_STATE_DEPRECATION,
+                    "max_legacy_tab_state_files_deleted_per_session",
+                    100);
+
     /** Cached param whether we disable e2e on the recent tabs page. */
     public static final BooleanCachedFeatureParam sDrawKeyNativeEdgeToEdgeDisableRecentTabsE2e =
             newBooleanCachedFeatureParam(
@@ -1399,6 +1419,9 @@ public abstract class ChromeFeatureList {
                     sCctResizableForThirdPartiesDefaultPolicy,
                     sClankStartupLatencyInjectionAmountMs,
                     sCollectAndroidFrameTimelineMetricsJankTrackerDelayedStartMs,
+                    sDeleteMigratedLegacyTabStateFilesAfterRestore,
+                    sDeleteLegacyTabStateFilesBatchSize,
+                    sMaxLegacyTabStateFilesDeletedPerSession,
                     sDrawKeyNativeEdgeToEdgeDisableRecentTabsE2e,
                     sDrawKeyNativeEdgeToEdgeDisableCctMediaViewerE2e,
                     sDrawKeyNativeEdgeToEdgeDisableHubE2e,

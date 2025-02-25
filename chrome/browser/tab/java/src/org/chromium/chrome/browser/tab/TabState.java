@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Token;
 import org.chromium.ui.util.ColorUtils;
 
+import java.io.File;
+
 /** Object that contains the state of a tab, including its navigation history. */
 public class TabState {
     /** Special value for timestamp related attributes. */
@@ -59,6 +61,11 @@ public class TabState {
     // Flag to signal TabState should be migrated to new FlatBuffer format.
     // This field is not persisted on disk.
     public boolean shouldMigrate;
+
+    // Temporary field indicating which legacy TabState file to delete (if
+    // applicable). Legacy TabState file should be deleted if the Tab has
+    // been migrated onto the new FlatBuffer format.
+    public File legacyFileToDelete;
 
     public boolean isIncognito() {
         return isIncognito;
