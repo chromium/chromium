@@ -286,6 +286,7 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
  private:
   // ServicesDelegate::ServicesCreator:
   bool CanCreateDatabaseManager() override { return true; }
+
   bool CanCreateIncidentReportingService() override {
 #if BUILDFLAG(IS_ANDROID)
     // Android does not support Incident Reporting for downloads.
@@ -294,9 +295,11 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
     return true;
 #endif
   }
+
   safe_browsing::SafeBrowsingDatabaseManager* CreateDatabaseManager() override {
     return mock_database_manager_.get();
   }
+
   IncidentReportingService* CreateIncidentReportingService() override {
 #if BUILDFLAG(IS_ANDROID)
     // Android does not support Incident Reporting for downloads.
@@ -305,6 +308,18 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
     return new IncidentReportingService(nullptr);
 #endif
   }
+
+  // Temporary test overrides for Android download protection.
+  // TODO(crbug.com/397407934): Once the ServicesDelegateAndroid learns how to
+  // create its own real DownloadProtectionService, remove these temporary
+  // overrides.
+#if BUILDFLAG(IS_ANDROID)
+  bool CanCreateDownloadProtectionService() override { return true; }
+
+  DownloadProtectionService* CreateDownloadProtectionService() override {
+    return new DownloadProtectionService(this);
+  }
+#endif
 
   base::flat_map<Profile*, std::unique_ptr<network::TestURLLoaderFactory>>
       test_url_loader_factory_map_;
@@ -365,6 +380,11 @@ class DownloadProtectionServiceTestBase
     // to test that we're on the correct thread work.
     sb_service_ =
         base::MakeRefCounted<StrictMock<FakeSafeBrowsingService>>(profile());
+#if BUILDFLAG(IS_ANDROID)
+    // Mock the database manager for Android instead of using a remote database
+    // manager.
+    sb_service_->SetDatabaseManager(sb_service_->mock_database_manager());
+#endif
     sb_service_->Initialize();
     ON_CALL(*sb_service_->mock_database_manager(),
             MatchDownloadAllowlistUrl(_, _))
@@ -1669,6 +1689,8 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadData) {
   ClearClientDownloadRequest();
 }
 
+// Zip file analysis is not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadZip) {
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
@@ -1795,6 +1817,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadZip) {
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadReportCorruptZip) {
   CheckClientDownloadReportCorruptArchive(ZIP);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadReportCorruptDmg) {
@@ -3400,6 +3423,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadAllowlistedByPolicy) {
   EXPECT_TRUE(IsResult(DownloadCheckResult::ALLOWLISTED_BY_POLICY));
 }
 
+// TODO(crbug.com/397407934): Support download feedback on Android.
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(DownloadProtectionServiceTest, CheckOffTheRecordDoesNotSendFeedback) {
   NiceMockDownloadItem item;
@@ -3475,6 +3499,8 @@ TEST_F(DownloadProtectionServiceFlagTest, CheckClientDownloadOverridenByFlag) {
   EXPECT_TRUE(IsResult(DownloadCheckResult::DANGEROUS));
 }
 
+// Zip file analysis is not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 // Test a real .zip with a real .exe in it, where the .exe is manually
 // blocklisted by hash.
 TEST_F(DownloadProtectionServiceFlagTest,
@@ -3506,6 +3532,7 @@ TEST_F(DownloadProtectionServiceFlagTest,
   // Overriden by flag:
   EXPECT_TRUE(IsResult(DownloadCheckResult::DANGEROUS));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DownloadProtectionServiceTest,
        VerifyReferrerChainWithEmptyNavigationHistory) {
@@ -4783,6 +4810,8 @@ TEST_F(DeepScanningDownloadTest, SafeVerdictPrecedence) {
 }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
+// Advanced Protection deep scans are not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DownloadProtectionServiceTest, AdvancedProtectionRequestScan) {
   PrepareResponse(ClientDownloadResponse::UNCOMMON, net::HTTP_OK, net::OK,
                   /*upload_requested=*/true, /*request_deep_scan=*/true);
@@ -4856,6 +4885,7 @@ TEST_F(DownloadProtectionServiceTest,
   EXPECT_EQ("response_token",
             DownloadProtectionService::GetDownloadPingToken(&item));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DownloadProtectionServiceTest, AdvancedProtectionRequestScanFalse) {
   PrepareResponse(ClientDownloadResponse::UNCOMMON, net::HTTP_OK, net::OK,
@@ -5008,6 +5038,8 @@ TEST_F(DownloadProtectionServiceTest, ESBRequestScanFalseWhenIncognito) {
   EXPECT_TRUE(IsResult(DownloadCheckResult::UNCOMMON));
 }
 
+// Deep scanning is not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DownloadProtectionServiceTest, ESBRequestScanPolicyEnabled) {
   PrepareResponse(ClientDownloadResponse::UNCOMMON, net::HTTP_OK, net::OK,
                   /*upload_requested=*/true, /*request_deep_scan=*/true);
@@ -5045,6 +5077,7 @@ TEST_F(DownloadProtectionServiceTest, ESBRequestScanPolicyEnabled) {
   run_loop.Run();
   EXPECT_TRUE(IsResult(DownloadCheckResult::IMMEDIATE_DEEP_SCAN));
 }
+#endif
 
 TEST_F(DownloadProtectionServiceTest, ESBRequestScanPolicyDisabled) {
   PrepareResponse(ClientDownloadResponse::UNCOMMON, net::HTTP_OK, net::OK,
@@ -5084,6 +5117,7 @@ TEST_F(DownloadProtectionServiceTest, ESBRequestScanPolicyDisabled) {
   EXPECT_TRUE(IsResult(DownloadCheckResult::UNCOMMON));
 }
 
+// TODO(crbug.com/397407934): Support download feedback on Android.
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(DownloadProtectionServiceTest, DownloadFeedbackOnDangerous) {
   NiceMockDownloadItem item;
@@ -5155,14 +5189,14 @@ TEST_F(DownloadProtectionServiceTest, DownloadFeedbackOnDangerous) {
     Mock::VerifyAndClearExpectations(feedback_service_);
   }
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 class EnterpriseCsdDownloadTest : public DownloadProtectionServiceTestBase {
  public:
   EnterpriseCsdDownloadTest() = default;
 };
 
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 TEST_F(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
   std::string file_contents = "Normal file contents";
   base::FilePath file_path;
@@ -5318,6 +5352,9 @@ TEST_F(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
 }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
+// Deep scans, Advanced Protection, and encrypted archives are not supported on
+// Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DownloadProtectionServiceTest, ESBRequestScan) {
   PrepareResponse(ClientDownloadResponse::UNCOMMON, net::HTTP_OK, net::OK,
                   /*upload_requested=*/true, /*request_deep_scan=*/true);
@@ -5423,5 +5460,6 @@ TEST_F(DownloadProtectionServiceTest, EncryptedArchive) {
   // Downloads of encrypted archives cannot immediately deep scan
   EXPECT_TRUE(IsResult(DownloadCheckResult::PROMPT_FOR_SCANNING));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace safe_browsing

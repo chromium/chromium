@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/telemetry/android/android_telemetry_service.h"
 #include "components/safe_browsing/android/remote_database_manager.h"
 #include "components/safe_browsing/buildflags.h"
@@ -30,12 +31,20 @@ std::unique_ptr<ServicesDelegate> ServicesDelegate::Create(
 std::unique_ptr<ServicesDelegate> ServicesDelegate::CreateForTest(
     SafeBrowsingServiceImpl* safe_browsing_service,
     ServicesDelegate::ServicesCreator* services_creator) {
-  NOTREACHED();
+  return base::WrapUnique(
+      new ServicesDelegateAndroid(safe_browsing_service, services_creator));
 }
 
 ServicesDelegateAndroid::ServicesDelegateAndroid(
     SafeBrowsingServiceImpl* safe_browsing_service)
     : ServicesDelegate(safe_browsing_service, /*services_creator=*/nullptr) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
+
+ServicesDelegateAndroid::ServicesDelegateAndroid(
+    SafeBrowsingServiceImpl* safe_browsing_service,
+    ServicesDelegate::ServicesCreator* services_creator)
+    : ServicesDelegate(safe_browsing_service, services_creator) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -53,6 +62,13 @@ void ServicesDelegateAndroid::Initialize() {
     database_manager_ =
         base::WrapRefCounted(new RemoteSafeBrowsingDatabaseManager());
   }
+
+  download_service_.reset(
+      (services_creator_ &&
+       services_creator_->CanCreateDownloadProtectionService())
+          ? services_creator_->CreateDownloadProtectionService()
+          // TODO(crbug.com/397407934): Implement this.
+          : nullptr);
 }
 
 void ServicesDelegateAndroid::SetDatabaseManagerForTest(
@@ -63,6 +79,7 @@ void ServicesDelegateAndroid::SetDatabaseManagerForTest(
 
 void ServicesDelegateAndroid::ShutdownServices() {
   telemetry_service_.reset();
+  download_service_.reset();
   ServicesDelegate::ShutdownServices();
 }
 
@@ -78,6 +95,11 @@ void ServicesDelegateAndroid::RegisterDelayedAnalysisCallback(
 
 void ServicesDelegateAndroid::AddDownloadManager(
     content::DownloadManager* download_manager) {}
+
+DownloadProtectionService* ServicesDelegateAndroid::GetDownloadService() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return download_service_.get();
+}
 
 void ServicesDelegateAndroid::StartOnUIThread(
     scoped_refptr<network::SharedURLLoaderFactory> browser_url_loader_factory,
