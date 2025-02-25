@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_view_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_consumer.h"
 
+@protocol ApplicationCommands;
 @class TabGroupGridViewController;
 class TabGroup;
 @protocol TabGroupsCommands;
@@ -28,6 +29,9 @@ class TabGroup;
 
 // The embedded grid view controller.
 @property(nonatomic, readonly) TabGroupGridViewController* gridViewController;
+
+// TODO(crbug.com/398183785): Remove once we got feedback.
+@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 
 // Initiates a TabGroupViewController with `handler` to handle user action,
 // `incognito` to YES to have a dark theme, `tabGroup` to get tab group

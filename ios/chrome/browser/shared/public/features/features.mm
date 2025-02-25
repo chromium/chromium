@@ -10,6 +10,7 @@
 #import "base/containers/contains.h"
 #import "base/metrics/field_trial_params.h"
 #import "components/country_codes/country_codes.h"
+#import "components/data_sharing/public/features.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/sync/base/features.h"
 #import "components/version_info/channel.h"
@@ -536,6 +537,12 @@ BASE_FEATURE(kTabGroupIndicator,
 bool IsTabGroupIndicatorEnabled() {
   return IsTabGroupInGridEnabled() &&
          base::FeatureList::IsEnabled(kTabGroupIndicator);
+}
+
+bool IsTabGroupSendFeedbackAvailable() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      data_sharing::features::kDataSharingFeature, "show_send_feedback",
+      /*default=*/false);
 }
 
 BASE_FEATURE(kNewSyncOptInIllustration,

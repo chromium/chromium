@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/share_kit/model/sharing_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
@@ -524,6 +525,10 @@ constexpr CGFloat kFacePileHeight = 44;
   [bottomToolbar setEditButtonHidden:YES];
   [bottomToolbar setDoneButtonHidden:YES];
 
+  if (IsTabGroupSendFeedbackAvailable()) {
+    [bottomToolbar setTabGroupFeedbackVisible:YES];
+  }
+
   [self.view addSubview:bottomToolbar];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -818,6 +823,13 @@ constexpr CGFloat kFacePileHeight = 44;
 
 - (void)selectTabsButtonTapped:(id)sender {
   NOTREACHED();
+}
+
+- (void)sendFeedbackGroupTapped:(id)sender {
+  // TODO(crbug.com/398183785): Remove once we got feedback.
+  [self.applicationHandler
+      showReportAnIssueFromViewController:self
+                                   sender:UserFeedbackSender::TabGroup];
 }
 
 @end
