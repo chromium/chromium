@@ -1508,6 +1508,7 @@ void PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndUse(
   std::string source_suffix;
   switch (source) {
     case SettingSource::kNone:
+    case SettingSource::kTest:
       source_suffix = "FromNone";
       break;
     case SettingSource::kPolicy:
