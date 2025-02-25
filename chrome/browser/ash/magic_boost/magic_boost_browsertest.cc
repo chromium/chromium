@@ -21,9 +21,11 @@
 #include "chrome/browser/ash/mahi/mahi_test_util.h"
 #include "chrome/browser/ash/mahi/mahi_ui_browser_test_base.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/editor_menu/editor_menu_view.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_opt_in_card.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -89,15 +91,26 @@ class MagicBoostBrowserTest
       public testing::WithParamInterface<std::tuple<
           /*editor_mode=*/chromeos::editor_menu::EditorMode,
           /*orca_consent_status=*/chromeos::editor_menu::EditorConsentStatus,
-          /*is_hmr_consent_unset=*/chromeos::HMRConsentStatus>> {
+          /*is_hmr_consent_unset=*/chromeos::HMRConsentStatus,
+          /*is_magic_boost_revamp_enabled=*/bool>> {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kMahi,
-                              chromeos::features::kOrca,
-                              chromeos::features::kFeatureManagementMahi,
-                              chromeos::features::kFeatureManagementOrca},
-        /*disabled_features=*/{});
+    if (IsMagicBoostRevampEnabled()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{chromeos::features::kMahi,
+                                chromeos::features::kOrca,
+                                chromeos::features::kFeatureManagementMahi,
+                                chromeos::features::kFeatureManagementOrca,
+                                chromeos::features::kMagicBoostRevamp},
+          /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{chromeos::features::kMahi,
+                                chromeos::features::kOrca,
+                                chromeos::features::kFeatureManagementMahi,
+                                chromeos::features::kFeatureManagementOrca},
+          /*disabled_features=*/{chromeos::features::kMagicBoostRevamp});
+    }
 
     InProcessBrowserTest::SetUp();
   }
@@ -181,6 +194,17 @@ class MagicBoostBrowserTest
     event_generator().ClickLeftButton();
   }
 
+  void ClickOnMahiSummaryButton(views::Widget* mahi_menu_widget) {
+    const views::View* summary_button =
+        mahi_menu_widget->GetContentsView()->GetViewByID(
+            chromeos::mahi::ViewID::kSummaryButton);
+    ASSERT_TRUE(summary_button);
+
+    event_generator().MoveMouseTo(
+        summary_button->GetBoundsInScreen().CenterPoint());
+    event_generator().ClickLeftButton();
+  }
+
   views::Widget* GetOptInCardWidget() const {
     return FindWidgetWithNameAndWaitIfNeeded(
         chromeos::MagicBoostOptInCard::GetWidgetNameForTest());
@@ -233,13 +257,30 @@ class MagicBoostBrowserTest
     return GetInitHmrConsentStatus() == chromeos::HMRConsentStatus::kUnset;
   }
 
-  bool ShouldShowEditorMenu() const {
+  bool ShouldShowDisclaimerViewForMagicBoostRevamp() const {
+    return GetInitHmrConsentStatus() == chromeos::HMRConsentStatus::kUnset ||
+           GetInitHmrConsentStatus() ==
+               chromeos::HMRConsentStatus::kPendingDisclaimer;
+  }
+
+  bool ShouldShowHmrMenuCard() const {
+    return GetInitHmrConsentStatus() != chromeos::HMRConsentStatus::kDeclined;
+  }
+
+  bool ShouldShowEditorMenuWithoutMagicBoostRevamp() const {
     // In production, when the editor is not soft/hard blocked, it checks the
     // Orca consent status to find the current editor mode. It will get
     // `kRewrite` when the selected length is greater than 0, and get `kWrite`
     // when the selected length is 0.
     return GetEditorMode() == chromeos::editor_menu::EditorMode::kRewrite ||
            GetEditorMode() == chromeos::editor_menu::EditorMode::kWrite;
+  }
+
+  bool ShouldShowEditorMenuWithMagicBoostRevamp() const {
+    // When magic boost revamp logic is enabled, the HMW card should be visible
+    // even when users have not given consent for HMW.
+    return ShouldShowEditorMenuWithoutMagicBoostRevamp() ||
+           GetEditorMode() == chromeos::editor_menu::EditorMode::kConsentNeeded;
   }
 
   chromeos::editor_menu::EditorMode GetEditorMode() const {
@@ -254,6 +295,8 @@ class MagicBoostBrowserTest
   chromeos::HMRConsentStatus GetInitHmrConsentStatus() const {
     return std::get<2>(GetParam());
   }
+
+  bool IsMagicBoostRevampEnabled() const { return std::get<3>(GetParam()); }
 
  private:
   void SetUpOnMainThread() override {
@@ -306,7 +349,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(chromeos::HMRConsentStatus::kUnset,
                         chromeos::HMRConsentStatus::kApproved,
                         chromeos::HMRConsentStatus::kDeclined,
-                        chromeos::HMRConsentStatus::kPendingDisclaimer)));
+                        chromeos::HMRConsentStatus::kPendingDisclaimer),
+        /*magic_boost_revamp_enabled=*/testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromReadOnlyContent) {
   EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
@@ -326,24 +370,51 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromReadOnlyContent) {
   // Right click on the web content to show the opt in card.
   NavigateAndRightClickReadOnlyWeb();
 
-  // Not showing the opt in flow if should not opt in hmr.
-  if (!ShouldOptInHmr()) {
-    EXPECT_FALSE(FindWidgetWithName(
-        chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+  if (IsMagicBoostRevampEnabled()) {
+    if (!ShouldShowHmrMenuCard()) {
+      EXPECT_FALSE(
+          FindWidgetWithName(chromeos::mahi::MahiMenuView::GetWidgetName()));
+      return;
+    }
+    // Ensure the mahi menu widget is shown, but not the opt in card or the
+    // disclaimer view.
+    views::Widget* mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+        chromeos::mahi::MahiMenuView::GetWidgetName());
+    EXPECT_TRUE(mahi_menu_widget);
+    EXPECT_FALSE(
+        FindWidgetWithName(chromeos::MagicBoostOptInCard::GetWidgetName()));
     EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
-    return;
+
+    ClickOnMahiSummaryButton(mahi_menu_widget);
+    WaitUntilViewClosed(mahi_menu_widget);
+
+    if (!ShouldShowDisclaimerViewForMagicBoostRevamp()) {
+      EXPECT_FALSE(
+          FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+      return;
+    }
+  } else {
+    // Not showing the opt in flow if should not opt in hmr.
+    if (!ShouldOptInHmr()) {
+      EXPECT_FALSE(FindWidgetWithName(
+          chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+      EXPECT_FALSE(
+          FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+      return;
+    }
+
+    // Finds the opt in card and still cannot find the disclaimer view.
+    views::Widget* opt_in_card_widget = GetOptInCardWidget();
+    EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+    ASSERT_TRUE(opt_in_card_widget);
+
+    // Left click on the accept button in the opt in card.
+    LeftClickOnView(GetOptInCardAcceptButton());
+
+    // Closes the opt in card and shows the disclaimer view.
+    WaitUntilViewClosed(opt_in_card_widget);
   }
 
-  // Finds the opt in card and still cannot find the disclaimer view.
-  views::Widget* opt_in_card_widget = GetOptInCardWidget();
-  EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
-  ASSERT_TRUE(opt_in_card_widget);
-
-  // Left click on the accept button in the opt in card.
-  LeftClickOnView(GetOptInCardAcceptButton());
-
-  // Closes the opt in card and shows the disclaimer view.
-  WaitUntilViewClosed(opt_in_card_widget);
   EXPECT_TRUE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
   EXPECT_FALSE(FindWidgetWithName(
       chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
@@ -387,6 +458,10 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromReadOnlyContent) {
 
 IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
                        DeclineThroughCardFromReadOnlyContent) {
+  // If the MagicBoostRevamp flag is enabled, there is no opt-in card.
+  if (IsMagicBoostRevampEnabled()) {
+    return;
+  }
   EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
   EXPECT_FALSE(FindWidgetWithName(
       chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
@@ -403,7 +478,6 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
 
   // Right click on the web content to show the opt in card.
   NavigateAndRightClickReadOnlyWeb();
-
   // Not showing the opt in flow if should not opt in hmr.
   if (!ShouldOptInHmr()) {
     EXPECT_FALSE(FindWidgetWithName(
@@ -474,24 +548,51 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
   // Right click on the web content to show the opt in card.
   NavigateAndRightClickReadOnlyWeb();
 
-  // Not showing the opt in flow if should not opt in hmr.
-  if (!ShouldOptInHmr()) {
-    EXPECT_FALSE(FindWidgetWithName(
-        chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+  if (IsMagicBoostRevampEnabled()) {
+    if (!ShouldShowHmrMenuCard()) {
+      EXPECT_FALSE(
+          FindWidgetWithName(chromeos::mahi::MahiMenuView::GetWidgetName()));
+      return;
+    }
+    // Ensure the mahi menu widget is shown, but not the opt in card or the
+    // disclaimer view.
+    views::Widget* mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+        chromeos::mahi::MahiMenuView::GetWidgetName());
+    EXPECT_TRUE(mahi_menu_widget);
+    EXPECT_FALSE(
+        FindWidgetWithName(chromeos::MagicBoostOptInCard::GetWidgetName()));
     EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
-    return;
+
+    ClickOnMahiSummaryButton(mahi_menu_widget);
+    WaitUntilViewClosed(mahi_menu_widget);
+
+    if (!ShouldShowDisclaimerViewForMagicBoostRevamp()) {
+      EXPECT_FALSE(
+          FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+      return;
+    }
+  } else {
+    // Not showing the opt in flow if should not opt in hmr.
+    if (!ShouldOptInHmr()) {
+      EXPECT_FALSE(FindWidgetWithName(
+          chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+      EXPECT_FALSE(
+          FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+      return;
+    }
+
+    // Finds the opt in card and still cannot find the disclaimer view.
+    views::Widget* opt_in_card_widget = GetOptInCardWidget();
+    ASSERT_TRUE(opt_in_card_widget);
+    EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+
+    // Left click on the accept button in the opt in card.
+    LeftClickOnView(GetOptInCardAcceptButton());
+
+    // Closes the opt in card and shows the disclaimer view.
+    WaitUntilViewClosed(opt_in_card_widget);
   }
 
-  // Finds the opt in card and still cannot find the disclaimer view.
-  views::Widget* opt_in_card_widget = GetOptInCardWidget();
-  ASSERT_TRUE(opt_in_card_widget);
-  EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
-
-  // Left click on the accept button in the opt in card.
-  LeftClickOnView(GetOptInCardAcceptButton());
-
-  // Closes the opt in card and shows the disclaimer view.
-  WaitUntilViewClosed(opt_in_card_widget);
   EXPECT_TRUE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
   views::Widget* disclaimer_view_widget = GetDisclaimerViewWidget();
   ASSERT_TRUE(disclaimer_view_widget);
@@ -568,6 +669,16 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromInputFieldWeb) {
   // Right click on the input.
   NavigateAndRightClickInputTextWeb();
 
+  if (IsMagicBoostRevampEnabled()) {
+    if (ShouldShowEditorMenuWithMagicBoostRevamp()) {
+      views::Widget* editor_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+          chromeos::editor_menu::EditorMenuView::GetWidgetNameForTest());
+      EXPECT_TRUE(editor_menu_widget);
+    }
+    // TODO: b:398189750 - Adds tests to cover the journey after clicking chips
+    // / typing freeform text and potentially see the magic boost notice.
+    return;
+  }
   // If should not include orca, there's no opt in flow from the input text
   // page.
   if (!ShouldIncludeOrca()) {
@@ -587,6 +698,7 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromInputFieldWeb) {
 
   // Closes the opt in card and shows the disclaimer view.
   WaitUntilViewClosed(opt_in_card_widget);
+
   EXPECT_TRUE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
   EXPECT_FALSE(FindWidgetWithName(
       chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
@@ -597,10 +709,18 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromInputFieldWeb) {
   LeftClickOnView(GetDisclaimerViewAcceptButton());
 
   // Closes the disclaimer view and checks the corresponding prefs. No matter
-  // what is the init Hmr status it will opt in Hmr again with the Orca feature,
-  // but in production it is expected that Hmr status will be unset when Orca is
-  // unset, since Hmr is launched after Orca.
+  // what is the init Hmr status it will opt in Hmr again with the Orca
+  // feature, but in production it is expected that Hmr status will be unset
+  // when Orca is unset, since Hmr is launched after Orca.
   WaitUntilViewClosed(disclaimer_view_widget);
+
+  // Shows the Editor Menu if the editor mode is not (soft/hard) blocked.
+  if (ShouldShowEditorMenuWithoutMagicBoostRevamp()) {
+    EXPECT_TRUE(IsShowingMakoBubble());
+  } else {
+    EXPECT_FALSE(IsShowingMakoBubble());
+  }
+
   EXPECT_EQ(chromeos::MagicBoostState::Get()->hmr_consent_status(),
             chromeos::HMRConsentStatus::kApproved);
   EXPECT_TRUE(chromeos::MagicBoostState::Get()->hmr_enabled().value());
@@ -611,13 +731,6 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromInputFieldWeb) {
   EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
             base::to_underlying(
                 chromeos::editor_menu::EditorConsentStatus::kApproved));
-
-  // Shows the Editor Menu if the editor mode is not (soft/hard) blocked.
-  if (ShouldShowEditorMenu()) {
-    EXPECT_TRUE(IsShowingMakoBubble());
-  } else {
-    EXPECT_FALSE(IsShowingMakoBubble());
-  }
 
   // Right click on the input again.
   NavigateAndRightClickInputTextWeb();
@@ -630,6 +743,10 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromInputFieldWeb) {
 
 IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
                        DeclineThroughCardFromInputFieldWeb) {
+  // If the MagicBoostRevamp flag is enabled, there is no opt-in card.
+  if (IsMagicBoostRevampEnabled()) {
+    return;
+  }
   EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
   EXPECT_FALSE(FindWidgetWithName(
       chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
@@ -715,6 +832,16 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
   // Right click on the input.
   NavigateAndRightClickInputTextWeb();
 
+  if (IsMagicBoostRevampEnabled()) {
+    if (ShouldShowEditorMenuWithMagicBoostRevamp()) {
+      views::Widget* editor_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+          chromeos::editor_menu::EditorMenuView::GetWidgetNameForTest());
+      EXPECT_TRUE(editor_menu_widget);
+    }
+    // TODO: b:398189750 - Adds tests to cover the journey after clicking chips
+    // / typing freeform text and potentially see the magic boost notice.
+    return;
+  }
   // If should not include orca, there's no opt in flow from the input text
   // page.
   if (!ShouldIncludeOrca()) {
@@ -800,6 +927,102 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, ShowDisclaimerViewOnMultiScreen) {
   NavigateToReadOnlyWeb();
   event_generator().MoveMouseTo(displays[1].work_area().CenterPoint());
   event_generator().ClickRightButton();
+
+  if (IsMagicBoostRevampEnabled()) {
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kHMRConsentStatus, base::to_underlying(init_hmr_status));
+    if (!ShouldShowHmrMenuCard()) {
+      EXPECT_FALSE(
+          FindWidgetWithName(chromeos::mahi::MahiMenuView::GetWidgetName()));
+      return;
+    }
+    // Ensure the mahi menu widget is shown, but not the opt in card or the
+    // disclaimer view.
+    views::Widget* mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+        chromeos::mahi::MahiMenuView::GetWidgetName());
+    EXPECT_TRUE(mahi_menu_widget);
+    EXPECT_EQ(root_windows[1], views::GetRootWindow(mahi_menu_widget));
+    EXPECT_FALSE(
+        FindWidgetWithName(chromeos::MagicBoostOptInCard::GetWidgetName()));
+    EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+
+    ClickOnMahiSummaryButton(mahi_menu_widget);
+    WaitUntilViewClosed(mahi_menu_widget);
+
+    if (!ShouldShowDisclaimerViewForMagicBoostRevamp()) {
+      EXPECT_FALSE(
+          FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+      return;
+    }
+
+    ASSERT_EQ(root_windows[1], views::GetRootWindow(GetDisclaimerViewWidget()));
+
+    // Resets the Hmr consent status to continue testing showing disclaimer view
+    // on the second screen.
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kHMRConsentStatus, base::to_underlying(init_hmr_status));
+    browser()->window()->SetBounds(displays[0].work_area());
+    event_generator().SetTargetWindow(root_windows[0]);
+    NavigateToReadOnlyWeb();
+    event_generator().MoveMouseTo(displays[0].work_area().CenterPoint());
+    event_generator().ClickRightButton();
+
+    mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+        chromeos::mahi::MahiMenuView::GetWidgetName());
+    EXPECT_TRUE(mahi_menu_widget);
+    EXPECT_EQ(root_windows[0], views::GetRootWindow(mahi_menu_widget));
+    EXPECT_FALSE(
+        FindWidgetWithName(chromeos::MagicBoostOptInCard::GetWidgetName()));
+    EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+
+    ClickOnMahiSummaryButton(mahi_menu_widget);
+    WaitUntilViewClosed(mahi_menu_widget);
+
+    ASSERT_EQ(root_windows[0], views::GetRootWindow(GetDisclaimerViewWidget()));
+
+    // Resets the Hmr consent status to continue testing showing disclaimer view
+    // on the third screen.
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kHMRConsentStatus, base::to_underlying(init_hmr_status));
+    browser()->window()->SetBounds(displays[2].work_area());
+    event_generator().SetTargetWindow(root_windows[2]);
+    NavigateToReadOnlyWeb();
+    event_generator().MoveMouseTo(displays[2].work_area().CenterPoint());
+    event_generator().ClickRightButton();
+
+    mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+        chromeos::mahi::MahiMenuView::GetWidgetName());
+    EXPECT_TRUE(mahi_menu_widget);
+    EXPECT_EQ(root_windows[2], views::GetRootWindow(mahi_menu_widget));
+    EXPECT_FALSE(
+        FindWidgetWithName(chromeos::MagicBoostOptInCard::GetWidgetName()));
+    EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+
+    ClickOnMahiSummaryButton(mahi_menu_widget);
+    WaitUntilViewClosed(mahi_menu_widget);
+
+    ASSERT_EQ(root_windows[2], views::GetRootWindow(GetDisclaimerViewWidget()));
+
+    // Without resetting the hmr consent status, it should show mahi menu and
+    // close the dicaimer view after right clicking on the read only web content
+    // again on the first screen.
+    browser()->window()->SetBounds(displays[0].work_area());
+    event_generator().SetTargetWindow(root_windows[0]);
+    NavigateToReadOnlyWeb();
+    event_generator().MoveMouseTo(displays[0].work_area().CenterPoint());
+    event_generator().ClickRightButton();
+
+    // Finds the mahi menu. Can not find the opt in card or disclaimer view any
+    // more.
+    views::Widget* mahi_widget = FindWidgetWithNameAndWaitIfNeeded(
+        chromeos::mahi::MahiMenuView::GetWidgetName());
+    ASSERT_TRUE(mahi_widget);
+    EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+    EXPECT_FALSE(FindWidgetWithName(
+        chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+
+    return;
+  }
 
   // Not showing the opt in flow if should not opt in hmr.
   if (!ShouldOptInHmr()) {
@@ -900,7 +1123,7 @@ class MahiUiWithOptInCardBrowserTest
                               chromeos::features::kFeatureManagementMahi,
                               chromeos::features::kMahi,
                               chromeos::features::kOrca},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{chromeos::features::kMagicBoostRevamp});
 
     MahiUiBrowserTestBase::SetUp();
   }
@@ -960,6 +1183,96 @@ IN_PROC_BROWSER_TEST_P(MahiUiWithOptInCardBrowserTest, Basics) {
 
   // The code below checks the Mahi panel.
 
+  WaitUntilUiUpdateReceived(MahiUiUpdateType::kSummaryLoaded);
+  views::Widget* panel_widget =
+      FindWidgetWithNameAndWaitIfNeeded(MahiPanelWidget::GetName());
+  ASSERT_TRUE(panel_widget);
+
+  const auto* const summary_label = views::AsViewClass<views::Label>(
+      panel_widget->GetContentsView()->GetViewByID(
+          mahi_constants::ViewId::kSummaryLabel));
+  ASSERT_TRUE(summary_label);
+  EXPECT_EQ(base::UTF16ToUTF8(summary_label->GetText()),
+            GetMahiDefaultTestSummary());
+}
+
+// MahiUiWithMagicBoostRevampBrowserTest
+// ----------------------------------------------
+
+class MahiUiWithMagicBoostRevampBrowserTest
+    : public MahiUiBrowserTestBase,
+      public ::testing::WithParamInterface</*accept=*/bool> {
+ private:
+  // MahiUiBrowserTestBase:
+  void SetUp() override {
+    // Enable Orca to ensure the existence of the write editor controller which
+    // is required to show the opt-in card.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kFeatureManagementOrca,
+                              chromeos::features::kFeatureManagementMahi,
+                              chromeos::features::kMahi,
+                              chromeos::features::kOrca,
+                              chromeos::features::kMagicBoostRevamp},
+        /*disabled_features=*/{});
+
+    MahiUiBrowserTestBase::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    MahiUiBrowserTestBase::SetUpOnMainThread();
+    ApplyHMRConsentStatusAndWait(chromeos::HMRConsentStatus::kUnset);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MahiUiWithMagicBoostRevampBrowserTest,
+                         /*accept=*/::testing::Bool());
+
+// Verifies Mahi UI features by accepting or declining the disclaimer view.
+IN_PROC_BROWSER_TEST_P(MahiUiWithMagicBoostRevampBrowserTest, Basics) {
+  ui::ScopedAnimationDurationScaleMode zero_duration(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  // Open the opt-in card by mouse right click on the web contents.
+  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
+                                    ->GetViewBounds()
+                                    .CenterPoint());
+  event_generator().ClickRightButton();
+
+  // Ensure the the mahi menu widget is shown, but not the opt in card or the
+  // disclaimer view.
+  views::Widget* mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+      chromeos::mahi::MahiMenuView::GetWidgetName());
+  EXPECT_TRUE(mahi_menu_widget);
+  EXPECT_FALSE(
+      FindWidgetWithName(chromeos::MagicBoostOptInCard::GetWidgetName()));
+  EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+
+  // Click at the Summary button.
+  const views::View* const summary_button =
+      mahi_menu_widget->GetContentsView()->GetViewByID(
+          chromeos::mahi::ViewID::kSummaryButton);
+  ASSERT_TRUE(summary_button);
+  event_generator().MoveMouseTo(
+      summary_button->GetBoundsInScreen().CenterPoint());
+  event_generator().ClickLeftButton();
+
+  WaitUntilViewClosed(mahi_menu_widget);
+  EXPECT_TRUE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+
+  const bool accept = GetParam();
+  ClickDisclaimerViewButton(accept);
+
+  // If user clicks the declination button, the Mahi panel should not show.
+  if (!accept) {
+    EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
+    return;
+  }
+
+  // The code below checks the Mahi panel.
   WaitUntilUiUpdateReceived(MahiUiUpdateType::kSummaryLoaded);
   views::Widget* panel_widget =
       FindWidgetWithNameAndWaitIfNeeded(MahiPanelWidget::GetName());
