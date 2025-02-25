@@ -39,7 +39,7 @@ size_t g_non_domain_wildcard_non_port_schemes_count = 0;
 // Keep it consistent with enum SchemeType in content_settings_pattern.h.
 // TODO(msramek): Layering violation: assemble this array from hardcoded
 // schemes and those injected via |SetNonWildcardDomainNonPortSchemes()|.
-const auto kSchemeNames = std::to_array<const char*>({
+constexpr auto kSchemeNames = std::to_array<const char*>({
     "wildcard",
     "other",
     url::kHttpScheme,
