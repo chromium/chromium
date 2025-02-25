@@ -24,7 +24,6 @@
 #include <unistd.h>
 
 #include "base/check_op.h"
-#include "base/notreached.h"
 #include "build/build_config.h"
 #include "client/annotation.h"
 #include "client/annotation_list.h"
@@ -764,8 +763,6 @@ class StartHandlerForChildTest : public Multiprocess {
     CHECK(test_state_.InstallHandler());
 
     __builtin_trap();
-
-    NOTREACHED();
   }
 
   StartHandlerForClientTest test_state_;
