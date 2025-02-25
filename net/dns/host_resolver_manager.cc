@@ -940,7 +940,7 @@ HostResolverManager::Job* HostResolverManager::AddJobWithoutRequest(
   auto insert_result = jobs_.emplace(std::move(key), std::move(new_job));
   auto& iterator = insert_result.first;
   bool is_new = insert_result.second;
-  DCHECK(is_new);
+  CHECK(is_new);
   auto& job = iterator->second;
   job->OnAddedToJobMap(iterator);
   return job.get();
@@ -1159,8 +1159,8 @@ void HostResolverManager::CacheResult(HostCache* cache,
 std::unique_ptr<HostResolverManager::Job> HostResolverManager::RemoveJob(
     JobMap::iterator job_it) {
   CHECK(job_it != jobs_.end(), base::NotFatalUntil::M130);
-  DCHECK(job_it->second);
-  DCHECK_EQ(1u, jobs_.count(job_it->first));
+  CHECK(job_it->second);
+  CHECK(jobs_.find(job_it->first) != jobs_.end());
 
   std::unique_ptr<Job> job;
   job_it->second.swap(job);

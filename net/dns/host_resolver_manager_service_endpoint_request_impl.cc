@@ -70,6 +70,10 @@ HostResolverManager::ServiceEndpointRequestImpl::~ServiceEndpointRequestImpl() {
   delegate_ = nullptr;
 
   job_.value()->CancelServiceEndpointRequest(this);
+  // TODO(crbug.com/397597592): Remove the following CHECKs after we identified
+  // the cause of the bug.
+  CHECK(previous() == nullptr);
+  CHECK(next() == nullptr);
 }
 
 int HostResolverManager::ServiceEndpointRequestImpl::Start(Delegate* delegate) {
