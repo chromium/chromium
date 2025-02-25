@@ -25,34 +25,11 @@
 
 namespace blink {
 
-namespace {
-
-// TODO(https://crbug.com/webrtc/14175): When "track" stats no longer exist in
-// the lower layer, checking for "DEPRECATED_" is no longer needed.
-bool ShouldExposeStatsObject(const webrtc::RTCStats& stats) {
-  // !starts_with()
-  return stats.id().rfind("DEPRECATED_", 0) != 0;
-}
-
-size_t CountExposedStatsObjects(
-    const scoped_refptr<const webrtc::RTCStatsReport>& stats_report) {
-  size_t count = 0u;
-  for (const auto& stats : *stats_report) {
-    if (ShouldExposeStatsObject(stats)) {
-      ++count;
-    }
-  }
-  return count;
-}
-
-}  // namespace
-
 RTCStatsReportPlatform::RTCStatsReportPlatform(
     const scoped_refptr<const webrtc::RTCStatsReport>& stats_report)
     : stats_report_(stats_report),
       it_(stats_report_->begin()),
-      end_(stats_report_->end()),
-      size_(CountExposedStatsObjects(stats_report)) {
+      end_(stats_report_->end()) {
   DCHECK(stats_report_);
 }
 
@@ -73,7 +50,7 @@ const webrtc::RTCStats* RTCStatsReportPlatform::NextStats() {
 }
 
 size_t RTCStatsReportPlatform::Size() const {
-  return size_;
+  return stats_report_->size();
 }
 
 rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback>
