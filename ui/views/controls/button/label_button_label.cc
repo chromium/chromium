@@ -22,26 +22,15 @@ LabelButtonLabel::LabelButtonLabel(std::u16string_view text, int text_context)
 
 LabelButtonLabel::~LabelButtonLabel() = default;
 
-void LabelButtonLabel::SetDisabledColor(SkColor color) {
+void LabelButtonLabel::SetDisabledColor(ui::ColorVariant color) {
   requested_disabled_color_ = color;
   if (!GetEnabled()) {
     Label::SetEnabledColor(color);
   }
 }
 
-void LabelButtonLabel::SetDisabledColorId(std::optional<ui::ColorId> color_id) {
-  if (!color_id.has_value()) {
-    return;
-  }
-  requested_disabled_color_ = color_id.value();
-  if (!GetEnabled()) {
-    Label::SetEnabledColor(color_id.value());
-  }
-}
-
-std::optional<ui::ColorId> LabelButtonLabel::GetDisabledColorId() const {
-  return requested_disabled_color_ ? requested_disabled_color_->GetColorId()
-                                   : std::nullopt;
+std::optional<ui::ColorVariant> LabelButtonLabel::GetDisabledColor() const {
+  return requested_disabled_color_;
 }
 
 void LabelButtonLabel::SetEnabledColor(ui::ColorVariant color) {
@@ -51,19 +40,8 @@ void LabelButtonLabel::SetEnabledColor(ui::ColorVariant color) {
   }
 }
 
-void LabelButtonLabel::SetEnabledColorId(std::optional<ui::ColorId> color_id) {
-  if (!color_id.has_value()) {
-    return;
-  }
-  requested_enabled_color_ = color_id.value();
-  if (GetEnabled()) {
-    Label::SetEnabledColor(color_id.value());
-  }
-}
-
-std::optional<ui::ColorId> LabelButtonLabel::GetEnabledColorId() const {
-  return requested_enabled_color_ ? requested_enabled_color_->GetColorId()
-                                  : std::nullopt;
+std::optional<ui::ColorVariant> LabelButtonLabel::GetEnabledColor() const {
+  return requested_enabled_color_;
 }
 
 void LabelButtonLabel::OnThemeChanged() {
@@ -92,8 +70,8 @@ void LabelButtonLabel::SetColorForEnableState() {
 }
 
 BEGIN_METADATA(LabelButtonLabel)
-ADD_PROPERTY_METADATA(std::optional<ui::ColorId>, EnabledColorId)
-ADD_PROPERTY_METADATA(std::optional<ui::ColorId>, DisabledColorId)
+ADD_READONLY_PROPERTY_METADATA(std::optional<ui::ColorVariant>, EnabledColor)
+ADD_READONLY_PROPERTY_METADATA(std::optional<ui::ColorVariant>, DisabledColor)
 END_METADATA
 
 }  // namespace views::internal
