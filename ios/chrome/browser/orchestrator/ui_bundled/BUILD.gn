@@ -13,6 +13,7 @@ source_set("ui_bundled") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common:timing",
   ]
