@@ -32,6 +32,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#endif
+
 @interface ChromeRenderWidgetHostViewMacDelegate () <HistorySwiperDelegate>
 
 @property(readonly) content::WebContents* webContents;
@@ -432,6 +438,23 @@
       IsTopChromeUntrustedWebUIURL(webContents->GetVisibleURL())) {
     return kAcceptMouseEventsInActiveApp;
   }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  // WebContents managed by glic should be allowed to accept mouse events while
+  // inactive, aligning with the expected behavior of native chrome dialogs.
+  // TODO(crbug.com/399119513): Consider making this a single WebContents
+  // scoped setting, allowing this behavior to be configured by feature code.
+  if (Profile* profile =
+          Profile::FromBrowserContext(webContents->GetBrowserContext());
+      glic::GlicEnabling::IsProfileEligible(profile)) {
+    glic::GlicKeyedService* glic_service =
+        glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile,
+                                                           /*create=*/false);
+    if (glic_service && glic_service->IsActiveWebContents(webContents)) {
+      return kAcceptMouseEventsInActiveApp;
+    }
+  }
+#endif
 
   return kAcceptMouseEventsInActiveWindow;
 }
