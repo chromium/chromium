@@ -45,6 +45,7 @@ specific_include_rules = {
         "+components/webrtc/thread_wrapper.h",
         "+gpu/command_buffer/common/mailbox.h",
         "+media/video/fake_gpu_memory_buffer.h",
+	"+gpu/command_buffer/client/test_shared_image_interface.h",
         "+media/video/mock_gpu_video_accelerator_factories.h",
         "+media/video/mock_video_encode_accelerator.h",
         "+media/mojo/clients/mock_mojo_video_encoder_metrics_provider_factory.h",

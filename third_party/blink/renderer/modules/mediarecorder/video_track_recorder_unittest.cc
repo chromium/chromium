@@ -257,6 +257,8 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
     EXPECT_CALL(*platform_, GetGpuFactories())
         .Times(testing::AnyNumber())
         .WillRepeatedly(Return(nullptr));
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
   }
 
   VideoTrackRecorderTest(const VideoTrackRecorderTest&) = delete;
@@ -366,7 +368,8 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
         frame_type == TestFrameType::kNv12Software
             ? media::VideoFrame::STORAGE_OWNED_MEMORY
             : media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-        media::VideoPixelFormat::PIXEL_FORMAT_NV12, base::TimeDelta());
+        media::VideoPixelFormat::PIXEL_FORMAT_NV12, base::TimeDelta(),
+        test_sii_.get());
     scoped_refptr<media::VideoFrame> video_frame2 = video_frame;
     if (frame_type == TestFrameType::kNv12GpuMemoryBuffer) {
       video_frame2 = media::ConvertToMemoryMappedFrame(video_frame);
@@ -384,6 +387,8 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
     }
     return video_frame2;
   }
+
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 class VideoTrackRecorderTestWithAllCodecs : public ::testing::Test,
@@ -774,10 +779,10 @@ TEST_P(VideoTrackRecorderTestParam, EncodeFrameRGB) {
           ? media::VideoFrame::CreateZeroInitializedFrame(
                 pixel_format, frame_size, gfx::Rect(frame_size), frame_size,
                 base::TimeDelta())
-          : blink::CreateTestFrame(frame_size, gfx::Rect(frame_size),
-                                   frame_size,
-                                   media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-                                   pixel_format, base::TimeDelta());
+          : blink::CreateTestFrame(
+                frame_size, gfx::Rect(frame_size), frame_size,
+                media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER, pixel_format,
+                base::TimeDelta(), test_sii_.get());
 
   base::RunLoop run_loop;
   EXPECT_CALL(*mock_callback_interface_,

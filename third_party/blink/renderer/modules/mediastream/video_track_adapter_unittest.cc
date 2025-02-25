@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/limits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -220,7 +221,10 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
   VideoTrackAdapterFixtureTest()
       : testing_render_thread_("TestingRenderThread"),
         frame_processed_(base::WaitableEvent::ResetPolicy::MANUAL,
-                         base::WaitableEvent::InitialState::NOT_SIGNALED) {}
+                         base::WaitableEvent::InitialState::NOT_SIGNALED),
+        test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()) {
+    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+  }
   ~VideoTrackAdapterFixtureTest() override = default;
 
  protected:
@@ -401,7 +405,7 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
           /*natural_size*/ resolution,
           /*storage_type=*/media::VideoFrame::STORAGE_OWNED_MEMORY,
           media::PIXEL_FORMAT_I420,
-          /*timestamp=*/index_to_timestamp.Run(i));
+          /*timestamp=*/index_to_timestamp.Run(i), test_sii_.get());
       DeliverAndValidateFrame(std::move(frame), base::TimeTicks());
     }
 
@@ -466,6 +470,7 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
   // For testing we use a nullptr for MediaStreamVideoTrack.
   std::unique_ptr<MediaStreamVideoTrack> null_track_;
   bool track_added_ = false;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {
@@ -474,9 +479,9 @@ TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize(1280, 720);
   const double kFrameRate = 30.0;
-  auto gmb_frame =
-      CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                      media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+  auto gmb_frame = CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
+                                   media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+                                   test_sii_.get());
 
   // Initialize the VideoTrackAdapter to handle GpuMemoryBuffer. NV12 is the
   // only pixel format supported at the moment.
@@ -531,7 +536,8 @@ TEST_F(VideoTrackAdapterFixtureTest,
   const gfx::Size kNaturalSize(1280, 720);
   TestDeliversFrameWithVisibleRectWithEvenOriginAndSize(
       CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                      media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER),
+                      media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+                      test_sii_.get()),
       media::PIXEL_FORMAT_NV12, kDesiredSize);
 }
 
@@ -543,7 +549,7 @@ TEST_F(VideoTrackAdapterFixtureTest,
   const gfx::Size kNaturalSize(1280, 720);
   TestDeliversFrameWithVisibleRectWithEvenOriginAndSize(
       CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                      media::VideoFrame::STORAGE_OWNED_MEMORY),
+                      media::VideoFrame::STORAGE_OWNED_MEMORY, test_sii_.get()),
       media::PIXEL_FORMAT_I420, kDesiredSize);
 }
 
@@ -555,7 +561,8 @@ TEST_F(VideoTrackAdapterFixtureTest,
   const gfx::Size kNaturalSize(1280, 720);
   TestDeliversFrameWithVisibleRectWithEvenOriginAndSize(
       CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                      media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER),
+                      media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+                      test_sii_.get()),
       media::PIXEL_FORMAT_NV12, kDesiredSize);
 }
 
@@ -567,7 +574,7 @@ TEST_F(VideoTrackAdapterFixtureTest,
   const gfx::Size kNaturalSize(1280, 720);
   TestDeliversFrameWithVisibleRectWithEvenOriginAndSize(
       CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                      media::VideoFrame::STORAGE_OWNED_MEMORY),
+                      media::VideoFrame::STORAGE_OWNED_MEMORY, test_sii_.get()),
       media::PIXEL_FORMAT_I420, kDesiredSize);
 }
 
@@ -579,7 +586,7 @@ TEST_F(VideoTrackAdapterFixtureTest,
   const gfx::Size kNaturalSize(1280, 720);
   TestDeliversFrameWithVisibleRectWithEvenOriginAndSize(
       CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                      media::VideoFrame::STORAGE_OWNED_MEMORY),
+                      media::VideoFrame::STORAGE_OWNED_MEMORY, test_sii_.get()),
       media::PIXEL_FORMAT_I420, kDesiredSize);
 }
 
@@ -596,7 +603,8 @@ TEST_F(VideoTrackAdapterFixtureTest,
   const double kFrameRate = 30.0;
   auto test_frame =
       CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                      /*storage_type=*/media::VideoFrame::STORAGE_OWNED_MEMORY);
+                      /*storage_type=*/media::VideoFrame::STORAGE_OWNED_MEMORY,
+                      test_sii_.get());
 
   const media::VideoCaptureFormat stream_format(kCodedSize, kFrameRate,
                                                 media::PIXEL_FORMAT_I420);
@@ -664,7 +672,8 @@ TEST_F(VideoTrackAdapterFixtureTest, SettingsCallback) {
   const double kFrameRate = 30.0;
   auto test_frame =
       CreateTestFrame(kCodedSize, kVisibleRect, kCodedSize,
-                      /*storage_type=*/media::VideoFrame::STORAGE_OWNED_MEMORY);
+                      /*storage_type=*/media::VideoFrame::STORAGE_OWNED_MEMORY,
+                      test_sii_.get());
   media::VideoFrameMetadata metadata;
   metadata.source_size = kCodedSize;
   metadata.device_scale_factor = 2.0f;
