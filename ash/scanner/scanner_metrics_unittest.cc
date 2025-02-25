@@ -136,9 +136,6 @@ class ScannerMetricsTest : public AshTestBase {
 
 TEST_F(ScannerMetricsTest, ClamshellLauncherShownWithoutSunfishSessionButton) {
   base::HistogramTester histogram_tester;
-  // Explicitly make `IsSunfishSessionAllowed` return false, even though we are
-  // setting the search box model's `ShowSunfishButton` explicitly, as it can be
-  // recalculated at any time.
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   auto* delegate = static_cast<FakeScannerProfileScopedDelegate*>(
@@ -147,9 +144,6 @@ TEST_F(ScannerMetricsTest, ClamshellLauncherShownWithoutSunfishSessionButton) {
       .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{
           specialized_features::FeatureAccessFailure::kDisabledInSettings}));
   ASSERT_FALSE(IsSunfishSessionAllowed());
-  SearchBoxModel* search_box_model =
-      AppListModelProvider::Get()->search_model()->search_box();
-  search_box_model->SetShowSunfishButton(false);
 
   // Open the app list by clicking on the home button.
   LeftClickOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
@@ -167,9 +161,6 @@ TEST_F(ScannerMetricsTest, ClamshellLauncherShownWithoutSunfishSessionButton) {
 
 TEST_F(ScannerMetricsTest, ClamshellLauncherShownWithSunfishSessionButton) {
   base::HistogramTester histogram_tester;
-  // Explicitly make `IsSunfishSessionAllowed` return true, even though we are
-  // setting the search box model's `ShowSunfishButton` explicitly, as it can be
-  // recalculated at any time.
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   auto* delegate = static_cast<FakeScannerProfileScopedDelegate*>(
@@ -177,9 +168,6 @@ TEST_F(ScannerMetricsTest, ClamshellLauncherShownWithSunfishSessionButton) {
   ON_CALL(*delegate, CheckFeatureAccess)
       .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
   ASSERT_TRUE(IsSunfishSessionAllowed());
-  SearchBoxModel* search_box_model =
-      AppListModelProvider::Get()->search_model()->search_box();
-  search_box_model->SetShowSunfishButton(true);
 
   // Open the app list by clicking on the home button.
   LeftClickOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
@@ -196,9 +184,6 @@ TEST_F(ScannerMetricsTest, ClamshellLauncherShownWithSunfishSessionButton) {
 
 TEST_F(ScannerMetricsTest, TabletLauncherShownWithoutSunfishSessionButton) {
   base::HistogramTester histogram_tester;
-  // Explicitly make `IsSunfishSessionAllowed` return false, even though we are
-  // setting the search box model's `ShowSunfishButton` explicitly, as it can be
-  // recalculated at any time.
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   auto* delegate = static_cast<FakeScannerProfileScopedDelegate*>(
@@ -207,9 +192,6 @@ TEST_F(ScannerMetricsTest, TabletLauncherShownWithoutSunfishSessionButton) {
       .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{
           specialized_features::FeatureAccessFailure::kDisabledInSettings}));
   ASSERT_FALSE(IsSunfishSessionAllowed());
-  SearchBoxModel* search_box_model =
-      AppListModelProvider::Get()->search_model()->search_box();
-  search_box_model->SetShowSunfishButton(false);
 
   // The app list should be open by default when we enter tablet mode.
   SwitchToTabletMode();
@@ -227,9 +209,6 @@ TEST_F(ScannerMetricsTest, TabletLauncherShownWithoutSunfishSessionButton) {
 
 TEST_F(ScannerMetricsTest, TabletLauncherShownWithSunfishSessionButton) {
   base::HistogramTester histogram_tester;
-  // Explicitly make `IsSunfishSessionAllowed` return true, even though we are
-  // setting the search box model's `ShowSunfishButton` explicitly, as it can be
-  // recalculated at any time.
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   auto* delegate = static_cast<FakeScannerProfileScopedDelegate*>(
@@ -237,9 +216,6 @@ TEST_F(ScannerMetricsTest, TabletLauncherShownWithSunfishSessionButton) {
   ON_CALL(*delegate, CheckFeatureAccess)
       .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
   ASSERT_TRUE(IsSunfishSessionAllowed());
-  SearchBoxModel* search_box_model =
-      AppListModelProvider::Get()->search_model()->search_box();
-  search_box_model->SetShowSunfishButton(true);
 
   // The app list should be open by default when we enter tablet mode.
   SwitchToTabletMode();

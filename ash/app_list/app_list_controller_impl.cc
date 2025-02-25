@@ -463,11 +463,6 @@ void AppListControllerImpl::OnActiveUserPrefServiceChanged(
     return;
   }
 
-  sunfish_enabled_ = std::make_unique<BooleanPrefMember>();
-  sunfish_enabled_->Init(
-      prefs::kSunfishEnabled, pref_service,
-      base::BindRepeating(&AppListControllerImpl::UpdateSearchBoxUiVisibilities,
-                          weak_ptr_factory_.GetWeakPtr()));
   UpdateSearchBoxUiVisibilities();
 
   if (!IsInTabletMode()) {
@@ -1786,10 +1781,16 @@ void AppListControllerImpl::OnVisibilityWillChange(bool visible,
                                              display_id);
     }
 
-    // The virtual keyboard should be hidden before the bubble launcher
-    // calculating the work area.
     if (real_target_visibility) {
+      // The virtual keyboard should be hidden before the bubble launcher
+      // calculating the work area.
       keyboard::KeyboardUIController::Get()->HideKeyboardExplicitlyBySystem();
+
+      // Recalculate the Sunfish-session button visibility every time the
+      // launcher will be shown, as there are too many variables that can
+      // control it and not all of them can be observed for changes.
+      GetSearchModel()->search_box()->SetShowSunfishButton(
+          IsSunfishSessionAllowed());
     }
   }
 }

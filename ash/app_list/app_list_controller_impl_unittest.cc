@@ -24,6 +24,8 @@
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/model/assistant_ui_model.h"
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -41,6 +43,7 @@
 #include "ash/public/cpp/test/assistant_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
+#include "ash/scanner/scanner_enterprise_policy.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_view.h"
@@ -511,32 +514,30 @@ TEST_F(AppListControllerImplTest, SimulateProfileSwapNoCrashOnDestruct) {
 }
 
 TEST_F(AppListControllerImplTest,
-       SunfishButtonHiddenWhenPreferenceChangedToFalse) {
+       SunfishButtonVisibilityUpdatedOnAppListVisibilityChange) {
   base::test::ScopedFeatureList feature_list(features::kSunfishFeature);
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
-  prefs->SetBoolean(prefs::kSunfishEnabled, true);
+  auto* test_capture_mode_delegate = static_cast<TestCaptureModeDelegate*>(
+      CaptureModeController::Get()->delegate_for_testing());
+  // Only control Sunfish policy in this test, not Scanner, for simplicity.
+  prefs->SetInteger(prefs::kScannerEnterprisePolicyAllowed,
+                    static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+  test_capture_mode_delegate->set_is_search_allowed_by_policy(true);
+  AppListControllerImpl* app_list_controller =
+      Shell::Get()->app_list_controller();
   SearchBoxModel* search_box_model =
       AppListModelProvider::Get()->search_model()->search_box();
-  search_box_model->SetShowSunfishButton(true);
 
-  prefs->SetBoolean(prefs::kSunfishEnabled, false);
-
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
+  EXPECT_TRUE(search_box_model->show_sunfish_button());
+  test_capture_mode_delegate->set_is_search_allowed_by_policy(false);
+  app_list_controller->OnVisibilityChanged(/*visible=*/false, /*display_id=*/0);
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
   EXPECT_FALSE(search_box_model->show_sunfish_button());
-}
-
-TEST_F(AppListControllerImplTest,
-       SunfishButtonHiddenWhenPreferenceChangedToTrue) {
-  base::test::ScopedFeatureList feature_list(features::kSunfishFeature);
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  prefs->SetBoolean(prefs::kSunfishEnabled, false);
-  SearchBoxModel* search_box_model =
-      AppListModelProvider::Get()->search_model()->search_box();
-  search_box_model->SetShowSunfishButton(false);
-
-  prefs->SetBoolean(prefs::kSunfishEnabled, true);
-
+  test_capture_mode_delegate->set_is_search_allowed_by_policy(true);
+  app_list_controller->OnVisibilityChanged(/*visible=*/false, /*display_id=*/0);
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
   EXPECT_TRUE(search_box_model->show_sunfish_button());
 }
 
