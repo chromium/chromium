@@ -32,6 +32,9 @@ using data_sharing_pb::MemberRole;
 
 namespace {
 
+// Delay to observe when deleting a shared tab group from the server.
+constexpr base::TimeDelta kDeleteGroupDelay = base::Seconds(0.5);
+
 // Creates a saved tab belonging to `group_guid` group.
 tab_groups::SavedTabGroupTab CreateTab(const base::Uuid& group_guid) {
   tab_groups::SavedTabGroupTab saved_tab(GURL("https://google.com"), u"Google",
@@ -228,11 +231,16 @@ void TestShareKitService::DeleteGroup(ShareKitDeleteConfiguration* config) {
                           "Deleting shared group failed."));
     return;
   }
-
-  chrome_test_util::DeleteSharedGroupFromFakeServer(tab_group->saved_guid());
-  chrome_test_util::TriggerSyncCycle(syncer::SAVED_TAB_GROUP);
-
   callback(absl::Status(absl::StatusCode::kOk, std::string()));
+
+  base::Uuid group_guid = tab_group->saved_guid();
+  // Delays group deletion to simulate a server call.
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, kDeleteGroupDelay.InNanoseconds()),
+      dispatch_get_main_queue(), ^{
+        chrome_test_util::DeleteSharedGroupFromFakeServer(group_guid);
+        chrome_test_util::TriggerSyncCycle(syncer::SAVED_TAB_GROUP);
+      });
 }
 
 void TestShareKitService::LookupGaiaIdByEmail(
