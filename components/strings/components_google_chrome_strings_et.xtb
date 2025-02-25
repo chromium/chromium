@@ -12,6 +12,9 @@
 <translation id="3512634283363927263">Need lehed on mõeldud kasutamiseks Chrome'i arendajatele ning neid ei pruugita aktiivselt hooldada ega testida. Silumislehtede lubamiseks navigeerige lingile <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klõpsake selleks ettenähtud nupul ja seejärel navigeerige uuesti praegusele lehele.</translation>
 <translation id="3875312571075912821">Lubage Chrome'i juurdepääs võrgule tulemüüri või viirusetõrje
          seadetes.</translation>
+<translation id="4949828774841497663">Avage Applications &gt; System Settings &gt; Network, valige
+          aktiivne võrk, klõpsake nupul Details... ja tühistage mis tahes puhverserverite valikud,
+          mis võisid olla valitud.</translation>
 <translation id="5005121315113832363">Chrome blokeeris selle lehe</translation>
 <translation id="6011049234605203654">Minge
           Chrome'i menüüsse &gt;

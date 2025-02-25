@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">Wag asseblief …</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Gedeelde</translation>
+<translation id="2749164457515831917">Voorstelle is geskommel</translation>
 <translation id="2751739896257479635">EAP se fase 2-stawing</translation>
 <translation id="2754757901767760034">lamp</translation>
 <translation id="2780756493585863768">Onlangse agtergronde aangedryf deur Google AI</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">Uitleghandelingekieslys</translation>
 <translation id="3227186760713762082">Deel die <ph name="CATEGORY_TEXT" />-waarde deur <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Druktake ouer as 1 dag sal verwyder word</translation>
+<translation id="3248791727258378769">Geen transkripsie sal geskep word nie</translation>
 <translation id="324961752321393509">Jou administrateur laat nie toe dat hierdie app toegemaak word nie</translation>
 <translation id="3263941347294171263">Prop die <ph name="DEVICE_NAME" /> uit en weer in om met die opdateringproses voort te gaan</translation>
 <translation id="3268178239013324452">Misluk – Deur is oop</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">Kies ’n temperatuureenheid</translation>
 <translation id="3661106764436337772">Skryf vinniger en met meer selfvertroue</translation>
 <translation id="3662461537616691585">wynrooi en maroen</translation>
+<translation id="3664755900672940272">Voorbeeldportekste is geskommel</translation>
 <translation id="3668449597372804501">Wolkvloeimuurpapier</translation>
 <translation id="3668570675727296296">Taalinstellings</translation>
 <translation id="3675132884790542448">varke</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">Skakel sluimerskerm af</translation>
 <translation id="4210636113897977670">Stoor en gaan uit</translation>
 <translation id="4210659479607886331">gletserrivier</translation>
+<translation id="4212169537710712814">Aflaai van <ph name="LANGUAGE_NAME" /> transkripsiemodel is voltooi</translation>
 <translation id="42126664696688958">Voer uit</translation>
 <translation id="4213104098953699324">USB-sleutelbord</translation>
 <translation id="4227825898293920515">Wagwoord verval oor <ph name="TIME" /></translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">Kleur</translation>
 <translation id="5457599981699367932">Blaai as Gas</translation>
 <translation id="54609108002486618">Bestuur</translation>
+<translation id="5461608756903394951">Aflaai van <ph name="LANGUAGE_NAME" /> transkripsiemodel is aan die gang</translation>
 <translation id="5470776029649730099">ligte goiing</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} poging oor}other{{0} pogings oor}}</translation>
 <translation id="5488280942828718790">magenta</translation>
@@ -1027,6 +1032,7 @@
 <translation id="590746845088109442">katte</translation>
 <translation id="5907649332524363701">sleutelkleur</translation>
 <translation id="5908813850962688338">Die installasie van hierdie opdatering sal ’n paar minute neem. Hou jou toestel ingeprop en aangeskakel terwyl die opdatering afgelaai word. Jou toestel kan homself verskeie kere herselflaai en ’n swart skerm wys tydens hierdie proses. Jy sal gevra word om jou toestel te herbegin om die installasie te voltooi.</translation>
+<translation id="5915794087373112615">Jy onderwyser gaan oor <ph name="NUM_SECONDS" /> sekondes na jou skerm kyk</translation>
 <translation id="5916084858004523819">Verbode</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Jou lêer is suksesvol geskandeer en in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gestoor.}other{Jou lêers is suksesvol geskandeer en in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gestoor.}}</translation>
@@ -1191,6 +1197,7 @@
 <translation id="6595046262780525922">Wil jy transkripsie aanskakel en die transkripsiemodel aflaai?</translation>
 <translation id="6596816719288285829">IP-adres</translation>
 <translation id="6599673642868607614">Dankie vir jou terugvoer. Jou terugvoer help ons om die Chromebook-ervaring beter te maak en sal deur ons span nagegaan word. Weens die groot aantal verslae sal ons nie ’n antwoord kan stuur nie.</translation>
+<translation id="6608043585557830684">Transkripsie is af. Skakel dit in Instellings of in die <ph name="THREE_DOTS_MENU_ICON" />-kieslys aan.</translation>
 <translation id="660846213831377756">Muissleutels</translation>
 <translation id="6618744767048954150">Werk tans</translation>
 <translation id="6620487321149975369">Druktake sal in geskiedenis verskyn tensy hulle handmatig verwyder word</translation>
@@ -1279,6 +1286,7 @@
 <translation id="6975620886940770104">’n <ph name="GLOWSCAPES_LANDSCAPE" /> met ’n gloeiende <ph name="GLOWSCAPES_FEATURE" /></translation>
 <translation id="6975981640379148271">koalas</translation>
 <translation id="6977381486153291903">Fermwarehersiening</translation>
+<translation id="6978396562261420054">Gegenereerde prent</translation>
 <translation id="6981982820502123353">Toeganklikheid</translation>
 <translation id="6982462588253070448">sandduine</translation>
 <translation id="7005833343836210400">Toestel is vanlyn</translation>
@@ -1517,6 +1525,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8054112564438735763">beige</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> op ’n <ph name="CHARACTERS_BACKGROUND" /> agtergrond</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Koppel ’n mikrofoon om oudio te begin opneem</translation>
 <translation id="8067126283828232460">APN is gekoppel.</translation>
 <translation id="8067208048261192356">bruin</translation>
 <translation id="8067224607978179455">Vee <ph name="ACTION_NAME" /> uit</translation>
@@ -1620,6 +1629,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">teehuis</translation>
 <translation id="8538236298648811558">Aangedryf deur Google AI</translation>
+<translation id="8543574988889671960">Herlaai oortjie</translation>
 <translation id="8550364285433943656">Plaas kontroles op speletjie-aksies om met sleutelbordsleutels te speel</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Jou selfoonmaatskappy kan hierdie opsie vereis om aan hul netwerk te koppel. Kontak jou selfoonmaatskappy vir besonderhede.</translation>

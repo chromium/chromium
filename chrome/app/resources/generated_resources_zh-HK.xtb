@@ -585,7 +585,6 @@
 <translation id="1401216725754314428">喺新分頁度進一步了解相關網站</translation>
 <translation id="1402426911829176748">正在連接您的裝置</translation>
 <translation id="1403222014593521787">無法連線至 Proxy</translation>
-<translation id="1405336513195181336">這包括網站書籤、擴充程式及瀏覽記錄。</translation>
 <translation id="1405779994569073824">已當機。</translation>
 <translation id="1406500794671479665">驗證中…</translation>
 <translation id="1407069428457324124">深色主題背景</translation>
@@ -1523,7 +1522,6 @@
 <translation id="2040894699575719559">位置已封鎖</translation>
 <translation id="2041246176170574368">安全更新即將終止，購買新 Chromebook 可節省 $50 美元或以上。</translation>
 <translation id="2042279886444479655">使用中的設定檔</translation>
-<translation id="2042427131767688936">為確保可安全使用此裝置，機構可以查看裝置的作業系統、瀏覽器和設定的相關資料，以及裝置上安裝的軟件。</translation>
 <translation id="2044014337866019681">請確保您驗證的是 <ph name="ACCOUNT" />，才能解鎖工作階段。</translation>
 <translation id="2044750031738659219">{0,plural, =1{關閉訪客視窗}other{關閉訪客視窗 (# 個視窗)}}</translation>
 <translation id="204497730941176055">Microsoft 憑證範本名稱</translation>
@@ -3661,7 +3659,6 @@
 <translation id="3566211766752891194">顯示分頁記憶體用量</translation>
 <translation id="3566325075220776093">此裝置中的密碼</translation>
 <translation id="3566721612727112615">沒有新增任何網站</translation>
-<translation id="3566788242120166275">現有瀏覽資料會保留在現有設定檔中。這個新設定檔不會載有任何之前的瀏覽資料。</translation>
 <translation id="3567168891086460374">儲存其他方式</translation>
 <translation id="3567284462585300767">如要與附近的使用者互相傳送檔案，請將裝置設為可供偵測狀態</translation>
 <translation id="356738834800832239">已儲存密碼</translation>
@@ -3828,7 +3825,6 @@
 <translation id="3685598397738512288">Linux 的 USB 偏好設定</translation>
 <translation id="3687598459967813435">一律批准接收嚟自 <ph name="WEBSITE" /> 嘅通知</translation>
 <translation id="368789413795732264">嘗試寫入檔案時發生錯誤：<ph name="ERROR_TEXT" />。</translation>
-<translation id="3687957587012862163">否，移到這個新設定檔</translation>
 <translation id="3688507211863392146">寫入您在應用程式中開啟的檔案和資料夾</translation>
 <translation id="3688526734140524629">變更版本</translation>
 <translation id="3688578402379768763">最新狀態</translation>
@@ -3887,7 +3883,6 @@
 <translation id="37143699183660101">游標穩定性</translation>
 <translation id="3714610938239537183">第 2 步 (共 4 步)：選取要匯出的診斷資料</translation>
 <translation id="3716065403310915079"><ph name="VM_NAME" /> 安裝程式</translation>
-<translation id="3717256685838828428">此設定檔由你的機構管理，機構可查看部分資料，包括：</translation>
 <translation id="3719245268140483218">裝置事件</translation>
 <translation id="3719310907809321183">填入咗 <ph name="CARD_IDENTIFIER" />。</translation>
 <translation id="3719826155360621982">首頁</translation>
@@ -4913,7 +4908,6 @@
 <translation id="4426857487270413362">無法下載安裝程式檔案。請檢查互聯網連線，並確保磁碟空間足夠，然後再試一次。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="4427111270137140798">偵測到 <ph name="COUNT" /> 次</translation>
 <translation id="4427365070557649936">正在驗證確認碼…</translation>
-<translation id="4428579202668721841">要將現有瀏覽資料與工作設定檔分開嗎？</translation>
 <translation id="4429163740524851942">實體鍵盤配置</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="443031431654216610">只使用數字</translation>
@@ -6079,7 +6073,6 @@
 <translation id="5276357196618041410">請先登入才能儲存設定</translation>
 <translation id="5277127016695466621">顯示側面板</translation>
 <translation id="5278823018825269962">狀態 ID</translation>
-<translation id="5279214046729249716">是，請保留</translation>
 <translation id="5279600392753459966">全部封鎖</translation>
 <translation id="5280064835262749532">更新 <ph name="SHARE_PATH" /> 的憑證</translation>
 <translation id="5280426389926346830">要建立捷徑嗎？</translation>
@@ -6404,7 +6397,6 @@
 <translation id="5503982651688210506">繼續允許 <ph name="HOST" /> 使用和移動相機，以及使用麥克風</translation>
 <translation id="5505307013568720083">墨水用完</translation>
 <translation id="5507756662695126555">不可否認性</translation>
-<translation id="5508864312047847614">要將現有瀏覽資料與學校設定檔分開嗎？</translation>
 <translation id="5509693895992845810">另存為(&amp;A)…</translation>
 <translation id="5509914365760201064">發行者：<ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">從 Google 取得圖片說明</translation>
@@ -6855,7 +6847,6 @@
 <translation id="5854066326260337683">LBS 目前已停用。如要啟用 LBS，請設定 <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" /> 政策。</translation>
 <translation id="5854912040170951372">薄餅</translation>
 <translation id="5855267860608268405">已知的 Wi-Fi 網絡</translation>
-<translation id="5855375823365231964">關於此設定檔</translation>
 <translation id="5855643921295613558">0.6 秒</translation>
 <translation id="5856721540245522153">啟用偵錯功能</translation>
 <translation id="5857090052475505287">新資料夾</translation>
@@ -7217,7 +7208,6 @@
 <translation id="6113942107547980621">如要使用 Smart Lock，請在手機上切換至主要使用者設定檔</translation>
 <translation id="6116921718742659598">變更語言和輸入設定</translation>
 <translation id="6119008366402292080">沒有可用的打印機</translation>
-<translation id="6119068870709745878">此設定檔由<ph name="PROFILE_MANAGER" />管理，管理員可查看某些資料，包括</translation>
 <translation id="6119927814891883061">將裝置個名改做 <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">色彩校正</translation>
 <translation id="6121773125605585883">睇下使用者名稱「<ph name="USERNAME" />」喺 <ph name="WEBSITE" /> 嘅密碼</translation>
@@ -7426,6 +7416,7 @@
 <translation id="6264060420924719834">此應用程式包含來自其他網站的網絡內容</translation>
 <translation id="6264365405983206840">全部選取(&amp;A)</translation>
 <translation id="6264376385120300461">仍要下載</translation>
+<translation id="6264485186158353794">返回安全連線</translation>
 <translation id="6264520534872750757">繼續使用此裝置</translation>
 <translation id="6264636978858465832">「密碼管理工具」需要更多存取權</translation>
 <translation id="626495329434552273">允許取代鍵盤輸入</translation>
@@ -7641,7 +7632,6 @@
 <translation id="6434104957329207050">點掃瞄速度</translation>
 <translation id="6434309073475700221">捨棄</translation>
 <translation id="6434325376267409267">您需要先更新裝置，才能使用 <ph name="APP_NAME" />。</translation>
-<translation id="6434690603850475457">是，請分開保存 (建議設定)</translation>
 <translation id="6434755719322447931">混亂</translation>
 <translation id="6435339218366409950">揀要將字幕翻譯成邊種語言</translation>
 <translation id="6436164536244065364">在網上商店中檢視</translation>

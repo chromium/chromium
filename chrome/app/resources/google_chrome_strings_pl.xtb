@@ -495,7 +495,6 @@
 <translation id="7655455401911432608">Twoja historia przeglądania, czyli rejestr witryn, które odwiedzasz w Chrome na tym urządzeniu.</translation>
 <translation id="7655472416356262023">Usuń konto z Chrome</translation>
 <translation id="7658239707568436148">Anuluj</translation>
-<translation id="7659737857277959440">Twoja organizacja może wyświetlać dane przeglądania (np. zakładki, historię i hasła) oraz nimi zarządzać. Nie widzi danych przeglądania w osobistych profilach Chrome.</translation>
 <translation id="7661924425853052955">Ta witryna nie była przez Ciebie ostatnio odwiedzana. Przeglądarka Chrome usunęła te uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="COUNT" />.</translation>
 <translation id="7670287553302121848">Konto Chrome wymaga ponownego uwierzytelnienia</translation>
 <translation id="769538538642757151">Jeśli coś będzie wymagało sprawdzenia, Chrome Cię o tym poinformuje</translation>
@@ -557,7 +556,6 @@
 <translation id="8418845734693287262">Chrome OS nie może zsynchronizować danych, ponieważ dane logowania na Twoje konto są nieaktualne.</translation>
 <translation id="842386925677997438">Narzędzia bezpieczeństwa w Chrome</translation>
 <translation id="8425765582779547329">Aby zapewnić sobie większe bezpieczeństwo online dzięki ustawieniom wybranym przez Twojego rodzica, zaloguj się w Chrome</translation>
-<translation id="8429214465555795676">Aby przejść dalej, musisz zalogować się w Chrome przy użyciu konta <ph name="EMAIL" />. Dzięki temu będziesz przestrzegać zasad organizacji.</translation>
 <translation id="8433638294851456451">Aby wysłać stąd numer na swój telefon z Androidem, zaloguj się w Chrome na obu urządzeniach.</translation>
 <translation id="8496177819998570653">Menedżer &amp;haseł Google</translation>
 <translation id="8498858610309223613">Właśnie została zastosowana specjalna aktualizacja zabezpieczeń Google Chrome. Uruchom ponownie Chrome teraz. Karty zostaną przywrócone.</translation>

@@ -585,7 +585,6 @@
 <translation id="1401216725754314428">Научете повече за сродните сайтове в нов раздел</translation>
 <translation id="1402426911829176748">Установява се връзка с устройството ви</translation>
 <translation id="1403222014593521787">Не може да се установи връзка с прокси сървъра</translation>
-<translation id="1405336513195181336">Това включва отметките, разширенията и историята на сърфирането ви в сайтовете.</translation>
 <translation id="1405779994569073824">Възникна срив.</translation>
 <translation id="1406500794671479665">Потвърждава се...</translation>
 <translation id="1407069428457324124">Тъмна тема</translation>
@@ -836,6 +835,7 @@
 <translation id="1575741822946219011">Езици и въвеждане</translation>
 <translation id="1576594961618857597">Стандартен бял аватар</translation>
 <translation id="1576729678809834061">Подаване на сигнал за този резултат от търсенето</translation>
+<translation id="1578110287710452646">Манипулатор за преоразмеряване успоредно</translation>
 <translation id="1578488449637163638">Тъмна</translation>
 <translation id="1578558981922970608">Принудително затваряне</translation>
 <translation id="157931050206866263">Научете повече за сканиранията за злонамерен софтуер</translation>
@@ -1519,7 +1519,6 @@
 <translation id="2040894699575719559">Местоположението е блокирано</translation>
 <translation id="2041246176170574368">Актуализациите за сигурност приключват скоро. Спестете поне 50 щ.д. от цената на нов Chromebook.</translation>
 <translation id="2042279886444479655">Активни потребителски профили</translation>
-<translation id="2042427131767688936">За да се обезпечи безопасното използване на това устройство, организацията ви може да вижда информация за операционната система, браузъра и настройките му, както и какъв софтуер е инсталиран на него.</translation>
 <translation id="2044014337866019681">За да отключите сесията, трябва да потвърдите <ph name="ACCOUNT" />.</translation>
 <translation id="2044750031738659219">{0,plural, =1{Затваряне на прозореца в режим на гост}other{Затваряне на прозорците в режим на гост (# прозореца)}}</translation>
 <translation id="204497730941176055">Име на шаблон за сертификат от Microsoft</translation>
@@ -3660,7 +3659,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3566211766752891194">Показване на използваната от разделите памет</translation>
 <translation id="3566325075220776093">От това устройство</translation>
 <translation id="3566721612727112615">Няма добавени сайтове</translation>
-<translation id="3566788242120166275">Съществуващите ви данни за сърфирането ще останат в съществуващия потребителски профил. Този нов потребителски профил няма да съдържа данни за предишно сърфиране.</translation>
 <translation id="3567168891086460374">Запазване по друг начин</translation>
 <translation id="3567284462585300767">За да получавате и приемате файлове от хора в района, направете устройството си видимо</translation>
 <translation id="356738834800832239">Паролата ви е запазена</translation>
@@ -3827,7 +3825,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3685598397738512288">Предпочитания за USB за Linux</translation>
 <translation id="3687598459967813435">Винаги да се разрешават известията от <ph name="WEBSITE" /></translation>
 <translation id="368789413795732264">Възникна грешка при опита за запис във файла: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3687957587012862163">Не, преместване в този нов потребителски профил</translation>
 <translation id="3688507211863392146">Запис във файлове и папки, които сте отворили в приложението</translation>
 <translation id="3688526734140524629">Промяна на канала</translation>
 <translation id="3688578402379768763">Актуално</translation>
@@ -3886,7 +3883,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="37143699183660101">Стабилност на курсора</translation>
 <translation id="3714610938239537183">Стъпка 2 от 4: Изберете диагностичните данни, които да бъдат експортирани</translation>
 <translation id="3716065403310915079">Инсталационна програма за <ph name="VM_NAME" /></translation>
-<translation id="3717256685838828428">Този потребителски профил се управлява от организацията ви, която може да преглежда определена информация, включително:</translation>
 <translation id="3719245268140483218">Събитие на устройството</translation>
 <translation id="3719310907809321183">Попълнихте формуляра за <ph name="CARD_IDENTIFIER" />.</translation>
 <translation id="3719826155360621982">Начална страница</translation>
@@ -4920,7 +4916,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4426857487270413362">Инсталационните файлове не могат да се изтеглят. Моля, проверете връзката си с интернет и дали имате достатъчно свободно място на диска и опитайте отново. Кодът на грешката е <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">Засечено е <ph name="COUNT" /> пъти</translation>
 <translation id="4427365070557649936">Кодът за потвърждение се проверява...</translation>
-<translation id="4428579202668721841">Искате ли съществуващите данни за сърфирането да се съхраняват отделно от служебния ви потребителски профил?</translation>
 <translation id="4429163740524851942">Подредба на физическата клавиатура</translation>
 <translation id="4430019312045809116">Звук</translation>
 <translation id="443031431654216610">Използвайте само цифри</translation>
@@ -6087,7 +6082,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5276357196618041410">За да запазите конфигурацията, първо трябва да влезете в профила си</translation>
 <translation id="5277127016695466621">Показване на страничния панел</translation>
 <translation id="5278823018825269962">ID на състоянието</translation>
-<translation id="5279214046729249716">Да, запазване отделно</translation>
 <translation id="5279600392753459966">Блокиране на всички</translation>
 <translation id="5280064835262749532">Актуализирайте идентификационните данни за <ph name="SHARE_PATH" /></translation>
 <translation id="5280426389926346830">Да се създаде ли пряк път?</translation>
@@ -6413,7 +6407,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5503982651688210506">Използването и местенето на камерата ви и използването на микрофона ви от <ph name="HOST" /> продължават да са разрешени</translation>
 <translation id="5505307013568720083">Няма мастило</translation>
 <translation id="5507756662695126555">Невъзможност за отричане</translation>
-<translation id="5508864312047847614">Искате ли съществуващите данни за сърфирането да се съхраняват отделно от училищния ви потребителски профил?</translation>
 <translation id="5509693895992845810">Запазване &amp;като...</translation>
 <translation id="5509914365760201064">Издател: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Изтегляне от Google на описания за изображенията</translation>
@@ -6867,7 +6860,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5854066326260337683">Поддръжката на наследени браузъри (LBS) е деактивирана. Можете да я активирате, като зададете правилото <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" />.</translation>
 <translation id="5854912040170951372">Парче пица</translation>
 <translation id="5855267860608268405">Известни Wi-Fi мрежи</translation>
-<translation id="5855375823365231964">Всичко за този потребителски профил</translation>
 <translation id="5855643921295613558">0,6 секунди</translation>
 <translation id="5856721540245522153">Активиране на функциите за отстраняване на грешки</translation>
 <translation id="5857090052475505287">Нова папка</translation>
@@ -7230,7 +7222,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6113942107547980621">За да използвате Smart Lock, превключете към основния потребителски профил на телефона си</translation>
 <translation id="6116921718742659598">Промяна на настройките за език и въвеждане</translation>
 <translation id="6119008366402292080">Няма наличен принтер</translation>
-<translation id="6119068870709745878">Този потребителски профил се управлява от организацията <ph name="PROFILE_MANAGER" />, която може да преглежда определена информация, включително:</translation>
 <translation id="6119927814891883061">Задаване на <ph name="DEVICE_NAME" /> като име на устройството</translation>
 <translation id="6119972796024789243">Корекция на цветове</translation>
 <translation id="6121773125605585883">Преглед на паролата, свързана с потребителското име <ph name="USERNAME" />, за <ph name="WEBSITE" /></translation>
@@ -7439,6 +7430,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6264060420924719834">Това приложение включва уеб съдържание от други сайтове</translation>
 <translation id="6264365405983206840">Избиране на &amp;всички</translation>
 <translation id="6264376385120300461">Изтегляне въпреки това</translation>
+<translation id="6264485186158353794">Назад към безопасната страница</translation>
 <translation id="6264520534872750757">Продължете да използвате устройството</translation>
 <translation id="6264636978858465832">Мениджър на пароли се нуждае от още разрешения за достъп</translation>
 <translation id="626495329434552273">Има разрешение да отменя въведеното с клавиатурата</translation>
@@ -7654,7 +7646,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6434104957329207050">Скорост на точковото сканиране</translation>
 <translation id="6434309073475700221">Отхвърляне</translation>
 <translation id="6434325376267409267">Устройството ви трябва да бъде актуализирано, преди да можете да използвате <ph name="APP_NAME" />.</translation>
-<translation id="6434690603850475457">Да, запазване отделно (препоръчва се)</translation>
 <translation id="6434755719322447931">Хаотично</translation>
 <translation id="6435339218366409950">Изберете езика, на който да бъдат преведени надписите</translation>
 <translation id="6436164536244065364">Преглед в уеб магазина</translation>

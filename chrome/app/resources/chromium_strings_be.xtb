@@ -109,7 +109,6 @@
 <translation id="2483889755041906834">У Chromium</translation>
 <translation id="2485422356828889247">Выдаліць</translation>
 <translation id="2513154137948333830">Патрабуецца перазагрузка. <ph name="INSTALL_SUCCESS" /></translation>
-<translation id="2522009821193247726">Каб працягнуць, неабходна ўвайсці ў Chromium праз <ph name="EMAIL" />. Гэтага патрабуюць правілы вашай арганізацыі.</translation>
 <translation id="2542968102051442371">Выберыце тэкст з дапамогай пошуку відарысаў</translation>
 <translation id="2554739539410784893">Chromium спрабуе замяніць існуючыя паролі. Каб дазволіць гэта, увядзіце пароль Windows.</translation>
 <translation id="2560420686485554789">Для спампоўвання файлаў браўзеру Chrome патрабуецца доступ да сховішча</translation>
@@ -434,7 +433,6 @@
 <translation id="6964305034639999644">Адкрыць спасылку ў акне інко&amp;гніта ў Chromium</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6978145336957848883">Ненадзейныя паролі лёгка адгадаць. Дазвольце Chromium <ph name="BEGIN_LINK" />ствараць для вас надзейныя паролі і запамінаць іх<ph name="END_LINK" />.</translation>
-<translation id="6980074797973263542">Ваша арганізацыя можа праглядаць даныя пра работу ў браўзеры (напрыклад, закладкі, гісторыю і паролі) і кіраваць імі. Яна не можа праглядаць даныя пра работу ў браўзеры, якія захоўваюцца ў асабістых профілях Chromium.</translation>
 <translation id="6985329841647292029">Умовы Chromium OS</translation>
 <translation id="6990124437352146030">Chromium запытвае дазвол на доступ да мікрафона для гэтага сайта</translation>
 <translation id="7003299027384820442">Каб выкарыстоўваць і захоўваць даныя Chromium ва ўліковым запісе <ph name="ACCOUNT_EMAIL" />, увядзіце фразу-пароль</translation>

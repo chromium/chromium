@@ -585,7 +585,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1401216725754314428">Máis información sobre sitios relacionados nunha pestana nova</translation>
 <translation id="1402426911829176748">Conectando co teu dispositivo</translation>
 <translation id="1403222014593521787">Non se puido establecer conexión co proxy</translation>
-<translation id="1405336513195181336">Esta opción aplicarase aos marcadores, ás extensións e ao teu historial de navegación dos sitios.</translation>
 <translation id="1405779994569073824">Produciuse un fallo.</translation>
 <translation id="1406500794671479665">Verificando...</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
@@ -1512,7 +1511,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2040894699575719559">Bloqueouse a localización</translation>
 <translation id="2041246176170574368">Deixarás de recibir actualizacións de seguranza en breve. Aforra 50 $ ou máis ao comprar un Chromebook novo.</translation>
 <translation id="2042279886444479655">Perfís activos</translation>
-<translation id="2042427131767688936">Para garantir que este dispositivo se use de maneira segura, a túa organización pode ver información sobre o seu sistema operativo, o navegador e a configuración, así como o software instalado no aparello.</translation>
 <translation id="2044014337866019681">Asegúrate de estar verificando a conta <ph name="ACCOUNT" /> para desbloquear a sesión.</translation>
 <translation id="2044750031738659219">{0,plural, =1{Pechar sesión de convidado}other{Pechar sesión de convidado (# ventás)}}</translation>
 <translation id="204497730941176055">Nome do modelo do certificado de Microsoft</translation>
@@ -3650,7 +3648,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3566211766752891194">Mostrar uso de memoria das pestanas</translation>
 <translation id="3566325075220776093">Deste dispositivo</translation>
 <translation id="3566721612727112615">Non se engadiu ningún sitio</translation>
-<translation id="3566788242120166275">Os datos de navegación actuais permanecerán no perfil actual. Este novo perfil non conterá ningún dato de navegación anterior.</translation>
 <translation id="3567168891086460374">Gardar doutro xeito</translation>
 <translation id="3567284462585300767">Fai que o teu dispositivo sexa visible para recibir e aceptar ficheiros de persoas preto de ti</translation>
 <translation id="356738834800832239">Gardouse o teu contrasinal</translation>
@@ -3820,7 +3817,6 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3685598397738512288">Preferencias de USB de Linux</translation>
 <translation id="3687598459967813435">Permitir sempre notificacións de <ph name="WEBSITE" /></translation>
 <translation id="368789413795732264">Produciuse un erro ao tentar escribir o ficheiro: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3687957587012862163">Non, movelos a este novo perfil de traballo</translation>
 <translation id="3688507211863392146">Escribir nos ficheiros e cartafoles que abres na aplicación</translation>
 <translation id="3688526734140524629">Cambiar canle</translation>
 <translation id="3688578402379768763">Actualizado</translation>
@@ -3879,7 +3875,6 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="37143699183660101">Estabilidade do cursor</translation>
 <translation id="3714610938239537183">Paso 2 de 4: Selecciona datos de diagnóstico para exportalos</translation>
 <translation id="3716065403310915079">Instalador de <ph name="VM_NAME" /></translation>
-<translation id="3717256685838828428">A túa organización xestiona este perfil e pode ver algunha información, como, por exemplo:</translation>
 <translation id="3719245268140483218">Evento do dispositivo</translation>
 <translation id="3719310907809321183">Formulario de <ph name="CARD_IDENTIFIER" /> cuberto.</translation>
 <translation id="3719826155360621982">Páxina de inicio</translation>
@@ -4912,7 +4907,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4426857487270413362">Non se puideron descargar os ficheiros do instalador. Comproba a túa conexión a Internet, asegúrate de que tes suficiente espazo no disco e téntao de novo. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">Detectado <ph name="COUNT" /> veces</translation>
 <translation id="4427365070557649936">Verificando código de confirmación…</translation>
-<translation id="4428579202668721841">Queres manter os datos de navegación separados do teu perfil de traballo?</translation>
 <translation id="4429163740524851942">Deseño do teclado físico</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="443031431654216610">Utiliza só díxitos</translation>
@@ -6079,7 +6073,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5276357196618041410">Non se pode gardar a configuración sen antes iniciar sesión</translation>
 <translation id="5277127016695466621">Mostrar panel lateral</translation>
 <translation id="5278823018825269962">Identificador de estado</translation>
-<translation id="5279214046729249716">Si, mantelos separados</translation>
 <translation id="5279600392753459966">Bloquear todo</translation>
 <translation id="5280064835262749532">Actualiza as credenciais de <ph name="SHARE_PATH" /></translation>
 <translation id="5280426389926346830">Queres crear un atallo?</translation>
@@ -6405,7 +6398,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5503982651688210506">Seguir permitindo que <ph name="HOST" /> use e mova a túa cámara, e que use o teu micrófono</translation>
 <translation id="5505307013568720083">Non hai tinta</translation>
 <translation id="5507756662695126555">Sen rexeitamento</translation>
-<translation id="5508864312047847614">Queres manter os datos de navegación separados do teu perfil de educativo?</translation>
 <translation id="5509693895992845810">Gardar &amp;como...</translation>
 <translation id="5509914365760201064">Emisor: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Obter descricións de Google para as imaxes</translation>
@@ -6856,7 +6848,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5854066326260337683">Nestes momentos, a función de compatibilidade con navegadores antigos está desactivada. Para activala, podes definir a política <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" />.</translation>
 <translation id="5854912040170951372">Porción</translation>
 <translation id="5855267860608268405">Redes wifi coñecidas</translation>
-<translation id="5855375823365231964">Acerca deste perfil</translation>
 <translation id="5855643921295613558">0,6 segundos</translation>
 <translation id="5856721540245522153">Activar funcións de depuración</translation>
 <translation id="5857090052475505287">Novo cartafol</translation>
@@ -7218,7 +7209,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6113942107547980621">Para utilizar Smart Lock, cambia ao perfil do usuario principal do teléfono</translation>
 <translation id="6116921718742659598">Cambiar configuración de idioma e entrada</translation>
 <translation id="6119008366402292080">Non hai ningunha impresora dispoñible</translation>
-<translation id="6119068870709745878"><ph name="PROFILE_MANAGER" /> xestiona este perfil e pode ver algunha información, como, por exemplo:</translation>
 <translation id="6119927814891883061">Cambiar nome de dispositivo a <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Corrección da cor</translation>
 <translation id="6121773125605585883">Ver contrasinal co nome de usuario <ph name="USERNAME" /> para <ph name="WEBSITE" /></translation>
@@ -7427,6 +7417,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6264060420924719834">Esta aplicación inclúe contido web doutros sitios</translation>
 <translation id="6264365405983206840">Seleccionar &amp;todo</translation>
 <translation id="6264376385120300461">Descargar de todos os modos</translation>
+<translation id="6264485186158353794">Volver para estar a salvo</translation>
 <translation id="6264520534872750757">Continuar usando o dispositivo</translation>
 <translation id="6264636978858465832">O xestor de contrasinais necesita máis acceso</translation>
 <translation id="626495329434552273">Permiso concedido para ignorar a entrada do teclado</translation>
@@ -7642,7 +7633,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6434104957329207050">Velocidade da exploración por punto</translation>
 <translation id="6434309073475700221">Descartar</translation>
 <translation id="6434325376267409267">É necesario actualizar o teu dispositivo para que poidas utilizar <ph name="APP_NAME" />.</translation>
-<translation id="6434690603850475457">Si, mantelos separados (opción recomendada)</translation>
 <translation id="6434755719322447931">Caótico</translation>
 <translation id="6435339218366409950">Elixir idioma ao que se traducirán os subtítulos</translation>
 <translation id="6436164536244065364">Ver na tenda web</translation>

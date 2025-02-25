@@ -107,7 +107,6 @@
 <translation id="2483889755041906834">W Chromium</translation>
 <translation id="2485422356828889247">Odinstaluj</translation>
 <translation id="2513154137948333830">Wymagany restart: <ph name="INSTALL_SUCCESS" /></translation>
-<translation id="2522009821193247726">Aby przejść dalej, musisz zalogować się w Chromium przy użyciu konta <ph name="EMAIL" />. Dzięki temu będziesz przestrzegać zasad organizacji.</translation>
 <translation id="2542968102051442371">Wybierz tekst za pomocą wyszukiwania obrazów</translation>
 <translation id="2554739539410784893">Chromium próbuje zastąpić obecne hasła. Aby na to zezwolić, podaj hasło do systemu Windows.</translation>
 <translation id="2560420686485554789">Chromium musi mieć dostęp do pamięci, by pobierać pliki</translation>
@@ -430,7 +429,6 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="6964305034639999644">Otwórz link w oknie inco&amp;gnito Chromium</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">Słabe hasła są łatwe do odgadnięcia. Pozwól Chromium <ph name="BEGIN_LINK" />utworzyć i zapamiętać silne hasła<ph name="END_LINK" />.</translation>
-<translation id="6980074797973263542">Twoja organizacja może wyświetlać dane przeglądania (np. zakładki, historię i hasła) oraz nimi zarządzać. Nie widzi danych przeglądania w osobistych profilach Chromium.</translation>
 <translation id="6985329841647292029">Warunki korzystania z systemu operacyjnego Chromium</translation>
 <translation id="6990124437352146030">Chromium potrzebuje uprawnień dostępu do mikrofonu na tej stronie</translation>
 <translation id="7003299027384820442">Wpisz hasło, aby móc zapisywać dane z Chromium na koncie <ph name="ACCOUNT_EMAIL" /> i ich używać</translation>

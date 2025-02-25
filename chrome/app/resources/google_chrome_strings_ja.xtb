@@ -495,7 +495,6 @@
 <translation id="7655455401911432608">ユーザーの閲覧履歴（該当のデバイスで Chrome を使用して訪れたウェブサイトの記録）。</translation>
 <translation id="7655472416356262023">Chrome からアカウントを削除</translation>
 <translation id="7658239707568436148">キャンセル</translation>
-<translation id="7659737857277959440">あなたの組織は閲覧データ（ブックマーク、履歴、パスワードなど）を確認、管理できます。個人用の Chrome プロフィールの閲覧データを確認することはできません。</translation>
 <translation id="7661924425853052955">最近アクセスしていないため、Chrome で <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="COUNT" /> 件の権限を削除しました</translation>
 <translation id="7670287553302121848">Chrome アカウントの再認証が必要です</translation>
 <translation id="769538538642757151">確認の必要な項目がありましたらお知らせします</translation>
@@ -557,7 +556,6 @@
 <translation id="8418845734693287262">アカウントのログイン情報が最新でないため、ChromeOS はデータを同期できませんでした。</translation>
 <translation id="842386925677997438">Chrome の安全性ツール</translation>
 <translation id="8425765582779547329">保護者の方が指定した設定でインターネットをより安全に利用するには、Chrome にログインしてください</translation>
-<translation id="8429214465555795676">続行するには、<ph name="EMAIL" /> で Chrome にログインする必要があります。これにより、組織のポリシーを遵守できます。</translation>
 <translation id="8433638294851456451">Android スマートフォンに番号を送信するには、両方のデバイスで Chrome にログインしてください。</translation>
 <translation id="8496177819998570653">Google パスワード マネージャー(&amp;A)</translation>
 <translation id="8498858610309223613">Google Chrome の特別なセキュリティ アップデートが適用されました。今すぐ再起動してください。タブは復元されます。</translation>

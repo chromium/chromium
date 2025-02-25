@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">Aguarde...</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2744221223678373668">Compartilhadas</translation>
+<translation id="2749164457515831917">Sugestões embaralhadas</translation>
 <translation id="2751739896257479635">Autenticação EAP Fase 2</translation>
 <translation id="2754757901767760034">Lâmpada</translation>
 <translation id="2780756493585863768">Planos de fundo recentes gerados com IA do Google</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">Menu de ações de layout</translation>
 <translation id="3227186760713762082">Divida o valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Trabalhos de impressão enviados há mais de 1 dia serão removidos</translation>
+<translation id="3248791727258378769">Nenhuma transcrição será criada</translation>
 <translation id="324961752321393509">O administrador não permite o fechamento deste app</translation>
 <translation id="3263941347294171263">Desconecte e reconecte o <ph name="DEVICE_NAME" /> para continuar o processo de atualização</translation>
 <translation id="3268178239013324452">Falha - Porta aberta</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">Selecione uma unidade de temperatura</translation>
 <translation id="3661106764436337772">Escreva com mais rapidez e confiança</translation>
 <translation id="3662461537616691585">borgonha e marrom</translation>
+<translation id="3664755900672940272">Exemplos de comandos embaralhados</translation>
 <translation id="3668449597372804501">Plano de fundo Fluxo das nuvens</translation>
 <translation id="3668570675727296296">Configurações de idioma</translation>
 <translation id="3675132884790542448">porcos</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">Desativar o protetor de tela</translation>
 <translation id="4210636113897977670">Salvar e sair</translation>
 <translation id="4210659479607886331">rio glacial</translation>
+<translation id="4212169537710712814">Download do modelo de transcrição em <ph name="LANGUAGE_NAME" /> concluído</translation>
 <translation id="42126664696688958">Exportar</translation>
 <translation id="4213104098953699324">Teclado USB</translation>
 <translation id="4227825898293920515">A senha expirará em <ph name="TIME" /></translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">Colorido</translation>
 <translation id="5457599981699367932">Navegar como visitante</translation>
 <translation id="54609108002486618">Gerenciado</translation>
+<translation id="5461608756903394951">Download em andamento do modelo de transcrição em <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5470776029649730099">juta</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativa restante}one{{0} tentativa restante}other{{0} tentativas restantes}}</translation>
 <translation id="5488280942828718790">magenta</translation>
@@ -1191,6 +1196,7 @@
 <translation id="6595046262780525922">Ativar a transcrição e baixar o modelo de transcrição?</translation>
 <translation id="6596816719288285829">Endereço IP</translation>
 <translation id="6599673642868607614">Agradecemos seu feedback. Seu feedback nos ajuda a melhorar a experiência no Chromebook e vai ser analisado pela nossa equipe. Devido ao grande número de avisos que recebemos, não conseguimos enviar uma resposta.</translation>
+<translation id="6608043585557830684">A transcrição está desativada. Ative nas Configurações ou no menu <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Teclas do mouse</translation>
 <translation id="6618744767048954150">Em execução</translation>
 <translation id="6620487321149975369">Os trabalhos de impressão aparecerão no histórico, a menos que sejam removidos manualmente</translation>
@@ -1279,6 +1285,7 @@
 <translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" /> com <ph name="GLOWSCAPES_FEATURE" /> brilhante</translation>
 <translation id="6975981640379148271">coalas</translation>
 <translation id="6977381486153291903">Revisão do firmware</translation>
+<translation id="6978396562261420054">Imagem gerada</translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
 <translation id="6982462588253070448">dunas</translation>
 <translation id="7005833343836210400">O dispositivo está off-line</translation>

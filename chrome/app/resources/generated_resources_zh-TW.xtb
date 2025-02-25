@@ -585,7 +585,6 @@
 <translation id="1401216725754314428">在新分頁中進一步瞭解新相關網站</translation>
 <translation id="1402426911829176748">正在連線至裝置</translation>
 <translation id="1403222014593521787">無法連線至 Proxy</translation>
-<translation id="1405336513195181336">包括書籤、擴充功能和網站瀏覽記錄。</translation>
 <translation id="1405779994569073824">已停止運作。</translation>
 <translation id="1406500794671479665">驗證中...</translation>
 <translation id="1407069428457324124">深色主題</translation>
@@ -1513,7 +1512,6 @@
 <translation id="2040894699575719559">禁止取得位置資訊</translation>
 <translation id="2041246176170574368">安全性更新即將終止，購買新款 Chromebook 可省下 $50 美元以上</translation>
 <translation id="2042279886444479655">使用中的設定檔</translation>
-<translation id="2042427131767688936">貴機構可以查看這部裝置的作業系統、瀏覽器和設定的相關資訊，以及裝置上安裝的軟體，確保裝置能安全使用。</translation>
 <translation id="2044014337866019681">請確認你驗證的是 <ph name="ACCOUNT" />，才能解鎖工作階段。</translation>
 <translation id="2044750031738659219">{0,plural, =1{關閉訪客視窗}other{關閉訪客視窗 (# 個視窗)}}</translation>
 <translation id="204497730941176055">Microsoft 憑證範本名稱</translation>
@@ -3648,7 +3646,6 @@
 <translation id="3566211766752891194">顯示分頁記憶體用量</translation>
 <translation id="3566325075220776093">從這部裝置</translation>
 <translation id="3566721612727112615">未新增任何網站</translation>
-<translation id="3566788242120166275">現有的瀏覽資料會保留在現有設定檔，這個新設定檔不會有任何先前的瀏覽資料。</translation>
 <translation id="3567168891086460374">以其他方式儲存</translation>
 <translation id="3567284462585300767">如要與附近的使用者互相傳送檔案，請將裝置設為可供偵測狀態</translation>
 <translation id="356738834800832239">已儲存密碼</translation>
@@ -3700,7 +3697,7 @@
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 個帳戶使用相同的密碼}other{{COUNT} 個帳戶使用相同的密碼}}</translation>
 <translation id="3605515937536882518">表單值已更新</translation>
 <translation id="3605780360466892872">小員工</translation>
-<translation id="3607671391978830431">供子女使用</translation>
+<translation id="3607671391978830431">供孩子使用</translation>
 <translation id="3607799000129481474"><ph name="SITE" /> 想驗證身分</translation>
 <translation id="3608460311600621471">請提供列印這項資料的原因：</translation>
 <translation id="3608730769702025110">步驟 4 之 3：查看個人識別資訊</translation>
@@ -3815,7 +3812,6 @@
 <translation id="3685598397738512288">Linux USB 偏好設定</translation>
 <translation id="3687598459967813435">一律允許接收來自 <ph name="WEBSITE" /> 的通知</translation>
 <translation id="368789413795732264">嘗試寫入檔案時發生錯誤：<ph name="ERROR_TEXT" />。</translation>
-<translation id="3687957587012862163">否，移到這個新設定檔</translation>
 <translation id="3688507211863392146">寫入你在應用程式中開啟的檔案和資料夾</translation>
 <translation id="3688526734140524629">變更版本</translation>
 <translation id="3688578402379768763">最新狀態</translation>
@@ -3874,7 +3870,6 @@
 <translation id="37143699183660101">游標穩定度</translation>
 <translation id="3714610938239537183">步驟 4 之 2：選取要匯出的診斷資料</translation>
 <translation id="3716065403310915079"><ph name="VM_NAME" /> 安裝程式</translation>
-<translation id="3717256685838828428">這個設定檔是由貴機構管理，貴機構可查看部分資訊，包括：</translation>
 <translation id="3719245268140483218">裝置事件</translation>
 <translation id="3719310907809321183">已填寫 <ph name="CARD_IDENTIFIER" />。</translation>
 <translation id="3719826155360621982">首頁</translation>
@@ -4598,7 +4593,7 @@
 <translation id="42126664696688958">匯出</translation>
 <translation id="4213540068152645535">無法變更密碼</translation>
 <translation id="42137655013211669">伺服器禁止存取這個資源。</translation>
-<translation id="4213918571089943508">子女的 Google 帳戶</translation>
+<translation id="4213918571089943508">孩子的 Google 帳戶</translation>
 <translation id="4214192212360095377">立即關閉</translation>
 <translation id="4214313983951846766">{NUM_TABS,plural, =0{沒有閒置分頁}=1{查看 1 個閒置分頁}other{查看 # 個閒置分頁}}</translation>
 <translation id="4217571870635786043">語音輸入</translation>
@@ -4906,7 +4901,6 @@
 <translation id="4426857487270413362">無法下載安裝程式檔案。請檢查網際網路連線，並確定有足夠的可用磁碟空間，然後再試一次。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="4427111270137140798">偵測到 <ph name="COUNT" /> 次</translation>
 <translation id="4427365070557649936">正在驗證確認碼…</translation>
-<translation id="4428579202668721841">要保留現有瀏覽資料，不要移到工作資料夾嗎？</translation>
 <translation id="4429163740524851942">實體鍵盤配置</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="443031431654216610">只能使用數字</translation>
@@ -6072,7 +6066,6 @@
 <translation id="5276357196618041410">請先登入才能儲存設定</translation>
 <translation id="5277127016695466621">顯示側邊面板</translation>
 <translation id="5278823018825269962">狀態 ID</translation>
-<translation id="5279214046729249716">是，請保留</translation>
 <translation id="5279600392753459966">全部封鎖</translation>
 <translation id="5280064835262749532">更新 <ph name="SHARE_PATH" /> 的憑證</translation>
 <translation id="5280426389926346830">要建立捷徑嗎？</translation>
@@ -6397,7 +6390,6 @@
 <translation id="5503982651688210506">繼續允許 <ph name="HOST" /> 使用與調整攝影機，以及存取麥克風</translation>
 <translation id="5505307013568720083">墨水已用盡</translation>
 <translation id="5507756662695126555">不可否認性</translation>
-<translation id="5508864312047847614">要保留現有瀏覽資料，不移到學校設定檔嗎？</translation>
 <translation id="5509693895992845810">另存為(&amp;A)...</translation>
 <translation id="5509914365760201064">發行者：<ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">從 Google 取得圖片說明</translation>
@@ -6848,7 +6840,6 @@
 <translation id="5854066326260337683">LBS 目前已停用。如要啟用 LBS，請設定 <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" /> 政策。</translation>
 <translation id="5854912040170951372">披薩</translation>
 <translation id="5855267860608268405">已知的 Wi-Fi 網路</translation>
-<translation id="5855375823365231964">關於這個設定檔</translation>
 <translation id="5855643921295613558">0.6 秒</translation>
 <translation id="5856721540245522153">啟用偵錯功能</translation>
 <translation id="5857090052475505287">新資料夾</translation>
@@ -7209,7 +7200,6 @@
 <translation id="6113942107547980621">如要使用 Smart Lock，請在手機上切換到主要使用者設定檔</translation>
 <translation id="6116921718742659598">變更語言和輸入設定</translation>
 <translation id="6119008366402292080">沒有可用的印表機</translation>
-<translation id="6119068870709745878">這個設定檔是由 <ph name="PROFILE_MANAGER" /> 管理，該方可查看部分資訊，包括：</translation>
 <translation id="6119927814891883061">將裝置命名為「<ph name="DEVICE_NAME" />」</translation>
 <translation id="6119972796024789243">色彩校正</translation>
 <translation id="6121773125605585883">檢視使用者名稱「<ph name="USERNAME" />」在「<ph name="WEBSITE" />」的密碼</translation>
@@ -7418,6 +7408,7 @@
 <translation id="6264060420924719834">這個應用程式含有來自其他網站的網路內容</translation>
 <translation id="6264365405983206840">選取全部(&amp;A)</translation>
 <translation id="6264376385120300461">仍要下載</translation>
+<translation id="6264485186158353794">返回安全網頁</translation>
 <translation id="6264520534872750757">繼續使用這部裝置</translation>
 <translation id="6264636978858465832">密碼管理工具需要更多存取權</translation>
 <translation id="626495329434552273">允許覆寫鍵盤輸入內容</translation>
@@ -7633,7 +7624,6 @@
 <translation id="6434104957329207050">點掃描速度</translation>
 <translation id="6434309073475700221">捨棄</translation>
 <translation id="6434325376267409267">必須先更新裝置才能使用「<ph name="APP_NAME" />」。</translation>
-<translation id="6434690603850475457">是，請保留 (建議)</translation>
 <translation id="6434755719322447931">混亂</translation>
 <translation id="6435339218366409950">請選擇字幕的譯文語言</translation>
 <translation id="6436164536244065364">在線上應用程式商店中查看</translation>

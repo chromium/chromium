@@ -107,7 +107,6 @@
 <translation id="2483889755041906834">В Chromium</translation>
 <translation id="2485422356828889247">Удалить</translation>
 <translation id="2513154137948333830">Требуется перезагрузка. <ph name="INSTALL_SUCCESS" /></translation>
-<translation id="2522009821193247726">Чтобы продолжить, войдите в Chromium, используя <ph name="EMAIL" />. Это необходимо согласно правилам организации.</translation>
 <translation id="2542968102051442371">Выберите текст для поиска по изображениям.</translation>
 <translation id="2554739539410784893">Chromium пытается заменить текущие пароли. Чтобы разрешить это, введите свой пароль Windows.</translation>
 <translation id="2560420686485554789">Для скачивания файлов браузеру Chromium требуется доступ к хранилищу.</translation>
@@ -430,7 +429,6 @@
 <translation id="6964305034639999644">Открыть ссылку в режиме инкогнито браузера Chromium</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6978145336957848883">Простые пароли легко подобрать. Разрешите Chromium <ph name="BEGIN_LINK" />создавать и хранить надежные пароли для вас<ph name="END_LINK" />.</translation>
-<translation id="6980074797973263542">Ваша организация может просматривать данные о работе в браузере (например, закладки, историю и пароли) и управлять ими. Сведения в личных профилях Chromium ей недоступны.</translation>
 <translation id="6985329841647292029">Условия использования Chromium OS</translation>
 <translation id="6990124437352146030">Для этого сайта Chromium запрашивает доступ к микрофону.</translation>
 <translation id="7003299027384820442">Введите кодовую фразу, чтобы использовать и сохранять данные Chromium в аккаунте <ph name="ACCOUNT_EMAIL" />.</translation>

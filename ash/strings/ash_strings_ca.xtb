@@ -176,6 +176,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1546492247443594934">Escriptori 2</translation>
 <translation id="1546930421365146760">Demana a l'administrador que configuri aquest dispositiu a la consola d'administració de Google</translation>
 <translation id="1549512626801247439">gestió d'emmagatzematge</translation>
+<translation id="1549721333775633305">Mostra la configuració de Quick Share. Quick Share està desactivat.</translation>
 <translation id="1550406609415860283">Dispositius disponibles</translation>
 <translation id="1550523713251050646">Feu clic per veure més opcions</translation>
 <translation id="1555130319947370107">Blau</translation>
@@ -1474,6 +1475,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> no s'ha activat.</translation>
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="5860491529813859533">Activa</translation>
+<translation id="5864691701242730005">Mostra la configuració de Quick Share. S'ha seleccionat la visibilitat <ph name="VISIBILITY" />.</translation>
 <translation id="5864748620896638071">Bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">S'està recollint informació de les xarxes</translation>
 <translation id="5867606971598166637">L'administrador del sistema està supervisant les teves pantalles</translation>
@@ -2262,6 +2264,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="851660987304951246">Utilitza Ajuda'm a llegir per resumir contingut o fer preguntes ràpidament</translation>
 <translation id="8517041960877371778">És possible que el dispositiu <ph name="DEVICE_TYPE" /> no es carregui mentre està encès.</translation>
 <translation id="8535393432370007982">Desfés l'ordenació per color</translation>
+<translation id="8536886494750559755">Mostra la configuració de Quick Share. Visible per a tothom durant <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">S'ha copiat el text al porta-retalls</translation>
 <translation id="8541078764854166027">Enquadr. càmera</translation>
 <translation id="8542053257095774575">No s'ha desat cap escriptori ni cap plantilla</translation>

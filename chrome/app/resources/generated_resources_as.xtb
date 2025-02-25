@@ -586,7 +586,6 @@
 <translation id="1401216725754314428">এটা নতুন টেবত জড়িত হৈ থকা ছাইটসমূহৰ বিষয়ে অধিক জানক</translation>
 <translation id="1402426911829176748">আপোনাৰ ডিভাইচটোৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
 <translation id="1403222014593521787">প্ৰ’ক্সীটোৰ সৈতে সংযোগ কৰিবলৈ সক্ষম নহ'ল</translation>
-<translation id="1405336513195181336">ইয়াত বুকমাৰ্ক, এক্সটেনশ্বন আৰু ছাইটবোৰত কৰা আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস অন্তৰ্ভুক্ত।</translation>
 <translation id="1405779994569073824">ক্ৰেশ্ব হ’ল।</translation>
 <translation id="1406500794671479665">সত্যাপন কৰি থকা হৈছে…</translation>
 <translation id="1407069428457324124">গাঢ় ৰঙৰ থীম</translation>
@@ -1521,7 +1520,6 @@
 <translation id="2040894699575719559">অৱস্থান অৱৰোধ কৰা হৈছে</translation>
 <translation id="2041246176170574368">সুৰক্ষা সম্পৰ্কীয় আপডে’ট শীঘ্ৰেই সমাপ্ত হ’ব। এটা নতুন Chromebookত $৫০ অথবা অধিক ৰাহি কৰক।</translation>
 <translation id="2042279886444479655">সক্ৰিয় প্ৰ'ফাইল</translation>
-<translation id="2042427131767688936">এই ডিভাইচটো সুৰক্ষিতভাৱে ব্যৱহাৰ কৰিব পৰাটো নিশ্চিত কৰিবলৈ আপোনাৰ প্ৰতিষ্ঠানে ইয়াৰ অপাৰেটিং ছিষ্টেম, ব্ৰাউজাৰ আৰু ছেটিং সম্পৰ্কীয় তথ্যৰ লগতে ডিভাইচটোত কি ছফ্টৱেৰ ইনষ্টল কৰা আছে সেয়া চাব পাৰে।</translation>
 <translation id="2044014337866019681">ছেশ্বনটো আনলক কৰিবলৈ অনুগ্ৰহ কৰি আপুনি <ph name="ACCOUNT" /> সত্যাপন কৰি থকাটো নিশ্চিত কৰক।</translation>
 <translation id="2044750031738659219">{0,plural, =1{অতিথিৰ ৱিণ্ড’ বন্ধ কৰক}one{অতিথিৰ ৱিণ্ড’ (# খন ৱিণ্ড’) বন্ধ কৰক}other{অতিথিৰ ৱিণ্ড’ (# খন ৱিণ্ড’) বন্ধ কৰক}}</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
@@ -3662,7 +3660,6 @@
 <translation id="3566211766752891194">টেবৰ মেম’ৰীৰ ব্যৱহাৰ দেখুৱাওক</translation>
 <translation id="3566325075220776093">এই ডিভাইচটোৰ পৰা</translation>
 <translation id="3566721612727112615">কোনো ছাইট যোগ কৰা হোৱা নাই</translation>
-<translation id="3566788242120166275">আপোনাৰ ইতিমধ্যে থকা ব্ৰাউজিঙৰ ডেটা পূৰ্বৰে পৰা থকা প্ৰ’ফাইলত থাকিব। এই নতুন প্ৰ’ফাইলটোত আগৰ কোনো ব্ৰাউজিঙৰ ডেটা নাথাকিব।</translation>
 <translation id="3567168891086460374">অন্য ধৰণে ছেভ কৰক</translation>
 <translation id="3567284462585300767">আপোনাৰ ওচৰে-পাজৰে থকা লোকৰ পৰা ফাইল পাবলৈ আৰু গ্ৰহণ কৰিবলৈ দৃশ্যমান হওক</translation>
 <translation id="356738834800832239">আপোনাৰ পাছৱৰ্ড ছেভ কৰা হৈছে</translation>
@@ -3829,7 +3826,6 @@
 <translation id="3685598397738512288">Linuxৰ USBৰ অগ্ৰাধিকাৰসমূহ</translation>
 <translation id="3687598459967813435">সদায়েই <ph name="WEBSITE" />ৰ পৰা জাননী লাভ কৰাৰ অনুমতি দিয়ক</translation>
 <translation id="368789413795732264">ফাইলটো পঢ়িবলৈ চেষ্টা কৰোঁতে কিবা আসোঁৱাহ হৈছে: <ph name="ERROR_TEXT" />।</translation>
-<translation id="3687957587012862163">নহয়, এইটো আপোনাৰ নতুন প্ৰ’ফাইললৈ স্থানান্তৰ কৰক</translation>
 <translation id="3688507211863392146">আপুনি এপ্লিকেশ্বনটোত খোলা ফাইল আৰু ফ'ল্ডাৰসমূহত লিখক</translation>
 <translation id="3688526734140524629">চেনেল সলনি কৰক</translation>
 <translation id="3688578402379768763">আপ-টু-ডে’ট আছে</translation>
@@ -3888,7 +3884,6 @@
 <translation id="37143699183660101">কাৰ্ছৰৰ সুস্থিৰতা</translation>
 <translation id="3714610938239537183">৪ টা পদক্ষেপৰ ২ নম্বৰটো: ৰপ্তানি কৰিবলৈ ডায়গন’ষ্টিক ডেটা বাছনি কৰক</translation>
 <translation id="3716065403310915079"><ph name="VM_NAME" /> ইনষ্টলাৰ</translation>
-<translation id="3717256685838828428">এই প্ৰ’ফাইলটো আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা কৰে, যি কিছুমান তথ্য চাব পাৰে, যেনে</translation>
 <translation id="3719245268140483218">ডিভাইচৰ কাৰ্যকলাপ</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> পূৰ কৰা হৈছে।</translation>
 <translation id="3719826155360621982">গৃহ পৃষ্ঠা</translation>
@@ -4920,7 +4915,6 @@
 <translation id="4426857487270413362">ইনষ্টলাৰ ফাইল ডাউনল’ড কৰিবলৈ সক্ষম নহ’ল। অনুগ্ৰহ কৰি আপোনাৰ ইণ্টাৰনেট সংযোগ আৰু আপোনাৰ ডিস্কত পৰ্যাপ্ত খালী থকা আছেনে নাই সেয়া পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক। আসোঁৱাহ ক’ডটো হৈছে <ph name="ERROR" />।</translation>
 <translation id="4427111270137140798"><ph name="COUNT" /> বাৰ চিনাক্ত কৰা হৈছে</translation>
 <translation id="4427365070557649936">নিশ্চিতকৰণৰ ক'ড সত্যাপন কৰি থকা হৈছে...</translation>
-<translation id="4428579202668721841">আপোনাৰ কৰ্মস্থানৰ প্ৰ’ফাইলৰ পৰা ইতিমধ্যে থকা ব্ৰাউজিঙৰ ডেটা পৃথক কৰি ৰাখিবনে?</translation>
 <translation id="4429163740524851942">কায়িক কীব’ৰ্ডৰ লে’আউট</translation>
 <translation id="4430019312045809116">ভলিউম</translation>
 <translation id="443031431654216610">কেৱল সংখ্যা ব্যৱহাৰ কৰক</translation>
@@ -6087,7 +6081,6 @@
 <translation id="5276357196618041410">প্ৰথমে লগইন নকৰাকৈ কনফিগাৰেশ্বন ছেভ কৰিব নোৱাৰি</translation>
 <translation id="5277127016695466621">ছাইডৰ পেনেল দেখুৱাওক</translation>
 <translation id="5278823018825269962">স্থিতিৰ আইডি</translation>
-<translation id="5279214046729249716">হয়, সেয়া পৃথক কৰি ৰাখক</translation>
 <translation id="5279600392753459966">আটাইবোৰ অৱৰোধ কৰক</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" />ৰ বাবে ক্ৰিডেনশ্বিয়েলসমূহ আপডে’ট কৰক</translation>
 <translation id="5280426389926346830">শ্বৰ্টকাট সৃষ্টি কৰিবনে?</translation>
@@ -6413,7 +6406,6 @@
 <translation id="5503982651688210506"><ph name="HOST" />ক আপোনাৰ কেমেৰা ব্যৱহাৰ আৰু লৰচৰ কৰিবলৈ আৰু আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিবলৈ দিয়াটো অব্যাহত ৰাখক</translation>
 <translation id="5505307013568720083">চিয়াহী শেষ হৈছে</translation>
 <translation id="5507756662695126555">প্ৰত্যাখ্যান নকৰা</translation>
-<translation id="5508864312047847614">আপোনাৰ বিদ্যালয়ৰ প্ৰ’ফাইলৰ পৰা ইতিমধ্যে থকা ব্ৰাউজিঙৰ ডেটা পৃথক কৰি ৰাখিবনে?</translation>
 <translation id="5509693895992845810">ইয়াৰ এটা &amp;হিচাপে ছেভ কৰক...</translation>
 <translation id="5509914365760201064">প্ৰদানকাৰী: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Googleৰ পৰা প্ৰতিচ্ছবিৰ বিৱৰণ পাওক</translation>
@@ -6866,7 +6858,6 @@
 <translation id="5854066326260337683">বৰ্তমান LBS অক্ষম কৰা আছে। আপুনি <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" /> নীতিটো ছেট কৰি LBS সক্ষম কৰিব পাৰে।</translation>
 <translation id="5854912040170951372">পিজ্জাৰ টুকুৰা</translation>
 <translation id="5855267860608268405">পৰিচিত ৱাই-ফাই নেটৱৰ্কসমূহ</translation>
-<translation id="5855375823365231964">এই প্ৰ’ফাইলটোৰ বিষয়ে</translation>
 <translation id="5855643921295613558">০.৬ছেকেণ্ড</translation>
 <translation id="5856721540245522153">ডিবাগিং সুবিধা সক্ষম কৰক</translation>
 <translation id="5857090052475505287">নতুন ফ’ল্ডাৰ</translation>
@@ -7229,7 +7220,6 @@
 <translation id="6113942107547980621">স্মার্ট লক ব্যৱহাৰ কৰিবলৈ, আপোনাৰ ফ'নত প্ৰাথমিক ব্যৱহাৰকাৰীৰ প্ৰ'ফাইল ব্যৱহাৰ কৰক</translation>
 <translation id="6116921718742659598">ভাষা আৰু ইনপুট ছেটিংসমূহ সলনি কৰক</translation>
 <translation id="6119008366402292080">কোনো প্ৰিণ্টাৰ উপলব্ধ নহয়</translation>
-<translation id="6119068870709745878">এই প্ৰ’ফাইলটো <ph name="PROFILE_MANAGER" />এ পৰিচালনা কৰে, যি কিছুমান তথ্য চাব পাৰে, যেনে</translation>
 <translation id="6119927814891883061">ডিভাইচৰ নাম <ph name="DEVICE_NAME" /> কৰক</translation>
 <translation id="6119972796024789243">ৰং শুধৰণী</translation>
 <translation id="6121773125605585883"><ph name="WEBSITE" />ৰ বাবে <ph name="USERNAME" /> ব্যৱহাৰকাৰীৰ নামৰ সৈতে পাছৱৰ্ড চাওক</translation>
@@ -7438,6 +7428,7 @@
 <translation id="6264060420924719834">এই এপ্‌টোত অন্য ছাইটৰ ৱেব সমল আছে</translation>
 <translation id="6264365405983206840">&amp;সকলো বাছনি কৰক</translation>
 <translation id="6264376385120300461">তথাপি ডাউনল’ড কৰক</translation>
+<translation id="6264485186158353794">পূৰ্বৱৰ্তী পৃষ্ঠাটোলৈ উভতি যাওক</translation>
 <translation id="6264520534872750757">ডিভাইচটো ব্যৱহাৰ কৰাটো অব্যাহত ৰাখক</translation>
 <translation id="6264636978858465832">Password Managerক অধিক এক্সেছৰ আৱশ্যক</translation>
 <translation id="626495329434552273">আপোনাৰ কীব’ৰ্ডৰ ইনপুট অ’ভাৰৰাইড কৰিবলৈ অনুমতি দিয়া হৈছে</translation>
@@ -7653,7 +7644,6 @@
 <translation id="6434104957329207050">পইণ্ট স্কেনিঙৰ গতিবেগ</translation>
 <translation id="6434309073475700221">প্ৰত্যাখ্যান কৰক</translation>
 <translation id="6434325376267409267">আপুনি <ph name="APP_NAME" /> ব্যৱহাৰ কৰিব পৰা হোৱাৰ পূর্বে আপোনাৰ ডিভাইচটো আপডে’ট কৰিব লাগিব।</translation>
-<translation id="6434690603850475457">হয়, এইটো পৃথক কৰি ৰাখক (চুপাৰিছ কৰা হৈছে)</translation>
 <translation id="6434755719322447931">বিশৃংখল</translation>
 <translation id="6435339218366409950">কেপশ্বনসমূহ অনুবাদ কৰিবলৈ ভাষা বাছনি কৰক</translation>
 <translation id="6436164536244065364">Web Storeত চাওক</translation>

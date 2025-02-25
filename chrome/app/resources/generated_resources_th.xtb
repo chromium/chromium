@@ -585,7 +585,6 @@
 <translation id="1401216725754314428">ดูข้อมูลเพิ่มเติมเกี่ยวกับเว็บไซต์ที่เกี่ยวข้องในแท็บใหม่</translation>
 <translation id="1402426911829176748">กำลังเชื่อมต่อกับอุปกรณ์</translation>
 <translation id="1403222014593521787">เชื่อมต่อพร็อกซีไม่ได้</translation>
-<translation id="1405336513195181336">ซึ่งรวมถึงบุ๊กมาร์ก ส่วนขยาย และประวัติการท่องเว็บไซต์</translation>
 <translation id="1405779994569073824">ขัดข้อง</translation>
 <translation id="1406500794671479665">กำลังยืนยันความถูกต้อง...</translation>
 <translation id="1407069428457324124">ธีมมืด</translation>
@@ -1514,7 +1513,6 @@
 <translation id="2040894699575719559">ตำแหน่งถูกบล็อก</translation>
 <translation id="2041246176170574368">การอัปเดตความปลอดภัยจะสิ้นสุดเร็วๆ นี้ ประหยัดอย่างน้อย $50 เมื่อซื้อ Chromebook เครื่องใหม่</translation>
 <translation id="2042279886444479655">โปรไฟล์ที่ใช้งานอยู่</translation>
-<translation id="2042427131767688936">องค์กรของคุณสามารถดูข้อมูลเกี่ยวกับระบบปฏิบัติการ เบราว์เซอร์ การตั้งค่า รวมทั้งซอฟต์แวร์ที่ติดตั้งในอุปกรณ์เพื่อให้ใช้อุปกรณ์นี้ได้อย่างปลอดภัย</translation>
 <translation id="2044014337866019681">โปรดยืนยันบัญชี <ph name="ACCOUNT" /> เพื่อปลดล็อกเซสชัน</translation>
 <translation id="2044750031738659219">{0,plural, =1{ปิดหน้าต่างสำหรับผู้มาเยือน}other{ปิดหน้าต่างสำหรับผู้มาเยือน (# หน้าต่าง)}}</translation>
 <translation id="204497730941176055">ชื่อแม่แบบใบรับรองของ Microsoft</translation>
@@ -3650,7 +3648,6 @@
 <translation id="3566211766752891194">แสดงการใช้งานหน่วยความจำของแท็บ</translation>
 <translation id="3566325075220776093">จากอุปกรณ์นี้</translation>
 <translation id="3566721612727112615">ยังไม่ได้เพิ่มเว็บไซต์</translation>
-<translation id="3566788242120166275">ข้อมูลการท่องเว็บจะยังคงอยู่ในโปรไฟล์ที่มีอยู่ โปรไฟล์ใหม่นี้จะไม่มีข้อมูลการท่องเว็บก่อนหน้า</translation>
 <translation id="3567168891086460374">บันทึกด้วยวิธีอื่น</translation>
 <translation id="3567284462585300767">เปลี่ยนให้อุปกรณ์มองเห็นได้เพื่อรับและยอมรับไฟล์กับผู้ที่อยู่ใกล้เคียง</translation>
 <translation id="356738834800832239">บันทึกรหัสผ่านของคุณแล้ว</translation>
@@ -3817,7 +3814,6 @@
 <translation id="3685598397738512288">ค่ากำหนด USB ใน Linux</translation>
 <translation id="3687598459967813435">อนุญาตการแจ้งเตือนจาก <ph name="WEBSITE" /> เสมอ</translation>
 <translation id="368789413795732264">เกิดข้อผิดพลาดขณะพยายามเขียนไฟล์: <ph name="ERROR_TEXT" /></translation>
-<translation id="3687957587012862163">ไม่ ย้ายข้อมูลดังกล่าวมายังโปรไฟล์ใหม่นี้</translation>
 <translation id="3688507211863392146">เขียนไปยังไฟล์และโฟลเดอร์ที่คุณเปิดในแอปพลิเคชัน</translation>
 <translation id="3688526734140524629">เปลี่ยนช่อง</translation>
 <translation id="3688578402379768763">ทันสมัย</translation>
@@ -3876,7 +3872,6 @@
 <translation id="37143699183660101">ความเสถียรของเคอร์เซอร์</translation>
 <translation id="3714610938239537183">ขั้นตอนที่ 2 จาก 4: เลือกข้อมูลการวินิจฉัยที่จะส่งออก</translation>
 <translation id="3716065403310915079">โปรแกรมติดตั้ง <ph name="VM_NAME" /></translation>
-<translation id="3717256685838828428">โปรไฟล์นี้จัดการโดยองค์กรของคุณ ซึ่งสามารถดูข้อมูลบางส่วนได้ รวมถึง</translation>
 <translation id="3719245268140483218">เหตุการณ์ในอุปกรณ์</translation>
 <translation id="3719310907809321183">กรอกข้อมูล <ph name="CARD_IDENTIFIER" /> แล้ว</translation>
 <translation id="3719826155360621982">หน้าแรก</translation>
@@ -4909,7 +4904,6 @@
 <translation id="4426857487270413362">ดาวน์โหลดไฟล์โปรแกรมติดตั้งไม่ได้ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและดูว่ามีพื้นที่ว่างในดิสก์เพียงพอ แล้วลองอีกครั้ง รหัสข้อผิดพลาดคือ <ph name="ERROR" /></translation>
 <translation id="4427111270137140798">ตรวจพบ <ph name="COUNT" /> ครั้ง</translation>
 <translation id="4427365070557649936">กำลังตรวจสอบรหัสยืนยัน...</translation>
-<translation id="4428579202668721841">แยกข้อมูลการท่องเว็บที่มีอยู่ออกจากโปรไฟล์งานไหม</translation>
 <translation id="4429163740524851942">รูปแบบแป้นพิมพ์จริง</translation>
 <translation id="4430019312045809116">ระดับเสียง</translation>
 <translation id="443031431654216610">ใส่เฉพาะตัวเลขเท่านั้น</translation>
@@ -6075,7 +6069,6 @@
 <translation id="5276357196618041410">ไม่สามารถบันทึกการกำหนดค่าโดยที่ไม่เข้าสู่ระบบ</translation>
 <translation id="5277127016695466621">แสดงแผงด้านข้าง</translation>
 <translation id="5278823018825269962">รหัสสถานะ</translation>
-<translation id="5279214046729249716">ใช่ แยกกัน</translation>
 <translation id="5279600392753459966">บล็อกทั้งหมด</translation>
 <translation id="5280064835262749532">อัปเดตข้อมูลเข้าสู่ระบบสำหรับ <ph name="SHARE_PATH" /></translation>
 <translation id="5280426389926346830">สร้างทางลัดไหม</translation>
@@ -6400,7 +6393,6 @@
 <translation id="5503982651688210506">อนุญาตให้ <ph name="HOST" /> ใช้และเคลื่อนย้ายกล้อง รวมถึงใช้ไมโครโฟนของคุณต่อไป</translation>
 <translation id="5505307013568720083">หมึกหมด</translation>
 <translation id="5507756662695126555">การป้องกันการปฏิเสธความรับผิดชอบต่อข้อมูล</translation>
-<translation id="5508864312047847614">แยกข้อมูลการท่องเว็บที่มีอยู่ออกจากโปรไฟล์โรงเรียนไหม</translation>
 <translation id="5509693895992845810">บันทึกเ&amp;ป็น...</translation>
 <translation id="5509914365760201064">ผู้ออก: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">รับคำอธิบายรูปภาพจาก Google</translation>
@@ -6851,7 +6843,6 @@
 <translation id="5854066326260337683">LBS ปิดใช้อยู่ คุณเปิดใช้ LBS ได้โดยกำหนดนโยบาย <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" /></translation>
 <translation id="5854912040170951372">สไลซ์</translation>
 <translation id="5855267860608268405">เครือข่าย Wi-Fi ที่รู้จัก</translation>
-<translation id="5855375823365231964">เกี่ยวกับโปรไฟล์นี้</translation>
 <translation id="5855643921295613558">0.6 วินาที</translation>
 <translation id="5856721540245522153">เปิดใช้ฟีเจอร์การแก้ไขข้อบกพร่อง</translation>
 <translation id="5857090052475505287">โฟลเดอร์ใหม่</translation>
@@ -7213,7 +7204,6 @@
 <translation id="6113942107547980621">โปรดเปลี่ยนเป็นโปรไฟล์ผู้ใช้หลักในโทรศัพท์เพื่อใช้ Smart Lock</translation>
 <translation id="6116921718742659598">เปลี่ยนการตั้งค่าภาษาและการป้อนข้อมูล</translation>
 <translation id="6119008366402292080">ไม่มีเครื่องพิมพ์</translation>
-<translation id="6119068870709745878">โปรไฟล์นี้จัดการโดย <ph name="PROFILE_MANAGER" /> ซึ่งสามารถดูข้อมูลบางส่วนได้ รวมถึง</translation>
 <translation id="6119927814891883061">ตั้งชื่ออุปกรณ์ว่า <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">การแก้สี</translation>
 <translation id="6121773125605585883">ดูรหัสผ่านที่มีชื่อผู้ใช้ <ph name="USERNAME" /> สำหรับ <ph name="WEBSITE" /></translation>
@@ -7422,6 +7412,7 @@
 <translation id="6264060420924719834">แอปนี้มีเนื้อหาจากเว็บไซต์อื่น</translation>
 <translation id="6264365405983206840">เลือก&amp;ทั้งหมด</translation>
 <translation id="6264376385120300461">ดาวน์โหลดต่อไป</translation>
+<translation id="6264485186158353794">กลับสู่ความปลอดภัย</translation>
 <translation id="6264520534872750757">ใช้อุปกรณ์ต่อไป</translation>
 <translation id="6264636978858465832">เครื่องมือจัดการรหัสผ่านต้องการเข้าถึงเพิ่มเติม</translation>
 <translation id="626495329434552273">ได้รับอนุญาตให้ลบล้างอินพุตจากแป้นพิมพ์</translation>
@@ -7637,7 +7628,6 @@
 <translation id="6434104957329207050">ความเร็วในการสแกนจุด</translation>
 <translation id="6434309073475700221">ทิ้ง</translation>
 <translation id="6434325376267409267">คุณต้องอัปเดตอุปกรณ์ก่อนจึงจะใช้ <ph name="APP_NAME" /> ได้</translation>
-<translation id="6434690603850475457">ใช่ แยกข้อมูล (แนะนำ)</translation>
 <translation id="6434755719322447931">วุ่นวาย</translation>
 <translation id="6435339218366409950">เลือกภาษาเป้าหมายของคำบรรยาย</translation>
 <translation id="6436164536244065364">ดูในเว็บสโตร์</translation>

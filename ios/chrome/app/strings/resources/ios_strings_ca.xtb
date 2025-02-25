@@ -976,6 +976,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5250371859659394278">Des d'una font desconeguda</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un camp obligatori és buit. Emplena'l abans de desar.}other{Alguns camps obligatoris són buits. Emplena'ls abans de desar.}}</translation>
 <translation id="5271549068863921519">Desa la contrasenya</translation>
+<translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vol que t'uneixis a un grup de pestanyes. Tothom que tingui l'enllaç podrà editar totes les pestanyes, així que ves amb compte en unir-t'hi. L'enllaç caducarà d'aquí a 48 hores.</translation>
 <translation id="5279214046729249716">Sí, mantén-les separades</translation>
 <translation id="5279600392753459966">Bloqueja'ls tots</translation>
 <translation id="5282340693022193851">Per rebre notificacions de seguiment de preus, activa-les a la configuració d'iOS.</translation>
@@ -994,7 +995,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5355191726083956201">La protecció millorada està activada</translation>
 <translation id="537853552771686272">Gestiona els temes i els llocs web que t'interessen</translation>
 <translation id="5395707839134961196">Amaga els detalls del motor de cerca</translation>
-<translation id="541276233349960923">Utilitza contrasenyes en tots els teus dispositius</translation>
 <translation id="5414763847370083940">Rebràs una alerta si el preu baixa en qualsevol lloc web.</translation>
 <translation id="5415289094036440596">Les claus d'accés no es poden compartir</translation>
 <translation id="5416455648658732408">Mou a un grup de pestanyes</translation>

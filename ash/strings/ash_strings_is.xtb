@@ -176,6 +176,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1546492247443594934">Skrifborð 2</translation>
 <translation id="1546930421365146760">Biddu kerfisstjórann um að setja þetta tæki upp á Google stjórnborði stjórnanda</translation>
 <translation id="1549512626801247439">geymslustjórnun</translation>
+<translation id="1549721333775633305">Opna stillingar flýtideilingar. Slökkt á flýtideilingu</translation>
 <translation id="1550406609415860283">Tiltæk tæki</translation>
 <translation id="1550523713251050646">Smelltu til að sjá fleiri valkosti</translation>
 <translation id="1555130319947370107">Blár</translation>
@@ -1474,6 +1475,7 @@ Engin tæki eru tengd.</translation>
 <translation id="5856638668464565213">Ekki er kveikt á <ph name="NETWORK_NAME" />.</translation>
 <translation id="5860033963881614850">Slökkt</translation>
 <translation id="5860491529813859533">Kveikja</translation>
+<translation id="5864691701242730005">Opna stillingar flýtideilingar. <ph name="VISIBILITY" /> sýnileiki valinn</translation>
 <translation id="5864748620896638071">Rafhlaða <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Safnar upplýsingum um netkerfi</translation>
 <translation id="5867606971598166637">Kerfisstjórinn fylgist með skjáunum þínum</translation>
@@ -2262,6 +2264,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="851660987304951246">Notaðu „Hjálpa mér að lesa“ til að gera snögga samantekt á efni eða spyrja spurninga</translation>
 <translation id="8517041960877371778">Ekki er víst að <ph name="DEVICE_TYPE" /> hlaðist á meðan kveikt er á tölvunni.</translation>
 <translation id="8535393432370007982">Afturkalla röðun eftir lit</translation>
+<translation id="8536886494750559755">Opna stillingar flýtideilingar. Sýnilegt öllum í <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Texti afritaður á klippiborð</translation>
 <translation id="8541078764854166027">Myndavélarrammi</translation>
 <translation id="8542053257095774575">Engin vistuð skrifborð eða sniðmát</translation>

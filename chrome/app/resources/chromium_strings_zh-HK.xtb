@@ -109,7 +109,6 @@
 <translation id="2483889755041906834">在 Chromium 中</translation>
 <translation id="2485422356828889247">解除安裝</translation>
 <translation id="2513154137948333830">必須重新啟動：<ph name="INSTALL_SUCCESS" /></translation>
-<translation id="2522009821193247726">如要繼續，請使用 <ph name="EMAIL" /> 登入 Chromium，確保符合機構的政策。</translation>
 <translation id="2542968102051442371">使用「圖片搜尋」選取文字</translation>
 <translation id="2554739539410784893">Chromium 正在嘗試更換現有密碼。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="2560420686485554789">Chromium 需要儲存空間的存取權才能下載檔案</translation>
@@ -434,7 +433,6 @@
 <translation id="6964305034639999644">在 Chromium 無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6978145336957848883">安全性弱的密碼很容易被猜到。讓 Chromium <ph name="BEGIN_LINK" />為您建立並記住安全性強的密碼<ph name="END_LINK" />。</translation>
-<translation id="6980074797973263542">機構可查看和管理瀏覽資料 (例如書籤、記錄和密碼)，但無法查看個人 Chromium 設定檔中的瀏覽資料。</translation>
 <translation id="6985329841647292029">Chromium 作業系統條款</translation>
 <translation id="6990124437352146030">Chromium 需要取得權限，才能讓這個網站存取您的麥克風</translation>
 <translation id="7003299027384820442">輸入用於在帳戶 <ph name="ACCOUNT_EMAIL" /> 中使用及儲存 Chromium 資料的密碼短語</translation>

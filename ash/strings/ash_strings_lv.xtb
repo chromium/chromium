@@ -176,6 +176,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1546492247443594934">2. galds</translation>
 <translation id="1546930421365146760">Lūdziet administratoram iestatīt šo ierīci Google administratora konsolē.</translation>
 <translation id="1549512626801247439">krātuves pārvaldība</translation>
+<translation id="1549721333775633305">Rādīt ātrās kopīgošanas iestatījumus. Ātrā kopīgošana ir atspējota.</translation>
 <translation id="1550406609415860283">Ir pieejamas ierīces</translation>
 <translation id="1550523713251050646">Noklikšķiniet, lai skatītu citas iespējas.</translation>
 <translation id="1555130319947370107">Zila</translation>
@@ -1474,6 +1475,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5856638668464565213">Tīkls <ph name="NETWORK_NAME" /> nav aktivizēts.</translation>
 <translation id="5860033963881614850">Izsl.</translation>
 <translation id="5860491529813859533">Ieslēgt</translation>
+<translation id="5864691701242730005">Rādīt ātrās kopīgošanas iestatījumus. <ph name="VISIBILITY" />: redzamība ir atlasīta.</translation>
 <translation id="5864748620896638071">Akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="5867217927013474703">Notiek tīkla informācijas vākšana</translation>
 <translation id="5867606971598166637">Sistēmas administrators uzrauga jūsu ekrānus</translation>
@@ -2262,6 +2264,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="851660987304951246">Izmantojiet funkciju “Palīdzība lasīšanā”, lai ātri iegūtu satura apkopojumu vai uzdotu jautājumus</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ierīce, iespējams, netiks uzlādēta, kamēr tā būs ieslēgta.</translation>
 <translation id="8535393432370007982">Atsaukt kārtošanu pēc krāsas</translation>
+<translation id="8536886494750559755">Rādīt ātrās kopīgošanas iestatījumus. Redzama visiem šādu laika periodu: <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Teksts ir nokopēts starpliktuvē.</translation>
 <translation id="8541078764854166027">Kadrēšana</translation>
 <translation id="8542053257095774575">Nav saglabātu darbvietu vai veidņu</translation>

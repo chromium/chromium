@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">Trang này bị Chromium chặn</translation>
 <translation id="48558539577516920">Cho phép Chromium truy cập mạng trong cài đặt tường lửa hoặc diệt vi-rút 
         của bạn.</translation>
+<translation id="4949828774841497663">Chuyển đến phần Ứng dụng &gt; Cài đặt hệ thống &gt; Mạng, chọn
+          mạng đang hoạt động, nhấp vào nút Chi tiết..., rồi bỏ chọn mọi máy chủ proxy
+          có thể đã được chọn.</translation>
 <translation id="580822234363523061">Đi tới
           menu Chromium &gt;
           <ph name="SETTINGS_TITLE" />

@@ -585,7 +585,6 @@
 <translation id="1401216725754314428">Холбоотой сайтуудын талаарх нэмэлт мэдээллийг шинэ табд авах</translation>
 <translation id="1402426911829176748">Таны төхөөрөмжид холбогдож байна</translation>
 <translation id="1403222014593521787">Проксид холбогдож чадсангүй</translation>
-<translation id="1405336513195181336">Үүнд хавчуурга, өргөтгөл, таны сайтуудын хөтчийн түүх багтана.</translation>
 <translation id="1405779994569073824">Эвдэрсэн.</translation>
 <translation id="1406500794671479665">Шалгаж байна...</translation>
 <translation id="1407069428457324124">Бараан загвар</translation>
@@ -1519,7 +1518,6 @@
 <translation id="2040894699575719559">Байршлыг блоклосон</translation>
 <translation id="2041246176170574368">Аюулгүй байдлын шинэчлэлтүүд удахгүй дуусна. Шинэ Chromebook-д $50 эсвэл үүнээс ихийг хэмнээрэй.</translation>
 <translation id="2042279886444479655">Идэвхтэй профайлууд</translation>
-<translation id="2042427131767688936">Энэ төхөөрөмжийг аюулгүй ашиглах боломжтой эсэхийг нягтлахын тулд танай байгууллага төхөөрөмжийн үйлдлийн систем, хөтөч, тохиргоо, төхөөрөмж дээр суулгасан программ хангамжийн талаарх мэдээллийг харах боломжтой.</translation>
 <translation id="2044014337866019681">Та харилцан үйлдлийн түгжээг тайлахын тулд <ph name="ACCOUNT" />-г баталгаажуулж байгаа эсэхээ шалгана уу.</translation>
 <translation id="2044750031738659219">{0,plural, =1{Зочны цонхыг хаах}other{Зочны цонхыг (# цонх) хаах}}</translation>
 <translation id="204497730941176055">Майкрософт гэрчилгээний загварын нэр</translation>
@@ -3660,7 +3658,6 @@
 <translation id="3566211766752891194">Табын санах ойн ашиглалтыг харуулах</translation>
 <translation id="3566325075220776093">Энэ төхөөрөмжөөс</translation>
 <translation id="3566721612727112615">Нэмсэн сайт алга</translation>
-<translation id="3566788242120166275">Таны одоо байгаа интернэтээр үзсэн өгөгдөл одоо байгаа профайлд үлдэнэ. Энэ шинэ профайлд өмнөх аливаа интернэтээр үзсэн өгөгдлийг агуулахгүй.</translation>
 <translation id="3567168891086460374">Өөр аргаар хадгалах</translation>
 <translation id="3567284462585300767">Эргэн тойрныхоо хүмүүсээс файл хүлээн авч, тэдэнд илгээхийн тулд харагдах боломжтой болно уу</translation>
 <translation id="356738834800832239">Таны нууц үгийг хадгалсан</translation>
@@ -3827,7 +3824,6 @@
 <translation id="3685598397738512288">Linux-н USB сонголт</translation>
 <translation id="3687598459967813435"><ph name="WEBSITE" />-н мэдэгдлийг үргэлж зөвшөөрөх</translation>
 <translation id="368789413795732264">Файлыг бичиж авахыг оролдож байх үед алдаа гарлаа <ph name="ERROR_TEXT" /> .</translation>
-<translation id="3687957587012862163">Үгүй, өгөгдлийг энэ шинэ профайл руу зөө</translation>
 <translation id="3688507211863392146">Аппликейшн дотор өөрийн нээсэн файл болон хавтас бичнэ үү.</translation>
 <translation id="3688526734140524629">Сувгийг өөрчлөх</translation>
 <translation id="3688578402379768763">Шинэчлэгдсэн</translation>
@@ -3886,7 +3882,6 @@
 <translation id="37143699183660101">Курсорын тогтвортой байдал</translation>
 <translation id="3714610938239537183">4-ийн 2-р алхам: Экспортлох оношилгооны өгөгдлийг сонгох</translation>
 <translation id="3716065403310915079"><ph name="VM_NAME" /> суулгагч</translation>
-<translation id="3717256685838828428">Энэ профайлыг танай байгууллага удирддаг бөгөөд таны зарим мэдээллийг харах боломжтой. Үүнд:</translation>
 <translation id="3719245268140483218">Төхөөрөмжийн үйл явдал</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" />-г бөглөсөн.</translation>
 <translation id="3719826155360621982">Нүүр хуудас</translation>
@@ -4918,7 +4913,6 @@
 <translation id="4426857487270413362">Суулгагч файлуудыг татах боломжгүй. Интернэт холболтоо болон танд дискийн хангалттай сул зай байгаа болохыг шалгаад, дахин оролдоно уу. Алдааны код нь <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798"><ph name="COUNT" /> удаа илэрсэн</translation>
 <translation id="4427365070557649936">Баталгаажуулах кодыг бататгаж байна...</translation>
-<translation id="4428579202668721841">Одоо байгаа интернэтээр үзсэн өгөгдлийг таны ажлын профайлаас тусад нь байлгах уу?</translation>
 <translation id="4429163740524851942">Биет гарын бүдүүвч</translation>
 <translation id="4430019312045809116">Хэмжээ</translation>
 <translation id="443031431654216610">Зөвхөн цифр ашиглана уу</translation>
@@ -6085,7 +6079,6 @@
 <translation id="5276357196618041410">Эхлээд нэвтрэхгүйгээр тохируулгыг хадгалах боломжгүй</translation>
 <translation id="5277127016695466621">Хажуугийн самбарыг харуулах</translation>
 <translation id="5278823018825269962">Төлөвийн Id</translation>
-<translation id="5279214046729249716">Тийм, өгөгдлийг тусад нь байлга</translation>
 <translation id="5279600392753459966">Бүгдийг хориглох</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" />-н мандат үнэмлэхийг шинэчлэх</translation>
 <translation id="5280426389926346830">Товчлол үүсгэх үү?</translation>
@@ -6411,7 +6404,6 @@
 <translation id="5503982651688210506"><ph name="HOST" />-д таны камерыг ашиглах, хөдөлгөх болон микрофоныг ашиглахыг үргэлжлүүлэн зөвшөөрөх</translation>
 <translation id="5505307013568720083">Бэх дууссан</translation>
 <translation id="5507756662695126555">Үл цуцлах</translation>
-<translation id="5508864312047847614">Одоо байгаа интернэтээр үзсэн өгөгдлийг сургуулийн профайлаасаа тусад нь байлгах уу?</translation>
 <translation id="5509693895992845810">... байдлаар хадгалах</translation>
 <translation id="5509914365760201064">Гаргагч: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Google-с зургийн тайлбар авах</translation>
@@ -6865,7 +6857,6 @@
 <translation id="5854066326260337683">LBS-г одоогоор идэвхгүй болгосон байна. Та <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" /> бодлогыг тохируулснаар LBS-г идэвхжүүлэх боломжтой.</translation>
 <translation id="5854912040170951372">Slice</translation>
 <translation id="5855267860608268405">Мэдэгдэж байгаа Wi-Fi сүлжээнүүд</translation>
-<translation id="5855375823365231964">Энэ профайлын тухай</translation>
 <translation id="5855643921295613558">0.6 секунд</translation>
 <translation id="5856721540245522153">Вирусны эсрэг программыг идэвхжүүлэх</translation>
 <translation id="5857090052475505287">Шинэ хавтас</translation>
@@ -7227,7 +7218,6 @@
 <translation id="6113942107547980621">Smart Lock-г ашиглахын тулд утсан дээрээ үндсэн хэрэглэгчийн профайл руу сэлгэнэ үү</translation>
 <translation id="6116921718742659598">Хэл болон оролтын тохиргоог өөрчлөх</translation>
 <translation id="6119008366402292080">Боломжтой ямар ч хэвлэгч байхгүй</translation>
-<translation id="6119068870709745878">Энэ профайлыг <ph name="PROFILE_MANAGER" /> удирддаг бөгөөд энэ нь зарим мэдээллийг харах боломжтой. Үүнд:</translation>
 <translation id="6119927814891883061">Төхөөрөмжийг <ph name="DEVICE_NAME" /> гэж нэрлэх</translation>
 <translation id="6119972796024789243">Өнгөний засвар</translation>
 <translation id="6121773125605585883"><ph name="WEBSITE" />-н <ph name="USERNAME" /> хэрэглэгчийн нэртэй нууц үгийг харах</translation>
@@ -7436,6 +7426,7 @@
 <translation id="6264060420924719834">Энэ апп бусад сайтын веб контентыг агуулж байна</translation>
 <translation id="6264365405983206840">Бүгдийг сонгох</translation>
 <translation id="6264376385120300461">Ямартай ч татах</translation>
+<translation id="6264485186158353794">Аюулгүй байдалд буцах</translation>
 <translation id="6264520534872750757">Төхөөрөмжийг үргэлжлүүлэн ашиглах</translation>
 <translation id="6264636978858465832">Нууц үгний менежерт хандах илүү эрх шаардлагатай</translation>
 <translation id="626495329434552273">Таны гарын оролтыг дарахыг зөвшөөрсөн</translation>
@@ -7651,7 +7642,6 @@
 <translation id="6434104957329207050">Цэгээр скан хийх хурд</translation>
 <translation id="6434309073475700221">Хэрэгсэхгүй байх</translation>
 <translation id="6434325376267409267">Та <ph name="APP_NAME" />-г ашиглах боломжтой болохоос өмнө таны төхөөрөмжийг шинэчлэх хэрэгтэй.</translation>
-<translation id="6434690603850475457">Тийм, өгөгдлийг тусад нь байлгана (санал болгосон)</translation>
 <translation id="6434755719322447931">Замбараагүй</translation>
 <translation id="6435339218366409950">Тайлбарыг орчуулах хэлийг сонгоно уу</translation>
 <translation id="6436164536244065364">Веб Дэлгүүрт харах</translation>

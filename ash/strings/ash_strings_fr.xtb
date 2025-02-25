@@ -176,6 +176,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1546492247443594934">Bureau 2</translation>
 <translation id="1546930421365146760">Demandez à votre administrateur de configurer cet appareil dans la console d'administration Google</translation>
 <translation id="1549512626801247439">gestion de l'espace de stockage</translation>
+<translation id="1549721333775633305">Affichez les paramètres de Quick Share. Quick Share désactivé</translation>
 <translation id="1550406609415860283">Appareils disponibles</translation>
 <translation id="1550523713251050646">Cliquez pour obtenir plus d'options.</translation>
 <translation id="1555130319947370107">Bleu</translation>
@@ -1474,6 +1475,7 @@ Aucun appareil connecté.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> n'est pas activé.</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
+<translation id="5864691701242730005">Affichez les paramètres de Quick Share. Visibilité <ph name="VISIBILITY" /> sélectionnée</translation>
 <translation id="5864748620896638071"><ph name="BATTERY_PERCENTAGE" /> % de batterie</translation>
 <translation id="5867217927013474703">Récupération des infos du réseau</translation>
 <translation id="5867606971598166637">Votre administrateur système surveille vos écrans</translation>
@@ -2263,6 +2265,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="851660987304951246">Utilisez Aide à la lecture pour résumer rapidement un contenu ou poser des questions</translation>
 <translation id="8517041960877371778">Il est possible que votre appareil <ph name="DEVICE_TYPE" /> ne se recharge pas lorsqu'il est allumé.</translation>
 <translation id="8535393432370007982">Annuler le tri par couleur</translation>
+<translation id="8536886494750559755">Affichez les paramètres de Quick Share. Visible par tous pendant <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Texte copié dans le presse-papiers</translation>
 <translation id="8541078764854166027">Cadrage caméra</translation>
 <translation id="8542053257095774575">Aucun bureau ni modèle enregistré</translation>

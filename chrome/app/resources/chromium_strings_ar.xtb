@@ -108,7 +108,6 @@
 <translation id="2483889755041906834">‏في Chromium</translation>
 <translation id="2485422356828889247">إزالة التثبيت</translation>
 <translation id="2513154137948333830"><ph name="INSTALL_SUCCESS" />: يجب إعادة التشغيل.</translation>
-<translation id="2522009821193247726">‏للمتابعة، يجب تسجيل الدخول إلى Chromium باستخدام <ph name="EMAIL" />. ويضمن ذلك الامتثال لسياسات مؤسستك.</translation>
 <translation id="2542968102051442371">اختيار نص باستخدام ميزة "بحث بالصور"</translation>
 <translation id="2554739539410784893">‏يحاول Chromium استبدال كلمات المرور الحالية. للسماح بذلك، يُرجى كتابة كلمة المرور المستخدَمة في Windows.</translation>
 <translation id="2560420686485554789">‏يحتاج Chromium إلى الوصول إلى مساحة التخزين لتنزيل الملفات.</translation>
@@ -433,7 +432,6 @@
 <translation id="6964305034639999644">‏فتح الرابط في نافذة تصفح متخفٍ في Chromium</translation>
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6978145336957848883">‏من السهل تخمين كلمات المرور الضعيفة. يمكنك السماح لمتصفِّح Chromium <ph name="BEGIN_LINK" />بإنشاء كلمات مرور قوية وتذكُّرها نيابة عنك<ph name="END_LINK" />.</translation>
-<translation id="6980074797973263542">‏يمكن لمؤسستك الاطّلاع على بيانات التصفّح وإدارتها، مثل الإشارات المرجعية والسجلّ وكلمات المرور. ولا يمكنها الاطّلاع على بيانات التصفّح في الملفات الشخصية على Chromium.</translation>
 <translation id="6985329841647292029">‏بنود نظام التشغيل Chromium</translation>
 <translation id="6990124437352146030">‏يحتاج Chromium إلى إذن للوصول إلى الميكروفون من أجل الموقع الإلكتروني هذا.</translation>
 <translation id="7003299027384820442">‏يُرجى إدخال عبارة المرور لاستخدام بيانات Chromium وحفظها في حسابك (<ph name="ACCOUNT_EMAIL" />)</translation>

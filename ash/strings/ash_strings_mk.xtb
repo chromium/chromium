@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">Биро 2</translation>
 <translation id="1546930421365146760">Побарајте од администраторот да го постави уредов во „Администраторската конзола на Google“</translation>
 <translation id="1549512626801247439">управување со просторот</translation>
+<translation id="1549721333775633305">Прикажувај ги поставките за „Брзо споделување“. „Брзо споделување“ е оневозможена</translation>
 <translation id="1550406609415860283">Достапни уреди</translation>
 <translation id="1550523713251050646">Кликни за повеќе опции</translation>
 <translation id="1555130319947370107">Сина</translation>
@@ -1475,6 +1476,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> не е активирана.</translation>
 <translation id="5860033963881614850">Исклучено</translation>
 <translation id="5860491529813859533">Вклучи</translation>
+<translation id="5864691701242730005">Прикажувај ги поставките за „Брзо споделување“. Видливоста на <ph name="VISIBILITY" /> е избрана</translation>
 <translation id="5864748620896638071">Батерија: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5867217927013474703">Се прибираат податоци за мрежата</translation>
 <translation id="5867606971598166637">Администраторот на системот ги надгледува вашите екрани</translation>
@@ -2263,6 +2265,7 @@
 <translation id="851660987304951246">Користете „Помош при читање“ за брзо резимирање содржини или поставување прашања</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> може да не се полни додека е вклучен.</translation>
 <translation id="8535393432370007982">Поништете го редоследот на подредувањето по боја</translation>
+<translation id="8536886494750559755">Прикажувај ги поставките за „Брзо споделување“. Видливо за сите <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Текстот е копиран во привремената меморија.</translation>
 <translation id="8541078764854166027">Врамување камера</translation>
 <translation id="8542053257095774575">Нема зачувани работни површини или шаблони</translation>

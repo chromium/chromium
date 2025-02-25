@@ -176,6 +176,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1546492247443594934">Không gian làm việc 2</translation>
 <translation id="1546930421365146760">Hãy yêu cầu quản trị viên thiết lập thiết bị này trong Bảng điều khiển dành cho quản trị viên của Google</translation>
 <translation id="1549512626801247439">quản lý bộ nhớ</translation>
+<translation id="1549721333775633305">Hiện chế độ cài đặt của tính năng Chia sẻ nhanh. Đã tắt tính năng Chia sẻ nhanh</translation>
 <translation id="1550406609415860283">Có sẵn thiết bị</translation>
 <translation id="1550523713251050646">Nhấp để xem các tùy chọn khác</translation>
 <translation id="1555130319947370107">Xanh lam</translation>
@@ -1474,6 +1475,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> chưa được kích hoạt.</translation>
 <translation id="5860033963881614850">Tắt</translation>
 <translation id="5860491529813859533">Bật</translation>
+<translation id="5864691701242730005">Hiện chế độ cài đặt của tính năng Chia sẻ nhanh. Đã chọn chế độ hiển thị <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071"><ph name="BATTERY_PERCENTAGE" />% pin</translation>
 <translation id="5867217927013474703">Đang thu thập thông tin mạng</translation>
 <translation id="5867606971598166637">Quản trị viên hệ thống đang giám sát các màn hình của bạn</translation>
@@ -2262,6 +2264,7 @@ Mới cài đặt</translation>
 <translation id="851660987304951246">Dùng tính năng Help me read để nhanh chóng tóm tắt nội dung hoặc đặt câu hỏi</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> của bạn có thể không sạc khi được bật.</translation>
 <translation id="8535393432370007982">Huỷ thứ tự sắp xếp theo màu</translation>
+<translation id="8536886494750559755">Hiện chế độ cài đặt của tính năng Chia sẻ nhanh. Mọi người đều nhìn thấy trong <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Đã sao chép văn bản vào Bảng nhớ tạm</translation>
 <translation id="8541078764854166027">Lấy khung hình</translation>
 <translation id="8542053257095774575">Bạn chưa lưu không gian làm việc hoặc mẫu nào</translation>

@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">Qëndro në pritje...</translation>
 <translation id="2740531572673183784">Në rregull</translation>
 <translation id="2744221223678373668">Të ndara</translation>
+<translation id="2749164457515831917">Sugjerimet u përzien</translation>
 <translation id="2751739896257479635">Vërtetimi EAP i fazës 2</translation>
 <translation id="2754757901767760034">llambë</translation>
 <translation id="2780756493585863768">Sfonde të fundit të mundësuara nga IA-ja e Google</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">Menyja e veprimeve të strukturës</translation>
 <translation id="3227186760713762082">Pjesëto vlerën <ph name="CATEGORY_TEXT" /> me <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Printimet më të vjetra se 1 ditë do të hiqen</translation>
+<translation id="3248791727258378769">Nuk do të krijohet transkript</translation>
 <translation id="324961752321393509">Administratori yt nuk e lejon mbylljen e këtij aplikacioni</translation>
 <translation id="3263941347294171263">Hiq dhe fut sërish në prizë pajisjen "<ph name="DEVICE_NAME" />" për të vazhduar procesin e përditësimit</translation>
 <translation id="3268178239013324452">Dështoi - Kapaku i hapur</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">Zgjidh një njësi temperature</translation>
 <translation id="3661106764436337772">Shkruaj më shpejt dhe me më shumë vetëbesim</translation>
 <translation id="3662461537616691585">burgundi dhe gështenjë</translation>
+<translation id="3664755900672940272">Shembujt e kërkesave u përzien</translation>
 <translation id="3668449597372804501">Imazhi i sfondit për rrjedhën e reve</translation>
 <translation id="3668570675727296296">Cilësimet e gjuhës</translation>
 <translation id="3675132884790542448">derra</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">Çaktivizo mbrojtësin e ekranit</translation>
 <translation id="4210636113897977670">Ruaj dhe dil</translation>
 <translation id="4210659479607886331">lumë akullnajor</translation>
+<translation id="4212169537710712814">Shkarkimi i modelit të transkriptit në <ph name="LANGUAGE_NAME" /> përfundoi</translation>
 <translation id="42126664696688958">Eksporto</translation>
 <translation id="4213104098953699324">Tastierë me USB</translation>
 <translation id="4227825898293920515">Fjalëkalimi skadon për <ph name="TIME" /></translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">Ngjyra</translation>
 <translation id="5457599981699367932">Shfleto si vizitor</translation>
 <translation id="54609108002486618">E menaxhuar</translation>
+<translation id="5461608756903394951">Shkarkimi i modelit të transkriptit në <ph name="LANGUAGE_NAME" /> është në vazhdim</translation>
 <translation id="5470776029649730099">burlap</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} përpjekje e mbetur}other{{0} përpjekje të mbetura}}</translation>
 <translation id="5488280942828718790">të purpurt</translation>
@@ -1191,6 +1196,7 @@
 <translation id="6595046262780525922">Të aktivizohet transkriptimi dhe të shkarkohet modeli i transkriptimit?</translation>
 <translation id="6596816719288285829">Adresa e IP-së</translation>
 <translation id="6599673642868607614">Faleminderit për komentet e tua. Komentet e tua na ndihmojnë të përmirësojmë përvojën me Chromebook dhe do të rishikohen nga ekipi ynë. Për shkak të numrit të lartë të raportimeve, nuk do të mund të dërgojmë një përgjigje.</translation>
+<translation id="6608043585557830684">Transkriptimi është joaktiv. Aktivizoje te "Cilësimet" ose te menyja <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Butonat e miut</translation>
 <translation id="6618744767048954150">Në ekzekutim</translation>
 <translation id="6620487321149975369">Printimet do të shfaqen te historiku, përveçse kur hiqen manualisht</translation>
@@ -1279,6 +1285,7 @@
 <translation id="6975620886940770104">Një <ph name="GLOWSCAPES_LANDSCAPE" /> me një <ph name="GLOWSCAPES_FEATURE" /> plot shkëlqim</translation>
 <translation id="6975981640379148271">koala</translation>
 <translation id="6977381486153291903">Rishikimi i firmuerit</translation>
+<translation id="6978396562261420054">Imazhi i gjeneruar</translation>
 <translation id="6981982820502123353">Qasja</translation>
 <translation id="6982462588253070448">duna rëre</translation>
 <translation id="7005833343836210400">Pajisja është offline</translation>

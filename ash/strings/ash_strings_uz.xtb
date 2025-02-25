@@ -176,6 +176,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1546492247443594934">Desk 2</translation>
 <translation id="1546930421365146760">Administratoringizdan ushbu qurilmani Google administrator konsolida sozlashni soʻrang</translation>
 <translation id="1549512626801247439">xotira boshqaruvi</translation>
+<translation id="1549721333775633305">Tezkor ulashuv sozlamalarini ochish. Tezkor ulashuv faolsizlantirildi</translation>
 <translation id="1550406609415860283">Qurilmalar mavjud</translation>
 <translation id="1550523713251050646">Qo‘shimcha parametrlarni ko‘rish</translation>
 <translation id="1555130319947370107">Ko‘k</translation>
@@ -1474,6 +1475,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> faollashtirilmagan.</translation>
 <translation id="5860033963881614850">O‘chiq</translation>
 <translation id="5860491529813859533">Yoqish</translation>
+<translation id="5864691701242730005">Tezkor ulashuv sozlamalarini ochish. <ph name="VISIBILITY" /> koʻrinuvchanligi tanlandi</translation>
 <translation id="5864748620896638071">Batareya: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Tarmoq axboroti yigʻilmoqda</translation>
 <translation id="5867606971598166637">Tizim administratori ekranlarni nazorat qiladi</translation>
@@ -2262,6 +2264,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="851660987304951246">Kontentni tez xulosalash yoki savol berish uchun Oʻqishda yordam funksiyasidan foydalaning</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> qurilmasi yoniqligida uni quvvatlab bo‘lmaydi.</translation>
 <translation id="8535393432370007982">Rangi asosida saralanishini bekor qilish</translation>
+<translation id="8536886494750559755">Tezkor ulashuv sozlamalarini ochish. Hammaga <ph name="TIME_REMAINING" /> koʻrinadi</translation>
 <translation id="8539803091108018926">Matn vaqtinchalik xotiraga nusxalandi</translation>
 <translation id="8541078764854166027">Kamerani freymlash</translation>
 <translation id="8542053257095774575">Saqlangan ish stoli yoki andozalar topilmadi</translation>

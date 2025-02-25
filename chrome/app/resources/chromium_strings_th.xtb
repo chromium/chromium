@@ -107,7 +107,6 @@
 <translation id="2483889755041906834">ใน Chromium</translation>
 <translation id="2485422356828889247">ถอนการติดตั้ง</translation>
 <translation id="2513154137948333830">ต้องรีบูต: <ph name="INSTALL_SUCCESS" /></translation>
-<translation id="2522009821193247726">หากต้องการดำเนินการต่อ คุณจะต้องลงชื่อเข้าใช้ Chromium ด้วย <ph name="EMAIL" /> ซึ่งจะเป็นไปตามนโยบายขององค์กร</translation>
 <translation id="2542968102051442371">เลือกข้อความด้วยการค้นหารูปภาพ</translation>
 <translation id="2554739539410784893">Chromium กำลังพยายามแทนที่รหัสผ่านที่มีอยู่ โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="2560420686485554789">Chromium ต้องการสิทธิ์เข้าถึงพื้นที่เก็บข้อมูลเพื่อดาวน์โหลดไฟล์</translation>
@@ -432,7 +431,6 @@
 <translation id="6964305034639999644">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chromium</translation>
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="6978145336957848883">รหัสผ่านที่ไม่รัดกุมนั้นคาดเดาได้ง่าย ให้ Chromium <ph name="BEGIN_LINK" />สร้างและจดจำรหัสผ่านที่รัดกุมให้คุณ<ph name="END_LINK" /></translation>
-<translation id="6980074797973263542">องค์กรของคุณจะดูและจัดการข้อมูลการท่องเว็บได้ เช่น บุ๊กมาร์ก ประวัติการเข้าชม และรหัสผ่าน แต่จะไม่เห็นข้อมูลการท่องเว็บในโปรไฟล์ Chromium ส่วนตัว</translation>
 <translation id="6985329841647292029">ข้อกำหนดของ Chromium OS</translation>
 <translation id="6990124437352146030">Chromium ต้องการสิทธิ์เข้าถึงไมโครโฟนของคุณสำหรับเว็บไซต์นี้</translation>
 <translation id="7003299027384820442">ป้อนรหัสผ่านเพื่อใช้และบันทึกข้อมูล Chromium ในบัญชี <ph name="ACCOUNT_EMAIL" /></translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1001534784610492198">The installer archive is corrupted or invalid. Please download Google Chrome again.</translation>
+<translation id="1018937009655463387">To share your window, allow screen recording for Chrome in System Settings.</translation>
 <translation id="1026101648481255140">Resume installation</translation>
 <translation id="102763973188675173">Customise and control Google Chrome. Update is available.</translation>
 <translation id="1028061813283459617">To delete browsing data from this device only, while keeping it in your Google Account, <ph name="BEGIN_LINK" />sign out of Chrome<ph name="END_LINK" />.</translation>
@@ -228,6 +229,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3941890832296813527">Install error: The installer filename is invalid or unsupported.</translation>
 <translation id="3968962723676998462">Enter your passphrase to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome wants to delete your Google Password Manager data. Type in your Windows password to allow this.</translation>
+<translation id="400161754580828648">To share your screen, allow screen recording for Chrome in System Settings.</translation>
 <translation id="4022972681110646219">Translate screen</translation>
 <translation id="4023601594785368013">Original language: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome OS needs to be restarted to apply the update.</translation>
@@ -290,6 +292,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4828579605166583682">Google Chrome is trying to replace existing passwords. Type in your Windows password to allow this.</translation>
 <translation id="4842397268809523050">Chrome OS Flex could not sync your data because sync is not available for your domain.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> is already signed in.  To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="4855026984605187434">To share your screen, allow screen recording for Chrome in System Settings</translation>
 <translation id="4873692836499071887">To get future Google Chrome updates, you'll need macOS 11 or later. This computer is using macOS 10.15.</translation>
 <translation id="4873783916118289636">Review key privacy and security controls in Chrome</translation>
 <translation id="4885446229353981848">Always show Google Lens shortcut</translation>
@@ -342,6 +345,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5579324208890605088">Startup error: Please run the installer as a regular user, not as administrator.</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5602351063754773347">Chrome recommends that you remove it. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" /></translation>
+<translation id="5649156266046089790">With Chrome profiles, you can separate all your Chrome stuff. Create profiles for friends and family, or split between work and fun.</translation>
 <translation id="5649680279845190972">To get your extensions and more on all your computers, sign in to Chrome</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> may be dangerous, so Chrome has blocked it.</translation>
 <translation id="566568153320186256">Chrome conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates. <ph name="BEGIN_LINK" />Learn more about Energy Saver<ph name="END_LINK" /></translation>
@@ -500,7 +504,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7655455401911432608">Your browsing history, a record of sites that you've visited using Chrome on this device.</translation>
 <translation id="7655472416356262023">Remove account from Chrome</translation>
 <translation id="7658239707568436148">Cancel</translation>
-<translation id="7659737857277959440">Your organisation can see and manage browsing data, such as your bookmarks, history and passwords. It can't see browsing data in personal Chrome profiles.</translation>
 <translation id="7661924425853052955">You haven't visited recently. Chrome removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="COUNT" /> more</translation>
 <translation id="7670287553302121848">Chrome account requires re-authentication</translation>
 <translation id="769538538642757151">Chrome will let you know if anything needs your review</translation>
@@ -562,7 +565,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8418845734693287262">Chrome OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="842386925677997438">Chrome’s safety tools</translation>
 <translation id="8425765582779547329">To stay safer online with your parent's choices, sign in to Chrome</translation>
-<translation id="8429214465555795676">To continue, you'll need to sign in to Chrome with <ph name="EMAIL" />. This ensures compliance with your organisation's policies.</translation>
 <translation id="8433638294851456451">To send a number from here to your Android phone, sign in to Chrome on both devices.</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">A special security update for Google Chrome was just applied. Restart now and we'll restore your tabs.</translation>
@@ -576,6 +578,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8614913330719544658">Google Chrome is unresponsive. Relaunch now?</translation>
 <translation id="861702415419836452">Chrome needs permission to access your camera to create a 3D map of your surroundings</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome will relaunch in 1 minute}other{Chrome will relaunch in # minutes}}</translation>
+<translation id="8637932705841171563">To share your window, allow screen recording for Chrome in System Settings</translation>
 <translation id="8641606876632989680">Chrome will notify you when you sign in with a compromised password</translation>
 <translation id="8649026945479135076">It's common for sites that you visit to remember things that you're interested in, to personalise your experience. Sites can also store information with Chrome about your interests.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>

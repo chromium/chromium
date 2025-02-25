@@ -6825,25 +6825,6 @@ Chính sách này không hỗ trợ biểu thức chính quy. Tuy nhiên, miền
 Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên bản đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên bản được quản lý qua MDM (Quản lý thiết bị di động), đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
-<translation id="5904248258096038701">Chính sách này cho phép quản trị viên thiết lập một công cụ chuyên biệt để tổng hợp nội dung tìm kiếm cho doanh nghiệp. Công cụ này sẽ cung cấp cụm từ tìm kiếm được đề xuất và kết quả tìm kiếm trong thanh địa chỉ khi được kích hoạt bởi một từ khoá cụ thể. Người dùng có thể bắt đầu tìm kiếm bằng cách nhập từ khoá được chỉ định trong trường <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> (có thể dùng hoặc không dùng tiền tố @, ví dụ: <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) vào thanh địa chỉ, sau đó nhấn phím cách hoặc phím Tab.
-
-Các trường sau đây là trường bắt buộc: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-Trường <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> tương ứng với tên công cụ tìm kiếm hiển thị cho người dùng trong thanh địa chỉ.
-
-Trường <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> tương ứng với từ khoá mà người dùng nhập để kích hoạt quá trình tìm kiếm. Lối tắt có thể chứa các từ và ký tự thuần tuý, nhưng không được chứa dấu cách hoặc bắt đầu bằng ký hiệu @. Lối tắt không được trùng lặp.
-
-Trường <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> chỉ định URL nơi quá trình tìm kiếm sẽ diễn ra. Nhập địa chỉ web cho trang kết quả của công cụ tìm kiếm và sử dụng <ph name="SEARCH_TERM_MARKER" /> thay cho cụm từ tìm kiếm.
-
-Trường <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> chỉ định URL cung cấp cụm từ tìm kiếm được đề xuất. Nếu <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> chứa <ph name="SEARCH_TERM_MARKER" />, thì Chrome sẽ lấy các cụm từ tìm kiếm được đề xuất bằng cách gửi một yêu cầu GET đến URL này, thay thế <ph name="SEARCH_TERM_MARKER" /> bằng cụm từ tìm kiếm của người dùng. Nếu không, Chrome sẽ gửi một yêu cầu POST, cụm từ tìm kiếm của người dùng sẽ được truyền trong các thông số POST theo khoá <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-Trường <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> chỉ định URL đến một hình ảnh sẽ được dùng cho các cụm từ tìm kiếm được đề xuất. Nếu bạn không thiết lập trường này, thì hệ thống sẽ dùng một biểu tượng mặc định. Bạn nên sử dụng một biểu tượng trang web (ví dụ: <ph name="ICON_URL_EXAMPLE" />).
-
-Trường <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> chỉ định việc có bắt buộc phải có thanh địa chỉ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> để xem nội dung đề xuất khi tìm kiếm hay không. Nếu bạn không đặt trường này, thì không bắt buộc có thanh địa chỉ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên bản đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên bản được quản lý qua MDM (Quản lý thiết bị di động), đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="5905114360004248993">Cho phép cửa sổ bật lên trên các trang web này</translation>
 <translation id="5905473632148429217">Bật tính năng kiểm tra OCSP/CRL trực tuyến</translation>
 <translation id="5908808391744484238">Khi được bật hoặc không được thiết lập, bộ lọc tham số URL có thể xoá một số tham số khi người dùng chọn "Mở đường liên kết trong cửa sổ ẩn danh" trên trình đơn theo bối cảnh.
@@ -11028,7 +11009,6 @@ Chính sách này chỉ kiểm soát <ph name="ARC_VM" /> trên <ph name="PRODUC
 <translation id="8908294717014659003">Cho phép bạn đặt liệu trang web có được phép truy cập vào thiết bị thu dữ liệu truyền thông hay không. Quyền truy cập vào thiết bị thu dữ liệu truyền thông có thể được phép theo mặc định hoặc người dùng có thể được hỏi mỗi lần trang web muốn có quyền truy cập vào thiết bị thu dữ liệu truyền thông.
 
           Nếu chính sách này không được đặt, 'PromptOnAccess' sẽ được sử dụng và người dùng có thể thay đổi cài đặt này.</translation>
-<translation id="8909400095164640684">Cài đặt công cụ tổng hợp nội dung tìm kiếm cho doanh nghiệp</translation>
 <translation id="8911348623012274122">Đặt giới hạn bộ nhớ cho các phiên bản Chrome</translation>
 <translation id="8911736066340032670">Báo cáo thông tin về trạng thái hiển thị, chẳng hạn như tốc độ làm mới và
       thông tin có liên quan đến đồ họa, ví dụ như phiên bản trình điều khiển.

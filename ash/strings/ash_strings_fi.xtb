@@ -176,6 +176,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1546492247443594934">Pöytä 2</translation>
 <translation id="1546930421365146760">Pyydä järjestelmänvalvojaa suorittamaan käyttöönotto Google-hallintakonsolissa</translation>
 <translation id="1549512626801247439">tallennustilan hallinta</translation>
+<translation id="1549721333775633305">Näytä Quick Share ‑asetukset. Quick Share on pois käytöstä</translation>
 <translation id="1550406609415860283">Laitteita saatavilla</translation>
 <translation id="1550523713251050646">Näet lisävaihtoehtoja klikkaamalla tätä.</translation>
 <translation id="1555130319947370107">Sininen</translation>
@@ -1474,6 +1475,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ei ole aktiivinen.</translation>
 <translation id="5860033963881614850">Pois päältä</translation>
 <translation id="5860491529813859533">Ota käyttöön</translation>
+<translation id="5864691701242730005">Näytä Quick Share ‑asetukset. Näkyvyys valittu (<ph name="VISIBILITY" />)</translation>
 <translation id="5864748620896638071">Battery <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5867217927013474703">Verkkotietoja kerätään</translation>
 <translation id="5867606971598166637">Järjestelmänvalvoja valvoo näyttöjäsi</translation>
@@ -2262,6 +2264,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="851660987304951246">Käytä "Apua lukemiseen" ‐toimintoa, niin voit luoda nopeasti yhteenvetoja sisällöstä tai esittää kysymyksiä</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ei välttämättä lataudu, kun se on käynnissä.</translation>
 <translation id="8535393432370007982">Kumoa värin mukaan lajittelu</translation>
+<translation id="8536886494750559755">Näytä Quick Share ‑asetukset. Näkyy kaikille <ph name="TIME_REMAINING" /> ajan</translation>
 <translation id="8539803091108018926">Teksti kopioitu leikepöydälle</translation>
 <translation id="8541078764854166027">Kamerakehystys</translation>
 <translation id="8542053257095774575">Ei tallennettuja virtuaalityöpöytiä tai malleja</translation>

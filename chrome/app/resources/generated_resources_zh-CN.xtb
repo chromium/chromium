@@ -585,7 +585,6 @@
 <translation id="1401216725754314428">在新标签页中详细了解相关网站</translation>
 <translation id="1402426911829176748">正在连接到您的设备</translation>
 <translation id="1403222014593521787">无法连接到代理</translation>
-<translation id="1405336513195181336">这包括书签、扩展程序和网站浏览记录。</translation>
 <translation id="1405779994569073824">已崩溃。</translation>
 <translation id="1406500794671479665">正在验证...</translation>
 <translation id="1407069428457324124">深色主题</translation>
@@ -833,6 +832,7 @@
 <translation id="1575741822946219011">语言和输入法</translation>
 <translation id="1576594961618857597">默认的白色头像</translation>
 <translation id="1576729678809834061">举报此搜索结果</translation>
+<translation id="1578110287710452646">并排大小调整手柄</translation>
 <translation id="1578488449637163638">深色</translation>
 <translation id="1578558981922970608">强制关闭</translation>
 <translation id="157931050206866263">详细了解恶意软件扫描</translation>
@@ -1004,6 +1004,7 @@
 <translation id="1682696837763999627">大号鼠标光标</translation>
 <translation id="1682867089915960590">要开启光标浏览模式吗？</translation>
 <translation id="1686550358074589746">启用滑行输入</translation>
+<translation id="1686785653877010442">网站通常会发送通知，告知您重大新闻或聊天消息。</translation>
 <translation id="168715261339224929">要想将您的书签同步到您的所有设备上，请开启同步功能。</translation>
 <translation id="1688935057616748272">请输入一个字母</translation>
 <translation id="1689333818294560261">别名</translation>
@@ -1276,6 +1277,7 @@
 <translation id="1878885068166344708">当您移动焦点时，所选项会突出显示。按 Tab 键或选择某项内容即可更改焦点。</translation>
 <translation id="1879000426787380528">登录身份</translation>
 <translation id="18802377548000045">将标签页收缩至较大宽度</translation>
+<translation id="1880618477732738742">更改并授予您所有网站和扩展程序（包括此扩展程序）对地理位置信息、麦克风、摄像头、Cookie 等的使用权限。</translation>
 <translation id="1880905663253319515">要删除证书“<ph name="CERTIFICATE_NAME" />”吗？</translation>
 <translation id="1881445033931614352">键盘布局</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{内容}other{# 项内容}}</translation>
@@ -1504,7 +1506,6 @@
 <translation id="2040894699575719559">已阻止获取位置信息</translation>
 <translation id="2041246176170574368">安全更新即将终止。升级为新款 Chromebook 至少可节省 50 美元。</translation>
 <translation id="2042279886444479655">使用中的配置文件</translation>
-<translation id="2042427131767688936">为确保您可以安全使用此设备，贵组织可以查看设备操作系统、浏览器和设置方面的信息，以及设备上安装了哪些软件。</translation>
 <translation id="2044014337866019681">请确保您验证的账号是 <ph name="ACCOUNT" /> 以解锁会话。</translation>
 <translation id="2044750031738659219">{0,plural, =1{关闭访客模式}other{关闭访客模式（# 个窗口）}}</translation>
 <translation id="204497730941176055">Microsoft 证书模板名称</translation>
@@ -3457,6 +3458,7 @@
 <translation id="3435738964857648380">安全</translation>
 <translation id="343578350365773421">纸张已用完</translation>
 <translation id="3435896845095436175">启用</translation>
+<translation id="3437397693214267762">查看您的 Outlook 日历及 SharePoint 和 OneDrive 文件</translation>
 <translation id="3438633801274389918">忍者</translation>
 <translation id="3439153939049640737">始终允许 <ph name="HOST" /> 使用您的麦克风</translation>
 <translation id="3439970425423980614">准备使用预览程序打开 PDF</translation>
@@ -3638,7 +3640,6 @@
 <translation id="3566211766752891194">显示标签页内存用量</translation>
 <translation id="3566325075220776093">保存在此设备上的密码</translation>
 <translation id="3566721612727112615">未添加任何网站</translation>
-<translation id="3566788242120166275">现有的浏览数据将保留在现有资料中。这份新的资料不会包含任何之前的浏览数据。</translation>
 <translation id="3567168891086460374">换一种方式保存</translation>
 <translation id="3567284462585300767">若要与附近的人互发文件，请将您的设备设为对他人可见</translation>
 <translation id="356738834800832239">您的密码已保存</translation>
@@ -3805,7 +3806,6 @@
 <translation id="3685598397738512288">Linux USB 偏好设置</translation>
 <translation id="3687598459967813435">始终允许接收来自 <ph name="WEBSITE" /> 的通知</translation>
 <translation id="368789413795732264">尝试写入文件时发生错误：<ph name="ERROR_TEXT" />。</translation>
-<translation id="3687957587012862163">否，将其移至这份新资料</translation>
 <translation id="3688507211863392146">写入您在此应用中打开的文件和文件夹</translation>
 <translation id="3688526734140524629">变更版本</translation>
 <translation id="3688578402379768763">已是最新</translation>
@@ -3864,7 +3864,6 @@
 <translation id="37143699183660101">光标稳定性</translation>
 <translation id="3714610938239537183">步骤 2/4：选择要导出的诊断数据</translation>
 <translation id="3716065403310915079"><ph name="VM_NAME" /> 安装程序</translation>
-<translation id="3717256685838828428">此资料由贵组织管理，贵组织可以查看某些信息，包括：</translation>
 <translation id="3719245268140483218">设备事件</translation>
 <translation id="3719310907809321183">已填充<ph name="CARD_IDENTIFIER" />。</translation>
 <translation id="3719826155360621982">主页</translation>
@@ -4896,7 +4895,6 @@
 <translation id="4426857487270413362">无法下载安装程序文件。请检查您的互联网连接，确保您有足够的可用磁盘空间，然后重试。错误代码为 <ph name="ERROR" />。</translation>
 <translation id="4427111270137140798">检测到 <ph name="COUNT" /> 次</translation>
 <translation id="4427365070557649936">正在验证确认码…</translation>
-<translation id="4428579202668721841">是否要将现有浏览数据与工作资料分开？</translation>
 <translation id="4429163740524851942">实体键盘布局</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="443031431654216610">只能使用数字</translation>
@@ -6062,7 +6060,6 @@
 <translation id="5276357196618041410">登录后才能保存配置</translation>
 <translation id="5277127016695466621">显示侧边栏</translation>
 <translation id="5278823018825269962">状态 ID</translation>
-<translation id="5279214046729249716">是，单独保留</translation>
 <translation id="5279600392753459966">全部屏蔽</translation>
 <translation id="5280064835262749532">更新 <ph name="SHARE_PATH" /> 的访问凭据</translation>
 <translation id="5280426389926346830">创建快捷方式？</translation>
@@ -6387,7 +6384,6 @@
 <translation id="5503982651688210506">继续允许 <ph name="HOST" /> 使用和移动您的摄像头，并允许其使用您的麦克风</translation>
 <translation id="5505307013568720083">墨水已耗尽</translation>
 <translation id="5507756662695126555">不可否认</translation>
-<translation id="5508864312047847614">是否要将现有浏览数据与学校资料分开？</translation>
 <translation id="5509693895992845810">存储为(&amp;A)...</translation>
 <translation id="5509914365760201064">颁发者：<ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">从 Google 获取图片说明</translation>
@@ -6838,7 +6834,6 @@
 <translation id="5854066326260337683">LBS 已停用。您可通过设置 <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" /> 政策来启用 LBS。</translation>
 <translation id="5854912040170951372">比萨</translation>
 <translation id="5855267860608268405">已知的 WLAN 网络</translation>
-<translation id="5855375823365231964">关于此个人资料</translation>
 <translation id="5855643921295613558">0.6 秒</translation>
 <translation id="5856721540245522153">启用调试功能</translation>
 <translation id="5857090052475505287">新文件夹</translation>
@@ -7111,6 +7106,7 @@
     使用该账号可轻松访问您的所有书签、文件和其他内容。如果您还没有 Google 账号，可在下一个界面上创建一个。</translation>
 <translation id="6054138466019582920">使用 Google 搜索此页面(&amp;C)…</translation>
 <translation id="6054284857788651331">最近关闭的标签页组</translation>
+<translation id="6054819000749443354">打开“系统设置”</translation>
 <translation id="6054961935262556546">更改公开范围</translation>
 <translation id="6055392876709372977">PKCS #1，带有 RSA 加密的 SHA-256</translation>
 <translation id="6055544610007596637">从 Google Play 商店为您的 <ph name="DEVICE_TYPE" /> 安装应用</translation>
@@ -7199,7 +7195,6 @@
 <translation id="6113942107547980621">要使用 Smart Lock，请切换到您手机上的主要用户个人资料</translation>
 <translation id="6116921718742659598">更改语言和输入设置</translation>
 <translation id="6119008366402292080">没有可用的打印机</translation>
-<translation id="6119068870709745878">此资料由 <ph name="PROFILE_MANAGER" /> 管理，管理方可以查看某些信息，包括：</translation>
 <translation id="6119927814891883061">将设备命名为“<ph name="DEVICE_NAME" />”</translation>
 <translation id="6119972796024789243">色彩校正</translation>
 <translation id="6121773125605585883">查看用户名“<ph name="USERNAME" />”在 <ph name="WEBSITE" /> 上的密码</translation>
@@ -7408,6 +7403,7 @@
 <translation id="6264060420924719834">此应用包含来自其他网站的 Web 内容</translation>
 <translation id="6264365405983206840">全选(&amp;A)</translation>
 <translation id="6264376385120300461">仍然下载</translation>
+<translation id="6264485186158353794">返回安全连接</translation>
 <translation id="6264520534872750757">继续使用设备</translation>
 <translation id="6264636978858465832">密码管理工具需要更多访问权限</translation>
 <translation id="626495329434552273">允许替换键盘输入</translation>
@@ -7623,7 +7619,6 @@
 <translation id="6434104957329207050">点扫描速度</translation>
 <translation id="6434309073475700221">舍弃</translation>
 <translation id="6434325376267409267">您需要更新设备，才能使用 <ph name="APP_NAME" />。</translation>
-<translation id="6434690603850475457">是，单独保存（推荐）</translation>
 <translation id="6434755719322447931">混乱</translation>
 <translation id="6435339218366409950">选择要将字幕翻译成哪种语言</translation>
 <translation id="6436164536244065364">在 Chrome 应用商店中查看</translation>
@@ -8933,6 +8928,7 @@
 <translation id="7380459290951585794">请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi</translation>
 <translation id="7380622428988553498">设备名称包含无效字符</translation>
 <translation id="7380768571499464492">已更新<ph name="PRINTER_NAME" /></translation>
+<translation id="7382009635620830394">如果停用此卡片，您的 Microsoft 卡片（例如 SharePoint 和 OneDrive 文件以及 Outlook 日历）也会被停用。</translation>
 <translation id="7382085868019811559">旧版浏览器支持 (LBS) 允许特定网址格式在备用浏览器中打开，前提是该浏览器支持为正常运行那些网站而需具备的旧版功能。</translation>
 <translation id="7382980704744807223">可疑</translation>
 <translation id="738322632977123193">无法上传。请使用以下任意格式的图片：.jpg、.gif、.png、.bmp、.tif 或 .webp</translation>
@@ -10603,6 +10599,7 @@
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> 由 <ph name="MANAGER" /> 管理。您无法将此电子邮件地址添加为其他账号。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />若要使用 <ph name="USER_EMAIL" />，请先在 <ph name="DEVICE_TYPE" /> 上退出您的账号，然后在登录屏幕的底部选择“添加用户”。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">按住搜索键可切换顶行键的行为</translation>
+<translation id="8549127125482561383">如何显示请求</translation>
 <translation id="8549316893834449916">您将使用自己的 Google 账号登录 Chromebook - 此账号与您登录 Gmail、Google 云端硬盘、YouTube 等服务时使用的账号相同。</translation>
 <translation id="8550239873869577759">下载的文件可疑</translation>
 <translation id="8551388862522347954">许可</translation>

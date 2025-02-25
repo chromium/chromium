@@ -295,6 +295,7 @@
 <translation id="2390510615457643724">Завантажити файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) знову?</translation>
 <translation id="2395004545133500011">Нижній екран "Поділитися разом із коротким викладом" відкрито</translation>
 <translation id="2410754283952462441">Виберіть обліковий запис</translation>
+<translation id="2413014528833954543">Не вдалося перевірити паролі на цьому пристрої</translation>
 <translation id="2414886740292270097">Темна</translation>
 <translation id="2421705177906985956">Зараз немає сайтів</translation>
 <translation id="2426805022920575512">Вибрати інший обліковий запис</translation>
@@ -1134,6 +1135,7 @@
 <translation id="6254139308321626268">Ви переглядаєте PDF-файл</translation>
 <translation id="6255809143828972562">Безпечно переглядайте вебсторінки й керуйте налаштуваннями завдяки інструментам від Chrome</translation>
 <translation id="6264376385120300461">Усе одно завантажити</translation>
+<translation id="6264485186158353794">Повернутися на безпечну сторінку</translation>
 <translation id="6277522088822131679">Виникла проблема з друком цієї сторінки. Повторіть спробу.</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6284472661216707937">Екран "Паролі на всіх ваших пристроях" закрито</translation>

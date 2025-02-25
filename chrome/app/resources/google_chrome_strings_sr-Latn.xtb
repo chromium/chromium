@@ -504,7 +504,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7655455401911432608">Istorija pregledanja, evidencija sajtova koje ste posetili pomoću Chrome-a na ovom uređaju.</translation>
 <translation id="7655472416356262023">Ukloni nalog iz Chrome-a</translation>
 <translation id="7658239707568436148">Otkaži</translation>
-<translation id="7659737857277959440">Organizacija može da vidi podatke pregledanja, poput obeleživača, istorije i lozinki, i da upravlja njima. Ne može da vidi podatke pregledanja na ličnim Chrome profilima.</translation>
 <translation id="7661924425853052955">Niste skoro posećivali sajt. Chrome je uklonio dozvole <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /> i još <ph name="COUNT" /></translation>
 <translation id="7670287553302121848">Chrome nalog zahteva ponovnu potvrdu identiteta</translation>
 <translation id="769538538642757151">Chrome će vas obavestiti ako treba da pregledate nešto</translation>
@@ -566,7 +565,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="8418845734693287262">Chrome OS ne može da sinhronizuje podatke zato što su podaci za prijavljivanje na nalog zastareli.</translation>
 <translation id="842386925677997438">Chrome alatke za bezbednost</translation>
 <translation id="8425765582779547329">Ako želiš veću bezbednost onlajn uz izbore roditelja, prijavi se u Chrome</translation>
-<translation id="8429214465555795676">Da biste nastavili, morate da se prijavite u Chrome pomoću naloga <ph name="EMAIL" />. Ovo obezbeđuje usklađenost sa smernicama organizacije.</translation>
 <translation id="8433638294851456451">Da biste poslali broj sa ovog uređaja na Android telefon, prijavite se u Chrome na oba uređaja.</translation>
 <translation id="8496177819998570653">Google menadžer lozinki</translation>
 <translation id="8498858610309223613">Posebno bezbednosno ažuriranje za Google Chrome je upravo primenjeno. Restartujte ga i vratićemo vam kartice.</translation>

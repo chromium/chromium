@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">Den här sidan har blockerats av Chromium</translation>
 <translation id="48558539577516920">Tillåt att Chromium får åtkomst till nätverket i inställningarna för brandväggen eller
         antivirusprogrammet.</translation>
+<translation id="4949828774841497663">Öppna Program &gt; Systeminställningar &gt; Nätverk, välj det
+          aktiva nätverket, klicka på knappen Information … och avmarkera
+          eventuella proxyservrar.</translation>
 <translation id="580822234363523061">Öppna
           Chromium-menyn &gt;
           <ph name="SETTINGS_TITLE" />

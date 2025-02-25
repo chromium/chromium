@@ -586,7 +586,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1401216725754314428">En savoir plus sur les sites associés dans un nouvel onglet</translation>
 <translation id="1402426911829176748">Connexion à votre appareil…</translation>
 <translation id="1403222014593521787">Impossible de se connecter au proxy</translation>
-<translation id="1405336513195181336">Cela inclut les favoris, les extensions et l'historique de navigation des sites.</translation>
 <translation id="1405779994569073824">A planté.</translation>
 <translation id="1406500794671479665">Vérification en cours…</translation>
 <translation id="1407069428457324124">Thème sombre</translation>
@@ -1010,6 +1009,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1682696837763999627">Grand curseur</translation>
 <translation id="1682867089915960590">Activer la navigation au clavier ?</translation>
 <translation id="1686550358074589746">Activer la saisie gestuelle</translation>
+<translation id="1686785653877010442">Les sites envoient généralement des notifications pour vous transmettre des alertes info ou vous informer que vous avez reçu un message dans un chat.</translation>
 <translation id="168715261339224929">Activez la synchronisation pour accéder à vos favoris sur tous vos appareils.</translation>
 <translation id="1688935057616748272">Saisissez une lettre</translation>
 <translation id="1689333818294560261">Pseudo</translation>
@@ -1284,6 +1284,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1878885068166344708">L'élément est mis en surbrillance à mesure que vous déplacez le curseur. Pour déplacer la sélection, appuyez sur Tabulation ou sélectionnez un élément.</translation>
 <translation id="1879000426787380528">Se connecter à l'aide du compte</translation>
 <translation id="18802377548000045">Onglets réduits à une grande largeur</translation>
+<translation id="1880618477732738742">Modifiez et accordez l'accès à des fonctionnalités telles que la géolocalisation, le micro, la caméra, les cookies, etc. pour tous vos sites Web et extensions, y compris celle-ci.</translation>
 <translation id="1880905663253319515">Supprimer le certificat "<ph name="CERTIFICATE_NAME" />" ?</translation>
 <translation id="1881445033931614352">Disposition des touches du clavier</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Élément}one{# élément}other{# éléments}}</translation>
@@ -1512,7 +1513,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2040894699575719559">Position bloquée</translation>
 <translation id="2041246176170574368">Vous ne recevrez bientôt plus de mises à jour de sécurité. Économisez 50 $ ou plus sur un nouveau Chromebook.</translation>
 <translation id="2042279886444479655">Profils actifs</translation>
-<translation id="2042427131767688936">Pour une utilisation sécurisée de cet appareil, votre organisation peut consulter des informations le concernant (système d'exploitation, navigateur, paramètres et logiciels installés).</translation>
 <translation id="2044014337866019681">Pour déverrouiller la session, vérifiez que vous êtes bien en train de valider <ph name="ACCOUNT" />.</translation>
 <translation id="2044750031738659219">{0,plural, =1{Fermer la fenêtre ouverte en tant qu'invité}one{Fermer la fenêtre ouverte en tant qu'invité (# fenêtre)}other{Fermer les fenêtres ouvertes en tant qu'invité (# fenêtres)}}</translation>
 <translation id="204497730941176055">Nom du modèle de certificat Microsoft</translation>
@@ -3466,6 +3466,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="343578350365773421">À court de papier</translation>
 <translation id="3435896845095436175">Activer</translation>
+<translation id="3437397693214267762">Affichez le calendrier Outlook et vos fichiers SharePoint et OneDrive</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Toujours autoriser <ph name="HOST" /> à accéder à votre micro</translation>
 <translation id="3439970425423980614">Ouverture du PDF dans Aperçu</translation>
@@ -3647,7 +3648,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3566211766752891194">Afficher l'utilisation de la mémoire par les onglets</translation>
 <translation id="3566325075220776093">Celui sur cet appareil</translation>
 <translation id="3566721612727112615">Aucun site ajouté</translation>
-<translation id="3566788242120166275">Vos données de navigation existantes resteront dans le profil actuel et ne figureront pas dans le nouveau.</translation>
 <translation id="3567168891086460374">Enregistrer autrement</translation>
 <translation id="3567284462585300767">Vous devez être visible pour recevoir et accepter des fichiers de personnes à proximité</translation>
 <translation id="356738834800832239">Votre mot de passe est enregistré</translation>
@@ -3814,7 +3814,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3685598397738512288">Préférences USB Linux</translation>
 <translation id="3687598459967813435">Toujours autoriser les notifications de <ph name="WEBSITE" /></translation>
 <translation id="368789413795732264">Une erreur s'est produite lors de la tentative d'écriture du fichier : <ph name="ERROR_TEXT" />.</translation>
-<translation id="3687957587012862163">Non, les déplacer vers ce nouveau profil</translation>
 <translation id="3688507211863392146">Accéder en écriture aux fichiers et aux dossiers ouverts dans l'application</translation>
 <translation id="3688526734140524629">Changer de version</translation>
 <translation id="3688578402379768763">Mise à jour effectuée</translation>
@@ -3873,7 +3872,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="37143699183660101">Stabilité du curseur</translation>
 <translation id="3714610938239537183">Étape 2 sur 4 : Sélectionnez les données de diagnostic à exporter</translation>
 <translation id="3716065403310915079">Programme d'installation de <ph name="VM_NAME" /></translation>
-<translation id="3717256685838828428">Ce profil est géré par votre organisation, qui peut voir certaines informations, y compris :</translation>
 <translation id="3719245268140483218">Événement sur l'appareil</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> indiqué.</translation>
 <translation id="3719826155360621982">Page d'accueil</translation>
@@ -4906,7 +4904,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4426857487270413362">Impossible de télécharger les fichiers du programme d'installation. Veuillez vérifier votre connexion Internet et vous assurer que l'espace disque disponible est suffisant, puis réessayez. Code d'erreur : <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">Détecté <ph name="COUNT" /> fois</translation>
 <translation id="4427365070557649936">Vérification du code de confirmation…</translation>
-<translation id="4428579202668721841">Séparer les données de navigation existantes de votre profil professionnel ?</translation>
 <translation id="4429163740524851942">Disposition du clavier physique</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="443031431654216610">N'utilisez que des chiffres</translation>
@@ -6072,7 +6069,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5276357196618041410">Impossible d'enregistrer la configuration sans se connecter</translation>
 <translation id="5277127016695466621">Afficher le panneau latéral</translation>
 <translation id="5278823018825269962">ID d'état</translation>
-<translation id="5279214046729249716">Oui, les séparer</translation>
 <translation id="5279600392753459966">Tout bloquer</translation>
 <translation id="5280064835262749532">Mettre à jour les identifiants pour <ph name="SHARE_PATH" /></translation>
 <translation id="5280426389926346830">Créer un raccourci ?</translation>
@@ -6397,7 +6393,6 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5503982651688210506">Continuer d'autoriser <ph name="HOST" /> à utiliser et bouger la caméra, et à utiliser le micro</translation>
 <translation id="5505307013568720083">À court d'encre</translation>
 <translation id="5507756662695126555">Non-répudiation</translation>
-<translation id="5508864312047847614">Séparer les données de navigation existantes de votre profil scolaire ?</translation>
 <translation id="5509693895992845810">Enregistrer &amp;sous...</translation>
 <translation id="5509914365760201064">Émetteur : <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Obtenir des descriptions d'images de Google</translation>
@@ -6851,7 +6846,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5854066326260337683">LBS est actuellement désactivé. Vous pouvez activer LBS en configurant le règlement <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" />.</translation>
 <translation id="5854912040170951372">Pizza</translation>
 <translation id="5855267860608268405">Réseaux Wi-Fi connus</translation>
-<translation id="5855375823365231964">À propos de ce profil</translation>
 <translation id="5855643921295613558">0,6 seconde</translation>
 <translation id="5856721540245522153">Activer les fonctionnalités de débogage</translation>
 <translation id="5857090052475505287">Nouveau dossier</translation>
@@ -7125,6 +7119,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
     Utilisez votre compte pour accéder facilement à vos favoris, fichiers, etc. Si vous n'avez pas de compte, vous pouvez en créer un sur l'écran suivant.</translation>
 <translation id="6054138466019582920">Rechercher sur cette page avec Google...</translation>
 <translation id="6054284857788651331">Groupe d'onglets récemment fermés</translation>
+<translation id="6054819000749443354">Ouvrir les réglages système</translation>
 <translation id="6054961935262556546">Modifier la visibilité</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 avec chiffrement RSA</translation>
 <translation id="6055544610007596637">Installez des applis pour votre <ph name="DEVICE_TYPE" /> depuis le Google Play Store</translation>
@@ -7213,7 +7208,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6113942107547980621">Pour utiliser Smart Lock, passez au profil de l'utilisateur principal sur votre téléphone</translation>
 <translation id="6116921718742659598">Modifier les paramètres de langue et de saisie</translation>
 <translation id="6119008366402292080">Aucune imprimante disponible</translation>
-<translation id="6119068870709745878">Ce profil est géré par <ph name="PROFILE_MANAGER" />, qui peut voir certaines informations, y compris :</translation>
 <translation id="6119927814891883061">Nommer l'appareil <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Correction des couleurs</translation>
 <translation id="6121773125605585883">Afficher le mot de passe du nom d'utilisateur <ph name="USERNAME" /> pour <ph name="WEBSITE" /></translation>
@@ -7422,6 +7416,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6264060420924719834">Cette appli inclut du contenu Web provenant d'autres sites</translation>
 <translation id="6264365405983206840">Tout &amp;sélectionner</translation>
 <translation id="6264376385120300461">Télécharger quand même</translation>
+<translation id="6264485186158353794">Revenir en lieu sûr</translation>
 <translation id="6264520534872750757">Continuer à utiliser l'appareil</translation>
 <translation id="6264636978858465832">Le Gestionnaire de mots de passe a besoin d'un accès plus étendu</translation>
 <translation id="626495329434552273">Autorisé à remplacer la saisie au clavier</translation>
@@ -7637,7 +7632,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6434104957329207050">Vitesse de l'exploration par position</translation>
 <translation id="6434309073475700221">Supprimer</translation>
 <translation id="6434325376267409267">Vous devez mettre à jour votre appareil avant de pouvoir utiliser <ph name="APP_NAME" />.</translation>
-<translation id="6434690603850475457">Oui, les séparer (recommandé)</translation>
 <translation id="6434755719322447931">Chaotique</translation>
 <translation id="6435339218366409950">Sélectionner la langue dans laquelle traduire les sous-titres</translation>
 <translation id="6436164536244065364">Afficher dans le Web Store</translation>
@@ -8949,6 +8943,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7380459290951585794">Vérifiez que votre téléphone est déverrouillé et à proximité, et que le Bluetooth et le Wi-Fi sont activés</translation>
 <translation id="7380622428988553498">Le nom de l'appareil comporte des caractères non valides</translation>
 <translation id="7380768571499464492">L'imprimante "<ph name="PRINTER_NAME" />" a bien été mise à jour</translation>
+<translation id="7382009635620830394">Si cette carte est désactivée, vos cartes Microsoft telles que Calendrier Outlook et la carte de fichiers SharePoint et OneDrive le seront aussi.</translation>
 <translation id="7382085868019811559">Legacy Browser Support (LBS) autorise l'ouverture d'URL spécifiques dans un navigateur secondaire qui prend en charge les anciennes fonctionnalités nécessaires pour exécuter ces sites correctement.</translation>
 <translation id="7382980704744807223">Suspect</translation>
 <translation id="738322632977123193">Impossible d'importer. Utilisez une image dans l'un de ces formats : .jpg, .gif, .png, .bmp, .tif ou .webp.</translation>
@@ -10619,6 +10614,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> est géré par <ph name="MANAGER" /> Vous ne pouvez pas ajouter cette adresse e-mail comme compte supplémentaire.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pour utiliser <ph name="USER_EMAIL" />, vous devez vous déconnecter sur votre <ph name="DEVICE_TYPE" />. Ensuite, au bas de l'écran de connexion, sélectionnez "Ajouter une personne".<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Maintenir la touche de recherche enfoncée pour modifier la fonction des touches de la rangée supérieure</translation>
+<translation id="8549127125482561383">Comment afficher les demandes</translation>
 <translation id="8549316893834449916">Vous vous connecterez à votre Chromebook à l'aide du compte Google que vous utilisez déjà pour vous connecter à Gmail, Drive, YouTube, etc.</translation>
 <translation id="8550239873869577759">Fichier suspect téléchargé</translation>
 <translation id="8551388862522347954">Licences</translation>

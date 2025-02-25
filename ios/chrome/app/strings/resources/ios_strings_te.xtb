@@ -114,6 +114,7 @@
 <translation id="1445276840641906250">మీ అన్ని ట్యాబ్‌లు ఒకే బ్రౌజర్‌లో</translation>
 <translation id="1450170672351507823">స్టాండర్డ్ రక్షణ ఆన్‌లో ఉంది. మరింత సెక్యూరిటీ కోసం, మెరుగైన రక్షణను ఉపయోగించండి.</translation>
 <translation id="1455660774629812862">దాచవద్దు</translation>
+<translation id="1456545332132818232"><ph name="PRODUCT_NAME" /> ప్రోడక్ట్ రివ్యూలు, <ph name="MAX_STARS" />‌లో  <ph name="STARS" />, <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">సమయాన్ని ఆదా చేసుకోండి, తక్కువ టైప్ చేయండి</translation>
 <translation id="1466035273550360103">తెరిచిన ట్యాబ్‌లు లేవు</translation>
 <translation id="1469381646033328562">మీ ఖాతాను మీ తల్లి/తండ్రి మేనేజ్ చేస్తున్నారు.
@@ -292,6 +293,7 @@
 <translation id="2199562093267256223">దీని వలన <ph name="USER_EMAIL" />‌కి సైన్ ఇన్ చేసిన అన్ని పరికరాల నుండి గ్రూప్ తొలగించబడుతుంది.</translation>
 <translation id="2202084845446535117">ఈమెయిల్ ఖాతాలు లేవు</translation>
 <translation id="2214453882118345682">షాపింగ్ చేయండి, అనువదించండి, మీ కెమెరాతో మీరు చూసే వాటిని గుర్తించండి.</translation>
+<translation id="2215819824168709130">ధర ట్రాకింగ్ కార్డ్‌ను దాచండి</translation>
 <translation id="2220529011494928058">సమస్యను రిపోర్ట్ చేయండి</translation>
 <translation id="2220887224562128152">ఒక ఫైల్‌ను తొలగించడానికి షెడ్యూల్ చేసిన తర్వాత, దానిని రికవర్ చేయడం సాధ్యం కాదు.</translation>
 <translation id="2223461067862937305">QR కోడ్‌ను క్రియేట్ చేయండి</translation>
@@ -458,6 +460,7 @@
 <translation id="2893168226686371498">ఆటోమేటిక్ బ్రౌజర్</translation>
 <translation id="2894757982205307093">గ్రూప్‌లో కొత్త ట్యాబ్</translation>
 <translation id="2902312830803030883">మరిన్ని చర్యలు</translation>
+<translation id="2904788871580817212"><ph name="DOMAIN" />‌కు చెందిన <ph name="PRODUCT_NAME" /> ధర <ph name="PREVIOUS_PRICE" /> నుండి <ph name="PRICE" />‌కు తగ్గింది, ఆ ధర తెరిచిన మీ ట్యాబ్‌లో చూపబడింది</translation>
 <translation id="2905479111267140204">మీ సెక్యూరిటీని ప్రమాదంలో ఉంచే <ph name="NUMBER_OF_PASSWORDS" /> వేరే చోట వాడిన పాస్‌వర్డ్‌లు మీ వద్ద ఉన్నాయి.</translation>
 <translation id="29153882450867370">"ధరను ట్రాక్ చేయండి"ని దాచండి</translation>
 <translation id="291754862089661335">QR కోడ్ లేదా బార్‌కోడ్‌ను ఈ ఫ్రేమ్‌లో ఉంచండి</translation>
@@ -642,6 +645,7 @@
 <translation id="3831560640878483188">హెచ్చరికను విస్మరించాలనుకుంటున్నారా?</translation>
 <translation id="3832419617903252251">పాస్‌వర్డ్ ఈ పరికరంలో మాత్రమే సేవ్ చేయబడింది</translation>
 <translation id="3838691874161539578">మీ సెక్యూరిటీని బలపరచడానికి, ఆన్‌లైన్‌లో సురక్షితంగా ఉండటానికి మీ సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
+<translation id="3838985624086228724">మీరు ట్రాక్ చేస్తోన్న ప్రోడక్ట్ ధర <ph name="PREVIOUS_PRICE" /> నుండి <ph name="PRICE" />‌కు తగ్గింది, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">వెనుకకు</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, మరో <ph name="NUMBER_OF_ACCOUNTS" /> URLలకు సంబంధించిన పాస్‌వర్డ్‌లు తొలగించబడతాయి. మీ ఖాతాలు తొలగించబడవు.</translation>
 <translation id="3858860766373142691">పేరు</translation>
@@ -760,6 +764,7 @@
 <translation id="4322394346347055525">ఇతర ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="4324735664183300693">నోటిఫికేషన్‌లను ఆన్ చేయండి</translation>
 <translation id="4326912346867677256">సురక్షితంగా సైన్ ఇన్ చేయడానికి "పాస్‌వర్డ్‌ను ఉపయోగించండి" ఆప్షన్‌ను ట్యాప్ చేయండి.</translation>
+<translation id="4327017157997423717"><ph name="PRODUCT_NAME" /> ధరను ట్రాక్ చేయండి, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">నా డ్రైవ్</translation>
 <translation id="4331177082088332784">మీరు దీన్ని BEGIN_LINK కంటెంట్ సెట్టింగ్‌ల END_LINKలో మేనేజ్ చేయవచ్చు</translation>
 <translation id="4334428914252001502">1 చదవని కథనం ఉంది.</translation>
@@ -943,6 +948,7 @@
 <translation id="5127538504377457572"><ph name="DAYS" /> రోజుల క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="5128788795241319992">కొత్త మెనూను అన్వేషించండి</translation>
 <translation id="5132942445612118989">అన్ని పరికరాల్లో మీ పాస్‌వర్డ్‌లు, హిస్టరీ, మరిన్నింటిని సింక్ చేయండి</translation>
+<translation id="5141363746588976328">మీ ట్యాబ్‌ల కార్డ్‌లో ధర తగ్గింపు వివరాలను దాచండి</translation>
 <translation id="5145331760738811130">ట్యాబ్ స్విచర్ నుండి నిష్క్రమించండి</translation>
 <translation id="5157638238828697074">ఏదో పొరపాటు జరిగింది. ఈ యాప్‌ను తెరవడం సాధ్యం కాదు.</translation>
 <translation id="5163417375525818870">PDFలు</translation>
@@ -994,8 +1000,8 @@
 <translation id="5352128922772839949">ఫైల్‌ను సేవ్ చేయండి</translation>
 <translation id="5355191726083956201">మెరుగైన రక్షణ ఆన్‌లో ఉంది</translation>
 <translation id="537853552771686272">మీకు ఆసక్తి ఉన్న టాపిక్‌లను, సైట్‌లను మేనేజ్ చేయండి</translation>
+<translation id="5394975111793637642">మీ కార్డ్ కోసం ప్రోడక్ట్ రివ్యూలను దాచండి</translation>
 <translation id="5395707839134961196">సెర్చ్ ఇంజిన్ వివరాలను దాచి ఉంచండి</translation>
-<translation id="541276233349960923">మీ పరికరాలన్నింటిలో పాస్‌వర్డ్‌లను ఉపయోగించండి</translation>
 <translation id="5414763847370083940">ఏదైనా సైట్‌లో ధర తగ్గితే మీకు అలర్ట్ వస్తుంది.</translation>
 <translation id="5415289094036440596">పాస్-కీలను షేర్ చేయడం సాధ్యం కాదు</translation>
 <translation id="5416455648658732408">ట్యాబ్ గ్రూప్‌నకు తరలించండి</translation>
@@ -1236,6 +1242,7 @@
 <translation id="634878792104344809">మీ పాస్‌వర్డ్‌లను, హిస్టరీని, అలాగే మరిన్నింటిని మీ అన్ని పరికరాలలోనూ సింక్ చేయండి</translation>
 <translation id="6351147166808964033">ట్యాబ్ స్విచర్‌లోకి ప్రవేశించండి</translation>
 <translation id="63519665078626091">వెబ్ ఇన్స్‌పెక్టర్‌ను ఉపయోగించడానికి, కేబుల్‌ను ఉపయోగించి మీ కంప్యూటర్‌లో Safariకి కనెక్ట్ అయ్యి, డెవలప్ మెనూ నుండి మీ iPadను యాక్సెస్ చేయండి. మీ కంప్యూటర్‌లోని Safari సెట్టింగ్‌లలోని అధునాతన విభాగంలో మీరు డెవలప్ మెనూను ఎనేబుల్ చేయవచ్చు.</translation>
+<translation id="6355820183143562453">ధర ట్రాకింగ్ కార్డ్‌ను దాచండి</translation>
 <translation id="6355820205320395730">బలహీనమైన పాస్‌వర్డ్‌లను ఊహించడం చాలా సులభం. మీరు శక్తివంతమైన పాస్‌వర్డ్‌లను క్రియేట్ చేస్తున్నారని నిర్ధారించుకోండి. <ph name="BEGIN_LINK" />మరిన్ని సెక్యూరిటీ చిట్కాలను చూడండి.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" />ను ఫాలో అవ్వండి</translation>
 <translation id="6368038301482806847">లిస్ట్ నుండి సెర్చ్ ఇంజిన్‌ను ఎంచుకోండి.</translation>
@@ -1534,6 +1541,7 @@
 <translation id="7638584964844754484">రహస్య పదబంధం చెల్లదు</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{చోరీకి గురైన పాస్‌వర్డ్‌లు}=1{చోరీకి గురైన {COUNT} పాస్‌వర్డ్}other{చోరీకి గురైన {COUNT} పాస్‌వర్డ్‌లు}}</translation>
 <translation id="7640669552036055091">Androidలో ట్యాబ్‌లు</translation>
+<translation id="7642277834834046856">మీ ట్యాబ్‌లలో ధర తగ్గింపు వివరాలు</translation>
 <translation id="7646263789464975852">మెనూ → సెట్టింగ్‌లు → భద్రతా తనిఖీ</translation>
 <translation id="7646772052135772216">పాస్‌వర్డ్ సింక్ పనిచేయడం లేదు</translation>
 <translation id="764827086632467055">ఆటోమేటిక్ బ్రౌజర్ యాప్‌ను ట్యాప్ చేయండి</translation>
@@ -1944,6 +1952,7 @@
 <translation id="963102227019621224">వెబ్ &amp; యాప్ యాక్టివిటీ</translation>
 <translation id="966593914872420832">వాయిస్ సెర్చ్</translation>
 <translation id="968653181266955408">కంటెంట్ నోటిఫికేషన్‌లను పొందండి</translation>
+<translation id="972084300091883657">{COUNT,plural, =0{<ph name="OWNER_NAME" />‌తో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి}=1{<ph name="OWNER_NAME" />, ఇంకా మరో {COUNT} వ్యక్తితో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి}other{<ph name="OWNER_NAME" />, ఇంకా మరో {COUNT} వ్యక్తులతో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి}}</translation>
 <translation id="973493300226275298">ఆన్‌లైన్ స్టోర్‌లలో ప్రోడక్ట్ ధరను ట్రాక్ చేయండి. ధర తగ్గినప్పుడు మీరు అలర్ట్‌లను పొందుతారు.</translation>
 <translation id="973788791897303708">ఈ ట్యాబ్ గ్రూప్ నిండింది</translation>
 <translation id="976392601789283511">చివరిగా మూసివేసిన ట్యాబ్‌ను మళ్లీ తెరవండి</translation>

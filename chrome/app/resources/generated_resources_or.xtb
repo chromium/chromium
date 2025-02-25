@@ -584,7 +584,6 @@
 <translation id="1401216725754314428">ଏକ ନୂଆ ଟାବରେ ସମ୍ବନ୍ଧିତ ସାଇଟଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="1402426911829176748">ଆପଣଙ୍କ ଡିଭାଇସ ସହ କନେକ୍ଟ କରାଯାଉଛି</translation>
 <translation id="1403222014593521787">ପ୍ରକ୍ସି ସହିତ ସଂଯୋଗ କରିବାକୁ ଅକ୍ଷମ</translation>
-<translation id="1405336513195181336">ଏଥିରେ ବୁକମାର୍କ, ଏକ୍ସଟେନସନ ଏବଂ ସାଇଟଗୁଡ଼ିକର ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ ଅନ୍ତର୍ଭୁକ୍ତ ଅଟେ।</translation>
 <translation id="1405779994569073824">କ୍ରାସ୍ ହୋଇଯାଇଛି।</translation>
 <translation id="1406500794671479665">ଯାଞ୍ଚ ହେଉଛି...</translation>
 <translation id="1407069428457324124">ଗାଢ଼ ଥିମ୍</translation>
@@ -1510,7 +1509,6 @@
 <translation id="2040894699575719559">ଲୋକେସନକୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="2041246176170574368">ସୁରକ୍ଷା ଅପଡେଟଗୁଡ଼ିକ ଶୀଘ୍ର ସମାପ୍ତ ହେଉଛି। ଏକ ନୂଆ Chromebook ଉପରେ $50 କିମ୍ବା ଅଧିକ ସେଭ କରନ୍ତୁ।</translation>
 <translation id="2042279886444479655">ସକ୍ରିୟ ପ୍ରୋଫାଇଲ୍</translation>
-<translation id="2042427131767688936">ଏହି ଡିଭାଇସକୁ ସୁରକ୍ଷିତ ଭାବରେ ବ୍ୟବହାର କରାଯାଇପାରିବା ସୁନିଶ୍ଚିତ କରିବାକୁ, ଆପଣଙ୍କ ସଂସ୍ଥା ଏହାର ଅପରେଟିଂ ସିଷ୍ଟମ, ବ୍ରାଉଜର ଓ ସେଟିଂସ ଏବଂ ଡିଭାଇସରେ କେଉଁ ସଫ୍ଟୱେର ଇନଷ୍ଟଲ ହୋଇଛି ସେ ବିଷୟରେ ସୂଚନା ଦେଖିପାରିବ।</translation>
 <translation id="2044014337866019681">ଦୟାକରି ସେସନକୁ ଅନଲକ୍ କରିବା ପାଇଁ ଆପଣ <ph name="ACCOUNT" />କୁ ଯାଞ୍ଚ କରୁଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="2044750031738659219">{0,plural, =1{ଅତିଥି ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ}other{ଅତିଥି ୱିଣ୍ଡୋ (# ୱିଣ୍ଡୋ) ବନ୍ଦ କରନ୍ତୁ}}</translation>
 <translation id="204497730941176055">Microsoft ସର୍ଟିଫିକେଟ୍‍ ଟେମ୍ପଲେଟ୍‍ର ନାମ</translation>
@@ -3649,7 +3647,6 @@
 <translation id="3566211766752891194">ଟାବ ମେମୋରୀ ବ୍ୟବହାର ଦେଖାନ୍ତୁ</translation>
 <translation id="3566325075220776093">ଏହି ଡିଭାଇସରୁ</translation>
 <translation id="3566721612727112615">କୌଣସି ସାଇଟ୍‌ ଯୋଗକରାଯାଇନାହିଁ</translation>
-<translation id="3566788242120166275">ପୂର୍ବରୁ ଥିବା ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଡାଟା ପୂର୍ବରୁ ଥିବା ପ୍ରୋଫାଇଲରେ ହିଁ ରହିବ। ଏହି ନୂଆ ପ୍ରୋଫାଇଲରେ ପୂର୍ବର କୌଣସି ବ୍ରାଉଜିଂ ଡାଟା ରହିବ ନାହିଁ।</translation>
 <translation id="3567168891086460374">ଅନ୍ୟ ଭାବେ ସେଭ କରନ୍ତୁ</translation>
 <translation id="3567284462585300767">ଆପଣଙ୍କ ଆଖପାଖରେ ଥିବା ଲୋକମାନଙ୍କଠାରୁ ଫାଇଲଗୁଡ଼ିକୁ ପ୍ରାପ୍ତ କରିବା ଏବଂ ଗ୍ରହଣ କରିବା ପାଇଁ ସମସ୍ତଙ୍କୁ ଦୃଶ୍ୟମାନ ହୁଅନ୍ତୁ</translation>
 <translation id="356738834800832239">ଆପଣଙ୍କ ପାସୱାର୍ଡକୁ ସେଭ କରାଯାଇଛି</translation>
@@ -3816,7 +3813,6 @@
 <translation id="3685598397738512288">Linux USB ପସନ୍ଦଗୁଡ଼ିକ</translation>
 <translation id="3687598459967813435">ସର୍ବଦା <ph name="WEBSITE" />ରୁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="368789413795732264">ଫାଇଲ୍‌ଟି ଲେଖିବା ସମୟରେ ଏକ ତ୍ରୁଟି ହୋଇଥିଲା: <ph name="ERROR_TEXT" />।</translation>
-<translation id="3687957587012862163">ନା, ଏହାକୁ ଏକ ନୂଆ ପ୍ରୋଫାଇଲକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="3688507211863392146">ଆପଣ ଆପ୍ଲିକେସନ୍‍‍ରେ ଖୋଲିଥିବା ଫାଇଲ୍ ଓ ଫୋଲ୍ଡର୍‍ଗୁଡ଼ିକରେ ଲେଖନ୍ତୁ</translation>
 <translation id="3688526734140524629">ଚ୍ୟାନେଲ୍ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="3688578402379768763">ଅପ୍-ଟୁ-ଡେଟ୍</translation>
@@ -3875,7 +3871,6 @@
 <translation id="37143699183660101">କର୍ସର ସ୍ଥିରତା</translation>
 <translation id="3714610938239537183">4ଟିରୁ 2 ନମ୍ବର ଷ୍ଟେପ: ଏକ୍ସପୋର୍ଟ କରିବା ପାଇଁ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଡାଟା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3716065403310915079"><ph name="VM_NAME" /> ଇନଷ୍ଟଲର</translation>
-<translation id="3717256685838828428">ଏହି ପ୍ରୋଫାଇଲ ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି, ଯାହା ଏଗୁଡ଼ିକ ସମେତ କିଛି ସୂଚନାକୁ ଭ୍ୟୁ କରିପାରିବ</translation>
 <translation id="3719245268140483218">ଡିଭାଇସ ଇଭେଣ୍ଟ</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> ପୂରଣ କରାଯାଇଛି।</translation>
 <translation id="3719826155360621982">ମୂଳ ପୃଷ୍ଠା</translation>
@@ -4907,7 +4902,6 @@
 <translation id="4426857487270413362">ଇନଷ୍ଟଲର ଫାଇଲ ଡାଉନଲୋଡ କରିବାରେ ଅସମର୍ଥ। ଦୟାକରି ଆପଣଙ୍କ ଇଣ୍ଟର୍ନେଟ କନେକ୍ସନ ଏବଂ ଆପଣଙ୍କ ପାଖରେ ଯଥେଷ୍ଟ ଖାଲି ଡିସ୍କ ସ୍ପେସ ଅଛି ବୋଲି ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। ତ୍ରୁଟି କୋଡ ହେଉଛି <ph name="ERROR" />।</translation>
 <translation id="4427111270137140798"><ph name="COUNT" /> ଥର ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="4427365070557649936">ସୁନିଶ୍ଚିତକରଣ କୋଡ୍ ଯାଞ୍ଚ କରାଯାଉଛି…</translation>
-<translation id="4428579202668721841">ପୂର୍ବରୁ ଥିବା ବ୍ରାଉଜିଂ ଡାଟାକୁ ଆପଣଙ୍କ ୱାର୍କ ପ୍ରୋଫାଇଲରୁ ଅଲଗା ରଖନ୍ତୁ?</translation>
 <translation id="4429163740524851942">ଫିଜିକାଲ୍ କୀବୋର୍ଡ ଲେଆଉଟ୍</translation>
 <translation id="4430019312045809116">ଭଲ୍ୟୁମ୍</translation>
 <translation id="443031431654216610">କେବଳ ସାଂଖ୍ୟିକ ଅଙ୍କଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -6073,7 +6067,6 @@
 <translation id="5276357196618041410">ପ୍ରଥମେ ଲଗଇନ ନକରି କନଫିଗରେସନ ସେଭ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5277127016695466621">ସାଇଡ୍ ପ୍ୟାନେଲ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="5278823018825269962">ସ୍ଥିତି Id</translation>
-<translation id="5279214046729249716">ହଁ, ଏହାକୁ ଅଲଗା ରଖନ୍ତୁ</translation>
 <translation id="5279600392753459966">ସବୁ ବ୍ଲକ କରନ୍ତୁ</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> ପାଇଁ କ୍ରେଡେନ୍ସିଆଲଗୁଡ଼ିକ ଅପଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="5280426389926346830">ସର୍ଟକଟ୍ ତିଆରି କରିବେ?</translation>
@@ -6399,7 +6392,6 @@
 <translation id="5503982651688210506">ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର ଓ ମୁଭ୍ କରିବା ପାଇଁ ଏବଂ ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାର କରିବା ପାଇଁ <ph name="HOST" />କୁ ଅନୁମତି ଦେବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="5505307013568720083">ସ୍ୟାହୀ ଶେଷ ହୋଇଯାଇଛି</translation>
 <translation id="5507756662695126555">ସ୍ୱୀକାର କରିବା</translation>
-<translation id="5508864312047847614">ପୂର୍ବରୁ ଥିବା ବ୍ରାଉଜିଂ ଡାଟାକୁ ଆପଣଙ୍କ ସ୍କୁଲ ପ୍ରୋଫାଇଲରୁ ଅଲଗା ରଖିବେ?</translation>
 <translation id="5509693895992845810">ଏହି &amp;ରୂପେ ସେଭ୍ କରନ୍ତୁ...</translation>
 <translation id="5509914365760201064">ଜାରିକର୍ତ୍ତା: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Googleରୁ ଛବିର ବର୍ଣ୍ଣନା ପ୍ରାପ୍ତ କରନ୍ତୁ</translation>
@@ -6850,7 +6842,6 @@
 <translation id="5854066326260337683">LBS ବର୍ତ୍ତମାନ ଅକ୍ଷମ ଅଛି। <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" /> ନୀତି ସେଟ କରି ଆପଣ LBSକୁ ସକ୍ଷମ କରିପାରିବେ।</translation>
 <translation id="5854912040170951372">ସ୍ଲାଇସ୍‌</translation>
 <translation id="5855267860608268405">ଜଣାଥିବା ୱାଇ-ଫାଇ ନେଟୱାର୍କଗୁଡ଼ିକ</translation>
-<translation id="5855375823365231964">ଏହି ପ୍ରୋଫାଇଲ ବିଷୟରେ</translation>
 <translation id="5855643921295613558">0.6 ସେକେଣ୍ଡ</translation>
 <translation id="5856721540245522153">ଡିବଗିଂ ବୈଶିଷ୍ଟ୍ୟଗୁଡ଼ିକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="5857090052475505287">ନୂତନ ଫୋଲ୍ଡର୍</translation>
@@ -7212,7 +7203,6 @@
 <translation id="6113942107547980621">ସ୍ମାର୍ଟ ଲକ ବ୍ୟବହାର କରିବାକୁ, ଆପଣଙ୍କ ଫୋନରେ ପ୍ରାଥମିକ ୟୁଜର ପ୍ରୋଫାଇଲକୁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
 <translation id="6116921718742659598">ଭାଷା ଓ ଇନ୍‌ପୁଟ୍ ସେଟିଂସ୍ ବଦଳାନ୍ତୁ</translation>
 <translation id="6119008366402292080">କୌଣସି ପ୍ରିଣ୍ଟର ଉପଲବ୍ଧ ନାହିଁ</translation>
-<translation id="6119068870709745878">ଏହି ପ୍ରୋଫାଇଲ <ph name="PROFILE_MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି, ଯାହା ଏଗୁଡ଼ିକ ସମେତ କିଛି ସୂଚନାକୁ ଭ୍ୟୁ କରିପାରିବ</translation>
 <translation id="6119927814891883061">ଡିଭାଇସର ନାମ <ph name="DEVICE_NAME" /> ଦିଅନ୍ତୁ</translation>
 <translation id="6119972796024789243">ରଙ୍ଗ ସଂଶୋଧନ</translation>
 <translation id="6121773125605585883"><ph name="WEBSITE" /> ପାଇଁ ଉପଯୋଗକର୍ତ୍ତାନାମ <ph name="USERNAME" />ର ପାସୱାର୍ଡ ଦେଖନ୍ତୁ</translation>
@@ -7421,6 +7411,7 @@
 <translation id="6264060420924719834">ଏହି ଆପରେ ଅନ୍ୟ ସାଇଟରୁ ୱେବ ବିଷୟବସ୍ତୁ ରହିଛି</translation>
 <translation id="6264365405983206840">&amp;ସବୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6264376385120300461">ଯେ କୌଣସି ମତେ ଡାଉନଲୋଡ୍ କରନ୍ତୁ</translation>
+<translation id="6264485186158353794">ନିରାପତ୍ତାକୁ ଫେରନ୍ତୁ</translation>
 <translation id="6264520534872750757">ଏହି ଡିଭାଇସ ବ୍ୟବହାର କରିବା ପାଇଁ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="6264636978858465832">Password Manager ଅଧିକ ଆକ୍ସେସ ଆବଶ୍ୟକ କରେ</translation>
 <translation id="626495329434552273">ଆପଣଙ୍କ କୀବୋର୍ଡ ଇନପୁଟକୁ ଓଭରରାଇଡ କରିବା ପାଇଁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
@@ -7636,7 +7627,6 @@
 <translation id="6434104957329207050">ପଏଣ୍ଟ ସ୍କାନିଂ ସ୍ପିଡ୍</translation>
 <translation id="6434309073475700221">ବର୍ଜିତ କରନ୍ତୁ</translation>
 <translation id="6434325376267409267">ଆପଣ <ph name="APP_NAME" /> ବ୍ୟବହାର କରିପାରିବା ପୂର୍ବରୁ ଆପଣଙ୍କର ଡିଭାଇସ୍ ଅପଡେଟ୍ ହେବା ଦରକାର।</translation>
-<translation id="6434690603850475457">ହଁ, ଏହାକୁ ଅଲଗା ରଖନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="6434755719322447931">ଚାଓଟିକ</translation>
 <translation id="6435339218366409950">କେପସନଗୁଡ଼ିକୁ କେଉଁ ଭାଷାରେ ଅନୁବାଦ କରିବେ ତାହା ବାଛନ୍ତୁ</translation>
 <translation id="6436164536244065364">ୱେବ୍ ଷ୍ଟୋର୍‌‌ରେ ଦେଖନ୍ତୁ</translation>

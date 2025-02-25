@@ -2250,6 +2250,7 @@
 <translation id="4989809363548539747">இந்தச் செருகுநிரல் ஆதரிக்கப்படவில்லை</translation>
 <translation id="4990241977441916452">என்வெலப் A2</translation>
 <translation id="4992066212339426712">ஒலி இயக்கு</translation>
+<translation id="4994095017621319069">1 பக்கக் குழு இனி கிடைக்காது</translation>
 <translation id="4994348767896109801">உங்களுக்குக் காட்டப்படும் விளம்பரம் பிரத்தியேகமானதா என்பது இந்த அமைப்பு, <ph name="BEGIN_LINK_1" />விளம்பரத் தலைப்புகள்<ph name="END_LINK_1" />, உங்கள் <ph name="BEGIN_LINK_2" />குக்கீ அமைப்புகள்<ph name="END_LINK_2" />, நீங்கள் பார்க்கும் தளம் விளம்பரங்களைப் பிரத்தியேகமாக்குகிறதா ஆகியவை உட்பட பலவற்றைப் பொறுத்து இருக்கும். <ph name="BEGIN_LINK_3" />உங்கள் விளம்பரங்கள் தொடர்பான தனியுரிமையை நிர்வகிப்பது<ph name="END_LINK_3" /> குறித்து மேலும் தெரிந்துகொள்ளுங்கள்.</translation>
 <translation id="4995474875135717171">திருத்தப்பட்டது:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, தளத்தில் தேடியவற்றையும் இயல்புத் தேடல் இன்ஜினையும் நிர்வகிக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
@@ -3327,7 +3328,6 @@
 <translation id="6925267999184670015">வட அமெரிக்க B+</translation>
 <translation id="6926216138694948720">உடல் கலை</translation>
 <translation id="692638818576287323">வர்த்தக வாகனங்கள்</translation>
-<translation id="6933282894115597956">உள்நுழைவதை உங்கள் நிறுவனம் அவசியமாக்கியுள்ளது</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />நீங்கள் அமைக்கும் தேடல் இன்ஜின் உங்கள் இணையத் தேடல்களுக்கும் சில Chrome அம்சங்களுக்கும் பயன்படுத்தப்படும்.<ph name="END_BOLD" /> அதாவது, முகவரிப் பட்டியலில் இருந்து தேடுதல், இணையப் பக்கங்களில் காட்டப்படும் படங்களில் இருந்து தேடுதல் போன்றவை. உங்கள் தேடல் இன்ஜின் ஆதரிக்காத அம்சங்களை நீங்கள் பயன்படுத்த முடியாது.</translation>
 <translation id="6934672428414710184">இந்தப் பெயர் உங்கள் ‘Google கணக்கிலிருந்து’ பெறப்பட்டது</translation>
 <translation id="6935082727755903526">அக்கவுண்டிங் &amp; நிதி சார்ந்த பணிகள்</translation>
@@ -3463,6 +3463,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">லாவெண்டர் நிறம்</translation>
 <translation id="7156870133441232244">சேவையகத்தை TLS 1.2 அல்லது அதற்குப் பிந்தைய பதிப்பிற்கு மேம்படுத்த வேண்டும்.</translation>
+<translation id="7156885531105222428">நீங்கள் கேட்ட பக்கத்தை ஆப்ஸில் கண்டறிய முடியவில்லை</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> அம்சத்தின் மூலம் இந்த ஃபைலை அனுப்ப உங்கள் சாதனத்தில் <ph name="DISK_SPACE_SIZE" /> சேமிப்பிடத்தைக் காலியாக்கவும்}other{<ph name="FEATURE_NAME" /> அம்சத்தின் மூலம் இந்த ஃபைல்களை அனுப்ப உங்கள் சாதனத்தில் <ph name="DISK_SPACE_SIZE" /> சேமிப்பிடத்தைக் காலியாக்கவும்}}</translation>
 <translation id="7160999678034985039">உங்கள் பணியைச் சேமித்து, தயாரானதும் புதுப்பிப்பைத் தொடங்குங்கள்.</translation>
 <translation id="7162277662076933695">ஸ்மார்ட் கார்டு ரீடர்</translation>
@@ -4250,6 +4251,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">தடைசெய்யப்பட்ட URLகளின் பட்டியலையும் உங்கள் சிஸ்டம் நிர்வாகி செயல்படுத்தியுள்ள பிற கொள்கைகளையும் பார்க்க &lt;strong&gt;chrome://policy&lt;/strong&gt; என்பதற்குச் செல்லவும்.</translation>
 <translation id="8536234749087605613">விண்டோ என்வெலப்</translation>
+<translation id="8538228968820006247">உங்கள் பக்கக் குழு நிரம்பிவிட்டது, இணைப்பின் மூலம் புதிய உறுப்பினர்களால் சேர முடியாது</translation>
 <translation id="8539500321752640291">இரண்டு அணுகல்களையும் வழங்கவா?</translation>
 <translation id="8541158209346794904">புளூடூத் சாதனம்</translation>
 <translation id="8541410041357371550">மிகவும் தொடர்புடைய விளம்பரங்களைக் காட்ட உங்களின் விளம்பரத் தலைப்புகளை Chrome உலாவியில் இருந்து இந்தத் தளம் பெறுகிறது.</translation>

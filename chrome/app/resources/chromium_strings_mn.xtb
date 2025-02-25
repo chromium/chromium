@@ -110,7 +110,6 @@
 <translation id="2483889755041906834">Chromium-д</translation>
 <translation id="2485422356828889247">Устгах</translation>
 <translation id="2513154137948333830">Дахин асаах шаардлагатай: <ph name="INSTALL_SUCCESS" /></translation>
-<translation id="2522009821193247726">Үргэлжлүүлэхийн тулд та <ph name="EMAIL" />-р Chromium-д нэвтрэх шаардлагатай болно. Энэ нь танай байгууллагын бодлогыг дагаж мөрдөж байгааг баталгаажуулна.</translation>
 <translation id="2542968102051442371">Зурган хайлтаар текст сонгоно уу</translation>
 <translation id="2554739539410784893">Chromium одоо байгаа нууц үгнүүдийг солихоор оролдож байна. Үүнийг зөвшөөрөхийн тулд Windows-н нууц үгээ бичнэ үү.</translation>
 <translation id="2560420686485554789">Файл татахын тулд Chromium-д сангийн хандалт шаардлагатай</translation>
@@ -433,7 +432,6 @@
 <translation id="6964305034639999644">Холбоосыг Chromium-н нууцлалтай цонхонд нээх</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">Сул нууц үгийг таахад хялбар байдаг. Chromium-д <ph name="BEGIN_LINK" />танд зориулан сайн нууц үг үүсгэж, санах<ph name="END_LINK" /> боломж олгоорой.</translation>
-<translation id="6980074797973263542">Танай байгууллага таны хавчуурга, түүх, нууц үг зэрэг интернэтээр үзсэн өгөгдлийг харж, удирдах боломжтой. Энэ нь хувийн Chromium профайлууд дахь интернэтээр үзсэн өгөгдлийг харах боломжгүй.</translation>
 <translation id="6985329841647292029">ChromiumOS-н нөхцөл</translation>
 <translation id="6990124437352146030">Энэ сайтыг ашиглахын тулд Chromium-д таны микрофонд хандах зөвшөөрөл шаардлагатай</translation>
 <translation id="7003299027384820442"><ph name="ACCOUNT_EMAIL" /> бүртгэлдээ Chromium-н өгөгдлийг ашиглах, хадгалахын тулд нэвтрэх үгээ оруулна уу</translation>

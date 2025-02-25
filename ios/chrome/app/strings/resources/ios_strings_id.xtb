@@ -995,7 +995,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5355191726083956201">Perlindungan yang Ditingkatkan aktif</translation>
 <translation id="537853552771686272">Kelola topik dan situs yang Anda minati</translation>
 <translation id="5395707839134961196">Sembunyikan detail mesin telusur</translation>
-<translation id="541276233349960923">Gunakan sandi di semua Perangkat Anda</translation>
 <translation id="5414763847370083940">Anda akan mendapatkan notifikasi jika ada diskon di situs mana pun.</translation>
 <translation id="5415289094036440596">Kunci sandi tidak dapat dibagikan</translation>
 <translation id="5416455648658732408">Pindahkan ke Grup Tab</translation>
@@ -1944,6 +1943,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="963102227019621224">Aktivitas Web &amp; Aplikasi</translation>
 <translation id="966593914872420832">Penelusuran suara</translation>
 <translation id="968653181266955408">Dapatkan notifikasi konten</translation>
+<translation id="972084300091883657">{COUNT,plural, =0{Gabung ke grup tab dengan <ph name="OWNER_NAME" />}=1{Gabung ke grup tab dengan <ph name="OWNER_NAME" /> dan {COUNT} orang lainnya}other{Gabung ke grup tab dengan <ph name="OWNER_NAME" /> dan {COUNT} orang lainnya}}</translation>
 <translation id="973493300226275298">Pantau harga produk di semua toko online. Anda akan mendapatkan notifikasi jika ada diskon.</translation>
 <translation id="973788791897303708">Grup tab ini penuh</translation>
 <translation id="976392601789283511">Membuka ulang tab yang terakhir ditutup</translation>

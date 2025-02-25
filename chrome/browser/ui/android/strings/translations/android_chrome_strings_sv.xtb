@@ -295,6 +295,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2390510615457643724">Vill du ladda ned <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> igen?</translation>
 <translation id="2395004545133500011">Dela med översiktsarket öppet</translation>
 <translation id="2410754283952462441">Välj ett konto</translation>
+<translation id="2413014528833954543">Det går inte att kontrollera lösenord på den här enheten</translation>
 <translation id="2414886740292270097">Mörk</translation>
 <translation id="2421705177906985956">Det finns inga webbplatser att visa just nu</translation>
 <translation id="2426805022920575512">Välj ett annat konto</translation>
@@ -1135,6 +1136,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6254139308321626268">Du ser en PDF-fil</translation>
 <translation id="6255809143828972562">Med verktyg från Chrome kan du surfa säkert och behålla kontrollen</translation>
 <translation id="6264376385120300461">Ladda ned ändå</translation>
+<translation id="6264485186158353794">Tillbaka till säker webbplats</translation>
 <translation id="6277522088822131679">Det gick inte att skriva ut sidan. Försök igen.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6284472661216707937">Lösenord på alla dina enheter har stängts</translation>

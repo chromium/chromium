@@ -12,6 +12,7 @@
 <translation id="3512634283363927263">Bu sayfalar Chrome geliştiricilerinin kullanması için tasarlanmış olup etkin şekilde yönetilmiyor veya test edilmemiş olabilir. Bu özellikleri etkinleştirmek için <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> adresine giderek hata ayıklama sayfalarını etkinleştirme düğmesini tıklayın ve tekrar bu sayfaya gelin.</translation>
 <translation id="3875312571075912821">Güvenlik duvarınızın veya virüsten korunma programınızın ayarlarından,
         Chrome'un ağa erişmesine izin verin.</translation>
+<translation id="4949828774841497663">Uygulamalar &gt; Sistem Ayarları &gt; Ağ'a gidip etkin ağı seçin, Ayrıntılar... düğmesini tıklayın ve seçilmiş olabilecek tüm proxy'lerin seçimini kaldırın.</translation>
 <translation id="5005121315113832363">Bu sayfa Chrome tarafından engellendi</translation>
 <translation id="6011049234605203654">Chrome menüsü &gt;
           <ph name="SETTINGS_TITLE" />

@@ -504,7 +504,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7655455401911432608">Tu historial de navegación, un registro de los sitios que has visitado usando Chrome en este dispositivo.</translation>
 <translation id="7655472416356262023">Eliminar cuenta de Chrome</translation>
 <translation id="7658239707568436148">Cancelar</translation>
-<translation id="7659737857277959440">Tu organización puede ver y gestionar los datos de navegación, como los marcadores, el historial y las contraseñas. No puede ver los datos de navegación de los perfiles personales de Chrome.</translation>
 <translation id="7661924425853052955">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="COUNT" /> más.</translation>
 <translation id="7670287553302121848">La cuenta de Chrome debe volver a autenticarse</translation>
 <translation id="769538538642757151">Chrome te avisará si tienes que revisar algo</translation>
@@ -566,7 +565,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8418845734693287262">ChromeOS no ha podido sincronizar tus datos porque la información de inicio de sesión de tu cuenta está obsoleta.</translation>
 <translation id="842386925677997438">Herramientas de seguridad de Chrome</translation>
 <translation id="8425765582779547329">Para tener más protección online con las opciones de tus padres, inicia sesión en Chrome</translation>
-<translation id="8429214465555795676">Para continuar, debes iniciar sesión en Chrome con <ph name="EMAIL" />. De esta forma, se asegura el cumplimiento de las políticas de tu organización.</translation>
 <translation id="8433638294851456451">Para enviar un número desde aquí a tu teléfono Android, inicia sesión en Chrome con ambos dispositivos.</translation>
 <translation id="8496177819998570653">&amp;Gestor de contraseñas de Google</translation>
 <translation id="8498858610309223613">Se acaba de instalar una actualización de seguridad especial para Google Chrome. Reinicia ahora y restauraremos las pestañas.</translation>

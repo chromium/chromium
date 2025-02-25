@@ -110,7 +110,6 @@
 <translation id="2483889755041906834">У Chromium-у</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
 <translation id="2513154137948333830">Потребно је рестартовање: <ph name="INSTALL_SUCCESS" /></translation>
-<translation id="2522009821193247726">Да бисте наставили, морате да се пријавите у Chromium помоћу налога <ph name="EMAIL" />. Ово обезбеђује усклађеност са смерницама организације.</translation>
 <translation id="2542968102051442371">Изаберите текст помоћу претраге слика</translation>
 <translation id="2554739539410784893">Chromium покушава да замени постојеће лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="2560420686485554789">Chromium тражи приступ меморијском простору да би преузимао датотеке</translation>
@@ -435,7 +434,6 @@
 <translation id="6964305034639999644">Отвори линк у Chromium прозору без архи&amp;вирања</translation>
 <translation id="6965382102122355670">Потврди</translation>
 <translation id="6978145336957848883">Слабе лозинке лако могу да се погоде. Дозволите да Chromium <ph name="BEGIN_LINK" />прави и памти јаке лозинке за вас<ph name="END_LINK" />.</translation>
-<translation id="6980074797973263542">Организација може да види податке прегледања, попут обележивача, историје и лозинки, и да управља њима. Не може да види податке прегледања на личним Chromium профилима.</translation>
 <translation id="6985329841647292029">Chromium ОС услови</translation>
 <translation id="6990124437352146030">Chromium тражи дозволу да приступи микрофону за овај сајт</translation>
 <translation id="7003299027384820442">Унесите приступну фразу да бисте користили и сачували Chromium податке на налогу, <ph name="ACCOUNT_EMAIL" /></translation>

@@ -13,6 +13,9 @@
 <translation id="3512634283363927263">Estas páginas se destinam para uso dos desenvolvedores do Chrome e podem não ser mantidas ou testadas ativamente. Para ativá-las, acesse <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, clique no botão para ativar as páginas de depuração. Em seguida, volte para esta página.</translation>
 <translation id="3875312571075912821">Permitir que o Chrome acesse a rede nas configurações do seu
           firewall ou antivírus.</translation>
+<translation id="4949828774841497663">Acesse Aplicativos &gt; Ajustes do Sistema &gt; Rede, selecione a
+          rede ativa, clique no botão Detalhes… e desmarque todos os proxies
+          que podem ter sido selecionados.</translation>
 <translation id="5005121315113832363">Esta página foi bloqueada pelo Chrome</translation>
 <translation id="6011049234605203654">Vá para
           no menu do Google Chrome &gt;

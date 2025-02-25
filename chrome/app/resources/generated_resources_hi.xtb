@@ -586,7 +586,6 @@
 <translation id="1401216725754314428">मिलती-जुलती साइटों को नए टैब में देखने के बारे में ज़्यादा जानें</translation>
 <translation id="1402426911829176748">आपके डिवाइस से कनेक्ट किया जा रहा है</translation>
 <translation id="1403222014593521787">प्रॉक्सी सर्वर से कनेक्ट नहीं किया जा सका</translation>
-<translation id="1405336513195181336">इस डेटा में बुकमार्क, एक्सटेंशन, और साइटों के आपके ब्राउज़िंग इतिहास का डेटा शामिल होगा.</translation>
 <translation id="1405779994569073824">बंद हो गया.</translation>
 <translation id="1406500794671479665">सत्यापन हो रहा है...</translation>
 <translation id="1407069428457324124">गहरे रंग वाली थीम</translation>
@@ -1525,7 +1524,6 @@
 <translation id="2040894699575719559">जगह की जानकारी पर रोक लगाई गई</translation>
 <translation id="2041246176170574368">सुरक्षा से जुड़े अपडेट मिलने की सुविधा जल्द बंद होने वाली है. नए Chromebook पर, 50 डॉलर या उससे ज़्यादा की बचत करें.</translation>
 <translation id="2042279886444479655">ऐक्टिव प्रोफ़ाइलें</translation>
-<translation id="2042427131767688936">इस डिवाइस का सुरक्षित तरीके से इस्तेमाल किया जा सके, यह पक्का करने के लिए आपका संगठन इसके ऑपरेटिंग सिस्टम, ब्राउज़र, और सेटिंग की जानकारी देख सकता है. इसके अलावा, संगठन यह भी देख सकता है कि डिवाइस पर कौनसा सॉफ़्टवेयर इंस्टॉल है.</translation>
 <translation id="2044014337866019681">पक्का करें कि आप सत्र को अनलॉक करने के लिए, <ph name="ACCOUNT" /> की पुष्टि कर रहे हैं.</translation>
 <translation id="2044750031738659219">{0,plural, =1{गेस्ट विंडो बंद करें}one{गेस्ट मोड में (# विंडो) बंद करें}other{गेस्ट मोड में (# विंडो) बंद करें}}</translation>
 <translation id="204497730941176055">माइक्रोसॉफ्ट प्रमाणपत्र टेंप्लेट नाम</translation>
@@ -3666,7 +3664,6 @@
 <translation id="3566211766752891194">टैब के मेमोरी इस्तेमाल करने की जानकारी दिखाएं</translation>
 <translation id="3566325075220776093">इस डिवाइस से</translation>
 <translation id="3566721612727112615">कोई साइट नहीं जोड़ी गई</translation>
-<translation id="3566788242120166275">आपका मौजूदा ब्राउज़िंग डेटा, पुरानी प्रोफ़ाइल में ही रहेगा. इस नई प्रोफ़ाइल में, कोई भी पुराना ब्राउज़िंग डेटा मौजूद नहीं रहेगा.</translation>
 <translation id="3567168891086460374">दूसरे तरीके से सेव करें</translation>
 <translation id="3567284462585300767">अपने आस-पास के लोगों से फ़ाइलें पाने और स्वीकार करने के लिए, 'आस-पास शेयर करना' सेट अप करें और लोगों को दिखाई दें</translation>
 <translation id="356738834800832239">आपका पासवर्ड सेव कर लिया गया है</translation>
@@ -3833,7 +3830,6 @@
 <translation id="3685598397738512288">Linux में यूएसबी से जुड़ी प्राथमिकताएं</translation>
 <translation id="3687598459967813435"><ph name="WEBSITE" /> को हमेशा सूचनाएं भेजने की अनुमति दें</translation>
 <translation id="368789413795732264">फ़ाइल में लिखने का प्रयास करते समय कोई गड़बड़ी आई: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3687957587012862163">नहीं, यह डेटा इस नई प्रोफ़ाइल में ट्रांसफ़र करें</translation>
 <translation id="3688507211863392146">  ऐप्लिकेशन में खोली गईं फ़ाइलों और फ़ोल्डर में लिखें</translation>
 <translation id="3688526734140524629">चैनल बदलें</translation>
 <translation id="3688578402379768763">अद्यतित</translation>
@@ -3892,7 +3888,6 @@
 <translation id="37143699183660101">कर्सर की स्थिरता</translation>
 <translation id="3714610938239537183">चार में से दूसरा चरण: एक्सपोर्ट करने के लिए डाइग्नोस्टिक्स डेटा चुनें</translation>
 <translation id="3716065403310915079"><ph name="VM_NAME" /> इंस्टॉलर</translation>
-<translation id="3717256685838828428">इस प्रोफ़ाइल को आपका संगठन मैनेज करता है. यह आपकी कुछ जानकारी देख सकता है. इसमें यह जानकारी शामिल है:</translation>
 <translation id="3719245268140483218">डिवाइस पर होने वाले इवेंट</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> का फ़ॉर्म भरा गया.</translation>
 <translation id="3719826155360621982">होमपेज</translation>
@@ -4924,7 +4919,6 @@
 <translation id="4426857487270413362">इंस्टॉलर फ़ाइलें डाउनलोड नहीं की जा सकीं. कृपया अपने इंटरनेट कनेक्शन की जांच करें. साथ ही, यह पक्का करें कि आपके डिवाइस में ज़रूरत के मुताबिक स्टोरेज हो. इसके बाद, फिर से कोशिश करें. गड़बड़ी का कोड <ph name="ERROR" /> है.</translation>
 <translation id="4427111270137140798"><ph name="COUNT" /> बार पता चला</translation>
 <translation id="4427365070557649936">पुष्टिकरण कोड की पुष्टि की जा रही है...</translation>
-<translation id="4428579202668721841">क्या आपको मौजूदा ब्राउज़िंग डेटा को अपनी वर्क प्रोफ़ाइल से अलग रखना है?</translation>
 <translation id="4429163740524851942">फ़िज़िकल कीबोर्ड लेआउट</translation>
 <translation id="4430019312045809116">आवाज़</translation>
 <translation id="443031431654216610">सिर्फ़ अंक डालें</translation>
@@ -6090,7 +6084,6 @@
 <translation id="5276357196618041410">लॉगिन किए बिना कॉन्फ़िगरेशन सेव नहीं किया जा सकता</translation>
 <translation id="5277127016695466621">साइड पैनल दिखाएं</translation>
 <translation id="5278823018825269962">स्थिति का आईडी</translation>
-<translation id="5279214046729249716">हां, इस डेटा को अलग रखें</translation>
 <translation id="5279600392753459966">सभी को ब्लॉक करें</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> के क्रेडेंशियल अपडेट करें</translation>
 <translation id="5280426389926346830">शॉर्टकट बनाएं?</translation>
@@ -6415,7 +6408,6 @@
 <translation id="5503982651688210506"><ph name="HOST" /> को कैमरे का इस्तेमाल और उसे मूव करते रहने दें. साथ ही, माइक्रोफ़ोन का इस्तेमाल करते रहने दें</translation>
 <translation id="5505307013568720083">इंक खत्म हो गया है</translation>
 <translation id="5507756662695126555">गैर-अस्वीकरण</translation>
-<translation id="5508864312047847614">क्या आपको मौजूदा ब्राउज़िंग डेटा को अपनी स्कूल प्रोफ़ाइल से अलग रखना है?</translation>
 <translation id="5509693895992845810">इस रूप में सेव करें...</translation>
 <translation id="5509914365760201064">जारीकर्ता: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Google से इमेज की जानकारी पाएं</translation>
@@ -6868,7 +6860,6 @@
 <translation id="5854066326260337683">एलबीएस की सुविधा फ़िलहाल बंद है. <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" /> नीति सेट करके, एलबीएस की सुविधा चालू की जा सकती है.</translation>
 <translation id="5854912040170951372">स्‍लाइस</translation>
 <translation id="5855267860608268405">सेव किए गए वाई-फ़ाई नेटवर्क</translation>
-<translation id="5855375823365231964">इस प्रोफ़ाइल के बारे में जानकारी</translation>
 <translation id="5855643921295613558">0.6 सेकंड</translation>
 <translation id="5856721540245522153">डीबग करने वाली सुविधाएं चालू करें</translation>
 <translation id="5857090052475505287">नया फ़ोल्डर</translation>
@@ -7231,7 +7222,6 @@
 <translation id="6113942107547980621">Smart Lock इस्तेमाल करने के लिए, अपने डिवाइस के प्राथमिक उपयोगकर्ता की प्रोफ़ाइल पर स्विच करें</translation>
 <translation id="6116921718742659598">भाषा और इनपुट की सेटिंग बदलें</translation>
 <translation id="6119008366402292080">कोई प्रिंटर उपलब्ध नहीं है</translation>
-<translation id="6119068870709745878">इस प्रोफ़ाइल को <ph name="PROFILE_MANAGER" /> मैनेज करता है. यह कुछ जानकारी देख सकता है. इसमें यह जानकारी शामिल है:</translation>
 <translation id="6119927814891883061">डिवाइस का नाम <ph name="DEVICE_NAME" /> रखें</translation>
 <translation id="6119972796024789243">रंग में सुधार करने की सुविधा</translation>
 <translation id="6121773125605585883"><ph name="WEBSITE" /> के लिए उपयोगकर्ता नाम <ph name="USERNAME" /> के लिए पासवर्ड देखें</translation>
@@ -7440,6 +7430,7 @@
 <translation id="6264060420924719834">इस ऐप्लिकेशन पर अन्य साइटों का वेब कॉन्टेंट मौजूद है</translation>
 <translation id="6264365405983206840">&amp;सभी को चुनें</translation>
 <translation id="6264376385120300461">फिर भी डाउनलोड करें</translation>
+<translation id="6264485186158353794">वापस सुरक्षित पेज पर जाएं</translation>
 <translation id="6264520534872750757">डिवाइस का इस्तेमाल करना जारी रखें</translation>
 <translation id="6264636978858465832">Password Manager को और चीज़ों का ऐक्सेस चाहिए</translation>
 <translation id="626495329434552273">इनके पास आपके कीबोर्ड इनपुट को बदलने की अनुमति है</translation>
@@ -7655,7 +7646,6 @@
 <translation id="6434104957329207050">पॉइंट स्कैनिंग कर्सर की स्पीड</translation>
 <translation id="6434309073475700221">खारिज करें</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> का इस्तेमाल करने से पहले अपने डिवाइस को अपडेट करें.</translation>
-<translation id="6434690603850475457">हां, इस डेटा को अलग रखें (सुझाया गया)</translation>
 <translation id="6434755719322447931">अस्त-व्यस्त</translation>
 <translation id="6435339218366409950">वह भाषा चुनें जिसमें आपको कैप्शन का अनुवाद करना है</translation>
 <translation id="6436164536244065364">वेब स्टोर में देखें</translation>

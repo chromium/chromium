@@ -110,7 +110,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2483889755041906834">En Chromium</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2513154137948333830">Reinicio requerido: <ph name="INSTALL_SUCCESS" /></translation>
-<translation id="2522009821193247726">Para continuar, debes iniciar sesión en Chromium con <ph name="EMAIL" />. De esta forma, se asegura el cumplimiento de las políticas de tu organización.</translation>
 <translation id="2542968102051442371">Selecciona texto con la búsqueda por imágenes</translation>
 <translation id="2554739539410784893">Chromium está intentando reemplazar las contraseñas. Introduce tu contraseña de Windows para permitirlo.</translation>
 <translation id="2560420686485554789">Chromium necesita acceso de almacenamiento para descargar archivos</translation>
@@ -435,7 +434,6 @@ Es posible que algunas funciones no estén disponibles. Especifica un directorio
 <translation id="6964305034639999644">Abrir enlace en una ventana de incó&amp;gnito de Chromium</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6978145336957848883">Las contraseñas poco seguras son fáciles de adivinar. Permite que Chromium <ph name="BEGIN_LINK" />cree y recuerde contraseñas seguras por ti<ph name="END_LINK" />.</translation>
-<translation id="6980074797973263542">Tu organización puede ver y gestionar los datos de navegación, como los marcadores, el historial y las contraseñas. No puede ver los datos de navegación de los perfiles personales de Chromium.</translation>
 <translation id="6985329841647292029">Términos de ChromiumOS</translation>
 <translation id="6990124437352146030">Chromium necesita permiso para acceder al micrófono en este sitio web</translation>
 <translation id="7003299027384820442">Introduce tu frase de contraseña para usar y guardar datos de Chromium en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>

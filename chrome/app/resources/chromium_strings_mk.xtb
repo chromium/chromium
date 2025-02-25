@@ -30,6 +30,7 @@
 <translation id="1345251407431278948">Закачено! Може да пристапите до „Пребарување со слики“ повторно од новото копче на алатникот</translation>
 <translation id="1356661055722410047">Ново! Може да ги преведувате и текстот и сликите на екранот</translation>
 <translation id="1414495520565016063">Најавени сте на Chromium!</translation>
+<translation id="1465192221147974788">За да го споделите прозорецот, дозволете снимање на екранот за Chromium во System Settings.</translation>
 <translation id="1478370723027452770">Добијте помош со „Chrome за тестирање“</translation>
 <translation id="1497802159252041924">Грешка при инсталирање: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Споделете картичка на Chromium</translation>
@@ -109,7 +110,6 @@
 <translation id="2483889755041906834">Во Chromium</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
 <translation id="2513154137948333830">Потребно е рестартирање: <ph name="INSTALL_SUCCESS" /></translation>
-<translation id="2522009821193247726">За да продолжите, ќе треба да се најавите на Chromium со <ph name="EMAIL" />. Ова гарантира сообразност со правилата на вашата организација.</translation>
 <translation id="2542968102051442371">Изберете текст со „Пребарување со слики“</translation>
 <translation id="2554739539410784893">Chromium се обидува да ги замени постојните лозинки. За да го дозволите тоа, внесете ја вашата лозинка за Windows.</translation>
 <translation id="2560420686485554789">На Chromium му треба пристап до меморијата за да презема датотеки</translation>
@@ -162,6 +162,7 @@
 <translation id="3130323860337406239">Chromium го користи микрофонот.</translation>
 <translation id="3137969841538672700">Повлечете за да пребарате</translation>
 <translation id="3144188012276422546">Картичкава користи дополнителни ресурси. За да се подобри изведбата, дозволете му на Chromium да ја деактивира.</translation>
+<translation id="3149163023759831301">За да го споделите екранот, дозволете снимање на екранот за Chromium во System Settings</translation>
 <translation id="3155163173539279776">Рестартирајте го Chromium</translation>
 <translation id="3161522574479303604">Сите јазици</translation>
 <translation id="3179665906251668410">Отвори го линкот во инко&amp;гнито прозорец на Chromium</translation>
@@ -184,8 +185,10 @@
 <translation id="3474745554856756813">Ова ќе избрише <ph name="ITEMS_COUNT" /> ставки од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chromium како <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Со <ph name="SHORTCUT" /> се менуваат профили на Chromium</translation>
 <translation id="3509308970982693815">Затворете ги сите прозорци на Chromium и обидете се повторно.</translation>
+<translation id="3522404737534491619">За да го споделите прозорецот, дозволете снимање на екранот за Chromium во System Settings</translation>
 <translation id="3530103706039034513">Корисникот <ph name="EXISTING_USER" /> веќе е најавен.  За да прелистувате одделно, најавете се на Chromium во вашиот сопствен профил како <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">Заради заштита на вашата приватност, автоматски ги бришеме вашите интереси што се постари од 4 седмици. Додека прелистувате, може да се појави интерес на списокот повторно. Или можете да ги отстраните интересите што не сакате Chromium да ги зема предвид.</translation>
+<translation id="3561853857681580870">За да го споделите екранот, дозволете снимање на екранот за Chromium во System Settings.</translation>
 <translation id="3567254597502212821">Вашата историја на прелистувањето, евиденција на сајтовите што сте ги посетиле со Chromium на овој уред.</translation>
 <translation id="3597003331831379823">Поставувањето со зголемени привилегии не можеше да се изврши. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3639635944603682591">Податоците од прелистување на ова лице ќе се избришат од уредов. За да ги вратите податоците, најавете се на Chromium како <ph name="USER_EMAIL" />.</translation>
@@ -283,6 +286,7 @@
 <translation id="4942295735032723435">За да добивате идни ажурирања на Chromium, потребен ви е macOS 11 или понова верзија. Компјутеров користи macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium е во заднински режим.</translation>
 <translation id="494490797786467921">Кликнете за да се затвори дијалогот за најавување на Chromium</translation>
+<translation id="4950660488495335294">Со профилите на Chromium може да ги одделите сите ваши работи на Chromium. Создајте профили за пријателите и семејството или поделете ги меѓу работа и забава.</translation>
 <translation id="4987820182225656817">Гостите може да го користат Chromium без оставање никакви траги зад нив.</translation>
 <translation id="4994636714258228724">Додај се себеси на Chromium</translation>
 <translation id="5123973130450702873">Chromium бара дозвола да ги следи вашите раце</translation>
@@ -430,7 +434,6 @@
 <translation id="6964305034639999644">Отвори го линкот во инко&amp;гнито прозорец на Chromium</translation>
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6978145336957848883">Слабите лозинки се лесни за погаѓање. Дозволете Chromium да ви <ph name="BEGIN_LINK" />создаде и запомни силни лозинки<ph name="END_LINK" />.</translation>
-<translation id="6980074797973263542">Вашата организација може да ги гледа и да управува со податоците од прелистување, како што се вашите обележувачи, историја и лозинки. Не може да ги гледа податоците од прелистување во личните профили на Chromium.</translation>
 <translation id="6985329841647292029">Услови на Chromium OS</translation>
 <translation id="6990124437352146030">На Chromium му треба дозвола за да пристапи до микрофонот за сајтов</translation>
 <translation id="7003299027384820442">Внесете ја вашата лозинка за да користите и зачувувате податоци од Chromium во вашата сметка <ph name="ACCOUNT_EMAIL" /></translation>

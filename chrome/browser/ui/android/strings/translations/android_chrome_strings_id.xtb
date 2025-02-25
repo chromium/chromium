@@ -295,6 +295,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2390510615457643724">Ingin mendownload <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> lagi?</translation>
 <translation id="2395004545133500011">Bagikan dengan sheet ringkasan dibuka</translation>
 <translation id="2410754283952462441">Pilih akun</translation>
+<translation id="2413014528833954543">Tidak dapat memeriksa sandi di perangkat ini</translation>
 <translation id="2414886740292270097">Gelap</translation>
 <translation id="2421705177906985956">Saat ini tidak ada situs untuk ditampilkan</translation>
 <translation id="2426805022920575512">Pilih akun lain</translation>
@@ -1134,6 +1135,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6254139308321626268">Anda sedang melihat file PDF</translation>
 <translation id="6255809143828972562">Dengan alat dari Chrome, Anda dapat menjelajah dengan aman dan tetap memegang kendali</translation>
 <translation id="6264376385120300461">Tetap download</translation>
+<translation id="6264485186158353794">Kembali agar aman</translation>
 <translation id="6277522088822131679">Terjadi error saat mencetak halaman. Coba lagi.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6284472661216707937">Sandi di semua perangkat Anda ditutup</translation>

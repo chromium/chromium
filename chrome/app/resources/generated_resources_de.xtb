@@ -585,7 +585,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1401216725754314428">Weitere Informationen zu ähnlichen Websites in einem neuen Tab</translation>
 <translation id="1402426911829176748">Verbindung zum Gerät wird hergestellt</translation>
 <translation id="1403222014593521787">Verbindung zum Proxy kann nicht hergestellt werden</translation>
-<translation id="1405336513195181336">Dazu gehören Lesezeichen, Erweiterungen und der Browserverlauf von Websites.</translation>
 <translation id="1405779994569073824">Abgestürzt.</translation>
 <translation id="1406500794671479665">Überprüfung wird durchgeführt...</translation>
 <translation id="1407069428457324124">Dunkles Design</translation>
@@ -1006,6 +1005,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1682696837763999627">Großer Cursor</translation>
 <translation id="1682867089915960590">Tastaturnavigation aktivieren?</translation>
 <translation id="1686550358074589746">Glide Typing aktivieren</translation>
+<translation id="1686785653877010442">Websites senden normalerweise Benachrichtigungen, um dich über Eilmeldungen oder Chatnachrichten zu informieren.</translation>
 <translation id="168715261339224929">Aktiviere die Synchronisierung, um deine Lesezeichen auf allen deinen Geräten zu sehen.</translation>
 <translation id="1688935057616748272">Gib einen Buchstaben ein</translation>
 <translation id="1689333818294560261">Alias</translation>
@@ -1280,6 +1280,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1878885068166344708">Das Element wird markiert, wenn du den Fokus verschiebst. Drücke die Tabulatortaste oder wähle ein Element aus, um den Fokus zu ändern.</translation>
 <translation id="1879000426787380528">Anmelden als</translation>
 <translation id="18802377548000045">Tabs werden auf eine große Breite verkleinert</translation>
+<translation id="1880618477732738742">Du kannst den Zugriff auf Funktionen wie Standortbestimmung, Mikrofon, Kamera oder Cookies für alle deine Websites und Erweiterungen, einschließlich dieser Erweiterung, ändern und gewähren.</translation>
 <translation id="1880905663253319515">Zertifikat "<ph name="CERTIFICATE_NAME" />" löschen?</translation>
 <translation id="1881445033931614352">Tastaturlayout</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Element}other{# Elemente}}</translation>
@@ -1508,7 +1509,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2040894699575719559">Standort blockiert</translation>
 <translation id="2041246176170574368">Dieses Chromebook erhält bald keine Sicherheitsupdates mehr. Sichere dir einen Rabatt von 50 $ oder mehr beim Kauf eines neuen Chromebook.</translation>
 <translation id="2042279886444479655">Aktive Profile</translation>
-<translation id="2042427131767688936">Damit dieses Gerät sicher verwendet werden kann, hat deine Organisation die Möglichkeit Informationen zu Betriebssystem, Browser und Einstellungen sowie zu der Software abzurufen, die auf dem Gerät installiert ist.</translation>
 <translation id="2044014337866019681">Bitte bestätige <ph name="ACCOUNT" />, um die Sitzung zu entsperren.</translation>
 <translation id="2044750031738659219">{0,plural, =1{Gastfenster schließen}other{Gastfenster schließen (# Fenster)}}</translation>
 <translation id="204497730941176055">Name der Microsoft-Zertifikatsvorlage</translation>
@@ -3462,6 +3462,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3435738964857648380">Sicherheit</translation>
 <translation id="343578350365773421">Kein Papier mehr</translation>
 <translation id="3435896845095436175">Aktivieren</translation>
+<translation id="3437397693214267762">Outlook-Kalender sowie SharePoint- und OneDrive-Dateien aufrufen</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> immer Zugriff auf dein Mikrofon gestatten</translation>
 <translation id="3439970425423980614">PDF-Vorschau wird geöffnet...</translation>
@@ -3643,7 +3644,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3566211766752891194">Arbeitsspeichernutzung auf Tab anzeigen</translation>
 <translation id="3566325075220776093">Von diesem Gerät</translation>
 <translation id="3566721612727112615">Keine Websites hinzugefügt</translation>
-<translation id="3566788242120166275">Deine vorhandenen Browserdaten bleiben im bestehenden Profil. Dieses neue Profil wird keine früheren Browserdaten enthalten.</translation>
 <translation id="3567168891086460374">Anders speichern</translation>
 <translation id="3567284462585300767">Sichtbar werden, um Dateien mit Personen in der Nähe auszutauschen</translation>
 <translation id="356738834800832239">Dein Passwort wurde gespeichert</translation>
@@ -3810,7 +3810,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3685598397738512288">Linux-USB-Einstellungen</translation>
 <translation id="3687598459967813435">Benachrichtigungen von <ph name="WEBSITE" /> immer zulassen</translation>
 <translation id="368789413795732264">Beim Versuch, in die Datei <ph name="ERROR_TEXT" /> zu schreiben, ist ein Fehler aufgetreten.</translation>
-<translation id="3687957587012862163">Nein, in dieses neue Profil verschieben</translation>
 <translation id="3688507211863392146">In Dateien und Ordner schreiben, die du in der Anwendung öffnest</translation>
 <translation id="3688526734140524629">Kanal ändern</translation>
 <translation id="3688578402379768763">Auf dem neusten Stand</translation>
@@ -3869,7 +3868,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="37143699183660101">Cursorstabilität</translation>
 <translation id="3714610938239537183">Schritt 2 von 4: Zu exportierende Diagnosedaten auswählen</translation>
 <translation id="3716065403310915079"><ph name="VM_NAME" />-Installationsprogramm</translation>
-<translation id="3717256685838828428">Dieses Profil wird von deiner Organisation verwaltet – bestimmte Informationen sind für deine Organisation sichtbar, unter anderem</translation>
 <translation id="3719245268140483218">Geräteereignis</translation>
 <translation id="3719310907809321183">„<ph name="CARD_IDENTIFIER" />“ ausgefüllt.</translation>
 <translation id="3719826155360621982">Startseite</translation>
@@ -4902,7 +4900,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4426857487270413362">Die Installationsdateien konnten nicht heruntergeladen werden. Prüfe deine Internetverbindung und ob du genügend freien Speicherplatz hast, und versuch es noch einmal. Fehlercode: <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798"><ph name="COUNT" />‑mal erkannt</translation>
 <translation id="4427365070557649936">Bestätigungscode wird geprüft…</translation>
-<translation id="4428579202668721841">Bestehende Browserdaten von deinem Arbeitsprofil getrennt halten?</translation>
 <translation id="4429163740524851942">Belegung der physischen Tastatur</translation>
 <translation id="4430019312045809116">Lautstärke</translation>
 <translation id="443031431654216610">Darf nur aus Ziffern bestehen</translation>
@@ -6068,7 +6065,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5276357196618041410">Zum Speichern der Konfiguration musst du dich erst anmelden</translation>
 <translation id="5277127016695466621">Seitenleiste einblenden</translation>
 <translation id="5278823018825269962">Status-ID</translation>
-<translation id="5279214046729249716">Ja, getrennt halten</translation>
 <translation id="5279600392753459966">Alle blockieren</translation>
 <translation id="5280064835262749532">Anmeldedaten für <ph name="SHARE_PATH" /> aktualisieren</translation>
 <translation id="5280426389926346830">Verknüpfung erstellen?</translation>
@@ -6393,7 +6389,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5503982651688210506"><ph name="HOST" /> weiterhin erlauben, meine Kamera zu verwenden und zu bewegen sowie mein Mikrofon zu benutzen</translation>
 <translation id="5505307013568720083">Patrone leer</translation>
 <translation id="5507756662695126555">Zugelassen</translation>
-<translation id="5508864312047847614">Bestehende Browserdaten von deinem Profil einer Bildungseinrichtung getrennt halten?</translation>
 <translation id="5509693895992845810">Speichern &amp;unter...</translation>
 <translation id="5509914365760201064">Aussteller: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Bildbeschreibungen von Google verwenden</translation>
@@ -6844,7 +6839,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5854066326260337683">Die Unterstützung älterer Browser ist momentan deaktiviert. Du kannst sie aktivieren, indem du die Richtlinie <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" /> konfigurierst.</translation>
 <translation id="5854912040170951372">Pizza</translation>
 <translation id="5855267860608268405">Bekannte WLANs</translation>
-<translation id="5855375823365231964">Informationen zu diesem Profil</translation>
 <translation id="5855643921295613558">0,6 Sekunden</translation>
 <translation id="5856721540245522153">Debugging-Funktionen aktivieren</translation>
 <translation id="5857090052475505287">Neuer Ordner</translation>
@@ -7117,6 +7111,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
     Du kannst es verwenden, um ganz einfach auf alle deine Lesezeichen, Dateien und andere Inhalte zuzugreifen. Wenn du noch kein Konto hast, kannst du auf dem nächsten Bildschirm eines erstellen.</translation>
 <translation id="6054138466019582920">Auf dieser Seite mit Google su&amp;chen…</translation>
 <translation id="6054284857788651331">Kürzlich geschlossene Tabgruppe</translation>
+<translation id="6054819000749443354">Systemeinstellungen öffnen</translation>
 <translation id="6054961935262556546">Sichtbarkeit ändern</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 mit RSA-Verschlüsselung</translation>
 <translation id="6055544610007596637">Apps für dein <ph name="DEVICE_TYPE" /> aus dem Google Play Store installieren</translation>
@@ -7205,7 +7200,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6113942107547980621">Wenn du Smart Lock verwenden möchtest, wechsle zum Profil des Hauptnutzers deines Smartphones</translation>
 <translation id="6116921718742659598">Sprach- und Eingabeeinstellungen ändern</translation>
 <translation id="6119008366402292080">Kein Drucker verfügbar</translation>
-<translation id="6119068870709745878">Dieses Profil wird von <ph name="PROFILE_MANAGER" /> verwaltet – bestimmte Informationen sind für diese Person sichtbar, unter anderem</translation>
 <translation id="6119927814891883061">Gerät als „<ph name="DEVICE_NAME" />“ benennen</translation>
 <translation id="6119972796024789243">Farbkorrektur</translation>
 <translation id="6121773125605585883">Passwort für den Nutzernamen <ph name="USERNAME" /> für <ph name="WEBSITE" /> anzeigen</translation>
@@ -7414,6 +7408,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6264060420924719834">Diese App enthält Webinhalte von anderen Websites</translation>
 <translation id="6264365405983206840">&amp;Alles auswählen</translation>
 <translation id="6264376385120300461">Trotzdem herunterladen</translation>
+<translation id="6264485186158353794">Zurück zu sicherer Website</translation>
 <translation id="6264520534872750757">Gerät weiterhin verwenden</translation>
 <translation id="6264636978858465832">Der Passwortmanager benötigt einen umfassenderen Zugriff</translation>
 <translation id="626495329434552273">Dürfen deine Tastatureingaben überschreiben</translation>
@@ -7629,7 +7624,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6434104957329207050">Punktscan-Geschwindigkeit</translation>
 <translation id="6434309073475700221">Verwerfen</translation>
 <translation id="6434325376267409267">Dein Gerät muss aktualisiert werden, bevor du <ph name="APP_NAME" /> verwenden kannst.</translation>
-<translation id="6434690603850475457">Ja, getrennt halten (empfohlen)</translation>
 <translation id="6434755719322447931">Chaotisch</translation>
 <translation id="6435339218366409950">Wähle die Sprache aus, in die die Untertitel übersetzt werden sollen</translation>
 <translation id="6436164536244065364">Im Web Store ansehen</translation>
@@ -8939,6 +8933,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7380459290951585794">Dein Smartphone muss sich in der Nähe befinden und entsperrt sein und Bluetooth sowie WLAN müssen aktiviert sein</translation>
 <translation id="7380622428988553498">Gerätename enthält ungültige Zeichen</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> aktualisiert</translation>
+<translation id="7382009635620830394">Wenn diese Karte deaktiviert ist, werden auch deine Microsoft-Karten wie SharePoint- und OneDrive-Dateien sowie Outlook-Kalender deaktiviert.</translation>
 <translation id="7382085868019811559">Die Unterstützung älterer Browser ermöglicht, dass bestimmte URL-Muster in einem alternativen Browser geöffnet werden können, der alte, zum korrekten Ausführen dieser Website erforderliche Funktionen unterstützt.</translation>
 <translation id="7382980704744807223">Verdächtig</translation>
 <translation id="738322632977123193">Fehler beim Upload. Verwende ein Bild in einem der folgenden Formate: JPG, GIF, PNG, BMP, TIF oder WEBP.</translation>
@@ -10609,6 +10604,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> wird von <ph name="MANAGER" /> verwaltet. Du kannst diese E-Mail-Adresse nicht für ein zusätzliches Konto hinzufügen.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Wenn du <ph name="USER_EMAIL" /> verwenden möchtest, musst du dich zuerst auf dem Gerät „<ph name="DEVICE_TYPE" />“ abmelden. Wähle dann unten auf dem Anmeldebildschirm „Person hinzufügen“ aus.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Halte die Suchtaste gedrückt, um die Funktion der Tasten in der obersten Reihe zu ändern</translation>
+<translation id="8549127125482561383">Wie sollen Anfragen angezeigt werden?</translation>
 <translation id="8549316893834449916">Du kannst dein Google-Konto verwenden, um dich auf deinem Chromebook anzumelden – also mit demselben Konto, das du schon für Gmail, Drive, YouTube und andere Google-Dienste verwendest.</translation>
 <translation id="8550239873869577759">Verdächtige Datei heruntergeladen</translation>
 <translation id="8551388862522347954">Lizenzen</translation>

@@ -2253,6 +2253,7 @@
 <translation id="4989809363548539747">Бұл плагинге қолдау көрсетілмейді</translation>
 <translation id="4990241977441916452">A2 хатқалтасы</translation>
 <translation id="4992066212339426712">Дыбысын қосу</translation>
+<translation id="4994095017621319069">1 қойындылар тобы енді қолжетімді емес.</translation>
 <translation id="4994348767896109801">Сізге көрсетілетін жарнаманың жекелендірілетіні осы параметр, <ph name="BEGIN_LINK_1" />жарнама тақырыптары<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />cookie файлдарының параметрлері<ph name="END_LINK_2" /> және сіз көретін сайттың жарнамаларды жекелендіруі сияқты көптеген факторға байланысты. <ph name="BEGIN_LINK_3" />Жарнамадағы құпиялықты басқару<ph name="END_LINK_3" /> туралы толық ақпарат алыңыз.</translation>
 <translation id="4995474875135717171">Өзгертілген күні:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, сайтта іздеу және әдепкі іздеу жүйесін басқару үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
@@ -3331,7 +3332,6 @@
 <translation id="6925267999184670015">Солтүстік Америка B+</translation>
 <translation id="6926216138694948720">Денені безендіру өнері</translation>
 <translation id="692638818576287323">Коммерциялық көліктер</translation>
-<translation id="6933282894115597956">Ұйым аккаунтқа кіруді талап етеді</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Әдепкі іздеу жүйесі интернеттен іздеуге мүмкіндік береді және Chrome функцияларының (мысалы, мекенжай жолағынан және веб-беттердегі кескіндерден іздеу) жұмысын қамтамасыз етеді.<ph name="END_BOLD" /> Іздеу жүйесі қолдау көрсетпесе, функция қолжетімді болмауы мүмкін.</translation>
 <translation id="6934672428414710184">Бұл атау Google аккаунтыңызда бар.</translation>
 <translation id="6935082727755903526">Есеп жүргізу және қаржы жұмыстары</translation>
@@ -3466,6 +3466,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Ақшыл көк</translation>
 <translation id="7156870133441232244">Серверде TLS 1.2 протоколы немесе одан кейінгі нұсқасы орнатылуы тиіс.</translation>
+<translation id="7156885531105222428">Сіз сұраған бет қолданбадан табылмады.</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Бұл файлды <ph name="FEATURE_NAME" /> көмегімен жіберу үшін құрылғыңыздан орын (<ph name="DISK_SPACE_SIZE" />) босатыңыз.}other{Бұл файлдарды <ph name="FEATURE_NAME" /> көмегімен жіберу үшін құрылғыңыздан орын (<ph name="DISK_SPACE_SIZE" />) босатыңыз.}}</translation>
 <translation id="7160999678034985039">Жұмысыңызды сақтаңыз және дайын болған кезде жаңартуды бастаңыз.</translation>
 <translation id="7162277662076933695">Смарт терминал</translation>
@@ -4253,6 +4254,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Тыйым салынған URL мекенжайларын және жүйе әкімшісі енгізген басқа саясаттар тізімін қарау үшін &lt;strong&gt;chrome://policy&lt;/strong&gt; бетіне кіріңіз.</translation>
 <translation id="8536234749087605613">Хатқалта (терезе)</translation>
+<translation id="8538228968820006247">Қойындылар тобында орын жоқ. Жаңа мүшелер сілтемемен қосыла алмайды.</translation>
 <translation id="8539500321752640291">2 рұқсат берілсін бе?</translation>
 <translation id="8541158209346794904">Bluetooth құрылғысы</translation>
 <translation id="8541410041357371550">Бұл сайт сәйкес жарнамаларды көбірек көрсету үшін Chrome браузерінен сізге қажетті жарнама тақырыптарын алады.</translation>
