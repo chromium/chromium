@@ -15,7 +15,8 @@ namespace remoting {
 
 typedef void (*TestFunction)(size_t i, RunningSamples& samples);
 
-const auto kTestValues = std::to_array<int64_t>({10, 20, 30, 10, 25, 16, 15});
+constexpr auto kTestValues =
+    std::to_array<int64_t>({10, 20, 30, 10, 25, 16, 15});
 
 // Test framework that verifies average() and max() at beginning, iterates
 // through all elements and meanwhile calls your own test function

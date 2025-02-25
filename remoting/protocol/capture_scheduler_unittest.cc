@@ -21,7 +21,8 @@
 
 namespace remoting::protocol {
 
-const auto kTestInputs = std::to_array<int>({100, 50, 30, 20, 10, 30, 60, 80});
+constexpr auto kTestInputs =
+    std::to_array<int>({100, 50, 30, 20, 10, 30, 60, 80});
 static const int kMinumumFrameIntervalMs = 50;
 
 class CaptureSchedulerTest : public testing::Test {
