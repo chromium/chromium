@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -22,7 +21,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
-#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
@@ -400,12 +398,6 @@ void DevToolsFileHelper::ConnectAutomaticFileSystem(
     bool add_if_missing,
     const ShowInfoBarCallback& show_info_bar_callback,
     ConnectCallback connect_callback) {
-  // This is a no-op if the DevToolsAutomaticFileSystems feature is turned off.
-  if (!base::FeatureList::IsEnabled(features::kDevToolsAutomaticFileSystems)) {
-    std::move(connect_callback).Run(false);
-    return;
-  }
-
   // Sanitize the |file_system_path|.
   if (!base::FilePath::FromUTF8Unsafe(file_system_path).IsAbsolute()) {
     LOG(ERROR) << "Rejected automatic file system " << file_system_path
@@ -560,11 +552,9 @@ DevToolsFileHelper::GetFileSystems() {
     auto change_handler_on_ui = base::BindRepeating(
         &DevToolsFileHelper::FileSystemPathsSettingChangedOnUI,
         weak_factory_.GetWeakPtr());
-    if (base::FeatureList::IsEnabled(features::kDevToolsAutomaticFileSystems)) {
-      pref_change_registrar_.Add(
-          prefs::kDevToolsAutomaticFileSystems,
-          base::BindRepeating(RunOnUIThread, change_handler_on_ui));
-    }
+    pref_change_registrar_.Add(
+        prefs::kDevToolsAutomaticFileSystems,
+        base::BindRepeating(RunOnUIThread, change_handler_on_ui));
     pref_change_registrar_.Add(
         prefs::kDevToolsFileSystemPaths,
         base::BindRepeating(RunOnUIThread, change_handler_on_ui));
@@ -588,13 +578,10 @@ void DevToolsFileHelper::RemoveFileSystem(const std::string& file_system_path) {
   isolated_context()->RevokeFileSystemByPath(path);
   DisconnectAutomaticFileSystem(file_system_path);
 
-  // Only update the automatic file system list if the feature is turned on.
-  if (base::FeatureList::IsEnabled(features::kDevToolsAutomaticFileSystems)) {
-    ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                                prefs::kDevToolsAutomaticFileSystems);
-    base::Value::Dict& automatic_file_systems_value = update.Get();
-    automatic_file_systems_value.Remove(file_system_path);
-  }
+  ScopedDictPrefUpdate automatic_update(profile_->GetPrefs(),
+                                        prefs::kDevToolsAutomaticFileSystems);
+  base::Value::Dict& automatic_file_systems_value = automatic_update.Get();
+  automatic_file_systems_value.Remove(file_system_path);
 
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kDevToolsFileSystemPaths);
