@@ -131,7 +131,8 @@ void FakeAdapter::RegisterAdvertisement(
     return;
   }
 
-  registered_advertisements_map_.insert({service_uuid, service_data});
+  registered_advertisements_map_.insert(
+      {service_uuid, std::make_pair(service_data, connectable)});
 
   auto advertisement = std::make_unique<FakeAdvertisement>(
       base::BindOnce(&FakeAdapter::OnAdvertisementDestroyed,
@@ -290,7 +291,19 @@ void FakeAdapter::SetExtendedAdvertisementSupport(
 const std::vector<uint8_t>* FakeAdapter::GetRegisteredAdvertisementServiceData(
     const device::BluetoothUUID& service_uuid) {
   auto it = registered_advertisements_map_.find(service_uuid);
-  return it == registered_advertisements_map_.end() ? nullptr : &it->second;
+  return it == registered_advertisements_map_.end() ? nullptr
+                                                    : &it->second.first;
+}
+
+std::optional<bool> FakeAdapter::GetRegisteredAdvertisementConnectable(
+    const device::BluetoothUUID& service_uuid) {
+  auto it = registered_advertisements_map_.find(service_uuid);
+  if (it == registered_advertisements_map_.end()) {
+    return std::nullopt;
+  }
+
+  bool connectable = it->second.second;
+  return connectable;
 }
 
 void FakeAdapter::SetDiscoverySessionDestroyedCallback(

@@ -187,6 +187,14 @@ bool BleV2Medium::StartAdvertising(
     }
   }
 
+  // Connectable is set to false due to privacy bug caused from connectable
+  // advertisements leaking the device name and not rotating the address.
+  //
+  // TODO(crbug/395934066): Change this back to reflect the advertisement
+  // connectable setting once the Nearby SDK sets Fast advertisements to
+  // non-connectable.
+  advertise_set_parameters.is_connectable = false;
+
   std::string service_data_info;
   for (auto it = advertising_data.service_data.begin();
        it != advertising_data.service_data.end(); it++) {
@@ -227,8 +235,8 @@ bool BleV2Medium::StartAdvertising(
   }
 
   // There are 3 types of advertisements that Nearby Connections will ask us
-  // to broadcast. All 3 are connectable, but there are a few other
-  // differences.
+  // to broadcast. All 3 are non-connectable, but there are a few other
+  // differences:
   // 1. Extended Advertisements - These do not have ScanResponse data, and
   //    contain their full payload in the AdvertisementData. This is limited by
   //    hardware support.
@@ -239,6 +247,10 @@ bool BleV2Medium::StartAdvertising(
   // 3. Fast advertisements - These do use ScanResponse data, and are shorter
   //    than GATT advertisements. These are expected to always be supported by
   //    hardware.
+  //
+  // TODO(crbug/395934066): Change this back to reflect the advertisement
+  // connectable setting once the Nearby SDK sets Fast advertisements to
+  // non-connectable.
   std::map<device::BluetoothUUID,
            mojo::PendingRemote<bluetooth::mojom::Advertisement>>
       registered_advertisements;
