@@ -95,14 +95,22 @@ static SkColor4f ResolveStopColorWithMissingParams(
     const Color& neighbor,
     Color::ColorSpace color_space,
     const cc::ColorFilter* color_filter) {
+  // neighbor should have the same color space
+  Color coverted = neighbor;
+  coverted.ConvertToColorSpace(color_space);
+
+  DCHECK(color.GetColorSpace() == coverted.GetColorSpace())
+      << "ResolveStopColorWithMissingParams requires that color and neighbor "
+         "have the same color space";
+
   std::optional<float> param0 =
-      color.Param0IsNone() ? neighbor.Param0() : color.Param0();
+      color.Param0IsNone() ? coverted.Param0() : color.Param0();
   std::optional<float> param1 =
-      color.Param1IsNone() ? neighbor.Param1() : color.Param1();
+      color.Param1IsNone() ? coverted.Param1() : color.Param1();
   std::optional<float> param2 =
-      color.Param2IsNone() ? neighbor.Param2() : color.Param2();
+      color.Param2IsNone() ? coverted.Param2() : color.Param2();
   std::optional<float> alpha =
-      color.AlphaIsNone() ? neighbor.Alpha() : color.Alpha();
+      color.AlphaIsNone() ? coverted.Alpha() : color.Alpha();
   Color resolved_color =
       Color::FromColorSpace(color_space, param0, param1, param2, alpha);
   if (color_filter) {
