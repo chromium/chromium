@@ -2966,6 +2966,12 @@ class BannedTypeCheckTest(unittest.TestCase):
                      ['ResourcesCompat.getDrawable();']),
             MockFile('some/java/problematic/getdrawable2.java',
                      ['getResources().getDrawable();']),
+            MockFile('some/java/problematic/announceForAccessibility.java',
+                     ['view.announceForAccessibility(accessibilityText);']),
+            MockFile(
+                'some/java/problematic/accessibilityTypeAnnouncement.java', [
+                    'accessibilityEvent.setEventType(AccessibilityEvent.TYPE_ANNOUNCEMENT);'
+                ]),
         ]
 
         errors = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
@@ -2990,6 +2996,12 @@ class BannedTypeCheckTest(unittest.TestCase):
             'some/java/problematic/getdrawable1.java' in errors[0].message)
         self.assertTrue(
             'some/java/problematic/getdrawable2.java' in errors[0].message)
+        self.assertTrue('some/java/problematic/announceForAccessibility.java'
+                        in errors[0].message)
+        self.assertTrue(
+            'some/java/problematic/accessibilityTypeAnnouncement.java' in
+            errors[0].message)
+
 
     def testBannedCppFunctions(self):
         input_api = MockInputApi()
