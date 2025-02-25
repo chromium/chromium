@@ -32,7 +32,7 @@ namespace {
 // https://cloud.google.com/compute/docs/metadata/querying-metadata#query-https-mds
 constexpr char kHttpMetadataBaseUrl[] =
     "http://metadata.google.internal/computeMetadata/v1/instance/"
-    "service-accounts/default/";
+    "service-accounts/default";
 
 constexpr size_t kMaxResponseSize = 4096;
 
