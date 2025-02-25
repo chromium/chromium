@@ -223,8 +223,13 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
                                static_cast<int>(HTCLIENT));
   }
 
+  // Pinned buttons are not shown in web apps but buttons can be shown
+  // ephemerally in this container and should have the same flex behavior as
+  // other toolbar buttons.
   pinned_toolbar_actions_container_ = AddChildView(
       std::make_unique<PinnedToolbarActionsContainer>(browser_view_));
+  views::SetHitTestComponent(pinned_toolbar_actions_container_,
+                             static_cast<int>(HTCLIENT));
 
   if (download::IsDownloadBubbleEnabled() &&
       !base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {

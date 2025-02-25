@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/action_utils.h"
@@ -88,6 +89,12 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
   // buttons.
   GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
   GetViewAccessibility().SetCheckedState(ax::mojom::CheckedState::kFalse);
+
+  if (web_app::AppBrowserController::IsWebApp(browser_)) {
+    SetLayoutInsets(gfx::Insets());
+    SetHorizontalAlignment(gfx::ALIGN_CENTER);
+    SetAppearDisabledInInactiveWidget(true);
+  }
 }
 
 PinnedActionToolbarButton::~PinnedActionToolbarButton() {
