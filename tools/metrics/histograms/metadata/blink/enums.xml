@@ -7853,6 +7853,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="296" label="DRAFT_PopoverHint"/>
   <int value="297" label="DRAFT_RegExpEscape"/>
   <int value="298" label="Float16array"/>
+  <int value="299" label="AppFileHandlers"/>
+  <int value="300" label="AppProtocolHandlers"/>
+  <int value="301" label="Badging"/>
+  <int value="302" label="Manifest"/>
+  <int value="303" label="BeforeInstallPrompt"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
