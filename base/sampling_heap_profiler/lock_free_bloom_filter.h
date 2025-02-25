@@ -5,6 +5,7 @@
 #ifndef BASE_SAMPLING_HEAP_PROFILER_LOCK_FREE_BLOOM_FILTER_H_
 #define BASE_SAMPLING_HEAP_PROFILER_LOCK_FREE_BLOOM_FILTER_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <atomic>
