@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -18,7 +19,13 @@
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
 #include "net/base/tracing.h"
+#include "net/filter/brotli_source_stream.h"
+#include "net/filter/filter_source_stream.h"
+#include "net/filter/gzip_source_stream.h"
+#include "net/filter/source_stream.h"
 #include "net/filter/source_stream_type.h"
+#include "net/filter/zstd_source_stream.h"
+#include "net/http/http_response_headers.h"
 
 namespace net {
 
@@ -97,6 +104,71 @@ SourceStreamType FilterSourceStream::ParseEncodingType(
     return SourceStreamType::kUnknown;
   }
   return encoding_type->second;
+}
+
+// static
+std::vector<SourceStreamType> FilterSourceStream::GetContentEncodingTypes(
+    const std::optional<base::flat_set<SourceStreamType>>&
+        accepted_stream_types,
+    const HttpResponseHeaders& headers) {
+  std::vector<SourceStreamType> types;
+  size_t iter = 0;
+  while (std::optional<std::string_view> type =
+             headers.EnumerateHeader(&iter, "Content-Encoding")) {
+    SourceStreamType source_type = FilterSourceStream::ParseEncodingType(*type);
+    switch (source_type) {
+      case SourceStreamType::kBrotli:
+      case SourceStreamType::kDeflate:
+      case SourceStreamType::kGzip:
+      case SourceStreamType::kZstd:
+        if (accepted_stream_types &&
+            !accepted_stream_types->contains(source_type)) {
+          // If the source type is disabled, we treat it
+          // in the same way as SourceStreamType::kUnknown.
+          return std::vector<SourceStreamType>();
+        }
+        types.push_back(source_type);
+        break;
+      case SourceStreamType::kNone:
+        // Identity encoding type. Returns an empty vector to pass through raw
+        // response body.
+        return std::vector<SourceStreamType>();
+      case SourceStreamType::kUnknown:
+        // Unknown encoding type. Returns an empty vector to pass through raw
+        // response body.
+        // Request will not be canceled; though
+        // it is expected that user will see malformed / garbage response.
+        return std::vector<SourceStreamType>();
+    }
+  }
+  return types;
+}
+
+// static
+std::unique_ptr<SourceStream> FilterSourceStream::CreateDecodingSourceStream(
+    std::unique_ptr<SourceStream> upstream,
+    const std::vector<SourceStreamType>& types) {
+  for (const auto& type : base::Reversed(types)) {
+    std::unique_ptr<FilterSourceStream> downstream;
+    switch (type) {
+      case SourceStreamType::kBrotli:
+        downstream = CreateBrotliSourceStream(std::move(upstream));
+        break;
+      case SourceStreamType::kGzip:
+      case SourceStreamType::kDeflate:
+        downstream = GzipSourceStream::Create(std::move(upstream), type);
+        break;
+      case SourceStreamType::kZstd:
+        downstream = CreateZstdSourceStream(std::move(upstream));
+        break;
+      case SourceStreamType::kNone:
+      case SourceStreamType::kUnknown:
+        NOTREACHED();
+    }
+    CHECK(downstream);
+    upstream = std::move(downstream);
+  }
+  return upstream;
 }
 
 int FilterSourceStream::DoLoop(int result) {

@@ -16,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/file_version_info.h"
 #include "base/functional/bind.h"
@@ -62,12 +61,9 @@
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
-#include "net/filter/brotli_source_stream.h"
 #include "net/filter/filter_source_stream.h"
-#include "net/filter/gzip_source_stream.h"
 #include "net/filter/source_stream.h"
 #include "net/filter/source_stream_type.h"
-#include "net/filter/zstd_source_stream.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
@@ -250,6 +246,23 @@ enum class ContentEncodingType {
   kZstd = 4,
   kMaxValue = kZstd,
 };
+
+ContentEncodingType ToContentEncodingType(net::SourceStreamType type) {
+  switch (type) {
+    case net::SourceStreamType::kBrotli:
+      return ContentEncodingType::kBrotli;
+    case net::SourceStreamType::kDeflate:
+      return ContentEncodingType::kDeflate;
+    case net::SourceStreamType::kGzip:
+      return ContentEncodingType::kGZip;
+    case net::SourceStreamType::kZstd:
+      return ContentEncodingType::kZstd;
+    case net::SourceStreamType::kUnknown:
+      return ContentEncodingType::kUnknown;
+    case net::SourceStreamType::kNone:
+      return ContentEncodingType::kUnknown;
+  }
+}
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -1491,69 +1504,17 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
 
   std::unique_ptr<SourceStream> upstream = URLRequestJob::SetUpSourceStream();
   HttpResponseHeaders* headers = GetResponseHeaders();
-  std::vector<SourceStreamType> types;
-  size_t iter = 0;
-  while (std::optional<std::string_view> type =
-             headers->EnumerateHeader(&iter, "Content-Encoding")) {
-    SourceStreamType source_type = FilterSourceStream::ParseEncodingType(*type);
-    switch (source_type) {
-      case SourceStreamType::kBrotli:
-      case SourceStreamType::kDeflate:
-      case SourceStreamType::kGzip:
-      case SourceStreamType::kZstd:
-        if (request_->accepted_stream_types() &&
-            !request_->accepted_stream_types()->contains(source_type)) {
-          // If the source type is disabled, we treat it
-          // in the same way as SourceStreamType::kUnknown.
-          return upstream;
-        }
-        types.push_back(source_type);
-        break;
-      case SourceStreamType::kNone:
-        // Identity encoding type. Pass through raw response body.
-        return upstream;
-      case SourceStreamType::kUnknown:
-        // Unknown encoding type. Pass through raw response body.
-        // Request will not be canceled; though
-        // it is expected that user will see malformed / garbage response.
-        return upstream;
-    }
-  }
-
-  ContentEncodingType content_encoding_type = ContentEncodingType::kUnknown;
-
-  for (const auto& type : base::Reversed(types)) {
-    std::unique_ptr<FilterSourceStream> downstream;
-    switch (type) {
-      case SourceStreamType::kBrotli:
-        downstream = CreateBrotliSourceStream(std::move(upstream));
-        content_encoding_type = ContentEncodingType::kBrotli;
-        break;
-      case SourceStreamType::kGzip:
-      case SourceStreamType::kDeflate:
-        downstream = GzipSourceStream::Create(std::move(upstream), type);
-        content_encoding_type = type == SourceStreamType::kGzip
-                                    ? ContentEncodingType::kGZip
-                                    : ContentEncodingType::kDeflate;
-        break;
-      case SourceStreamType::kZstd:
-        downstream = CreateZstdSourceStream(std::move(upstream));
-        content_encoding_type = ContentEncodingType::kZstd;
-        break;
-      case SourceStreamType::kNone:
-      case SourceStreamType::kUnknown:
-        NOTREACHED();
-    }
-    if (downstream == nullptr)
-      return nullptr;
-    upstream = std::move(downstream);
-  }
-
+  const std::vector<SourceStreamType> types =
+      FilterSourceStream::GetContentEncodingTypes(
+          request_->accepted_stream_types(), *headers);
   // Note: If multiple encoding types were specified, this only records the last
   // encoding type.
-  UMA_HISTOGRAM_ENUMERATION("Net.ContentEncodingType", content_encoding_type);
-
-  return upstream;
+  UMA_HISTOGRAM_ENUMERATION(
+      "Net.ContentEncodingType2",
+      ToContentEncodingType(types.empty() ? SourceStreamType::kNone
+                                          : types[0]));
+  return FilterSourceStream::CreateDecodingSourceStream(std::move(upstream),
+                                                        types);
 }
 
 bool URLRequestHttpJob::CopyFragmentOnRedirect(const GURL& location) const {

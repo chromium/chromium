@@ -963,7 +963,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.ContentEncodingType" enum="ContentEncodingType"
+<histogram name="Net.ContentEncodingType2" enum="ContentEncodingType"
     expires_after="2025-07-06">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
