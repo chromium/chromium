@@ -31,6 +31,8 @@ import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.URLEncoder;
+import java.util.HashSet;
+import java.util.Set;
 
 /** Utilities for inline pdf support. */
 @NullMarked
@@ -71,6 +73,13 @@ public class PdfUtils {
     private static final String PARAM_ANDROID_INLINE_PDF_BACKPORT_IN_INCOGNITO =
             "inline_pdf_backport_in_incognito";
     private static boolean sShouldOpenPdfInlineForTesting;
+    private static final Set<String> TRANSIENT_PDF_SCHEMES = new HashSet<>();
+
+    static {
+        TRANSIENT_PDF_SCHEMES.add(UrlConstants.HTTP_SCHEME);
+        TRANSIENT_PDF_SCHEMES.add(UrlConstants.HTTPS_SCHEME);
+        TRANSIENT_PDF_SCHEMES.add(UrlConstants.BLOB_SCHEME);
+    }
 
     /**
      * Determines whether the navigation is to a pdf file.
@@ -88,7 +97,7 @@ public class PdfUtils {
         if (scheme.equals(UrlConstants.FILE_SCHEME) || scheme.equals(UrlConstants.CONTENT_SCHEME)) {
             return true;
         }
-        if (scheme.equals(UrlConstants.HTTP_SCHEME) || scheme.equals(UrlConstants.HTTPS_SCHEME)) {
+        if (TRANSIENT_PDF_SCHEMES.contains(scheme)) {
             return params != null && params.getIsPdf();
         }
         return false;
@@ -184,6 +193,7 @@ public class PdfUtils {
         assert scheme != null;
         assert scheme.equals(UrlConstants.HTTP_SCHEME)
                 || scheme.equals(UrlConstants.HTTPS_SCHEME)
+                || scheme.equals(UrlConstants.BLOB_SCHEME)
                 || scheme.equals(UrlConstants.CONTENT_SCHEME)
                 || scheme.equals(UrlConstants.FILE_SCHEME);
         String fileName = defaultTitle;
@@ -235,7 +245,7 @@ public class PdfUtils {
         if (scheme == null) {
             return PdfPageType.NONE;
         }
-        if (scheme.equals(UrlConstants.HTTP_SCHEME) || scheme.equals(UrlConstants.HTTPS_SCHEME)) {
+        if (TRANSIENT_PDF_SCHEMES.contains(scheme)) {
             return isDownloadSafe ? PdfPageType.TRANSIENT_SECURE : PdfPageType.TRANSIENT_INSECURE;
         }
         if (scheme.equals(UrlConstants.CONTENT_SCHEME) || scheme.equals(UrlConstants.FILE_SCHEME)) {
