@@ -823,6 +823,18 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     ycbcr_info_ = ycbcr_info;
   }
 
+  // Tests can use this method to mark a VF as non-texturable. This is required
+  // when tests creates a VF with a mappable shared image but does not want to
+  // render it. In those cases only looking for ::HasSharedImage() does not
+  // provide enough info to make a decision if VF is texturable or not since VF
+  // will always have a shared image for MappableSI case.
+  void DisableTexturingForTesting() {
+    CHECK(is_mappable_si_enabled_);
+    is_texturable_for_testing_ = false;
+  }
+
+  bool IsTexturableForTesting() const { return is_texturable_for_testing_; }
+
  protected:
   friend class base::RefCountedThreadSafe<VideoFrame>;
   virtual ~VideoFrame();
@@ -994,6 +1006,17 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Allocation which makes up |data_| planes for self-allocated frames.
   std::unique_ptr<uint8_t, base::UncheckedFreeDeleter> private_data_;
+
+  // Only used by tests.
+  // Some tests creates VideoFrame with a Mappable shared image which it does
+  // not intend to render. Tests generally uses ::IsSharedImage() to identify
+  // if a frame is texture backed and can be rendered. This is not enough when
+  // MappableSI is used since a Mappable shared image can be created by tests
+  // only for mapping the underlying buffer to CPU visible memory for
+  // read/write and not necessarily for rendering. Tests which intends to do so
+  // must explicitly mark the VideoFrame as non texturable via
+  // ::DisableTexturingForTesting().
+  bool is_texturable_for_testing_ = true;
 };
 
 }  // namespace media
