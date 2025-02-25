@@ -4,16 +4,22 @@
             "media.mobile": {
                 "abridged": false
             },
+            "jetstream2": {
+                "abridged": false
+            },
             "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
                 "abridged": false
+            },
+            "v8.browsing_mobile": {
+                "abridged": false
             }
         }
     },
     "extra_infos": {
-        "num_stories": 18,
+        "num_stories": 5,
         "predicted_min_shard_time": 3600.0,
         "predicted_min_shard_index": 0,
         "predicted_max_shard_time": 3600.0,
