@@ -343,7 +343,7 @@ const struct CropEntry kImagesToCrop[] = {
 // be byte-copied directly into the finished DataPack. This should contain the
 // persistent IDs for all themeable image IDs that aren't in kFrameValues,
 // kTabBackgroundMap or kImagesToCrop.
-const auto kPreloadIDs = std::to_array<BrowserThemePack::PersistentID>({
+constexpr auto kPreloadIDs = std::to_array<BrowserThemePack::PersistentID>({
     PRS::kNtpBackground,
     PRS::kNtpAttribution,
 });
