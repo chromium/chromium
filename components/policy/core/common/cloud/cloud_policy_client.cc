@@ -1290,7 +1290,7 @@ void CloudPolicyClient::UploadFmRegistrationToken(
   *config->request()->mutable_fm_registration_token_upload_request() =
       std::move(request);
 
-  unique_request_job_ = service_->CreateJob(std::move(config));
+  request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
 void CloudPolicyClient::OnUploadFmRegistrationTokenResponse(
@@ -1306,6 +1306,7 @@ void CloudPolicyClient::OnUploadFmRegistrationTokenResponse(
     result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
   }
   std::move(callback).Run(CloudPolicyClient::Result(result.dm_status));
+  RemoveJob(result.job);
 }
 
 void CloudPolicyClient::UpdateServiceAccount(const std::string& account_email) {
