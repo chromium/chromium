@@ -22,14 +22,14 @@ namespace extensions {
 namespace {
 
 // Manifest permissions injected into |kManifest|:
-const auto kPermissions = std::to_array<const char*>({
+constexpr auto kPermissions = std::to_array<const char*>({
     "*://*/*",               // ALL
     "http://127.0.0.1/*",    // PARTICULAR
     "http://nowhere.com/*",  // NOWHERE
 });
 
 // Script matchers for injected into |kBackgroundScriptSource|:
-const auto kScriptMatchers = std::to_array<const char*>({
+constexpr auto kScriptMatchers = std::to_array<const char*>({
     "{ pageUrl: { hostContains: '' } }",           // ALL
     "{ pageUrl: { hostEquals: '127.0.0.1' } }",    // PARTICULAR
     "{ pageUrl: { hostEquals: 'nowhere.com' } }",  // NOWHERE
