@@ -1566,6 +1566,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
     @Override
     public void tabClosureUndone(Tab tab) {
+        assert !ChromeFeatureList.sTabClosureMethodRefactor.isEnabled();
+
         addTab(tab, /* fromUndo= */ true);
         reorder();
         for (TabModelObserver observer : mFilteredObservers) {
@@ -1574,6 +1576,23 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         @Nullable Token tabGroupId = tab.getTabGroupId();
         if (tabGroupId != null) {
             mHidingTabGroups.remove(tabGroupId);
+        }
+    }
+
+    @Override
+    public void onTabCloseUndone(List<Tab> tabs, boolean isAllTabs) {
+        assert ChromeFeatureList.sTabClosureMethodRefactor.isEnabled();
+
+        for (Tab tab : tabs) {
+            addTab(tab, /* fromUndo= */ true);
+            @Nullable Token tabGroupId = tab.getTabGroupId();
+            if (tabGroupId != null) {
+                mHidingTabGroups.remove(tabGroupId);
+            }
+        }
+        reorder();
+        for (TabModelObserver observer : mFilteredObservers) {
+            observer.onTabCloseUndone(tabs, isAllTabs);
         }
     }
 

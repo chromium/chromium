@@ -75,6 +75,10 @@ class TabModelObserverJniBridge {
                         const base::android::JavaParamRef<jobject>& jobj,
                         const base::android::JavaParamRef<jobject>& jtab);
 
+  void OnTabCloseUndone(JNIEnv* env,
+                        const base::android::JavaParamRef<jobject>& jobj,
+                        const base::android::JavaParamRef<jobjectArray>& jtabs);
+
   void TabClosureCommitted(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& jobj,
                            const base::android::JavaParamRef<jobject>& jtab);

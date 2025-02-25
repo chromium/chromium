@@ -414,6 +414,8 @@ void OnDeviceModelComponentStateManager::NotifyOnDeviceEligibleFeatureFirstUsed(
 const std::optional<OnDeviceBaseModelSpec>
 OnDeviceModelComponentStateManager::ProcessBaseModelSpecFromManifest(
     const base::Value::Dict& manifest) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto* model_spec = manifest.FindDict("BaseModelSpec");
   if (!model_spec) {
     return std::nullopt;
@@ -425,48 +427,47 @@ OnDeviceModelComponentStateManager::ProcessBaseModelSpecFromManifest(
   }
   auto* supported_performance_hints =
       model_spec->FindList("supported_performance_hints");
-  base::flat_set<proto::OnDeviceModelPerformanceHint>
-      supported_performance_hint_enums =
-          supported_performance_hints
-              ? GetSupportedPerformanceHintsForDeviceFromManifest(
-                    *supported_performance_hints)
-              : base::flat_set<proto::OnDeviceModelPerformanceHint>();
-  return OnDeviceBaseModelSpec(*name, *version,
-                               supported_performance_hint_enums);
+  std::optional<proto::OnDeviceModelPerformanceHint>
+      supported_performance_hint_enum =
+          GetSupportedPerformanceHintForDeviceFromManifest(
+              supported_performance_hints);
+  return OnDeviceBaseModelSpec(
+      *name, *version,
+      supported_performance_hint_enum
+          ? base::flat_set<proto::OnDeviceModelPerformanceHint>(
+                {*supported_performance_hint_enum})
+          : base::flat_set<proto::OnDeviceModelPerformanceHint>({}));
 }
 
-base::flat_set<proto::OnDeviceModelPerformanceHint>
+std::optional<proto::OnDeviceModelPerformanceHint>
 OnDeviceModelComponentStateManager::
-    GetSupportedPerformanceHintsForDeviceFromManifest(
-        const base::Value::List& manifest_performance_hints) const {
-  base::flat_set<proto::OnDeviceModelPerformanceHint>
-      supported_performance_hint_enums;
+    GetSupportedPerformanceHintForDeviceFromManifest(
+        const base::Value::List* manifest_performance_hints) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!manifest_performance_hints) {
+    return std::nullopt;
+  }
+
   for (const auto& supported_performance_hint_val :
-       manifest_performance_hints) {
+       *manifest_performance_hints) {
     std::optional<int> supported_performance_hint_int =
         supported_performance_hint_val.GetIfInt();
-    if (!proto::OnDeviceModelPerformanceHint_IsValid(
-            supported_performance_hint_int.value_or(
-                proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED))) {
-      // Skip values that are not well-formed.
-      continue;
+
+    if (IsLowTierDevice() &&
+        *supported_performance_hint_int ==
+            proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE) {
+      return proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE;
     }
-    if (*supported_performance_hint_int ==
-        proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED) {
-      // Skip unspecified value.
-      continue;
+    // `IsDeviceCapable` is a superset of `IsLowTierDevice`, so assume that
+    // !`IsLowTier` = highest quality capable.
+    if (IsDeviceCapable(*local_state_) && !IsLowTierDevice() &&
+        *supported_performance_hint_int ==
+            proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY) {
+      return proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY;
     }
-    if (*supported_performance_hint_int ==
-            proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY &&
-        IsLowTierDevice()) {
-      // Low-tier devices do not support highest quality.
-      continue;
-    }
-    supported_performance_hint_enums.insert(
-        static_cast<proto::OnDeviceModelPerformanceHint>(
-            *supported_performance_hint_int));
   }
-  return supported_performance_hint_enums;
+  return std::nullopt;
 }
 
 OnDeviceModelComponentState::OnDeviceModelComponentState() = default;

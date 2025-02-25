@@ -52,6 +52,7 @@ include_rules = [
   "+extensions/common/extension_features.h",
   "+google_apis/gaia/gaia_constants.h",
   "+net",
+  "+services/data_decoder/public",
   "+services/metrics/public/cpp",
   "+services/network/public/cpp",
   "+services/network/public/mojom",

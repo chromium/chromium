@@ -70,6 +70,8 @@ class EditorMenuView : public PreTargetHandlerView,
 
   EditorMenuTextfieldView* textfield_for_testing() { return textfield_; }
 
+  static const char* GetWidgetNameForTest();
+
  private:
   const TextAndImageMode text_and_image_mode_;
 

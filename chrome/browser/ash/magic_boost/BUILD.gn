@@ -99,6 +99,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/mahi:test_util",
+    "//chrome/browser/ui/ash/editor_menu:views",
     "//chrome/browser/ui/ash/magic_boost",
     "//chrome/browser/ui/ash/magic_boost:magic_boost_constants",
     "//chrome/browser/ui/views/mahi",

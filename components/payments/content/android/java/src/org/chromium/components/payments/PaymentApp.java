@@ -59,7 +59,7 @@ public abstract class PaymentApp extends EditableOption {
         void onInstrumentAbortResult(boolean abortSucceeded);
     }
 
-    protected PaymentApp(String id, String label, String sublabel, Drawable icon) {
+    protected PaymentApp(String id, String label, @Nullable String sublabel, Drawable icon) {
         super(id, maybeElide(removeLineTerminators(label)), sublabel, icon);
     }
 

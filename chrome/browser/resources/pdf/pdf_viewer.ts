@@ -231,7 +231,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected clockwiseRotations_: number = 0;
   // <if expr="enable_pdf_ink2">
   protected currentBrushColor_?: Color;
-  protected currentBrushSize_: number = 0;
+  protected currentBrushSize_?: number = 0;
   protected currentBrushType_: AnnotationBrushType = AnnotationBrushType.PEN;
   // </if>
   protected docLength_: number = 0;

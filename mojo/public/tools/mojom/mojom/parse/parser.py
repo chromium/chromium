@@ -322,8 +322,7 @@ class Parser:
 
   def p_response_type_1(self, p):
     """response_type : RESULT response_pop_state LANGLE typename COMMA typename RANGLE"""
-    # TODO(crbug.com/40841428): implement result type.
-    p[0] = None
+    p[0] = ast.ResultResponse(p[4], p[6])
 
   def p_response_type_2(self, p):
     """response_type : LPAREN response_pop_state parameter_list RPAREN"""

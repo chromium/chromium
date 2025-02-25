@@ -159,6 +159,7 @@ void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
 }
 
 void GlicMetrics::OnResponseStarted() {
+  response_started_ = true;
   base::RecordAction(base::UserMetricsAction("GlicResponseStart"));
 
   // It doesn't make sense to record response start without input submission.
@@ -219,6 +220,12 @@ void GlicMetrics::OnResponseStarted() {
 }
 
 void GlicMetrics::OnResponseStopped() {
+  // The client may call "stopped" without "started" for very short responses.
+  // We synthetically call it ourselves in this case.
+  if (!input_submitted_time_.is_null() && !response_started_) {
+    OnResponseStarted();
+  }
+
   base::RecordAction(base::UserMetricsAction("GlicResponseStop"));
 
   if (input_submitted_time_.is_null()) {
@@ -234,6 +241,7 @@ void GlicMetrics::OnResponseStopped() {
   input_submitted_time_ = base::TimeTicks();
   did_request_context_ = false;
   source_id_ = no_url_source_id_;
+  response_started_ = false;
 }
 
 void GlicMetrics::OnSessionTerminated() {

@@ -102,6 +102,10 @@ class GlicMetrics {
   // value.
   bool is_enabled_ = false;
 
+  // Set to true in OnResponseStarted() and set to false in OnResponseStopped().
+  // This is a workaround and should be removed, see crbug.com/399151164.
+  bool response_started_ = false;
+
   // Holds subscriptions for callbacks.
   std::vector<base::CallbackListSubscription> subscriptions_;
 

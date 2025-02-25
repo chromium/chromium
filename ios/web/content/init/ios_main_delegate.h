@@ -33,6 +33,9 @@ class IOSMainDelegate : public content::ContentMainDelegate {
   content::ContentClient* CreateContentClient() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentRendererClient* CreateContentRendererClient() override;
+  bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
+  bool ShouldInitializeMojo(InvokedIn invoked_in) override;
+  std::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
 
   absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,

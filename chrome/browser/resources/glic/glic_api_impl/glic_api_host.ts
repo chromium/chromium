@@ -25,7 +25,7 @@ import {CaptureScreenshotErrorReason, DEFAULT_PDF_SIZE_LIMIT, GetTabContextError
 import {replaceProperties} from './conversions.js';
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
-import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate} from './request_types.js';
+import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException} from './request_types.js';
 import {ErrorWithReasonImpl, ImageAlphaType, ImageColorType} from './request_types.js';
 
 // Implemented by the embedder of GlicApiHost.
@@ -33,8 +33,9 @@ export interface ApiHostEmbedder {
   // Called when the guest requests resize.
   onGuestResizeRequest(size: {width: number, height: number}): void;
 
-  // Called after the web client is initialized.
-  showGuest(): void;
+  // Called when the web client completes initialization.
+  webClientInitializationDone(
+      success: boolean, exception: TransferableException|undefined): void;
 
   // Called when the notifyPanelWillOpen promise resolves to open the panel
   // when triggered from the browser.
@@ -194,10 +195,12 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     };
   }
 
-  glicBrowserWebClientInitialized(request: {success: boolean}) {
+  glicBrowserWebClientInitialized(
+      request: {success: boolean, exception?: TransferableException}) {
     // The webview may have been re-shown by webui, having previously been
     // opened by the browser. In that case, show the guest frame again.
-    this.embedder.showGuest();
+    this.embedder.webClientInitializationDone(
+        request.success, request.exception);
 
     if (request.success) {
       this.handler.webClientInitialized();

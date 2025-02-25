@@ -8,11 +8,14 @@
 #include <string>
 
 class GURL;
+class Profile;
+class ThemeService;
 
 namespace glic {
 
-GURL GetFreURL();
+GURL GetFreURL(Profile* profile);
 std::string GetHotkeyString();
+bool UseDarkMode(ThemeService* theme_service);
 
 }  // namespace glic
 

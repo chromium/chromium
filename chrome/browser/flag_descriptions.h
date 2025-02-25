@@ -2094,6 +2094,9 @@ extern const char kSystemShortcutBehaviorDescription[];
 extern const char kTabDragDropName[];
 extern const char kTabDragDropDescription[];
 
+extern const char kTabGroupParityBottomSheetAndroidName[];
+extern const char kTabGroupParityBottomSheetAndroidDescription[];
+
 extern const char kToolbarPhoneCleanupName[];
 extern const char kToolbarPhoneCleanupDescription[];
 

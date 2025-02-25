@@ -719,7 +719,7 @@ public class TabListMediatorUnitTest {
         var provider = spy(model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER));
         model.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
 
-        mMediator.removeAt(0);
+        mModelList.removeAt(0);
         verify(provider).destroy();
     }
 

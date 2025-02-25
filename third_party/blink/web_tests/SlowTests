@@ -1347,13 +1347,7 @@ crbug.com/1423483 [ Mac12 ] external/wpt/css/css-color/parsing/color-computed-hs
 crbug.com/1423483 [ Release Win ] external/wpt/css/css-color/parsing/color-computed-hsl.html [ Slow ]
 
 # Slow because of too many cycles of waiting for layout and paint
-crbug.com/1310326 [ Debug Mac13-arm64 ] http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
-crbug.com/1310326 [ Linux ] http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
-crbug.com/1310326 [ Mac11 Release ] http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
-crbug.com/1310326 [ Mac12 Release ] http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
-crbug.com/1310326 [ Mac12-arm64 Release ] http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
-crbug.com/1310326 [ Mac13 ] http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
-crbug.com/1310326 [ Release Win ] http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
+crbug.com/40283659 http/tests/misc/transforms-usecounter-3d-scene.html [ Slow ]
 
 crbug.com/1307741 external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Slow ]
 

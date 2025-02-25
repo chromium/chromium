@@ -64,6 +64,24 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
                     feature_engagement::kMaxStoragePeriod);
     return config;
   }
+
+  if (kiOSTailoredNonModalDefaultBrowserPromosGroup.name == group->name) {
+    std::optional<GroupConfig> config = GroupConfig();
+    config->valid = true;
+    config->session_rate = Comparator(ANY, 0);
+
+    // No more than 1 promo across all variants per day.
+    config->trigger =
+        EventConfig("tailored_non_modal_default_browser_promos_group_trigger",
+                    Comparator(LESS_THAN, 1), 1, 365);
+
+    // No more than 4 promos across all variants per 6 months
+    config->event_configs.insert(
+        EventConfig("tailored_non_modal_default_browser_promos_group_trigger",
+                    Comparator(LESS_THAN, 4), 180, 365));
+
+    return config;
+  }
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

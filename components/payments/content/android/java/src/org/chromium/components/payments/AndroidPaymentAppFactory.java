@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.payments.intent.WebPaymentIntentHelper;
 
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Looks up installed third party Android payment apps. */
+@NullMarked
 public class AndroidPaymentAppFactory implements PaymentAppFactoryInterface {
     // PaymentAppFactoryInterface implementation.
     @Override

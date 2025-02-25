@@ -1198,10 +1198,12 @@ bool GlicWindowController::IsBrowserOccludedAtPoint(Browser* browser,
 }
 
 void GlicWindowController::EnableChanged() {
-  // This is an unusual case. Immediately close everything to avoid implicit
-  // dependencies (e.g. on the position of the glic button in the window, which
-  // itself may also no longer be available).
-  if (!enabling_->IsEnabled()) {
+  // IsReadyForProfile can change at runtime for a few reasons, including
+  // pausing the profile. For now, we just close the window in all cases.
+  // Later this may be relaxed to just check for IsEnabled(), if we add new UX
+  // to handle the various reasons glic is not ready.
+  // See crbug.com/398909522.
+  if (!enabling_->IsReadyForProfile(profile_)) {
     CloseFinish(/*reopen_detached=*/false, std::nullopt);
   }
 }

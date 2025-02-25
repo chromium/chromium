@@ -22,6 +22,7 @@ class MockPageActionModel : public PageActionModelInterface {
   MOCK_METHOD(const std::u16string&, GetText, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetTooltipText, (), (const, override));
   MOCK_METHOD(const ui::ImageModel&, GetImage, (), (const, override));
+  MOCK_METHOD(bool, GetActionItemIsShowingBubble, (), (const, override));
   MOCK_METHOD(void,
               AddObserver,
               (PageActionModelObserver * observer),

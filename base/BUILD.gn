@@ -2384,7 +2384,6 @@ component("base") {
   if (enable_base_tracing) {
     sources += [
       "trace_event/auto_open_close_event.h",
-      "trace_event/builtin_categories.cc",
       "trace_event/builtin_categories.h",
       "trace_event/heap_profiler.h",
       "trace_event/interned_args_helper.cc",

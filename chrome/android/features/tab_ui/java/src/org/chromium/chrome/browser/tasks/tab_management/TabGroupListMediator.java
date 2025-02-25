@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupMessageCa
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DESTROYABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
+import static org.chromium.ui.modelutil.ModelListCleaner.destroyAndClearAllRows;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -28,7 +29,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.Token;
-import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.bookmarks.PendingRunnable;
 import org.chromium.chrome.browser.hub.PaneManager;
@@ -252,7 +252,7 @@ public class TabGroupListMediator {
 
     /** Clean up observers used by this class. */
     public void destroy() {
-        destroyAndClearAllRows();
+        destroyAndClearAllRows(mModelList, DESTROYABLE);
         mFilter.removeObserver(mTabModelObserver);
         if (mTabGroupSyncService != null) {
             mTabGroupSyncService.removeObserver(mTabGroupSyncObserver);
@@ -311,7 +311,7 @@ public class TabGroupListMediator {
     }
 
     private void repopulateModelList() {
-        destroyAndClearAllRows();
+        destroyAndClearAllRows(mModelList, DESTROYABLE);
 
         for (PropertyModel propertyModel : getTabGroupRemovedMessageModelList()) {
             mModelList.add(new ListItem(RowType.TAB_GROUP_REMOVED_CARD, propertyModel));
@@ -381,18 +381,5 @@ public class TabGroupListMediator {
                 break;
             }
         }
-    }
-
-    private void destroyAndClearAllRows() {
-        for (ListItem listItem : mModelList) {
-            Destroyable destroyable =
-                    listItem.model.containsKey(DESTROYABLE)
-                            ? listItem.model.get(DESTROYABLE)
-                            : null;
-            if (destroyable != null) {
-                destroyable.destroy();
-            }
-        }
-        mModelList.clear();
     }
 }

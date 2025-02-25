@@ -98,6 +98,7 @@ class BocaSessionManager
   // Interface for observing events.
   class Observer : public base::CheckedObserver {
    public:
+    virtual void OnSessionMetadataUpdated(const std::string& session_id);
     // Notifies when session started. Pure virtual function, must be handled by
     // observer. Session metadata will be provided when fired.
     virtual void OnSessionStarted(const std::string& session_id,
@@ -202,6 +203,7 @@ class BocaSessionManager
                       std::unique_ptr<::boca::Session> session);
   void DispatchEvent();
   void NotifySessionUpdate();
+  void NotifySessionMetadataUpdate();
   void NotifyOnTaskUpdate();
   void NotifySessionCaptionConfigUpdate();
   void NotifyRosterUpdate();

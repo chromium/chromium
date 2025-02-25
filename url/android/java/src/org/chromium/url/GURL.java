@@ -287,7 +287,7 @@ public class GURL {
     }
 
     @Override
-    public final boolean equals(Object other) {
+    public final boolean equals(@Nullable Object other) {
         if (other == this) return true;
         if (!(other instanceof GURL)) return false;
         return mSpec.equals(((GURL) other).mSpec);

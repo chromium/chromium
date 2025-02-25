@@ -382,7 +382,7 @@ void ExtensionRegistrar::EnabledReloadableExtensions() {
   }
 }
 
-DisableReasonSet ExtensionRegistrar::GetDisableReasonsOnInstalled(
+base::flat_set<int> ExtensionRegistrar::GetDisableReasonsOnInstalled(
     const Extension* extension) {
   bool is_update_from_same_type = false;
   {
@@ -410,14 +410,15 @@ DisableReasonSet ExtensionRegistrar::GetDisableReasonsOnInstalled(
   }
 
   // An already disabled extension should inherit the disable reasons and
-  // remain disabled.
+  // remain disabled. We must get the raw reasons to retain unknown reasons.
   if (extension_prefs_->IsExtensionDisabled(extension->id())) {
-    DisableReasonSet disable_reasons =
-        extension_prefs_->GetDisableReasons(extension->id());
+    auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
+    base::flat_set<int> disable_reasons =
+        extension_prefs_->GetRawDisableReasons(passkey, extension->id());
     // If an extension was disabled without specified reason, presume it's
     // disabled by user.
     return disable_reasons.empty()
-               ? DisableReasonSet({disable_reason::DISABLE_USER_ACTION})
+               ? base::flat_set<int>({disable_reason::DISABLE_USER_ACTION})
                : disable_reasons;
   }
 

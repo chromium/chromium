@@ -334,6 +334,7 @@ public class TabPersistentStore {
 
     private final Deque<Tab> mTabsToSave;
     private final ArrayDeque<Tab> mTabsToMigrate;
+    private final ArrayDeque<File> mLegacyTabStateFilesToDelete;
     private final Deque<TabRestoreDetails> mTabsToRestore;
     private final Set<Integer> mTabIdsToRestore;
 
@@ -389,6 +390,7 @@ public class TabPersistentStore {
 
         mTabsToSave = new ArrayDeque<>();
         mTabsToMigrate = new ArrayDeque<>();
+        mLegacyTabStateFilesToDelete = new ArrayDeque<>();
         mTabsToRestore = new ArrayDeque<>();
         mTabIdsToRestore = new HashSet<>();
         mObservers = new ObserverList<>();
@@ -875,6 +877,14 @@ public class TabPersistentStore {
         if (tabState != null) {
             if (tabState.contentsState != null) {
                 tabState.contentsState.setFallbackUrlForRestorationFailure(tabToRestore.url);
+            }
+
+            if (tabState.legacyFileToDelete != null
+                    && mLegacyTabStateFilesToDelete.size()
+                            < ChromeFeatureList.sMaxLegacyTabStateFilesDeletedPerSession
+                                    .getValue()) {
+                mLegacyTabStateFilesToDelete.add(tabState.legacyFileToDelete);
+                tabState.legacyFileToDelete = null;
             }
 
             @TabRestoreMethod int tabRestoreMethod = TabRestoreMethod.TAB_STATE;
@@ -1502,6 +1512,7 @@ public class TabPersistentStore {
                 mTabsToMigrate.addFirst(tab);
             }
             migrateNextTabIfApplicable(1);
+            deleteLegacyTabStateFilesIfApplicable();
         } else {
             saveTabListAsynchronously();
         }
@@ -1521,6 +1532,29 @@ public class TabPersistentStore {
         Tab tab = mTabsToMigrate.removeFirst();
         mMigrateTabTask = new MigrateTabTask(tab, numMigration);
         mMigrateTabTask.executeOnTaskRunner(mSequencedTaskRunner);
+    }
+
+    private void deleteLegacyTabStateFilesIfApplicable() {
+        if (mLegacyTabStateFilesToDelete.isEmpty()) {
+            return;
+        }
+        List<File> filesToDelete = new LinkedList<>();
+        for (int i = 0;
+                !mLegacyTabStateFilesToDelete.isEmpty()
+                        && i < ChromeFeatureList.sDeleteLegacyTabStateFilesBatchSize.getValue();
+                i++) {
+            filesToDelete.add(mLegacyTabStateFilesToDelete.poll());
+        }
+        PostTask.runOrPostTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    ThreadUtils.assertOnBackgroundThread();
+                    for (File fileToDelete : filesToDelete) {
+                        if (fileToDelete.exists() && !fileToDelete.delete()) {
+                            Log.e(TAG, "Error deleting " + fileToDelete);
+                        }
+                    }
+                });
     }
 
     /** Kick off an AsyncTask to save the current list of Tabs. */

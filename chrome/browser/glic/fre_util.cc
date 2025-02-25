@@ -10,15 +10,19 @@
 #include "base/command_line.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "content/public/browser/browser_context.h"
 #include "net/base/url_util.h"
 #include "ui/base/accelerators/command.h"
+#include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
 namespace glic {
 
-GURL GetFreURL() {
+GURL GetFreURL(Profile* profile) {
   // Use the corresponding command line argument as the URL, if available.
   auto* command_line = base::CommandLine::ForCurrentProcess();
   bool has_glic_fre_url = command_line->HasSwitch(::switches::kGlicFreURL);
@@ -29,12 +33,15 @@ GURL GetFreURL() {
 
   // Add the hotkey configuration to the URL as a query parameter.
   std::string hotkey_param_value = GetHotkeyString();
-  if (hotkey_param_value.empty()) {
-    return base_url;
-  } else {
-    return net::AppendOrReplaceQueryParameter(base_url, "hotkey",
-                                              hotkey_param_value);
+  if (!hotkey_param_value.empty()) {
+    base_url = net::AppendOrReplaceQueryParameter(base_url, "hotkey",
+                                                  hotkey_param_value);
   }
+
+  // Add the current Chrome theme to the URL as a query parameter
+  ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile);
+  std::string theme_value = UseDarkMode(theme_service) ? "dark" : "light";
+  return net::AppendOrReplaceQueryParameter(base_url, "theme", theme_value);
 }
 
 std::string GetHotkeyString() {
@@ -65,6 +72,14 @@ std::string GetHotkeyString() {
   }
 
   return formatted_hotkey_string;
+}
+
+bool UseDarkMode(ThemeService* theme_service) {
+  ThemeService::BrowserColorScheme color_scheme =
+      theme_service->GetBrowserColorScheme();
+  return color_scheme == ThemeService::BrowserColorScheme::kSystem
+             ? ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
+             : color_scheme == ThemeService::BrowserColorScheme::kDark;
 }
 
 }  // namespace glic

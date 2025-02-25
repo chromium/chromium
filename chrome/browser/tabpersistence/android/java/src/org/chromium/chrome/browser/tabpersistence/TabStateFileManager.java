@@ -192,6 +192,12 @@ public class TabStateFileManager {
         long startTime = SystemClock.elapsedRealtime();
         TabState tabState = restoreTabStateInternal(file, encrypted, cipherFactory);
         if (tabState != null) {
+            if (useFlatBuffer
+                    && ChromeFeatureList.sDeleteMigratedLegacyTabStateFilesAfterRestore
+                            .getValue()) {
+                tabState.legacyFileToDelete =
+                        getTabStateFile(stateFolder, id, encrypted, /* isFlatbuffer= */ false);
+            }
             RecordHistogram.recordTimesHistogram(
                     "Tabs.TabState.LoadTime", SystemClock.elapsedRealtime() - startTime);
         }

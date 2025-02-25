@@ -4,10 +4,11 @@
 
 #include "chrome/browser/safe_browsing/notification_content_detection_service_factory.h"
 
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -63,6 +64,27 @@ std::unique_ptr<KeyedService> NotificationContentDetectionServiceFactory::
     return nullptr;
   }
 
+// The model takes up too much memory to be run on ARM devices.
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
+  return nullptr;
+#elif BUILDFLAG(IS_ANDROID)
+  // The model takes up too much memory to be run on low end Android devices.
+  if (base::SysInfo::IsLowEndDevice()) {
+    return nullptr;
+  }
+  return CreateNotificationContentDetectionService(opt_guide, context);
+#else
+  return CreateNotificationContentDetectionService(opt_guide, context);
+#endif
+}
+
+std::unique_ptr<NotificationContentDetectionService>
+NotificationContentDetectionServiceFactory::
+    CreateNotificationContentDetectionService(
+        OptimizationGuideKeyedService* opt_guide,
+        content::BrowserContext* context) const {
+  CHECK(opt_guide);
+  CHECK(context);
   auto database_manager =
       g_browser_process->safe_browsing_service()->database_manager();
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =

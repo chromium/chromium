@@ -616,6 +616,10 @@ void BocaAppHandler::OnSessionStarted(const std::string& session_id,
   UpdateSessionConfig();
 }
 
+void BocaAppHandler::OnSessionMetadataUpdated(const std::string& session_id) {
+  UpdateSessionConfig();
+}
+
 void BocaAppHandler::OnSessionEnded(const std::string& session_id) {
   OnSessionConfigUpdated(
       mojom::ConfigResult::NewError(mojom::GetSessionError::kEmpty));

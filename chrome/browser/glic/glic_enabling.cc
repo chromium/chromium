@@ -127,8 +127,7 @@ void GlicEnabling::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
     const GoogleServiceAuthError& error,
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
-  // Do nothing for now because there is no callback list for detecting changes
-  // to IsReady().
+  enable_changed_callback_list_.Notify();
 }
 
 }  // namespace glic

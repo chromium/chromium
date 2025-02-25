@@ -164,12 +164,8 @@ class PdfInkModule {
   void OnGeometryChanged();
 
   // For testing only. Returns the current `PdfInkBrush` used to draw strokes,
-  // or nullptr if there is no brush.
+  // or nullptr if there is no brush because `PdfInkModule` is erasing.
   const PdfInkBrush* GetPdfInkBrushForTesting() const;
-
-  // For testing only. Returns the current eraser size, or nullopt if the
-  // eraser is not in use.
-  std::optional<float> GetEraserSizeForTesting() const;
 
   // For testing only. Returns the (visible) input positions used for all
   // strokes in the document.
@@ -435,7 +431,6 @@ class PdfInkModule {
   // modified in the middle of an in-progress stroke.
   PdfInkBrush highlighter_brush_;
   PdfInkBrush pen_brush_;
-  float eraser_size_ = 3.0f;
 
   // The parameters that are to be applied to the drawing brushes when a new
   // stroke is started.  These can be modified at any time, including in the

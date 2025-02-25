@@ -13,11 +13,14 @@
 #include <tuple>
 #include <vector>
 
+#include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_util_win.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,6 +28,7 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
+#include "crypto/features.h"
 #include "crypto/random.h"
 #include "crypto/sha2.h"
 #include "crypto/unexportable_key.h"
@@ -48,6 +52,10 @@ const char kMetricVirtualFinalizeKeyError[] =
 const char kMetricVirtualOpenKeyError[] = "Crypto.TpmError.VirtualOpenKey";
 const char kMetricVirtualOpenStorageError[] =
     "Crypto.TpmError.VirtualOpenStorage";
+
+std::u16string KeyIdToWindowsLabel(base::span<const uint8_t> key_id) {
+  return u"unexportable-key-" + base::UTF8ToUTF16(base::Base64Encode(key_id));
+}
 
 // Logs `status` and `selected_algorithm` to an error histogram capturing that
 // `operation` failed for a TPM-backed key.
@@ -332,10 +340,10 @@ base::expected<std::vector<uint8_t>, SECURITY_STATUS> SignRSA(
 class ECDSAKey : public UnexportableSigningKey {
  public:
   ECDSAKey(ScopedNCryptKey key,
-           std::vector<uint8_t> wrapped,
+           std::vector<uint8_t> key_id,
            std::vector<uint8_t> spki)
       : key_(std::move(key)),
-        wrapped_(std::move(wrapped)),
+        key_id_(std::move(key_id)),
         spki_(std::move(spki)) {}
 
   SignatureVerifier::SignatureAlgorithm Algorithm() const override {
@@ -346,7 +354,7 @@ class ECDSAKey : public UnexportableSigningKey {
     return spki_;
   }
 
-  std::vector<uint8_t> GetWrappedKey() const override { return wrapped_; }
+  std::vector<uint8_t> GetWrappedKey() const override { return key_id_; }
 
   std::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) override {
@@ -364,7 +372,7 @@ class ECDSAKey : public UnexportableSigningKey {
 
  private:
   ScopedNCryptKey key_;
-  const std::vector<uint8_t> wrapped_;
+  const std::vector<uint8_t> key_id_;
   const std::vector<uint8_t> spki_;
 };
 
@@ -452,14 +460,31 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
       return nullptr;
     }
 
+    std::vector<uint8_t> key_id;
     ScopedNCryptKey key;
     {
       SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
-      // An empty key name stops the key being persisted to disk.
-      SECURITY_STATUS creation_status = NCryptCreatePersistedKey(
-          provider.get(), ScopedNCryptKey::Receiver(key).get(),
-          BCryptAlgorithmFor(*algo).value(), /*pszKeyName=*/nullptr,
-          /*dwLegacyKeySpec=*/0, /*dwFlags=*/0);
+
+      SECURITY_STATUS creation_status;
+      if (base::FeatureList::IsEnabled(
+              features::kLabelWindowsUnexportableKeys)) {
+        // Windows support for wrapped keys is undocumented, and doesn't seem to
+        // work for the software backend. The API wants Chrome to provide a
+        // label for the key, so we assign one randomly.
+        key_id = crypto::RandBytesAsVector(16);
+        std::u16string key_label = KeyIdToWindowsLabel(key_id);
+        creation_status = NCryptCreatePersistedKey(
+            provider.get(), ScopedNCryptKey::Receiver(key).get(),
+            BCryptAlgorithmFor(*algo).value(), base::as_wcstr(key_label),
+            /*dwLegacyKeySpec=*/0, /*dwFlags=*/0);
+      } else {
+        // An empty key name stops the key being persisted to disk.
+        creation_status = NCryptCreatePersistedKey(
+            provider.get(), ScopedNCryptKey::Receiver(key).get(),
+            BCryptAlgorithmFor(*algo).value(),
+            /*pszKeyName=*/nullptr,
+            /*dwLegacyKeySpec=*/0, /*dwFlags=*/0);
+      }
       if (FAILED(creation_status)) {
         LogTPMOperationError(TPMOperation::kNewKeyCreation, creation_status,
                              algo);
@@ -471,12 +496,16 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
       }
     }
 
-    const base::expected<std::vector<uint8_t>, SECURITY_STATUS> wrapped_key =
-        ExportKey(key.get(), BCRYPT_OPAQUE_KEY_BLOB);
-    if (!wrapped_key.has_value()) {
-      LogTPMOperationError(TPMOperation::kWrappedKeyExport, wrapped_key.error(),
-                           algo);
-      return nullptr;
+    if (!base::FeatureList::IsEnabled(
+            features::kLabelWindowsUnexportableKeys)) {
+      base::expected<std::vector<uint8_t>, SECURITY_STATUS> wrapped_key =
+          ExportKey(key.get(), BCRYPT_OPAQUE_KEY_BLOB);
+      if (!wrapped_key.has_value()) {
+        LogTPMOperationError(TPMOperation::kWrappedKeyExport,
+                             wrapped_key.error(), algo);
+        return nullptr;
+      }
+      key_id = std::move(wrapped_key.value());
     }
 
     std::optional<std::vector<uint8_t>> spki;
@@ -486,14 +515,14 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
         if (!spki) {
           return nullptr;
         }
-        return std::make_unique<ECDSAKey>(
-            std::move(key), std::move(*wrapped_key), std::move(spki.value()));
+        return std::make_unique<ECDSAKey>(std::move(key), std::move(key_id),
+                                          std::move(spki.value()));
       case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
         spki = GetRSASPKI(key.get());
         if (!spki) {
           return nullptr;
         }
-        return std::make_unique<RSAKey>(std::move(key), std::move(*wrapped_key),
+        return std::make_unique<RSAKey>(std::move(key), std::move(key_id),
                                         std::move(spki.value()));
       default:
         return nullptr;
@@ -813,11 +842,26 @@ bool LoadWrappedTPMKey(base::span<const uint8_t> wrapped,
     return false;
   }
 
-  SECURITY_STATUS import_status = NCryptImportKey(
-      provider.get(), /*hImportKey=*/NULL, BCRYPT_OPAQUE_KEY_BLOB,
-      /*pParameterList=*/nullptr, ScopedNCryptKey::Receiver(key).get(),
-      const_cast<PBYTE>(wrapped.data()), wrapped.size(),
-      /*dwFlags=*/NCRYPT_SILENT_FLAG);
+  SECURITY_STATUS import_status = -1;
+  if (base::FeatureList::IsEnabled(features::kLabelWindowsUnexportableKeys)) {
+    // Current versions of Chrome label keys with a random identifier. Attempt
+    // to obtain a handle from the identifier.
+    std::u16string key_label = KeyIdToWindowsLabel(wrapped);
+    import_status =
+        NCryptOpenKey(provider.get(), ScopedNCryptKey::Receiver(key).get(),
+                      base::as_wcstr(key_label),
+                      /*dwLegacyKeySpec=*/0, /*dwFlags=*/0);
+  }
+  if (FAILED(import_status)) {
+    // Previous versions of Chrome used an undocumented Windows feature to
+    // export a wrapped key. Attempt to obtain a handle from the wrapped key to
+    // continue to support old keys.
+    import_status = NCryptImportKey(
+        provider.get(), /*hImportKey=*/NULL, BCRYPT_OPAQUE_KEY_BLOB,
+        /*pParameterList=*/nullptr, ScopedNCryptKey::Receiver(key).get(),
+        const_cast<PBYTE>(wrapped.data()), wrapped.size(),
+        /*dwFlags=*/NCRYPT_SILENT_FLAG);
+  }
   if (FAILED(import_status)) {
     LogTPMOperationError(TPMOperation::kWrappedKeyCreation, import_status,
                          std::nullopt);

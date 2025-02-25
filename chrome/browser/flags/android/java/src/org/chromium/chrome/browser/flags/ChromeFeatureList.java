@@ -542,6 +542,8 @@ public abstract class ChromeFeatureList {
     public static final String TAB_GROUP_SYNC_ANDROID = "TabGroupSyncAndroid";
     public static final String TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH =
             "TabGroupSyncAutoOpenKillSwitch";
+    public static final String TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID =
+            "TabGroupParityBottomSheetAndroid";
     public static final String TAB_RESUMPTION_MODULE_ANDROID = "TabResumptionModuleAndroid";
     public static final String TAB_STRIP_CONTEXT_MENU = "TabStripContextMenuAndroid";
     public static final String TAB_STRIP_GROUP_COLLAPSE = "TabStripGroupCollapseAndroid";
@@ -1047,6 +1049,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES, false);
     public static final MutableFlagWithSafeDefault sSuppressToolbarCapturesAtGestureEnd =
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END, false);
+    public static final MutableFlagWithSafeDefault sTabGroupParityBottomSheetAndroid =
+            newMutableFlagWithSafeDefault(TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabSwitcherColorBlendAnimate =
             newMutableFlagWithSafeDefault(TAB_SWITCHER_COLOR_BLEND_ANIMATE, true);
     public static final MutableFlagWithSafeDefault sTabSwitcherForeignFaviconSupport =
@@ -1199,6 +1203,26 @@ public abstract class ChromeFeatureList {
             sCollectAndroidFrameTimelineMetricsJankTrackerDelayedStartMs =
                     newIntCachedFeatureParam(
                             COLLECT_ANDROID_FRAME_TIMELINE_METRICS, "delayed_start_ms", 3000);
+
+    /***
+     * Feature parameter for TabState deprecation which indicates that legacy TabState
+     * files should be deleted after restore if they have been migrated to FlatBuffer.
+     */
+    public static final BooleanCachedFeatureParam sDeleteMigratedLegacyTabStateFilesAfterRestore =
+            newBooleanCachedFeatureParam(
+                    LEGACY_TAB_STATE_DEPRECATION, "delete_migrated_files_after_restore", false);
+
+    /** Batch size for number of legacy TabState files that should be deleted in a batch. */
+    public static final IntCachedFeatureParam sDeleteLegacyTabStateFilesBatchSize =
+            newIntCachedFeatureParam(
+                    LEGACY_TAB_STATE_DEPRECATION, "delete_legacy_tabstate_files_batch_size", 5);
+
+    /** Maximum number of legacy TabState files that can be deleted per session. */
+    public static final IntCachedFeatureParam sMaxLegacyTabStateFilesDeletedPerSession =
+            newIntCachedFeatureParam(
+                    LEGACY_TAB_STATE_DEPRECATION,
+                    "max_legacy_tab_state_files_deleted_per_session",
+                    100);
 
     /** Cached param whether we disable e2e on the recent tabs page. */
     public static final BooleanCachedFeatureParam sDrawKeyNativeEdgeToEdgeDisableRecentTabsE2e =
@@ -1395,6 +1419,9 @@ public abstract class ChromeFeatureList {
                     sCctResizableForThirdPartiesDefaultPolicy,
                     sClankStartupLatencyInjectionAmountMs,
                     sCollectAndroidFrameTimelineMetricsJankTrackerDelayedStartMs,
+                    sDeleteMigratedLegacyTabStateFilesAfterRestore,
+                    sDeleteLegacyTabStateFilesBatchSize,
+                    sMaxLegacyTabStateFilesDeletedPerSession,
                     sDrawKeyNativeEdgeToEdgeDisableRecentTabsE2e,
                     sDrawKeyNativeEdgeToEdgeDisableCctMediaViewerE2e,
                     sDrawKeyNativeEdgeToEdgeDisableHubE2e,

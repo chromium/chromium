@@ -68,6 +68,10 @@ const char kDefaultBrowserPromoRemindMeLater[] =
     "default_browser_promo_remind_me_later";
 const char kNonModalDefaultBrowserPromoUrlPasteTrigger[] =
     "non_modal_default_browser_promo_url_paste_trigger";
+const char kNonModalDefaultBrowserPromoAppSwitcherTrigger[] =
+    "non_modal_default_browser_promo_app_switcher_trigger";
+const char kNonModalDefaultBrowserPromoShareTrigger[] =
+    "non_modal_default_browser_promo_share_trigger";
 const char kPasswordManagerWidgetPromoTriggered[] =
     "password_manager_widget_promo_trigger";
 const char kPasswordManagerWidgetPromoUsed[] =

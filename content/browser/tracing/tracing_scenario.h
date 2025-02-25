@@ -138,8 +138,6 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
     kEnabled,
     // The tracing session was setup and the scenario is ready to start.
     kSetup,
-    // The tracing session is starting.
-    kStarting,
     // The tracing session is recording.
     kRecording,
     // A stop rule was triggered and the tracing session is stopping.

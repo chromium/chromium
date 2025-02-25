@@ -18905,6 +18905,12 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "QuickShareV2"
+                    ]
+                },
+                {
                     "name": "Enabled",
                     "enable_features": [
                         "QuickShareV2"

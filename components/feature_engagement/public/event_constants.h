@@ -117,6 +117,12 @@ extern const char kDefaultBrowserPromoRemindMeLater[];
 // The non-modal default browser promo from omnibox paste was triggered.
 extern const char kNonModalDefaultBrowserPromoUrlPasteTrigger[];
 
+// The non-modal default browser promo from App switcher was triggered.
+extern const char kNonModalDefaultBrowserPromoAppSwitcherTrigger[];
+
+// The non-modal default browser promo from share was triggered.
+extern const char kNonModalDefaultBrowserPromoShareTrigger[];
+
 // The Password Manager widget promo was triggered.
 extern const char kPasswordManagerWidgetPromoTriggered[];
 

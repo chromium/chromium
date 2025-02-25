@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/extensions/pending_extension_info.h"
+#include "extensions/browser/pending_extension_info.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"

@@ -353,6 +353,14 @@ std::string CanonicalizeHost(std::string_view host,
 }
 }  // namespace
 
+std::string CanonicalizeHostSupportsBareIPV6(std::string_view host,
+                                             url::CanonHostInfo* host_info) {
+  const std::string host_or_ip = host.find(':') != std::string::npos
+                                     ? base::StrCat({"[", host, "]"})
+                                     : std::string(host);
+  return CanonicalizeHost(host_or_ip, host_info);
+}
+
 std::string CanonicalizeHost(std::string_view host,
                              url::CanonHostInfo* host_info) {
   return CanonicalizeHost(host, /*is_file_scheme=*/false, host_info);

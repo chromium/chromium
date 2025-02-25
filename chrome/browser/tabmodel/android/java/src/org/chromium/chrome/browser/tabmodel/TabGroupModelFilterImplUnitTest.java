@@ -87,6 +87,7 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE})
+@DisableFeatures({ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR})
 public class TabGroupModelFilterImplUnitTest {
     private static final int TAB1_ID = 11;
     private static final int TAB2_ID = 12;

@@ -23,8 +23,7 @@ buildflag_header("buildflags") {
   # This is true only for Android.
   #
   # SAFE_BROWSING_DOWNLOAD_PROTECTION means "are SB download protection features
-  # available?" This is true for desktop OSes.
-  # TODO(crbug.com/397407934): This will be true for Android soon.
+  # available?" This is true for desktop OSes and Android.
   if (safe_browsing_mode == 0) {
     flags += [ "FULL_SAFE_BROWSING=0" ]
     flags += [ "SAFE_BROWSING_AVAILABLE=0" ]
@@ -42,6 +41,6 @@ buildflag_header("buildflags") {
     flags += [ "SAFE_BROWSING_AVAILABLE=1" ]
     flags += [ "SAFE_BROWSING_DB_LOCAL=0" ]
     flags += [ "SAFE_BROWSING_DB_REMOTE=1" ]
-    flags += [ "SAFE_BROWSING_DOWNLOAD_PROTECTION=0" ]
+    flags += [ "SAFE_BROWSING_DOWNLOAD_PROTECTION=1" ]
   }
 }

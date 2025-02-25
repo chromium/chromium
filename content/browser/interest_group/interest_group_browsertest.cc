@@ -27367,12 +27367,12 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
         0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
         0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
     };
+    BiddingAndAuctionKeySet keyset({BiddingAndAuctionServerKey{
+        std::string(reinterpret_cast<const char*>(kTestPublicKey),
+                    sizeof(kTestPublicKey)),
+        kKeyIdStr}});
     manager_->SetBiddingAndAuctionServerKeys(
-        kCoordinatorOrigin,
-        {BiddingAndAuctionServerKey{
-            std::string(reinterpret_cast<const char*>(kTestPublicKey),
-                        sizeof(kTestPublicKey)),
-            kKeyId}},
+        kCoordinatorOrigin, keyset.AsBinaryProto(),
         /*expiration=*/base::Time::Now() + base::Days(1));
   }
 
@@ -27590,6 +27590,7 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
   }
 
   static constexpr int kKeyId = 170;
+  static constexpr char kKeyIdStr[] = "AA";
   base::test::ScopedFeatureList feature_list_;
 
   const url::Origin kCoordinatorOrigin = url::Origin::Create(

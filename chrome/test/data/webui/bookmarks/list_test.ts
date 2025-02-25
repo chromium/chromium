@@ -7,6 +7,7 @@ import {BrowserProxyImpl, Command, MenuSource, removeBookmark} from 'chrome://bo
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
 import {TestStore} from './test_store.js';
@@ -258,7 +259,7 @@ suite('<bookmarks-list> command manager integration test', function() {
     flush();
   });
 
-  test('show context menu', () => {
+  test('show context menu', async () => {
     const commandManager =
         app.shadowRoot!.querySelector('bookmarks-command-manager')!;
     const list = app.shadowRoot!.querySelector('bookmarks-list')!;
@@ -267,6 +268,7 @@ suite('<bookmarks-list> command manager integration test', function() {
         {bubbles: true, composed: true, detail: {clientX: 0, clientY: 0}}));
 
     assertEquals(MenuSource.LIST, commandManager.getMenuSourceForTesting());
+    await microtasksFinished();
     const menuCommands =
         commandManager.shadowRoot.querySelectorAll<HTMLElement>(
             '.dropdown-item');

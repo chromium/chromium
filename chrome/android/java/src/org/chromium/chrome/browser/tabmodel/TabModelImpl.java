@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.common.collect.ImmutableList;
+
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
@@ -16,6 +18,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -110,7 +113,11 @@ public class TabModelImpl extends TabModelJniBridge {
             //   is selected before this it may not exist for those observers.
             // * UndoRefocusHelper may update the index out-of-band.
             for (TabModelObserver obs : mObservers) {
-                obs.tabClosureUndone(tab);
+                if (ChromeFeatureList.sTabClosureMethodRefactor.isEnabled()) {
+                    obs.onTabCloseUndone(ImmutableList.of(tab), /* isAllTabs= */ false);
+                } else {
+                    obs.tabClosureUndone(tab);
+                }
             }
 
             // If the mIndex we set earlier is still in use then trigger a proper index update and

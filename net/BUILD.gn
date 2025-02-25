@@ -3039,6 +3039,7 @@ target(_test_target_type, "net_unittests") {
 
   deps = [
     ":cronet_buildflags",
+    ":isolation_info_proto",
     ":net",
     ":preload_decoder",
     ":quic_test_tools",

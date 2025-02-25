@@ -436,7 +436,7 @@ struct CreateBnplPaymentInstrumentRequestDetails {
   // The ID of the BNPL partner to be linked. i.e. Affirm
   std::string issuer_id;
   // An opaque token used to chain consecutive payments requests together.
-  std::u16string context_token;
+  std::string context_token;
   // Client encoded risk data.
   std::string risk_data;
 };

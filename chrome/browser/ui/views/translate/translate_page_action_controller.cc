@@ -31,6 +31,7 @@ ChromeTranslateClient& GetTranslateClient(
 TranslatePageActionController::TranslatePageActionController(
     tabs::TabInterface& tab_interface)
     : PageActionObserver(kActionShowTranslate), tab_interface_(tab_interface) {
+  CHECK(base::FeatureList::IsEnabled(features::kPageActionsMigration));
   translate_observation_.Observe(
       GetTranslateClient(tab_interface).translate_driver());
   will_discard_contents_subscription_ =
@@ -76,10 +77,6 @@ void TranslatePageActionController::WillDiscardContents(
 }
 
 void TranslatePageActionController::UpdatePageAction() {
-  if (!base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
-    return;
-  }
-
   if (!tab_interface_->GetContents()) {
     return;
   }

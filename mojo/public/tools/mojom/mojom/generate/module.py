@@ -953,6 +953,19 @@ class Parameter:
                                       rhs.default, rhs.attributes))
 
 
+class Result:
+
+  def __init__(self, success_type, failure_type):
+    self.success_type = success_type
+    self.failure_type = failure_type
+
+  def Repr(self):
+    return GenericRepr(self, {
+        'success_type': self.success_type,
+        'failure_type': self.failure_type,
+    })
+
+
 class Method:
   def __init__(self, interface, mojom_name, ordinal=None, attributes=None):
     self.interface = interface
@@ -963,6 +976,7 @@ class Method:
     self.parameters = []
     self.param_struct = None
     self.response_parameters = None
+    self.result_response = None
     self.response_param_struct = None
     self.attributes = attributes
 

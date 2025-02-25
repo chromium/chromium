@@ -494,7 +494,7 @@ export function setupTestMockPluginForInk(): MockPdfPluginElement {
  * @param color The brush color in the reply message.
  */
 export function setGetAnnotationBrushReply(
-    mockPlugin: MockPdfPluginElement, type: AnnotationBrushType, size: number,
+    mockPlugin: MockPdfPluginElement, type: AnnotationBrushType, size?: number,
     color?: {r: number, g: number, b: number}) {
   mockPlugin.setMessageReply('getAnnotationBrush', {data: {type, size, color}});
 }

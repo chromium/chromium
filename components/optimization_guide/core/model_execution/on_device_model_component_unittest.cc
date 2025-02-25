@@ -587,7 +587,6 @@ TEST_F(OnDeviceModelComponentTest, SetReadyManifestContainsPerformanceHints) {
   EXPECT_THAT(
       manager()->GetState()->GetBaseModelSpec().supported_performance_hints,
       UnorderedElementsAre(
-          proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE,
           proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY));
 }
 

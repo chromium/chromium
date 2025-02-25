@@ -123,6 +123,12 @@ bool PageActionView::ShouldUpdateInkDropOnClickCanceled() const {
 
 void PageActionView::NotifyClick(const ui::Event& event) {
   IconLabelBubbleView::NotifyClick(event);
+
+  if (skip_action_invocation_) {
+    skip_action_invocation_ = false;
+    return;
+  }
+
   PageActionTrigger trigger_source;
   if (event.IsMouseEvent()) {
     trigger_source = PageActionTrigger::kMouse;
@@ -169,6 +175,26 @@ gfx::Size PageActionView::GetMinimumSize() const {
   icon_preferred_size.Enlarge(insets.width(), insets.height());
 
   return icon_preferred_size;
+}
+
+bool PageActionView::OnMousePressed(const ui::MouseEvent& event) {
+  // If an action is already displaying a bubble, don't reinvoke the action on
+  // the pending click (the click should hide the bubble, but not spawn a
+  // new one). This state must be cleared on NotifyClick() or OnClickCanceled(),
+  // otherwise it will persist and affect future non-mouse input.
+  // An alternative to this approach is to intercept and conditionally not
+  // propagate OnMouseReleased, thus not triggering NotifyClick().
+  if (observation_.IsObserving()) {
+    skip_action_invocation_ =
+        observation_.GetSource()->GetActionItemIsShowingBubble();
+    LOG(WARNING) << "[CG] *** skip_action_invocation_: "
+                 << skip_action_invocation_;
+  }
+  return IconLabelBubbleView::OnMousePressed(event);
+}
+
+void PageActionView::OnClickCanceled(const ui::Event& event) {
+  skip_action_invocation_ = false;
 }
 
 views::View* PageActionView::GetLabelForTesting() {

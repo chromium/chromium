@@ -42,6 +42,7 @@ source_set("unit_tests") {
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:test_support",
+    "//ios/chrome/browser/default_browser/model:features",
     "//ios/chrome/browser/default_browser/model:test_support",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/default_promo/ui_bundled:coordinator",

@@ -133,14 +133,12 @@ chromium-metrics-reviews@google.com.
   <owner>thestig@chromium.org</owner>
   <summary>
     Tracks the brush size used for an Ink2 {Brush} stroke modification in the
-    PDF viewer. This includes new drawing strokes as well as erasing strokes.
-    Erase strokes that erase pre-existing strokes in a PDF are also included.
-    This is only recorded when drawing or erasing actions are performed by the
-    user, but not if they occur as part of undo or redo operations. Eraser
-    strokes that do not erase any other strokes are ignored.
+    PDF viewer. This includes new drawing strokes, but not erasing strokes, as
+    the eraser does not have a size. This is only recorded when drawing actions
+    are performed by the user, but not if they occur as part of undo or redo
+    operations.
   </summary>
   <token key="Brush">
-    <variant name="Eraser"/>
     <variant name="Highlighter"/>
     <variant name="Pen"/>
   </token>

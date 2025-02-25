@@ -13,6 +13,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/cookies/site_for_cookies.h"
 #include "url/origin.h"
 
@@ -150,7 +151,9 @@ class NET_EXPORT IsolationInfo {
       const url::Origin& top_frame_origin,
       const url::Origin& frame_origin,
       const SiteForCookies& site_for_cookies,
-      const std::optional<base::UnguessableToken>& nonce = std::nullopt);
+      const std::optional<base::UnguessableToken>& nonce = std::nullopt,
+      NetworkIsolationPartition network_isolation_partition =
+          NetworkIsolationPartition::kGeneral);
 
   // TODO(crbug.com/344943210): Remove this and create a safer way to ensure
   // NIKs created from NAKs aren't used by accident.
@@ -168,7 +171,9 @@ class NET_EXPORT IsolationInfo {
       const std::optional<url::Origin>& top_frame_origin,
       const std::optional<url::Origin>& frame_origin,
       const SiteForCookies& site_for_cookies,
-      const std::optional<base::UnguessableToken>& nonce = std::nullopt);
+      const std::optional<base::UnguessableToken>& nonce = std::nullopt,
+      NetworkIsolationPartition network_isolation_partition =
+          NetworkIsolationPartition::kGeneral);
 
   // Create a new IsolationInfo for a redirect to the supplied origin. |this| is
   // unmodified.
@@ -209,6 +214,10 @@ class NET_EXPORT IsolationInfo {
 
   const std::optional<base::UnguessableToken>& nonce() const { return nonce_; }
 
+  NetworkIsolationPartition GetNetworkIsolationPartition() const {
+    return network_isolation_key_.GetNetworkIsolationPartition();
+  }
+
   // The value that should be consulted for the third-party cookie blocking
   // policy, as defined in Section 2.1.1 and 2.1.2 of
   // https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site.
@@ -230,7 +239,8 @@ class NET_EXPORT IsolationInfo {
                 const std::optional<url::Origin>& top_frame_origin,
                 const std::optional<url::Origin>& frame_origin,
                 const SiteForCookies& site_for_cookies,
-                const std::optional<base::UnguessableToken>& nonce);
+                const std::optional<base::UnguessableToken>& nonce,
+                NetworkIsolationPartition network_isolation_partition);
 
   RequestType request_type_;
 

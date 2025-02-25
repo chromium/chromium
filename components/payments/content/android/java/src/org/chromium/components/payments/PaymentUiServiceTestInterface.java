@@ -4,9 +4,11 @@
 
 package org.chromium.components.payments;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /** The interface of PaymentUiService that provides testing methods. */
+@NullMarked
 public interface PaymentUiServiceTestInterface {
     /**
      * Get the WebContents of the Payment Handler; return null if nonexistent.

@@ -117,21 +117,16 @@ void UpdateDataProvider::GetData(
                                                             browser_context_)) {
       DisableReasonSet disable_reasons = extension_prefs->GetDisableReasons(id);
 
-      // TODO(crbug.com/372186532): Once ExtensionPrefs::GetDisableReasons()
-      // starts collapsing unknown reasons to DISABLE_UNKNOWN, this code should
-      // be updated to handle that.
-      bool contains_invalid_reason = std::ranges::any_of(
-          disable_reasons,
-          [](int reason) { return !IsValidDisableReason(reason); });
-
-      if (disable_reasons.empty() || contains_invalid_reason) {
+      if (disable_reasons.empty() ||
+          disable_reasons.contains(disable_reason::DISABLE_UNKNOWN)) {
         crx_component->disabled_reasons.push_back(0);
       }
 
+      // We are only interested in valid disable reasons from here.
+      disable_reasons.erase(disable_reason::DISABLE_UNKNOWN);
+
       for (int reason : disable_reasons) {
-        if (IsValidDisableReason(reason)) {
-          crx_component->disabled_reasons.push_back(reason);
-        }
+        crx_component->disabled_reasons.push_back(reason);
       }
     }
     crx_component->install_source = extension_data.is_corrupt_reinstall

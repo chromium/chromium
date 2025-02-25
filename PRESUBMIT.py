@@ -290,6 +290,15 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
         'base/test/android/javatests/src/org/chromium/base/test/util/HistogramWatcher.java',
       ),
     ),
+    BanRule(
+        r'/((announceForAccessibility\()|TYPE_ANNOUNCEMENT)',
+        ('Android 16 deprecates accessibility announcements, characterized by '
+         'the use of announceForAccessibility or the dispatch of '
+         'TYPE_ANNOUNCEMENT accessibility events. See '
+         'https://developer.android.com/about/versions/16/behavior-changes-all#disruptive-a11y'
+         ' for more details and suggested replacements.', ),
+        False,
+    ),
 )
 
 _BANNED_JAVASCRIPT_FUNCTIONS : Sequence [BanRule] = (

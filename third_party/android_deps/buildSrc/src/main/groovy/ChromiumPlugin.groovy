@@ -80,13 +80,13 @@ class ChromiumPlugin implements Plugin<Project> {
 
         project.configurations.compileLatest {
             resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                overrideVersionIfNecessary(details)
+                overrideVersionIfNecessary(project, details)
             }
         }
 
         project.configurations.androidTestCompileLatest {
             resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                overrideVersionIfNecessary(details)
+                overrideVersionIfNecessary(project, details)
             }
         }
 
@@ -106,10 +106,18 @@ class ChromiumPlugin implements Plugin<Project> {
 
     }
 
-    private static void overrideVersionIfNecessary(DependencyResolveDetails details) {
+    private static void overrideVersionIfNecessary(Project project, DependencyResolveDetails details) {
         String group = details.requested.group
-        String version = details.requested.version
-        if (group.startsWith('androidx') && version != '+' && !version.contains('-SNAPSHOT')) {
+        String requestedVersion = details.requested.version
+        if (project.ext.has('versionCache') && project.ext.versionCache) {
+            String module = "${group}:${details.requested.name}"
+            String cachedVersion = project.ext.versionCache[module]
+            if (cachedVersion != null) {
+                details.useVersion cachedVersion
+                return
+            }
+        }
+        if (group.startsWith('androidx') && requestedVersion != '+' && !requestedVersion.contains('-SNAPSHOT')) {
             details.useVersion '+'
         }
     }

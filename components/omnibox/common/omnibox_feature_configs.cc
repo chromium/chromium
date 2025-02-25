@@ -115,6 +115,10 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
   min_query_length =
       base::FeatureParam<int>(&kSearchAggregatorProvider, "min_query_length", 4)
           .Get();
+  parse_response_in_utility_process =
+      base::FeatureParam<bool>(&kSearchAggregatorProvider,
+                               "parse_response_in_utility_process", true)
+          .Get();
 }
 
 SearchAggregatorProvider::SearchAggregatorProvider(

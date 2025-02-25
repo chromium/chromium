@@ -198,11 +198,11 @@ class OnDeviceModelComponentStateManager
   // Returns true if this is determined to be a low tier device.
   bool IsLowTierDevice() const;
 
-  // Returns the performance hints for this device based on the supported
+  // Returns the performance hint for this device based on the supported
   // performance hints in the manifest.
-  base::flat_set<proto::OnDeviceModelPerformanceHint>
-  GetSupportedPerformanceHintsForDeviceFromManifest(
-      const base::Value::List& manifest_performance_hints) const;
+  std::optional<proto::OnDeviceModelPerformanceHint>
+  GetSupportedPerformanceHintForDeviceFromManifest(
+      const base::Value::List* manifest_performance_hints) const;
 
   base::WeakPtr<OnDeviceModelComponentStateManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

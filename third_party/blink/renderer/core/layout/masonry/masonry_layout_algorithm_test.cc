@@ -26,10 +26,14 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     grid_axis_tracks_ = std::make_unique<GridSizingTrackCollection>(
         algorithm.BuildGridAxisTracks(line_resolver, SizingConstraint::kLayout,
                                       &start_offset));
+
+    masonry_items_ =
+        algorithm.Node().ConstructMasonryItems(line_resolver, start_offset);
   }
 
   const GridRangeVector& Ranges() { return grid_axis_tracks_->ranges_; }
   wtf_size_t SetCount() { return grid_axis_tracks_->GetSetCount(); }
+  wtf_size_t MasonryItemCount() { return masonry_items_.Size(); }
   wtf_size_t VirtualItemCount() { return virtual_masonry_items_.Size(); }
 
   LayoutUnit TrackSize(wtf_size_t index) {
@@ -50,6 +54,11 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
         grid_axis_tracks_->Direction());
   }
 
+  const GridSpan& MasonryItemSpan(wtf_size_t index) {
+    return masonry_items_.At(index).resolved_position.Span(
+        grid_axis_tracks_->Direction());
+  }
+
  private:
   const MinMaxSizes& ContributionSizes(wtf_size_t index) {
     const auto& contribution_sizes =
@@ -60,8 +69,58 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   }
 
   std::unique_ptr<GridSizingTrackCollection> grid_axis_tracks_;
+  // Virtual items represent the contributions of item groups in the track
+  // sizing algorithm.
   GridItems virtual_masonry_items_;
+  // Children of the container to be laid out are represented by masonry items.
+  GridItems masonry_items_;
 };
+
+TEST_F(MasonryLayoutAlgorithmTest, BuildTrackSizesAndMasonryItems) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #masonry {
+        display: masonry;
+        masonry-template-tracks: 5% repeat(3, 10px 15%) repeat(1, 15px 5px 20px);
+      }
+    </style>
+    <div id="masonry">
+      <div>1</div>
+      <div style="masonry-track: 3 / span 2">2</div>
+      <div style="masonry-track: span 2">3</div>
+      <div style="masonry-track: span 3">4</div>
+      <div style="masonry-track: 2 / 5">5</div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("masonry"));
+
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+
+  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  EXPECT_EQ(MasonryItemCount(), 0U);
+
+  ComputeGeometry(algorithm);
+  EXPECT_EQ(MasonryItemCount(), 5U);
+
+  const Vector<GridSpan> expected_spans = {
+      GridSpan::IndefiniteGridSpan(1),
+      GridSpan::TranslatedDefiniteGridSpan(2, 4),
+      GridSpan::IndefiniteGridSpan(2), GridSpan::IndefiniteGridSpan(3),
+      GridSpan::TranslatedDefiniteGridSpan(1, 4)};
+
+  for (wtf_size_t i = 0; i < expected_spans.size(); ++i) {
+    EXPECT_EQ(MasonryItemSpan(i), expected_spans[i]);
+  }
+}
 
 TEST_F(MasonryLayoutAlgorithmTest, BuildRanges) {
   SetBodyInnerHTML(R"HTML(

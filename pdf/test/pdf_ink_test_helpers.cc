@@ -28,20 +28,19 @@ std::optional<ink::StrokeInputBatch> CreateInkInputBatch(
 
 base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
     std::string_view type,
-    double size,
     const TestAnnotationBrushMessageParams* params) {
   base::Value::Dict message;
   message.Set("type", "setAnnotationBrush");
 
   base::Value::Dict data;
   data.Set("type", type);
-  data.Set("size", size);
   if (params) {
     base::Value::Dict color;
     color.Set("r", params->color_r);
     color.Set("g", params->color_g);
     color.Set("b", params->color_b);
     data.Set("color", std::move(color));
+    data.Set("size", params->size);
   }
   message.Set("data", std::move(data));
   return message;

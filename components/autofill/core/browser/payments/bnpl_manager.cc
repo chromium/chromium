@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
@@ -44,8 +45,8 @@ BnplManager::OngoingFlowState::OngoingFlowState() = default;
 
 BnplManager::OngoingFlowState::~OngoingFlowState() = default;
 
-BnplManager::BnplManager(PaymentsAutofillClient* payments_autofill_client)
-    : payments_autofill_client_(CHECK_DEREF(payments_autofill_client)) {}
+BnplManager::BnplManager(AutofillClient* autofill_client)
+    : autofill_client_(CHECK_DEREF(autofill_client)) {}
 
 BnplManager::~BnplManager() = default;
 
@@ -63,8 +64,16 @@ void BnplManager::InitBnplFlow(
   ongoing_flow_state_ = std::make_unique<OngoingFlowState>();
 
   ongoing_flow_state_->final_checkout_amount = final_checkout_amount;
+  ongoing_flow_state_->app_locale = autofill_client_->GetAppLocale();
+  ongoing_flow_state_->billing_customer_number =
+      GetBillingCustomerId(payments_autofill_client().GetPaymentsDataManager());
   ongoing_flow_state_->on_bnpl_vcn_fetched_callback =
       std::move(on_bnpl_vcn_fetched_callback);
+
+  // Prefetch risk data to improve flow latency by reducing the need to fetch
+  // risk data later, as it can take several seconds in some rare cases.
+  payments_autofill_client().LoadRiskData(base::BindOnce(
+      &BnplManager::OnPrefetchedRiskDataLoaded, weak_factory_.GetWeakPtr()));
 
   // TODO(crbug.com/356443046): Add integration for the BNPL dialogs.
 }
@@ -102,6 +111,27 @@ void BnplManager::OnAmountExtractionReturned(
   }
 }
 
+bool BnplManager::ShouldShowBnplSettingsToggle() const {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  const PaymentsDataManager& payments_data_manager =
+      payments_autofill_client().GetPaymentsDataManager();
+
+  // Call `GetBnplIssuers()` only if `IsAutofillHasSeenBnplPrefEnabled()` is
+  // true and a BNPL issuer is present to avoid unnecessary feature flag
+  // checks. Ensures that only relevant sessions are included in BNPL related
+  // A/B experiments. Otherwise, users that navigate to the settings page can
+  // enroll in the experiment, with very little guarantee they will actually use
+  // the BNPL feature.
+  return payments_data_manager.IsAutofillHasSeenBnplPrefEnabled() &&
+         !payments_data_manager.GetBnplIssuers().empty() &&
+         base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+}
+
 void BnplManager::FetchVcnDetails() {
   GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details;
   request_details.billing_customer_number =
@@ -112,7 +142,8 @@ void BnplManager::FetchVcnDetails() {
   request_details.redirect_url = ongoing_flow_state_->redirect_url;
   request_details.issuer_id = ongoing_flow_state_->issuer_id;
 
-  payments_autofill_client_->GetPaymentsNetworkInterface()
+  payments_autofill_client()
+      .GetPaymentsNetworkInterface()
       ->GetBnplPaymentInstrumentForFetchingVcn(
           std::move(request_details),
           base::BindOnce(&BnplManager::OnVcnDetailsFetched,
@@ -167,7 +198,7 @@ void BnplManager::MaybeUpdateSuggestionsWithBnpl(
   }
 
   const std::vector<BnplIssuer>& bnpl_issuers =
-      payments_autofill_client_->GetPaymentsDataManager().GetBnplIssuers();
+      payments_autofill_client().GetPaymentsDataManager().GetBnplIssuers();
 
   if (std::none_of(bnpl_issuers.begin(), bnpl_issuers.end(),
                    [extracted_amount](const BnplIssuer& bnpl_issuer) {
@@ -198,34 +229,47 @@ void BnplManager::MaybeUpdateSuggestionsWithBnpl(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  payments_autofill_client_->GetPaymentsDataManager().SetAutofillHasSeenBnpl();
+  payments_autofill_client().GetPaymentsDataManager().SetAutofillHasSeenBnpl();
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 }
 
-std::set<std::string> BnplManager::GetBnplSupportedCountries() {
-  return {"US"};
+void BnplManager::OnTosDialogAccepted() {
+  if (!ongoing_flow_state_->risk_data.empty()) {
+    CreateBnplPaymentInstrument();
+    return;
+  }
+
+  payments_autofill_client().LoadRiskData(
+      base::BindOnce(&BnplManager::OnRiskDataLoadedAfterTosDialogAcceptance,
+                     weak_factory_.GetWeakPtr()));
 }
 
-bool BnplManager::ShouldShowBnplSettingsToggle() const {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-  const PaymentsDataManager& payments_data_manager =
-      payments_autofill_client_->GetPaymentsDataManager();
+void BnplManager::OnPrefetchedRiskDataLoaded(const std::string& risk_data) {
+  ongoing_flow_state_->risk_data = risk_data;
+}
 
-  // Call `GetBnplIssuers()` only if `IsAutofillHasSeenBnplPrefEnabled()` is
-  // true and a BNPL issuer is present to avoid unnecessary feature flag
-  // checks. Ensures that only relevant sessions are included in BNPL related
-  // A/B experiments. Otherwise, users that navigate to the settings page can
-  // enroll in the experiment, with very little guarantee they will actually use
-  // the BNPL feature.
-  return payments_data_manager.IsAutofillHasSeenBnplPrefEnabled() &&
-         !payments_data_manager.GetBnplIssuers().empty() &&
-         base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater);
-#else
-  return false;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
+void BnplManager::OnRiskDataLoadedAfterTosDialogAcceptance(
+    const std::string& risk_data) {
+  ongoing_flow_state_->risk_data = risk_data;
+  CreateBnplPaymentInstrument();
+}
+
+void BnplManager::CreateBnplPaymentInstrument() {
+  CreateBnplPaymentInstrumentRequestDetails request_details;
+  request_details.app_locale = ongoing_flow_state_->app_locale;
+  request_details.billing_customer_number =
+      ongoing_flow_state_->billing_customer_number;
+  request_details.context_token = ongoing_flow_state_->context_token;
+  request_details.issuer_id = ongoing_flow_state_->issuer_id;
+  request_details.risk_data = ongoing_flow_state_->risk_data;
+  payments_autofill_client()
+      .GetPaymentsNetworkInterface()
+      ->CreateBnplPaymentInstrument(
+          std::move(request_details),
+          // TODO(crbug.com/378518488): Integrate with the future
+          // GetBnplPaymentInstrumentForFetchingUrlRequest.
+          base::DoNothing());
 }
 
 }  // namespace autofill::payments

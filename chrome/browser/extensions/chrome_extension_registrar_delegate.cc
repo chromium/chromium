@@ -24,7 +24,9 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_file_task_runner.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -368,8 +370,9 @@ void ChromeExtensionRegistrarDelegate::CheckPermissionsIncrease(
   // still remember that "omnibox" had been granted, so that if the
   // extension once again includes "omnibox" in an upgrade, the extension
   // can upgrade without requiring this user's approval.
-  DisableReasonSet disable_reasons =
-      extension_prefs_->GetDisableReasons(extension->id());
+  auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
+  base::flat_set<int> disable_reasons =
+      extension_prefs_->GetRawDisableReasons(passkey, extension->id());
 
   // Silently grant all active permissions to pre-installed apps and apps
   // installed in kiosk mode.
@@ -452,7 +455,16 @@ void ChromeExtensionRegistrarDelegate::CheckPermissionsIncrease(
   if (disable_reasons.empty()) {
     extension_prefs_->SetExtensionEnabled(extension->id());
   } else {
-    extension_prefs_->SetExtensionDisabled(extension->id(), disable_reasons);
+    // TODO(crbug.com/372186532): We have an interesting side effect here. The
+    // method below will be called even if the code above doesn't change any
+    // disable reasons. If the extension has disable reasons, but its enabled
+    // state is incorrect, the call below will fix it by setting the correct
+    // enabled state. Disable reasons and enabled state can go out-of-sync if
+    // ExtensionRegistrar::DisableExtension() is called for an extension that is
+    // blocklisted. Until we fix this, we must use raw get/set methods here and
+    // can not convert the above code to a series of additions / removals.
+    extension_prefs_->SetExtensionDisabledWithRawReasons(
+        passkey, extension->id(), disable_reasons);
   }
 }
 

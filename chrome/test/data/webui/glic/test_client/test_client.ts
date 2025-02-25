@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {FocusedTabData, GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, PanelState, TabData} from '/glic/glic_api/glic_api.js';
-import {WebClientMode} from '/glic/glic_api/glic_api.js';
+import type {FocusedTabData, GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, PanelState, TabData, WebClientInitializeError} from '/glic/glic_api/glic_api.js';
+import {WebClientInitializeErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
 
 import {createGlicHostRegistryOnLoad} from '../api_boot.js';
 
@@ -67,6 +67,7 @@ interface PageElementTypes {
   fileDrop: HTMLDivElement;
   fileDropList: HTMLDivElement;
   showDirectoryPicker: HTMLButtonElement;
+  failInitializationCheckbox: HTMLInputElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -79,10 +80,22 @@ function logMessage(message: string) {
   $.status.append(message.slice(0, 100000), document.createElement('br'));
 }
 
+class TestInitFailure extends Error implements WebClientInitializeError {
+  reason = WebClientInitializeErrorReason.UNKNOWN;
+  readonly reasonType = 'webClientInitialize';
+  constructor() {
+    super('test-init-failure');
+  }
+}
+
 class WebClient implements GlicWebClient {
   browser: GlicBrowserHost|undefined;
 
   async initialize(browser: GlicBrowserHost): Promise<void> {
+    if (localStorage.getItem('test-init-failure')) {
+      localStorage.removeItem('test-init-failure');
+      throw new TestInitFailure();
+    }
     this.browser = browser;
 
     logMessage('initialize called');
@@ -619,3 +632,11 @@ function readStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
 function pickOne(choices: any[]): any {
   return choices[Math.floor(Math.random() * choices.length)];
 }
+
+$.failInitializationCheckbox.addEventListener('click', () => {
+  if ($.failInitializationCheckbox.checked) {
+    localStorage.setItem('test-init-failure', 'true');
+  } else {
+    localStorage.removeItem('test-init-failure');
+  }
+});

@@ -12,7 +12,9 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/cookies/site_for_cookies.h"
+#include "services/network/public/cpp/network_isolation_partition_mojom_traits.h"
 #include "services/network/public/cpp/schemeful_site_mojom_traits.h"
 #include "services/network/public/mojom/isolation_info.mojom-shared.h"
 #include "url/mojom/origin_mojom_traits.h"
@@ -50,7 +52,12 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 
   static const std::optional<base::UnguessableToken>& nonce(
       const net::IsolationInfo& input) {
-    return input.nonce_;
+    return input.nonce();
+  }
+
+  static net::NetworkIsolationPartition network_isolation_partition(
+      const net::IsolationInfo& input) {
+    return input.GetNetworkIsolationPartition();
   }
 
   static const net::SiteForCookies& site_for_cookies(

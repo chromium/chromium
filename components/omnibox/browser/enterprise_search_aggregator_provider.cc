@@ -11,6 +11,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -24,6 +25,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -166,7 +168,6 @@ void EnterpriseSearchAggregatorProvider::Run() {
 
   // Don't clear `matches_` until a new successful response is ready to replace
   // them.
-
   client_->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
       ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
           adjusted_input.text(), GURL(template_url->suggestions_url()),
@@ -191,11 +192,21 @@ void EnterpriseSearchAggregatorProvider::RequestCompleted(
   DCHECK_EQ(loader_.get(), source);
 
   if (response_code == 200) {
+    // Parse `response_body` in utility process if feature param is true.
     const std::string& json_data = SearchSuggestionParser::ExtractJsonData(
         source, std::move(response_body));
-    std::optional<base::Value::Dict> value =
-        base::JSONReader::ReadDict(json_data, base::JSON_ALLOW_TRAILING_COMMAS);
-    UpdateResults(value, response_code);
+    if (omnibox_feature_configs::SearchAggregatorProvider::Get()
+            .parse_response_in_utility_process) {
+      data_decoder::DataDecoder::ParseJsonIsolated(
+          json_data,
+          base::BindOnce(
+              &EnterpriseSearchAggregatorProvider::OnJsonParsedIsolated,
+              base::Unretained(this)));
+    } else {
+      std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+          json_data, base::JSON_ALLOW_TRAILING_COMMAS);
+      UpdateResults(value, response_code);
+    }
   } else {
     // TODO(crbug.com/380642693): Add backoff if needed. This could be done by
     // tracking the number of consecutive errors and only clearing matches if
@@ -205,9 +216,20 @@ void EnterpriseSearchAggregatorProvider::RequestCompleted(
   }
 }
 
+void EnterpriseSearchAggregatorProvider::OnJsonParsedIsolated(
+    base::expected<base::Value, std::string> result) {
+  std::optional<base::Value::Dict> value = std::nullopt;
+  if (result.has_value()) {
+    if (result.value().is_dict()) {
+      value = std::move(result.value().GetDict());
+    }
+  }
+  UpdateResults(value, 200);
+}
+
 void EnterpriseSearchAggregatorProvider::UpdateResults(
     const std::optional<base::Value::Dict>& response_value,
-    const int response_code) {
+    int response_code) {
   bool updated_matches = false;
 
   if (response_value.has_value()) {

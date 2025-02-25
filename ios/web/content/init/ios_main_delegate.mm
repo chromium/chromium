@@ -2,17 +2,44 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/content/init/ios_main_delegate.h"
+#import "ios/web/content/init/ios_main_delegate.h"
 
-#include "content/public/renderer/content_renderer_client.h"
-#include "ios/web/content/init/ios_content_browser_client.h"
-#include "ios/web/content/init/ios_content_client.h"
-#include "ios/web/content/init/ios_content_renderer_client.h"
+#import "content/public/app/initialize_mojo_core.h"
+#import "content/public/renderer/content_renderer_client.h"
+#import "ios/web/content/init/ios_content_browser_client.h"
+#import "ios/web/content/init/ios_content_client.h"
+#import "ios/web/content/init/ios_content_renderer_client.h"
+#import "ios/web/public/web_client.h"
 
 namespace web {
 
 IOSMainDelegate::IOSMainDelegate() {}
 IOSMainDelegate::~IOSMainDelegate() {}
+
+bool IOSMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
+  // The //content layer is always responsible for creating the FeatureList in
+  // child processes.
+  if (absl::holds_alternative<InvokedInChildProcess>(invoked_in)) {
+    return true;
+  }
+
+  // Otherwise, normally the browser process in Chrome is responsible for
+  // creating the FeatureList.
+  return false;
+}
+
+bool IOSMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
+  return ShouldCreateFeatureList(invoked_in);
+}
+
+std::optional<int> IOSMainDelegate::PostEarlyInitialization(
+    InvokedIn invoked_in) {
+#if BUILDFLAG(USE_BLINK)
+  web::GetWebClient()->InitializeFieldTrialAndFeatureList();
+  content::InitializeMojoCore();
+#endif
+  return std::nullopt;
+}
 
 content::ContentClient* IOSMainDelegate::CreateContentClient() {
   content_client_ = std::make_unique<IOSContentClient>();

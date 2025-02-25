@@ -28,16 +28,16 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
      * @return The scheme, host, and port of the last committed URL of the top-level context as
      * formatted by UrlFormatter.formatUrlForSecurityDisplay().
      */
-    default @Nullable String getTopLevelOrigin() {
-        return null;
+    default String getTopLevelOrigin() {
+        throw new UnsupportedOperationException();
     }
 
     /**
      * @return The scheme, host, and port of the last committed URL of the iframe that invoked the
      * PaymentRequest API as formatted by UrlFormatter.formatUrlForSecurityDisplay().
      */
-    default @Nullable String getPaymentRequestOrigin() {
-        return null;
+    default String getPaymentRequestOrigin() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -45,8 +45,8 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
      * security features like 'Sec-Fetch-Site' and 'Cross-Origin-Resource-Policy'. Should not be
      * null.
      */
-    default @Nullable Origin getPaymentRequestSecurityOrigin() {
-        return null;
+    default Origin getPaymentRequestSecurityOrigin() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -64,14 +64,18 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
         return false;
     }
 
-    /** @return The listener for payment method, shipping address, and shipping option change events. */
+    /**
+     * @return The listener for payment method, shipping address, and shipping option change events.
+     */
     default @Nullable PaymentRequestUpdateEventListener getPaymentRequestUpdateEventListener() {
         return null;
     }
 
-    /** @return The Payment Request information received from the merchant. */
-    default @Nullable PaymentRequestSpec getSpec() {
-        return null;
+    /**
+     * @return The Payment Request information received from the merchant.
+     */
+    default PaymentRequestSpec getSpec() {
+        throw new UnsupportedOperationException();
     }
 
     /**

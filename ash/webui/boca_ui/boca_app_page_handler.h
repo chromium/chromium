@@ -107,6 +107,7 @@ class BocaAppHandler : public mojom::PageHandler,
 
   void OnSessionStarted(const std::string& session_id,
                         const ::boca::UserIdentity& producer) override;
+  void OnSessionMetadataUpdated(const std::string& session_id) override;
   void OnSessionEnded(const std::string& session_id) override;
   void OnBundleUpdated(const ::boca::Bundle& bundle) override;
   void OnSessionCaptionConfigUpdated(

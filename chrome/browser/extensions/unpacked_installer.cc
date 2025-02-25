@@ -19,6 +19,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/model/string_ordinal.h"
@@ -75,11 +76,18 @@ scoped_refptr<UnpackedInstaller> UnpackedInstaller::Create(
 }
 
 UnpackedInstaller::UnpackedInstaller(ExtensionService* extension_service)
-    : service_weak_(extension_service->AsExtensionServiceWeakPtr()),
+    : service_(extension_service),
       profile_(extension_service->profile()),
       require_modern_manifest_version_(true),
       be_noisy_on_failure_(true) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  profile_observation_.Observe(profile_);
+
+  // Observe for browser shutdown. Unretained is safe because the callback
+  // subscription is owned by this object.
+  on_browser_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+          &UnpackedInstaller::OnBrowserTerminating, base::Unretained(this)));
 }
 
 UnpackedInstaller::~UnpackedInstaller() = default;
@@ -97,8 +105,9 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(extension_path_.empty());
 
-  if (!service_weak_.get())
+  if (!profile_) {
     return false;
+  }
   // Load extensions from the command line synchronously to avoid a race
   // between extension loading and loading an URL from the command line.
   base::ScopedAllowBlocking allow_blocking;
@@ -133,8 +142,7 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
   }
 
   extension()->permissions_data()->BindToCurrentThread();
-  PermissionsUpdater(
-      service_weak_->profile(), PermissionsUpdater::INIT_FLAG_TRANSIENT)
+  PermissionsUpdater(profile_, PermissionsUpdater::INIT_FLAG_TRANSIENT)
       .InitializePermissions(extension());
   StartInstallChecks();
 
@@ -144,9 +152,9 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
 
 void UnpackedInstaller::StartInstallChecks() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ExtensionService* service = service_weak_.get();
-  if (!service)
+  if (!profile_) {
     return;
+  }
 
   // TODO(crbug.com/40388034): Enable these checks all the time.  The reason
   // they are disabled for extensions loaded from the command-line is that
@@ -154,8 +162,9 @@ void UnpackedInstaller::StartInstallChecks() {
   // dependencies between the extensions loaded by the command line.
   if (extension()->manifest()->location() !=
       mojom::ManifestLocation::kCommandLine) {
-    if (service->browser_terminating())
+    if (browser_terminating_) {
       return;
+    }
 
     // TODO(crbug.com/40387578): Move this code to a utility class to avoid
     // duplication of SharedModuleService::CheckImports code.
@@ -163,7 +172,7 @@ void UnpackedInstaller::StartInstallChecks() {
       const std::vector<SharedModuleInfo::ImportInfo>& imports =
           SharedModuleInfo::GetImports(extension());
       std::vector<SharedModuleInfo::ImportInfo>::const_iterator i;
-      ExtensionRegistry* registry = ExtensionRegistry::Get(service->profile());
+      ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
       for (i = imports.begin(); i != imports.end(); ++i) {
         base::Version version_required(i->minimum_version);
         const Extension* imported_module = registry->GetExtensionById(
@@ -220,7 +229,7 @@ int UnpackedInstaller::GetFlags() {
   std::string id = crx_file::id_util::GenerateIdForPath(extension_path_);
   bool allow_file_access =
       Manifest::ShouldAlwaysAllowFileAccess(mojom::ManifestLocation::kUnpacked);
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(service_weak_->profile());
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_);
   if (allow_file_access_.has_value()) {
     allow_file_access = *allow_file_access_;
   } else if (prefs->HasAllowFileAccessSetting(id)) {
@@ -284,12 +293,12 @@ bool UnpackedInstaller::IndexAndPersistRulesIfNeeded(std::string* error) {
 }
 
 bool UnpackedInstaller::IsLoadingUnpackedAllowed() const {
-  if (!service_weak_.get())
+  if (!profile_) {
     return true;
+  }
   // If there is a "*" in the extension blocklist, then no extensions should be
   // allowed at all (except explicitly allowlisted extensions).
-  return !ExtensionManagementFactory::GetForBrowserContext(
-              service_weak_->profile())
+  return !ExtensionManagementFactory::GetForBrowserContext(profile_)
               ->BlocklistedByDefault();
 }
 
@@ -305,8 +314,9 @@ void UnpackedInstaller::GetAbsolutePath() {
 
 void UnpackedInstaller::CheckExtensionFileAccess() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!service_weak_.get())
+  if (!profile_) {
     return;
+  }
 
   if (!IsLoadingUnpackedAllowed()) {
     ReportExtensionLoadError(kUnpackedExtensionsBlocklistedError);
@@ -338,9 +348,9 @@ void UnpackedInstaller::LoadWithFileAccess(int flags) {
 void UnpackedInstaller::ReportExtensionLoadError(const std::string &error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (service_weak_.get()) {
+  if (profile_) {
     LoadErrorReporter::GetInstance()->ReportLoadError(
-        extension_path_, error, service_weak_->profile(), be_noisy_on_failure_);
+        extension_path_, error, profile_, be_noisy_on_failure_);
   }
 
   if (!callback_.is_null())
@@ -350,14 +360,14 @@ void UnpackedInstaller::ReportExtensionLoadError(const std::string &error) {
 void UnpackedInstaller::InstallExtension() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!service_weak_.get()) {
+  if (!profile_) {
     callback_.Reset();
     return;
   }
 
   // Force file access and/or incognito state and set install param if
   // requested.
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(service_weak_->profile());
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_);
   if (allow_file_access_.has_value()) {
     prefs->SetAllowFileAccess(extension()->id(), *allow_file_access_);
   }
@@ -368,13 +378,13 @@ void UnpackedInstaller::InstallExtension() {
     SetInstallParam(prefs, extension()->id(), *install_param_);
   }
 
-  PermissionsUpdater perms_updater(service_weak_->profile());
+  PermissionsUpdater perms_updater(profile_);
   perms_updater.InitializePermissions(extension());
   perms_updater.GrantActivePermissions(extension());
 
-  service_weak_->OnExtensionInstalled(extension(), syncer::StringOrdinal(),
-                                      kInstallFlagInstallImmediately,
-                                      std::move(ruleset_install_prefs_));
+  service_->OnExtensionInstalled(extension(), syncer::StringOrdinal(),
+                                 kInstallFlagInstallImmediately,
+                                 std::move(ruleset_install_prefs_));
 
   // Record metrics here since the registry would contain the extension by now.
   RecordCommandLineDeveloperModeMetrics();
@@ -412,6 +422,17 @@ void UnpackedInstaller::RecordCommandLineDeveloperModeMetrics() {
           "Extensions.CommandLineWithDeveloperModeOff.Disabled", 1);
     }
   }
+}
+
+void UnpackedInstaller::OnProfileWillBeDestroyed(Profile* profile) {
+  profile_observation_.Reset();
+  profile_ = nullptr;
+  service_ = nullptr;
+}
+
+void UnpackedInstaller::OnBrowserTerminating() {
+  browser_terminating_ = true;
+  service_ = nullptr;
 }
 
 }  // namespace extensions

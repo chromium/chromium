@@ -119,8 +119,10 @@ class BrowserWindowInterface : public content::PageNavigator {
   GetWebContentsModalDialogHostForWindow() = 0;
 
   // Whether the window is active.
-  // This definition needs to be more precise, as "active" has different
-  // semantics and nuance on each platform.
+  // The definition of "active" aligns with the window being painted as active
+  // instead of the top level widget having focus.
+  // Note this is different from "active" for BrowserList which is based on if
+  // the top level widget has focus and doesn't account for child widgets.
   // Note that this does not work correctly for mac PWA windows, as those are
   // hosted in a separate application with a stub in the browser process.
   virtual bool IsActive() = 0;

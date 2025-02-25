@@ -296,10 +296,10 @@ class AccountImageView : public views::ImageView {
       avatar_ =
           gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
               account.decoded_picture.AsImageSkia(), std::nullopt, image_size);
-      if (account.is_filtered_out) {
-        avatar_ = gfx::ImageSkiaOperations::CreateTransparentImage(
-            avatar_, kDisabledAvatarOpacity);
-      }
+    }
+    if (account.is_filtered_out) {
+      avatar_ = gfx::ImageSkiaOperations::CreateTransparentImage(
+          avatar_, kDisabledAvatarOpacity);
     }
     if (idp_image && idp_image->width() == idp_image->height() &&
         idp_image->width() >=

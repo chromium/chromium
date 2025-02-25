@@ -175,6 +175,7 @@ class ExtensionPrefs : public KeyedService {
 
    private:
     DisableReasonRawManipulationPasskey() = default;
+    friend class ChromeExtensionRegistrarDelegate;
     friend class ::ExtensionSyncService;
     friend class ExtensionPrefs;
     friend class ExtensionRegistrar;
@@ -419,9 +420,14 @@ class ExtensionPrefs : public KeyedService {
 
   // Getters and setters for disabled reason.
   // Note that you should rarely need to modify disable reasons directly -
-  // pass the proper value to SetExtensionState instead when you enable/disable
-  // an extension. In particular, AddDisableReason(s) is only legal when the
-  // extension is not enabled.
+  // pass the proper value to SetExtensionEnabled / SetExtensionDisabled instead
+  // when you enable/disable an extension. In particular, AddDisableReason(s) is
+  // only legal when the extension is not enabled.
+
+  // Returns the set of reasons for which an extension is disabled. If there are
+  // unknown reasons in the prefs (e.g. reasons which were synced from a newer
+  // version of the browser), they will be collapsed to DISABLE_UNKNOWN before
+  // returning.
   DisableReasonSet GetDisableReasons(const ExtensionId& extension_id) const;
 
   // Returns true if the extension has `disable_reason` in its disable reasons.
@@ -439,24 +445,19 @@ class ExtensionPrefs : public KeyedService {
                          const DisableReasonSet& disable_reasons);
 
   void RemoveDisableReason(const ExtensionId& extension_id,
-                           disable_reason::DisableReason disable_reason);
-  void ReplaceDisableReasons(const ExtensionId& extension_id,
-                             const DisableReasonSet& disable_reasons);
+                           disable_reason::DisableReason to_remove);
+  void RemoveDisableReasons(const ExtensionId& extension_id,
+                            const DisableReasonSet& to_remove);
+
   void ClearDisableReasons(const ExtensionId& extension_id);
 
-  // The methods above will start returning / accepting a `flat_set` of
-  // `DisableReason` soon (see crbug.com/372186532). When that happens, all
-  // unknown reasons in prefs will be collapsed to `DISABLE_UNKNOWN` before
-  // returning. Writing unknown reasons to prefs will be disallowed. This is
-  // because casting unknown reasons (integer) to `DisableReason` enum is
-  // undefined behavior. This isn't a problem in the bitflag representation
-  // because there is no casting involved.
-  //
-  // Any code which needs to read or write unknown reasons should use the
+  // Any code which needs to read / write unknown reasons should use the
   // methods below, which operate on raw integers. This is needed for scenarios
   // like Sync where unknown reasons can be synced from newer versions of the
-  // browser to older versions. Most code should use the above methods. We want
-  // to limit the use of the methods below, so they are guarded by a passkey.
+  // browser to older versions. The methods above will trigger undefined
+  // behavior when unknown values are casted to DisableReason while constructing
+  // DisableReasonSet. Most code should use the methods above. We want to limit
+  // the usage of the methods below, so they are guarded by a passkey.
   base::flat_set<int> GetRawDisableReasons(
       DisableReasonRawManipulationPasskey,
       const ExtensionId& extension_id) const;
@@ -868,7 +869,8 @@ class ExtensionPrefs : public KeyedService {
 
   // Helper methods to read and write disable reasons to prefs.
   base::flat_set<int> ReadDisableReasonsFromPrefs(
-      const ExtensionId& extension_id) const;
+      const ExtensionId& extension_id,
+      bool collapse_unknown_reasons) const;
 
   void WriteDisableReasonsToPrefs(const ExtensionId& extension_id,
                                   const base::flat_set<int>& disable_reasons);
@@ -943,6 +945,9 @@ class ExtensionPrefs : public KeyedService {
 
   // Base extensions install directory.
   base::FilePath install_directory_;
+
+  const DisableReasonRawManipulationPasskey
+      disable_reason_raw_manipulation_passkey_;
 
   // Weak pointer, owned by BrowserContext.
   raw_ptr<ExtensionPrefValueMap, AcrossTasksDanglingUntriaged>

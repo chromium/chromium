@@ -140,6 +140,8 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSHistoryOnOverflowMenuFeature,
     &kIPHiOSPromoPostRestoreDefaultBrowserFeature,
     &kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature,
+    &kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature,
+    &kIPHiOSPromoNonModalShareDefaultBrowserFeature,
     &kIPHiOSPromoPasswordManagerWidgetFeature,
     &kIPHiOSParcelTrackingFeature,
     &kIPHiOSPullToRefreshFeature,

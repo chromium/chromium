@@ -31,7 +31,7 @@ namespace net {
 namespace {
 
 // Parses |x509_cert| as a bssl::ParsedCertificate and stores the output in
-// *|out_parsed_cert|. Wrap in ASSERT_NO_FATAL_FAILURE on callsites.
+// *|out_parsed_cert|.
 ::testing::AssertionResult ParseX509Certificate(
     const scoped_refptr<X509Certificate>& x509_cert,
     std::shared_ptr<const bssl::ParsedCertificate>* out_parsed_cert) {
@@ -62,8 +62,7 @@ class SystemTrustStoreNSSTest : public ::testing::Test {
     root_cert_ =
         ImportCertFromFile(GetTestCertsDirectory(), "root_ca_cert.pem");
     ASSERT_TRUE(root_cert_);
-    ASSERT_NO_FATAL_FAILURE(
-        ParseX509Certificate(root_cert_, &parsed_root_cert_));
+    ASSERT_TRUE(ParseX509Certificate(root_cert_, &parsed_root_cert_));
     nss_root_cert_ =
         x509_util::CreateCERTCertificateFromX509Certificate(root_cert_.get());
     ASSERT_TRUE(nss_root_cert_);

@@ -8,6 +8,7 @@
 
 #include "ash/system/mahi/test/mock_mahi_media_app_events_proxy.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ash/magic_boost/mock_editor_panel_manager.h"
 #include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
@@ -17,6 +18,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,6 +32,10 @@ using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
 class MagicBoostCardControllerTest : public ChromeViewsTestBase {
  public:
   MagicBoostCardControllerTest() {
+    // The magic boost card only exists when Magic Boost Revamp logic is
+    // disabled.
+    features_.InitAndDisableFeature(chromeos::features::kMagicBoostRevamp);
+
     // Sets the default functions for the test to create image with the lottie
     // resource id. Otherwise there's no `g_parse_lottie_as_still_image_` set in
     // the `ResourceBundle`.
@@ -58,6 +64,7 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
   }
 
  protected:
+  base::test::ScopedFeatureList features_;
   // Providing a mock MahiMediaAppEvnetsProxy to satisfy
   // MagicBoostCardController.
   testing::NiceMock<::ash::MockMahiMediaAppEventsProxy>

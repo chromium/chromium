@@ -564,13 +564,17 @@ NET_ERROR(CERT_KNOWN_INTERCEPTION_BLOCKED, -217)
 // -218 was SSL_OBSOLETE_VERSION which is not longer used. TLS 1.0/1.1 instead
 // cause SSL_VERSION_OR_CIPHER_MISMATCH now.
 
+// The certificate is self signed and it's being used for either an RFC1918 IP
+// literal URL, or a url ending in .local.
+NET_ERROR(CERT_SELF_SIGNED_LOCAL_NETWORK, -219)
+
 // Add new certificate error codes here.
 //
 // Update the value of CERT_END whenever you add a new certificate error
 // code.
 
 // The value immediately past the last certificate error code.
-NET_ERROR(CERT_END, -219)
+NET_ERROR(CERT_END, -220)
 
 // The URL is invalid.
 NET_ERROR(INVALID_URL, -300)

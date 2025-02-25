@@ -10,6 +10,7 @@
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/isolation_info.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/isolation_info.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,6 +62,16 @@ TEST(IsolationInfoMojomTraitsTest, SerializeAndDeserialize) {
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
                                  url::Origin(), url::Origin(),
                                  net::SiteForCookies(), nonce),
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 url::Origin(), url::Origin(),
+                                 net::SiteForCookies(), /*nonce=*/std::nullopt,
+                                 /*network_isolation_partition=*/
+                                 net::NetworkIsolationPartition::kGeneral),
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kOther, url::Origin(), url::Origin(),
+          net::SiteForCookies(), /*nonce=*/std::nullopt,
+          /*network_isolation_partition=*/
+          net::NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
   };
 
   for (auto original : keys) {

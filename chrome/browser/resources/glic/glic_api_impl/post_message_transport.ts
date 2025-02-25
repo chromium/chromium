@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ErrorReasonTypes, ErrorWithReason} from 'glic_api/glic_api.js';
-
-import type {HostRequestTypes, WebClientRequestTypes} from './request_types.js';
+import type {HostRequestTypes, TransferableException, WebClientRequestTypes} from './request_types.js';
+import {exceptionFromTransferable, newTransferableException} from './request_types.js';
 
 // This file contains helpers to send and receive messages over postMessage.
 
@@ -36,20 +35,7 @@ declare interface ResponseMessage {
   responsePayload?: any;
   // An error that occurred during processing the request. If this is set,
   // responsePayload will not be set.
-  exception?: Error;
-  // If exception is set, this may be set to indicate that the exception
-  // is a ErrorWithReason exception.
-  exceptionReason?: ErrorWithReasonDetails;
-}
-
-/** Any ErrorWithReason<T>.reason type. */
-type AnyErrorReasonType = ErrorReasonTypes[keyof ErrorReasonTypes];
-/** Any ErrorWithReason type. */
-type AnyErrorWithReasonType = ErrorWithReason<keyof ErrorReasonTypes>;
-/** Sent in ResponseMessage to reconstruct the ErrorWithReason. */
-interface ErrorWithReasonDetails {
-  reason: AnyErrorReasonType;
-  reasonType: keyof ErrorReasonTypes;
+  exception?: TransferableException;
 }
 
 // Something that has postMessage() - probably a window or WindowProxy.
@@ -109,16 +95,7 @@ export class PostMessageRequestSender {
     const requestId = this.requestId++;
     this.responseHandlers.set(requestId, (response: ResponseMessage) => {
       if (response.exception !== undefined) {
-        // Error types are serializable, but they do not serialize all members.
-        // If exceptionReason is provided, we use it to reconstruct a
-        // ErrorWithReason by just setting additional fields after
-        // serialization.
-        if (response.exceptionReason) {
-          const withReason = response.exception as AnyErrorWithReasonType;
-          withReason.reason = response.exceptionReason.reason;
-          withReason.reasonType = response.exceptionReason.reasonType;
-        }
-        reject(response.exception);
+        reject(exceptionFromTransferable(response.exception));
       } else {
         resolve(response.responsePayload as AllRequestTypes[T]['response']);
       }
@@ -196,21 +173,16 @@ export class PostMessageRequestReceiver {
     const requestMessage = event.data as RequestMessage;
     const {requestId, type, requestPayload} = requestMessage;
     let response;
-    let exception: Error|undefined;
-    let reasonDetails: ErrorWithReasonDetails|undefined;
+    let exception: TransferableException|undefined;
     try {
       response = await this.handler.handleRawRequest(type, requestPayload);
     } catch (error) {
       console.warn('Unexpected error', error);
       if (error instanceof Error) {
-        exception = error;
-        const [reasonType, reason] =
-            [(error as any).reasonType, (error as any).reason];
-        if (reasonType !== undefined && reason !== undefined) {
-          reasonDetails = {reason, reasonType};
-        }
+        exception = newTransferableException(error);
       } else {
-        exception = new Error(`Unexpected error: ${error}`);
+        exception =
+            newTransferableException(new Error(`Unexpected error: ${error}`));
       }
     }
 
@@ -225,9 +197,6 @@ export class PostMessageRequestReceiver {
     };
     if (exception) {
       responseMessage.exception = exception;
-      if (reasonDetails) {
-        responseMessage.exceptionReason = reasonDetails;
-      }
     }
     this.postMessageSender.postMessage(
         responseMessage,

@@ -997,8 +997,10 @@
       // This remembered scroll offset may affect the sizing of an
       // anchor-positioned element, if it is tethered to the default anchor at
       // one edge, and to the original containing block at the other edge.
+      // This feature was shipped in M135, and the flag can be cleaned up in
+      // M137, assuming no issues.
       name: "CSSAnchorRememberedScrollOffset",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Support for the anchor-scope property.
@@ -4675,12 +4677,6 @@
     },
     {
       name: "VideoTrackGeneratorInWorker",
-    },
-    {
-      // This is a kill switch for a fix where viewport changes did not update
-      // the text autosizer, see: crbug.com/359910401.
-      name: "ViewportChangesUpdateTextAutosizing",
-      status: "stable",
     },
     {
       name: "ViewportHeightClientHintHeader",

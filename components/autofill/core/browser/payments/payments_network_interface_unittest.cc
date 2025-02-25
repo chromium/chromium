@@ -228,10 +228,10 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
 
   void OnDidGetDetailsForCreateBnplPaymentInstrument(
       PaymentsRpcResult result,
-      std::u16string context_token,
+      std::string context_token,
       std::unique_ptr<base::Value::Dict> legal_message) {
     result_ = result;
-    context_token_ = base::UTF16ToUTF8(context_token);
+    context_token_ = std::move(context_token);
     legal_message_ = std::move(legal_message);
   }
 
@@ -1940,7 +1940,7 @@ TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
   CreateBnplPaymentInstrumentRequestDetails request_details;
   request_details.app_locale = "en-US";
   request_details.billing_customer_number = 555666777888;
-  request_details.context_token = u"context_token";
+  request_details.context_token = "context_token";
   request_details.risk_data = "wjhJLg";
   std::string instrument_id = "instrument_id";
 

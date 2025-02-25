@@ -161,6 +161,9 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   }
 
   bool risk_data_loaded() const { return risk_data_loaded_; }
+  void set_risk_data_loaded(bool risk_data_loaded) {
+    risk_data_loaded_ = risk_data_loaded;
+  }
 
   bool ConfirmUploadIbanToCloudWasCalled() const {
     return confirm_upload_iban_to_cloud_called_ &&

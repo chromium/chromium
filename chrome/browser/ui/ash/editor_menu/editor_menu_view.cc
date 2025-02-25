@@ -262,6 +262,10 @@ void EditorMenuView::DisableMenu() {
   textfield_->arrow_button()->SetEnabled(false);
 }
 
+const char* EditorMenuView::GetWidgetNameForTest() {
+  return kWidgetName;
+}
+
 void EditorMenuView::InitLayout(const PresetTextQueries& preset_text_queries) {
   SetBackground(views::CreateThemedRoundedRectBackground(
       ui::kColorPrimaryBackground,

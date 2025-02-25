@@ -41,10 +41,15 @@ export declare interface HostRequestTypes {
       panelIsActive: boolean,
     },
   };
-  // This message is sent after the client returns successfully from
-  // initialize(). It is not part of the GlicBrowserHost public API.
+  // This message is sent after the client returns from initialize(). It is not
+  // part of the GlicBrowserHost public API.
   glicBrowserWebClientInitialized: {
-    request: {success: boolean},
+    request: {
+      success: boolean,
+      // Exception present if initialize() returns a rejected promise (success
+      // is false).
+      exception?: TransferableException,
+    },
     response: void,
   };
 
@@ -342,4 +347,53 @@ export class ErrorWithReasonImpl<T extends keyof ErrorReasonTypes> extends Error
   ) {
     super(message ?? `${reasonType} Error: ${reason}`);
   }
+}
+
+/** Any ErrorWithReason<T>.reason type. */
+export type AnyErrorReasonType = ErrorReasonTypes[keyof ErrorReasonTypes];
+/** Any ErrorWithReason type. */
+export type AnyErrorWithReasonType = ErrorWithReason<keyof ErrorReasonTypes>;
+/** Sent in ResponseMessage to reconstruct the ErrorWithReason. */
+export interface ErrorWithReasonDetails {
+  reason: AnyErrorReasonType;
+  reasonType: keyof ErrorReasonTypes;
+}
+
+// Exception information that can be passed across postMessage.
+export interface TransferableException {
+  // An error that occurred during processing the request.
+  exception: Error;
+  // This may be set to indicate that the exception is a ErrorWithReason
+  // exception.
+  exceptionReason?: ErrorWithReasonDetails;
+}
+
+// Constructs an exception from a TransferableException.
+export function exceptionFromTransferable(e: TransferableException): Error|
+    AnyErrorWithReasonType {
+  // Error types are serializable, but they do not serialize all members.
+  // If exceptionReason is provided, we use it to reconstruct a
+  // ErrorWithReason by just setting additional fields after
+  // serialization.
+  if (e.exceptionReason !== undefined) {
+    const withReason = e.exception as AnyErrorWithReasonType;
+    withReason.reason = e.exceptionReason.reason;
+    withReason.reasonType = e.exceptionReason.reasonType;
+  }
+
+  return e.exception;
+}
+
+// Transform an Error into a TransferableException.
+export function newTransferableException(e: Error): TransferableException {
+  let exceptionReason = undefined;
+  const maybeWithReason = e as Partial<AnyErrorWithReasonType>;
+  if (maybeWithReason.reasonType !== undefined &&
+      maybeWithReason.reason !== undefined) {
+    exceptionReason = {
+      reason: maybeWithReason.reason,
+      reasonType: maybeWithReason.reasonType,
+    };
+  }
+  return {exception: e, exceptionReason};
 }

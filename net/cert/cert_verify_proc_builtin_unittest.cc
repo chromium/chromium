@@ -20,8 +20,10 @@
 #include "base/time/time.h"
 #include "components/network_time/time_tracker/time_tracker.h"
 #include "net/base/features.h"
+#include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/do_nothing_ct_verifier.h"
@@ -29,6 +31,7 @@
 #include "net/cert/internal/system_trust_store.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/time_conversions.h"
+#include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/http/transport_security_state.h"
@@ -2110,5 +2113,212 @@ TEST_F(CertVerifyProcBuiltinTest, IterationLimit) {
   EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
   EXPECT_EQ(true, event->params.FindBool("exceeded_iteration_limit"));
 }
+
+class CertVerifyProcBuiltinSelfSignedTest
+    : public CertVerifyProcBuiltinTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  CertVerifyProcBuiltinSelfSignedTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          features::kSelfSignedLocalNetworkInterstitial);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kSelfSignedLocalNetworkInterstitial);
+    }
+  }
+
+  scoped_refptr<X509Certificate> CreateSelfSigned(
+      std::string_view subject_dns_name) {
+    // Create a chain of size 1, which will result in a self-signed certificate
+    std::vector<std::unique_ptr<CertBuilder>> builders =
+        CertBuilder::CreateSimpleChain(1);
+    base::Time not_before = base::Time::Now() - base::Days(1);
+    base::Time not_after = base::Time::Now() + base::Days(1);
+    builders[0]->SetValidity(not_before, not_after);
+    builders[0]->SetSubjectAltName(subject_dns_name);
+    return builders[0]->GetX509Certificate();
+  }
+
+  scoped_refptr<X509Certificate> CreateSelfSignedIPSubject(
+      std::string_view ip_address) {
+    // Create a chain of size 1, which will result in a self-signed certificate
+    std::vector<std::unique_ptr<CertBuilder>> builders =
+        CertBuilder::CreateSimpleChain(1);
+    base::Time not_before = base::Time::Now() - base::Days(1);
+    base::Time not_after = base::Time::Now() + base::Days(1);
+    builders[0]->SetValidity(not_before, not_after);
+    IPAddress ip;
+    if (!ParseURLHostnameToAddress(ip_address, &ip)) {
+      ADD_FAILURE() << "Failed to parse IP address";
+    }
+
+    builders[0]->SetSubjectAltNames({}, {ip});
+    return builders[0]->GetX509Certificate();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(CertVerifyProcBuiltinSelfSignedTest,
+       SelfSignedCertOnLocalNetworkHostname) {
+  scoped_refptr<X509Certificate> cert = CreateSelfSigned("testurl.local");
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(cert, "testurl.local", 0, &verify_result, &verify_net_log_source,
+         callback.callback());
+  int error = callback.WaitForResult();
+
+  if (GetParam()) {
+    EXPECT_TRUE(verify_result.cert_status &
+                CERT_STATUS_SELF_SIGNED_LOCAL_NETWORK);
+    EXPECT_THAT(error, IsError(ERR_CERT_SELF_SIGNED_LOCAL_NETWORK));
+  } else {
+    EXPECT_FALSE(verify_result.cert_status &
+                 CERT_STATUS_SELF_SIGNED_LOCAL_NETWORK);
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+}
+
+TEST_P(CertVerifyProcBuiltinSelfSignedTest, SelfSignedCertOnLocalNetworkIP) {
+  scoped_refptr<X509Certificate> cert =
+      CreateSelfSignedIPSubject("192.168.0.1");
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(cert, "192.168.0.1", 0, &verify_result, &verify_net_log_source,
+         callback.callback());
+  int error = callback.WaitForResult();
+
+  if (GetParam()) {
+    EXPECT_TRUE(verify_result.cert_status &
+                CERT_STATUS_SELF_SIGNED_LOCAL_NETWORK);
+    EXPECT_THAT(error, IsError(ERR_CERT_SELF_SIGNED_LOCAL_NETWORK));
+  } else {
+    EXPECT_FALSE(verify_result.cert_status &
+                 CERT_STATUS_SELF_SIGNED_LOCAL_NETWORK);
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+}
+
+TEST_P(CertVerifyProcBuiltinSelfSignedTest, SelfSignedCertOnLocalNetworkIPv6) {
+  scoped_refptr<X509Certificate> cert =
+      CreateSelfSignedIPSubject("[fc00:0:0:0:0:0:0:0]");
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(cert, "fc00:0:0:0:0:0:0:0", 0, &verify_result, &verify_net_log_source,
+         callback.callback());
+  int error = callback.WaitForResult();
+
+  if (GetParam()) {
+    EXPECT_TRUE(verify_result.cert_status &
+                CERT_STATUS_SELF_SIGNED_LOCAL_NETWORK);
+    EXPECT_THAT(error, IsError(ERR_CERT_SELF_SIGNED_LOCAL_NETWORK));
+  } else {
+    EXPECT_FALSE(verify_result.cert_status &
+                 CERT_STATUS_SELF_SIGNED_LOCAL_NETWORK);
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+}
+
+TEST_P(CertVerifyProcBuiltinSelfSignedTest, NonSelfSignedCertOnLocalNetwork) {
+  std::vector<std::unique_ptr<CertBuilder>> builders =
+      CertBuilder::CreateSimpleChain(2);
+
+  base::Time not_before = base::Time::Now() - base::Days(2);
+  base::Time not_after = base::Time::Now() - base::Days(2);
+  builders[0]->SetValidity(not_before, not_after);
+  builders[0]->SetSubjectAltName("testurl.local");
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(builders[0]->GetX509CertificateChain(), "testurl.local", 0,
+         &verify_result, &verify_net_log_source, callback.callback());
+  int error = callback.WaitForResult();
+
+  EXPECT_FALSE(verify_result.cert_status &
+               CERT_STATUS_SELF_SIGNED_LOCAL_NETWORK);
+  EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+}
+
+TEST_P(CertVerifyProcBuiltinSelfSignedTest,
+       SelfSignedCertNotLocalNetworkHostname) {
+  scoped_refptr<X509Certificate> cert = CreateSelfSigned("www.example.com");
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(cert, "www.example.com", 0, &verify_result, &verify_net_log_source,
+         callback.callback());
+  int error = callback.WaitForResult();
+
+  EXPECT_FALSE(verify_result.cert_status &
+               CERT_STATUS_SELF_SIGNED_LOCAL_NETWORK);
+  EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+}
+
+TEST_P(CertVerifyProcBuiltinSelfSignedTest, SelfSignedCertNotLocalNetworkIP) {
+  scoped_refptr<X509Certificate> cert = CreateSelfSignedIPSubject("8.8.8.8");
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(cert, "8.8.8.8", 0, &verify_result, &verify_net_log_source,
+         callback.callback());
+  int error = callback.WaitForResult();
+
+  EXPECT_FALSE(verify_result.cert_status &
+               CERT_STATUS_SELF_SIGNED_LOCAL_NETWORK);
+  EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+}
+
+TEST_P(CertVerifyProcBuiltinSelfSignedTest, SelfSignedCertNotLocalNetworkIPv6) {
+  scoped_refptr<X509Certificate> cert =
+      CreateSelfSignedIPSubject("[2001:4860:4860::8888]");
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(cert, "2001:4860:4860::8888", 0, &verify_result,
+         &verify_net_log_source, callback.callback());
+  int error = callback.WaitForResult();
+
+  EXPECT_FALSE(verify_result.cert_status &
+               CERT_STATUS_SELF_SIGNED_LOCAL_NETWORK);
+  EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+}
+
+TEST_P(CertVerifyProcBuiltinSelfSignedTest,
+       SelfSignedCertOnLocalNetworkHostnameNameMismatchTakesPrecedence) {
+  scoped_refptr<X509Certificate> cert = CreateSelfSigned("nottesturl.local");
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(cert, "testurl.local", 0, &verify_result, &verify_net_log_source,
+         callback.callback());
+  int error = callback.WaitForResult();
+
+  if (GetParam()) {
+    EXPECT_TRUE(verify_result.cert_status &
+                CERT_STATUS_SELF_SIGNED_LOCAL_NETWORK);
+    EXPECT_THAT(error, IsError(ERR_CERT_COMMON_NAME_INVALID));
+  } else {
+    EXPECT_FALSE(verify_result.cert_status &
+                 CERT_STATUS_SELF_SIGNED_LOCAL_NETWORK);
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(SelfSignedInterstitial,
+                         CertVerifyProcBuiltinSelfSignedTest,
+                         testing::Bool());
 
 }  // namespace net

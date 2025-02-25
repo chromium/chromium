@@ -237,6 +237,11 @@ class ClientSideDetectionService
   // on-device model session creation.
   bool IsOnDeviceModelAvailable();
 
+  // Resets the session that's created by the on-device model. This occurs when
+  // there is a new page navigation and at the start and end of
+  // |InquireOnDeviceModel|.
+  void ResetOnDeviceSession();
+
   // Called from the host class when the proper requirements are met to inquire
   // the on-device model.
   virtual void InquireOnDeviceModel(

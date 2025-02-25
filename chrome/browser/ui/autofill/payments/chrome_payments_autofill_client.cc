@@ -946,7 +946,7 @@ ChromePaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
 
 payments::BnplManager* ChromePaymentsAutofillClient::GetPaymentsBnplManager() {
   if (!bnpl_manager_) {
-    bnpl_manager_ = std::make_unique<payments::BnplManager>(this);
+    bnpl_manager_ = std::make_unique<payments::BnplManager>(&client_.get());
   }
 
   return bnpl_manager_.get();

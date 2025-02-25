@@ -1004,15 +1004,15 @@ bool ExtensionPrefs::DidExtensionEscalatePermissions(
 
 DisableReasonSet ExtensionPrefs::GetDisableReasons(
     const ExtensionId& extension_id) const {
-  // TODO(crbug.com/372186532): Add logic to collapse all unknown reasons to
-  // disable_reason::DISABLE_UNKNOWN.
-  return ReadDisableReasonsFromPrefs(extension_id);
+  return ReadDisableReasonsFromPrefs(extension_id,
+                                     /*collapse_unknown_reasons=*/true);
 }
 
 base::flat_set<int> ExtensionPrefs::GetRawDisableReasons(
     DisableReasonRawManipulationPasskey,
     const ExtensionId& extension_id) const {
-  return ReadDisableReasonsFromPrefs(extension_id);
+  return ReadDisableReasonsFromPrefs(extension_id,
+                                     /*collapse_unknown_reasons=*/false);
 }
 
 int ExtensionPrefs::GetBitMapPrefBits(const ExtensionId& extension_id,
@@ -1048,8 +1048,8 @@ void ExtensionPrefs::AddDisableReason(
 void ExtensionPrefs::AddDisableReasons(
     const ExtensionId& extension_id,
     const DisableReasonSet& disable_reasons) {
-  auto passkey = DisableReasonRawManipulationPasskey();
-  AddRawDisableReasons(passkey, extension_id, disable_reasons);
+  AddRawDisableReasons(disable_reason_raw_manipulation_passkey_, extension_id,
+                       disable_reasons);
 }
 
 void ExtensionPrefs::AddRawDisableReasons(
@@ -1059,11 +1059,9 @@ void ExtensionPrefs::AddRawDisableReasons(
   DCHECK(!DoesExtensionHaveState(extension_id, Extension::ENABLED) ||
          blocklist_prefs::IsExtensionBlocklisted(extension_id, this));
   CHECK(!incoming_reasons.empty());
-  CHECK(!incoming_reasons.contains(disable_reason::DISABLE_UNKNOWN))
-      << "Can not add DISABLE_UNKNOWN to the disable reasons list.";
 
-  const base::flat_set<int> current_reasons =
-      ReadDisableReasonsFromPrefs(extension_id);
+  const base::flat_set<int> current_reasons = ReadDisableReasonsFromPrefs(
+      extension_id, /*collapse_unknown_reasons=*/false);
   const base::flat_set<int> new_reasons =
       base::STLSetUnion<base::flat_set<int>>(current_reasons, incoming_reasons);
 
@@ -1077,28 +1075,24 @@ void ExtensionPrefs::AddRawDisableReasons(
 
 void ExtensionPrefs::RemoveDisableReason(
     const ExtensionId& extension_id,
-    disable_reason::DisableReason disable_reason) {
-  CHECK_NE(disable_reason, disable_reason::DISABLE_NONE);
+    disable_reason::DisableReason to_remove) {
+  CHECK_NE(to_remove, disable_reason::DISABLE_NONE);
+  RemoveDisableReasons(extension_id, {to_remove});
+}
 
-  base::flat_set<int> current_reasons =
-      ReadDisableReasonsFromPrefs(extension_id);
+void ExtensionPrefs::RemoveDisableReasons(const ExtensionId& extension_id,
+                                          const DisableReasonSet& to_remove) {
+  base::flat_set<int> current_reasons = ReadDisableReasonsFromPrefs(
+      extension_id, /*collapse_unknown_reasons=*/false);
 
-  if (!current_reasons.contains(disable_reason)) {
+  base::flat_set<int> new_reasons =
+      base::STLSetDifference<base::flat_set<int>>(current_reasons, to_remove);
+  if (new_reasons == current_reasons) {
     return;
   }
 
-  const int removed = current_reasons.erase(disable_reason);
-  DCHECK_GT(removed, 0);
-
-  WriteDisableReasonsToPrefs(extension_id, current_reasons);
+  WriteDisableReasonsToPrefs(extension_id, new_reasons);
   NotifyDisableReasonsChanged(extension_id);
-}
-
-void ExtensionPrefs::ReplaceDisableReasons(
-    const ExtensionId& extension_id,
-    const DisableReasonSet& disable_reasons) {
-  auto passkey = DisableReasonRawManipulationPasskey();
-  ReplaceRawDisableReasons(passkey, extension_id, disable_reasons);
 }
 
 void ExtensionPrefs::ReplaceRawDisableReasons(
@@ -1106,7 +1100,8 @@ void ExtensionPrefs::ReplaceRawDisableReasons(
     const ExtensionId& extension_id,
     const base::flat_set<int>& disable_reasons) {
   const base::flat_set<int> current_disable_reasons =
-      ReadDisableReasonsFromPrefs(extension_id);
+      ReadDisableReasonsFromPrefs(extension_id,
+                                  /*collapse_unknown_reasons=*/false);
   if (current_disable_reasons == disable_reasons) {
     return;
   }
@@ -1117,7 +1112,8 @@ void ExtensionPrefs::ReplaceRawDisableReasons(
 
 void ExtensionPrefs::ClearDisableReasons(const ExtensionId& extension_id) {
   const base::flat_set<int> current_disable_reasons =
-      ReadDisableReasonsFromPrefs(extension_id);
+      ReadDisableReasonsFromPrefs(extension_id,
+                                  /*collapse_unknown_reasons=*/false);
 
   if (current_disable_reasons.empty()) {
     return;
@@ -1134,15 +1130,17 @@ void ExtensionPrefs::ClearInapplicableDisableReasonsForComponentExtension(
       disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT,
       disable_reason::DISABLE_CORRUPTED, disable_reason::DISABLE_REINSTALL};
 
-  const DisableReasonSet current_disable_reasons =
-      GetDisableReasons(component_extension_id);
+  const base::flat_set<int> current_disable_reasons =
+      ReadDisableReasonsFromPrefs(component_extension_id,
+                                  /*collapse_unknown_reasons=*/false);
 
   // Some disable reasons incorrectly cause component extensions to never
   // activate on load. See https://crbug.com/946839 for more details on why we
   // do this.
-  ReplaceDisableReasons(component_extension_id,
-                        base::STLSetIntersection<DisableReasonSet>(
-                            current_disable_reasons, kAllowDisableReasons));
+  ReplaceRawDisableReasons(disable_reason_raw_manipulation_passkey_,
+                           component_extension_id,
+                           base::STLSetIntersection<base::flat_set<int>>(
+                               current_disable_reasons, kAllowDisableReasons));
 }
 
 void ExtensionPrefs::ModifyBitMapPrefBits(const ExtensionId& extension_id,
@@ -1495,8 +1493,8 @@ void ExtensionPrefs::SetExtensionEnabled(const ExtensionId& extension_id) {
 void ExtensionPrefs::SetExtensionDisabled(
     const ExtensionId& extension_id,
     const DisableReasonSet& disable_reasons) {
-  auto passkey = DisableReasonRawManipulationPasskey();
-  SetExtensionDisabledWithRawReasons(passkey, extension_id, disable_reasons);
+  SetExtensionDisabledWithRawReasons(disable_reason_raw_manipulation_passkey_,
+                                     extension_id, disable_reasons);
 }
 
 void ExtensionPrefs::SetExtensionDisabledWithRawReasons(
@@ -2012,7 +2010,8 @@ void ExtensionPrefs::NotifyDisableReasonsChanged(
 }
 
 base::flat_set<int> ExtensionPrefs::ReadDisableReasonsFromPrefs(
-    const ExtensionId& extension_id) const {
+    const ExtensionId& extension_id,
+    bool collapse_unknown_reasons) const {
   const base::Value::List* disable_reasons_list =
       ReadPrefAsList(extension_id, kPrefDisableReasons);
   base::flat_set<int> result;
@@ -2027,6 +2026,12 @@ base::flat_set<int> ExtensionPrefs::ReadDisableReasonsFromPrefs(
     }
 
     int reason = value.GetInt();
+
+    // Alias unknown reasons to DISABLE_UNKNOWN, unless we're getting the raw
+    // reasons.
+    if (collapse_unknown_reasons && !IsValidDisableReason(reason)) {
+      reason = disable_reason::DISABLE_UNKNOWN;
+    }
     result.insert(reason);
   }
 
@@ -2036,22 +2041,6 @@ base::flat_set<int> ExtensionPrefs::ReadDisableReasonsFromPrefs(
 void ExtensionPrefs::WriteDisableReasonsToPrefs(
     const ExtensionId& extension_id,
     const base::flat_set<int>& disable_reasons) {
-  // TODO(crbug.com/372186532) This assertion is temporary. Many callers do
-  // this:
-  //
-  // int reasons = GetDisableReasons(extension_id);
-  // ... modify reasons ...
-  // ReplaceDisableReasons(extension_id, reasons);
-  // ... OR ...
-  // SetExtensionDisabled(extension_id, reasons);
-  //
-  // Currently, GetDisableReasons() returns unknown disable reasons, without
-  // collapsing them to DISABLE_UNKNOWN. So, this is not a problem.
-  //
-  // Once GetDisableReasons() starts returning DISABLE_UNKNOWN, this assertion
-  // should be removed. We handle the case when DISABLE_UNKNOWN is passed here
-  // by getting all unknown reasons from the prefs and adding them back to the
-  // set before writing it to the prefs.
   CHECK(!disable_reasons.contains(disable_reason::DISABLE_UNKNOWN))
       << "Can not add DISABLE_UNKNOWN to the disable reasons list.";
 
@@ -2551,7 +2540,9 @@ void ExtensionPrefs::MigrateDeprecatedDisableReasons() {
   // remove DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED from the disable_reason enum.
   for (const auto& info : extensions_info) {
     const ExtensionId& extension_id = info.extension_id;
-    DisableReasonSet disable_reasons = GetDisableReasons(extension_id);
+    base::flat_set<int> disable_reasons =
+        ReadDisableReasonsFromPrefs(extension_id,
+                                    /*collapse_unknown_reasons=*/false);
 
     if (!disable_reasons.contains(
             disable_reason::DEPRECATED_DISABLE_NOT_ASH_KEEPLISTED)) {
@@ -2562,14 +2553,17 @@ void ExtensionPrefs::MigrateDeprecatedDisableReasons() {
     if (disable_reasons.empty() && IsExtensionDisabled(extension_id)) {
       SetExtensionEnabled(extension_id);
     } else {
-      ReplaceDisableReasons(extension_id, disable_reasons);
+      ReplaceRawDisableReasons(disable_reason_raw_manipulation_passkey_,
+                               extension_id, disable_reasons);
     }
   }
 #endif
 
   for (const auto& info : extensions_info) {
     const ExtensionId& extension_id = info.extension_id;
-    DisableReasonSet disable_reasons = GetDisableReasons(extension_id);
+    base::flat_set<int> disable_reasons =
+        ReadDisableReasonsFromPrefs(extension_id,
+                                    /*collapse_unknown_reasons=*/false);
 
     if (!disable_reasons.contains(
             disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC)) {
@@ -2585,7 +2579,8 @@ void ExtensionPrefs::MigrateDeprecatedDisableReasons() {
       // reversible).
       disable_reasons = {disable_reason::DISABLE_USER_ACTION};
     }
-    ReplaceDisableReasons(extension_id, disable_reasons);
+    ReplaceRawDisableReasons(disable_reason_raw_manipulation_passkey_,
+                             extension_id, disable_reasons);
   }
 }
 

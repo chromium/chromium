@@ -671,6 +671,10 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
   if (classification_request_.get()) {
     classification_request_->Cancel();
   }
+
+  // Cancel any ongoing on device sessions.
+  csd_service_->ResetOnDeviceSession();
+
   // If we navigate away and there currently is a pending phishing report
   // request we have to cancel it to make sure we don't display an interstitial
   // for the wrong page.  Note that this won't cancel the server ping back but

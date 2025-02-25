@@ -20,12 +20,12 @@ import collections
 import contextlib
 import fnmatch
 import logging
-import tempfile
-import textwrap
 import os
 import re
 import shutil
 import subprocess
+import tempfile
+import textwrap
 import urllib.request
 import zipfile
 
@@ -38,6 +38,9 @@ _PRIMARY_ANDROID_DEPS_DIR = os.path.join(_CHROMIUM_SRC, 'third_party',
 
 # Path to additional_readme_paths.json relative to custom 'android_deps' directory.
 _ADDITIONAL_README_PATHS = 'additional_readme_paths.json'
+
+# Path to Bill of Materials json output by gradle.
+_BOM_PATH = 'bill_of_materials.json'
 
 # Path to BUILD.gn file from custom 'android_deps' directory.
 _BUILD_GN = 'BUILD.gn'
@@ -677,6 +680,12 @@ def main():
              args.android_deps_dir,
              _CUSTOM_ANDROID_DEPS_FILES,
              src_path_must_exist=is_primary_android_deps)
+
+        # Not all projects (eg: the primary project) output a bill of materials.
+        # Thus only copy if it exists.
+        Copy(build_android_deps_dir, [_BOM_PATH],
+             args.android_deps_dir, [_BOM_PATH],
+             src_path_must_exist=False)
 
         # Delete obsolete or updated package directories.
         for pkg in existing_packages.values():

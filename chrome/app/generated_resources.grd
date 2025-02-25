@@ -8573,6 +8573,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_CALENDAR_SEE_MORE" desc="Text for a link to the user's calendar." meaning="Click here to view more of the calendar.">
         See more
       </message>
+      <message name="IDS_NTP_MODULES_CALENDAR_SEE_MORE_ACCNAME" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the see more link is focused.">
+        See more meetings on your Calendar
+      </message>
       <message name="IDS_NTP_MODULES_KALEIDOSCOPE_TITLE" desc="Title shown in the header of the Kaleidoscope module.">
         Top picks for you
       </message>

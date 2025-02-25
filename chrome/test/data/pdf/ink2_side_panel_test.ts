@@ -85,34 +85,21 @@ chrome.test.runTests([
     chrome.test.assertTrue(viewer.$.toolbar.annotationMode);
 
     // Switch to eraser.
-    setGetAnnotationBrushReply(
-        mockPlugin, AnnotationBrushType.ERASER, /*size=*/ 3);
+    setGetAnnotationBrushReply(mockPlugin, AnnotationBrushType.ERASER);
     getBrushSelector(getSidePanel()).$.eraser.click();
     await microtasksFinished();
 
     assertAnnotationBrush(mockPlugin, {
       type: AnnotationBrushType.ERASER,
-      size: 3,
-    });
-
-    const sizeButtons = getSizeButtons(getSizeSelector());
-    assertSelectedSize(sizeButtons, /*buttonIndex=*/ 2);
-
-    // Change the eraser size.
-    const button = sizeButtons[1];
-    chrome.test.assertTrue(!!button);
-    button.click();
-    await microtasksFinished();
-
-    assertAnnotationBrush(mockPlugin, {
-      type: AnnotationBrushType.ERASER,
-      size: 2,
     });
 
     // There shouldn't be color options.
     const sidePanel = getSidePanel();
     chrome.test.assertTrue(!sidePanel.shadowRoot!.querySelector<HTMLElement>(
         'ink-color-selector'));
+    // There shouldn't be size options.
+    chrome.test.assertTrue(
+        !sidePanel.shadowRoot!.querySelector<HTMLElement>('ink-size-selector'));
     chrome.test.succeed();
   },
 

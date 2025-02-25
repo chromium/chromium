@@ -690,7 +690,7 @@ class TabListMediator implements TabListNotificationHandler {
                                 previousGroupTab.getId() == movedTab.getId();
                         int curTabListModelIndex = mModelList.indexFromTabId(movedTab.getId());
                         if (!isValidMovePosition(curTabListModelIndex)) return;
-                        removeAt(curTabListModelIndex);
+                        mModelList.removeAt(curTabListModelIndex);
                         if (mTabGridDialogHandler != null) {
                             mTabGridDialogHandler.updateDialogContent(
                                     isUngroupingLastTabInGroup
@@ -741,7 +741,7 @@ class TabListMediator implements TabListNotificationHandler {
                             return;
                         }
 
-                        removeAt(srcIndex);
+                        mModelList.removeAt(srcIndex);
                         if (getRelatedTabsForId(movedTab.getId()).size() == 2) {
                             // When users use drop-to-merge to create a group.
                             RecordUserAction.record("TabGroup.Created.DropToMerge");
@@ -1075,7 +1075,7 @@ class TabListMediator implements TabListNotificationHandler {
                         int index = mModelList.indexFromTabId(tab.getId());
                         if (index == TabModel.INVALID_TAB_INDEX) return;
 
-                        removeAt(index);
+                        mModelList.removeAt(index);
                     }
 
                     @Override
@@ -1087,7 +1087,7 @@ class TabListMediator implements TabListNotificationHandler {
                         int index = mModelList.indexFromTabId(tab.getId());
                         if (index == TabModel.INVALID_TAB_INDEX) return;
 
-                        removeAt(index);
+                        mModelList.removeAt(index);
                     }
                 };
 
@@ -1459,7 +1459,7 @@ class TabListMediator implements TabListNotificationHandler {
             mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
             return true;
         }
-        resetModel();
+        mModelList.clear();
         mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
 
         if (tabs == null) {
@@ -2152,7 +2152,7 @@ class TabListMediator implements TabListNotificationHandler {
             if (itemIdentifier == MessageService.MessageType.ALL) {
                 while (mModelList.lastIndexForMessageItem() != TabModel.INVALID_TAB_INDEX) {
                     index = mModelList.lastIndexForMessageItem();
-                    removeAt(index);
+                    mModelList.removeAt(index);
                 }
                 return;
             }
@@ -2162,7 +2162,7 @@ class TabListMediator implements TabListNotificationHandler {
         if (index == TabModel.INVALID_TAB_INDEX) return;
 
         assert validateItemAt(index, uiType, itemIdentifier);
-        removeAt(index);
+        mModelList.removeAt(index);
     }
 
     private boolean validateItemAt(
@@ -2301,6 +2301,12 @@ class TabListMediator implements TabListNotificationHandler {
             }
         }
         return TabModel.INVALID_TAB_INDEX;
+    }
+
+    /** Provides the tab ID for the most recently swiped tab. */
+    @NonNull
+    ObservableSupplier<Integer> getRecentlySwipedTabSupplier() {
+        return mTabGridItemTouchHelperCallback.getRecentlySwipedTabIdSupplier();
     }
 
     /**
@@ -2869,26 +2875,6 @@ class TabListMediator implements TabListNotificationHandler {
         } else {
             provider.setTabGroupId(tabGroupId);
             provider.setTabGroupColorId(colorId);
-        }
-    }
-
-    private void resetModel() {
-        for (int i = 0; i < mModelList.size(); i++) {
-            destroyTabGroupColorViewProviderIfNotNull(mModelList.get(i).model);
-        }
-        mModelList.clear();
-    }
-
-    @VisibleForTesting
-    void removeAt(int index) {
-        destroyTabGroupColorViewProviderIfNotNull(mModelList.get(index).model);
-        mModelList.removeAt(index);
-    }
-
-    private void destroyTabGroupColorViewProviderIfNotNull(PropertyModel model) {
-        if (model.get(CARD_TYPE) == TAB) {
-            @Nullable TabGroupColorViewProvider provider = model.get(TAB_GROUP_COLOR_VIEW_PROVIDER);
-            if (provider != null) provider.destroy();
         }
     }
 

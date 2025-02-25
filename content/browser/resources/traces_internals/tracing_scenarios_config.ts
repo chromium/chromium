@@ -130,12 +130,12 @@ export class TracingScenariosConfigElement extends CrLitElement {
     this.isLoading_ = false;
   }
 
-  protected async privacyFilterDidChange_(event: CustomEvent<{value: boolean}>):
+  protected async privacyFilterDidChange_(event: CustomEvent<boolean>):
       Promise<void> {
-    if (this.privacyFilterEnabled_ === event.detail.value) {
+    if (this.privacyFilterEnabled_ === event.detail) {
       return;
     }
-    this.privacyFilterEnabled_ = event.detail.value;
+    this.privacyFilterEnabled_ = event.detail;
     await this.traceReportProxy_.handler.setPrivacyFilterEnabled(
         this.privacyFilterEnabled_);
   }

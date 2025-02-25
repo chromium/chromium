@@ -103,15 +103,20 @@ class GlicBorderView::BorderViewUpdater {
         focused_tab_data.focused_tab_contents.get();
     auto* previous_focus = glic_focused_contents_in_current_window_.get();
     if (contents && IsTabInCurrentWindow(contents)) {
-      glic_focused_contents_in_current_window_ =
-          const_cast<content::WebContents*>(contents)->GetWeakPtr();
+      glic_focused_contents_in_current_window_ = contents->GetWeakPtr();
     } else {
       glic_focused_contents_in_current_window_.reset();
     }
 
-    bool tab_switch =
-        previous_focus && glic_focused_contents_in_current_window_ &&
-        previous_focus != glic_focused_contents_in_current_window_.get();
+    auto* current_focus = glic_focused_contents_in_current_window_.get();
+    bool focus_changed = previous_focus != current_focus;
+    if (border_view_->tester_ && focus_changed) [[unlikely]] {
+      auto current_focus_url = current_focus ? current_focus->GetURL() : GURL();
+      border_view_->tester_->FocusedTabChanged(current_focus_url);
+    }
+
+    bool tab_switch = previous_focus &&
+                      glic_focused_contents_in_current_window_ && focus_changed;
     // OnFocusedTabChanged is dispatched after the previous focused WebContents
     // is destroyed, making it no different than the focus changing to a
     // different browser window. `border_view_->compositor_` helps
@@ -234,8 +239,7 @@ class GlicBorderView::BorderViewUpdater {
   const raw_ptr<BrowserWindowInterface> browser_;
 
   // Tracked states and their subscriptions.
-  base::WeakPtr<const content::WebContents>
-      glic_focused_contents_in_current_window_;
+  base::WeakPtr<content::WebContents> glic_focused_contents_in_current_window_;
   base::CallbackListSubscription focus_change_subscription_;
   bool context_access_indicator_enabled_ = false;
   base::CallbackListSubscription indicator_change_subscription_;

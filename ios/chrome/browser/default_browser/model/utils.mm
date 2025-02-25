@@ -19,6 +19,7 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -787,6 +788,49 @@ const std::string IOSDefaultBrowserPromoActionToString(
       return "Dismiss";
     case IOSDefaultBrowserPromoAction::kRemindMeLater:
     default:
+      NOTREACHED();
+  }
+}
+
+const base::Feature& GetFeatureForPromoReason(
+    NonModalDefaultBrowserPromoReason promo_reason) {
+  if (!IsTailoredNonModalDBPromoEnabled()) {
+    return feature_engagement::
+        kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature;
+  }
+
+  switch (promo_reason) {
+    case NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste:
+      return feature_engagement::
+          kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature;
+    case NonModalDefaultBrowserPromoReason::PromoReasonAppSwitcher:
+      return feature_engagement::
+          kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature;
+    case NonModalDefaultBrowserPromoReason::PromoReasonShare:
+      return feature_engagement::kIPHiOSPromoNonModalShareDefaultBrowserFeature;
+    case NonModalDefaultBrowserPromoReason::PromoReasonNone:
+      NOTREACHED();
+  }
+}
+
+const std::string GetFeatureEventNameForPromoReason(
+    NonModalDefaultBrowserPromoReason promo_reason) {
+  if (!IsTailoredNonModalDBPromoEnabled()) {
+    return feature_engagement::events::
+        kNonModalDefaultBrowserPromoUrlPasteTrigger;
+  }
+
+  switch (promo_reason) {
+    case NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste:
+      return feature_engagement::events::
+          kNonModalDefaultBrowserPromoUrlPasteTrigger;
+    case NonModalDefaultBrowserPromoReason::PromoReasonAppSwitcher:
+      return feature_engagement::events::
+          kNonModalDefaultBrowserPromoAppSwitcherTrigger;
+    case NonModalDefaultBrowserPromoReason::PromoReasonShare:
+      return feature_engagement::events::
+          kNonModalDefaultBrowserPromoShareTrigger;
+    case NonModalDefaultBrowserPromoReason::PromoReasonNone:
       NOTREACHED();
   }
 }

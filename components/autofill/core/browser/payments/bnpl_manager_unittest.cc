@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,6 +36,12 @@ class PaymentsNetworkInterfaceMock : public PaymentsNetworkInterface {
       (GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details,
        base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                                const BnplFetchVcnResponseDetails&)> callback));
+  MOCK_METHOD(
+      void,
+      CreateBnplPaymentInstrument,
+      (const CreateBnplPaymentInstrumentRequestDetails& request_details,
+       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                               std::u16string instrument_id)> callback));
 };
 }  // namespace
 
@@ -64,8 +71,7 @@ class BnplManagerTest : public Test {
     autofill_client_->GetPaymentsAutofillClient()
         ->set_payments_network_interface(std::move(payments_network_interface));
 
-    bnpl_manager_ = std::make_unique<BnplManager>(
-        autofill_client_->GetPaymentsAutofillClient());
+    bnpl_manager_ = std::make_unique<BnplManager>(autofill_client_.get());
   }
 
   // Sets up the PersonalDataManager with a unlinked bnpl issuer.
@@ -131,9 +137,112 @@ TEST_F(BnplManagerTest, InitBnplFlow_SetsInitialState) {
   EXPECT_EQ(
       final_checkout_amount,
       test_api(*bnpl_manager_).GetOngoingFlowState()->final_checkout_amount);
+  EXPECT_EQ(autofill_client_->GetAppLocale(),
+            test_api(*bnpl_manager_).GetOngoingFlowState()->app_locale);
+  EXPECT_EQ(
+      GetBillingCustomerId(autofill_client_->GetPaymentsAutofillClient()
+                               ->GetPaymentsDataManager()),
+      test_api(*bnpl_manager_).GetOngoingFlowState()->billing_customer_number);
   EXPECT_FALSE(test_api(*bnpl_manager_)
                    .GetOngoingFlowState()
                    ->on_bnpl_vcn_fetched_callback.is_null());
+  EXPECT_FALSE(
+      test_api(*bnpl_manager_).GetOngoingFlowState()->risk_data.empty());
+}
+
+// Tests that the initial state for a BNPL flow is set when
+// BnplManager::InitBnplFlow() is triggered, even if the app locale is not
+// "en-US". This helps test that the flow is easily scalable to other app
+// locales.
+TEST_F(BnplManagerTest, InitBnplFlow_SetsInitialStateWithDifferentAppLocale) {
+  uint64_t final_checkout_amount = 1000000;
+  autofill_client_->set_app_locale("en_GB");
+  bnpl_manager_->InitBnplFlow(final_checkout_amount, base::DoNothing());
+
+  EXPECT_EQ(
+      final_checkout_amount,
+      test_api(*bnpl_manager_).GetOngoingFlowState()->final_checkout_amount);
+  EXPECT_EQ(autofill_client_->GetAppLocale(),
+            test_api(*bnpl_manager_).GetOngoingFlowState()->app_locale);
+  EXPECT_EQ(
+      GetBillingCustomerId(autofill_client_->GetPaymentsAutofillClient()
+                               ->GetPaymentsDataManager()),
+      test_api(*bnpl_manager_).GetOngoingFlowState()->billing_customer_number);
+  EXPECT_FALSE(test_api(*bnpl_manager_)
+                   .GetOngoingFlowState()
+                   ->on_bnpl_vcn_fetched_callback.is_null());
+  EXPECT_FALSE(
+      test_api(*bnpl_manager_).GetOngoingFlowState()->risk_data.empty());
+}
+
+// Tests that the the user accepting the ToS dialog triggers a
+// CreatePaymentInstrument request and loads risk data after ToS dialog
+// acceptance if it was not already loaded.
+TEST_F(BnplManagerTest, TosDialogAccepted_PrefetchedRiskDataNotLoaded) {
+  bnpl_manager_->InitBnplFlow(/*final_checkout_amount=*/1000000,
+                              base::DoNothing());
+  auto* ongoing_flow_state = test_api(*bnpl_manager_).GetOngoingFlowState();
+  std::string test_context_token = "test_context_token";
+  std::string test_issuer_id = std::string(kBnplAffirmIssuerId);
+  ongoing_flow_state->context_token = test_context_token;
+  ongoing_flow_state->issuer_id = test_issuer_id;
+  ongoing_flow_state->risk_data.clear();
+
+  ASSERT_TRUE(ongoing_flow_state->risk_data.empty());
+
+  EXPECT_CALL(
+      *payments_network_interface_,
+      CreateBnplPaymentInstrument(/*request_details=*/
+                                  FieldsAre(
+                                      autofill_client_->GetAppLocale(),
+                                      GetBillingCustomerId(
+                                          autofill_client_
+                                              ->GetPaymentsAutofillClient()
+                                              ->GetPaymentsDataManager()),
+                                      test_issuer_id, test_context_token,
+                                      /*risk_data=*/_),
+                                  /*callback=*/_));
+  test_api(*bnpl_manager_).OnTosDialogAccepted();
+
+  EXPECT_FALSE(ongoing_flow_state->risk_data.empty());
+}
+
+// Tests that the the user accepting the ToS dialog triggers a
+// CreatePaymentInstrument request with the loaded risk data, if it is present.
+TEST_F(BnplManagerTest, TosDialogAccepted_PrefetchedRiskDataLoaded) {
+  bnpl_manager_->InitBnplFlow(/*final_checkout_amount=*/1000000,
+                              base::DoNothing());
+  auto* ongoing_flow_state = test_api(*bnpl_manager_).GetOngoingFlowState();
+  std::string test_context_token = "test_context_token";
+  std::string test_issuer_id = std::string(kBnplAffirmIssuerId);
+  std::string risk_data = ongoing_flow_state->risk_data;
+  ongoing_flow_state->context_token = test_context_token;
+  ongoing_flow_state->issuer_id = test_issuer_id;
+
+  ASSERT_FALSE(ongoing_flow_state->risk_data.empty());
+
+  autofill_client_->GetPaymentsAutofillClient()->set_risk_data_loaded(false);
+
+  EXPECT_CALL(
+      *payments_network_interface_,
+      CreateBnplPaymentInstrument(/*request_details=*/
+                                  FieldsAre(
+                                      autofill_client_->GetAppLocale(),
+                                      GetBillingCustomerId(
+                                          autofill_client_
+                                              ->GetPaymentsAutofillClient()
+                                              ->GetPaymentsDataManager()),
+                                      test_issuer_id, test_context_token,
+                                      risk_data),
+                                  /*callback=*/_));
+  test_api(*bnpl_manager_).OnTosDialogAccepted();
+
+  EXPECT_FALSE(ongoing_flow_state->risk_data.empty());
+
+  // Since risk data was cached, it was directly used, thus loading risk data
+  // was skipped.
+  EXPECT_FALSE(
+      autofill_client_->GetPaymentsAutofillClient()->risk_data_loaded());
 }
 
 // Tests that FetchVcnDetails calls the payments network interface with the

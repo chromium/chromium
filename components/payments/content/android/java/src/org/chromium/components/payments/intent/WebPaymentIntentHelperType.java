@@ -115,10 +115,10 @@ public final class WebPaymentIntentHelperType {
 
     /** The class that corresponds mojom.PaymentDetailsModifier, with minimally required fields. */
     public static final class PaymentDetailsModifier {
-        public final PaymentItem total;
+        public final @Nullable PaymentItem total;
         public final PaymentMethodData methodData;
 
-        public PaymentDetailsModifier(PaymentItem total, PaymentMethodData methodData) {
+        public PaymentDetailsModifier(@Nullable PaymentItem total, PaymentMethodData methodData) {
             this.total = total;
             this.methodData = methodData;
         }

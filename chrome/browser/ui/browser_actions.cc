@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
@@ -280,6 +281,21 @@ void BrowserActions::InitializeBrowserActions() {
               kPerformanceSpeedometerIcon, ui::kColorIcon,
               ui::SimpleMenuModel::kDefaultIconSize))
           .SetEnabled(true)
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                // TODO(crbug.com/376284060): Request zoom level
+                // on click.
+              },
+              base::Unretained(browser)))
+          .SetActionId(kActionZoomNormal)
+          .SetText(l10n_util::GetStringUTF16((IDS_ZOOM_NORMAL)))
+          .SetTooltipText(l10n_util::GetStringUTF16((IDS_TOOLTIP_ZOOM)))
+          .SetImage(ui::ImageModel::FromVectorIcon(kZoomInIcon))
           .Build());
 
   //------- Chrome Menu Actions --------//

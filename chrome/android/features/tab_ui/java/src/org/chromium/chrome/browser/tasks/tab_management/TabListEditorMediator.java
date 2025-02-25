@@ -331,6 +331,11 @@ class TabListEditorMediator
     }
 
     @Override
+    public boolean needsCleanUp() {
+        return false;
+    }
+
+    @Override
     public void setToolbarTitle(String title) {
         mModel.set(TabListEditorProperties.TOOLBAR_TITLE, title);
     }

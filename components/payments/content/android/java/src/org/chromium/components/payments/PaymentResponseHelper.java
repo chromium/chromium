@@ -4,6 +4,7 @@
 
 package org.chromium.components.payments;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.payments.mojom.PayerDetail;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentResponse;
@@ -13,6 +14,7 @@ import org.chromium.payments.mojom.PaymentResponse;
  * Compared to ChromePaymentResponseHelper, this helper does not handle the Autofill data, and so
  * can be used for WebLayerPaymentRequestService.
  */
+@NullMarked
 public class PaymentResponseHelper implements PaymentResponseHelperInterface {
     private final PaymentResponse mPaymentResponse;
     private final PaymentOptions mPaymentOptions;

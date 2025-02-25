@@ -4,6 +4,8 @@
 
 package org.chromium.components.payments;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -16,9 +18,10 @@ import org.chromium.payments.mojom.PaymentValidationErrors;
  * Guards against invalid mojo parameters and enforces correct call sequence from mojo IPC in the
  * untrusted renderer, so PaymentRequestService does not have to.
  */
+@NullMarked
 public class MojoPaymentRequestGateKeeper implements PaymentRequest {
     private final Delegate mDelegate;
-    private PaymentRequestService mPaymentRequestService;
+    private @Nullable PaymentRequestService mPaymentRequestService;
 
     /** The delegate of the class. */
     public interface Delegate {

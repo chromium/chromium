@@ -11,6 +11,7 @@
 
 namespace blink {
 
+class GridItems;
 class GridLineResolver;
 
 // Masonry specific extensions to `BlockNode`.
@@ -27,6 +28,12 @@ class CORE_EXPORT MasonryNode final : public BlockNode {
   // grid, which is used to translate definite grid spans to a 0-indexed format.
   MasonryItemGroups CollectItemGroups(const GridLineResolver& line_resolver,
                                       wtf_size_t* start_offset) const;
+
+  // Collects the children of this node, sorts by order property if needed, and
+  // resolves the grid line positions of the items based on style. Translates
+  // each item based on `start_offset`.
+  GridItems ConstructMasonryItems(const GridLineResolver& line_resolver,
+                                  wtf_size_t start_offset) const;
 };
 
 template <>

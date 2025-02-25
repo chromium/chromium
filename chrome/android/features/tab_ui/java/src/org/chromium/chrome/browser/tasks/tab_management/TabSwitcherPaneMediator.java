@@ -397,7 +397,7 @@ public class TabSwitcherPaneMediator
         return false;
     }
 
-    private TabListEditorController getTabListEditorController() {
+    TabListEditorController getTabListEditorController() {
         return mTabListEditorControllerSupplier == null
                 ? null
                 : mTabListEditorControllerSupplier.get();

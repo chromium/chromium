@@ -134,7 +134,7 @@ BASE_FEATURE(kKioskHeartbeatsViaERP,
 // Enables the new Magic Boost Consent Flow.
 BASE_FEATURE(kMagicBoostRevamp,
              "MagicBoostRevamp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the mahi feature.
 BASE_FEATURE(kMahi, "Mahi", base::FEATURE_ENABLED_BY_DEFAULT);
