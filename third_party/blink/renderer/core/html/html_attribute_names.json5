@@ -178,6 +178,7 @@
     "onchange",
     "onclick",
     "onclose",
+    "oncommand",
     "oncontentvisibilityautostatechange",
     "oncontextlost",
     "oncontextmenu",
