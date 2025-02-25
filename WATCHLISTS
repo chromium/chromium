@@ -3009,7 +3009,6 @@
     'ios_widget_kit': ['rkgibson+watch@chromium.org'],
     'ip_protection': ['aakallam+watch@chromium.org',
                       'awillia@chromium.org',
-                      'brgoldstein@google.com',
                       'djmitche@chromium.org',
                       'ciaramcmullin@google.com'],
     'ipcz': ['andreaorru+watch@chromium.org'],
