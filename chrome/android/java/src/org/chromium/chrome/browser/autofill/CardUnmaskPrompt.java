@@ -360,7 +360,7 @@ public class CardUnmaskPrompt
         setOverlayVisibility(View.VISIBLE);
         mVerificationProgressBar.setVisibility(View.VISIBLE);
         mVerificationView.setText(R.string.autofill_card_unmask_verification_in_progress);
-        mVerificationView.announceForAccessibility(mVerificationView.getText());
+        ViewCompat.setAccessibilityPaneTitle(mVerificationView, mVerificationView.getText());
         clearInputError();
     }
 
