@@ -97,6 +97,7 @@
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -108,6 +109,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #include "ui/base/page_transition_types.h"
 #else
@@ -352,6 +354,39 @@ TEST_F(ChromeContentBrowserClientWindowTest, AutomaticBeaconCredentials) {
   EXPECT_FALSE(client.AreDeprecatedAutomaticBeaconCredentialsAllowed(
       browser()->profile(), GURL("a.test"),
       url::Origin::Create(GURL("c.test"))));
+}
+
+TEST_F(ChromeContentBrowserClientWindowTest, GetAutoPipReason) {
+  ChromeContentBrowserClient client;
+
+  const GURL url("https://www.google.com");
+  content::OpenURLParams params(url, content::Referrer(),
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
+
+  content::WebContents* web_contents = nullptr;
+  scoped_refptr<content::SiteInstance> site_instance =
+      content::SiteInstance::Create(browser()->profile());
+  client.OpenURL(site_instance.get(), params,
+                 base::BindOnce(&DidOpenURLForWindowTest, &web_contents));
+  EXPECT_TRUE(web_contents);
+
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  ASSERT_NE(nullptr, tab_helper);
+  EXPECT_EQ(media::PictureInPictureEventsInfo::AutoPipReason::kUnknown,
+            client.GetAutoPipReason(*web_contents));
+
+  tab_helper->set_auto_pip_trigger_reason_for_testing(
+      media::PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing);
+  EXPECT_EQ(
+      media::PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing,
+      client.GetAutoPipReason(*web_contents));
+
+  tab_helper->set_auto_pip_trigger_reason_for_testing(
+      media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback);
+  EXPECT_EQ(media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback,
+            client.GetAutoPipReason(*web_contents));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

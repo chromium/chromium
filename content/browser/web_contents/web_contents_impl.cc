@@ -7183,6 +7183,11 @@ gfx::NativeWindow WebContentsImpl::GetOwnerNativeWindow() {
   return GetTopLevelNativeWindow();
 }
 
+media::PictureInPictureEventsInfo::AutoPipReason
+WebContentsImpl::GetAutoPipReason() const {
+  return GetContentClient()->browser()->GetAutoPipReason(*this);
+}
+
 void WebContentsImpl::NotifyChangedNavigationState(
     InvalidateTypes changed_flags) {
   NotifyNavigationStateChanged(changed_flags);

@@ -1335,6 +1335,11 @@ ContentBrowserClient::CreateWindowForVideoPictureInPicture(
   return nullptr;
 }
 
+media::PictureInPictureEventsInfo::AutoPipReason
+ContentBrowserClient::GetAutoPipReason(const WebContents& web_contents) const {
+  return media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+}
+
 void ContentBrowserClient::RegisterRendererPreferenceWatcher(
     BrowserContext* browser_context,
     mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher) {

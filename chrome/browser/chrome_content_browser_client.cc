@@ -546,6 +546,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/preloading/preview/preview_navigation_throttle.h"
 #include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_response_capture_navigation_throttle.h"
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h"
@@ -7118,6 +7119,20 @@ ChromeContentBrowserClient::CreateWindowForVideoPictureInPicture(
   // chrome/browser/ui/views code either from here or from other code in
   // chrome/browser.
   return content::VideoOverlayWindow::Create(controller);
+}
+
+media::PictureInPictureEventsInfo::AutoPipReason
+ChromeContentBrowserClient::GetAutoPipReason(
+    const content::WebContents& web_contents) const {
+#if BUILDFLAG(IS_ANDROID)
+  return media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+#else
+  auto* auto_pip_tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(&web_contents);
+  return auto_pip_tab_helper
+             ? auto_pip_tab_helper->GetAutoPipTriggerReason()
+             : media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeContentBrowserClient::RegisterRendererPreferenceWatcher(

@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/video_codecs.h"
 #include "media/mojo/mojom/watch_time_recorder.mojom.h"
@@ -24,10 +25,12 @@ namespace media {
 // See mojom::WatchTimeRecorder for documentation.
 class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
  public:
-  WatchTimeRecorder(mojom::PlaybackPropertiesPtr properties,
-                    ukm::SourceId source_id,
-                    bool is_top_frame,
-                    uint64_t player_id);
+  WatchTimeRecorder(
+      PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb,
+      mojom::PlaybackPropertiesPtr properties,
+      ukm::SourceId source_id,
+      bool is_top_frame,
+      uint64_t player_id);
 
   WatchTimeRecorder(const WatchTimeRecorder&) = delete;
   WatchTimeRecorder& operator=(const WatchTimeRecorder&) = delete;
@@ -55,6 +58,8 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
   // Clears |aggregate_watch_time_info_| upon completion.
   void RecordUkmPlaybackData();
   bool ShouldRecordUma() const;
+
+  PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb_;
 
   const mojom::PlaybackPropertiesPtr properties_;
 

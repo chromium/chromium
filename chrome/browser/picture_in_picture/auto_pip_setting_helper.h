@@ -11,6 +11,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -70,24 +71,6 @@ class AutoPipSettingHelper {
     kMaxValue = kNotShownIncognito,
   };
 
-  // These values represent the reason for entering picture in picture
-  // automatically and are persisted to logs. Entries should not be renumbered
-  // and numeric values should never be reused.
-  enum class AutoPipReason {
-    // The reason for entering auto picture in picture is not known, or auto
-    // picture in picture has not been triggered.
-    kUnknown = 0,
-
-    // Entered auto picture in picture due to video conferencing (usage of
-    // camera or microphone).
-    kVideoConferencing = 1,
-
-    // Entered auto picture in picture due to media playback.
-    kMediaPlayback = 2,
-
-    kMaxValue = kMediaPlayback,
-  };
-
   using ResultCb =
       base::OnceCallback<void(AutoPipSettingView::UiResult result)>;
   // Convenience function.
@@ -110,8 +93,9 @@ class AutoPipSettingHelper {
 
   // Notify us that the user has closed the window.  This will cause the embargo
   // to be updated if needed.
-  void OnUserClosedWindow(AutoPipReason auto_pip_reason,
-                          std::optional<ukm::SourceId> source_id);
+  void OnUserClosedWindow(
+      media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason,
+      std::optional<ukm::SourceId> source_id);
 
   // Create an AutoPipSettingOverlayView that should be used as the overlay view
   // when the content setting is ASK.  This view will call back to us, so we
@@ -119,7 +103,7 @@ class AutoPipSettingHelper {
   // optionally call `close_pip_cb_` if AutoPiP is blocked.
   std::unique_ptr<AutoPipSettingOverlayView> CreateOverlayViewIfNeeded(
       base::OnceClosure close_pip_cb,
-      AutoPipReason auto_pip_reason,
+      media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason,
       std::optional<ukm::SourceId> source_id,
       views::View* anchor_view,
       views::BubbleBorder::Arrow arrow);
@@ -127,9 +111,11 @@ class AutoPipSettingHelper {
   // Called by the AutoPictureInPictureTabHelper when automatic
   // picture-in-picture has been preemptively blocked. Used to record various
   // `PromptResultV2` metrics.
-  void OnAutoPipBlockedByPermission(AutoPipReason auto_pip_reason,
-                                    std::optional<ukm::SourceId> source_id);
-  void OnAutoPipBlockedByIncognito(AutoPipReason auto_pip_reason);
+  void OnAutoPipBlockedByPermission(
+      media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason,
+      std::optional<ukm::SourceId> source_id);
+  void OnAutoPipBlockedByIncognito(
+      media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason);
 
  private:
   // Returns the content setting, modified as needed by any embargo.
@@ -144,27 +130,31 @@ class AutoPipSettingHelper {
   //
   // `auto_pip_reason` and `source_id` are used for recording various tab helper
   // related metrics.
-  void OnUiResult(base::OnceClosure close_pip_cb,
-                  AutoPipReason auto_pip_reason,
-                  std::optional<ukm::SourceId> source_id,
-                  AutoPipSettingView::UiResult result);
+  void OnUiResult(
+      base::OnceClosure close_pip_cb,
+      media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason,
+      std::optional<ukm::SourceId> source_id,
+      AutoPipSettingView::UiResult result);
 
   // Return a new ResultCb, and invalidate any previous ones.
-  ResultCb CreateResultCb(base::OnceClosure close_pip_cb,
-                          AutoPipReason auto_pip_reason,
-                          std::optional<ukm::SourceId> source_id);
+  ResultCb CreateResultCb(
+      base::OnceClosure close_pip_cb,
+      media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason,
+      std::optional<ukm::SourceId> source_id);
 
   // Record metrics for the result of the prompt.
   //
   // Records the various prompt results and the prompt results for each of the
   // reasons for entering auto picture in picture: video conferencing or media
   // playback.
-  void RecordResult(PromptResult result,
-                    AutoPipReason auto_pip_reason,
-                    std::optional<ukm::SourceId> source_id);
-  void RecordUkms(AutoPipReason auto_pip_reason,
-                  std::optional<ukm::SourceId> source_id,
-                  PromptResult result) const;
+  void RecordResult(
+      PromptResult result,
+      media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason,
+      std::optional<ukm::SourceId> source_id);
+  void RecordUkms(
+      media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason,
+      std::optional<ukm::SourceId> source_id,
+      PromptResult result) const;
 
   GURL origin_;
   const raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;

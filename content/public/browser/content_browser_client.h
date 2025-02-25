@@ -55,6 +55,7 @@
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/window_container_type.mojom-forward.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "media/mojo/mojom/media_service.mojom-forward.h"
 #include "media/mojo/mojom/remoting.mojom-forward.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -2446,6 +2447,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual std::unique_ptr<VideoOverlayWindow>
   CreateWindowForVideoPictureInPicture(
       VideoPictureInPictureWindowController* controller);
+
+  // Returns the reason for entering picture in picture automatically. This is
+  // recorded in metrics.
+  virtual media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipReason(
+      const WebContents& web_contents) const;
 
   // Registers the watcher to observe updates in RendererPreferences.
   virtual void RegisterRendererPreferenceWatcher(

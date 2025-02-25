@@ -26,6 +26,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/javascript_dialog_type.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "media/mojo/services/media_metrics_provider.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -772,6 +773,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // Returns the top-level native window for the associated WebContents.
   virtual gfx::NativeWindow GetOwnerNativeWindow();
+
+  // Gets the delegate reason for entering picture in picture automatically.
+  virtual media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipReason()
+      const;
 
  protected:
   virtual ~RenderFrameHostDelegate() = default;

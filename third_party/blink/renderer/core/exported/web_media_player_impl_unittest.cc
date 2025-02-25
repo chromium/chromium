@@ -435,6 +435,7 @@ class WebMediaPlayerImplTest
         media::MediaMetricsProvider::GetLearningSessionCallback(),
         WTF::BindRepeating(&WebMediaPlayerImplTest::IsShuttingDown,
                            WTF::Unretained(this)),
+        media::PictureInPictureEventsInfo::AutoPipReasonCallback(),
         provider.BindNewPipeAndPassReceiver());
 
     // Initialize provider since none of the tests below actually go through the

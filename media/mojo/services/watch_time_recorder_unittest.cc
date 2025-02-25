@@ -68,6 +68,7 @@ class WatchTimeRecorderTest : public testing::Test {
         MediaMetricsProvider::GetLearningSessionCallback(),
         base::BindRepeating(&WatchTimeRecorderTest::IsShuttingDown,
                             base::Unretained(this)),
+        PictureInPictureEventsInfo::AutoPipReasonCallback(),
         provider_.BindNewPipeAndPassReceiver());
   }
 

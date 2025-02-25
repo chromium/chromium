@@ -41,11 +41,13 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/media_start_stop_observer.h"
 #include "media/base/media_switches.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/media_session/public/cpp/test/audio_focus_test_util.h"
@@ -673,6 +675,12 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
       ASSERT_FALSE(
           ukm_recorder()->EntryHasMetric(entry, not_expected_metric_name));
     }
+  }
+
+  media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipReason(
+      const content::WebContents& web_contents) {
+    return content::GetContentClientForTesting()->browser()->GetAutoPipReason(
+        web_contents);
   }
 
   ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
@@ -1345,6 +1353,63 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
       kVideoConferencingTotalTimeForSessionHistogram);
   EXPECT_EQ(1, samples->TotalCount());
   EXPECT_EQ(1, samples->GetCount(10000));
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       AutoPipReasonSetForDocumentPip_VideoConferencing) {
+  // Load a page that registers for autopip and starts using camera/microphone.
+  LoadCameraMicrophonePage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(web_contents);
+
+  EXPECT_EQ(media::PictureInPictureEventsInfo::AutoPipReason::kUnknown,
+            GetAutoPipReason(*web_contents));
+  SwitchToNewTabAndWaitForAutoPip();
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  ASSERT_NE(nullptr, tab_helper);
+
+  media::PictureInPictureEventsInfo::AutoPipReason expected_reason =
+      media::PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing;
+  EXPECT_EQ(expected_reason, tab_helper->GetAutoPipTriggerReason());
+  EXPECT_EQ(expected_reason, GetAutoPipReason(*web_contents));
+
+  SwitchBackToOpenerAndWaitForPipToClose();
+  expected_reason = media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+  EXPECT_EQ(expected_reason, tab_helper->GetAutoPipTriggerReason());
+  EXPECT_EQ(expected_reason, GetAutoPipReason(*web_contents));
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       AutoPipReasonSetForDocumentPip_Unknown) {
+  // Load a page that registers for autopip and starts using camera/microphone.
+  LoadCameraMicrophonePage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(web_contents);
+
+  media::PictureInPictureEventsInfo::AutoPipReason expected_reason =
+      media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+  EXPECT_EQ(expected_reason, GetAutoPipReason(*web_contents));
+
+  // Open a picture-in-picture window manually.
+  content::MediaStartStopObserver enter_pip_observer(
+      web_contents,
+      content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+  OpenPipManually(web_contents);
+  enter_pip_observer.Wait();
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  ASSERT_NE(nullptr, tab_helper);
+
+  EXPECT_EQ(expected_reason, tab_helper->GetAutoPipTriggerReason());
+  EXPECT_EQ(expected_reason, GetAutoPipReason(*web_contents));
+
+  web_contents->ClosePage();
+  ui_test_utils::WaitForBrowserToClose(browser());
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
@@ -2363,4 +2428,146 @@ IN_PROC_BROWSER_TEST_F(
       kMediaPlaybackTotalTimeForSessionHistogram);
   EXPECT_EQ(1, media_playback_samples->TotalCount());
   EXPECT_EQ(1, media_playback_samples->GetCount(5000));
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       AutoPipReasonSetForVideoPip_MediaPlayback) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoVideoPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
+
+  EXPECT_EQ(media::PictureInPictureEventsInfo::AutoPipReason::kUnknown,
+            GetAutoPipReason(*web_contents));
+  SwitchToNewTabAndWaitForAutoPip();
+  EXPECT_TRUE(web_contents->HasPictureInPictureVideo());
+
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  ASSERT_NE(nullptr, tab_helper);
+
+  media::PictureInPictureEventsInfo::AutoPipReason expected_reason =
+      media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback;
+  EXPECT_EQ(expected_reason, tab_helper->GetAutoPipTriggerReason());
+  EXPECT_EQ(expected_reason, GetAutoPipReason(*web_contents));
+
+  SwitchBackToOpenerAndWaitForPipToClose();
+  expected_reason = media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+  EXPECT_EQ(expected_reason, tab_helper->GetAutoPipTriggerReason());
+  EXPECT_EQ(expected_reason, GetAutoPipReason(*web_contents));
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       AutoPipReasonSetForDocumentPip_MediaPlayback) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoDocumentPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
+
+  EXPECT_EQ(media::PictureInPictureEventsInfo::AutoPipReason::kUnknown,
+            GetAutoPipReason(*web_contents));
+  SwitchToNewTabAndWaitForAutoPip();
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  ASSERT_NE(nullptr, tab_helper);
+
+  media::PictureInPictureEventsInfo::AutoPipReason expected_reason =
+      media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback;
+  EXPECT_EQ(expected_reason, tab_helper->GetAutoPipTriggerReason());
+  EXPECT_EQ(expected_reason, GetAutoPipReason(*web_contents));
+
+  SwitchBackToOpenerAndWaitForPipToClose();
+  expected_reason = media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+  EXPECT_EQ(expected_reason, tab_helper->GetAutoPipTriggerReason());
+  EXPECT_EQ(expected_reason, GetAutoPipReason(*web_contents));
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       AutoPipReasonSetForDocumentPip_Unknown) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoDocumentPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
+
+  media::PictureInPictureEventsInfo::AutoPipReason expected_reason =
+      media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+  EXPECT_EQ(expected_reason, GetAutoPipReason(*web_contents));
+  // Open a picture-in-picture window manually.
+  content::MediaStartStopObserver enter_pip_observer(
+      web_contents,
+      content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+  OpenPipManually(web_contents);
+  enter_pip_observer.Wait();
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  ASSERT_NE(nullptr, tab_helper);
+
+  EXPECT_EQ(expected_reason, tab_helper->GetAutoPipTriggerReason());
+  EXPECT_EQ(expected_reason, GetAutoPipReason(*web_contents));
+
+  web_contents->ClosePage();
+  ui_test_utils::WaitForBrowserToClose(browser());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       AutoPipReasonIsResetForDocumentPip_Unknown) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoDocumentPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
+
+  EXPECT_EQ(media::PictureInPictureEventsInfo::AutoPipReason::kUnknown,
+            GetAutoPipReason(*web_contents));
+  SwitchToNewTabAndWaitForAutoPip();
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  ASSERT_NE(nullptr, tab_helper);
+
+  media::PictureInPictureEventsInfo::AutoPipReason expected_reason =
+      media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback;
+  EXPECT_EQ(expected_reason, tab_helper->GetAutoPipTriggerReason());
+  EXPECT_EQ(expected_reason, GetAutoPipReason(*web_contents));
+
+  auto* pip_web_contents =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_web_contents);
+
+  // Closing the picture in picture window, without returning to the opener,
+  // should reset the `auto_pip_trigger_reason_` to
+  // `media::PictureInPictureEventsInfo::AutoPipReason::kUnknown`.
+  {
+    content::MediaStartStopObserver exit_pip_observer(
+        web_contents,
+        content::MediaStartStopObserver::Type::kExitPictureInPicture);
+    pip_web_contents->ClosePage();
+    exit_pip_observer.Wait();
+  }
+
+  expected_reason = media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+  EXPECT_EQ(expected_reason, tab_helper->GetAutoPipTriggerReason());
+  EXPECT_EQ(expected_reason, GetAutoPipReason(*web_contents));
+
+  CloseBrowserSynchronously(browser());
 }

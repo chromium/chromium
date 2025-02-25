@@ -13,6 +13,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -149,6 +150,15 @@ class AutoPictureInPictureTabHelper
     clock_ = testing_clock;
   }
 
+  void set_auto_pip_trigger_reason_for_testing(
+      media::PictureInPictureEventsInfo::AutoPipReason
+          auto_pip_trigger_reason) {
+    auto_pip_trigger_reason_ = auto_pip_trigger_reason;
+  }
+
+  media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipTriggerReason()
+      const;
+
  private:
   explicit AutoPictureInPictureTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutoPictureInPictureTabHelper>;
@@ -232,9 +242,12 @@ class AutoPictureInPictureTabHelper
   //
   // Note that a media element can meet both, the "video conferencing" and
   // "media playback" conditions. If both conditions are met, this method will
-  // return the "video conferencing" histogram. If no
-  // conditions are met, `AutoPipReason::kUnknown` will be returned.
-  AutoPipSettingHelper::AutoPipReason GetAutoPipReason() const;
+  // return
+  // "media::PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing". If
+  // no conditions are met,
+  // `Autmedia::PictureInPictureEventsInfo::AutoPipReasonPipReason::kUnknown`
+  // will be returned.
+  media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipReason() const;
 
   // Accumulates the total time spent in picture in picture during the lifetime
   // of `this`, separated by the reason for entering auto picture in picture:
@@ -362,10 +375,9 @@ class AutoPictureInPictureTabHelper
   raw_ptr<const base::TickClock> clock_;
 
   // Stores the reason that triggered auto picture in picture. The value is
-  // updated during `MaybeEnterAutoPictureInPicture` and
-  // `MaybeExitAutoPictureInPicture`.
-  AutoPipSettingHelper::AutoPipReason auto_pip_trigger_reason_ =
-      AutoPipSettingHelper::AutoPipReason::kUnknown;
+  // updated as needed when entering/exiting picture in picture.
+  media::PictureInPictureEventsInfo::AutoPipReason auto_pip_trigger_reason_ =
+      media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
 
   // Set to true if auto picture in picture was blocked due to content setting
   // or incognito, false otherwise. The value is used to prevent recording

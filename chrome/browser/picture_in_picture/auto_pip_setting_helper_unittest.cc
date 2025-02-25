@@ -14,6 +14,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -24,7 +25,7 @@ using testing::AtLeast;
 using testing::Return;
 
 using UiResult = AutoPipSettingView::UiResult;
-using AutoPipReason = AutoPipSettingHelper::AutoPipReason;
+using AutoPipReason = media::PictureInPictureEventsInfo::AutoPipReason;
 
 namespace {
 

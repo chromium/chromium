@@ -62,6 +62,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_capability_type.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -940,6 +941,9 @@ class CONTENT_EXPORT WebContentsImpl
       const std::vector<blink::mojom::DraggableRegionPtr>& regions) override;
   void OnFirstContentfulPaintInPrimaryMainFrame() override;
   gfx::NativeWindow GetOwnerNativeWindow() override;
+
+  media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipReason()
+      const override;
 
   // RenderViewHostDelegate ----------------------------------------------------
   RenderViewHostDelegateView* GetDelegateView() override;
