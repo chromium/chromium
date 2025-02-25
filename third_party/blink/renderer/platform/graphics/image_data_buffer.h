@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -59,9 +58,6 @@ class PLATFORM_EXPORT ImageDataBuffer {
                    Vector<unsigned char>* encoded_image) const;
 
   base::span<const uint8_t> PixelData() const;
-  const gfx::Size& size() const { return size_; }
-  int Height() const { return size_.height(); }
-  int Width() const { return size_.width(); }
 
  private:
   ImageDataBuffer(const SkPixmap&);
@@ -77,7 +73,6 @@ class PLATFORM_EXPORT ImageDataBuffer {
   sk_sp<SkImage> retained_image_;
   SkPixmap pixmap_;
   bool is_valid_ = false;
-  gfx::Size size_;
 };
 
 }  // namespace blink
