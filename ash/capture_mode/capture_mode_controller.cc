@@ -971,11 +971,7 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
 void CaptureModeController::StartSunfishSession() {
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kSunfishScreenEnteredViaShortcut);
-  DCHECK(IsSunfishSessionAllowed());
-  if (!capture_mode_util::GetActiveUserPrefService()->GetBoolean(
-          prefs::kSunfishEnabled)) {
-    return;
-  }
+  CHECK(IsSunfishSessionAllowed());
   // Close the launcher nudge if it is still visible.
   AnchoredNudgeManager::Get()->Cancel(capture_mode::kSunfishLauncherNudgeId);
   StartInternal(
