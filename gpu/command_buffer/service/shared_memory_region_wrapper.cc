@@ -132,6 +132,15 @@ size_t SharedMemoryRegionWrapper::GetStride(int plane_index) const {
   return planes_[plane_index].stride;
 }
 
+base::span<const uint8_t> SharedMemoryRegionWrapper::GetMemoryPlanes() const {
+  DCHECK(IsValid());
+  auto full_mapped_span =
+      base::span(mapping_.GetMemoryAs<const uint8_t>(), mapping_.mapped_size());
+  // It is possible that the first plane starts at a non-zero offset. So we
+  // subspan at this offset.
+  return full_mapped_span.subspan(planes_[0].offset);
+}
+
 SkPixmap SharedMemoryRegionWrapper::MakePixmapForPlane(const SkImageInfo& info,
                                                        int plane_index) const {
   DCHECK(IsValid());

@@ -48,6 +48,8 @@ class GPU_GLES2_EXPORT SharedMemoryRegionWrapper {
   // Returns SkPixmap pointing to memory for offset.
   SkPixmap MakePixmapForPlane(const SkImageInfo& info, int plane_index) const;
 
+  base::span<const uint8_t> GetMemoryPlanes() const;
+
   const base::UnguessableToken& GetMappingGuid() const;
 
  private:

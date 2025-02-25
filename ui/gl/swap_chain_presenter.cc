@@ -546,9 +546,9 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
 
 Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
     const gfx::Size& texture_size,
-    const uint8_t* shm_video_pixmap,
+    base::span<const uint8_t> shm_video_pixmap,
     size_t pixmap_stride) {
-  if (!shm_video_pixmap) {
+  if (!shm_video_pixmap.data()) {
     DLOG(ERROR) << "Invalid NV12 pixmap data.";
     return nullptr;
   }
@@ -622,26 +622,24 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
   size_t dest_stride = mapped_resource.RowPitch;
   DCHECK_GE(dest_stride, cols);
   // y-plane size.
-  size_t src_size = pixmap_stride * rows;
+
   size_t dest_size = dest_stride * rows;
   if (rows / 2 > 0) {
     // uv-plane size. Note that the last row is actual texture width, not
     // the stride.
-    src_size += pixmap_stride * (rows / 2 - 1) + cols;
     dest_size += dest_stride * (rows / 2 - 1) + cols;
   }
-  base::span<const uint8_t> src =
-      UNSAFE_TODO(base::span(shm_video_pixmap, src_size));
+
   // SAFETY: required from Map() call result.
   base::span<uint8_t> dest = UNSAFE_BUFFERS(
       base::span(reinterpret_cast<uint8_t*>(mapped_resource.pData), dest_size));
   for (size_t y = 0; y < rows; ++y) {
-    auto src_row = src.subspan(pixmap_stride * y, cols);
+    auto src_row = shm_video_pixmap.subspan(pixmap_stride * y, cols);
     auto dest_row = dest.subspan(dest_stride * y, cols);
     dest_row.copy_prefix_from(src_row);
   }
 
-  auto uv_src = src.subspan(pixmap_stride * rows);
+  auto uv_src = shm_video_pixmap.subspan(pixmap_stride * rows);
   auto uv_dest = dest.subspan(dest_stride * rows);
   for (size_t y = 0; y < rows / 2; ++y) {
     auto src_row = uv_src.subspan(pixmap_stride * y, cols);
