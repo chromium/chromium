@@ -3835,7 +3835,7 @@
       name: "ScrollbarWidth",
       status: "stable",
     },
-    // Killswitch in M134.
+    // Killswitch added in M134, changed in M135.
     {
       name: "ScrollCullRectFromContainerRect",
       status: "stable",

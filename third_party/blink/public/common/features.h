@@ -437,6 +437,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
 // use a minimal cull rect expansion instead of the above expansion.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                                kSmallScrollersUseMinCullRect);
+// Parameter for ChangedEnoughMinimumDistance() in cull_rect.cc.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kCullRectChangedEnoughDistance);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFencedFrames);
 

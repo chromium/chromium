@@ -9413,6 +9413,30 @@
             ]
         }
     ],
+    "ExpandCompositedCullRect": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "LargeChangedEnough",
+                    "params": {
+                        "changed_enough": "1024"
+                    },
+                    "enable_features": [
+                        "ExpandCompositedCullRect"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExploreSitesDense": [
         {
             "platforms": [

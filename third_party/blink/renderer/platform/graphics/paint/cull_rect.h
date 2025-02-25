@@ -87,6 +87,7 @@ class PLATFORM_EXPORT CullRect {
   bool ChangedEnough(const std::pair<bool, bool>& expanded,
                      const CullRect& old_cull_rect,
                      const std::optional<gfx::Rect>& expansion_bounds,
+                     const TransformPaintPropertyNode& local_transform,
                      float expansion_ratio) const;
 
   gfx::Rect rect_;

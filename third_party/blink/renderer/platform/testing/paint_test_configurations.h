@@ -22,7 +22,8 @@ class CullRectTestConfig {
  public:
   CullRectTestConfig() {
     feature_.InitAndEnableFeatureWithParameters(
-        features::kExpandCompositedCullRect, {{"pixels", "4000"}});
+        features::kExpandCompositedCullRect,
+        {{"pixels", "4000"}, {"changed_enough", "512"}});
   }
 
  private:
