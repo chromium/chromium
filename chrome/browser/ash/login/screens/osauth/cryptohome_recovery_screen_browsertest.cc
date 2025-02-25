@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, SuccessfulRecovery) {
   EXPECT_TRUE(IsMounted());
 }
 
-// Verifies that recovery is skipped and GaiaPasswordChangedScreen is shown when
+// Verifies that recovery is skipped and EnterOldPasswordScreen is shown when
 // recovery factor is not configured.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenNoRecoveryTest,
                        NoRecoveryFactor) {
