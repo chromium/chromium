@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/core/paint/svg_shape_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
-#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
+#include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/point_f.h"
 

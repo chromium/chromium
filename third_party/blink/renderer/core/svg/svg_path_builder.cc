@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/svg/svg_path_builder.h"
 
 #include "base/notreached.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 
 namespace blink {
 

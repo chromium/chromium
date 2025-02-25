@@ -26,12 +26,12 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_STROKE_DATA_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_STROKE_DATA_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_STROKE_DATA_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_STROKE_DATA_H_
 
 #include "cc/paint/paint_flags.h"
-#include "third_party/blink/renderer/platform/graphics/dash_array.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/geometry/dash_array.h"
+#include "third_party/blink/renderer/platform/geometry/path_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -76,4 +76,4 @@ class PLATFORM_EXPORT StrokeData final {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_STROKE_DATA_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_STROKE_DATA_H_

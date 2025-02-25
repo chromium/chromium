@@ -26,12 +26,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATH_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATH_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PATH_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PATH_H_
 
 #include "base/memory/raw_span.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/geometry/path_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -45,7 +45,7 @@ class PointF;
 class QuadF;
 class RectF;
 class Vector2dF;
-}
+}  // namespace gfx
 
 namespace blink {
 
@@ -222,4 +222,4 @@ PLATFORM_EXPORT bool EllipseIsRenderable(float start_angle, float end_angle);
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATH_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PATH_H_

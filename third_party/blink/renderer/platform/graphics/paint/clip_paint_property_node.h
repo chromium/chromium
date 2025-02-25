@@ -10,10 +10,10 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper_clip_cache.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {

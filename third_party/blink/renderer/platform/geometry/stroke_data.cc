@@ -26,7 +26,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
+#include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 
 #include <memory>
 
@@ -42,8 +42,9 @@ void StrokeData::SetLineDash(const DashArray& dashes, float dash_offset) {
   wtf_size_t count = !(dash_length % 2) ? dash_length : dash_length * 2;
   auto intervals = std::make_unique<SkScalar[]>(count);
 
-  for (wtf_size_t i = 0; i < count; i++)
+  for (wtf_size_t i = 0; i < count; i++) {
     intervals[i] = dashes[i % dash_length];
+  }
 
   dash_ = cc::PathEffect::MakeDash(intervals.get(), count, dash_offset);
 }

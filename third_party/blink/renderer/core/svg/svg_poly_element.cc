@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/core/svg/svg_poly_element.h"
 
 #include "third_party/blink/renderer/core/svg/svg_animated_point_list.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {

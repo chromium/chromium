@@ -9,7 +9,7 @@
 
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {

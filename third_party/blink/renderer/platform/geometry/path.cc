@@ -27,12 +27,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 
 #include <math.h>
 
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
-#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
+#include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
+#include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
@@ -147,14 +147,16 @@ bool Path::operator==(const Path& other) const {
 }
 
 bool Path::Contains(const gfx::PointF& point) const {
-  if (!std::isfinite(point.x()) || !std::isfinite(point.y()))
+  if (!std::isfinite(point.x()) || !std::isfinite(point.y())) {
     return false;
+  }
   return path_.contains(SkScalar(point.x()), SkScalar(point.y()));
 }
 
 bool Path::Contains(const gfx::PointF& point, WindRule rule) const {
-  if (!std::isfinite(point.x()) || !std::isfinite(point.y()))
+  if (!std::isfinite(point.x()) || !std::isfinite(point.y())) {
     return false;
+  }
   SkScalar x = point.x();
   SkScalar y = point.y();
   SkPathFillType fill_type = WebCoreWindRuleToSkFillType(rule);
@@ -201,8 +203,9 @@ SkPath Path::StrokePath(const StrokeData& stroke_data,
 bool Path::StrokeContains(const gfx::PointF& point,
                           const StrokeData& stroke_data,
                           const AffineTransform& transform) const {
-  if (!std::isfinite(point.x()) || !std::isfinite(point.y()))
+  if (!std::isfinite(point.x()) || !std::isfinite(point.y())) {
     return false;
+  }
   return StrokePath(stroke_data, transform)
       .contains(SkScalar(point.x()), SkScalar(point.y()));
 }
@@ -364,8 +367,9 @@ PointAndTangent Path::PositionCalculator::PointAndNormalAtLength(float length) {
 
     std::optional<PointAndTangent> result = CalculatePointAndNormalOnPath(
         path_measure_, accumulated_length_, sk_length);
-    if (result)
+    if (result) {
       return *result;
+    }
   }
   return {gfx::SkPointToPointF(path_.getPoint(0)), 0};
 }
@@ -563,8 +567,9 @@ void Path::AddEllipse(const gfx::PointF& center,
 }
 
 void Path::AddRoundedRect(const FloatRoundedRect& rect, bool clockwise) {
-  if (rect.IsEmpty())
+  if (rect.IsEmpty()) {
     return;
+  }
 
   if (rect.HasSimpleRoundedCurvature()) {
     path_.addRRect(SkRRect(rect),
