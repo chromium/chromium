@@ -27,6 +27,7 @@ import sys
 import subprocess
 import tempfile
 from urllib import request
+import zipfile
 
 _ANDROIDX_PATH = os.path.normpath(os.path.join(__file__, '..'))
 _CIPD_PATH = os.path.join(_ANDROIDX_PATH, 'cipd')
@@ -335,6 +336,28 @@ def main():
                      yaml_path,
                      experimental=bool(args.local_repo))
 
+    to_commit_paths = []
+    for root, _, files in os.walk(libs_dir):
+        for file in files:
+            # Avoid committing actual artifacts.
+            if file.endswith(('.aar', '.jar')):
+                continue
+            file_path = os.path.join(root, file)
+            file_path_in_committed = os.path.relpath(file_path, _CIPD_PATH)
+            to_commit_paths.append((file_path, file_path_in_committed))
+
+    files_in_tree = [
+        'additional_readme_paths.json', 'BUILD.gn', 'build.gradle'
+    ]
+    for file in files_in_tree:
+        file_path = os.path.join(_CIPD_PATH, file)
+        to_commit_paths.append(
+            (file_path, f'CHROMIUM_SRC/third_party/androidx/{file}'))
+
+    to_commit_zip_path = os.path.join(_CIPD_PATH, 'to_commit.zip')
+    with zipfile.ZipFile(to_commit_zip_path, 'w') as zip_file:
+        for filename, arcname in to_commit_paths:
+            zip_file.write(filename, arcname=arcname)
 
 if __name__ == '__main__':
     main()
