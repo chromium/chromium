@@ -69,6 +69,9 @@ class EditorPanelManager {
 
   // Invoked when the magic boost promo card is explicitly declined by the user.
   virtual void OnMagicBoostPromoCardDeclined() = 0;
+
+  // Determines if editor should require an opt-in.
+  virtual bool ShouldOptInEditor() = 0;
 };
 
 // Interface to handle communication between the context menu editor panel entry
@@ -132,6 +135,8 @@ class EditorPanelManagerImpl : public EditorPanelManager {
   // Used by the Magic Boost opt-in flow. Virtual for testing.
   void OnConsentApproved() override;
   void OnMagicBoostPromoCardDeclined() override;
+
+  bool ShouldOptInEditor() override;
 
   // For testing
   void SetEditorClientForTesting(

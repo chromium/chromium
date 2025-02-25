@@ -18,6 +18,7 @@ class FakeMagicBoostState : public chromeos::MagicBoostState {
   void AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus consent_status) override;
   void AsyncWriteHMREnabled(bool enabled) override;
+  bool ShouldIncludeOrcaInOptInSync() override;
   void DisableOrcaFeature() override {}
   void DisableLobsterSettings() override {}
 

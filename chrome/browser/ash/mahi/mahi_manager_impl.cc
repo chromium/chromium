@@ -812,7 +812,9 @@ void MahiManagerImpl::InterrputRequestHandlingWithDisclaimerView(
   ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
       display_id,
       crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
-      OptInFeatures::kOrcaAndHmr);
+      chromeos::MagicBoostState::Get()->ShouldIncludeOrcaInOptInSync()
+          ? OptInFeatures::kOrcaAndHmr
+          : OptInFeatures::kHmrOnly);
 }
 
 void MahiManagerImpl::OnGetPageContent(

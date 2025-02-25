@@ -13,6 +13,10 @@ bool FakeMagicBoostState::IsMagicBoostAvailable() {
   return is_magic_boost_available_;
 }
 
+bool FakeMagicBoostState::ShouldIncludeOrcaInOptInSync() {
+  return false;
+}
+
 bool FakeMagicBoostState::CanShowNoticeBannerForHMR() {
   return false;
 }

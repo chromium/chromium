@@ -66,6 +66,7 @@ class TestMagicBoostState : public chromeos::MagicBoostState {
     UpdateHMRConsentStatus(consent_status);
   }
 
+  bool ShouldIncludeOrcaInOptInSync() override { return false; }
   bool IsMagicBoostAvailable() override { return true; }
   bool CanShowNoticeBannerForHMR() override { return false; }
   int32_t AsyncIncrementHMRConsentWindowDismissCount() override { return 0; }

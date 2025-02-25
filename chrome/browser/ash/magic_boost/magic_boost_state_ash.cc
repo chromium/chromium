@@ -98,6 +98,10 @@ void MagicBoostStateAsh::ShouldIncludeOrcaInOptIn(
       std::move(callback)));
 }
 
+bool MagicBoostStateAsh::ShouldIncludeOrcaInOptInSync() {
+  return GetEditorPanelManager()->ShouldOptInEditor();
+}
+
 void MagicBoostStateAsh::DisableOrcaFeature() {
   GetEditorPanelManager()->OnMagicBoostPromoCardDeclined();
 }
