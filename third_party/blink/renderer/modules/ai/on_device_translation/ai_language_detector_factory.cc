@@ -7,9 +7,11 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
+#include "third_party/blink/renderer/modules/ai/ai_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector.h"
+#include "third_party/blink/renderer/platform/language_detection/language_detection_model.h"
 
 namespace blink {
 
@@ -117,6 +119,42 @@ void AILanguageDetectorFactory::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(language_detection_model_);
   visitor->Trace(language_detection_driver_);
+}
+
+ScriptPromise<V8AIAvailability> AILanguageDetectorFactory::availability(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The execution context is not valid.");
+    return EmptyPromise();
+  }
+
+  ScriptPromiseResolver<V8AIAvailability>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<V8AIAvailability>>(
+          script_state);
+  ScriptPromise<V8AIAvailability> promise = resolver->Promise();
+  ExecutionContext* execution_context = GetExecutionContext();
+
+  GetLanguageDetectionDriverRemote()->GetLanguageDetectionModelStatus(
+      WTF::BindOnce(
+          [](RejectOnDestructionHelper<V8AIAvailability> resolver_holder,
+             ExecutionContext* execution_context,
+             language_detection::mojom::blink::LanguageDetectionModelStatus
+                 result) {
+            if (!execution_context) {
+              return;
+            }
+            auto resolver(resolver_holder.Take());
+            AIAvailability availability =
+                HandleLanguageDetectionModelCheckResult(execution_context,
+                                                        result);
+            resolver->Resolve(AIAvailabilityToV8(availability));
+          },
+          RejectOnDestructionHelper(resolver),
+          WrapWeakPersistent(execution_context)));
+
+  return promise;
 }
 
 ScriptPromise<AILanguageDetector> AILanguageDetectorFactory::create(

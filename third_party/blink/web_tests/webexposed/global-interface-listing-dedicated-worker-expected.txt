@@ -30,6 +30,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method languageAvailable
 [Worker] interface AILanguageDetectorFactory
 [Worker]     attribute @@toStringTag
+[Worker]     method availability
 [Worker]     method capabilities
 [Worker]     method constructor
 [Worker]     method create
