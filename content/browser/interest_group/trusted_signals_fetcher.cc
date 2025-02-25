@@ -22,6 +22,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -352,10 +353,13 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
   trusted_signals_url_ = trusted_signals_url;
   callback_ = std::move(callback);
 
+  uint32_t key_id = 0;
+  DCHECK(base::HexStringToUInt(
+      std::string_view(bidding_and_auction_key.id).substr(0, 2), &key_id));
   // Add encryption for request body.
   auto maybe_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-      bidding_and_auction_key.id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
-      EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM);
+      key_id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+      EVP_HPKE_AES_256_GCM);
   CHECK(maybe_key_config.ok());
 
   auto maybe_ciphertext_request_body =
