@@ -412,6 +412,8 @@ source_set("browser_sources") {
     "offscreen_document_host.h",
     "path_util.cc",
     "path_util.h",
+    "pending_extension_info.cc",
+    "pending_extension_info.h",
     "permissions_manager.cc",
     "permissions_manager.h",
     "policy_check.cc",
