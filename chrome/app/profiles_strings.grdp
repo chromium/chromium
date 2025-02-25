@@ -726,7 +726,31 @@
       No, continue to use for school in this profile
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
-      You currently have bookmarks, extensions, and your browsing history of sites. Your organization will be able to see and manage this data
+      Your organization will be able to see and manage any existing browsing data, such as passwords and more
+    </message>
+    <message name="IDS_BROWSING_HISTORY_COUNT" desc="Text describing the number of browsing history entries">
+      {BROWSING_HISTORY_COUNT, plural,
+        =1 {your browsing history of # site}
+        other {your browsing history of # sites}}
+    </message>
+    <message name="IDS_BOOKMARKS_COUNT" desc="Text describing the number of bookmarks">
+      {BOOKMARKS_COUNT, plural,
+        =1 {# extension}
+        other {# extensions}}
+    </message>
+    <message name="IDS_EXTENSIONS_COUNT" desc="Text describing the number of extensions">
+      {EXTENSIONS_COUNT, plural,
+        =1 {# bookmark}
+        other {# bookmarks}}
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_THREE_COUNTS_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
+      You currently have <ph name="NUMBERED_ITEM_1">$1<ex>10 bookmarks</ex></ph>, <ph name="NUMBERED_ITEM_2">$2<ex>10 extensions</ex></ph>, <ph name="NUMBERED_ITEM_3">$3<ex>your browsing history of 5 sites</ex></ph>, and more
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_TWO_COUNTS_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
+      You currently have <ph name="NUMBERED_ITEM_1">$1<ex>10 bookmarks</ex></ph>, <ph name="NUMBERED_ITEM_2">$2<ex>10 extensions</ex></ph>, and more
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_ONE_COUNT_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user add their existing data from a newly created work profile.">
+      You currently have <ph name="NUMBERED_ITEM">$1<ex>10 bookmarks</ex></ph>, and more
     </message>
 
     <!-- Supervised user profile signin IPH -->

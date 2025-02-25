@@ -16,6 +16,9 @@
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_statistics.h"
+#include "chrome/browser/profiles/profile_statistics_common.h"
+#include "chrome/browser/profiles/profile_statistics_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -32,6 +35,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "extensions/browser/extension_registry.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -325,6 +329,13 @@ void ManagedUserProfileNoticeUI::Initialize(
                 : IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_WORK_NOT_RECOMMENDED));
   }
 
+  if (create_param->show_link_data_option) {
+    ProfileStatisticsFactory::GetForProfile(profile)->GatherStatistics(
+        base::BindRepeating(
+            &ManagedUserProfileNoticeUI::UpdateBrowsingDataStringWithCounts,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+
   content::WebUIDataSource::Update(
       profile, chrome::kChromeUIManagedUserProfileNoticeHost,
       std::move(update_data));
@@ -339,6 +350,74 @@ void ManagedUserProfileNoticeUI::Initialize(
 ManagedUserProfileNoticeHandler*
 ManagedUserProfileNoticeUI::GetHandlerForTesting() {
   return handler_;
+}
+
+void ManagedUserProfileNoticeUI::UpdateBrowsingDataStringWithCounts(
+    profiles::ProfileCategoryStats stats) {
+  int browsing_history_count = 0;
+  int bookmarks_count = 0;
+  int extensions_count = 0;
+
+  for (const auto& stat : stats) {
+    if (stat.category == profiles::kProfileStatisticsBrowsingHistory) {
+      browsing_history_count = stat.count;
+    } else if (stat.category == profiles::kProfileStatisticsBookmarks) {
+      bookmarks_count = stat.count;
+    }
+  }
+  auto* profile = Profile::FromWebUI(web_ui());
+  auto* registry = extensions::ExtensionRegistry::Get(profile);
+  extensions_count = registry->enabled_extensions().size() +
+                     registry->disabled_extensions().size() +
+                     registry->terminated_extensions().size() +
+                     registry->blocklisted_extensions().size() +
+                     registry->blocked_extensions().size();
+
+  std::vector<std::u16string> string_replacements;
+  if (bookmarks_count > 0) {
+    string_replacements.push_back(
+        l10n_util::GetPluralStringFUTF16(IDS_BOOKMARKS_COUNT, bookmarks_count));
+  }
+  if (extensions_count > 0) {
+    string_replacements.push_back(l10n_util::GetPluralStringFUTF16(
+        IDS_EXTENSIONS_COUNT, extensions_count));
+  }
+  if (browsing_history_count > 0) {
+    string_replacements.push_back(l10n_util::GetPluralStringFUTF16(
+        IDS_BROWSING_HISTORY_COUNT, browsing_history_count));
+  }
+
+  if (string_replacements.empty()) {
+    return;
+  }
+
+  base::Value::Dict update_data;
+  std::u16string browsing_data_string;
+  if (string_replacements.size() == 1) {
+    update_data.Set(
+        "mergeBrowsingDataChoiceDetails",
+        l10n_util::GetStringFUTF16(
+            IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_ONE_COUNT_CHOICE_DETAILS,
+            string_replacements, nullptr));
+  }
+  if (string_replacements.size() == 2) {
+    update_data.Set(
+        "mergeBrowsingDataChoiceDetails",
+        l10n_util::GetStringFUTF16(
+            IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_TWO_COUNTS_CHOICE_DETAILS,
+            string_replacements, nullptr));
+  }
+  if (string_replacements.size() == 3) {
+    update_data.Set(
+        "mergeBrowsingDataChoiceDetails",
+        l10n_util::GetStringFUTF16(
+            IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_THREE_COUNTS_CHOICE_DETAILS,
+            string_replacements, nullptr));
+  }
+
+  content::WebUIDataSource::Update(
+      profile, chrome::kChromeUIManagedUserProfileNoticeHost,
+      std::move(update_data));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ManagedUserProfileNoticeUI)
