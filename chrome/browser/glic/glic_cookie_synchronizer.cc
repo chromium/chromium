@@ -11,14 +11,12 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_switches.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/multilogin_parameters.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -221,12 +219,6 @@ void GlicCookieSynchronizer::CopyCookiesToWebviewStoragePartition(
   if (!GetStoragePartition()) {
     DLOG(ERROR) << "glic webview storage partition does not exist";
     CompleteAuth(false);
-    return;
-  }
-
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(::switches::kGlicDev)) {
-    CompleteAuth(/*is_success=*/true);
     return;
   }
 
