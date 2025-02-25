@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/buildflag.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -439,7 +440,7 @@ class ViewTransitionCaptureTest
 };
 
 IN_PROC_BROWSER_TEST_P(ViewTransitionCaptureTest,
-                       DISABLED_ViewTransitionNoArtifactDuringCapture) {
+                       ViewTransitionNoArtifactDuringCapture) {
   GURL test_url(embedded_test_server()->GetURL(GetParam()));
   auto* web_contents = shell()->web_contents();
   web_contents->Resize({0, 0, 20, 20});
@@ -469,8 +470,19 @@ IN_PROC_BROWSER_TEST_P(ViewTransitionCaptureTest,
   auto after_bitmap = TakeScreenshot();
   ASSERT_EQ(before_bitmap.width(), after_bitmap.width());
   ASSERT_EQ(before_bitmap.height(), after_bitmap.height());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  cc::FuzzyPixelComparator comparator;
+  // Allow 50% of pixels to different by at most 3 in all channels.
+  // The small differences on ChromeOS seem to be noise, and don't invalidate
+  // the test intent.
+  comparator.SetAbsErrorLimit(255, 3);
+  comparator.SetErrorPixelsPercentageLimit(0, 50);
+  EXPECT_TRUE(cc::MatchesBitmap(after_bitmap, before_bitmap, comparator));
+#else
   EXPECT_TRUE(cc::MatchesBitmap(after_bitmap, before_bitmap,
                                 cc::ExactPixelComparator()));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 INSTANTIATE_TEST_SUITE_P(
