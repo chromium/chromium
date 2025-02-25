@@ -762,7 +762,7 @@ CGFloat const kContentOptimalWidth = 327;
   return newSize;
 }
 
-// Selector of self.actionButton and link in caption text view.
+// Selector of `self.actionButton` and link in caption text view.
 - (void)didTapActionButton {
   [self.delegate openApplicationSettings];
 }

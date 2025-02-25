@@ -16,7 +16,7 @@ source_set("passwords_in_other_apps") {
     "//ios/chrome/browser/settings/ui_bundled/password/reauthentication:reauthentication_delegate",
     "//ios/chrome/browser/settings/ui_bundled/utils",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/public/provider/chrome/browser/password_auto_fill:password_auto_fill_api",
+    "//ios/chrome/browser/shared/coordinator/utils",
   ]
 }
 

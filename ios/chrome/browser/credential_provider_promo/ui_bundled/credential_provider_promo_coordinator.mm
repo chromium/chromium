@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_ui_handler.h"
+#import "ios/chrome/browser/shared/coordinator/utils/credential_provider_settings_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -24,7 +25,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
-#import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
 
 @interface CredentialProviderPromoCoordinator () <
     ConfirmationAlertActionHandler,
@@ -139,7 +139,7 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
     [self presentLearnMore];
     [self recordAction:IOSCredentialProviderPromoAction::kLearnMore];
   } else {
-    [self openiOSSettings];
+    OpenIOSCredentialProviderSettings();
     [self recordAction:IOSCredentialProviderPromoAction::kGoToSettings];
     [self promoWasDismissed];
   }
@@ -192,21 +192,6 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
   [topViewController presentViewController:self.viewController
                                   animated:YES
                                 completion:nil];
-}
-
-// Opens the iOS settings for the user to set the app as a credential provider.
-// Directly opens the iOS credential provider settings when the API is
-// available. Otherwise, opens the iOS settings homepage.
-- (void)openiOSSettings {
-  if (@available(iOS 17.0, *)) {
-    if (IOSPasskeysM2Enabled()) {
-      [ASSettingsHelper
-          openCredentialProviderAppSettingsWithCompletionHandler:nil];
-      return;
-    }
-  }
-
-  ios::provider::PasswordsInOtherAppsOpensSettings();
 }
 
 // Dismisses the feature.
