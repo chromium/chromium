@@ -77,6 +77,8 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void ResetAccessibilityMode() override;
   void OnScreenReaderDetected() override;
   void OnScreenReaderStopped() override;
+  void SetKnownScreenReaderAppActive(bool is_active) override;
+  bool IsKnownScreenReaderAppActive() override;
   bool IsAccessibleBrowser() override;
   void AddUIThreadHistogramCallback(base::OnceClosure callback) override;
   void AddOtherThreadHistogramCallback(base::OnceClosure callback) override;

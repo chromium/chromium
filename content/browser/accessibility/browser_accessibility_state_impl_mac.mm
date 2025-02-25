@@ -17,6 +17,9 @@
 namespace content {
 
 namespace {
+
+bool g_voiceover = false;
+
 void SetUpAccessibilityNotifications() {
   // We need to call into gfx::Animation and WebContentsImpl on the UI thread,
   // so ensure that we setup the notification on the correct thread.
@@ -61,6 +64,8 @@ class BrowserAccessibilityStateImplMac : public BrowserAccessibilityStateImpl {
   void InitBackgroundTasks() override;
   void UpdateHistogramsOnOtherThread() override;
   void UpdateUniqueUserHistograms() override;
+  void SetKnownScreenReaderAppActive(bool is_active) override;
+  bool IsKnownScreenReaderAppActive() override;
 };
 
 void BrowserAccessibilityStateImplMac::InitBackgroundTasks() {
@@ -80,12 +85,30 @@ void BrowserAccessibilityStateImplMac::UpdateHistogramsOnOtherThread() {
                         mode.has_mode(ui::AXMode::kScreenReader));
 }
 
+void BrowserAccessibilityStateImplMac::SetKnownScreenReaderAppActive(
+    bool is_active) {
+  static auto* ax_voiceover_crash_key = base::debug::AllocateCrashKeyString(
+      "ax_voiceover", base::debug::CrashKeySize::Size32);
+  if (is_active) {
+    base::debug::SetCrashKeyString(ax_voiceover_crash_key, "true");
+  } else if (g_voiceover) {
+    base::debug::ClearCrashKeyString(ax_voiceover_crash_key);
+  }
+  g_voiceover = is_active;
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.VoiceOver", g_voiceover);
+}
+
+bool BrowserAccessibilityStateImplMac::IsKnownScreenReaderAppActive() {
+  return g_voiceover;
+}
+
 void BrowserAccessibilityStateImplMac::UpdateUniqueUserHistograms() {
   BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms();
 
   ui::AXMode mode = GetAccessibilityMode();
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.ScreenReader.EveryReport",
                         mode.has_mode(ui::AXMode::kScreenReader));
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.VoiceOver.EveryReport", g_voiceover);
 }
 
 // static

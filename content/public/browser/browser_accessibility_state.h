@@ -84,12 +84,17 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // Win7.
   virtual void ResetAccessibilityMode() = 0;
 
-  // Called when screen reader client is detected.
+  // Called when screen reader client is detected, using a heuristic.
+  // For specific screen reader usage, see "KnownScreenReaderApp" methods.
   virtual void OnScreenReaderDetected() = 0;
 
   // Called when screen reader client that had been detected is no longer
   // running.
   virtual void OnScreenReaderStopped() = 0;
+
+  virtual void SetKnownScreenReaderAppActive(bool is_found) = 0;
+
+  virtual bool IsKnownScreenReaderAppActive() = 0;
 
   // Returns true if the browser should be customized for accessibility.
   virtual bool IsAccessibleBrowser() = 0;
