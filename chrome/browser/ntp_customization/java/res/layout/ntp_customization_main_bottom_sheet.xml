@@ -34,11 +34,14 @@ found in the LICENSE file.
 
         <ImageView
             android:id="@+id/edit_icon"
-            android:layout_width="@dimen/ntp_customization_edit_icon_with_background_size"
-            android:layout_height="@dimen/ntp_customization_edit_icon_with_background_size"
+            android:layout_width="@dimen/ntp_customization_edit_icon_background_size"
+            android:layout_height="@dimen/ntp_customization_edit_icon_background_size"
+            android:padding="@dimen/ntp_customization_edit_icon_padding"
             android:layout_marginTop="@dimen/ntp_customization_edit_icon_margin"
             android:importantForAccessibility="no"
-            app:srcCompat="@drawable/edit_icon_with_background"
+            app:srcCompat="@drawable/edit_icon"
+            app:tint="@color/ntp_customization_edit_icon_fill_color"
+            android:background="@drawable/edit_icon_circle_background"
             app:layout_constraintTop_toBottomOf="@id/drag_handle_bar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
