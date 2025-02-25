@@ -1993,7 +1993,10 @@ VISIT_PROTO_FIELDS(
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillLoyaltyCardSpecifics& proto) {
-  // TODO(crbug.com/393119606): In CL #2, VISIT fields added to specifics.
+  VISIT(uuid);
+  VISIT(merchant_name);
+  VISIT(program_name);
+  VISIT(program_logo);
 }
 
 }  // namespace syncer

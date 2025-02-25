@@ -16,8 +16,17 @@ package sync_pb;
 
 // Loyalty cards coming from Google Wallet.
 
-// Next tag: 1
+// Next tag: 5
 message AutofillLoyaltyCardSpecifics {
-  // TODO(crbug.com/393119606): In CL #2, add fields that you wish to sync, then
-  // update proto_visitors.h and potentially proto_enum_conversions.*.
+  // The card id.
+  optional string uuid = 1;
+
+  // The merchant name e.g. "Deutsche Bahn".
+  optional string merchant_name = 2;
+
+  // The program name e.g. "BahnBonus".
+  optional string program_name = 3;
+
+  // The logo URL.
+  optional string program_logo = 4;
 }
