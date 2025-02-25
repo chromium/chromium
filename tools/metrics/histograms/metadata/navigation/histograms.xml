@@ -2411,7 +2411,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Navigation.Throttles.PolicyBlocklist.RedirectCount{Target}.SafeSitesFilterEnabled"
-    units="times" expires_after="2025-04-06">
+    units="times" expires_after="2025-07-06">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
