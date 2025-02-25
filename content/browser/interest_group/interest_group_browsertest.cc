@@ -750,7 +750,6 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kParakeet, {}},
          {blink::features::kFledge, {}},
          {blink::features::kAllowURNsInIframes, {}},
-         {blink::features::kBiddingAndScoringDebugReportingAPI, {}},
          {blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot, {}},
          {features::kBackForwardCache, {}},
          {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
@@ -20038,101 +20037,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
                             embedded_https_test_server().GetURL(
                                 "a.test", "/interest_group/decision_logic.js")),
                         b_iframe));
-}
-
-// forDebuggingOnly.reportAdAuctionLoss() and
-// forDebuggingOnly.reportAdAuctionWin() APIs will be disabled (available but do
-// nothing) when feature kBiddingAndScoringDebugReportingAPI is disabled.
-class InterestGroupBiddingAndScoringDebugReportingAPIDisabledBrowserTest
-    : public InterestGroupBrowserTest {
- public:
-  InterestGroupBiddingAndScoringDebugReportingAPIDisabledBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        blink::features::kBiddingAndScoringDebugReportingAPI);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupBiddingAndScoringDebugReportingAPIDisabledBrowserTest,
-    RunAdAuctionWithDebugReporting) {
-  GURL test_url =
-      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  url::Origin test_origin = url::Origin::Create(test_url);
-  GURL ad_url =
-      embedded_https_test_server().GetURL("c.test", "/echo?render_winner");
-  GURL ad2_url =
-      embedded_https_test_server().GetURL("c.test", "/echo?render_bikes");
-
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          blink::TestInterestGroupBuilder(
-              /*owner=*/test_origin,
-              /*name=*/"winner")
-              .SetBiddingUrl(embedded_https_test_server().GetURL(
-                  "a.test",
-                  "/interest_group/bidding_logic_with_debugging_report.js"))
-              .SetAds({{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}})
-              .Build()));
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          blink::TestInterestGroupBuilder(
-              /*owner=*/test_origin,
-              /*name=*/"bikes")
-              .SetBiddingUrl(embedded_https_test_server().GetURL(
-                  "a.test",
-                  "/interest_group/bidding_logic_with_debugging_report.js"))
-              .SetAds({{{ad2_url, /*metadata=*/std::nullopt}}})
-              .Build()));
-
-  std::string auction_config = JsReplace(
-      R"({
-    seller: $1,
-    decisionLogicURL: $2,
-    interestGroupBuyers: [$1],
-    auctionSignals: {x: 1},
-    sellerSignals: {yet: 'more', info: 1},
-    perBuyerSignals: {$1: {even: 'more', x: 4.5}}
-                })",
-      test_origin,
-      embedded_https_test_server().GetURL(
-          "a.test", "/interest_group/decision_logic_with_debugging_report.js"));
-  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
-
-  // Check ResourceRequest structs of report requests.
-  const GURL kExpectedReportUrls[] = {
-      embedded_https_test_server().GetURL("a.test", "/echoall?report_seller"),
-      embedded_https_test_server().GetURL("a.test",
-                                          "/echoall?report_bidder/winner")};
-
-  for (const auto& expected_report_url : kExpectedReportUrls) {
-    SCOPED_TRACE(expected_report_url);
-    WaitForUrl(expected_report_url);
-  }
-
-  // No requests should be sent to forDebuggingOnly reporting URLs when
-  // feature kBiddingAndScoringDebugReportingAPI is disabled.
-  const GURL kDebuggingReportUrls[] = {
-      // Debugging report URL from winner for win report.
-      embedded_https_test_server().GetURL(
-          "a.test", "/echo?bidder_debug_report_win/winner"),
-      // Debugging report URL from losing bidder for loss report.
-      embedded_https_test_server().GetURL(
-          "a.test", "/echo?bidder_debug_report_loss/bikes"),
-      // Debugging report URL from seller for loss report.
-      embedded_https_test_server().GetURL(
-          "a.test", "/echo?seller_debug_report_loss/bikes"),
-      // Debugging report URL from seller for win report.
-      embedded_https_test_server().GetURL(
-          "a.test", "/echo?seller_debug_report_win/winner")};
-  for (const auto& debugging_report_url : kDebuggingReportUrls) {
-    EXPECT_FALSE(HasServerSeenUrl(debugging_report_url));
-  }
 }
 
 // Test event-level reporting of ad component fenced frame. This test class is

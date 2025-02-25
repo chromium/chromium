@@ -6488,8 +6488,6 @@ void InterestGroupAuction::OnLoadedGhostWinnerGroupImpl(
 void InterestGroupAuction::MaybeLoadDebugReportLockoutAndCooldowns() {
   if (saved_response_->result == AuctionResult::kSuccess &&
       base::FeatureList::IsEnabled(
-          blink::features::kBiddingAndScoringDebugReportingAPI) &&
-      base::FeatureList::IsEnabled(
           blink::features::kFledgeSampleDebugReports) &&
       !server_auction_debug_report_lockout_loaded_) {
     // All ad tech origins that have debug reports.

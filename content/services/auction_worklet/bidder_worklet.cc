@@ -1882,16 +1882,12 @@ BidderWorklet::V8State::RunGenerateBidOnce(
       !browser_signals_dict.Set("bidCount",
                                 bidding_browser_signals->bid_count) ||
       (base::FeatureList::IsEnabled(
-           blink::features::kBiddingAndScoringDebugReportingAPI) &&
-       base::FeatureList::IsEnabled(
            blink::features::kFledgeSampleDebugReports) &&
        !browser_signals_dict.Set(
            "forDebuggingOnlyInCooldownOrLockout",
            bidding_browser_signals
                ->for_debugging_only_in_cooldown_or_lockout)) ||
       (base::FeatureList::IsEnabled(
-           blink::features::kBiddingAndScoringDebugReportingAPI) &&
-       base::FeatureList::IsEnabled(
            blink::features::kFledgeEnableSampleDebugReportOnCookieSetting) &&
        !browser_signals_dict.Set("forDebuggingOnlySampling",
                                  browser_signal_for_debugging_only_sampling)) ||

@@ -17952,7 +17952,6 @@
                     },
                     "enable_features": [
                         "AllowURNsInIframes",
-                        "BiddingAndScoringDebugReportingAPI",
                         "BrowsingTopics",
                         "FencedFrames",
                         "FencedFramesAPIChanges",

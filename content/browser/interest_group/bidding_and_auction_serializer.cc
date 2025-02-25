@@ -959,9 +959,7 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
                            TaggedStringLength(publisher_.size());
 
   message_obj[cbor::Value("enableDebugReporting")] =
-      cbor::Value(base::FeatureList::IsEnabled(
-                      blink::features::kBiddingAndScoringDebugReportingAPI) &&
-                  !debug_report_in_lockout_);
+      cbor::Value(!debug_report_in_lockout_);
   message_elements_size +=
       TaggedStringLength(constexpr_strlen("enableDebugReporting")) + 1;
 

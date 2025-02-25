@@ -2558,7 +2558,6 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
          {blink::features::kAllowURNsInIframes, {}},
          {blink::features::kDisplayWarningDeprecateURNIframesUseFencedFrames,
           {}},
-         {blink::features::kBiddingAndScoringDebugReportingAPI, {}},
          {features::kBackForwardCache, {}},
          // This feature allows `runAdAuction()`'s promise to resolve to a
          // `FencedFrameConfig` object upon developer request.

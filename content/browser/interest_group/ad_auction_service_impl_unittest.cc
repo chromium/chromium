@@ -9114,22 +9114,9 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
 }
 
-class AdAuctionServiceImplBiddingAndScoringDebugReportingAPIEnabledTest
-    : public AdAuctionServiceImplTest {
- public:
-  AdAuctionServiceImplBiddingAndScoringDebugReportingAPIEnabledTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kBiddingAndScoringDebugReportingAPI);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Allowing sending multiple reports in parallel, instead of only allowing
 // sending one at a time.
-TEST_F(AdAuctionServiceImplBiddingAndScoringDebugReportingAPIEnabledTest,
-       SendReportsMaximumActive) {
+TEST_F(AdAuctionServiceImplTest, SendReportsMaximumActive) {
   // Use interest group name as bid value.
   const std::string kBiddingScript =
       base::StringPrintf(R"(
@@ -9247,7 +9234,7 @@ function reportResult(auctionConfig, browserSignals) {
 }
 
 class AdAuctionServiceImplEventReportingAttestationTest
-    : public AdAuctionServiceImplBiddingAndScoringDebugReportingAPIEnabledTest {
+    : public AdAuctionServiceImplTest {
  public:
   // Run an auction with 2 interest groups, and send reports to different
   // third-party (non seller or buyer) origins.
@@ -11501,57 +11488,10 @@ TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
           testing::Pair(test_origin_b, testing::ElementsAre("trains"))));
 }
 
-TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithoutDebugReporting) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      blink::features::kBiddingAndScoringDebugReportingAPI);
-  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
-  manager_->JoinInterestGroup(
-      blink::TestInterestGroupBuilder(test_origin, "cars")
-          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/"do not send",
-                     /*size_group=*/std::nullopt,
-                     /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt,
-                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
-                     "1234"}}})
-          .Build(),
-      GURL("https://a.test/example.html"));
-  task_environment()->FastForwardBy(base::Seconds(1));
-
-  std::vector<uint8_t> msg;
-  base::flat_map<url::Origin, std::vector<std::string>> group_names;
-  base::RunLoop run_loop;
-  manager_->GetInterestGroupAdAuctionData(
-      /*top_level_origin=*/test_origin,
-      /*generation_id=*/
-      base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
-      /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
-      /*config=*/blink::mojom::AuctionDataConfig::New(),
-      /*callback=*/base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
-        msg = std::move(data.request);
-        group_names = std::move(data.group_names);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  std::string expected =
-      "AgAAAPqmZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
-      "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8v"
-      "YS50ZXN0WGEfiwgAAAAAAAAAa1ycnJhS3JhiaGRskpKXmJuakpxYVJyXVJRfXpxaFJyZnpeY"
-      "U7wkIykzxTm/"
-      "NK+"
-      "EIaOgKLUsPDOvuCEzKz8zDyzImFmUmpyal1zpW8wAALB77c5QAAAAcnJlcXVlc3RUaW1lc3R"
-      "hbXBNcwB0ZW5hYmxlRGVidWdSZXBvcnRpbmf0AAAAAAAAAAAAAA";
-  EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
-  EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
-  EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
-                               test_origin, testing::ElementsAre("cars"))));
-}
-
 TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobDebugReportingInLockout) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
-       {blink::features::kFledgeSampleDebugReports,
+      {{blink::features::kFledgeSampleDebugReports,
         {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}}},
       {});
 
@@ -11656,9 +11596,6 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithDebugToken) {
 }
 
 TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithOmitAds) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      blink::features::kBiddingAndScoringDebugReportingAPI);
   url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(test_origin, "cars")
@@ -11712,9 +11649,6 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithOmitAds) {
 }
 
 TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithFullAds) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      blink::features::kBiddingAndScoringDebugReportingAPI);
   url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(test_origin, "cars")
@@ -11774,9 +11708,6 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithFullAds) {
 
 TEST_F(AdAuctionServiceImplTest,
        SerializesAuctionBlobWithNoUserBiddingSignalsAndOmitAds) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      blink::features::kBiddingAndScoringDebugReportingAPI);
   url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(test_origin, "cars")
@@ -12455,8 +12386,7 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
 TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithDebugReportLockout) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
-       {blink::features::kFledgeSampleDebugReports,
+      {{blink::features::kFledgeSampleDebugReports,
         {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}}},
       {});
 
@@ -14107,8 +14037,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
   // Give it 100% chance to allow a debug report if not under cooldown or
   // lockout.
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
-       {blink::features::kFledgeSampleDebugReports,
+      {{blink::features::kFledgeSampleDebugReports,
         {{"fledge_debug_report_sampling_random_max", "0"},
          {"fledge_enable_filtering_debug_report_starting_from", "0"}}},
        {features::kEnableBandASampleDebugReports, {}}},
@@ -14305,8 +14234,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
   // Give it 100% chance to allow a debug report if not under cooldown or
   // lockout.
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
-       {blink::features::kFledgeSampleDebugReports,
+      {{blink::features::kFledgeSampleDebugReports,
         {{"fledge_debug_report_sampling_random_max", "0"},
          {"fledge_enable_filtering_debug_report_starting_from", "0"}}},
        {features::kEnableBandASampleDebugReports, {}}},
@@ -14506,8 +14434,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
   // if the B&A component winner's debug report is always sent, wethat no
   // sampling was applied to that report on client side.
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
-       {blink::features::kFledgeSampleDebugReports,
+      {{blink::features::kFledgeSampleDebugReports,
         {{"fledge_debug_report_sampling_random_max", "10000"},
          {"fledge_enable_filtering_debug_report_starting_from", "100ms"}}},
        {features::kEnableBandASampleDebugReports, {}}},
@@ -14643,8 +14570,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
   // if the B&A component winner's debug report is always sent, wethat no
   // sampling was applied to that report on client side.
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
-       {blink::features::kFledgeSampleDebugReports,
+      {{blink::features::kFledgeSampleDebugReports,
         {{"fledge_debug_report_sampling_random_max", "100000"},
          {"fledge_enable_filtering_debug_report_starting_from", "100ms"}}},
        {features::kEnableBandASampleDebugReports, {}}},
@@ -14750,8 +14676,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
        RunBAndAAuctionWithServerFilteredDebugReportEnableFiltering) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
-       {blink::features::kFledgeSampleDebugReports,
+      {{blink::features::kFledgeSampleDebugReports,
         {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}},
        {features::kEnableBandASampleDebugReports, {}}},
       {});
@@ -14906,8 +14831,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
        RunBAndAAuctionWithServerFilteredDebugReportUpdateCooldown) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
-       {blink::features::kFledgeSampleDebugReports,
+      {{blink::features::kFledgeSampleDebugReports,
         {{"fledge_enable_filtering_debug_report_starting_from", "0ms"}}},
        {features::kEnableBandASampleDebugReports, {}}},
       {});
@@ -15021,8 +14945,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
        RunBAndAAuctionWithServerFilteredDebugReportInLockout) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
-       {blink::features::kFledgeSampleDebugReports,
+      {{blink::features::kFledgeSampleDebugReports,
         {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}},
        {features::kEnableBandASampleDebugReports, {}}},
       {});

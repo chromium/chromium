@@ -7694,25 +7694,6 @@ TEST_F(BidderWorkletTest, ContributeToHistogramOnEventPermissionNotEnforced) {
       false, 1);
 }
 
-// Debug win/loss reporting APIs should do nothing when feature
-// kBiddingAndScoringDebugReportingAPI is not enabled. It will not fail
-// generateBid().
-TEST_F(BidderWorkletTest, ForDebuggingOnlyReportsWithDebugFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      blink::features::kBiddingAndScoringDebugReportingAPI);
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateBasicGenerateBidScriptWithExtraCode(
-          R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url"))"),
-      TestBidBuilder().SetAd("[\"ad\"]").Build());
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateBasicGenerateBidScriptWithExtraCode(
-          R"(forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
-      TestBidBuilder().SetAd("[\"ad\"]").Build());
-}
-
 TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
   AddJavascriptResponse(
       &url_loader_factory_, interest_group_bidding_url_,
@@ -10179,22 +10160,9 @@ TEST_F(BidderWorkletTest, CancelBeforeFetch) {
   task_environment_.RunUntilIdle();
 }
 
-class BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest
-    : public BidderWorkletTest {
- public:
-  BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kBiddingAndScoringDebugReportingAPI);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Test forDebuggingOnly.reportAdAuctionLoss() and
 // forDebuggingOnly.reportAdAuctionWin() called in generateBid().
-TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       ForDebuggingOnlyReports) {
+TEST_F(BidderWorkletTest, ForDebuggingOnlyReports) {
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithExtraCode(
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
@@ -10235,8 +10203,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
 // Test the case the debugging report URLs are exactly match and are just above
 // the max URL length. When the length is hit, no errors are produced, but the
 // debug report URLs are ignored.
-TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       ForDebuggingOnlyReportsLengthLimit) {
+TEST_F(BidderWorkletTest, ForDebuggingOnlyReportsLengthLimit) {
   std::string almost_too_long_loss_report_url = "https://loss.url/";
   almost_too_long_loss_report_url += std::string(
       url::kMaxURLChars - almost_too_long_loss_report_url.size(), '1');
@@ -10335,8 +10302,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
   }
 }
 
-TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       ForDebuggingOnlyArgumentTimeout) {
+TEST_F(BidderWorkletTest, ForDebuggingOnlyArgumentTimeout) {
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithExtraCode(
           R"(forDebuggingOnly.reportAdAuctionLoss({
@@ -10358,8 +10324,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
 
 // Debugging loss/win report URLs should be nullopt if generateBid() parameters
 // are invalid.
-TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       ForDebuggingOnlyReportsInvalidGenerateBidParameter) {
+TEST_F(BidderWorkletTest, ForDebuggingOnlyReportsInvalidGenerateBidParameter) {
   auction_signals_ = "invalid json";
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithExtraCode(
@@ -10372,8 +10337,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       /*expected_debug_win_report_url=*/std::nullopt);
 }
 
-TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       GenerateBidHasError) {
+TEST_F(BidderWorkletTest, GenerateBidHasError) {
   // The bidding script has an error statement and the script will fail. But
   // th loss report URLs before bidding script encounters error should be kept.
   RunGenerateBidWithJavascriptExpectingResult(
@@ -10388,8 +10352,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       GURL("https://loss.url1"));
 }
 
-TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       GenerateBidInvalidReturnValue) {
+TEST_F(BidderWorkletTest, GenerateBidInvalidReturnValue) {
   // Keep debugging loss report URLs when generateBid() returns invalid value
   // type.
   RunGenerateBidWithJavascriptExpectingResult(
@@ -10406,8 +10369,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
 }
 
 // Loss report URLs before bidding script times out should be kept.
-TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       GenerateBidTimedOut) {
+TEST_F(BidderWorkletTest, GenerateBidTimedOutForDebuggingOnlyReport) {
   // The bidding script has an endless while loop. It will time out due to
   // AuctionV8Helper's default script timeout (50 ms).
   RunGenerateBidWithJavascriptExpectingResult(
@@ -14095,11 +14057,8 @@ class BidderWorkletEnableSampleDebugReportOnCookieSettingTest
     : public BidderWorkletTest {
  public:
   BidderWorkletEnableSampleDebugReportOnCookieSettingTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {blink::features::kBiddingAndScoringDebugReportingAPI,
-         blink::features::kFledgeEnableSampleDebugReportOnCookieSetting},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kFledgeEnableSampleDebugReportOnCookieSetting);
   }
 
  private:

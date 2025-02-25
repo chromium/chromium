@@ -89,25 +89,13 @@ void ForDebuggingOnlyBindings::AttachToContext(v8::Local<v8::Context> context) {
   v8::Local<v8::External> v8_this = v8::External::New(isolate, this);
   v8::Local<v8::Object> debugging = v8::Object::New(isolate);
 
-  // If runtime flag BiddingAndScoringDebugReportingAPI is not enabled,
-  // forDebuggingOnly.reportAdAuctionLoss() and
-  // forDebuggingOnly.reportAdAuctionWin() APIs will be disabled (do nothing).
-  // They are still valid APIs doing nothing instead of causing Javascript
-  // errors.
-  bool enabled = base::FeatureList::IsEnabled(
-      blink::features::kBiddingAndScoringDebugReportingAPI);
-
   v8::Local<v8::Function> loss_function =
-      v8::Function::New(
-          context,
-          enabled ? &ForDebuggingOnlyBindings::ReportAdAuctionLoss : nullptr,
-          v8_this)
+      v8::Function::New(context, &ForDebuggingOnlyBindings::ReportAdAuctionLoss,
+                        v8_this)
           .ToLocalChecked();
   v8::Local<v8::Function> win_function =
-      v8::Function::New(
-          context,
-          enabled ? &ForDebuggingOnlyBindings::ReportAdAuctionWin : nullptr,
-          v8_this)
+      v8::Function::New(context, &ForDebuggingOnlyBindings::ReportAdAuctionWin,
+                        v8_this)
           .ToLocalChecked();
 
   debugging

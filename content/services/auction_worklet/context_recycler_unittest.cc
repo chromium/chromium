@@ -390,10 +390,6 @@ TEST_F(ContextRecyclerTest, Basic) {
 
 // Exercise ForDebuggingOnlyBindings, and make sure they reset properly.
 TEST_F(ContextRecyclerTest, ForDebuggingOnlyBindings) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kBiddingAndScoringDebugReportingAPI);
-
   const char kScript[] = R"(
     function test() {
       forDebuggingOnly.reportAdAuctionLoss('https://example2.test/loss');
@@ -525,10 +521,6 @@ TEST_F(ContextRecyclerTest, ForDebuggingOnlyBindings) {
 
 // Exercise ForDebuggingOnlyBindings, and test invalid arguments.
 TEST_F(ContextRecyclerTest, ForDebuggingOnlyBindingsInvalidArguments) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kBiddingAndScoringDebugReportingAPI);
-
   // reportAdAuctionWin() and reportAdAuctionLoss() have the same code path
   // handling their arguments, so will randomly use one of the two APIs to test
   // different cases.
