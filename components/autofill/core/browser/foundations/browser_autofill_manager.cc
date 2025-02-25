@@ -1178,22 +1178,14 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
         delegate->GetSuggestions(form.global_id(), field.global_id());
   }
 
-  SuggestionsContext context = BuildSuggestionsContext(
-      form, form_structure, field, autofill_field, trigger_source);
-  GenerateSuggestionsAndMaybeShowUIPhase1(
-      form, field, trigger_source, context,
-      base::BindOnce(&BrowserAutofillManager::OnGenerateSuggestionsComplete,
-                     weak_ptr_factory_.GetWeakPtr(), form, field,
-                     trigger_source, context),
-      std::move(autofill_ai_suggestions));
+  GenerateSuggestionsAndMaybeShowUIPhase1(form, field, trigger_source,
+                                          std::move(autofill_ai_suggestions));
 }
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
     const FormData& form,
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
-    SuggestionsContext context,
-    OnGenerateSuggestionsCallback callback,
     std::vector<Suggestion> autofill_ai_suggestions) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
@@ -1211,6 +1203,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
   std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
                                       &form_structure, &autofill_field);
 
+  SuggestionsContext context = BuildSuggestionsContext(
+      form, form_structure, field, autofill_field, trigger_source);
   context.field_is_relevant_for_plus_addresses =
       IsPlusAddressesManuallyTriggered(trigger_source) ||
       (!context.should_show_mixed_content_warning &&
@@ -1224,7 +1218,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
   auto generate_suggestions_and_maybe_show_ui_phase2 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2,
       weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
-      std::move(autofill_ai_suggestions), context, std::move(callback));
+      std::move(autofill_ai_suggestions), context);
 
   if (context.field_is_relevant_for_plus_addresses) {
     client().GetPlusAddressDelegate()->GetAffiliatedPlusAddresses(
@@ -1244,8 +1238,11 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     AutofillSuggestionTriggerSource trigger_source,
     std::vector<Suggestion> autofill_ai_suggestions,
     SuggestionsContext context,
-    OnGenerateSuggestionsCallback callback,
     std::vector<std::string> plus_addresses) {
+  OnGenerateSuggestionsCallback callback = base::BindOnce(
+      &BrowserAutofillManager::OnGenerateSuggestionsComplete,
+      weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context);
+
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   // This function cannot exit early in case GetCachedFormAndField() yields

@@ -497,16 +497,11 @@ class BrowserAutofillManager : public AutofillManager {
   // address profile suggestions are shown. Other flows that rely on the
   // `external_delegate_` to show their suggestions, pass the suggestions list
   // to the delegate via `OnGenerateSuggestionsComplete` and request them to be
-  // shown (via `show_suggestions`). Note that the `callback` is almost always
-  // called, regardless of the suggestion surface. The only case when it's not
-  // called is when suggestions are suppressed (See
-  // `ShouldSuppressSuggestions`).
+  // shown (via `show_suggestions`).
   void GenerateSuggestionsAndMaybeShowUIPhase1(
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
-      SuggestionsContext context,
-      OnGenerateSuggestionsCallback callback,
       std::vector<Suggestion> autofill_ai_suggestions);
   void GenerateSuggestionsAndMaybeShowUIPhase2(
       const FormData& form,
@@ -514,7 +509,6 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       std::vector<Suggestion> autofill_ai_suggestions,
       SuggestionsContext context,
-      OnGenerateSuggestionsCallback callback,
       std::vector<std::string> plus_addresses);
 
   // Receives the lists of plus address and single field form fill suggestions
