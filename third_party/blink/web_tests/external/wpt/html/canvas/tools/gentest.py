@@ -1349,7 +1349,7 @@ def _get_variant_grids(
         variants = dimension.variants
         if dimension.layout == _VariantLayout.MULTI_FILES:
             grids = [
-                grid.merge_params(name, params)
+                grid.merge_params(name, params or {})
                 for name, params in variants.items() for grid in grids
             ]
         else:
