@@ -17,6 +17,8 @@
 #include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -67,6 +69,10 @@ class GlicMetricsTest : public testing::Test {
   GlicMetricsTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   void SetUp() override {
+    // Set up profile before enabling is created so we don't fire enabled
+    // change notifications.
+    ForceSigninAndModelExecutionCapability(&profile_);
+
     enabling_ = std::make_unique<GlicEnabling>(&profile_);
     controller_ = std::make_unique<MockWindowController>(
         &profile_, identity_env_.identity_manager(), enabling_.get());
@@ -74,11 +80,18 @@ class GlicMetricsTest : public testing::Test {
 
     metrics_ = std::make_unique<GlicMetrics>(&profile_, enabling_.get());
     metrics_->SetControllers(controller_.get(), tab_manager_.get());
+  }
 
-    ForceSigninAndModelExecutionCapability(&profile_);
+  void ExpectEntryPointImpressionLogged(base::HistogramBase::Sample32 bucket) {
+    task_environment_.FastForwardBy(base::Minutes(16));
+    histogram_tester_.ExpectTotalCount("Glic.EntryPoint.Impression", 1);
+    histogram_tester_.ExpectBucketCount("Glic.EntryPoint.Impression", bucket,
+                                        /*expected_count=*/1);
   }
 
  protected:
+  TestingPrefServiceSimple* local_state() { return local_state_.Get(); }
+
   content::BrowserTaskEnvironment task_environment_;
 
   content::RenderViewHostTestEnabler enabler_;
@@ -87,6 +100,7 @@ class GlicMetricsTest : public testing::Test {
   base::UserActionTester user_action_tester_;
   ukm::TestAutoSetUkmRecorder ukm_tester_;
 
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   TestingProfile profile_;
   signin::IdentityTestEnvironment identity_env_;
 
@@ -245,49 +259,94 @@ TEST_F(GlicMetricsTest, SegmentationChroMenuDetachedAudio) {
 TEST_F(GlicMetricsTest, ImpressionBeforeFre) {
   profile_.GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, false);
 
-  task_environment_.FastForwardBy(base::Minutes(16));
-  histogram_tester_.ExpectTotalCount("Glic.EntryPoint.Impression", 1);
-  histogram_tester_.ExpectBucketCount("Glic.EntryPoint.Impression",
-                                      /*kBeforeFre=*/0, /*expected_count=*/1);
+  ExpectEntryPointImpressionLogged(/*kBeforeFre=*/0);
 }
 
-TEST_F(GlicMetricsTest, ImpressionAfterFre) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {
-          features::kGlic,
-          features::kTabstripComboButton,
-      },
-      {});
+// kGlicSettingsPolicy is by default enabled, however if we initialize a scoped
+// feature list in a test, since the features were initially off during setup,
+// glic is considered disabled until the kGlicSettingsPolicy pref changes and
+// subscribers are notified. The following tests turn the feature flags on
+// before setup happens, so that glic is enabled from the start.
+class GlicMetricsFeaturesEnabledTest : public GlicMetricsTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list.InitWithFeatures(
+        {
+            features::kGlic,
+            features::kTabstripComboButton,
+        },
+        {});
+    GlicMetricsTest::SetUp();
+  }
 
-  task_environment_.FastForwardBy(base::Minutes(16));
-  histogram_tester_.ExpectTotalCount("Glic.EntryPoint.Impression", 1);
-  histogram_tester_.ExpectBucketCount("Glic.EntryPoint.Impression",
-                                      /*kAfterFreGlicEnabled=*/1,
-                                      /*expected_count=*/1);
+ private:
+  base::test::ScopedFeatureList scoped_feature_list;
+};
+
+TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreDisabledPolicy) {
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicSettingsPolicy,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
+
+  ExpectEntryPointImpressionLogged(/*kAfterFreDisabled=*/4);
 }
 
-TEST_F(GlicMetricsTest, EnablingChanged) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {
-          features::kGlic,
-          features::kTabstripComboButton,
-      },
-      {});
+TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreBrowserOnly) {
+  // kGlicSettingsPolicy is enabled
+  // kGlicPinnedToTabstrip is true
+  // kGlicLauncherEnabled is false
 
+  ExpectEntryPointImpressionLogged(/*kAfterFreBrowserOnly=*/1);
+}
+
+TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreOsOnly) {
+  // kGlicSettingsPolicy is enabled
+  profile_.GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
+  local_state()->SetBoolean(prefs::kGlicLauncherEnabled, true);
+
+  ExpectEntryPointImpressionLogged(/*kAfterFreOsOnly=*/2);
+}
+
+TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreEnabled) {
+  // kGlicSettingsPolicy is enabled
+  // kGlicPinnedToTabstrip is true
+  local_state()->SetBoolean(prefs::kGlicLauncherEnabled, true);
+
+  ExpectEntryPointImpressionLogged(/*kAfterFreEnabled=*/3);
+}
+
+TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreDisabled) {
+  // kGlicSettingsPolicy is enabled
+  profile_.GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
+  // kGlicLauncherEnabled is false
+
+  ExpectEntryPointImpressionLogged(/*kAfterFreDisabled=*/4);
+}
+
+TEST_F(GlicMetricsFeaturesEnabledTest, EnablingChanged) {
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 0);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 0);
   profile_.GetPrefs()->SetInteger(
       prefs::kGlicSettingsPolicy,
-      static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
-  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 0);
-  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 1);
-  profile_.GetPrefs()->SetInteger(
-      prefs::kGlicSettingsPolicy,
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 0);
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicSettingsPolicy,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 1);
+}
+
+TEST_F(GlicMetricsFeaturesEnabledTest, PinnedChanged) {
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Pinned"), 0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Unpinned"), 0);
+  profile_.GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Pinned"), 0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Unpinned"), 1);
+  profile_.GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Pinned"), 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Unpinned"), 1);
 }
 
 }  // namespace
