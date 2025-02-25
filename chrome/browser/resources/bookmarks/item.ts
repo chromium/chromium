@@ -6,7 +6,6 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '/strings.m.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -88,7 +87,6 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('itemId') && this.itemId !== '') {
-      assert(this.getState().nodes[this.itemId]);
       this.updateFromStore();
     }
 

@@ -173,11 +173,14 @@ export class BookmarksCommandManagerElement extends
     this.menuSource_ = source;
     this.menuIds_ = items || this.getState().selection.items;
 
-    const dropdown = this.$.dropdown.get();
-    DialogFocusManager.getInstance().showDialog(
-        dropdown.getDialog(), function() {
-          dropdown.showAtPosition({top: y, left: x});
-        });
+    // Wait for the changes above to reflect in the DOM before showing the menu.
+    this.updateComplete.then(() => {
+      const dropdown = this.$.dropdown.get();
+      DialogFocusManager.getInstance().showDialog(
+          dropdown.getDialog(), function() {
+            dropdown.showAtPosition({top: y, left: x});
+          });
+    });
   }
 
   /**
@@ -188,11 +191,14 @@ export class BookmarksCommandManagerElement extends
     this.menuSource_ = source;
     this.menuIds_ = this.getState().selection.items;
 
-    const dropdown = this.$.dropdown.get();
-    DialogFocusManager.getInstance().showDialog(
-        dropdown.getDialog(), function() {
-          dropdown.showAt(target);
-        });
+    // Wait for the changes above to reflect in the DOM before showing the menu.
+    this.updateComplete.then(() => {
+      const dropdown = this.$.dropdown.get();
+      DialogFocusManager.getInstance().showDialog(
+          dropdown.getDialog(), function() {
+            dropdown.showAt(target);
+          });
+    });
   }
 
   closeCommandMenu() {

@@ -208,6 +208,7 @@ suite('<bookmarks-command-manager>', function() {
     await microtasksFinished();
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
+    await microtasksFinished();
     const showInFolderItem =
         commandManager.shadowRoot.querySelector<HTMLElement>(
             `[data-command='${Command.SHOW_IN_FOLDER}']`);
@@ -360,7 +361,7 @@ suite('<bookmarks-command-manager>', function() {
     });
   });
 
-  test('cannot edit unmodifiable nodes', function() {
+  test('cannot edit unmodifiable nodes', async () => {
     // Cannot edit root folders.
     let items = new Set(['1']);
     store.data.selection.items = items;
@@ -372,6 +373,7 @@ suite('<bookmarks-command-manager>', function() {
     assertFalse(commandManager.canExecute(Command.DELETE, items));
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
+    await microtasksFinished();
     const commandItem: {[key: string]: HTMLElement} = {};
     commandManager.shadowRoot.querySelectorAll<HTMLElement>('.dropdown-item')
         .forEach(element => {
@@ -406,6 +408,7 @@ suite('<bookmarks-command-manager>', function() {
     await microtasksFinished();
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.TOOLBAR);
+    await microtasksFinished();
     assertTrue(commandManager.canExecute(Command.SORT, new Set()));
     assertTrue(commandManager.canExecute(Command.ADD_BOOKMARK, new Set()));
     assertTrue(commandManager.canExecute(Command.ADD_FOLDER, new Set()));
@@ -436,6 +439,7 @@ suite('<bookmarks-command-manager>', function() {
     await microtasksFinished();
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.TOOLBAR);
+    await microtasksFinished();
     assertTrue(commandManager.canExecute(Command.SORT, new Set()));
 
     store.data.selectedFolder = '21';
