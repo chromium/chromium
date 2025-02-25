@@ -2036,6 +2036,10 @@
       status: "experimental",
     },
     {
+      name: "FindFirstMisspellingEndWhenNonEditable",
+      status: "stable",
+    },
+    {
       name: "FindTextInReadonlyTextInput",
       status: "experimental",
     },

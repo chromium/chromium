@@ -676,8 +676,14 @@ std::pair<String, int> SpellChecker::FindFirstMisspelling(const Position& start,
     Position new_paragraph_start =
         StartOfNextParagraph(CreateVisiblePosition(paragraph_end))
             .DeepEquivalent();
-    if (new_paragraph_start.IsNull())
+    // To prevent an infinite loop, break when `new_paragraph_start` is
+    // non-editable.
+    if (new_paragraph_start.IsNull() ||
+        (RuntimeEnabledFeatures::
+             FindFirstMisspellingEndWhenNonEditableEnabled() &&
+         !IsEditablePosition(new_paragraph_start))) {
       break;
+    }
 
     paragraph_range = ExpandToParagraphBoundary(
         EphemeralRange(new_paragraph_start, new_paragraph_start));

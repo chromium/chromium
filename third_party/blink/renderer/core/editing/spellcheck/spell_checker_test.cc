@@ -99,6 +99,26 @@ TEST_F(SpellCheckerTest, AdvanceToNextMisspellingWithCrossEditableNoCrash) {
   GetSpellChecker().AdvanceToNextMisspelling(false);
 }
 
+// https://issues.chromium.org/issues/398431390
+// The test is used to check for the presence of an infinite loop. There are no
+// `EXPECT_*` in this test. If the test does not hang, it is considered to have
+// passed.
+TEST_F(SpellCheckerTest, AdvanceToNextMisspellingNoUnresponsive) {
+  SetBodyContent(
+      "<div contenteditable>"
+      "<div contenteditable='false'>"
+      "<div contenteditable id='div'></div>"
+      "<div style='height: 100px;'></div>"
+      "</div>"
+      "<div>test</div>"
+      "</div>");
+  Element* div = GetElementById("div");
+  div->Focus();
+  UpdateAllLifecyclePhasesForTest();
+  // No unresponsive in AdvanceToNextMisspelling
+  GetSpellChecker().AdvanceToNextMisspelling(false);
+}
+
 TEST_F(SpellCheckerTest, SpellCheckDoesNotCauseUpdateLayout) {
   SetBodyContent("<input>");
   auto* input =
