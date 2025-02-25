@@ -430,6 +430,12 @@ void SetLockedFullscreenState(Browser* browser, bool pinned) {
 // Returns whether the given `bounds` intersect with at least 50% of all the
 // displays.
 bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds) {
+  // Bail if `bounds` has an overflown area.
+  auto checked_area = bounds.size().GetCheckedArea();
+  if (!checked_area.IsValid()) {
+    return false;
+  }
+
   int intersect_area = 0;
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     gfx::Rect display_bounds = display.bounds();
