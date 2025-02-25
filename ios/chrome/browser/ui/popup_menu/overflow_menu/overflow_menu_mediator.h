@@ -46,6 +46,7 @@ class PromosManager;
 @protocol QuickDeleteCommands;
 class ReadingListBrowserAgent;
 class ReadingListModel;
+@protocol ReminderNotificationsCommands;
 @protocol SettingsCommands;
 class TabBasedIPHBrowserAgent;
 class TemplateURLService;
@@ -82,6 +83,8 @@ class WebStateList;
 @property(nonatomic, weak) id<PopupMenuCommands> popupMenuHandler;
 @property(nonatomic, weak) id<PriceNotificationsCommands>
     priceNotificationHandler;
+@property(nonatomic, weak) id<ReminderNotificationsCommands>
+    reminderNotificationsHandler;
 @property(nonatomic, weak) id<TextZoomCommands> textZoomHandler;
 @property(nonatomic, weak) id<QuickDeleteCommands> quickDeleteHandler;
 @property(nonatomic, weak) id<WhatsNewCommands> whatsNewHandler;

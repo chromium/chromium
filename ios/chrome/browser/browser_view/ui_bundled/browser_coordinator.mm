@@ -31,6 +31,7 @@
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
@@ -155,6 +156,7 @@
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_coordinator_delegate.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_coordinator.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_coordinator_delegate.h"
+#import "ios/chrome/browser/reminder_notifications/coordinator/reminder_notifications_coordinator.h"
 #import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_coordinator.h"
 #import "ios/chrome/browser/safe_browsing/ui_bundled/safe_browsing_coordinator.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h"
@@ -210,6 +212,7 @@
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
@@ -352,6 +355,7 @@ enum class ToolbarKind {
     QuickDeleteCommands,
     ReadingListCoordinatorDelegate,
     RecentTabsCoordinatorDelegate,
+    ReminderNotificationsCommands,
     RepostFormCoordinatorDelegate,
     RepostFormTabHelperDelegate,
     SaveToDriveCommands,
@@ -620,6 +624,9 @@ enum class ToolbarKind {
   ContextualSheetCoordinator* _contextualSheetCoordinator;
   RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
   GoogleOneCoordinator* _googleOneCoordinator;
+  // Coordinator to display the "Set a reminder" screen for the user's current
+  // tab.
+  ReminderNotificationsCoordinator* _reminderNotificationsCoordinator;
   SafeAreaProvider* _safeAreaProvider;
   // Number of time `showActivityOverlay` was called and its callback not
   // called.
@@ -875,6 +882,12 @@ enum class ToolbarKind {
   self.recentTabsCoordinator = nil;
 }
 
+// Stops the reminder notifications coordinator.
+- (void)stopReminderNotificationsCoordinator {
+  [_reminderNotificationsCoordinator stop];
+  _reminderNotificationsCoordinator = nil;
+}
+
 // Stop the store kit coordinator.
 - (void)stopStoreKitCoordinator {
   [self.storeKitCoordinator stop];
@@ -1011,6 +1024,7 @@ enum class ToolbarKind {
     @protocol(MiniMapCommands),
     @protocol(ParcelTrackingOptInCommands),
     @protocol(ParentAccessCommands),
+    @protocol(ReminderNotificationsCommands),
     @protocol(UnitConversionCommands),
     @protocol(AddContactsCommands),
     @protocol(CountryCodePickerCommands),
@@ -1377,6 +1391,9 @@ enum class ToolbarKind {
 
   /* RecentTabsCoordinator is created and started by a BrowserCommand */
 
+  /* `ReminderNotificationsCoordinator` is created and started by a
+   * `ReminderNotificationsCommands` */
+
   /* RepostFormCoordinator is created and started by a delegate method */
 
   /* WhatsNewCoordinator is created and started by a BrowserCommand */
@@ -1511,6 +1528,8 @@ enum class ToolbarKind {
   self.readingListCoordinator = nil;
 
   [self stopRecentTabsCoordinator];
+
+  [self stopReminderNotificationsCoordinator];
 
   [self stopRepostFormCoordinator];
 
@@ -3924,6 +3943,26 @@ enum class ToolbarKind {
     (RecentTabsCoordinator*)coordinator {
   CHECK_EQ(coordinator, self.recentTabsCoordinator);
   [self stopRecentTabsCoordinator];
+}
+
+#pragma mark - ReminderNotificationsCommands
+
+- (void)showSetTabReminderUI:(SetTabReminderEntryPoint)entryPoint {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  _reminderNotificationsCoordinator = [[ReminderNotificationsCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+
+  [_reminderNotificationsCoordinator start];
+}
+
+- (void)dismissSetTabReminderUI {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  [self stopReminderNotificationsCoordinator];
 }
 
 #pragma mark - StoreKitCoordinatorDelegate
