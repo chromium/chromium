@@ -413,7 +413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.{ModelName}.ExecuteResult.Event"
-    enum="MachineLearningServiceExecuteResultEvent" expires_after="2025-06-22">
+    enum="MachineLearningServiceExecuteResultEvent" expires_after="2025-08-24">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>

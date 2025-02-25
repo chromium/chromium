@@ -340,7 +340,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="interstitial.{SecurityInterstitialSBType}decision{RepeatVisit}{IsPostCommitInterstitialSuffix}"
-    enum="SecurityInterstitialDecision" expires_after="2025-06-22">
+    enum="SecurityInterstitialDecision" expires_after="2025-08-24">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -391,7 +391,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="interstitial.{SecurityInterstitialSBType}interaction{IsPostCommitInterstitialSuffix}"
-    enum="SecurityInterstitialInteraction" expires_after="2025-06-22">
+    enum="SecurityInterstitialInteraction" expires_after="2025-08-24">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -432,7 +432,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="interstitial.{SecurityInterstitialSBType}show_delay{SecurityInterstitialSBWithSourceType}"
-    units="ms" expires_after="2025-06-22">
+    units="ms" expires_after="2025-08-24">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

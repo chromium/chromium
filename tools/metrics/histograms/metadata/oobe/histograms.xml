@@ -584,7 +584,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ChromeVersionBeforeUpdate" units="custom"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -865,7 +865,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.HidDetectionScreen.BluetoothPairingAttempts"
-    units="attempts" expires_after="2025-06-22">
+    units="attempts" expires_after="2025-08-24">
   <owner>chadduffin@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -1030,7 +1030,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OOBE.OobeFlowDuration" units="ms" expires_after="2025-06-22">
+<histogram name="OOBE.OobeFlowDuration" units="ms" expires_after="2025-08-24">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -1273,7 +1273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.StepCompletionTime2.{CommonScreenName}.{OnboardingType}"
-    units="ms" expires_after="2025-06-22">
+    units="ms" expires_after="2025-08-24">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -1331,7 +1331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.StepShownStatus2.{CommonScreenName}.{OnboardingType}"
-    enum="BooleanShown" expires_after="2025-06-22">
+    enum="BooleanShown" expires_after="2025-08-24">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -1347,7 +1347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.StepShownStatus2.{OOBEOnlyScreenName}"
-    enum="BooleanShown" expires_after="2025-06-22">
+    enum="BooleanShown" expires_after="2025-08-24">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>

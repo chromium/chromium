@@ -938,7 +938,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FlexBootMethod" enum="FlexBootMethod"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>justinoue@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -1066,7 +1066,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Fwupd.ActivateStatus" enum="FwupdReturnValue"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>rishbhagr@google.com</owner>
   <owner>chromeos-fwupd@google.com</owner>
   <summary>
@@ -1076,7 +1076,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Fwupd.UpdateDuration" units="seconds"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>rishabhagr@google.com</owner>
   <owner>chromeos-fwupd@google.com</owner>
   <summary>
@@ -1086,7 +1086,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Fwupd.UpdateStatus" enum="FwupdReturnValue"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>rishabhagr@google.com</owner>
   <owner>chromeos-fwupd@google.com</owner>
   <summary>
@@ -1481,7 +1481,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Meminfo" units="KB" expires_after="2025-06-22">
+<histogram name="Platform.Meminfo" units="KB" expires_after="2025-08-24">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>
@@ -2121,7 +2121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Segmentation.FeatureLevel" units="level number"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>gwendal@chromium.org</owner>
   <owner>iby@chromium.org</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -2640,7 +2640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.VersionFingerprint" enum="TPMVersionFingerprint"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>

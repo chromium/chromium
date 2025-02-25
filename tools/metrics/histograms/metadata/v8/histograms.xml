@@ -1691,7 +1691,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.LocalWindowProxy.CreateContextTime" units="ms"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1701,7 +1701,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.LocalWindowProxy.InitializeTime" units="ms"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

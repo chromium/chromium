@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.ApiFunctions" enum="DownloadFunctions"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>dtrainor@chromium.org</owner>
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -324,7 +324,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Download.DownloadDangerPrompt.{DownloadDangerTypeString}.{Action}"
-    enum="SBClientDownloadExtensions" expires_after="2025-06-22">
+    enum="SBClientDownloadExtensions" expires_after="2025-08-24">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -468,7 +468,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadedFileAction" enum="DownloadedFileAction"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -490,7 +490,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileInBackground"
-    enum="DownloadFileInBackground" expires_after="2025-06-22">
+    enum="DownloadFileInBackground" expires_after="2025-08-24">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -503,7 +503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileResult" enum="DownloadFileResult"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -522,7 +522,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileUIGoogleDrive"
-    enum="DownloadFileUIGoogleDrive" expires_after="2025-06-22">
+    enum="DownloadFileUIGoogleDrive" expires_after="2025-08-24">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -1011,7 +1011,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.ShelfContextMenuAction"
-    enum="DownloadShelfContextMenuAction" expires_after="2025-06-22">
+    enum="DownloadShelfContextMenuAction" expires_after="2025-08-24">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

@@ -1852,7 +1852,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ConnectedDeviceCount" units="devices"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>adlr@chromium.org</owner>
   <summary>
     Counts the number of simulataneously connected Bluetooth devices. Used to
@@ -1886,7 +1886,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.Linux.ConnectToServiceInsecurelyResult"
     enum="BluetoothAdapterConnectToServiceInsecurelyResult"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1896,7 +1896,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Mojo.PendingConnectAtShutdown.DurationWaiting"
-    units="ms" expires_after="2025-06-22">
+    units="ms" expires_after="2025-08-24">
   <owner>jonmann@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
@@ -1911,7 +1911,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.Mojo.PendingConnectAtShutdown.NumberOfServiceDiscoveriesInProgress"
-    units="count" expires_after="2025-06-22">
+    units="count" expires_after="2025-08-24">
   <owner>jonmann@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
@@ -1985,7 +1985,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.ConnectGATT.Outcome"
-    enum="WebBluetoothConnectGATTOutcome" expires_after="2025-06-22">
+    enum="WebBluetoothConnectGATTOutcome" expires_after="2025-08-24">
   <owner>chengweih@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

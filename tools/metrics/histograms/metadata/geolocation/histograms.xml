@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationProvider.SessionResult"
-    enum="NetworkLocationRequestResult" expires_after="2025-06-22">
+    enum="NetworkLocationRequestResult" expires_after="2025-08-24">
   <owner>alvinji@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -241,7 +241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationProvider.TimeToFirstPosition"
-    units="ms" expires_after="2025-06-22">
+    units="ms" expires_after="2025-08-24">
   <owner>alvinji@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>

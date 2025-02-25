@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuRasterizationEnabled" enum="BooleanEnabled"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -254,7 +254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.ScrollingThread" enum="ScrollingThreadStatus"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
 <!-- Name completed by histogram_suffixes name="ScrollSourceDevice" -->
 
   <owner>bokan@chromium.org</owner>
