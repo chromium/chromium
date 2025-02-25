@@ -9,7 +9,7 @@ desc: |-
 
   By leaving this policy unset, all identity providers that are supported by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will be enabled.
 
-  For identity providers that are enabled in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and configured on the device the the administrator, users who sign into their once using that identity provider, on any application that supports <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME">Extensible Enterprise SSO</ph>, can be signed into web properties using that identity provider automatically. Information pertaining to the user's authencitation information is transmitted to the user's cloud identity provider for each authentication event.
+  For identity providers that are enabled in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and configured on the device the administrator, users who sign into their once using that identity provider, on any application that supports <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME">Extensible Enterprise SSO</ph>, can be signed into web properties using that identity provider automatically. Information pertaining to the user's authencitation information is transmitted to the user's cloud identity provider for each authentication event.
 
   Notes:
 
