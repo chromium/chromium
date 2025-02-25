@@ -19,6 +19,12 @@ export default [
       // No point linting auto-generated files.
       'tools/typescript/definitions/**/*',
 
+      // Ignore generated checked-in JS file.
+      'ios/tools/documents_statistics_viewer/tsc/viewer.js',
+
+      // TODO(crbug.com/397907153): Fix violations and remove from ignore list.
+      'ios/**/*.ts',
+
       // ESLint is disabled for camera_app_ui and recorder_app_ui as they used
       // a custom eslint plugin that does not work with the latest eslint, and
       // they had complex eslint rc files that have not been updated to the
