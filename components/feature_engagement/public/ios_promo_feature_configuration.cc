@@ -315,12 +315,56 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     config.trigger = EventConfig(
         feature_engagement::events::kNonModalDefaultBrowserPromoUrlPasteTrigger,
         Comparator(LESS_THAN, 1), 14, 365);
-    // The limit for promo triggers should be 10.
+    // Should be triggered no more than twice (2x) every 6 months.
     config.event_configs.insert(EventConfig(
         feature_engagement::events::kNonModalDefaultBrowserPromoUrlPasteTrigger,
-        Comparator(LESS_THAN, 10), feature_engagement::kMaxStoragePeriod,
-        feature_engagement::kMaxStoragePeriod));
+        Comparator(LESS_THAN, 2), 180, 365));
 
+    config.groups.push_back(kiOSTailoredNonModalDefaultBrowserPromosGroup.name);
+    return config;
+  }
+
+  if (kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature.name ==
+      feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.used =
+        EventConfig("non_modal_default_browser_promo_app_switcher_used",
+                    Comparator(ANY, 0), 365, 365);
+    // Should be triggered no more than once every 14 days.
+    config.trigger =
+        EventConfig(feature_engagement::events::
+                        kNonModalDefaultBrowserPromoAppSwitcherTrigger,
+                    Comparator(LESS_THAN, 1), 14, 365);
+    // Should be triggered no more than twice (2x) every 6 months.
+    config.event_configs.insert(
+        EventConfig(feature_engagement::events::
+                        kNonModalDefaultBrowserPromoAppSwitcherTrigger,
+                    Comparator(LESS_THAN, 2), 180, 365));
+
+    config.groups.push_back(kiOSTailoredNonModalDefaultBrowserPromosGroup.name);
+    return config;
+  }
+
+  if (kIPHiOSPromoNonModalShareDefaultBrowserFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.used = EventConfig("non_modal_default_browser_promo_share_used",
+                              Comparator(ANY, 0), 365, 365);
+    // Should be triggered no more than once every 14 days.
+    config.trigger = EventConfig(
+        feature_engagement::events::kNonModalDefaultBrowserPromoShareTrigger,
+        Comparator(LESS_THAN, 1), 14, 365);
+    // Should be triggered no more than twice (2x) every 6 months.
+    config.event_configs.insert(EventConfig(
+        feature_engagement::events::kNonModalDefaultBrowserPromoShareTrigger,
+        Comparator(LESS_THAN, 2), 180, 365));
+
+    config.groups.push_back(kiOSTailoredNonModalDefaultBrowserPromosGroup.name);
     return config;
   }
 

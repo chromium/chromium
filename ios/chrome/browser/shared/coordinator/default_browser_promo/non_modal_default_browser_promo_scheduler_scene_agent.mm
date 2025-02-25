@@ -50,7 +50,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
       return NonModalPromoTriggerType::kUnknown;
     case NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste:
       return NonModalPromoTriggerType::kPastedLink;
-    case NonModalDefaultBrowserPromoReason::PromoReasonExternalLink:
+    case NonModalDefaultBrowserPromoReason::PromoReasonAppSwitcher:
       return NonModalPromoTriggerType::kGrowthKitOpen;
     case NonModalDefaultBrowserPromoReason::PromoReasonShare:
       return NonModalPromoTriggerType::kShare;
@@ -136,7 +136,12 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
     return;
   }
 
+  self.currentPromoReason =
+      NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste;
+
   if (![self promoCanBeDisplayed]) {
+    self.currentPromoReason =
+        NonModalDefaultBrowserPromoReason::PromoReasonNone;
     return;
   }
 
@@ -145,11 +150,10 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
   web::WebState* activeWebState = self.webStateList->GetActiveWebState();
   // There should always be an active web state when pasting in the omnibox.
   if (!activeWebState) {
+    self.currentPromoReason =
+        NonModalDefaultBrowserPromoReason::PromoReasonNone;
     return;
   }
-
-  self.currentPromoReason =
-      NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste;
 
   // Store the pasted web state, so when that web state's page load finishes,
   // the promo can be shown.
@@ -162,11 +166,14 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
     return;
   }
 
+  self.currentPromoReason = NonModalDefaultBrowserPromoReason::PromoReasonShare;
+
   if (![self promoCanBeDisplayed]) {
+    self.currentPromoReason =
+        NonModalDefaultBrowserPromoReason::PromoReasonNone;
     return;
   }
 
-  self.currentPromoReason = NonModalDefaultBrowserPromoReason::PromoReasonShare;
   [self startShowPromoTimer];
 }
 
@@ -176,12 +183,14 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
     return;
   }
 
+  self.currentPromoReason =
+      NonModalDefaultBrowserPromoReason::PromoReasonAppSwitcher;
+
   if (![self promoCanBeDisplayed]) {
+    self.currentPromoReason =
+        NonModalDefaultBrowserPromoReason::PromoReasonNone;
     return;
   }
-
-  self.currentPromoReason =
-      NonModalDefaultBrowserPromoReason::PromoReasonExternalLink;
 
   // Store the current web state, so when that web state's page load finishes,
   // the promo can be shown.
@@ -226,7 +235,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
 
   if (IsNonModalPromoMigrationEnabled()) {
     return self.tracker->WouldTriggerHelpUI(
-        feature_engagement::kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature);
+        GetFeatureForPromoReason(self.currentPromoReason));
   }
 
   if (UserInNonModalPromoCooldown()) {
@@ -245,8 +254,8 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
       UserInteractionWithNonModalPromoCount();
 
   if (!IsNonModalPromoMigrationEnabled() && IsNonModalPromoMigrationDone()) {
-    self.tracker->NotifyEvent(feature_engagement::events::
-                                  kNonModalDefaultBrowserPromoUrlPasteTrigger);
+    self.tracker->NotifyEvent(
+        GetFeatureEventNameForPromoReason(self.currentPromoReason));
   }
 
   [_handler showDefaultBrowserNonModalPromoWithReason:self.currentPromoReason];
@@ -388,7 +397,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
       // when the current web state is the one that was active when the link was
       // opened.
       if (self.currentPromoReason ==
-              NonModalDefaultBrowserPromoReason::PromoReasonExternalLink &&
+              NonModalDefaultBrowserPromoReason::PromoReasonAppSwitcher &&
           self.webStateList->GetActiveWebState() == self.webStateToListenTo &&
           status.active_web_state_change()) {
         const WebStateListChangeInsert& insertChange =
@@ -492,7 +501,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
     case NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste:
       promoTimeInterval = kShowPromoWebpageLoadWaitTime;
       break;
-    case NonModalDefaultBrowserPromoReason::PromoReasonExternalLink:
+    case NonModalDefaultBrowserPromoReason::PromoReasonAppSwitcher:
       promoTimeInterval = kShowPromoWebpageLoadWaitTime;
       break;
     case NonModalDefaultBrowserPromoReason::PromoReasonShare:
@@ -525,8 +534,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
 
   if (IsNonModalPromoMigrationEnabled() &&
       !self.tracker->ShouldTriggerHelpUI(
-          feature_engagement::
-              kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature)) {
+          GetFeatureForPromoReason(self.currentPromoReason))) {
     return;
   }
 
@@ -571,11 +579,10 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
   unsigned int interactions = 0;
   std::vector<std::pair<feature_engagement::EventConfig, int>> events =
       self.tracker->ListEvents(
-          feature_engagement::
-              kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature);
+          GetFeatureForPromoReason(self.currentPromoReason));
   for (const auto& event : events) {
-    if (event.first.name == feature_engagement::events::
-                                kNonModalDefaultBrowserPromoUrlPasteTrigger) {
+    if (event.first.name ==
+        GetFeatureEventNameForPromoReason(self.currentPromoReason)) {
       interactions = event.second;
       break;
     }

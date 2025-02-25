@@ -581,6 +581,12 @@ BASE_FEATURE(kIPHiOSPromoPostRestoreDefaultBrowserFeature,
 BASE_FEATURE(kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature,
              "IPH_iOSPromoNonModalUrlPasteDefaultBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature,
+             "IPH_iOSPromoNonModalAppSwitcherDefaultBrowser",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPromoNonModalShareDefaultBrowserFeature,
+             "IPH_iOSPromoNonModalShareDefaultBrowser",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoPasswordManagerWidgetFeature,
              "IPH_iOSPromoPasswordManagerWidget",
              base::FEATURE_ENABLED_BY_DEFAULT);

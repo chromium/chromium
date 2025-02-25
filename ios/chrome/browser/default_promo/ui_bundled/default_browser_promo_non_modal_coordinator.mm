@@ -136,8 +136,7 @@
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForProfile(
             self.browser->GetProfile());
-    tracker->Dismissed(
-        feature_engagement::kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature);
+    tracker->Dismissed(GetFeatureForPromoReason(_promoReason));
   }
 
   id<DefaultBrowserPromoNonModalCommands> handler =
@@ -172,7 +171,7 @@
     case NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste:
       return l10n_util::GetNSString(
           IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_DESCRIPTION);
-    case NonModalDefaultBrowserPromoReason::PromoReasonExternalLink:
+    case NonModalDefaultBrowserPromoReason::PromoReasonAppSwitcher:
       return l10n_util::GetNSString(
           IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION);
     case NonModalDefaultBrowserPromoReason::PromoReasonShare:
@@ -195,7 +194,7 @@
     case NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste:
       return l10n_util::GetNSString(
           IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE);
-    case NonModalDefaultBrowserPromoReason::PromoReasonExternalLink:
+    case NonModalDefaultBrowserPromoReason::PromoReasonAppSwitcher:
       return l10n_util::GetNSString(
           IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE);
     case NonModalDefaultBrowserPromoReason::PromoReasonShare:

@@ -47748,9 +47748,14 @@ should be able to be added at any place in this file.
       label="For generivc default browser promo."/>
   <suffix name="iOSPromoMadeForIOS"
       label="For Made for iOS default browser promo."/>
-  <suffix name="iOSPromoNonModalUrlPasteDefaultBrowser"
-      label="howing the non-modal Default Browser Promo from omnibox paste on
+  <suffix name="iOSPromoNonModalAppSwitcherDefaultBrowser"
+      label="Showing the non-modal Default Browser Promo from app switcher on
              iOS."/>
+  <suffix name="iOSPromoNonModalShareDefaultBrowser"
+      label="Showing the non-modal Default Browser Promo from share on iOS."/>
+  <suffix name="iOSPromoNonModalUrlPasteDefaultBrowser"
+      label="Showing the non-modal Default Browser Promo from omnibox paste
+             on iOS."/>
   <suffix name="iOSPromoPasswordManagerWidget"
       label="For iOSPromoPasswordManagerWidget feature"/>
   <suffix name="iOSPromoPostRestore" label="For iOSPromoPostRestore feature"/>
