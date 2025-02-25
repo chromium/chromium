@@ -5,9 +5,24 @@
 #include "services/on_device_model/ml/session_accessor.h"
 
 #include "base/compiler_specific.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 
 namespace ml {
+
+namespace {
+
+// TODO(crbug.com/385173789): Pass enable_image_input via LoadAdaptationParams.
+const base::FeatureParam<bool> kImageInput{
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    "on_device_model_image_input", false};
+
+// TODO(crbug.com/385173368): Pass enable_audio_input via LoadAdaptationParams.
+const base::FeatureParam<bool> kAudioInput{
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    "on_device_model_audio_input", false};
+
+}  // namespace
 
 // Wrapper for the ChromeMLCancel object.
 class SessionAccessor::Canceler : public base::RefCountedThreadSafe<Canceler> {
@@ -133,6 +148,15 @@ DISABLE_CFI_DLSYM
 void SessionAccessor::CreateInternal(
     on_device_model::mojom::LoadAdaptationParamsPtr params) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  const bool enable_image_input = kImageInput.Get();
+  const bool enable_audio_input = kAudioInput.Get();
+  if (enable_image_input || enable_audio_input) {
+    if (!params) {
+      params = on_device_model::mojom::LoadAdaptationParams::New();
+    }
+    params->enable_image_input |= enable_image_input;
+    params->enable_audio_input |= enable_audio_input;
+  }
   if (params) {
     ChromeMLAdaptationDescriptor descriptor = {
         .max_tokens = params->max_tokens,
