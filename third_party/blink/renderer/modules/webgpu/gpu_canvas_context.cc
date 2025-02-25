@@ -314,14 +314,13 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
 
   auto sk_color_type = viz::ToClosestSkColorType(client_si->format());
 
-  const SkImageInfo sk_image_info = SkImageInfo::Make(
-      texture_descriptor_.size.width, texture_descriptor_.size.height,
-      sk_color_type, kPremul_SkAlphaType);
-
   return MakeGarbageCollected<ImageBitmap>(
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
           std::move(client_si), sk_image_sync_token,
-          /* shared_image_texture_id = */ 0, sk_image_info,
+          /* shared_image_texture_id = */ 0,
+          gfx::Size(texture_descriptor_.size.width,
+                    texture_descriptor_.size.height),
+          sk_color_type, kPremul_SkAlphaType, nullptr,
           GetContextProviderWeakPtr(), base::PlatformThread::CurrentRef(),
           ThreadScheduler::Current()->CleanupTaskRunner(),
           std::move(release_callback)));
