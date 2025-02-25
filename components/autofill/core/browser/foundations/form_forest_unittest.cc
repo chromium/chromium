@@ -492,9 +492,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
       if (f.begin >= source.fields().size()) {
         continue;
       }
-      if (f.begin + f.count > source.fields().size()) {
-        f.count = base::dynamic_extent;
-      }
+      f.count = std::min(f.count, source.fields().size() - f.begin);
       std::ranges::copy(base::span(source.fields()).subspan(f.begin, f.count),
                         std::back_inserter(fields));
     }
