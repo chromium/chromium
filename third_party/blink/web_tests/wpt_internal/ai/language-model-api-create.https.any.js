@@ -19,16 +19,37 @@ promise_test(async t => {
 promise_test(async t => {
   let result = ai.languageModel.create({ topK: 3 });
   await promise_rejects_dom(
-      t, 'NotSupportedError', result,
-      'Initializing a new session must either specify both topK and temperature, or neither of them.');
+    t, 'NotSupportedError', result,
+    'Initializing a new session must either specify both topK and temperature, or neither of them.');
 }, 'Create with only topK should fail');
 
 promise_test(async t => {
   let result = ai.languageModel.create({ temperature: 0.5 });
   await promise_rejects_dom(
-      t, 'NotSupportedError', result,
-      'Initializing a new session must either specify both topK and temperature, or neither of them.');
+    t, 'NotSupportedError', result,
+    'Initializing a new session must either specify both topK and temperature, or neither of them.');
 }, 'Create with only temperature should fail');
+
+promise_test(async t => {
+  let result = ai.languageModel.create({ topK: 3, temperature: -0.5 });
+  await promise_rejects_js(t, RangeError, result);
+}, 'Create with negative temperature should fail');
+
+promise_test(async t => {
+  let result = ai.languageModel.create({ topK: 0, temperature: 0.5 });
+  await promise_rejects_js(t, RangeError, result);
+}, 'Create with zero topK should fail');
+
+promise_test(async t => {
+  let result = ai.languageModel.create({ topK: -2, temperature: 0.5 });
+  await promise_rejects_js(t, RangeError, result);
+}, 'Create with negative topK should fail');
+
+promise_test(async t => {
+  let session = await ai.languageModel.create({ topK: 1.5, temperature: 0.5 });
+  assert_true(!!session);
+  assert_equals(session.topK, 1);
+}, 'Create with fractional topK should be rounded down');
 
 promise_test(async t => {
   let session = await ai.languageModel.create({ systemPrompt: 'you are a robot' });
