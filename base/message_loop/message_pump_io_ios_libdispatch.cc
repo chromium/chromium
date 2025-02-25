@@ -166,42 +166,27 @@ MessagePumpIOSForIOLibdispatch::~MessagePumpIOSForIOLibdispatch() {
   dispatch_release(queue_);
 }
 
-void MessagePumpIOSForIOLibdispatch::Attach(Delegate* delegate) {
-  // The MessagePumpIOSForIOLibdispatch does support `Run` but we need to know
-  // the task runner before any watch call is made. This cannot be done in
-  // the constructor because the task runner is not made before the pump is
-  // created.
-  if (SequencedTaskRunner::HasCurrentDefault()) {
-    io_thread_task_runner_ = SequencedTaskRunner::GetCurrentDefault();
-  }
-
-  MessagePumpNSRunLoop::Attach(delegate);
-}
-
-void MessagePumpIOSForIOLibdispatch::DoRun(Delegate* delegate) {
-  // If we haven't set up the current task runner ensure we do.
-  if (!io_thread_task_runner_) {
-    io_thread_task_runner_ = SequencedTaskRunner::GetCurrentDefault();
-  }
-
-  MessagePumpNSRunLoop::DoRun(delegate);
-}
-
 bool MessagePumpIOSForIOLibdispatch::WatchFileDescriptor(
     int fd,
     bool persistent,
     int mode,
     FdWatchController* controller,
     FdWatcher* watcher) {
-  CHECK(io_thread_task_runner_);
-  DCHECK(io_thread_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_GE(fd, 0);
   DCHECK(controller);
   DCHECK(watcher);
   DCHECK(mode == WATCH_READ || mode == WATCH_WRITE || mode == WATCH_READ_WRITE);
 
-  controller->Init(io_thread_task_runner_, queue_, fd, persistent, mode,
-                   watcher);
+  // WatchFileDescriptor is allowed to be called again if the file handle
+  // matches the one that is currently bound.
+  if (controller->fd() != -1 && controller->fd() != fd) {
+    return false;
+  }
+  controller->StopWatchingFileDescriptor();
+
+  controller->Init(SequencedTaskRunner::GetCurrentDefault(), queue_, fd,
+                   persistent, mode, watcher);
   return true;
 }
 
@@ -209,12 +194,12 @@ bool MessagePumpIOSForIOLibdispatch::WatchMachReceivePort(
     mach_port_t port,
     MachPortWatchController* controller,
     MachPortWatcher* watcher) {
-  CHECK(io_thread_task_runner_);
-  DCHECK(io_thread_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_NE(port, static_cast<mach_port_t>(MACH_PORT_NULL));
   DCHECK(controller);
   DCHECK(watcher);
-  controller->Init(io_thread_task_runner_, queue_, port, watcher);
+  controller->Init(SequencedTaskRunner::GetCurrentDefault(), queue_, port,
+                   watcher);
   return true;
 }
 
