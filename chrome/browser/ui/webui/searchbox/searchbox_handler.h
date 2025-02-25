@@ -67,6 +67,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);
+  FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, RealboxUpdatesEditModelInput);
   FRIEND_TEST_ALL_PREFIXES(LensSearchboxHandlerTest,
                            Lens_AutocompleteController_Start);
 

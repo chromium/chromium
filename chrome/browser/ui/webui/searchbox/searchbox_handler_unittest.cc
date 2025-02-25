@@ -7,12 +7,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
+#include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
-#include "components/omnibox/browser/test_omnibox_client.h"
-#include "components/omnibox/browser/test_omnibox_edit_model.h"
 #include "components/search/ntp_features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
@@ -26,94 +25,6 @@
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 
 namespace {
-
-using testing::_;
-using testing::DoAll;
-using testing::Return;
-using testing::ReturnRef;
-using testing::SaveArg;
-
-class MockPage : public searchbox::mojom::Page {
- public:
-  MockPage() = default;
-  ~MockPage() override = default;
-
-  mojo::PendingRemote<searchbox::mojom::Page> BindAndGetRemote() {
-    DCHECK(!receiver_.is_bound());
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-  mojo::Receiver<searchbox::mojom::Page> receiver_{this};
-
-  void FlushForTesting() { receiver_.FlushForTesting(); }
-
-  MOCK_METHOD(void,
-              AutocompleteResultChanged,
-              (searchbox::mojom::AutocompleteResultPtr));
-  MOCK_METHOD(void,
-              UpdateSelection,
-              (searchbox::mojom::OmniboxPopupSelectionPtr,
-               searchbox::mojom::OmniboxPopupSelectionPtr));
-  MOCK_METHOD(void, SetInputText, (const std::string& input_text));
-  MOCK_METHOD(void, SetThumbnail, (const std::string& thumbnail_url));
-};
-
-class MockAutocompleteController : public AutocompleteController {
- public:
-  MockAutocompleteController(
-      std::unique_ptr<AutocompleteProviderClient> provider_client,
-      int provider_types)
-      : AutocompleteController(std::move(provider_client), provider_types) {}
-  ~MockAutocompleteController() override = default;
-  MockAutocompleteController(const MockAutocompleteController&) = delete;
-  MockAutocompleteController& operator=(const MockAutocompleteController&) =
-      delete;
-
-  // AutocompleteController:
-  MOCK_METHOD(void, Start, (const AutocompleteInput&), (override));
-};
-
-class MockOmniboxEditModel : public OmniboxEditModel {
- public:
-  MockOmniboxEditModel(OmniboxController* omnibox_controller, OmniboxView* view)
-      : OmniboxEditModel(omnibox_controller, view) {}
-  ~MockOmniboxEditModel() override = default;
-  MockOmniboxEditModel(const MockOmniboxEditModel&) = delete;
-  MockOmniboxEditModel& operator=(const MockOmniboxEditModel&) = delete;
-
-  // OmniboxEditModel:
-  MOCK_METHOD(void, SetUserText, (const std::u16string&), (override));
-};
-
-class MockLensSearchboxClient : public LensSearchboxClient {
- public:
-  MockLensSearchboxClient() = default;
-  ~MockLensSearchboxClient() override = default;
-  MockLensSearchboxClient(const MockLensSearchboxClient&) = delete;
-  MockLensSearchboxClient& operator=(const MockLensSearchboxClient&) = delete;
-
-  // LensSearchboxClient:
-  MOCK_METHOD(const GURL&, GetPageURL, (), (override, const));
-  MOCK_METHOD(SessionID, GetTabId, (), (override, const));
-  MOCK_METHOD(metrics::OmniboxEventProto::PageClassification,
-              GetPageClassification,
-              (),
-              (override, const));
-  MOCK_METHOD(std::string&, GetThumbnail, (), (override));
-  MOCK_METHOD(const lens::proto::LensOverlaySuggestInputs&,
-              GetLensSuggestInputs,
-              (),
-              (override, const));
-  MOCK_METHOD(void, OnTextModified, (), (override));
-  MOCK_METHOD(void, OnThumbnailRemoved, (), (override));
-  MOCK_METHOD(void,
-              OnSuggestionAccepted,
-              (const GURL&, AutocompleteMatchType::Type, bool),
-              (override));
-  MOCK_METHOD(void, OnFocusChanged, (bool focused), (override));
-  MOCK_METHOD(void, OnPageBound, (), (override));
-  MOCK_METHOD(void, ShowGhostLoaderErrorState, (), (override));
-  MOCK_METHOD(void, OnZeroSuggestShown, (), (override));
-};
 
 class TestObserver : public OmniboxWebUIPopupChangeObserver {
  public:
@@ -138,7 +49,7 @@ class SearchboxHandlerTest : public ::testing::Test {
   TestingProfile* profile() { return profile_.get(); }
 
  protected:
-  testing::NiceMock<MockPage> page_;
+  testing::NiceMock<MockSearchboxPage> page_;
   raw_ptr<testing::NiceMock<MockAutocompleteController>>
       autocomplete_controller_;
   raw_ptr<testing::NiceMock<MockOmniboxEditModel>> omnibox_edit_model_;

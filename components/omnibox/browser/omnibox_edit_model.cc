@@ -2252,6 +2252,10 @@ void OmniboxEditModel::SetPopupSuggestionGroupVisibility(
   }
 }
 
+void OmniboxEditModel::SetAutocompleteInput(AutocompleteInput input) {
+  input_ = std::move(input);
+}
+
 PrefService* OmniboxEditModel::GetPrefService() {
   return controller_->client()->GetPrefs();
 }
@@ -2570,14 +2574,15 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   // In some unusual cases, we ignore autocomplete_controller()->result() and
   // instead log a fake result set with a single element (|match|) and
   // selected_index of 0. For these cases:
-  //  1. If the popup is closed (there is no result set).
+  //  1. If the popup is closed (there is no result set). This doesn't apply
+  //  for WebUI searchboxes since they don't have an associated popup.
   //  2. If the index is out of bounds. This should only happen if
   //  |selection.line| is
   //     kNoMatch, which can happen if the default search provider is disabled.
   //  3. If this is paste-and-go (meaning the contents of the dropdown
   //     are ignored regardless).
   const bool dropdown_ignored =
-      !popup_open ||
+      (!popup_open && !omnibox::IsWebUISearchbox(GetPageClassification())) ||
       selection.line >= autocomplete_controller()->result().size() ||
       !pasted_text.empty();
   ACMatches fake_single_entry_matches;

@@ -378,6 +378,7 @@ class AutocompleteController : public AutocompleteProviderListener,
       GetPopupRichSuggestionBitmapForMatchWithAssociatedKeyword);
   FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
                            GetIconForExtensionWithImageURL);
+  FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, RealboxUpdatesEditModelInput);
 
   // A minimal representation of the previous `AutocompleteResult`. Used by
   // `UpdateResult()`'s helper methods.
