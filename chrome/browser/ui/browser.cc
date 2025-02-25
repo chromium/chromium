@@ -1214,12 +1214,9 @@ bool Browser::IsActive() {
   // If this is a standalone PWA window, check BrowserList instead.
   if (GetAppBrowserController()) {
     return BrowserList::GetInstance()->GetLastActive() == this;
-  } else {
-    return window_->IsActive();
   }
-#else
-  return window_->IsActive();
 #endif
+  return is_active_;
 }
 
 base::CallbackListSubscription Browser::RegisterDidBecomeActive(
@@ -1269,13 +1266,17 @@ Browser* Browser::GetBrowserForMigrationOnly() {
 }
 
 void Browser::DidBecomeActive() {
-  BrowserList::SetLastActive(this);
-  did_become_active_callback_list_.Notify(this);
+  if (!is_active_) {
+    is_active_ = true;
+    did_become_active_callback_list_.Notify(this);
+  }
 }
 
 void Browser::DidBecomeInactive() {
-  BrowserList::NotifyBrowserNoLongerActive(this);
-  did_become_inactive_callback_list_.Notify(this);
+  if (is_active_) {
+    is_active_ = false;
+    did_become_inactive_callback_list_.Notify(this);
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

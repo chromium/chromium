@@ -52,8 +52,8 @@ class GlicFocusedTabManager : public BrowserListObserver,
   virtual FocusedTabData GetFocusedTabData();
 
   // BrowserListObserver
-  void OnBrowserSetLastActive(Browser* browser) override;
-  void OnBrowserNoLongerActive(Browser* browser) override;
+  void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserRemoved(Browser* browser) override;
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
@@ -108,6 +108,10 @@ class GlicFocusedTabManager : public BrowserListObserver,
   // Calls all registered focused tab changed callbacks.
   void NotifyFocusedTabChanged();
 
+  // Callback for active browser changes from BrowserWindowInterface.
+  void OnBrowserBecameActive(BrowserWindowInterface* browser_interface);
+  void OnBrowserBecameInactive(BrowserWindowInterface* browser_interface);
+
   // Callback for active tab changes from BrowserWindowInterface.
   void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
 
@@ -135,12 +139,13 @@ class GlicFocusedTabManager : public BrowserListObserver,
   FocusedTabData focused_tab_data_ =
       FocusedTabData(nullptr, std::nullopt, std::nullopt);
 
-  // Callback subscription for listening to changes to active tab for a browser.
-  base::CallbackListSubscription browser_subscription_;
-
   // Callback subscription for listening to changes to the Glic window
   // activation changes.
   base::CallbackListSubscription window_activation_subscription_;
+
+  // Callback subscription for listening to changes from compliant browsers.
+  std::map<BrowserWindowInterface*, std::vector<base::CallbackListSubscription>>
+      browser_subscriptions_;
 
   // WidgetObserver for triggering window minimization/maximization changes.
   base::ScopedObservation<views::Widget, views::WidgetObserver>

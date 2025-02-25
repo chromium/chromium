@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/common/url_constants.h"
 #include "ui/views/widget/widget.h"
 
@@ -41,6 +40,7 @@ GlicFocusedTabManager::GlicFocusedTabManager(
 }
 
 GlicFocusedTabManager::~GlicFocusedTabManager() {
+  browser_subscriptions_.clear();
   widget_observation_.Reset();
   BrowserList::GetInstance()->RemoveObserver(this);
   window_controller_->RemoveStateObserver(this);
@@ -52,25 +52,38 @@ GlicFocusedTabManager::AddFocusedTabChangedCallback(
   return focused_callback_list_.Add(std::move(callback));
 }
 
-void GlicFocusedTabManager::OnBrowserSetLastActive(Browser* browser) {
-  // Clear any existing browser callback subscription.
-  browser_subscription_ = {};
-  widget_observation_.Reset();
-
+void GlicFocusedTabManager::OnBrowserAdded(Browser* browser) {
   // Subscribe to active tab changes to this browser if it's valid.
   if (IsBrowserValid(browser)) {
-    browser_subscription_ = browser->RegisterActiveTabDidChange(
-        base::BindRepeating(&GlicFocusedTabManager::OnActiveTabChanged,
-                            base::Unretained(this)));
+    std::vector<base::CallbackListSubscription> subscriptions;
 
-    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-    if (browser_view) {
-      views::Widget* widget = browser_view->GetWidget();
-      if (widget) {
-        widget_observation_.Observe(widget);
-      }
-    }
+    subscriptions.push_back(browser->RegisterDidBecomeActive(
+        base::BindRepeating(&GlicFocusedTabManager::OnBrowserBecameActive,
+                            base::Unretained(this))));
+
+    subscriptions.push_back(browser->RegisterDidBecomeInactive(
+        base::BindRepeating(&GlicFocusedTabManager::OnBrowserBecameInactive,
+                            base::Unretained(this))));
+
+    subscriptions.push_back(browser->RegisterActiveTabDidChange(
+        base::BindRepeating(&GlicFocusedTabManager::OnActiveTabChanged,
+                            base::Unretained(this))));
+
+    browser_subscriptions_[browser] = std::move(subscriptions);
   }
+}
+
+void GlicFocusedTabManager::OnBrowserRemoved(Browser* browser) {
+  // Remove the browser if it exists in the map.
+  browser_subscriptions_.erase(browser);
+}
+
+void GlicFocusedTabManager::OnBrowserBecameActive(
+    BrowserWindowInterface* browser_interface) {
+  // Observe for browser window minimization changes.
+  widget_observation_.Reset();
+  views::Widget* widget = browser_interface->TopContainer()->GetWidget();
+  widget_observation_.Observe(widget);
 
   // We need to force-notify because even if the focused tab doesn't change, it
   // can be in a different browser window (i.e., the user drag-n-drop the
@@ -82,7 +95,8 @@ void GlicFocusedTabManager::OnBrowserSetLastActive(Browser* browser) {
   MaybeUpdateFocusedTab(/*force_notify=*/true);
 }
 
-void GlicFocusedTabManager::OnBrowserNoLongerActive(Browser* browser) {
+void GlicFocusedTabManager::OnBrowserBecameInactive(
+    BrowserWindowInterface* browser_interface) {
   MaybeUpdateFocusedTab(/*force_notify=*/true);
 }
 

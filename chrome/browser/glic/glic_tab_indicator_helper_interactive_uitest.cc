@@ -221,4 +221,16 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                   WaitForState(kTab2AlertState, IsAccessing()));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
+                       AcessingTabAfterOpeningTabSearchDialog) {
+  RunTestSequence(LoadStartingPage(),
+                  ObserveState(kTab1AlertState, browser(), 0),
+                  OpenGlicWindow(GlicWindowMode::kAttached),
+                  ClickMockGlicElement(kMockGlicContextAccessButton),
+                  WaitForState(kTab1AlertState, IsAccessing()),
+                  PressButton(kTabSearchButtonElementId),
+                  WaitForShow(kTabSearchBubbleElementId),
+                  WaitForState(kTab1AlertState, IsAccessing()));
+}
+
 }  // namespace glic

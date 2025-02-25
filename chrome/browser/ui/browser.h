@@ -876,7 +876,7 @@ class Browser : public TabStripModelObserver,
   std::vector<tabs::TabInterface*> GetAllTabInterfaces() override;
   Browser* GetBrowserForMigrationOnly() override;
 
-  // Called by BrowserView when on active changes.
+  // Called by BrowserView on active change for the browser.
   void DidBecomeActive();
   void DidBecomeInactive();
 
@@ -1306,6 +1306,9 @@ class Browser : public TabStripModelObserver,
 
   // This Browser's window.
   raw_ptr<BrowserWindow, DanglingUntriaged> window_;
+
+  // The active state of this browser.
+  bool is_active_ = false;
 
   std::unique_ptr<TabStripModelDelegate> const tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> const tab_strip_model_;

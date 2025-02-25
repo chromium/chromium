@@ -32,7 +32,6 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -42,7 +41,6 @@
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace glic {
 
@@ -51,8 +49,7 @@ namespace {
 // Monitors the panel state and the browser widget state. Emits an event any
 // time the active state changes.
 // inactive = (panel hidden) || (panel attached) && (window not active)
-class ActiveStateCalculator : public views::WidgetObserver,
-                              public GlicWindowController::StateObserver {
+class ActiveStateCalculator : public GlicWindowController::StateObserver {
  public:
   // Observes changes to active state.
   class Observer : public base::CheckedObserver {
@@ -61,7 +58,7 @@ class ActiveStateCalculator : public views::WidgetObserver,
   };
 
   explicit ActiveStateCalculator(GlicWindowController* window_controller)
-      : window_controller_(window_controller), widget_observation_(this) {
+      : window_controller_(window_controller) {
     window_controller_->AddStateObserver(this);
     PanelStateChanged(window_controller_->GetPanelState(),
                       window_controller_->attached_browser());
@@ -74,12 +71,6 @@ class ActiveStateCalculator : public views::WidgetObserver,
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
   void RemoveObserver(Observer* observer) {
     observers_.RemoveObserver(observer);
-  }
-
-  // views::WidgetObserver implementation.
-  void OnWidgetDestroyed(views::Widget* widget) override {
-    SetAttachedBrowser(nullptr);
-    PostRecalcAndNotify();
   }
 
   // GlicWindowController::StateObserver implementation.
@@ -107,22 +98,35 @@ class ActiveStateCalculator : public views::WidgetObserver,
     }
   }
 
+  void AttachedBrowserActiveChanged(BrowserWindowInterface* browser) {
+    PostRecalcAndNotify();
+  }
+
+  void AttachedBrowserDidClose(BrowserWindowInterface* browser) {
+    SetAttachedBrowser(nullptr);
+    PostRecalcAndNotify();
+  }
+
   bool SetAttachedBrowser(Browser* attached_browser) {
     if (attached_browser_ == attached_browser) {
       return false;
     }
-    widget_observation_.Reset();
-    paint_as_active_changed_subscription_ = {};
+    attached_browser_subscriptions_.clear();
     attached_browser_ = attached_browser;
+
     if (attached_browser_ && !attached_browser_->IsBrowserClosing()) {
-      paint_as_active_changed_subscription_ =
-          attached_browser_->GetBrowserView()
-              .GetWidget()
-              ->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
-                  &ActiveStateCalculator::PostRecalcAndNotify,
-                  base::Unretained(this)));
-      widget_observation_.Observe(
-          attached_browser_->GetBrowserView().GetWidget());
+      attached_browser_subscriptions_.push_back(
+          attached_browser_->RegisterDidBecomeActive(base::BindRepeating(
+              &ActiveStateCalculator::AttachedBrowserActiveChanged,
+              base::Unretained(this))));
+      attached_browser_subscriptions_.push_back(
+          attached_browser_->RegisterDidBecomeInactive(base::BindRepeating(
+              &ActiveStateCalculator::AttachedBrowserActiveChanged,
+              base::Unretained(this))));
+      attached_browser_subscriptions_.push_back(
+          attached_browser_->RegisterBrowserDidClose(base::BindRepeating(
+              &ActiveStateCalculator::AttachedBrowserDidClose,
+              base::Unretained(this))));
     }
     return true;
   }
@@ -138,23 +142,16 @@ class ActiveStateCalculator : public views::WidgetObserver,
       return false;
     }
 
-    // TODO(harringtond): This is a temporary solution. There are some known
-    // issues where this provides both false-positive and false-negative signals
-    // compared to the ideal behavior.
-    return attached_browser_->GetBrowserView()
-        .GetWidget()
-        ->ShouldPaintAsActive();
+    return attached_browser_->IsActive();
   }
 
   base::OneShotTimer calc_timer_;
-  base::CallbackListSubscription paint_as_active_changed_subscription_;
+  std::vector<base::CallbackListSubscription> attached_browser_subscriptions_;
 
   raw_ptr<GlicWindowController> window_controller_;
   base::ObserverList<Observer> observers_;
   glic::mojom::PanelState::Kind panel_state_kind_;
   bool is_active_ = false;
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      widget_observation_;
   raw_ptr<Browser> attached_browser_ = nullptr;
 };
 
