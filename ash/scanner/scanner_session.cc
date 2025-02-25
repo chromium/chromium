@@ -209,9 +209,21 @@ void ScannerSession::OnActionsReturned(
   base::UmaHistogramMediumTimes(kScannerFeatureTimerFetchActionsForImage,
                                 base::TimeTicks::Now() - request_start_time);
 
+  if (status.status_code == manta::MantaStatusCode::kUnsupportedLanguage) {
+    std::move(callback).Run(base::unexpected(FetchError{
+        .error_message = l10n_util::GetStringUTF16(
+            IDS_ASH_SCANNER_ERROR_UNSUPPORTED_LANGUAGE),
+        .can_try_again = false,
+    }));
+    return;
+  }
+
   if (output == nullptr) {
-    std::move(callback).Run(base::unexpected(
-        l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC)));
+    std::move(callback).Run(base::unexpected(FetchError{
+        .error_message =
+            l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC),
+        .can_try_again = true,
+    }));
     return;
   }
 
