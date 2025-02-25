@@ -10,7 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model_observer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/common/features.h"
 
@@ -32,7 +32,7 @@ FullscreenModel::FullscreenModel() {
   UpdateSpeed();
 }
 FullscreenModel::~FullscreenModel() {
-  [toolbar_ui_state_ removeObserver:this];
+  [toolbars_size_ removeObserver:this];
 }
 
 void FullscreenModel::AddObserver(FullscreenModelObserver* observer) {
@@ -111,21 +111,19 @@ void FullscreenModel::ToolbarsHeightDidChange() {
 }
 
 CGFloat FullscreenModel::GetCollapsedTopToolbarHeight() const {
-  return toolbar_ui_state_ ? toolbar_ui_state_.collapsedTopToolbarHeight : 0.0;
+  return toolbars_size_ ? toolbars_size_.collapsedTopToolbarHeight : 0.0;
 }
 
 CGFloat FullscreenModel::GetExpandedTopToolbarHeight() const {
-  return toolbar_ui_state_ ? toolbar_ui_state_.expandedTopToolbarHeight : 0.0;
+  return toolbars_size_ ? toolbars_size_.expandedTopToolbarHeight : 0.0;
 }
 
 CGFloat FullscreenModel::GetExpandedBottomToolbarHeight() const {
-  return toolbar_ui_state_ ? toolbar_ui_state_.expandedBottomToolbarHeight
-                           : 0.0;
+  return toolbars_size_ ? toolbars_size_.expandedBottomToolbarHeight : 0.0;
 }
 
 CGFloat FullscreenModel::GetCollapsedBottomToolbarHeight() const {
-  return toolbar_ui_state_ ? toolbar_ui_state_.collapsedBottomToolbarHeight
-                           : 0.0;
+  return toolbars_size_ ? toolbars_size_.collapsedBottomToolbarHeight : 0.0;
 }
 
 void FullscreenModel::SetScrollViewHeight(CGFloat scroll_view_height) {
@@ -531,40 +529,40 @@ void FullscreenModel::OnScrollViewIsDraggingBroadcasted(bool dragging) {
 }
 
 void FullscreenModel::OnCollapsedTopToolbarHeightBroadcasted(CGFloat height) {
-  CHECK(!IsRefactorToolbarUI());
+  CHECK(!IsRefactorToolbarsSize());
   ToolbarsHeightDidChange();
 }
 
 void FullscreenModel::OnExpandedTopToolbarHeightBroadcasted(CGFloat height) {
-  CHECK(!IsRefactorToolbarUI());
+  CHECK(!IsRefactorToolbarsSize());
   ToolbarsHeightDidChange();
 }
 
 void FullscreenModel::OnCollapsedBottomToolbarHeightBroadcasted(
     CGFloat height) {
-  CHECK(!IsRefactorToolbarUI());
+  CHECK(!IsRefactorToolbarsSize());
   ToolbarsHeightDidChange();
 }
 
 void FullscreenModel::OnExpandedBottomToolbarHeightBroadcasted(CGFloat height) {
-  CHECK(!IsRefactorToolbarUI());
+  CHECK(!IsRefactorToolbarsSize());
   ToolbarsHeightDidChange();
 }
 
-void FullscreenModel::SetToolbarUIState(ToolbarUIState* toolbar_ui_state) {
-  toolbar_ui_state_ = toolbar_ui_state;
+void FullscreenModel::SetToolbarsSize(ToolbarsSize* toolbars_size) {
+  toolbars_size_ = toolbars_size;
   ToolbarsHeightDidChange();
-  if (IsRefactorToolbarUI() && toolbar_ui_state_) {
-    [toolbar_ui_state addObserver:this];
+  if (IsRefactorToolbarsSize() && toolbars_size_) {
+    [toolbars_size addObserver:this];
   }
 }
 
 void FullscreenModel::OnTopToolbarHeightChanged() {
-  CHECK(IsRefactorToolbarUI());
+  CHECK(IsRefactorToolbarsSize());
   ToolbarsHeightDidChange();
 }
 
 void FullscreenModel::OnBottomToolbarHeightChanged() {
-  CHECK(IsRefactorToolbarUI());
+  CHECK(IsRefactorToolbarsSize());
   ToolbarsHeightDidChange();
 }

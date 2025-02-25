@@ -13,18 +13,18 @@
 #import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcast_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui_observer.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_observer.h"
 #import "ios/web/common/features.h"
 
 class FullscreenModelObserver;
-@class ToolbarUIState;
+@class ToolbarsSize;
 
 // Represents the direction the user is scrolling.
 enum class FullscreenModelScrollDirection : int { kUp, kDown, kNone };
 
 // Model object used to calculate fullscreen state.
 class FullscreenModel : public ChromeBroadcastObserverInterface,
-                        ToolbarUIObserver {
+                        ToolbarsSizeObserver {
  public:
   FullscreenModel();
 
@@ -223,7 +223,7 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
   CGFloat GetSpeed() { return speed_; }
 
   // Setter for the toolbar.
-  void SetToolbarUIState(ToolbarUIState* toolbar_ui_state);
+  void SetToolbarsSize(ToolbarsSize* toolbars_size);
 
  private:
   // Returns how a scroll to the current `y_content_offset_` from `from_offset`
@@ -265,7 +265,7 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
   void OnExpandedBottomToolbarHeightBroadcasted(CGFloat height) override;
   void OnCollapsedBottomToolbarHeightBroadcasted(CGFloat height) override;
 
-  // ToolbarUIObserver implementation
+  // ToolbarsSizeObserver implementation
   void OnTopToolbarHeightChanged() override;
   void OnBottomToolbarHeightChanged() override;
   // The observers for this model.
@@ -277,7 +277,7 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
   // is false, it is reset to the current offset after each scroll event.
   CGFloat base_offset_ = 0.0;
   // Heights of the top and bottom toolbars.
-  ToolbarUIState* toolbar_ui_state_;
+  ToolbarsSize* toolbars_size_;
   // The current vertical content offset of the main content.
   CGFloat y_content_offset_ = 0.0;
   // The height of the scroll view displaying the current page.

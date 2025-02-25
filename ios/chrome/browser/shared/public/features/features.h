@@ -1038,9 +1038,9 @@ extern const char kMediumFullscreenTransitionOffsetParam[];
 BASE_DECLARE_FEATURE(kFullscreenTransition);
 
 // Feature flag for switching the toolbar UI to an observer-based architecture.
-BASE_DECLARE_FEATURE(kRefactorToolbarUI);
+BASE_DECLARE_FEATURE(kRefactorToolbarsSize);
 
-bool IsRefactorToolbarUI();
+bool IsRefactorToolbarsSize();
 
 // Feature flag to enable the new share extension UI and entries.
 BASE_DECLARE_FEATURE(kNewShareExtension);

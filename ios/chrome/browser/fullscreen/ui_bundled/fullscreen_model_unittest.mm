@@ -7,7 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_model_test_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_model_observer.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
 #import "ios/web/common/features.h"
 #import "testing/platform_test.h"
 
@@ -31,12 +31,12 @@ class FullscreenModelTest : public PlatformTest {
     model_->AddObserver(&observer_);
     // Set the toolbars height to kToolbarHeight, and simulate a page load that
     // finishes with a 0.0 y content offset.
-    ToolbarUIState* toolbarUIState =
-        [[ToolbarUIState alloc] initWithCollapsedTopToolbarHeight:0.0
-                                         expandedTopToolbarHeight:kToolbarHeight
-                                      expandedBottomToolbarHeight:kToolbarHeight
-                                     collapsedBottomToolbarHeight:0.0];
-    model_->SetToolbarUIState(toolbarUIState);
+    ToolbarsSize* toolbarsSize =
+        [[ToolbarsSize alloc] initWithCollapsedTopToolbarHeight:0.0
+                                       expandedTopToolbarHeight:kToolbarHeight
+                                    expandedBottomToolbarHeight:kToolbarHeight
+                                   collapsedBottomToolbarHeight:0.0];
+    model_->SetToolbarsSize(toolbarsSize);
     model_->SetScrollViewHeight(kScrollViewHeight);
     model_->SetContentHeight(kContentHeight);
     model_->ResetForNavigation();
@@ -46,7 +46,7 @@ class FullscreenModelTest : public PlatformTest {
 
   FullscreenModel* model() { return model_.get(); }
   TestFullscreenModelObserver& observer() { return observer_; }
-  ToolbarUIState* getToolbarUIState() { return model()->toolbar_ui_state_; }
+  ToolbarsSize* GetToolbarsSize() { return model()->toolbars_size_; }
 
  private:
   std::unique_ptr<FullscreenModel> model_ = std::make_unique<FullscreenModel>();
@@ -150,8 +150,8 @@ TEST_F(FullscreenModelTest, AnimationEnded) {
 TEST_F(FullscreenModelTest, UpdateToolbarHeight) {
   // Reset the toolbar height and verify that the base offset is reset and that
   // the toolbar is fully visible.
-  ToolbarUIState* toolbarUIState = getToolbarUIState();
-  toolbarUIState.expandedTopToolbarHeight = 2.0 * kToolbarHeight;
+  ToolbarsSize* ToolbarsSize = GetToolbarsSize();
+  ToolbarsSize.expandedTopToolbarHeight = 2.0 * kToolbarHeight;
   model()->ToolbarsHeightDidChange();
   if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
     EXPECT_FALSE(model()->has_base_offset());
@@ -213,8 +213,8 @@ TEST_F(FullscreenModelTest, ZoomScroll) {
 // Tests that updating the y content offset while the toolbar height is 0 only
 // updates the model's base offset.
 TEST_F(FullscreenModelTest, NoToolbarScroll) {
-  ToolbarUIState* toolbarUIState = getToolbarUIState();
-  toolbarUIState.expandedTopToolbarHeight = 0.0;
+  ToolbarsSize* ToolbarsSize = GetToolbarsSize();
+  ToolbarsSize.expandedTopToolbarHeight = 0.0;
   model()->SetYContentOffset(100);
   EXPECT_EQ(observer().progress(), 1.0);
   EXPECT_EQ(model()->base_offset(), 100);

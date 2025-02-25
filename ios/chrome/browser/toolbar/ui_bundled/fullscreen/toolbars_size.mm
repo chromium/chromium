@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
 
 #import "base/observer_list.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_observer.h"
 
-@implementation ToolbarUIState {
+@implementation ToolbarsSize {
   base::ObserverList<ToolbarsSizeObserver> observers_;
 }
 

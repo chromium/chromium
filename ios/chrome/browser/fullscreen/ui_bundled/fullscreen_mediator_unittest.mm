@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller_observer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_mediator.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
 #import "testing/platform_test.h"
 
 // Test fixture for FullscreenMediator.
@@ -68,13 +68,12 @@ TEST_F(FullscreenMediatorTest, ObserveViewportInsets) {
   const CGFloat kExpandedBottomToolbarHeight = 60.0;
   const CGFloat kCollapsedBottomToolbarHeight = 1.0;
 
-  ToolbarUIState* toolbarUIState = [[ToolbarUIState alloc]
+  ToolbarsSize* toolbarsSize = [[ToolbarsSize alloc]
       initWithCollapsedTopToolbarHeight:kCollapsedTopToolbarHeight
                expandedTopToolbarHeight:kExpandedTopToolbarHeight
             expandedBottomToolbarHeight:kExpandedBottomToolbarHeight
            collapsedBottomToolbarHeight:kCollapsedBottomToolbarHeight];
-  model()->SetToolbarUIState(toolbarUIState);
-
+  model()->SetToolbarsSize(toolbarsSize);
   EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(
       observer().min_viewport_insets(),
       UIEdgeInsetsMake(kCollapsedTopToolbarHeight, 0,

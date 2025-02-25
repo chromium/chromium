@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_system_notification_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
 #import "ios/web/common/features.h"
 
 // static
@@ -55,7 +56,7 @@ FullscreenControllerImpl::FullscreenControllerImpl(Browser* browser)
     [broadcaster_ addObserver:bridge_
                   forSelector:@selector(broadcastContentScrollOffset:)];
   }
-  if (!IsRefactorToolbarUI()) {
+  if (!IsRefactorToolbarsSize()) {
     [broadcaster_ addObserver:bridge_
                   forSelector:@selector(broadcastCollapsedTopToolbarHeight:)];
     [broadcaster_ addObserver:bridge_
@@ -88,7 +89,7 @@ FullscreenControllerImpl::~FullscreenControllerImpl() {
     [broadcaster_ removeObserver:bridge_
                      forSelector:@selector(broadcastContentScrollOffset:)];
   }
-  if (!IsRefactorToolbarUI()) {
+  if (!IsRefactorToolbarsSize()) {
     [broadcaster_
         removeObserver:bridge_
            forSelector:@selector(broadcastCollapsedTopToolbarHeight:)];
@@ -202,12 +203,26 @@ void FullscreenControllerImpl::ResizeHorizontalViewport() {
   mediator_.ResizeHorizontalInsets();
 }
 
-void FullscreenControllerImpl::SetToolbarUIState(
-    ToolbarUIState* toolbar_ui_state) {
-  toolbar_ui_state_ = toolbar_ui_state;
-  model_->SetToolbarUIState(toolbar_ui_state);
+void FullscreenControllerImpl::SetToolbarsSize(ToolbarsSize* toolbars_size) {
+  toolbars_size_ = toolbars_size;
+  model_->SetToolbarsSize(toolbars_size);
 }
 
-ToolbarUIState* FullscreenControllerImpl::GetToolbarUIState() const {
-  return toolbar_ui_state_;
+ToolbarsSize* FullscreenControllerImpl::GetToolbarsSize() const {
+  return toolbars_size_;
+}
+
+// Needs to be cleanup after internal test changes.
+void FullscreenControllerImpl::SetToolbarUIState(
+    ToolbarUIState* toolbar_ui_state) {
+  ToolbarsSize* toolbars_size = [[ToolbarsSize alloc]
+      initWithCollapsedTopToolbarHeight:toolbar_ui_state
+                                            .collapsedTopToolbarHeight
+               expandedTopToolbarHeight:toolbar_ui_state
+                                            .expandedTopToolbarHeight
+            expandedBottomToolbarHeight:toolbar_ui_state
+                                            .expandedBottomToolbarHeight
+           collapsedBottomToolbarHeight:toolbar_ui_state
+                                            .collapsedBottomToolbarHeight];
+  SetToolbarsSize(toolbars_size);
 }

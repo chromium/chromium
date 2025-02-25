@@ -10,30 +10,31 @@
 #import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_content_consumer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui_observer.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui_observer_bridge.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_observer.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_observer_bridge.h"
 
-@interface PanelContentMediator () <ChromeBroadcastObserver, ToolbarUIObserving>
+@interface PanelContentMediator () <ChromeBroadcastObserver,
+                                    ToolbarsSizeObserving>
 
 @end
 
 @implementation PanelContentMediator {
   // The broadcaster to use to receive updates on the toolbar's height.
   __weak ChromeBroadcaster* _broadcaster;
-  __weak ToolbarUIState* _toolbarUIState;
-  std::unique_ptr<ToolbarUIObserverBridge> _toolbarUIObserverBridge;
+  __weak ToolbarsSize* _toolbarsSize;
+  std::unique_ptr<ToolbarsSizeObserverBridge> _toolbarsUIObserverBridge;
 }
 
 - (instancetype)initWithBroadcaster:(ChromeBroadcaster*)broadcaster
-                     toolbarUIState:(ToolbarUIState*)toolbarUIState {
+                       toolbarsSize:(ToolbarsSize*)toolbarsSize {
   self = [super init];
   if (self) {
-    if (IsRefactorToolbarUI()) {
-      _toolbarUIObserverBridge =
-          std::make_unique<ToolbarUIObserverBridge>(self);
-      _toolbarUIState = toolbarUIState;
-      [_toolbarUIState addObserver:_toolbarUIObserverBridge.get()];
+    if (IsRefactorToolbarsSize()) {
+      _toolbarsUIObserverBridge =
+          std::make_unique<ToolbarsSizeObserverBridge>(self);
+      _toolbarsSize = toolbarsSize;
+      [_toolbarsSize addObserver:_toolbarsUIObserverBridge.get()];
     } else {
       _broadcaster = broadcaster;
     }
@@ -42,9 +43,9 @@
 }
 
 - (void)dealloc {
-  if (IsRefactorToolbarUI()) {
-    if (_toolbarUIState) {
-      [_toolbarUIState removeObserver:_toolbarUIObserverBridge.get()];
+  if (IsRefactorToolbarsSize()) {
+    if (_toolbarsSize) {
+      [_toolbarsSize removeObserver:_toolbarsUIObserverBridge.get()];
     }
   }
 }
@@ -52,11 +53,10 @@
 - (void)setConsumer:(id<PanelContentConsumer>)consumer {
   _consumer = consumer;
 
-  if (IsRefactorToolbarUI()) {
-    if (_toolbarUIState) {
+  if (IsRefactorToolbarsSize()) {
+    if (_toolbarsSize) {
       [self.consumer
-          updateBottomToolbarHeight:_toolbarUIState
-                                        .expandedBottomToolbarHeight];
+          updateBottomToolbarHeight:_toolbarsSize.expandedBottomToolbarHeight];
     }
   } else {
     // Wait for a consumer so the data can be passed straight along to the
@@ -69,16 +69,16 @@
 #pragma mark - ChromeBroadcastObserver
 
 - (void)broadcastExpandedBottomToolbarHeight:(CGFloat)height {
-  CHECK(!IsRefactorToolbarUI());
+  CHECK(!IsRefactorToolbarsSize());
   [self.consumer updateBottomToolbarHeight:height];
 }
 
 #pragma mark - ToolbarUIObserving
 
 - (void)OnBottomToolbarHeightChanged {
-  if (IsRefactorToolbarUI()) {
+  if (IsRefactorToolbarsSize()) {
     [self.consumer
-        updateBottomToolbarHeight:_toolbarUIState.expandedBottomToolbarHeight];
+        updateBottomToolbarHeight:_toolbarsSize.expandedBottomToolbarHeight];
   }
 }
 

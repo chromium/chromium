@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_FULLSCREEN_TOOLBAR_UI_H_
-#define IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_FULLSCREEN_TOOLBAR_UI_H_
+#ifndef IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_FULLSCREEN_TOOLBARS_SIZE_H_
+#define IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_FULLSCREEN_TOOLBARS_SIZE_H_
 
 #import <UIKit/UIKit.h>
 
 class ToolbarsSizeObserver;
 
-// Simple implementation of ToolbarUI that allows readwrite access to broadcast
-// properties.
-@interface ToolbarUIState : NSObject
+// Toolbars' size. Almost constants.
+@interface ToolbarsSize : NSObject
 
-// TODO(crbug.com/397683330): Make properties readonly and use specific
-// functions to update them. Redefine properties as readwrite.
+// Define properties as readwrite.
 @property(nonatomic, assign) CGFloat collapsedTopToolbarHeight;
 @property(nonatomic, assign) CGFloat expandedTopToolbarHeight;
 @property(nonatomic, assign) CGFloat expandedBottomToolbarHeight;
@@ -38,4 +36,4 @@ class ToolbarsSizeObserver;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_FULLSCREEN_TOOLBAR_UI_H_
+#endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_FULLSCREEN_TOOLBARS_SIZE_H_

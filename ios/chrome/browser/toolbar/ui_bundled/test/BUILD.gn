@@ -6,12 +6,12 @@ source_set("test") {
   testonly = true
 
   sources = [
-    "test_toolbar_ui_observer.h",
-    "test_toolbar_ui_observer.mm",
-    "toolbar_broadcast_test_util.h",
-    "toolbar_broadcast_test_util.mm",
+    "test_toolbars_size_observer.h",
+    "test_toolbars_size_observer.mm",
     "toolbar_test_navigation_manager.h",
     "toolbar_test_navigation_manager.mm",
+    "toolbars_size_broadcast_test_util.h",
+    "toolbars_size_broadcast_test_util.mm",
   ]
 
   deps = [
