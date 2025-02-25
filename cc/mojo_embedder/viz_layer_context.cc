@@ -465,11 +465,14 @@ void SerializeLayer(LayerImpl& layer,
   wire.effect_tree_index = layer.effect_tree_index();
   wire.scroll_tree_index = layer.scroll_tree_index();
   switch (layer.GetLayerType()) {
-    case mojom::LayerType::kSurface:
-      wire.surface_layer_extra = viz::mojom::SurfaceLayerExtra::New();
+    case mojom::LayerType::kSurface: {
+      auto surface_layer_extra = viz::mojom::SurfaceLayerExtra::New();
       SerializeSurfaceLayerExtra(static_cast<SurfaceLayerImpl&>(layer),
-                                 wire.surface_layer_extra);
+                                 surface_layer_extra);
+      wire.layer_extra = viz::mojom::LayerExtra::NewSurfaceLayerExtra(
+          std::move(surface_layer_extra));
       break;
+    }
     case mojom::LayerType::kPicture: {
       PictureLayerImpl& picture_layer = static_cast<PictureLayerImpl&>(layer);
       if (picture_layer.GetRasterSource()->IsSolidColor()) {
