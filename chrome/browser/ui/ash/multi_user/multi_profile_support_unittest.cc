@@ -305,9 +305,6 @@ void MultiProfileSupportTest::SetUp() {
   ChromeAshTestBase::SetUp(std::make_unique<TestShellDelegateChromeOS>());
   ash_test_helper()
       ->test_session_controller_client()
-      ->set_use_lower_case_user_id(false);
-  ash_test_helper()
-      ->test_session_controller_client()
       ->set_pref_service_must_exist(true);
 
   profile_manager_ = std::make_unique<TestingProfileManager>(

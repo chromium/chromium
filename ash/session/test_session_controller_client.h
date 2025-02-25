@@ -58,10 +58,6 @@ class TestSessionControllerClient final : public SessionControllerClient {
   // Sets up the default state of SessionController.
   void Reset();
 
-  void set_use_lower_case_user_id(bool value) {
-    use_lower_case_user_id_ = value;
-  }
-
   int attempt_restart_chrome_count() const {
     return attempt_restart_chrome_count_;
   }
@@ -197,7 +193,6 @@ class TestSessionControllerClient final : public SessionControllerClient {
   // If true, pref service must exist when adding a session, or fail with CHECK.
   bool pref_service_must_exist_ = false;
 
-  bool use_lower_case_user_id_ = true;
   int request_hide_lock_screen_count_ = 0;
   int request_sign_out_count_ = 0;
   int request_restart_for_update_count_ = 0;
