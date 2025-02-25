@@ -28,6 +28,7 @@ def __clang_compile_coverage(ctx, cmd):
 __handlers = {
     "clang_compile_coverage": __clang_compile_coverage,
 }
+__handlers.update(clang_all.handlers)
 
 def __step_config(ctx, step_config):
     cfg = "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_windows.cfg"
@@ -136,6 +137,26 @@ def __step_config(ctx, step_config):
                 "canonicalize_dir": canonicalize_dir,
                 "remote_wrapper": remote_wrapper,
                 "timeout": timeout,
+            },
+            {
+                "name": "lld-link/alink",
+                "action": "(.*_)?alink",
+                "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe /lib",
+                "handler": "lld_thin_archive",
+                "remote": False,
+                "accumulate": True,
+            },
+            {
+                "name": "lld-link/solink",
+                "action": "(.*_)?solink",
+                "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
+                "handler": "lld_link",
+            },
+            {
+                "name": "lld-link/link",
+                "action": "(.*_)?link",
+                "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
+                "handler": "lld_link",
             },
         ])
     elif gn.args(ctx).get("use_remoteexec") == "true":
