@@ -566,6 +566,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="User reported an issue"/>
   <int value="3" label="User opened settings"/>
   <int value="4" label="User opened a query"/>
+  <int value="5" label="User disabled detection"/>
+  <int value="6" label="User opened settings from disable confirmation"/>
 </enum>
 
 <enum name="IOSMultiWindowConfiguration">
