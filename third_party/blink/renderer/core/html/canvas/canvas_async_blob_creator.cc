@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/canvas/canvas_async_blob_creator.h"
 
 #include "base/location.h"
@@ -505,8 +500,7 @@ void CanvasAsyncBlobCreator::RecordIdentifiabilityMetric() {
         .Add(blink::IdentifiableSurface::FromTypeAndToken(
                  blink::IdentifiableSurface::Type::kCanvasReadback,
                  input_digest_),
-             blink::IdentifiabilityDigestOfBytes(base::span(
-                 data_buffer->Pixels(), data_buffer->ComputeByteSize())))
+             blink::IdentifiabilityDigestOfBytes(data_buffer->PixelData()))
         .Record(context_->UkmRecorder());
   }
 
