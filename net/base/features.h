@@ -725,6 +725,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kExcludeLargeBodyReports);
 NET_EXPORT BASE_DECLARE_FEATURE(kUseCertTransparencyAwareApiForOsCertVerify);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Enables a special interstitial for self signed cert errors in local network
+// URLs.
+NET_EXPORT BASE_DECLARE_FEATURE(kSelfSignedLocalNetworkInterstitial);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

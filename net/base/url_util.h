@@ -167,6 +167,12 @@ NET_EXPORT std::string GetSuperdomain(std::string_view domain);
 NET_EXPORT bool IsSubdomainOf(std::string_view subdomain,
                               std::string_view superdomain);
 
+// Wrapper for CanonicalizeHost that allows using a bare IPV6. If |host| is
+// not IPV6, this is equivalent to CanonicalizeHost.
+NET_EXPORT std::string CanonicalizeHostSupportsBareIPV6(
+    std::string_view host,
+    url::CanonHostInfo* host_info);
+
 // Canonicalizes |host| and returns it.  Also fills |host_info| with
 // IP address information.  |host_info| must not be NULL.
 // Canonicalization will follow the host parsing rules for a non-file

@@ -29,6 +29,7 @@ TEST(NetErrorsTest, IsCertificateError) {
   EXPECT_TRUE(IsCertificateError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
   EXPECT_TRUE(IsCertificateError(ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN));
   EXPECT_TRUE(IsCertificateError(ERR_CERT_KNOWN_INTERCEPTION_BLOCKED));
+  EXPECT_TRUE(IsCertificateError(ERR_CERT_SELF_SIGNED_LOCAL_NETWORK));
 
   // Negative tests.
   EXPECT_FALSE(IsCertificateError(ERR_SSL_PROTOCOL_ERROR));
@@ -42,7 +43,7 @@ TEST(NetErrorsTest, IsCertificateError) {
 
   // Trigger a failure whenever ERR_CERT_END is changed, forcing developers to
   // update this test.
-  EXPECT_EQ(ERR_CERT_END, -219)
+  EXPECT_EQ(ERR_CERT_END, -220)
       << "It looks like you added a new certificate error code ("
       << ErrorToString(ERR_CERT_END + 1)
       << ").\n"

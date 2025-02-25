@@ -13,6 +13,8 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/network_time/time_tracker/time_tracker.h"
@@ -20,6 +22,7 @@
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
+#include "net/base/url_util.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verifier.h"
@@ -49,6 +52,7 @@
 #include "third_party/boringssl/src/pki/trust_store.h"
 #include "third_party/boringssl/src/pki/trust_store_collection.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
+#include "url/url_canon.h"
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "base/version_info/version_info.h"  // nogncheck
@@ -186,6 +190,37 @@ bool IsEVCandidate(const EVRootCAMetadata* ev_metadata,
   std::set<bssl::der::Input> oids;
   GetEVPolicyOids(ev_metadata, cert, &oids);
   return !oids.empty();
+}
+
+bool IsSelfSignedCertOnLocalNetwork(const X509Certificate* cert,
+                                    const std::string& hostname) {
+  if (!base::FeatureList::IsEnabled(
+          features::kSelfSignedLocalNetworkInterstitial)) {
+    return false;
+  }
+  url::CanonHostInfo host_info;
+  std::string canonicalized_hostname =
+      CanonicalizeHostSupportsBareIPV6(hostname, &host_info);
+  if (canonicalized_hostname.empty()) {
+    return false;
+  }
+  if (host_info.IsIPAddress()) {
+    base::span<uint8_t> ip_span(host_info.address);
+    // AddressLength() is always 0, 4, or 16, so it's safe to cast to unsigned.
+    IPAddress ip(
+        ip_span.first(static_cast<unsigned>(host_info.AddressLength())));
+    if (ip.IsPubliclyRoutable()) {
+      return false;
+    }
+  } else {
+    if (!base::EndsWith(canonicalized_hostname, ".local",
+                        base::CompareCase::INSENSITIVE_ASCII) &&
+        !base::EndsWith(canonicalized_hostname, ".local.",
+                        base::CompareCase::INSENSITIVE_ASCII)) {
+      return false;
+    }
+  }
+  return X509Certificate::IsSelfSigned(cert->cert_buffer());
 }
 
 // CertVerifyProcTrustStore wraps a SystemTrustStore with additional trust
@@ -1158,9 +1193,13 @@ int AssignVerifyResult(X509Certificate* input_cert,
     verify_result->policy_compliance = delegate_data->ct_policy_compliance;
   }
 
-  return IsCertStatusError(verify_result->cert_status)
-             ? MapCertStatusToNetError(verify_result->cert_status)
-             : OK;
+  if (IsCertStatusError(verify_result->cert_status)) {
+    if (IsSelfSignedCertOnLocalNetwork(input_cert, hostname)) {
+      verify_result->cert_status |= CERT_STATUS_SELF_SIGNED_LOCAL_NETWORK;
+    }
+    return MapCertStatusToNetError(verify_result->cert_status);
+  }
+  return OK;
 }
 
 // Returns true if retrying path building with a less stringent signature

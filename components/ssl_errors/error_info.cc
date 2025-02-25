@@ -100,6 +100,7 @@ ErrorInfo ErrorInfo::CreateError(ErrorType error_type,
     case CERT_KNOWN_INTERCEPTION_BLOCKED:
     case CERT_AUTHORITY_INVALID:
     case CERT_SYMANTEC_LEGACY:
+    case CERT_SELF_SIGNED_LOCAL_NETWORK:
       details =
           l10n_util::GetStringFUTF16(IDS_CERT_ERROR_AUTHORITY_INVALID_DETAILS,
                                      UTF8ToUTF16(request_url.host()));
@@ -235,6 +236,8 @@ ErrorInfo::ErrorType ErrorInfo::NetErrorToErrorType(int net_error) {
       return CERT_SYMANTEC_LEGACY;
     case net::ERR_CERT_KNOWN_INTERCEPTION_BLOCKED:
       return CERT_KNOWN_INTERCEPTION_BLOCKED;
+    case net::ERR_CERT_SELF_SIGNED_LOCAL_NETWORK:
+      return CERT_SELF_SIGNED_LOCAL_NETWORK;
     default:
       NOTREACHED();
   }
