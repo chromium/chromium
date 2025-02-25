@@ -295,6 +295,19 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, IsProviderAllowed) {
     scoped_config_.Get().enabled = true;
     EXPECT_TRUE(provider_->IsProviderAllowed(input));
   }
+
+  {
+    // Query must be at least 4 characters long in unscoped mode.
+    AutocompleteInput unscoped_input_long(
+        u"text", metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+    EXPECT_TRUE(provider_->IsProviderAllowed(unscoped_input_long));
+    AutocompleteInput unscoped_input_short(
+        u"t", metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+    EXPECT_FALSE(provider_->IsProviderAllowed(unscoped_input_short));
+    AutocompleteInput unscoped_empty_input(
+        u"", metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+    EXPECT_FALSE(provider_->IsProviderAllowed(unscoped_empty_input));
+  }
 }
 
 // Test that a call to `Start()` will stop old requests to prevent their results
@@ -348,11 +361,9 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, StartCallsStopForZeroSuggest) {
   EXPECT_CALL(*mock_listener_.get(), OnProviderUpdate(_, provider_.get()))
       .Times(0);
 
-  // Matches will not be cleared but the provider will not be called for Zero
-  // Suggest.
   provider_->Start(input, false);
   EXPECT_TRUE(provider_->done());
-  EXPECT_THAT(GetMatches(), testing::ElementsAre(u"https://cached.org"));
+  EXPECT_THAT(GetMatches(), testing::ElementsAre());
 }
 
 // Test that a call to `Start()` will not set `done_` if

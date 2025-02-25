@@ -112,6 +112,9 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
   require_shortcut = base::FeatureParam<bool>(&kSearchAggregatorProvider,
                                               "require_shortcut", false)
                          .Get();
+  min_query_length =
+      base::FeatureParam<int>(&kSearchAggregatorProvider, "min_query_length", 4)
+          .Get();
 }
 
 SearchAggregatorProvider::SearchAggregatorProvider(

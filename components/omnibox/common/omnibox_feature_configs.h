@@ -181,6 +181,9 @@ struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
   ~SearchAggregatorProvider();
 
   bool enabled;
+  // Minimum length input must be to run the
+  // `EnterpriseSearchAggregatorProvider`.
+  int min_query_length;
 
  private:
   // Utility methods and members for setting up a mock search engine via Finch.

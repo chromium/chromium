@@ -140,6 +140,17 @@ bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
     return false;
   }
 
+  // Don't run provider in non-keyword mode if query length is less than
+  // the minimum length.
+  if (!input.InKeywordMode() &&
+      static_cast<int>(input.text().length()) <
+          omnibox_feature_configs::SearchAggregatorProvider::Get()
+              .min_query_length) {
+    // Clear old matches if the query length goes below `min_query_length`.
+    matches_.clear();
+    return false;
+  }
+
   // TODO(crbug.com/380642693): Add backoff check.
   return true;
 }
