@@ -1633,6 +1633,7 @@ if (is_android) {
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/webaudio:browser_tests",
       "//chrome/test/data/webui:browser_tests",
+      "//chrome/test/data/webui:interactive_ui_tests",
       "//chrome/test/data/webui:resources",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/content/renderer:test_support",
