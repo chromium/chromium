@@ -8,7 +8,9 @@
 #include <tuple>
 
 #include "base/logging.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "crypto/features.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,8 +31,24 @@ constexpr char kTestKeychainAccessGroup[] = "test-keychain-access-group";
 
 class UnexportableKeySigningTest
     : public testing::TestWithParam<
-          std::tuple<crypto::SignatureVerifier::SignatureAlgorithm, bool>> {
+          std::tuple<crypto::SignatureVerifier::SignatureAlgorithm,
+                     bool,
+                     bool>> {
+ public:
+  void SetUp() override {
+    bool label_win_keys = std::get<2>(GetParam());
+#if BUILDFLAG(IS_WIN)
+    scoped_feature_list.InitWithFeatureState(
+        crypto::features::kLabelWindowsUnexportableKeys, label_win_keys);
+#else
+    if (label_win_keys) {
+      GTEST_SKIP() << "Skipping Windows-specific flag on non Windows";
+    }
+#endif
+  }
+
  private:
+  base::test::ScopedFeatureList scoped_feature_list;
 #if BUILDFLAG(IS_MAC)
   crypto::ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
       kTestKeychainAccessGroup};
@@ -40,6 +58,7 @@ class UnexportableKeySigningTest
 INSTANTIATE_TEST_SUITE_P(All,
                          UnexportableKeySigningTest,
                          testing::Combine(testing::ValuesIn(kAllAlgorithms),
+                                          testing::Bool(),
                                           testing::Bool()));
 
 TEST_P(UnexportableKeySigningTest, RoundTrip) {
