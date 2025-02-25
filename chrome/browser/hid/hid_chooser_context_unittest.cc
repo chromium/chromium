@@ -59,7 +59,7 @@ constexpr uint16_t kTestVendorId = 0x1234;
 constexpr uint16_t kTestProductId = 0xabcd;
 constexpr char kTestSerialNumber[] = "serial-number";
 constexpr char kTestProductName[] = "product-name";
-const auto kTestPhysicalDeviceIds = std::to_array<const char*>(
+constexpr auto kTestPhysicalDeviceIds = std::to_array<const char*>(
     {"physical-device-id-1", "physical-device-id-2"});
 constexpr char kTestUserEmail[] = "user@example.com";
 

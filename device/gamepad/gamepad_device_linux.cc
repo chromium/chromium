@@ -49,7 +49,7 @@ const float kMaxLinuxAxisValue = 32767.0;
 const int kInvalidEffectId = -1;
 const uint16_t kRumbleMagnitudeMax = 0xffff;
 
-const auto kSpecialKeys = std::to_array<size_t>({
+constexpr auto kSpecialKeys = std::to_array<size_t>({
     // Xbox One S pre-FW update reports Xbox button as SystemMainMenu over BT.
     KEY_MENU,
     // Power is used for the Guide button on the Nvidia Shield 2015 gamepad.
