@@ -2088,7 +2088,13 @@ TEST_F(HostContentSettingsMapTest, IncognitoChangesDoNotPersist) {
 
 // Validate that a content setting that uses a different scope/constraint can
 // co-exist with another setting
-TEST_F(HostContentSettingsMapTest, MixedScopeSettings) {
+// TODO(crbug.com/398993133): Fix flakes on some Android builders.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_MixedScopeSettings DISABLED_MixedScopeSettings
+#else
+#define MAYBE_MixedScopeSettings MixedScopeSettings
+#endif
+TEST_F(HostContentSettingsMapTest, MAYBE_MixedScopeSettings) {
   TestingProfile profile;
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -2248,8 +2254,14 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Validate that the settings array retrieved correctly carries the expiry data
 // for settings and they can detect if and when they expire.
 // GetSettingsForOneType should also omit any settings that are already expired.
+// TODO(crbug.com/398993133): Fix flakes on some Android builders.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms DISABLED_GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms
+#else
+#define MAYBE_GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms
+#endif
 TEST_P(HostContentSettingsMapActiveExpirationTest,
-       GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms) {
+       MAYBE_GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms) {
   base::HistogramTester t;
   TestingProfile profile;
   HostContentSettingsMap* map =
