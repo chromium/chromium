@@ -24,7 +24,7 @@
 namespace {
 
 // List of file systems we care about.
-const auto kKnownFileSystems = std::to_array<const char*>({
+constexpr auto kKnownFileSystems = std::to_array<const char*>({
     "btrfs",
     "ext2",
     "ext3",
