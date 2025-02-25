@@ -224,6 +224,30 @@ class TabListModel extends ModelList {
         return true;
     }
 
+    @Override
+    public MVCListAdapter.ListItem removeAt(int position) {
+        if (position >= 0 && position < size()) {
+            destroyTabGroupColorViewProviderIfNotNull(get(position).model);
+        }
+        return super.removeAt(position);
+    }
+
+    @Override
+    public void clear() {
+        for (int i = 0; i < size(); i++) {
+            destroyTabGroupColorViewProviderIfNotNull(get(i).model);
+        }
+        super.clear();
+    }
+
+    private void destroyTabGroupColorViewProviderIfNotNull(PropertyModel model) {
+        if (model.get(CARD_TYPE) == TAB) {
+            @Nullable TabGroupColorViewProvider provider =
+                    model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
+            if (provider != null) provider.destroy();
+        }
+    }
+
     /**
      * Sync the {@link TabListModel} with updated information. Update tab id of the item in {@code
      * index} with the current selected {@code tab} of the group.
