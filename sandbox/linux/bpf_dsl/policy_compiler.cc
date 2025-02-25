@@ -41,7 +41,7 @@ const bool kIsX32 = true;
 const bool kIsX32 = false;
 #endif
 
-const auto kSyscallsRequiredForUnsafeTraps = std::to_array<int>({
+constexpr auto kSyscallsRequiredForUnsafeTraps = std::to_array<int>({
     __NR_rt_sigprocmask,
     __NR_rt_sigreturn,
 #if defined(__NR_sigprocmask)
