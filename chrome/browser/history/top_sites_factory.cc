@@ -57,7 +57,7 @@ struct RawPrepopulatedPage {
 
 #if !BUILDFLAG(IS_ANDROID)
 // Android does not use prepopulated pages.
-const auto kRawPrepopulatedPages = std::to_array<RawPrepopulatedPage>({
+constexpr auto kRawPrepopulatedPages = std::to_array<RawPrepopulatedPage>({
     {
         IDS_WEBSTORE_URL,
         IDS_EXTENSION_WEB_STORE_TITLE_SHORT,
