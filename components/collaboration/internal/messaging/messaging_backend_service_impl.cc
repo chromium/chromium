@@ -713,14 +713,18 @@ void MessagingBackendServiceImpl::OnTabAdded(
     // Unable to find collaboration ID from tab.
     return;
   }
+
+  DirtyType dirty_type = source == tab_groups::TriggerSource::LOCAL
+                             ? DirtyType::kNone
+                             : DirtyType::kDotAndChip;
+  collaboration_pb::Message message =
+      CreateTabMessage(*collaboration_group_id, added_tab,
+                       collaboration_pb::TAB_ADDED, dirty_type);
+  store_->AddMessage(message);
+
   if (source == tab_groups::TriggerSource::LOCAL) {
     return;
   }
-
-  collaboration_pb::Message message =
-      CreateTabMessage(*collaboration_group_id, added_tab,
-                       collaboration_pb::TAB_ADDED, DirtyType::kDotAndChip);
-  store_->AddMessage(message);
 
   PersistentMessage persistent_message =
       CreatePersistentMessage(message, std::nullopt, added_tab, std::nullopt);
@@ -744,13 +748,12 @@ void MessagingBackendServiceImpl::OnTabRemoved(
     return;
   }
 
+  bool is_local = source == tab_groups::TriggerSource::LOCAL;
+  DirtyType dirty_type = is_local ? DirtyType::kNone : DirtyType::kTombstoned;
   collaboration_pb::Message message =
       CreateTabMessage(*collaboration_group_id, removed_tab,
-                       collaboration_pb::TAB_REMOVED, DirtyType::kTombstoned);
-  if (source == tab_groups::TriggerSource::REMOTE) {
-    // Create a new message only if the tab was removed from remote.
-    store_->AddMessage(message);
-  }
+                       collaboration_pb::TAB_REMOVED, dirty_type);
+  store_->AddMessage(message);
 
   // Tab is no longer available, so should not contribute to any dirty tab
   // groups.
@@ -770,8 +773,7 @@ void MessagingBackendServiceImpl::OnTabRemoved(
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            removed_tab.saved_group_guid());
 
-  if (source == tab_groups::TriggerSource::REMOTE && is_selected &&
-      instant_message_delegate_) {
+  if (!is_local && is_selected && instant_message_delegate_) {
     InstantMessage instant_message =
         CreateInstantMessage(message, /*tab_group=*/std::nullopt, removed_tab);
     instant_message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
@@ -795,16 +797,20 @@ void MessagingBackendServiceImpl::OnTabUpdated(
     return;
   }
 
+  bool is_local = source == tab_groups::TriggerSource::LOCAL;
   DirtyType dirty_type =
-      is_selected ? DirtyType::kChip : DirtyType::kDotAndChip;
+      is_local ? DirtyType::kNone
+               : (is_selected ? DirtyType::kChip : DirtyType::kDotAndChip);
 
   collaboration_pb::Message message =
       CreateTabMessage(*collaboration_group_id, updated_tab,
                        collaboration_pb::TAB_UPDATED, dirty_type);
+  store_->AddMessage(message);
+
   PersistentMessage persistent_message =
       CreatePersistentMessage(message, std::nullopt, updated_tab, std::nullopt);
 
-  if (source == tab_groups::TriggerSource::LOCAL) {
+  if (is_local) {
     // For local updates, hide any dirty messages for tab from storage and
     // dismiss any messages already being displayed for tab.
     store_->ClearDirtyMessageForTab(*collaboration_group_id,
@@ -821,7 +827,6 @@ void MessagingBackendServiceImpl::OnTabUpdated(
           PersistentNotificationType::DIRTY_TAB);
     }
     // For remote updates, show the message on UI.
-    store_->AddMessage(message);
     NotifyDisplayPersistentMessagesForTypes(persistent_message,
                                             persistent_notification_types);
   }
@@ -829,8 +834,7 @@ void MessagingBackendServiceImpl::OnTabUpdated(
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            updated_tab.saved_group_guid());
 
-  if (source == tab_groups::TriggerSource::REMOTE && is_selected &&
-      instant_message_delegate_) {
+  if (!is_local && is_selected && instant_message_delegate_) {
     InstantMessage instant_message_base;
     instant_message_base.attribution = CreateMessageAttributionForTabUpdates(
         message, std::nullopt, updated_tab);
