@@ -7,6 +7,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
@@ -33,6 +34,9 @@ class MagicStackCollectionViewControllerTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    // Create and initialize PrefService
+    RegisterProfilePrefs(pref_service_.registry());
+
     _window = [[UIWindow alloc] init];
     UIView.animationsEnabled = NO;
     view_controller_ = [[MagicStackCollectionViewController alloc] init];
@@ -44,16 +48,9 @@ class MagicStackCollectionViewControllerTest : public PlatformTest {
     [_window addSubview:[view_controller_ view]];
     AddSameConstraints(_window, [view_controller_ view]);
     [[view_controller_ view] layoutIfNeeded];
-
-    pref_service_.registry()->RegisterIntegerPref(
-        prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness,
-        -1);
-
-    TestingApplicationContext::GetGlobal()->SetLocalState(&pref_service_);
   }
 
   void TearDown() override {
-    TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     PlatformTest::TearDown();
   }
 
@@ -76,6 +73,8 @@ TEST_F(MagicStackCollectionViewControllerTest, TestEphemeralCardAudienceCall) {
       {segmentation_platform::features::
            kSegmentationPlatformEphemeralCardRanker},
       {});
+  OCMExpect([audience_ logTopModuleImpressionForType:
+                           ContentSuggestionsModuleType::kPriceTrackingPromo]);
   OCMExpect([audience_ logEphemeralCardVisibility:ContentSuggestionsModuleType::
                                                       kPriceTrackingPromo]);
   // Test that populating the Magic Stack triggers audience call
@@ -97,6 +96,8 @@ TEST_F(MagicStackCollectionViewControllerTest,
       {segmentation_platform::features::
            kSegmentationPlatformEphemeralCardRanker},
       {});
+  OCMExpect([audience_
+      logTopModuleImpressionForType:ContentSuggestionsModuleType::kShortcuts]);
   // Test that populating the Magic Stack does not trigger audience call since
   // it is not top card.
   [view_controller_ populateItems:@[

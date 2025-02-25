@@ -57,8 +57,10 @@ void TrackParcels(
              std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>>
                  parcel_status) {
             if (success) {
+              // Using `nullptr` since parcel tracking metrics are intentionally
+              // remaining in local state during deprecation.
               RecordModuleFreshnessSignal(
-                  ContentSuggestionsModuleType::kParcelTracking);
+                  ContentSuggestionsModuleType::kParcelTracking, nullptr);
               parcel_tracking::RecordParcelsTracked(source, parcels.count);
               if (display_infobar) {
                 [parcel_tracking_commands_handler

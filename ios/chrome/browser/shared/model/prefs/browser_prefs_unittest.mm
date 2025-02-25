@@ -152,22 +152,47 @@ TEST_F(BrowserPrefsTest, VerifyProfilePrefsMigration) {
 // Check that the migration of a pref from localState prefService to
 // profile prefService is performed correctly.
 TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
+  // Setup test data
   base::Value::List list_example = base::Value::List().Append("Example");
   base::Value::Dict dict_example;
   dict_example.Set("Example_key", "Example_value");
 
-  // Simulate registering a value different from default in localState
-  // prefService.
+  // Set initial values in local_state
+
+  // New Tab Page Display Count
   local_state()->SetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount, 10);
+
+  // Safety Check Manager and Settings
   local_state()->SetString(prefs::kIosSafetyCheckManagerPasswordCheckResult,
                            "Example");
-  local_state()->SetDict(prefs::kIosPreRestoreAccountInfo,
-                         dict_example.Clone());
   local_state()->SetBoolean(
       safety_check_prefs::kSafetyCheckInMagicStackDisabledPref, true);
+
+  // Account Info
+  local_state()->SetDict(prefs::kIosPreRestoreAccountInfo,
+                         dict_example.Clone());
+
+  // Tab Resumption Settings
   local_state()->SetBoolean(tab_resumption_prefs::kTabResumptionDisabledPref,
                             true);
 
+  // Magic Stack Segmentation Impressions
+  local_state()->SetInteger(
+      prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness, 5);
+  local_state()->SetInteger(
+      prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness, 3);
+  local_state()->SetInteger(
+      prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness, 7);
+  local_state()->SetInteger(
+      prefs::kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
+      2);
+  local_state()->SetInteger(
+      prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness,
+      4);
+
+  // Verify initial state before migration
+
+  // Check New Tab Page Display Count
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount),
       0);
@@ -175,6 +200,7 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
       local_state()->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount),
       10);
 
+  // Check Safety Check Manager and Settings
   EXPECT_EQ(pref_service()->GetString(
                 prefs::kIosSafetyCheckManagerPasswordCheckResult),
             NameForSafetyCheckState(PasswordSafetyCheckState::kDefault));
@@ -186,18 +212,68 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_TRUE(local_state()->GetBoolean(
       safety_check_prefs::kSafetyCheckInMagicStackDisabledPref));
 
+  // Check Account Info
   EXPECT_EQ(pref_service()->GetDict(prefs::kIosPreRestoreAccountInfo).size(),
             0ul);
   EXPECT_EQ(local_state()->GetDict(prefs::kIosPreRestoreAccountInfo),
             dict_example);
+
+  // Check Tab Resumption Settings
   EXPECT_FALSE(pref_service()->GetBoolean(
       tab_resumption_prefs::kTabResumptionDisabledPref));
   EXPECT_TRUE(local_state()->GetBoolean(
       tab_resumption_prefs::kTabResumptionDisabledPref));
 
+  // Check Magic Stack Segmentation Impressions in pref_service (should be -1)
+  EXPECT_EQ(pref_service()->GetInteger(
+                prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness),
+            -1);
+  EXPECT_EQ(
+      pref_service()->GetInteger(
+          prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness),
+      -1);
+  EXPECT_EQ(
+      pref_service()->GetInteger(
+          prefs::
+              kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness),
+      -1);
+  EXPECT_EQ(
+      pref_service()->GetInteger(
+          prefs::
+              kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness),
+      -1);
+
+  // Check Magic Stack Segmentation Impressions in local_state
+  EXPECT_EQ(local_state()->GetInteger(
+                prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness),
+            5);
+  EXPECT_EQ(
+      local_state()->GetInteger(
+          prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness),
+      3);
+  EXPECT_EQ(
+      local_state()->GetInteger(
+          prefs::
+              kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness),
+      7);
+  EXPECT_EQ(
+      local_state()->GetInteger(
+          prefs::
+              kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness),
+      2);
+  EXPECT_EQ(
+      local_state()->GetInteger(
+          prefs::
+              kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness),
+      4);
+
+  // Perform migration
+  MigrateObsoleteLocalStatePrefs(local_state());
   MigrateObsoleteProfilePrefs(pref_service());
 
-  // Verify that the prefs were migrated successfully.
+  // Verify state after migration
+
+  // Check New Tab Page Display Count
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount),
       10);
@@ -205,23 +281,70 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
       local_state()->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount),
       0);
 
+  // Check Safety Check Manager and Settings
   EXPECT_EQ(pref_service()->GetString(
                 prefs::kIosSafetyCheckManagerPasswordCheckResult),
             "Example");
   EXPECT_EQ(local_state()->GetString(
                 prefs::kIosSafetyCheckManagerPasswordCheckResult),
             NameForSafetyCheckState(PasswordSafetyCheckState::kDefault));
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref));
+  EXPECT_FALSE(local_state()->GetBoolean(
+      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref));
 
+  // Check Account Info
   EXPECT_EQ(pref_service()->GetDict(prefs::kIosPreRestoreAccountInfo),
             dict_example);
   EXPECT_EQ(local_state()->GetDict(prefs::kIosPreRestoreAccountInfo).size(),
             0ul);
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref));
-  EXPECT_FALSE(local_state()->GetBoolean(
-      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref));
+
+  // Check Tab Resumption Settings
   EXPECT_TRUE(pref_service()->GetBoolean(
       tab_resumption_prefs::kTabResumptionDisabledPref));
   EXPECT_FALSE(local_state()->GetBoolean(
       tab_resumption_prefs::kTabResumptionDisabledPref));
+
+  // Check Magic Stack Segmentation Impressions in pref_service
+  EXPECT_EQ(pref_service()->GetInteger(
+                prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness),
+            5);
+  EXPECT_EQ(
+      pref_service()->GetInteger(
+          prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness),
+      3);
+  EXPECT_EQ(
+      pref_service()->GetInteger(
+          prefs::
+              kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness),
+      7);
+  EXPECT_EQ(
+      pref_service()->GetInteger(
+          prefs::
+              kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness),
+      2);
+
+  // Check Magic Stack Segmentation Impressions in local_state (should be -1)
+  EXPECT_EQ(local_state()->GetInteger(
+                prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness),
+            -1);
+  EXPECT_EQ(
+      local_state()->GetInteger(
+          prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness),
+      -1);
+  EXPECT_EQ(
+      local_state()->GetInteger(
+          prefs::
+              kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness),
+      -1);
+  EXPECT_EQ(
+      local_state()->GetInteger(
+          prefs::
+              kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness),
+      -1);
+  EXPECT_EQ(
+      local_state()->GetInteger(
+          prefs::
+              kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness),
+      -1);
 }

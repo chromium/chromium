@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 
+class PrefService;
+
 // These values are persisted to IOS.Start/NTP.Click histograms.
 // Entries should not be renumbered and numeric values should never be reused.
 // LINT.IfChange
@@ -43,11 +45,13 @@ void RecordMagicStackTabResumptionClick(bool isLocal,
                                         NSUInteger index);
 
 // Logs a Magic Stack freshness event.
-void RecordModuleFreshnessSignal(ContentSuggestionsModuleType module_type);
+void RecordModuleFreshnessSignal(ContentSuggestionsModuleType module_type,
+                                 PrefService* profile_pref_service);
 
 // Logs a metric for when a module of `type` is shown as the first module in the
 // Magic Stack.
-void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type);
+void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type,
+                                   PrefService* profile_pref_service);
 
 // Logs some TabResumption specific metrics on impression split by NTP and Start
 // surface.

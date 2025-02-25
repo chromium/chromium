@@ -454,7 +454,8 @@ void IOSChromeSafetyCheckManager::SetPasswordCheckState(
        state == PasswordSafetyCheckState::kSafe);
 
   if (should_log_freshness) {
-    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
+    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck,
+                                pref_service_);
     base::UmaHistogramEnumeration(
         "IOS.SafetyCheck.FreshnessTrigger",
         IOSSafetyCheckFreshnessTrigger::kPasswordCheckStateChanged);
@@ -514,7 +515,8 @@ void IOSChromeSafetyCheckManager::SetUpdateChromeCheckState(
        state == UpdateChromeSafetyCheckState::kUpToDate);
 
   if (should_log_freshness) {
-    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
+    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck,
+                                pref_service_);
     base::UmaHistogramEnumeration(
         "IOS.SafetyCheck.FreshnessTrigger",
         IOSSafetyCheckFreshnessTrigger::kUpdateChromeCheckStateChanged);

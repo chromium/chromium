@@ -220,8 +220,10 @@
     if (item.estimatedDeliveryTime.has_value() &&
         *item.estimatedDeliveryTime > now &&
         *item.estimatedDeliveryTime < now + base::Days(2)) {
-      RecordModuleFreshnessSignal(
-          ContentSuggestionsModuleType::kParcelTracking);
+      // Using nullptr since parcel tracking metrics are intentionally remaining
+      // in local state during deprecation.
+      RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kParcelTracking,
+                                  nullptr);
       return;
     }
   }
