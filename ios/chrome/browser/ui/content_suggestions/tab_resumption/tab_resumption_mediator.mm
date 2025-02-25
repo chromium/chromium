@@ -694,6 +694,31 @@ class TabResumptionMediatorProxy {
   }
 }
 
+- (void)fetchShopCardDataForItemIfApplicable:(TabResumptionItem*)item
+                                         url:(const GURL&)resumptionURL {
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 ||
+      commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
+    __weak __typeof(self) weakSelf = self;
+    TabResumptionMediatorProxy::CanApplyOptimizationOnDemand(
+        _optimizationGuideService, resumptionURL,
+        optimization_guide::proto::PRICE_TRACKING,
+        optimization_guide::proto::RequestContext::CONTEXT_SHOP_CARD,
+        base::BindRepeating(
+            ^(const GURL& url,
+              const base::flat_map<
+                  optimization_guide::proto::OptimizationType,
+                  optimization_guide::OptimizationGuideDecisionWithMetadata>&
+                  decisions) {
+              ConfigureTabResumptionItemForShopCard(decisions, item, url);
+              // Fetch the favicon.
+              [weakSelf fetchImageForItem:item];
+            }));
+  } else {
+    // Fetch the favicon.
+    [self fetchImageForItem:item];
+  }
+}
+
 // Fetches a relevant image for the `item` to display.
 - (void)fetchImageForItem:(TabResumptionItem*)item {
   if ([self isPendingItem:item]) {
@@ -867,8 +892,7 @@ class TabResumptionMediatorProxy {
   item.commandHandler = self;
   item.delegate = self;
   item.shouldShowSeeMore = IsTabResumption1_5SeeMoreEnabled();
-  // Fetch the image.
-  [self fetchImageForItem:item];
+  [self fetchShopCardDataForItemIfApplicable:item url:tab->virtual_url];
 }
 
 // Creates a TabResumptionItem corresponding to the `webState`.
@@ -882,8 +906,8 @@ class TabResumptionMediatorProxy {
   item.commandHandler = self;
   item.delegate = self;
   item.shouldShowSeeMore = IsTabResumption1_5SeeMoreEnabled();
-  // Fetch the image.
-  [self fetchImageForItem:item];
+  [self fetchShopCardDataForItemIfApplicable:item
+                                         url:webState->GetLastCommittedURL()];
 }
 
 // Compares `item` and `_pendingItem` on tabURL and tabTitle field.
@@ -1026,27 +1050,7 @@ class TabResumptionMediatorProxy {
     }
   }
 
-  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 ||
-      commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
-    __weak __typeof(self) weakSelf = self;
-    TabResumptionMediatorProxy::CanApplyOptimizationOnDemand(
-        _optimizationGuideService, visit->url,
-        optimization_guide::proto::PRICE_TRACKING,
-        optimization_guide::proto::RequestContext::CONTEXT_SHOP_CARD,
-        base::BindRepeating(
-            ^(const GURL& url,
-              const base::flat_map<
-                  optimization_guide::proto::OptimizationType,
-                  optimization_guide::OptimizationGuideDecisionWithMetadata>&
-                  decisions) {
-              ConfigureTabResumptionItemForShopCard(decisions, item, url);
-              // Fetch the favicon.
-              [weakSelf fetchImageForItem:item];
-            }));
-  } else {
-    // Fetch the favicon.
-    [self fetchImageForItem:item];
-  }
+  [self fetchShopCardDataForItemIfApplicable:item url:visit->url];
 }
 
 @end
