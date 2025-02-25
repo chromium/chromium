@@ -70,7 +70,7 @@ void NotificationInputContainer::Init() {
   textfield_->set_controller(this);
   textfield_->SetBorder(views::CreateEmptyBorder(GetTextfieldPadding()));
   StyleTextfield();
-  AddChildView(textfield_.get());
+  AddChildViewRaw(textfield_.get());
   box_layout->SetFlexForView(textfield_, 1);
 
   button_->SetBorder(views::CreateEmptyBorder(GetSendButtonPadding()));
@@ -83,7 +83,7 @@ void NotificationInputContainer::Init() {
       l10n_util::GetStringUTF16(GetDefaultAccessibleNameStringId()));
 
   OnAfterUserAction(textfield_);
-  AddChildView(button_.get());
+  AddChildViewRaw(button_.get());
 
   views::InstallRectHighlightPathGenerator(this);
 }

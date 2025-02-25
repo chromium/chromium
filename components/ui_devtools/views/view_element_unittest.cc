@@ -166,7 +166,7 @@ TEST_F(ViewElementTest, AddingChildView) {
   EXPECT_CALL(*delegate(), OnUIElementAdded(nullptr, _)).Times(1);
   EXPECT_CALL(*delegate(), OnUIElementAdded(element(), _)).Times(1);
   views::View child_view;
-  view()->AddChildView(&child_view);
+  view()->AddChildViewRaw(&child_view);
 
   DCHECK_EQ(element()->children().size(), 1U);
   UIElement* child_element = element()->children()[0];

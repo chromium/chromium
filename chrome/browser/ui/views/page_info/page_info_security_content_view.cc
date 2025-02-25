@@ -148,16 +148,16 @@ void PageInfoSecurityContentView::SetIdentityInfo(
       RemoveChildViewT(certificate_button_.get());
     }
     certificate_button_ =
-        AddChildView(std::make_unique<RichHoverButton>(
-                         base::BindRepeating(
-                             [](PageInfoSecurityContentView* view) {
-                               view->presenter_->OpenCertificateDialog(
-                                   view->certificate_.get());
-                             },
-                             this),
-                         icon, l10n_util::GetStringUTF16(title_id),
-                         subtitle_text, PageInfoViewFactory::GetLaunchIcon())
-                         .release());
+        AddChildViewRaw(std::make_unique<RichHoverButton>(
+                            base::BindRepeating(
+                                [](PageInfoSecurityContentView* view) {
+                                  view->presenter_->OpenCertificateDialog(
+                                      view->certificate_.get());
+                                },
+                                this),
+                            icon, l10n_util::GetStringUTF16(title_id),
+                            subtitle_text, PageInfoViewFactory::GetLaunchIcon())
+                            .release());
     certificate_button_->SetID(
         PageInfoViewFactory::
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER);

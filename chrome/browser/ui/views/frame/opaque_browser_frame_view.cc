@@ -229,7 +229,7 @@ void OpaqueBrowserFrameView::InitViews() {
     window_title_->SetSubpixelRenderingEnabled(false);
     window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     window_title_->SetID(VIEW_ID_WINDOW_TITLE);
-    AddChildView(window_title_.get());
+    AddChildViewRaw(window_title_.get());
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -720,7 +720,7 @@ void OpaqueBrowserFrameView::InitWindowCaptionButton(
   button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(accessibility_string_id));
   button->SetID(view_id);
-  AddChildView(button);
+  AddChildViewRaw(button);
 }
 
 gfx::Size OpaqueBrowserFrameView::GetThemeImageSize(int image_id) {

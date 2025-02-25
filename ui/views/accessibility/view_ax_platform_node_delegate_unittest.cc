@@ -1254,7 +1254,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, CreateTextPositionAtInLabel) {
   View* content = widget->SetContentsView(std::make_unique<View>());
 
   Label* label = new Label(u"Label's Name");
-  content->AddChildView(label);
+  content->AddChildViewRaw(label);
   label->GetViewAccessibility().EnsureAtomicViewAXTreeManager();
   ViewAXPlatformNodeDelegate* label_accessibility =
       static_cast<ViewAXPlatformNodeDelegate*>(&label->GetViewAccessibility());
@@ -1280,7 +1280,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, CreateTextPositionAtInTextfield) {
   Textfield* textfield = new Textfield;
   textfield->GetViewAccessibility().SetName(u"hello world");
   textfield->GetViewAccessibility().EnsureAtomicViewAXTreeManager();
-  content->AddChildView(textfield);
+  content->AddChildViewRaw(textfield);
 
   ViewAXPlatformNodeDelegate* delegate =
       static_cast<ViewAXPlatformNodeDelegate*>(

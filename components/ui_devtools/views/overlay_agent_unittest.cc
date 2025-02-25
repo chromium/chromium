@@ -203,8 +203,8 @@ TEST_F(OverlayAgentTest, FindElementIdTargetedByPointViews) {
   // |            --------- |
   // |                      |
   // ------------------------
-  contents_view->AddChildView(child_2);
-  contents_view->AddChildView(child_1);
+  contents_view->AddChildViewRaw(child_2);
+  contents_view->AddChildViewRaw(child_1);
   child_1->SetBounds(20, 20, 100, 100);
   child_2->SetBounds(90, 50, 100, 100);
 
@@ -261,8 +261,8 @@ TEST_F(OverlayAgentTest, HighlightRects) {
 
     views::View* child_1 = new views::View;
     views::View* child_2 = new views::View;
-    client_view->AddChildView(child_1);
-    client_view->AddChildView(child_2);
+    client_view->AddChildViewRaw(child_1);
+    client_view->AddChildViewRaw(child_2);
     child_1->SetBoundsRect(test_case.first_element_bounds);
     child_2->SetBoundsRect(test_case.second_element_bounds);
 

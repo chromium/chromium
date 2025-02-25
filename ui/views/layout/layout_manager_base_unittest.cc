@@ -591,7 +591,7 @@ TEST_F(LayoutManagerBaseManagerTest, ViewAdded_NotVisible) {
   // doesn't touch it during layout.
   View* new_view = new StaticSizedView(kSquarishSize);
   new_view->SetVisible(false);
-  host_view()->AddChildView(new_view);
+  host_view()->AddChildViewRaw(new_view);
   test::RunScheduledLayout(host_view());
 
   EXPECT_FALSE(new_view->GetVisible());

@@ -672,8 +672,8 @@ TEST_F(WidgetTestInteractive, ViewFocusOnWidgetActivationChanges) {
   View* view2b = new View;
   view2a->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   view2b->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  widget2->GetContentsView()->AddChildView(view2a);
-  widget2->GetContentsView()->AddChildView(view2b);
+  widget2->GetContentsView()->AddChildViewRaw(view2a);
+  widget2->GetContentsView()->AddChildViewRaw(view2b);
 
   ShowSync(widget1.get());
   EXPECT_TRUE(widget1->IsActive());
@@ -1396,7 +1396,7 @@ TEST_F(WidgetTestInteractive, InitialFocus) {
       CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   View* view = new View;
   view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  toplevel->GetContentsView()->AddChildView(view);
+  toplevel->GetContentsView()->AddChildViewRaw(view);
 
   ShowSync(toplevel.get());
   toplevel->Show();
@@ -1927,7 +1927,7 @@ TEST_F(WidgetCaptureTest, ResetCaptureOnGestureEnd) {
 
   View* gesture = new GestureCaptureView;
   gesture->SetBounds(0, 0, 30, 30);
-  container->AddChildView(gesture);
+  container->AddChildViewRaw(gesture);
 
   MouseView* mouse = new MouseView;
   mouse->SetBounds(30, 0, 30, 30);

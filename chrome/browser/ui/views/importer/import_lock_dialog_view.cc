@@ -76,7 +76,7 @@ ImportLockDialogView::ImportLockDialogView(
           views::DialogContentType::kText, views::DialogContentType::kText)));
   description_label->SetMultiLine(true);
   description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(description_label);
+  AddChildViewRaw(description_label);
 }
 
 ImportLockDialogView::~ImportLockDialogView() = default;

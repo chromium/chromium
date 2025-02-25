@@ -99,7 +99,7 @@ class TooltipControllerTest : public ViewsTestBase {
     widget_ = CreateWidget(root_window);
     widget_->SetContentsView(std::make_unique<View>());
     view_ = new TooltipTestView;
-    widget_->GetContentsView()->AddChildView(view_.get());
+    widget_->GetContentsView()->AddChildViewRaw(view_.get());
     view_->SetBoundsRect(widget_->GetContentsView()->GetLocalBounds());
     helper_ = std::make_unique<TooltipControllerTestHelper>(
         widget_->GetNativeWindow()->GetRootWindow());
@@ -149,7 +149,7 @@ class TooltipControllerTest : public ViewsTestBase {
 
   TooltipTestView* PrepareSecondView() {
     TooltipTestView* view2 = new TooltipTestView;
-    widget_->GetContentsView()->AddChildView(view2);
+    widget_->GetContentsView()->AddChildViewRaw(view2);
     view_->SetBounds(0, 0, 100, 100);
     view2->SetBounds(100, 0, 100, 100);
     return view2;
@@ -605,8 +605,8 @@ TEST_F(TooltipControllerTest, ReshowOnClickAfterEnterExit) {
   // Owned by |view_|.
   TooltipTestView* v1 = new TooltipTestView;
   TooltipTestView* v2 = new TooltipTestView;
-  view_->AddChildView(v1);
-  view_->AddChildView(v2);
+  view_->AddChildViewRaw(v1);
+  view_->AddChildViewRaw(v2);
   gfx::Rect view_bounds(view_->GetLocalBounds());
   view_bounds.set_height(view_bounds.height() / 2);
   v1->SetBoundsRect(view_bounds);
@@ -763,7 +763,7 @@ TEST_F(TooltipControllerTest, MAYBE_Capture) {
   std::unique_ptr<views::Widget> widget2 = CreateWidget(GetContext());
   widget2->SetContentsView(std::make_unique<View>());
   TooltipTestView* view2 = new TooltipTestView;
-  widget2->GetContentsView()->AddChildView(view2);
+  widget2->GetContentsView()->AddChildViewRaw(view2);
   view2->set_tooltip_text(tooltip_text2);
   widget2->SetBounds(gfx::Rect(0, 0, 200, 200));
   view2->SetBoundsRect(widget2->GetContentsView()->GetLocalBounds());
@@ -801,7 +801,7 @@ TEST_F(TooltipControllerTest, MAYBE_Capture) {
   std::unique_ptr<views::Widget> widget_child = CreateWidget(GetContext());
   widget_child->SetContentsView(std::make_unique<View>());
   TooltipTestView* view_child = new TooltipTestView;
-  widget_child->GetContentsView()->AddChildView(view_child);
+  widget_child->GetContentsView()->AddChildViewRaw(view_child);
   view_child->set_tooltip_text(tooltip_text_child);
   widget_child->SetBounds(gfx::Rect(0, 0, 200, 200));
   view_child->SetBoundsRect(widget_child->GetContentsView()->GetLocalBounds());
@@ -1080,7 +1080,7 @@ class TooltipControllerTest3 : public ViewsTestBase {
     widget_ = CreateWidget(GetContext());
     widget_->SetContentsView(std::make_unique<View>());
     view_ = new TooltipTestView;
-    widget_->GetContentsView()->AddChildView(view_.get());
+    widget_->GetContentsView()->AddChildViewRaw(view_.get());
     view_->SetBoundsRect(widget_->GetContentsView()->GetLocalBounds());
 
     generator_ = std::make_unique<ui::test::EventGenerator>(GetRootWindow());
@@ -1146,11 +1146,11 @@ TEST_F(TooltipControllerTest3, TooltipPositionChangesOnTwoViewsWithSameLabel) {
   TooltipTestView* v2_2 = new TooltipTestView;
 
   // Setup all the views' relations
-  view_->AddChildView(v1);
-  view_->AddChildView(v2);
-  v1->AddChildView(v1_1);
-  v2->AddChildView(v2_1);
-  v2->AddChildView(v2_2);
+  view_->AddChildViewRaw(v1);
+  view_->AddChildViewRaw(v2);
+  v1->AddChildViewRaw(v1_1);
+  v2->AddChildViewRaw(v2_1);
+  v2->AddChildViewRaw(v2_2);
   const std::u16string reference_string(u"Identical Tooltip Text");
   const std::u16string alternative_string(u"Another Shrubbery");
   v1->set_tooltip_text(reference_string);

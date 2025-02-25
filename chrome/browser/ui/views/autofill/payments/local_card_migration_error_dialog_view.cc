@@ -97,7 +97,7 @@ void LocalCardMigrationErrorDialogView::Init() {
           : IDR_AUTOFILL_MIGRATION_DIALOG_HEADER));
   image->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME));
-  AddChildView(image);
+  AddChildViewRaw(image);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   auto* error_view = new views::View();
@@ -112,16 +112,16 @@ void LocalCardMigrationErrorDialogView::Init() {
   auto* error_image = new views::ImageView();
   error_image->SetImage(ui::ImageModel::FromVectorIcon(
       kBrowserToolsErrorIcon, ui::kColorAlertHighSeverity));
-  error_view->AddChildView(error_image);
+  error_view->AddChildViewRaw(error_image);
 
   auto* error_message = new views::Label(
       l10n_util::GetPluralStringFUTF16(
           IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_MESSAGE_ERROR,
           controller_->GetCardList().size()),
       views::style::CONTEXT_DIALOG_BODY_TEXT, ChromeTextStyle::STYLE_RED);
-  error_view->AddChildView(error_message);
+  error_view->AddChildViewRaw(error_message);
 
-  AddChildView(error_view);
+  AddChildViewRaw(error_view);
 }
 
 LocalCardMigrationDialog* CreateLocalCardMigrationErrorDialogView(

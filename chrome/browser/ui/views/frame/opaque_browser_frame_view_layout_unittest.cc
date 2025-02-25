@@ -184,7 +184,7 @@ class OpaqueBrowserFrameViewLayoutTest
     window_title_->SetSubpixelRenderingEnabled(false);
     window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     window_title_->SetID(VIEW_ID_WINDOW_TITLE);
-    root_view_->AddChildView(window_title_.get());
+    root_view_->AddChildViewRaw(window_title_.get());
   }
 
   int CaptionY() const {

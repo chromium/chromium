@@ -131,7 +131,8 @@ std::u16string ShippingOptionViewController::GetSheetTitle() {
 
 void ShippingOptionViewController::FillContentView(views::View* content_view) {
   content_view->SetLayoutManager(std::make_unique<views::FillLayout>());
-  content_view->AddChildView(shipping_option_list_.CreateListView().release());
+  content_view->AddChildViewRaw(
+      shipping_option_list_.CreateListView().release());
 }
 
 std::unique_ptr<views::View>

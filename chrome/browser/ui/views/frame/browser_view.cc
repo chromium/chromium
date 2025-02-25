@@ -5070,7 +5070,7 @@ bool BrowserView::MaybeShowBookmarkBar(WebContents* contents) {
         new_parent->AddChildViewAt(bookmark_bar_view_.get(),
                                    separator_index.value());
       } else {
-        new_parent->AddChildView(bookmark_bar_view_.get());
+        new_parent->AddChildViewRaw(bookmark_bar_view_.get());
       }
     } else {
       DCHECK(!new_parent);
@@ -5813,7 +5813,7 @@ void BrowserView::OnImmersiveRevealStarted() {
 
   top_container()->SetPaintToLayer();
   top_container()->layer()->SetFillsBoundsOpaquely(false);
-  overlay_view_->AddChildView(top_container());
+  overlay_view_->AddChildViewRaw(top_container());
   overlay_view_->SetVisible(true);
   InvalidateLayout();
   GetWidget()->GetRootView()->DeprecatedLayoutImmediately();

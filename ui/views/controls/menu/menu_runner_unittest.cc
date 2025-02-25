@@ -869,7 +869,7 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
       Button::PressedCallback(), std::u16string(), style::CONTEXT_BUTTON);
   button->SetID(1);
   button->SetSize(gfx::Size(20, 20));
-  owner()->GetRootView()->AddChildView(button);
+  owner()->GetRootView()->AddChildViewRaw(button);
   button->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   button->GetWidget()->widget_delegate()->SetCanActivate(true);
   button->GetWidget()->Activate();

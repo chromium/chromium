@@ -32,7 +32,7 @@ class AtomicViewAXTreeManagerTest : public ViewsTestBase {
 
     textfield_ = new Textfield();
     textfield_->SetBounds(10, 20, 30, 40);
-    widget_->GetContentsView()->AddChildView(textfield_.get());
+    widget_->GetContentsView()->AddChildViewRaw(textfield_.get());
 
     delegate_ = static_cast<ViewAXPlatformNodeDelegate*>(
         &textfield_->GetViewAccessibility());

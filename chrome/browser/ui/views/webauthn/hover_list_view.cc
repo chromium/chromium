@@ -92,7 +92,7 @@ void HoverListView::AppendListItemView(const ui::ImageModel& icon,
                           base::Unretained(model_.get()), item_tag));
 
   auto* list_item_view_ptr = hover_button.release();
-  item_container_->AddChildView(list_item_view_ptr);
+  item_container_->AddChildViewRaw(list_item_view_ptr);
   auto* separator =
       item_container_->AddChildView(std::make_unique<views::Separator>());
   tags_to_list_item_views_.emplace(

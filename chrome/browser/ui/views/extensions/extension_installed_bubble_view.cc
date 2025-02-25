@@ -206,7 +206,7 @@ void ExtensionInstalledBubbleView::Init() {
   SetLayoutManager(std::move(layout));
 
   if (model_->show_how_to_use()) {
-    AddChildView(CreateLabel(model_->GetHowToUseText()));
+    AddChildViewRaw(CreateLabel(model_->GetHowToUseText()));
   }
 
   if (model_->show_key_binding()) {
