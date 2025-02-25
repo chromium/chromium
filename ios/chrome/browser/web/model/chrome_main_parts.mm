@@ -136,7 +136,9 @@ IOSChromeMainParts::~IOSChromeMainParts() {
 }
 
 void IOSChromeMainParts::PreCreateMainMessageLoop() {
+#if !BUILDFLAG(USE_BLINK)
   l10n_util::OverrideLocaleWithCocoaLocale();
+#endif
   const std::string loaded_locale =
       ui::ResourceBundle::InitSharedInstanceWithLocale(
           std::string(), nullptr, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
@@ -152,22 +154,15 @@ void IOSChromeMainParts::PreCreateMainMessageLoop() {
       resources_pack_path, ui::k100Percent);
 }
 
-void IOSChromeMainParts::PreCreateThreads() {
-  // Create and start the stack sampling profiler if CANARY or DEV. The warning
-  // below doesn't apply.
-  const version_info::Channel channel = ::GetChannel();
-  if (channel == version_info::Channel::CANARY ||
-      channel == version_info::Channel::DEV) {
-    sampling_profiler_ = IOSThreadProfiler::CreateAndStartOnMainThread();
-    IOSThreadProfiler::SetMainThreadTaskRunner(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
-  }
+void IOSChromeMainParts::InitializeFieldTrialAndFeatureList() {
+#if BUILDFLAG(USE_BLINK)
+  l10n_util::OverrideLocaleWithCocoaLocale();
+  CreateApplicationContext();
+  ApplyFeatureList();
+#endif
+}
 
-  // IMPORTANT
-  // Calls in this function should not post tasks or create threads as
-  // components used to handle those tasks are not yet available. This work
-  // should be deferred to PreMainMessageLoopRunImpl.
-
+void IOSChromeMainParts::CreateApplicationContext() {
   // The initial read is done synchronously, the TaskPriority is thus only used
   // for flushes to disks and BACKGROUND is therefore appropriate. Priority of
   // remaining BACKGROUND+BLOCK_SHUTDOWN tasks is bumped by the ThreadPool on
@@ -178,36 +173,15 @@ void IOSChromeMainParts::PreCreateThreads() {
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 
-  base::FilePath local_state_path;
-  CHECK(base::PathService::Get(ios::FILE_LOCAL_STATE, &local_state_path));
   application_context_.reset(new ApplicationContextImpl(
       local_state_task_runner.get(), *parsed_command_line_,
       l10n_util::GetLocaleOverride(),
       base::SysNSStringToUTF8(
           [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode])));
   DCHECK_EQ(application_context_.get(), GetApplicationContext());
+}
 
-  // Check the first run state early; this must be done before IO is disallowed
-  // so that later calls can use the cached value.
-  static crash_reporter::CrashKeyString<4> key("first-run");
-  if (FirstRun::IsChromeFirstRun()) {
-    key.Set("yes");
-  }
-
-  // Compute device restore flag before IO is disallowed on UI thread, so the
-  // value is available from cache synchronously.
-  static crash_reporter::CrashKeyString<8> device_restore_key("device-restore");
-  switch (IsFirstSessionAfterDeviceRestore()) {
-    case signin::Tribool::kTrue:
-      device_restore_key.Set("yes");
-      break;
-    case signin::Tribool::kFalse:
-      break;
-    case signin::Tribool::kUnknown:
-      device_restore_key.Set("unknown");
-      break;
-  }
-
+void IOSChromeMainParts::ApplyFeatureList() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   // Convert freeform experimental settings into switches before initializing
@@ -245,6 +219,55 @@ void IOSChromeMainParts::PreCreateThreads() {
   // emitting profiler metadata since the profiler doesn't run on iOS.
   base::features::Init(
       base::features::EmitThreadControllerProfilerMetadata::kFeatureDependent);
+}
+
+void IOSChromeMainParts::PreCreateThreads() {
+  // Create and start the stack sampling profiler if CANARY or DEV. The warning
+  // below doesn't apply.
+  const version_info::Channel channel = ::GetChannel();
+  if (channel == version_info::Channel::CANARY ||
+      channel == version_info::Channel::DEV) {
+    sampling_profiler_ = IOSThreadProfiler::CreateAndStartOnMainThread();
+    IOSThreadProfiler::SetMainThreadTaskRunner(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
+
+#if BUILDFLAG(USE_BLINK)
+  GetApplicationContext()
+      ->GetBrowserPolicyConnector()
+      ->OnResourceBundleCreated();
+#else
+  // IMPORTANT
+  // Calls in this function should not post tasks or create threads as
+  // components used to handle those tasks are not yet available. This work
+  // should be deferred to PreMainMessageLoopRunImpl.
+  CreateApplicationContext();
+#endif
+
+  // Check the first run state early; this must be done before IO is disallowed
+  // so that later calls can use the cached value.
+  static crash_reporter::CrashKeyString<4> key("first-run");
+  if (FirstRun::IsChromeFirstRun()) {
+    key.Set("yes");
+  }
+
+  // Compute device restore flag before IO is disallowed on UI thread, so the
+  // value is available from cache synchronously.
+  static crash_reporter::CrashKeyString<8> device_restore_key("device-restore");
+  switch (IsFirstSessionAfterDeviceRestore()) {
+    case signin::Tribool::kTrue:
+      device_restore_key.Set("yes");
+      break;
+    case signin::Tribool::kFalse:
+      break;
+    case signin::Tribool::kUnknown:
+      device_restore_key.Set("unknown");
+      break;
+  }
+
+#if !BUILDFLAG(USE_BLINK)
+  ApplyFeatureList();
+#endif
 
   // Set metrics upload for stack/heap profiles.
   IOSThreadProfiler::SetBrowserProcessReceiverCallback(base::BindRepeating(
@@ -278,6 +301,9 @@ void IOSChromeMainParts::PreCreateThreads() {
       @"RemoveProtectionFromPrefKey";
   if ([NSUserDefaults.standardUserDefaults
           boolForKey:kRemoveProtectionFromPrefFileKey]) {
+    base::FilePath local_state_path;
+    CHECK(base::PathService::Get(ios::FILE_LOCAL_STATE, &local_state_path));
+
     // Restore default protection level when user is no longer in the
     // experimental group.
     SetProtectionLevel(local_state_path,
@@ -391,9 +417,9 @@ void IOSChromeMainParts::SetUpFieldTrials(
     const std::string& command_line_variation_ids) {
   base::SetRecordActionTaskRunner(web::GetUIThreadTaskRunner({}));
 
-  // FeatureList requires VariationsIdsProvider to be created.
+// This will occur inside //content for blink.
 #if !BUILDFLAG(USE_BLINK)
-  // TODO(crbug.com/40261735) Move variations to PostEarlyInitialization.
+  // FeatureList requires VariationsIdsProvider to be created.
   variations::VariationsIdsProvider::Create(
       variations::VariationsIdsProvider::Mode::kUseSignedInState);
 #endif
@@ -416,14 +442,11 @@ void IOSChromeMainParts::SetUpFieldTrials(
       application_context_->GetAdditionalFeaturesController();
   additional_features_controller->RegisterFeatureList(feature_list.get());
 
-#if !BUILDFLAG(USE_BLINK)
-  // TODO(crbug.com/40261735) Move variations to PostEarlyInitialization.
   application_context_->GetVariationsService()->SetUpFieldTrials(
       variation_ids, command_line_variation_ids,
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::move(feature_list), &ios_field_trials_);
   additional_features_controller->FeatureListDidCompleteSetup();
-#endif
 }
 
 void IOSChromeMainParts::SetupMetrics() {

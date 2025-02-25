@@ -254,8 +254,21 @@ ChromeWebClient::ChromeWebClient() {}
 ChromeWebClient::~ChromeWebClient() {}
 
 std::unique_ptr<web::WebMainParts> ChromeWebClient::CreateWebMainParts() {
+#if BUILDFLAG(USE_BLINK)
+  CHECK(main_parts_);
+  return std::move(main_parts_);
+#else
   return std::make_unique<IOSChromeMainParts>(
       *base::CommandLine::ForCurrentProcess());
+#endif
+}
+
+void ChromeWebClient::InitializeFieldTrialAndFeatureList() {
+#if BUILDFLAG(USE_BLINK)
+  main_parts_ = std::make_unique<IOSChromeMainParts>(
+      *base::CommandLine::ForCurrentProcess());
+  main_parts_->InitializeFieldTrialAndFeatureList();
+#endif
 }
 
 void ChromeWebClient::PreWebViewCreation() const {}

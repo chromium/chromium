@@ -457,11 +457,15 @@ ApplicationContextImpl::GetNetworkConnectionTracker() {
 BrowserPolicyConnectorIOS* ApplicationContextImpl::GetBrowserPolicyConnector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!browser_policy_connector_.get()) {
+#if !BUILDFLAG(USE_BLINK)
     // Ensure that the ResourceBundle has already been initialized. If this
     // DCHECK ever fails, a call to
     // BrowserPolicyConnector::OnResourceBundleCreated() will need to be added
     // later in the startup sequence, after the ResourceBundle is initialized.
+    // Blink based startup will call OnResourceBundleCreated in
+    // IOSChromeMainParts::PreCreateThreads.
     DCHECK(ui::ResourceBundle::HasSharedInstance());
+#endif
     version_info::Channel channel = ::GetChannel();
     policy::ConfigurationPolicyProvider* test_policy_provider =
         tests_hook::GetOverriddenPlatformPolicyProvider();

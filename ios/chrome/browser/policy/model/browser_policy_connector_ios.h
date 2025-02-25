@@ -79,6 +79,8 @@ class BrowserPolicyConnectorIOS : public policy::BrowserPolicyConnector {
   // line switch anyway.
   bool IsCommandLineSwitchSupported() const override;
 
+  void OnResourceBundleCreated();
+
  protected:
   // BrowserPolicyConnectorBase.
   std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>
