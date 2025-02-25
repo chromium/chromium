@@ -817,11 +817,7 @@ bool IsPlayStoreAvailable() {
   }
 
   // Demo Mode is the only public session scenario that can launch Play.
-  if (!ash::DemoSession::IsDeviceInDemoMode()) {
-    return false;
-  }
-
-  return ash::features::ShouldShowPlayStoreInDemoMode();
+  return ash::DemoSession::IsDeviceInDemoMode();
 }
 
 bool ShouldStartArcSilentlyForManagedProfile(const Profile* profile) {

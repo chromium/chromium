@@ -2711,11 +2711,6 @@ BASE_FEATURE(kShowLiveCaptionInVideoConferenceTray,
              "ShowLiveCaptionInVideoConferenceTray",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Shows the Play Store icon in Demo Mode.
-BASE_FEATURE(kShowPlayInDemoMode,
-             "ShowPlayInDemoMode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether sharing user name should be shown in the continue section for drive
 // files shown because they have been recently shared with the user.
 BASE_FEATURE(kShowSharingUserInLauncherContinueSection,
@@ -4686,10 +4681,6 @@ bool IsWmModeEnabled() {
 
 bool IsSearchCustomizableShortcutsInLauncherEnabled() {
   return base::FeatureList::IsEnabled(kSearchCustomizableShortcutsInLauncher);
-}
-
-bool ShouldShowPlayStoreInDemoMode() {
-  return base::FeatureList::IsEnabled(kShowPlayInDemoMode);
 }
 
 bool IsFeatureAwareDeviceDemoModeEnabled() {
