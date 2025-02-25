@@ -88,7 +88,7 @@ struct TestVector {
   const char* const output;
 };
 
-const auto kEncryptionTestVectorsDraft03 = std::to_array<TestVector>(
+constexpr auto kEncryptionTestVectorsDraft03 = std::to_array<TestVector>(
     {// Simple message.
      {"Hello, world!",
       {0x0B, 0x32, 0xE2, 0xD1, 0x6A, 0xBF, 0x4F, 0x2C, 0x49, 0xEA, 0xF7,
@@ -112,7 +112,7 @@ const auto kEncryptionTestVectorsDraft03 = std::to_array<TestVector>(
       4096,
       "8s-Tzq8Cn_eobL6uEcNDXL7K"}});
 
-const auto kEncryptionTestVectorsDraft08 = std::to_array<TestVector>(
+constexpr auto kEncryptionTestVectorsDraft08 = std::to_array<TestVector>(
     {// Simple message.
      {"Hello, world!",
       {0x0B, 0x32, 0xE2, 0xD1, 0x6A, 0xBF, 0x4F, 0x2C, 0x49, 0xEA, 0xF7,
@@ -136,7 +136,7 @@ const auto kEncryptionTestVectorsDraft08 = std::to_array<TestVector>(
       4096,
       "5OXY345WYPyIvsF7hx4swuA"}});
 
-const auto kDecryptionTestVectorsDraft03 = std::to_array<TestVector>({
+constexpr auto kDecryptionTestVectorsDraft03 = std::to_array<TestVector>({
     // Simple message.
     {"lsemWwzlFoJzoidHCnVuxRiJpotTcYokJHKzmQ2FsA",
      {0x4D, 0x3A, 0x6C, 0xBA, 0xD8, 0x1D, 0x8E, 0x68, 0x8B, 0xE6, 0x76,
@@ -205,7 +205,7 @@ const auto kDecryptionTestVectorsDraft03 = std::to_array<TestVector>({
      nullptr},
 });
 
-const auto kDecryptionTestVectorsDraft08 = std::to_array<TestVector>({
+constexpr auto kDecryptionTestVectorsDraft08 = std::to_array<TestVector>({
     // Simple message.
     {"baIDPDv-Do_x1RVtlFDex2uCvd3Ugrv-gJG3sWeg",
      {0x4D, 0x3A, 0x6C, 0xBA, 0xD8, 0x1D, 0x8E, 0x68, 0x8B, 0xE6, 0x76,
