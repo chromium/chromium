@@ -41,6 +41,7 @@
 #include "services/network/public/mojom/restricted_udp_socket.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
 
@@ -106,7 +107,7 @@ bool ValidateRequest(const Context& context,
     // No additional rules from the embedder.
     return true;
   }
-  return std::visit(
+  return absl::visit(
       base::Overloaded{
           [&](RenderFrameHost* rfh) {
             return delegate->ValidateRequest(*rfh, {address, port, protocol});
@@ -169,7 +170,7 @@ void RequestPrivateNetworkAccess(const Context& context,
     std::move(callback).Run(/*access_allowed=*/true);
     return;
   }
-  return std::visit(
+  return absl::visit(
       base::Overloaded{
           [&](content::RenderFrameHost* rfh) {
             if (!rfh->IsFeatureEnabled(
@@ -667,7 +668,7 @@ network::mojom::NetworkContext* DirectSocketsServiceImpl::GetNetworkContext()
   if (auto* network_context = GetNetworkContextForTesting()) {
     return network_context;
   }
-  return std::visit(
+  return absl::visit(
       base::Overloaded{
           [](RenderFrameHost* rfh) {
             return rfh->GetStoragePartition()->GetNetworkContext();
