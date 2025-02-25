@@ -677,7 +677,7 @@ bool PaintShader::IsValid() const {
     case Type::kLinearGradient:
     case Type::kRadialGradient:
     case Type::kTwoPointConicalGradient:
-      return colors_.size() >= 2 &&
+      return colors_.size() >= 1 &&
              (positions_.empty() || positions_.size() == colors_.size());
     case Type::kImage:
       // We may not be able to decode the image, in which case it would be
