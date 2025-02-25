@@ -22,8 +22,6 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -49,19 +47,6 @@ constexpr base::TimeDelta kSwapDeviceAvailableSpaceCheckInterval =
 base::TimeTicks g_last_swap_device_free_space_check;
 uint64_t g_swap_device_free_swap_bytes;
 
-// We must bind our mojo remote on the UI thread, this callback does that.
-void BindUserspaceSwapReceiverOnUIThread(
-    RenderProcessHostProxy proxy,
-    mojo::PendingReceiver<::userspace_swap::mojom::UserspaceSwap> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::RenderProcessHost* render_process_host = proxy.Get();
-  if (!render_process_host) {
-    return;
-  }
-
-  render_process_host->BindReceiver(std::move(receiver));
-}
-
 // UserspaceSwapMechanismData contains process node specific details and
 // handles.
 class UserspaceSwapMechanismData
@@ -75,45 +60,33 @@ class UserspaceSwapMechanismData
 
 void InitializeProcessNodeOnGraph(int render_process_host_id,
                                   base::ScopedFD uffd,
-                                  Region swap_area,
-                                  performance_manager::Graph* graph) {
+                                  Region swap_area) {
   // Now look up the ProcessNode so we can complete initialization.
-  DCHECK(graph);
   DCHECK(uffd.is_valid());
 
-  const ProcessNode* process_node = nullptr;
-  for (const ProcessNode* proc : graph->GetAllProcessNodes()) {
-    if (proc->GetRenderProcessHostId().GetUnsafeValue() ==
-        render_process_host_id) {
-      process_node = proc;
-      break;
-    }
-  }
-
+  base::WeakPtr<ProcessNode> process_node =
+      PerformanceManager::GetProcessNodeForRenderProcessHostId(
+          RenderProcessHostId(render_process_host_id));
   if (!process_node) {
     LOG(ERROR) << "Couldn't find process node for rphid: "
                << render_process_host_id;
     return;
   }
 
-  if (UserspaceSwapMechanismData::Destroy(process_node)) {
+  if (UserspaceSwapMechanismData::Destroy(process_node.get())) {
     LOG(ERROR) << "ProcessNode contained UserspaceSwapMechanismData";
     return;
   }
 
-  auto* data = UserspaceSwapMechanismData::GetOrCreate(process_node);
+  auto* data = UserspaceSwapMechanismData::GetOrCreate(process_node.get());
 
   // If all other setup has completed successfully, we can tell the renderer to
   // construct an implementation of userspace_swap::mojom::UserspaceSwap.
-  // The RenderProcessHostProxy is a WeakPtr that should only be accessed on the
-  // UI thread.
   mojo::PendingRemote<::userspace_swap::mojom::UserspaceSwap> remote;
   const RenderProcessHostProxy& proxy =
       process_node->GetRenderProcessHostProxy();
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&BindUserspaceSwapReceiverOnUIThread, proxy,
-                                remote.InitWithNewPipeAndPassReceiver()));
+  content::RenderProcessHost* render_process_host = proxy.Get();
+  render_process_host->BindReceiver(remote.InitWithNewPipeAndPassReceiver());
 
   // Wrap up the received userfaultfd into a UserfaultFD instance.
   std::unique_ptr<UserfaultFD> userfaultfd =
@@ -133,7 +106,7 @@ void InitializeProcessNodeOnGraph(int render_process_host_id,
                    "creating swap file";
 
     // If we can't create a swap file, then we will bail freeing our resources.
-    UserspaceSwapMechanismData::Destroy(process_node);
+    UserspaceSwapMechanismData::Destroy(process_node.get());
 
     return;
   }
@@ -302,11 +275,8 @@ void UserspaceSwapInitializationImpl::TransferUserfaultFD(
     return;
   }
 
-  // Make sure we're on the graph and complete the initialization.
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindOnce(&InitializeProcessNodeOnGraph,
-                                render_process_host_id_, uffd_handle.TakeFD(),
-                                Region(swap_area->address, swap_area->length)));
+  InitializeProcessNodeOnGraph(render_process_host_id_, uffd_handle.TakeFD(),
+                               Region(swap_area->address, swap_area->length));
 }
 
 }  // namespace userspace_swap
