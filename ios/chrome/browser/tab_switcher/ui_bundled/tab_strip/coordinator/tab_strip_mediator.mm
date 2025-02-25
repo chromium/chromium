@@ -13,7 +13,6 @@
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/collaboration/public/messaging/message.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
-#import "components/data_sharing/public/data_sharing_service.h"
 #import "components/data_sharing/public/group_data.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
@@ -57,9 +56,6 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/gfx/image/image.h"
-
-using PeopleGroupActionOutcome =
-    data_sharing::DataSharingService::PeopleGroupActionOutcome;
 
 namespace {
 
@@ -277,7 +273,6 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
   // Used to get info about saved groups and to mutate them.
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
-  raw_ptr<data_sharing::DataSharingService> _dataSharingService;
 
   // A service to get activity messages for a shared tab group.
   raw_ptr<collaboration::messaging::MessagingBackendService> _messagingService;
@@ -299,7 +294,6 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 - (instancetype)
         initWithConsumer:(id<TabStripConsumer>)consumer
      tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
-      dataSharingService:(data_sharing::DataSharingService*)dataSharingService
              browserList:(BrowserList*)browserList
         messagingService:
             (collaboration::messaging::MessagingBackendService*)messagingService
@@ -310,7 +304,6 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     _browserList = browserList;
     _collaborationService = collaborationService;
     _tabGroupSyncService = tabGroupSyncService;
-    _dataSharingService = dataSharingService;
     _consumer = consumer;
     _messagingService = messagingService;
     if (_messagingService) {
@@ -340,7 +333,6 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     _messagingService = nullptr;
   }
   _tabGroupSyncService = nullptr;
-  _dataSharingService = nullptr;
   _tabStripHandler = nil;
   _browserList = nullptr;
 }
@@ -441,7 +433,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 }
 
 - (void)leaveSharedGroup:(TabGroupItem*)tabGroupItem {
-  if (!_dataSharingService || !tabGroupItem.tabGroup) {
+  if (!_collaborationService || !tabGroupItem.tabGroup) {
     return;
   }
   [self takeActionForActionType:TabGroupActionType::kLeaveSharedTabGroup
@@ -449,7 +441,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 }
 
 - (void)deleteSharedGroup:(TabGroupItem*)tabGroupItem {
-  if (!_dataSharingService || !tabGroupItem.tabGroup) {
+  if (!_collaborationService || !tabGroupItem.tabGroup) {
     return;
   }
   [self takeActionForActionType:TabGroupActionType::kDeleteSharedTabGroup
@@ -1874,7 +1866,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 // TabGroupActionType must be kLeaveSharedTabGroup or kDeleteSharedTabGroup.
 - (void)takeActionForActionType:(TabGroupActionType)actionType
                  sharedTabGroup:(const TabGroup*)group {
-  CHECK(_dataSharingService);
+  CHECK(_collaborationService);
 
   const tab_groups::CollaborationId collabId =
       tab_groups::utils::GetTabGroupCollabID(group, _tabGroupSyncService);
@@ -1882,8 +1874,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());
 
   __weak TabStripMediator* weakSelf = self;
-  auto callback = base::BindOnce(^(PeopleGroupActionOutcome outcome) {
-    BOOL success = outcome == PeopleGroupActionOutcome::kSuccess;
+  auto callback = base::BindOnce(^(bool success) {
     [weakSelf handleTakeActionForActionTypeOutcome:success];
   });
 
@@ -1892,10 +1883,10 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // Asynchronously call on the server.
   switch (actionType) {
     case TabGroupActionType::kLeaveSharedTabGroup:
-      _dataSharingService->LeaveGroup(groupId, std::move(callback));
+      _collaborationService->LeaveGroup(groupId, std::move(callback));
       break;
     case TabGroupActionType::kDeleteSharedTabGroup:
-      _dataSharingService->DeleteGroup(groupId, std::move(callback));
+      _collaborationService->DeleteGroup(groupId, std::move(callback));
       break;
     case TabGroupActionType::kUngroupTabGroup:
     case TabGroupActionType::kDeleteTabGroup:
