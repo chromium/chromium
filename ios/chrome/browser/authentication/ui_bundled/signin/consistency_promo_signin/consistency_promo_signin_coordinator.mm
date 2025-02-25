@@ -4,10 +4,15 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 
+#import <memory>
+#import <optional>
+
+#import "base/check_deref.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/browser/web_signin_tracker.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
@@ -28,6 +33,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -121,6 +127,8 @@
   ProfileIOS* profile = self.browser->GetProfile();
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
+  AccountReconcilor* accountReconcilor =
+      ios::AccountReconcilorFactory::GetForProfile(profile);
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   AuthenticationService* authenticationService =
@@ -129,6 +137,7 @@
       initWithAccountManagerService:accountManagerService
               authenticationService:authenticationService
                     identityManager:identityManager
+                  accountReconcilor:accountReconcilor
                     userPrefService:profile->GetPrefs()
                         accessPoint:self.accessPoint];
   self.consistencyPromoSigninMediator.delegate = self;
@@ -546,6 +555,20 @@
                 }
                  style:UIAlertActionStyleCancel];
   [self.alertCoordinator start];
+}
+
+- (std::unique_ptr<signin::WebSigninTracker>)
+    trackWebSigninWithIdentityManager:(signin::IdentityManager*)identityManager
+                    accountReconcilor:(AccountReconcilor*)accountReconcilor
+                        signinAccount:(const CoreAccountId&)signin_account
+                         withCallback:
+                             (const base::RepeatingCallback<void(
+                                  signin::WebSigninTracker::Result)>*)callback
+                          withTimeout:
+                              (const std::optional<base::TimeDelta>&)timeout {
+  return std::make_unique<signin::WebSigninTracker>(
+      identityManager, accountReconcilor, signin_account, CHECK_DEREF(callback),
+      timeout);
 }
 
 #pragma mark - NSObject
