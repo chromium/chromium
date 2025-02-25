@@ -22,19 +22,16 @@ class FormStructure;
 // //components/autofill_ai.
 class AutofillAiDelegate {
  public:
-  using GetSuggestionsCallback =
-      base::OnceCallback<void(std::vector<autofill::Suggestion>)>;
-
   using UpdateSuggestionsCallback =
       base::RepeatingCallback<void(std::vector<Suggestion>,
                                    AutofillSuggestionTriggerSource)>;
 
   virtual ~AutofillAiDelegate() = default;
 
-  // Generates AutofillAi suggestions and calls `callback` with them.
-  virtual void GetSuggestions(autofill::FormGlobalId form_global_id,
-                              autofill::FieldGlobalId field_global_id,
-                              GetSuggestionsCallback callback) = 0;
+  // Generates AutofillAi suggestions.
+  virtual std::vector<autofill::Suggestion> GetSuggestions(
+      autofill::FormGlobalId form_global_id,
+      autofill::FieldGlobalId field_global_id) = 0;
 
   // Returns whether `form` and `field` are eligible for the Autofill AI
   // experience.

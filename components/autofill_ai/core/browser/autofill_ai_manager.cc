@@ -389,38 +389,34 @@ void AutofillAiManager::OnSavePromptAcceptance(
   entity_manager->AddOrUpdateEntityInstance(*std::move(result.entity));
 }
 
-void AutofillAiManager::GetSuggestions(autofill::FormGlobalId form_global_id,
-                                       autofill::FieldGlobalId field_global_id,
-                                       GetSuggestionsCallback callback) {
+std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
+    autofill::FormGlobalId form_global_id,
+    autofill::FieldGlobalId field_global_id) {
   autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
-    return std::move(callback).Run({});
+    return {};
   }
 
   base::span<const autofill::EntityInstance> entities =
       entity_manager->GetEntityInstances();
   if (entities.empty()) {
-    std::move(callback).Run({});
-    return;
+    return {};
   }
 
   autofill::FormStructure* form_structure =
       client_->GetCachedFormStructure(form_global_id);
   if (!form_structure) {
-    std::move(callback).Run({});
-    return;
+    return {};
   }
 
   const autofill::AutofillField* autofill_field =
       form_structure->GetFieldById(field_global_id);
   if (!autofill_field) {
-    std::move(callback).Run({});
-    return;
+    return {};
   }
 
   CHECK(autofill_field->GetAutofillAiServerTypePredictions());
-  std::move(callback).Run(
-      CreateFillingSuggestions(*form_structure, field_global_id, entities));
+  return CreateFillingSuggestions(*form_structure, field_global_id, entities);
 }
 
 bool AutofillAiManager::ShouldDisplayIph(

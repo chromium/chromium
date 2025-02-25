@@ -1169,38 +1169,23 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source,
                               /*update_datalist=*/true);
 
-  SuggestionsContext context = BuildSuggestionsContext(
-      form, form_structure, field, autofill_field, trigger_source);
-
-  OnGenerateSuggestionsCallback callback = base::BindOnce(
-      &BrowserAutofillManager::OnGenerateSuggestionsComplete,
-      weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context);
-
-  // Check via the `AutofillAiDelegate` if there's data stored in user
-  // annotations. IMPORTANT NOTE: If there's no data stored in user annotations,
-  // `GenerateSuggestionsAndMaybeShowUI()` will be called and Autofill's regular
-  // flow will continue.
+  std::vector<Suggestion> autofill_ai_suggestions;
   if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
       delegate && form_structure && autofill_field &&
       delegate->IsFormAndFieldEligibleForAutofillAi(*form_structure,
                                                     *autofill_field)) {
-    delegate->GetSuggestions(
-        form.global_id(), field.global_id(),
-        base::BindOnce(
-            &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1,
-            weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
-            context, std::move(callback)));
-    return;
+    autofill_ai_suggestions =
+        delegate->GetSuggestions(form.global_id(), field.global_id());
   }
 
-  // IMPORTANT NOTE: DON'T ADD CODE HERE, but in
-  // `GenerateSuggestionsAndMaybeShowUIPhase1()` instead.
-
-  // If user annotations wasn't checked for readiness above, synchronously move
-  // on with generating suggestions and maybe showing the UI.
-  GenerateSuggestionsAndMaybeShowUIPhase1(form, field, trigger_source, context,
-                                          std::move(callback),
-                                          /*autofill_ai_suggestions=*/{});
+  SuggestionsContext context = BuildSuggestionsContext(
+      form, form_structure, field, autofill_field, trigger_source);
+  GenerateSuggestionsAndMaybeShowUIPhase1(
+      form, field, trigger_source, context,
+      base::BindOnce(&BrowserAutofillManager::OnGenerateSuggestionsComplete,
+                     weak_ptr_factory_.GetWeakPtr(), form, field,
+                     trigger_source, context),
+      std::move(autofill_ai_suggestions));
 }
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(

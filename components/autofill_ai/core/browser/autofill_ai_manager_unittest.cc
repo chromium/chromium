@@ -226,9 +226,8 @@ TEST_F(AutofillAiManagerTest, RejectedPromptStrikeCounting) {
   EXPECT_FALSE(manager().IsFormBlockedForImport(form2));
 }
 
-// Tests that the user receives a filling suggestion when using AutofillAi
-// manual fallback on a field that was previously classified as such. Since the
-// field is already classified, no model call is required.
+// Tests that the user receives a filling suggestion when interacting with
+// a field that has AutofillAi predictions.
 TEST_F(AutofillAiManagerTest,
        GetSuggestionsTriggeringFieldIsAutofillAi_ReturnFillingSuggestion) {
   autofill::test::FormDescription form_description = {
@@ -242,11 +241,8 @@ TEST_F(AutofillAiManagerTest,
       .WillByDefault(Return(&form_structure));
 
   AddOrUpdateEntityInstance(autofill::test::GetPassportEntityInstance());
-
-  base::test::TestFuture<std::vector<autofill::Suggestion>> suggestions;
-  manager().GetSuggestions(form.global_id(), form.fields().front().global_id(),
-                           suggestions.GetCallback());
-  EXPECT_THAT(suggestions.Take(),
+  EXPECT_THAT(manager().GetSuggestions(form.global_id(),
+                                       form.fields().front().global_id()),
               ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
                           HasType(kManageAutofillAi)));
 }
