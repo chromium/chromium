@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_ENUMS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_ENUMS_H_
 
+#include <stdint.h>
+
 #include <utility>
 
 namespace blink {
