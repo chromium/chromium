@@ -568,6 +568,26 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
   metadata.alpha_type = kOpaque_SkAlphaType;
   metadata.usage = gpu::SharedImageUsageSet();
 
+  return CreateForTesting(metadata, texture_target);
+}
+
+// static
+scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
+    SharedImageUsageSet usage) {
+  SharedImageMetadata metadata;
+  metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+  metadata.color_space = gfx::ColorSpace::CreateSRGB();
+  metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+  metadata.alpha_type = kOpaque_SkAlphaType;
+  metadata.usage = usage;
+
+  return CreateForTesting(metadata, GL_TEXTURE_2D);
+}
+
+// static
+scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
+    const SharedImageMetadata& metadata,
+    uint32_t texture_target) {
   return ImportUnowned(ExportedSharedImage(Mailbox::Generate(), metadata,
                                            SyncToken(), std::nullopt,
                                            std::nullopt, texture_target));
