@@ -16,7 +16,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/services/file_util/safe_archive_analyzer.h"
 #endif
 
@@ -42,7 +42,7 @@ void FileUtilService::BindZipFileCreator(
 }
 #endif
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
 void FileUtilService::BindSafeArchiveAnalyzer(
     mojo::PendingReceiver<chrome::mojom::SafeArchiveAnalyzer> receiver) {
   scoped_refptr<base::SequencedTaskRunner> runner =

@@ -577,6 +577,8 @@ TEST_F(DownloadRequestMakerTest, NotifiesCallback) {
   EXPECT_TRUE(callback_ran);
 }
 
+// Archive file analysis is not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DownloadRequestMakerTest, SetsIsEncrypted) {
   content::InProcessUtilityThreadHelper utility_thread_helper;
 
@@ -730,5 +732,6 @@ TEST_F(DownloadRequestMakerTest, SetsFullyExtractedArchive) {
   EXPECT_FALSE(
       DownloadItemWarningData::IsFullyExtractedArchive(&mock_download_item));
 }
+#endif
 
 }  // namespace safe_browsing

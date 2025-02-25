@@ -6,7 +6,7 @@ module chrome.mojom;
 
 import "sandbox/policy/mojom/sandbox.mojom";
 
-[EnableIf=full_safe_browsing]
+[EnableIf=safe_browsing_desktop_download_protection]
 import "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom";
 
 [EnableIf=is_chromeos]
@@ -24,7 +24,7 @@ interface FileUtilService {
   BindZipFileCreator(pending_receiver<ZipFileCreator> receiver);
 
   // Binds an instance of the SafeArchiveAnalyzer interface.
-  [EnableIf=full_safe_browsing]
+  [EnableIf=safe_browsing_desktop_download_protection]
   BindSafeArchiveAnalyzer(pending_receiver<SafeArchiveAnalyzer> receiver);
 
   // Binds a SingleFileTarFileExtractor instance of the SingleFileExtractor
