@@ -25,7 +25,7 @@ namespace content {
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
-const auto kExpectedFontFamilyNames = std::to_array({
+constexpr auto kExpectedFontFamilyNames = std::to_array({
     "AndroidClock",
     "Droid Sans Mono",
     "Roboto",
@@ -38,7 +38,7 @@ const auto kExpectedFontFamilyNames = std::to_array({
     "Noto Sans Thai UI",
 });
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-const auto kExpectedFontFamilyNames = std::to_array({
+constexpr auto kExpectedFontFamilyNames = std::to_array({
     "Ahem",
     "Arimo",
     "Arimo",
@@ -67,7 +67,7 @@ const auto kExpectedFontFamilyNames = std::to_array({
     "Tinos",
 });
 #elif BUILDFLAG(IS_APPLE)
-const auto kExpectedFontFamilyNames = std::to_array({
+constexpr auto kExpectedFontFamilyNames = std::to_array({
     "American Typewriter",
     "Arial Narrow",
     "Baskerville",
@@ -80,7 +80,7 @@ const auto kExpectedFontFamilyNames = std::to_array({
     "Hiragino Kaku Gothic StdN",
 });
 #elif BUILDFLAG(IS_WIN)
-const auto kExpectedFontFamilyNames = std::to_array({
+constexpr auto kExpectedFontFamilyNames = std::to_array({
     "Cambria Math",
     "MingLiU_HKSCS-ExtB",
     "NSimSun",
