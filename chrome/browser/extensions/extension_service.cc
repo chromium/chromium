@@ -274,18 +274,11 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
               registry_->GetExtensionById(info.extension_id,
                                           ExtensionRegistry::EVERYTHING),
               nullptr)) {
-        DisableReasonSet disable_reasons =
-            extension_prefs_->GetDisableReasons(info.extension_id);
-
         const DisableReasonSet to_remove = {
             disable_reason::DISABLE_USER_ACTION,
             disable_reason::DISABLE_EXTERNAL_EXTENSION,
             disable_reason::DISABLE_PERMISSIONS_INCREASE};
-        disable_reasons = base::STLSetDifference<DisableReasonSet>(
-            disable_reasons, to_remove);
-
-        extension_prefs_->ReplaceDisableReasons(info.extension_id,
-                                                disable_reasons);
+        extension_prefs_->RemoveDisableReasons(info.extension_id, to_remove);
 
         // Only re-enable the extension if there are no other disable reasons.
         if (extension_prefs_->GetDisableReasons(info.extension_id).empty()) {
@@ -972,31 +965,29 @@ void ExtensionService::CheckManagementPolicy() {
   // constructed above, since disabled_extensions() and enabled_extensions() are
   // supposed to be mutually exclusive.
   for (const auto& extension : registry_->disabled_extensions()) {
-    DisableReasonSet disable_reasons =
-        extension_prefs_->GetDisableReasons(extension->id());
+    DisableReasonSet to_add;
+    DisableReasonSet to_remove;
 
     // Find all extensions disabled due to minimum version requirement and
     // management policy but now satisfying it.
     if (management->CheckMinimumVersion(extension.get(), nullptr)) {
-      disable_reasons.erase(disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY);
+      to_remove.insert(disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY);
     }
 
     // Check published-in-store status against policy requirement and update
     // the disable reasons accordingly.
     if (management->IsAllowedByUnpublishedAvailabilityPolicy(extension.get())) {
-      disable_reasons.erase(
+      to_remove.insert(
           disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY);
     } else {
-      disable_reasons.insert(
+      to_add.insert(
           disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY);
     }
 
     if (management->IsAllowedByUnpackedDeveloperModePolicy(*extension)) {
-      disable_reasons.erase(
-          disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION);
+      to_remove.insert(disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION);
     } else {
-      disable_reasons.insert(
-          disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION);
+      to_add.insert(disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION);
     }
 
     // Check if the `DISABLE_NOT_VERIFIED` reason is still applicable. This
@@ -1012,12 +1003,12 @@ void ExtensionService::CheckManagementPolicy() {
         ->MustRemainDisabled(extension.get(), &install_verifier_disable_reason);
     if (install_verifier_disable_reason == disable_reason::DISABLE_NONE &&
         !management->ShouldBlockForceInstalledOffstoreExtension(*extension)) {
-      disable_reasons.erase(disable_reason::DISABLE_NOT_VERIFIED);
+      to_remove.insert(disable_reason::DISABLE_NOT_VERIFIED);
     }
 
     if (!system_->management_policy()->MustRemainDisabled(extension.get(),
                                                           nullptr)) {
-      disable_reasons.erase(disable_reason::DISABLE_BLOCKED_BY_POLICY);
+      to_remove.insert(disable_reason::DISABLE_BLOCKED_BY_POLICY);
     }
 
     // Note: `mv2_experiment_manager` may be null for certain types of profiles
@@ -1030,16 +1021,14 @@ void ExtensionService::CheckManagementPolicy() {
         mv2_experiment_manager->GetCurrentExperimentStage() ==
             MV2ExperimentStage::kUnsupported &&
         !mv2_experiment_manager->ShouldBlockExtensionEnable(*extension)) {
-      disable_reasons.erase(
-          disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
+      to_remove.insert(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
     }
 
     // If this profile is not supervised, then remove any supervised user
     // related disable reasons.
     bool is_supervised = profile() && profile()->IsChild();
     if (!is_supervised) {
-      disable_reasons.erase(
-          disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+      to_remove.insert(disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
     }
 
     if (system_->management_policy()->MustRemainEnabled(extension.get(),
@@ -1051,11 +1040,24 @@ void ExtensionService::CheckManagementPolicy() {
       //
       // TODO(crbug.com/40144051): This won't be needed after a few milestones.
       // It should be safe to remove in M107.
-      disable_reasons.erase(disable_reason::DISABLE_EXTERNAL_EXTENSION);
+      to_remove.insert(disable_reason::DISABLE_EXTERNAL_EXTENSION);
     }
 
-    extension_prefs_->ReplaceDisableReasons(extension->id(), disable_reasons);
-    if (disable_reasons.empty()) {
+    DisableReasonSet shared_disable_reasons =
+        base::STLSetIntersection<DisableReasonSet>(to_remove, to_add);
+    CHECK(shared_disable_reasons.empty())
+        << "Found a disable reason in both `to_add` and `to_remove`: "
+        << static_cast<int>(*shared_disable_reasons.begin());
+
+    if (!to_add.empty()) {
+      extension_prefs_->AddDisableReasons(extension->id(), to_add);
+    }
+
+    if (!to_remove.empty()) {
+      extension_prefs_->RemoveDisableReasons(extension->id(), to_remove);
+    }
+
+    if (extension_prefs_->GetDisableReasons(extension->id()).empty()) {
       to_enable.push_back(extension->id());
     }
   }
@@ -1282,7 +1284,7 @@ void ExtensionService::OnExtensionInstalled(
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   const std::string& id = extension->id();
-  DisableReasonSet disable_reasons =
+  base::flat_set<int> disable_reasons =
       extension_registrar_->GetDisableReasonsOnInstalled(extension);
   std::string install_parameter;
   const PendingExtensionInfo* pending_extension_info =
@@ -1396,7 +1398,9 @@ void ExtensionService::OnExtensionInstalled(
   if (initial_state == Extension::ENABLED) {
     extension_prefs_->SetExtensionEnabled(id);
   } else {
-    extension_prefs_->SetExtensionDisabled(id, disable_reasons);
+    auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
+    extension_prefs_->SetExtensionDisabledWithRawReasons(passkey, id,
+                                                         disable_reasons);
   }
 
   allowlist()->OnExtensionInstalled(id, install_flags);

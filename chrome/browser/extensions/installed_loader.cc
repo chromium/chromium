@@ -333,7 +333,8 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
     if (disable_reasons.contains(disable_reason::DISABLE_BLOCKED_BY_POLICY) &&
         !policy->MustRemainDisabled(extension.get(), nullptr)) {
       disable_reasons.erase(disable_reason::DISABLE_BLOCKED_BY_POLICY);
-      extension_prefs_->ReplaceDisableReasons(extension->id(), disable_reasons);
+      extension_prefs_->RemoveDisableReason(
+          extension->id(), disable_reason::DISABLE_BLOCKED_BY_POLICY);
       if (disable_reasons.empty()) {
         extension_prefs_->SetExtensionEnabled(extension->id());
       }
