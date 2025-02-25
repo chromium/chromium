@@ -281,7 +281,11 @@ AnchorPositionScrollData::EnsureAnchorPositionVisibilityObserver() {
 }
 
 void AnchorPositionScrollData::InvalidateLayoutAndPaint() {
-  DCHECK(IsActive());
+  // Temporary workaround for https://crbug.com/395057435: Skip invalidation if
+  // this has been detached.
+  if (!IsActive()) {
+    return;
+  }
   DCHECK(anchored_element_->GetLayoutObject());
   anchored_element_->GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
       layout_invalidation_reason::kAnchorPositioning);
@@ -289,7 +293,11 @@ void AnchorPositionScrollData::InvalidateLayoutAndPaint() {
 }
 
 void AnchorPositionScrollData::InvalidatePaint() {
-  DCHECK(IsActive());
+  // Temporary workaround for https://crbug.com/395057435: Skip invalidation if
+  // this has been detached.
+  if (!IsActive()) {
+    return;
+  }
   DCHECK(anchored_element_->GetLayoutObject());
   anchored_element_->GetLayoutObject()->SetNeedsPaintPropertyUpdate();
 }
