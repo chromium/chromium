@@ -159,6 +159,15 @@ dependencies {
     androidTestCompile 'com.google.j2objc:j2objc-annotations:1.3'
 }
 
+ext {
+    // This map is empty when rolling androidx but is filled by
+    // fetch_all_androidx.py to cache the resolved values of all the '+'
+    // versions when we are not trying to roll (e.g. when the main project
+    // imports the androidx subproject).
+    def versionCache = [:]
+{{version_overrides}}
+}
+
 task setUpRepository(type: BuildConfigGenerator) {
     // Paths are relative to the chromium source root.
     repositoryPath 'third_party/androidx/cipd'
@@ -168,4 +177,5 @@ task setUpRepository(type: BuildConfigGenerator) {
     allFilesInCipd true
     skipLicenses false
     ignoreDEPS true
+    writeBoM true
 }
