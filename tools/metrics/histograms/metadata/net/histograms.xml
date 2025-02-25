@@ -2587,14 +2587,14 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.HttpStreamPool.InitialAttemptState"
+<histogram name="Net.HttpStreamPool.InitialAttemptState2"
     enum="HttpStreamPoolInitialAttemptState" expires_after="2025-07-13">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     Record the initial attempt state (whether known to support QUIC/SPDY,
     attempt QUIC first, etc). Recorded the first time a
-    HttpStreamPool::AttemptManager starts a job or preconnect.
+    HttpStreamPool::AttemptManager attempts a TCP connection.
   </summary>
 </histogram>
 
