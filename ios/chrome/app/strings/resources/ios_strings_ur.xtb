@@ -1952,6 +1952,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="963102227019621224">ویب اور ایپ سرگرمی</translation>
 <translation id="966593914872420832">صوتی تلاش</translation>
 <translation id="968653181266955408">مواد کی اطلاعات حاصل کریں</translation>
+<translation id="972084300091883657">{COUNT,plural, =0{‫<ph name="OWNER_NAME" /> کے ساتھ ٹیب گروپ میں شامل ہوں}=1{‫<ph name="OWNER_NAME" /> اور {COUNT} دیگر کے ساتھ ٹیب گروپ میں شامل ہوں}other{‫<ph name="OWNER_NAME" /> اور {COUNT} دیگر کے ساتھ ٹیب گروپ میں شامل ہوں}}</translation>
 <translation id="973493300226275298">تمام آن لائن اسٹورز پر پروڈکٹ کی قیمت ٹریک کریں۔ قیمت میں گراوٹ ہونے پر آپ کو الرٹس ملیں گے۔</translation>
 <translation id="973788791897303708">یہ ٹیب گروپ بھرا ہوا ہے</translation>
 <translation id="976392601789283511">آخری بار بند کردہ ٹیب دوبارہ کھولیں</translation>

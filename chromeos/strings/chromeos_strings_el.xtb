@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">γάτες</translation>
 <translation id="5907649332524363701">χρώμα πλήκτρων</translation>
 <translation id="5908813850962688338">Η εγκατάσταση αυτής της ενημέρωσης θα διαρκέσει μερικά λεπτά. Διατηρήστε τη συσκευή σας συνδεδεμένη στην πρίζα και ενεργοποιημένη κατά τη λήψη της ενημέρωσης. Η συσκευή σας μπορεί να κάνει πολλές επανεκκινήσεις και να εμφανίσει μια μαύρη οθόνη κατά τη διάρκεια αυτής της διαδικασίας. Θα σας ζητηθεί να επανεκκινήσετε τη συσκευή σας, για να ολοκληρώσετε την εγκατάσταση.</translation>
+<translation id="5915794087373112615">Ο καθηγητής θα δει την οθόνη σας σε <ph name="NUM_SECONDS" /> δευτερόλεπτα</translation>
 <translation id="5916084858004523819">Απαγορεύεται</translation>
 <translation id="5916664084637901428">Ενεργό</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Το αρχείο σας σαρώθηκε και αποθηκεύτηκε με επιτυχία στον φάκελο <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Τα αρχεία σας σαρώθηκαν και αποθηκεύτηκαν με επιτυχία στον φάκελο <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7618216277886673749">Επιλέξτε <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Ουδέτερο</translation>
 <translation id="7620771111601174153">Μάθετε περισσότερα στο Κέντρο βοήθειας</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">Ώρα τελευταίας ενημέρωσης</translation>
 <translation id="7633068090678117093">Εικόνα φόντου</translation>
 <translation id="763873111564339966">λουλακί</translation>
@@ -1524,6 +1526,7 @@
 <translation id="8054112564438735763">μπεζ</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> σε <ph name="CHARACTERS_BACKGROUND" /> φόντο</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />, <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Συνδέστε ένα μικρόφωνο για να ξεκινήσει η εγγραφή ήχου</translation>
 <translation id="8067126283828232460">Το APN συνδέθηκε.</translation>
 <translation id="8067208048261192356">καφέ</translation>
 <translation id="8067224607978179455">Διαγραφή <ph name="ACTION_NAME" /></translation>
