@@ -285,6 +285,91 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/390687767): Port to desktop Android. Currently the redirect
+// doesn't happen.
+
+// Navigate to a web page and then try to load an extension subresource.
+IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
+                       SubresourceReachabilityAfterServerRedirect) {
+  // Load extension.
+  TestExtensionDir extension_dir;
+  constexpr char kManifest[] = R"({
+    "name": "test",
+    "version": "1",
+    "manifest_version": 3,
+    "web_accessible_resources": [{
+      "resources": [ "accessible.html" ],
+      "matches": [ "<all_urls>" ]
+    }]
+  })";
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("accessible.html"),
+                          "accessible.html");
+  extension_dir.WriteFile(FILE_PATH_LITERAL("inaccessible.html"),
+                          "inaccessible.html");
+  const Extension* extension = LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  GURL gurl(embedded_test_server()->GetURL("example.org", "/iframe.html"));
+
+  struct {
+    const char* title;
+    const char* filename;
+    net::Error error;
+  } test_cases[] = {
+      {"inaccessible", "inaccessible.html", net::ERR_BLOCKED_BY_CLIENT},
+      {"accessible", "accessible.html", net::OK}};
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.title);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+
+    // Navigate to a web page and then fetch the supplied subresource.
+    static constexpr char kScriptTemplate[] = R"(
+      const serverOrigin = '%s';
+      const resourceUrl = '%s';
+
+      // Verify that web accessible resource can be fetched.
+      async function run() {
+        return new Promise(async (resolve, reject) => {
+          const url = `${serverOrigin}?${resourceUrl}`;
+          const iframe = document.getElementById("test");
+          iframe.onload = event => resolve();
+          iframe.src = url;
+        });
+      }
+
+      run().then(response => true);
+    )";
+    GURL resource_url = extension->GetResourceURL(test_case.filename);
+    std::string script =
+        base::StringPrintf(kScriptTemplate,
+                           embedded_test_server()
+                               ->GetURL("example.com", "/server-redirect")
+                               .spec(),
+                           resource_url.spec());
+
+    // Get the first child frame, which should be the only html child [iframe].
+    auto* active_web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::RenderFrameHost* first_child =
+        content::ChildFrameAt(active_web_contents, 0);
+
+    // Determine if the subresource load was successful.
+    content::TestFrameNavigationObserver nav_observer(first_child);
+    ASSERT_TRUE(content::EvalJs(active_web_contents, script).ExtractBool());
+    nav_observer.Wait();
+    EXPECT_EQ(test_case.error, nav_observer.last_net_error_code());
+    if (nav_observer.last_net_error_code() == net::OK) {
+      ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+      ASSERT_EQ(resource_url, nav_observer.last_committed_url());
+    }
+  }
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // A test suite that will run both with and without the dynamic URL feature
 // enabled.
 class ParameterizedWebAccessibleResourcesBrowserTest
@@ -463,85 +548,6 @@ IN_PROC_BROWSER_TEST_P(ParameterizedWebAccessibleResourcesBrowserTest,
 #if !BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/390687767): Port to desktop Android. Currently the redirect
 // doesn't happen.
-
-// Navigate to a web page and then try to load an extension subresource.
-IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
-                       SubresourceReachabilityAfterServerRedirect) {
-  // Load extension.
-  TestExtensionDir extension_dir;
-  constexpr char kManifest[] = R"({
-    "name": "test",
-    "version": "1",
-    "manifest_version": 3,
-    "web_accessible_resources": [{
-      "resources": [ "accessible.html" ],
-      "matches": [ "<all_urls>" ]
-    }]
-  })";
-  extension_dir.WriteManifest(kManifest);
-  extension_dir.WriteFile(FILE_PATH_LITERAL("accessible.html"),
-                          "accessible.html");
-  extension_dir.WriteFile(FILE_PATH_LITERAL("inaccessible.html"),
-                          "inaccessible.html");
-  const Extension* extension = LoadExtension(extension_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-
-  GURL gurl(embedded_test_server()->GetURL("example.org", "/iframe.html"));
-
-  struct {
-    const char* title;
-    const char* filename;
-    net::Error error;
-  } test_cases[] = {
-      {"inaccessible", "inaccessible.html", net::ERR_BLOCKED_BY_CLIENT},
-      {"accessible", "accessible.html", net::OK}};
-
-  for (const auto& test_case : test_cases) {
-    SCOPED_TRACE(test_case.title);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-
-    // Navigate to a web page and then fetch the supplied subresource.
-    static constexpr char kScriptTemplate[] = R"(
-      const serverOrigin = '%s';
-      const resourceUrl = '%s';
-
-      // Verify that web accessible resource can be fetched.
-      async function run() {
-        return new Promise(async (resolve, reject) => {
-          const url = `${serverOrigin}?${resourceUrl}`;
-          const iframe = document.getElementById("test");
-          iframe.onload = event => resolve();
-          iframe.src = url;
-        });
-      }
-
-      run().then(response => true);
-    )";
-    GURL resource_url = extension->GetResourceURL(test_case.filename);
-    std::string script =
-        base::StringPrintf(kScriptTemplate,
-                           embedded_test_server()
-                               ->GetURL("example.com", "/server-redirect")
-                               .spec(),
-                           resource_url.spec());
-
-    // Get the first child frame, which should be the only html child [iframe].
-    auto* active_web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    content::RenderFrameHost* first_child =
-        content::ChildFrameAt(active_web_contents, 0);
-
-    // Determine if the subresource load was successful.
-    content::TestFrameNavigationObserver nav_observer(first_child);
-    ASSERT_TRUE(content::EvalJs(active_web_contents, script).ExtractBool());
-    nav_observer.Wait();
-    EXPECT_EQ(test_case.error, nav_observer.last_net_error_code());
-    if (nav_observer.last_net_error_code() == net::OK) {
-      ASSERT_TRUE(nav_observer.last_navigation_succeeded());
-      ASSERT_EQ(resource_url, nav_observer.last_committed_url());
-    }
-  }
-}
 
 // Class for testing browser process initiated redirection.
 class WebAccessibleResourcesBrowserProcessRedirectTest
