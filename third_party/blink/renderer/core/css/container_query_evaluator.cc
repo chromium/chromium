@@ -581,7 +581,7 @@ void ContainerQueryEvaluator::UpdateContainerScrollable(
     ContainerScrollableFlags scrollable_horizontal,
     ContainerScrollableFlags scrollable_vertical) {
   scrollable_horizontal_ = scrollable_horizontal;
-  scrollable_vertical_ = scrollable_horizontal;
+  scrollable_vertical_ = scrollable_vertical;
 
   const MediaValues& existing_values = media_query_evaluator_->GetMediaValues();
   Element* container = existing_values.ContainerElement();
