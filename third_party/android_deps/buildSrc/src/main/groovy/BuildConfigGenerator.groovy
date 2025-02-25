@@ -441,8 +441,11 @@ No modifications.
             }
 
             new File("${absoluteDepDir}/README.chromium").write(makeReadme(dependency))
-            new File("${absoluteDepDir}/cipd.yaml").write(makeCipdYaml(dependency, cipdBucket, repositoryPath))
-            new File("${absoluteDepDir}/OWNERS").write(makeOwners())
+            if (!allFilesInCipd) {
+                // When all the files are in CIPD there is no need for individual cipd.yaml or OWNERS files.
+                new File("${absoluteDepDir}/cipd.yaml").write(makeCipdYaml(dependency, cipdBucket, repositoryPath))
+                new File("${absoluteDepDir}/OWNERS").write(makeOwners())
+            }
 
             // Enable 3pp flow for //third_party/android_deps only.
             // TODO(crbug.com/1132368): Enable 3pp flow for subprojects as well.
