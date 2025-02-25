@@ -2947,6 +2947,11 @@
       status: "stable",
     },
     {
+      // crbug.com/380107555
+      name: "NodeInUAShadowRootUnderAnonymousBlockFlow",
+      status: "stable",
+    },
+    {
       name: "NoIdleEncodingForWebTests",
       status: "test",
     },
