@@ -5,13 +5,26 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version_info/channel.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
+
+using IconVariantsFeatureFreeManifestTest = ManifestTest;
+
+// Test that icon_variants doesn't create an error when the feature isn't
+// enabled, even in the event of warnings.
+TEST_F(IconVariantsFeatureFreeManifestTest, Warnings) {
+  LoadAndExpectWarnings("icon_variants.json",
+                        {"'icon_variants' requires canary channel or newer, "
+                         "but this is the stable channel."});
+}
 
 class IconVariantsManifestTest : public ManifestTest {
  public:
@@ -165,14 +178,26 @@ TEST_F(IconVariantsManifestTest, Errors) {
   }
 }
 
-using IconVariantsFeatureFreeManifestTest = ManifestTest;
+TEST_F(IconVariantsManifestTest, PreferIconVariantsOverIcons) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "test",
+        "version": "1",
+        "manifest_version": 3,
+        "icons": {
+          "16": "icons.16.png"
+        },
+        "icon_variants": [{
+          "16": "icon_variants.16.png"
+        }]
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+  const ExtensionIconSet& icons = IconsInfo::GetIcons(extension.get());
 
-// Test that icon_variants doesn't create an error, even in the event of
-// warnings.
-TEST_F(IconVariantsFeatureFreeManifestTest, Warnings) {
-  LoadAndExpectWarnings("icon_variants.json",
-                        {"'icon_variants' requires canary channel or newer, "
-                         "but this is the stable channel."});
+  EXPECT_EQ("icon_variants.16.png",
+            icons.Get(extension_misc::EXTENSION_ICON_BITTY,
+                      ExtensionIconSet::Match::kExactly));
 }
 
 }  // namespace extensions

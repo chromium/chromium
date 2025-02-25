@@ -18,14 +18,25 @@ struct IconVariantsInfo : public Extension::ManifestData {
   IconVariantsInfo();
   ~IconVariantsInfo() override;
 
-  // A map of mode to ExtensionIconSet, which represents the declared icons.
-  std::unique_ptr<ExtensionIconVariants> icon_variants;
-
-  // Returns the icon set for the given `extension`.
+  // Returns whether `icon_variants` are defined for the given `extension`.
   static bool HasIconVariants(const Extension* extension);
 
   // Get IconVariants for the given `extension`, if they exist.
   static const IconVariantsInfo* GetIconVariants(const Extension* extension);
+
+  // Retrieve a matching ExtensionIconSet.
+  const ExtensionIconSet& Get() const;
+
+  // Data structure for `icon_variants`, based on icon_variants.idl.
+  std::unique_ptr<ExtensionIconVariants> icon_variants;
+
+  // Populate member variable extension sets from `icon_variants`.
+  void InitializeIconSets();
+
+ private:
+  // Allow for easy access to the theme-related sets
+  ExtensionIconSet dark_;
+  ExtensionIconSet light_;
 };
 
 // Parses the "icon_variants" manifest key.

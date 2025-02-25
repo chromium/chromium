@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/api/icon_variants.h"
@@ -14,8 +15,14 @@
 #include "extensions/common/icons/extension_icon_variants.h"
 #include "extensions/common/icons/extension_icon_variants_diagnostics.h"
 #include "extensions/common/manifest_constants.h"
+#include "ui/gfx/color_utils.h"
 
 namespace extensions {
+
+namespace {
+static base::LazyInstance<ExtensionIconSet>::DestructorAtExit g_empty_icon_set =
+    LAZY_INSTANCE_INITIALIZER;
+}  // namespace
 
 IconVariantsInfo::IconVariantsInfo() = default;
 IconVariantsInfo::~IconVariantsInfo() = default;
@@ -94,6 +101,40 @@ const IconVariantsInfo* IconVariantsInfo::GetIconVariants(
       extension->GetManifestData(IconVariantsManifestKeys::kIconVariants));
 }
 
+void IconVariantsInfo::InitializeIconSets() {
+  for (const auto& icon_variant : icon_variants->GetList()) {
+    const auto color_schemes = icon_variant.GetColorSchemes();
+    const auto sizes = icon_variant.GetSizes();
+    // TODO(crbug.com/344639840): Support any, e.g. any = icon_variant.GetAny();
+
+    for (const auto& size : sizes) {
+      // Add the size path pair to both extension icon sets if unspecified.
+      if (color_schemes.empty()) {
+        dark_.Add(size.first, size.second);
+        light_.Add(size.first, size.second);
+        continue;
+      }
+
+      if (color_schemes.contains(ExtensionIconVariant::ColorScheme::kDark)) {
+        dark_.Add(size.first, size.second);
+      }
+
+      if (color_schemes.contains(ExtensionIconVariant::ColorScheme::kLight)) {
+        light_.Add(size.first, size.second);
+      }
+    }
+  }
+}
+
+const ExtensionIconSet& IconVariantsInfo::Get() const {
+  if (!icon_variants) {
+    g_empty_icon_set.Get();
+  }
+
+  // TODO(crbug.com/344639840): Determine the current browser theme color.
+  return light_;
+}
+
 // TODO(crbug.com/41419485): Add more test coverage for warnings and errors.
 bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
   DCHECK(extension);
@@ -146,6 +187,7 @@ bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<IconVariantsInfo> icon_variants_info(
       std::make_unique<IconVariantsInfo>());
   icon_variants_info->icon_variants = std::move(icon_variants);
+  icon_variants_info->InitializeIconSets();
 
   extension->SetManifestData(keys::kIconVariants,
                              std::move(icon_variants_info));
@@ -156,7 +198,7 @@ bool IconVariantsHandler::Validate(
     const Extension* extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
-  // TODO(crbug.com/41419485): Validate icons.
+  // TODO(crbug.com/41419485): Validate icon existence.
   return true;
 }
 

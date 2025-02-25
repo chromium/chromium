@@ -9,12 +9,13 @@
 #include <vector>
 
 #include "base/values.h"
+#include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/icons/extension_icon_variant.h"
 #include "extensions/common/icons/extension_icon_variants_diagnostics.h"
 
 namespace extensions {
 
-// Representation of the `icon_variants` key anywhere in manifest.json. It could
+// Representation of the `icon_variants` key defined in manifest.json. It could
 // be a top level key or a subkey of `action`.
 class ExtensionIconVariants {
  public:
@@ -36,6 +37,8 @@ class ExtensionIconVariants {
   std::vector<diagnostics::icon_variants::Diagnostic>& get_diagnostics() {
     return diagnostics_;
   }
+
+  const std::vector<ExtensionIconVariant>& GetList() const { return list_; }
 
  private:
   std::vector<ExtensionIconVariant> list_;

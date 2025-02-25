@@ -37,6 +37,16 @@ class ExtensionIconVariant {
     return diagnostics_;
   }
 
+  using Size = short;
+  using Path = std::string;
+
+  // Getters.
+  const std::optional<Path>& GetAny() const { return any_; }
+  const std::set<ColorScheme>& GetColorSchemes() const {
+    return color_schemes_;
+  }
+  const base::flat_map<Size, Path>& GetSizes() const { return sizes_; }
+
  private:
   // Helper methods that add to `this` object if the parameter is valid.
   void MaybeAddColorSchemes(const base::Value& value);
@@ -45,9 +55,6 @@ class ExtensionIconVariant {
 
   // Either `any` or `<size>` keys must have at least one value.
   bool IsValid() const;
-
-  using Size = short;
-  using Path = std::string;
 
   // The any key can have a path that's for any size.
   std::optional<Path> any_;
