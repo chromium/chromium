@@ -4153,7 +4153,8 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
       bool launch_icon_shown = false;
       bool is_app_browser = AppBrowserController::IsWebApp(browser);
       if (!is_app_browser && active_tab_contents != nullptr) {
-        AwaitIntentPickerTabHelperIconUpdateComplete(active_tab_contents);
+        EXPECT_TRUE(
+            AwaitIntentPickerTabHelperIconUpdateComplete(active_tab_contents));
         launch_icon_shown = intent_chip_view()->GetVisible();
       }
       webapps::AppId app_id;
