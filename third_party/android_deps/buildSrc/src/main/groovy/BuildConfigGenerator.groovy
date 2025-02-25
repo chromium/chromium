@@ -441,8 +441,12 @@ No modifications.
             }
 
             new File("${absoluteDepDir}/README.chromium").write(makeReadme(dependency))
+            // fetch_all.py parses cipd.yaml to get information about each dep, even if cipd.yaml isn't needed (e.g. androidx).
             new File("${absoluteDepDir}/cipd.yaml").write(makeCipdYaml(dependency, cipdBucket, repositoryPath))
-            new File("${absoluteDepDir}/OWNERS").write(makeOwners())
+            if (!allFilesInCipd) {
+                // When all the files are in CIPD there is no need for individual OWNERS files.
+                new File("${absoluteDepDir}/OWNERS").write(makeOwners())
+            }
 
             // Enable 3pp flow for //third_party/android_deps only.
             // TODO(crbug.com/1132368): Enable 3pp flow for subprojects as well.
