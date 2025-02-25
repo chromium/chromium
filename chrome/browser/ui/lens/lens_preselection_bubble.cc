@@ -81,11 +81,15 @@ void LensPreselectionBubble::Init() {
            : set_margins(gfx::Insets::TLBR(12, 16, 12, 16));
 
   // Set bubble icon and text
-  const std::u16string toast_text =
-      offline_
+  const std::u16string online_toast_text =
+      lens::features::IsSimplifiedSelectionEnabled()
           ? l10n_util::GetStringUTF16(
-                IDS_LENS_OVERLAY_INITIAL_TOAST_ERROR_MESSAGE)
+                IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED)
           : l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE);
+  const std::u16string toast_text =
+      offline_ ? l10n_util::GetStringUTF16(
+                     IDS_LENS_OVERLAY_INITIAL_TOAST_ERROR_MESSAGE)
+               : online_toast_text;
   SetAccessibleTitle(toast_text);
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   label_ = AddChildView(std::make_unique<views::Label>(toast_text));

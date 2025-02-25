@@ -1741,6 +1741,15 @@ Google Chrome is unable to recover your settings.
           desc="Text that is shown in the Lens Overlay education bubble when starting the feature. Informs the user to tap an object or drag over the screen to select a region to search with Google Lens.">
           Select anything to search with Google Lens
         </message>
+        <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_LABEL_SIMPLIFIED"
+          desc="Accessibility label for the initial user eduction bubble that appears at the top of the screen after the user invokes the Lens Overlay feature. Informs the user to select an object to search with Google Lens, or use the escape key to exit the feature."
+          is_accessibility_with_no_ui="true">
+          Select any text or image to search with Google Lens or press escape to exit Google Lens
+        </message>
+        <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED"
+          desc="Text that is shown in the Lens Overlay education bubble when starting the feature. Informs the user to tap an object or drag over the screen to select a region to search with Google Lens.">
+          Select any text or image to search with Google Lens
+        </message>
         <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SELECT_TEXT"
           desc="Text that is shown in the Lens Overlay education bubble when starting the feature. Informs the user to drag over the screen to select text to search with Google Lens.">
           Select text with Google Lens
