@@ -27,7 +27,7 @@
 namespace net {
 
 namespace {
-const auto kSchemeNames = std::to_array<const char*>({
+constexpr auto kSchemeNames = std::to_array<const char*>({
     kBasicAuthScheme,
     kDigestAuthScheme,
     kNtlmAuthScheme,

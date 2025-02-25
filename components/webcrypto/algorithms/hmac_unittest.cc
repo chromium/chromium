@@ -74,7 +74,7 @@ struct HmacKnownAnswer {
   const char* hmac;
 };
 
-const auto kHmacKnownAnswers = std::to_array<HmacKnownAnswer>({
+constexpr auto kHmacKnownAnswers = std::to_array<HmacKnownAnswer>({
     // A single byte key with an empty message, generated with:
     //   openssl dgst -sha{1,256} -hmac "" < /dev/null
     {blink::kWebCryptoAlgorithmIdSha1, "00", "",

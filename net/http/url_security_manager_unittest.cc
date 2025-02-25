@@ -30,7 +30,7 @@ const char kTestAuthAllowlist[] = "*example.com,*foobar.com,baz";
 //    host names without a period.
 // In Posix systems (or on Windows if an allowlist is specified explicitly),
 // everything depends on the allowlist.
-const auto kTestDataList = std::to_array<TestData>({
+constexpr auto kTestDataList = std::to_array<TestData>({
     {"http://localhost", true, false},
     {"http://bat", true, false},
     {"http://www.example.com", false, true},

@@ -81,7 +81,7 @@ namespace test3 {
 
 const char kHost[] = "example.test";
 
-const auto kGoodPath = std::to_array<const char*>({
+constexpr auto kGoodPath = std::to_array<const char*>({
     "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
     "sha256/fzP+pVAbH0hRoUphJKenIP8+2tD/d2QH9J+kQNieM6Q=",
     "sha256/9vRUVdjloCa4wXUKfDWotV5eUXYD7vu0v0z9SRzQdzg=",
@@ -89,7 +89,7 @@ const auto kGoodPath = std::to_array<const char*>({
     nullptr,
 });
 
-const auto kBadPath = std::to_array<const char*>({
+constexpr auto kBadPath = std::to_array<const char*>({
     "sha256/1111111111111111111111111111111111111111111=",
     "sha256/2222222222222222222222222222222222222222222=",
     "sha256/3333333333333333333333333333333333333333333=",

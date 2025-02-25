@@ -181,7 +181,7 @@ struct RsaPssKnownAnswer {
   const char* signature;
 };
 
-const auto kRsaPssKnownAnswers = std::to_array<RsaPssKnownAnswer>({
+constexpr auto kRsaPssKnownAnswers = std::to_array<RsaPssKnownAnswer>({
     // Example 1.1 from pss-vect.txt in
     // ftp://ftp.rsasecurity.com/pub/pkcs/pkcs-1/pkcs-1v2-1-vec.zip
     {blink::kWebCryptoAlgorithmIdSha1, kKey1,

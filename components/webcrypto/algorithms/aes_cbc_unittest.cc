@@ -141,7 +141,7 @@ struct AesCbcKnownAnswer {
   const char* ciphertext;
 };
 
-const auto kAesCbcKnownAnswers = std::to_array<AesCbcKnownAnswer>({
+constexpr auto kAesCbcKnownAnswers = std::to_array<AesCbcKnownAnswer>({
     // F.2.1 (CBC-AES128.Encrypt)
     // http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf
     {"2b7e151628aed2a6abf7158809cf4f3c", "000102030405060708090a0b0c0d0e0f",
