@@ -51,11 +51,11 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "ui/views/vector_icons.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using download::DownloadItem;
 using offline_items_collection::FailState;
@@ -68,7 +68,7 @@ using ::testing::ReturnRef;
 using ::testing::ReturnRefOfCopy;
 using ::testing::SetArgPointee;
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
 #endif
 
@@ -664,7 +664,7 @@ TEST_F(DownloadItemModelTest,
             DownloadUIModel::DangerUiPattern::kSuspicious);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(FULL_SAFE_BROWSING)
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   // It doesn't matter what the DownloadProtectionData is; just that it is
   // present.
   std::string token = "token";
@@ -676,7 +676,8 @@ TEST_F(DownloadItemModelTest,
 
   EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
             "Suspicious download blocked");
-#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // !BUILDFLAG(IS_ANDROID) &&
+        // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 }
 
 #if !BUILDFLAG(IS_ANDROID)

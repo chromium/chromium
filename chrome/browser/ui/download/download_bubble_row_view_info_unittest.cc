@@ -43,7 +43,7 @@ using ::testing::Return;
 using ::testing::ReturnRefOfCopy;
 using ::testing::UnorderedElementsAre;
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
 #endif
 

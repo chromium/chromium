@@ -837,7 +837,7 @@ void DownloadItemView::UpdateLabels() {
                                    download::DownloadItemMode::kDeepScanning);
   if (deep_scanning_label_->GetVisible()) {
     const int id = (model_->GetDownloadItem() &&
-                    safe_browsing::DeepScanningRequest::ShouldUploadBinary(
+                    safe_browsing::ShouldUploadBinaryForDeepScanning(
                         model_->GetDownloadItem()))
                        ? IDS_PROMPT_DEEP_SCANNING_DOWNLOAD
                        : IDS_PROMPT_DEEP_SCANNING_APP_DOWNLOAD;
