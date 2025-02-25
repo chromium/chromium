@@ -708,4 +708,10 @@ void AutoEnrollmentController::SetEnrollmentStateFetcherFactoryForTesting(
   }
 }
 
+bool AutoEnrollmentController::IsGuestSigninAllowed() const {
+  return auto_enrollment_check_type_ !=
+         AutoEnrollmentTypeChecker::CheckType::
+             kForcedReEnrollmentExplicitlyRequired;
+}
+
 }  // namespace policy

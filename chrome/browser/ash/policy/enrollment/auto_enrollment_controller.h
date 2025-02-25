@@ -151,6 +151,14 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // Returns safeguard timer. Used for testing
   base::OneShotTimer& SafeguardTimerForTesting() { return safeguard_timer_; }
 
+  // The OOBE network error screen can provide a link to sign in as guest.
+  // This should only be allowed if
+  //   * enrollment state determination has completed,
+  //   * forced enrollment is not strictly required (using guest mode would be
+  //     considered an enrollment escape).
+  // Use `IsGuestSigninAllowed` to determine if guest mode should be allowed.
+  bool IsGuestSigninAllowed() const;
+
  protected:
   // Complete constructor which can be used to inject testing modules.
   AutoEnrollmentController(
@@ -285,7 +293,8 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // Which type of auto-enrollment check is being performed by this
   // `AutoEnrollmentClient`.
   AutoEnrollmentTypeChecker::CheckType auto_enrollment_check_type_ =
-      AutoEnrollmentTypeChecker::CheckType::kNone;
+      AutoEnrollmentTypeChecker::CheckType::
+          kForcedReEnrollmentExplicitlyRequired;
   bool auto_enrollment_check_type_init_started_ = false;
 
   // Shared factory for outgoing network requests.
