@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -13,17 +12,17 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 
@@ -32,18 +31,12 @@ import org.chromium.chrome.browser.profiles.Profile;
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION})
 public final class AuxiliarySearchBridgeTest {
-    private static final String BOOKMARK_TITLE = "bookmark";
-    private static final String BOOKMARK_URL = "https://bookmark.google.com";
-    private static final String TAB_TITLE = "tab";
-    private static final String TAB_URL = "https://tab.google.com";
-    private static final long FAKE_NATIVE_PROVIDER = 1;
-
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private AuxiliarySearchBridge.Natives mMockAuxiliarySearchBridgeJni;
     @Mock private Profile mProfile;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         AuxiliarySearchBridgeJni.setInstanceForTesting(mMockAuxiliarySearchBridgeJni);
     }
 
@@ -70,33 +63,5 @@ public final class AuxiliarySearchBridgeTest {
         assertNotNull(bridge);
 
         verify(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
-    }
-
-    @Test
-    @SmallTest
-    public void getBookmarksSearchableData() {
-        doReturn(false).when(mProfile).isOffTheRecord();
-
-        var bookmark =
-                AuxiliarySearchEntry.newBuilder()
-                        .setTitle(BOOKMARK_TITLE)
-                        .setUrl(BOOKMARK_URL)
-                        .build();
-        var proto = AuxiliarySearchBookmarkGroup.newBuilder().addBookmark(bookmark).build();
-
-        doReturn(FAKE_NATIVE_PROVIDER).when(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
-        doReturn(proto.toByteArray())
-                .when(mMockAuxiliarySearchBridgeJni)
-                .getBookmarksSearchableData(FAKE_NATIVE_PROVIDER);
-
-        AuxiliarySearchBridge bridge = new AuxiliarySearchBridge(mProfile);
-        assertNotNull(bridge);
-        verify(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
-
-        AuxiliarySearchBookmarkGroup group = bridge.getBookmarksSearchableData();
-
-        assertEquals(1, group.getBookmarkCount());
-        assertEquals(BOOKMARK_TITLE, group.getBookmark(0).getTitle());
-        assertEquals(BOOKMARK_URL, group.getBookmark(0).getUrl());
     }
 }
