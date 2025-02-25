@@ -163,28 +163,6 @@ class MODULES_EXPORT InspectorAccessibilityAgent
   // Unconditionally enables the agent, even if |enabled_.Get()==true|.
   // For idempotence, call enable().
   void EnableAndReset();
-  std::unique_ptr<protocol::Array<AXNode>> WalkAXNodesToDepth(
-      Document* document,
-      int max_depth);
-  std::unique_ptr<AXNode> BuildProtocolAXNodeForDOMNodeWithNoAXNode(
-      int backend_node_id) const;
-  std::unique_ptr<AXNode> BuildProtocolAXNodeForAXObject(
-      AXObject&,
-      bool force_name_and_role = false) const;
-  std::unique_ptr<AXNode> BuildProtocolAXNodeForIgnoredAXObject(
-      AXObject&,
-      bool force_name_and_role) const;
-  std::unique_ptr<AXNode> BuildProtocolAXNodeForUnignoredAXObject(
-      AXObject&) const;
-  void FillCoreProperties(AXObject&, AXNode*) const;
-  void AddAncestors(AXObject& first_ancestor,
-                    AXObject* inspected_ax_object,
-                    std::unique_ptr<protocol::Array<AXNode>>& nodes,
-                    AXObjectCacheImpl&) const;
-  void AddChildren(AXObject& ax_object,
-                   bool follow_ignored,
-                   std::unique_ptr<protocol::Array<AXNode>>& nodes,
-                   AXObjectCacheImpl&) const;
   LocalFrame* FrameFromIdOrRoot(const std::optional<String>& frame_id);
   void ScheduleAXChangeNotification(Document* document);
   AXObjectCacheImpl& AttachToAXObjectCache(Document*);
