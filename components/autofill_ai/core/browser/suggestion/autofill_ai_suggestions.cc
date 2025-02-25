@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/entities/field_filling_entity_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -309,6 +310,15 @@ Suggestion::Icon GetSuggestionIcon(
   NOTREACHED();
 }
 
+// If `attribute.is_obfuscated` is true, it returns an obfuscated version of
+// the attribute's value. Otherwise, it returns `attribute.value()`.
+std::u16string GetMaybeObfuscatedValue(const AttributeInstance& attribute) {
+  if (!attribute.type().is_obfuscated()) {
+    return attribute.value();
+  }
+  return autofill::GetObfuscatedAttributeValue(attribute);
+}
+
 }  // namespace
 
 std::vector<Suggestion> CreateFillingSuggestions(
@@ -344,18 +354,19 @@ std::vector<Suggestion> CreateFillingSuggestions(
     if (!attribute_for_triggering_field) {
       continue;
     }
-    const std::u16string main_text = attribute_for_triggering_field->value();
-    std::u16string normalized_main_text =
-        autofill::AutofillProfileComparator::NormalizeForComparison(main_text);
-    const std::u16string normalized_triggering_field_content =
-        autofill::AutofillProfileComparator::NormalizeForComparison(
-            autofill_field->value(autofill::ValueSemantics::kCurrent));
+
     // Obfuscated types are not prefix matched to avoid that a webpage can
     // use the existence of suggestions to guess a user's data.
-    if (!triggering_field_attribute_type->is_obfuscated() &&
-        !normalized_main_text.starts_with(
-            normalized_triggering_field_content)) {
-      continue;
+    if (!triggering_field_attribute_type->is_obfuscated()) {
+      const std::u16string normalized_attribute =
+          autofill::AutofillProfileComparator::NormalizeForComparison(
+              attribute_for_triggering_field->value());
+      const std::u16string normalized_field_content =
+          autofill::AutofillProfileComparator::NormalizeForComparison(
+              autofill_field->value(autofill::ValueSemantics::kCurrent));
+      if (!normalized_attribute.starts_with(normalized_field_content)) {
+        continue;
+      }
     }
 
     std::vector<std::pair<AttributeType, std::u16string>>
@@ -388,11 +399,14 @@ std::vector<Suggestion> CreateFillingSuggestions(
       }
 
       attribute_type_to_value.emplace_back(*attribute_type, attribute->value());
-      field_to_value.emplace_back(field->global_id(), attribute->value());
+      field_to_value.emplace_back(field->global_id(),
+                                  GetMaybeObfuscatedValue(*attribute));
     }
 
     SuggestionWithMetadata& s = suggestions_with_metadata.emplace_back();
-    s.suggestion = Suggestion(main_text, SuggestionType::kFillAutofillAi);
+    s.suggestion =
+        Suggestion(GetMaybeObfuscatedValue(*attribute_for_triggering_field),
+                   SuggestionType::kFillAutofillAi);
     s.suggestion.payload = Suggestion::AutofillAiPayload(entity.guid());
     s.suggestion.icon =
         GetSuggestionIcon(triggering_field_attribute_type->entity_type());
