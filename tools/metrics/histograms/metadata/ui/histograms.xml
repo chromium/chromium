@@ -649,8 +649,8 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUITabStrip.CloseAction" enum="WebUITabStripCloseActions"
-    expires_after="2025-06-08">
-  <owner>collinbaker@chromium.org</owner>
+    expires_after="2025-11-12">
+  <owner>robliao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
     The WebUI tab strip is a more touch-friendly tab strip used in place of
@@ -660,9 +660,9 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUITabStrip.CloseTabAction"
-    enum="WebUITabStripCloseTabActions" expires_after="2025-06-08">
-  <owner>johntlee@chromium.org</owner>
-  <owner>dpapad@chromium.org</owner>
+    enum="WebUITabStripCloseTabActions" expires_after="2025-11-12">
+  <owner>robliao@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
   <summary>
     The WebUI tab strip is a more touch-friendly tab strip used in place of
     Chrome's native tab strip in some cases. This records how a user closed a
@@ -671,10 +671,9 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUITabStrip.LoadCompletedTime" units="ms"
-    expires_after="2025-03-30">
-  <owner>yuhengh@chromium.org</owner>
+    expires_after="2025-11-12">
+  <owner>robliao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
-  <owner>romanarora@chromium.org</owner>
   <summary>
     The amount of time between the RenderFrameHost StartProvisionalLoad event
     and the RenderFrameHost DocumentOnLoadCompleted event for the WebUI tab
@@ -685,10 +684,9 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUITabStrip.LoadDocumentTime" units="ms"
-    expires_after="2025-03-30">
-  <owner>yuhengh@chromium.org</owner>
+    expires_after="2025-11-12">
+  <owner>robliao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
-  <owner>romanarora@chromium.org</owner>
   <summary>
     The amount of time between the RenderFrameHost StartProvisionalLoad and
     DidFinishDocumentLoad events for the WebUI tab strip page. This happens once
@@ -699,8 +697,8 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUITabStrip.OpenAction" enum="WebUITabStripOpenActions"
-    expires_after="2025-08-10">
-  <owner>collinbaker@chromium.org</owner>
+    expires_after="2025-11-12">
+  <owner>robliao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
     The WebUI tab strip is a more touch-friendly tab strip used in place of
@@ -710,8 +708,8 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUITabStrip.OpenDuration" units="ms"
-    expires_after="2025-08-10">
-  <owner>collinbaker@chromium.org</owner>
+    expires_after="2025-11-12">
+  <owner>robliao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
     The WebUI tab strip is a more touch-friendly tab strip used in place of
@@ -721,9 +719,9 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUITabStrip.TabActivation" units="ms"
-    expires_after="2025-08-03">
+    expires_after="2025-11-12">
   <owner>robliao@chromium.org</owner>
-  <owner>johntlee@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
   <summary>
     WebUI Tabstrip: Time from activating a tab from WebUI to receiving an
     activation notification in WebUI.
@@ -731,18 +729,18 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUITabStrip.TabCreation" units="ms"
-    expires_after="2025-03-30">
+    expires_after="2025-11-12">
   <owner>robliao@chromium.org</owner>
-  <owner>johntlee@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
   <summary>
     WebUI Tabstrip: Time needed to create all of the tab elements at launch.
   </summary>
 </histogram>
 
 <histogram name="WebUITabStrip.TabDataReceived" units="ms"
-    expires_after="2025-03-30">
+    expires_after="2025-11-12">
   <owner>robliao@chromium.org</owner>
-  <owner>johntlee@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
   <summary>
     WebUI Tabstrip: Time from requesting the tab data to receiving the data.
   </summary>
