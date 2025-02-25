@@ -32,7 +32,7 @@
 
     testRunner.log(
         `Window` +
-        ` ${bounds.top},${bounds.left} ${bounds.width}x${bounds.height}` +
+        ` ${bounds.left},${bounds.top} ${bounds.width}x${bounds.height}` +
         `, screen ${screen}`);
   }
 
