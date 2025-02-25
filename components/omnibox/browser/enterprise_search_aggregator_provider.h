@@ -10,11 +10,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -61,15 +63,19 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
 
   // Called when the network request for suggestions has completed.
   void RequestCompleted(const network::SimpleURLLoader* source,
-                        const int response_code,
+                        int response_code,
                         std::unique_ptr<std::string> response_body);
 
   // The function updates `matches_` with data parsed from `response_value`.
   // The update is not performed if `response_value` is invalid.
-  void UpdateResults(const std::optional<base::Value::Dict>& response_value,
-                     const int response_code);
+  virtual void UpdateResults(
+      const std::optional<base::Value::Dict>& response_value,
+      int response_code);
 
-  // Parses enterprise search aggregator response JSON.
+  // Callback for handling parsed json from response.
+  void OnJsonParsedIsolated(base::expected<base::Value, std::string> result);
+
+  // Parses enterprise search aggregator response JSON and updates `matches_`.
   void ParseEnterpriseSearchAggregatorSearchResults(
       const base::Value::Dict& root_val);
 

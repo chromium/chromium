@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -40,7 +41,9 @@ class FakeEnterpriseSearchAggregatorProvider
   explicit FakeEnterpriseSearchAggregatorProvider(
       AutocompleteProviderClient* client,
       AutocompleteProviderListener* listener)
-      : EnterpriseSearchAggregatorProvider(client, listener) {}
+      : EnterpriseSearchAggregatorProvider(client, listener),
+        update_results_future_(
+            std::make_unique<base::test::TestFuture<void>>()) {}
 
   using EnterpriseSearchAggregatorProvider::SuggestionType;
 
@@ -55,8 +58,18 @@ class FakeEnterpriseSearchAggregatorProvider
   using EnterpriseSearchAggregatorProvider::input_;
   using EnterpriseSearchAggregatorProvider::matches_;
 
+  void UpdateResults(const std::optional<base::Value::Dict>& response_value,
+                     const int response_code) override {
+    EnterpriseSearchAggregatorProvider::UpdateResults(std::move(response_value),
+                                                      response_code);
+    update_results_future_->SetValue();
+  }
+
+  bool WaitForUpdateResults() { return update_results_future_->Wait(); }
+
  protected:
   ~FakeEnterpriseSearchAggregatorProvider() override = default;
+  std::unique_ptr<base::test::TestFuture<void>> update_results_future_;
 };
 
 const std::string kGoodJsonResponse = base::StringPrintf(
@@ -456,7 +469,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseWithNonDict) {
   provider_->done_ = false;
   provider_->RequestCompleted(
       nullptr, 200, std::make_unique<std::string>(kNonDictJsonResponse));
-
+  ASSERT_TRUE(provider_->WaitForUpdateResults());
   EXPECT_THAT(GetMatches(), testing::ElementsAre());
 }
 
@@ -546,6 +559,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, CacheMatches_EmptyResponse) {
   provider_->done_ = false;
   provider_->RequestCompleted(
       nullptr, 200, std::make_unique<std::string>(kGoodEmptyJsonResponse));
+  ASSERT_TRUE(provider_->WaitForUpdateResults());
   EXPECT_THAT(GetMatches(), testing::ElementsAre());
 }
 
@@ -570,6 +584,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
   provider_->done_ = false;
   provider_->RequestCompleted(nullptr, 200,
                               std::make_unique<std::string>(kGoodJsonResponse));
+  ASSERT_TRUE(provider_->WaitForUpdateResults());
   EXPECT_THAT(GetMatches(),
               testing::ElementsAre(u"http://www.yahoo.com/Document%201",
                                    u"http://www.yahoo.com/john@example.com",
@@ -600,6 +615,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, UnfeaturedKeyword) {
   provider_->Start(input, false);
   provider_->RequestCompleted(nullptr, 200,
                               std::make_unique<std::string>(kGoodJsonResponse));
+  ASSERT_TRUE(provider_->WaitForUpdateResults());
   EXPECT_THAT(GetMatches(),
               testing::ElementsAre(u"http://www.yahoo.com/Document%201",
                                    u"http://www.yahoo.com/john@example.com",
@@ -619,6 +635,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, UnscopedMode) {
   provider_->Start(input, false);
   provider_->RequestCompleted(nullptr, 200,
                               std::make_unique<std::string>(kGoodJsonResponse));
+  ASSERT_TRUE(provider_->WaitForUpdateResults());
   EXPECT_THAT(GetMatches(),
               testing::ElementsAre(u"http://www.yahoo.com/Document%201",
                                    u"http://www.yahoo.com/john@example.com",
