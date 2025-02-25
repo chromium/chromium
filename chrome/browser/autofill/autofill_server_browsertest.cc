@@ -62,7 +62,7 @@ class WindowedNetworkObserver {
 
   ~WindowedNetworkObserver() = default;
 
-  // Waits for a network request with the |expected_upload_data_|.
+  // Waits for a network request with the `expected_upload_data_`.
   void Wait() {
     message_loop_runner_->Run();
     interceptor_.reset();

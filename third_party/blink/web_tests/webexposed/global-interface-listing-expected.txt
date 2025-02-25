@@ -29,7 +29,6 @@ interface AILanguageDetectorCapabilities
     method languageAvailable
 interface AILanguageDetectorFactory
     attribute @@toStringTag
-    method availability
     method capabilities
     method constructor
     method create

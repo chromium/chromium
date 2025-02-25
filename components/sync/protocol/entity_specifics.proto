@@ -62,6 +62,7 @@ import "components/sync/protocol/web_app_specifics.proto";
 import "components/sync/protocol/webauthn_credential_specifics.proto";
 import "components/sync/protocol/wifi_configuration_specifics.proto";
 import "components/sync/protocol/workspace_desk_specifics.proto";
+import "components/sync/protocol/autofill_loyalty_card_specifics.proto";
 
 message EntitySpecifics {
   // If a datatype is encrypted, this field will contain the encrypted
@@ -155,6 +156,7 @@ message EntitySpecifics {
     PlusAddressSpecifics plus_address = 1267844;
     CookieSpecifics cookie = 1281100;
     PlusAddressSettingSpecifics plus_address_setting = 1303742;
+    AutofillLoyaltyCardSpecifics autofill_loyalty_card = 1419865;
     // When adding a new type, follow the docs below and keep this comment as
     // the last entry.
     // https://www.chromium.org/developers/design-documents/sync/integration-checklist/

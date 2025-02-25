@@ -56,8 +56,6 @@ class PLATFORM_EXPORT RTCStatsReportPlatform {
   const scoped_refptr<const webrtc::RTCStatsReport> stats_report_;
   webrtc::RTCStatsReport::ConstIterator it_;
   const webrtc::RTCStatsReport::ConstIterator end_;
-  // Number of allowlisted webrtc::RTCStats in |stats_report_|.
-  const size_t size_;
 };
 
 using RTCStatsReportCallback =

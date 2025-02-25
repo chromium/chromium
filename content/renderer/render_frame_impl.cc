@@ -5720,11 +5720,25 @@ void RenderFrameImpl::BeginNavigation(
     return;
   }
 
+  if (!frame_->WillStartNavigation(*info)) {
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.DidStartNavigation(info->url_request.Url(), info->navigation_type);
+  }
+  is_requesting_navigation_ = true;
+
   // Everything else is handled asynchronously by the browser process through
   // BeginNavigation.
-  BeginNavigationInternal(
+  // base::Unretained() is safe to use here because if the callback
+  // is retained, it's by the member of this class.
+  auto do_begin_navigation = base::BindOnce(
+      &RenderFrameImpl::BeginNavigationInternal, base::Unretained(this),
       std::move(info), is_history_navigation_in_new_child_frame,
       renderer_before_unload_start, renderer_before_unload_end);
+  client_navigation_throttler_.DispatchOrScheduleNavigation(
+      std::move(do_begin_navigation));
 }
 
 void RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318(
@@ -6165,13 +6179,6 @@ void RenderFrameImpl::BeginNavigationInternal(
   // Provisional frames shouldn't initiate navigations.
   CHECK(!GetWebFrame()->IsProvisional());
 
-  if (!frame_->WillStartNavigation(*info))
-    return;
-
-  for (auto& observer : observers_)
-    observer.DidStartNavigation(info->url_request.Url(), info->navigation_type);
-  is_requesting_navigation_ = true;
-
   // Set SiteForCookies.
   WebDocument frame_document = frame_->GetDocument();
   if (info->frame_type == blink::mojom::RequestContextFrameType::kTopLevel) {
@@ -6367,6 +6374,7 @@ void RenderFrameImpl::BeginNavigationInternal(
       renderer_cancellation_listener_receiver;
   navigation_client_impl_->SetUpRendererInitiatedNavigation(
       renderer_cancellation_listener_receiver.InitWithNewPipeAndPassRemote());
+
   GetFrameHost()->BeginNavigation(
       std::move(common_params), std::move(begin_params),
       std::move(blob_url_token), std::move(navigation_client_remote),
@@ -7020,6 +7028,11 @@ WebView* RenderFrameImpl::CreateNewWindow(
 std::unique_ptr<blink::WebLinkPreviewTriggerer>
 RenderFrameImpl::CreateLinkPreviewTriggerer() {
   return GetContentClient()->renderer()->CreateLinkPreviewTriggerer();
+}
+
+base::ScopedClosureRunner
+RenderFrameImpl::CreateScopedClientNavigationThrottler() {
+  return client_navigation_throttler_.DeferNavigations();
 }
 
 void RenderFrameImpl::ResetMembersUsedForDurationOfCommit() {

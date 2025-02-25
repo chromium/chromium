@@ -109,6 +109,7 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/omnibox/eg_tests:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/model/metrics",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support",

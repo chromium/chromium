@@ -19,12 +19,12 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
-#import "components/data_sharing/public/data_sharing_service.h"
+#import "components/collaboration/public/collaboration_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
-#import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
@@ -89,8 +89,6 @@
 #import "net/base/apple/url_conversions.h"
 #import "ui/gfx/image/image.h"
 
-using PeopleGroupActionOutcome =
-    data_sharing::DataSharingService::PeopleGroupActionOutcome;
 using PinnedState = WebStateSearchCriteria::PinnedState;
 
 namespace {
@@ -1725,11 +1723,11 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   [self.tabGridIdleStatusHandler
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
 
-  data_sharing::DataSharingService* dataSharingService =
-      data_sharing::DataSharingServiceFactory::GetForProfile(self.profile);
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(_profile);
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
-  CHECK(dataSharingService);
+  CHECK(collaborationService);
   CHECK(tabGroupSyncService);
 
   const tab_groups::CollaborationId collabId =
@@ -1738,8 +1736,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());
 
   __weak BaseGridMediator* weakSelf = self;
-  auto callback = base::BindOnce(^(PeopleGroupActionOutcome outcome) {
-    BOOL success = outcome == PeopleGroupActionOutcome::kSuccess;
+  auto callback = base::BindOnce(^(bool success) {
     [weakSelf handleTakeActionForActionTypeOutcome:success];
   });
 
@@ -1748,10 +1745,10 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   // Asynchronously call on the server.
   switch (actionType) {
     case TabGroupActionType::kLeaveSharedTabGroup:
-      dataSharingService->LeaveGroup(groupId, std::move(callback));
+      collaborationService->LeaveGroup(groupId, std::move(callback));
       break;
     case TabGroupActionType::kDeleteSharedTabGroup:
-      dataSharingService->DeleteGroup(groupId, std::move(callback));
+      collaborationService->DeleteGroup(groupId, std::move(callback));
       break;
     case TabGroupActionType::kUngroupTabGroup:
     case TabGroupActionType::kDeleteTabGroup:

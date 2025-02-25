@@ -7,7 +7,7 @@
 #import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui.h"
 
-void StartBroadcastingToolbarUI(id<ToolbarUI> toolbar,
+void StartBroadcastingToolbarUI(ToolbarUIState* toolbar,
                                 ChromeBroadcaster* broadcaster) {
   [broadcaster broadcastValue:@"collapsedTopToolbarHeight"
                      ofObject:toolbar

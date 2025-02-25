@@ -1169,46 +1169,23 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source,
                               /*update_datalist=*/true);
 
-  SuggestionsContext context = BuildSuggestionsContext(
-      form, form_structure, field, autofill_field, trigger_source);
-
-  OnGenerateSuggestionsCallback callback = base::BindOnce(
-      &BrowserAutofillManager::OnGenerateSuggestionsComplete,
-      weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context);
-
-  // Check via the `AutofillAiDelegate` if there's data stored in user
-  // annotations. IMPORTANT NOTE: If there's no data stored in user annotations,
-  // `GenerateSuggestionsAndMaybeShowUI()` will be called and Autofill's regular
-  // flow will continue.
+  std::vector<Suggestion> autofill_ai_suggestions;
   if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
       delegate && form_structure && autofill_field &&
       delegate->IsFormAndFieldEligibleForAutofillAi(*form_structure,
                                                     *autofill_field)) {
-    delegate->GetSuggestions(
-        form.global_id(), field.global_id(),
-        base::BindOnce(
-            &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1,
-            weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
-            context, std::move(callback)));
-    return;
+    autofill_ai_suggestions =
+        delegate->GetSuggestions(form.global_id(), field.global_id());
   }
 
-  // IMPORTANT NOTE: DON'T ADD CODE HERE, but in
-  // `GenerateSuggestionsAndMaybeShowUIPhase1()` instead.
-
-  // If user annotations wasn't checked for readiness above, synchronously move
-  // on with generating suggestions and maybe showing the UI.
-  GenerateSuggestionsAndMaybeShowUIPhase1(form, field, trigger_source, context,
-                                          std::move(callback),
-                                          /*autofill_ai_suggestions=*/{});
+  GenerateSuggestionsAndMaybeShowUIPhase1(form, field, trigger_source,
+                                          std::move(autofill_ai_suggestions));
 }
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
     const FormData& form,
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
-    SuggestionsContext context,
-    OnGenerateSuggestionsCallback callback,
     std::vector<Suggestion> autofill_ai_suggestions) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
@@ -1226,6 +1203,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
   std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
                                       &form_structure, &autofill_field);
 
+  SuggestionsContext context = BuildSuggestionsContext(
+      form, form_structure, field, autofill_field, trigger_source);
   context.field_is_relevant_for_plus_addresses =
       IsPlusAddressesManuallyTriggered(trigger_source) ||
       (!context.should_show_mixed_content_warning &&
@@ -1239,7 +1218,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
   auto generate_suggestions_and_maybe_show_ui_phase2 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2,
       weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
-      std::move(autofill_ai_suggestions), context, std::move(callback));
+      std::move(autofill_ai_suggestions), context);
 
   if (context.field_is_relevant_for_plus_addresses) {
     client().GetPlusAddressDelegate()->GetAffiliatedPlusAddresses(
@@ -1259,8 +1238,11 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     AutofillSuggestionTriggerSource trigger_source,
     std::vector<Suggestion> autofill_ai_suggestions,
     SuggestionsContext context,
-    OnGenerateSuggestionsCallback callback,
     std::vector<std::string> plus_addresses) {
+  OnGenerateSuggestionsCallback callback = base::BindOnce(
+      &BrowserAutofillManager::OnGenerateSuggestionsComplete,
+      weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context);
+
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   // This function cannot exit early in case GetCachedFormAndField() yields

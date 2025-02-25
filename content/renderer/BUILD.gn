@@ -56,6 +56,8 @@ target(link_target_type, "renderer") {
     "background_resource_fetch_assets.h",
     "browser_exposed_renderer_interfaces.cc",
     "browser_exposed_renderer_interfaces.h",
+    "client_navigation_throttler.cc",
+    "client_navigation_throttler.h",
     "content_security_policy_util.cc",
     "content_security_policy_util.h",
     "discardable_memory_utils.cc",

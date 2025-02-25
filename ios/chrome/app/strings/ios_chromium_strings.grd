@@ -659,6 +659,15 @@ Things to consider:
       <message name="IDS_IOS_MINI_MAP_CONSENT_SUBTITLE" desc="The subtitle of the consent screen for mini map [iOS only].">
         Allow Chromium to use Google Maps to give you directions and local info on detected addresses.
       </message>
+      <message name="IDS_IOS_MINI_MAP_DISABLE_CONFIRMATION_BUTTON_STRING" desc="The text in the button of the snackbar after disabling address detection [iOS only].">
+        DONE
+      </message>
+      <message name="IDS_IOS_MINI_MAP_DISABLE_CONFIRMATION_STRING" desc="The text in the snackbar after disabling address detection [iOS only].">
+        Address detection off. Turn it back on in Settings.
+      </message>
+      <message name="IDS_IOS_MINI_MAP_DISABLE_STRING" desc="The text button to disable the address detecion [iOS only].">
+        Turn off address detection
+      </message>
       <message name="IDS_IOS_MINI_MAP_FOOTER_STRING" desc="The text of the footer string displayed at the bottom of the minimap [iOS only].">
         Chromium uses Google Maps to give you directions and local info on detected addresses.
       </message>

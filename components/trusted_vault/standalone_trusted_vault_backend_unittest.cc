@@ -33,6 +33,7 @@
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
+#include "components/trusted_vault/standalone_trusted_vault_storage_impl.h"
 #include "components/trusted_vault/test/mock_trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
@@ -149,9 +150,7 @@ class MockDelegate : public StandaloneTrustedVaultBackend::Delegate {
 class StandaloneTrustedVaultBackendTest : public testing::Test {
  public:
   StandaloneTrustedVaultBackendTest()
-      : file_path_(
-            CreateUniqueTempDir(&temp_dir_)
-                .Append(base::FilePath(FILE_PATH_LITERAL("some_file")))) {
+      : base_path_(CreateUniqueTempDir(&temp_dir_)) {
     clock_.SetNow(base::Time::Now());
     ResetBackend();
   }
@@ -170,8 +169,10 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     connection_ = connection.get();
 
     backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-        security_domain_id(), file_path_, std::move(delegate),
-        std::move(connection));
+        security_domain_id(),
+        std::make_unique<StandaloneTrustedVaultStorageImpl>(
+            base_path_, security_domain_id()),
+        std::move(delegate), std::move(connection));
     backend_->SetClockForTesting(&clock_);
     backend_->ReadDataFromDisk();
 
@@ -202,7 +203,14 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     return GetSecurityDomainNameForUma(security_domain_id());
   }
 
-  const base::FilePath& file_path() { return file_path_; }
+  const base::FilePath& base_path() { return base_path_; }
+
+  const base::FilePath file_path() {
+    // |security_domain_id| is |kChromeSync|, thus the file name is
+    // "trusted_vault.pb".
+    return base_path_.Append(
+        base::FilePath(FILE_PATH_LITERAL("trusted_vault.pb")));
+  }
 
   void SetPrimaryAccountWithUnknownAuthError(
       std::optional<CoreAccountInfo> primary_account) {
@@ -265,7 +273,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-  const base::FilePath file_path_;
+  const base::FilePath base_path_;
   base::SimpleTestClock clock_;
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
   raw_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection_ = nullptr;
@@ -669,7 +677,9 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchPreviouslyStoredKeys) {
 
   // Instantiate a second backend to read the file.
   auto other_backend = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      security_domain_id(), file_path(),
+      security_domain_id(),
+      std::make_unique<StandaloneTrustedVaultStorageImpl>(base_path(),
+                                                          security_domain_id()),
       std::make_unique<testing::NiceMock<MockDelegate>>(),
       std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>());
   other_backend->ReadDataFromDisk();
@@ -763,7 +773,9 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Mimic browser restart and reset primary account.
   auto new_backend = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      security_domain_id(), file_path(),
+      security_domain_id(),
+      std::make_unique<StandaloneTrustedVaultStorageImpl>(base_path(),
+                                                          security_domain_id()),
       /*delegate=*/std::make_unique<testing::NiceMock<MockDelegate>>(),
       /*connection=*/nullptr);
   new_backend->ReadDataFromDisk();

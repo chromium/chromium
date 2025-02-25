@@ -71,6 +71,9 @@ extern char kBitTorrentMimeType[];
 // MIME Type for Java archive.
 extern char kJavaArchiveMimeType[];
 
+// MIME Type for Apple Wallet order packages.
+extern char kAppleWalletOrderMimeType[];
+
 // Legacy USDZ content types.
 extern char kLegacyUsdzMimeType[];
 extern char kLegacyPixarUsdzMimeType[];

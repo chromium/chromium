@@ -564,10 +564,6 @@ class ASH_EXPORT AppListControllerImpl
   // Sub-controller to handle app collections page.
   std::unique_ptr<AppsCollectionsController> apps_collections_controller_;
 
-  // Responsible for calling `UpdateSearchBoxUiVisibilities` when the Sunfish
-  // enabled pref changes.
-  std::unique_ptr<BooleanPrefMember> sunfish_enabled_;
-
   base::ScopedObservation<SplitViewController, SplitViewObserver>
       split_view_observation_{this};
 

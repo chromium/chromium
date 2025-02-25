@@ -2036,6 +2036,10 @@
       status: "experimental",
     },
     {
+      name: "FindFirstMisspellingEndWhenNonEditable",
+      status: "stable",
+    },
+    {
       name: "FindTextInReadonlyTextInput",
       status: "experimental",
     },
@@ -2940,6 +2944,11 @@
     {
       // crbug.com/376097115
       name: "NoCollapseSpaceBeforeRuby",
+      status: "stable",
+    },
+    {
+      // crbug.com/380107555
+      name: "NodeInUAShadowRootUnderAnonymousBlockFlow",
       status: "stable",
     },
     {
@@ -4153,6 +4162,16 @@
     },
     {
       name: "SpeculationRulesPrefetchWithSubresources",
+    },
+    {
+      // Enables to run prerendering for new tabs (e.g., target="_blank").
+      // See https://crbug.com/1350676.
+      name: "SpeculationRulesTargetHint",
+      origin_trial_feature_name: "SpeculationRulesTargetHint",
+      base_feature: "Prerender2InNewTab",
+      status: "experimental",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
     },
     {
       name: "SplitTextNotCleanupDummySpans",

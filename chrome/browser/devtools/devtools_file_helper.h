@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/uuid.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
 #include "chrome/browser/platform_util.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -91,13 +92,18 @@ class DevToolsFileHelper {
               const std::string& content,
               base::OnceClosure callback);
 
-  // Shows infobar by means of |show_info_bar_callback| to let the user
-  // decide whether to grant security permissions or not.
-  // If user allows adding file system in infobar, grants renderer
-  // read/write permissions, registers isolated file system for it and
-  // passes FileSystem struct to |callback|. Saves file system path to prefs.
+  // Opens a folder selector dialog, asking the user to select a folder
+  // on the local file system to be added as file system with the given
+  // |type|. Once the user selects a folder, it shows an infobar by means
+  // of |show_info_bar_callback| to let the user decide whether to grant
+  // security permissions or not. If user allows adding file system in
+  // infobar, grants renderer read/write permissions and registers isolated
+  // file system for it. Saves file system path to prefs.
   // If user denies adding file system in infobar, passes error string to
-  // |callback|. Marks filesystem as of arbitrary |type|.
+  // |callback|.
+  // The filesystem is marked of |type|, which is an arbitrary string (with
+  // the exception that it must not be the string "automatic" and it also
+  // must not be a valid UUID).
   void AddFileSystem(const std::string& type,
                      const ShowInfoBarCallback& show_info_bar_callback);
 
@@ -121,7 +127,7 @@ class DevToolsFileHelper {
   // Invokes |connect_callback| with the result.
   void ConnectAutomaticFileSystem(
       const std::string& file_system_path,
-      const std::string& file_system_uuid,
+      const base::Uuid& file_system_uuid,
       bool add_if_missing,
       const ShowInfoBarCallback& show_info_bar_callback,
       ConnectCallback connect_callback);
@@ -161,13 +167,19 @@ class DevToolsFileHelper {
   void ConnectUserConfirmedAutomaticFileSystem(
       ConnectCallback connect_callback,
       const std::string& file_system_path,
-      const std::string& file_system_uuid,
+      const base::Uuid& file_system_uuid,
       bool allowed);
+  bool IsUserConfirmedAutomaticFileSystem(
+      const std::string& file_system_path,
+      const base::Uuid& file_system_uuid) const;
   void FailedToAddFileSystem(const std::string& error);
-  void FileSystemPathsSettingChangedOnUI();
+  void UpdateFileSystemPathsOnUI();
   void FilePathsChanged(const std::vector<std::string>& changed_paths,
                         const std::vector<std::string>& added_paths,
                         const std::vector<std::string>& removed_paths);
+
+  using PathToType = std::map<std::string, std::string>;
+  PathToType GetActiveFileSystemPaths();
 
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<Profile> profile_;
@@ -175,10 +187,8 @@ class DevToolsFileHelper {
   typedef std::map<std::string, base::FilePath> PathsMap;
   PathsMap saved_files_;
   PrefChangeRegistrar pref_change_registrar_;
-  using PathToType = std::map<std::string, std::string>;
   PathToType file_system_paths_;
-  using PathToUUID = std::map<std::string, std::string>;
-  PathToUUID connected_automatic_file_systems_;
+  std::set<std::string> connected_automatic_file_systems_;
   std::unique_ptr<DevToolsFileWatcher, DevToolsFileWatcher::Deleter>
       file_watcher_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;

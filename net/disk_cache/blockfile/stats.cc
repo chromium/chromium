@@ -31,7 +31,7 @@ struct OnDiskStats {
 static_assert(sizeof(OnDiskStats) < 512, "needs more than 2 blocks");
 
 // WARNING: Add new stats only at the end, or change LoadStats().
-const auto kCounterNames = std::to_array<const char*>({
+constexpr auto kCounterNames = std::to_array<const char*>({
     "Open miss",     "Open hit",          "Create miss",
     "Create hit",    "Resurrect hit",     "Create error",
     "Trim entry",    "Doom entry",        "Doom cache",

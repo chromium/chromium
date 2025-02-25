@@ -464,8 +464,12 @@ TEST_F(HostContentSettingsMapTest, Origins) {
 }
 
 // TODO(crbug.com/398891214): Make test pass on Android.
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(HostContentSettingsMapTest, Observer) {
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Observer DISABLED_Observer
+#else
+#define MAYBE_Observer Observer
+#endif
+TEST_F(HostContentSettingsMapTest, MAYBE_Observer) {
   TestingProfile profile;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -497,7 +501,6 @@ TEST_F(HostContentSettingsMapTest, Observer) {
   host_content_settings_map->SetDefaultContentSetting(
       ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
 }
-#endif
 
 TEST_F(HostContentSettingsMapTest, ObserveDefaultPref) {
   TestingProfile profile;
@@ -1521,7 +1524,6 @@ TEST_F(HostContentSettingsMapTest, GuestProfileDefaultSetting) {
               host_content_settings_map->GetContentSetting(
                   host, host, ContentSettingsType::COOKIES));
 }
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(HostContentSettingsMapTest, InvalidPattern) {
@@ -2086,7 +2088,13 @@ TEST_F(HostContentSettingsMapTest, IncognitoChangesDoNotPersist) {
 
 // Validate that a content setting that uses a different scope/constraint can
 // co-exist with another setting
-TEST_F(HostContentSettingsMapTest, MixedScopeSettings) {
+// TODO(crbug.com/398993133): Fix flakes on some Android builders.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_MixedScopeSettings DISABLED_MixedScopeSettings
+#else
+#define MAYBE_MixedScopeSettings MixedScopeSettings
+#endif
+TEST_F(HostContentSettingsMapTest, MAYBE_MixedScopeSettings) {
   TestingProfile profile;
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -2246,8 +2254,14 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Validate that the settings array retrieved correctly carries the expiry data
 // for settings and they can detect if and when they expire.
 // GetSettingsForOneType should also omit any settings that are already expired.
+// TODO(crbug.com/398993133): Fix flakes on some Android builders.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms DISABLED_GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms
+#else
+#define MAYBE_GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms
+#endif
 TEST_P(HostContentSettingsMapActiveExpirationTest,
-       GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms) {
+       MAYBE_GetSettingsForOneTypeWithExpiryAndVerifyUmaHistograms) {
   base::HistogramTester t;
   TestingProfile profile;
   HostContentSettingsMap* map =
@@ -2389,7 +2403,13 @@ TEST_F(HostContentSettingsMapTest, StorageAccessMetrics) {
   t.ExpectUniqueSample(base_histogram + ".MaxTopLevel", 4, 1);
 }
 
-TEST_F(HostContentSettingsMapTest, RenewContentSetting) {
+// TODO(crbug.com/398993133): Fix flakes on some Android builders.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_RenewContentSetting DISABLED_RenewContentSetting
+#else
+#define MAYBE_RenewContentSetting RenewContentSetting
+#endif
+TEST_F(HostContentSettingsMapTest, MAYBE_RenewContentSetting) {
   TestingProfile profile;
   const base::Time now = base::Time::Now();
   const base::Time plus_1_hour = now + base::Hours(1);
@@ -2523,7 +2543,8 @@ TEST_F(HostContentSettingsMapTest, TrackingProtectionMetrics) {
       "ContentSettings.RegularProfile.Exceptions.tracking-protection", 3, 1);
 }
 
-// File access is not implemented on Android. Luckily we don't need it for DevTools.
+// File access is not implemented on Android. Luckily we don't need it for
+// DevTools.
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(HostContentSettingsMapTest, DevToolsFileAccess) {
   TestingProfile profile;

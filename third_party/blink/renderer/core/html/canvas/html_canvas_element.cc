@@ -972,8 +972,8 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
 
     if (!source_image) {
       SourceImageStatus status;
-      source_image =
-          GetSourceImageForCanvasInternal(FlushReason::kDrawListener, &status);
+      source_image = GetSourceImageForCanvasInternal(FlushReason::kDrawListener,
+                                                     &status, kDontChangeAlpha);
       if (status != kNormalSourceImageStatus)
         continue;
     }

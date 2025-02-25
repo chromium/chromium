@@ -136,4 +136,38 @@ TEST_F(AwPrefetchManagerTest, RemoveOldestPrefetchHandle) {
   EXPECT_EQ(current_prefetches.at(0), initial_prefetches.at(1));
 }
 
+TEST_F(AwPrefetchManagerTest, UpdateMaxPrefetchesIsRespected) {
+  AwPrefetchManager prefetch_manager(browser_context_.get());
+
+  prefetch_manager.SetTtlInSec(base::android::AttachCurrentThread(),
+                               /*ttl_in_sec=*/60 * 10);
+
+  // set MaxPrefetches to a big number, 5.
+  prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
+                                    /* max_prefetches=*/5);
+
+  // Make five requests.
+  for (int i = 0; i < 5; ++i) {
+    prefetch_manager.StartPrefetchRequest(
+        base::android::AttachCurrentThread(),
+        "https://example.com/" + base::NumberToString(i),
+        /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+        /*callback_executor=*/nullptr);
+  }
+  EXPECT_EQ(prefetch_manager.GetAllPrefetchesForTesting().size(), 5u);
+
+  // Now, let's lower that number with more than 1. Let's say 2.
+  prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
+                                    /* max_prefetches=*/2);
+
+  // Adding another request.
+  prefetch_manager.StartPrefetchRequest(
+      base::android::AttachCurrentThread(), "https://example.com/6",
+      /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+      /*callback_executor=*/nullptr);
+
+  // Should be on the latest setting, 2.
+  EXPECT_EQ(prefetch_manager.GetAllPrefetchesForTesting().size(), 2u);
+}
+
 }  // namespace android_webview

@@ -169,13 +169,13 @@ std::optional<autofill::FieldType> StringToFieldType(std::string_view str) {
 }
 
 // Command types to control and debug execution.
-// * The |kAbsoluteLimit| and |kRelativeLimit| commands indicate that
-//   execution shall not proceed if the next action's position is >= |param|
-//   or >= current_index + |param|, respectively.
-// * The |kSkipAction| command jumps |param| actions forward or backward.
-// * The |kShowAction| command prints the |param| previous (if < 0) or
+// * The `kAbsoluteLimit` and `kRelativeLimit` commands indicate that
+//   execution shall not proceed if the next action's position is >= `param`
+//   or >= current_index + `param`, respectively.
+// * The `kSkipAction` command jumps `param` actions forward or backward.
+// * The `kShowAction` command prints the `param` previous (if < 0) or
 //   upcoming (if > 0) actions.
-// * The |kWhereAmI| command prints the current execution position.
+// * The `kWhereAmI` command prints the current execution position.
 enum class ExecutionCommandType {
   kAbsoluteLimit,
   kRelativeLimit,
@@ -190,7 +190,7 @@ struct ExecutionCommand {
   int param = std::numeric_limits<int>::max();
 };
 
-// Blockingly reads the content of |command_file_path|, parses it into
+// Blockingly reads the content of `command_file_path`, parses it into
 // ExecutionCommands, and returns the result.
 std::vector<ExecutionCommand> ReadExecutionCommands(
     const base::FilePath& command_file_path) {
@@ -247,8 +247,8 @@ struct ExecutionState {
   bool pause_on_failure = false;
 };
 
-// Blockingly reads the commands from |command_file_path| and executes them.
-// Execution primarily means manipulation of the |execution_state|, particularly
+// Blockingly reads the commands from `command_file_path` and executes them.
+// Execution primarily means manipulation of the `execution_state`, particularly
 // `execution_state.limit`.
 ExecutionState ProcessCommands(ExecutionState execution_state,
                                const base::Value::List* action_list,
@@ -1090,11 +1090,11 @@ void TestRecipeReplayer::WaitTillPageIsIdle(
       break;
     } else if ((base::TimeTicks::Now() - finished_load_time) >
                continuous_paint_timeout) {
-      // |continuous_paint_timeout| has expired since Chrome loaded the page.
+      // `continuous_paint_timeout` has expired since Chrome loaded the page.
       // During this period of time, Chrome has been continuously painting
       // the page. In this case, the page is probably idle, but a bug, a
       // blinking caret or a persistent animation is keeping the
-      // |render_frame_count| from reaching zero. Exit.
+      // `render_frame_count` from reaching zero. Exit.
       VLOG(1) << "Wait for render frame count timed out after "
               << continuous_paint_timeout.InSeconds()
               << " seconds with the frame count still at: "

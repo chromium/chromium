@@ -7,34 +7,34 @@
 
 #import <UIKit/UIKit.h>
 
-// Protocol for the UI displaying the toolbar.
-@protocol ToolbarUI <NSObject>
-
-// The minimum height of the toolbar relative to the browser content area.
-// This should be broadcast using `-broadcastCollapsedTopToolbarHeight:`.
-@property(nonatomic, readonly) CGFloat collapsedTopToolbarHeight;
-
-// The minimum height of the toolbar relative to the browser content area.
-// This should be broadcast using `-broadcastExpandedTopToolbarHeight:`.
-@property(nonatomic, readonly) CGFloat expandedTopToolbarHeight;
-
-// The height of the bottom toolbar relative to the browser content area.
-// This should be broadcast using `-broadcastExpandedBottomToolbarHeight:`.
-@property(nonatomic, readonly) CGFloat expandedBottomToolbarHeight;
-
-@property(nonatomic, readonly) CGFloat collapsedBottomToolbarHeight;
-
-@end
+class ToolbarsSizeObserver;
 
 // Simple implementation of ToolbarUI that allows readwrite access to broadcast
 // properties.
-@interface ToolbarUIState : NSObject <ToolbarUI>
+@interface ToolbarUIState : NSObject
 
-// Redefine properties as readwrite.
+// TODO(crbug.com/397683330): Make properties readonly and use specific
+// functions to update them. Redefine properties as readwrite.
 @property(nonatomic, assign) CGFloat collapsedTopToolbarHeight;
 @property(nonatomic, assign) CGFloat expandedTopToolbarHeight;
 @property(nonatomic, assign) CGFloat expandedBottomToolbarHeight;
 @property(nonatomic, assign) CGFloat collapsedBottomToolbarHeight;
+
+- (instancetype)
+    initWithCollapsedTopToolbarHeight:(CGFloat)collapsedTopToolbarHeight
+             expandedTopToolbarHeight:(CGFloat)expandedTopToolbarHeight
+          expandedBottomToolbarHeight:(CGFloat)expandedBottomToolbarHeight
+         collapsedBottomToolbarHeight:(CGFloat)collapsedBottomToolbarHeight;
+
+// Setter for toolbars properties and notify observers.
+- (void)setCollapsedTopToolbarHeight:(CGFloat)collapsedTopToolbarHeight
+            expandedTopToolbarHeight:(CGFloat)expandedTopToolbarHeight
+         expandedBottomToolbarHeight:(CGFloat)expandedBottomToolbarHeight
+        collapsedBottomToolbarHeight:(CGFloat)collapsedBottomToolbarHeight;
+
+// Adding and Removing observers.
+- (void)addObserver:(ToolbarsSizeObserver*)observer;
+- (void)removeObserver:(ToolbarsSizeObserver*)observer;
 
 @end
 

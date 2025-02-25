@@ -81,8 +81,8 @@
 #import "ios/chrome/browser/tabs/ui_bundled/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_configuration.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui_broadcasting_util.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_broadcasting_util.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
@@ -212,8 +212,8 @@ enum HeaderBehaviour {
   // button.
   BookmarksCoordinator* _bookmarksCoordinator;
 
-  // Toolbar state that broadcasts changes to min and max heights.
-  ToolbarUIState* _toolbarUIState;
+  // Toolbars size that broadcasts changes to min and max heights.
+  ToolbarsSize* _toolbarsSize;
 
   // The main content UI updater for the content displayed by this BVC.
   MainContentUIStateUpdater* _mainContentUIUpdater;
@@ -476,12 +476,15 @@ enum HeaderBehaviour {
 
   ChromeBroadcaster* broadcaster = self.fullscreenController->broadcaster();
   if (_broadcasting) {
-    _toolbarUIState = [[ToolbarUIState alloc] init];
-    // Must update _toolbarUIState with current toolbar height state before
+    _toolbarsSize = [[ToolbarsSize alloc] init];
+    // Must update _toolbarsSize with current toolbar height state before
     // starting broadcasting.
     [self updateToolbarState];
-    StartBroadcastingToolbarUI(_toolbarUIState, broadcaster);
+    self.fullscreenController->SetToolbarsSize(_toolbarsSize);
 
+    if (!IsRefactorToolbarsSize()) {
+      StartBroadcastingToolbarsSize(_toolbarsSize, broadcaster);
+    }
     _mainContentUIUpdater = [[MainContentUIStateUpdater alloc]
         initWithState:[[MainContentUIState alloc] init]];
     _webMainContentUIForwarder = [[WebScrollViewMainContentUIForwarder alloc]
@@ -493,10 +496,12 @@ enum HeaderBehaviour {
         std::make_unique<FullscreenUIUpdater>(self.fullscreenController, self);
     [self updateForFullscreenProgress:self.fullscreenController->GetProgress()];
   } else {
-    StopBroadcastingToolbarUI(broadcaster);
+    if (!IsRefactorToolbarsSize()) {
+      StopBroadcastingToolbarsSize(broadcaster);
+    }
     StopBroadcastingMainContentUI(broadcaster);
     _mainContentUIUpdater = nil;
-    _toolbarUIState = nil;
+    _toolbarsSize = nil;
     [_webMainContentUIForwarder disconnect];
     _webMainContentUIForwarder = nil;
 
@@ -1024,7 +1029,7 @@ enum HeaderBehaviour {
     _voiceSearchController.dispatcher = nil;
     [self.toolbarCoordinator stop];
     self.toolbarCoordinator = nil;
-    _toolbarUIState = nil;
+    _toolbarsSize = nil;
     if (IsModernTabStripOrRaccoonEnabled()) {
       [self.tabStripCoordinator stop];
       self.tabStripCoordinator = nil;
@@ -1081,7 +1086,7 @@ enum HeaderBehaviour {
 }
 
 - (void)animateTransition {
-  // Force updates of the toolbar state as the toolbar height might
+  // Force updates of the toolbars' size as the toolbar height might
   // change on rotation.
   [self updateToolbarState];
   // Resize horizontal viewport if Smooth Scrolling is on.
@@ -1735,8 +1740,9 @@ enum HeaderBehaviour {
     self.currentWebState->GetWebViewProxy().contentInset = contentPadding;
   }
 
-  // Toolbar state must be updated before `updateFootersForFullscreenProgress`
-  // as the later uses the insets from fullscreen model.
+  // Toolbars size must be updated before
+  // `updateFootersForFullscreenProgress` as the later uses the insets from
+  // fullscreen model.
   [self updateToolbarState];
 
   // Change the height of the secondary toolbar to show/hide it.
@@ -1992,15 +1998,23 @@ enum HeaderBehaviour {
          self.headerOffset;
 }
 
-// Updates the ToolbarUIState, which broadcasts any changes to registered
+// Updates the ToolbarsSize, which broadcasts any changes to registered
 // listeners.
 - (void)updateToolbarState {
-  _toolbarUIState.collapsedTopToolbarHeight = [self collapsedTopToolbarHeight];
-  _toolbarUIState.expandedTopToolbarHeight = [self expandedTopToolbarHeight];
-  _toolbarUIState.collapsedBottomToolbarHeight =
-      [self collapsedBottomToolbarHeight];
-  _toolbarUIState.expandedBottomToolbarHeight =
-      [self secondaryToolbarHeightWithInset];
+  if (IsRefactorToolbarsSize()) {
+    [_toolbarsSize
+        setCollapsedTopToolbarHeight:[self collapsedTopToolbarHeight]
+            expandedTopToolbarHeight:[self expandedTopToolbarHeight]
+         expandedBottomToolbarHeight:[self secondaryToolbarHeightWithInset]
+        collapsedBottomToolbarHeight:[self collapsedBottomToolbarHeight]];
+  } else {
+    _toolbarsSize.collapsedTopToolbarHeight = [self collapsedTopToolbarHeight];
+    _toolbarsSize.expandedTopToolbarHeight = [self expandedTopToolbarHeight];
+    _toolbarsSize.collapsedBottomToolbarHeight =
+        [self collapsedBottomToolbarHeight];
+    _toolbarsSize.expandedBottomToolbarHeight =
+        [self secondaryToolbarHeightWithInset];
+  }
 }
 
 // Returns the height difference between the fully expanded and fully collapsed
@@ -2636,8 +2650,8 @@ enum HeaderBehaviour {
     return;
   }
 
-  // Toolbar state must be updated before `updateForFullscreenProgress` as the
-  // later uses the insets from fullscreen model.
+  // Toolbars size must be updated before `updateForFullscreenProgress` as
+  // the later uses the insets from fullscreen model.
   [self updateToolbarState];
 
   self.primaryToolbarHeightConstraint.constant =

@@ -26,7 +26,8 @@ import {BottomLeftLayout, BottomRightLayout, MechanicalLayout, NumberPadPresence
 import type {InputDataProviderInterface, KeyEvent} from './input_data_provider.mojom-webui.js';
 import {KeyboardObserverReceiver, KeyEventType} from './input_data_provider.mojom-webui.js';
 import {getTemplate} from './keyboard_tester.html.js';
-import {getInputDataProvider} from './mojo_interface_provider.js';
+import {getInputDataProvider, getSystemDataProvider} from './mojo_interface_provider.js';
+import type {SystemDataProviderInterface, SystemInfo} from './system_data_provider.mojom-webui.js';
 
 export interface KeyboardTesterElement {
   $: {
@@ -135,6 +136,11 @@ const standardNumberPadCodes: Set<number> = new Set([
   111,  // KEY_DELETE
 ]);
 
+const acerSplitModifierKeyboardWithNumpadBoards = [
+  'ruke',
+  'jubileum',
+];
+
 const DISPLAY_TOAST_INDEFINITELY_MS = 0;
 const TOAST_LINGER_MS = 1000;
 
@@ -220,6 +226,21 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     };
   }
 
+  constructor() {
+    // For acer split modifier keyboard w/ numpad, the top row is different
+    // from standard reference design, therefore need a physical layout
+    // exception.
+    super();
+    this.systemDataProvider.getSystemInfo().then(
+        (result: {systemInfo: SystemInfo}) => {
+          this.onSystemInfoReceived(result.systemInfo);
+        });
+  }
+
+  private onSystemInfoReceived(systemInfo: SystemInfo): void {
+    this.boardName = systemInfo.boardName;
+  }
+
   keyboard: KeyboardInfo;
   isLoggedIn: boolean;
   protected diagramTopRightKey: DiagramTopRightKey|null;
@@ -228,10 +249,13 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   private diagramMechanicalLayout: DiagramMechanicalLayout|null;
   private diagramPhysicalLayout: DiagramPhysicalLayout|null;
   private showNumberPad: boolean;
+  private boardName: string = '';
   private topRowKeys: KeyboardDiagramTopRowKey[];
   private receiver: KeyboardObserverReceiver|null = null;
   private inputDataProvider: InputDataProviderInterface =
       getInputDataProvider();
+  private systemDataProvider: SystemDataProviderInterface =
+      getSystemDataProvider();
   private eventTracker: EventTracker = new EventTracker();
 
   override disconnectedCallback(): void {
@@ -278,10 +302,16 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     if (!keyboardInfo) {
       return null;
     }
+
+    if (acerSplitModifierKeyboardWithNumpadBoards.includes(this.boardName)) {
+      return DiagramPhysicalLayout.ACER_SPLIT_MODIFIER_WITH_NUMPAD;
+    }
+
     if (keyboardInfo.bottomLeftLayout !== BottomLeftLayout.kUnknown &&
         keyboardInfo.bottomRightLayout !== BottomRightLayout.kUnknown) {
       return DiagramPhysicalLayout.SPLIT_MODIFIER;
     }
+
     return {
       [PhysicalLayout.kUnmappedEnumField]: null,
       [PhysicalLayout.kUnknown]: null,
@@ -314,9 +344,11 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   }
 
   private computeShowAssistantKey(keyboard?: KeyboardInfo): boolean {
+    const physicalLayout = this.computeDiagramPhysicalLayout(keyboard);
     return !!keyboard && keyboard.hasAssistantKey &&
-        this.computeDiagramPhysicalLayout(keyboard) !==
-        DiagramPhysicalLayout.SPLIT_MODIFIER;
+        physicalLayout !== DiagramPhysicalLayout.SPLIT_MODIFIER &&
+        physicalLayout !==
+        DiagramPhysicalLayout.ACER_SPLIT_MODIFIER_WITH_NUMPAD;
   }
 
   private computeTopRowKeys(keyboard?: KeyboardInfo):

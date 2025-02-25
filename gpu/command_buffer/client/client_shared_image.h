@@ -203,6 +203,11 @@ class GPU_EXPORT ClientSharedImage
   static scoped_refptr<ClientSharedImage> CreateForTesting(
       viz::SharedImageFormat format,
       uint32_t texture_target);
+  static scoped_refptr<ClientSharedImage> CreateForTesting(
+      SharedImageUsageSet usage);
+  static scoped_refptr<ClientSharedImage> CreateForTesting(
+      const SharedImageMetadata& metadata,
+      uint32_t texture_target);
 
   static scoped_refptr<ClientSharedImage> CreateForTesting(
       const Mailbox& mailbox,

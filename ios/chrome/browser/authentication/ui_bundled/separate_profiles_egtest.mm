@@ -176,7 +176,15 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
 
 // Tests switching to a managed account and refuse the enterprise onboard
 // screen.
-- (void)testRefuseToSwitchToManageAccount {
+// TODO(crbug.com/399015648): Test is flaky on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testRefuseToSwitchToManageAccount \
+  testRefuseToSwitchToManageAccount
+#else
+#define MAYBE_testRefuseToSwitchToManageAccount \
+  FLAKY_testRefuseToSwitchToManageAccount
+#endif
+- (void)MAYBE_testRefuseToSwitchToManageAccount {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;

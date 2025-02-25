@@ -60,11 +60,12 @@ public class AddressEditorCoordinator {
     public @interface UserFlow {
         // The user creates a new address from Chrome settings.
         int CREATE_NEW_ADDRESS_PROFILE = 1;
-        // The user edits an potentially save an address parsed from a submitted form.
+        // The user edits and potentially saves an address parsed from a submitted form.
         int SAVE_NEW_ADDRESS_PROFILE = 2;
         // The user edits an existing address either from Chrome settings or upon form submission.
         int UPDATE_EXISTING_ADDRESS_PROFILE = 3;
-        // The user edits an existing
+        // The user edits an existing address which is going to be migrated to the Google Address
+        // Store.
         int MIGRATE_EXISTING_ADDRESS_PROFILE = 4;
     }
 

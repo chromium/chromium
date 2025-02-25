@@ -1,6 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/broadcaster/ui_bundled",
   "+ios/chrome/browser/find_in_page/model",
+  "+ios/chrome/browser/toolbar/ui_bundled/fullscreen"
 ]
 
 specific_include_rules = {

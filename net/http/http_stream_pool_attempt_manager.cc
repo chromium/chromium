@@ -89,16 +89,6 @@ std::string_view GetHistogramSuffixForStreamAttemptCancel(
   }
 }
 
-bool GetSupportsSpdy(HttpNetworkSession* session,
-                     const HttpStreamKey& stream_key) {
-  HttpServerProperties* properties = session->http_server_properties();
-  if (properties) {
-    return properties->GetSupportsSpdy(stream_key.destination(),
-                                       stream_key.network_anonymization_key());
-  }
-  return false;
-}
-
 base::Value::Dict GetServiceEndpointRequestAsValue(
     HostResolver::ServiceEndpointRequest* request) {
   base::Value::Dict dict;
@@ -330,13 +320,37 @@ std::string_view HttpStreamPool::AttemptManager::IPEndPointStateToString(
   }
 }
 
+// static
+std::string_view HttpStreamPool::AttemptManager::InitialAttemptStateToString(
+    InitialAttemptState state) {
+  switch (state) {
+    case InitialAttemptState::kOther:
+      return "Other";
+    case InitialAttemptState::kCanUseQuicWithKnownVersion:
+      return "CanUseQuicWithKnownVersion";
+    case InitialAttemptState::kCanUseQuicWithKnownVersionAndSupportsSpdy:
+      return "CanUseQuicWithKnownVersionAndSupportsSpdy";
+    case InitialAttemptState::kCanUseQuicWithUnknownVersion:
+      return "CanUseQuicWithUnknownVersion";
+    case InitialAttemptState::kCanUseQuicWithUnknownVersionAndSupportsSpdy:
+      return "CanUseQuicWithUnknownVersionAndSupportsSpdy";
+    case InitialAttemptState::kCannotUseQuicWithKnownVersion:
+      return "CannotUseQuicWithKnownVersion";
+    case InitialAttemptState::kCannotUseQuicWithKnownVersionAndSupportsSpdy:
+      return "CannotUseQuicWithKnownVersionAndSupportsSpdy";
+    case InitialAttemptState::kCannotUseQuicWithUnknownVersion:
+      return "CannotUseQuicWithUnknownVersion";
+    case InitialAttemptState::kCannotUseQuicWithUnknownVersionAndSupportsSpdy:
+      return "CannotUseQuicWithUnknownVersionAndSupportsSpdy";
+  }
+}
+
 HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
     : group_(group),
       net_log_(NetLogWithSource::Make(
           net_log,
           NetLogSourceType::HTTP_STREAM_POOL_ATTEMPT_MANAGER)),
       jobs_(NUM_PRIORITIES),
-      supports_spdy_(GetSupportsSpdy(http_network_session(), stream_key())),
       stream_attempt_delay_(GetStreamAttemptDelay()),
       should_block_stream_attempt_(!stream_attempt_delay_.is_zero()) {
   CHECK(group_);
@@ -348,7 +362,6 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
         dict.Set("stream_attempt_delay",
                  static_cast<int>(stream_attempt_delay_.InMilliseconds()));
         dict.Set("should_block_stream_attempt", should_block_stream_attempt_);
-        dict.Set("supports_spdy", supports_spdy_);
         group_->net_log().source().AddToEventParameters(dict);
         return dict;
       });
@@ -533,15 +546,16 @@ bool HttpStreamPool::AttemptManager::IsSvcbOptional() {
 HttpStreamPool::AttemptManager::InitialAttemptState
 HttpStreamPool::AttemptManager::CalculateInitialAttemptState() {
   using enum InitialAttemptState;
+  bool supports_spdy = SupportsSpdy();
   if (CanUseQuic()) {
     if (quic_version_.IsKnown()) {
-      if (supports_spdy_) {
+      if (supports_spdy) {
         return kCanUseQuicWithKnownVersionAndSupportsSpdy;
       } else {
         return kCanUseQuicWithKnownVersion;
       }
     } else {
-      if (supports_spdy_) {
+      if (supports_spdy) {
         return kCanUseQuicWithUnknownVersionAndSupportsSpdy;
       } else {
         return kCanUseQuicWithUnknownVersion;
@@ -549,13 +563,13 @@ HttpStreamPool::AttemptManager::CalculateInitialAttemptState() {
     }
   } else {
     if (quic_version_.IsKnown()) {
-      if (supports_spdy_) {
+      if (supports_spdy) {
         return kCannotUseQuicWithKnownVersionAndSupportsSpdy;
       } else {
         return kCannotUseQuicWithKnownVersion;
       }
     } else {
-      if (supports_spdy_) {
+      if (supports_spdy) {
         return kCannotUseQuicWithUnknownVersionAndSupportsSpdy;
       } else {
         return kCannotUseQuicWithUnknownVersion;
@@ -564,13 +578,16 @@ HttpStreamPool::AttemptManager::CalculateInitialAttemptState() {
   }
 }
 
-void HttpStreamPool::AttemptManager::MaybeSetInitialAttemptState() {
-  if (initial_attempt_state_.has_value()) {
-    return;
-  }
-
+void HttpStreamPool::AttemptManager::SetInitialAttemptState() {
+  CHECK(!initial_attempt_state_.has_value());
   initial_attempt_state_ = CalculateInitialAttemptState();
-  base::UmaHistogramEnumeration("Net.HttpStreamPool.InitialAttemptState",
+  net_log_.AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_INITIAL_ATTEMPT_STATE,
+      [&] {
+        return base::Value::Dict().Set(
+            "state", InitialAttemptStateToString(*initial_attempt_state_));
+      });
+  base::UmaHistogramEnumeration("Net.HttpStreamPool.InitialAttemptState2",
                                 *initial_attempt_state_);
 }
 
@@ -988,7 +1005,6 @@ HttpStreamPool::AttemptManager::CalculateMultiplexedSessionCreationInitiator() {
 
 void HttpStreamPool::AttemptManager::StartInternal(Job* job) {
   RestrictAllowedProtocols(job->allowed_alpns());
-  MaybeSetInitialAttemptState();
   UpdateStreamAttemptState();
 
   if (service_endpoint_request_ || service_endpoint_request_finished_) {
@@ -1313,6 +1329,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
     }
 
     if (tcp_based_attempt_state_ == TcpBasedAttemptState::kNotStarted) {
+      SetInitialAttemptState();
       tcp_based_attempt_state_ = TcpBasedAttemptState::kAttempting;
     }
 
@@ -1437,8 +1454,13 @@ bool HttpStreamPool::AttemptManager::IsAlternativeServiceEnabled() const {
   return alternative_service_disabling_jobs_.empty();
 }
 
+bool HttpStreamPool::AttemptManager::SupportsSpdy() const {
+  return http_network_session()->http_server_properties()->GetSupportsSpdy(
+      stream_key().destination(), stream_key().network_anonymization_key());
+}
+
 bool HttpStreamPool::AttemptManager::ShouldThrottleAttemptForSpdy() const {
-  if (!supports_spdy_) {
+  if (!SupportsSpdy()) {
     return false;
   }
 
@@ -1955,14 +1977,11 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
       return;
     }
 
-    supports_spdy_ = true;
     HttpServerProperties* http_server_properties =
         http_network_session()->http_server_properties();
-    if (http_server_properties) {
-      http_server_properties->SetSupportsSpdy(
-          stream_key().destination(), stream_key().network_anonymization_key(),
-          /*supports_spdy=*/true);
-    }
+    http_server_properties->SetSupportsSpdy(
+        stream_key().destination(), stream_key().network_anonymization_key(),
+        /*supports_spdy=*/true);
 
     base::UmaHistogramTimes(
         "Net.HttpStreamPool.NewSpdySessionEstablishTime",

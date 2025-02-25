@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_model_test_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -28,10 +29,12 @@ class FullscreenWebViewResizerTest : public PlatformTest {
   FullscreenWebViewResizerTest() {
     _model = controller_.getModel();
     // FullscreenModel setup.
-    _model->SetExpandedTopToolbarHeight(kExpandedTopToolbarHeight);
-    _model->SetCollapsedTopToolbarHeight(kCollapsedTopToolbarHeight);
-    _model->SetExpandedBottomToolbarHeight(kExpandedBottomToolbarHeight);
-    _model->SetCollapsedBottomToolbarHeight(kCollapsedBottomToolbarHeight);
+    ToolbarsSize* toolbarsSize = [[ToolbarsSize alloc]
+        initWithCollapsedTopToolbarHeight:kCollapsedTopToolbarHeight
+                 expandedTopToolbarHeight:kExpandedTopToolbarHeight
+              expandedBottomToolbarHeight:kExpandedBottomToolbarHeight
+             collapsedBottomToolbarHeight:kCollapsedBottomToolbarHeight];
+    _model->SetToolbarsSize(toolbarsSize);
     _model->SetContentHeight(1000);
     _model->SetScrollViewHeight(700);
     _model->SetScrollViewIsScrolling(true);

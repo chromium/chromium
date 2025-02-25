@@ -357,7 +357,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyLinkUser.FamilyInfoLogSource.FetchLatency" units="ms"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>ljjlee@google.com</owner>
   <owner>fernandex@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -370,7 +370,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyLinkUser.FamilyInfoLogSource.FetchStatus"
-    enum="FamilyInfoLogSourceFetchStatus" expires_after="2025-06-22">
+    enum="FamilyInfoLogSourceFetchStatus" expires_after="2025-08-24">
   <owner>ljjlee@google.com</owner>
   <owner>fernandex@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -382,7 +382,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyLinkUser.FamilyInfoLogSource.ImmediatelyAvailable"
-    enum="Boolean" expires_after="2025-06-22">
+    enum="Boolean" expires_after="2025-08-24">
   <owner>fernandex@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -883,7 +883,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="SupervisedUsers.ExtensionApprovalsCountOnExtensionToggle"
-    units="Extensions" expires_after="2025-06-22">
+    units="Extensions" expires_after="2025-08-24">
   <owner>anthie@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -928,7 +928,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 
 <histogram name="SupervisedUsers.ExtensionParentApprovalEntryPoint"
     enum="SupervisedUserExtensionParentApprovalEntryPoint"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -951,7 +951,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 
 <histogram name="SupervisedUsers.ImplicitParentApprovalGrantEntryPoint"
     enum="SupervisedUserImplicitParentApprovalGrantEntryPoint"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -963,7 +963,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 
 <histogram
     name="SupervisedUsers.InitialLocallyApprovedExtensionsCountOnWinLinuxMac"
-    units="Extensions" expires_after="2025-06-22">
+    units="Extensions" expires_after="2025-08-24">
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -1160,7 +1160,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="{RequestType}.{Status}.Latency" units="ms"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>

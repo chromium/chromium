@@ -141,15 +141,7 @@ bool HostedAppBrowserController::IsUrlInAppScope(const GURL& url) const {
     return false;
   }
 
-  const std::vector<UrlHandlerInfo>* url_handlers =
-      UrlHandlers::GetUrlHandlers(extension);
-
-  // We don't have a scope, fall back to same origin check.
-  if (!url_handlers) {
-    return IsSameHostAndPort(GetAppStartUrl(), url);
-  }
-
-  return UrlHandlers::CanBookmarkAppHandleUrl(extension, url);
+  return IsSameHostAndPort(GetAppStartUrl(), url);
 }
 
 const Extension* HostedAppBrowserController::GetExtension() const {

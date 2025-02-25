@@ -30,6 +30,12 @@ std::string InvocationSourceToString(
       return "FindInPage";
     case LensOverlayInvocationSource::kOmnibox:
       return "Omnibox";
+    case LensOverlayInvocationSource::kLVFShutterButton:
+      return "LVFShutterButton";
+    case LensOverlayInvocationSource::kLVFGallery:
+      return "LVFGallery";
+    case LensOverlayInvocationSource::kContextMenu:
+      return "ContextMenu";
   }
 }
 
@@ -366,6 +372,12 @@ void RecordTimeToFirstInteraction(
       // Not recorded since the image menu entry point results in a search
       // without the user having to interact with the overlay. Time to first
       // interaction in this case is essentially zero.
+      break;
+    case LensOverlayInvocationSource::kLVFShutterButton:
+    case LensOverlayInvocationSource::kLVFGallery:
+    case LensOverlayInvocationSource::kContextMenu:
+      // Not recorded since for LVF and context menu invocation the first
+      // interaction is done automatically by autoselection.
       break;
     case lens::LensOverlayInvocationSource::kToolbar:
       event.SetToolbar(time_to_first_interaction.InMilliseconds());

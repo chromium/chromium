@@ -74,7 +74,7 @@ const char kHistogramLCPPSubresourceConfidenceOfActualNegativeSameSite[] =
 const char kHistogramLCPPSubresourceFrequencyOfActualPositiveCrossSite[] =
     HISTOGRAM_PREFIX "Subresource.FrequencyOfActualPositive.CrossSite.2";
 const char kHistogramLCPPSubresourceFrequencyOfActualNegativeCrossSite[] =
-    HISTOGRAM_PREFIX "Subresource.FrequencyOfActualNegative.CrossSite2";
+    HISTOGRAM_PREFIX "Subresource.FrequencyOfActualNegative.CrossSite.2";
 const char kHistogramLCPPSubresourceConfidenceOfActualPositiveCrossSite[] =
     HISTOGRAM_PREFIX "Subresource.ConfidenceOfActualPositive.CrossSite.2";
 const char kHistogramLCPPSubresourceConfidenceOfActualNegativeCrossSite[] =
@@ -459,14 +459,15 @@ void MaybeReportConfidenceUMAs(
               HISTOGRAM_PREFIX
               "Subresource"
               ".ConfidenceOfActualPositive"
-              ".PerTotalFrequency",
+              ".PerTotalFrequency"
+              ".3",
               CalculateScoreFromTotalFrequencyAndConfidence(confidence,
                                                             total_frequency));
           base::UmaHistogramPercentage(
               base::StrCat({HISTOGRAM_PREFIX "Subresource"
                                              ".ConfidenceOfActualPositive"
                                              ".PerTotalFrequency",
-                            same_site_or_cross_site, ".2"}),
+                            same_site_or_cross_site, ".3"}),
               CalculateScoreFromTotalFrequencyAndConfidence(confidence,
                                                             total_frequency));
         };
@@ -511,14 +512,14 @@ void MaybeReportConfidenceUMAs(
               "Subresource"
               ".ConfidenceOfActualNegative"
               ".PerTotalFrequency"
-              ".2",
+              ".3",
               CalculateScoreFromTotalFrequencyAndConfidence(confidence,
                                                             total_frequency));
           base::UmaHistogramPercentage(
               base::StrCat({HISTOGRAM_PREFIX "Subresource"
                                              ".ConfidenceOfActualNegative"
                                              ".PerTotalFrequency",
-                            same_site_or_cross_site, ".2"}),
+                            same_site_or_cross_site, ".3"}),
               CalculateScoreFromTotalFrequencyAndConfidence(confidence,
                                                             total_frequency));
         };

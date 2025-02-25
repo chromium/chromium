@@ -57,7 +57,11 @@
   ChromeBroadcaster* broadcaster =
       FullscreenController::FromBrowser(self.browser)->broadcaster();
 
-  _mediator = [[PanelContentMediator alloc] initWithBroadcaster:broadcaster];
+  ToolbarsSize* toolbarsSize =
+      FullscreenController::FromBrowser(self.browser)->GetToolbarsSize();
+
+  _mediator = [[PanelContentMediator alloc] initWithBroadcaster:broadcaster
+                                                   toolbarsSize:toolbarsSize];
   _mediator.consumer = _viewController;
 
   _modulators = [[NSMutableArray alloc] init];

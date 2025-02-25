@@ -567,7 +567,8 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   std::u16string sunfish_button_label(u"Select to search");
   sunfish_button->GetViewAccessibility().SetName(sunfish_button_label);
   sunfish_button->SetTooltipText(sunfish_button_label);
-  SetShowSunfishButton(search_box_model->show_sunfish_button());
+  // Update the visibility based on the search box model.
+  SunfishButtonVisibilityChanged();
 
   views::ImageButton* assistant_button =
       CreateAssistantButton(base::BindRepeating(
@@ -815,13 +816,22 @@ void SearchBoxView::OnThemeChanged() {
       views::ImageButton::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(views::kIcCloseIcon, button_icon_color,
                                      GetSearchBoxIconSize()));
-  if (IsSunfishSessionAllowed()) {
+
+  SearchBoxModel::SunfishButtonVisibility sunfish_button_visibility =
+      AppListModelProvider::Get()
+          ->search_model()
+          ->search_box()
+          ->sunfish_button_visibility();
+  if (sunfish_button_visibility !=
+      SearchBoxModel::SunfishButtonVisibility::kHidden) {
+    bool is_sunfish_icon =
+        sunfish_button_visibility ==
+        SearchBoxModel::SunfishButtonVisibility::kShownWithSunfishIcon;
     sunfish_button()->SetImageModel(
         views::ImageButton::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(
-            CanShowSunfishUi() ? kLensColorIcon : kScannerIcon,
-            button_icon_color,
-            CanShowSunfishUi() ? kLensColorIconSize : GetSearchBoxIconSize()));
+            is_sunfish_icon ? kLensColorIcon : kScannerIcon, button_icon_color,
+            is_sunfish_icon ? kLensColorIconSize : GetSearchBoxIconSize()));
   }
   assistant_button()->SetImageModel(
       views::ImageButton::STATE_NORMAL,
@@ -1270,6 +1280,18 @@ void SearchBoxView::SunfishButtonPressed() {
   if (is_app_list_bubble_) {
     // Only hide the launcher bubble in clamshell mode.
     view_delegate_->DismissAppList();
+  }
+
+  if (!IsSunfishSessionAllowed()) {
+    // The Sunfish-session allowed state changed between when the launcher was
+    // shown and when the the button was clicked. Hide the Sunfish-session
+    // button immediately for tablet mode.
+    AppListModelProvider::Get()
+        ->search_model()
+        ->search_box()
+        ->SetSunfishButtonVisibility(
+            SearchBoxModel::SunfishButtonVisibility::kHidden);
+    return;
   }
 
   // If the user presses the button, there is no need to show the nudge anymore,
@@ -1778,11 +1800,15 @@ void SearchBoxView::ShowAssistantNewEntryPointChanged() {
   SetShowAssistantNewEntryPointButton(show);
 }
 
-void SearchBoxView::ShowSunfishChanged() {
-  SetShowSunfishButton(AppListModelProvider::Get()
-                           ->search_model()
-                           ->search_box()
-                           ->show_sunfish_button());
+void SearchBoxView::SunfishButtonVisibilityChanged() {
+  // TODO: crbug.com/397301161 - Update the icon based on the visibility.
+  SearchBoxModel::SunfishButtonVisibility visibility =
+      AppListModelProvider::Get()
+          ->search_model()
+          ->search_box()
+          ->sunfish_button_visibility();
+  SetShowSunfishButton(visibility !=
+                       SearchBoxModel::SunfishButtonVisibility::kHidden);
 }
 
 void SearchBoxView::UpdateIphViewVisibility(bool can_show_iph) {

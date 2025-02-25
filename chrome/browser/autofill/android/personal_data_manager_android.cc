@@ -859,7 +859,7 @@ static std::string JNI_PersonalDataManager_GetBasicCardIssuerNetwork(
       .basic_card_issuer_network;
 }
 
-// Returns an ISO 3166-1-alpha-2 country code for a |country_name| using
+// Returns an ISO 3166-1-alpha-2 country code for a `country_name` using
 // the application locale, or an empty string.
 static std::string JNI_PersonalDataManager_ToCountryCode(
     JNIEnv* env,

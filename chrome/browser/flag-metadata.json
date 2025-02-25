@@ -7576,7 +7576,7 @@
     "expiry_milestone": 90
   },
   {
-    "name": "refactor-toolbar-ui",
+    "name": "refactor-toolbars-size",
     "owners": [ "prasanaa@google.com", "alionadangla@chromium.org" ],
     "expiry_milestone": 150
   },

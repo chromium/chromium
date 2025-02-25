@@ -49,7 +49,7 @@ auto kQualities = std::to_array<GLHelper::ScalerQuality>({
     GLHelper::SCALER_QUALITY_FAST,
 });
 
-const auto kQualityNames = std::to_array<const char*>({
+constexpr auto kQualityNames = std::to_array<const char*>({
     "best",
     "good",
     "fast",

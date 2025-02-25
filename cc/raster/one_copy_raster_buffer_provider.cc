@@ -63,7 +63,7 @@ OneCopyRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
   backing_ = in_use_resource.backing();
   before_raster_sync_token_ = backing_->returned_sync_token;
   shared_image_ = backing_->shared_image();
-  mailbox_texture_is_overlay_candidate_ = backing_->overlay_candidate;
+  mailbox_texture_is_overlay_candidate_ = client_->tile_overlay_candidate_;
 }
 
 OneCopyRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() {

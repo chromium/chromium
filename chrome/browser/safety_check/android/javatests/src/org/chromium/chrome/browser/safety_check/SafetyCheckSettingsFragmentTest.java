@@ -233,7 +233,6 @@ public class SafetyCheckSettingsFragmentTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41496704")
     public void testNullStateDisplayedCorrectlySyncOnUsingSplitStores() {
         verifyNullStateDisplayedCorrectly(true, true);
     }

@@ -25,7 +25,9 @@
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_results_observer.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -220,6 +222,57 @@ TEST_F(LoginDbDeprecationPasswordExporterTest, ExportFailure) {
       kExportResultHistogram, LoginDbDeprecationExportResult::kFileWriteError,
       1);
   histogram_tester.ExpectTotalCount(kExportLatencyHistogram, 0);
+}
+
+TEST_F(LoginDbDeprecationPasswordExporterTest, RemovesLoginsOnExportSuccess) {
+  std::pair<PasswordForm, std::string> form_expected_data_pair =
+      GetTestFormWithExpectedExportData();
+  PasswordForm form = std::move(form_expected_data_pair.first);
+  std::string expected_exported_data =
+      std::move(form_expected_data_pair.second);
+
+  password_store()->AddLogin(form, task_env_.QuitClosure());
+  task_env_.RunUntilQuit();
+
+  exporter()->Start(password_store(), task_env_.QuitClosure());
+  task_env_.RunUntilQuit();
+
+  ASSERT_TRUE(
+      pref_service()->GetBoolean(prefs::kUpmUnmigratedPasswordsExported));
+
+  password_manager::PasswordStoreResultsObserver results_observer;
+  password_store()->GetAllLogins(results_observer.GetWeakPtr());
+  std::vector<std::unique_ptr<PasswordForm>> forms =
+      results_observer.WaitForResults();
+  EXPECT_TRUE(forms.empty());
+}
+
+TEST_F(LoginDbDeprecationPasswordExporterTest,
+       DoesntRemoveLoginsOnExportFailure) {
+  PasswordForm form = GetTestFormWithExpectedExportData().first;
+  password_store()->AddLogin(form, task_env_.QuitClosure());
+  task_env_.RunUntilQuit();
+
+  PasswordManagerExporter* internal_exporter =
+      exporter()->GetInternalExporterForTesting(passkey);
+  StrictMock<base::MockCallback<PasswordManagerExporter::WriteCallback>>
+      mock_write_callback;
+
+  // Fake a failed write.
+  internal_exporter->SetWriteForTesting(mock_write_callback.Get());
+  EXPECT_CALL(mock_write_callback, Run).WillOnce(Return(false));
+
+  exporter()->Start(password_store(), task_env_.QuitClosure());
+  task_env_.RunUntilQuit();
+
+  ASSERT_FALSE(
+      pref_service()->GetBoolean(prefs::kUpmUnmigratedPasswordsExported));
+
+  password_manager::PasswordStoreResultsObserver results_observer;
+  password_store()->GetAllLogins(results_observer.GetWeakPtr());
+  std::vector<std::unique_ptr<PasswordForm>> forms =
+      results_observer.WaitForResults();
+  EXPECT_FALSE(forms.empty());
 }
 
 }  // namespace password_manager

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -22,7 +21,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
-#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
@@ -59,10 +57,14 @@ using std::set;
 
 namespace {
 
+static const char kAutomaticFileSystemType[] = "automatic";
+
 static const char kRootName[] = "<root>";
+
+static const char kIllegalPath[] = "<illegal path>";
+static const char kIllegalType[] = "<illegal type>";
 static const char kPermissionDenied[] = "<permission denied>";
 static const char kSelectionCancelled[] = "<selection cancelled>";
-static const char kAutomaticFileSystemType[] = "automatic";
 
 base::LazyInstance<base::FilePath>::Leaky g_last_save_path =
     LAZY_INSTANCE_INITIALIZER;
@@ -208,28 +210,6 @@ DevToolsFileHelper::FileSystem CreateFileSystemStruct(
                                         file_system_path);
 }
 
-using PathToType = std::map<std::string, std::string>;
-using PathToUUID = std::map<std::string, std::string>;
-PathToType GetAddedFileSystemPaths(
-    Profile* profile,
-    const PathToUUID& connected_automatic_file_systems) {
-  const base::Value::Dict& file_systems_paths_value =
-      profile->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths);
-  PathToType result;
-  for (auto pair : file_systems_paths_value) {
-    std::string type =
-        pair.second.is_string() ? pair.second.GetString() : std::string();
-    result[pair.first] = type;
-  }
-  // The automatic file systems take precedence over the manually added file
-  // systems (the current plan of action is that one day we might want to
-  // remove the ability to keep a list of manual file systems around).
-  for (const auto& pair : connected_automatic_file_systems) {
-    result[pair.first] = kAutomaticFileSystemType;
-  }
-  return result;
-}
-
 }  // namespace
 
 DevToolsFileHelper::FileSystem::FileSystem() = default;
@@ -365,6 +345,14 @@ void DevToolsFileHelper::SaveAsFileSelected(const std::string& url,
 void DevToolsFileHelper::AddFileSystem(
     const std::string& type,
     const ShowInfoBarCallback& show_info_bar_callback) {
+  // Make sure the |type| is not a valid UUID. These are reserved for automatic
+  // file systems.
+  if (type == kAutomaticFileSystemType ||
+      base::Uuid::ParseCaseInsensitive(type).is_valid()) {
+    FailedToAddFileSystem(kIllegalType);
+    return;
+  }
+
   SelectFileDialog::Show(
       base::BindOnce(&DevToolsFileHelper::InnerAddFileSystem,
                      weak_factory_.GetWeakPtr(), show_info_bar_callback, type),
@@ -396,49 +384,40 @@ void DevToolsFileHelper::UpgradeDraggedFileSystemPermissions(
 
 void DevToolsFileHelper::ConnectAutomaticFileSystem(
     const std::string& file_system_path,
-    const std::string& file_system_uuid,
+    const base::Uuid& file_system_uuid,
     bool add_if_missing,
     const ShowInfoBarCallback& show_info_bar_callback,
     ConnectCallback connect_callback) {
-  // This is a no-op if the DevToolsAutomaticFileSystems feature is turned off.
-  if (!base::FeatureList::IsEnabled(features::kDevToolsAutomaticFileSystems)) {
-    std::move(connect_callback).Run(false);
-    return;
-  }
+  DCHECK(file_system_uuid.is_valid());
 
-  // Sanitize the |file_system_path|.
-  if (!base::FilePath::FromUTF8Unsafe(file_system_path).IsAbsolute()) {
+  // Sanitize the |file_system_path|, ensuring that it refers to an existing
+  // local folder.
+  base::FilePath path = base::FilePath::FromUTF8Unsafe(file_system_path);
+  if (!path.IsAbsolute() || !base::DirectoryExists(path)) {
     LOG(ERROR) << "Rejected automatic file system " << file_system_path
                << " with UUID " << file_system_uuid << " because it's not"
-               << " a valid absolute path.";
-    std::move(connect_callback).Run(true);
+               << " a valid absolute path to an existing local folder.";
+    std::move(connect_callback).Run(false);
+    FailedToAddFileSystem(kIllegalPath);
     return;
   }
 
-  // Check if the file system is already connected.
-  auto it = connected_automatic_file_systems_.find(file_system_path);
-  if (it != connected_automatic_file_systems_.end() &&
-      it->second == file_system_uuid) {
-    VLOG(1) << "Automatic file system " << file_system_path << " with UUID "
-            << file_system_uuid << " was already connected.";
-    std::move(connect_callback).Run(true);
-    return;
-  }
-
-  // Connect the file system if it's already known.
-  const auto& automatic_file_systems_value =
-      profile_->GetPrefs()->GetDict(prefs::kDevToolsAutomaticFileSystems);
-  const auto* value = automatic_file_systems_value.Find(file_system_path);
-  if (value && value->is_string() && value->GetString() == file_system_uuid) {
-    VLOG(1) << "Automatic file system " << file_system_path << " with UUID "
-            << file_system_uuid << " was found in the profile, and will be "
-            << "automatically connected now.";
-    if (IsFileSystemAdded(file_system_path)) {
-      RemoveFileSystem(file_system_path);
+  // Check if the automatic file system is already known, and potentially
+  // already connected (in this session).
+  if (IsUserConfirmedAutomaticFileSystem(file_system_path, file_system_uuid)) {
+    if (connected_automatic_file_systems_.emplace(file_system_path).second) {
+      // The |file_system_path| is known, but was just connected now
+      // (within this session).
+      VLOG(1) << "Automatic file system " << file_system_path << " with UUID "
+              << file_system_uuid << " was found in the profile, and will be "
+              << "automatically connected now.";
+      connected_automatic_file_systems_.emplace(file_system_path);
+      UpdateFileSystemPathsOnUI();
+    } else {
+      // The |file_system_path| was already connected.
+      VLOG(1) << "Automatic file system " << file_system_path << " with UUID "
+              << file_system_uuid << " was already connected.";
     }
-    connected_automatic_file_systems_.emplace(file_system_path,
-                                              kAutomaticFileSystemType);
-    FileSystemPathsSettingChangedOnUI();
     std::move(connect_callback).Run(true);
     return;
   }
@@ -448,6 +427,10 @@ void DevToolsFileHelper::ConnectAutomaticFileSystem(
             << " with UUID " << file_system_uuid << ".";
     std::move(connect_callback).Run(false);
     return;
+  }
+
+  if (IsFileSystemAdded(file_system_path)) {
+    RemoveFileSystem(file_system_path);
   }
 
   std::u16string message =
@@ -463,35 +446,46 @@ void DevToolsFileHelper::ConnectAutomaticFileSystem(
 void DevToolsFileHelper::ConnectUserConfirmedAutomaticFileSystem(
     ConnectCallback connect_callback,
     const std::string& file_system_path,
-    const std::string& file_system_uuid,
+    const base::Uuid& file_system_uuid,
     bool allowed) {
   VLOG(1) << "User " << (allowed ? "allowed" : "denied")
           << " adding automatic file system " << file_system_path
           << " with UUID " << file_system_uuid << ".";
   if (allowed) {
-    if (IsFileSystemAdded(file_system_path)) {
-      RemoveFileSystem(file_system_path);
-    }
-
     base::FilePath path = base::FilePath::FromUTF8Unsafe(file_system_path);
     RegisterFileSystem(web_contents_, path);
 
-    connected_automatic_file_systems_.emplace(file_system_path,
-                                              file_system_uuid);
+    connected_automatic_file_systems_.emplace(file_system_path);
 
     ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                                prefs::kDevToolsAutomaticFileSystems);
+                                prefs::kDevToolsFileSystemPaths);
     auto& automatic_file_systems_value = update.Get();
-    automatic_file_systems_value.Set(file_system_path, file_system_uuid);
+    automatic_file_systems_value.Set(file_system_path,
+                                     file_system_uuid.AsLowercaseString());
+  } else {
+    FailedToAddFileSystem(kPermissionDenied);
   }
   std::move(connect_callback).Run(allowed);
+}
+
+bool DevToolsFileHelper::IsUserConfirmedAutomaticFileSystem(
+    const std::string& file_system_path,
+    const base::Uuid& file_system_uuid) const {
+  DCHECK(file_system_uuid.is_valid());
+  const base::Value::Dict& file_system_paths_value =
+      profile_->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths);
+  const base::Value* value = file_system_paths_value.Find(file_system_path);
+  if (value == nullptr || !value->is_string()) {
+    return false;
+  }
+  return value->GetString() == file_system_uuid.AsLowercaseString();
 }
 
 void DevToolsFileHelper::DisconnectAutomaticFileSystem(
     const std::string& file_system_path) {
   if (connected_automatic_file_systems_.erase(file_system_path) == 1) {
     VLOG(1) << "Disconnected automatic file system " << file_system_path << ".";
-    FileSystemPathsSettingChangedOnUI();
+    UpdateFileSystemPathsOnUI();
   }
 }
 
@@ -525,9 +519,7 @@ void DevToolsFileHelper::AddUserConfirmedFileSystem(const std::string& type,
   std::string file_system_id = RegisterFileSystem(web_contents_, path);
   std::string file_system_path = path.AsUTF8Unsafe();
 
-  if (connected_automatic_file_systems_.erase(file_system_path) == 1) {
-    FileSystemPathsSettingChangedOnUI();
-  }
+  connected_automatic_file_systems_.erase(file_system_path);
 
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kDevToolsFileSystemPaths);
@@ -549,22 +541,16 @@ void RunOnUIThread(base::OnceClosure callback) {
 
 std::vector<DevToolsFileHelper::FileSystem>
 DevToolsFileHelper::GetFileSystems() {
-  file_system_paths_ =
-      GetAddedFileSystemPaths(profile_, connected_automatic_file_systems_);
+  file_system_paths_ = GetActiveFileSystemPaths();
   std::vector<FileSystem> file_systems;
   if (!file_watcher_) {
     file_watcher_.reset(new DevToolsFileWatcher(
         base::BindRepeating(&DevToolsFileHelper::FilePathsChanged,
                             weak_factory_.GetWeakPtr()),
         base::SequencedTaskRunner::GetCurrentDefault()));
-    auto change_handler_on_ui = base::BindRepeating(
-        &DevToolsFileHelper::FileSystemPathsSettingChangedOnUI,
-        weak_factory_.GetWeakPtr());
-    if (base::FeatureList::IsEnabled(features::kDevToolsAutomaticFileSystems)) {
-      pref_change_registrar_.Add(
-          prefs::kDevToolsAutomaticFileSystems,
-          base::BindRepeating(RunOnUIThread, change_handler_on_ui));
-    }
+    auto change_handler_on_ui =
+        base::BindRepeating(&DevToolsFileHelper::UpdateFileSystemPathsOnUI,
+                            weak_factory_.GetWeakPtr());
     pref_change_registrar_.Add(
         prefs::kDevToolsFileSystemPaths,
         base::BindRepeating(RunOnUIThread, change_handler_on_ui));
@@ -586,14 +572,10 @@ void DevToolsFileHelper::RemoveFileSystem(const std::string& file_system_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::FilePath path = base::FilePath::FromUTF8Unsafe(file_system_path);
   isolated_context()->RevokeFileSystemByPath(path);
-  DisconnectAutomaticFileSystem(file_system_path);
 
-  // Only update the automatic file system list if the feature is turned on.
-  if (base::FeatureList::IsEnabled(features::kDevToolsAutomaticFileSystems)) {
-    ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                                prefs::kDevToolsAutomaticFileSystems);
-    base::Value::Dict& automatic_file_systems_value = update.Get();
-    automatic_file_systems_value.Remove(file_system_path);
+  if (connected_automatic_file_systems_.erase(file_system_path) == 1) {
+    VLOG(1) << "Disconnected automatic file system " << file_system_path
+            << " (prior to removal).";
   }
 
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
@@ -629,14 +611,13 @@ void DevToolsFileHelper::ShowItemInFolder(const std::string& file_system_path) {
                      weak_factory_.GetWeakPtr(), path));
 }
 
-void DevToolsFileHelper::FileSystemPathsSettingChangedOnUI() {
+void DevToolsFileHelper::UpdateFileSystemPathsOnUI() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PathToType remaining;
   remaining.swap(file_system_paths_);
   DCHECK(file_watcher_.get());
 
-  for (auto file_system :
-       GetAddedFileSystemPaths(profile_, connected_automatic_file_systems_)) {
+  for (auto file_system : GetActiveFileSystemPaths()) {
     if (remaining.find(file_system.first) == remaining.end()) {
       base::FilePath path = base::FilePath::FromUTF8Unsafe(file_system.first);
       std::string file_system_id = RegisterFileSystem(web_contents_, path);
@@ -662,4 +643,29 @@ void DevToolsFileHelper::FilePathsChanged(
     const std::vector<std::string>& added_paths,
     const std::vector<std::string>& removed_paths) {
   delegate_->FilePathsChanged(changed_paths, added_paths, removed_paths);
+}
+
+DevToolsFileHelper::PathToType DevToolsFileHelper::GetActiveFileSystemPaths() {
+  const base::Value::Dict& file_systems_paths_value =
+      profile_->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths);
+  PathToType result;
+  for (auto pair : file_systems_paths_value) {
+    const std::string& path = pair.first;
+    std::string type;
+    if (pair.second.is_string()) {
+      type = pair.second.GetString();
+    }
+    // If the |type| is a valid UUID, it signifies an automatic file
+    // system. We only report the subset of automatic file systems that
+    // are (currently) connected (within this session). And we report them
+    // with type "automatic".
+    if (base::Uuid::ParseLowercase(type).is_valid()) {
+      if (!connected_automatic_file_systems_.contains(path)) {
+        continue;
+      }
+      type = kAutomaticFileSystemType;
+    }
+    result[path] = type;
+  }
+  return result;
 }

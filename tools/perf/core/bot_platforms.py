@@ -690,13 +690,13 @@ _ANDROID_PIXEL_TANGOR_EXECUTABLE_CONFIGS = frozenset(
     [_components_perftests(60)])
 _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('rendering.desktop')])
-_FUCHSIA_PERF_NELSON_BENCHMARK_CONFIGS = PerfSuite([
+_FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer3'),
     _GetBenchmarkConfig('media.mobile'),
+    _GetBenchmarkConfig('v8.browsing_mobile'),
 ])
-_FUCHSIA_PERF_SHERLOCK_BENCHMARK_CONFIGS = \
-    _FUCHSIA_PERF_NELSON_BENCHMARK_CONFIGS
 _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer2-minorms'),
@@ -961,16 +961,17 @@ ANDROID_NEW_PIXEL_PRO_PGO = PerfPlatform('android-new-pixel-pro-perf-pgo',
 # Cros
 FUCHSIA_PERF_NELSON = PerfPlatform('fuchsia-perf-nsn',
                                    '',
-                                   _FUCHSIA_PERF_NELSON_BENCHMARK_CONFIGS,
+                                   _FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS,
                                    1,
                                    'fuchsia',
                                    is_fyi=True)
-FUCHSIA_PERF_SHERLOCK = PerfPlatform('fuchsia-perf-shk',
-                                     '',
-                                     _FUCHSIA_PERF_SHERLOCK_BENCHMARK_CONFIGS,
-                                     1,
-                                     'fuchsia',
-                                     is_fyi=True)
+FUCHSIA_PERF_SHERLOCK = PerfPlatform(
+    'fuchsia-perf-shk',
+    '',
+    _FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS,
+    1,
+    'fuchsia',
+    is_fyi=True)
 
 # FYI bots
 WIN_10_LOW_END_HP_CANDIDATE = PerfPlatform(

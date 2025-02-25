@@ -79,13 +79,6 @@ bool UrlHandlers::CanPlatformAppHandleUrl(const Extension* app,
 }
 
 // static
-// TODO(crbug.com/40124309): Clean up this function and related paths.
-bool UrlHandlers::CanBookmarkAppHandleUrl(const Extension* app,
-                                          const GURL& url) {
-  return !!GetMatchingUrlHandler(app, url);
-}
-
-// static
 const UrlHandlerInfo* UrlHandlers::GetMatchingPlatformAppUrlHandler(
     const Extension* app,
     const GURL& url) {

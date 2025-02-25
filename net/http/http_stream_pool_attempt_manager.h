@@ -213,21 +213,21 @@ class HttpStreamPool::AttemptManager
   // LINT.IfChange(InitialAttemptState)
   enum class InitialAttemptState {
     kOther = 0,
-    // CanUseQuic() && quic_version_.IsKnown() && !supports_spdy_
+    // CanUseQuic() && quic_version_.IsKnown() && !SupportsSpdy()
     kCanUseQuicWithKnownVersion = 1,
-    // CanUseQuic() && quic_version_.IsKnown() && supports_spdy_
+    // CanUseQuic() && quic_version_.IsKnown() && SupportsSpdy()
     kCanUseQuicWithKnownVersionAndSupportsSpdy = 2,
-    // CanUseQuic() && !quic_version_.IsKnown() && !supports_spdy_
+    // CanUseQuic() && !quic_version_.IsKnown() && !SupportsSpdy()
     kCanUseQuicWithUnknownVersion = 3,
-    // CanUseQuic() && !quic_version_.IsKnown() && supports_spdy_
+    // CanUseQuic() && !quic_version_.IsKnown() && SupportsSpdy()
     kCanUseQuicWithUnknownVersionAndSupportsSpdy = 4,
-    // !CanUseQuic() && quic_version_.IsKnown() && !supports_spdy_
+    // !CanUseQuic() && quic_version_.IsKnown() && !SupportsSpdy()
     kCannotUseQuicWithKnownVersion = 5,
-    // !CanUseQuic() && quic_version_.IsKnown() && supports_spdy_
+    // !CanUseQuic() && quic_version_.IsKnown() && SupportsSpdy()
     kCannotUseQuicWithKnownVersionAndSupportsSpdy = 6,
-    // !CanUseQuic() && !quic_version_.IsKnown() && !supports_spdy_
+    // !CanUseQuic() && !quic_version_.IsKnown() && !SupportsSpdy()
     kCannotUseQuicWithUnknownVersion = 7,
-    // !CanUseQuic() && !quic_version_.IsKnown() && supports_spdy_
+    // !CanUseQuic() && !quic_version_.IsKnown() && SupportsSpdy()
     kCannotUseQuicWithUnknownVersionAndSupportsSpdy = 8,
     kMaxValue = kCannotUseQuicWithUnknownVersionAndSupportsSpdy,
   };
@@ -258,6 +258,8 @@ class HttpStreamPool::AttemptManager
     kSucceededAtLeastOnce,
     kAllEndpointsFailed,
   };
+
+  std::string_view InitialAttemptStateToString(InitialAttemptState state);
 
   using JobQueue = PriorityQueue<raw_ptr<Job>>;
 
@@ -293,7 +295,7 @@ class HttpStreamPool::AttemptManager
 
   int WaitForSSLConfigReady();
 
-  void MaybeSetInitialAttemptState();
+  void SetInitialAttemptState();
   InitialAttemptState CalculateInitialAttemptState();
 
   base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig(
@@ -359,6 +361,10 @@ class HttpStreamPool::AttemptManager
 
   // Returns true only when there are no jobs that disable alternative services.
   bool IsAlternativeServiceEnabled() const;
+
+  // Returns true when the destination is known to support HTTP/2. Note that
+  // this could return false while initializing HttpServerProperties.
+  bool SupportsSpdy() const;
 
   // Returns true when connection attempts should be throttled because there is
   // an in-flight attempt and the destination is known to support HTTP/2.
@@ -579,9 +585,6 @@ class HttpStreamPool::AttemptManager
 
   base::OneShotTimer spdy_throttle_timer_;
   bool spdy_throttle_delay_passed_ = false;
-
-  // True when the destination supports SPDY.
-  bool supports_spdy_ = false;
 
   // When true, try to use IPv6 for the next attempt first.
   bool prefer_ipv6_ = true;

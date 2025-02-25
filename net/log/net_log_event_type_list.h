@@ -1526,6 +1526,13 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_START_JOB)
 // HttpStreamPool::AttemptManager starts a Job.
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_JOB_BOUND)
 
+// Emitted when an HttpStreamPool::AttemptManager calculated its initial
+// attempt state. The event parameter is:
+//   {
+//      "initial_state": <The initial state of the manager>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_INITIAL_ATTEMPT_STATE)
+
 // Emitted when an HttpStreamPool::AttemptManager is requested a preconnect. The
 // event parameter is:
 //   {

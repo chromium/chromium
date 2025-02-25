@@ -4712,7 +4712,6 @@ enum WebFeature {
   kGeolocationWouldSucceedWhenAdScriptInStack = 5326,
   kAdScriptInStackOnWatchGeoLocation = 5327,
   kDeviceBoundSessionRegistered = 5328,
-  kV8AILanguageDetectorFactory_Availability_Method = 5329,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

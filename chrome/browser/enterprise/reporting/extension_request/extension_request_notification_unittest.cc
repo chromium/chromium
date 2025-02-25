@@ -28,17 +28,17 @@ constexpr char kFakeExtensionId[] = "fake-extension-id";
 
 // The elements order of array below must match the order in enum
 // ExtensionRequestNotification::NotifyType.
-const auto kNotificationIds = std::to_array<const char*>({
+constexpr auto kNotificationIds = std::to_array<const char*>({
     "extension_approved_notificaiton",
     "extension_rejected_notificaiton",
     "extension_installed_notificaiton",
 });
-const auto kNotificationTitleKeywords = std::to_array<const char*>({
+constexpr auto kNotificationTitleKeywords = std::to_array<const char*>({
     "approved",
     "rejected",
     "installed",
 });
-const auto kNotificationBodyKeywords = std::to_array<const char*>({
+constexpr auto kNotificationBodyKeywords = std::to_array<const char*>({
     "to install",
     "to view",
     "to view",

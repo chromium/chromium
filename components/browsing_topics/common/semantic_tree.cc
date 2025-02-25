@@ -33,7 +33,7 @@ constexpr Topic kNullTopic = Topic(0);
 // kChildToParent stores the first parent for each topic. This data structure
 // was chosen to reduce the binary size, since most topics have at most one
 // parent. Additional parents are added in GetParentTopics.
-const auto kChildToFirstParent = std::to_array<uint16_t>({
+constexpr auto kChildToFirstParent = std::to_array<uint16_t>({
     0,   1,   1,   352, 1,   1,   1,   7,   352, 1,   1,   1,   12,  12,  12,
     12,  12,  12,  12,  12,  12,  12,  1,   23,  23,  23,  23,  23,  23,  23,
     23,  23,  23,  33,  33,  33,  23,  23,  23,  23,  40,  1,   1,   1,   363,

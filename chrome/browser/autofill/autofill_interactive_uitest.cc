@@ -166,8 +166,8 @@ constexpr char kTestShippingFormString[] = R"(
     </form>
     )";
 
-// Searches all frames of the primary page in |web_contents| and returns one
-// called |name|. If there are none, returns null, if there are more, returns
+// Searches all frames of the primary page in `web_contents` and returns one
+// called `name`. If there are none, returns null, if there are more, returns
 // an arbitrary one.
 content::RenderFrameHost* RenderFrameHostForName(
     content::WebContents* web_contents,
@@ -280,7 +280,7 @@ const std::vector<FieldValue> kDefaultAddress{
     {"country", kDefaultAddressValues.country},
     {"phone", kDefaultAddressValues.phone}};
 
-// Returns a copy of |fields| except that the value of `update.id` is set to
+// Returns a copy of `fields` except that the value of `update.id` is set to
 // `update.value`.
 [[nodiscard]] std::vector<FieldValue> MergeValue(std::vector<FieldValue> fields,
                                                  const FieldValue& update) {
@@ -584,7 +584,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
             embedded_test_server(), "/mock_translate_script.js",
             true /*relative_url_is_prefix*/);
 
-    // Ensure that |embedded_test_server()| serves both domains used below.
+    // Ensure that `embedded_test_server()` serves both domains used below.
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &AutofillInteractiveTestBase::HandleTestURL, base::Unretained(this)));
@@ -765,8 +765,8 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   void FillElementWithValue(const std::string& element_id,
                             const std::string& value) {
-    // Sends "|element_id|:|value|" to |msg_queue| if the |element_id|'s
-    // value has changed to |value|.
+    // Sends "`element_id`:`value`" to `msg_queue` if the `element_id`'s
+    // value has changed to `value`.
     std::string script = base::StringPrintf(
         R"( (function() {
               const element_id = '%s';
@@ -842,7 +842,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   // event the tests create and have the WebContents forward is handled by some
   // key press event callback. It is necessary to have this sink because if no
   // key press event callback handles the event (at least on Mac), a DCHECK
-  // ends up going off that the |event| doesn't have an |os_event| associated
+  // ends up going off that the `event` doesn't have an `os_event` associated
   // with it.
   content::RenderWidgetHost::KeyPressEventCallback key_press_event_sink_;
 
@@ -1437,7 +1437,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, InputFiresBeforeChange) {
   EXPECT_THAT(select_element_events, ElementsAre("input", "change"));
 }
 
-// Test that we can autofill forms distinguished only by their |id| attribute.
+// Test that we can autofill forms distinguished only by their `id` attribute.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        AutofillFormsDistinguishedById) {
   static const char kScript[] =
@@ -2411,7 +2411,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
   ContentAutofillDriver* cross_driver =
       ContentAutofillDriver::GetForRenderFrameHost(cross_frame_host);
   ASSERT_TRUE(cross_driver);
-  // Let |test_delegate()| also observe autofill events in the iframe.
+  // Let `test_delegate()` also observe autofill events in the iframe.
   test_delegate()->Observe(cross_driver->GetAutofillManager());
 
   ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST"), this,
@@ -2437,7 +2437,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
   ContentAutofillDriver* cross_driver =
       ContentAutofillDriver::GetForRenderFrameHost(cross_frame_host);
   ASSERT_TRUE(cross_driver);
-  // Let |test_delegate()| also observe autofill events in the iframe.
+  // Let `test_delegate()` also observe autofill events in the iframe.
   test_delegate()->Observe(cross_driver->GetAutofillManager());
 
   auto Wait = [this] { DoNothingAndWait(base::Seconds(2)); };
@@ -2471,7 +2471,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
   ContentAutofillDriver* cross_driver =
       ContentAutofillDriver::GetForRenderFrameHost(cross_frame_host);
   ASSERT_TRUE(cross_driver);
-  // Let |test_delegate()| also observe autofill events in the iframe.
+  // Let `test_delegate()` also observe autofill events in the iframe.
   test_delegate()->Observe(cross_driver->GetAutofillManager());
 
   // Open the Autofill popup but do not accept the suggestion yet. Deleting the
@@ -3210,7 +3210,7 @@ class AutofillInteractiveTestChromeVox : public AutofillInteractiveTestBase {
     // fetched.
     ASSERT_FALSE(ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
     // TODO(accessibility): fix console error/warnings and instantiate
-    // |console_observer_| here.
+    // `console_observer_` here.
 
     // Load ChromeVox and block until it's fully loaded.
     ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);

@@ -11,6 +11,8 @@
 extern const char kUmaDownloadCalendarFileUI[];
 // Key of the UMA Download.IOSDownloadMobileConfigFileUI histogram.
 extern const char kUmaDownloadMobileConfigFileUI[];
+// Key of the UMA Download.IOSDownloadAppleWalletOrderFileUI histogram.
+extern const char kUmaDownloadAppleWalletOrderFileUI[];
 
 // Values of the UMA Download.IOSDownloadMobileConfigFileUI and
 // Download.IOSDownloadCalendarFileUI histograms. These values are persisted to

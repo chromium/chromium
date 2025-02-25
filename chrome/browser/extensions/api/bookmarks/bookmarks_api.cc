@@ -21,6 +21,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/extensions/bookmarks/bookmarks_error_constants.h"
+#include "chrome/browser/extensions/bookmarks/bookmarks_features.h"
 #include "chrome/browser/extensions/bookmarks/bookmarks_helpers.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -103,6 +104,11 @@ void BookmarkEventRouter::BookmarkNodeAdded(const BookmarkNode* parent,
                                             size_t index,
                                             bool added_by_user) {
   const BookmarkNode* node = parent->children()[index].get();
+  if (base::FeatureList::IsEnabled(kEnforceBookmarkVisibilityOnExtensionsAPI) &&
+      !model_->IsNodeVisible(*node)) {
+    return;
+  }
+
   BookmarkTreeNode tree_node = bookmarks_helpers::GetBookmarkTreeNode(
       model_, managed_, node, /*recurse=*/false, /*only_folders=*/false);
   DispatchEvent(events::BOOKMARKS_ON_CREATED,

@@ -513,7 +513,6 @@ DevToolsWindow::~DevToolsWindow() {
 void DevToolsWindow::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kDevToolsEditedFiles);
-  registry->RegisterDictionaryPref(prefs::kDevToolsAutomaticFileSystems);
   registry->RegisterDictionaryPref(prefs::kDevToolsFileSystemPaths);
   registry->RegisterStringPref(prefs::kDevToolsAdbKey, std::string());
   registry->RegisterInt64Pref(prefs::kDevToolsLastOpenTimestamp, 0L);

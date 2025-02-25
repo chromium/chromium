@@ -288,6 +288,18 @@ bool IsAssistantExitPointInsideLauncher(
          exit_point == AssistantExitPoint::kLauncherSearchIphChip;
 }
 
+SearchBoxModel::SunfishButtonVisibility GetSunfishButtonVisibility() {
+  if (!IsSunfishSessionAllowed()) {
+    return SearchBoxModel::SunfishButtonVisibility::kHidden;
+  }
+
+  if (!CanShowSunfishUi()) {
+    return SearchBoxModel::SunfishButtonVisibility::kShownWithScannerIcon;
+  }
+
+  return SearchBoxModel::SunfishButtonVisibility::kShownWithSunfishIcon;
+}
+
 }  // namespace
 
 AppListControllerImpl::AppListControllerImpl()
@@ -463,11 +475,6 @@ void AppListControllerImpl::OnActiveUserPrefServiceChanged(
     return;
   }
 
-  sunfish_enabled_ = std::make_unique<BooleanPrefMember>();
-  sunfish_enabled_->Init(
-      prefs::kSunfishEnabled, pref_service,
-      base::BindRepeating(&AppListControllerImpl::UpdateSearchBoxUiVisibilities,
-                          weak_ptr_factory_.GetWeakPtr()));
   UpdateSearchBoxUiVisibilities();
 
   if (!IsInTabletMode()) {
@@ -1723,8 +1730,11 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
       // Record whether the continue section is hidden by the user.
       RecordHideContinueSectionMetric();
 
+      SearchBoxModel::SunfishButtonVisibility visibility =
+          GetSearchModel()->search_box()->sunfish_button_visibility();
       RecordSunfishSessionButtonVisibilityOnLauncherShown(
-          /*is_visible=*/GetSearchModel()->search_box()->show_sunfish_button());
+          /*is_visible=*/visibility !=
+          SearchBoxModel::SunfishButtonVisibility::kHidden);
     }
 
     if (!home_launcher_animation_callback_.is_null())
@@ -1786,10 +1796,16 @@ void AppListControllerImpl::OnVisibilityWillChange(bool visible,
                                              display_id);
     }
 
-    // The virtual keyboard should be hidden before the bubble launcher
-    // calculating the work area.
     if (real_target_visibility) {
+      // The virtual keyboard should be hidden before the bubble launcher
+      // calculating the work area.
       keyboard::KeyboardUIController::Get()->HideKeyboardExplicitlyBySystem();
+
+      // Recalculate the Sunfish-session button visibility every time the
+      // launcher will be shown, as there are too many variables that can
+      // control it and not all of them can be observed for changes.
+      GetSearchModel()->search_box()->SetSunfishButtonVisibility(
+          GetSunfishButtonVisibility());
     }
   }
 }
@@ -1808,7 +1824,7 @@ SearchModel* AppListControllerImpl::GetSearchModel() {
 void AppListControllerImpl::UpdateSearchBoxUiVisibilities() {
   SearchBoxModel* search_box_model = GetSearchModel()->search_box();
   search_box_model->SetShowAssistantButton(IsAssistantAllowedAndEnabled());
-  search_box_model->SetShowSunfishButton(IsSunfishSessionAllowed());
+  search_box_model->SetSunfishButtonVisibility(GetSunfishButtonVisibility());
 
   if (!client_) {
     return;

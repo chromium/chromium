@@ -34,7 +34,10 @@ chromium-metrics-reviews@google.com.
   <variant name="AppMenu"/>
   <variant name="ContentAreaContextMenuImage"/>
   <variant name="ContentAreaContextMenuPage"/>
+  <variant name="ContextMenu"/>
   <variant name="FindInPage"/>
+  <variant name="LVFGallery"/>
+  <variant name="LVFShutterButton"/>
   <variant name="Omnibox"/>
   <variant name="Toolbar"/>
   <variant name="Unknown"/>

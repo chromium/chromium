@@ -29,7 +29,7 @@ namespace {
 
 // Maps policy::policy_prefs::kIncognitoModeAvailability values (0 = enabled,
 // ...) to strings exposed to extensions.
-const auto kIncognitoModeAvailabilityStrings = std::to_array<const char*>({
+constexpr auto kIncognitoModeAvailabilityStrings = std::to_array<const char*>({
     "enabled",
     "disabled",
     "forced",

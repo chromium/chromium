@@ -8,10 +8,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/bookmarks/bookmarks_error_constants.h"
+#include "chrome/browser/extensions/bookmarks/bookmarks_features.h"
 #include "chrome/common/extensions/api/bookmarks.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -36,7 +38,7 @@ void AddNodeHelper(bookmarks::BookmarkModel* model,
                    std::vector<BookmarkTreeNode>* nodes,
                    bool recurse,
                    bool only_folders) {
-  if (node->IsVisible()) {
+  if (model->IsNodeVisible(*node)) {
     nodes->push_back(
         GetBookmarkTreeNode(model, managed, node, recurse, only_folders));
   }
@@ -49,6 +51,11 @@ BookmarkTreeNode GetBookmarkTreeNode(bookmarks::BookmarkModel* model,
                                      const BookmarkNode* node,
                                      bool recurse,
                                      bool only_folders) {
+  // The calling code should have checked this.
+  CHECK(!base::FeatureList::IsEnabled(
+            kEnforceBookmarkVisibilityOnExtensionsAPI) ||
+        model->IsNodeVisible(*node));
+
   BookmarkTreeNode bookmark_tree_node;
   PopulateBookmarkTreeNode(model, managed, node, recurse, only_folders,
                            &bookmark_tree_node);
@@ -114,7 +121,8 @@ void PopulateBookmarkTreeNode(
   if (recurse && node->is_folder()) {
     std::vector<BookmarkTreeNode> children;
     for (const auto& child : node->children()) {
-      if (child->IsVisible() && (!only_folders || child->is_folder())) {
+      if (model->IsNodeVisible(*child) &&
+          (!only_folders || child->is_folder())) {
         children.push_back(GetBookmarkTreeNode(model, managed, child.get(),
                                                /*recurse=*/true, only_folders));
       }

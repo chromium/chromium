@@ -19,6 +19,12 @@ class MockPermissionUiSelector : public permissions::PermissionUiSelector {
 
   ~MockPermissionUiSelector() override = default;
 
+  std::optional<permissions::PermissionUmaUtil::PredictionGrantLikelihood>
+      last_request_grant_likelihood_;
+  std::optional<permissions::PermissionRequestRelevance>
+      last_permission_request_relevance_;
+  std::optional<bool> was_decision_held_back_;
+
  protected:
   // permissions::PermissionUiSelector:
   void SelectUiToUse(content::WebContents* web_contents,
@@ -27,6 +33,14 @@ class MockPermissionUiSelector : public permissions::PermissionUiSelector {
 
   bool IsPermissionRequestSupported(
       permissions::RequestType request_type) override;
+
+  std::optional<permissions::PermissionUmaUtil::PredictionGrantLikelihood>
+  PredictedGrantLikelihoodForUKM() override;
+
+  std::optional<permissions::PermissionRequestRelevance>
+  PermissionRequestRelevanceForUKM() override;
+
+  std::optional<bool> WasSelectorDecisionHeldback() override;
 
  private:
   Decision canned_decision_;

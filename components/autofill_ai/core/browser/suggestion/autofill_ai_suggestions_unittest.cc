@@ -133,6 +133,26 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PassportEntity) {
             std::nullopt);
 }
 
+// Tests that when the filling suggestion is triggered on a field that
+// corresponds to an obfuscated attribute, the main text of the suggestion is
+// obfuscated as well.
+TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestionWithObfuscatedMainText) {
+  autofill::EntityInstance passport_entity =
+      MakePassportWithRandomGuid({.number = u"12"});
+  std::vector<autofill::EntityInstance> entities = {passport_entity};
+
+  autofill::FieldType triggering_field_type = autofill::PASSPORT_NUMBER;
+  std::unique_ptr<autofill::FormStructure> form =
+      CreateFormStructure({triggering_field_type});
+  std::vector<autofill::Suggestion> suggestions =
+      CreateFillingSuggestions(*form, form->fields()[0]->global_id(), entities);
+
+  // The main label is obfuscated.
+  ASSERT_THAT(suggestions, SizeIs(Ge(1)));
+  EXPECT_EQ(suggestions[0].main_text.value,
+            u"\u2022\u2060\u2006\u2060\u2022\u2060\u2006\u2060");
+}
+
 TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PrefixMatching) {
   autofill::EntityInstance passport_prefix_matches =
       MakePassportWithRandomGuid({.name = u"Jon Doe"});

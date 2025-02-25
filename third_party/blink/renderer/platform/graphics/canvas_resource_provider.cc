@@ -191,12 +191,12 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
   }
 };
 
-// * Renders to a shared memory bitmap.
-// * Uses SharedBitmaps to pass frames directly to the compositor.
-class CanvasResourceProviderSharedBitmap : public CanvasResourceProvider,
-                                           public BitmapGpuChannelLostObserver {
+// * Renders to a SharedImage, which manages memory internally.
+// * Layers may be overlay candidates.
+class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
+                                          public BitmapGpuChannelLostObserver {
  public:
-  CanvasResourceProviderSharedBitmap(
+  CanvasResourceProviderSharedImage(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
@@ -213,41 +213,19 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProvider,
         shared_image_interface_provider_(
             shared_image_interface_provider
                 ? shared_image_interface_provider->GetWeakPtr()
-                : nullptr) {
+                : nullptr),
+        is_accelerated_(false),
+        shared_image_usage_flags_(gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY),
+        use_oop_rasterization_(false),
+        is_software_(true) {
     if (shared_image_interface_provider_) {
       shared_image_interface_provider_->AddGpuChannelLostObserver(this);
-    }
-  }
-
-  scoped_refptr<StaticBitmapImage> Snapshot(
-      FlushReason reason,
-      ImageOrientation orientation) override {
-    TRACE_EVENT0("blink", "CanvasResourceProviderSharedBitmap::Snapshot");
-    return SnapshotInternal(orientation, reason);
-  }
-
-  sk_sp<SkSurface> CreateSkSurface() const override {
-    TRACE_EVENT0("blink",
-                 "CanvasResourceProviderSharedBitmap::CreateSkSurface");
-
-    const auto props = GetSkSurfaceProps();
-    return SkSurfaces::Raster(GetSkImageInfo(), &props);
-  }
-  ~CanvasResourceProviderSharedBitmap() override {
-    if (shared_image_interface_provider_) {
-      shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
     }
   }
 
   // BitmapGpuChannelLostObserver implementation.
   void OnGpuChannelLost() override { resource_host()->NotifyGpuContextLost(); }
 
-  bool IsValid() const final {
-    return !IsSharedBitmapGpuChannelLost() && GetSkSurface();
-  }
-
-  bool IsAccelerated() const final { return false; }
-  bool SupportsDirectCompositing() const override { return true; }
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
 
@@ -256,42 +234,6 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProvider,
            !shared_image_interface_provider_->SharedImageInterface();
   }
 
- private:
-  scoped_refptr<CanvasResource> CreateResource() final {
-    auto format = GetSharedImageFormat();
-    if (!format.IsBitmapFormatSupported()) {
-      // If the rendering format is not supported, downgrade to 8-bits.
-      // TODO(junov): Should we try 12-12-12-12 and 10-10-10-2?
-      format = GetN32FormatForCanvas();
-    }
-
-    return CanvasResourceSharedImage::CreateSoftware(
-        Size(), format, GetAlphaType(), GetColorSpace(), CreateWeakPtr(),
-        shared_image_interface_provider_);
-  }
-
-  scoped_refptr<CanvasResource> ProduceCanvasResource(
-      FlushReason reason) final {
-    DCHECK(GetSkSurface());
-    scoped_refptr<CanvasResource> output_resource = NewOrRecycledResource();
-    if (!output_resource)
-      return nullptr;
-
-    FlushCanvas(reason);
-
-    // Note that the resource *must* be a CanvasResourceSharedImage as this
-    // class creates CanvasResourceSharedImage instances exclusively.
-    static_cast<CanvasResourceSharedImage*>(output_resource.get())
-        ->UploadSoftwareRenderingResults(GetSkSurface());
-
-    return output_resource;
-  }
-};
-
-// * Renders to a SharedImage, which manages memory internally.
-// * Layers are overlay candidates.
-class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
- public:
   CanvasResourceProviderSharedImage(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -323,6 +265,13 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
   }
 
   ~CanvasResourceProviderSharedImage() override {
+    if (is_software_) {
+      if (shared_image_interface_provider_) {
+        shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
+      }
+      return;
+    }
+
     GetFlushForImageListener()->RemoveObserver(this);
     // Issue any skia work using this resource before destroying any buffer
     // that may have a reference in skia.
@@ -333,6 +282,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
   bool IsAccelerated() const final { return is_accelerated_; }
   bool SupportsDirectCompositing() const override { return true; }
   bool IsValid() const final {
+    if (is_software_) {
+      return !IsSharedBitmapGpuChannelLost() && GetSkSurface();
+    }
+
     if (!use_oop_rasterization_)
       return GetSkSurface() && !IsGpuContextLost();
     else
@@ -427,6 +380,20 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
 
   scoped_refptr<CanvasResource> CreateResource() final {
     TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::CreateResource");
+
+    if (is_software_) {
+      auto format = GetSharedImageFormat();
+      if (!format.IsBitmapFormatSupported()) {
+        // If the rendering format is not supported, downgrade to 8-bits.
+        // TODO(junov): Should we try 12-12-12-12 and 10-10-10-2?
+        format = GetN32FormatForCanvas();
+      }
+
+      return CanvasResourceSharedImage::CreateSoftware(
+          Size(), format, GetAlphaType(), GetColorSpace(), CreateWeakPtr(),
+          shared_image_interface_provider_);
+    }
+
     if (IsGpuContextLost())
       return nullptr;
 
@@ -458,6 +425,23 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       FlushReason reason) override {
     TRACE_EVENT0("blink",
                  "CanvasResourceProviderSharedImage::ProduceCanvasResource");
+    if (is_software_) {
+      DCHECK(GetSkSurface());
+      scoped_refptr<CanvasResource> output_resource = NewOrRecycledResource();
+      if (!output_resource) {
+        return nullptr;
+      }
+
+      FlushCanvas(reason);
+
+      // Note that the resource *must* be a CanvasResourceSharedImage as this
+      // class creates CanvasResourceSharedImage instances exclusively.
+      static_cast<CanvasResourceSharedImage*>(output_resource.get())
+          ->UploadSoftwareRenderingResults(GetSkSurface());
+
+      return output_resource;
+    }
+
     if (IsGpuContextLost())
       return nullptr;
 
@@ -611,7 +595,12 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     }
   }
 
-  void WillDraw() override { WillDrawInternal(true); }
+  void WillDraw() override {
+    if (is_software_) {
+      return;
+    }
+    WillDrawInternal(true);
+  }
 
   void RasterRecord(cc::PaintRecord last_recording) override {
     if (!use_oop_rasterization_) {
@@ -661,8 +650,14 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
 
   sk_sp<SkSurface> CreateSkSurface() const override {
     TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::CreateSkSurface");
-    if (IsGpuContextLost() || !resource_)
+    if (is_software_) {
+      const auto props = GetSkSurfaceProps();
+      return SkSurfaces::Raster(GetSkImageInfo(), &props);
+    }
+
+    if (IsGpuContextLost() || !resource_) {
       return nullptr;
+    }
 
     const auto props = GetSkSurfaceProps();
     if (is_accelerated_) {
@@ -794,6 +789,14 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
   }
 
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override {
+    if (is_software_) {
+      // This class creates software SharedImages only on demand and might not
+      // have one here - invoke the base class implementation of this method
+      // instead.
+      CanvasResourceProvider::OnMemoryDump(pmd);
+      return;
+    }
+
     std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
                                           reinterpret_cast<uintptr_t>(this));
 
@@ -816,6 +819,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
   gpu::SharedImageUsageSet shared_image_usage_flags_;
   bool current_resource_has_write_access_ = false;
   const bool use_oop_rasterization_;
+  bool is_software_ = false;
   bool is_cleared_ = false;
   scoped_refptr<CanvasResource> resource_;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
@@ -1077,7 +1081,7 @@ CanvasResourceProvider::CreateSharedBitmapProvider(
     }
   }
 
-  auto provider = std::make_unique<CanvasResourceProviderSharedBitmap>(
+  auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
       size, format, alpha_type, color_space, shared_image_interface_provider,
       resource_host);
   if (provider->IsValid()) {

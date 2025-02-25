@@ -6,9 +6,12 @@
 #define NET_FILTER_FILTER_SOURCE_STREAM_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
@@ -20,6 +23,7 @@
 namespace net {
 
 class DrainableIOBuffer;
+class HttpResponseHeaders;
 class IOBuffer;
 
 // FilterSourceStream represents SourceStreams that always have an upstream
@@ -46,6 +50,29 @@ class NET_EXPORT_PRIVATE FilterSourceStream : public SourceStream {
   bool MayHaveMoreBytes() const override;
 
   static SourceStreamType ParseEncodingType(std::string_view encoding);
+
+  // Parses the "Content-Encoding" HTTP header from the provided headers.
+  // Returns a vector of SourceStreamType representing the encoding types found,
+  // in the order they appear in the header.
+  // Returns an empty vector if:
+  //   - No "Content-Encoding" HTTP header is set.
+  //   - The value of "Content-Encoding" HTTP header is empty string.
+  //   - An unknown encoding type is encountered.
+  //   - An encoding type is found that is not within the accepted_stream_types
+  //     set (if provided).
+  static std::vector<SourceStreamType> GetContentEncodingTypes(
+      const std::optional<base::flat_set<SourceStreamType>>&
+          accepted_stream_types,
+      const HttpResponseHeaders& headers);
+
+  // Creates a chained decoding SourceStream by wrapping the provided `upstream`
+  // SourceStream with a series of decoding FilterSourceStreams.
+  // The decoding is performed in the reverse order of the `types` vector.
+  // The `types` vector must not contain SourceStreamType::kNone or
+  // SourceStreamType::kUnknown.
+  static std::unique_ptr<SourceStream> CreateDecodingSourceStream(
+      std::unique_ptr<SourceStream> upstream,
+      const std::vector<SourceStreamType>& types);
 
  private:
   enum State {

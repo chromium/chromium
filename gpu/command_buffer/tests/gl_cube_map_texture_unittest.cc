@@ -21,7 +21,7 @@
 namespace gpu {
 
 namespace {
-const auto kCubeMapTextureTargets = std::to_array<GLenum>({
+constexpr auto kCubeMapTextureTargets = std::to_array<GLenum>({
     GL_TEXTURE_CUBE_MAP_POSITIVE_X,
     GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
     GL_TEXTURE_CUBE_MAP_POSITIVE_Y,

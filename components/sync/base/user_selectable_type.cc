@@ -40,8 +40,8 @@ constexpr char kProductComparisonTypeName[] = "productComparison";
 constexpr char kCookiesTypeName[] = "cookies";
 
 UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
-  static_assert(53 == syncer::GetNumDataTypes(),
-                "Almost always when adding a new DataType, you must tie it to "
+  static_assert(54 == syncer::GetNumDataTypes(),
+                "Almost always when adding a new Data, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
                 "disable syncing of that data. Today you must also update the "
                 "UI code yourself; crbug.com/1067282 and related bugs will "
@@ -114,7 +114,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
               AUTOFILL_WALLET_DATA,
               {AUTOFILL_WALLET_CREDENTIAL, AUTOFILL_WALLET_DATA,
                AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER,
-               AUTOFILL_WALLET_USAGE}};
+               AUTOFILL_WALLET_USAGE, AUTOFILL_LOYALTY_CARD}};
     case UserSelectableType::kProductComparison:
       return {
           kProductComparisonTypeName, PRODUCT_COMPARISON, {PRODUCT_COMPARISON}};

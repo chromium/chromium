@@ -167,10 +167,6 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
 
     system_notification_manager()->HandleDeviceEvent(event);
   }
-
-  // DeviceEventRouter overrides.
-  // Hard set to disabled for the ExternalStorageDisabled test to work.
-  bool IsExternalStorageDisabled() override { return true; }
 };
 
 constexpr char kDevicePath[] = "/device/test";
@@ -304,8 +300,8 @@ class SystemNotificationManagerTest
 
 TEST_F(SystemNotificationManagerTest, ExternalStorageDisabled) {
   base::HistogramTester histogram_tester;
-  // Send a removable volume mounted event.
-  event_router_->OnDeviceAdded(kDevicePath);
+  // Send the event.
+  event_router_->OnDiskAddBlockedByPolicy(kDevicePath);
   // Get the number of notifications from the NotificationDisplayService.
   NotificationDisplayServiceFactory::GetForProfile(profile_)->GetDisplayed(
       BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,

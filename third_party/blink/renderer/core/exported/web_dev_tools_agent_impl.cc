@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
 
 #include <v8-inspector.h>
+
 #include <memory>
 #include <utility>
 
@@ -40,6 +41,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_scoped_page_pauser.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -506,11 +508,14 @@ void WebDevToolsAgentImpl::InspectElement(
 }
 
 void WebDevToolsAgentImpl::DebuggerTaskStarted() {
+  client_navigation_throttler_ =
+      web_local_frame_impl_->Client()->CreateScopedClientNavigationThrottler();
   probe::WillStartDebuggerTask(probe_sink_);
 }
 
 void WebDevToolsAgentImpl::DebuggerTaskFinished() {
   probe::DidFinishDebuggerTask(probe_sink_);
+  client_navigation_throttler_.reset();
 }
 
 void WebDevToolsAgentImpl::DidCommitLoadForLocalFrame(LocalFrame* frame) {

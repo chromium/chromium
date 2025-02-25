@@ -379,13 +379,6 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
     system_notification_manager()->HandleDeviceEvent(event);
   }
 
-  // DeviceEventRouter overrides.
-  bool IsExternalStorageDisabled() override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    return profile_->GetPrefs()->GetBoolean(
-        disks::prefs::kExternalStorageDisabled);
-  }
-
  private:
   const raw_ptr<Profile> profile_;
 };

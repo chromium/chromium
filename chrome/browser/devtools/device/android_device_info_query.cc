@@ -55,7 +55,7 @@ struct BrowserDescriptor {
   const char* display_name;
 };
 
-const auto kBrowserDescriptors = std::to_array<BrowserDescriptor>({
+constexpr auto kBrowserDescriptors = std::to_array<BrowserDescriptor>({
     {
         "com.google.android.apps.chrome",
         kChromeDefaultSocket,

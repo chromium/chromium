@@ -165,7 +165,7 @@ class AutofillTest : public InProcessBrowserTest {
   }
 
   // Helper where the actual submit JS code can be specified, as well as whether
-  // the test should |simulate_click| on the document.
+  // the test should `simulate_click` on the document.
   void FillFormAndSubmitWithHandler(const std::string& filename,
                                     const FormMap& data,
                                     const std::string& submit_js,

@@ -32,7 +32,7 @@ struct HostedDocumentKind {
   const char* extension;
 };
 
-const auto kHostedDocumentKinds = std::to_array<HostedDocumentKind>({
+constexpr auto kHostedDocumentKinds = std::to_array<HostedDocumentKind>({
     {kGoogleDocumentMimeType, ".gdoc"},
     {kGoogleSpreadsheetMimeType, ".gsheet"},
     {kGooglePresentationMimeType, ".gslides"},

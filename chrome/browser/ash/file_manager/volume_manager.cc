@@ -46,6 +46,7 @@
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/components/disks/disks_prefs.h"
 #include "components/prefs/pref_service.h"
+#include "components/storage_monitor/storage_info_utils.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -709,10 +710,14 @@ void VolumeManager::OnAutoMountableDiskEvent(
       }
 
       bool mounting = false;
-      const auto device_id = policy::DeviceId::FromDisk(&disk);
-      if (disk.mount_path().empty() && disk.has_media() &&
-          !policy::ExternalStoragePolicyController::IsDeviceDisabled(
-              CHECK_DEREF(profile_->GetPrefs()), device_id)) {
+      if (disk.mount_path().empty() && disk.has_media()) {
+        const auto device_id = policy::DeviceId::FromDisk(&disk);
+        if (policy::ExternalStoragePolicyController::IsDeviceDisabled(
+                CHECK_DEREF(profile_->GetPrefs()), device_id)) {
+          observers_.Notify(&VolumeManagerObserver::OnDiskAddBlockedByPolicy,
+                            disk.device_path());
+          return;
+        }
         // If disk is not mounted yet and it has media and there is no policy
         // forbidding external storage, give it a try.
         // Initiate disk mount operation. MountPath auto-detects the filesystem
@@ -1215,6 +1220,11 @@ void VolumeManager::DoAttachMtpStorage(
 
   if (policy::ExternalStoragePolicyController::IsDeviceDisabled(
           CHECK_DEREF(profile_->GetPrefs()), device_id)) {
+    const std::string device_location =
+        storage_monitor::GetDeviceLocationFromStorageName(
+            mtp_storage_info->storage_name);
+    observers_.Notify(&VolumeManagerObserver::OnDiskAddBlockedByPolicy,
+                      device_location);
     return;
   }
 
@@ -1589,7 +1599,9 @@ bool VolumeManager::DoMountEvent(std::unique_ptr<Volume> volume_ptr,
   if (volume.type() == VOLUME_TYPE_REMOVABLE_DISK_PARTITION &&
       policy::ExternalStoragePolicyController::IsDeviceDisabled(
           CHECK_DEREF(profile_->GetPrefs()),
-          GetDeviceIdFromDevicePath(volume.source_path().value()))) {
+          GetDeviceIdFromDevicePath(volume.source_path().AsUTF8Unsafe()))) {
+    observers_.Notify(&VolumeManagerObserver::OnDiskAddBlockedByPolicy,
+                      volume.source_path().AsUTF8Unsafe());
     return false;
   }
 

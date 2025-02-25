@@ -1691,7 +1691,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.LocalWindowProxy.CreateContextTime" units="ms"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1701,7 +1701,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.LocalWindowProxy.InitializeTime" units="ms"
-    expires_after="2025-06-22">
+    expires_after="2025-08-24">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1712,7 +1712,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.MaglevOptimizeExecute" units="microseconds"
-    expires_after="2025-03-01">
+    expires_after="2026-03-01">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@chromium.org</owner>
   <summary>
@@ -1724,7 +1724,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.MaglevOptimizeFinalize" units="microseconds"
-    expires_after="2025-03-01">
+    expires_after="2026-03-01">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@chromium.org</owner>
   <summary>
@@ -1736,7 +1736,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.MaglevOptimizePrepare" units="microseconds"
-    expires_after="2025-03-01">
+    expires_after="2026-03-01">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@chromium.org</owner>
   <summary>
@@ -1748,7 +1748,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.MaglevOptimizeTotalTime" units="microseconds"
-    expires_after="2025-03-01">
+    expires_after="2026-03-01">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@chromium.org</owner>
   <summary>

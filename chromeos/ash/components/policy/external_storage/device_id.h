@@ -23,8 +23,7 @@ namespace policy {
 // read and unpack the policy value into a proper C++ type.
 //
 // It consists of the vendor_id/product_id external storage identifier.
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) DeviceId {
- public:
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) DeviceId {
   static const char kVendorId[];
   static const char kProductId[];
 
@@ -53,7 +52,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) DeviceId {
 
   friend bool operator==(const DeviceId&, const DeviceId&) = default;
 
- private:
   uint16_t vid;
   uint16_t pid;
 };

@@ -156,11 +156,9 @@ IN_PROC_BROWSER_TEST_F(BookmarksApiEventsTest,
   // Create the account permanent folders.
   model()->CreateAccountPermanentFolders();
 
-  // The onCreated event should have been called for each of the permanent
-  // folders.
-  // TODO(crbug.com/392614318): The non-visible mobile folder should not trigger
-  // an event.
-  EXPECT_EQ(event_observer()->all_events().size(), 3u);
+  // The onCreated event should have been called for each of the visible
+  // permanent folders.
+  EXPECT_EQ(event_observer()->all_events().size(), 2u);
 
   EXPECT_EQ(event_observer()->all_events()[0]->event_name,
             api::bookmarks::OnCreated::kEventName);
@@ -176,13 +174,6 @@ IN_PROC_BROWSER_TEST_F(BookmarksApiEventsTest,
   EXPECT_EQ(event_args->size(), 2u);
   EXPECT_EQ((*event_args)[0].GetString(),
             base::NumberToString(model()->account_other_node()->id()));
-
-  EXPECT_EQ(event_observer()->all_events()[2]->event_name,
-            api::bookmarks::OnCreated::kEventName);
-  event_args = &event_observer()->all_events()[2]->event_args;
-  EXPECT_EQ(event_args->size(), 2u);
-  EXPECT_EQ((*event_args)[0].GetString(),
-            base::NumberToString(model()->account_mobile_node()->id()));
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarksApiEventsTest,

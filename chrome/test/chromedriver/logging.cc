@@ -59,7 +59,7 @@ int64_t g_start_time = 0;
 bool readable_timestamp;
 
 // Array indices are the Log::Level enum values.
-const auto kLevelToName = std::to_array<const char*>({
+constexpr auto kLevelToName = std::to_array<const char*>({
     "ALL",      // kAll
     "DEBUG",    // kDebug
     "INFO",     // kInfo
@@ -80,7 +80,7 @@ struct LevelPair {
   Log::Level level;
 };
 
-const auto kNameToLevel = std::to_array<LevelPair>({
+constexpr auto kNameToLevel = std::to_array<LevelPair>({
     {"ALL", Log::kAll},
     {"DEBUG", Log::kDebug},
     {"INFO", Log::kInfo},

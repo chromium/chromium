@@ -5,36 +5,27 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_DELEGATE_H_
 
-#include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
-#include "components/autofill/core/browser/filling/filling_product.h"
-#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "base/functional/callback_forward.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
 class AutofillField;
-class FormData;
-class FormFieldData;
 class FormStructure;
+struct Suggestion;
 
 // The interface for communication from //components/autofill to
 // //components/autofill_ai.
 class AutofillAiDelegate {
  public:
-  using GetSuggestionsCallback =
-      base::OnceCallback<void(std::vector<autofill::Suggestion>)>;
-
-  using UpdateSuggestionsCallback =
-      base::RepeatingCallback<void(std::vector<Suggestion>,
-                                   AutofillSuggestionTriggerSource)>;
-
   virtual ~AutofillAiDelegate() = default;
 
-  // Generates AutofillAi suggestions and calls `callback` with them.
-  virtual void GetSuggestions(autofill::FormGlobalId form_global_id,
-                              autofill::FieldGlobalId field_global_id,
-                              GetSuggestionsCallback callback) = 0;
+  // Generates AutofillAi suggestions.
+  virtual std::vector<autofill::Suggestion> GetSuggestions(
+      autofill::FormGlobalId form_global_id,
+      autofill::FieldGlobalId field_global_id) = 0;
 
   // Returns whether `form` and `field` are eligible for the Autofill AI
   // experience.
@@ -76,21 +67,13 @@ class AutofillAiDelegate {
   // in chrome://settings.
   virtual bool ShouldDisplayIph(const AutofillField& field) const = 0;
 
-  // Event handler called when suggestions are shown.
+  // TODO(crbug.com/389629573): The "On*" methods below are used only for
+  // logging purposes. Explore different approaches.
   virtual void OnSuggestionsShown(
       const DenseSet<SuggestionType>& shown_suggestion_types,
-      const FormData& form,
-      const FormFieldData& trigger_field,
-      UpdateSuggestionsCallback update_suggestions_callback) = 0;
-
-  // TODO(crbug.com/389629573): This method is only used for logging purposes.
-  // Consider if we can have a difference approach.
+      const FormGlobalId& form_id) = 0;
   virtual void OnFormSeen(const FormStructure& form) = 0;
-
   virtual void OnDidFillSuggestion(FormGlobalId form_id) = 0;
-
-  // Called when the user manually edits a field that was filled using Autofill
-  // AI.
   virtual void OnEditedAutofilledField(FormGlobalId form_id) = 0;
 };
 

@@ -1067,7 +1067,7 @@ TEST_F(AutofillExternalDelegateTest, AutofillSuggestionAvailability_Autofill) {
 // Test that a11y autofill availability is set to `kAutofillAvailable` when
 // the popup is open with the `kFillAutofillAi` suggestion.
 TEST_F(AutofillExternalDelegateTest,
-       AutofillSuggestionAvailability_RetrieveAutofillAi) {
+       AutofillSuggestionAvailabilityFillAutofillAi) {
   IssueOnQuery();
 
   std::vector<Suggestion> suggestions = {

@@ -1656,6 +1656,18 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   HeapHashMap<String, Member<const CSSValue>> unresolved_defaults;
   HashMap<String, const CSSSyntaxDefinition*> default_types;
 
+  auto insert_default = [&unresolved_defaults, &default_types, &context](
+                            const StyleRuleFunction::Parameter& parameter) {
+    DCHECK(parameter.default_value);
+    const CSSValue* defaulted_value =
+        MakeGarbageCollected<CSSUnparsedDeclarationValue>(
+            parameter.default_value, &context);
+    unresolved_defaults.insert(parameter.name, defaulted_value);
+    if (!parameter.type.IsUniversal()) {
+      default_types.insert(parameter.name, &parameter.type);
+    }
+  };
+
   bool first_parameter = true;
   for (const StyleRuleFunction::Parameter& parameter :
        function->GetParameters()) {
@@ -1701,18 +1713,22 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
       argument_value =
           ResolveFunctionExpression(*argument_value, &parameter.type, resolver,
                                     context, function_context);
-      if (!argument_value) {
-        return false;
+
+      // An argument generally "captures" a failed resolution, without
+      // propagation to the outer declaration; if e.g. a var() reference fails,
+      // we should instead use the default value.
+      if (argument_value) {
+        function_arguments.insert(parameter.name, argument_value);
+      } else if (parameter.default_value) {
+        insert_default(parameter);
+      } else {
+        // An explicit nullptr is needed for shadowing; even if an argument
+        // did not resolve successfully, we should not be able to reach
+        // a variable with the same name defined in an outer scope.
+        function_arguments.insert(parameter.name, nullptr);
       }
-      function_arguments.insert(parameter.name, argument_value);
     } else if (parameter.default_value) {
-      const CSSValue* defaulted_value =
-          MakeGarbageCollected<CSSUnparsedDeclarationValue>(
-              parameter.default_value, &context);
-      unresolved_defaults.insert(parameter.name, defaulted_value);
-      if (!parameter.type.IsUniversal()) {
-        default_types.insert(parameter.name, &parameter.type);
-      }
+      insert_default(parameter);
     } else {
       // Argument was missing, with no default.
       return false;

@@ -97,7 +97,17 @@ std::unique_ptr<Disk> CreateAllowlistedDisk(const std::string& disk_path) {
       .SetDevicePath(disk_path)
       .SetVendorId(kAllowlistedVendorId)
       .SetProductId(kAllowlistedProductId)
+      .SetHasMedia(true)
       .Build();
+}
+
+device::mojom::MtpStorageInfoPtr CreateAllowlistedMtpStorageInfo(
+    std::string_view storage_name) {
+  auto mtp_storage_info = device::mojom::MtpStorageInfo::New();
+  mtp_storage_info->vendor_id = kAllowlistedDeviceId.vid;
+  mtp_storage_info->product_id = kAllowlistedDeviceId.pid;
+  mtp_storage_info->storage_name = storage_name;
+  return mtp_storage_info;
 }
 
 class LoggingObserver : public VolumeManagerObserver {
@@ -105,6 +115,7 @@ class LoggingObserver : public VolumeManagerObserver {
   struct Event {
     enum EventType {
       DISK_ADDED,
+      DISK_ADD_BLOCKED_BY_POLICY,
       DISK_REMOVED,
       DEVICE_ADDED,
       DEVICE_REMOVED,
@@ -156,6 +167,13 @@ class LoggingObserver : public VolumeManagerObserver {
     event.type = Event::DISK_ADDED;
     event.device_path = disk.device_path();  // Keep only device_path.
     event.mounting = mounting;
+    events_.push_back(event);
+  }
+
+  void OnDiskAddBlockedByPolicy(const std::string& device_path) override {
+    Event event;
+    event.type = Event::DISK_ADD_BLOCKED_BY_POLICY;
+    event.device_path = device_path;
     events_.push_back(event);
   }
 
@@ -278,6 +296,27 @@ class LoggingObserver : public VolumeManagerObserver {
   std::vector<Event> events_;
 };
 
+// TODO(isandrk, b/383308221): Roll into LoggingObserver and update file.
+class ScopedLoggingObserver {
+ public:
+  explicit ScopedLoggingObserver(VolumeManager* volume_manager)
+      : volume_manager_(volume_manager) {
+    volume_manager_->AddObserver(&logging_observer_);
+  }
+
+  ~ScopedLoggingObserver() {
+    volume_manager_->RemoveObserver(&logging_observer_);
+  }
+
+  const std::vector<LoggingObserver::Event>& events() const {
+    return logging_observer_.events();
+  }
+
+ private:
+  const raw_ptr<VolumeManager> volume_manager_;
+  LoggingObserver logging_observer_;
+};
+
 }  // namespace
 
 std::unique_ptr<KeyedService> CreateFileSystemOperationRunnerForTesting(
@@ -324,11 +363,19 @@ class VolumeManagerTest : public testing::Test {
     TestingProfile* profile() const { return profile_; }
     VolumeManager* volume_manager() const { return volume_manager_.get(); }
 
+    void SetFakeMtpStorageInfo(
+        device::mojom::MtpStorageInfoPtr fake_mtp_storage_info) {
+      fake_mtp_storage_info_ = std::move(fake_mtp_storage_info);
+    }
+
    private:
     void GetFakeMtpStorageInfo(
         const std::string& storage_name,
         device::mojom::MtpManager::GetStorageInfoCallback callback) {
-      std::move(callback).Run(device::mojom::MtpStorageInfo::New());
+      if (!fake_mtp_storage_info_) {
+        fake_mtp_storage_info_ = device::mojom::MtpStorageInfo::New();
+      }
+      std::move(callback).Run(std::move(fake_mtp_storage_info_));
     }
 
     const raw_ptr<TestingProfile> profile_;
@@ -337,6 +384,7 @@ class VolumeManagerTest : public testing::Test {
         file_system_provider_service_;
     std::unique_ptr<drive::DriveIntegrationService> drive_integration_service_;
     std::unique_ptr<VolumeManager> volume_manager_;
+    device::mojom::MtpStorageInfoPtr fake_mtp_storage_info_;
   };
 
   void SetUp() override {
@@ -386,6 +434,7 @@ class VolumeManagerTest : public testing::Test {
   VolumeManager* volume_manager() const {
     return primary_profile_->volume_manager();
   }
+  ProfileEnvironment* primary_profile() { return primary_profile_.get(); }
 
   base::test::ScopedCommandLine scoped_command_line_;
   content::BrowserTaskEnvironment task_environment_;
@@ -569,28 +618,42 @@ TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_AddedNonMounting) {
 
     volume_manager()->RemoveObserver(&observer);
   }
+}
 
-  // External storage is disabled.
+TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_ExternalStoragePolicy) {
+  std::unique_ptr<const Disk> media_disk = CreateAllowlistedDisk("device1");
+
+  // Disable external storage by policy.
+  profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageDisabled,
+                                    true);
+
+  // Disk mounting is blocked by policy.
   {
-    profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageDisabled,
-                                      true);
+    ScopedLoggingObserver observer(volume_manager());
+    volume_manager()->OnAutoMountableDiskEvent(DiskMountManager::DISK_ADDED,
+                                               *media_disk);
+    ASSERT_EQ(1U, observer.events().size());
+    const LoggingObserver::Event& event = observer.events()[0];
+    EXPECT_EQ(LoggingObserver::Event::DISK_ADD_BLOCKED_BY_POLICY, event.type);
+    EXPECT_EQ("device1", event.device_path);
+    EXPECT_FALSE(event.mounting);
+    ASSERT_EQ(0U, disk_mount_manager_->mount_requests().size());
+  }
 
-    LoggingObserver observer;
-    volume_manager()->AddObserver(&observer);
+  // Set the external storage allowlist.
+  SetExternalStorageAllowlist(profile()->GetPrefs());
 
-    std::unique_ptr<const Disk> media_disk =
-        Disk::Builder().SetDevicePath("device1").SetHasMedia(true).Build();
+  // Disk mounting is not blocked because of the allowlist.
+  {
+    ScopedLoggingObserver observer(volume_manager());
     volume_manager()->OnAutoMountableDiskEvent(DiskMountManager::DISK_ADDED,
                                                *media_disk);
     ASSERT_EQ(1U, observer.events().size());
     const LoggingObserver::Event& event = observer.events()[0];
     EXPECT_EQ(LoggingObserver::Event::DISK_ADDED, event.type);
     EXPECT_EQ("device1", event.device_path);
-    EXPECT_FALSE(event.mounting);
-
-    ASSERT_EQ(0U, disk_mount_manager_->mount_requests().size());
-
-    volume_manager()->RemoveObserver(&observer);
+    EXPECT_TRUE(event.mounting);
+    ASSERT_EQ(1U, disk_mount_manager_->mount_requests().size());
   }
 }
 
@@ -744,6 +807,42 @@ TEST_F(VolumeManagerTest, OnMountEvent_MountingAndUnmounting) {
   EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
 
   volume_manager()->RemoveObserver(&observer);
+}
+
+TEST_F(VolumeManagerTest, OnMountEvent_ExternalStoragePolicy) {
+  disk_mount_manager_->AddDiskForTest(CreateAllowlistedDisk("device1"));
+  const DiskMountManager::MountPoint kMountPoint{"device1", "mount1",
+                                                 ash::MountType::kDevice};
+
+  // Disable external storage by policy.
+  profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageDisabled,
+                                    true);
+
+  // Disk mounting is blocked by policy.
+  {
+    ScopedLoggingObserver observer(volume_manager());
+    volume_manager()->OnMountEvent(DiskMountManager::MOUNTING,
+                                   ash::MountError::kSuccess, kMountPoint);
+    ASSERT_EQ(1U, observer.events().size());
+    LoggingObserver::Event event = observer.events()[0];
+    EXPECT_EQ(LoggingObserver::Event::DISK_ADD_BLOCKED_BY_POLICY, event.type);
+    EXPECT_EQ("device1", event.device_path);
+  }
+
+  // Set the external storage allowlist.
+  SetExternalStorageAllowlist(profile()->GetPrefs());
+
+  // Disk mounting is not blocked because of the allowlist.
+  {
+    ScopedLoggingObserver observer(volume_manager());
+    volume_manager()->OnMountEvent(DiskMountManager::MOUNTING,
+                                   ash::MountError::kSuccess, kMountPoint);
+    ASSERT_EQ(1U, observer.events().size());
+    LoggingObserver::Event event = observer.events()[0];
+    EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type);
+    EXPECT_EQ("device1", event.device_path);
+    EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
+  }
 }
 
 TEST_F(VolumeManagerTest, OnMountEvent_Remounting) {
@@ -1274,6 +1373,49 @@ TEST_F(VolumeManagerTest, MTPPlugAndUnplug) {
   EXPECT_FALSE(fusebox_volume);
 
   volume_manager()->RemoveObserver(&observer);
+}
+
+TEST_F(VolumeManagerTest, MTP_ExternalStoragePolicy) {
+  storage_monitor::StorageInfo info(
+      storage_monitor::StorageInfo::MakeDeviceId(
+          storage_monitor::StorageInfo::MTP_OR_PTP, "dummy-device-id"),
+      FILE_PATH_LITERAL("/dummy/device/location"), u"label", u"vendor",
+      u"model", 12345 /* size */);
+
+  // Disable external storage by policy.
+  profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageDisabled,
+                                    true);
+
+  // Attach is blocked by policy.
+  {
+    ScopedLoggingObserver observer(volume_manager());
+    primary_profile()->SetFakeMtpStorageInfo(
+        CreateAllowlistedMtpStorageInfo("dummy/device/location"));
+    volume_manager()->OnRemovableStorageAttached(info);
+    ASSERT_EQ(1u, observer.events().size());
+    const LoggingObserver::Event& event = observer.events()[0];
+    EXPECT_EQ(LoggingObserver::Event::DISK_ADD_BLOCKED_BY_POLICY, event.type);
+    EXPECT_EQ("/dummy/device/location", event.device_path);
+  }
+
+  // Set the external storage allowlist.
+  SetExternalStorageAllowlist(profile()->GetPrefs());
+
+  // Attach is not blocked because of the allowlist.
+  {
+    ScopedLoggingObserver observer(volume_manager());
+    primary_profile()->SetFakeMtpStorageInfo(
+        CreateAllowlistedMtpStorageInfo("dummy/device/location"));
+    volume_manager()->OnRemovableStorageAttached(info);
+    ASSERT_EQ(2u, observer.events().size());
+    EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED,
+              observer.events()[0].type);
+    EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED,
+              observer.events()[1].type);
+  }
+
+  // Cleanup. Detach storage, otherwise crashes in ~MTPDeviceMapService.
+  volume_manager()->OnRemovableStorageDetached(info);
 }
 
 TEST_F(VolumeManagerTest, OnRenameEvent_Started) {

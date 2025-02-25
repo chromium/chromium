@@ -624,8 +624,7 @@ NSString* CreationText(base::Time creation_date) {
   const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());
 
   __weak TabGroupsPanelMediator* weakSelf = self;
-  auto callback = base::BindOnce(^(PeopleGroupActionOutcome outcome) {
-    BOOL success = outcome == PeopleGroupActionOutcome::kSuccess;
+  auto callback = base::BindOnce(^(bool success) {
     [weakSelf handleTakeActionForActionTypeOutcome:success];
   });
 
@@ -634,10 +633,10 @@ NSString* CreationText(base::Time creation_date) {
   // Asynchronously call on the server.
   switch (actionType) {
     case TabGroupActionType::kLeaveSharedTabGroup:
-      _dataSharingService->LeaveGroup(groupId, std::move(callback));
+      _collaborationService->LeaveGroup(groupId, std::move(callback));
       break;
     case TabGroupActionType::kDeleteSharedTabGroup:
-      _dataSharingService->DeleteGroup(groupId, std::move(callback));
+      _collaborationService->DeleteGroup(groupId, std::move(callback));
       break;
     case TabGroupActionType::kUngroupTabGroup:
     case TabGroupActionType::kDeleteTabGroup:

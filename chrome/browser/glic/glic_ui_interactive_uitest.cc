@@ -341,7 +341,7 @@ class GlicUiQuickLoadingSequenceWithHoldTest
   GlicUiQuickLoadingSequenceWithHoldTest()
       : GlicUiInteractiveUiTestBase(
             TestParams(base::Milliseconds(0),     // Pre-load
-                       base::Seconds(3),          // Min loading time
+                       base::Seconds(5),          // Min loading time
                        base::Hours(1),            // Max loading time
                        base::Milliseconds(500)))  // Actual loading time
   {}
@@ -369,7 +369,7 @@ class GlicUiQuickLoadingSequenceWithPreloadTest
   GlicUiQuickLoadingSequenceWithPreloadTest()
       : GlicUiInteractiveUiTestBase(
             TestParams(base::Seconds(3),         // Pre-load
-                       base::Seconds(2),         // Min loading time
+                       base::Seconds(5),         // Min loading time
                        base::Seconds(10),        // Max loading time
                        base::Milliseconds(10)))  // Actual loading time
   {}

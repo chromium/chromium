@@ -1251,12 +1251,12 @@ BASE_FEATURE(kFullscreenTransition,
              "FullscreenTransition",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRefactorToolbarUI,
-             "RefactorToolbarUI",
+BASE_FEATURE(kRefactorToolbarsSize,
+             "RefactorToolbarsSize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsRefactorToolbarUI() {
-  return base::FeatureList::IsEnabled(kRefactorToolbarUI);
+bool IsRefactorToolbarsSize() {
+  return base::FeatureList::IsEnabled(kRefactorToolbarsSize);
 }
 
 BASE_FEATURE(kNewShareExtension,

@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class ToolbarsSize;
 @class ChromeBroadcaster;
 @protocol PanelContentConsumer;
 
@@ -14,6 +15,7 @@
 @interface PanelContentMediator : NSObject
 
 - (instancetype)initWithBroadcaster:(ChromeBroadcaster*)broadcaster
+                       toolbarsSize:(ToolbarsSize*)toolbarsSize
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

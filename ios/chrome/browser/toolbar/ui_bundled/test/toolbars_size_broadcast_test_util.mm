@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/toolbar/ui_bundled/test/toolbar_broadcast_test_util.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/test/toolbars_size_broadcast_test_util.h"
 
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/test/test_toolbar_ui_observer.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/test/test_toolbars_size_observer.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
@@ -14,21 +14,21 @@ namespace {
 const CGFloat kHeightDelta = 100.0;
 // Helper class that modifies a TestMainContentUIState, then reverts those
 // changes upon destruction.
-class TestToolbarUIStateModifier {
+class TestToolbarsSizeModifier {
  public:
-  TestToolbarUIStateModifier(ToolbarUIState* toolbar_ui)
-      : toolbar_ui_(toolbar_ui),
+  TestToolbarsSizeModifier(ToolbarsSize* toolbars_size)
+      : toolbars_size_(toolbars_size),
         original_collapsed_top_toolbar_height_(
-            toolbar_ui_.collapsedTopToolbarHeight),
+            toolbars_size_.collapsedTopToolbarHeight),
         original_expanded_top_toolbar_height_(
-            toolbar_ui_.expandedTopToolbarHeight) {
-    toolbar_ui_.collapsedTopToolbarHeight += kHeightDelta;
-    toolbar_ui_.expandedTopToolbarHeight += kHeightDelta;
+            toolbars_size_.expandedTopToolbarHeight) {
+    toolbars_size_.collapsedTopToolbarHeight += kHeightDelta;
+    toolbars_size_.expandedTopToolbarHeight += kHeightDelta;
   }
-  ~TestToolbarUIStateModifier() {
-    toolbar_ui_.collapsedTopToolbarHeight =
+  ~TestToolbarsSizeModifier() {
+    toolbars_size_.collapsedTopToolbarHeight =
         original_collapsed_top_toolbar_height_;
-    toolbar_ui_.expandedTopToolbarHeight =
+    toolbars_size_.expandedTopToolbarHeight =
         original_expanded_top_toolbar_height_;
   }
 
@@ -41,27 +41,27 @@ class TestToolbarUIStateModifier {
   }
 
  private:
-  __strong ToolbarUIState* toolbar_ui_ = nil;
+  __strong ToolbarsSize* toolbars_size_ = nil;
   CGFloat original_collapsed_top_toolbar_height_ = 0.0;
   CGFloat original_expanded_top_toolbar_height_ = 0.0;
 };
 }  // namespace
 
-void VerifyToolbarUIBroadcast(ToolbarUIState* toolbar_ui,
-                              ChromeBroadcaster* broadcaster,
-                              bool should_broadcast) {
-  ASSERT_TRUE(toolbar_ui);
+void VerifyToolbarsSizeBroadcast(ToolbarsSize* toolbars_size,
+                                 ChromeBroadcaster* broadcaster,
+                                 bool should_broadcast) {
+  ASSERT_TRUE(toolbars_size);
   ASSERT_TRUE(broadcaster);
   // Create an observer and modifier for `ui_state`.
-  TestToolbarUIObserver* observer = [[TestToolbarUIObserver alloc] init];
+  TestToolbarsSizeObserver* observer = [[TestToolbarsSizeObserver alloc] init];
   observer.broadcaster = broadcaster;
-  TestToolbarUIStateModifier modifier(toolbar_ui);
+  TestToolbarsSizeModifier modifier(toolbars_size);
   // Verify whether the changed or original UI elements are observed.
   if (should_broadcast) {
     EXPECT_TRUE(AreCGFloatsEqual(observer.collapsedTopToolbarHeight,
-                                 toolbar_ui.collapsedTopToolbarHeight));
+                                 toolbars_size.collapsedTopToolbarHeight));
     EXPECT_TRUE(AreCGFloatsEqual(observer.expandedTopToolbarHeight,
-                                 toolbar_ui.expandedTopToolbarHeight));
+                                 toolbars_size.expandedTopToolbarHeight));
   } else {
     EXPECT_TRUE(
         AreCGFloatsEqual(observer.collapsedTopToolbarHeight,

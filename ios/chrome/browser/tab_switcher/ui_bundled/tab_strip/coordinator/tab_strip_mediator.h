@@ -30,10 +30,6 @@ class MessagingBackendService;
 }  // namespace messaging
 }  // namespace collaboration
 
-namespace data_sharing {
-class DataSharingService;
-}  // namespace data_sharing
-
 namespace tab_groups {
 class TabGroupId;
 class TabGroupSyncService;
@@ -69,7 +65,6 @@ class WebStateID;
 - (instancetype)
         initWithConsumer:(id<TabStripConsumer>)consumer
      tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
-      dataSharingService:(data_sharing::DataSharingService*)dataSharingService
              browserList:(BrowserList*)browserList
         messagingService:
             (collaboration::messaging::MessagingBackendService*)messagingService

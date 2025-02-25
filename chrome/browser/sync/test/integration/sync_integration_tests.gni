@@ -20,6 +20,10 @@ sync_integration_tests_sources = [
   "//chrome/browser/sync/test/integration/single_client_standalone_transport_sync_test.cc",
   "//chrome/browser/sync/test/integration/single_client_sync_invalidations_test.cc",
   "//chrome/browser/sync/test/integration/sync_exponential_backoff_test.cc",
+
+  # TODO(crbug.com/393119606): After enough of the implementation is ready
+  # (CL #N), add integration tests. Careful, sync_integration_tests runs in CQ
+  # but android_sync_integration_tests do not.
 ]
 
 if (!is_android) {

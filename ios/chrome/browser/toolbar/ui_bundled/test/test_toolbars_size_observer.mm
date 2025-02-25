@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/toolbar/ui_bundled/test/test_toolbar_ui_observer.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/test/test_toolbars_size_observer.h"
 
-@implementation TestToolbarUIObserver
+@implementation TestToolbarsSizeObserver
 @synthesize broadcaster = _broadcaster;
 @synthesize collapsedTopToolbarHeight = _collapsedTopToolbarHeight;
 @synthesize expandedTopToolbarHeight = _expandedTopToolbarHeight;

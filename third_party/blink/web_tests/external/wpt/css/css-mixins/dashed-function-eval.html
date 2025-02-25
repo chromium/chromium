@@ -267,6 +267,42 @@
   </style>
 </template>
 
+<template data-name="Argument captures IACVT due to invalid var()">
+  <style>
+    @function --f(--x) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f(var(--unknown));
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Argument captures IACVT due to invalid var(), typed">
+  <style>
+    @function --f(--x <length>) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f(var(--unknown));
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Argument captures IACVT due to type mismatch">
+  <style>
+    @function --f(--x <length>) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --actual: --f(red);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
 <!-- Defaults -->
 
 <template data-name="Single parameter with default value">
@@ -358,6 +394,42 @@
       --y: FAIL;
       --actual: --f();
       --expected: 5px 6px;
+    }
+  </style>
+</template>
+
+<template data-name="IACVT arguments are defaulted">
+  <style>
+    @function --f(--x: 1, --y, --z: 3) {
+      result: var(--x) var(--y) var(--z);
+    }
+    #target {
+      --actual: --f(var(--unknown), 2, var(--unknown));
+      --expected: 1 2 3;
+    }
+  </style>
+</template>
+
+<template data-name="IACVT arguments are defaulted, typed">
+  <style>
+    @function --f(--x <number>: 1, --y <number>, --z <number>: 3) {
+      result: var(--x) var(--y) var(--z);
+    }
+    #target {
+      --actual: --f(var(--unknown), 2, var(--unknown));
+      --expected: 1 2 3;
+    }
+  </style>
+</template>
+
+<template data-name="Arguments are defaulted on type mismatch">
+  <style>
+    @function --f(--x <number>: 1, --y <number>, --z <number>: 3) {
+      result: var(--x) var(--y) var(--z);
+    }
+    #target {
+      --actual: --f(red, 2, 360deg);
+      --expected: 1 2 3;
     }
   </style>
 </template>
@@ -749,6 +821,45 @@
   </style>
 </template>
 
+<template data-name="IACVT argument shadows outer scope">
+  <style>
+    @function --f(--x) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --x: FAIL;
+      --actual: --f(var(--unknown));
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="IACVT argument shadows outer scope, typed">
+  <style>
+    @function --f(--x <length>) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --x: FAIL;
+      --actual: --f(var(--unknown));
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="IACVT argument shadows outer scope, type mismatch">
+  <style>
+    @function --f(--x <length>) {
+      result: var(--x, PASS);
+    }
+    #target {
+      --x: FAIL;
+      --actual: --f(red);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
 <!-- Invalid invocations -->
 
 <template data-name="Missing only argument">
@@ -770,20 +881,6 @@
     }
     #target {
       --actual: --f(1, 2);
-      /* --expected: <guaranteed-invalid> */
-    }
-  </style>
-</template>
-
-<template data-name="Unknown var() in argument makes declaration IACVT">
-  <!-- Note: In the future, this may be changed to instead trigger
-             the default for --x. -->
-  <style>
-    @function --f(--x:1px) {
-      result: var(--x);
-    }
-    #target {
-      --actual: --f(var(--unknown));
       /* --expected: <guaranteed-invalid> */
     }
   </style>

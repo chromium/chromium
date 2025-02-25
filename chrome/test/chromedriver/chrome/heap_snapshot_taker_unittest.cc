@@ -24,7 +24,7 @@
 
 namespace {
 
-const auto chunks = std::to_array<const char*>({"{\"a\": 1,", "\"b\": 2}"});
+constexpr auto chunks = std::to_array<const char*>({"{\"a\": 1,", "\"b\": 2}"});
 
 base::Value GetSnapshotAsValue() {
   return base::Value("{\"a\": 1,\"b\": 2}");

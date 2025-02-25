@@ -28,7 +28,7 @@
 
 namespace {
 
-const auto kAllWdLevels = std::to_array<const char*>({
+constexpr auto kAllWdLevels = std::to_array<const char*>({
     "ALL",
     "DEBUG",
     "INFO",
