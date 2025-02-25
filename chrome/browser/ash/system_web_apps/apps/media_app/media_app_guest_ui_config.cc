@@ -122,6 +122,9 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
                                       channel != version_info::Channel::STABLE);
   source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
+  source->AddString("mantisModel",
+                    ash::features::kMediaAppImageMantisModelParams.GetName(
+                        ash::features::kMediaAppImageMantisModelParams.Get()));
 }
 
 std::unique_ptr<specialized_features::FeatureAccessChecker>
