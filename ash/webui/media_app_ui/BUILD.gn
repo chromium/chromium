@@ -170,7 +170,9 @@ ts_library("test_build_ts") {
   root_dir = ts_root_dir
   testonly = true
   in_files = media_app_test_ts
-  definitions = media_app_definitions_staged + media_app_test_definitions_staged
+  definitions =
+      media_app_definitions_staged + media_app_test_definitions_staged +
+      [ "//tools/typescript/definitions/strings.d.ts" ]
   deps = [
     ":build_ts",
     "//chrome/test/data/webui:build_ts",

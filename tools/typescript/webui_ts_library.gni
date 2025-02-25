@@ -13,7 +13,6 @@ template("webui_ts_library") {
                            "out_dir",
                            "composite",
                            "in_files",
-                           "definitions",
                            "tsconfig_base",
                            "path_mappings",
                            "manifest_excludes",
@@ -44,6 +43,11 @@ template("webui_ts_library") {
     }
     if (defined(invoker.extra_deps)) {
       extra_deps += invoker.extra_deps
+    }
+
+    definitions = [ "//tools/typescript/definitions/strings.d.ts" ]
+    if (defined(invoker.definitions)) {
+      definitions += invoker.definitions
     }
   }
 }
