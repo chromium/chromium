@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/policy/cbcm_invalidations_initializer.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#include "components/enterprise/client_certificates/core/prefs_certificate_store.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/public/invalidation_service.h"
 
@@ -74,6 +75,8 @@ class ChromeBrowserCloudManagementControllerDesktop
   std::unique_ptr<ClientDataDelegate> CreateClientDataDelegate() override;
   std::unique_ptr<enterprise_connectors::DeviceTrustKeyManager>
   CreateDeviceTrustKeyManager() override;
+  std::unique_ptr<client_certificates::CertificateProvisioningService>
+  CreateCertificateProvisioningService() override;
 
   // CBCMInvalidationsInitializer::Delegate:
   // Starts the services required for Policy Invalidations over FCM to be
@@ -101,6 +104,9 @@ class ChromeBrowserCloudManagementControllerDesktop
 
   // This invalidator is responsible for receiving remote commands invalidations
   std::unique_ptr<RemoteCommandsInvalidator> commands_invalidator_;
+
+  // Responsible for storing and retrieving browser-level managed identities.
+  std::unique_ptr<client_certificates::CertificateStore> certificate_store_;
 };
 
 }  // namespace policy

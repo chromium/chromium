@@ -93,6 +93,10 @@ static_library("enterprise") {
 
     deps += [ "//third_party/abseil-cpp:absl" ]
   }
+
+  if (enterprise_client_certificates) {
+    deps += [ "//components/enterprise/client_certificates/core" ]
+  }
 }
 
 static_library("test_support") {
