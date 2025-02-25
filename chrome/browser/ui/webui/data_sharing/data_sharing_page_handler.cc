@@ -20,7 +20,7 @@
 #include "third_party/abseil-cpp/absl/status/status.h"
 
 namespace {
-constexpr base::TimeDelta kTokenRefreshTimeBuffer = base::Seconds(10);
+constexpr base::TimeDelta kTokenRetryTimeDelta = base::Seconds(1);
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr base::TimeDelta kDummyTokenExpirationDuration = base::Minutes(1);
 #endif
@@ -136,18 +136,16 @@ void DataSharingPageHandler::OnAccessTokenFetched(
   // Note: We do not do anything special for empty tokens.
   page_->OnAccessTokenFetched(access_token_info.token);
 
-  base::TimeDelta time_delta = access_token_info.expiration_time -
-                               base::Time::Now() - kTokenRefreshTimeBuffer;
+  base::TimeDelta time_delta =
+      access_token_info.expiration_time - base::Time::Now();
 
-  if (time_delta.is_positive()) {
-    access_token_refresh_timer_->Start(
-        FROM_HERE, time_delta, this,
-        &DataSharingPageHandler::RequestAccessToken);
-  } else {
-    LOG(ERROR) << "Access token refresh time should not be negative or zero: "
-                  "TimeDelta="
-               << time_delta;
+  // In case access token is expired, retry it later.
+  if (!time_delta.is_positive()) {
+    time_delta = kTokenRetryTimeDelta;
   }
+
+  access_token_refresh_timer_->Start(
+      FROM_HERE, time_delta, this, &DataSharingPageHandler::RequestAccessToken);
 }
 
 void DataSharingPageHandler::ReadGroups(
