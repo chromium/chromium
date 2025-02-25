@@ -1283,11 +1283,24 @@ void DevToolsUIBindings::ConnectAutomaticFileSystem(
         frontend_host_);
   // This is a no-op if the DevToolsAutomaticFileSystems feature is turned off.
   if (!base::FeatureList::IsEnabled(features::kDevToolsAutomaticFileSystems)) {
+    VLOG(1) << "Ignoring attempt to connect automatic file system "
+            << file_system_path << " with UUID " << file_system_uuid
+            << " because the DevToolsAutomaticFileSystems feature is disabled";
     ConnectAutomaticFileSystemDone(std::move(callback), false);
     return;
   }
+
+  // Ensure that the |file_system_uuid| is indeed a valid UUID.
+  base::Uuid uuid = base::Uuid::ParseCaseInsensitive(file_system_uuid);
+  if (!uuid.is_valid()) {
+    LOG(ERROR) << "Rejecting automatic file system " << file_system_path
+               << " with invalid UUID " << file_system_uuid << ".";
+    ConnectAutomaticFileSystemDone(std::move(callback), false);
+    return;
+  }
+
   file_helper_.ConnectAutomaticFileSystem(
-      file_system_path, file_system_uuid, add_if_missing,
+      file_system_path, uuid, add_if_missing,
       BindRepeating(&DevToolsUIBindings::ShowDevToolsInfoBar,
                     weak_factory_.GetWeakPtr()),
       BindOnce(&DevToolsUIBindings::ConnectAutomaticFileSystemDone,
