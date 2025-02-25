@@ -88,9 +88,8 @@ void SiteDataCacheFacadeFactory::OnBeforeFacadeCreated(
     base::PassKey<SiteDataCacheFacade>) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (service_instance_count_ == 0U) {
-    DCHECK(cache_factory_.is_null());
-    cache_factory_ = base::SequenceBound<SiteDataCacheFactory>(
-        performance_manager::PerformanceManager::GetTaskRunner());
+    DCHECK(!cache_factory_);
+    cache_factory_ = std::make_unique<SiteDataCacheFactory>();
   }
   ++service_instance_count_;
 }
@@ -102,7 +101,7 @@ void SiteDataCacheFacadeFactory::OnFacadeDestroyed(
   // Destroy the cache factory if there's no more SiteDataCacheFacade needing
   // it.
   if (--service_instance_count_ == 0) {
-    cache_factory_.Reset();
+    cache_factory_ = nullptr;
   }
 }
 
