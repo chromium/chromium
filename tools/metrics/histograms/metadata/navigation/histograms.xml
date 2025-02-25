@@ -2491,7 +2491,7 @@ chromium-metrics-reviews@google.com.
   <token key="Condition" variants="NavigationThrottleConditions"/>
 </histogram>
 
-<histogram name="Navigation.Timeline.{DurationFromTo}.Time" units="ms"
+<histogram name="Navigation.Timeline.{DurationFromTo}.Duration" units="ms"
     expires_after="2026-01-15">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
