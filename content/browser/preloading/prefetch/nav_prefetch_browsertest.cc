@@ -95,12 +95,6 @@ class NavPrefetchBrowserTest : public ContentBrowserTest,
     return *ukm_recorder_;
   }
 
-  // TODO(taiyo): Merge this into `ukm_recorder()` by changing
-  // test::ExpectPreloadingAttemptUkm.
-  ukm::TestAutoSetUkmRecorder& non_const_ukm_recorder() {
-    return *ukm_recorder_;
-  }
-
   const test::PreloadingAttemptUkmEntryBuilder&
   attempt_entry_builder() {
     return *attempt_ukm_entry_builder_;
@@ -196,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, ServedToRedirectionChain) {
   ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
 
   test::ExpectPreloadingAttemptUkm(
-      non_const_ukm_recorder(),
+      ukm_recorder(),
       {attempt_entry_builder().BuildEntry(
           ukm_source_id, PreloadingType::kPrefetch,
           PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
