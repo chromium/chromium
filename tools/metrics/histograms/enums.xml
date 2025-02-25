@@ -315,6 +315,7 @@ uploading your change for review.  These are checked by presubmit scripts.
 <enum name="AmountExtractionResult">
   <int value="0" label="Success"/>
   <int value="1" label="Amount not found"/>
+  <int value="2" label="Timeout"/>
 </enum>
 
 <enum name="AndroidMultiWindowActivityType">

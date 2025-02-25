@@ -1093,9 +1093,10 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <summary>
     Records the result of amount extraction process. Amount extraction process
     is initiated once user clicks on the credit card form on Desktop. The result
-    is recorded upon receiving the response in the browser process. This metric
-    records two types of amount extraction results: success and amount not
-    found.
+    is recorded upon receiving the response in the browser process or the
+    extraction timeout is reached before a response is received. This metric
+    records three types of amount extraction results: success, amount not found
+    and timeout.
   </summary>
 </histogram>
 
