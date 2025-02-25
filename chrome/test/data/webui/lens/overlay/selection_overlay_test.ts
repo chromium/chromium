@@ -14,7 +14,7 @@ import {ContextMenuOption} from 'chrome-untrusted://lens-overlay/metrics_utils.j
 import type {OverlayObject} from 'chrome-untrusted://lens-overlay/overlay_object.mojom-webui.js';
 import {ScreenshotBitmapBrowserProxyImpl} from 'chrome-untrusted://lens-overlay/screenshot_bitmap_browser_proxy.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
-import type {TextLayerElement} from 'chrome-untrusted://lens-overlay/text_layer.js';
+import type {TextLayerBase} from 'chrome-untrusted://lens-overlay/text_layer_base.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
@@ -24,8 +24,8 @@ import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {fakeScreenshotBitmap, waitForScreenshotRendered} from '../utils/image_utils.js';
 import {assertBoxesWithinThreshold, createObject} from '../utils/object_utils.js';
-import {getImageBoundingRect, simulateClick, simulateDrag} from '../utils/selection_utils.js';
-import {createLine, createParagraph, createText, createTranslatedLine, createTranslatedParagraph, createWord, dispatchTranslateStateEvent} from '../utils/text_utils.js';
+import {getImageBoundingRect, normalizeBoxInElement, simulateClick, simulateDrag} from '../utils/selection_utils.js';
+import {createLine, createParagraph, createText, createTranslatedLine, createTranslatedParagraph, createWord, dispatchTranslateStateEvent, getTranslatedWordNodesForTesting, getWordNodesForTesting} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
@@ -76,19 +76,23 @@ suite('SelectionOverlay', function() {
     return waitAfterNextRender(selectionOverlayElement);
   });
 
-  function getTextSelectionLayer(): TextLayerElement {
+  function getTextSelectionLayer(): TextLayerBase {
     return selectionOverlayElement.getTextSelectionLayerForTesting()!;
+  }
+
+  function getWordNodes(): NodeListOf<Element> {
+    return getWordNodesForTesting(
+        getTextSelectionLayer().getElementForTesting());
+  }
+
+  function getTranslatedWordNodes(): NodeListOf<Element> {
+    return getTranslatedWordNodesForTesting(
+        getTextSelectionLayer().getElementForTesting());
   }
 
   // Normalizes the given values to the size of selection overlay.
   function normalizedBox(box: RectF): RectF {
-    const boundingRect = selectionOverlayElement.getBoundingClientRect();
-    return {
-      x: box.x / boundingRect.width,
-      y: box.y / boundingRect.height,
-      width: box.width / boundingRect.width,
-      height: box.height / boundingRect.height,
-    };
+    return normalizeBoxInElement(box, selectionOverlayElement);
   }
 
   async function addEmptyText() {
@@ -402,7 +406,7 @@ suite('SelectionOverlay', function() {
         'verify that starting a drag on a word does not trigger region search',
         async () => {
           // Drag that starts on a word but finishes on empty space.
-          const wordEl = getTextSelectionLayer().getWordNodesForTesting()[0]!;
+          const wordEl = getWordNodes()[0]!;
           await simulateDrag(
               selectionOverlayElement, {
                 x: wordEl.getBoundingClientRect().left + 15,
@@ -422,7 +426,7 @@ suite('SelectionOverlay', function() {
         `verify that starting a drag off a word and continuing onto a word triggers region search`,
         async () => {
           // Drag that starts off a word but finishes on a word.
-          const wordEl = getTextSelectionLayer().getWordNodesForTesting()[0]!;
+          const wordEl = getWordNodes()[0]!;
           const dragEnd = {
             x: wordEl.getBoundingClientRect().left + 5,
             y: wordEl.getBoundingClientRect().top + 5,
@@ -651,7 +655,7 @@ suite('SelectionOverlay', function() {
       testBrowserProxy.handler.reset();
 
       // Drag that starts on a word and post selection.
-      const wordEl = getTextSelectionLayer().getWordNodesForTesting()[1]!;
+      const wordEl = getWordNodes()[1]!;
       const wordElBoundingBox = wordEl.getBoundingClientRect();
       await simulateDrag(
           selectionOverlayElement, {
@@ -674,7 +678,7 @@ suite('SelectionOverlay', function() {
       testBrowserProxy.handler.reset();
 
       // Drag that starts on a word.
-      const wordEl = getTextSelectionLayer().getWordNodesForTesting()[1]!;
+      const wordEl = getWordNodes()[1]!;
       const wordElBoundingBox = wordEl.getBoundingClientRect();
       await simulateDrag(
           selectionOverlayElement, {
@@ -725,7 +729,7 @@ suite('SelectionOverlay', function() {
       testBrowserProxy.handler.reset();
 
       // Drag that starts on a word.
-      const wordEl = getTextSelectionLayer().getWordNodesForTesting()[1]!;
+      const wordEl = getWordNodes()[1]!;
       const wordElBoundingBox = wordEl.getBoundingClientRect();
       await simulateDrag(
           selectionOverlayElement, {
@@ -769,7 +773,7 @@ suite('SelectionOverlay', function() {
           testBrowserProxy.handler.reset();
 
           // Drag that starts on a word.
-          const wordEl = getTextSelectionLayer().getWordNodesForTesting()[1]!;
+          const wordEl = getWordNodes()[1]!;
           const wordElBoundingBox = wordEl.getBoundingClientRect();
           await simulateDrag(
               selectionOverlayElement, {
@@ -814,7 +818,7 @@ suite('SelectionOverlay', function() {
 
       // Verify that dragging on text works.
       // Drag that starts on a word but finishes on empty space.
-      const wordEl = getTextSelectionLayer().getWordNodesForTesting()[0]!;
+      const wordEl = getWordNodes()[0]!;
       await simulateDrag(
           selectionOverlayElement, {
             x: wordEl.getBoundingClientRect().left + 15,
@@ -1072,7 +1076,8 @@ suite('SelectionOverlay', function() {
     test(
         `verify that translate text is selected from anywhere on the overlay`,
         async () => {
-          dispatchTranslateStateEvent(getTextSelectionLayer(), true, 'es');
+          dispatchTranslateStateEvent(
+              getTextSelectionLayer().getElementForTesting(), true, 'es');
           await waitAfterNextRender(selectionOverlayElement);
 
           // Drag at the top corner, above any actual words.
@@ -1114,7 +1119,8 @@ suite('SelectionOverlay', function() {
                                .getObjectNodesForTesting()[1]!;
           const objectBoundingBox = objectEl.getBoundingClientRect();
 
-          dispatchTranslateStateEvent(getTextSelectionLayer(), true, 'es');
+          dispatchTranslateStateEvent(
+              getTextSelectionLayer().getElementForTesting(), true, 'es');
           await waitAfterNextRender(selectionOverlayElement);
 
           await simulateClick(
@@ -1130,14 +1136,13 @@ suite('SelectionOverlay', function() {
         `verify that translate text does not render if translate mode disabled`,
         () => {
           // Make sure only non-translated word divs are present and visible.
-          const wordElements = getTextSelectionLayer().getWordNodesForTesting();
+          const wordElements = getWordNodes();
           assertTrue(wordElements.length > 0);
           for (const word of wordElements) {
             assertTrue(isVisible(word));
           }
 
-          const translatedWordElements =
-              getTextSelectionLayer().getTranslatedWordNodesForTesting();
+          const translatedWordElements = getTranslatedWordNodes();
           assertTrue(translatedWordElements.length > 0);
           for (const word of translatedWordElements) {
             assertFalse(isVisible(word));
@@ -1147,11 +1152,11 @@ suite('SelectionOverlay', function() {
     test(
         `verify that translate text does render if translate mode enabled`,
         async () => {
-          dispatchTranslateStateEvent(getTextSelectionLayer(), true, 'es');
+          dispatchTranslateStateEvent(
+              getTextSelectionLayer().getElementForTesting(), true, 'es');
           await waitAfterNextRender(selectionOverlayElement);
 
-          const translatedWordElements =
-              getTextSelectionLayer().getTranslatedWordNodesForTesting();
+          const translatedWordElements = getTranslatedWordNodes();
           assertTrue(translatedWordElements.length > 0);
           for (const word of translatedWordElements) {
             assertTrue(isVisible(word));
@@ -1161,11 +1166,11 @@ suite('SelectionOverlay', function() {
     test(
         `verify that clicking a translated word issues a text request`,
         async () => {
-          dispatchTranslateStateEvent(getTextSelectionLayer(), true, 'es');
+          dispatchTranslateStateEvent(
+              getTextSelectionLayer().getElementForTesting(), true, 'es');
           await waitAfterNextRender(selectionOverlayElement);
 
-          const wordEl =
-              getTextSelectionLayer().getTranslatedWordNodesForTesting()[0]!;
+          const wordEl = getTranslatedWordNodes()[0]!;
           await simulateClick(selectionOverlayElement, {
             x: wordEl.getBoundingClientRect().left,
             y: wordEl.getBoundingClientRect().top,
@@ -1192,12 +1197,12 @@ suite('SelectionOverlay', function() {
         `verify that dragging a translated word and finishing drag off the word
     issues a text request`,
         async () => {
-          dispatchTranslateStateEvent(getTextSelectionLayer(), true, 'es');
+          dispatchTranslateStateEvent(
+              getTextSelectionLayer().getElementForTesting(), true, 'es');
           await waitAfterNextRender(selectionOverlayElement);
 
           // Drag that starts on a word but finishes on empty space.
-          const wordEl =
-              getTextSelectionLayer().getTranslatedWordNodesForTesting()[0]!;
+          const wordEl = getTranslatedWordNodes()[0]!;
           await simulateDrag(
               selectionOverlayElement, {
                 x: wordEl.getBoundingClientRect().left,
@@ -1226,7 +1231,8 @@ suite('SelectionOverlay', function() {
         `verify that clicking a detected word without a translation in translate
     mode issues a text request`,
         async () => {
-          dispatchTranslateStateEvent(getTextSelectionLayer(), true, 'es');
+          dispatchTranslateStateEvent(
+              getTextSelectionLayer().getElementForTesting(), true, 'es');
           await waitAfterNextRender(selectionOverlayElement);
 
           await simulateClick(selectionOverlayElement, {
@@ -1255,11 +1261,11 @@ suite('SelectionOverlay', function() {
         `verify that dragging over translated and detected text sends a request
     with both`,
         async () => {
-          dispatchTranslateStateEvent(getTextSelectionLayer(), true, 'es');
+          dispatchTranslateStateEvent(
+              getTextSelectionLayer().getElementForTesting(), true, 'es');
           await waitAfterNextRender(selectionOverlayElement);
 
-          const wordEl =
-              getTextSelectionLayer().getTranslatedWordNodesForTesting()[0]!;
+          const wordEl = getTranslatedWordNodes()[0]!;
           await simulateDrag(
               selectionOverlayElement, {
                 x: wordEl.getBoundingClientRect().left,
@@ -1293,12 +1299,12 @@ suite('SelectionOverlay', function() {
         async () => {
           testBrowserProxy.handler.reset();
 
-          dispatchTranslateStateEvent(getTextSelectionLayer(), true, 'es');
+          dispatchTranslateStateEvent(
+              getTextSelectionLayer().getElementForTesting(), true, 'es');
           await waitAfterNextRender(selectionOverlayElement);
 
           // Drag that starts on a word.
-          const wordEl =
-              getTextSelectionLayer().getTranslatedWordNodesForTesting()[0]!;
+          const wordEl = getTranslatedWordNodes()[0]!;
           await simulateDrag(
               selectionOverlayElement, {
                 x: wordEl.getBoundingClientRect().left,
@@ -1337,12 +1343,12 @@ suite('SelectionOverlay', function() {
         });
 
     test('NoTextSelectionIfLanguagePickersOpen', async () => {
-      dispatchTranslateStateEvent(getTextSelectionLayer(), true, 'es');
+      dispatchTranslateStateEvent(
+          getTextSelectionLayer().getElementForTesting(), true, 'es');
       await waitAfterNextRender(selectionOverlayElement);
 
       selectionOverlayElement.setLanguagePickersOpenForTesting(true);
-      let wordEl =
-          getTextSelectionLayer().getTranslatedWordNodesForTesting()[0]!;
+      let wordEl = getTranslatedWordNodes()[0]!;
       await simulateClick(selectionOverlayElement, {
         x: wordEl.getBoundingClientRect().left,
         y: wordEl.getBoundingClientRect().top,
@@ -1359,7 +1365,7 @@ suite('SelectionOverlay', function() {
               UserAction.kTranslateTextSelection));
 
       selectionOverlayElement.setLanguagePickersOpenForTesting(false);
-      wordEl = getTextSelectionLayer().getTranslatedWordNodesForTesting()[0]!;
+      wordEl = getTranslatedWordNodes()[0]!;
       await simulateClick(selectionOverlayElement, {
         x: wordEl.getBoundingClientRect().left,
         y: wordEl.getBoundingClientRect().top,
@@ -1382,12 +1388,12 @@ suite('SelectionOverlay', function() {
     });
 
     test('TextSelectionDragIfLanguagePickersOpen', async () => {
-      dispatchTranslateStateEvent(getTextSelectionLayer(), true, 'es');
+      dispatchTranslateStateEvent(
+          getTextSelectionLayer().getElementForTesting(), true, 'es');
       await waitAfterNextRender(selectionOverlayElement);
       selectionOverlayElement.setLanguagePickersOpenForTesting(true);
 
-      const wordEl =
-          getTextSelectionLayer().getTranslatedWordNodesForTesting()[0]!;
+      const wordEl = getTranslatedWordNodes()[0]!;
       await simulateDrag(
           selectionOverlayElement, {
             x: wordEl.getBoundingClientRect().left,

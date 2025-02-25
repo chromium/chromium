@@ -35,7 +35,7 @@ import {renderScreenshot} from './screenshot_utils.js';
 import {getTemplate} from './selection_overlay.html.js';
 import {CursorType, DRAG_THRESHOLD, DragFeature, emptyGestureEvent, focusShimmerOnRegion, GestureState, ShimmerControlRequester} from './selection_utils.js';
 import type {GestureEvent, OverlayShimmerFocusedRegion} from './selection_utils.js';
-import type {TextLayerElement} from './text_layer.js';
+import type {TextLayerBase} from './text_layer_base.js';
 import type {TranslateState} from './translate_button.js';
 import {toPercent} from './values_converter.js';
 
@@ -272,7 +272,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private shimmerFadeOutComplete: boolean = true;
   private simplifiedSelectionEnabled: boolean;
   // The text selection layer rendered on the selection overlay if it exists.
-  private textSelectionLayer?: TextLayerElement;
+  private textSelectionLayer: TextLayerBase;
 
   private eventTracker_: EventTracker = new EventTracker();
   // Listener ids for events from the browser side.
@@ -628,7 +628,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     }
 
     if (event.button === 2 /* right button */) {
-      if (this.getTextSelectionLayer()?.handleRightClick(event)) {
+      if (this.getTextSelectionLayer().handleRightClick(event)) {
         return;
       }
       this.$.postSelectionRenderer.handleRightClick(event);
@@ -737,7 +737,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
     if (this.$.postSelectionRenderer.handleGestureStart(this.currentGesture)) {
       this.draggingRespondent = DragFeature.POST_SELECTION;
-    } else if (this.getTextSelectionLayer()?.handleGestureStart(
+    } else if (this.getTextSelectionLayer().handleGestureStart(
                    this.currentGesture)) {
       // Text is responding to this sequence of gestures.
       this.draggingRespondent = DragFeature.TEXT;
@@ -754,7 +754,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
     if (this.draggingRespondent === DragFeature.TEXT) {
       this.setCursorToText();
-      this.getTextSelectionLayer()?.handleGestureDrag(this.currentGesture);
+      this.getTextSelectionLayer().handleGestureDrag(this.currentGesture);
     } else if (this.draggingRespondent === DragFeature.POST_SELECTION) {
       this.$.postSelectionRenderer.handleGestureDrag(this.currentGesture);
     } else if (!this.translateModeEnabled) {
@@ -778,7 +778,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         if (this.draggingRespondent === DragFeature.MANUAL_REGION) {
           this.$.regionSelectionLayer.handleGestureEnd(this.currentGesture);
         } else if (this.draggingRespondent === DragFeature.TEXT) {
-          this.getTextSelectionLayer()?.handleGestureEnd();
+          this.getTextSelectionLayer().handleGestureEnd();
         } else if (this.draggingRespondent === DragFeature.POST_SELECTION) {
           this.$.postSelectionRenderer.handleGestureEnd();
         }
@@ -786,7 +786,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       case GestureState.STARTING:
         // This gesture was a tap. Let the features respond to a tap.
         if (this.draggingRespondent === DragFeature.TEXT) {
-          this.getTextSelectionLayer()?.handleGestureEnd();
+          this.getTextSelectionLayer().handleGestureEnd();
           break;
         }
         if (this.translateModeEnabled) {
@@ -812,7 +812,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   }
 
   private handleGestureCancel() {
-    this.getTextSelectionLayer()?.cancelGesture();
+    this.getTextSelectionLayer().cancelGesture();
     this.$.regionSelectionLayer.cancelGesture();
     this.$.postSelectionRenderer.cancelGesture();
   }
@@ -993,14 +993,21 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   }
 
   private handleSelectText() {
-    this.getTextSelectionLayer()?.selectAndSendWords(
+    this.getTextSelectionLayer().selectAndSendWords(
         this.detectedTextStartIndex, this.detectedTextEndIndex);
     this.$.postSelectionRenderer.clearSelection();
   }
 
   private handleTranslateDetectedText() {
-    this.getTextSelectionLayer()?.selectAndTranslateWords(
+    this.getTextSelectionLayer().selectAndTranslateWords(
         this.detectedTextStartIndex, this.detectedTextEndIndex);
+
+    // Do not clear the post selection renderer if simplified selection is
+    // enabled. Instead, just hide the region context menu manually.
+    if (this.simplifiedSelectionEnabled) {
+      this.setShowSelectedRegionContextMenu(false);
+      return;
+    }
     this.$.postSelectionRenderer.clearSelection();
   }
 
@@ -1144,13 +1151,24 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   /**
    * Attempts to fetch the text layer in the selection overlay and returns it.
    */
-  private getTextSelectionLayer(): TextLayerElement|undefined {
+  private getTextSelectionLayer(): TextLayerBase {
     if (this.textSelectionLayer) {
       return this.textSelectionLayer;
     }
 
+    // If simplified selection is enabled, then that means the layer being
+    // rendered must be the `lens-simplified-text-layer`. It is only not
+    // rendered when simplified selection is disabled.
+    if (this.simplifiedSelectionEnabled) {
+      this.textSelectionLayer =
+          this.shadowRoot!.querySelector('lens-simplified-text-layer')!;
+      return this.textSelectionLayer;
+    }
+
+    // Likewise, if simplified selection is disabled, `lens-text-layer` must be
+    // the text layer being rendered.
     this.textSelectionLayer =
-        this.shadowRoot!.querySelector('lens-text-layer') ?? undefined;
+        this.shadowRoot!.querySelector('lens-text-layer')!;
     return this.textSelectionLayer;
   }
 
@@ -1163,7 +1181,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     return this.selectionOverlayRect;
   }
 
-  getTextSelectionLayerForTesting(): TextLayerElement|undefined {
+  getTextSelectionLayerForTesting(): TextLayerBase {
     return this.getTextSelectionLayer();
   }
 
