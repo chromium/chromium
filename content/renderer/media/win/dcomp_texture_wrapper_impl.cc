@@ -167,6 +167,9 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
     return;
   }
 
+  const gfx::ColorSpace color_space = gfx::ColorSpace(
+      gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709);
+
   // No need to wait on any sync token as the SharedImage |mailbox_| should be
   // ready for use.
   if (!dcomp_texture_resources_) {
@@ -185,14 +188,13 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
     // Ensure that the ClientSI holds the correct texture target (which is *not*
     // the texture target that ClientSharedImage would compute internally for
     // these parameters).
-    shared_image =
-        sii->NotifyMailboxAdded(mailbox_, viz::SinglePlaneFormat::kBGRA_8888,
-                                natural_size_, gfx::ColorSpace::CreateSRGB(),
-                                kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                                gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                    gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                                    gpu::SHARED_IMAGE_USAGE_RASTER_READ,
-                                GL_TEXTURE_EXTERNAL_OES);
+    shared_image = sii->NotifyMailboxAdded(
+        mailbox_, viz::SinglePlaneFormat::kBGRA_8888, natural_size_,
+        color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+            gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+            gpu::SHARED_IMAGE_USAGE_RASTER_READ,
+        GL_TEXTURE_EXTERNAL_OES);
 
     CHECK(shared_image);
     dcomp_texture_resources_ =
@@ -211,6 +213,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
       natural_size_, gfx::Rect(natural_size_), natural_size_,
       base::TimeDelta());
 
+  frame->set_color_space(color_space);
   // Sets `dcomp_surface` to use StreamTexture. See `VideoResourceUpdater`.
   frame->metadata().dcomp_surface = true;
 
