@@ -208,7 +208,6 @@ class AddressEditorMediator {
      * [ an address field    ] /
      * [ phone number field  ] <----- phone is always present.
      * [ email address field ] <----- only present if purpose is Purpose.AUTOFILL_SETTINGS.
-     * [ address nickname    ] <----- only present if nickname support is enabled.
      */
     PropertyModel getEditorModel() {
         if (mEditorModel != null) {
@@ -230,7 +229,7 @@ class AddressEditorMediator {
                                                 mProfileToEdit, mPersonalDataManager),
                                         mProfileToEdit.getLanguageCode()))
                         .with(DONE_RUNNABLE, this::onCommitChanges)
-                        // If the user clicks [Cancel], send |toEdit| address back to the caller,
+                        // If the user clicks [Cancel], send `toEdit` address back to the caller,
                         // which was the original state (could be null, a complete address, a
                         // partial address).
                         .with(CANCEL_RUNNABLE, this::onCancelEditing)

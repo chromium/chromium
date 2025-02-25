@@ -311,7 +311,7 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
 }
 
 // Tests that the save callback is triggered with
-// |AddressPromptUserDecision::kMessageDeclined| when the user
+// `AddressPromptUserDecision::kMessageDeclined` when the user
 // dismisses the message via gesture.
 TEST_F(SaveUpdateAddressProfileMessageControllerTest,
        DecisionIsMessageDeclinedOnGestureDismiss) {
@@ -325,7 +325,7 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
 }
 
 // Tests that the save callback is triggered with
-// |AddressPromptUserDecision::kMessageTimeout| when the message is
+// `AddressPromptUserDecision::kMessageTimeout` when the message is
 // auto-dismissed after a timeout.
 TEST_F(SaveUpdateAddressProfileMessageControllerTest,
        DecisionIsMessageTimeoutOnTimerAutodismiss) {

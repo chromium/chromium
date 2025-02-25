@@ -257,7 +257,7 @@ void FormStructureBrowserTest::GenerateResults(const std::string& input,
   html_content_.clear();
   html_content_.reserve(input.length());
   for (const char c : input) {
-    // Strip `\n`, `\t`, `\r` from |html| to match old `data:` URL behavior.
+    // Strip `\n`, `\t`, `\r` from `html` to match old `data:` URL behavior.
     // TODO(crbug.com/40317270): the tests expect weird concatenation behavior
     // based
     //   legacy data URL behavior. Fix this so the the tests better represent

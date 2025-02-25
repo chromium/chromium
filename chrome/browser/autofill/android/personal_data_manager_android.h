@@ -60,8 +60,8 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   base::android::ScopedJavaLocalRef<jobjectArray> GetProfileGUIDsToSuggest(
       JNIEnv* env);
 
-  // Returns the profile with the specified |guid|, or NULL if there is no
-  // profile with the specified |guid|. Both web and auxiliary profiles may
+  // Returns the profile with the specified `guid`, or NULL if there is no
+  // profile with the specified `guid`. Both web and auxiliary profiles may
   // be returned.
   base::android::ScopedJavaLocalRef<jobject> GetProfileByGUID(
       JNIEnv* env,
@@ -80,13 +80,13 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   bool IsCountryEligibleForAccountStorage(JNIEnv* env,
                                           std::string& country_code) const;
 
-  // Adds or modifies a profile.  If |guid| is an empty string, we are creating
+  // Adds or modifies a profile.  If `guid` is an empty string, we are creating
   // a new profile.  Else we are updating an existing profile.  Always returns
   // the GUID for this profile; the GUID it may have just been created.
   std::string SetProfile(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& jprofile,
                          std::string& guid);
-  // Adds or modifies a profile like SetProfile interface if |jprofile| is
+  // Adds or modifies a profile like SetProfile interface if `jprofile` is
   // local. Otherwise it creates a local copy of it.
   std::string SetProfileToLocal(
       JNIEnv* env,
@@ -104,7 +104,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // useful for distinguishing the profiles from one another.
   //
   // The labels never contain the email address, or phone numbers. The
-  // |include_name_in_label| argument controls whether the name is included.
+  // `include_name_in_label` argument controls whether the name is included.
   // All other fields are included in the label.
   base::android::ScopedJavaLocalRef<jobjectArray> GetProfileLabelsToSuggest(
       JNIEnv* env,
@@ -114,7 +114,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
 
   // Returns the shipping label of the given profile for PaymentRequest. This
   // label does not contain the full name or the email address but will include
-  // the country depending on the value of |include_country_in_label|. All other
+  // the country depending on the value of `include_country_in_label`. All other
   // fields are included in the label.
   std::u16string GetShippingAddressLabelForPaymentRequest(
       JNIEnv* env,
@@ -135,13 +135,13 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   base::android::ScopedJavaLocalRef<jobjectArray> GetCreditCardGUIDsToSuggest(
       JNIEnv* env);
 
-  // Returns the credit card with the specified |guid|, or NULL if there is
-  // no credit card with the specified |guid|.
+  // Returns the credit card with the specified `guid`, or NULL if there is
+  // no credit card with the specified `guid`.
   base::android::ScopedJavaLocalRef<jobject> GetCreditCardByGUID(
       JNIEnv* env,
       std::string& guid);
 
-  // Returns a credit card with the specified |jcard_number|. This is used for
+  // Returns a credit card with the specified `jcard_number`. This is used for
   // determining the card's obfuscated number, issuer icon, and type in one go.
   // This function does not interact with the autofill table on disk, so can be
   // used for cards that are not saved.
@@ -149,13 +149,13 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       JNIEnv* env,
       std::u16string& jcard_number);
 
-  // Adds or modifies a local credit card.  If |guid| is an empty string, we
+  // Adds or modifies a local credit card.  If `guid` is an empty string, we
   // are creating a new card. Else we are updating an existing card. Always
   // returns the GUID for this card; the GUID it may have just been created.
   std::string SetCreditCard(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& jcard);
 
-  // Updates the billing address of a server credit card |jcard|.
+  // Updates the billing address of a server credit card `jcard`.
   void UpdateServerCardBillingAddress(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcard);
@@ -176,12 +176,12 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // --------------------
 
   // Records the use and log usage metrics for the profile associated with the
-  // |guid|. Increments the use count of the profile and sets its use date to
+  // `guid`. Increments the use count of the profile and sets its use date to
   // the current time.
   void RecordAndLogProfileUse(JNIEnv* env, std::string& guid);
 
   // Records the use and log usage metrics for the credit card associated with
-  // the |guid|. Increments the use count of the credit card and sets its use
+  // the `guid`. Increments the use count of the credit card and sets its use
   // date to the current time.
   void RecordAndLogCreditCardUse(JNIEnv* env, std::string& guid);
 
@@ -273,22 +273,22 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
  private:
   ~PersonalDataManagerAndroid() override;
 
-  // Returns the GUIDs of the |profiles| passed as parameter.
+  // Returns the GUIDs of the `profiles` passed as parameter.
   base::android::ScopedJavaLocalRef<jobjectArray> GetProfileGUIDs(
       JNIEnv* env,
       const std::vector<const AutofillProfile*>& profiles);
 
-  // Returns the GUIDs of the |credit_cards| passed as parameter.
+  // Returns the GUIDs of the `credit_cards` passed as parameter.
   base::android::ScopedJavaLocalRef<jobjectArray> GetCreditCardGUIDs(
       JNIEnv* env,
       const std::vector<const CreditCard*>& credit_cards);
 
-  // Gets the labels for the |profiles| passed as parameters. These labels are
+  // Gets the labels for the `profiles` passed as parameters. These labels are
   // useful for distinguishing the profiles from one another.
   //
   // The labels never contain the full name and include at least 2 fields.
   //
-  // If |address_only| is true, then such fields as phone number, and email
+  // If `address_only` is true, then such fields as phone number, and email
   // address are also omitted, but all other fields are included in the label.
   base::android::ScopedJavaLocalRef<jobjectArray> GetProfileLabels(
       JNIEnv* env,
