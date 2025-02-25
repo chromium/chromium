@@ -55,6 +55,15 @@ class CloudHeartbeatServiceClient : public HeartbeatServiceClient {
   void CancelPendingRequests() override;
 
  private:
+  // Overloads used to create callbacks for |instance_identity_token_getter_|.
+  void SendFullHeartbeatWithIdToken(bool is_initial_heartbeat,
+                                    std::optional<std::string> signaling_id,
+                                    std::optional<std::string> offline_reason,
+                                    HeartbeatResponseCallback callback,
+                                    std::string_view instance_identity_token);
+  void SendLiteHeartbeatWithIdToken(HeartbeatResponseCallback callback,
+                                    std::string_view instance_identity_token);
+
   void OnSendHeartbeatResponse(
       HeartbeatResponseCallback callback,
       const HttpStatus& status,
@@ -75,6 +84,7 @@ class CloudHeartbeatServiceClient : public HeartbeatServiceClient {
   void MakeUpdateRemoteAccessHostCall(
       std::optional<std::string> signaling_id,
       std::optional<std::string> offline_reason,
+      std::string_view instance_identity_token,
       CloudServiceClient::UpdateRemoteAccessHostCallback callback);
 
   void RunHeartbeatResponseCallback(HeartbeatResponseCallback callback,
