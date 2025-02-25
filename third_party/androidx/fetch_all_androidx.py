@@ -206,7 +206,6 @@ def _process_build_gradle(template_path, output_path, androidx_repository_url,
 def _write_cipd_yaml(libs_dir,
                      version,
                      cipd_yaml_path,
-                     to_commit_zip_path,
                      experimental=False):
     """Writes cipd.yaml file at the passed-in path."""
 
@@ -220,7 +219,7 @@ def _write_cipd_yaml(libs_dir,
         'bill_of_materials.json',
         'additional_readme_paths.json',
         'build.gradle',
-        to_commit_zip_path,
+        'to_commit.zip',
     ]
     for lib_dir in lib_dirs:
         abs_lib_dir = os.path.join(libs_dir, lib_dir)
@@ -378,7 +377,6 @@ def main():
     _write_cipd_yaml(libs_dir,
                      version,
                      yaml_path,
-                     to_commit_zip_path,
                      experimental=bool(args.local_repo))
 
 if __name__ == '__main__':
