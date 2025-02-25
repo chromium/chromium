@@ -337,7 +337,7 @@ suite('ApnListItemTest', function() {
 
           apnDetailsClickedEvent =
               eventToPromise('show-apn-detail-dialog', window);
-          getDetailsButton()!.click();
+          getDetailsButton().click();
           eventData = await apnDetailsClickedEvent;
           assertEquals(TEST_APN_EVENT_DATA.apn.name, eventData.detail.apn.name);
           assertEquals(ApnDetailDialogMode.EDIT, eventData.detail.mode);

@@ -124,7 +124,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   void GetFileTypesInThreadPool(blink::mojom::FileChooserParamsPtr params);
   void GetSanitizedFilenameOnUIThread(
       blink::mojom::FileChooserParamsPtr params);
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   // Safe Browsing checks are only applied when `params->mode` is
   // `kSave`, which is only for PPAPI requests.
   void CheckDownloadRequestWithSafeBrowsing(

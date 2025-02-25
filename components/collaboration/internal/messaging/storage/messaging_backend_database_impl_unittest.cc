@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -40,6 +41,7 @@ class MessagingBackendDatabaseImplTest : public testing::Test {
   }
 
   void MimicRestart() {
+    all_entries_from_db_.clear();
     base::RunLoop run_loop;
     database_->SetShutdownCallbackForTesting(run_loop.QuitClosure());
 
@@ -77,6 +79,10 @@ class MessagingBackendDatabaseImplTest : public testing::Test {
     return message;
   }
 
+  std::map<std::string, collaboration_pb::Message> GetAllDataFromDB() {
+    return all_entries_from_db_;
+  }
+
   std::unique_ptr<MessagingBackendDatabaseImpl> database_;
 
  private:
@@ -84,21 +90,28 @@ class MessagingBackendDatabaseImplTest : public testing::Test {
     base::RunLoop run_loop;
     database_ =
         std::make_unique<MessagingBackendDatabaseImpl>(temp_dir_.GetPath());
-
-    database_->Initialize(base::BindOnce(
-        [](base::RunLoop* run_loop, bool success,
-           const std::map<std::string, collaboration_pb::Message>& data) {
-          EXPECT_EQ(true, success);
-          LOG(ERROR) << data.size();
-          run_loop->Quit();
-        },
-        &run_loop));
+    database_->Initialize(
+        base::BindOnce(&MessagingBackendDatabaseImplTest::OnDBLoaded,
+                       weak_ptr_factory_.GetWeakPtr(), &run_loop));
     run_loop.Run();
+  }
+
+  void OnDBLoaded(
+      base::RunLoop* run_loop,
+      bool success,
+      const std::map<std::string, collaboration_pb::Message>& data) {
+    EXPECT_EQ(true, success);
+    LOG(ERROR) << data.size();
+    all_entries_from_db_ = data;
+    run_loop->Quit();
   }
 
   base::test::TaskEnvironment task_environment_;
 
   base::ScopedTempDir temp_dir_;
+  std::map<std::string, collaboration_pb::Message> all_entries_from_db_;
+  base::WeakPtrFactory<MessagingBackendDatabaseImplTest> weak_ptr_factory_{
+      this};
 };
 
 TEST_F(MessagingBackendDatabaseImplTest, AddMessages) {
@@ -155,6 +168,25 @@ TEST_F(MessagingBackendDatabaseImplTest, DeleteMessage) {
   // Make sure the message is deleted after restart.
   MimicRestart();
   ASSERT_FALSE(database_->GetMessageForTesting(message.uuid()).has_value());
+}
+
+TEST_F(MessagingBackendDatabaseImplTest, DeleteAllMessages) {
+  // Update a message.
+  auto message = CreateMessage(collaboration_pb::TAB_ADDED);
+  database_->Update(message);
+  MimicRestart();
+
+  // Make sure the message is saved after restart.
+  std::optional<collaboration_pb::Message> db_message =
+      database_->GetMessageForTesting(message.uuid());
+  ASSERT_TRUE(db_message.has_value());
+  // Delete message.
+  database_->DeleteAllData();
+
+  // Make sure the message is deleted after restart.
+  MimicRestart();
+  ASSERT_FALSE(database_->GetMessageForTesting(message.uuid()).has_value());
+  ASSERT_TRUE(GetAllDataFromDB().empty());
 }
 
 }  // namespace

@@ -16,7 +16,7 @@ suite('DpiSettingsTest', function() {
 
   let model: PrintPreviewModelElement;
 
-  const dpi = getCddTemplate('FooPrinter')!.capabilities!.printer!.dpi;
+  const dpi = getCddTemplate('FooPrinter').capabilities!.printer.dpi;
   assert(dpi);
 
   const dpiCapability: LabelledDpiCapability = dpi as LabelledDpiCapability;

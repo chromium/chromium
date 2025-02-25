@@ -85,6 +85,16 @@ SourceLocation::SourceLocation(const String& url, int char_position)
       char_position_(char_position),
       script_id_(0) {}
 
+SourceLocation::SourceLocation(const String& url,
+                               int char_position,
+                               unsigned line_number,
+                               unsigned column_number)
+    : url_(url),
+      line_number_(line_number),
+      column_number_(column_number),
+      char_position_(char_position),
+      script_id_(0) {}
+
 SourceLocation::SourceLocation(
     const String& url,
     const String& function,

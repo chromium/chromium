@@ -18,6 +18,17 @@
 
 namespace blink {
 
+class CullRectTestConfig {
+ public:
+  CullRectTestConfig() {
+    feature_.InitAndEnableFeatureWithParameters(
+        features::kExpandCompositedCullRect, {{"pixels", "4000"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_;
+};
+
 inline constexpr unsigned kUnderInvalidationChecking = 1 << 0;
 inline constexpr unsigned kFluentScrollbar = 1 << 1;
 inline constexpr unsigned kElementCapture = 1 << 2;
@@ -28,7 +39,8 @@ class PaintTestConfigurations
     : public testing::WithParamInterface<unsigned>,
       private ScopedPaintUnderInvalidationCheckingForTest,
       private ScopedElementCaptureForTest,
-      private ScopedRasterInducingScrollForTest {
+      private ScopedRasterInducingScrollForTest,
+      private CullRectTestConfig {
  public:
   PaintTestConfigurations()
       : ScopedPaintUnderInvalidationCheckingForTest(GetParam() &

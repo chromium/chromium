@@ -324,7 +324,7 @@ export class FakeBluetoothConfig implements CrosBluetoothConfigInterface {
     assertTrue(!!this.pendingConnectRequest);
     const device = this.systemProperties.pairedDevices.find(
         d => d.deviceProperties.id === this.pendingConnectRequest!.deviceId);
-    device!.deviceProperties!.connectionState =
+    device!.deviceProperties.connectionState =
         DeviceConnectionState.kNotConnected;
 
     if (success) {
@@ -395,7 +395,7 @@ export class FakeBluetoothConfig implements CrosBluetoothConfigInterface {
 
     // lastDiscoveryDelegate uses ! flag because the compilar currently fails
     // when running test locally.
-    this.lastDiscoveryDelegate!.onDiscoveredDevicesListChanged(
+    this.lastDiscoveryDelegate.onDiscoveredDevicesListChanged(
         [...this.discoveredDevices]);
   }
 

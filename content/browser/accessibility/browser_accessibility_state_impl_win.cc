@@ -227,33 +227,46 @@ void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
     TCHAR filename[MAX_PATH];
     GetModuleFileName(modules[i], filename, std::size(filename));
     std::string module_name(base::FilePath(filename).BaseName().AsUTF8Unsafe());
-    if (base::EqualsCaseInsensitiveASCII(module_name, "fsdomsrv.dll")) {
       static auto* ax_jaws_crash_key = base::debug::AllocateCrashKeyString(
           "ax_jaws", base::debug::CrashKeySize::Size32);
-      base::debug::SetCrashKeyString(ax_jaws_crash_key, "true");
-      g_jaws = true;
-    }
-    if (base::EqualsCaseInsensitiveASCII(module_name,
-                                         "vbufbackend_gecko_ia2.dll") ||
-        base::EqualsCaseInsensitiveASCII(module_name, "nvdahelperremote.dll")) {
+      if (base::EqualsCaseInsensitiveASCII(module_name, "fsdomsrv.dll")) {
+        base::debug::SetCrashKeyString(ax_jaws_crash_key, "true");
+        g_jaws = true;
+      } else if (g_jaws) {
+        base::debug::ClearCrashKeyString(ax_jaws_crash_key);
+        g_jaws = false;
+      }
       static auto* ax_nvda_crash_key = base::debug::AllocateCrashKeyString(
           "ax_nvda", base::debug::CrashKeySize::Size32);
-      base::debug::SetCrashKeyString(ax_nvda_crash_key, "true");
-      g_nvda = true;
-    }
-    if (base::EqualsCaseInsensitiveASCII(module_name, "dolwinhk.dll")) {
+      if (base::EqualsCaseInsensitiveASCII(module_name,
+                                           "vbufbackend_gecko_ia2.dll") ||
+          base::EqualsCaseInsensitiveASCII(module_name,
+                                           "nvdahelperremote.dll")) {
+        base::debug::SetCrashKeyString(ax_nvda_crash_key, "true");
+        g_nvda = true;
+      } else if (g_nvda) {
+        base::debug::ClearCrashKeyString(ax_nvda_crash_key);
+        g_nvda = false;
+      }
       static auto* ax_supernova_crash_key = base::debug::AllocateCrashKeyString(
           "ax_supernova", base::debug::CrashKeySize::Size32);
-      base::debug::SetCrashKeyString(ax_supernova_crash_key, "true");
-      g_supernova = true;
-    }
-    if (base::EqualsCaseInsensitiveASCII(module_name, "zslhook.dll") ||
-        base::EqualsCaseInsensitiveASCII(module_name, "zslhook64.dll")) {
+      if (base::EqualsCaseInsensitiveASCII(module_name, "dolwinhk.dll")) {
+        base::debug::SetCrashKeyString(ax_supernova_crash_key, "true");
+        g_supernova = true;
+      } else {
+        base::debug::ClearCrashKeyString(ax_supernova_crash_key);
+        g_supernova = false;
+      }
       static auto* ax_zoomtext_crash_key = base::debug::AllocateCrashKeyString(
           "ax_zoomtext", base::debug::CrashKeySize::Size32);
-      base::debug::SetCrashKeyString(ax_zoomtext_crash_key, "true");
-      g_zoomtext = true;
-    }
+      if (base::EqualsCaseInsensitiveASCII(module_name, "zslhook.dll") ||
+          base::EqualsCaseInsensitiveASCII(module_name, "zslhook64.dll")) {
+        base::debug::SetCrashKeyString(ax_zoomtext_crash_key, "true");
+        g_zoomtext = true;
+      } else if (g_zoomtext) {
+        base::debug::ClearCrashKeyString(ax_zoomtext_crash_key);
+        g_zoomtext = false;
+      }
   }
 
   // Narrator detection.
@@ -263,7 +276,15 @@ void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
   if (narrator_key.Valid()) {
     narrator_key.ReadValueDW(kNarratorRunningStateValueName, &narrator_value);
   }
-  g_narrator = narrator_value != 0;
+  static auto* ax_narrator_crash_key = base::debug::AllocateCrashKeyString(
+      "ax_narrator", base::debug::CrashKeySize::Size32);
+  if (narrator_value) {
+    base::debug::SetCrashKeyString(ax_narrator_crash_key, "true");
+    g_narrator = true;
+  } else if (g_narrator) {
+    base::debug::ClearCrashKeyString(ax_narrator_crash_key);
+    g_narrator = false;
+  }
 
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinJAWS", g_jaws);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA", g_nvda);

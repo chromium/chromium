@@ -83,7 +83,7 @@ Network.responseReceived{
         remotePort : 8443
         responseTime : <number>
         securityDetails : <object>
-        securityState : insecure
+        securityState : secure
         status : 200
         statusText : OK
         timing : <object>
@@ -214,7 +214,7 @@ Network.requestWillBeSent{
         remotePort : 8443
         responseTime : <number>
         securityDetails : <object>
-        securityState : insecure
+        securityState : secure
         status : 302
         statusText : Found
         timing : <object>
@@ -321,7 +321,7 @@ Network.responseReceived{
         remotePort : 8443
         responseTime : <number>
         securityDetails : <object>
-        securityState : insecure
+        securityState : secure
         status : 200
         statusText : OK
         timing : <object>

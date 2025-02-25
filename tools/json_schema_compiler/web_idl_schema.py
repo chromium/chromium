@@ -3,13 +3,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import itertools
 import json
-import os.path
-import sys
 import linecache
+import os.path
+import re
+import sys
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional
-from json_parse import OrderedDict
+from typing import Dict, List, Optional, NamedTuple
+from collections import OrderedDict
 
 # This file is a peer to json_schema.py and idl_schema.py. Each of these files
 # understands a certain format describing APIs (either JSON, old extensions IDL
@@ -98,24 +100,21 @@ def GetExtendedAttributes(node: IDLNode) -> Optional[List[IDLNode]]:
   return ext_attribute_node.GetListOf('ExtAttribute')
 
 
-def GetNodeDescription(node: IDLNode) -> str:
-  """Extract file comments above a node and convert them to description strings
+def _ExtractNodeComment(node: IDLNode) -> str:
+  """Extract contiguous file comments above a node and return them as a string.
 
-  For comments to be converted to description properties they must be on the
-  lines directly preceding the node they apply to and must use the '//' form.
-  All contiguous preceding commented lines will be grouped together for the
-  description, until a non-commented line is reached. New lines and leading/
-  trailing whitespace are removed, but if an empty commented line is used for
-  formatting, each "paragraph" of the comment  will be wrapped with a <p> tag.
-
-  TODO(crbug.com/340297705): Add support for parameter comments and call this
-  for functions, events and properties.
+  For comments to be extracted correctly they must be on the lines directly
+  preceding the node they apply to and must use the '//' form. All contiguous
+  preceding commented lines will be joined together, until a non-commented line
+  is reached, with the comment characters (//) and leading/trailing whitespace
+  being removed. The resulting string is returned.
 
   Args:
     node: The IDL node to look for a descriptive comment above.
 
   Returns:
-    The formatted string expected for the description of the node.
+    A string of all the preceding comment lines joined, ready for further
+    processing.
 
   Raises:
     SchemaCompilerError: If top of file is reached while trying to extract a
@@ -128,14 +127,14 @@ def GetNodeDescription(node: IDLNode) -> str:
   # correctly, but the Arguments child node will have the correct line number,
   # so use that instead.
   if node.GetClass() == 'Operation':
-    return GetNodeDescription(node.GetOneOf('Arguments'))
+    return _ExtractNodeComment(node.GetOneOf('Arguments'))
 
   # Extended attributes for a node can actually be formatted onto a preceding
   # line, so if this node has an extended attribute we instead look for the
   # description relative to the extended attribute node.
   ext_attribute_node = node.GetOneOf('ExtAttributes')
   if ext_attribute_node is not None:
-    return GetNodeDescription(ext_attribute_node)
+    return _ExtractNodeComment(ext_attribute_node)
 
   # Look through the lines above the current node and extract every consecutive
   # line that is a comment until a blank or non-comment line is found.
@@ -168,17 +167,83 @@ def GetNodeDescription(node: IDLNode) -> str:
           ' comment. Make sure there is a blank line before the comment.',
           node,
       )
-  description = ''.join(lines)
+  return ''.join(lines)
 
-  # Remove new line characters and add HTML paragraphing to comments formatted
-  # with intentional blank commented lines in them.
+
+class DescriptionData(NamedTuple):
+  """Structured tuple to wrap documentation comment strings."""
+  description: str
+  parameter_descriptions: OrderedDict[str, str]
+
+
+def ProcessNodeDescription(node: IDLNode) -> DescriptionData:
+  """Extracts the node description and a list of any parameter descriptions.
+
+  Uses _ExtractNodeComment to first get the comments on lines directly preceding
+  the supplied node and then applies formatting to them. Newlines are removed,
+  but if the comment also includes intentional blank new lines, the different
+  "paragraphs" of the comment will be wrapped with a <p> tag.
+
+  Also extracts out parameter descriptions and applies the above formatting to
+  them. Parameter comments must come at the end of the comment and be of the
+  form:
+    // General function documentation, can be multiple lines.
+    //
+    // |arg1_name|: Description of arg1.
+    // |arg2_name|: Description of arg2...
+  Parameter descriptions are returned as a dictionary, with the parameter names
+  as keys pointing to the formatted description strings as values.
+
+  TODO(crbug.com/340297705): Call this for events and properties.
+
+  Args:
+    node: The IDL node to look for a descriptive comment above.
+
+  Returns:
+    A DescriptionData containing the formatted string for the description of the
+    node and a dictionary of formatted strings for any parameter descriptions.
+  """
+  comment = _ExtractNodeComment(node)
+
+  # Helper function to add HTML paragraphing to comments formatted with
+  # intentional blank commented lines in them.
   def add_paragraphs(content):
     paragraphs = content.split('\n\n')
     if len(paragraphs) < 2:
       return content
     return '<p>' + '</p><p>'.join(p.strip() for p in paragraphs) + '</p>'
 
-  return add_paragraphs(description.strip()).replace('\n', '')
+  # Helper function to strip whitespace, add paragraphing and remove newlines.
+  def format_description(content):
+    return add_paragraphs(content.strip()).replace('\n', '')
+
+  # Find all the parameter comment labels of the form '|name|: comment',
+  # capturing the parameter name. Note: the end of a match is actually where
+  # that parameter comment starts, going until the beginning of the next match
+  # (or until the end of the string).
+  parameter_matches = list(re.finditer(r' *\|([^|]*)\| *: *', comment))
+
+  # Get the parent comment (everything before the first parameter comment).
+  first_parameter_location = (parameter_matches[0].start()
+                              if parameter_matches else len(comment))
+  description = format_description(comment[:first_parameter_location])
+
+  # Now extract any parameter comments.
+  parameter_descriptions = OrderedDict()
+  # Shorthand to iterate over parameter_matches with both element N and N+1.
+  for (current_param,
+       next_param) in itertools.zip_longest(parameter_matches,
+                                            parameter_matches[1:]):
+    param_name = current_param.group(1)
+
+    # A parameter's comment goes from the end of its introduction to the
+    # beginning of the next parameter's introduction.
+    param_comment_start = current_param.end()
+    param_comment_end = next_param.start() if next_param else len(comment)
+    parameter_descriptions[param_name] = format_description(
+        comment[param_comment_start:param_comment_end])
+
+  return DescriptionData(description, parameter_descriptions)
 
 
 class Type():
@@ -301,13 +366,18 @@ class TypedProperty(ABC):
 
   Attributes:
     node: The IDLNode that represents this property.
+    descriptions: A dictionary of comment description strings, used for passing
+      in descriptions of function arguments.
     type_node: The specific IDLNode of class Type which contains type details.
     properties: The dictionary for the final processed representation of this
       typed property which will be returned when calling Process.
   """
 
-  def __init__(self, node: IDLNode) -> None:
+  def __init__(self,
+               node: IDLNode,
+               descriptions: Optional[OrderedDict[str, str]] = None) -> None:
     self.node = node
+    self.descriptions = descriptions
     self.type_node = node.GetOneOf('Type')
     assert self.type_node is not None, self.type_node.GetLogLine(
         'Could not find Type node on IDLNode named: %s.' % (node.GetName()))
@@ -322,9 +392,10 @@ class FunctionArgument(TypedProperty):
   """Handles processing for function arguments."""
 
   def Process(self) -> dict:
-    # TODO(crbug.com/340297705): Add processing of comments to descriptions on
-    # function argument types.
-    self.properties['name'] = self.node.GetName()
+    name = self.node.GetName()
+    self.properties['name'] = name
+    if self.descriptions and name in self.descriptions:
+      self.properties['description'] = self.descriptions[name]
     if self.node.GetProperty('OPTIONAL'):
       self.properties['optional'] = True
     return self.properties
@@ -363,7 +434,7 @@ class DictionaryMember(TypedProperty):
     if self.type_node.GetProperty('NULLABLE'):
       self.properties['optional'] = True
 
-    description = GetNodeDescription(self.node)
+    description = ProcessNodeDescription(self.node).description
     if description:
       self.properties['description'] = description
     return self.properties
@@ -387,14 +458,16 @@ class Operation:
     properties = OrderedDict()
     properties['name'] = self.node.GetName()
 
-    description = GetNodeDescription(self.node)
-    if (description):
-      properties['description'] = description
+    description_data = ProcessNodeDescription(self.node)
+    if (description_data.description):
+      properties['description'] = description_data.description
 
     parameters = []
     arguments_node = self.node.GetOneOf('Arguments')
     for argument in arguments_node.GetListOf('Argument'):
-      parameters.append(FunctionArgument(argument).Process())
+      parameters.append(
+          FunctionArgument(argument,
+                           description_data.parameter_descriptions).Process())
     properties['parameters'] = parameters
 
     # Return type processing.
@@ -468,7 +541,7 @@ class Namespace:
   def process(self) -> dict:
     functions = []
     types = []
-    description = GetNodeDescription(self.namespace)
+    description = ProcessNodeDescription(self.namespace).description
     nodoc = False
     platforms = None
 

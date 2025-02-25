@@ -31,7 +31,7 @@ suite('PersonalizationMainElementTest', function() {
     personalizationMainElement = initElement(PersonalizationMainElement);
     await waitAfterNextRender(personalizationMainElement);
 
-    const preview = personalizationMainElement!.shadowRoot!.querySelector(
+    const preview = personalizationMainElement.shadowRoot!.querySelector(
         'ambient-preview-large')!;
     assertTrue(!!preview, 'ambient preview exists');
   });
@@ -41,7 +41,7 @@ suite('PersonalizationMainElementTest', function() {
     personalizationMainElement = initElement(PersonalizationMainElement);
     await waitAfterNextRender(personalizationMainElement);
 
-    const preview = personalizationMainElement!.shadowRoot!.querySelector(
+    const preview = personalizationMainElement.shadowRoot!.querySelector(
         'ambient-preview-large')!;
     assertTrue(!!preview, 'ambient preview exists');
   });
@@ -53,7 +53,7 @@ suite('PersonalizationMainElementTest', function() {
     personalizationMainElement = initElement(PersonalizationMainElement);
     await waitAfterNextRender(personalizationMainElement);
 
-    const banner = personalizationMainElement!.shadowRoot!.querySelector(
+    const banner = personalizationMainElement.shadowRoot!.querySelector(
         'time-of-day-banner');
     assertTrue(!!banner, 'time of day banner exists');
 

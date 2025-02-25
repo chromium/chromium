@@ -1294,6 +1294,52 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void tabAddition_TabGridDialog_delayAdd() {
+        mMediator.setComponentNameForTesting(TabGridDialogCoordinator.COMPONENT_NAME_PREFIX);
+        initAndAssertAllProperties();
+
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(0);
+        doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(1);
+        doReturn(newTab).when(mTabGroupModelFilter).getTabAt(2);
+        doReturn(Arrays.asList(mTab1, mTab2, newTab))
+                .when(mTabGroupModelFilter)
+                .getRelatedTabList(TAB1_ID);
+        doReturn(3).when(mTabGroupModelFilter).getCount();
+        doReturn(Arrays.asList(newTab)).when(mTabGroupModelFilter).getRelatedTabList(eq(TAB3_ID));
+        assertThat(mModelList.size(), equalTo(2));
+
+        // Add tab marked as delayed.
+        mTabModelObserverCaptor
+                .getValue()
+                .didAddTab(
+                        newTab,
+                        TabLaunchType.FROM_TAB_GROUP_UI,
+                        TabCreationState.LIVE_IN_FOREGROUND,
+                        true);
+
+        // Verify tab did not get added and delayed tab is captured.
+        assertThat(mModelList.size(), equalTo(2));
+        assertThat(mMediator.getTabToAddDelayedForTesting(), equalTo(newTab));
+
+        // Select delayed tab.
+        mTabModelObserverCaptor
+                .getValue()
+                .didSelectTab(newTab, TabSelectionType.FROM_USER, mTab1.getId());
+        // Assert old tab is still marked as selected.
+        assertThat(mModelList.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
+
+        when(mTabModel.getTabAt(2)).thenReturn(newTab);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        // Hide dialog to complete and ensure the delayed tab is not added.
+        resetWithNullTabs();
+        mMediator.postHiding();
+        // Assert tab was not added.
+        assertThat(mModelList.size(), equalTo(0));
+    }
+
+    @Test
     public void tabAddition_Gts_delayAdd() {
         mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
         initAndAssertAllProperties();

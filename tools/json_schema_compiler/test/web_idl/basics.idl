@@ -49,6 +49,13 @@ interface TestWebIdl {
   //
   // With blank comment line for paragraph tags.
   static undefined paragraphedDescription();
+  // This function has parameter comments.
+  //
+  // |arg1|: This comment about the argument
+  // is split across multiple lines
+  // and contains <em>HTML tags</em>.
+  // |arg2|: This second argument uses a custom type.
+  static undefined parameterComments(boolean arg1, ExampleType arg2);
 
 };
 

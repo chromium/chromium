@@ -154,7 +154,7 @@ suite('<manage-mirrorsync>', () => {
       if (!dataFullPath || !isVisible(element)) {
         continue;
       }
-      paths.push(dataFullPath!);
+      paths.push(dataFullPath);
     }
     return paths;
   }

@@ -53,10 +53,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
  public:
   // Indicates whether or not scroll view is initialized with layer-scrolling.
-  enum class ScrollWithLayers { kDisabled, kEnabled };
+  enum class ScrollWithLayers : bool { kDisabled, kEnabled };
 
   // Controls how a scroll bar appears and functions.
-  enum class ScrollBarMode {
+  enum class ScrollBarMode : uint8_t {
     // The scrollbar is hidden, and the pane will not respond to e.g. mousewheel
     // events even if the contents are larger than the viewport.
     kDisabled,

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/files/file_path.h"
@@ -48,6 +49,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
+#include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
@@ -93,7 +95,6 @@ using ::optimization_guide::ModelExecutionFeaturesController;
 using ::optimization_guide::OnDeviceModelComponentStateManager;
 using ::optimization_guide::OnDeviceModelPerformanceClass;
 using ::optimization_guide::OnDeviceModelServiceController;
-
 
 // Returns the profile to use for when setting up the keyed service when the
 // profile is Off-The-Record. For guest profiles, returns a loaded profile if
@@ -434,15 +435,16 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
           optimization_guide::features::kOptimizationGuideOnDeviceModel)) {
     service_controller = GetOnDeviceModelServiceController(
         on_device_component_manager_->GetWeakPtr());
+    on_device_asset_manager_ =
+        std::make_unique<optimization_guide::OnDeviceAssetManager>(
+            g_browser_process->local_state(), service_controller->GetWeakPtr(),
+            on_device_component_manager_->GetWeakPtr(), this);
   }
 
   model_execution_manager_ =
       std::make_unique<optimization_guide::ModelExecutionManager>(
-          url_loader_factory, g_browser_process->local_state(),
-          IdentityManagerFactory::GetForProfile(profile),
-          std::move(service_controller), this,
-          on_device_component_manager_->GetWeakPtr(),
-          optimization_guide_logger_.get(),
+          url_loader_factory, IdentityManagerFactory::GetForProfile(profile),
+          std::move(service_controller), optimization_guide_logger_.get(),
           model_quality_logs_uploader_service_
               ? model_quality_logs_uploader_service_->GetWeakPtr()
               : nullptr);

@@ -49,6 +49,7 @@ constexpr char kBP[] = "bp";
 constexpr char kAP[] = "ap";
 constexpr char kAPPath[] = "ap_path";
 constexpr char kAPKey[] = "ap_key";
+constexpr char kLang[] = "lang";
 
 constexpr char kHadApps[] = "had_apps";
 constexpr char kUsageStatsEnabledKey[] = "usage_stats_enabled";
@@ -285,6 +286,47 @@ void PersistedData::SetAPKey(const std::string& id, const std::string& key) {
   SetString(id, kAPKey, key);
 }
 
+std::string PersistedData::GetLang(const std::string& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const std::string lang = GetString(id, kLang);
+
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, if there is a lang in the registry Clients or
+  // ClientState, that lang is considered authoritative, and overrides any lang
+  // that is already in `prefs`.
+  const std::wstring id_w = base::UTF8ToWide(id);
+  for (const auto& subkey :
+       {GetAppClientsKey(id_w), GetAppClientStateKey(id_w)}) {
+    std::wstring registry_lang_w;
+    if (base::win::RegKey(UpdaterScopeToHKeyRoot(scope_), subkey.c_str(),
+                          Wow6432(KEY_QUERY_VALUE))
+            .ReadValue(kRegValueLang, &registry_lang_w) == ERROR_SUCCESS) {
+      const std::string registry_lang = base::WideToUTF8(registry_lang_w);
+      if (!registry_lang.empty() && registry_lang != lang) {
+        SetString(id, kLang, registry_lang);
+        return registry_lang;
+      }
+    }
+  }
+#endif
+
+  return lang;
+}
+
+void PersistedData::SetLang(const std::string& id, const std::string& lang) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  SetString(id, kLang, lang);
+
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, record the lang in ClientState, since some
+  // applications read it from there.
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_), base::UTF8ToWide(id),
+                 kRegValueLang, base::UTF8ToWide(lang));
+#endif
+}
+
 int PersistedData::GetDateLastActive(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return delegate_->GetDateLastActive(id);
@@ -434,6 +476,9 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   }
   if (!rq.existence_checker_path.empty()) {
     SetExistenceCheckerPath(rq.app_id, rq.existence_checker_path);
+  }
+  if (!rq.lang.empty()) {
+    SetLang(rq.app_id, rq.lang);
   }
   if (!rq.brand_code.empty()) {
     SetBrandCode(rq.app_id, rq.brand_code);

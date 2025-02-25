@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_availability.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
+#include "third_party/blink/renderer/platform/language_detection/language_detection_model.h"
 
 namespace blink {
 // These values are persisted to logs. Entries should not be renumbered and
@@ -36,6 +37,10 @@ AIAvailability HandleModelAvailabilityCheckResult(
 AIAvailability HandleTranslatorAvailabilityCheckResult(
     ExecutionContext* execution_context,
     mojom::blink::CanCreateTranslatorResult result);
+
+AIAvailability HandleLanguageDetectionModelCheckResult(
+    ExecutionContext* execution_context,
+    language_detection::mojom::blink::LanguageDetectionModelStatus result);
 
 }  // namespace blink
 

@@ -37,6 +37,7 @@ class MockMessagingBackendDatabase : public MessagingBackendDatabase {
               Delete,
               (const std::vector<std::string>& message_uuids),
               (override));
+  MOCK_METHOD(void, DeleteAllData, (), (override));
 };
 
 class MessagingBackendStoreTest : public testing::Test {

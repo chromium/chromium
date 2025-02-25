@@ -278,8 +278,8 @@ suite('FeedbackFlowTestSuite', () => {
     continueButton.click();
     await clickPromise;
 
-    assertEquals(FeedbackFlowState.SEARCH, eventDetail!.detail!.currentState);
-    assertEquals('abc', eventDetail!.detail!.description);
+    assertEquals(FeedbackFlowState.SEARCH, eventDetail!.detail.currentState);
+    assertEquals('abc', eventDetail!.detail.description);
 
     // Should move to share data page when click the continue button.
     activePage = getActivePage<ShareDataPageElement>();
@@ -439,16 +439,15 @@ suite('FeedbackFlowTestSuite', () => {
 
     const searchPage = findChildElement(page, '.iron-selected');
     assertTrue(!!searchPage);
-    assertEquals('searchPage', searchPage!.id);
+    assertEquals('searchPage', searchPage.id);
 
-    const inputElement = findChildElement(searchPage as Element, 'textarea') as
-        HTMLTextAreaElement;
+    const inputElement =
+        findChildElement(searchPage, 'textarea') as HTMLTextAreaElement;
     inputElement.value = 'wifi wi-fi internet network hotspot';
     // The flag ShouldShowWifiDebugLogsCheckBox_ is only updated when continue
     // button is clicked.
     const continueButton =
-        findChildElement(searchPage as Element, '#buttonContinue') as
-        CrButtonElement;
+        findChildElement(searchPage, '#buttonContinue') as CrButtonElement;
     continueButton.click();
     await flushTasks();
 
@@ -469,14 +468,13 @@ suite('FeedbackFlowTestSuite', () => {
     assertTrue(!!searchPage);
     assertEquals('searchPage', searchPage.id);
 
-    const inputElement = findChildElement(searchPage as Element, 'textarea') as
-        HTMLTextAreaElement;
+    const inputElement =
+        findChildElement(searchPage, 'textarea') as HTMLTextAreaElement;
     inputElement.value = 'wi-fi';
     // The flag ShouldShowWifiDebugLogsCheckBox_ is only updated when continue
     // button is clicked.
     const continueButton =
-        findChildElement(searchPage as Element, '#buttonContinue') as
-        CrButtonElement;
+        findChildElement(searchPage, '#buttonContinue') as CrButtonElement;
     continueButton.click();
     await flushTasks();
 
@@ -497,14 +495,13 @@ suite('FeedbackFlowTestSuite', () => {
     assertTrue(!!searchPage);
     assertEquals('searchPage', searchPage.id);
 
-    const inputElement = findChildElement(searchPage as Element, 'textarea') as
-        HTMLTextAreaElement;
+    const inputElement =
+        findChildElement(searchPage, 'textarea') as HTMLTextAreaElement;
     inputElement.value = 'wi-fi';
     // The flag ShouldShowWifiDebugLogsCheckBox_ is only updated when continue
     // button is clicked.
     const continueButton =
-        findChildElement(searchPage as Element, '#buttonContinue') as
-        CrButtonElement;
+        findChildElement(searchPage, '#buttonContinue') as CrButtonElement;
     continueButton.click();
     await flushTasks();
 
@@ -906,7 +903,7 @@ suite('FeedbackFlowTestSuite', () => {
     await clickPromise;
 
     assertEquals(
-        FeedbackFlowState.CONFIRMATION, eventDetail!.detail!.currentState);
+        FeedbackFlowState.CONFIRMATION, eventDetail!.detail.currentState);
 
     // Should navigate to search page.
     const newActivePage = getActivePage<SearchPageElement>();
@@ -947,7 +944,7 @@ suite('FeedbackFlowTestSuite', () => {
 
     // Click send new report button.
     strictQuery(
-        '#buttonNewReport', confirmationPage!.shadowRoot, CrButtonElement)
+        '#buttonNewReport', confirmationPage.shadowRoot, CrButtonElement)
         .click();
     await goBackClickPromise;
 
@@ -958,7 +955,7 @@ suite('FeedbackFlowTestSuite', () => {
 
     // Add some text and clicks continue button.
     searchPage.setDescription(/*text=*/ 'abc123');
-    strictQuery('#buttonContinue', searchPage!.shadowRoot, CrButtonElement)
+    strictQuery('#buttonContinue', searchPage.shadowRoot, CrButtonElement)
         .click();
     await continueClickPromise;
 
@@ -1110,7 +1107,7 @@ suite('FeedbackFlowTestSuite', () => {
     const data = {
       id: 'help-content-clicked-for-testing',
     };
-    iframe.contentWindow!.parent!.postMessage(data, OS_FEEDBACK_TRUSTED_ORIGIN);
+    iframe.contentWindow!.parent.postMessage(data, OS_FEEDBACK_TRUSTED_ORIGIN);
 
     // Wait for the "help-content-clicked" message has been received.
     await resolver.promise;

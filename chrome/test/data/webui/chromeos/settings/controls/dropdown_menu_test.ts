@@ -61,7 +61,7 @@ suite('SettingsDropdownMenu', function() {
 
     // Selecting an item updates the pref.
     await simulateChangeEvent('200');
-    assertEquals(200, dropdown.pref!.value);
+    assertEquals(200, dropdown.pref.value);
 
     // Updating the pref selects an item.
     dropdown.set('pref.value', 400);
@@ -88,7 +88,7 @@ suite('SettingsDropdownMenu', function() {
 
     // Selecting an item updates the pref.
     await simulateChangeEvent('a');
-    assertEquals('a', dropdown.pref!.value);
+    assertEquals('a', dropdown.pref.value);
 
     // Item remains selected after updating menu items.
     const newMenuOptions = dropdown.menuOptions.slice().reverse();
@@ -122,7 +122,7 @@ suite('SettingsDropdownMenu', function() {
     assertFalse(customOption.disabled);
 
     // Pref should not have changed.
-    assertEquals('f', dropdown.pref!.value);
+    assertEquals('f', dropdown.pref.value);
   });
 
   test('with hidden options', async function() {
@@ -213,7 +213,7 @@ suite('SettingsDropdownMenu', function() {
 
     // Selecting an item updates the pref.
     await simulateChangeEvent('value3');
-    assertEquals('value3', dropdown.pref!.value['key2']);
+    assertEquals('value3', dropdown.pref.value['key2']);
 
     // The settings-control-change callback should have been triggered
     // exactly once.

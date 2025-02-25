@@ -303,6 +303,13 @@ void TabGroupChangeNotifierImpl::OnTabGroupLocalIdChanged(
 void TabGroupChangeNotifierImpl::OnSyncBridgeUpdateTypeChanged(
     tab_groups::SyncBridgeUpdateType sync_bridge_update_type) {
   sync_bridge_update_type_ = sync_bridge_update_type;
+
+  if (sync_bridge_update_type_ ==
+      tab_groups::SyncBridgeUpdateType::kDisableSync) {
+    for (auto& observer : observers_) {
+      observer.OnSyncDisabled();
+    }
+  }
 }
 
 void TabGroupChangeNotifierImpl::OnTabGroupOpenedOrClosed(

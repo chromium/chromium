@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ToolbarEvent, VoiceClientSideStatusCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent, VoiceClientSideStatusCode, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -374,6 +374,91 @@ suite('AppReceivesToolbarChanges', () => {
         'new theme uses transparent highlight with highlights off',
         async () => {
           await emitHighlight(false);
+          await emitColorTheme(chrome.readingMode.yellowTheme);
+          assertEquals('transparent', highlightColor());
+        });
+  });
+
+  suite('with highlight granularity menu', () => {
+    function highlightColor(): string {
+      return window.getComputedStyle(app.$.container)
+          .getPropertyValue('--current-highlight-bg-color');
+    }
+
+    function emitHighlight(granularity: number) {
+      chrome.readingMode.onHighlightGranularityChanged(granularity);
+      return emitEvent(app, ToolbarEvent.HIGHLIGHT_CHANGE, {
+        detail: {data: granularity},
+      });
+    }
+
+    let highlightedWord: boolean;
+    let highlightedSentence: boolean;
+    let highlightedPhrase: boolean;
+
+    setup(() => {
+      chrome.readingMode.isPhraseHighlightingEnabled = true;
+      highlightedWord = false;
+      highlightedSentence = false;
+      highlightedPhrase = false;
+      app.highlightCurrentSentence = () => highlightedSentence = true;
+      app.highlightCurrentWord = () => highlightedWord = true;
+      app.highlightCurrentPhrase = () => highlightedPhrase = true;
+      app.wordBoundaryState.mode = WordBoundaryMode.BOUNDARY_DETECTED;
+      app.updateContent();
+    });
+
+    test('updates highlight', async () => {
+      const wordHighlighting = chrome.readingMode.wordHighlighting;
+      await emitHighlight(wordHighlighting);
+
+      app.playSpeech();
+
+      assertTrue(highlightedWord);
+      assertFalse(highlightedSentence);
+      assertFalse(highlightedPhrase);
+      assertEquals(wordHighlighting, chrome.readingMode.highlightGranularity);
+    });
+
+    test('multiple changes, uses latest granularity', async () => {
+      const phraseHighlighting = chrome.readingMode.phraseHighlighting;
+      await emitHighlight(chrome.readingMode.wordHighlighting);
+      await emitHighlight(phraseHighlighting);
+
+      app.playSpeech();
+
+      assertTrue(highlightedWord, 'word');
+      assertFalse(highlightedSentence, 'sentence');
+      assertTrue(highlightedPhrase, 'phrase');
+      assertEquals(phraseHighlighting, chrome.readingMode.highlightGranularity);
+    });
+
+    test(
+        'on switch granularity after speech start, updates highlight',
+        async () => {
+          await emitHighlight(chrome.readingMode.wordHighlighting);
+          const sentenceHighlighting = chrome.readingMode.sentenceHighlighting;
+
+          app.playSpeech();
+          await emitHighlight(sentenceHighlighting);
+
+          assertTrue(highlightedWord, 'word');
+          assertTrue(highlightedSentence, 'sentence');
+          assertFalse(highlightedPhrase);
+          assertEquals(
+              sentenceHighlighting, chrome.readingMode.highlightGranularity);
+        });
+
+    test('new theme uses colored highlight with highlights on', async () => {
+      await emitHighlight(chrome.readingMode.phraseHighlighting);
+      await emitColorTheme(chrome.readingMode.blueTheme);
+      assertNotEquals('transparent', highlightColor());
+    });
+
+    test(
+        'new theme uses transparent highlight with highlights off',
+        async () => {
+          await emitHighlight(chrome.readingMode.noHighlighting);
           await emitColorTheme(chrome.readingMode.yellowTheme);
           assertEquals('transparent', highlightColor());
         });

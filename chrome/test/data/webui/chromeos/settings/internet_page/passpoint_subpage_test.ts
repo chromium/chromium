@@ -60,7 +60,7 @@ suite('PasspointSubpage', () => {
     const div =
         passpointSubpage_.shadowRoot!.querySelector<HTMLElement>(`#${id}`);
     assertTrue(!!div);
-    return div!.querySelectorAll('div.list-item');
+    return div.querySelectorAll('div.list-item');
   }
 
   function getExpirationDateItem(): HTMLElement|null {
@@ -72,14 +72,14 @@ suite('PasspointSubpage', () => {
     const div = passpointSubpage_.shadowRoot!.querySelector<HTMLElement>(
         '#passpointSourceText');
     assertTrue(!!div);
-    return div!.textContent!.trim();
+    return div.textContent!.trim();
   }
 
   function getCertificateName(): string {
     const div = passpointSubpage_.shadowRoot!.querySelector<HTMLElement>(
         '#passpointCertificateName');
     assertTrue(!!div);
-    return div!.textContent!.trim();
+    return div.textContent!.trim();
   }
 
   function getRemovalDialog(): HTMLDialogElement|null {
@@ -241,9 +241,9 @@ suite('PasspointSubpage', () => {
     assertTrue(!!dialog);
 
     // Check the dialog message contains the subscription name.
-    const link = dialog!.querySelector('localized-link');
+    const link = dialog.querySelector('localized-link');
     assertTrue(!!link);
-    const span = link!.shadowRoot!.querySelector('span');
+    const span = link.shadowRoot!.querySelector('span');
     assertTrue(!!span);
     assertEquals(
         span.textContent,
@@ -323,7 +323,7 @@ suite('PasspointSubpage', () => {
     assertTrue(!!row);
 
     const showDetailPromise = eventToPromise('show-detail', window);
-    row!.click();
+    row.click();
     const showDetailEvent = await showDetailPromise;
     assertEquals('wifi1_guid', showDetailEvent.detail.guid);
   });

@@ -104,6 +104,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /** Tests for {@link TabGroupListMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -187,21 +188,24 @@ public class TabGroupListMediatorUnitTest {
     }
 
     private TabGroupListMediator createMediator() {
-        return new TabGroupListMediator(
-                mContext,
-                mModelList,
-                mPropertyModel,
-                mTabGroupModelFilter,
-                mFaviconResolver,
-                mTabGroupSyncService,
-                mDataSharingService,
-                mCollaborationService,
-                mMessagingBackendService,
-                mPaneManager,
-                mTabGroupUiActionHandler,
-                mActionConfirmationManager,
-                mSyncService,
-                mModalDialogManager);
+        TabGroupListMediator mediator =
+                new TabGroupListMediator(
+                        mContext,
+                        mModelList,
+                        mPropertyModel,
+                        mTabGroupModelFilter,
+                        mFaviconResolver,
+                        mTabGroupSyncService,
+                        mDataSharingService,
+                        mCollaborationService,
+                        mMessagingBackendService,
+                        mPaneManager,
+                        mTabGroupUiActionHandler,
+                        mActionConfirmationManager,
+                        mSyncService,
+                        mModalDialogManager);
+        verify(mSyncService).addSyncStateChangedListener(mSyncStateChangedListenerCaptor.capture());
+        return mediator;
     }
 
     @Test
@@ -870,18 +874,27 @@ public class TabGroupListMediatorUnitTest {
         PersistentMessage originalMessage = makeTabGroupRemovedMessage(MESSAGE_ID1, GROUP_NAME1);
         PersistentMessage newMessageCard = makeTabGroupRemovedMessage(MESSAGE_ID2, GROUP_NAME2);
 
-        when(mMessagingBackendService.getMessages(any()))
-                .thenReturn(List.of(originalMessage), List.of(originalMessage, newMessageCard));
+        // Set up backend to return the initial message.
+        when(mMessagingBackendService.getMessages(any())).thenReturn(List.of(originalMessage));
 
         createMediator();
         assertEquals(1, mModelList.size());
 
+        // Invoke displayPersistentMessage from backend which adds one more message.
+        when(mMessagingBackendService.getMessages(any()))
+                .thenReturn(List.of(originalMessage, newMessageCard));
         verify(mMessagingBackendService)
                 .addPersistentMessageObserver(mPersistentMessageObserverCaptor.capture());
         mPersistentMessageObserverCaptor.getValue().displayPersistentMessage(newMessageCard);
         ShadowLooper.idleMainLooper();
 
         assertEquals(2, mModelList.size());
+
+        // Disable sync which should clear all the backend messages.
+        when(mSyncService.getActiveDataTypes()).thenReturn(Set.of());
+        when(mMessagingBackendService.getMessages(any())).thenReturn(List.of());
+        mSyncStateChangedListenerCaptor.getValue().syncStateChanged();
+        assertEquals(0, mModelList.size());
     }
 
     private PersistentMessage makeTabGroupRemovedMessage(String messageId, String groupName) {

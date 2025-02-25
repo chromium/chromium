@@ -141,7 +141,7 @@ suite('PrintButtonTest', function() {
             d => d.id === 'Save as PDF');
     assertTrue(!!pdfDestination);
     destinationSettings.getDestinationStoreForTest().selectDestination(
-        pdfDestination!);
+        pdfDestination);
   }
 
   // Tests that hidePreview() is not called if Save as PDF is selected and
@@ -220,7 +220,7 @@ suite('PrintButtonTest', function() {
             d => d.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS);
     assertTrue(!!driveDestination);
     destinationSettings.getDestinationStoreForTest().selectDestination(
-        driveDestination!);
+        driveDestination);
 
     // Reload preview and wait for print.
     const printTicket = await nativeLayer.whenCalled('doPrint');

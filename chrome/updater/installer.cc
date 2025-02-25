@@ -45,13 +45,14 @@ AppInfo MakeAppInfo(UpdaterScope scope,
                     const std::string& ap,
                     const base::FilePath& ap_path,
                     const std::string& ap_key,
+                    const std::string& lang,
                     const std::string& brand,
                     const base::FilePath& brand_path,
                     const std::string& brand_key,
                     const base::FilePath& ec_path) {
   const base::Version pv_lookup =
       LookupVersion(scope, app_id, pv_path, pv_key, pv);
-  return AppInfo(scope, app_id, LookupString(ap_path, ap_key, ap),
+  return AppInfo(scope, app_id, LookupString(ap_path, ap_key, ap), lang,
                  LookupString(brand_path, brand_key, brand),
                  pv_lookup.IsValid() ? pv_lookup : base::Version(kNullVersion),
                  ec_path);
@@ -62,12 +63,14 @@ AppInfo MakeAppInfo(UpdaterScope scope,
 AppInfo::AppInfo(const UpdaterScope scope,
                  const std::string& app_id,
                  const std::string& ap,
+                 const std::string& lang,
                  const std::string& brand,
                  const base::Version& app_version,
                  const base::FilePath& ecp)
     : scope(scope),
       app_id(app_id),
       ap(ap),
+      lang(lang),
       brand(brand),
       version(app_version),
       ecp(ecp) {}
@@ -101,7 +104,7 @@ Installer::Installer(
       crx_verifier_format_(crx_verifier_format),
       usage_stats_enabled_(IsUpdaterOrCompanionApp(app_id) &&
                            persisted_data->GetUsageStatsEnabled()),
-      app_info_(AppInfo(GetUpdaterScope(), app_id, {}, {}, {}, {})) {}
+      app_info_(AppInfo(GetUpdaterScope(), app_id, {}, {}, {}, {}, {})) {}
 
 Installer::~Installer() = default;
 
@@ -109,16 +112,16 @@ void Installer::MakeCrxComponent(
     base::OnceCallback<void(update_client::CrxComponent)> callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&MakeAppInfo, updater_scope_, app_id_,
-                     persisted_data_->GetProductVersion(app_id_),
-                     persisted_data_->GetProductVersionPath(app_id_),
-                     persisted_data_->GetProductVersionKey(app_id_),
-                     persisted_data_->GetAP(app_id_),
-                     persisted_data_->GetAPPath(app_id_),
-                     persisted_data_->GetAPKey(app_id_),
-                     persisted_data_->GetBrandCode(app_id_),
-                     persisted_data_->GetBrandPath(app_id_), "KSBrandID",
-                     persisted_data_->GetExistenceCheckerPath(app_id_)),
+      base::BindOnce(
+          &MakeAppInfo, updater_scope_, app_id_,
+          persisted_data_->GetProductVersion(app_id_),
+          persisted_data_->GetProductVersionPath(app_id_),
+          persisted_data_->GetProductVersionKey(app_id_),
+          persisted_data_->GetAP(app_id_), persisted_data_->GetAPPath(app_id_),
+          persisted_data_->GetAPKey(app_id_), persisted_data_->GetLang(app_id_),
+          persisted_data_->GetBrandCode(app_id_),
+          persisted_data_->GetBrandPath(app_id_), "KSBrandID",
+          persisted_data_->GetExistenceCheckerPath(app_id_)),
       base::BindOnce(&Installer::MakeCrxComponentFromAppInfo, this,
                      std::move(callback)));
 }
@@ -145,6 +148,7 @@ void Installer::MakeCrxComponentFromAppInfo(
   }
 
   component.ap = app_info_.ap;
+  component.lang = app_info_.lang;
   component.brand = app_info_.brand;
   component.name = app_id_;
   component.version = app_info_.version;

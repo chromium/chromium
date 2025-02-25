@@ -111,13 +111,13 @@ suite('cpuCardTestSuite', function() {
                   convertkhzToGhz(
                       fakeCpuUsage[0]!.scalingCurrentFrequencyKhz)}`);
           dx_utils.assertElementContainsText(
-              cpuElement!.shadowRoot!.querySelector('#cpuChipInfo'),
+              cpuElement.shadowRoot!.querySelector('#cpuChipInfo'),
               `${fakeSystemInfo.cpuModelName}`);
           dx_utils.assertElementContainsText(
-              cpuElement!.shadowRoot!.querySelector('#cpuChipInfo'),
+              cpuElement.shadowRoot!.querySelector('#cpuChipInfo'),
               `${fakeSystemInfo.cpuThreadsCount}`);
           dx_utils.assertElementContainsText(
-              cpuElement!.shadowRoot!.querySelector('#cpuChipInfo'),
+              cpuElement.shadowRoot!.querySelector('#cpuChipInfo'),
               `${fakeSystemInfo.cpuMaxClockSpeedKhz}`);
 
           const cpuChart = dx_utils.getRealtimeCpuChartElement(cpuElement);

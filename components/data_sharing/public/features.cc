@@ -24,10 +24,34 @@ BASE_FEATURE(kDataSharingJoinOnly,
              "DataSharingJoinOnly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDataSharingNonProductionEnvironment,
+             "DataSharingNonProductionEnvironment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<std::string> kDataSharingURL(
     &kDataSharingFeature,
     "data_sharing_url",
     kDataSharingDefaultUrl);
+
+constexpr base::FeatureParam<ServerEnvironment>::Option
+    kServerEnvironmentOptions[] = {
+        {ServerEnvironment::kProduction, "production"},
+        {ServerEnvironment::kStaging, "staging"},
+        {ServerEnvironment::kAutopush, "autopush"}};
+
+constexpr base::FeatureParam<ServerEnvironment> kServerEnvironment(
+    &kDataSharingNonProductionEnvironment,
+    "server_environment",
+    ServerEnvironment::kAutopush,
+    &kServerEnvironmentOptions);
+
+ServerEnvironment GetServerEnvironmentParam() {
+  if (base::FeatureList::IsEnabled(kDataSharingNonProductionEnvironment)) {
+    return kServerEnvironment.Get();
+  } else {
+    return ServerEnvironment::kProduction;
+  }
+}
 
 constexpr base::FeatureParam<std::string> kLearnMoreSharedTabGroupPageURL(
     &kDataSharingFeature,

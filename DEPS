@@ -276,23 +276,23 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': 'ed1c0776b24147c342026b5d8132b2edf2498c6e',
+  'src_internal_revision': '2eb35c875785d3f85f1a51e63e98f06f1fad09f7',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '994168b1ba10358a66a53658589d27ac2977618c',
+  'skia_revision': 'd4215cd978bbb7e3aee77d9fc86caf98af25bea6',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '072bc3cf031891f75280234fe358a810f2dd3793',
+  'v8_revision': '703001dcdcd3793e2d42753c6858aa2cc7b676d6',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '5e05636486651d5f995fdd1fedaa48fc937aca82',
+  'angle_revision': '91fe334eadd279746e06367142de6e8d9f8d00ed',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
-  'swiftshader_revision': 'c4a6f30bbe1feb48de836f5b2bbfb13b959163b7',
+  'swiftshader_revision': 'c12c13839d689f411911326b1f72e96eb525686c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
@@ -348,7 +348,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling catapult
   # and whatever else without interference from each other.
-  'catapult_revision': '09f963b5f4b4304a0f1b9e75fc610de2eb0603ef',
+  'catapult_revision': '5b10d02d31a830f3e307f42d34c765d18dd2f00a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'a2bcd799996d48fe465fed131a81930a7edef4d2',
+  'devtools_frontend_revision': 'd1c95eb8b07834e853310f7dd66289442cafa43f',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -500,7 +500,7 @@ vars = {
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
-  'libcxx_revision':       '94672e2af44a266bfafbae01a18cae546aa67ed6',
+  'libcxx_revision':       'cdc82e180c610aaa7153301fea4d6b4005da9f22',
 
   # GN CIPD package version.
   'gn_version': 'git_revision:ed1abc107815210dc66ec439542bee2f6cbabc00',
@@ -1123,7 +1123,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '13c155a3ab684d9214e6c656fa6ac4428a7ab5af',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '525f2f0c31baaeff214bd22e2d555d2665a12b40',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1611,7 +1611,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'V15LiQ76fB4v-RV6muwzOCzgjIg6rygAEhxdCrSp354C',
+          'version': '9xnAKISau54FqB5YB5U1SPHPtNlNUDq75ma9d5wBSHoC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -4306,7 +4306,7 @@ deps = {
 
   'src/chrome/browser/glic/resources/internal': {
       'url': Var('chrome_git') + '/chrome/browser/glic/resources/internal.git' + '@' +
-        'edf887e30e442d3721790cff3ba7e44ca7572f1b',
+        '9242c4fb47f717bb3638853bf7b3217f88493d17',
       'condition': 'checkout_src_internal',
   },
 
@@ -4490,7 +4490,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        'd197d81378ae5f7e3aef38be0c182ca711575937',
+        '3cee11d2d5b4d72b53913e0e88fba604239ac157',
       'condition': 'checkout_src_internal',
   },
 

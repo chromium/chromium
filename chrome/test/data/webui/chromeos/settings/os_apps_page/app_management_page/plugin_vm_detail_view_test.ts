@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import type {AppManagementPinToShelfItemElement, AppManagementPluginVmDetailViewElement} from 'chrome://os-settings/lazy_load.js';
-import type {AppManagementToggleRowElement, CrButtonElement, CrToggleElement} from 'chrome://os-settings/os_settings.js';
+import type {AppManagementToggleRowElement, CrButtonElement} from 'chrome://os-settings/os_settings.js';
 import {AppManagementStore, PluginVmBrowserProxyImpl, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
 import type {App, Permission} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppType, PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
@@ -35,16 +35,14 @@ suite('<app-management-plugin-vm-detail-view>', () => {
   }
 
   function isCrToggleChecked(permissionType: PermissionTypeIndex): boolean {
-    return (getPermissionCrToggleByType(pluginVmDetailView, permissionType) as
-            CrToggleElement)
+    return getPermissionCrToggleByType(pluginVmDetailView, permissionType)
         .checked;
   }
 
   async function clickToggle(permissionType: PermissionTypeIndex):
       Promise<void> {
     const toggleRow =
-        getPermissionToggleByType(pluginVmDetailView, permissionType) as
-        AppManagementToggleRowElement;
+        getPermissionToggleByType(pluginVmDetailView, permissionType);
     toggleRow.click();
     // It appears that we need to await twice so that camera/mic toggles can
     // get back from `isRelaunchNeededForNewPermissions()` and commit the

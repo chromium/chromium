@@ -104,6 +104,12 @@ found in the LICENSE file.
         <item android:id="@+id/disable_price_tracking_menu_id"
             android:title="@string/disable_price_tracking_menu_item"
             android:icon="@drawable/price_tracking_enabled_filled" />
+        <item android:id="@+id/ai_web_menu_id"
+            android:title="@string/sharing_create_summary"
+            android:icon="@drawable/summarize_auto"/>
+        <item android:id="@+id/ai_pdf_menu_id"
+            android:title="@string/sharing_create_summary"
+            android:icon="@drawable/summarize_auto"/>
         <item android:id="@+id/find_in_page_id"
             android:title="@string/menu_find_in_page"
             android:icon="@drawable/ic_find_in_page" />

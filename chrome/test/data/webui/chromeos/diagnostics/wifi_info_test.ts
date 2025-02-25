@@ -33,7 +33,7 @@ suite('wifiInfoTestSuite', function() {
     // Add the wifi info to the DOM.
     wifiInfoElement = document.createElement('wifi-info');
     assert(wifiInfoElement);
-    wifiInfoElement.network = network as Network;
+    wifiInfoElement.network = network;
     document.body.appendChild(wifiInfoElement);
 
     return flushTasks();
@@ -61,14 +61,14 @@ suite('wifiInfoTestSuite', function() {
       assert(wifiInfoElement);
       assertDataPointHasExpectedHeaderAndValue(
           wifiInfoElement, '#ssid', wifiInfoElement.i18n('networkSsidLabel'),
-          `${fakeWifiNetwork!.typeProperties!.wifi!.ssid}`);
+          `${fakeWifiNetwork.typeProperties!.wifi!.ssid}`);
       assertDataPointHasExpectedHeaderAndValue(
           wifiInfoElement, '#ipAddress',
           wifiInfoElement.i18n('networkIpAddressLabel'),
-          `${fakeWifiNetwork!.ipConfig!.ipAddress}`);
+          `${fakeWifiNetwork.ipConfig!.ipAddress}`);
       assertDataPointHasExpectedHeaderAndValue(
           wifiInfoElement, '#bssid', wifiInfoElement.i18n('networkBssidLabel'),
-          `${fakeWifiNetwork!.typeProperties!.wifi!.bssid}`);
+          `${fakeWifiNetwork.typeProperties!.wifi!.bssid}`);
       assertDataPointHasExpectedHeaderAndValue(
           wifiInfoElement, '#security',
           wifiInfoElement.i18n('networkSecurityLabel'),
@@ -77,7 +77,7 @@ suite('wifiInfoTestSuite', function() {
           wifiInfoElement, '#signalStrength',
           wifiInfoElement.i18n('networkSignalStrengthLabel'),
           getSignalStrength(
-              fakeWifiNetwork!.typeProperties!.wifi!.signalStrength));
+              fakeWifiNetwork.typeProperties!.wifi!.signalStrength));
       assertDataPointHasExpectedHeaderAndValue(
           wifiInfoElement, '#channel',
           wifiInfoElement.i18n('networkChannelLabel'),

@@ -113,7 +113,7 @@ suite('memoryCardTestSuite', function() {
           loadTimeData.getString('notEnoughAvailableMemoryMessage'));
       assertTrue(isRunTestsButtonDisabled());
       assertTrue(isVisible(
-          routineSectionElement!.shadowRoot!.querySelector('#messageIcon')));
+          routineSectionElement.shadowRoot!.querySelector('#messageIcon')));
     });
   });
 });

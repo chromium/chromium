@@ -29,6 +29,11 @@ class TabGroupChangeNotifier
     // observer before calling Initialize().
     virtual void OnTabGroupChangeNotifierInitialized() = 0;
 
+    // Invoked when sync is disabled which includes sign out or disabling sync
+    // for tabs. On receiving this event, the messaging service is expected to
+    // clear the database, in-memory model, and hide any outstanding messages.
+    virtual void OnSyncDisabled() = 0;
+
     // A new tab group was added.
     virtual void OnTabGroupAdded(const tab_groups::SavedTabGroup& added_group,
                                  tab_groups::TriggerSource source) = 0;

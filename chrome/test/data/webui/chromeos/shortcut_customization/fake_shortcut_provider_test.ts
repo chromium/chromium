@@ -42,7 +42,7 @@ suite('fakeShortcutProviderTest', function() {
 
   function getProvider(): FakeShortcutProvider {
     assertTrue(!!provider);
-    return provider as FakeShortcutProvider;
+    return provider;
   }
   test('GetAcceleratorsEmpty', () => {
     const expected = {};
@@ -79,8 +79,7 @@ suite('fakeShortcutProviderTest', function() {
   test('ObserveAcceleratorsUpdated', () => {
     // Set the expected value to be returned when `onAcceleratorsUpdated()` is
     // called.
-    getProvider().setFakeAcceleratorsUpdated(
-        [fakeAcceleratorConfig as MojoAcceleratorConfig]);
+    getProvider().setFakeAcceleratorsUpdated([fakeAcceleratorConfig]);
 
     const remote = new FakeAcceleratorsUpdatedRemote();
     getProvider().addObserver(remote);

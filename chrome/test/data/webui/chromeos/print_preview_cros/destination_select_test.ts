@@ -46,8 +46,8 @@ suite('DestinationSelect', () => {
     destinationManager = DestinationManager.getInstance();
     destinationManager.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
 
-    element = document.createElement(DestinationSelectElement.is) as
-        DestinationSelectElement;
+    element = document.createElement(DestinationSelectElement.is);
+    DestinationSelectElement;
     assertTrue(!!element);
     document.body.append(element);
 

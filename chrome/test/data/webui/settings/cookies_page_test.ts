@@ -206,6 +206,9 @@ suite('CookiesPageTest', function() {
             'recordSettingsPageHistogram');
         assertEquals(
             PrivacyElementInteractions.THIRD_PARTY_COOKIES_BLOCK, result);
+        assertEquals(
+              'Settings.ThirdPartyCookies.Block',
+              await testMetricsBrowserProxy.whenCalled('recordAction'));
         testMetricsBrowserProxy.reset();
 
         block3pcIncognito().click();
@@ -219,6 +222,9 @@ suite('CookiesPageTest', function() {
         assertEquals(
             PrivacyElementInteractions.THIRD_PARTY_COOKIES_BLOCK_IN_INCOGNITO,
             result);
+        assertEquals(
+              'Settings.ThirdPartyCookies.Allow',
+              await testMetricsBrowserProxy.whenCalled('recordAction'));
         testMetricsBrowserProxy.reset();
       });
 

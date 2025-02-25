@@ -391,7 +391,7 @@ suite('SettingsToggleButton', () => {
     assertTrue(testElement.checked);
     flush();
 
-    subLabelTextWithLink!.click();
+    subLabelTextWithLink.click();
     assertFalse(testElement.checked);
   });
   // </if>

@@ -71,12 +71,12 @@ suite('acceleratorRowTest', function() {
     rowElement.description = description;
     await flush();
     const acceleratorElements =
-        rowElement!.shadowRoot!.querySelectorAll('accelerator-view');
+        rowElement.shadowRoot!.querySelectorAll('accelerator-view');
     assertEquals(2, acceleratorElements.length);
     assertEquals(
         description,
-        rowElement!.shadowRoot!.querySelector(
-                                   '#descriptionText')!.textContent!.trim());
+        rowElement.shadowRoot!.querySelector(
+                                  '#descriptionText')!.textContent!.trim());
 
     const keys1: NodeListOf<ShortcutInputKeyElement> =
         acceleratorElements[0]!.shadowRoot!.querySelectorAll(
@@ -129,7 +129,7 @@ suite('acceleratorRowTest', function() {
     await flushTasks();
 
     const acceleratorViewElement =
-        rowElement!.shadowRoot!.querySelectorAll('accelerator-view');
+        rowElement.shadowRoot!.querySelectorAll('accelerator-view');
     assertEquals(1, acceleratorViewElement.length);
     const editButton = strictQuery(
         '.edit-button', acceleratorViewElement[0]!.shadowRoot,
@@ -163,7 +163,7 @@ suite('acceleratorRowTest', function() {
     await flushTasks();
 
     const acceleratorViewElement =
-        rowElement!.shadowRoot!.querySelectorAll('accelerator-view');
+        rowElement.shadowRoot!.querySelectorAll('accelerator-view');
     assertEquals(1, acceleratorViewElement.length);
 
     const editIconContainerElement = strictQuery(
@@ -187,18 +187,17 @@ suite('acceleratorRowTest', function() {
     await flush();
 
     const acceleratorElements =
-        rowElement!.shadowRoot!.querySelectorAll('accelerator-view');
+        rowElement.shadowRoot!.querySelectorAll('accelerator-view');
     // Because rowElement.layoutStyle is kText, we don't expect there to be any
     // 'accelerator-view' elements shown. Instead, 'text-accelerator' elements
     // will be shown.
     assertEquals(0, acceleratorElements.length);
 
     const textAccelElement =
-        rowElement!.shadowRoot!.querySelector('text-accelerator');
+        rowElement.shadowRoot!.querySelector('text-accelerator');
     assertTrue(!!textAccelElement);
-    const textWrapper =
-        textAccelElement!.shadowRoot!.querySelector<HTMLElement>(
-            '#text-wrapper');
+    const textWrapper = textAccelElement.shadowRoot!.querySelector<HTMLElement>(
+        '#text-wrapper');
     assertTrue(!!textWrapper);
   });
 
@@ -223,18 +222,18 @@ suite('acceleratorRowTest', function() {
     await flush();
 
     const acceleratorElements =
-        rowElement!.shadowRoot!.querySelectorAll('accelerator-view');
+        rowElement.shadowRoot!.querySelectorAll('accelerator-view');
     assertEquals(2, acceleratorElements.length);
     assertEquals(
         description,
-        rowElement!.shadowRoot!.querySelector(
-                                   '#descriptionText')!.textContent!.trim());
+        rowElement.shadowRoot!.querySelector(
+                                  '#descriptionText')!.textContent!.trim());
 
     // Because rowElement.layoutStyle is kDefault, we don't expect any
     // 'text-accelerator' elements to be shown, even though the property
     // rowElement.acceleratorText is set.
     const textAccelElement =
-        rowElement!.shadowRoot!.querySelector('text-accelerator');
+        rowElement.shadowRoot!.querySelector('text-accelerator');
     assertFalse(!!textAccelElement);
 
     const keys1: NodeListOf<ShortcutInputKeyElement> =
@@ -264,7 +263,7 @@ suite('acceleratorRowTest', function() {
     await flush();
     assertEquals(
         'Open notifications, ctrl c, editable.',
-        rowElement!.shadowRoot!.querySelector('#container')!.getAttribute(
+        rowElement.shadowRoot!.querySelector('#container')!.getAttribute(
             'aria-label'));
   });
 
@@ -289,7 +288,7 @@ suite('acceleratorRowTest', function() {
     await flush();
     assertEquals(
         'Open Calculator app, ctrl c or ctrl d, editable.',
-        rowElement!.shadowRoot!.querySelector('#container')!.getAttribute(
+        rowElement.shadowRoot!.querySelector('#container')!.getAttribute(
             'aria-label'));
   });
 
@@ -328,7 +327,7 @@ suite('acceleratorRowTest', function() {
     await flush();
     assertEquals(
         'Go through tabs 1 to 8, ctrl + 1 through 8, locked.',
-        rowElement!.shadowRoot!.querySelector('#container')!.getAttribute(
+        rowElement.shadowRoot!.querySelector('#container')!.getAttribute(
             'aria-label'));
   });
 });

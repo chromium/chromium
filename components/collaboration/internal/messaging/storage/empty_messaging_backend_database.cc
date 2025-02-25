@@ -24,4 +24,7 @@ void EmptyMessagingBackendDatabase::Update(
 
 void EmptyMessagingBackendDatabase::Delete(
     const std::vector<std::string>& message_uuids) {}
+
+void EmptyMessagingBackendDatabase::DeleteAllData() {}
+
 }  // namespace collaboration::messaging

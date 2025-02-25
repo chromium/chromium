@@ -225,8 +225,8 @@ class WebIdlSchemaTest(unittest.TestCase):
     }], getFunctionParameters(schema, 'takesOptionalCustomType'))
 
   # Tests function descriptions are processed as expected.
-  # TODO(crbug.com/379052294): Add testcases for functions with parameter and
-  # return descriptions, once support for those are added to the processor.
+  # TODO(crbug.com/379052294): Add testcases for function return descriptions
+  # once support for those are added to the processor.
   def testFunctionDescriptions(self):
     schema = self.idl_basics
     # A function without a preceding comment has no 'description' key.
@@ -243,6 +243,28 @@ class WebIdlSchemaTest(unittest.TestCase):
         ' paragraph tags.</p>',
         getFunction(schema, 'paragraphedDescription').get('description'))
 
+    function = getFunction(schema, 'parameterComments')
+    self.assertEqual('This function has parameter comments.',
+                     function.get('description'))
+    function_parameters = getFunctionParameters(schema, 'parameterComments')
+    self.assertEqual(
+        {
+            'description':
+            ('This comment about the argument is split across multiple lines'
+             ' and contains <em>HTML tags</em>.'),
+            'name':
+            'arg1',
+            'type':
+            'boolean',
+        },
+        function_parameters[0],
+    )
+    self.assertEqual(
+        {
+            'description': 'This second argument uses a custom type.',
+            'name': 'arg2',
+            '$ref': 'ExampleType'
+        }, function_parameters[1])
 
   # Tests that Dictionaries defined on the top level of the IDL file are
   # processed into types on the resulting namespace.

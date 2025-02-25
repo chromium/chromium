@@ -35,9 +35,8 @@ namespace glic {
 
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 
-extern void* kGlicWidgetIdentifier;
-
 class GlicEnabling;
+class GlicWidget;
 class GlicKeyedService;
 class GlicView;
 class WebUIContentsContainer;
@@ -314,11 +313,6 @@ class GlicWindowController : public views::WidgetObserver {
   // When the attached browser is closed, this is invoked so we can clean up.
   void AttachedBrowserDidClose(BrowserWindowInterface* browser);
 
-  // Creates the glic widget.
-  std::unique_ptr<views::Widget> CreateGlicWidget(
-      Profile* profile,
-      const gfx::Rect& initial_bounds);
-
   void ResetPresentationTimingState();
 
   // Returns true if a browser is occluded at point in screen coordinates.
@@ -349,7 +343,7 @@ class GlicWindowController : public views::WidgetObserver {
 
   // Contains the glic webview. In the attached state the parent is set to a
   // browser window. In the detached state the parent is set to holder_widget_.
-  std::unique_ptr<views::Widget> glic_widget_;
+  std::unique_ptr<GlicWidget> glic_widget_;
 
   std::unique_ptr<GlicWindowAnimator> glic_window_animator_;
 

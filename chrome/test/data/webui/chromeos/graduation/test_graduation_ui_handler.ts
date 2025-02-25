@@ -37,7 +37,7 @@ export class TestGraduationUiHandler extends TestBrowserProxy implements
 
   getProfileInfo(): Promise<{profileInfo: ProfileInfo}> {
     this.methodCalled('getProfileInfo');
-    return Promise.resolve({profileInfo: this.profileInfo!});
+    return Promise.resolve({profileInfo: this.profileInfo});
   }
 
   onScreenSwitched(graduationScreen: GraduationScreen): Promise<void> {

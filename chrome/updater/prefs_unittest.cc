@@ -34,15 +34,17 @@ namespace updater {
 class PrefsTest : public ::testing::Test {
 #if BUILDFLAG(IS_WIN)
  protected:
-  void SetUp() override { DeleteBrandCodeValueInRegistry(); }
-  void TearDown() override { DeleteBrandCodeValueInRegistry(); }
+  void SetUp() override { DeleteValuesInRegistry(); }
+  void TearDown() override { DeleteValuesInRegistry(); }
 
  private:
-  void DeleteBrandCodeValueInRegistry() {
-    base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
-                      GetAppClientStateKey(L"someappid").c_str(),
-                      Wow6432(KEY_SET_VALUE))
-        .DeleteValue(kRegValueBrandCode);
+  void DeleteValuesInRegistry() {
+    for (const auto value : {kRegValueBrandCode, kRegValueLang}) {
+      base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                        GetAppClientStateKey(L"someappid").c_str(),
+                        Wow6432(KEY_SET_VALUE))
+          .DeleteValue(value);
+    }
   }
 #endif
 };
@@ -58,6 +60,9 @@ TEST_F(PrefsTest, PrefsCommitPendingWrites) {
   metadata->SetBrandCode("someappid", "brand");
   EXPECT_STREQ(metadata->GetBrandCode("someappid").c_str(), "brand");
 
+  metadata->SetLang("someappid", "somelang");
+  EXPECT_EQ(metadata->GetLang("someappid"), "somelang");
+
 #if BUILDFLAG(IS_WIN)
   EXPECT_EQ(
       base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
@@ -66,6 +71,14 @@ TEST_F(PrefsTest, PrefsCommitPendingWrites) {
           .WriteValue(kRegValueBrandCode, L"nbrnd"),
       ERROR_SUCCESS);
   EXPECT_STREQ(metadata->GetBrandCode("someappid").c_str(), "nbrnd");
+
+  EXPECT_EQ(
+      base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                        GetAppClientStateKey(L"someappid").c_str(),
+                        Wow6432(KEY_SET_VALUE))
+          .WriteValue(kRegValueLang, L"newlang"),
+      ERROR_SUCCESS);
+  EXPECT_EQ(metadata->GetLang("someappid"), "newlang");
 #endif
 
   // Tests writing to storage completes.

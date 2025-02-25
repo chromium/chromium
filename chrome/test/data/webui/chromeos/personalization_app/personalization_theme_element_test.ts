@@ -155,7 +155,7 @@ suite('PersonalizationThemeTest', function() {
   function isAutoModeLocationWarningIconManaged(): boolean {
     const tooltip = personalizationThemeElement!.shadowRoot!.getElementById(
                         'locationDeniedInfoIcon') as CrTooltipIconElement;
-    return tooltip.iconClass! === 'personalization:managed';
+    return tooltip.iconClass === 'personalization:managed';
   }
 
   // Use this helper method to set the geolocation permission in the
@@ -387,7 +387,7 @@ suite('PersonalizationThemeTest', function() {
     personalizationStore.data.theme.colorModeAutoScheduleEnabled = true;
 
     personalizationThemeElement = initElement(PersonalizationThemeElement);
-    await waitAfterNextRender(personalizationThemeElement!);
+    await waitAfterNextRender(personalizationThemeElement);
 
     assertEquals(
         'true',

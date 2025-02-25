@@ -17,6 +17,7 @@
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handler_helpers.h"
+#include "extensions/common/manifest_handlers/icon_variants_handler.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -30,6 +31,13 @@ static base::LazyInstance<ExtensionIconSet>::DestructorAtExit g_empty_icon_set =
 // static
 const ExtensionIconSet& IconsInfo::GetIcons(const Extension* extension) {
   DCHECK(extension);
+  // Prefer `icon_variants` over `icons`.
+  const IconVariantsInfo* icon_variants_info =
+      IconVariantsInfo::GetIconVariants(extension);
+  if (icon_variants_info) {
+    return icon_variants_info->Get();
+  }
+
   IconsInfo* info = static_cast<IconsInfo*>(
       extension->GetManifestData(keys::kIcons));
   return info ? info->icons : g_empty_icon_set.Get();

@@ -100,7 +100,7 @@ export function createSvgDataUrl(id: string): string {
 export async function waitForActiveElement(
     targetElement: Element, elementContainer: HTMLElement) {
   while (elementContainer.shadowRoot!.activeElement !== targetElement) {
-    await waitAfterNextRender(elementContainer!);
+    await waitAfterNextRender(elementContainer);
   }
 }
 

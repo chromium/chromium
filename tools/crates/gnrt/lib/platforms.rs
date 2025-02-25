@@ -13,7 +13,7 @@ pub use cargo_platform::Platform;
 
 /// A set of platforms: either the set of all platforms, or a finite set of
 /// platform configurations.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PlatformSet {
     /// Matches any platform configuration.
     All,

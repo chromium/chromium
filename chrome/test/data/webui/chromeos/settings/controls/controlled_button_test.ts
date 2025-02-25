@@ -67,7 +67,7 @@ suite('controlled button', function() {
     const indicator =
         controlledButton.shadowRoot!.querySelector('cr-policy-pref-indicator');
     assertTrue(!!indicator);
-    assertGT(indicator!.clientHeight, 0);
+    assertGT(indicator.clientHeight, 0);
 
     controlledButton.pref = uncontrolledPref;
     flush();

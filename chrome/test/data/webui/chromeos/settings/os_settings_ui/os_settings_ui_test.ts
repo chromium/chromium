@@ -67,7 +67,7 @@ suite('OSSettingsUi', () => {
         mainPageContainer.shadowRoot!.querySelector(
             '#updateRequiredEolBanner'));
 
-    mainPageContainer!.set('showUpdateRequiredEolBanner_', true);
+    mainPageContainer.set('showUpdateRequiredEolBanner_', true);
     flush();
     assertTrue(!!mainPageContainer.shadowRoot!.querySelector(
         '#updateRequiredEolBanner'));

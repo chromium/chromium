@@ -92,7 +92,7 @@ suite('PostMessageApiModuleTest', function() {
   let innerFrame: HTMLIFrameElement;
 
   suiteSetup(function() {
-    innerFrame = document.createElement('iframe') as HTMLIFrameElement;
+    innerFrame = document.createElement('iframe');
     innerFrame.src = TARGET_URL;
     document.body.appendChild(innerFrame);
   });

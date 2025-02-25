@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import type {AppManagementPinToShelfItemElement, AppManagementPwaDetailViewElement, AppManagementSubAppsItemElement} from 'chrome://os-settings/lazy_load.js';
-import type {AppManagementToggleRowElement, CrToggleElement} from 'chrome://os-settings/os_settings.js';
+import type {AppManagementToggleRowElement} from 'chrome://os-settings/os_settings.js';
 import {AppManagementStore, Router, updateSelectedAppId, updateSubAppToParentAppId} from 'chrome://os-settings/os_settings.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {InstallReason} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
@@ -30,9 +30,7 @@ suite('<app-management-pwa-detail-view>', () => {
 
   async function clickToggle(permissionType: PermissionTypeIndex):
       Promise<void> {
-    (getPermissionToggleByType(pwaDetailView, permissionType) as
-     AppManagementToggleRowElement)
-        .click();
+    getPermissionToggleByType(pwaDetailView, permissionType).click();
     await fakeHandler.flushPipesForTesting();
   }
 
@@ -90,23 +88,20 @@ suite('<app-management-pwa-detail-view>', () => {
   test('toggle permissions', async () => {
     const checkToggle = async (permissionType: PermissionTypeIndex) => {
       assertTrue(getPermissionBoolByType(permissionType));
-      assertTrue((getPermissionCrToggleByType(pwaDetailView, permissionType) as
-                  CrToggleElement)
-                     .checked);
+      assertTrue(
+          getPermissionCrToggleByType(pwaDetailView, permissionType).checked);
 
       // Toggle off.
       await clickToggle(permissionType);
       assertFalse(getPermissionBoolByType(permissionType));
-      assertFalse((getPermissionCrToggleByType(pwaDetailView, permissionType) as
-                   CrToggleElement)
-                      .checked);
+      assertFalse(
+          getPermissionCrToggleByType(pwaDetailView, permissionType).checked);
 
       // Toggle on.
       await clickToggle(permissionType);
       assertTrue(getPermissionBoolByType(permissionType));
-      assertTrue((getPermissionCrToggleByType(pwaDetailView, permissionType) as
-                  CrToggleElement)
-                     .checked);
+      assertTrue(
+          getPermissionCrToggleByType(pwaDetailView, permissionType).checked);
     };
 
     await checkToggle('kNotifications');
@@ -247,9 +242,7 @@ suite('<app-management-pwa-detail-view>', () => {
     const checkToggleDisabled = (permissionType: PermissionTypeIndex) => {
       assertTrue(getPermissionBoolByType(permissionType));
       assertTrue(
-          (getPermissionCrToggleByType(pwaDetailView, permissionType) as
-           CrToggleElement)
-              .disabled,
+          getPermissionCrToggleByType(pwaDetailView, permissionType).disabled,
           'permission toggle should be disabled on sub app setting page');
     };
 

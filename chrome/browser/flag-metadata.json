@@ -1859,6 +1859,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "data-sharing-non-production-environment",
+    "owners": [ "ritikagup@google.com", "chrome-tab-group-eng@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "dbd-revamp-desktop",
     "owners": [ "zalmashni@google.com", "chrome-browser-privacy-team@google.com" ],
     "expiry_milestone": 140

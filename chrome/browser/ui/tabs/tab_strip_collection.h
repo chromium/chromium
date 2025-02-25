@@ -59,7 +59,7 @@ class TabStripCollection : public TabCollection {
                          size_t destination_index,
                          std::optional<tab_groups::TabGroupId> new_group_id,
                          bool new_pinned_state);
-  void MoveGroupTo(const tab_groups::TabGroupId& group, int to_index);
+  void MoveTabGroupTo(const tab_groups::TabGroupId& group, int to_index);
   size_t TotalTabCount() const;
 
   // Removes the tab present at a recursive index in the collection and
@@ -96,6 +96,11 @@ class TabStripCollection : public TabCollection {
   // so that it can be used when inserting a tab to a group.
   void CreateTabGroup(
       std::unique_ptr<tabs::TabGroupTabCollection> tab_group_collection);
+
+  // Adds the `tab_group_collection` to the collection hierarchy
+  // with the first tab of the group starting at the recursive `index`.
+  void InsertTabGroupAt(std::unique_ptr<TabGroupTabCollection> group_collection,
+                        int index);
 
   // Clears all detached groups present in `detached_group_collections_`.
   void CloseDetachedTabGroup(const tab_groups::TabGroupId& group_id);

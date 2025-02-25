@@ -142,6 +142,13 @@ public class TabGroupListMediator {
                     boolean enabled =
                             mSyncService.getActiveDataTypes().contains(DataType.SAVED_TAB_GROUP);
                     mPropertyModel.set(TabGroupListProperties.SYNC_ENABLED, enabled);
+                    if (!enabled) {
+                        // When sign out happens, we need to clear the message cards. There is no
+                        // other signal that will do this, hence we explicitly clear and rebuild the
+                        // list.
+                        // TODO(crbug.com/398901000): Build this into backend service observer.
+                        repopulateModelList();
+                    }
                 }
             };
 

@@ -22,6 +22,7 @@ const wchar_t kRegValueAutoRunOnOSUpgrade[] = L"AutoRunOnOSUpgrade";
 const wchar_t kRegValuePV[] = L"pv";
 const wchar_t kRegValueBrandCode[] = L"brand";
 const wchar_t kRegValueAP[] = L"ap";
+const wchar_t kRegValueLang[] = L"lang";
 const wchar_t kRegValueDateOfLastActivity[] = L"DayOfLastActivity";
 const wchar_t kRegValueDateOfLastRollcall[] = L"DayOfLastRollCall";
 const wchar_t kRegValueDayOfInstall[] = L"DayOfInstall";

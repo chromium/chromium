@@ -77,10 +77,10 @@ suite('emoji-picker-offline-gif', () => {
         const results = await waitForCondition(
             () => emojiSearch.shadowRoot!.getElementById('results'),
             'wait for results');
-        const errorElement = results!.querySelector('.no-result > emoji-error');
+        const errorElement = results.querySelector('.no-result > emoji-error');
         assert(errorElement);
 
-        const errorText = errorElement!.shadowRoot!.querySelector(
+        const errorText = errorElement.shadowRoot!.querySelector(
             '.gif-error-container > .error-text');
         assertEquals(
             errorText!.textContent,

@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
+import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
@@ -130,6 +131,7 @@ import java.util.Optional;
 /** Unit tests for {@link AppMenuPropertiesDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
+@DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
 public class AppMenuPropertiesDelegateUnitTest {
 
     @Mock private ActivityTabProvider mActivityTabProvider;
@@ -1445,6 +1447,77 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Test
     public void testReadaloudMenuItem_noChangeInReadability_readable() {
         testReadAloudMenuItemUpdates(/* initiallyReadable= */ true, /* laterReadable= */ true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
+    public void testAiWebMenuItem() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        setUpMocksForPageMenu();
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        assertTrue(
+                "AI Web menu item should be visible",
+                menu.findItem(R.id.ai_web_menu_id).isVisible());
+        assertFalse(
+                "AI PDF menu item should not be visible",
+                menu.findItem(R.id.ai_pdf_menu_id).isVisible());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
+    public void testAiWebMenuItem_shouldAppearOnWebPages() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        setUpMocksForPageMenu();
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        assertTrue(
+                "AI Web menu item should be visible",
+                menu.findItem(R.id.ai_web_menu_id).isVisible());
+        assertFalse(
+                "AI PDF menu item should not be visible",
+                menu.findItem(R.id.ai_pdf_menu_id).isVisible());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
+    public void testAiPdfMenuItem_shouldAppearOnPdfPages() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1_WITH_PDF_PATH);
+        var pdfNativePage = mock(PdfPage.class);
+        when(mTab.getNativePage()).thenReturn(pdfNativePage);
+        when(mTab.isNativePage()).thenReturn(true);
+        setUpMocksForPageMenu();
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        assertFalse(
+                "AI Web menu item should not be visible",
+                menu.findItem(R.id.ai_web_menu_id).isVisible());
+        assertTrue(
+                "AI PDF menu item should be visible",
+                menu.findItem(R.id.ai_pdf_menu_id).isVisible());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
+    public void testAiMenuItems_shouldNotAppearIfDisabled() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        setUpMocksForPageMenu();
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        assertFalse(
+                "AI Web menu item should not be visible",
+                menu.findItem(R.id.ai_web_menu_id).isVisible());
+        assertFalse(
+                "AI PDF menu item should not be visible",
+                menu.findItem(R.id.ai_pdf_menu_id).isVisible());
     }
 
     private void testReadAloudMenuItemUpdates(boolean initiallyReadable, boolean laterReadable) {

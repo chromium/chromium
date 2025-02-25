@@ -124,7 +124,7 @@ class WebRtcVideoTrackSourceTest
                 frame_parameters.pixel_format)
                 .value(),
             premapped, this);
-    scoped_refptr<media::VideoFrame> frame = CreateTestFrame(
+    scoped_refptr<media::VideoFrame> frame = CreateTestFrameWithGMB(
         frame_parameters.coded_size, frame_parameters.visible_rect,
         frame_parameters.natural_size, frame_parameters.storage_type,
         frame_parameters.pixel_format, timestamp, std::move(fake_gmb));

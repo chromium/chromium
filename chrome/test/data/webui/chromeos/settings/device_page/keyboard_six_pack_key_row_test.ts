@@ -74,9 +74,9 @@ suite('<keyboard-six-pack-key-row>', () => {
     for (const key
              of [SixPackKey.DELETE, SixPackKey.INSERT, SixPackKey.PAGE_UP,
                  SixPackKey.PAGE_DOWN, SixPackKey.HOME, SixPackKey.END]) {
-      await setKey((key as SixPackKey));
+      await setKey(key);
       assertDeepEquals(
-          getMenuOptionsForSixPackKey((key as SixPackKey)),
+          getMenuOptionsForSixPackKey((key)),
           sixPackKeyRow.shadowRoot!
               .querySelector<SettingsDropdownMenuElement>(
                   '#keyDropdown')!.menuOptions);

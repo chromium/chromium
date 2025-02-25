@@ -2085,7 +2085,7 @@ export class AppElement extends AppElementBase {
     assert(this.shadowRoot);
     const currentHighlights = this.shadowRoot.querySelectorAll<HTMLElement>(
         '.' + currentReadHighlightClass);
-    if (!currentHighlights) {
+    if (!currentHighlights || !currentHighlights.length) {
       return;
     }
     const firstHighlight = currentHighlights.item(0);
@@ -2517,9 +2517,10 @@ export class AppElement extends AppElementBase {
     // Apply highlighting changes to the DOM.
     this.styleUpdater_.setHighlight();
 
-    // TODO(crbug.com/366002886): Re-highlight with the new granularity. In
-    // particular, when switching from word or phrase to sentence, the sentence
-    // highlight needs to be recalculated.
+    // Rehighlight the new granularity.
+    if (changedHighlight !== chrome.readingMode.noHighlighting) {
+      this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
+    }
 
     // Log these highlight granularity changes when the phrase menu is shown.
     // (Toggles are already logged in the toolbar.)

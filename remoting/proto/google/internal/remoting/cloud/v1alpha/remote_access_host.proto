@@ -15,7 +15,7 @@ import "timestamp.proto";
 
 // Represents a remote access host instance.
 //
-// Next ID: 12
+// Next ID: 13
 message RemoteAccessHost {
   // A fully qualified resource name matching the pattern:
   //   users/{user}/hosts/{host}
@@ -57,4 +57,10 @@ message RemoteAccessHost {
 
   // Information about the operating system of the host machine.
   optional OperatingSystemInfo operating_system_info = 11;
+
+  // Provides information about the project, zone, and instance of the Compute
+  // Engine Instance which generated the request.
+  // More information about the contents of the token can be found at:
+  // https://cloud.google.com/compute/docs/instances/verifying-instance-identity
+  optional string instance_identity_token = 12;
 }

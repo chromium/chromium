@@ -51,7 +51,7 @@ void ExtensionIconVariants::Parse(const base::Value::List* list) {
 }
 
 bool ExtensionIconVariants::IsEmpty() const {
-  return list_.size() == 0;
+  return list_.empty();
 }
 
 void ExtensionIconVariants::Add(

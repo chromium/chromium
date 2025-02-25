@@ -357,6 +357,11 @@ void MessagingBackendStoreImpl::RemoveMessages(
       std::vector<std::string>(message_ids.begin(), message_ids.end()));
 }
 
+void MessagingBackendStoreImpl::RemoveAllMessages() {
+  messages_.clear();
+  database_->DeleteAllData();
+}
+
 std::optional<MessagesPerGroup*>
 MessagingBackendStoreImpl::GetMessagesPerGroupForTesting(
     const data_sharing::GroupId& collaboration_id) {

@@ -143,13 +143,13 @@ suite('diagnosticsNetworkIconTestSuite', function() {
 
   test('NetworkToNetworkStateAdapter_Guid', () => {
     assertEquals(
-        fakeEthernetNetwork!.observerGuid,
+        fakeEthernetNetwork.observerGuid,
         networkToNetworkStateAdapter((fakeEthernetNetwork as Network)).guid);
     assertEquals(
-        fakeWifiNetwork!.observerGuid,
+        fakeWifiNetwork.observerGuid,
         networkToNetworkStateAdapter((fakeWifiNetwork as Network)).guid);
     assertEquals(
-        fakeCellularNetwork!.observerGuid,
+        fakeCellularNetwork.observerGuid,
         networkToNetworkStateAdapter((fakeCellularNetwork as Network)).guid);
   });
 
@@ -157,17 +157,17 @@ suite('diagnosticsNetworkIconTestSuite', function() {
     const networkState =
         networkToNetworkStateAdapter((fakeCellularNetwork as Network));
     assertEquals(
-        fakeCellularNetwork!.typeProperties!.cellular!.networkTechnology,
-        networkState!.typeState!.cellular!.networkTechnology);
+        fakeCellularNetwork.typeProperties!.cellular!.networkTechnology,
+        networkState.typeState!.cellular!.networkTechnology);
     assertEquals(
-        fakeCellularNetwork!.typeProperties!.cellular!.simLocked,
-        networkState!.typeState!.cellular!.simLocked);
+        fakeCellularNetwork.typeProperties!.cellular!.simLocked,
+        networkState.typeState!.cellular!.simLocked);
     assertEquals(
-        fakeCellularNetwork!.typeProperties!.cellular!.signalStrength,
-        networkState!.typeState!.cellular!.signalStrength);
+        fakeCellularNetwork.typeProperties!.cellular!.signalStrength,
+        networkState.typeState!.cellular!.signalStrength);
     assertEquals(
-        fakeCellularNetwork!.typeProperties!.cellular!.roaming,
-        networkState!.typeState!.cellular!.roaming);
+        fakeCellularNetwork.typeProperties!.cellular!.roaming,
+        networkState.typeState!.cellular!.roaming);
   });
 
   test('DiagnosticsNetworkIconCellular', () => {
@@ -200,7 +200,7 @@ suite('diagnosticsNetworkIconTestSuite', function() {
     const networkState =
         networkToNetworkStateAdapter((fakeWifiNetwork as Network));
     assertEquals(
-        fakeWifiNetwork!.typeProperties!.wifi!.signalStrength,
+        fakeWifiNetwork.typeProperties!.wifi!.signalStrength,
         networkState.typeState!.wifi!.signalStrength);
   });
 

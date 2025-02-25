@@ -135,7 +135,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
     const chips =
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
     const chip = chips[0] as HTMLElement;
-    chip!.click();
+    chip.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const seaPenOptionsElement =
@@ -147,12 +147,13 @@ suite('SeaPenTemplateQueryElementTest', function() {
     const optionToSelect =
         seaPenOptionsElement.shadowRoot!.querySelector<CrButtonElement>(
             '#container cr-button[aria-checked=false]');
-    const optionText = optionToSelect!.innerText;
+    assertTrue(!!optionToSelect);
+    const optionText = optionToSelect.innerText;
     assertTrue(
         optionText !== chip.innerText,
         'unselected option should not match text');
 
-    optionToSelect!.click();
+    optionToSelect.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     assertEquals(
@@ -171,7 +172,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
     const chipToSelect = chips[0] as HTMLElement;
 
-    chipToSelect!.click();
+    chipToSelect.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const seaPenOptionsElement =
@@ -210,7 +211,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
     const chipToSelect = chips[1] as HTMLElement;
 
-    chipToSelect!.click();
+    chipToSelect.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const seaPenOptionsElement =
@@ -252,7 +253,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
     const chip = chips[0] as HTMLElement;
 
-    chip!.click();
+    chip.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const seaPenOptionsElement =
@@ -291,7 +292,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         selectedChipText!.innerText, optionText,
         'the chip should update to match the new selected option');
 
-    chip!.click();
+    chip.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     selectedOption =
@@ -312,7 +313,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
     const chip = chips[0] as HTMLElement;
 
-    chip!.click();
+    chip.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     assertEquals(
@@ -337,7 +338,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
             '#container cr-button[aria-checked=false]');
     assertTrue(!!optionToSelect, 'option should be available to select');
 
-    optionToSelect!.click();
+    optionToSelect.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     // verify the text animation happened, <span> elements with `letter` class
@@ -357,7 +358,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
     const inspireButton =
         seaPenTemplateQueryElement.shadowRoot!.getElementById('inspire');
     assertTrue(!!inspireButton);
-    inspireButton!.click();
+    inspireButton.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const chips =
@@ -406,6 +407,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
             '.chip-text');
     const inspireButton =
         seaPenTemplateQueryElement.shadowRoot!.getElementById('inspire');
+    assertTrue(!!inspireButton);
 
     // Select a chip.
     chips[0]!.click();
@@ -418,7 +420,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         unselected.length > 0, 'template should have unselected elements');
 
     // Click inspire button.
-    inspireButton!.click();
+    inspireButton.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     unselected =
@@ -438,7 +440,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
     const inspireButton =
         seaPenTemplateQueryElement.shadowRoot!.getElementById('inspire');
     assertTrue(!!inspireButton);
-    inspireButton!.click();
+    inspireButton.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const query: SeaPenQuery =

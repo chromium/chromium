@@ -17,7 +17,7 @@ suite('MediaTypeSettingsTest', function() {
   let model: PrintPreviewModelElement;
 
   const mediaTypeCapability: MediaTypeCapability =
-      getCddTemplate('FooPrinter').capabilities!.printer!.media_type!;
+      getCddTemplate('FooPrinter').capabilities!.printer.media_type!;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

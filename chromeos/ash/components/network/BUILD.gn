@@ -170,6 +170,8 @@ component("network") {
     "network_handler_callbacks.h",
     "network_ip_config.cc",
     "network_ip_config.h",
+    "network_login_screen_protocol_handler_observer.cc",
+    "network_login_screen_protocol_handler_observer.h",
     "network_metadata_observer.cc",
     "network_metadata_observer.h",
     "network_metadata_store.cc",

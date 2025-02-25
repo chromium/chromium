@@ -51,6 +51,7 @@ class AppManagementPageHandlerBase : public app_management::mojom::PageHandler,
                      apps::PermissionPtr permission) override;
   void OpenNativeSettings(const std::string& app_id) override;
   void SetFileHandlingEnabled(const std::string& app_id, bool enabled) override;
+  void UpdateAppSize(const std::string& app_id) override;
 
  protected:
   AppManagementPageHandlerBase(

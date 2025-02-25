@@ -144,7 +144,7 @@ suite('GooglePhotosCollectionElementTest', function() {
     // Zero state should be hidden.
     const zeroState = querySelector('#zeroState');
     assertTrue(!!zeroState);
-    assertEquals(window.getComputedStyle(zeroState)!.display, 'none');
+    assertEquals(window.getComputedStyle(zeroState).display, 'none');
   });
 
   test('displays tabs and content for photos and albums', async () => {
@@ -237,7 +237,7 @@ suite('GooglePhotosCollectionElementTest', function() {
     // * photos content to be hidden.
     googlePhotosCollectionElement.removeAttribute('album-id');
     await waitAfterNextRender(googlePhotosCollectionElement);
-    assertEquals(window.getComputedStyle(tabStrip!).display, 'block');
+    assertEquals(window.getComputedStyle(tabStrip).display, 'block');
     assertTrue(photosByAlbumIdContent.hidden);
     assertFalse(albumsContent.hidden);
     assertTrue(photosContent.hidden);

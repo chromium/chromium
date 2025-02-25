@@ -323,7 +323,7 @@ suite('<facegaze-actions-card>', () => {
     alert = getAlert();
     assertTrue(!!alert);
     assertEquals(
-        alert!.innerText,
+        alert.innerText,
         'Assigned gesture Briefly close both eyes to Left-click the mouse');
 
     const addButton = getAddButton();
@@ -355,7 +355,7 @@ suite('<facegaze-actions-card>', () => {
 
     alert = getAlert();
     assertTrue(!!alert);
-    assertEquals(alert!.innerText, 'Removed action Left-click the mouse');
+    assertEquals(alert.innerText, 'Removed action Left-click the mouse');
 
     const addButton = getAddButton();
     assertFalse(addButton.disabled);
@@ -388,7 +388,7 @@ suite('<facegaze-actions-card>', () => {
     assertTrue(!!focusedElement);
     assertEquals(removeButton, focusedElement);
 
-    removeButton!.click();
+    removeButton.click();
     flush();
 
     const addButton = getAddButton();

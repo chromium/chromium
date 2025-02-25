@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_algorithm.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
@@ -602,11 +603,12 @@ GridSizingTree GridLayoutAlgorithm::BuildGridSizingTree(
 GridSizingTree GridLayoutAlgorithm::BuildGridSizingTreeIgnoringChildren()
     const {
   GridSizingTree sizing_tree;
-  BuildGridSizingSubtree(&sizing_tree, /*opt_oof_children=*/nullptr,
-                         /*opt_subgrid_data=*/kNoSubgriddedItemData,
-                         /*opt_parent_line_resolver=*/nullptr,
-                         /*must_invalidate_placement_cache=*/false,
-                         /*must_ignore_children=*/true);
+  BuildGridSizingSubtree(
+      &sizing_tree, /*opt_oof_children=*/nullptr,
+      /*opt_subgrid_data=*/SubgriddedItemData::NoSubgriddedItemData(),
+      /*opt_parent_line_resolver=*/nullptr,
+      /*must_invalidate_placement_cache=*/false,
+      /*must_ignore_children=*/true);
   return sizing_tree;
 }
 
@@ -1565,9 +1567,10 @@ void GridLayoutAlgorithm::InitializeTrackSizes(
 void GridLayoutAlgorithm::InitializeTrackSizes(
     const GridSizingTree& sizing_tree,
     const std::optional<GridTrackSizingDirection>& opt_track_direction) const {
-  InitializeTrackSizes(GridSizingSubtree(sizing_tree),
-                       /* opt_subgrid_data */ kNoSubgriddedItemData,
-                       opt_track_direction);
+  InitializeTrackSizes(
+      GridSizingSubtree(sizing_tree),
+      /* opt_subgrid_data */ SubgriddedItemData::NoSubgriddedItemData(),
+      opt_track_direction);
 }
 
 namespace {
@@ -1790,12 +1793,14 @@ void GridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
 
   ValidateMinMaxSizesCache(Node(), sizing_subtree, track_direction);
 
-  ComputeBaselineAlignment(sizing_tree.FinalizeTree(), sizing_subtree,
-                           /* opt_subgrid_data */ kNoSubgriddedItemData,
-                           track_direction, sizing_constraint);
+  ComputeBaselineAlignment(
+      sizing_tree.FinalizeTree(), sizing_subtree,
+      /* opt_subgrid_data */ SubgriddedItemData::NoSubgriddedItemData(),
+      track_direction, sizing_constraint);
 
   CompleteTrackSizingAlgorithm(
-      sizing_subtree, /* opt_subgrid_data */ kNoSubgriddedItemData,
+      sizing_subtree,
+      /* opt_subgrid_data */ SubgriddedItemData::NoSubgriddedItemData(),
       track_direction, sizing_constraint, opt_needs_additional_pass);
 }
 
@@ -1855,7 +1860,7 @@ void GridLayoutAlgorithm::CompleteFinalBaselineAlignment(
     const GridSizingTree& sizing_tree) const {
   ComputeBaselineAlignment(
       sizing_tree.FinalizeTree(), GridSizingSubtree(sizing_tree),
-      /* opt_subgrid_data */ kNoSubgriddedItemData,
+      /* opt_subgrid_data */ SubgriddedItemData::NoSubgriddedItemData(),
       /* opt_track_direction */ std::nullopt, SizingConstraint::kLayout);
 }
 
@@ -2563,10 +2568,11 @@ void GridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
   std::sort(reordered_grid_items.begin(), reordered_grid_items.end(),
             CompareGridItemsForIntrinsicTrackResolution);
 
-  auto current_group_begin = reordered_grid_items.begin();
+  auto current_group_begin = base::span(reordered_grid_items).begin();
+  const auto reordered_grid_items_end = base::span(reordered_grid_items).end();
 
   // First, process the items that don't span a flexible track.
-  while (current_group_begin != reordered_grid_items.end() &&
+  while (current_group_begin != reordered_grid_items_end &&
          !(*current_group_begin)->IsSpanningFlexibleTrack(track_direction)) {
     // Each iteration considers all items with the same span size.
     wtf_size_t current_group_span_size =
@@ -2575,9 +2581,8 @@ void GridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
     auto current_group_end = current_group_begin;
     do {
       DCHECK(!(*current_group_end)->IsSpanningFlexibleTrack(track_direction));
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      UNSAFE_TODO(++current_group_end);
-    } while (current_group_end != reordered_grid_items.end() &&
+      ++current_group_end;
+    } while (current_group_end != reordered_grid_items_end &&
              !(*current_group_end)->IsSpanningFlexibleTrack(track_direction) &&
              (*current_group_end)->SpanSize(track_direction) ==
                  current_group_span_size);
@@ -2614,27 +2619,25 @@ void GridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
   //   sizing function...
 #if DCHECK_IS_ON()
   // Every grid item of the remaining group should span a flexible track.
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  for (auto it = current_group_begin; it != reordered_grid_items.end();
-       UNSAFE_TODO(++it)) {
+  for (auto it = current_group_begin; it != reordered_grid_items_end; ++it) {
     DCHECK((*it)->IsSpanningFlexibleTrack(track_direction));
   }
 #endif
 
   // Now, process items spanning flexible tracks (if any).
-  if (current_group_begin != reordered_grid_items.end()) {
+  if (current_group_begin != reordered_grid_items_end) {
     // We can safely skip contributions for maximums since a <flex> definition
     // does not have an intrinsic max track sizing function.
     IncreaseTrackSizesToAccommodateGridItems(
-        current_group_begin, reordered_grid_items.end(), sizing_subtree,
+        current_group_begin, reordered_grid_items_end, sizing_subtree,
         /* is_group_spanning_flex_track */ true, sizing_constraint,
         GridItemContributionType::kForIntrinsicMinimums, &track_collection);
     IncreaseTrackSizesToAccommodateGridItems(
-        current_group_begin, reordered_grid_items.end(), sizing_subtree,
+        current_group_begin, reordered_grid_items_end, sizing_subtree,
         /* is_group_spanning_flex_track */ true, sizing_constraint,
         GridItemContributionType::kForContentBasedMinimums, &track_collection);
     IncreaseTrackSizesToAccommodateGridItems(
-        current_group_begin, reordered_grid_items.end(), sizing_subtree,
+        current_group_begin, reordered_grid_items_end, sizing_subtree,
         /* is_group_spanning_flex_track */ true, sizing_constraint,
         GridItemContributionType::kForMaxContentMinimums, &track_collection);
   }
@@ -2804,7 +2807,7 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
     std::sort(flexible_sets.begin(), flexible_sets.end(),
               CompareSetsByBaseSizeFlexFactorRatio);
 
-    auto current_set = flexible_sets.begin();
+    auto current_set = base::span(flexible_sets).begin();
     while (leftover_space > 0 && current_set != flexible_sets.end()) {
       flex_factor_sum = base::ClampMax(flex_factor_sum, 1);
 
@@ -2812,8 +2815,7 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
       while (next_set != flexible_sets.end() &&
              (*next_set)->FlexFactor() * leftover_space.RawValue() <
                  (*next_set)->BaseSize().RawValue() * flex_factor_sum) {
-        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-        UNSAFE_TODO(++next_set);
+        ++next_set;
       }
 
       // Any upcoming flexible set will receive a share of free space of at
@@ -2826,8 +2828,7 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
       // Otherwise, treat all those sets that does not receive a share of free
       // space of at least their base size as inflexible, effectively excluding
       // them from the leftover space and flex factor sum computation.
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      for (auto it = current_set; it != next_set; UNSAFE_TODO(++it)) {
+      for (auto it = current_set; it != next_set; ++it) {
         flex_factor_sum -= (*it)->FlexFactor();
         leftover_space -= (*it)->BaseSize();
       }

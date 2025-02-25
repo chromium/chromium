@@ -46,6 +46,9 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // Returns true if the device is being used in the landscape mode.
   virtual bool IsInLandscapeMode() = 0;
 
+  // Returns true if the device is a foldable device.
+  virtual bool IsFoldable() = 0;
+
   // Shows the user's PIX accounts from their Google Wallet, and prompts to pay.
   // `bank_account_suggestions` is the list of PIX accounts to be shown to the
   // user for payment. `on_payment_account_selected` is the callback called with

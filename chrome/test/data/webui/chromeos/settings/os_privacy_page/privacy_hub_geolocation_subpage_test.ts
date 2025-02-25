@@ -228,7 +228,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
             'privacyHubSystemServicesSectionTitle'),
         privacyHubGeolocationSubpage.shadowRoot!
             .querySelector<HTMLElement>(
-                '#systemServicesSectionTitle')!.innerText!.trim());
+                '#systemServicesSectionTitle')!.innerText.trim());
 
     const systemServices =
         getSystemServicesFromSubpage(privacyHubGeolocationSubpage);
@@ -257,7 +257,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
             .filter(value => typeof value === 'number') as ScheduleType[];
     // Test Night Light
     for (const scheduleType of allScheduleTypes) {
-      await setNightLightScheduleType(scheduleType as ScheduleType);
+      await setNightLightScheduleType(scheduleType);
 
       checkService(
           systemServices[1]!,
@@ -276,7 +276,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
 
     // Test Dark Theme
     for (const scheduleType of allScheduleTypes) {
-      await setDarkThemeScheduleType(scheduleType as ScheduleType);
+      await setDarkThemeScheduleType(scheduleType);
 
       checkService(
           systemServices[2]!,
@@ -432,8 +432,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
     assertEquals(
         privacyHubGeolocationSubpage.i18n('privacyHubAppsSectionTitle'),
         privacyHubGeolocationSubpage.shadowRoot!
-            .querySelector<HTMLElement>(
-                '#appsSectionTitle')!.innerText!.trim());
+            .querySelector<HTMLElement>('#appsSectionTitle')!.innerText.trim());
     assertTrue(!!getAppList());
     assertNull(getNoAppHasAccessTextSection());
   });
@@ -447,7 +446,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
     assertTrue(!!getNoAppHasAccessTextSection());
     assertEquals(
         privacyHubGeolocationSubpage.i18n('noAppCanUseGeolocationText'),
-        getNoAppHasAccessTextSection()!.innerText!.trim());
+        getNoAppHasAccessTextSection()!.innerText.trim());
 
     // Setting location permission to "Only allowed for system" should have
     // similar effect.
@@ -457,7 +456,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
     assertTrue(!!getNoAppHasAccessTextSection());
     assertEquals(
         privacyHubGeolocationSubpage.i18n('noAppCanUseGeolocationText'),
-        getNoAppHasAccessTextSection()!.innerText!.trim());
+        getNoAppHasAccessTextSection()!.innerText.trim());
   });
 
   function initializeObserver(): Promise<void> {
@@ -602,7 +601,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
         privacyHubGeolocationSubpage.i18n('websitesSectionTitle'),
         privacyHubGeolocationSubpage.shadowRoot!
             .querySelector<HTMLElement>(
-                '#websitesSectionTitle')!.innerText!.trim()),
+                '#websitesSectionTitle')!.innerText.trim()),
         'problem 1';
 
     assertEquals(
@@ -614,7 +613,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
     setGeolocationAccessLevelPref(GeolocationAccessLevel.DISALLOWED);
     assertEquals(
         privacyHubGeolocationSubpage.i18n('noWebsiteCanUseLocationText'),
-        getNoWebsiteHasAccessTextRow()!.innerText!.trim(), 'problem 3');
+        getNoWebsiteHasAccessTextRow()!.innerText.trim(), 'problem 3');
 
     // Setting location to "only allowed for system services" should have same
     // effect as disabling.
@@ -622,7 +621,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
         GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM);
     assertEquals(
         privacyHubGeolocationSubpage.i18n('noWebsiteCanUseLocationText'),
-        getNoWebsiteHasAccessTextRow()!.innerText!.trim(), 'problem 4');
+        getNoWebsiteHasAccessTextRow()!.innerText.trim(), 'problem 4');
   });
 
   test(

@@ -34,7 +34,7 @@ suite('SanitizeUITest', function() {
     // Verify the header element exists
     assert(titleDiv);
     // Check the header content
-    assertEquals('Safety reset has been completed', titleDiv!.textContent);
+    assertEquals('Safety reset has been completed', titleDiv.textContent);
   });
 
   test('SanitizeDoneAccordionsAndLinksTest', async () => {

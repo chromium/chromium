@@ -121,6 +121,10 @@ void MessagingBackendDatabaseImpl::Delete(
   message_data_->DeleteData(message_uuids);
 }
 
+void MessagingBackendDatabaseImpl::DeleteAllData() {
+  message_data_->DeleteAllData();
+}
+
 void MessagingBackendDatabaseImpl::OnDBReady(
     DBLoadedCallback db_loaded_callback,
     bool success) {

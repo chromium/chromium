@@ -71,7 +71,9 @@ enum class EwalletFlowExitedReason {
   // The FOP selector was dismissed by a user action e.g., swiping down, tapping
   // on the webpage behind the FOP selector, or tapping on the omnibox.
   kFopSelectorClosedByUser = 12,
-  kMaxValue = kFopSelectorClosedByUser
+  // The device is a foldable device which we don't support yet.
+  kFoldableDevice = 13,
+  kMaxValue = kFoldableDevice
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.EwalletFlowExitedReason)
 

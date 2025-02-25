@@ -2045,6 +2045,22 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   // to position-try-order.
   HeapVector<NonOverflowingCandidate, kMaxTryAttempts>
       non_overflowing_candidates;
+
+  const Element* element = To<Element>(node_info.node.GetDOMNode());
+  std::optional<wtf_size_t> last_successful_index;
+  bool find_last_successful_option = false;
+  if (const OutOfFlowData* oof_data =
+          element ? element->GetOutOfFlowData() : nullptr) {
+    // Unless `position-try-fallbacks` has changed, prefer the last successful
+    // option.
+    if (oof_data->HasLastSuccessfulPositionFallback() &&
+        !oof_data->HasStaleFallbackData(*node_info.node.GetLayoutBox()) &&
+        RuntimeEnabledFeatures::CSSAnchorRememberedScrollOffsetEnabled()) {
+      last_successful_index = oof_data->GetLastSuccessfulIndex();
+      find_last_successful_option = true;
+    }
+  }
+
   do {
     NonOverflowingScrollRange non_overflowing_range;
     // Do @position-try placement decisions on the *base style* to avoid
@@ -2052,9 +2068,9 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     const ComputedStyle& style = iter.ActivateBaseStyleForTryAttempt();
     // However, without @position-try, the style is the current style.
     CHECK(has_try_fallbacks || &style == &iter.GetStyle());
-    std::optional<OffsetInfo> offset_info =
-        TryCalculateOffset(node_info, style, anchor_evaluator,
-                           try_fit_available_space, &non_overflowing_range);
+    std::optional<OffsetInfo> offset_info = TryCalculateOffset(
+        node_info, style, anchor_evaluator, iter.TryFallbackIndex(),
+        try_fit_available_space, &non_overflowing_range);
 
     // Also check if it fits the containing block after applying scroll offset
     // (i.e. the scroll-adjusted inset-modified containing block).
@@ -2066,10 +2082,21 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
           continue;
         }
       }
-      non_overflowing_candidates.push_back(
-          NonOverflowingCandidate{iter.TryFallbackIndex(), *offset_info});
+      NonOverflowingCandidate candidate{iter.TryFallbackIndex(), *offset_info};
+      if (find_last_successful_option &&
+          iter.TryFallbackIndex() == last_successful_index) {
+        // The last successful option still fits.
+        //
+        // TODO(layout-dev): Consider refactoring this. If we want to keep the
+        // last successful option index as long as it fits, we could just check
+        // that option first, and skip the rest, if it still fits.
+        non_overflowing_candidates.clear();
+        non_overflowing_candidates.push_back(candidate);
+        break;
+      }
+      non_overflowing_candidates.push_back(candidate);
     }
-  } while ((non_overflowing_candidates.empty() ||
+  } while ((non_overflowing_candidates.empty() || find_last_successful_option ||
             position_try_order != EPositionTryOrder::kNormal) &&
            --attempts_left != 0 && has_try_fallbacks && iter.MoveToNextStyle());
 
@@ -2099,9 +2126,9 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     // offset again, using the non-base style.
     const ComputedStyle& style = iter.ActivateStyleForChosenFallback();
     NonOverflowingScrollRange non_overflowing_range_unused;
-    offset_info = TryCalculateOffset(node_info, style, anchor_evaluator,
-                                     /* try_fit_available_space */ false,
-                                     &non_overflowing_range_unused);
+    offset_info = TryCalculateOffset(
+        node_info, style, anchor_evaluator, iter.TryFallbackIndex(),
+        /*try_fit_available_space*/ false, &non_overflowing_range_unused);
     offset_info->overflows_containing_block = overflows_containing_block;
   }
   CHECK(offset_info);
@@ -2125,6 +2152,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
     const NodeInfo& node_info,
     const ComputedStyle& candidate_style,
     AnchorEvaluatorImpl& anchor_evaluator,
+    std::optional<wtf_size_t> option_index,
     bool try_fit_available_space,
     NonOverflowingScrollRange* out_non_overflowing_range) {
   // TryCalculateOffset may be called multiple times if we have multiple @try
@@ -2145,10 +2173,36 @@ OutOfFlowLayoutPart::TryCalculateOffset(
     PhysicalOffset default_anchor_scroll_shift;
     if (RuntimeEnabledFeatures::CSSAnchorRememberedScrollOffsetEnabled()) {
       Element* elm = To<Element>(node_info.node.GetDOMNode());
-
       if (const OutOfFlowData* oof_data = elm->GetOutOfFlowData()) {
-        default_anchor_scroll_shift =
-            oof_data->DefaultAnchorScrollShift().value_or(PhysicalOffset());
+        // If this is the current option, use the scroll shift that was stored
+        // at the previous anchor recalculation point. Otherwise, use the
+        // current offset.
+        //
+        // Options may not fit at the previous anchor recalculation point, but
+        // may fit at the current scroll offset. Use the latter, so that we're
+        // able to switch to them.
+        //
+        // TODO(layout-dev): There's one unsolved problem with this approach: If
+        // scrolling has changed along one axis (e.g. the block axis), and the
+        // current option has the same constraints along that axis as another
+        // option, we may switch to the other option, although it doesn't fit
+        // any better.
+        //
+        // Example:
+        //   div {
+        //     position: absolute;
+        //     position-anchor: --a;
+        //     position-area: top left;
+        //     position-try-fallbacks: flip-inline;
+        //   }
+        if (oof_data->HasLastSuccessfulPositionFallback() &&
+            option_index == oof_data->GetLastSuccessfulIndex()) {
+          default_anchor_scroll_shift = oof_data->DefaultAnchorScrollShift();
+        } else {
+          default_anchor_scroll_shift =
+              oof_data->PotentialNextDefaultAnchorScrollShift(
+                  *node_info.node.GetLayoutBox());
+        }
       }
 
       if (offsets->top.has_value() != offsets->bottom.has_value() ||

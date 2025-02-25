@@ -66,12 +66,12 @@ suite('<customize-button-row>', () => {
         customizeButtonRow.shadowRoot!.querySelector(
             '#remappingActionDropdown');
     assertTrue(!!dropdown);
-    return dropdown!.get('selectedValue');
+    return dropdown.get('selectedValue');
   }
 
   function getSelectDropdownElement() {
     const dropdownElement =
-        customizeButtonRow.$.remappingActionDropdown!.$.selectDropdown;
+        customizeButtonRow.$.remappingActionDropdown.$.selectDropdown;
     return dropdownElement;
   }
 

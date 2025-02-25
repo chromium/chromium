@@ -8,8 +8,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
@@ -22,7 +20,13 @@
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
+#endif
 
 namespace safe_browsing {
 
@@ -40,6 +44,7 @@ bool DangerTypeIsDangerous(download::DownloadDangerType danger_type) {
 }
 
 void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // If |download| has a deep scanning malware verdict, then it means the
   // dangerous file has already been reported.
   auto* scan_result = static_cast<enterprise_connectors::ScanResult*>(
@@ -68,11 +73,13 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
       base::HexEncode(download->GetHash()), download->GetDangerType(),
       download->GetMimeType(), /*scan_id*/ "", download->GetTotalBytes(),
       enterprise_connectors::EventResult::WARNED);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void ReportDangerousDownloadWarningBypassed(
     download::DownloadItem* download,
     download::DownloadDangerType original_danger_type) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -102,9 +109,11 @@ void ReportDangerousDownloadWarningBypassed(
         download->GetMimeType(),
         /*scan_id*/ "", download->GetTotalBytes());
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -134,6 +143,7 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
         enterprise_connectors::ContentAnalysisResponse(),
         /*user_justification=*/std::nullopt);
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 }  // namespace

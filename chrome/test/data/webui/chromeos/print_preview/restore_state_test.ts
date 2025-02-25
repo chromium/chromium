@@ -47,7 +47,7 @@ suite('RestoreStateTest', function() {
         stickySettings.mediaSize!.width_microns,
         page.settings.mediaSize.value.width_microns);
     assertEquals(
-        (stickySettings.vendorOptions! as {[key: string]: any})!['paperType'],
+        (stickySettings.vendorOptions! as {[key: string]: any})['paperType'],
         page.settings.vendorItems.value.paperType);
     assertEquals(
         (stickySettings.vendorOptions! as {[key: string]: any})['printArea'],
@@ -66,8 +66,8 @@ suite('RestoreStateTest', function() {
     ] as Array<[keyof Settings, string]>)
         .forEach(keys => {
           assertEquals(
-              (stickySettings as {[key: string]: any})[keys[1]!],
-              page.settings![keys[0]!]!.value);
+              (stickySettings as {[key: string]: any})[keys[1]],
+              page.settings[keys[0]].value);
         });
   }
 

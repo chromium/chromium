@@ -41,8 +41,7 @@ suite('PeripheralUpdatesListTest', () => {
 
     // Add the update list to the DOM.
     peripheralUpdateListElement =
-        document.createElement('peripheral-updates-list') as
-        PeripheralUpdateListElement;
+        document.createElement('peripheral-updates-list');
     assertTrue(!!peripheralUpdateListElement);
     document.body.appendChild(peripheralUpdateListElement);
 
@@ -72,7 +71,7 @@ suite('PeripheralUpdatesListTest', () => {
         const card = updateCards[i];
         assertTrue(!!card);
         const updateCardName =
-            card!.shadowRoot!.querySelector<HTMLElement>('#name');
+            card.shadowRoot!.querySelector<HTMLElement>('#name');
         assertTrue(!!updateCardName);
         assertEquals(
             mojoString16ToString(u.deviceName), updateCardName.innerText);

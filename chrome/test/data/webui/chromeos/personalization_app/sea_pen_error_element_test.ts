@@ -40,7 +40,7 @@ suite('SeaPenErrorElementTest', function() {
     assertTrue(!!errorMessage);
     assertEquals(
         seaPenErrorElement.i18n('seaPenErrorNoInternet'),
-        errorMessage!.innerText);
+        errorMessage.innerText);
 
     const errorIllo =
         seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
@@ -63,7 +63,7 @@ suite('SeaPenErrorElementTest', function() {
     assertTrue(!!errorMessage);
     assertEquals(
         seaPenErrorElement.i18n('seaPenFreeformErrorNoInternet'),
-        errorMessage!.innerText);
+        errorMessage.innerText);
 
     const errorIllo =
         seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
@@ -85,7 +85,7 @@ suite('SeaPenErrorElementTest', function() {
     assertTrue(!!errorMessage, 'an error message should be displayed');
     assertEquals(
         seaPenErrorElement.i18n('seaPenErrorResourceExhausted'),
-        errorMessage!.innerText);
+        errorMessage.innerText);
 
     const errorIllo =
         seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
@@ -107,7 +107,7 @@ suite('SeaPenErrorElementTest', function() {
     assertTrue(!!errorMessage, 'an error message should be displayed');
     assertEquals(
         seaPenErrorElement.i18n('seaPenErrorResourceExhausted'),
-        errorMessage!.innerText);
+        errorMessage.innerText);
 
     const errorIllo =
         seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
@@ -128,7 +128,7 @@ suite('SeaPenErrorElementTest', function() {
             '.error-message');
     assertTrue(!!errorMessage, 'an error message should be displayed');
     assertEquals(
-        seaPenErrorElement.i18n('seaPenErrorGeneric'), errorMessage!.innerText);
+        seaPenErrorElement.i18n('seaPenErrorGeneric'), errorMessage.innerText);
 
     const errorIllo =
         seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
@@ -150,7 +150,7 @@ suite('SeaPenErrorElementTest', function() {
             '.error-message');
     assertTrue(!!errorMessage, 'an error message should be displayed');
     assertEquals(
-        seaPenErrorElement.i18n('seaPenErrorGeneric'), errorMessage!.innerText);
+        seaPenErrorElement.i18n('seaPenErrorGeneric'), errorMessage.innerText);
 
     const errorIllo =
         seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
@@ -172,7 +172,7 @@ suite('SeaPenErrorElementTest', function() {
             '.error-message');
     assertTrue(!!errorMessage, 'an error message should be displayed');
     assertEquals(
-        seaPenErrorElement.i18n('seaPenErrorGeneric'), errorMessage!.innerText);
+        seaPenErrorElement.i18n('seaPenErrorGeneric'), errorMessage.innerText);
 
     const errorIllo =
         seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
@@ -197,7 +197,7 @@ suite('SeaPenErrorElementTest', function() {
         assertTrue(!!errorMessage, 'an error message should be displayed');
         assertEquals(
             seaPenErrorElement.i18n('seaPenFreeformErrorUnsupportedLanguage'),
-            errorMessage!.innerText);
+            errorMessage.innerText);
 
         const errorIllo =
             seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>(
@@ -221,7 +221,7 @@ suite('SeaPenErrorElementTest', function() {
     assertTrue(!!errorMessage, 'an error message should be displayed');
     assertEquals(
         seaPenErrorElement.i18n('seaPenFreeformErrorBlockedOutputs'),
-        errorMessage!.innerText);
+        errorMessage.innerText);
 
     const errorIllo =
         seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
@@ -244,7 +244,7 @@ suite('SeaPenErrorElementTest', function() {
     assertTrue(!!errorMessage, 'an error message should be displayed');
     assertEquals(
         seaPenErrorElement.i18n('seaPenFreeformErrorPerson'),
-        errorMessage!.innerText);
+        errorMessage.innerText);
 
     const errorIllo =
         seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');

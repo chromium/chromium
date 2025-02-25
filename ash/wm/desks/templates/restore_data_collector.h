@@ -70,7 +70,6 @@ class RestoreDataCollector {
     size_t non_persistable_window_count = 0;
     std::unique_ptr<app_restore::RestoreData> data;
     uint32_t pending_request_count = 0;
-    uint64_t lacros_profile_id = 0;
     GetDeskTemplateCallback callback;
   };
 

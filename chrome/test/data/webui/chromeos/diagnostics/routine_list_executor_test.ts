@@ -48,12 +48,11 @@ suite('fakeRoutineListExecutorTestSuite', function() {
 
       if (routine.result.hasOwnProperty('simpleResult')) {
         controller.setFakeStandardRoutineResult(
-            routine.type,
-            routine.result!.simpleResult as StandardRoutineResult);
+            routine.type, routine.result.simpleResult as StandardRoutineResult);
       } else {
-        assertTrue(routine.result!.powerResult!.hasOwnProperty('simpleResult'));
+        assertTrue(routine.result.powerResult!.hasOwnProperty('simpleResult'));
         controller.setFakePowerRoutineResult(
-            routine.type, routine.result!.powerResult as PowerRoutineResult);
+            routine.type, routine.result.powerResult as PowerRoutineResult);
       }
 
       // Build the list of routines to run.
@@ -89,7 +88,7 @@ suite('fakeRoutineListExecutorTestSuite', function() {
           assertEquals(
               expectedCallbacks[callbackIndex]!.result!.powerResult!
                   .simpleResult,
-              status!.result!.powerResult!.simpleResult);
+              status.result!.powerResult!.simpleResult);
         }
       }
 

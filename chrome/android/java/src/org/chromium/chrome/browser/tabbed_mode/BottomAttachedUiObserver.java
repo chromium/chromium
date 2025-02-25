@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
-import android.content.Context;
-import android.graphics.Color;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,7 +12,6 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -29,7 +25,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
-import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarStateProvider;
@@ -53,8 +48,7 @@ public class BottomAttachedUiObserver
                 BottomSheetObserver,
                 AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver,
                 AccessorySheetVisualStateProvider.Observer,
-                InsetObserver.WindowInsetObserver,
-                TabObscuringHandler.Observer {
+                InsetObserver.WindowInsetObserver {
 
     /**
      * An observer to be notified of changes to what kind of UI is currently bordering the bottom of
@@ -73,16 +67,8 @@ public class BottomAttachedUiObserver
                 @Nullable @ColorInt Integer color,
                 boolean forceShowDivider,
                 boolean disableAnimation);
-
-        /**
-         * Called when the scrim at the bottom of the screen changes.
-         *
-         * @param scrimColor The color of the scrim at the bottom of the screen.
-         */
-        void onScrimOverlapChanged(@ColorInt int scrimColor);
     }
 
-    private final Context mContext;
     private boolean mBottomNavbarPresent;
     private final ObserverList<Observer> mObservers;
     private @Nullable @ColorInt Integer mBottomAttachedColor;
@@ -114,8 +100,6 @@ public class BottomAttachedUiObserver
     private @Nullable @ColorInt Integer mOmniboxSuggestionsColor;
 
     private final InsetObserver mInsetObserver;
-    private final TabObscuringHandler mTabObscuringHandler;
-    private boolean mIsTabObscured;
 
     private ObservableSupplier<AccessorySheetVisualStateProvider>
             mAccessorySheetVisualStateProviderSupplier;
@@ -143,11 +127,8 @@ public class BottomAttachedUiObserver
      *     AccessorySheetVisualStateProvider} to watch for visual changes to the keyboard accessory
      *     sheet.
      * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
-     * @param tabObscuringHandler A {@link TabObscuringHandler} to listen to the tab-obscuring state
-     *     change.
      */
     public BottomAttachedUiObserver(
-            @NonNull Context context,
             @NonNull BottomControlsStacker bottomControlsStacker,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull SnackbarStateProvider snackbarStateProvider,
@@ -157,9 +138,7 @@ public class BottomAttachedUiObserver
             @NonNull
                     ObservableSupplier<AccessorySheetVisualStateProvider>
                             accessorySheetVisualStateProviderSupplier,
-            InsetObserver insetObserver,
-            @NonNull TabObscuringHandler tabObscuringHandler) {
-        mContext = context;
+            InsetObserver insetObserver) {
         mObservers = new ObserverList<>();
 
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -179,11 +158,6 @@ public class BottomAttachedUiObserver
         mInsetObserver = insetObserver;
         mInsetObserver.addObserver(this);
         checkIfBottomNavbarIsPresent();
-
-        mTabObscuringHandler = tabObscuringHandler;
-        if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
-            mTabObscuringHandler.addObserver(this);
-        }
 
         mAccessorySheetVisualStateProviderSupplier = accessorySheetVisualStateProviderSupplier;
         mAccessorySheetProviderSupplierObserver =
@@ -265,9 +239,6 @@ public class BottomAttachedUiObserver
         }
         if (mInsetObserver != null) {
             mInsetObserver.removeObserver(this);
-        }
-        if (mTabObscuringHandler != null) {
-            mTabObscuringHandler.removeObserver(this);
         }
     }
 
@@ -510,29 +481,6 @@ public class BottomAttachedUiObserver
     @Override
     public void onInsetChanged() {
         checkIfBottomNavbarIsPresent();
-    }
-
-    // TabObscuringHandler.Observer
-    @Override
-    public void updateObscured(boolean obscureTabContent, boolean obscureToolbar) {
-        // The bottom chin is scrimmed only when the toolbar is not obscure.
-        boolean hasOtherVisibleBottomControls =
-                mBottomControlsHeight > 1
-                        && mBottomControlsStacker.hasVisibleLayersOtherThan(
-                                BottomControlsStacker.LayerType.BOTTOM_CHIN);
-
-        // obscureTabContent = true && obscureToolbar = false implies a tab modal dialog. If
-        // obscureToolbar = true, don't apply overlay as the obscure UI will cover the entire app
-        // (including the bottom nav bar region).
-        mIsTabObscured = obscureTabContent && !obscureToolbar && !hasOtherVisibleBottomControls;
-
-        for (Observer observer : mObservers) {
-            observer.onScrimOverlapChanged(
-                    // TODO(https://crbug.com/392980128): Address the hard-coded scrim color.
-                    mIsTabObscured
-                            ? mContext.getColor(R.color.modal_dialog_scrim_color)
-                            : Color.TRANSPARENT);
-        }
     }
 
     /**

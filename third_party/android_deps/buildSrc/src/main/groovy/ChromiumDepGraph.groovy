@@ -39,6 +39,12 @@ class ChromiumDepGraph {
                     description: 'Firebase Cloud Messaging library that interfaces with gmscore.'),
             com_google_android_gms_play_services_location: new PropertyOverride(
                     description: 'Provides data about the device\'s physical location via gmscore.'),
+            com_google_ar_impress: new PropertyOverride(
+                    url: 'https://maven.google.com/web/index.html?q=impress#com.google.ar:impress',
+                    description: 'Impress shows GLTF models on XR devices, and provides advanced materials and rendering.\n'
+                               + 'A dependency of https://developer.android.com/jetpack/androidx/releases/xr-scenecore.\n',
+                    licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+                    licenseName: 'Apache-2.0'),
             com_google_auto_service_auto_service_annotations: new PropertyOverride(
                     licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
                     licenseName: 'Apache 2.0'),

@@ -73,6 +73,7 @@ class EwalletManagerTest : public testing::Test {
     ON_CALL(client_, GetFacilitatedPaymentsNetworkInterface)
         .WillByDefault(testing::Return(&payments_network_interface_));
     ON_CALL(client_, IsInLandscapeMode).WillByDefault(testing::Return(false));
+    ON_CALL(client_, IsFoldable).WillByDefault(testing::Return(false));
     ON_CALL(client_, GetCoreAccountInfo)
         .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
     ON_CALL(optimization_guide_decider_,
@@ -327,6 +328,38 @@ TEST_F(EwalletManagerTest, UserOptedOut_ApiClientNotCheckedForAvailability) {
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.PayflowExitedReason.ShopeePay",
       /*sample=*/EwalletFlowExitedReason::kUserOptedOut,
+      /*expected_bucket_count=*/1);
+}
+
+// API availability is not invoked if in foldable devices.
+TEST_F(EwalletManagerTest, IsFoldable_ApiClientNotCheckedForAvailability) {
+  base::HistogramTester histogram_tester;
+  payments_data_manager_.AddEwalletForTest(
+      autofill::Ewallet(/*instrument_id=*/100, u"nickname",
+                        /*display_icon_url=*/GURL("http://www.example.com"),
+                        u"ewallet_name", u"account_display_name",
+                        /*supported_payment_link_uris=*/
+                        {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$",
+                         u"^tngd:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
+                        /*is_fido_enrolled=*/true));
+  GURL supported_payment_link(
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+
+  EXPECT_CALL(client_, IsFoldable).Times(1).WillOnce(testing::Return(true));
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason",
+      /*sample=*/EwalletFlowExitedReason::kFoldableDevice,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason.ShopeePay",
+      /*sample=*/EwalletFlowExitedReason::kFoldableDevice,
       /*expected_bucket_count=*/1);
 }
 

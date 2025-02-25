@@ -144,7 +144,7 @@ suite('networkCardTestSuite', function() {
 
   function getNameServers(): string[] {
     assert(networkCardElement);
-    return networkCardElement.network!.ipConfig!.nameServers as string[];
+    return networkCardElement.network.ipConfig!.nameServers as string[];
   }
 
   function openIpConfigDrawer(): Promise<void> {

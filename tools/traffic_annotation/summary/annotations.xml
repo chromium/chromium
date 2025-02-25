@@ -508,4 +508,5 @@ Refer to README.md for content description and update process.
  <item id="remoting_compute_engine_instance_access_token_scopes" added_in_milestone="135" content_hash_code="023331d4" os_list="linux,windows,chromeos,android" file_path="remoting/base/compute_engine_service_client.cc" />
  <item id="metrics_report_dwa" added_in_milestone="135" content_hash_code="04a744db" os_list="linux,windows,android,chromeos" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
  <item id="version_history" added_in_milestone="135" content_hash_code="03c4973a" os_list="linux,windows" file_path="chrome/browser/upgrade_detector/version_history_client.cc" />
+ <item id="payments_autofill" added_in_milestone="135" content_hash_code="04acbe74" os_list="linux,windows,android,chromeos" file_path="components/autofill/core/browser/payments/multiple_request_payments_network_interface_base.cc" />
 </annotations>

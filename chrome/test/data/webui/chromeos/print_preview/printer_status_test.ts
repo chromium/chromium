@@ -138,7 +138,7 @@ suite('PrinterStatusTest', function() {
       dropdown: PrintPreviewDestinationDropdownCrosElement,
       key: string): string {
     return dropdown.shadowRoot!.querySelector(`#${
-        escapeForwardSlahes(key)}`)!.querySelector('cr-icon')!.icon!;
+        escapeForwardSlahes(key)}`)!.querySelector('cr-icon')!.icon;
   }
 
   // Mocks calls to window.matchMedia, returning false by default.

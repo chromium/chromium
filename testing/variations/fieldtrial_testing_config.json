@@ -775,6 +775,37 @@
             ]
         }
     ],
+    "AppMallStudy": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20241010",
+                    "enable_features": [
+                        "CrosMall",
+                        "CrosMallSwa"
+                    ]
+                },
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AppInstallServiceUri",
+                        "CrosMall"
+                    ]
+                },
+                {
+                    "name": "Enabled_20240619",
+                    "enable_features": [
+                        "AppInstallServiceUri",
+                        "CrosMall",
+                        "CrosMallSwa"
+                    ]
+                }
+            ]
+        }
+    ],
     "AppStreamingAccessibilityIntegration": [
         {
             "platforms": [
@@ -9392,32 +9423,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EventTimingSelectionAutoScrollNoInteractionId"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ExpandCompositedCullRect": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ExpandCompositedCullRect",
-                    "params": {
-                        "dpr_coef": "1",
-                        "pixels": "4000",
-                        "small_scroller_opt": "true"
-                    },
-                    "enable_features": [
-                        "ExpandCompositedCullRect"
                     ]
                 }
             ]

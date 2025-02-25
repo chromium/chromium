@@ -268,6 +268,8 @@ public class RootUiCoordinator
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<MerchantTrustSignalsCoordinator>
             mMerchantTrustSignalsCoordinatorSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<ScrimManager> mScrimManagerSupplier =
+            new ObservableSupplierImpl<>();
     protected final ObservableSupplier<Profile> mProfileSupplier;
     protected final ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
@@ -758,7 +760,7 @@ public class RootUiCoordinator
     @Override
     public void onInflationComplete() {
         mScrimManager = buildScrimWidget();
-
+        mScrimManagerSupplier.set(mScrimManager);
         initFindToolbarManager();
         initializeToolbar();
     }
@@ -2067,5 +2069,10 @@ public class RootUiCoordinator
     public DataSharingTabManager getDataSharingTabManager() {
         // This should only be called on an instance of TabbedRootUiCoordinator.
         return null;
+    }
+
+    /** Returns the entry point for all scrim interactions. */
+    public ObservableSupplier<ScrimManager> getScrimManagerSupplier() {
+        return mScrimManagerSupplier;
     }
 }

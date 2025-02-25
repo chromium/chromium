@@ -106,7 +106,7 @@ suite('<settings-per-device-mouse-subsection>', function() {
     await flushTasks();
     updatedMice = await provider.getConnectedMouseSettings();
     assertEquals(
-        updatedMice[0]!.settings.sensitivity, mouseSpeedSlider.pref!.value);
+        updatedMice[0]!.settings.sensitivity, mouseSpeedSlider.pref.value);
 
     const mouseReverseScrollToggleButton =
         subsection.shadowRoot!.querySelector<CrToggleElement>(
@@ -140,7 +140,7 @@ suite('<settings-per-device-mouse-subsection>', function() {
     updatedMice = await provider.getConnectedMouseSettings();
     assertEquals(
         updatedMice[0]!.settings.scrollSensitivity,
-        mouseScrollSpeedSlider.pref!.value);
+        mouseScrollSpeedSlider.pref.value);
   });
 
   /**
@@ -169,17 +169,17 @@ suite('<settings-per-device-mouse-subsection>', function() {
         subsection.shadowRoot!.querySelector<CrLinkRowElement>(
             '#customizeMouseButtons');
     assertTrue(!!mouseSwapToggleButton);
-    assertTrue(mouseSwapToggleButton!.pref!.value);
+    assertTrue(mouseSwapToggleButton.pref!.value);
     assertEquals(
-        fakeMice2[0]!.settings.swapRight, mouseSwapToggleButton!.pref!.value);
+        fakeMice2[0]!.settings.swapRight, mouseSwapToggleButton.pref!.value);
     assertFalse(!!customizeButtonsRow);
 
     // Click mouse swap toggle button will update the pref value.
     mouseSwapToggleButton.click();
     await flushTasks();
-    assertFalse(mouseSwapToggleButton!.pref!.value);
+    assertFalse(mouseSwapToggleButton.pref!.value);
     assertEquals(
-        fakeMice2[0]!.settings.swapRight, mouseSwapToggleButton!.pref!.value);
+        fakeMice2[0]!.settings.swapRight, mouseSwapToggleButton.pref!.value);
 
     // Turn off the feature flag, the mouse swap toggle button disappear.
     setPeripheralCustomizationEnabled(false);
@@ -236,7 +236,7 @@ suite('<settings-per-device-mouse-subsection>', function() {
         subsection.shadowRoot!.querySelector<SettingsSliderElement>(
             '#mouseSpeedSlider');
     assertEquals(
-        fakeMice[0]!.settings.sensitivity, mouseSpeedSlider!.pref!.value);
+        fakeMice[0]!.settings.sensitivity, mouseSpeedSlider!.pref.value);
     assertEquals(
         fakeMice[0]!.settings.reverseScrolling,
         subsection.get('reverseScrollValue'));
@@ -254,25 +254,25 @@ suite('<settings-per-device-mouse-subsection>', function() {
     assertTrue(isVisible(mouseScrollSpeedSlider));
     assertEquals(
         fakeMice[0]!.settings.scrollSensitivity,
-        mouseScrollSpeedSlider.pref!.value);
+        mouseScrollSpeedSlider.pref.value);
 
     assert(fakeMice[1]);
     await changeMouseSubsectionState(fakeMice[1], false);
     mouseSwapButtonDropdown =
         subsection.shadowRoot!.querySelector('#mouseSwapButtonDropdown');
     assertEquals(
-        fakeMice[1]!.settings.swapRight, mouseSwapButtonDropdown!.pref!.value);
+        fakeMice[1].settings.swapRight, mouseSwapButtonDropdown!.pref!.value);
     mouseAccelerationToggleButton =
         subsection.shadowRoot!.querySelector('#mouseAcceleration');
     assertEquals(
-        fakeMice[1]!.settings.accelerationEnabled,
+        fakeMice[1].settings.accelerationEnabled,
         mouseAccelerationToggleButton!.pref!.value);
     mouseSpeedSlider =
         subsection.shadowRoot!.querySelector('#mouseSpeedSlider');
     assertEquals(
-        fakeMice[1]!.settings.sensitivity, mouseSpeedSlider!.pref!.value);
+        fakeMice[1].settings.sensitivity, mouseSpeedSlider!.pref.value);
     assertEquals(
-        fakeMice[1]!.settings.reverseScrolling,
+        fakeMice[1].settings.reverseScrolling,
         subsection.get('reverseScrollValue'));
     mouseControlledScrollingToggleButton =
         subsection.shadowRoot!.querySelector('#mouseControlledScrolling');

@@ -361,7 +361,7 @@ suite('<facegaze-cursor-card>', () => {
 
     alert = getResetAlert();
     assertTrue(!!alert);
-    assertEquals(alert!.innerText, 'Cursor settings reset');
+    assertEquals(alert.innerText, 'Cursor settings reset');
 
     button.focus();
     flush();

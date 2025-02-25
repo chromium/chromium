@@ -27,9 +27,9 @@ enum ListType {
 }
 
 suite('<app-language-selection-dialog>', () => {
-  const appLanguageSelectionItemTag = 'app-language-selection-item' as const;
+  const appLanguageSelectionItemTag = 'app-language-selection-item';
   const listItemId = '#listItem';
-  const ironIconTag = 'iron-icon' as const;
+  const ironIconTag = 'iron-icon';
   const deviceLanguageLabel = 'Device language';
   const lastSetAppLocalePrefKey = 'arc.last_set_app_locale';
   const defaultPref: chrome.settingsPrivate.PrefObject = {

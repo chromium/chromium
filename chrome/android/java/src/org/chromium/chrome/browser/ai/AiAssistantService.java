@@ -103,8 +103,8 @@ public class AiAssistantService {
         if (!isTabElegible(tab)) return;
 
         boolean isSystemAiProviderAvailable = result != null && result.hasAvailable();
-        boolean isSummarizeUrlAvailable = true;
-        boolean isAnalyzeAttachmentAvailable = true;
+        final boolean isSummarizeUrlAvailable;
+        final boolean isAnalyzeAttachmentAvailable;
         if (isSystemAiProviderAvailable && result != null) {
             isSummarizeUrlAvailable =
                     result.getAvailable()
@@ -114,35 +114,36 @@ public class AiAssistantService {
                     result.getAvailable()
                             .getSupportedCapabilitiesList()
                             .contains(Capability.ANALYZE_ATTACHMENT_CAPABILITY);
+        } else {
+            isSummarizeUrlAvailable = true;
+            isAnalyzeAttachmentAvailable = true;
         }
 
-        if (isTabPdf(tab)
-                && tab.getNativePage() instanceof PdfPage pdfPage
-                && isAnalyzeAttachmentAvailable) {
+        if (isTabPdf(tab) && tab.getNativePage() instanceof PdfPage pdfPage) {
             sendLaunchRequest(
                     context,
                     getLaunchRequestForAnalyzeAttachment(pdfPage),
-                    isSystemAiProviderAvailable);
-        } else if (isTabWebPage(tab) && isSummarizeUrlAvailable) {
+                    /* shouldUseSystemProvider= */ isSystemAiProviderAvailable
+                            && isAnalyzeAttachmentAvailable);
+        } else if (isTabWebPage(tab)) {
             ThreadUtils.postOnUiThread(
                     () -> {
                         if (tab.getWebContents() == null || tab.isDestroyed()) return;
                         var mainFrame = tab.getWebContents().getMainFrame();
+                        var shouldUseSystemProvider =
+                                isSystemAiProviderAvailable && isSummarizeUrlAvailable;
                         InnerTextBridge.getInnerText(
                                 mainFrame,
                                 innerText -> {
                                     onInnerTextReceived(
-                                            context, tab, isSystemAiProviderAvailable, innerText);
+                                            context, tab, shouldUseSystemProvider, innerText);
                                 });
                     });
         }
     }
 
     private void onInnerTextReceived(
-            Context context,
-            Tab tab,
-            boolean isSystemAiProviderAvailable,
-            Optional<String> innerText) {
+            Context context, Tab tab, boolean shouldUseSystemProvider, Optional<String> innerText) {
         if (innerText.isEmpty()) {
             Log.w(TAG, "Error while extracting page contents");
             return;
@@ -151,7 +152,7 @@ public class AiAssistantService {
         sendLaunchRequest(
                 context,
                 getLaunchRequestForSummarizeUrl(tab, innerText.get()),
-                isSystemAiProviderAvailable);
+                shouldUseSystemProvider);
     }
 
     private boolean isTabPdf(Tab tab) {
@@ -191,8 +192,8 @@ public class AiAssistantService {
     }
 
     private void sendLaunchRequest(
-            Context context, LaunchRequest launchRequest, boolean isSystemAiProviderAvailable) {
-        if (isSystemAiProviderAvailable) {
+            Context context, LaunchRequest launchRequest, boolean shouldUseSystemProvider) {
+        if (shouldUseSystemProvider) {
             sendLaunchRequestToSystemProvider(context, launchRequest);
         } else {
             sendLaunchRequestWithIntent(context, launchRequest);

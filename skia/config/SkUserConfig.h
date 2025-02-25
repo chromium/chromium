@@ -239,6 +239,8 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_AVOID_SLOW_RASTER_PIPELINE_BLURS
 
+#define SK_DAWN_TEXTURE_INFO_IS_STRUCT
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,

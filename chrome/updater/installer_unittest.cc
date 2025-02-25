@@ -36,6 +36,7 @@ TEST(InstallerTest, Simple) {
   metadata->SetProductVersion("id", base::Version("1.2.3.4"));
   metadata->SetAP("id", "ap");
   metadata->SetBrandCode("id", "BRND");
+  metadata->SetLang("id", "foolang");
 
   update_client::CrxComponent crx;
 
@@ -57,6 +58,7 @@ TEST(InstallerTest, Simple) {
   EXPECT_EQ(crx.version, base::Version("1.2.3.4"));
   EXPECT_EQ(crx.ap, "ap");
   EXPECT_EQ(crx.brand, "BRND");
+  EXPECT_EQ(crx.lang, "foolang");
   EXPECT_EQ(crx.crx_format_requirement,
             crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF);
   EXPECT_EQ(crx.target_version_prefix, "target_version_prefix");

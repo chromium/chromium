@@ -238,6 +238,10 @@ class OptimizationGuideService
   scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>
       on_device_model_state_manager_;
 
+  // Downloads other model assets for on-device execution.
+  std::unique_ptr<optimization_guide::OnDeviceAssetManager>
+      on_device_asset_manager_;
+
 #endif
 
   // Manages the model execution. Not created for off the record profiles.

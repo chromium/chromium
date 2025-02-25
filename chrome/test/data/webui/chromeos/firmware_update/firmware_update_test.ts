@@ -50,8 +50,7 @@ suite('FirmwareUpdateAppTest', () => {
   });
 
   function initializePage(): void {
-    page = document.createElement('firmware-update-app') as
-        FirmwareUpdateAppElement;
+    page = document.createElement('firmware-update-app');
     assert(!!page);
     document.body.appendChild(page);
   }
@@ -59,10 +58,10 @@ suite('FirmwareUpdateAppTest', () => {
   function getConfirmationDialog(): CrDialogElement {
     assert(page);
     const fwConfirmDialog = strictQuery(
-        'firmware-confirmation-dialog', page.shadowRoot, HTMLElement)!;
+        'firmware-confirmation-dialog', page.shadowRoot, HTMLElement);
     assert(fwConfirmDialog);
     const confirmDialog = strictQuery(
-        '#confirmationDialog', fwConfirmDialog.shadowRoot, CrDialogElement)!;
+        '#confirmationDialog', fwConfirmDialog.shadowRoot, CrDialogElement);
     assert(confirmDialog);
     return confirmDialog;
   }
@@ -90,14 +89,12 @@ suite('FirmwareUpdateAppTest', () => {
   function getFirmwareUpdateDialog(): FirmwareUpdateDialogElement {
     assert(page);
     return strictQuery(
-        'firmware-update-dialog', page.shadowRoot, FirmwareUpdateDialogElement)!
-        ;
+        'firmware-update-dialog', page.shadowRoot, FirmwareUpdateDialogElement);
   }
 
   function getUpdateDialog(): CrDialogElement {
     return strictQuery(
-        '#updateDialog', getFirmwareUpdateDialog().shadowRoot, CrDialogElement)!
-        ;
+        '#updateDialog', getFirmwareUpdateDialog().shadowRoot, CrDialogElement);
   }
 
   function getUpdateCards(): UpdateCardElement[] {
@@ -109,7 +106,7 @@ suite('FirmwareUpdateAppTest', () => {
   }
 
   function getUpdateState(): UpdateState {
-    return getFirmwareUpdateDialog()!.installationProgress!.state;
+    return getFirmwareUpdateDialog().installationProgress.state;
   }
 
   function getFirmwareUpdateFromDialog(): FirmwareUpdate|null {

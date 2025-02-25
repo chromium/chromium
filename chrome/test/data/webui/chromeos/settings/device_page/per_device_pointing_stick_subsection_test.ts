@@ -72,7 +72,7 @@ suite('<settings-per-device-pointing-stick-subsection>', () => {
     updatedPointingSticks = await provider.getConnectedPointingStickSettings();
     assertEquals(
         updatedPointingSticks[0]!.settings.sensitivity,
-        pointingStickSpeedSlider.pref!.value);
+        pointingStickSpeedSlider.pref.value);
   });
 
   /**

@@ -21,8 +21,12 @@
 #include "net/cert/x509_util.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 #endif
 
 namespace safe_browsing {
@@ -131,7 +135,7 @@ void AddEventUrlToReferrerChain(const download::DownloadItem& item,
   }
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 bool IsDownloadReportGatedByExtendedReporting(
     ClientSafeBrowsingReportRequest::ReportType report_type) {
   switch (report_type) {
@@ -412,7 +416,7 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
                                              recent_navigations_to_collect);
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 bool ShouldSendDangerousDownloadReport(
     download::DownloadItem* item,
     ClientSafeBrowsingReportRequest::ReportType report_type) {
@@ -464,5 +468,15 @@ bool ShouldSendDangerousDownloadReport(
   }
 }
 #endif
+
+std::optional<enterprise_connectors::AnalysisSettings>
+ShouldUploadBinaryForDeepScanning(download::DownloadItem* item) {
+#if BUILDFLAG(IS_ANDROID)
+  // Deep scanning is not supported on Android.
+  return std::nullopt;
+#else
+  return DeepScanningRequest::ShouldUploadBinary(item);
+#endif
+}
 
 }  // namespace safe_browsing

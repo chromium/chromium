@@ -17,7 +17,7 @@ suite('MediaSizeSettingsTest', function() {
   let model: PrintPreviewModelElement;
 
   const mediaSizeCapability: MediaSizeCapability =
-      getCddTemplate('FooPrinter').capabilities!.printer!.media_size!;
+      getCddTemplate('FooPrinter').capabilities!.printer.media_size!;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

@@ -59,7 +59,7 @@ suite('acceleratorEditViewTest', function() {
     assertTrue(!!editViewElement);
     const element = editViewElement.shadowRoot!.getElementById(id);
     assertTrue(!!element);
-    return element as HTMLElement;
+    return element;
   }
 
   test('LoadsBasicEditView', async () => {
@@ -80,14 +80,14 @@ suite('acceleratorEditViewTest', function() {
     assertEquals(undefined, provider.getLastRecordedSubactions());
 
     // Click on the edit button.
-    getElementById('editButton')!.click();
+    getElementById('editButton').click();
 
     // Only the Cancel button should now be visible.
     assertFalse(isVisible(getElementById('editButtonsContainer')));
     assertTrue(isVisible(getElementById('cancelButtonContainer')));
 
     // Click on the Cancel button and expect the edit buttons to be available.
-    getElementById('cancelButton')!.click();
+    getElementById('cancelButton').click();
 
     await flushTasks();
     assertTrue(isVisible(getElementById('editButtonsContainer')));
@@ -117,7 +117,7 @@ suite('acceleratorEditViewTest', function() {
     assertEquals(undefined, provider.getLastRecordedSubactions());
 
     // Click on the edit button.
-    getElementById('editButton')!.click();
+    getElementById('editButton').click();
     await flushTasks();
 
     const fakeResult: AcceleratorResultData = {
@@ -174,7 +174,7 @@ suite('acceleratorEditViewTest', function() {
     assertEquals(undefined, provider.getLastRecordedSubactions());
 
     // Click on the edit button.
-    getElementById('editButton')!.click();
+    getElementById('editButton').click();
     await flushTasks();
 
     // Press 'Snap Window left' key, expect an error since it is a
@@ -244,7 +244,7 @@ suite('acceleratorEditViewTest', function() {
     assertEquals(undefined, provider.getLastRecordedSubactions());
 
     // Click on the edit button.
-    getElementById('editButton')!.click();
+    getElementById('editButton').click();
     await flushTasks();
 
     // Press 'Snap Window left' key, expect an error since it is a
@@ -262,7 +262,7 @@ suite('acceleratorEditViewTest', function() {
     assertTrue(editViewElement!.hasError);
 
     // Click the cancel button and expect metric to be fired.
-    getElementById('cancelButton')!.click();
+    getElementById('cancelButton').click();
     assertFalse(provider.getLastRecordedIsAdd());
     assertEquals(Subactions.kErrorCancel, provider.getLastRecordedSubactions());
   });
@@ -286,7 +286,7 @@ suite('acceleratorEditViewTest', function() {
     await flushTasks();
 
     // Click on the edit button.
-    getElementById('editButton')!.click();
+    getElementById('editButton').click();
 
     await flushTasks();
 
@@ -333,7 +333,7 @@ suite('acceleratorEditViewTest', function() {
     assertTrue(isVisible(getElementById('editButtonsContainer')));
 
     // Click on the edit button.
-    getElementById('editButton')!.click();
+    getElementById('editButton').click();
 
     // Input hint message should be shown.
     const expectedHintMessage =
@@ -356,7 +356,7 @@ suite('acceleratorEditViewTest', function() {
     await flush();
 
     // Click on the edit button.
-    getElementById('editButton')!.click();
+    getElementById('editButton').click();
 
     // Expect cancel button is visible.
     const cancelButton = getElementById('cancelButton');
@@ -370,7 +370,7 @@ suite('acceleratorEditViewTest', function() {
     editViewElement!.addEventListener('blur', () => {
       onBlurCalled = true;
     });
-    cancelButton!.addEventListener('click', () => {
+    cancelButton.addEventListener('click', () => {
       onCancelButtonClickedCalled = true;
     });
 

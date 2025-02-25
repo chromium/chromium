@@ -244,7 +244,7 @@ suite('shareDataPageTestSuite', () => {
     const secondOption = emailDropdown.options.item(1);
     assertEquals(
         'Don\'t include email address', secondOption!.textContent!.trim());
-    assertEquals('', secondOption!.value!.trim());
+    assertEquals('', secondOption!.value.trim());
 
     // The user email section should be visible.
     const userEmailElement =
@@ -288,7 +288,7 @@ suite('shareDataPageTestSuite', () => {
   // Test that the pageUrl section is hidden when the url is empty string.
   test('pageUrlHidden', async () => {
     await initializePage();
-    fakeFeedbackContext!.pageUrl!.url = '';
+    fakeFeedbackContext.pageUrl!.url = '';
     page.feedbackContext = fakeFeedbackContext;
 
     // The pageUrl section should be hidden
@@ -297,7 +297,7 @@ suite('shareDataPageTestSuite', () => {
     assertFalse(isVisible(pageUrl));
 
     // Change it back otherwise it will effect other tests.
-    fakeFeedbackContext!.pageUrl!.url = 'chrome://tab/';
+    fakeFeedbackContext.pageUrl!.url = 'chrome://tab/';
   });
 
   // Test that the performanceTraceContainer section is hidden when the trace id
@@ -348,9 +348,9 @@ suite('shareDataPageTestSuite', () => {
     strictQuery('#sysInfoCheckbox', page.shadowRoot, CrCheckboxElement)
         .checked = false;
 
-    const report = (await clickSendAndWait(page)).detail!.report;
+    const report = (await clickSendAndWait(page)).detail.report;
 
-    assertEquals('chrome://tab/', report!.feedbackContext!.pageUrl!.url);
+    assertEquals('chrome://tab/', report!.feedbackContext.pageUrl!.url);
     assertFalse(report!.includeSystemLogsAndHistograms);
   });
 
@@ -493,7 +493,7 @@ suite('shareDataPageTestSuite', () => {
 
     const report = (await clickSendAndWait(page)).detail.report;
 
-    assertEquals(fakeFeedbackContext.traceId, report!.feedbackContext!.traceId);
+    assertEquals(fakeFeedbackContext.traceId, report!.feedbackContext.traceId);
   });
 
   /**
@@ -509,7 +509,7 @@ suite('shareDataPageTestSuite', () => {
 
     const report = (await clickSendAndWait(page)).detail.report;
 
-    assertEquals(0, report!.feedbackContext!.traceId);
+    assertEquals(0, report!.feedbackContext.traceId);
   });
 
   /**
@@ -529,8 +529,8 @@ suite('shareDataPageTestSuite', () => {
                    .checked);
     const report = (await clickSendAndWait(page)).detail.report;
 
-    assertFalse(report!.feedbackContext!.assistantDebugInfoAllowed);
-    assertFalse(report!.feedbackContext!.fromAssistant);
+    assertFalse(report!.feedbackContext.assistantDebugInfoAllowed);
+    assertFalse(report!.feedbackContext.fromAssistant);
   });
 
   /**
@@ -550,8 +550,8 @@ suite('shareDataPageTestSuite', () => {
         .checked = true;
 
     const report = (await clickSendAndWait(page)).detail.report;
-    assertTrue(report!.feedbackContext!.assistantDebugInfoAllowed);
-    assertTrue(report!.feedbackContext!.fromAssistant);
+    assertTrue(report!.feedbackContext.assistantDebugInfoAllowed);
+    assertTrue(report!.feedbackContext.fromAssistant);
   });
 
   /**
@@ -574,8 +574,8 @@ suite('shareDataPageTestSuite', () => {
 
     const report = (await clickSendAndWait(page)).detail.report;
 
-    assertFalse(report!.feedbackContext!.assistantDebugInfoAllowed);
-    assertTrue(report!.feedbackContext!.fromAssistant);
+    assertFalse(report!.feedbackContext.assistantDebugInfoAllowed);
+    assertTrue(report!.feedbackContext.fromAssistant);
   });
 
   /**
@@ -596,8 +596,8 @@ suite('shareDataPageTestSuite', () => {
 
     const report = (await clickSendAndWait(page)).detail.report;
 
-    assertFalse(report!.feedbackContext!.assistantDebugInfoAllowed);
-    assertFalse(report!.feedbackContext!.fromAssistant);
+    assertFalse(report!.feedbackContext.assistantDebugInfoAllowed);
+    assertFalse(report!.feedbackContext.fromAssistant);
   });
 
   /**
@@ -792,7 +792,7 @@ suite('shareDataPageTestSuite', () => {
     const attachedFile = request!.attachedFile;
     assertTrue(!!attachedFile);
     assertEquals('fake.zip', attachedFile.fileName.path.path);
-    assertArrayEquals(fakeFileData, attachedFile!.fileData!.bytes as number[]);
+    assertArrayEquals(fakeFileData, attachedFile.fileData.bytes as number[]);
   });
 
   /**
@@ -901,7 +901,7 @@ suite('shareDataPageTestSuite', () => {
     const reportWithoutExtraDiagnostics =
         (await clickSendAndWait(page)).detail.report;
     assertFalse(
-        !!reportWithoutExtraDiagnostics!.feedbackContext!.extraDiagnostics);
+        !!reportWithoutExtraDiagnostics!.feedbackContext.extraDiagnostics);
 
     page.reEnableSendReportButton();
     page.feedbackContext = fakeFeedbackContextWithExtraDiagnostics;
@@ -913,13 +913,13 @@ suite('shareDataPageTestSuite', () => {
         (await clickSendAndWait(page)).detail.report;
     assertEquals(
         fakeFeedbackContextWithExtraDiagnostics.extraDiagnostics,
-        reportWithExtraDiagnostics!.feedbackContext!.extraDiagnostics);
+        reportWithExtraDiagnostics!.feedbackContext.extraDiagnostics);
 
     strictQuery('#sysInfoCheckbox', page.shadowRoot, CrCheckboxElement)
         .checked = false;
     page.reEnableSendReportButton();
     const reportNoSysInfo = (await clickSendAndWait(page)).detail.report;
-    assertFalse(!!reportNoSysInfo!.feedbackContext!.extraDiagnostics);
+    assertFalse(!!reportNoSysInfo!.feedbackContext.extraDiagnostics);
   });
 
   test(
@@ -981,7 +981,7 @@ suite('shareDataPageTestSuite', () => {
     const reportWithCategoryTag = (await clickSendAndWait(page)).detail.report;
     assertEquals(
         fakeFeedbackContext.categoryTag,
-        reportWithCategoryTag!.feedbackContext!.categoryTag);
+        reportWithCategoryTag!.feedbackContext.categoryTag);
 
     // Check the bluetooth logs checkbox. The categoryTag
     // should be BluetoothReportWithLogs, not the tag from url.
@@ -995,7 +995,7 @@ suite('shareDataPageTestSuite', () => {
         (await clickSendAndWait(page)).detail.report;
     assertEquals(
         'BluetoothReportWithLogs',
-        reportWithCategoryTagAndBluetoothFlag!.feedbackContext!.categoryTag);
+        reportWithCategoryTagAndBluetoothFlag!.feedbackContext.categoryTag);
   });
 
   /**

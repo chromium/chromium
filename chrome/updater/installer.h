@@ -31,6 +31,7 @@ struct AppInfo {
   AppInfo(const UpdaterScope scope,
           const std::string& app_id,
           const std::string& ap,
+          const std::string& lang,
           const std::string& brand,
           const base::Version& app_version,
           const base::FilePath& ecp);
@@ -41,6 +42,7 @@ struct AppInfo {
   UpdaterScope scope;
   std::string app_id;
   std::string ap;
+  std::string lang;
   std::string brand;
   base::Version version;
   base::FilePath ecp;

@@ -15,11 +15,13 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/gfx/range/range.h"
 
 class TabGroupController;
+class TabGroupModel;
 
 // The metadata and state of a tab group. This handles state changes that are
 // specific to tab groups and not grouped tabs. The latter (i.e. the groupness
@@ -99,6 +101,11 @@ class TabGroup {
   // observers are notified of some changes in during intermediate
   // steps.
   gfx::Range ListTabs() const;
+
+  void set_controller(TabGroupController* controller,
+                      base::PassKey<TabGroupModel>) {
+    controller_ = controller;
+  }
 
  private:
   raw_ptr<TabGroupController> controller_;

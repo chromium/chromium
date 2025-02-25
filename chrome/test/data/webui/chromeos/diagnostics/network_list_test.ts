@@ -190,7 +190,7 @@ suite('networkListTestSuite', function() {
     dx_utils.assertTextContains(
         wifiInfoElement.shadowRoot!.querySelector<DataPointElement>(
                                        '#ssid')!.value,
-        fakeWifiNetwork!.typeProperties!.wifi!.ssid);
+        fakeWifiNetwork.typeProperties!.wifi!.ssid);
     assertEquals(
         getConnectivityCard().activeGuid,
         fakeNetworkGuidInfoList[0]!.activeGuid);
@@ -204,7 +204,7 @@ suite('networkListTestSuite', function() {
     dx_utils.assertTextContains(
         cellularInfoElement.shadowRoot!
             .querySelector<DataPointElement>('#iccid')!.value,
-        fakeCellularNetwork!.typeProperties!.cellular!.iccid);
+        fakeCellularNetwork.typeProperties!.cellular!.iccid);
     assertEquals(
         getConnectivityCard().activeGuid,
         fakeNetworkGuidInfoList[1]!.activeGuid);

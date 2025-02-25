@@ -47,14 +47,14 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="WebNN.ConstantDataSizeInKB" units="KB"
-    expires_after="2025-06-27">
+    expires_after="2026-06-27">
   <owner>reillyg@chromium.org</owner>
   <owner>src/services/webnn/OWNERS</owner>
   <summary>Records the constant data sizes in KB.</summary>
 </histogram>
 
 <histogram name="WebNN.CoreML.TimingMs.{WebNNCoreMLActions}" units="ms"
-    expires_after="2025-02-26">
+    expires_after="2026-06-27">
   <owner>reillyg@chromium.org</owner>
   <owner>src/services/webnn/OWNERS</owner>
   <summary>
@@ -65,14 +65,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebNN.DeviceType" enum="DeviceTypeUma"
-    expires_after="2025-06-27">
+    expires_after="2026-06-27">
   <owner>reillyg@chromium.org</owner>
   <owner>src/services/webnn/OWNERS</owner>
   <summary>Records what device type WebNN is running on.</summary>
 </histogram>
 
 <histogram name="WebNN.DML.TimingMs.{WebNNDMLActions}" units="ms"
-    expires_after="2025-06-27">
+    expires_after="2026-06-27">
   <owner>reillyg@chromium.org</owner>
   <owner>src/services/webnn/OWNERS</owner>
   <summary>
@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebNN.DMLCreateDevice.Error" enum="Hresult"
-    expires_after="2025-06-27">
+    expires_after="2026-06-27">
   <owner>reillyg@chromium.org</owner>
   <owner>src/services/webnn/OWNERS</owner>
   <summary>
@@ -92,14 +92,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebNN.MLTensor.TimingMs.Read" units="ms"
-    expires_after="2025-06-27">
+    expires_after="2026-06-27">
   <owner>reillyg@chromium.org</owner>
   <owner>src/services/webnn/OWNERS</owner>
   <summary>The time taken to read the ml tensor.</summary>
 </histogram>
 
 <histogram name="WebNN.Operator" enum="MLGraphOperatorUma"
-    expires_after="2025-06-27">
+    expires_after="2026-06-27">
   <owner>reillyg@chromium.org</owner>
   <owner>src/services/webnn/OWNERS</owner>
   <summary>

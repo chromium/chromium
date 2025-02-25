@@ -18,6 +18,7 @@
 namespace blink {
 
 class CSSPropertyValueSet;
+class LayoutBox;
 class LayoutObject;
 
 class CORE_EXPORT OutOfFlowData final
@@ -76,17 +77,26 @@ class CORE_EXPORT OutOfFlowData final
   // including) the containing block of this anchored element, at the latest
   // anchor recalculation point.
   //
-  // This value is set when the element is initially laid out - at an "anchor
-  // recalulcation point"). Any scrolling that takes place after this point.
-  //
-  std::optional<PhysicalOffset> DefaultAnchorScrollShift() const {
+  // This value is updated at an "anchor recalculation point". This occurs when
+  // the element is initially laid out, and when switching to a different
+  // position option.
+  PhysicalOffset DefaultAnchorScrollShift() const {
     return default_anchor_scroll_shift_;
   }
+
+  // See DefaultAnchorScrollShift(). This function returns that offset, except
+  // that it's based on the current scroll offsets, not what the offsets were at
+  // the last "anchor recalculation point".
+  PhysicalOffset PotentialNextDefaultAnchorScrollShift(const LayoutBox&) const;
+
+  // Return true if there's any stale successful position fallback data (if
+  // `position-try-fallbacks` has changed).
+  bool HasStaleFallbackData(const LayoutBox&) const;
 
   void Trace(Visitor*) const override;
 
  private:
-  void ClearLastSuccessfulPositionFallback();
+  void ResetAnchorData();
 
   SuccessfulPositionFallback last_successful_position_fallback_;
   // If the previous layout had a successful position fallback, it is stored
@@ -94,7 +104,7 @@ class CORE_EXPORT OutOfFlowData final
   // resize observer update.
   SuccessfulPositionFallback new_successful_position_fallback_;
 
-  std::optional<PhysicalOffset> default_anchor_scroll_shift_;
+  PhysicalOffset default_anchor_scroll_shift_;
 };
 
 }  // namespace blink

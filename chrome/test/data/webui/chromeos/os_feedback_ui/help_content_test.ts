@@ -73,7 +73,7 @@ suite('helpContentTestSuite', () => {
             .items!.length);
     const helpLinks =
         helpContentElement.shadowRoot!.querySelectorAll('.help-item a');
-    assertEquals(2, helpLinks!.length);
+    assertEquals(2, helpLinks.length);
 
     // Verify the help links are displayed in order with correct title, url
     // and icon.
@@ -81,12 +81,12 @@ suite('helpContentTestSuite', () => {
     assertEquals('fake article', link1.innerText.trim());
     assertEquals(
         'https://support.google.com/chromebook/?q=article', link1.href);
-    verifyIconName(link1, fakePopularHelpContentList![0]!.contentType);
+    verifyIconName(link1, fakePopularHelpContentList[0]!.contentType);
 
     const link2 = helpLinks[1] as HTMLAnchorElement;
     assertEquals('fake forum', link2.innerText.trim());
     assertEquals('https://support.google.com/chromebook/?q=forum', link2.href);
-    verifyIconName(link2, fakePopularHelpContentList![1]!.contentType);
+    verifyIconName(link2, fakePopularHelpContentList[1]!.contentType);
   }
 
   function goOffline() {

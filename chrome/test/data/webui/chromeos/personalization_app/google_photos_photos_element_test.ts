@@ -153,68 +153,68 @@ suite('GooglePhotosPhotosElementTest', function() {
     const photoEls = querySelectorAll(photoSelector);
     assertEquals(photoEls?.length, 4);
     ((photoEls?.[0] as HTMLElement).closest('.row') as HTMLElement).focus();
-    await waitForActiveElement(photoEls?.[0]!, googlePhotosPhotosElement!);
+    await waitForActiveElement(photoEls?.[0]!, googlePhotosPhotosElement);
 
     // Use the right arrow key to traverse to the last photo. Focus should pass
     // through all the photos in between.
     for (let i = 1; i <= 3; ++i) {
       dispatchKeydown(
-          getActiveElement(googlePhotosPhotosElement!)?.closest('.row')!,
+          getActiveElement(googlePhotosPhotosElement)?.closest('.row')!,
           'ArrowRight');
-      await waitForActiveElement(photoEls?.[i]!, googlePhotosPhotosElement!);
+      await waitForActiveElement(photoEls?.[i]!, googlePhotosPhotosElement);
     }
 
     // Use the left arrow key to traverse to the first photo. Focus should pass
     // through all the photos in between.
     for (let i = 2; i >= 0; --i) {
       dispatchKeydown(
-          getActiveElement(googlePhotosPhotosElement!)?.closest('.row')!,
+          getActiveElement(googlePhotosPhotosElement)?.closest('.row')!,
           'ArrowLeft');
-      await waitForActiveElement(photoEls?.[i]!, googlePhotosPhotosElement!);
+      await waitForActiveElement(photoEls?.[i]!, googlePhotosPhotosElement);
     }
 
     // Use the down arrow key to traverse to the last photo. Focus should only
     // pass through the photos in between which are in the same column.
     for (let i = 1; i <= 3; i = i + 2) {
       dispatchKeydown(
-          getActiveElement(googlePhotosPhotosElement!)?.closest('.row')!,
+          getActiveElement(googlePhotosPhotosElement)?.closest('.row')!,
           'ArrowDown');
-      await waitForActiveElement(photoEls?.[i]!, googlePhotosPhotosElement!);
+      await waitForActiveElement(photoEls?.[i]!, googlePhotosPhotosElement);
     }
 
     // Use the up arrow key to traverse to the first photo. Focus should only
     // pass through the photos in between which are in the same column.
     for (let i = 1; i >= 0; --i) {
       dispatchKeydown(
-          getActiveElement(googlePhotosPhotosElement!)?.closest('.row')!,
+          getActiveElement(googlePhotosPhotosElement)?.closest('.row')!,
           'ArrowUp');
-      await waitForActiveElement(photoEls?.[i]!, googlePhotosPhotosElement!);
+      await waitForActiveElement(photoEls?.[i]!, googlePhotosPhotosElement);
     }
 
     // Focus the third photo.
     dispatchKeydown(
-        getActiveElement(googlePhotosPhotosElement!)?.closest('.row')!,
+        getActiveElement(googlePhotosPhotosElement)?.closest('.row')!,
         'ArrowRight');
     dispatchKeydown(
-        getActiveElement(googlePhotosPhotosElement!)?.closest('.row')!,
+        getActiveElement(googlePhotosPhotosElement)?.closest('.row')!,
         'ArrowRight');
-    await waitForActiveElement(photoEls?.[2]!, googlePhotosPhotosElement!);
+    await waitForActiveElement(photoEls?.[2]!, googlePhotosPhotosElement);
 
     // Because no photo exists directly below the third photo, the down arrow
     // key should do nothing.
     dispatchKeydown(
-        getActiveElement(googlePhotosPhotosElement!)?.closest('.row')!,
+        getActiveElement(googlePhotosPhotosElement)?.closest('.row')!,
         'ArrowDown');
     await new Promise<void>(resolve => setTimeout(resolve, 100));
-    assertEquals(getActiveElement(googlePhotosPhotosElement!), photoEls?.[2]);
+    assertEquals(getActiveElement(googlePhotosPhotosElement), photoEls?.[2]);
 
     // Because no photo exists directly above the third photo, the up arrow key
     // should do nothing.
     dispatchKeydown(
-        getActiveElement(googlePhotosPhotosElement!)?.closest('.row')!,
+        getActiveElement(googlePhotosPhotosElement)?.closest('.row')!,
         'ArrowUp');
     await new Promise<void>(resolve => setTimeout(resolve, 100));
-    assertEquals(getActiveElement(googlePhotosPhotosElement!), photoEls?.[2]);
+    assertEquals(getActiveElement(googlePhotosPhotosElement), photoEls?.[2]);
   });
 
   [true, false].forEach(

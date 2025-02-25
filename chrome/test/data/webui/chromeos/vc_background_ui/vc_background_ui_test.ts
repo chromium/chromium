@@ -24,7 +24,7 @@ suite('VcBackgroundUITest', () => {
   function getVcBackgroundApp(): VcBackgroundApp {
     const vcBackgroundApp = document.body.querySelector('vc-background-app');
     assertTrue(!!vcBackgroundApp, 'vc-background-app exists');
-    return vcBackgroundApp!;
+    return vcBackgroundApp;
   }
 
   function getVcBackgroundBreadcrumbs(): VcBackgroundBreadcrumbElement {
@@ -32,7 +32,7 @@ suite('VcBackgroundUITest', () => {
         getVcBackgroundApp().shadowRoot!.querySelector(
             'vc-background-breadcrumb')!;
     assertTrue(!!vcBackgroundBreadcrumb, 'vc-background-breadcrumb exists');
-    return vcBackgroundBreadcrumb!;
+    return vcBackgroundBreadcrumb;
   }
 
   function getVcBackgroundBreadcrumbsText(): string[] {
@@ -144,8 +144,9 @@ suite('VcBackgroundUITest', () => {
         assertTrue(!!seaPenTemplateQuery, 'sea-pen-template-query exists');
 
         // Click on the 'Create' button.
-        const createButton = seaPenTemplateQuery.shadowRoot?.querySelector(
-                                 'cr-button#searchButton')! as HTMLElement;
+        const createButton =
+            seaPenTemplateQuery.shadowRoot?.querySelector<HTMLButtonElement>(
+                'cr-button#searchButton')!;
         createButton.click();
 
         await waitAfterNextRender(seaPenTemplateQuery);
@@ -179,7 +180,7 @@ suite('VcBackgroundUITest', () => {
     const dropdownMenu =
         breadcrumbElement.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!dropdownMenu);
-    assertFalse(dropdownMenu!.open, 'the action menu should not open yet');
+    assertFalse(dropdownMenu.open, 'the action menu should not open yet');
 
     // Verify the selected template.
     const selectedElement =
@@ -187,7 +188,7 @@ suite('VcBackgroundUITest', () => {
     assertEquals(
         1, selectedElement.length, 'there should be one template selected');
     assertEquals(
-        classicArtTitle, (selectedElement[0] as HTMLElement)!.innerText.trim(),
+        classicArtTitle, (selectedElement[0] as HTMLElement).innerText.trim(),
         `selected template in the dropdown should be ${classicArtTitle}`);
 
     // Activate the dropdown menu.
@@ -199,7 +200,7 @@ suite('VcBackgroundUITest', () => {
 
     await waitAfterNextRender(breadcrumbElement);
 
-    assertTrue(dropdownMenu!.open, 'the action menu should be open');
+    assertTrue(dropdownMenu.open, 'the action menu should be open');
 
     // The dropdown should show the sea pen templates.
     const allMenuItems = dropdownMenu.querySelectorAll('button');

@@ -2461,6 +2461,14 @@ _CONFIG = [
             'base::flat_map',
         ]
     },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/canvas_interventions/',
+        ],
+        'allowed': [
+            'gfx::SkPixmapToWritableSpan',
+        ]
+    },
 ]
 
 

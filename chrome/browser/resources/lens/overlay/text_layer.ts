@@ -28,6 +28,7 @@ import type {GestureEvent} from './selection_utils.js';
 import type {BackgroundImageData, Line, Paragraph, Text, TranslatedLine, TranslatedParagraph, Word} from './text.mojom-webui.js';
 import {Alignment, WritingDirection} from './text.mojom-webui.js';
 import {getTemplate} from './text_layer.html.js';
+import {getTextSeparator, isWordRenderable} from './text_rendering.js';
 import type {TranslateState} from './translate_button.js';
 import {toPercent} from './values_converter.js';
 
@@ -71,28 +72,6 @@ function rotateCoordinateAroundOrigin(
   const newY =
       pointToRotate.y * Math.cos(-angle) + pointToRotate.x * Math.sin(-angle);
   return {x: newX, y: newY};
-}
-
-// Returns true if the word has a valid bounding box and is renderable by the
-// TextLayer.
-function isWordRenderable(word: Word): boolean {
-  // For a word to be renderable, it must have a bounding box with normalized
-  // coordinates.
-  // TODO(b/330183480): Add rendering for IMAGE CoordinateType
-  const wordBoundingBox = word.geometry?.boundingBox;
-  if (!wordBoundingBox) {
-    return false;
-  }
-
-  return wordBoundingBox.coordinateType ===
-      CenterRotatedBox_CoordinateType.kNormalized;
-}
-
-// Return the text separator if there is one, else returns a space.
-function getTextSeparator(word: Word): string {
-  return (word.textSeparator !== null && word.textSeparator !== undefined) ?
-      word.textSeparator :
-      ' ';
 }
 
 // Returns true if index is in the range [start, end]. End index may be lesser

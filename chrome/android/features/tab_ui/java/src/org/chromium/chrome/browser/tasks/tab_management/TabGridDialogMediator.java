@@ -87,7 +87,6 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -925,12 +924,6 @@ public class TabGridDialogMediator
             TabModel tabModel = filter.getTabModel();
             Tab currentTab = tabModel.getTabById(mCurrentTabId);
             hideDialog(false);
-
-            // Reset the list of tabs so the new tab doesn't appear on the dialog before the
-            // animation.
-            if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
-                mDialogController.resetWithListOfTabs(null);
-            }
 
             if (currentTab == null) {
                 tabModel.getTabCreator().launchNtp();

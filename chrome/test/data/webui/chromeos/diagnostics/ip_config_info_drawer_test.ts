@@ -118,7 +118,7 @@ suite('ipConfigInfoDrawerTestSuite', function() {
           dx_utils.assertDataPointHasExpectedHeaderAndValue(
               ipConfigInfoDrawerElement, '#gateway',
               ipConfigInfoDrawerElement!.i18n('ipConfigInfoDrawerGateway'),
-              `${fakeWifiNetwork!.ipConfig!.gateway}`);
+              `${fakeWifiNetwork.ipConfig!.gateway}`);
         });
   });
 
@@ -165,7 +165,7 @@ suite('ipConfigInfoDrawerTestSuite', function() {
         .then(() => {
           dx_utils.assertDataPointHasExpectedHeaderAndValue(
               ipConfigInfoDrawerElement, '#nameServers', 'Name Server',
-              `${fakeEthernetNetwork!.ipConfig!.nameServers!.join(', ')}`);
+              `${fakeEthernetNetwork.ipConfig!.nameServers!.join(', ')}`);
         });
   });
 

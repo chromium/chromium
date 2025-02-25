@@ -45,6 +45,8 @@ message LockedNavigationOptions {
     LIMITED_NAVIGATION = 4;
 
     SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION = 5;
+
+    WORKSPACE_NAVIGATION = 6;
   }
 
   NavigationType navigation_type = 1;

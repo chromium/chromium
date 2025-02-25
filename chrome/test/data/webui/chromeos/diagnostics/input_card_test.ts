@@ -175,7 +175,7 @@ suite('inputCardTestSuite', function() {
   test('KeyboardTestabilityLidState', async () => {
     await initializeInputCard(InputCardType.KEYBOARD, keyboards);
     assert(inputCardElement);
-    const elements = inputCardElement!.root!.querySelectorAll('.device');
+    const elements = inputCardElement.root!.querySelectorAll('.device');
     assertEquals(2, elements.length);
 
     inputCardElement.hostDeviceStatus = {
@@ -229,7 +229,7 @@ suite('inputCardTestSuite', function() {
   test('KeyboardTestabilityTabletMode', async () => {
     await initializeInputCard(InputCardType.KEYBOARD, keyboards);
     assert(inputCardElement);
-    const elements = inputCardElement!.root!.querySelectorAll('.device');
+    const elements = inputCardElement.root!.querySelectorAll('.device');
     assertEquals(2, elements.length);
     inputCardElement.hostDeviceStatus = {
       ...inputCardElement.hostDeviceStatus,

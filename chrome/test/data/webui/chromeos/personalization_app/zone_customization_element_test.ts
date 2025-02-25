@@ -45,10 +45,10 @@ suite('ZoneCustomizationElementTest', function() {
 
   function verifyColorIconAriaChecked(
       expectedColor: string, colorContainers: NodeListOf<Element>) {
-    for (let i = 0; i < colorContainers!.length; i++) {
+    for (let i = 0; i < colorContainers.length; i++) {
       const colorContainer = colorContainers[i] as HTMLElement;
       const colorIconElem =
-          colorContainer!.querySelector<HTMLElement>('color-icon');
+          colorContainer.querySelector<HTMLElement>('color-icon');
       assertTrue(!!colorIconElem);
       const colorId = colorContainer.id;
       if (colorId === expectedColor) {
@@ -64,10 +64,10 @@ suite('ZoneCustomizationElementTest', function() {
   }
 
   function verifyNoColorIconsAriaChecked(colorContainers: NodeListOf<Element>) {
-    for (let i = 0; i < colorContainers!.length; i++) {
+    for (let i = 0; i < colorContainers.length; i++) {
       const colorContainer = colorContainers[i] as HTMLElement;
       const colorIconElem =
-          colorContainer!.querySelector<HTMLElement>('color-icon');
+          colorContainer.querySelector<HTMLElement>('color-icon');
       assertTrue(!!colorIconElem);
       const colorId = colorContainer.id;
       assertNotEquals(
@@ -90,7 +90,7 @@ suite('ZoneCustomizationElementTest', function() {
         const zoneTabs =
             zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-tab');
         assertEquals(
-            5, zoneTabs!.length,
+            5, zoneTabs.length,
             '5 zones should display in customization dialog');
         const colorSelectorElement =
             zoneCustomizationElement!.shadowRoot!.querySelector(
@@ -99,7 +99,7 @@ suite('ZoneCustomizationElementTest', function() {
         const colorContainers =
             colorSelectorElement.shadowRoot!.querySelectorAll('.selectable');
         assertEquals(
-            8, colorContainers!.length,
+            8, colorContainers.length,
             '8 color options should display in customization dialog');
         const dialogCloseButton =
             zoneCustomizationElement!.shadowRoot!.getElementById(
@@ -121,13 +121,13 @@ suite('ZoneCustomizationElementTest', function() {
         const zoneTabs =
             zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-tab');
         assertEquals(
-            4, zoneTabs!.length,
+            4, zoneTabs.length,
             '4 zones should display in customization dialog');
         const colorIcons =
             zoneCustomizationElement!.shadowRoot!.querySelectorAll(
                 'color-icon');
         assertEquals(
-            4, colorIcons!.length,
+            4, colorIcons.length,
             '4 color icons should display in customization dialog');
         // Color of the color-icon displayed in each zone should match with the
         // corresponding one in zone colors.
@@ -169,7 +169,7 @@ suite('ZoneCustomizationElementTest', function() {
     const zoneTabs =
         zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-tab');
     assertEquals(
-        4, zoneTabs!.length, '4 zones should display in customization dialog');
+        4, zoneTabs.length, '4 zones should display in customization dialog');
     // Zone 2 has zone color as red, expect red color button to be highlighted.
     (zoneTabs[1] as CrButtonElement).click();
     const colorSelectorElement =
@@ -177,7 +177,7 @@ suite('ZoneCustomizationElementTest', function() {
     assertTrue(!!colorSelectorElement, 'color-selector should display.');
     const colorContainers =
         colorSelectorElement.shadowRoot!.querySelectorAll('.selectable');
-    assertEquals(8, colorContainers!.length);
+    assertEquals(8, colorContainers.length);
     verifyColorIconAriaChecked('redColor', colorContainers);
 
     // Zone 4 has zone color as yellow, expect yellow color button to be
@@ -198,7 +198,7 @@ suite('ZoneCustomizationElementTest', function() {
     const zoneTabs =
         zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-tab');
     assertEquals(
-        4, zoneTabs!.length, '4 zones should display in customization dialog');
+        4, zoneTabs.length, '4 zones should display in customization dialog');
 
     // Click on zone 2, expect red color icon to be highlighted.
     (zoneTabs[1] as HTMLElement).click();
@@ -209,7 +209,7 @@ suite('ZoneCustomizationElementTest', function() {
     const colorContainers =
         colorSelectorElement.shadowRoot!.querySelectorAll('.selectable');
     assertEquals(
-        8, colorContainers.length!, 'there should be 8 color containers');
+        8, colorContainers.length, 'there should be 8 color containers');
     verifyColorIconAriaChecked('redColor', colorContainers);
 
     personalizationStore.setReducersEnabled(true);
@@ -248,7 +248,7 @@ suite('ZoneCustomizationElementTest', function() {
     const zoneTabs =
         zoneCustomizationElement!.shadowRoot!.querySelectorAll('.zone-tab');
     assertEquals(
-        4, zoneTabs!.length, '4 zones should display in customization dialog');
+        4, zoneTabs.length, '4 zones should display in customization dialog');
 
     // Click on zone 2, none of color icons to be highlighted as no rainbow
     // color available in color options.
@@ -260,7 +260,7 @@ suite('ZoneCustomizationElementTest', function() {
     const colorContainers =
         colorSelectorElement.shadowRoot!.querySelectorAll('.selectable');
     assertEquals(
-        8, colorContainers.length!, 'there should be 8 color containers');
+        8, colorContainers.length, 'there should be 8 color containers');
     verifyNoColorIconsAriaChecked(colorContainers);
 
     personalizationStore.setReducersEnabled(true);

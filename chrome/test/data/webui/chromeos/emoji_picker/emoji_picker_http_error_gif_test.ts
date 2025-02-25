@@ -63,10 +63,10 @@ suite('emoji-picker-offline-gif', () => {
         assert(errorElement);
 
         const genericErrorImageNew =
-            errorElement!.shadowRoot!.querySelector('.gif-error-container svg');
+            errorElement.shadowRoot!.querySelector('.gif-error-container svg');
         assert(genericErrorImageNew);
 
-        const errorText = errorElement!.shadowRoot!.querySelector(
+        const errorText = errorElement.shadowRoot!.querySelector(
             '.gif-error-container > .error-text');
         assertEquals(errorText!.textContent, 'Something went wrong');
       });
@@ -79,14 +79,14 @@ suite('emoji-picker-offline-gif', () => {
         const results = await waitForCondition(
             () => emojiSearch.shadowRoot!.getElementById('results'),
             'wait for search results');
-        const errorElement = results!.querySelector('.no-result > emoji-error');
+        const errorElement = results.querySelector('.no-result > emoji-error');
         assert(errorElement);
 
         const genericErrorImageNew =
-            errorElement!.shadowRoot!.querySelector('.gif-error-container svg');
+            errorElement.shadowRoot!.querySelector('.gif-error-container svg');
         assert(genericErrorImageNew);
 
-        const errorText = errorElement!.shadowRoot!.querySelector(
+        const errorText = errorElement.shadowRoot!.querySelector(
             '.gif-error-container > .error-text');
         assertEquals(errorText!.textContent, 'Something went wrong');
       });

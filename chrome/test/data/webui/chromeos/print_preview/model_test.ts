@@ -204,8 +204,8 @@ suite('ModelTest', function() {
       collate: false,
       layout: true,
       color: false,
-      mediaSize: testDestination.capabilities!.printer!.media_size!.option[1]!,
-      mediaType: testDestination.capabilities!.printer!.media_type!.option[1]!,
+      mediaSize: testDestination.capabilities!.printer.media_size!.option[1]!,
+      mediaType: testDestination.capabilities!.printer.media_type!.option[1]!,
       margins: MarginsType.CUSTOM,
       customMargins: {
         marginTop: 100,
@@ -295,8 +295,8 @@ suite('ModelTest', function() {
         model.createPrintTicket(testDestination, false, false);
 
     const expectedDefaultTicketObject: PrintTicket = {
-      mediaSize: testDestination.capabilities!.printer!.media_size!.option[0]!,
-      mediaType: testDestination.capabilities!.printer!.media_type!.option[0]!
+      mediaSize: testDestination.capabilities!.printer.media_size!.option[0]!,
+      mediaType: testDestination.capabilities!.printer.media_type!.option[0]!
                      .vendor_id,
       pageCount: 3,
       landscape: false,
@@ -337,9 +337,9 @@ suite('ModelTest', function() {
     toggleSettings(testDestination);
     const newTicket = model.createPrintTicket(testDestination, false, false);
     const expectedNewTicketObject: PrintTicket = {
-      mediaSize: testDestination.capabilities!.printer!.media_size!.option[1]!,
+      mediaSize: testDestination.capabilities!.printer.media_size!.option[1]!,
       borderless: false,
-      mediaType: testDestination.capabilities!.printer!.media_type!.option[1]!
+      mediaType: testDestination.capabilities!.printer.media_type!.option[1]!
                      .vendor_id,
       pageCount: 1,
       landscape: true,
@@ -502,7 +502,7 @@ suite('ModelTest', function() {
     testDestination.capabilities =
         getCddTemplateWithAdvancedSettings(2, 'FooDevice').capabilities;
     // Make black and white printing the default.
-    testDestination.capabilities!.printer!.color = {
+    testDestination.capabilities!.printer.color = {
       option: [
         {type: 'STANDARD_COLOR'},
         {type: 'STANDARD_MONOCHROME', is_default: true},
@@ -529,10 +529,10 @@ suite('ModelTest', function() {
     model.setSetting('duplex', true);
     model.setSetting(
         'mediaSize',
-        testDestination.capabilities!.printer!.media_size!.option[1]!);
+        testDestination.capabilities!.printer.media_size!.option[1]!);
     model.setSetting('color', true);
     model.setSetting(
-        'dpi', testDestination.capabilities!.printer!.dpi!.option[1]!);
+        'dpi', testDestination.capabilities!.printer.dpi!.option[1]!);
 
     // Confirm toggles.
     assertEquals(true, model.getSettingValue('color'));
@@ -554,7 +554,7 @@ suite('ModelTest', function() {
         new Destination('Device1', DestinationOrigin.LOCAL, 'One');
     testDestination3.capabilities =
         Object.assign({}, testDestination.capabilities);
-    testDestination3.capabilities!.printer!.media_size = {
+    testDestination3.capabilities.printer.media_size = {
       option: [
         {
           name: 'ISO_A4',
@@ -565,17 +565,17 @@ suite('ModelTest', function() {
         },
       ],
     };
-    testDestination3.capabilities!.printer!.color = {
+    testDestination3.capabilities.printer.color = {
       option: [
         {type: 'STANDARD_MONOCHROME', is_default: true},
       ] as ColorOption[],
     };
-    testDestination3.capabilities!.printer!.duplex = {
+    testDestination3.capabilities.printer.duplex = {
       option: [
         {type: 'NO_DUPLEX', is_default: true},
       ] as DuplexOption[],
     };
-    testDestination3.capabilities!.printer!.dpi = {
+    testDestination3.capabilities.printer.dpi = {
       option: [
         {horizontal_dpi: 400, vertical_dpi: 400, is_default: true},
         {horizontal_dpi: 800, vertical_dpi: 800},
@@ -717,12 +717,11 @@ suite('ModelTest', function() {
     testDestination2.capabilities =
         getTestCapabilities(/*resetToDefault=*/ true);
     // Remove the `is_default` attribute from all the settings.
-    delete testDestination2.capabilities!.printer!.color!.option[0]!.is_default;
-    delete testDestination2.capabilities!.printer!.duplex!.option[0]!
+    delete testDestination2.capabilities.printer.color!.option[0]!.is_default;
+    delete testDestination2.capabilities.printer.duplex!.option[0]!.is_default;
+    delete testDestination2.capabilities.printer.media_size!.option[0]!
         .is_default;
-    delete testDestination2.capabilities!.printer!.media_size!.option[0]!
-        .is_default;
-    delete testDestination2.capabilities!.printer!.dpi!.option[0]!.is_default;
+    delete testDestination2.capabilities.printer.dpi!.option[0]!.is_default;
 
     model.destination = testDestination2;
 
@@ -836,7 +835,7 @@ suite('ModelTest', function() {
         /*displayName_=*/ 'TestDestination1');
     testDestination1.capabilities =
         getCddTemplate('TestDestination1').capabilities;
-    testDestination1.capabilities!.printer!.duplex = {
+    testDestination1.capabilities!.printer.duplex = {
       option: [
         {type: 'NO_DUPLEX', is_default: true},
         {type: 'LONG_EDGE'},

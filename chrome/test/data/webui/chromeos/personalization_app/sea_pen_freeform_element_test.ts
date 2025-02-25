@@ -30,8 +30,7 @@ suite('SeaPenFreeformElementTest', function() {
     assertTrue(!!samples, 'samples should exist');
 
     return Array.from(samples).flatMap(sample => {
-      const text =
-          sample!.shadowRoot!.querySelector('.primary-text')?.innerHTML;
+      const text = sample.shadowRoot!.querySelector('.primary-text')?.innerHTML;
       return text ? [text] : [];
     });
   }
@@ -76,10 +75,10 @@ suite('SeaPenFreeformElementTest', function() {
             SeaPenRecentWallpapersElement.is),
         'sea-pen-recent-wallpapers shown on freeform page');
     assertTrue(
-        !!freeformElement!.shadowRoot!.getElementById('shuffle'),
+        !!freeformElement.shadowRoot!.getElementById('shuffle'),
         'shuffle button should be shown');
     assertTrue(
-        !!freeformElement!.shadowRoot!.getElementById('promptingGuide'),
+        !!freeformElement.shadowRoot!.getElementById('promptingGuide'),
         'prompting guide should exist');
 
     assertFalse(
@@ -137,13 +136,13 @@ suite('SeaPenFreeformElementTest', function() {
 
     // Sample prompts tab should be present and but not pressed.
     const samplePromptsTabButton =
-        tabContainer!.querySelector<CrButtonElement>('#samplePromptsTab');
+        tabContainer.querySelector<CrButtonElement>('#samplePromptsTab');
     assertTrue(!!samplePromptsTabButton, 'sample prompts tab displays');
     assertEquals(samplePromptsTabButton.getAttribute('aria-selected'), 'false');
 
     // Results tab should be present and pressed.
     const resultsTabButton =
-        tabContainer!.querySelector<CrButtonElement>('#resultsTab');
+        tabContainer.querySelector<CrButtonElement>('#resultsTab');
     assertTrue(!!resultsTabButton, 'results tab display');
     assertEquals(resultsTabButton.getAttribute('aria-selected'), 'true');
 
@@ -156,10 +155,10 @@ suite('SeaPenFreeformElementTest', function() {
             SeaPenRecentWallpapersElement.is),
         'sea-pen-recent-wallpapers is not shown');
     assertFalse(
-        !!freeformElement!.shadowRoot!.getElementById('shuffle'),
+        !!freeformElement.shadowRoot!.getElementById('shuffle'),
         'shuffle button should be hidden for results tab');
     assertFalse(
-        !!freeformElement!.shadowRoot!.getElementById('promptingGuide'),
+        !!freeformElement.shadowRoot!.getElementById('promptingGuide'),
         'prompting guide should be hidden for results tab');
 
     assertTrue(
@@ -182,7 +181,7 @@ suite('SeaPenFreeformElementTest', function() {
 
     // Switch to Sample Prompts tab
     const samplePromptsTabButton =
-        tabContainer!.querySelector<CrButtonElement>('#samplePromptsTab');
+        tabContainer.querySelector<CrButtonElement>('#samplePromptsTab');
     samplePromptsTabButton!.click();
     await waitAfterNextRender(freeformElement);
 
@@ -194,10 +193,10 @@ suite('SeaPenFreeformElementTest', function() {
             SeaPenRecentWallpapersElement.is),
         'sea-pen-recent-wallpapers is shown in Sample Prompts tab');
     assertTrue(
-        !!freeformElement!.shadowRoot!.getElementById('shuffle'),
+        !!freeformElement.shadowRoot!.getElementById('shuffle'),
         'shuffle button should be shown for samples tab');
     assertTrue(
-        !!freeformElement!.shadowRoot!.getElementById('promptingGuide'),
+        !!freeformElement.shadowRoot!.getElementById('promptingGuide'),
         'prompting guide should be shown for samples tab');
     assertFalse(
         !!freeformElement.shadowRoot!.querySelector<HTMLElement>(
@@ -216,8 +215,7 @@ suite('SeaPenFreeformElementTest', function() {
     const originalSamples = getSamples();
 
     // Click shuffle button
-    const shuffleButton =
-        freeformElement!.shadowRoot!.getElementById('shuffle');
+    const shuffleButton = freeformElement.shadowRoot!.getElementById('shuffle');
     shuffleButton!.click();
     await waitAfterNextRender(freeformElement);
     seaPenSamplesElement =
@@ -250,8 +248,7 @@ suite('SeaPenFreeformElementTest', function() {
     const originalSamples = getSamples();
 
     // Click shuffle button
-    const shuffleButton =
-        freeformElement!.shadowRoot!.getElementById('shuffle');
+    const shuffleButton = freeformElement.shadowRoot!.getElementById('shuffle');
     shuffleButton!.click();
     await waitAfterNextRender(freeformElement);
     seaPenSamplesElement =
@@ -273,7 +270,7 @@ suite('SeaPenFreeformElementTest', function() {
         '#tabContainer:not([hidden])');
     assertTrue(!!tabContainer, 'tab container should be shown');
     const resultsTabButton =
-        tabContainer!.querySelector<CrButtonElement>('#resultsTab');
+        tabContainer.querySelector<CrButtonElement>('#resultsTab');
     assertTrue(!!resultsTabButton, 'results tab displays');
     assertEquals(
         'true', resultsTabButton.getAttribute('aria-selected'),

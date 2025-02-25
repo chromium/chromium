@@ -138,7 +138,7 @@ suite('LocalImagesElementTest', function() {
             `${WallpaperGridItemElement.is}:not([placeholder]):not([hidden])`);
         assertEquals(1, gridItems.length);
         assertDeepEquals(
-            {url: 'data:image/png;base64,localimage0data'}, gridItems![0]!.src);
+            {url: 'data:image/png;base64,localimage0data'}, gridItems[0]!.src);
 
         // Set loading failed for second thumbnail.
         personalizationStore.data.wallpaper.loading.local.data = {
@@ -161,7 +161,7 @@ suite('LocalImagesElementTest', function() {
         assertEquals(
             1, gridItems.length, 'still only first thumbnail displayed');
         assertDeepEquals(
-            {url: 'data:image/png;base64,localimage0data'}, gridItems![0]!.src);
+            {url: 'data:image/png;base64,localimage0data'}, gridItems[0]!.src);
       });
 
   test('sets selected if image name matches currently selected', async () => {

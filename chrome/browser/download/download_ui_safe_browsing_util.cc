@@ -13,7 +13,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -25,7 +25,7 @@
 
 namespace {
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 using safe_browsing::ClientDownloadResponse;
 using safe_browsing::ClientSafeBrowsingReportRequest;
 #endif
@@ -43,7 +43,7 @@ std::string GetDangerPromptHistogramName(const std::string& suffix,
 }  // namespace
 
 bool WasSafeBrowsingVerdictObtained(const download::DownloadItem* item) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   return item &&
          safe_browsing::DownloadProtectionService::HasDownloadProtectionVerdict(
              item);
@@ -53,7 +53,7 @@ bool WasSafeBrowsingVerdictObtained(const download::DownloadItem* item) {
 }
 
 bool ShouldShowWarningForNoSafeBrowsing(Profile* profile) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   return safe_browsing::GetSafeBrowsingState(*profile->GetPrefs()) ==
          safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;
 #else
@@ -62,7 +62,7 @@ bool ShouldShowWarningForNoSafeBrowsing(Profile* profile) {
 }
 
 bool CanUserTurnOnSafeBrowsing(Profile* profile) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   return !safe_browsing::IsSafeBrowsingPolicyManaged(*profile->GetPrefs());
 #else
   return false;
@@ -82,7 +82,7 @@ void RecordDownloadDangerPromptHistogram(
 #endif
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 void SendSafeBrowsingDownloadReport(
     ClientSafeBrowsingReportRequest::ReportType report_type,
     bool did_proceed,
@@ -93,4 +93,4 @@ void SendSafeBrowsingDownloadReport(
                                    /*show_download_in_folder=*/std::nullopt);
   }
 }
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)

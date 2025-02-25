@@ -1,3 +1,4 @@
+# Note, this file is only used on arm64 builders.
 # https://crbug.com/1241502
 -All/ImageTransferCacheEntryTest.Deserialize/Y_UV
 -All/ImageTransferCacheEntryTest.Deserialize/Y_U_V
@@ -17,6 +18,7 @@
 -OopPixelTest.DrawGainmapImageFiltering
 -OopPixelTest.DrawHdrImageWithMetadata
 -OopPixelTest.DrawImage
+-OopPixelTest.DrawImageAlpha
 -OopPixelTest.DrawImageScaled
 -OopPixelTest.DrawImageShaderScaled
 -OopPixelTest.DrawImageWithSetMatrix

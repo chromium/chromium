@@ -18,8 +18,9 @@ export enum ContextMenuOption {
   TRANSLATE_TEXT_IN_REGION = 3,
   COPY_AS_IMAGE = 4,
   SAVE_AS_IMAGE = 5,
+  COPY_TEXT_IN_REGION = 6,
   // Must be last.
-  COUNT = 6,
+  COUNT = 7,
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayContextMenuOption)
 

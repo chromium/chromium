@@ -85,6 +85,7 @@ class MockTabGroupChangeNotifierObserver
   ~MockTabGroupChangeNotifierObserver() override = default;
 
   MOCK_METHOD(void, OnTabGroupChangeNotifierInitialized, ());
+  MOCK_METHOD(void, OnSyncDisabled, ());
   MOCK_METHOD(void,
               OnTabGroupAdded,
               (const tab_groups::SavedTabGroup&, tab_groups::TriggerSource));
@@ -281,6 +282,7 @@ TEST_F(TabGroupChangeNotifierImplTest,
       /*init_tab_groups=*/std::vector<tab_groups::SavedTabGroup>());
 
   // Sign-in and start initial merge. Incoming sync updates should be ignored.
+  EXPECT_CALL(*notifier_observer_, OnSyncDisabled).Times(0);
   tgss_observer_->OnSyncBridgeUpdateTypeChanged(
       tab_groups::SyncBridgeUpdateType::kInitialMerge);
   // Add a tab group to the service.
@@ -291,6 +293,7 @@ TEST_F(TabGroupChangeNotifierImplTest,
   testing::Mock::VerifyAndClearExpectations(tgss_observer_);
 
   // Complete initial merge.
+  EXPECT_CALL(*notifier_observer_, OnSyncDisabled).Times(0);
   tgss_observer_->OnSyncBridgeUpdateTypeChanged(
       tab_groups::SyncBridgeUpdateType::kDefaultState);
 
@@ -305,6 +308,7 @@ TEST_F(TabGroupChangeNotifierImplTest,
 
   // Sign-out and start disabling sync. Incoming sync updates should be ignored.
   // Remove the first group and ensure the observer is not informed.
+  EXPECT_CALL(*notifier_observer_, OnSyncDisabled).Times(1);
   tgss_observer_->OnSyncBridgeUpdateTypeChanged(
       tab_groups::SyncBridgeUpdateType::kDisableSync);
 

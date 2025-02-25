@@ -1151,11 +1151,14 @@ void UpdateServiceImplImpl::InstallImpl(
   if (new_install) {
     // Pre-register the app if there is no registration for it. This app
     // registration is removed later if the app install encounters an error.
-    config_->GetUpdaterPersistedData()->RegisterApp(registration);
+    RegistrationRequest request = registration;
+    request.lang = language;
+    config_->GetUpdaterPersistedData()->RegisterApp(request);
   } else {
-    // Update ap and iid.
+    // Update lang/ap/iid.
     RegistrationRequest request;
     request.app_id = registration.app_id;
+    request.lang = language;
     request.ap = registration.ap;
     request.install_id = registration.install_id;
     config_->GetUpdaterPersistedData()->RegisterApp(request);
@@ -1244,17 +1247,28 @@ void UpdateServiceImplImpl::RunInstallerImpl(
     return;
   }
 
+  if (!IsUpdaterOrCompanionApp(app_id)) {
+    config_->GetUpdaterPersistedData()->SetHadApps();
+  }
+
   const base::Version pv =
       config_->GetUpdaterPersistedData()->GetProductVersion(app_id);
+  const bool new_install = !pv.IsValid();
   AppInfo app_info(
       GetUpdaterScope(), app_id,
-      pv.IsValid() ? config_->GetUpdaterPersistedData()->GetAP(app_id) : "",
-      pv.IsValid() ? config_->GetUpdaterPersistedData()->GetBrandCode(app_id)
-                   : "",
-      pv,
-      pv.IsValid()
-          ? config_->GetUpdaterPersistedData()->GetExistenceCheckerPath(app_id)
-          : base::FilePath());
+      config_->GetUpdaterPersistedData()->GetAP(app_id),
+      !language.empty() ? language
+                        : config_->GetUpdaterPersistedData()->GetLang(app_id),
+      config_->GetUpdaterPersistedData()->GetBrandCode(app_id), pv,
+      config_->GetUpdaterPersistedData()->GetExistenceCheckerPath(app_id));
+
+  // Pre-register the app in case there is no registration for it. This app
+  // registration is removed later if `new_install` is `true and if the app
+  // install encounters an error.
+  RegistrationRequest request;
+  request.app_id = app_id;
+  request.lang = language;
+  config_->GetUpdaterPersistedData()->RegisterApp(request);
 
   const base::Version installer_version([&install_settings]() -> std::string {
     std::unique_ptr<base::Value> install_settings_deserialized =
@@ -1333,7 +1347,7 @@ void UpdateServiceImplImpl::RunInstallerImpl(
              base::RepeatingCallback<void(const UpdateState&)> state_update,
              const std::string& app_id, const std::string& ap,
              const std::string& brand, const std::string& language,
-             base::OnceCallback<void(Result)> callback,
+             bool new_install, base::OnceCallback<void(Result)> callback,
              const InstallerResult& result) {
             // Final state update after installation completes.
             UpdateState state;
@@ -1357,6 +1371,8 @@ void UpdateServiceImplImpl::RunInstallerImpl(
                 installer_version.IsValid()) {
               persisted_data->SetProductVersion(app_id, installer_version);
               config->GetPrefService()->CommitPendingWrite();
+            } else if (new_install) {
+              persisted_data->RemoveApp(app_id);
             }
 
             state.error_category = ToErrorCategory(result.result.category_);
@@ -1381,6 +1397,7 @@ void UpdateServiceImplImpl::RunInstallerImpl(
               update_client::CrxComponent install_data;
               install_data.ap = ap;
               install_data.app_id = app_id;
+              install_data.lang = language;
               install_data.brand = brand;
               install_data.requires_network_encryption = false;
               install_data.install_source = kInstallSourceOffline;
@@ -1407,7 +1424,7 @@ void UpdateServiceImplImpl::RunInstallerImpl(
           },
           config_, config_->GetUpdaterPersistedData(), update_client_,
           installer_version, state_update, app_info.app_id, app_info.ap,
-          app_info.brand, language, std::move(callback)));
+          app_info.brand, language, new_install, std::move(callback)));
 }
 
 bool UpdateServiceImplImpl::IsAppPolicyLoadedOK(

@@ -46,6 +46,11 @@ class PLATFORM_EXPORT SourceLocation {
   SourceLocation(const String& url, int char_position);
 
   SourceLocation(const String& url,
+                 int char_position,
+                 unsigned line_number,
+                 unsigned column_number);
+
+  SourceLocation(const String& url,
                  const String& function,
                  unsigned line_number,
                  unsigned column_number,

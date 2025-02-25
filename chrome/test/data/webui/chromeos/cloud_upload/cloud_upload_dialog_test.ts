@@ -75,8 +75,7 @@ suite('<cloud-upload>', () => {
     });
 
     // Creates and attaches the <cloud-upload> element to the DOM tree.
-    cloudUploadApp =
-        document.createElement('cloud-upload') as CloudUploadElement;
+    cloudUploadApp = document.createElement('cloud-upload');
     container.appendChild(cloudUploadApp);
     await cloudUploadApp.initPromise;
   }
@@ -440,7 +439,7 @@ suite('<cloud-upload>', () => {
         // Bring up the cancel dialog with a Cancel click.
         cloudUploadApp.$('.cancel-button').click();
         const cancelDialog =
-            cloudUploadApp.$<SetupCancelDialogElement>('setup-cancel-dialog')!;
+            cloudUploadApp.$<SetupCancelDialogElement>('setup-cancel-dialog');
         assertTrue(cancelDialog.open);
 
         // Dismiss the cancel dialog with a Continue click.
@@ -492,7 +491,7 @@ suite('<cloud-upload>', () => {
         }
 
         const cancelDialog =
-            cloudUploadApp.$<SetupCancelDialogElement>('setup-cancel-dialog')!;
+            cloudUploadApp.$<SetupCancelDialogElement>('setup-cancel-dialog');
 
         if (page > 3) {
           await doSignInPage();

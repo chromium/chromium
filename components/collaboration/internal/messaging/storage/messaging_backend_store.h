@@ -88,6 +88,9 @@ class MessagingBackendStore {
 
   // Remove a message from the store.
   virtual void RemoveMessages(const std::set<std::string>& message_ids) = 0;
+
+  // Remove all messages from the store.
+  virtual void RemoveAllMessages() = 0;
 };
 
 }  // namespace collaboration::messaging

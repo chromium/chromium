@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_view.h"
+#include "chrome/browser/glic/glic_widget.h"
 #include "chrome/browser/glic/glic_window_animator.h"
 #include "chrome/browser/glic/scoped_glic_button_indicator.h"
 #include "chrome/browser/glic/webui_contents_container.h"
@@ -53,8 +54,6 @@
 namespace glic {
 
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
-
-void* kGlicWidgetIdentifier = &kGlicWidgetIdentifier;
 
 namespace {
 // Default value for adding a buffer to the attachment zone.
@@ -530,7 +529,7 @@ void GlicWindowController::OpenAttached(Browser& browser) {
   // window.
   gfx::Rect glic_window_widget_initial_rect = glic_button->GetBoundsWithInset();
 
-  glic_widget_ = CreateGlicWidget(profile_, glic_window_widget_initial_rect);
+  glic_widget_ = GlicWidget::Create(profile_, glic_window_widget_initial_rect);
   glic_widget_observation_.Observe(glic_widget_.get());
 
   glic_widget_->Show();
@@ -552,7 +551,7 @@ void GlicWindowController::OpenDetached() {
   gfx::Rect initial_bounds = GetInitialDetachedBounds();
 
   // Make the widget.
-  glic_widget_ = CreateGlicWidget(profile_, initial_bounds);
+  glic_widget_ = GlicWidget::Create(profile_, initial_bounds);
   glic_widget_observation_.Observe(glic_widget_.get());
 
   // Be sure to reparent the widget and set its state first before showing it.
@@ -803,35 +802,6 @@ void GlicWindowController::Resize(const gfx::Size& size,
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback));
   }
-}
-
-std::unique_ptr<views::Widget> GlicWindowController::CreateGlicWidget(
-    Profile* profile,
-    const gfx::Rect& initial_bounds) {
-  views::Widget::InitParams params(
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-#if BUILDFLAG(IS_WIN)
-  params.dont_show_in_taskbar = true;
-  params.force_system_menu_for_frameless = true;
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-#endif
-  params.bounds = initial_bounds;
-  params.sublevel = ChromeWidgetSublevel::kSublevelGlic;
-  params.name = "GlicWidget";
-
-  std::unique_ptr<views::Widget> widget =
-      std::make_unique<views::Widget>(std::move(params));
-
-  widget->SetContentsView(
-      std::make_unique<GlicView>(profile, initial_bounds.size()));
-
-  // Mac fullscreen uses this identifier to find this widget and reparent it to
-  // the overlay widget.
-  widget->SetNativeWindowProperty(views::kWidgetIdentifierKey,
-                                  kGlicWidgetIdentifier);
-
-  return widget;
 }
 
 gfx::Size GlicWindowController::GetSize() {

@@ -68,14 +68,17 @@ class SubgriddedItemData {
     return *parent_layout_data_;
   }
 
+  static const SubgriddedItemData& NoSubgriddedItemData() {
+    static SubgriddedItemData no_subgridded_item_data;
+    return no_subgridded_item_data;
+  }
+
  private:
   GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
   const GridItemData* item_data_in_parent_{nullptr};
   const GridLayoutData* parent_layout_data_{nullptr};
   WritingMode parent_writing_mode_{WritingMode::kHorizontalTb};
 };
-
-inline constexpr SubgriddedItemData kNoSubgriddedItemData;
 
 // This class represents a grid tree (see `grid_subtree.h`) and contains the
 // necessary data to perform the track sizing algorithm of its nested subgrids.

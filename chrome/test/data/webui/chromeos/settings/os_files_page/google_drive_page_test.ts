@@ -352,7 +352,7 @@ suite('<settings-google-drive-subpage>', function() {
               subTitleElement =
                   bulkPinningToggle.shadowRoot!.querySelector<HTMLElement>(
                       '#sub-label-text');
-              return subTitleElement !== null && fn(subTitleElement!.innerText);
+              return subTitleElement !== null && fn(subTitleElement.innerText);
             }, 5000);
           };
 

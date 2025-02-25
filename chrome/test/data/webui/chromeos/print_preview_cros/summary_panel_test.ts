@@ -46,8 +46,7 @@ suite('SummaryPanel', () => {
     printPreviewPageHandler =
         (getPrintPreviewPageHandler() as PrintPreviewPageHandlerComposite)
             .fakePageHandler;
-    element =
-        document.createElement(SummaryPanelElement.is) as SummaryPanelElement;
+    element = document.createElement(SummaryPanelElement.is);
     assertTrue(!!element);
     document.body.append(element);
     assert(element);

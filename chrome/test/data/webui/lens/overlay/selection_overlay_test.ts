@@ -53,6 +53,10 @@ suite('SelectionOverlay', function() {
       'enableShimmer': false,
       'enableCopyAsImage': true,
       'enableSaveAsImage': true,
+      // TODO(crbug.com/398040980): After launching simplified selection, the
+      // tests under the SimplifiedSelection suite should instead be moved to
+      // the appropriate suite with conflicting tests removed.
+      'simplifiedSelectionEnabled': false,
     });
 
 
@@ -1488,6 +1492,193 @@ suite('SelectionOverlay', function() {
       await simulateClick(selectionOverlayElement, {x: 1, y: 1});
       assertEquals(
           0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+    });
+  });
+
+  suite('SimplifiedSelection', function() {
+    setup(async function() {
+      loadTimeData.overrideValues({
+        'simplifiedSelectionEnabled': true,
+      });
+
+      // Recreate overlay element with new load time data.
+      document.body.removeChild(selectionOverlayElement);
+      selectionOverlayElement =
+          document.createElement('lens-selection-overlay');
+      document.body.appendChild(selectionOverlayElement);
+      selectionOverlayElement.$.selectionOverlay.style.width = '100%';
+      selectionOverlayElement.$.selectionOverlay.style.height = '100%';
+      await waitAfterNextRender(selectionOverlayElement);
+      return waitAfterNextRender(selectionOverlayElement);
+    });
+
+    test('SelectedRegionContextMenuAppearsWithNoText', async () => {
+      await addEmptyText();
+
+      await simulateDrag(
+          selectionOverlayElement, {x: 50, y: 25}, {x: 300, y: 200});
+      await waitAfterNextRender(selectionOverlayElement);
+
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+      assertFalse(selectionOverlayElement
+                      .getShowDetectedTextContextMenuOptionsForTesting());
+
+      // Check that the region context menu options were shown.
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
+              ContextMenuOption.COPY_AS_IMAGE));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
+              ContextMenuOption.SAVE_AS_IMAGE));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.COPY_AS_IMAGE));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.SAVE_AS_IMAGE));
+
+      // Ensure that no other context menu options were shown.
+      assertEquals(
+          2,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown'));
+      assertEquals(2, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
+    });
+
+    test('SelectedRegionContextMenuAppearsWithEmptyText', async () => {
+      await addEmptyText();
+
+      await simulateDrag(
+          selectionOverlayElement, {x: 50, y: 25}, {x: 300, y: 200});
+      await waitAfterNextRender(selectionOverlayElement);
+
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+      assertFalse(selectionOverlayElement
+                      .getShowDetectedTextContextMenuOptionsForTesting());
+
+      // Check that the region context menu options were shown.
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
+              ContextMenuOption.COPY_AS_IMAGE));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
+              ContextMenuOption.SAVE_AS_IMAGE));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.COPY_AS_IMAGE));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.SAVE_AS_IMAGE));
+
+      // Ensure that no other context menu options were shown.
+      assertEquals(
+          2,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown'));
+      assertEquals(2, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
+    });
+
+    test('SelectedRegionContextMenuAppearsWithText', async () => {
+      await addWords();
+
+      await simulateDrag(
+          selectionOverlayElement, {x: 50, y: 25}, {x: 300, y: 200});
+      await waitAfterNextRender(selectionOverlayElement);
+
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+      assertTrue(selectionOverlayElement
+                     .getShowDetectedTextContextMenuOptionsForTesting());
+
+      // Check that the region context menu options were shown.
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
+              ContextMenuOption.COPY_AS_IMAGE));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
+              ContextMenuOption.SAVE_AS_IMAGE));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
+              ContextMenuOption.TRANSLATE_TEXT_IN_REGION));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
+              ContextMenuOption.COPY_TEXT_IN_REGION));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.COPY_AS_IMAGE));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.SAVE_AS_IMAGE));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.TRANSLATE_TEXT_IN_REGION));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.COPY_TEXT_IN_REGION));
+
+      // Ensure that no other context menu options were shown.
+      assertEquals(
+          4,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown'));
+      assertEquals(4, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
+    });
+
+    test('SelectedRegionContextMenuCopyDetectedText', async () => {
+      await addWords();
+
+      await simulateDrag(
+          selectionOverlayElement, {x: 50, y: 25}, {x: 300, y: 200});
+      await waitAfterNextRender(selectionOverlayElement);
+
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+      assertTrue(selectionOverlayElement
+                     .getShowDetectedTextContextMenuOptionsForTesting());
+
+      selectionOverlayElement.handleCopyDetectedTextForTesting();
+      const textQuery = await testBrowserProxy.handler.whenCalled('copyText');
+      // Copied text should include newlines.
+      assertDeepEquals('hello there\r\ntest', textQuery);
+
+      // Verify context menu hides when an option is selected.
+      await waitAfterNextRender(selectionOverlayElement);
+      assertFalse(
+          selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
     });
   });
 
