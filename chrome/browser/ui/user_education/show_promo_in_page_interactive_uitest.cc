@@ -6,14 +6,17 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -66,6 +69,8 @@ constexpr char kExpectActiveJs[] = R"(
 using ShowPromoInPageBrowserTest = InteractiveBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, FocusesBrowserTabAndAnchor) {
+  g_browser_process->local_state()->SetBoolean(
+      chrome_urls::kInternalOnlyUisEnabled, true);
   auto params = GetDefaultParams();
   params.target_url = GURL(chrome::kChromeUIUserEducationInternalsURL);
   params.overwrite_active_tab = true;

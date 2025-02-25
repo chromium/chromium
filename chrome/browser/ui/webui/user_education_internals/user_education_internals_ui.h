@@ -10,8 +10,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals.mojom.h"
 #include "components/user_education/webui/help_bubble_handler.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/browser/webui_config.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
@@ -23,7 +23,7 @@ class WebUI;
 class UserEducationInternalsUI;
 
 class UserEducationInternalsUIConfig
-    : public content::DefaultWebUIConfig<UserEducationInternalsUI> {
+    : public content::DefaultInternalWebUIConfig<UserEducationInternalsUI> {
  public:
   UserEducationInternalsUIConfig();
 };

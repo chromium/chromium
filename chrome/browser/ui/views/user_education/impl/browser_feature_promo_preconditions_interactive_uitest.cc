@@ -10,6 +10,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
@@ -23,6 +24,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/omnibox_controller.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_education/common/anchor_element_provider.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
@@ -30,6 +32,7 @@
 #include "components/user_education/common/feature_promo/impl/precondition_data.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -76,7 +79,18 @@ class BrowserFeaturePromoPreconditionsUiTest : public InteractiveBrowserTest {
           user_education::AnchorElementPrecondition::kAnchorElement};
 };
 
-using WindowActivePreconditionUiTest = BrowserFeaturePromoPreconditionsUiTest;
+class WindowActivePreconditionUiTest
+    : public BrowserFeaturePromoPreconditionsUiTest {
+ public:
+  WindowActivePreconditionUiTest() = default;
+  ~WindowActivePreconditionUiTest() override = default;
+
+  void SetUpOnMainThread() override {
+    BrowserFeaturePromoPreconditionsUiTest::SetUpOnMainThread();
+    g_browser_process->local_state()->SetBoolean(
+        chrome_urls::kInternalOnlyUisEnabled, true);
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, ElementInActiveBrowser) {
   RunTestSequence(
