@@ -7,6 +7,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -22,7 +23,9 @@ constexpr base::TimeDelta kChipVisibleDuration = base::Seconds(12);
 
 MemorySaverChipController::MemorySaverChipController(
     page_actions::PageActionController& page_action_controller)
-    : page_action_controller_(page_action_controller) {}
+    : page_action_controller_(page_action_controller) {
+  CHECK(base::FeatureList::IsEnabled(features::kPageActionsMigration));
+}
 
 MemorySaverChipController::~MemorySaverChipController() = default;
 
