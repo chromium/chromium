@@ -719,7 +719,7 @@ std::unique_ptr<SpdySession> SpdySessionPool::CreateSession(
   // the alias.
   auto it = LookupAvailableSessionByKey(key);
   if (it != available_sessions_.end()) {
-    DCHECK(key != it->second->spdy_session_key());
+    CHECK(key != it->second->spdy_session_key());
 
     // Remove session from available sessions and from aliases, and remove
     // key from the session's pooled alias set, so that a new session can be
