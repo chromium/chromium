@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/bookmark_bar_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/chrome_gws_abandoned_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/chrome_gws_page_load_metrics_observer.h"
@@ -195,6 +196,10 @@ void PageLoadMetricsEmbedder::RegisterObservers(
                 tracker->GetWebContents(),
                 HeavyAdServiceFactory::GetForBrowserContext(
                     tracker->GetWebContents()->GetBrowserContext()),
+                HistoryServiceFactory::GetForProfile(
+                    Profile::FromBrowserContext(
+                        web_contents()->GetBrowserContext()),
+                    ServiceAccessType::EXPLICIT_ACCESS),
                 base::BindRepeating(&GetApplicationLocale), is_incognito);
     if (ads_observer)
       tracker->AddObserver(std::move(ads_observer));

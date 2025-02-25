@@ -17,6 +17,7 @@
 #include "base/time/tick_clock.h"
 #include "build/build_config.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_data.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/aggregate_frame_data.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_data_utils.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_tree_data.h"
@@ -77,6 +78,7 @@ class AdsPageLoadMetricsObserver
   static std::unique_ptr<AdsPageLoadMetricsObserver> CreateIfNeeded(
       content::WebContents* web_contents,
       heavy_ad_intervention::HeavyAdService* heavy_ad_service,
+      history::HistoryService* history_service,
       const ApplicationLocaleGetter& application_local_getter,
       bool is_incognito);
 
@@ -89,6 +91,7 @@ class AdsPageLoadMetricsObserver
   // |blocklist| should be set only if |heavy_ad_service| is null.
   explicit AdsPageLoadMetricsObserver(
       heavy_ad_intervention::HeavyAdService* heavy_ad_service,
+      history::HistoryService* history_service,
       const ApplicationLocaleGetter& application_local_getter,
       bool is_incognito,
       base::TickClock* clock = nullptr,
@@ -158,6 +161,15 @@ class AdsPageLoadMetricsObserver
                            FrameTreeData* frame_data,
                            bool update_density_tracker,
                            bool record_metrics);
+
+  // Query `history_service` for `ad_url` and log a UMA metric for the frequency
+  // at which `ad_url` appears in history.
+  static void QueryAdUrlFrequencyInHistory(
+      history::HistoryService* history_service,
+      const GURL& ad_url,
+      base::CancelableTaskTracker* query_ad_url_cancelable_task_tracker,
+      base::CancelableTaskTracker*
+          query_ad_url_etld_plus_one_cancelable_task_tracker);
 
  private:
   // Object which maps to a FrameTreeData object. This can either own the
@@ -306,6 +318,14 @@ class AdsPageLoadMetricsObserver
   // Pointer to the HeavyAdService from which the heavy ad blocklist is obtained
   // in production.
   raw_ptr<heavy_ad_intervention::HeavyAdService> heavy_ad_service_;
+
+  // Pointer to HistoryService, which records history of pages visited.
+  // This pointer is owned by HistoryServiceFactory singleton.
+  raw_ptr<history::HistoryService> history_service_;
+
+  // Trackers for the async tasks querying `history_service_` for ad URL.
+  base::CancelableTaskTracker query_ad_url_history_task_tracker_;
+  base::CancelableTaskTracker query_ad_url_etld_plus_one_history_task_tracker_;
 
   ApplicationLocaleGetter application_locale_getter_;
 
