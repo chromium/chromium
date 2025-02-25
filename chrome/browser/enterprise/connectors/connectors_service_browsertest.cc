@@ -39,12 +39,9 @@
 #include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #endif
 
 namespace enterprise_connectors {
@@ -90,11 +87,6 @@ constexpr char kFakeProfileClientId[] = "fake-profile-client-id";
 constexpr char kAffiliationId1[] = "affiliation-id-1";
 constexpr char kDomain1[] = "domain1.com";
 constexpr char kTestUrl[] = "https://foo.com";
-
-#if BUILDFLAG(IS_CHROMEOS)
-constexpr GaiaId::Literal kTestGaiaId("123");
-constexpr char kTestEmail[] = "test@test";
-#endif
 
 std::string ExpectedOsPlatform() {
 #if BUILDFLAG(IS_WIN)
@@ -174,12 +166,6 @@ class ConnectorsServiceProfileBrowserTest
     }
   }
 
-  void TearDownOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS)
-    user_manager_enabler_.reset();
-#endif
-  }
-
   void SetUpProfileData() {
 #if !BUILDFLAG(IS_CHROMEOS)
     test::SetProfileDMToken(browser()->profile(), kFakeProfileDMToken);
@@ -205,16 +191,12 @@ class ConnectorsServiceProfileBrowserTest
 
   void SetUpDeviceData() {
 #if BUILDFLAG(IS_CHROMEOS)
-    auto* fake_user_manager = new ash::FakeChromeUserManager();
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager));
-    AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId);
-    fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, management_status() == ManagementStatus::AFFILIATED,
-        user_manager::UserType::kRegular,
-        static_cast<TestingProfile*>(browser()->profile()));
-    fake_user_manager->LoginUser(account_id);
+    auto* user_manager = user_manager::UserManager::Get();
+    auto* user = user_manager->GetActiveUser();
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
+        user->GetAccountId(),
+        /*is_managed=*/management_status() == ManagementStatus::UNMANAGED,
+        /*is_affliated=*/management_status() == ManagementStatus::AFFILIATED);
 #else
     auto* browser_policy_manager =
         g_browser_process->browser_policy_connector()
@@ -264,10 +246,6 @@ class ConnectorsServiceProfileBrowserTest
  protected:
   std::unique_ptr<policy::FakeBrowserDMTokenStorage> browser_dm_token_storage_;
   ManagementStatus management_status_;
-#if BUILDFLAG(IS_CHROMEOS)
- private:
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-#endif
 };
 
 class ConnectorsServiceReportingProfileBrowserTest
