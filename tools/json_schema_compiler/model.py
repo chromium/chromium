@@ -868,7 +868,6 @@ class Platforms(object):
   """
   CHROMEOS = _PlatformInfo("chromeos")
   FUCHSIA = _PlatformInfo("fuchsia")
-  LACROS = _PlatformInfo("lacros")
   LINUX = _PlatformInfo("linux")
   MAC = _PlatformInfo("mac")
   WIN = _PlatformInfo("win")
