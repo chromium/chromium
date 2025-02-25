@@ -525,9 +525,8 @@ void AutofillExternalDelegate::OnSuggestionsShown(
                           })) {
     if (auto* autofill_ai_delegate =
             manager_->client().GetAutofillAiDelegate()) {
-      autofill_ai_delegate->OnSuggestionsShown(
-          shown_suggestion_types, query_form_, query_field_,
-          CreateUpdateSuggestionsCallback());
+      autofill_ai_delegate->OnSuggestionsShown(shown_suggestion_types,
+                                               query_form_.global_id());
     }
   }
 

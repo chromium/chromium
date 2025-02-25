@@ -268,8 +268,7 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
 
   if (user_saw_filling_suggestions()) {
     manager().OnSuggestionsShown({autofill::SuggestionType::kFillAutofillAi},
-                                 form->ToFormData(), autofill::FormFieldData(),
-                                 /*update_suggestions_callback=*/{});
+                                 form->global_id());
   }
   if (user_filled_suggestion()) {
     manager().OnDidFillSuggestion(form->global_id());

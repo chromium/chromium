@@ -290,11 +290,9 @@ void AutofillAiManager::OnReceivedAXTree(
 
 void AutofillAiManager::OnSuggestionsShown(
     const autofill::DenseSet<SuggestionType>& shown_suggestion_types,
-    const autofill::FormData& form,
-    const autofill::FormFieldData& trigger_field,
-    UpdateSuggestionsCallback update_suggestions_callback) {
+    const autofill::FormGlobalId& form_id) {
   if (shown_suggestion_types.contains(SuggestionType::kFillAutofillAi)) {
-    logger_.OnFillingSuggestionsShown(form.global_id());
+    logger_.OnFillingSuggestionsShown(form_id);
   }
 }
 

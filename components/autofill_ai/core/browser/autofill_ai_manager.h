@@ -49,12 +49,9 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
                               bool autofill_ai_shows_bubble)> callback)
       override;
   bool ShouldDisplayIph(const autofill::AutofillField& field) const override;
-  void OnSuggestionsShown(
-      const autofill::DenseSet<autofill::SuggestionType>&
-          shown_suggestion_types,
-      const autofill::FormData& form,
-      const autofill::FormFieldData& trigger_field,
-      UpdateSuggestionsCallback update_suggestions_callback) override;
+  void OnSuggestionsShown(const autofill::DenseSet<autofill::SuggestionType>&
+                              shown_suggestion_types,
+                          const autofill::FormGlobalId& form_id) override;
   void OnFormSeen(const autofill::FormStructure& form) override;
   void OnDidFillSuggestion(autofill::FormGlobalId form_id) override;
   void OnEditedAutofilledField(autofill::FormGlobalId form_id) override;
