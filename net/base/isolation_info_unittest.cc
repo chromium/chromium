@@ -11,10 +11,11 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
-#include "isolation_info.h"
 #include "net/base/features.h"
+#include "net/base/isolation_info.pb.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/site_for_cookies.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,7 +45,8 @@ void DuplicateAndCompare(const IsolationInfo& isolation_info) {
       IsolationInfo::CreateIfConsistent(
           isolation_info.request_type(), isolation_info.top_frame_origin(),
           isolation_info.frame_origin(), isolation_info.site_for_cookies(),
-          isolation_info.nonce());
+          isolation_info.nonce(),
+          isolation_info.GetNetworkIsolationPartition());
 
   ASSERT_TRUE(duplicate_isolation_info);
   EXPECT_TRUE(isolation_info.IsEqualForTesting(*duplicate_isolation_info));
@@ -189,6 +191,64 @@ TEST_F(IsolationInfoTest, RequestTypeMainFrameWithNonce) {
   EXPECT_EQ(kNonce1, redirected_isolation_info.nonce().value());
   EXPECT_TRUE(redirected_isolation_info.IsMainFrameRequest());
   EXPECT_FALSE(redirected_isolation_info.IsOutermostMainFrameRequest());
+}
+
+TEST_F(IsolationInfoTest,
+       RequestTypeMainFrameWithNonGeneralNetworkIsolationPartition) {
+  IsolationInfo isolation_info = IsolationInfo::Create(
+      IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin1,
+      SiteForCookies::FromOrigin(kOrigin1), /*nonce=*/std::nullopt,
+      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+  EXPECT_EQ(IsolationInfo::RequestType::kMainFrame,
+            isolation_info.request_type());
+  EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
+  EXPECT_EQ(kOrigin1, isolation_info.frame_origin());
+  EXPECT_EQ(NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+            isolation_info.GetNetworkIsolationPartition());
+  EXPECT_EQ(
+      NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+      isolation_info.network_anonymization_key().network_isolation_partition());
+  EXPECT_EQ(
+      NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+      isolation_info.network_isolation_key().GetNetworkIsolationPartition());
+  EXPECT_EQ("https://foo.test https://foo.test 1",
+            isolation_info.network_isolation_key().ToCacheKeyString());
+  EXPECT_TRUE(isolation_info.network_isolation_key().IsFullyPopulated());
+  EXPECT_FALSE(isolation_info.network_isolation_key().IsTransient());
+  EXPECT_TRUE(
+      isolation_info.site_for_cookies().IsFirstParty(kOrigin1.GetURL()));
+  EXPECT_FALSE(isolation_info.nonce().has_value());
+  EXPECT_TRUE(isolation_info.IsMainFrameRequest());
+  EXPECT_TRUE(isolation_info.IsOutermostMainFrameRequest());
+
+  DuplicateAndCompare(isolation_info);
+
+  IsolationInfo redirected_isolation_info =
+      isolation_info.CreateForRedirect(kOrigin3);
+  EXPECT_EQ(IsolationInfo::RequestType::kMainFrame,
+            redirected_isolation_info.request_type());
+  EXPECT_EQ(kOrigin3, redirected_isolation_info.top_frame_origin());
+  EXPECT_EQ(kOrigin3, redirected_isolation_info.frame_origin());
+  EXPECT_EQ(NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+            redirected_isolation_info.GetNetworkIsolationPartition());
+  EXPECT_EQ(NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+            redirected_isolation_info.network_anonymization_key()
+                .network_isolation_partition());
+  EXPECT_EQ(NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+            redirected_isolation_info.network_isolation_key()
+                .GetNetworkIsolationPartition());
+  EXPECT_TRUE(
+      redirected_isolation_info.network_isolation_key().IsFullyPopulated());
+  EXPECT_FALSE(redirected_isolation_info.network_isolation_key().IsTransient());
+  EXPECT_EQ(
+      "https://baz.test https://baz.test 1",
+      redirected_isolation_info.network_isolation_key().ToCacheKeyString());
+
+  EXPECT_TRUE(redirected_isolation_info.site_for_cookies().IsFirstParty(
+      kOrigin3.GetURL()));
+  EXPECT_FALSE(redirected_isolation_info.nonce().has_value());
+  EXPECT_TRUE(redirected_isolation_info.IsMainFrameRequest());
+  EXPECT_TRUE(redirected_isolation_info.IsOutermostMainFrameRequest());
 }
 
 TEST_F(IsolationInfoTest, RequestTypeSubFrameWithNonce) {
@@ -488,6 +548,11 @@ TEST_F(IsolationInfoTest, Serialization) {
       // Request type kMainframe
       IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, kOrigin1,
                             kOrigin1, SiteForCookies::FromOrigin(kOrigin1)),
+      // Non-general NetworkIsolationPartition
+      IsolationInfo::Create(
+          IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin1,
+          SiteForCookies::FromOrigin(kOrigin1), /*nonce=*/std::nullopt,
+          NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
   };
   for (const auto& info : kPositiveTestCases) {
     auto rt = IsolationInfo::Deserialize(info.Serialize());
@@ -510,6 +575,44 @@ TEST_F(IsolationInfoTest, Serialization) {
   for (const auto& info : kNegativeTestCases) {
     EXPECT_TRUE(info.Serialize().empty());
   }
+}
+
+TEST_F(IsolationInfoTest,
+       DeserializationAcceptsValidNetworkIsolationPartitionOnly) {
+  proto::IsolationInfo info;
+  info.set_request_type(0);
+  info.set_top_frame_origin(kOrigin1.Serialize());
+  info.set_frame_origin(kOrigin2.Serialize());
+
+  // We can deserialize a missing NetworkIsolationPartition.
+  auto deserialized = IsolationInfo::Deserialize(info.SerializeAsString());
+  ASSERT_TRUE(deserialized);
+  EXPECT_EQ(deserialized->GetNetworkIsolationPartition(),
+            NetworkIsolationPartition::kGeneral);
+
+  // We can deserialize the max value of NetworkIsolationPartition.
+  info.set_network_isolation_partition(
+      static_cast<int32_t>(NetworkIsolationPartition::kMaxValue));
+  deserialized = IsolationInfo::Deserialize(info.SerializeAsString());
+  ASSERT_TRUE(deserialized);
+  EXPECT_EQ(deserialized->GetNetworkIsolationPartition(),
+            NetworkIsolationPartition::kMaxValue);
+
+  // We can deserialize the min value of NetworkIsolationPartition.
+  info.set_network_isolation_partition(0);
+  deserialized = IsolationInfo::Deserialize(info.SerializeAsString());
+  ASSERT_TRUE(deserialized);
+  EXPECT_EQ(deserialized->GetNetworkIsolationPartition(),
+            NetworkIsolationPartition::kGeneral);
+
+  // We can't deserialize a negative value.
+  info.set_network_isolation_partition(-1);
+  EXPECT_FALSE(IsolationInfo::Deserialize(info.SerializeAsString()));
+
+  // We can't deserialize a too large value.
+  info.set_network_isolation_partition(
+      static_cast<int32_t>(NetworkIsolationPartition::kMaxValue) + 1);
+  EXPECT_FALSE(IsolationInfo::Deserialize(info.SerializeAsString()));
 }
 
 }  // namespace

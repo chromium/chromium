@@ -10,11 +10,13 @@
 #include <string>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
 #include "net/base/features.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "url/gurl.h"
@@ -537,6 +539,10 @@ StorageKey StorageKey::Create(const url::Origin& origin,
 StorageKey StorageKey::CreateFromOriginAndIsolationInfo(
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info) {
+  // Support for creating a StorageKey from IsolationInfos with special
+  // NetworkIsolationPartition is not implemented.
+  CHECK_EQ(isolation_info.GetNetworkIsolationPartition(),
+           net::NetworkIsolationPartition::kGeneral);
   if (isolation_info.nonce()) {
     // If the nonce is set we can use the simpler construction path.
     return CreateWithNonce(origin, *isolation_info.nonce());

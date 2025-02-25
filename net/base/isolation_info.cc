@@ -13,6 +13,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/isolation_info.pb.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/base/proxy_server.h"
 
 namespace net {
@@ -95,7 +96,8 @@ IsolationInfo::IsolationInfo()
                     /*top_frame_origin=*/std::nullopt,
                     /*frame_origin=*/std::nullopt,
                     SiteForCookies(),
-                    /*nonce=*/std::nullopt) {}
+                    /*nonce=*/std::nullopt,
+                    NetworkIsolationPartition::kGeneral) {}
 
 IsolationInfo::IsolationInfo(const IsolationInfo&) = default;
 IsolationInfo::IsolationInfo(IsolationInfo&&) = default;
@@ -107,14 +109,16 @@ IsolationInfo IsolationInfo::CreateForInternalRequest(
     const url::Origin& top_frame_origin) {
   return IsolationInfo(RequestType::kOther, top_frame_origin, top_frame_origin,
                        SiteForCookies::FromOrigin(top_frame_origin),
-                       /*nonce=*/std::nullopt);
+                       /*nonce=*/std::nullopt,
+                       NetworkIsolationPartition::kGeneral);
 }
 
 IsolationInfo IsolationInfo::CreateTransient(
     const std::optional<base::UnguessableToken>& nonce) {
   url::Origin opaque_origin;
   return IsolationInfo(RequestType::kOther, opaque_origin, opaque_origin,
-                       SiteForCookies(), /*nonce=*/nonce);
+                       SiteForCookies(), /*nonce=*/nonce,
+                       NetworkIsolationPartition::kGeneral);
 }
 
 std::optional<IsolationInfo> IsolationInfo::Deserialize(
@@ -131,11 +135,23 @@ std::optional<IsolationInfo> IsolationInfo::Deserialize(
   if (proto.has_frame_origin())
     frame_origin = url::Origin::Create(GURL(proto.frame_origin()));
 
+  NetworkIsolationPartition network_isolation_partition =
+      NetworkIsolationPartition::kGeneral;
+  if (proto.has_network_isolation_partition()) {
+    if (proto.network_isolation_partition() >
+            static_cast<int32_t>(NetworkIsolationPartition::kMaxValue) ||
+        proto.network_isolation_partition() < 0) {
+      return std::nullopt;
+    }
+    network_isolation_partition = static_cast<NetworkIsolationPartition>(
+        proto.network_isolation_partition());
+  }
+
   return IsolationInfo::CreateIfConsistent(
       static_cast<RequestType>(proto.request_type()),
       std::move(top_frame_origin), std::move(frame_origin),
       SiteForCookies::FromUrl(GURL(proto.site_for_cookies())),
-      /*nonce=*/std::nullopt);
+      /*nonce=*/std::nullopt, network_isolation_partition);
 }
 
 IsolationInfo IsolationInfo::Create(
@@ -143,9 +159,10 @@ IsolationInfo IsolationInfo::Create(
     const url::Origin& top_frame_origin,
     const url::Origin& frame_origin,
     const SiteForCookies& site_for_cookies,
-    const std::optional<base::UnguessableToken>& nonce) {
+    const std::optional<base::UnguessableToken>& nonce,
+    NetworkIsolationPartition network_isolation_partition) {
   return IsolationInfo(request_type, top_frame_origin, frame_origin,
-                       site_for_cookies, nonce);
+                       site_for_cookies, nonce, network_isolation_partition);
 }
 
 IsolationInfo IsolationInfo::DoNotUseCreatePartialFromNak(
@@ -184,13 +201,14 @@ std::optional<IsolationInfo> IsolationInfo::CreateIfConsistent(
     const std::optional<url::Origin>& top_frame_origin,
     const std::optional<url::Origin>& frame_origin,
     const SiteForCookies& site_for_cookies,
-    const std::optional<base::UnguessableToken>& nonce) {
+    const std::optional<base::UnguessableToken>& nonce,
+    NetworkIsolationPartition network_isolation_partition) {
   if (!IsConsistent(request_type, top_frame_origin, frame_origin,
                     site_for_cookies, nonce)) {
     return std::nullopt;
   }
   return IsolationInfo(request_type, top_frame_origin, frame_origin,
-                       site_for_cookies, nonce);
+                       site_for_cookies, nonce, network_isolation_partition);
 }
 
 IsolationInfo IsolationInfo::CreateForRedirect(
@@ -200,12 +218,14 @@ IsolationInfo IsolationInfo::CreateForRedirect(
 
   if (request_type_ == RequestType::kSubFrame) {
     return IsolationInfo(request_type_, top_frame_origin_, new_origin,
-                         site_for_cookies_, nonce_);
+                         site_for_cookies_, nonce_,
+                         GetNetworkIsolationPartition());
   }
 
   DCHECK_EQ(RequestType::kMainFrame, request_type_);
   return IsolationInfo(request_type_, new_origin, new_origin,
-                       SiteForCookies::FromOrigin(new_origin), nonce_);
+                       SiteForCookies::FromOrigin(new_origin), nonce_,
+                       GetNetworkIsolationPartition());
 }
 
 const std::optional<url::Origin>& IsolationInfo::frame_origin() const {
@@ -235,6 +255,13 @@ std::string IsolationInfo::Serialize() const {
 
   if (frame_origin_)
     info.set_frame_origin(frame_origin_->Serialize());
+
+  // The NetworkIsolationPartition defaults to kGeneral if not present in
+  // the protobuf.
+  if (GetNetworkIsolationPartition() != NetworkIsolationPartition::kGeneral) {
+    info.set_network_isolation_partition(
+        static_cast<int32_t>(GetNetworkIsolationPartition()));
+  }
 
   info.set_site_for_cookies(site_for_cookies_.RepresentativeUrl().spec());
 
@@ -289,11 +316,13 @@ std::string IsolationInfo::DebugString() const {
   return s;
 }
 
-IsolationInfo::IsolationInfo(RequestType request_type,
-                             const std::optional<url::Origin>& top_frame_origin,
-                             const std::optional<url::Origin>& frame_origin,
-                             const SiteForCookies& site_for_cookies,
-                             const std::optional<base::UnguessableToken>& nonce)
+IsolationInfo::IsolationInfo(
+    RequestType request_type,
+    const std::optional<url::Origin>& top_frame_origin,
+    const std::optional<url::Origin>& frame_origin,
+    const SiteForCookies& site_for_cookies,
+    const std::optional<base::UnguessableToken>& nonce,
+    NetworkIsolationPartition network_isolation_partition)
     : request_type_(request_type),
       top_frame_origin_(top_frame_origin),
       frame_origin_(frame_origin),
@@ -302,13 +331,15 @@ IsolationInfo::IsolationInfo(RequestType request_type,
               ? NetworkIsolationKey()
               : NetworkIsolationKey(SchemefulSite(*top_frame_origin),
                                     SchemefulSite(*frame_origin),
-                                    nonce)),
+                                    nonce,
+                                    network_isolation_partition)),
       network_anonymization_key_(
           !top_frame_origin ? NetworkAnonymizationKey()
                             : NetworkAnonymizationKey::CreateFromFrameSite(
                                   SchemefulSite(*top_frame_origin),
                                   SchemefulSite(*frame_origin),
-                                  nonce)),
+                                  nonce,
+                                  network_isolation_partition)),
       site_for_cookies_(site_for_cookies),
       nonce_(nonce) {
   DCHECK(IsConsistent(request_type_, top_frame_origin_, frame_origin_,
