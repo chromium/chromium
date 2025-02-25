@@ -7,12 +7,14 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
@@ -1157,6 +1159,41 @@ id<GREYMatcher> OpenKeyboardButton() {
       performAction:grey_tap()];
 
   [self verifyPasswordFieldsHaveBeenFilled:@"user1"];
+}
+
+// Tests that the bottom sheet isn't displayed when the user uses the omnibox.
+- (void)testBottomSheetWithOmnibox {
+  GURL URL = self.testServer->GetURL("/simple_login_form_empty.html");
+
+  // Put a credential in the store so the sheet can trigger.
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(URL)];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  [self loadLoginPage];
+
+  // Display the omnibox UI.
+  [ChromeEarlGreyUI focusOmnibox];
+  GREYAssertTrue([OmniboxAppInterface isOmniboxFocusedOnMainBrowser],
+                 @"IsOmniboxFocused is expected to be true.");
+
+  // While the omnibox UI is being displayed, focus on the webview behind the
+  // omnibox UI so the password bottom sheet would be displayed if the omnibox
+  // wasn't handled correctly.
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:
+          @"document.querySelector('input[type=password]').focus()"];
+
+  // Give some time to the sheet to be displayed if it was to be displayed so we
+  // can correctly assess that the password bottom sheet is indeed not
+  // displayed.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(2));
+
+  // Verify that the sheet wasn't displayed.
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

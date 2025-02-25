@@ -1837,6 +1837,12 @@ enum class ToolbarKind {
   if (self.passwordSuggestionBottomSheetCoordinator) {
     return;
   }
+  // Do not present the bottom sheet when the omnibox is being used to not
+  // disrupt the user.
+  if (OmniboxPositionBrowserAgent::FromBrowser(self.browser)
+          ->IsOmniboxFocused()) {
+    return;
+  }
   self.passwordSuggestionBottomSheetCoordinator =
       [[PasswordSuggestionBottomSheetCoordinator alloc]
           initWithBaseViewController:self.viewController
