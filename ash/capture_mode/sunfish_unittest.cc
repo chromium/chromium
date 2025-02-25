@@ -740,7 +740,8 @@ TEST_F(SunfishTest, CaptureBarView) {
 TEST_F(SunfishTest, DragSearchResultsPanel) {
   auto widget = SearchResultsPanel::CreateWidget(Shell::GetPrimaryRootWindow(),
                                                  /*is_active=*/false);
-  widget->SetBounds(gfx::Rect(100, 100, capture_mode::kSearchResultsPanelWidth,
+  widget->SetBounds(gfx::Rect(100, 100,
+                              capture_mode::kSearchResultsPanelTotalWidth,
                               capture_mode::kSearchResultsPanelHeight));
   widget->Show();
 
@@ -1851,7 +1852,7 @@ TEST_F(SunfishTest, PanelBounds) {
   // Define the known possible coordinates of the search results panel.
   const int left_x = work_area.x() + capture_mode::kPanelWorkAreaSpacing;
   const int right_x = work_area.right() -
-                      capture_mode::kSearchResultsPanelWidth -
+                      capture_mode::kSearchResultsPanelTotalWidth -
                       capture_mode::kPanelWorkAreaSpacing;
   const int default_y = work_area.bottom() -
                         capture_mode::kSearchResultsPanelHeight -
@@ -1863,7 +1864,7 @@ TEST_F(SunfishTest, PanelBounds) {
 
   // By default, the panel should appear on the left side.
   gfx::Rect target_bounds(left_x, default_y,
-                          capture_mode::kSearchResultsPanelWidth,
+                          capture_mode::kSearchResultsPanelTotalWidth,
                           capture_mode::kSearchResultsPanelHeight);
   EXPECT_EQ(controller->GetSearchResultsPanel()->GetBoundsInScreen(),
             target_bounds);

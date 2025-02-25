@@ -143,7 +143,11 @@ inline constexpr base::TimeDelta kCaptureUIOpacityChangeDuration =
     base::Milliseconds(100);
 
 // Search result panel dimensions.
-constexpr int kSearchResultsPanelWidth = 360;
+inline constexpr int kPanelPaddingSize = 16;
+inline constexpr int kSearchResultsPanelWebViewWidth = 360;
+inline constexpr int kSearchResultsPanelTotalWidth =
+    capture_mode::kSearchResultsPanelWebViewWidth +
+    2 * capture_mode::kPanelPaddingSize;
 constexpr int kSearchResultsPanelHeight = 492;
 
 // The distance between the search result panel and the work area.
