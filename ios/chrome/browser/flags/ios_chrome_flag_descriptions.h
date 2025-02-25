@@ -343,6 +343,9 @@ extern const char kIOSKeyboardAccessoryUpgradeForIPadDescription[];
 extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuName[];
 extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuDescription[];
 
+extern const char kIOSPasskeysM2Name[];
+extern const char kIOSPasskeysM2Description[];
+
 extern const char kIOSPasswordBottomSheetAutofocusName[];
 extern const char kIOSPasswordBottomSheetAutofocusDescription[];
 
