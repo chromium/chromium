@@ -74,6 +74,10 @@ void PageActionModel::SetActionItemProperties(
     action_item_image_ = action_item->GetImage();
     model_changed = true;
   }
+  if (action_item_is_showing_bubble_ != action_item->GetIsShowingBubble()) {
+    action_item_is_showing_bubble_ = action_item->GetIsShowingBubble();
+    model_changed = true;
+  }
   if (text_ != action_item->GetText()) {
     text_ = action_item->GetText();
     model_changed = true;
@@ -108,6 +112,10 @@ const std::u16string& PageActionModel::GetText() const {
 
 const std::u16string& PageActionModel::GetTooltipText() const {
   return override_tooltip_.has_value() ? override_tooltip_.value() : tooltip_;
+}
+
+bool PageActionModel::GetActionItemIsShowingBubble() const {
+  return action_item_is_showing_bubble_;
 }
 
 void PageActionModel::SetOverrideText(
