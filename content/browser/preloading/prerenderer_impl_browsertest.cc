@@ -60,7 +60,8 @@ class PrerendererImplBrowserTestBase : public ContentBrowserTest {
               return &that->web_contents();
             },
             base::Unretained(this)),
-        /*force_disable_prerender2fallback=*/false);
+        /*force_disable_prerender2fallback=*/false,
+        /*force_enable_prerender2innewtab==*/false);
 
     ContentBrowserTest::SetUp();
   }
