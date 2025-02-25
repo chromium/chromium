@@ -235,8 +235,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                                   AppLaunchSource::X_CALLBACK);
     // TODO(crbug.com/41004788): Temporary fix.
     NSString* action = [completeURL path];
-    // Currently only "open" and "extension-command" are supported.
-    // Other actions are being considered (see b/6914153).
+    // Currently only "open" and "app-group-command" are supported.
     if ([action
             isEqualToString:
                 [NSString
