@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PASSES_PASSES_TABLE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PASSES_PASSES_TABLE_H_
 
+#include <optional>
 #include <string_view>
 #include <vector>
 
