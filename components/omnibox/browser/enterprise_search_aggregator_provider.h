@@ -64,14 +64,14 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
                         const int response_code,
                         std::unique_ptr<std::string> response_body);
 
-  // The function updates `matches_` with data parsed from `json_data`.
-  // The update is not performed if `json_data` is invalid.
-  // Returns whether `matches_` changed.
-  bool UpdateResults(const std::string& json_data);
+  // The function updates `matches_` with data parsed from `response_value`.
+  // The update is not performed if `response_value` is invalid.
+  void UpdateResults(const std::optional<base::Value::Dict>& response_value,
+                     const int response_code);
 
   // Parses enterprise search aggregator response JSON.
   void ParseEnterpriseSearchAggregatorSearchResults(
-      const base::Value& root_val);
+      const base::Value::Dict& root_val);
 
   // Helper method to parse query, people, and content suggestions.
   // Example:
