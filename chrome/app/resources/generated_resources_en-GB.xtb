@@ -585,7 +585,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1401216725754314428">Learn more about related sites in a new tab</translation>
 <translation id="1402426911829176748">Connecting to your device</translation>
 <translation id="1403222014593521787">Unable to connect to the proxy</translation>
-<translation id="1405336513195181336">This includes bookmarks, extensions and your browsing history of sites.</translation>
 <translation id="1405779994569073824">Crashed.</translation>
 <translation id="1406500794671479665">Verifying...</translation>
 <translation id="1407069428457324124">Dark theme</translation>
@@ -1010,6 +1009,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1682696837763999627">Big mouse cursor</translation>
 <translation id="1682867089915960590">Turn on Caret Browsing?</translation>
 <translation id="1686550358074589746">Enable glide typing</translation>
+<translation id="1686785653877010442">Sites usually send notifications to let you know about breaking news or chat messages.</translation>
 <translation id="168715261339224929">To get your bookmarks on all your devices, turn on sync.</translation>
 <translation id="1688935057616748272">Type a letter</translation>
 <translation id="1689333818294560261">Nickname</translation>
@@ -1293,6 +1293,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1878885068166344708">Item is highlighted when you move focus. Press tab or select an item to change focus.</translation>
 <translation id="1879000426787380528">Sign in as</translation>
 <translation id="18802377548000045">Tabs shrink to a large width</translation>
+<translation id="1880618477732738742">Change and grant access to features such as geolocation, microphone, camera, cookies, etc. for all your websites and extensions, including this extension.</translation>
 <translation id="1880905663253319515">Delete certificate "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Keyboard layout</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Item}other{# items}}</translation>
@@ -1521,7 +1522,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2040894699575719559">Location blocked</translation>
 <translation id="2041246176170574368">Security updates end soon. Save $50 or more on a new Chromebook.</translation>
 <translation id="2042279886444479655">Active profiles</translation>
-<translation id="2042427131767688936">To make sure that this device can be used safely, your organisation may need to see information about its operating system, browser and settings, and what software is installed on the device.</translation>
 <translation id="2044014337866019681">Please make sure that you are verifying <ph name="ACCOUNT" /> to unlock the session.</translation>
 <translation id="2044750031738659219">{0,plural, =1{Close Guest}other{Close Guest (# windows)}}</translation>
 <translation id="204497730941176055">Microsoft certificate template name</translation>
@@ -3480,6 +3480,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3435738964857648380">Security</translation>
 <translation id="343578350365773421">Out of paper</translation>
 <translation id="3435896845095436175">Enable</translation>
+<translation id="3437397693214267762">See your Outlook Calendar, SharePoint and OneDrive files</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Always allow <ph name="HOST" /> to access your microphone</translation>
 <translation id="3439970425423980614">Opening PDF in Preview</translation>
@@ -3661,7 +3662,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3566211766752891194">Show tab memory usage</translation>
 <translation id="3566325075220776093">From this device</translation>
 <translation id="3566721612727112615">No sites added</translation>
-<translation id="3566788242120166275">Your existing browsing data will remain in the existing profile. This new profile will not contain any previous browsing data.</translation>
 <translation id="3567168891086460374">Save another way</translation>
 <translation id="3567284462585300767">To receive and accept files with people around you, become visible</translation>
 <translation id="356738834800832239">Your password is saved</translation>
@@ -3828,7 +3828,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3685598397738512288">Linux USB preferences</translation>
 <translation id="3687598459967813435">Always allow notifications from <ph name="WEBSITE" /></translation>
 <translation id="368789413795732264">There was an error while trying to write the file: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3687957587012862163">No, move it into this new profile</translation>
 <translation id="3688507211863392146">Write to files and folders that you open in the application</translation>
 <translation id="3688526734140524629">Change channel</translation>
 <translation id="3688578402379768763">Up-to-date</translation>
@@ -3887,7 +3886,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="37143699183660101">Cursor stability</translation>
 <translation id="3714610938239537183">Step 2 of 4: Select diagnostics data to export</translation>
 <translation id="3716065403310915079"><ph name="VM_NAME" /> installer</translation>
-<translation id="3717256685838828428">This profile is managed by your organisation, which can view some information, including</translation>
 <translation id="3719245268140483218">Device Event</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> filled.</translation>
 <translation id="3719826155360621982">Homepage</translation>
@@ -4920,7 +4918,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4426857487270413362">Unable to download installer files. Please check your Internet connection, and that you have enough free disk space and try again. The error code is <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">Detected <ph name="COUNT" /> times</translation>
 <translation id="4427365070557649936">Verifying confirmation code…</translation>
-<translation id="4428579202668721841">Keep existing browsing data separate from your work profile?</translation>
 <translation id="4429163740524851942">Physical keyboard layout</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="443031431654216610">Use numerical digits only</translation>
@@ -6087,7 +6084,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5276357196618041410">Cannot save configuration without login first</translation>
 <translation id="5277127016695466621">Show side panel</translation>
 <translation id="5278823018825269962">Status ID</translation>
-<translation id="5279214046729249716">Yes, keep it separate</translation>
 <translation id="5279600392753459966">Block all</translation>
 <translation id="5280064835262749532">Update credentials for <ph name="SHARE_PATH" /></translation>
 <translation id="5280426389926346830">Create Shortcut?</translation>
@@ -6413,7 +6409,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5503982651688210506">Continue allowing <ph name="HOST" /> to use and move your camera, and use your microphone</translation>
 <translation id="5505307013568720083">Out of ink</translation>
 <translation id="5507756662695126555">Non-repudiation</translation>
-<translation id="5508864312047847614">Keep existing browsing data separate from your school profile?</translation>
 <translation id="5509693895992845810">Save &amp;As...</translation>
 <translation id="5509914365760201064">Issuer: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Get Image Descriptions from Google</translation>
@@ -6866,7 +6861,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5854066326260337683">LBS is currently disabled. You can enable LBS by setting the <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" /> policy.</translation>
 <translation id="5854912040170951372">Pizza</translation>
 <translation id="5855267860608268405">Known Wi-Fi networks</translation>
-<translation id="5855375823365231964">About this profile</translation>
 <translation id="5855643921295613558">0.6 seconds</translation>
 <translation id="5856721540245522153">Enable debugging features</translation>
 <translation id="5857090052475505287">New Folder</translation>
@@ -7140,6 +7134,7 @@ You can assign multiple switches to this action.</translation>
     Use your account to easily access all of your bookmarks, files and more. If you don't have an account, you can create one on the next screen.</translation>
 <translation id="6054138466019582920">Search this page with Google…</translation>
 <translation id="6054284857788651331">Recently closed tab group</translation>
+<translation id="6054819000749443354">Open System Settings</translation>
 <translation id="6054961935262556546">Change visibility</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 With RSA Encryption</translation>
 <translation id="6055544610007596637">Install apps for your <ph name="DEVICE_TYPE" /> from the Google Play Store</translation>
@@ -7228,7 +7223,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6113942107547980621">To use Smart Lock, switch to the primary user profile on your phone</translation>
 <translation id="6116921718742659598">Change language and input settings</translation>
 <translation id="6119008366402292080">No printer available</translation>
-<translation id="6119068870709745878">This profile is managed by <ph name="PROFILE_MANAGER" />, which can view some information, including</translation>
 <translation id="6119927814891883061">Name device to <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Colour correction</translation>
 <translation id="6121773125605585883">View password with username <ph name="USERNAME" /> for <ph name="WEBSITE" /></translation>
@@ -7437,6 +7431,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6264060420924719834">This app contains web content from other sites</translation>
 <translation id="6264365405983206840">Select &amp;All</translation>
 <translation id="6264376385120300461">Download anyway</translation>
+<translation id="6264485186158353794">Back to safety</translation>
 <translation id="6264520534872750757">Continue to use the device</translation>
 <translation id="6264636978858465832">Password Manager needs more access</translation>
 <translation id="626495329434552273">Allowed to override your keyboard input</translation>
@@ -7652,7 +7647,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6434104957329207050">Point scanning speed</translation>
 <translation id="6434309073475700221">Discard</translation>
 <translation id="6434325376267409267">Your device needs to be updated before you can use <ph name="APP_NAME" />.</translation>
-<translation id="6434690603850475457">Yes, keep it separate (recommended)</translation>
 <translation id="6434755719322447931">Chaotic</translation>
 <translation id="6435339218366409950">Choose the language into which you want to translate the captions</translation>
 <translation id="6436164536244065364">View in Web Store</translation>
@@ -8962,6 +8956,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7380459290951585794">Make sure that your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on</translation>
 <translation id="7380622428988553498">Device name contains invalid characters</translation>
 <translation id="7380768571499464492">Updated <ph name="PRINTER_NAME" /></translation>
+<translation id="7382009635620830394">If this card is disabled, your Microsoft cards, such as SharePoint, OneDrive files and Outlook Calendar will be disabled as well.</translation>
 <translation id="7382085868019811559">Legacy Browser Support (LBS) allows specific URL patterns to be opened in an alternative browser that supports legacy features required to properly run those sites.</translation>
 <translation id="7382980704744807223">Suspicious</translation>
 <translation id="738322632977123193">Can't upload. Use an image in one of these formats: .jpg, .gif, .png, .bmp, .tif or .webp</translation>
@@ -10632,6 +10627,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> is managed by <ph name="MANAGER" />. You can't add this email as an additional account.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />To use <ph name="USER_EMAIL" />, first sign out of your <ph name="DEVICE_TYPE" />. Then at the bottom of the login screen, select 'Add person'.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Hold the Search key to switch the behaviour of the top-row keys</translation>
+<translation id="8549127125482561383">How to show requests</translation>
 <translation id="8549316893834449916">You’ll use your Google Account to sign in to your Chromebook – the same account that you use for Gmail, Drive, YouTube and more.</translation>
 <translation id="8550239873869577759">Downloaded suspicious file</translation>
 <translation id="8551388862522347954">Licences</translation>

@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">2-ші жұмыс үстелі</translation>
 <translation id="1546930421365146760">Әкімшіден осы құрылғыны Google әкімші консолінде реттеуді сұраңыз.</translation>
 <translation id="1549512626801247439">жадты басқару</translation>
+<translation id="1549721333775633305">Quick Share параметрлерін көрсетеді. Quick Share өшірілді</translation>
 <translation id="1550406609415860283">Қолжетімді құрылғылар</translation>
 <translation id="1550523713251050646">Қосымша опциялар үшін басыңыз</translation>
 <translation id="1555130319947370107">Көк</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> іске қосылмады.</translation>
 <translation id="5860033963881614850">Өшірулі</translation>
 <translation id="5860491529813859533">Қосу</translation>
+<translation id="5864691701242730005">Quick Share параметрлерін көрсетеді. <ph name="VISIBILITY" /> көру рұқсаты таңдалды</translation>
 <translation id="5864748620896638071">Батарея заряды: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Желі туралы ақпарат жиналуда</translation>
 <translation id="5867606971598166637">Әкімшіңіз экрандарды бақылап отыр.</translation>
@@ -2262,6 +2264,7 @@
 <translation id="851660987304951246">Контентті жылдам қорытындылау немесе сұрақтар қою үшін "Оқуға көмек керек" өнімін пайдаланыңыз</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> іске қосылғанда зарядталмауы мүмкін.</translation>
 <translation id="8535393432370007982">Түс бойынша сұрыптау ретін қайтару</translation>
+<translation id="8536886494750559755">Quick Share параметрлерін көрсетеді. <ph name="TIME_REMAINING" /> бойы барлығына көрінеді</translation>
 <translation id="8539803091108018926">Мәтін буферге көшірілді.</translation>
 <translation id="8541078764854166027">Камерамен кадрлау</translation>
 <translation id="8542053257095774575">Сақталған жұмыс үстелі немесе үлгі жоқ.</translation>

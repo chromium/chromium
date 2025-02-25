@@ -3952,7 +3952,9 @@ inline constexpr char kDesktopSharingHubEnabled[] =
 
 #if !BUILDFLAG(IS_ANDROID)
 // Pref name for the last major version where the What's New page was
-// successfully shown.
+// automatically shown. This indicates that on the next startup within
+// the same major version, the browser should not attempt to auto-open
+// the page again.
 inline constexpr char kLastWhatsNewVersion[] = "browser.last_whats_new_version";
 // A boolean indicating whether the Lens Region search feature should be enabled
 // if supported.
@@ -3971,6 +3973,9 @@ inline constexpr char kWhatsNewEditionUsed[] = "browser.whats_new.edition_used";
 // were first enabled.
 inline constexpr char kWhatsNewFirstEnabledOrder[] =
     "browser.whats_new.enabled_order";
+// Integer representing the last milestone that successfully showed
+// a version page.
+inline constexpr char kWhatsNewVersionUsed[] = "browser.whats_new.version_used";
 #endif
 
 // An integer indicating the number of times the Lens Overlay was started.

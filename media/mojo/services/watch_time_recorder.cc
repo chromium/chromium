@@ -63,11 +63,14 @@ WatchTimeRecorder::WatchTimeUkmRecord::WatchTimeUkmRecord(
 
 WatchTimeRecorder::WatchTimeUkmRecord::~WatchTimeUkmRecord() = default;
 
-WatchTimeRecorder::WatchTimeRecorder(mojom::PlaybackPropertiesPtr properties,
-                                     ukm::SourceId source_id,
-                                     bool is_top_frame,
-                                     uint64_t player_id)
-    : properties_(std::move(properties)),
+WatchTimeRecorder::WatchTimeRecorder(
+    PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb,
+    mojom::PlaybackPropertiesPtr properties,
+    ukm::SourceId source_id,
+    bool is_top_frame,
+    uint64_t player_id)
+    : auto_pip_reason_cb_(std::move(auto_pip_reason_cb)),
+      properties_(std::move(properties)),
       source_id_(source_id),
       is_top_frame_(is_top_frame),
       player_id_(player_id),

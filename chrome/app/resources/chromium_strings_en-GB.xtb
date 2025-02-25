@@ -30,6 +30,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1345251407431278948">Pinned! You can access image search again from the new button on the toolbar</translation>
 <translation id="1356661055722410047">New! You can translate both text and images on your screen</translation>
 <translation id="1414495520565016063">You're signed in to Chromium!</translation>
+<translation id="1465192221147974788">To share your window, allow screen recording for Chromium in System Settings.</translation>
 <translation id="1478370723027452770">Get help with Chrome for testing</translation>
 <translation id="1497802159252041924">Install error: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Share a Chromium tab</translation>
@@ -109,7 +110,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Uninstall</translation>
 <translation id="2513154137948333830">Reboot required: <ph name="INSTALL_SUCCESS" /></translation>
-<translation id="2522009821193247726">To continue, you'll need to sign in to Chromium with <ph name="EMAIL" />. This ensures compliance with your organisation's policies.</translation>
 <translation id="2542968102051442371">Select text with image search</translation>
 <translation id="2554739539410784893">Chromium is trying to replace existing passwords. Type in your Windows password to allow this.</translation>
 <translation id="2560420686485554789">Chromium needs storage access to download files</translation>
@@ -162,6 +162,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3130323860337406239">Chromium is using your microphone.</translation>
 <translation id="3137969841538672700">Drag to search</translation>
 <translation id="3144188012276422546">This tab is using extra resources. To improve your performance, let Chromium make it inactive.</translation>
+<translation id="3149163023759831301">To share your screen, allow screen recording for Chromium in System Settings</translation>
 <translation id="3155163173539279776">Relaunch Chromium</translation>
 <translation id="3161522574479303604">All languages</translation>
 <translation id="3179665906251668410">Open Link in Chromium Inco&amp;gnito Window</translation>
@@ -184,8 +185,10 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3474745554856756813">This will delete <ph name="ITEMS_COUNT" /> items from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> can switch between Chromium profiles</translation>
 <translation id="3509308970982693815">Please close all Chromium windows and try again.</translation>
+<translation id="3522404737534491619">To share your window, allow screen recording for Chromium in System Settings</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> is already signed in.  To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. Or you can remove interests you don't want Chromium to consider.</translation>
+<translation id="3561853857681580870">To share your screen, allow screen recording for Chromium in System Settings.</translation>
 <translation id="3567254597502212821">Your browsing history, a record of sites that you've visited using Chromium on this device.</translation>
 <translation id="3597003331831379823">Failed to run setup with elevated privileges. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3639635944603682591">This person's browsing data will be deleted from this device. To recover the data, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
@@ -283,6 +286,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4942295735032723435">To get future Chromium updates, you'll need macOS 11 or later. This computer is using macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium is in background mode.</translation>
 <translation id="494490797786467921">Click to close the Chromium sign-in dialogue</translation>
+<translation id="4950660488495335294">With Chromium profiles, you can separate all your Chromium stuff. Create profiles for friends and family, or split between work and fun.</translation>
 <translation id="4987820182225656817">Guests can use Chromium without leaving anything behind.</translation>
 <translation id="4994636714258228724">Add yourself to Chromium</translation>
 <translation id="5123973130450702873">Chromium needs permission to track your hands</translation>
@@ -430,7 +434,6 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="6964305034639999644">Open link in Chromium inco&amp;gnito window</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">Weak passwords are easy to guess. Let Chromium <ph name="BEGIN_LINK" />create and remember strong passwords for you<ph name="END_LINK" />.</translation>
-<translation id="6980074797973263542">Your organisation can see and manage browsing data, such as your bookmarks, history and passwords. It can't see browsing data in personal Chromium profiles.</translation>
 <translation id="6985329841647292029">Chromium OS terms</translation>
 <translation id="6990124437352146030">Chromium needs permission to access your microphone for this site</translation>
 <translation id="7003299027384820442">Enter your passphrase to use and save Chromium data in your account, <ph name="ACCOUNT_EMAIL" /></translation>

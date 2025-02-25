@@ -465,7 +465,7 @@ void BookmarkBubbleView::ShowBubble(
     // widget to account for it.
     bubble->SetFootnoteView(std::make_unique<BubbleSignInPromoView>(
         profile, delegate_ptr, signin_metrics::AccessPoint::kBookmarkBubble,
-        IDS_BOOKMARK_DICE_PROMO_SYNC_MESSAGE, ui::ButtonStyle::kDefault));
+        ui::ButtonStyle::kDefault));
 #endif
   }
 

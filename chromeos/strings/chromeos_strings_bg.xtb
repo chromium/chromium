@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">котки</translation>
 <translation id="5907649332524363701">цвят на клавишите</translation>
 <translation id="5908813850962688338">Инсталирането на тази актуализация ще отнеме няколко минути. Докато тя се изтегля, устройството ви трябва да е включено и свързано със захранването. Възможно е то да се рестартира няколко пъти и да показва черен екран по време на процеса. За да завършите инсталирането, ще получите подкана да рестартирате устройството си.</translation>
+<translation id="5915794087373112615">Преподавателят ви ще види екрана ви след <ph name="NUM_SECONDS" /> секунди</translation>
 <translation id="5916084858004523819">Забранено</translation>
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файлът ви бе сканиран успешно и запазен в папката <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файловете ви бяха сканирани успешно и запазени в папката <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1524,6 +1525,7 @@
 <translation id="8054112564438735763">бежов</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> на <ph name="CHARACTERS_BACKGROUND" /> фон</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Свържете микрофон, за да започнете да записвате аудио</translation>
 <translation id="8067126283828232460">Името на точката за достъп (APN) е свързано.</translation>
 <translation id="8067208048261192356">кафяв</translation>
 <translation id="8067224607978179455">Изтриване на <ph name="ACTION_NAME" /></translation>

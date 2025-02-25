@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">പൂച്ചകൾ</translation>
 <translation id="5907649332524363701">കീയുടെ നിറം</translation>
 <translation id="5908813850962688338">ഈ അപ്‌ഡേറ്റ് ഇൻസ്റ്റാൾ ചെയ്യുന്നതിന് കുറച്ച് സമയമെടുത്തേക്കാം. അപ്‌ഡേറ്റ് ഡൗൺലോഡ് ചെയ്യുമ്പോൾ നിങ്ങളുടെ ഉപകരണം പ്ലഗ് ഇൻ ചെയ്‌ത് ഓണാക്കി വയ്ക്കുക. ഈ പ്രോസസിനിടയിൽ നിങ്ങളുടെ ഉപകരണം പലതവണ സ്വയം റീബൂട്ട് ചെയ്ത് ഒരു കറുത്ത സ്ക്രീൻ കാണിച്ചേക്കാം. ഇൻസ്റ്റലേഷൻ പൂർത്തിയാക്കാൻ ഉപകരണം റീസ്റ്റാർട്ട് ചെയ്യാൻ നിങ്ങളോട് ആവശ്യപ്പെടും.</translation>
+<translation id="5915794087373112615"><ph name="NUM_SECONDS" /> സെക്കൻഡിനകം ടീച്ചർ നിങ്ങളുടെ സ്ക്രീൻ കാണും</translation>
 <translation id="5916084858004523819">നിരോധിച്ചിരിക്കുന്നു</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{നിങ്ങളുടെ ഫയൽ സ്‌കാൻ ചെയ്ത് <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> എന്നതിലേക്ക് സംരക്ഷിച്ചു.}other{നിങ്ങളുടെ ഫയലുകൾ സ്‌കാൻ ചെയ്ത് <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> എന്നതിലേക്ക് സംരക്ഷിച്ചു.}}</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7618774594543487847">ന്യൂട്രൽ</translation>
 <translation id="7620771111601174153">സഹായകേന്ദ്രത്തിൽ കൂടുതലറിയുക</translation>
+<translation id="7623327321610992184">OnTask പോഡ്</translation>
 <translation id="763165478673169849">അവസാനം റീസെറ്റ് ചെയ്‌ത സമയം</translation>
 <translation id="7633068090678117093">പശ്ചാത്തല ചിത്രം</translation>
 <translation id="763873111564339966">ഇൻഡിഗോ</translation>
@@ -1524,6 +1526,7 @@
 <translation id="8054112564438735763">ബീജ്</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> പശ്ചാത്തലത്തിൽ <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">ഓഡിയോ റെക്കോർഡിംഗ് ആരംഭിക്കാൻ മൈക്ക് കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="8067126283828232460">APN കണക്റ്റ് ചെയ്തു.</translation>
 <translation id="8067208048261192356">തവിട്ട്</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> ഇല്ലാതാക്കുക</translation>
@@ -1627,6 +1630,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ടീ ഹൗസ്</translation>
 <translation id="8538236298648811558">Google AI കൊണ്ട് പ്രവർത്തിക്കുന്നത്</translation>
+<translation id="8543574988889671960">റീലോഡ് ചെയ്യുക ടാബ്</translation>
 <translation id="8550364285433943656">കീബോർഡ് കീകൾ ഉപയോഗിച്ച് കളിക്കാൻ ഗെയിം പ്രവർത്തനങ്ങളിൽ നിയന്ത്രണങ്ങൾ സജ്ജീകരിക്കുക</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">നിങ്ങളുടെ സേവനദാതാവിന് അവരുടെ നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്യാൻ ഈ ഓപ്‌ഷൻ ആവശ്യമായി വന്നേക്കാം. വിശദാംശങ്ങൾക്ക് നിങ്ങളുടെ സേവനദാതാവുമായി ബന്ധപ്പെടുക.</translation>

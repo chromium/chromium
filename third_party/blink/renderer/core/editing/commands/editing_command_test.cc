@@ -27,7 +27,7 @@ struct CommandNameEntry {
   EditingCommandType type;
 };
 
-const auto kCommandNameEntries = std::to_array<CommandNameEntry>({
+constexpr auto kCommandNameEntries = std::to_array<CommandNameEntry>({
 #define V(name) {#name, EditingCommandType::k##name},
     FOR_EACH_BLINK_EDITING_COMMAND_NAME(V)
 #undef V

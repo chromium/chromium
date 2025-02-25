@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/trace_event/trace_id_helper.h"
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
@@ -123,9 +124,15 @@ void SetCallStack(v8::Isolate* isolate, perfetto::TracedDictionary& dict) {
   // So we collect the top frame with  CaptureSourceLocation() to
   // get the binding call site info.
   auto source_location = CaptureSourceLocation();
+  uint64_t sample_trace_id = base::trace_event::GetNextGlobalTraceId();
+  // Bit mask the 64-bit sample trace id to 53 bits to allow it to be
+  // used in JavaScript trace clients (e.g. DevTools).
+  uint64_t mask = ((1ULL << 53) - 1);
+  sample_trace_id = sample_trace_id & mask;
+  dict.Add("sampleTraceId", sample_trace_id);
   if (source_location->HasStackTrace())
     dict.Add("stackTrace", source_location);
-  v8::CpuProfiler::CollectSample(isolate);
+  v8::CpuProfiler::CollectSample(isolate, sample_trace_id);
 }
 
 void InspectorTraceEvents::WillSendRequest(

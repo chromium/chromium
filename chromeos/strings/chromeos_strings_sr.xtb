@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">мачке</translation>
 <translation id="5907649332524363701">боја кључа</translation>
 <translation id="5908813850962688338">Инсталирање овог ажурирања ће потрајати неколико минута. Нека уређај остане прикључен на напајање и укључен док се ажурирање преузима. Током овог процеса уређај може да се рестартује неколико пута и да се прикаже црни екран. Затражиће се да рестартујете уређај да бисте довршили инсталацију.</translation>
+<translation id="5915794087373112615">Наставник ће видети ваш екран за <ph name="NUM_SECONDS" /> сек</translation>
 <translation id="5916084858004523819">Забрањено</translation>
 <translation id="5916664084637901428">Укључено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Фајл је скениран и сачуван у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Фајлови су скенирани и сачувани у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Фајлови су скенирани и сачувани у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Фајлови су скенирани и сачувани у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7618216277886673749">Изаберите <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Неутрално</translation>
 <translation id="7620771111601174153">Сазнајте више у Центру за помоћ</translation>
+<translation id="7623327321610992184">OnTask група</translation>
 <translation id="763165478673169849">Време последњег ресетовања</translation>
 <translation id="7633068090678117093">Слика у позадини</translation>
 <translation id="763873111564339966">тамноплаве</translation>
@@ -1524,6 +1526,7 @@
 <translation id="8054112564438735763">беж</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_COLOR" /> боје на позадини <ph name="CHARACTERS_BACKGROUND" /> боје</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Повежите микрофон да бисте почели да снимате звук</translation>
 <translation id="8067126283828232460">Назив приступне тачке је повезан.</translation>
 <translation id="8067208048261192356">браон</translation>
 <translation id="8067224607978179455">Избришите <ph name="ACTION_NAME" /></translation>
@@ -1627,6 +1630,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чајџиница</translation>
 <translation id="8538236298648811558">Омогућава Google AI</translation>
+<translation id="8543574988889671960">Поново учитајте картицу</translation>
 <translation id="8550364285433943656">Поставите контроле за радње у игри да бисте играли помоћу тастера на тастатури</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Мобилни оператер може да затражи ову опцију ради повезивања на мрежу. Обратите се мобилном оператеру за детаље.</translation>

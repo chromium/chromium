@@ -72,9 +72,6 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   void BindMultiDeviceSetup(
       mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
           receiver) override;
-  void BindMultiCaptureService(
-      mojo::PendingReceiver<video_capture::mojom::MultiCaptureService> receiver)
-      override;
   media_session::MediaSessionService* GetMediaSessionService() override;
   bool IsSessionRestoreInProgress() const override;
   void SetUpEnvironmentForLockedFullscreen(

@@ -108,7 +108,6 @@
 <translation id="2483889755041906834">В Chromium</translation>
 <translation id="2485422356828889247">Деинсталиране</translation>
 <translation id="2513154137948333830">Изисква се рестартиране: <ph name="INSTALL_SUCCESS" /></translation>
-<translation id="2522009821193247726">За да продължите, трябва да влезете в профила си в Chromium чрез <ph name="EMAIL" />. Това гарантира спазване на правилата на организацията ви.</translation>
 <translation id="2542968102051442371">Изберете текст с търсенето на изображения</translation>
 <translation id="2554739539410784893">Chromium опитва да замени съществуващите пароли. За да разрешите това, въведете паролата си за Windows.</translation>
 <translation id="2560420686485554789">Chromium се нуждае от достъп до хранилището, за да изтегля файлове</translation>
@@ -429,7 +428,6 @@
 <translation id="6964305034639999644">Отваряне на връзката в прозорец в режим „инко&amp;гнито“ на Chromium</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">Ненадеждните пароли са лесни за отгатване. Използвайте Chromium <ph name="BEGIN_LINK" />за създаване и запомняне на надеждни пароли за профилите ви<ph name="END_LINK" />.</translation>
-<translation id="6980074797973263542">Организацията ви може да вижда и управлява данните за сърфирането, като например отметките, историята и паролите ви. Тя не може да преглежда такива данни в личните потребителски профили в Chromium.</translation>
 <translation id="6985329841647292029">Общи условия на Chromium OS</translation>
 <translation id="6990124437352146030">Chromium се нуждае от разрешение за достъп до микрофона ви за този сайт</translation>
 <translation id="7003299027384820442">Въведете пропуска си, за да използвате и запазвате данните от Chromium в профила си (<ph name="ACCOUNT_EMAIL" />)</translation>

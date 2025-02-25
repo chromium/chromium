@@ -74,7 +74,7 @@ class OverlayImageRepresentationImpl : public OverlayImageRepresentation {
     const auto& shm_wrapper = static_cast<SharedMemoryImageBacking*>(backing())
                                   ->shared_memory_wrapper();
     return std::make_optional<gl::DCLayerOverlayImage>(
-        size(), shm_wrapper.GetMemory(0), shm_wrapper.GetStride(0));
+        size(), shm_wrapper.GetMemoryPlanes(), shm_wrapper.GetStride(0));
   }
 #endif
 };

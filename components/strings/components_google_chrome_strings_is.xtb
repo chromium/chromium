@@ -12,6 +12,9 @@
 <translation id="3512634283363927263">Þessar síður eru ætlaðar til notkunar hjá þróunaraðilum Chrome og er e.t.v. ekki haldið við eða prófaðar reglulega. Til að kveikja á þeim skaltu fara á <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, smella á hnappinn til að kveikja á villuleitarsíðum og fara síðan aftur á þessa síðu.</translation>
 <translation id="3875312571075912821">Veittu Chrome aðgang að netkerfinu þínu í eldveggsstillingunum þínum eða
            vírusvarnarstillingunum.</translation>
+<translation id="4949828774841497663">Farðu í Forrit &gt; Kerfisstillingar &gt; Netkerfi og veldu
+          virkt netkerfi, smelltu á hnappinn Upplýsingar... og afveldu alla staðgengla
+          sem kunna að hafa verið valdir.</translation>
 <translation id="5005121315113832363">Chrome setti þessa síðu á bannlista</translation>
 <translation id="6011049234605203654">Farðu í
           valmynd Chrome &gt;

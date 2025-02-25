@@ -36,16 +36,16 @@ const char kSurveyParam[] = "whats_new_survey_id";
 //
 // To connect the rollout of your Feature to your WhatsNewModule,
 // supple a base::Feature when creating a module. This will tell the
-// embedded page when the user has enabled this Feature that the content
-// may be shown.
+// embedded page that the content may be shown when the user has enabled
+// this Feature.
 //
 // Content on the What's New page that is released to 100% Stable before
 // a milestone launches does not need to register a WhatsNewModule. The
 // content will always be shown. Regardless, do remember to create metrics
 // variants for these modules using the module name you agreed upon
 // with frizzle-team@google.com. However, if this module triggers
-// a browser command, it still needs to be created and registered, just
-// without a base::Feature.
+// a browser command, it still needs to be created and registered,
+// albeit without a base::Feature.
 //
 // Metrics:
 // When registering a module, make sure to add UserAction and Histogram
@@ -189,6 +189,9 @@ class WhatsNewRegistry {
 
   // Set a "used version" for an edition.
   void SetEditionUsed(std::string edition) const;
+
+  // Record that the version page was used for this milestone.
+  void SetVersionUsed() const;
 
   // Cleanup data from storage for housekeeping.
   void ClearUnregisteredModules() const;

@@ -9,14 +9,15 @@ import android.os.Handler;
 import android.util.Size;
 import android.widget.OverScroller;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.paintpreview.player.OverscrollHandler;
 
 /** Handles scrolling of a frame for the paint preview player. */
+@NullMarked
 public class PlayerFrameScrollController {
     /** For swipe-to-refresh logic */
-    private OverscrollHandler mOverscrollHandler;
+    private @Nullable OverscrollHandler mOverscrollHandler;
 
     private boolean mIsOverscrolling;
     private float mOverscrollAmount;
@@ -34,10 +35,10 @@ public class PlayerFrameScrollController {
     /** Interface for calling shared methods on the mediator. */
     private final PlayerFrameMediatorDelegate mMediatorDelegate;
 
-    private final Runnable mOnScrollListener;
-    private final Runnable mOnFlingListener;
+    private final @Nullable Runnable mOnScrollListener;
+    private final @Nullable Runnable mOnFlingListener;
     private boolean mAcceptUserInput;
-    private Runnable mOnScrollCallbackForAccessibility;
+    private @Nullable Runnable mOnScrollCallbackForAccessibility;
 
     PlayerFrameScrollController(
             OverScroller scroller,
@@ -116,7 +117,7 @@ public class PlayerFrameScrollController {
     }
 
     /** Ensures that the given {@link Rect} is visible by scrolling the viewport to include it. */
-    void scrollToMakeRectVisibleForAccessibility(Rect rect) {
+    void scrollToMakeRectVisibleForAccessibility(@Nullable Rect rect) {
         if (rect == null) return;
 
         float scaleFactor = mViewport.getScale();

@@ -526,31 +526,21 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Preference related to the tab pickup feature.
   registry->RegisterBooleanPref(prefs::kTabPickupEnabled, true);
 
-  // Pref used to store the number of impressions of the Most Visited Sites
-  // since a freshness signal of the Most Visited Sites.
+  // TODO(crbug.com/398173021): Remove Magic Stack freshness pref registrations
+  // from local-state Prefs after 12 months (approximately Feb 2026).
   registry->RegisterIntegerPref(
       prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness, -1);
-  // Pref used to store the number of impressions of Shortcuts in the Home
-  // Surface since a Shortcuts freshness signal.
   registry->RegisterIntegerPref(
       prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness, -1);
-  // Pref used to store the number of impressions of Safety Check in the Home
-  // Surface since a Safety Check freshness signal.
   registry->RegisterIntegerPref(
       prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
       -1);
-  // Pref used to store the number of impressions of the tab resumption module
-  // in the Home Surface since a tab resumption freshness signal.
   registry->RegisterIntegerPref(
       prefs::kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
       -1);
-  // Pref used to store the number of impressions of the parcel tracking module
-  // in the Home Surface since a parcel tracking freshness signal.
   registry->RegisterIntegerPref(
       prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness,
       -1);
-  // Pref used to store the number of impressions of the price tracking promo
-  // module in the Home Surface since a price tracking promo freshness signal.
   registry->RegisterIntegerPref(
       kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness,
       -1);
@@ -1031,6 +1021,18 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Added 02/2025
   safety_check_prefs::RegisterPrefs(registry);
+
+  // Added 02/2025
+  registry->RegisterIntegerPref(
+      prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness, -1);
+  registry->RegisterIntegerPref(
+      prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness, -1);
+  registry->RegisterIntegerPref(
+      prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
+      -1);
+  registry->RegisterIntegerPref(
+      prefs::kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
+      -1);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1059,6 +1061,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 02/2025
   prefs->ClearPref(kNumberOfProfiles);
   prefs->ClearPref(kLastActiveProfiles);
+
+  // Added 02/2025
+  prefs->ClearPref(
+      prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1199,6 +1205,22 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // local-state to profile Prefs.
   MigrateBooleanPrefFromLocalStatePrefsToProfilePrefs(
       tab_resumption_prefs::kTabResumptionDisabledPref, prefs);
+
+  // Added 02/2025
+  // TODO(crbug.com/398173021): Remove these Magic Stack freshness pref
+  // migrations after successfully migrating from local state to profile Prefs.
+  // These migrations were added Feb 2025 - approximately remove them Feb 2026.
+  MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
+      prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness, prefs);
+  MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
+      prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness,
+      prefs);
+  MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
+      prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
+      prefs);
+  MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
+      prefs::kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
+      prefs);
 }
 
 void MigrateObsoleteUserDefault() {

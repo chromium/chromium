@@ -94,7 +94,8 @@ void EchoAIManagerImpl::CreateLanguageModel(
 
   auto return_language_model_callback =
       base::BindOnce(&EchoAIManagerImpl::ReturnAILanguageModelCreationResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote),
+                     std::move(options->sampling_params));
 
   // In order to test the model download progress handling, the
   // `EchoAIManagerImpl` will always start from the `after-download` state, and
@@ -204,20 +205,25 @@ void EchoAIManagerImpl::CreateRewriter(
 
 void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
     mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
-        client_remote) {
+        client_remote,
+    blink::mojom::AILanguageModelSamplingParamsPtr sampling_params) {
   mojo::PendingRemote<blink::mojom::AILanguageModel> language_model;
-  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAILanguageModel>(),
-                              language_model.InitWithNewPipeAndPassReceiver());
-  client_remote->OnResult(
-      std::move(language_model),
-      blink::mojom::AILanguageModelInstanceInfo::New(
-          kMaxContextSizeInTokens,
-          /*current_tokens=*/0,
-          blink::mojom::AILanguageModelSamplingParams::New(
-              optimization_guide::features::GetOnDeviceModelDefaultTopK(),
-              optimization_guide::features::
-                  GetOnDeviceModelDefaultTemperature()),
-          std::nullopt));
+  auto model_sampling_params =
+      sampling_params
+          ? std::move(sampling_params)
+          : blink::mojom::AILanguageModelSamplingParams::New(
+                optimization_guide::features::GetOnDeviceModelDefaultTopK(),
+                optimization_guide::features::
+                    GetOnDeviceModelDefaultTemperature());
+
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<EchoAILanguageModel>(model_sampling_params->Clone()),
+      language_model.InitWithNewPipeAndPassReceiver());
+  client_remote->OnResult(std::move(language_model),
+                          blink::mojom::AILanguageModelInstanceInfo::New(
+                              kMaxContextSizeInTokens,
+                              /*current_tokens=*/0,
+                              std::move(model_sampling_params), std::nullopt));
 }
 
 void EchoAIManagerImpl::ReturnAISummarizerCreationResult(

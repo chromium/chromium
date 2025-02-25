@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">దయచేసి వేచి ఉండండి...</translation>
 <translation id="2740531572673183784">సరే</translation>
 <translation id="2744221223678373668">భాగస్వామ్యం చేయబడింది</translation>
+<translation id="2749164457515831917">సూచనలు షఫుల్ చేయబడ్డాయి</translation>
 <translation id="2751739896257479635">EAP 2వ దశ ప్రమాణీకరణ</translation>
 <translation id="2754757901767760034">దీపం</translation>
 <translation id="2780756493585863768">Googleకు చెందిన AI టెక్నాలజీలు ఇటీవల క్రియేట్ చేసిన బ్యాక్‌గ్రౌండ్‌లు</translation>
@@ -559,6 +560,7 @@
 <translation id="3651050199673793219">ఉష్ణోగ్రత యూనిట్‌ను ఎంచుకోండి</translation>
 <translation id="3661106764436337772">మరింత వేగంగా, మరింత నమ్మకంతో రాయండి</translation>
 <translation id="3662461537616691585">బర్గండీ, మెరూన్</translation>
+<translation id="3664755900672940272">శాంపిల్ ప్రాంప్ట్‌లు షఫుల్ చేయబడ్డాయి</translation>
 <translation id="3668449597372804501">క్లౌడ్ ఫ్లో వాల్‌పేపర్</translation>
 <translation id="3668570675727296296">భాష సెట్టింగ్‌లు</translation>
 <translation id="3675132884790542448">పందులు</translation>
@@ -1030,6 +1032,7 @@
 <translation id="590746845088109442">పిల్లులు</translation>
 <translation id="5907649332524363701">కీ రంగు</translation>
 <translation id="5908813850962688338">ఈ అప్‌డేట్‌ను ఇన్‌స్టాల్ చేయడానికి కొన్ని నిముషాలు పడతాయి. అప్‌డేట్ డౌన్‌లోడ్ అవుతున్నప్పుడు, మీ పరికరాన్ని ప్లగ్-ఇన్ చేసి, పవర్ ఆన్‌లో ఉంచండి. ఈ ప్రాసెస్ జరిగే సమయంలో మీ పరికరం దానికదే అనేక సార్లు రీబూట్ అవ్వవచ్చు, నలుపు రంగు స్క్రీన్ కనిపించవచ్చు. ఇన్‌స్టలేషన్‌ను పూర్తి చేయడానికి మీ పరికరాన్ని రీస్టార్ట్ చేయమని మీకు ప్రాంప్ట్ వస్తుంది.</translation>
+<translation id="5915794087373112615">మీ టీచర్ మీ స్క్రీన్‌ను<ph name="NUM_SECONDS" /> సెకన్లలలో చూస్తారు</translation>
 <translation id="5916084858004523819">నిషేధించబడింది</translation>
 <translation id="5916664084637901428">ఆన్‌లో ఉంది</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{మీ ఫైల్ విజయవంతంగా స్కాన్ చేయబడి, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />కు సేవ్ చేయబడింది.}other{మీ ఫైళ్లు విజయవంతంగా స్కాన్ చేయబడి, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />కు సేవ్ చేయబడ్డాయి.}}</translation>
@@ -1283,6 +1286,7 @@
 <translation id="6975620886940770104">మెరిసే <ph name="GLOWSCAPES_FEATURE" />‌తో <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">కోలాలు</translation>
 <translation id="6977381486153291903">ఫర్మ్‌వేర్ పునర్విమర్శ</translation>
+<translation id="6978396562261420054">జెనరేట్ అయిన ఇమేజ్</translation>
 <translation id="6981982820502123353">యాక్సెసిబిలిటీ</translation>
 <translation id="6982462588253070448">ఇసుక తిన్నెలు</translation>
 <translation id="7005833343836210400">పరికరం ఆఫ్‌లైన్‌లో ఉంది</translation>
@@ -1521,6 +1525,7 @@
 <translation id="8054112564438735763">లేత గోధుమ రంగు</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> బ్యాక్‌గ్రౌండ్‌లో <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">ఆడియో రికార్డింగ్‌ను ప్రారంభించడానికి మైక్‌ను కనెక్ట్ చేయండి</translation>
 <translation id="8067126283828232460">APN కనెక్ట్ చేయబడింది.</translation>
 <translation id="8067208048261192356">గోధుమ రంగు</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" />‌ను తొలగించండి</translation>
@@ -1624,6 +1629,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">టీ హౌస్</translation>
 <translation id="8538236298648811558">Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతోంది</translation>
+<translation id="8543574988889671960">ట్యాబ్‌ను రీలోడ్ చేయండి</translation>
 <translation id="8550364285433943656">మీ కీబోర్డ్‌తో ఆడేందుకు గేమ్ చర్యలకు కంట్రోల్స్‌ను సెట్ చేయండి</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">వారి నెట్‌వర్క్‌కు కనెక్ట్ అవ్వడానికి మీ క్యారియర్‌కు ఈ ఆప్షన్ అవసరం పడవచ్చు. వివరాల కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>

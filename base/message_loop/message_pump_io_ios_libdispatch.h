@@ -20,6 +20,7 @@
 #include "base/message_loop/message_pump_apple.h"
 #include "base/message_loop/watchable_io_message_pump_posix.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/thread_checker.h"
 
 namespace base {
 
@@ -57,6 +58,7 @@ class BASE_EXPORT MessagePumpIOSForIOLibdispatch
 
     void HandleRead();
     void HandleWrite();
+    int fd() { return fd_; }
 
     bool is_persistent_ = false;  // false if this event is one-shot.
     raw_ptr<FdWatcher> watcher_ = nullptr;
@@ -118,9 +120,6 @@ class BASE_EXPORT MessagePumpIOSForIOLibdispatch
 
   ~MessagePumpIOSForIOLibdispatch() override;
 
-  void Attach(Delegate* delegate) override;
-  void DoRun(Delegate* delegate) override;
-
   bool WatchFileDescriptor(int fd,
                            bool persistent,
                            int mode,
@@ -138,7 +137,7 @@ class BASE_EXPORT MessagePumpIOSForIOLibdispatch
  private:
   friend class MessagePumpIOSForIOLibdispatchFdTest;
 
-  scoped_refptr<base::SequencedTaskRunner> io_thread_task_runner_;
+  THREAD_CHECKER(thread_checker_);
   dispatch_queue_t queue_;
 };
 

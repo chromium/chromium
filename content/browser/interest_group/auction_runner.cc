@@ -599,8 +599,6 @@ void AuctionRunner::OnLoadInterestGroupsComplete(bool success) {
   }
 
   if (base::FeatureList::IsEnabled(
-          blink::features::kBiddingAndScoringDebugReportingAPI) &&
-      base::FeatureList::IsEnabled(
           blink::features::kFledgeSampleDebugReports)) {
     // All sellers and buyers in the auction.
     base::flat_set<url::Origin> origins = auction_.GetSellersAndBuyers();

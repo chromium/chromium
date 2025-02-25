@@ -176,6 +176,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1546492247443594934">Plocha 2</translation>
 <translation id="1546930421365146760">Požádejte svého administrátora, aby toto zařízení nastavil v administrátorské konzoli Google</translation>
 <translation id="1549512626801247439">správa úložiště</translation>
+<translation id="1549721333775633305">Zobrazit nastavení funkce Quick Share. Funkce Quick Share je vypnutá</translation>
 <translation id="1550406609415860283">Dostupná zařízení</translation>
 <translation id="1550523713251050646">Kliknutím zobrazíte další možnosti</translation>
 <translation id="1555130319947370107">Modrá</translation>
@@ -1474,6 +1475,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5856638668464565213">Síť <ph name="NETWORK_NAME" /> není aktivována.</translation>
 <translation id="5860033963881614850">Vypnuto</translation>
 <translation id="5860491529813859533">Zapnout</translation>
+<translation id="5864691701242730005">Zobrazit nastavení funkce Quick Share. Je vybrána viditelnost <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071">Baterie: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5867217927013474703">Shromažďování informací o síti</translation>
 <translation id="5867606971598166637">Vaše obrazovky sleduje administrátor systému.</translation>
@@ -2261,6 +2263,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="851660987304951246">Pomocí funkce Pomoz mi číst si můžete nechat rychle shrnout obsah nebo se na něco zeptat</translation>
 <translation id="8517041960877371778">Je možné, že když bude zařízení <ph name="DEVICE_TYPE" /> zapnuté, nebude se nabíjet.</translation>
 <translation id="8535393432370007982">Zrušit řazení podle barvy</translation>
+<translation id="8536886494750559755">Zobrazit nastavení funkce Quick Share. Viditelné všem na <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Text byl zkopírován do schránky</translation>
 <translation id="8541078764854166027">Automatické zabírání</translation>
 <translation id="8542053257095774575">Žádné uložené plochy ani šablony</translation>

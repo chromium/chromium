@@ -274,7 +274,6 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "dbus/bus.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
-#include "services/video_capture/public/mojom/multi_capture_service.mojom.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -1207,7 +1206,7 @@ Shell::~Shell() {
 
   shell_delegate_.reset();
 
-  multi_capture_service_client_.reset();
+  multi_capture_service_.reset();
 
   // Observes `SessionController` and must be destroyed before it.
   federated_service_controller_.reset();
@@ -1617,12 +1616,7 @@ void Shell::Init(
   ambient_controller_ =
       std::make_unique<AmbientController>(std::move(ambient_fingerprint));
 
-  mojo::PendingRemote<video_capture::mojom::MultiCaptureService>
-      multi_capture_service;
-  shell_delegate_->BindMultiCaptureService(
-      multi_capture_service.InitWithNewPipeAndPassReceiver());
-  multi_capture_service_client_ = std::make_unique<MultiCaptureServiceClient>(
-      std::move(multi_capture_service));
+  multi_capture_service_ = std::make_unique<MultiCaptureService>();
 
   // |tablet_mode_controller_| |mru_window_tracker_|, and
   // |assistant_controller_| are put before |app_list_controller_| as they are

@@ -5,6 +5,8 @@ include_rules = [
   "+content/test",
   "+components/blocklist",
   "+components/heavy_ad_intervention",
+  "+components/history/core/browser",
+  "+components/history/core/test",
   "+components/keyed_service/content",
   "+components/keyed_service/core",
   "+components/metrics",

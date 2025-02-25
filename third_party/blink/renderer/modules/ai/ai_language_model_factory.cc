@@ -374,19 +374,25 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
       std::ignore = options->monitor()->Invoke(nullptr, monitor);
     }
 
-    // The temperature and top_k are optional, but they must be provided
-    // together.
-    if (!options->hasTopK() && !options->hasTemperature()) {
-      sampling_params = nullptr;
-    } else if (options->hasTopK() && options->hasTemperature()) {
-      sampling_params = mojom::blink::AILanguageModelSamplingParams::New(
-          options->topK(), options->temperature());
-    } else {
-      resolver->Reject(DOMException::Create(
-          kExceptionMessageInvalidTemperatureAndTopKFormat,
-          DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
+    auto sampling_params_or_exception = ResolveSamplingParamsOption(options);
+    if (!sampling_params_or_exception.has_value()) {
+      switch (sampling_params_or_exception.error()) {
+        case SamplingParamsOptionError::kOnlyOneOfTopKAndTemperatureIsProvided:
+          resolver->Reject(DOMException::Create(
+              kExceptionMessageInvalidTemperatureAndTopKFormat,
+              DOMException::GetErrorName(
+                  DOMExceptionCode::kNotSupportedError)));
+          break;
+        case SamplingParamsOptionError::kInvalidTopK:
+          resolver->RejectWithRangeError(kExceptionMessageInvalidTopK);
+          break;
+        case SamplingParamsOptionError::kInvalidTemperature:
+          resolver->RejectWithRangeError(kExceptionMessageInvalidTemperature);
+          break;
+      }
       return promise;
     }
+    sampling_params = std::move(sampling_params_or_exception.value());
 
     // The API impl does not yet support expectedInputTypes, more to come soon!
     if (options->hasExpectedInputTypes()) {

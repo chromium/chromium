@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">Күтө туруңуз…</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2744221223678373668">Бөлүшүлгөн</translation>
+<translation id="2749164457515831917">Сунуштар аралаштырылды</translation>
 <translation id="2751739896257479635">EAP 2-фазадагы аныктыгын текшерүү</translation>
 <translation id="2754757901767760034">чырак</translation>
 <translation id="2780756493585863768">Google сунуштаган ЖИ технологиялары менен түзүлгөн соңку фондор</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">Калып боюнча аракеттер менюсу</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> маанисин төмөнкүгө бөлүңүз: <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">1 күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
+<translation id="3248791727258378769">Транскрипция түзүлбөйт</translation>
 <translation id="324961752321393509">Администраторуңуз бул колдонмону жабууга тыюу салган</translation>
 <translation id="3263941347294171263">Жаңыртуу процессин улантуу үчүн <ph name="DEVICE_NAME" /> түзмөгүн ажыратып, кайра туташтырыңыз</translation>
 <translation id="3268178239013324452">Басылып чыгарылган жок - Принтердин эшиги ачык</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">Температураны өлчөө бирдигин тандоо</translation>
 <translation id="3661106764436337772">Тезирээк жана тагыраак жазыңыз</translation>
 <translation id="3662461537616691585">кызыл шарап жана кочкул кызыл</translation>
+<translation id="3664755900672940272">Сурамдардын үлгүлөрү аралаштырылды</translation>
 <translation id="3668449597372804501">Булут тушкагазы</translation>
 <translation id="3668570675727296296">Тил параметрлери</translation>
 <translation id="3675132884790542448">чочколор</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">Көшөгөнү өчүрүү</translation>
 <translation id="4210636113897977670">Сактап туруп, чыгуу</translation>
 <translation id="4210659479607886331">мөңгү дарыясы</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> транскрипциянын үлгүсү жүктөп алынды</translation>
 <translation id="42126664696688958">Экспорттоо</translation>
 <translation id="4213104098953699324">USB баскычтобу</translation>
 <translation id="4227825898293920515">Сырсөздүн мөөнөтү <ph name="TIME" /> кийин бүтөт</translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">Түс</translation>
 <translation id="5457599981699367932">Конок катары серептөө</translation>
 <translation id="54609108002486618">Башкарылуучу</translation>
+<translation id="5461608756903394951"><ph name="LANGUAGE_NAME" /> транскрипциянын үлгүсү жүктөп алынууда</translation>
 <translation id="5470776029649730099">таар</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} аракет калды}other{{0} аракет калды}}</translation>
 <translation id="5488280942828718790">маджента</translation>
@@ -1191,6 +1196,7 @@
 <translation id="6595046262780525922">Транскрипция күйгүзүлүп, анын үлгүсү жүктөлүп алынсынбы?</translation>
 <translation id="6596816719288285829">IP дарек</translation>
 <translation id="6599673642868607614">Пикириңиз үчүн рахмат. Пикириңиз Chromebook'тагы тажрыйбаңызды жакшыртууга жардам берип, жамаатыбыз тарабынан текшерилет. Кабарлардын көп болгонуна байланыштуу жооп жаза албайбыз.</translation>
+<translation id="6608043585557830684">Транскрипция өчүк. Аны параметрлерден же <ph name="THREE_DOTS_MENU_ICON" /> менюcунан күйгүзүңүз.</translation>
 <translation id="660846213831377756">Чычкандын баскычтары</translation>
 <translation id="6618744767048954150">Иштеп жатат</translation>
 <translation id="6620487321149975369">Басып чыгаруу тапшырмаларын кол менен өчүрмөйүнчө, алар таржымалда сакталат</translation>
@@ -1279,6 +1285,7 @@
 <translation id="6975620886940770104">Жылтылдаган <ph name="GLOWSCAPES_FEATURE" /> менен <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">коалалар</translation>
 <translation id="6977381486153291903">Орнотулган программаны оңдоо</translation>
+<translation id="6978396562261420054">Түзүлгөн сүрөт</translation>
 <translation id="6981982820502123353">Атайын мүмкүн-төр</translation>
 <translation id="6982462588253070448">кум дөбөлөр</translation>
 <translation id="7005833343836210400">Түзмөк офлайн режиминде</translation>
@@ -1620,6 +1627,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чайкана</translation>
 <translation id="8538236298648811558">Google сунуштаган ЖИ технологиялары</translation>
+<translation id="8543574988889671960">Өтмөктү кайрадан жүктөө</translation>
 <translation id="8550364285433943656">Баскычтоп баскычтары менен ойноо үчүн оюн аракеттерине башкаруу элементтерин коюңуз</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Тармакка туташуу үчүн байланыш оператору бул параметрди талап кылышы мүмкүн. Кеңири маалымат үчүн байланыш операторуңузга кайрылыңыз</translation>

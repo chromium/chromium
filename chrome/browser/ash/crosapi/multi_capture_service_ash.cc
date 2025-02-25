@@ -33,7 +33,7 @@ void MultiCaptureServiceAsh::MultiCaptureStarted(const std::string& label,
   // TODO(crbug.com/40249909): Origin cannot be used in a crosapi interface as
   // it is not stable. Currently, only the host of the origin is used. Pass the
   // complete origin when the `Origin` interface becomes stable.
-  GetMultiCaptureClient()->MultiCaptureStarted(
+  ash::Shell::Get()->multi_capture_service()->NotifyMultiCaptureStarted(
       label, url::Origin::CreateFromNormalizedTuple(/*scheme=*/"https", host,
                                                     /*port=*/443));
 }
@@ -42,19 +42,12 @@ void MultiCaptureServiceAsh::MultiCaptureStartedFromApp(
     const std::string& label,
     const std::string& app_id,
     const std::string& app_name) {
-  GetMultiCaptureClient()->MultiCaptureStartedFromApp(label, app_id, app_name);
+  ash::Shell::Get()->multi_capture_service()->NotifyMultiCaptureStartedFromApp(
+      label, app_id, app_name);
 }
 
 void MultiCaptureServiceAsh::MultiCaptureStopped(const std::string& label) {
-  GetMultiCaptureClient()->MultiCaptureStopped(label);
-}
-
-ash::MultiCaptureServiceClient*
-MultiCaptureServiceAsh::GetMultiCaptureClient() {
-  auto* multi_capture_client =
-      ash::Shell::Get()->multi_capture_service_client();
-  CHECK(multi_capture_client);
-  return multi_capture_client;
+  ash::Shell::Get()->multi_capture_service()->NotifyMultiCaptureStopped(label);
 }
 
 void MultiCaptureServiceAsh::IsMultiCaptureAllowed(

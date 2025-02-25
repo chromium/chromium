@@ -192,6 +192,12 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceInternal(
     viz::CopyOutputRequest::CopyOutputRequestCallback callback) {
   auto request = std::make_unique<viz::CopyOutputRequest>(format, destination,
                                                           std::move(callback));
+  // Run result callback on the current thread in case `callback` needs to run
+  // on the current thread. See http://crbug.com/1431363. When we bound a
+  // `ui::Compositor::ScopedKeepSurfaceAliveCallback` it must also be ran on the
+  // current thread.
+  request->set_result_task_runner(
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   // It is possible for us to not have a valid surface to copy from. Such as
   // if a navigation fails to complete. In such a case do not attempt to request
@@ -223,12 +229,6 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceInternal(
         gfx::Vector2d(area.width(), area.height()),
         gfx::Vector2d(output_size.width(), output_size.height()));
   }
-
-  // Run result callback on the current thread in case `callback` needs to run
-  // on the current thread. See http://crbug.com/1431363.
-  request->set_result_task_runner(
-      base::SingleThreadTaskRunner::GetCurrentDefault());
-
   CHECK(host_frame_sink_manager_);
   host_frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request));
 }

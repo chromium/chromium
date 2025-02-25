@@ -706,6 +706,7 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
             platform_settings.physical_frame_size->width() / ratio.value());
         settings->setLogicalHeight(
             platform_settings.physical_frame_size->height() / ratio.value());
+        settings->setPixelRatio(ratio.value());
       }
     }
   }

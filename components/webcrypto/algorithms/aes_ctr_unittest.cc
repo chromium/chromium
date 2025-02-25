@@ -49,7 +49,7 @@ const char k128BitTestKey[] = "7691BE035E5020A8AC6E618529F9A0DC";
 const char k256BitTestKey[] =
     "F6D66D6BD52D59BB0796365879EFF886C66DD51A5B6A99744B50590C87A23884";
 
-const auto kAesCtrKnownAnswers = std::to_array<AesCtrKnownAnswer>({
+constexpr auto kAesCtrKnownAnswers = std::to_array<AesCtrKnownAnswer>({
     // RFC 3686 test vector #3:
     {k128BitTestKey,
      "000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F20212223",

@@ -176,6 +176,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1546492247443594934">2. plocha</translation>
 <translation id="1546930421365146760">Požiadajte správcu, aby toto zariadenie nastavil v správcovskej konzole Google</translation>
 <translation id="1549512626801247439">správa ukladacieho priestoru</translation>
+<translation id="1549721333775633305">Zobrazte si nastavenia funkcie Quick Share. Funkcia Quick Share je vypnutá.</translation>
 <translation id="1550406609415860283">Dostupné zariadenia</translation>
 <translation id="1550523713251050646">Kliknutím zobrazíte ďalšie možnosti</translation>
 <translation id="1555130319947370107">Modrá</translation>
@@ -1474,6 +1475,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5856638668464565213">Sieť <ph name="NETWORK_NAME" /> nie je aktivovaná.</translation>
 <translation id="5860033963881614850">Vypnuté</translation>
 <translation id="5860491529813859533">Zapnúť</translation>
+<translation id="5864691701242730005">Zobrazte si nastavenia funkcie Quick Share. Bola vybraná viditeľnosť <ph name="VISIBILITY" />.</translation>
 <translation id="5864748620896638071">Batéria: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5867217927013474703">Zhromažďujú sa informácie o sieti</translation>
 <translation id="5867606971598166637">Správca systému monitoruje vaše obrazovky</translation>
@@ -2262,6 +2264,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="851660987304951246">Rýchlo si zhŕňajte obsah alebo sa pýtajte pomocou asistenta pri čítaní</translation>
 <translation id="8517041960877371778">Vaše zariadenie <ph name="DEVICE_TYPE" /> sa nemusí nabíjať, keď je zapnuté.</translation>
 <translation id="8535393432370007982">Vrátiť späť poradie zoradenia podľa farby</translation>
+<translation id="8536886494750559755">Zobrazte si nastavenia funkcie Quick Share. Zariadenie je viditeľné pre všetkých na <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Text bol skopírovaný do schránky</translation>
 <translation id="8541078764854166027">Centr. kamery</translation>
 <translation id="8542053257095774575">Žiadne uložené plochy ani šablóny</translation>

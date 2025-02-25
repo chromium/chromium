@@ -83,7 +83,7 @@ using bookmarks::BookmarkNode;
 - (MDCSnackbarMessage*)addBookmarkWithTitle:(NSString*)title
                                         URL:(const GURL&)URL
                                  editAction:(void (^)())editAction {
-  RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
+  RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts, _prefs);
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
 
   const BookmarkNode* defaultFolder =
@@ -167,7 +167,8 @@ using bookmarks::BookmarkNode;
 - (MDCSnackbarMessage*)addBookmarks:(NSArray<URLWithTitle*>*)URLs
                            toFolder:(const BookmarkNode*)folder {
   for (URLWithTitle* urlWithTitle in URLs) {
-    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
+    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts,
+                                _prefs);
     base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
     _bookmarkModel->AddNewURL(folder, folder->children().size(),
                               base::SysNSStringToUTF16(urlWithTitle.title),

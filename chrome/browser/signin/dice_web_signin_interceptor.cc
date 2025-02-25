@@ -788,6 +788,17 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
     return false;
   }
 
+  if (!intercepted_account_info.IsManaged()) {
+    return false;
+  }
+
+  // If the user has declined profile creation twice, stop asking them.
+  if (HasUserDeclinedProfileCreation(intercepted_account_info.email)) {
+    return false;
+  }
+
+  // Enterprise dialog not shown if profile separation is enforced (another
+  // dialog will be shown) or disabled.
   if (state_->intercepted_account_profile_separation_policies_
           .value_or(policy::ProfileSeparationPolicies())
           .profile_separation_settings()
@@ -796,19 +807,15 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
     return false;
   }
 
-  // Check if the intercepted account is managed and has not yet accepted
-  // management.
-  if (!intercepted_account_info.IsManaged() ||
-      enterprise_util::UserAcceptedAccountManagement(profile_)) {
+  // Primary account re-auth should not see any dialogs.
+  if (IsPrimaryAccountInterception(intercepted_account_info.account_id,
+                                   identity_manager_)) {
     return false;
   }
 
-  if (IsPrimaryAccountInterception(intercepted_account_info.account_id,
-                                   identity_manager_)) {
-    return true;
-  }
-
   // If there is no primary account, propose to the user to sign into Chrome.
+  // Here account who do not have management enabled might see this, but it is
+  // fine, because they were not even signed in the browser.
   return !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
@@ -988,7 +995,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
       RecordSigninInterceptionHeuristicOutcome(
           SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
     }
-  } else if (ShouldShowEnterpriseDialog(info)) {
+  } else if (!switch_to_entry && ShouldShowEnterpriseDialog(info)) {
     interception_type = WebSigninInterceptor::SigninInterceptionType::
         kEnterpriseAcceptManagement;
     show_link_data_option = true;

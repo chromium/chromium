@@ -585,7 +585,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1401216725754314428">Meer informatie over gerelateerde sites in een nieuw tabblad</translation>
 <translation id="1402426911829176748">Verbinding maken met je apparaat</translation>
 <translation id="1403222014593521787">Kan geen verbinding maken met de proxy</translation>
-<translation id="1405336513195181336">Dit omvat bookmarks, extensies en je browsegeschiedenis voor sites.</translation>
 <translation id="1405779994569073824">Gecrasht</translation>
 <translation id="1406500794671479665">Verifiëren...</translation>
 <translation id="1407069428457324124">Donker thema</translation>
@@ -838,6 +837,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1575741822946219011">Talen en invoermethoden</translation>
 <translation id="1576594961618857597">Standaard witte avatar</translation>
 <translation id="1576729678809834061">Dit zoekresultaat melden</translation>
+<translation id="1578110287710452646">Handgreep voor wijziging van het formaat voor weergave naast elkaar</translation>
 <translation id="1578488449637163638">Donker</translation>
 <translation id="1578558981922970608">Nu sluiten</translation>
 <translation id="157931050206866263">Meer informatie over malwarescans</translation>
@@ -1513,7 +1513,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2040894699575719559">Locatie geblokkeerd</translation>
 <translation id="2041246176170574368">Beveiligingsupdates worden binnenkort beëindigd. Bespaar $ 50 of meer op een nieuwe Chromebook.</translation>
 <translation id="2042279886444479655">Actieve profielen</translation>
-<translation id="2042427131767688936">Je organisatie kan informatie nagaan over het besturingssysteem, de browser, de instellingen en de geïnstalleerde software op het apparaat om te zorgen dat dit apparaat op een beter beveiligde manier kan worden gebruikt.</translation>
 <translation id="2044014337866019681">Zorg dat je <ph name="ACCOUNT" /> verifieert om de sessie te ontgrendelen.</translation>
 <translation id="2044750031738659219">{0,plural, =1{Gastvenster sluiten}other{Gastvenster sluiten (# vensters)}}</translation>
 <translation id="204497730941176055">Sjabloonnaam van Microsoft-certificaat</translation>
@@ -3649,7 +3648,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3566211766752891194">Geheugengebruik voor tabblad tonen</translation>
 <translation id="3566325075220776093">Van dit apparaat</translation>
 <translation id="3566721612727112615">Geen sites toegevoegd</translation>
-<translation id="3566788242120166275">Je bestaande browsegegevens blijven in het bestaande profiel staan. Dit nieuwe profiel bevat geen eerdere browsegegevens.</translation>
 <translation id="3567168891086460374">Op een andere manier opslaan</translation>
 <translation id="3567284462585300767">Als je bestanden wilt krijgen en accepteren van mensen bij jou in de buurt, moet je zichtbaar zijn</translation>
 <translation id="356738834800832239">Je wachtwoord is opgeslagen</translation>
@@ -3816,7 +3814,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3685598397738512288">USB-voorkeuren voor Linux</translation>
 <translation id="3687598459967813435">Meldingen van <ph name="WEBSITE" /> altijd toestaan</translation>
 <translation id="368789413795732264">Er is een fout opgetreden bij het genereren van het bestand: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3687957587012862163">Nee, deze verplaatsen naar dit nieuwe profiel</translation>
 <translation id="3688507211863392146">Schrijven naar bestanden en mappen die je opent in de app</translation>
 <translation id="3688526734140524629">Kanaal wijzigen</translation>
 <translation id="3688578402379768763">Bijgewerkt</translation>
@@ -3875,7 +3872,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="37143699183660101">Cursorstabiliteit</translation>
 <translation id="3714610938239537183">Stap 2 van 4: Selecteer de diagnostische gegevens die je wilt exporteren</translation>
 <translation id="3716065403310915079"><ph name="VM_NAME" />-installatieprogramma</translation>
-<translation id="3717256685838828428">Dit profiel wordt beheerd door je organisatie, die bepaalde soorten informatie kan bekijken, waaronder</translation>
 <translation id="3719245268140483218">Apparaatgebeurtenis</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> ingevuld.</translation>
 <translation id="3719826155360621982">Homepage</translation>
@@ -4907,7 +4903,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4426857487270413362">Kan installatiebestanden niet downloaden. Check je internetverbinding en of je voldoende vrije schijfruimte hebt en probeer het nogmaals. De foutcode is <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798"><ph name="COUNT" /> keer gedetecteerd</translation>
 <translation id="4427365070557649936">Bevestigingscode verifiëren...</translation>
-<translation id="4428579202668721841">Bestaande browsegegevens gescheiden houden van je werkprofiel?</translation>
 <translation id="4429163740524851942">Indeling van fysiek toetsenbord</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="443031431654216610">Gebruik alleen cijfers</translation>
@@ -6073,7 +6068,6 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5276357196618041410">Kan de configuratie niet opslaan zonder eerst in te loggen</translation>
 <translation id="5277127016695466621">Zijvenster bekijken</translation>
 <translation id="5278823018825269962">Status-ID</translation>
-<translation id="5279214046729249716">Ja, deze gescheiden houden</translation>
 <translation id="5279600392753459966">Alle blokkeren</translation>
 <translation id="5280064835262749532">Update je inloggegevens voor <ph name="SHARE_PATH" /></translation>
 <translation id="5280426389926346830">Snelkoppeling maken?</translation>
@@ -6398,7 +6392,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5503982651688210506">Blijven toestaan dat <ph name="HOST" /> de camera gebruikt en beweegt en de microfoon gebruikt</translation>
 <translation id="5505307013568720083">Inkt is op</translation>
 <translation id="5507756662695126555">Onweerlegbaarheid</translation>
-<translation id="5508864312047847614">Bestaande browsegegevens gescheiden houden van je schoolprofiel?</translation>
 <translation id="5509693895992845810">Opslaan &amp;als...</translation>
 <translation id="5509914365760201064">Uitgever: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Afbeeldingsbeschrijvingen ophalen van Google</translation>
@@ -6849,7 +6842,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5854066326260337683">LBS staat op dit moment uit. Je kunt LBS aanzetten door het beleid <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" /> in te stellen.</translation>
 <translation id="5854912040170951372">Pizzapunt</translation>
 <translation id="5855267860608268405">Bekende wifi-netwerken</translation>
-<translation id="5855375823365231964">Over dit profiel</translation>
 <translation id="5855643921295613558">0,6 seconden</translation>
 <translation id="5856721540245522153">Foutopsporingsfuncties aanzetten</translation>
 <translation id="5857090052475505287">Nieuwe map</translation>
@@ -7211,7 +7203,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6113942107547980621">Als je Smart Lock wilt gebruiken, schakel je over naar het primaire gebruikersprofiel op je telefoon</translation>
 <translation id="6116921718742659598">Taal- en invoerinstellingen wijzigen</translation>
 <translation id="6119008366402292080">Geen printer beschikbaar</translation>
-<translation id="6119068870709745878">Dit profiel wordt beheerd door <ph name="PROFILE_MANAGER" />, die bepaalde informatie kan bekijken, waaronder</translation>
 <translation id="6119927814891883061">Naam van apparaat wijzigen in <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Kleurcorrectie</translation>
 <translation id="6121773125605585883">Wachtwoord met gebruikersnaam <ph name="USERNAME" /> voor <ph name="WEBSITE" /> bekijken</translation>
@@ -7420,6 +7411,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6264060420924719834">Deze app heeft webcontent van andere sites</translation>
 <translation id="6264365405983206840">&amp;Alles selecteren</translation>
 <translation id="6264376385120300461">Toch downloaden</translation>
+<translation id="6264485186158353794">Terug naar beveiligde website</translation>
 <translation id="6264520534872750757">Het apparaat blijven gebruiken</translation>
 <translation id="6264636978858465832">Wachtwoordmanager heeft meer toegang nodig</translation>
 <translation id="626495329434552273">Toestemming om je toetsenbordinvoer te overschrijven</translation>
@@ -7635,7 +7627,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6434104957329207050">Snelheid van puntscannen</translation>
 <translation id="6434309073475700221">Verwijderen</translation>
 <translation id="6434325376267409267">Je apparaat moet worden geüpdatet voordat je <ph name="APP_NAME" /> kunt gebruiken.</translation>
-<translation id="6434690603850475457">Ja, deze gescheiden houden (aanbevolen)</translation>
 <translation id="6434755719322447931">Chaotisch</translation>
 <translation id="6435339218366409950">Kies de taal waarnaar je de ondertiteling wilt vertalen</translation>
 <translation id="6436164536244065364">Bekijken in Web Store</translation>

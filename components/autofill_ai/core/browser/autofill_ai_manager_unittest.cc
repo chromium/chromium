@@ -186,46 +186,6 @@ class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(AutofillAiManagerTest, RejectedPromptStrikeCounting) {
-  autofill::FormStructure form1{autofill::FormData()};
-  form1.set_form_signature(autofill::FormSignature(1));
-
-  autofill::FormStructure form2{autofill::FormData()};
-  form1.set_form_signature(autofill::FormSignature(2));
-
-  // Neither of the forms should be blocked in the beginning.
-  EXPECT_FALSE(manager().IsFormBlockedForImport(form1));
-  EXPECT_FALSE(manager().IsFormBlockedForImport(form2));
-
-  // After up to two strikes the form should not blocked.
-  manager().AddStrikeForImportFromForm(form1);
-  EXPECT_FALSE(manager().IsFormBlockedForImport(form1));
-  EXPECT_FALSE(manager().IsFormBlockedForImport(form2));
-
-  manager().AddStrikeForImportFromForm(form1);
-  EXPECT_FALSE(manager().IsFormBlockedForImport(form1));
-  EXPECT_FALSE(manager().IsFormBlockedForImport(form2));
-
-  // After the third strike form1 should become blocked but form2 remains
-  // unblocked.
-  manager().AddStrikeForImportFromForm(form1);
-  EXPECT_TRUE(manager().IsFormBlockedForImport(form1));
-  EXPECT_FALSE(manager().IsFormBlockedForImport(form2));
-
-  // Now the second form received three strikes and gets eventually blocked.
-  manager().AddStrikeForImportFromForm(form2);
-  EXPECT_FALSE(manager().IsFormBlockedForImport(form2));
-  manager().AddStrikeForImportFromForm(form2);
-  EXPECT_FALSE(manager().IsFormBlockedForImport(form2));
-  manager().AddStrikeForImportFromForm(form2);
-  EXPECT_TRUE(manager().IsFormBlockedForImport(form2));
-
-  // After resetting form2, form1 should remain blocked.
-  manager().RemoveStrikesForImportFromForm(form2);
-  EXPECT_TRUE(manager().IsFormBlockedForImport(form1));
-  EXPECT_FALSE(manager().IsFormBlockedForImport(form2));
-}
-
 // Tests that the user receives a filling suggestion when interacting with
 // a field that has AutofillAi predictions.
 TEST_F(AutofillAiManagerTest,

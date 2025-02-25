@@ -6521,6 +6521,9 @@ static_library("browser") {
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
       "//components/enterprise/client_certificates/core",
+      "//components/enterprise/client_certificates/core:cloud_management_delegate",
+      "//components/enterprise/client_certificates/core:dm_server_client",
+      "//components/enterprise/client_certificates/core:management_delegate",
       "//components/enterprise/core",
     ]
   }

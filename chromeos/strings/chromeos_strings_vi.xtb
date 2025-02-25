@@ -473,6 +473,7 @@
 <translation id="3226657629376379887">Trình đơn thao tác của bố cục</translation>
 <translation id="3227186760713762082">Lấy giá trị <ph name="CATEGORY_TEXT" /> chia cho <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Các lệnh in quá 1 ngày sẽ bị xóa</translation>
+<translation id="3248791727258378769">Không có bản chép lời nào sẽ được tạo</translation>
 <translation id="324961752321393509">Quản trị viên của bạn không cho phép đóng ứng dụng này</translation>
 <translation id="3263941347294171263">Hãy rút <ph name="DEVICE_NAME" /> ra rồi cắm lại để tiếp tục quá trình cập nhật</translation>
 <translation id="3268178239013324452">Không thành công – Cửa máy in đang mở</translation>
@@ -672,6 +673,7 @@
 <translation id="420283545744377356">Tắt trình bảo vệ màn hình</translation>
 <translation id="4210636113897977670">Lưu và thoát</translation>
 <translation id="4210659479607886331">sông băng</translation>
+<translation id="4212169537710712814">Đã tải xong mô hình chép lời <ph name="LANGUAGE_NAME" /> xuống</translation>
 <translation id="42126664696688958">Xuất</translation>
 <translation id="4213104098953699324">Bàn phím USB</translation>
 <translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
@@ -942,6 +944,7 @@
 <translation id="5431318178759467895">Màu</translation>
 <translation id="5457599981699367932">Duyệt với tư cách Khách</translation>
 <translation id="54609108002486618">Được quản lý</translation>
+<translation id="5461608756903394951">Đang tải mô hình chép lời <ph name="LANGUAGE_NAME" /> xuống</translation>
 <translation id="5470776029649730099">vải thô</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Bạn còn {0} lần thử}other{Bạn còn {0} lần thử}}</translation>
 <translation id="5488280942828718790">hồng cánh sen</translation>
@@ -1193,6 +1196,7 @@
 <translation id="6595046262780525922">Bật tính năng chép lời và tải mô hình chép lời xuống?</translation>
 <translation id="6596816719288285829">Địa chỉ IP</translation>
 <translation id="6599673642868607614">Cảm ơn ý kiến phản hồi của bạn. Ý kiến phản hồi của bạn giúp chúng tôi cải thiện trải nghiệm sử dụng Chromebook và sẽ được đội ngũ của chúng tôi xem xét. Do nhận được số lượng lớn báo cáo nên chúng tôi sẽ không thể gửi thư trả lời cho bạn.</translation>
+<translation id="6608043585557830684">Tính năng chép lời đang tắt. Hãy bật tính năng này trong phần Cài đặt hoặc trong trình đơn <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Phím chuột</translation>
 <translation id="6618744767048954150">Đang chạy</translation>
 <translation id="6620487321149975369">Lệnh in sẽ xuất hiện trong lịch sử in trừ phi bạn tự xóa</translation>

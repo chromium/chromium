@@ -42,6 +42,10 @@ const char kExceptionRequestTooLarge[] = "The prompt request is too large.";
 const char kExceptionMessageInvalidTemperatureAndTopKFormat[] =
     "Initializing a new session must either specify both topK and temperature, "
     "or neither of them.";
+const char kExceptionMessageInvalidTopK[] =
+    "The topK value provided is invalid.";
+const char kExceptionMessageInvalidTemperature[] =
+    "The temperature value provided is invalid.";
 const char kExceptionMessageUnableToCreateSession[] =
     "The session cannot be created.";
 const char kExceptionMessageInitialPromptTooLarge[] =

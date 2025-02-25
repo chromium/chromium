@@ -849,6 +849,11 @@ using segmentation_platform::TipIdentifier;
   }
 }
 
+- (void)logTopModuleImpressionForType:(ContentSuggestionsModuleType)moduleType {
+  LogTopModuleImpressionForType(moduleType,
+                                self.browser->GetProfile()->GetPrefs());
+}
+
 #pragma mark - MagicStackModuleContainerDelegate
 
 - (void)seeMoreWasTappedForModuleType:(ContentSuggestionsModuleType)type {

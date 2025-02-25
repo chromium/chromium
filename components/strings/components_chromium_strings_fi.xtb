@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">Chromium on estänyt tämän sivun</translation>
 <translation id="48558539577516920">Myönnä Chromiumille verkon käyttöoikeus palomuurin tai virustorjuntaohjelmiston
           asetuksissa</translation>
+<translation id="4949828774841497663">Siirry kohtaan Sovellukset &gt; Järjestelmäasetukset &gt; Verkko, valitse
+          aktiivinen verkko, klikkaa Tiedot…-painiketta ja poista valinta kaikista mahdollisesti
+          valituista välityspalvelimista.</translation>
 <translation id="580822234363523061">Avaa
           Chromium-valikko &gt;
           <ph name="SETTINGS_TITLE" />

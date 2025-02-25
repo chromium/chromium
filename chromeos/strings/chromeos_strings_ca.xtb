@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">Espereu...</translation>
 <translation id="2740531572673183784">D'acord</translation>
 <translation id="2744221223678373668">Compartides</translation>
+<translation id="2749164457515831917">Els suggeriments s'han barrejat</translation>
 <translation id="2751739896257479635">Autenticació de fase 2 d'EAP</translation>
 <translation id="2754757901767760034">llum</translation>
 <translation id="2780756493585863768">Fons recents amb la tecnologia de la IA de Google</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">Menú d'accions de disseny</translation>
 <translation id="3227186760713762082">Divideix el valor de <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
+<translation id="3248791727258378769">No es crearà cap transcripció</translation>
 <translation id="324961752321393509">L'administrador no permet tancar aquesta aplicació</translation>
 <translation id="3263941347294171263">Desendolla i torna a endollar el <ph name="DEVICE_NAME" /> per continuar amb el procés d'actualització</translation>
 <translation id="3268178239013324452">Error: porta oberta</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">Selecciona una unitat de temperatura</translation>
 <translation id="3661106764436337772">Escriu més ràpidament i amb més confiança</translation>
 <translation id="3662461537616691585">bordeus i granat</translation>
+<translation id="3664755900672940272">Les indicacions de mostra s'han barrejat</translation>
 <translation id="3668449597372804501">Fons de pantalla Moviment de núvols</translation>
 <translation id="3668570675727296296">Configuració d'idioma</translation>
 <translation id="3675132884790542448">porcs</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">Desactiva l'estalvi de pantalla</translation>
 <translation id="4210636113897977670">Desa i surt</translation>
 <translation id="4210659479607886331">riu glaçat</translation>
+<translation id="4212169537710712814">S'ha completat la baixada del model de transcripció per a <ph name="LANGUAGE_NAME" /></translation>
 <translation id="42126664696688958">Exporta</translation>
 <translation id="4213104098953699324">Teclat USB</translation>
 <translation id="4227825898293920515">La contrasenya caduca d'aquí a <ph name="TIME" /></translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">Color</translation>
 <translation id="5457599981699367932">Navega com a convidat</translation>
 <translation id="54609108002486618">Gestionat</translation>
+<translation id="5461608756903394951">S'està baixant el model de transcripció de <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5470776029649730099">xarpellera</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intent}other{Queden {0} intents}}</translation>
 <translation id="5488280942828718790">magenta</translation>
@@ -1191,6 +1196,7 @@
 <translation id="6595046262780525922">Vols activar la transcripció i baixar el model de transcripció?</translation>
 <translation id="6596816719288285829">Adreça IP</translation>
 <translation id="6599673642868607614">Gràcies per la teva opinió. Els suggeriments ens ajuden a millorar l'experiència de Chromebook i el nostre equip els revisarà. Com que hi ha un gran nombre d'informes, no podrem respondre.</translation>
+<translation id="6608043585557830684">La transcripció està desactivada. Activa-la a Configuració o al menú <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Tecles del ratolí</translation>
 <translation id="6618744767048954150">Comprovació en curs</translation>
 <translation id="6620487321149975369">Les tasques d'impressió es mostraran a l'historial tret que se suprimeixin manualment</translation>
@@ -1279,6 +1285,7 @@
 <translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" /> amb <ph name="GLOWSCAPES_FEATURE" /> brillant</translation>
 <translation id="6975981640379148271">coales</translation>
 <translation id="6977381486153291903">Revisió de microprogramari</translation>
+<translation id="6978396562261420054">Imatge generada</translation>
 <translation id="6981982820502123353">Accessibilitat</translation>
 <translation id="6982462588253070448">dunes de sorra</translation>
 <translation id="7005833343836210400">El dispositiu no té connexió</translation>
@@ -1426,6 +1433,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7618216277886673749">Selecciona <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7620771111601174153">Més informació al Centre d'ajuda</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">Hora del darrer restabliment</translation>
 <translation id="7633068090678117093">Imatge de fons</translation>
 <translation id="763873111564339966">anyil</translation>

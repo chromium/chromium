@@ -39,8 +39,7 @@ TEST_F(ForDebuggingOnlyReportUtilTest, IsInDebugReportLockout) {
 TEST_F(ForDebuggingOnlyReportUtilTest, EnableFilteringInFutureTime) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
-       {blink::features::kFledgeSampleDebugReports,
+      {{blink::features::kFledgeSampleDebugReports,
         {{"fledge_enable_filtering_debug_report_starting_from",
           base::StrCat({base::NumberToString(base::Time::Max()
                                                  .ToDeltaSinceWindowsEpoch()

@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">Γραφείο 2</translation>
 <translation id="1546930421365146760">Ζητήστε από τον διαχειριστή σας να ρυθμίσει αυτήν τη συσκευή στην Κονσόλα διαχειριστή Google</translation>
 <translation id="1549512626801247439">διαχείριση αποθηκευτικού χώρου</translation>
+<translation id="1549721333775633305">Εμφάνιση ρυθμίσεων Quick Share. Το Quick Share είναι απενεργοποιημένο</translation>
 <translation id="1550406609415860283">Διαθέσιμες συσκευές</translation>
 <translation id="1550523713251050646">Κάντε κλικ για περισσότερες επιλογές</translation>
 <translation id="1555130319947370107">Μπλε</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213">Το δίκτυο <ph name="NETWORK_NAME" /> δεν είναι ενεργό.</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
 <translation id="5860491529813859533">Ενεργοποίηση</translation>
+<translation id="5864691701242730005">Εμφάνιση ρυθμίσεων Quick Share. Επιλέχθηκε ορατότητα για τη <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071">Μπαταρία <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Συλλογή πληροφοριών δικτύου</translation>
 <translation id="5867606971598166637">Ο διαχειριστής συστήματος παρακολουθεί τις οθόνες σας</translation>
@@ -2262,6 +2264,7 @@
 <translation id="851660987304951246">Χρησιμοποιήστε τη λειτουργία Βοήθεια με την ανάγνωση για να συνοψίσετε γρήγορα το περιεχόμενο ή να κάνετε ερωτήσεις</translation>
 <translation id="8517041960877371778">Δεν είναι δυνατή η φόρτιση της συσκευής <ph name="DEVICE_TYPE" /> ενώ είναι ενεργοποιημένη.</translation>
 <translation id="8535393432370007982">Αναίρεση σειράς ταξινόμησης κατά χρώμα</translation>
+<translation id="8536886494750559755">Εμφάνιση ρυθμίσεων Quick Share. Ορατή σε όλους για <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Το κείμενο αντιγράφηκε στο Πρόχειρο</translation>
 <translation id="8541078764854166027">Καδράρισμα</translation>
 <translation id="8542053257095774575">Δεν υπάρχουν αποθηκευμένα γραφεία ή πρότυπα.</translation>

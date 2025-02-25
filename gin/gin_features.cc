@@ -142,10 +142,6 @@ BASE_FEATURE(kV8ScavengerHigherCapacity,
 const base::FeatureParam<int> kV8ScavengerMaxCapacity{
     &kV8ScavengerHigherCapacity, "V8ScavengerMaxCapacity", 16};
 
-BASE_FEATURE(kV8SeparateGCPhases,
-             ("V8SeparateGCPhases"),
-             kFeatureDefaultStateControlledByV8);
-
 // Enables Sparkplug compiler. Note that this only sets the V8 flag when
 // manually overridden; otherwise it defers to whatever the V8 default is.
 BASE_FEATURE(kV8Sparkplug, ("V8Sparkplug"), kFeatureDefaultStateControlledByV8);

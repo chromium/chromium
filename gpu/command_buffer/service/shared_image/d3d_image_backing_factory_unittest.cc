@@ -19,6 +19,7 @@
 #include <utility>
 
 #include "base/bits.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -1984,8 +1985,9 @@ void D3DImageBackingFactoryTest::RunCreateFromSharedMemoryMultiplanarTest(
     ASSERT_TRUE(overlay_image);
     EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kShMemPixmap);
 
-    CheckNV12(overlay_image->shm_video_pixmap(), overlay_image->pixmap_stride(),
-              size, kYClearValue, kUClearValue, kVClearValue);
+    CheckNV12(overlay_image->shm_video_pixmap().data(),
+              overlay_image->pixmap_stride(), size, kYClearValue, kUClearValue,
+              kVClearValue);
   }
 }
 

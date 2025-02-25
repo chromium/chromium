@@ -134,7 +134,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 - (void)populateItems:(NSArray<MagicStackModule*>*)items {
   if ([items count] > 0) {
     MagicStackModule* card = items[0];
-    LogTopModuleImpressionForType(card.type);
+    [self.audience logTopModuleImpressionForType:card.type];
     if ([self isCardEphemeral:card]) {
       _hasSeenEphemeralCard = YES;
       [self.audience logEphemeralCardVisibility:card.type];
@@ -150,7 +150,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 
 - (void)insertItem:(MagicStackModule*)item atIndex:(NSUInteger)index {
   if (index == 0) {
-    LogTopModuleImpressionForType(item.type);
+    [self.audience logTopModuleImpressionForType:item.type];
     if ([self isCardEphemeral:item]) {
       _hasSeenEphemeralCard = YES;
       [self.audience logEphemeralCardVisibility:item.type];

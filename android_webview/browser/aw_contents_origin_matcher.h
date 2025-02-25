@@ -26,7 +26,7 @@ class OriginMatcher;
 
 namespace android_webview {
 
-// Wrapper for a |js_incection::OriginMatcher| that allows locked updates
+// Wrapper for a |js_injection::OriginMatcher| that allows locked updates
 // to the match rules.
 //
 // Lifetime: WebView

@@ -32,7 +32,7 @@ struct AesKwKnownAnswer {
   const char* ciphertext;
 };
 
-const auto kAesKwKnownAnswers = std::to_array<AesKwKnownAnswer>({
+constexpr auto kAesKwKnownAnswers = std::to_array<AesKwKnownAnswer>({
     // AES-KW test vectors from http://www.ietf.org/rfc/rfc3394.txt
     // 4.1 Wrap 128 bits of Key Data with a 128-bit KEK
     {"000102030405060708090A0B0C0D0E0F", "00112233445566778899AABBCCDDEEFF",

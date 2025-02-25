@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">காத்திருக்கவும்...</translation>
 <translation id="2740531572673183784">சரி</translation>
 <translation id="2744221223678373668">பகிர்ந்தது</translation>
+<translation id="2749164457515831917">பரிந்துரைகள் கலைத்துப் போடப்பட்டன</translation>
 <translation id="2751739896257479635">EAP 2ஆம் கட்ட அங்கீகரிப்பு</translation>
 <translation id="2754757901767760034">விளக்கு</translation>
 <translation id="2780756493585863768">சமீபத்தில் AI உருவாக்கிய பின்புலங்கள்</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">தளவமைப்புகளுக்கான செயல்பாட்டு மெனு</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> மதிப்பை <ph name="CONVERSION_RATE" /> ஆல் வகுக்கவும்</translation>
 <translation id="3246869037381808805">1 நாளுக்கும் முன்னதாக உள்ள பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
+<translation id="3248791727258378769">டிரான்ஸ்கிரிப்ட் உருவாக்கப்படாது</translation>
 <translation id="324961752321393509">இந்த ஆப்ஸை மூடுவதை உங்கள் நிர்வாகி அனுமதிக்கவில்லை</translation>
 <translation id="3263941347294171263">புதுப்பிப்பைத் தொடர <ph name="DEVICE_NAME" /> ஐ அகற்றிவிட்டு மீண்டும் செருகவும்</translation>
 <translation id="3268178239013324452">பிரிண்டரின் மூடி திறந்துள்ளதால் அச்சிட முடியவில்லை</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">வெப்பநிலை அலகைத் தேர்ந்தெடுக்கும்</translation>
 <translation id="3661106764436337772">விரைவாகவும் கூடுதல் நம்பிக்கையுடனும் எழுதுங்கள்</translation>
 <translation id="3662461537616691585">பர்கண்டி மற்றும் கருஞ்சிவப்பு</translation>
+<translation id="3664755900672940272">சாம்பிள் ப்ராம்ப்ட்டுகள் கலைத்துப் போடப்பட்டன</translation>
 <translation id="3668449597372804501">கிளவுடு ஃப்ளோ வால்பேப்பர்</translation>
 <translation id="3668570675727296296">மொழி அமைப்புகள்</translation>
 <translation id="3675132884790542448">பன்றிகள்</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">ஸ்கிரீன் சேவரை முடக்குதல்</translation>
 <translation id="4210636113897977670">சேமித்து வெளியேறு</translation>
 <translation id="4210659479607886331">பனியாறு</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> டிரான்ஸ்கிரிப்ஷன் மாடல் பதிவிறக்கப்பட்டது</translation>
 <translation id="42126664696688958">ஏற்றுமதி செய்</translation>
 <translation id="4213104098953699324">USB கீபோர்டு</translation>
 <translation id="4227825898293920515">கடவுச்சொல் காலாவதியாக இன்னும் <ph name="TIME" /></translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">வண்ணம்</translation>
 <translation id="5457599981699367932">கெஸ்டாக உலாவுங்கள்</translation>
 <translation id="54609108002486618">நிர்வகிக்கப்பட்டது</translation>
+<translation id="5461608756903394951"><ph name="LANGUAGE_NAME" /> டிரான்ஸ்கிரிப்ஷன் மாடல் பதிவிறக்கப்படுகிறது</translation>
 <translation id="5470776029649730099">சணல்</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} முயற்சி மீதமுள்ளது}other{{0} முயற்சிகள் மீதமுள்ளன}}</translation>
 <translation id="5488280942828718790">மெஜந்தா</translation>
@@ -1191,6 +1196,7 @@
 <translation id="6595046262780525922">டிரான்ஸ்கிரிப்ஷனை இயக்கி டிரான்ஸ்கிரிப்ஷன் மாடலைப் பதிவிறக்க வேண்டுமா?</translation>
 <translation id="6596816719288285829">IP முகவரி</translation>
 <translation id="6599673642868607614">கருத்து தெரிவித்ததற்கு நன்றி. Chromebook அனுபவத்தை மேம்படுத்துவதற்கு உங்கள் கருத்துகள் எங்களுக்கு உதவியாக இருக்கும். அவை எங்கள் குழுவால் மதிப்பாய்வு செய்யப்படும். புகார்களின் எண்ணிக்கை அதிகமாக இருப்பதால் எங்களால் பதிலளிக்க முடியாது.</translation>
+<translation id="6608043585557830684">டிரான்ஸ்கிரிப்ஷன் முடக்கப்பட்டுள்ளது. அமைப்புகளிலோ <ph name="THREE_DOTS_MENU_ICON" /> மெனுவிலோ அதை இயக்கவும்.</translation>
 <translation id="660846213831377756">மவுஸ் பட்டன்கள்</translation>
 <translation id="6618744767048954150">சோதனை செய்கிறது</translation>
 <translation id="6620487321149975369">பிரிண்ட்டிங் பணிகளை நீங்களாகவே அகற்றும் வரை அவை வரலாற்றில் காட்டப்படும்</translation>
@@ -1279,6 +1285,7 @@
 <translation id="6975620886940770104">ஒளிரும் <ph name="GLOWSCAPES_FEATURE" /> இருக்கும் <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">கோலா கரடிகள்</translation>
 <translation id="6977381486153291903">நிலைபொருள் பதிப்பு</translation>
+<translation id="6978396562261420054">உருவாக்கப்பட்ட படம்</translation>
 <translation id="6981982820502123353">அணுகல் தன்மை</translation>
 <translation id="6982462588253070448">மணல் மேடுகள்</translation>
 <translation id="7005833343836210400">சாதனம் ஆஃப்லைனில் உள்ளது</translation>
@@ -1620,6 +1627,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">தேநீர் விடுதி</translation>
 <translation id="8538236298648811558">Google AI வழங்குவது</translation>
+<translation id="8543574988889671960">பக்கத்தை ரெஃப்ரெஷ் செய்யும்</translation>
 <translation id="8550364285433943656">கீபோர்டு பட்டன்கள் மூலம் விளையாட, கட்டுப்பாட்டை கேம் ஆக்‌ஷன்களுக்கு அமைத்திடுங்கள்</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">சேவை வழங்கும் நிறுவனத்தின் நெட்வொர்க்குடன் இணைக்க இந்த விருப்பத்தை இயக்க வேண்டியிருக்கலாம். விவரங்களுக்கு சேவை வழங்கும் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>

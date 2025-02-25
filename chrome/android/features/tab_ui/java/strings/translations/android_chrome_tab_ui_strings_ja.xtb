@@ -11,6 +11,8 @@
 <translation id="1293272072740285747">後でタブを追加できるようにこのグループを保持するか、不要になった場合は削除します。
 
 削除すると、全員が「<ph name="TITLE_OF_GROUP" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます。</translation>
+<translation id="1326654401173629446">「<ph name="TAB_GROUP_NAME" />」タブグループは使用できなくなりました</translation>
+<translation id="1329584516321524826">たった今更新されました</translation>
 <translation id="1340839264183302272">グループから退出</translation>
 <translation id="1419023007528516122">この操作を行うとデバイスからグループが完全に削除されます</translation>
 <translation id="1486715732399361704">ここですべてのタブグループを表示できます</translation>

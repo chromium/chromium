@@ -3822,6 +3822,10 @@
       status: "stable",
     },
     {
+      name: "ScrollAnchorPriorityCandidateSubtree",
+      status: "experimental",
+    },
+    {
       name: "ScrollbarColor",
       status: "stable",
     },

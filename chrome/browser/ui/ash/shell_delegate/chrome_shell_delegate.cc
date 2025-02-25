@@ -87,7 +87,6 @@
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/chromeos/multi_capture_service.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/media_session_service.h"
@@ -320,12 +319,6 @@ void ChromeShellDelegate::BindMultiDeviceSetup(
   if (service) {
     service->BindMultiDeviceSetup(std::move(receiver));
   }
-}
-
-void ChromeShellDelegate::BindMultiCaptureService(
-    mojo::PendingReceiver<video_capture::mojom::MultiCaptureService> receiver) {
-  content::GetMultiCaptureService().BindMultiCaptureService(
-      std::move(receiver));
 }
 
 media_session::MediaSessionService*

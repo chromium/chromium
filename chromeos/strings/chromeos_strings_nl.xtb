@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">katten</translation>
 <translation id="5907649332524363701">toetskleur</translation>
 <translation id="5908813850962688338">De installatie van deze update duurt een paar minuten. Houd je apparaat aangesloten en aan terwijl de update wordt gedownload. Je apparaat start misschien een paar keer opnieuw op en toont een zwart scherm tijdens dit proces. Je wordt gevraagd je apparaat opnieuw op te starten om de installatie af te ronden.</translation>
+<translation id="5915794087373112615">Je docent bekijkt je scherm over <ph name="NUM_SECONDS" /> seconden</translation>
 <translation id="5916084858004523819">Verboden</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Je bestand is gescand en opgeslagen in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Je bestanden zijn gescand en opgeslagen in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> selecteren</translation>
 <translation id="7618774594543487847">Neutraal</translation>
 <translation id="7620771111601174153">Meer informatie in het Helpcentrum</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">Laatste resettijd</translation>
 <translation id="7633068090678117093">Achtergrondafbeelding</translation>
 <translation id="763873111564339966">indigo</translation>
@@ -1524,6 +1526,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8054112564438735763">beige</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> tegen een achtergrond van <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Sluit een microfoon aan om audio op te nemen</translation>
 <translation id="8067126283828232460">APN is verbonden.</translation>
 <translation id="8067208048261192356">bruin</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> verwijderen</translation>
@@ -1627,6 +1630,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">theehuis</translation>
 <translation id="8538236298648811558">Mogelijk gemaakt door AI van Google</translation>
+<translation id="8543574988889671960">Tabblad opnieuw laden</translation>
 <translation id="8550364285433943656">Plaats bedieningselementen op game-acties om te spelen met toetsenbordtoetsen</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Je provider kan deze optie vereisen om verbinding te maken met hun netwerk. Neem contact op met je provider voor meer informatie.</translation>

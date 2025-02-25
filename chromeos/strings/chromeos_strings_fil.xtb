@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">mga pusa</translation>
 <translation id="5907649332524363701">kulay ng key</translation>
 <translation id="5908813850962688338">Aabutin nang ilang minuto ang pag-install ng update na ito. Panatilihing nakasaksak at naka-on ang iyong device habang dina-download ang update. Posibleng kusang mag-reboot nang ilang beses ang iyong device at magpakita ito ng itim na screen sa prosesong ito. Ipo-prompt kang i-restart ang iyong device para makumpleto ang pag-install.</translation>
+<translation id="5915794087373112615">Titingnan ng iyong guro ang screen mo sa loob ng <ph name="NUM_SECONDS" /> (na) segundo</translation>
 <translation id="5916084858004523819">Ipinagbabawal</translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Na-scan at na-save na ang iyong file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Na-scan at na-save na ang iyong mga file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Na-scan at na-save na ang iyong mga file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1524,6 +1525,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8054112564438735763">beige</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> na <ph name="CHARACTERS_SUBJECTS" /> sa <ph name="CHARACTERS_BACKGROUND" /> na background</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Magkonekta ng mikropono para magsimulang mag-record ng audio</translation>
 <translation id="8067126283828232460">Nakakonekta ang APN.</translation>
 <translation id="8067208048261192356">brown</translation>
 <translation id="8067224607978179455">I-delete ang <ph name="ACTION_NAME" /></translation>

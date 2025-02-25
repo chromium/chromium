@@ -176,6 +176,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1546492247443594934">Tavolina e punës 2</translation>
 <translation id="1546930421365146760">Kërkoji administratorit ta konfigurojë këtë pajisje te "Paneli i administratorit të Google"</translation>
 <translation id="1549512626801247439">menaxhimi i hapësirës ruajtëse</translation>
+<translation id="1549721333775633305">Shfaq cilësimet e "Ndarjes së shpejtë". "Ndarja e shpejtë" është çaktivizuar</translation>
 <translation id="1550406609415860283">Pajisjet e disponueshme</translation>
 <translation id="1550523713251050646">Kliko për opsione të tjera</translation>
 <translation id="1555130319947370107">E kaltër</translation>
@@ -1474,6 +1475,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> nuk është aktivizuar.</translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
 <translation id="5860491529813859533">Aktivizo</translation>
+<translation id="5864691701242730005">Shfaq cilësimet e "Ndarjes së shpejtë". Është zgjedhur dukshmëria "<ph name="VISIBILITY" />"</translation>
 <translation id="5864748620896638071">Bateria <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Po mblidhet informacioni i rrjetit</translation>
 <translation id="5867606971598166637">Administratori i sistemit po monitoron ekranet e tua</translation>
@@ -2262,6 +2264,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="851660987304951246">Përdor "Më ndihmo të lexoj" për të përmbledhur me shpejtësi përmbajtjen ose për të bërë pyetje</translation>
 <translation id="8517041960877371778">Pajisja jote <ph name="DEVICE_TYPE" /> mund të mos ngarkohet kur është e ndezur.</translation>
 <translation id="8535393432370007982">Zhbëj mënyrën e renditjes sipas ngjyrës</translation>
+<translation id="8536886494750559755">Shfaq cilësimet e "Ndarjes së shpejtë". E dukshme për të gjithë për <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Teksti u kopjua në "Kujtesën e fragmenteve"</translation>
 <translation id="8541078764854166027">Inkuadrimi i kamerës</translation>
 <translation id="8542053257095774575">Nuk ka asnjë tavolinë pune apo shabllon të ruajtur</translation>

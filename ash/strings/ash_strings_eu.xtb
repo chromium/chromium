@@ -176,6 +176,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1546492247443594934">2. lan-eremua</translation>
 <translation id="1546930421365146760">Eskatu administratzaileari gailua konfiguratzeko Google-ren administrazio-kontsolan</translation>
 <translation id="1549512626801247439">biltegiaren kudeaketa</translation>
+<translation id="1549721333775633305">Erakutsi Quick Share-ren ezarpenak. Quick Share desgaituta dago.</translation>
 <translation id="1550406609415860283">Gailuak erabilgarri</translation>
 <translation id="1550523713251050646">Aukera gehiago ikusteko, egin klik hemen</translation>
 <translation id="1555130319947370107">Urdina</translation>
@@ -1475,6 +1476,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ez dago aktibatuta.</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="5860491529813859533">Aktibatu</translation>
+<translation id="5864691701242730005">Erakutsi Quick Share-ren ezarpenak. Hautatutako ikusgaitasuna: <ph name="VISIBILITY" />.</translation>
 <translation id="5864748620896638071">Bateria: % <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="5867217927013474703">Sareari buruzko informazioa biltzen</translation>
 <translation id="5867606971598166637">Sistemaren administratzailea pantailak kontrolatzen ari da</translation>
@@ -2263,6 +2265,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="851660987304951246">Erabili Irakurtzeko laguntza edukia bizkor laburbiltzeko edo galderak egiteko</translation>
 <translation id="8517041960877371778">Baliteke <ph name="DEVICE_TYPE" /> gailua ez kargatzea piztuta dagoen bitartean.</translation>
 <translation id="8535393432370007982">Desegin kolorearen arabera ordenatzeko irizpidea ezartzeko aukera</translation>
+<translation id="8536886494750559755">Erakutsi Quick Share-ren ezarpenak. Denentzat ikusgai egongo diren denbora: <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Kopiatu da testua arbelean</translation>
 <translation id="8541078764854166027">Kamerako markoa</translation>
 <translation id="8542053257095774575">Ez dago lan-eremu edo txantiloirik gordeta</translation>

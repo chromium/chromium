@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">ကျေးဇူးပြုပြီး စောင့်ပါ…</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">မျှဝေထား</translation>
+<translation id="2749164457515831917">အကြံပြုချက်များကို ရောသမမွှေလိုက်သည်</translation>
 <translation id="2751739896257479635">EAP အဆင့် ၂ အထောက်အထားစိစစ်ခြင်း</translation>
 <translation id="2754757901767760034">မီးအိမ်</translation>
 <translation id="2780756493585863768">Google AI က ပံ့ပိုးထားသည့် လတ်တလော နောက်ခံများ</translation>
@@ -559,6 +560,7 @@
 <translation id="3651050199673793219">အပူချိန်ယူနစ်ရွေးရန်</translation>
 <translation id="3661106764436337772">ပိုမိုယုံကြည်မှုရှိစွာ မြန်မြန်ရေးလိုက်ပါ</translation>
 <translation id="3662461537616691585">အနီမှိုင်းရောင်နှင့် ကြက်သွေးရင့်ရောင်</translation>
+<translation id="3664755900672940272">နမူနာ ညွှန်ကြားချက်များကို ရောသမမွှေလိုက်သည်</translation>
 <translation id="3668449597372804501">တိမ်များလွှင့်နေသည့် နောက်ခံ</translation>
 <translation id="3668570675727296296">ဘာသာစကား ကြိုတင်ချိန်ညှိချက်များ</translation>
 <translation id="3675132884790542448">ဝက်</translation>
@@ -1283,6 +1285,7 @@
 <translation id="6975620886940770104">တောက်ပသော <ph name="GLOWSCAPES_FEATURE" /> ဖြင့် <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">ကိုအာလာဝက်ဝံ</translation>
 <translation id="6977381486153291903">ဖာမ်းဝဲ ပြန်လည်စိစစ်ခြင်း</translation>
+<translation id="6978396562261420054">ထုတ်လုပ်ထားသောပုံ</translation>
 <translation id="6981982820502123353">ရယူအသုံးချနိုင်မှု</translation>
 <translation id="6982462588253070448">သဲခုံ</translation>
 <translation id="7005833343836210400">စက်အော့ဖ်လိုင်းဖြစ်နေသည်</translation>
@@ -1430,6 +1433,7 @@
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> ကို ရွေးရန်</translation>
 <translation id="7618774594543487847">ပုံမှန်</translation>
 <translation id="7620771111601174153">'ကူညီရေးဌာန' တွင် ပိုမိုလေ့လာရန်</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">နောက်ဆုံး ပြင်ဆင်သတ်မှတ်ထားချိန်</translation>
 <translation id="7633068090678117093">နောက်ခံပုံရိပ်</translation>
 <translation id="763873111564339966">မဲနယ်ရောင်</translation>
@@ -1624,6 +1628,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">လက်ဖက်ရည်ဆိုင်</translation>
 <translation id="8538236298648811558">Google AI က ပံ့ပိုးထားသည်</translation>
+<translation id="8543574988889671960">တဘ်ကို ပြန်လည်စတင်ရန်</translation>
 <translation id="8550364285433943656">ကီးဘုတ်ကီးများဖြင့် ကစားရန်အတွက် ဂိမ်းလုပ်ဆောင်ချက်များတွင် သတ်မှတ်ချက်များ ထည့်ပါ</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီသည် ၎င်း၏ကွန်ရက်သို့ ချိတ်ဆက်ရန် ဤရွေးချယ်စရာကို သတ်မှတ်ထားနိုင်သည်။ အသေးစိတ်အတွက် သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>

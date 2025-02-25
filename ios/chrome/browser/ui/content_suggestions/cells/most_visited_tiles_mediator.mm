@@ -481,7 +481,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     }
     if (!freshSiteInOldList) {
       // Reset impressions since freshness.
-      GetApplicationContext()->GetLocalState()->SetInteger(
+      _prefService->SetInteger(
           prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness, 0);
       base::RecordAction(
           base::UserMetricsAction("IOSMostVisitedTopSitesChanged"));

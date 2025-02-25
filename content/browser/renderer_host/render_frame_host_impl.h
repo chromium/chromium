@@ -94,6 +94,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/extra_mojo_js_features.mojom-forward.h"
 #include "content/public/common/javascript_dialog_type.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "media/mojo/mojom/interface_factory.mojom-forward.h"
 #include "media/mojo/mojom/key_system_support.mojom-forward.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom-forward.h"
@@ -4376,6 +4377,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   blink::mojom::PermissionStatus GetCombinedPermissionStatus(
       blink::PermissionType permission_type);
+
+  // Creates and returns a
+  // `media::PictureInPictureEventsInfo::AutoPipReasonCallback`. This callback
+  // is used to retrieve the reason for entering picture in picture
+  // automatically. Ownership is transferred to the `MediaMetricsProvider`
+  // during the provider creation.
+  media::PictureInPictureEventsInfo::AutoPipReasonCallback
+  CreateAutoPipReasonCallback();
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //

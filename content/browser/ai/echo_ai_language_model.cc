@@ -26,7 +26,9 @@ constexpr char kResponsePrefix[] =
     "back the input:\n";
 }
 
-EchoAILanguageModel::EchoAILanguageModel() = default;
+EchoAILanguageModel::EchoAILanguageModel(
+    blink::mojom::AILanguageModelSamplingParamsPtr sampling_params)
+    : sampling_params_(std::move(sampling_params)) {}
 
 EchoAILanguageModel::~EchoAILanguageModel() = default;
 
@@ -91,17 +93,14 @@ void EchoAILanguageModel::Fork(
       std::move(client));
   mojo::PendingRemote<blink::mojom::AILanguageModel> language_model;
 
-  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAILanguageModel>(),
-                              language_model.InitWithNewPipeAndPassReceiver());
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<EchoAILanguageModel>(sampling_params_.Clone()),
+      language_model.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(
       std::move(language_model),
       blink::mojom::AILanguageModelInstanceInfo::New(
           EchoAIManagerImpl::kMaxContextSizeInTokens, current_tokens_,
-          blink::mojom::AILanguageModelSamplingParams::New(
-              optimization_guide::features::GetOnDeviceModelDefaultTopK(),
-              optimization_guide::features::
-                  GetOnDeviceModelDefaultTemperature()),
-          std::nullopt));
+          sampling_params_->Clone(), std::nullopt));
 }
 
 void EchoAILanguageModel::Destroy() {

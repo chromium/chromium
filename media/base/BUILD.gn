@@ -272,6 +272,8 @@ source_set("base") {
     "output_device_info.h",
     "overlay_info.cc",
     "overlay_info.h",
+    "picture_in_picture_events_info.cc",
+    "picture_in_picture_events_info.h",
     "pipeline.h",
     "pipeline_impl.cc",
     "pipeline_impl.h",

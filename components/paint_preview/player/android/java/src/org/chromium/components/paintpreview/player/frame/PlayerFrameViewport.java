@@ -9,11 +9,14 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Size;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Used to represent the viewport for a frame in the paint preview player. There should be one of
  * these objects per player frame and it should be shared between various classes that manipulated
  * the location. Should only be accessed on the UI thread to avoid the need for locks.
  */
+@NullMarked
 public class PlayerFrameViewport {
     // Enforce a max tile size to avoid giant bitmaps. Most high-DPI displays are < 2500px in any
     // dimension so this is a reasonable upper bound. Alternatively, this could use screensize, but

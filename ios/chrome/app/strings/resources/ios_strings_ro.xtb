@@ -995,7 +995,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5355191726083956201">Protecția îmbunătățită este activată</translation>
 <translation id="537853552771686272">Gestionează subiectele și site-urile care te interesează</translation>
 <translation id="5395707839134961196">Ascunde detaliile motorului de căutare</translation>
-<translation id="541276233349960923">Folosește parole pe toate dispozitivele</translation>
 <translation id="5414763847370083940">Vei primi o alertă dacă prețul scade pe orice site.</translation>
 <translation id="5415289094036440596">Cheile de acces nu pot fi trimise</translation>
 <translation id="5416455648658732408">Mută în grupul de file</translation>
@@ -1944,6 +1943,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="963102227019621224">Activitatea de pe web și din aplicații</translation>
 <translation id="966593914872420832">Căutare vocală</translation>
 <translation id="968653181266955408">Primește notificări privind conținutul</translation>
+<translation id="972084300091883657">{COUNT,plural, =0{Alătură-te grupului de file cu <ph name="OWNER_NAME" />}=1{Alătură-te grupului de file cu <ph name="OWNER_NAME" /> și încă {COUNT} persoană}few{Alătură-te grupului de file cu <ph name="OWNER_NAME" /> și încă {COUNT} persoane}other{Alătură-te grupului de file cu <ph name="OWNER_NAME" /> și încă {COUNT} de persoane}}</translation>
 <translation id="973493300226275298">Urmărește prețul unui produs în mai multe magazine online. Vei primi alerte când scade prețul.</translation>
 <translation id="973788791897303708">Acest grup de file este plin</translation>
 <translation id="976392601789283511">Redeschide ultima filă închisă</translation>

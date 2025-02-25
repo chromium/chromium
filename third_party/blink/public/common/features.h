@@ -124,9 +124,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     std::string,
     kBackgroundTracingPerformanceMark_AllowList);
 
-// Debug reporting runtime flag/JS API.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBiddingAndScoringDebugReportingAPI);
-
 // Finch flag for preventing rendering starvation during threaded scrolling.
 // With this feature enabled, the compositor task queue priority remains low
 // during compositor gestures, e.g. scrolling, but main thread compositor tasks

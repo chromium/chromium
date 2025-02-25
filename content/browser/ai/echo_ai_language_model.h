@@ -17,7 +17,8 @@ namespace content {
 // back the prompt text used for testing.
 class EchoAILanguageModel : public blink::mojom::AILanguageModel {
  public:
-  EchoAILanguageModel();
+  explicit EchoAILanguageModel(
+      blink::mojom::AILanguageModelSamplingParamsPtr sampling_params);
   EchoAILanguageModel(const EchoAILanguageModel&) = delete;
   EchoAILanguageModel& operator=(const EchoAILanguageModel&) = delete;
 
@@ -42,6 +43,8 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
 
   bool is_destroyed_ = false;
   uint64_t current_tokens_ = 0;
+  blink::mojom::AILanguageModelSamplingParamsPtr sampling_params_;
+
   mojo::RemoteSet<blink::mojom::ModelStreamingResponder> responder_set_;
 
   base::WeakPtrFactory<EchoAILanguageModel> weak_ptr_factory_{this};

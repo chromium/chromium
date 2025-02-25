@@ -587,7 +587,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1401216725754314428">Dowiedz się więcej o powiązanych witrynach w nowej karcie</translation>
 <translation id="1402426911829176748">Łączę z Twoim urządzeniem</translation>
 <translation id="1403222014593521787">Nie udało się nawiązać połączenia z serwerem proxy</translation>
-<translation id="1405336513195181336">Obejmuje to zakładki, rozszerzenia i historię przeglądania witryn.</translation>
 <translation id="1405779994569073824">Awaria</translation>
 <translation id="1406500794671479665">Weryfikuję...</translation>
 <translation id="1407069428457324124">Ciemny motyw</translation>
@@ -840,6 +839,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1575741822946219011">Języki i metody wprowadzania</translation>
 <translation id="1576594961618857597">Domyślny biały awatar</translation>
 <translation id="1576729678809834061">Zgłoś ten wynik wyszukiwania</translation>
+<translation id="1578110287710452646">Uchwyt zmiany rozmiaru okien wyświetlanych obok siebie</translation>
 <translation id="1578488449637163638">Ciemny</translation>
 <translation id="1578558981922970608">Wymuś zamknięcie</translation>
 <translation id="157931050206866263">Więcej informacji o skanowaniu pod kątem złośliwego oprogramowania</translation>
@@ -1514,7 +1514,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2040894699575719559">Lokalizacja zablokowana</translation>
 <translation id="2041246176170574368">Aktualizacje zabezpieczeń wkrótce się zakończą. Kup nowego Chromebooka taniej o co najmniej 50 USD.</translation>
 <translation id="2042279886444479655">Aktywne profile</translation>
-<translation id="2042427131767688936">Aby korzystanie z tego urządzenia było bezpieczne, Twoja organizacja może sprawdzać informacje o systemie operacyjnym, przeglądarce i ustawieniach, a także o zainstalowanym na nim oprogramowaniu.</translation>
 <translation id="2044014337866019681">Aby odblokować sesję, upewnij się, że potwierdzasz własność konta <ph name="ACCOUNT" />.</translation>
 <translation id="2044750031738659219">{0,plural, =1{Zamknij okno gościa}few{Zamknij okna gościa (# okna)}many{Zamknij okna gościa (# okien)}other{Zamknij okna gościa (# okna)}}</translation>
 <translation id="204497730941176055">Nazwa szablonu certyfikatu firmy Microsoft</translation>
@@ -3633,7 +3632,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3566211766752891194">Pokaż wykorzystanie pamięci przez kartę</translation>
 <translation id="3566325075220776093">Z tego urządzenia</translation>
 <translation id="3566721612727112615">Nie dodano żadnych witryn</translation>
-<translation id="3566788242120166275">Obecne dane przeglądania pozostaną w starym profilu. Ten nowy profil nie będzie zawierać żadnych wcześniejszych danych przeglądania.</translation>
 <translation id="3567168891086460374">Zapisz w inny sposób</translation>
 <translation id="3567284462585300767">Aby móc odbierać i akceptować pliki od osób w pobliżu, włącz swoją widoczność</translation>
 <translation id="356738834800832239">Hasło zostało zapisane</translation>
@@ -3800,7 +3798,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3685598397738512288">Ustawienia Linuksa dotyczące USB</translation>
 <translation id="3687598459967813435">Zawsze zezwalaj na powiadomienia z <ph name="WEBSITE" /></translation>
 <translation id="368789413795732264">Wystąpił błąd podczas próby zapisu pliku: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3687957587012862163">Nie, przenieś je do tego nowego profilu</translation>
 <translation id="3688507211863392146">Zapisywanie danych w plikach i folderach otwieranych w aplikacji</translation>
 <translation id="3688526734140524629">Zmień kanał</translation>
 <translation id="3688578402379768763">Aktualne</translation>
@@ -3859,7 +3856,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="37143699183660101">Stabilność kursora</translation>
 <translation id="3714610938239537183">Krok 2 z 4. Wybierz dane diagnostyczne, które chcesz wyeksportować</translation>
 <translation id="3716065403310915079">Instalator <ph name="VM_NAME" /></translation>
-<translation id="3717256685838828428">Tym profilem zarządza Twoja organizacja, która może wyświetlać niektóre informacje, takie jak</translation>
 <translation id="3719245268140483218">Zdarzenie na urządzeniu</translation>
 <translation id="3719310907809321183">Dane karty <ph name="CARD_IDENTIFIER" /> zostały uzupełnione.</translation>
 <translation id="3719826155360621982">Strona główna</translation>
@@ -4892,7 +4888,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4426857487270413362">Nie udało się pobrać plików instalatora. Sprawdź połączenie z internetem, upewnij się, że masz wystarczającą ilość wolnego miejsca na dysku, i spróbuj ponownie. Kod błędu: <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">Wykryto <ph name="COUNT" /> razy</translation>
 <translation id="4427365070557649936">Sprawdzam kod potwierdzenia...</translation>
-<translation id="4428579202668721841">Czy chcesz przechowywać dotychczasowe dane przeglądania oddzielnie od profilu służbowego?</translation>
 <translation id="4429163740524851942">Układ klawiatury fizycznej</translation>
 <translation id="4430019312045809116">Głośność</translation>
 <translation id="443031431654216610">Używaj tylko cyfr</translation>
@@ -6058,7 +6053,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5276357196618041410">Nie można zapisać konfiguracji bez wcześniejszego zalogowania</translation>
 <translation id="5277127016695466621">Pokaż panel boczny</translation>
 <translation id="5278823018825269962">Identyfikator stanu</translation>
-<translation id="5279214046729249716">Tak, przechowuj je oddzielnie</translation>
 <translation id="5279600392753459966">Blokuj wszystkie</translation>
 <translation id="5280064835262749532">Zaktualizuj dane logowania do <ph name="SHARE_PATH" /></translation>
 <translation id="5280426389926346830">Utworzyć skrót?</translation>
@@ -6382,7 +6376,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5503982651688210506">Nadal zezwalaj witrynie <ph name="HOST" /> na używanie kamery i poruszanie nią oraz na używanie mikrofonu</translation>
 <translation id="5505307013568720083">Brak tuszu</translation>
 <translation id="5507756662695126555">Niezaprzeczalność</translation>
-<translation id="5508864312047847614">Czy chcesz przechowywać dotychczasowe dane przeglądania oddzielnie od profilu służbowego?</translation>
 <translation id="5509693895992845810">Zapisz &amp;jako...</translation>
 <translation id="5509914365760201064">Wystawca: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Pobieraj opisy obrazów z Google</translation>
@@ -6835,7 +6828,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5854066326260337683">Obsługa starszych przeglądarek jest wyłączona. Możesz ją włączyć przez skonfigurowanie zasady <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" />.</translation>
 <translation id="5854912040170951372">Kawałek pizzy</translation>
 <translation id="5855267860608268405">Zapisane sieci komórkowe</translation>
-<translation id="5855375823365231964">Informacje o tym profilu</translation>
 <translation id="5855643921295613558">0,6 s</translation>
 <translation id="5856721540245522153">Włącz funkcje debugowania</translation>
 <translation id="5857090052475505287">Nowy folder</translation>
@@ -7198,7 +7190,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6113942107547980621">Aby używać Smart Lock, przełącz telefon na profil głównego użytkownika</translation>
 <translation id="6116921718742659598">Zmień język i ustawienia wprowadzania</translation>
 <translation id="6119008366402292080">Brak dostępnych drukarek</translation>
-<translation id="6119068870709745878">Tym profilem zarządza organizacja <ph name="PROFILE_MANAGER" />, która może wyświetlać niektóre informacje, takie jak</translation>
 <translation id="6119927814891883061">Nazwij urządzenie dla: <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Korekcja kolorów</translation>
 <translation id="6121773125605585883">Wyświetl hasło powiązane z nazwą użytkownika <ph name="USERNAME" /> do strony <ph name="WEBSITE" />.</translation>
@@ -7407,6 +7398,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6264060420924719834">Ta aplikacja zawiera treści z internetu z innych witryn</translation>
 <translation id="6264365405983206840">Wybierz &amp;wszystko</translation>
 <translation id="6264376385120300461">Pobierz mimo to</translation>
+<translation id="6264485186158353794">Wróć do bezpieczeństwa</translation>
 <translation id="6264520534872750757">Nadal korzystaj z urządzenia</translation>
 <translation id="6264636978858465832">Menedżer haseł potrzebuje szerszych uprawnień dostępu</translation>
 <translation id="626495329434552273">Witryny z pozwoleniem na zastępowanie sygnałów z klawiatury</translation>
@@ -7622,7 +7614,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6434104957329207050">Szybkość skanowania punktów</translation>
 <translation id="6434309073475700221">Odrzuć</translation>
 <translation id="6434325376267409267">Zanim będzie można używać <ph name="APP_NAME" />, musisz zaktualizować urządzenie.</translation>
-<translation id="6434690603850475457">Tak, przechowuj je oddzielnie (zalecane)</translation>
 <translation id="6434755719322447931">Chaotyczny</translation>
 <translation id="6435339218366409950">Wybierz język, na który chcesz przetłumaczyć napisy</translation>
 <translation id="6436164536244065364">Zobacz w Chrome Web Store</translation>

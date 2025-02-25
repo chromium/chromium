@@ -12,6 +12,9 @@
 <translation id="3512634283363927263">These pages are intended for use by Chrome developers, and may not be actively maintained or tested. To enable them, navigate to <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, click the button to enable debug pages and then navigate to this page again.</translation>
 <translation id="3875312571075912821">Allow Chrome to access the network in your firewall or antivirus
           settings.</translation>
+<translation id="4949828774841497663">Go to Applications &gt; System Settings &gt; Network, select the
+          active network, click the Details... button and deselect any proxies
+          that may have been selected.</translation>
 <translation id="5005121315113832363">This page has been blocked by Chrome</translation>
 <translation id="6011049234605203654">Go to
           the Chrome menu &gt;

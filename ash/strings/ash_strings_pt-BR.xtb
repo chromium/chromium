@@ -176,6 +176,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1546492247443594934">Espaço de trabalho 2</translation>
 <translation id="1546930421365146760">Peça ao administrador para configurar este dispositivo no Google Admin Console.</translation>
 <translation id="1549512626801247439">gestão de armazenamento</translation>
+<translation id="1549721333775633305">Mostrar configurações do Quick Share. Quick Share desativado</translation>
 <translation id="1550406609415860283">Dispositivos disponíveis</translation>
 <translation id="1550523713251050646">Clique para ver mais opções</translation>
 <translation id="1555130319947370107">Azul</translation>
@@ -1474,6 +1475,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5856638668464565213">A rede <ph name="NETWORK_NAME" /> não está ativada.</translation>
 <translation id="5860033963881614850">Desativada</translation>
 <translation id="5860491529813859533">Ativar</translation>
+<translation id="5864691701242730005">Mostrar configurações do Quick Share. Visibilidade <ph name="VISIBILITY" /> selecionada</translation>
 <translation id="5864748620896638071">Bateria em <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Coletando informações da rede</translation>
 <translation id="5867606971598166637">O administrador do sistema está monitorando suas telas</translation>
@@ -2262,6 +2264,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="851660987304951246">Use o recurso "Quero ajuda para ler" para resumir rapidamente o conteúdo ou fazer perguntas</translation>
 <translation id="8517041960877371778">Seu <ph name="DEVICE_TYPE" /> pode não ser carregado enquanto estiver ligado.</translation>
 <translation id="8535393432370007982">Desfazer ordem de classificação por cor</translation>
+<translation id="8536886494750559755">Mostrar configurações do Quick Share. Visível para todos por <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Texto copiado para a área de transferência</translation>
 <translation id="8541078764854166027">Enquadramento da câmera</translation>
 <translation id="8542053257095774575">Nenhum espaço de trabalho ou modelo salvo</translation>

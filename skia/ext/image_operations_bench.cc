@@ -45,7 +45,7 @@ struct StringMethodPair {
   skia::ImageOperations::ResizeMethod method;
 };
 #define ADD_METHOD(x) { #x, skia::ImageOperations::RESIZE_##x }
-const auto resize_methods = std::to_array<StringMethodPair>({
+constexpr auto resize_methods = std::to_array<StringMethodPair>({
     ADD_METHOD(GOOD),
     ADD_METHOD(BETTER),
     ADD_METHOD(BEST),

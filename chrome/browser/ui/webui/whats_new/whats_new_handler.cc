@@ -48,6 +48,9 @@ void WhatsNewHandler::RecordTimeToLoadContent(base::Time time) {
 }
 
 void WhatsNewHandler::RecordVersionPageLoaded(bool is_auto_open) {
+  // Store that this version was used to show a version page.
+  whats_new_registry_->SetVersionUsed();
+
   base::RecordAction(base::UserMetricsAction("UserEducation.WhatsNew.Shown"));
   base::RecordAction(
       base::UserMetricsAction("UserEducation.WhatsNew.VersionShown"));

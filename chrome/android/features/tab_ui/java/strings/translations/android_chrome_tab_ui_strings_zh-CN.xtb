@@ -11,6 +11,8 @@
 <translation id="1293272072740285747">您可以保留此分组以便日后添加标签页；如果不再需要，也可以将其删除。
 
 如果删除，所有人将立即失去对标签页分组“<ph name="TITLE_OF_GROUP" />”的访问权限，并且该分组将从所有设备中删除。</translation>
+<translation id="1326654401173629446">“<ph name="TAB_GROUP_NAME" />”标签页分组已不可用</translation>
+<translation id="1329584516321524826">上次更新时间：刚才</translation>
 <translation id="1340839264183302272">退出分组</translation>
 <translation id="1419023007528516122">此操作会将该分组从您的设备中永久删除</translation>
 <translation id="1486715732399361704">您可在此处找到您的所有标签页分组</translation>

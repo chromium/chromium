@@ -188,7 +188,7 @@ String MakeTestData(base::span<const char*> lines,
   return builder.ToString();
 }
 
-const auto kBlockSizes = std::to_array<wtf_size_t>(
+constexpr auto kBlockSizes = std::to_array<wtf_size_t>(
     {64, 32, 16, 8, 4, 2, 1, 3, 5, 7, 9, 11, 13, 17, 19, 23});
 
 TEST(BufferedLineReaderTest, BufferSizes) {

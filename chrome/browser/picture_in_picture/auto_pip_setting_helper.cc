@@ -36,7 +36,7 @@ AutoPipSettingHelper::AutoPipSettingHelper(
 AutoPipSettingHelper::~AutoPipSettingHelper() = default;
 
 void AutoPipSettingHelper::OnUserClosedWindow(
-    AutoPipReason auto_pip_reason,
+    media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason,
     std::optional<ukm::SourceId> source_id) {
   if (ui_was_shown_but_not_acknowledged_) {
     RecordResult(PromptResult::kIgnored, auto_pip_reason, std::move(source_id));
@@ -84,7 +84,7 @@ void AutoPipSettingHelper::UpdateContentSetting(ContentSetting new_setting) {
 
 AutoPipSettingHelper::ResultCb AutoPipSettingHelper::CreateResultCb(
     base::OnceClosure close_pip_cb,
-    AutoPipSettingHelper::AutoPipReason auto_pip_reason,
+    media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason,
     std::optional<ukm::SourceId> source_id) {
   weak_factory_.InvalidateWeakPtrs();
   return base::BindOnce(&AutoPipSettingHelper::OnUiResult,
@@ -95,7 +95,7 @@ AutoPipSettingHelper::ResultCb AutoPipSettingHelper::CreateResultCb(
 std::unique_ptr<AutoPipSettingOverlayView>
 AutoPipSettingHelper::CreateOverlayViewIfNeeded(
     base::OnceClosure close_pip_cb,
-    AutoPipReason auto_pip_reason,
+    media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason,
     std::optional<ukm::SourceId> source_id,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow) {
@@ -131,21 +131,22 @@ AutoPipSettingHelper::CreateOverlayViewIfNeeded(
 }
 
 void AutoPipSettingHelper::OnAutoPipBlockedByPermission(
-    AutoPipReason auto_pip_reason,
+    media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason,
     std::optional<ukm::SourceId> source_id) {
   RecordResult(PromptResult::kNotShownBlocked, auto_pip_reason,
                std::move(source_id));
 }
 
 void AutoPipSettingHelper::OnAutoPipBlockedByIncognito(
-    AutoPipReason auto_pip_reason) {
+    media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason) {
   RecordResult(PromptResult::kNotShownIncognito, auto_pip_reason, std::nullopt);
 }
 
-void AutoPipSettingHelper::OnUiResult(base::OnceClosure close_pip_cb,
-                                      AutoPipReason auto_pip_reason,
-                                      std::optional<ukm::SourceId> source_id,
-                                      AutoPipSettingView::UiResult result) {
+void AutoPipSettingHelper::OnUiResult(
+    base::OnceClosure close_pip_cb,
+    media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason,
+    std::optional<ukm::SourceId> source_id,
+    AutoPipSettingView::UiResult result) {
   // The UI was both shown and acknowledged, so we don't have to worry about it
   // being dismissed without being acted on for the permission embargo.
   ui_was_shown_but_not_acknowledged_ = false;
@@ -173,21 +174,21 @@ void AutoPipSettingHelper::OnUiResult(base::OnceClosure close_pip_cb,
 
 void AutoPipSettingHelper::RecordResult(
     PromptResult result,
-    AutoPipReason auto_pip_reason,
+    media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason,
     std::optional<ukm::SourceId> source_id) {
   base::UmaHistogramEnumeration("Media.AutoPictureInPicture.PromptResultV2",
                                 result);
   switch (auto_pip_reason) {
-    case AutoPipReason::kUnknown:
+    case media::PictureInPictureEventsInfo::AutoPipReason::kUnknown:
       break;
-    case AutoPipReason::kVideoConferencing:
+    case media::PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing:
       base::UmaHistogramEnumeration(
           "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
           "VideoConferencing.PromptResultV2",
           result);
       RecordUkms(auto_pip_reason, source_id, result);
       break;
-    case AutoPipReason::kMediaPlayback:
+    case media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback:
       base::UmaHistogramEnumeration(
           "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
           "MediaPlayback.PromptResultV2",
@@ -197,25 +198,26 @@ void AutoPipSettingHelper::RecordResult(
   }
 }
 
-void AutoPipSettingHelper::RecordUkms(AutoPipReason auto_pip_reason,
-                                      std::optional<ukm::SourceId> source_id,
-                                      PromptResult result) const {
+void AutoPipSettingHelper::RecordUkms(
+    media::PictureInPictureEventsInfo::AutoPipReason auto_pip_reason,
+    std::optional<ukm::SourceId> source_id,
+    PromptResult result) const {
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
   if (!ukm_recorder || !source_id) {
     return;
   }
 
   switch (auto_pip_reason) {
-    case AutoPipReason::kUnknown:
+    case media::PictureInPictureEventsInfo::AutoPipReason::kUnknown:
       break;
-    case AutoPipReason::kVideoConferencing:
+    case media::PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing:
       ukm::builders::
           Media_AutoPictureInPicture_EnterPictureInPicture_AutomaticReason_PromptResultV2(
               source_id.value())
               .SetVideoConferencing(static_cast<uintmax_t>(result))
               .Record(ukm_recorder);
       break;
-    case AutoPipReason::kMediaPlayback:
+    case media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback:
       ukm::builders::
           Media_AutoPictureInPicture_EnterPictureInPicture_AutomaticReason_PromptResultV2(
               source_id.value())

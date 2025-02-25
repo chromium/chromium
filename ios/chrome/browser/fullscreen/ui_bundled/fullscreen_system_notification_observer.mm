@@ -125,7 +125,7 @@
 }
 
 - (void)applicationWillEnterForeground {
-  self.mediator->ExitFullscreen();
+  self.mediator->ExitFullscreenWithoutAnimation();
 }
 
 @end

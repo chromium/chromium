@@ -8,48 +8,35 @@
 
 namespace ash {
 
-MultiCaptureServiceClient::MultiCaptureServiceClient(
-    mojo::PendingRemote<video_capture::mojom::MultiCaptureService>
-        multi_capture_service)
-    : multi_capture_service_(std::move(multi_capture_service)) {
-  multi_capture_service_->AddObserver(
-      multi_capture_service_observer_receiver_.BindNewPipeAndPassRemote());
+MultiCaptureService::MultiCaptureService() = default;
+
+MultiCaptureService::~MultiCaptureService() {
+  observers_.Notify(&Observer::MultiCaptureServiceDestroyed);
 }
 
-MultiCaptureServiceClient::~MultiCaptureServiceClient() {
-  for (Observer& observer : observers_) {
-    observer.MultiCaptureServiceClientDestroyed();
-  }
-}
-
-void MultiCaptureServiceClient::AddObserver(Observer* observer) {
+void MultiCaptureService::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void MultiCaptureServiceClient::RemoveObserver(Observer* observer) {
+void MultiCaptureService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void MultiCaptureServiceClient::MultiCaptureStarted(const std::string& label,
+void MultiCaptureService::NotifyMultiCaptureStarted(const std::string& label,
                                                     const url::Origin& origin) {
-  for (Observer& observer : observers_) {
-    observer.MultiCaptureStarted(label, origin);
-  }
+  observers_.Notify(&Observer::MultiCaptureStarted, label, origin);
 }
 
-void MultiCaptureServiceClient::MultiCaptureStartedFromApp(
+void MultiCaptureService::NotifyMultiCaptureStartedFromApp(
     const std::string& label,
     const std::string& app_id,
     const std::string& app_short_name) {
-  for (Observer& observer : observers_) {
-    observer.MultiCaptureStartedFromApp(label, app_id, app_short_name);
-  }
+  observers_.Notify(&Observer::MultiCaptureStartedFromApp, label, app_id,
+                    app_short_name);
 }
 
-void MultiCaptureServiceClient::MultiCaptureStopped(const std::string& label) {
-  for (Observer& observer : observers_) {
-    observer.MultiCaptureStopped(label);
-  }
+void MultiCaptureService::NotifyMultiCaptureStopped(const std::string& label) {
+  observers_.Notify(&Observer::MultiCaptureStopped, label);
 }
 
 }  // namespace ash

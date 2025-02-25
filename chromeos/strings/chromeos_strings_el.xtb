@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">Περιμένετε…</translation>
 <translation id="2740531572673183784">ΟK</translation>
 <translation id="2744221223678373668">Κοινόχρηστο</translation>
+<translation id="2749164457515831917">Τυχαία αναπαραγωγή προτάσεων</translation>
 <translation id="2751739896257479635">2η φάση ελέγχου ταυτότητας EAP:</translation>
 <translation id="2754757901767760034">λάμπα</translation>
 <translation id="2780756493585863768">Πρόσφατα φόντα με την υποστήριξη του Google AI</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">Μενού ενεργειών διάταξης</translation>
 <translation id="3227186760713762082">Διαιρέστε την τιμή <ph name="CATEGORY_TEXT" /> με το <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Οι εργασίες εκτύπωσης που είναι παλαιότερες της 1 ημέρας θα καταργηθούν.</translation>
+<translation id="3248791727258378769">Δεν θα δημιουργηθεί μεταγραφή</translation>
 <translation id="324961752321393509">Ο διαχειριστής σας δεν επιτρέπει το κλείσιμο αυτής της εφαρμογής</translation>
 <translation id="3263941347294171263">Αποσυνδέστε και επανασυνδέστε τη συσκευή <ph name="DEVICE_NAME" /> για να συνεχίσετε τη διαδικασία ενημέρωσης</translation>
 <translation id="3268178239013324452">Σφάλμα - Η θύρα είναι ανοικτή</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">Επιλέξτε μια μονάδα θερμοκρασίας</translation>
 <translation id="3661106764436337772">Γράψτε πιο γρήγορα και με περισσότερη αυτοπεποίθηση</translation>
 <translation id="3662461537616691585">μπορντό και καστανοκόκκινο</translation>
+<translation id="3664755900672940272">Τυχαία αναπαραγωγή δειγμάτων οδηγιών</translation>
 <translation id="3668449597372804501">Ταπετσαρία Κίνηση των σύννεφων</translation>
 <translation id="3668570675727296296">Ρυθμίσεις γλώσσας</translation>
 <translation id="3675132884790542448">χοίροι</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">Απενεργοποίηση προφύλαξης οθόνης</translation>
 <translation id="4210636113897977670">Αποθήκευση και έξοδος</translation>
 <translation id="4210659479607886331">παγετωνικός ποταμός</translation>
+<translation id="4212169537710712814">Ολοκληρώθηκε η λήψη του μοντέλου μεταγραφής στα <ph name="LANGUAGE_NAME" /></translation>
 <translation id="42126664696688958">Εξαγωγή</translation>
 <translation id="4213104098953699324">Πληκτρολόγιο USB</translation>
 <translation id="4227825898293920515">Ο κωδικός πρόσβασης λήγει σε <ph name="TIME" /></translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">Χρώμα</translation>
 <translation id="5457599981699367932">Περιήγηση ως επισκέπτης</translation>
 <translation id="54609108002486618">Διαχειριζόμενη</translation>
+<translation id="5461608756903394951">Λήψη μοντέλου μεταγραφής στα <ph name="LANGUAGE_NAME" /> σε εξέλιξη</translation>
 <translation id="5470776029649730099">λινάτσα</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Απομένει {0} προσπάθεια}other{Απομένουν {0} προσπάθειες}}</translation>
 <translation id="5488280942828718790">ματζέντα</translation>
@@ -1027,6 +1032,7 @@
 <translation id="590746845088109442">γάτες</translation>
 <translation id="5907649332524363701">χρώμα πλήκτρων</translation>
 <translation id="5908813850962688338">Η εγκατάσταση αυτής της ενημέρωσης θα διαρκέσει μερικά λεπτά. Διατηρήστε τη συσκευή σας συνδεδεμένη στην πρίζα και ενεργοποιημένη κατά τη λήψη της ενημέρωσης. Η συσκευή σας μπορεί να κάνει πολλές επανεκκινήσεις και να εμφανίσει μια μαύρη οθόνη κατά τη διάρκεια αυτής της διαδικασίας. Θα σας ζητηθεί να επανεκκινήσετε τη συσκευή σας, για να ολοκληρώσετε την εγκατάσταση.</translation>
+<translation id="5915794087373112615">Ο καθηγητής θα δει την οθόνη σας σε <ph name="NUM_SECONDS" /> δευτερόλεπτα</translation>
 <translation id="5916084858004523819">Απαγορεύεται</translation>
 <translation id="5916664084637901428">Ενεργό</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Το αρχείο σας σαρώθηκε και αποθηκεύτηκε με επιτυχία στον φάκελο <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Τα αρχεία σας σαρώθηκαν και αποθηκεύτηκαν με επιτυχία στον φάκελο <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1191,6 +1197,7 @@
 <translation id="6595046262780525922">Ενεργοποίηση μεταγραφής και λήψη μοντέλου μεταγραφής;</translation>
 <translation id="6596816719288285829">Διεύθυνση IP</translation>
 <translation id="6599673642868607614">Ευχαριστούμε για τα σχόλιά σας. Τα σχόλιά σας μας βοηθούν να βελτιώσουμε την εμπειρία του Chromebook και θα ελεγχθούν από την ομάδα μας. Λόγω του μεγάλου αριθμού αναφορών, δεν θα μπορέσουμε να στείλουμε απάντηση.</translation>
+<translation id="6608043585557830684">Η μεταγραφή είναι απενεργοποιημένη. Ενεργοποιήστε τη στις Ρυθμίσεις ή στο μενού <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Πλήκτρα ποντικιού</translation>
 <translation id="6618744767048954150">Σε εξέλιξη</translation>
 <translation id="6620487321149975369">Οι εργασίες εκτύπωσης θα εμφανίζονται στο ιστορικό, εκτός εάν καταργηθούν μη αυτόματα.</translation>
@@ -1279,6 +1286,7 @@
 <translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" /> με λαμπερό <ph name="GLOWSCAPES_FEATURE" /></translation>
 <translation id="6975981640379148271">κοάλα</translation>
 <translation id="6977381486153291903">Έκδοση υλικολογισμικού</translation>
+<translation id="6978396562261420054">Δημιουργημένη εικόνα</translation>
 <translation id="6981982820502123353">Προσβασιμότητα</translation>
 <translation id="6982462588253070448">αμμόλοφοι</translation>
 <translation id="7005833343836210400">Η συσκευή είναι εκτός σύνδεσης</translation>
@@ -1426,6 +1434,7 @@
 <translation id="7618216277886673749">Επιλέξτε <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Ουδέτερο</translation>
 <translation id="7620771111601174153">Μάθετε περισσότερα στο Κέντρο βοήθειας</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">Ώρα τελευταίας ενημέρωσης</translation>
 <translation id="7633068090678117093">Εικόνα φόντου</translation>
 <translation id="763873111564339966">λουλακί</translation>
@@ -1517,6 +1526,7 @@
 <translation id="8054112564438735763">μπεζ</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> σε <ph name="CHARACTERS_BACKGROUND" /> φόντο</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />, <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Συνδέστε ένα μικρόφωνο για να ξεκινήσει η εγγραφή ήχου</translation>
 <translation id="8067126283828232460">Το APN συνδέθηκε.</translation>
 <translation id="8067208048261192356">καφέ</translation>
 <translation id="8067224607978179455">Διαγραφή <ph name="ACTION_NAME" /></translation>
@@ -1620,6 +1630,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">τσαγερί</translation>
 <translation id="8538236298648811558">Με την υποστήριξη του Google AI</translation>
+<translation id="8543574988889671960">Επανάληψη φόρτωσης καρτέλας</translation>
 <translation id="8550364285433943656">Τοποθετήστε στοιχεία ελέγχου στις ενέργειες παιχνιδιού για να παίξετε με τα πλήκτρα του πληκτρολογίου</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Αυτή η επιλογή μπορεί να απαιτείται από την εταιρεία κινητής τηλεφωνίας σας για σύνδεση στο δίκτυό της. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας που χρησιμοποιείτε για λεπτομέρειες.</translation>

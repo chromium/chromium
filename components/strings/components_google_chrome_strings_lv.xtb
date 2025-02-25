@@ -11,6 +11,7 @@
 <translation id="3444832043240812445">Šajā lapā tiek parādīta tikai informācija par pēdējā laika avārijām, ja <ph name="BEGIN_LINK" />iespējojat avāriju pārskatu izveidi<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Šīs lapas ir paredzētas Chrome izstrādātājiem, un tās var nebūt aktīvi uzturētas vai testētas. Lai tās iespējotu, pārejiet uz lapu <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, noklikšķiniet uz pogas, lai iespējotu atkļūdošanas lapas, un pēc tam atkal pārejiet uz šo lapu.</translation>
 <translation id="3875312571075912821">Ugunsmūra vai antivīrusu programmas iestatījumu maiņa, lai atļautu pārlūkam Chrome piekļūt tīklam.</translation>
+<translation id="4949828774841497663">Pārejiet uz sadaļu Applications (Lietojumprogrammas) &gt; System Settings (Sistēmas iestatījumi) &gt; Network (Tīkls), atlasiet aktīvo tīklu, noklikšķiniet uz pogas “Details...” (Detalizēta informācija) un noņemiet atlasi visiem starpniekserveriem, kas, iespējams, ir atlasīti.</translation>
 <translation id="5005121315113832363">Šī lapa ir bloķēta pārlūkā Chrome.</translation>
 <translation id="6011049234605203654">Atveriet
           Chrome izvēlni &gt;

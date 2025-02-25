@@ -17,6 +17,8 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -24,6 +26,8 @@
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/heavy_ad_intervention/heavy_ad_helper.h"
 #include "components/heavy_ad_intervention/heavy_ad_service.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -164,6 +168,22 @@ void RecordPageLoadInitiatorForAdTaggingUkm(
   builder.Record(ukm_recorder->Get());
 }
 
+std::string GetEtldPlusOne(const GURL& url) {
+  return net::registry_controlled_domains::GetDomainAndRegistry(
+      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+size_t GetTotalVisitCountsInHistoryQueryResults(
+    const history::QueryResults& results) {
+  // QueryResults is a vector of URLResult. The total number of visits is
+  // the summation of all visit_count in each URLResult.
+  size_t visit_counts = 0;
+  for (auto& result : results) {
+    visit_counts += result.visit_count();
+  }
+  return visit_counts;
+}
+
 }  // namespace
 
 // static
@@ -171,6 +191,7 @@ std::unique_ptr<AdsPageLoadMetricsObserver>
 AdsPageLoadMetricsObserver::CreateIfNeeded(
     content::WebContents* web_contents,
     heavy_ad_intervention::HeavyAdService* heavy_ad_service,
+    history::HistoryService* history_service,
     const ApplicationLocaleGetter& application_locale_getter,
     bool is_incognito) {
   // TODO(bokan): ContentSubresourceFilterThrottleManager is now associated
@@ -182,7 +203,8 @@ AdsPageLoadMetricsObserver::CreateIfNeeded(
     return nullptr;
 
   return std::make_unique<AdsPageLoadMetricsObserver>(
-      heavy_ad_service, application_locale_getter, is_incognito);
+      heavy_ad_service, history_service, application_locale_getter,
+      is_incognito);
 }
 
 // static
@@ -241,12 +263,14 @@ int AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
 
 AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
     heavy_ad_intervention::HeavyAdService* heavy_ad_service,
+    history::HistoryService* history_service,
     const ApplicationLocaleGetter& application_locale_getter,
     bool is_incognito,
     base::TickClock* clock,
     heavy_ad_intervention::HeavyAdBlocklist* blocklist)
     : clock_(clock ? clock : base::DefaultTickClock::GetInstance()),
       heavy_ad_service_(heavy_ad_service),
+      history_service_(history_service),
       application_locale_getter_(application_locale_getter),
       heavy_ad_blocklist_(blocklist),
       heavy_ad_privacy_mitigations_enabled_(base::FeatureList::IsEnabled(
@@ -308,6 +332,20 @@ PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnCommit(
   DCHECK(ad_frames_data_.empty());
 
   RecordPageLoadInitiatorForAdTaggingUkm(navigation_handle);
+
+  // When NavigationInitiatorActivationAndAdStatus is
+  // kStartedWithTransientActivationFromAd, the navigation activated from a user
+  // ad click gesture.
+  if (history_service_ &&
+      navigation_handle->GetNavigationInitiatorActivationAndAdStatus() ==
+          blink::mojom::NavigationInitiatorActivationAndAdStatus::
+              kStartedWithTransientActivationFromAd) {
+    // Check the frequency of the navigation URL in history.
+    QueryAdUrlFrequencyInHistory(
+        history_service_.get(), navigation_handle->GetURL(),
+        &query_ad_url_history_task_tracker_,
+        &query_ad_url_etld_plus_one_history_task_tracker_);
+  }
 
   page_load_is_reload_ =
       navigation_handle->GetReloadType() != content::ReloadType::NONE;
@@ -1525,6 +1563,35 @@ void AdsPageLoadMetricsObserver::CleanupDeletedFrame(
     page_ad_density_tracker_.RemoveRect(RectId(RectType::kIFrame, id.value()),
                                         /*recalculate_viewport_density=*/true);
   }
+}
+
+void AdsPageLoadMetricsObserver::QueryAdUrlFrequencyInHistory(
+    history::HistoryService* history_service,
+    const GURL& ad_url,
+    base::CancelableTaskTracker* query_ad_url_cancelable_task_tracker,
+    base::CancelableTaskTracker*
+        query_ad_url_etld_plus_one_cancelable_task_tracker) {
+  history::QueryOptions query_options;
+
+  // Query ad url in history.
+  history_service->QueryHistory(
+      base::ASCIIToUTF16(ad_url.GetWithoutFilename().spec()), query_options,
+      base::BindOnce([](history::QueryResults result) {
+        base::UmaHistogramCounts1000(
+            "PageLoad.Clients.Ads.AdClick.HistoryQueryCount",
+            GetTotalVisitCountsInHistoryQueryResults(result));
+      }),
+      query_ad_url_cancelable_task_tracker);
+
+  // Query eTLD+1 of ad url in history.
+  history_service->QueryHistory(
+      base::ASCIIToUTF16(GetEtldPlusOne(ad_url)), query_options,
+      base::BindOnce([](history::QueryResults result) {
+        base::UmaHistogramCounts1000(
+            "PageLoad.Clients.Ads.AdClick.EtldPlusOneHistoryQueryCount",
+            GetTotalVisitCountsInHistoryQueryResults(result));
+      }),
+      query_ad_url_etld_plus_one_cancelable_task_tracker);
 }
 
 }  // namespace page_load_metrics

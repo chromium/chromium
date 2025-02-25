@@ -176,6 +176,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1546492247443594934">Töölaud 2</translation>
 <translation id="1546930421365146760">Paluge administraatoril see seade Google Admini konsoolil seadistada</translation>
 <translation id="1549512626801247439">salvestusruumi haldus</translation>
+<translation id="1549721333775633305">Saate kuvada kiirjagamise seaded. Kiirjagamine on keelatud</translation>
 <translation id="1550406609415860283">Seadmed on saadaval</translation>
 <translation id="1550523713251050646">Klõpsake lisavalikute nägemiseks</translation>
 <translation id="1555130319947370107">Sinine</translation>
@@ -1475,6 +1476,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> pole aktiveeritud.</translation>
 <translation id="5860033963881614850">Väljas</translation>
 <translation id="5860491529813859533">Lülita sisse</translation>
+<translation id="5864691701242730005">Saate kuvada kiirjagamise seaded. Valitud nähtavus: <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071">Aku <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Toimub võrgu teabe kogumine</translation>
 <translation id="5867606971598166637">Teie süsteemiadministraator jälgib teie ekraanikuvasid</translation>
@@ -2263,6 +2265,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="851660987304951246">Sisust kiiresti kokkuvõtte tegemiseks või küsimuste esitamiseks kasutage funktsiooni Aita mul lugeda</translation>
 <translation id="8517041960877371778">Kui seade <ph name="DEVICE_TYPE" /> on sisse lülitatud, ei pruugita seda laadida.</translation>
 <translation id="8535393432370007982">Võta värvi järgi sortimine tagasi</translation>
+<translation id="8536886494750559755">Saate kuvada kiirjagamise seaded. Kõigile nähtav <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Tekst kopeeriti lõikelauale</translation>
 <translation id="8541078764854166027">Kadreerimine</translation>
 <translation id="8542053257095774575">Salvestatud töölaudu ega malle ei ole</translation>

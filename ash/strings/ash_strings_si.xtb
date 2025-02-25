@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">2 වෙනි මේසය</translation>
 <translation id="1546930421365146760">Google පරිපාලක කොන්සෝලය තුළ මෙම උපාංගය පිහිටුවීමට ඔබගේ පරිපාලකගෙන් ඉල්ලන්න</translation>
 <translation id="1549512626801247439">ආචයනය කළමනාකරණය</translation>
+<translation id="1549721333775633305">ඉක්මන් බෙදා ගැනීමේ සැකසීම් පෙන්වන්න. ඉක්මන් බෙදා ගැනීම අබල කර ඇත</translation>
 <translation id="1550406609415860283">ලබා ගත හැකි උපාංග</translation>
 <translation id="1550523713251050646">තවත් විකල්ප සඳහා ක්ලික් කරන්න</translation>
 <translation id="1555130319947370107">නිල්</translation>
@@ -1474,6 +1475,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> සක්‍රිය කර නැත.</translation>
 <translation id="5860033963881614850">අක්‍රීය</translation>
 <translation id="5860491529813859533">ක්‍රියාත්මක කරන්න</translation>
+<translation id="5864691701242730005">ඉක්මන් බෙදා ගැනීමේ සැකසීම් පෙන්වන්න. <ph name="VISIBILITY" /> දෘශ්‍යතාව තෝරා ඇත</translation>
 <translation id="5864748620896638071">බැටරිය <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">ජාල තොරතුරු රැස් කරමින්</translation>
 <translation id="5867606971598166637">ඔබේ පද්ධති පරිපාලක ඔබේ තිර අධීක්ෂණය කරයි</translation>
@@ -2262,6 +2264,7 @@
 <translation id="851660987304951246">අන්තර්ගතය ක්‍ෂණිකව සාරාංශ කිරීමට හෝ ප්‍රශ්න ඇසීමට මට කියවීමට උදවු කරන්න භාවිත කරන්න</translation>
 <translation id="8517041960877371778">ඔබගේ <ph name="DEVICE_TYPE" /> සක්‍රියව පවතින විට එය ආරෝපණය නොවනු ඇත.</translation>
 <translation id="8535393432370007982">වර්ණය අනුව අනුපිළිවෙලට සැකසීමේ පිළිවෙළ පසුගමනය කරන්න</translation>
+<translation id="8536886494750559755">ඉක්මන් බෙදා ගැනීමේ සැකසීම් පෙන්වන්න. <ph name="TIME_REMAINING" /> සඳහා සැමට දෘශ්‍යමානයි</translation>
 <translation id="8539803091108018926">පසුරු පුවරුවට පෙළ පිටපත් කරන ලදි</translation>
 <translation id="8541078764854166027">කැමරා රාමුව</translation>
 <translation id="8542053257095774575">සුරැකි මේස හෝ අච්චු නැත</translation>

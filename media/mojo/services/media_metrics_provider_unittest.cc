@@ -57,6 +57,7 @@ class MediaMetricsProviderTest : public testing::Test {
         MediaMetricsProvider::GetLearningSessionCallback(),
         base::BindRepeating(&MediaMetricsProviderTest::IsShuttingDown,
                             base::Unretained(this)),
+        PictureInPictureEventsInfo::AutoPipReasonCallback(),
         provider_.BindNewPipeAndPassReceiver());
     provider_->Initialize(is_mse, scheme, media_stream_type);
   }

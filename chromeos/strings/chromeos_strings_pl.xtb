@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">koty</translation>
 <translation id="5907649332524363701">kolor klawiszy</translation>
 <translation id="5908813850962688338">Instalacja tej aktualizacji może potrwać kilka minut. Podczas pobierania aktualizacji urządzenie musi być podłączone do zasilania i włączone. Podczas tego procesu urządzenie może kilka razy uruchomić się ponownie i wyświetlić czarny ekran. Aby można było dokończyć instalację, pojawi się prośba o ponowne uruchomienie urządzenia.</translation>
+<translation id="5915794087373112615">Nauczyciel zobaczy Twój ekran za <ph name="NUM_SECONDS" /> s</translation>
 <translation id="5916084858004523819">Niedozwolone</translation>
 <translation id="5916664084637901428">Włączone</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Plik został zeskanowany i zapisany w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1522,6 +1523,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8054112564438735763">beżowy</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> w kolorze: <ph name="CHARACTERS_COLOR" />, kolor tła: <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Aby rozpocząć nagrywanie dźwięku, podłącz mikrofon</translation>
 <translation id="8067126283828232460">APN jest połączony.</translation>
 <translation id="8067208048261192356">brązowy</translation>
 <translation id="8067224607978179455">Usuń <ph name="ACTION_NAME" /></translation>
@@ -1625,6 +1627,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">herbaciarnia</translation>
 <translation id="8538236298648811558">Z wykorzystaniem AI od Google</translation>
+<translation id="8543574988889671960">Załaduj kartę ponownie</translation>
 <translation id="8550364285433943656">Dodaj elementy sterujące do działań w grze, aby grać za pomocą klawiszy na klawiaturze</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Tej opcji może wymagać operator do połączenia z jego siecią. Aby uzyskać szczegółowe informacje, skontaktuj się z operatorem.</translation>

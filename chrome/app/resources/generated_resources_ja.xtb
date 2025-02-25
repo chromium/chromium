@@ -585,7 +585,6 @@
 <translation id="1401216725754314428">新しいタブで関連サイトの詳細を確認します</translation>
 <translation id="1402426911829176748">デバイスに接続しています</translation>
 <translation id="1403222014593521787">プロキシに接続できませんでした</translation>
-<translation id="1405336513195181336">ブックマーク、拡張機能、サイトの閲覧履歴などが含まれます。</translation>
 <translation id="1405779994569073824">クラッシュしました。</translation>
 <translation id="1406500794671479665">確認中...</translation>
 <translation id="1407069428457324124">ダークモード</translation>
@@ -838,6 +837,7 @@
 <translation id="1575741822946219011">言語と入力方法</translation>
 <translation id="1576594961618857597">デフォルトの白のアバター</translation>
 <translation id="1576729678809834061">この検索結果を報告</translation>
+<translation id="1578110287710452646">横並び表示のサイズ変更ハンドル</translation>
 <translation id="1578488449637163638">ダーク</translation>
 <translation id="1578558981922970608">強制終了</translation>
 <translation id="157931050206866263">マルウェア スキャンの詳細</translation>
@@ -1510,7 +1510,6 @@
 <translation id="2040894699575719559">位置情報がブロックされています</translation>
 <translation id="2041246176170574368">まもなくセキュリティ アップデートの提供が終了します。新しい Chromebook を 50 ドル以上お得に手に入れましょう。</translation>
 <translation id="2042279886444479655">有効なプロファイル</translation>
-<translation id="2042427131767688936">デバイスを安全に使用できるようにするため、組織ではオペレーティング システム、ブラウザ、設定、デバイスにインストールされているソフトウェアに関する情報を確認することができます。</translation>
 <translation id="2044014337866019681">セッションのロックを解除するには、<ph name="ACCOUNT" /> の確認を行ってください。</translation>
 <translation id="2044750031738659219">{0,plural, =1{ゲストモードを終了}other{ゲストモードを終了（# 個のウィンドウ）}}</translation>
 <translation id="204497730941176055">Microsoft 証明書テンプレート名</translation>
@@ -3642,7 +3641,6 @@
 <translation id="3566211766752891194">タブのメモリ使用量を表示する</translation>
 <translation id="3566325075220776093">このデバイスから削除</translation>
 <translation id="3566721612727112615">サイトが追加されていません</translation>
-<translation id="3566788242120166275">以前の閲覧データは既存のプロフィールに保持され、この新しいプロフィールには含められません。</translation>
 <translation id="3567168891086460374">別の方法で保存</translation>
 <translation id="3567284462585300767">近くのユーザーとファイルを送受信するには、デバイスを公開してください</translation>
 <translation id="356738834800832239">パスワードを保存しました</translation>
@@ -3809,7 +3807,6 @@
 <translation id="3685598397738512288">Linux の USB 設定</translation>
 <translation id="3687598459967813435"><ph name="WEBSITE" /> からの通知を常に許可する</translation>
 <translation id="368789413795732264">ファイルの書き出し中にエラーが発生しました: <ph name="ERROR_TEXT" /></translation>
-<translation id="3687957587012862163">いいえ、この新しいプロフィールに移動します</translation>
 <translation id="3688507211863392146">アプリケーションで開いたファイルとフォルダに書き込む</translation>
 <translation id="3688526734140524629">チャンネルを変更</translation>
 <translation id="3688578402379768763">最新</translation>
@@ -3868,7 +3865,6 @@
 <translation id="37143699183660101">カーソルの安定性</translation>
 <translation id="3714610938239537183">ステップ 2/4: エクスポートする診断データを選択</translation>
 <translation id="3716065403310915079"><ph name="VM_NAME" /> インストーラ</translation>
-<translation id="3717256685838828428">このプロフィールは組織によって管理されており、この組織は次の情報を見ることができます</translation>
 <translation id="3719245268140483218">デバイスのイベント</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> を入力しました。</translation>
 <translation id="3719826155360621982">ホームページ</translation>
@@ -4899,7 +4895,6 @@
 <translation id="4426857487270413362">インストーラ ファイルをダウンロードできません。インターネット接続とディスクの空き容量を確認し、もう一度お試しください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="4427111270137140798"><ph name="COUNT" /> 回検出</translation>
 <translation id="4427365070557649936">確認コードを確認しています...</translation>
-<translation id="4428579202668721841">既存の閲覧データを仕事用プロフィールとは別に保持しますか？</translation>
 <translation id="4429163740524851942">物理キーボード配列</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="443031431654216610">数字のみ指定可能</translation>
@@ -6063,7 +6058,6 @@
 <translation id="5276357196618041410">ログインしてからでないと設定を保存できません</translation>
 <translation id="5277127016695466621">サイドパネルを表示</translation>
 <translation id="5278823018825269962">ステータス ID</translation>
-<translation id="5279214046729249716">はい、別に保持します</translation>
 <translation id="5279600392753459966">すべてブロックする</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> の認証情報を更新してください</translation>
 <translation id="5280426389926346830">ショートカットを作成しますか？</translation>
@@ -6387,7 +6381,6 @@
 <translation id="5503982651688210506"><ph name="HOST" /> によるカメラの使用と移動、およびマイクの使用を引き続き許可する</translation>
 <translation id="5505307013568720083">インクがありません</translation>
 <translation id="5507756662695126555">否認防止</translation>
-<translation id="5508864312047847614">既存の閲覧データを学校用プロフィールとは別に保持しますか？</translation>
 <translation id="5509693895992845810">別名で保存(&amp;A)...</translation>
 <translation id="5509914365760201064">発行元: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Google から画像の説明を取得</translation>
@@ -6840,7 +6833,6 @@
 <translation id="5854066326260337683">LBS は現在無効になっています。LBS を有効にするには、<ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" /> ポリシーを設定します。</translation>
 <translation id="5854912040170951372">スライス</translation>
 <translation id="5855267860608268405">既知の Wi-Fi ネットワーク</translation>
-<translation id="5855375823365231964">このプロフィールについて</translation>
 <translation id="5855643921295613558">0.6秒</translation>
 <translation id="5856721540245522153">デバッグ機能を有効にする</translation>
 <translation id="5857090052475505287">新しいフォルダ</translation>
@@ -7203,7 +7195,6 @@
 <translation id="6113942107547980621">Smart Lock を使用するには、お使いのスマートフォンでメインユーザーのプロフィールに切り替えます</translation>
 <translation id="6116921718742659598">言語と入力の設定を変更</translation>
 <translation id="6119008366402292080">プリンタがありません</translation>
-<translation id="6119068870709745878">このプロフィールは <ph name="PROFILE_MANAGER" /> によって管理されており、この組織は次の情報を見ることができます</translation>
 <translation id="6119927814891883061">デバイス名を <ph name="DEVICE_NAME" /> に指定します</translation>
 <translation id="6119972796024789243">色補正</translation>
 <translation id="6121773125605585883"><ph name="WEBSITE" /> のユーザー名 <ph name="USERNAME" /> のパスワードを表示します</translation>
@@ -7412,6 +7403,7 @@
 <translation id="6264060420924719834">このアプリには他のサイトのウェブ コンテンツが含まれています</translation>
 <translation id="6264365405983206840">すべて選択(&amp;A)</translation>
 <translation id="6264376385120300461">ダウンロードを続行</translation>
+<translation id="6264485186158353794">セキュリティで保護されたページに戻る</translation>
 <translation id="6264520534872750757">デバイスを引き続き使用</translation>
 <translation id="6264636978858465832">パスワード マネージャーにさらにアクセスを許可する必要があります</translation>
 <translation id="626495329434552273">キーボード入力のオーバライドを許可するサイト</translation>
@@ -7627,7 +7619,6 @@
 <translation id="6434104957329207050">ポイントのスキャン速度</translation>
 <translation id="6434309073475700221">破棄</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> を使用するには、先にデバイスを更新する必要があります。</translation>
-<translation id="6434690603850475457">はい、別に保持します（推奨）</translation>
 <translation id="6434755719322447931">無秩序</translation>
 <translation id="6435339218366409950">字幕の訳文言語を選択してください</translation>
 <translation id="6436164536244065364">ウェブストアで見る</translation>

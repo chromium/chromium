@@ -57,7 +57,6 @@ OneCopyRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
       previous_content_id_(previous_content_id) {
   if (!in_use_resource.backing()) {
     auto backing = std::make_unique<ResourcePool::Backing>();
-    backing->overlay_candidate = client_->tile_overlay_candidate_;
     in_use_resource.set_backing(std::move(backing));
   }
   backing_ = in_use_resource.backing();

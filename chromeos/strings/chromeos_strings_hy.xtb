@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">Սպասեք…</translation>
 <translation id="2740531572673183784">Եղավ</translation>
 <translation id="2744221223678373668">Համօգտագործված</translation>
+<translation id="2749164457515831917">Առաջարկությունները խառնվել են</translation>
 <translation id="2751739896257479635">EAP նույնականացման փուլ 2</translation>
 <translation id="2754757901767760034">լամպ</translation>
 <translation id="2780756493585863768">Google AI տեխնոլոգիաներով ստեղծված վերջին ֆոները</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">Դասավորության գործողությունների ընտրացանկ</translation>
 <translation id="3227186760713762082">Բաժանեք «<ph name="CATEGORY_TEXT" />» արժեքը <ph name="CONVERSION_RATE" />-ի</translation>
 <translation id="3246869037381808805">Տպման առաջադրանքները, որոնք 1 օրից հին են, կհեռացվեն</translation>
+<translation id="3248791727258378769">Գրադարձում չի ստեղծվի</translation>
 <translation id="324961752321393509">Ձեր ադմինիստրատորը թույլ չի տալիս փակել այս հավելվածը</translation>
 <translation id="3263941347294171263">Թարմացումը շարունակելու համար անջատեք հոսանքի լարը ձեր <ph name="DEVICE_NAME" /> սարքից և նորից միացրեք</translation>
 <translation id="3268178239013324452">Չհաջողվեց տպել – Կափարիչը բաց է</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">Ընտրել ջերմաստիճանի միավոր</translation>
 <translation id="3661106764436337772">Գրեք ավելի արագ և ավելի վստահ</translation>
 <translation id="3662461537616691585">բորդո և շագանակագույն</translation>
+<translation id="3664755900672940272">Սեմփլի հուշումները խառնվել են</translation>
 <translation id="3668449597372804501">«Ամպերի հոսք» պաստառ</translation>
 <translation id="3668570675727296296">Լեզվի կարգավորումներ</translation>
 <translation id="3675132884790542448">խոզեր</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">Անջատել էկրանապահը</translation>
 <translation id="4210636113897977670">Պահել և դուրս գալ</translation>
 <translation id="4210659479607886331">սառցադաշտային գետ</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> գրադարձման մոդելի ներբեռնումն ավարտված է</translation>
 <translation id="42126664696688958">Արտահանում</translation>
 <translation id="4213104098953699324">USB ստեղնաշար</translation>
 <translation id="4227825898293920515">Գաղտնաբառի գործողության ժամկետը <ph name="TIME" />ից կսպառվի</translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">Գունավոր</translation>
 <translation id="5457599981699367932">Մտնել հյուրի ռեժիմ</translation>
 <translation id="54609108002486618">Կառավարվող</translation>
+<translation id="5461608756903394951"><ph name="LANGUAGE_NAME" /> գրադարձման մոդելի ներբեռնումն ընթացքի մեջ է</translation>
 <translation id="5470776029649730099">պարկացու կտոր</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Մնացած փորձերի քանակը՝ {0}}one{Մնացած փորձերի քանակը՝ {0}}other{Մնացած փորձերի քանակը՝ {0}}}</translation>
 <translation id="5488280942828718790">ծիրանեգույն</translation>
@@ -1191,6 +1196,7 @@
 <translation id="6595046262780525922">Միացնե՞լ գրադարձումը և ներբեռնել գրադարձման մոդելը</translation>
 <translation id="6596816719288285829">IP հասցե</translation>
 <translation id="6599673642868607614">Շնորհակալություն արձագանքի համար: Մեր թիմը կդիտարկի այն։ Ձեր կարծիքը կօգնի մեզ բարելավել Chromebook-ի աշխատանքը։ Հաղորդումների մեծ քանակի պատճառով մենք չենք կարողանա պատասխան ուղարկել։</translation>
+<translation id="6608043585557830684">Գրադարձումն անջատված է։ Միացրեք Կարգավորումներում կամ <ph name="THREE_DOTS_MENU_ICON" /> ընտրացանկում։</translation>
 <translation id="660846213831377756">Մկնիկի ստեղներ</translation>
 <translation id="6618744767048954150">Ստուգումն ընթացքում է</translation>
 <translation id="6620487321149975369">Տպելու առաջադրանքները կցուցադրվեն պատմության մեջ, եթե դրանք ձեռքով չեն հեռացվել</translation>
@@ -1279,6 +1285,7 @@
 <translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" /> և փայլուն <ph name="GLOWSCAPES_FEATURE" /></translation>
 <translation id="6975981640379148271">կոալաներ</translation>
 <translation id="6977381486153291903">Ներկառուցված ծրագրակազմի տարբերակը</translation>
+<translation id="6978396562261420054">Գեներացված պատկեր</translation>
 <translation id="6981982820502123353">Մատչելիությունը</translation>
 <translation id="6982462588253070448">ավազաթմբեր</translation>
 <translation id="7005833343836210400">Սարքը միացած չէ ինտերնետին</translation>

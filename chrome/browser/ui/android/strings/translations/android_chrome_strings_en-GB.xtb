@@ -295,6 +295,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2390510615457643724">Do you want to download <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> again?</translation>
 <translation id="2395004545133500011">Share with summary sheet opened</translation>
 <translation id="2410754283952462441">Choose an account</translation>
+<translation id="2413014528833954543">Can't check passwords on this device</translation>
 <translation id="2414886740292270097">Dark</translation>
 <translation id="2421705177906985956">No sites to show right now</translation>
 <translation id="2426805022920575512">Choose another account</translation>
@@ -1134,6 +1135,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6254139308321626268">You're viewing a PDF file</translation>
 <translation id="6255809143828972562">With tools from Chrome, you can browse safely and stay in control</translation>
 <translation id="6264376385120300461">Download anyway</translation>
+<translation id="6264485186158353794">Back to safety</translation>
 <translation id="6277522088822131679">There was a problem printing the page. Please try again.</translation>
 <translation id="6278428485366576908">Theme</translation>
 <translation id="6284472661216707937">Passwords on all your devices closed</translation>

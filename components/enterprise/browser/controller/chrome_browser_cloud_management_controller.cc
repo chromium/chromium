@@ -51,6 +51,12 @@ ChromeBrowserCloudManagementController::Delegate::
   return nullptr;
 }
 
+std::unique_ptr<client_certificates::CertificateProvisioningService>
+ChromeBrowserCloudManagementController::Delegate::
+    CreateCertificateProvisioningService() {
+  return nullptr;
+}
+
 void ChromeBrowserCloudManagementController::Delegate::DeferInitialization(
     base::OnceClosure callback) {
   NOTREACHED();
@@ -378,6 +384,16 @@ ChromeBrowserCloudManagementController::GetDeviceTrustKeyManager() {
     device_trust_key_manager_ = delegate_->CreateDeviceTrustKeyManager();
   }
   return device_trust_key_manager_.get();
+}
+
+client_certificates::CertificateProvisioningService*
+ChromeBrowserCloudManagementController::GetCertificateProvisioningService() {
+  if (!certificate_provisioning_service_) {
+    certificate_provisioning_service_ =
+        delegate_->CreateCertificateProvisioningService();
+  }
+
+  return certificate_provisioning_service_.get();
 }
 
 void ChromeBrowserCloudManagementController::SetGaiaURLLoaderFactory(

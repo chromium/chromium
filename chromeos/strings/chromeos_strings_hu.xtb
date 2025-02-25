@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">Kérjük, várjon...</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Megosztott</translation>
+<translation id="2749164457515831917">Javaslatok megkeverve</translation>
 <translation id="2751739896257479635">EAP hitelesítés 2. fázisa</translation>
 <translation id="2754757901767760034">lámpa</translation>
 <translation id="2780756493585863768">A Google AI által biztosított legutóbbi hátterek</translation>
@@ -559,6 +560,7 @@
 <translation id="3651050199673793219">Hőmérséklet mértékegységének kiválasztása</translation>
 <translation id="3661106764436337772">Gyorsabb és magabiztosabb írás</translation>
 <translation id="3662461537616691585">burgundi és gesztenyevörös</translation>
+<translation id="3664755900672940272">Mintautasítások megkeverve</translation>
 <translation id="3668449597372804501">Szálló felhők háttérkép</translation>
 <translation id="3668570675727296296">Nyelvi beállítások</translation>
 <translation id="3675132884790542448">sertések</translation>
@@ -1283,6 +1285,7 @@
 <translation id="6975620886940770104">Egy <ph name="GLOWSCAPES_FEATURE" /> a következővel: ragyogó <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">koalák</translation>
 <translation id="6977381486153291903">Firmware ellenőrzése</translation>
+<translation id="6978396562261420054">Generált kép</translation>
 <translation id="6981982820502123353">Kisegítő lehetőségek</translation>
 <translation id="6982462588253070448">homokdűnék</translation>
 <translation id="7005833343836210400">Az eszköz offline állapotú</translation>
@@ -1430,6 +1433,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7618216277886673749">A következő kiválasztása: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Semleges</translation>
 <translation id="7620771111601174153">További információ a Súgóban</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">Utolsó visszaállítás ideje</translation>
 <translation id="7633068090678117093">Háttérkép</translation>
 <translation id="763873111564339966">indigókék</translation>
@@ -1624,6 +1628,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">teaház</translation>
 <translation id="8538236298648811558">A Google AI működteti</translation>
+<translation id="8543574988889671960">Lap újratöltése</translation>
 <translation id="8550364285433943656">Rendeljen vezérlőket a játékműveletekhez, és használja játékra a billentyűzet billentyűit</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Szolgáltatója előírhatja ennek a beállításnak a használatát a hálózathoz való csatlakozás érdekében. További információért forduljon a szolgáltatójához.</translation>

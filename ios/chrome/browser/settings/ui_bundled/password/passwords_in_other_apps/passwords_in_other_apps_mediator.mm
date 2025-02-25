@@ -8,7 +8,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_auto_fill_status_manager.h"
-#import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
+#import "ios/chrome/browser/shared/coordinator/utils/credential_provider_settings_utils.h"
 
 @implementation PasswordsInOtherAppsMediator
 
@@ -36,7 +36,7 @@
 #pragma mark - PasswordsInOtherAppsViewControllerDelegate
 
 - (void)openApplicationSettings {
-  ios::provider::PasswordsInOtherAppsOpensSettings();
+  OpenIOSCredentialProviderSettings();
 }
 
 @end

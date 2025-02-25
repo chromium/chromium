@@ -8,7 +8,6 @@ mojom("mojom") {
   sources = [
     "device.mojom",
     "devices_changed_observer.mojom",
-    "multi_capture_service.mojom",
     "producer.mojom",
     "testing_controls.mojom",
     "video_capture_service.mojom",

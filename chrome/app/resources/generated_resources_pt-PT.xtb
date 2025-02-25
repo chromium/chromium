@@ -585,7 +585,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1401216725754314428">Saiba mais sobre sites relacionados num novo separador</translation>
 <translation id="1402426911829176748">A ligar ao seu dispositivo</translation>
 <translation id="1403222014593521787">Não é possível estabelecer ligação ao proxy</translation>
-<translation id="1405336513195181336">Isto inclui marcadores, extensões e o histórico de navegação de sites.</translation>
 <translation id="1405779994569073824">Falhou.</translation>
 <translation id="1406500794671479665">A confirmar...</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
@@ -838,6 +837,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1575741822946219011">Idiomas e métodos de introdução</translation>
 <translation id="1576594961618857597">Avatar branco predefinido</translation>
 <translation id="1576729678809834061">Denunciar este resultado da pesquisa</translation>
+<translation id="1578110287710452646">Indicador de redimensionamento lado a lado</translation>
 <translation id="1578488449637163638">Escuro</translation>
 <translation id="1578558981922970608">Forçar fecho</translation>
 <translation id="157931050206866263">Saiba mais acerca das análises de software malicioso</translation>
@@ -1513,7 +1513,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2040894699575719559">Localização bloqueada</translation>
 <translation id="2041246176170574368">As atualizações de segurança terminam em breve. Poupe 50 $ ou mais num novo Chromebook.</translation>
 <translation id="2042279886444479655">Perfis ativos</translation>
-<translation id="2042427131767688936">Para garantir que este dispositivo pode ser usado em segurança, a sua organização pode ver informações sobre o sistema operativo, o navegador e as definições, e que software está instalado no dispositivo.</translation>
 <translation id="2044014337866019681">Certifique-se de que está a validar a conta <ph name="ACCOUNT" /> para desbloquear a sessão.</translation>
 <translation id="2044750031738659219">{0,plural, =1{Fechar sessão de convidado}other{Fechar sessão de convidado (# janelas)}}</translation>
 <translation id="204497730941176055">Nome do modelo de certificado Microsoft</translation>
@@ -3652,7 +3651,6 @@ Quer pará-lo?</translation>
 <translation id="3566211766752891194">Mostrar utilização de memória dos separadores</translation>
 <translation id="3566325075220776093">Deste dispositivo</translation>
 <translation id="3566721612727112615">Nenhum site adicionado</translation>
-<translation id="3566788242120166275">Os seus dados de navegação existentes vão permanecer no perfil existente. Este novo perfil não vai conter dados de navegação anteriores.</translation>
 <translation id="3567168891086460374">Guardar de outra forma</translation>
 <translation id="3567284462585300767">Para receber e aceitar ficheiros de pessoas à sua volta, torne-se visível</translation>
 <translation id="356738834800832239">A sua palavra-passe foi guardada</translation>
@@ -3819,7 +3817,6 @@ Quer pará-lo?</translation>
 <translation id="3685598397738512288">Preferências de USB do Linux</translation>
 <translation id="3687598459967813435">Permitir sempre notificações de <ph name="WEBSITE" /></translation>
 <translation id="368789413795732264">Ocorreu um erro ao tentar escrever o ficheiro: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3687957587012862163">Não, movê-los para este novo perfil</translation>
 <translation id="3688507211863392146">Escrever em ficheiros e pastas que são abertos na aplicação</translation>
 <translation id="3688526734140524629">Alterar canal</translation>
 <translation id="3688578402379768763">Atualizado</translation>
@@ -3878,7 +3875,6 @@ Quer pará-lo?</translation>
 <translation id="37143699183660101">Estabilidade do cursor</translation>
 <translation id="3714610938239537183">Passo 2 de 4: selecione os dados de diagnóstico a exportar</translation>
 <translation id="3716065403310915079">Instalador de <ph name="VM_NAME" /></translation>
-<translation id="3717256685838828428">Este perfil é gerido pela sua organização, que pode ver algumas informações, incluindo</translation>
 <translation id="3719245268140483218">Evento de dispositivo</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> preenchido.</translation>
 <translation id="3719826155360621982">Página inicial</translation>
@@ -4911,7 +4907,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4426857487270413362">Não é possível transferir os ficheiros de instalação. Verifique a sua ligação à Internet, se tem espaço livre em disco suficiente e tente novamente. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">Detetado <ph name="COUNT" /> vezes</translation>
 <translation id="4427365070557649936">A validar o código de validação…</translation>
-<translation id="4428579202668721841">Manter os dados de navegação existentes separados do seu perfil de trabalho?</translation>
 <translation id="4429163740524851942">Esquema de teclado físico</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="443031431654216610">Use apenas dígitos numéricos</translation>
@@ -6078,7 +6073,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5276357196618041410">Não é possível guardar a configuração sem iniciar sessão primeiro</translation>
 <translation id="5277127016695466621">Mostre o painel lateral</translation>
 <translation id="5278823018825269962">ID de estado</translation>
-<translation id="5279214046729249716">Sim, mantê-los separados</translation>
 <translation id="5279600392753459966">Bloquear todos</translation>
 <translation id="5280064835262749532">Atualize as credenciais de <ph name="SHARE_PATH" /></translation>
 <translation id="5280426389926346830">Quer criar um atalho?</translation>
@@ -6404,7 +6398,6 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5503982651688210506">Continuar a permitir que <ph name="HOST" /> utilize e mova a câmara e utilize o microfone</translation>
 <translation id="5505307013568720083">Sem tinta</translation>
 <translation id="5507756662695126555">Não repudiação</translation>
-<translation id="5508864312047847614">Manter os dados de navegação existentes separados do seu perfil escolar?</translation>
 <translation id="5509693895992845810">Guard&amp;ar Como...</translation>
 <translation id="5509914365760201064">Emissor: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Obter descrições de imagens a partir do Google</translation>
@@ -6858,7 +6851,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5854066326260337683">A LBS está atualmente desativada. Pode ativar a LBS ao definir a política <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" />.</translation>
 <translation id="5854912040170951372">Fatia</translation>
 <translation id="5855267860608268405">Redes Wi-Fi conhecidas</translation>
-<translation id="5855375823365231964">Acerca deste perfil</translation>
 <translation id="5855643921295613558">0,6 segundos</translation>
 <translation id="5856721540245522153">Ativar funcionalidades de depuração</translation>
 <translation id="5857090052475505287">Nova pasta</translation>
@@ -7221,7 +7213,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6113942107547980621">Para utilizar o Smart Lock, mude para o perfil de utilizador principal no seu telemóvel</translation>
 <translation id="6116921718742659598">Alterar idioma e definições de introdução</translation>
 <translation id="6119008366402292080">Nenhuma impressora disponível</translation>
-<translation id="6119068870709745878">Este perfil é gerido por <ph name="PROFILE_MANAGER" />, que pode ver algumas informações, incluindo</translation>
 <translation id="6119927814891883061">Atribuir o nome <ph name="DEVICE_NAME" /> ao dispositivo</translation>
 <translation id="6119972796024789243">Correção da cor</translation>
 <translation id="6121773125605585883">Veja a palavra-passe com o nome de utilizador <ph name="USERNAME" /> para <ph name="WEBSITE" /></translation>
@@ -7430,6 +7421,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6264060420924719834">Esta app inclui conteúdo da Web de outros sites</translation>
 <translation id="6264365405983206840">Seleccion&amp;ar Tudo</translation>
 <translation id="6264376385120300461">Transferir mesmo assim</translation>
+<translation id="6264485186158353794">Voltar para segurança</translation>
 <translation id="6264520534872750757">Continuar a usar o dispositivo</translation>
 <translation id="6264636978858465832">O Gestor de Palavras-passe precisa de mais acesso</translation>
 <translation id="626495329434552273">Com autorização para substituir a entrada de teclado</translation>
@@ -7645,7 +7637,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6434104957329207050">Velocidade de análise de pontos</translation>
 <translation id="6434309073475700221">Rejeitar</translation>
 <translation id="6434325376267409267">O seu dispositivo tem de ser atualizado antes de poder utilizar a app <ph name="APP_NAME" />.</translation>
-<translation id="6434690603850475457">Sim, mantê-los em separado (recomendado)</translation>
 <translation id="6434755719322447931">Caótico</translation>
 <translation id="6435339218366409950">Escolha o idioma para o qual quer traduzir as legendas</translation>
 <translation id="6436164536244065364">Ver na Web Store</translation>

@@ -2109,6 +2109,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
+  csd_service_->SetOnDeviceAvailabilityForTesting(true);
 
   base::HistogramTester histogram_tester;
 
@@ -2169,6 +2170,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
+  csd_service_->SetOnDeviceAvailabilityForTesting(true);
 
   base::HistogramTester histogram_tester;
 
@@ -2241,6 +2243,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
+  csd_service_->SetOnDeviceAvailabilityForTesting(true);
 
   base::HistogramTester histogram_tester;
 
@@ -2330,6 +2333,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection},
               {kClientSideDetectionShowScamVerdictWarning});
+  csd_service_->SetOnDeviceAvailabilityForTesting(true);
 
   base::HistogramTester histogram_tester;
 
@@ -2414,6 +2418,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
                kClientSideDetectionShowScamVerdictWarning},
               {});
+  csd_service_->SetOnDeviceAvailabilityForTesting(true);
 
   base::HistogramTester histogram_tester;
 
@@ -2502,6 +2507,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
                kClientSideDetectionSendLlamaForcedTriggerInfo,
                kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
               {});
+  csd_service_->SetOnDeviceAvailabilityForTesting(true);
 
   GURL example_url("http://suspiciousurl.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(example_url, false);

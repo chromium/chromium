@@ -473,6 +473,7 @@
 <translation id="3226657629376379887">布局操作菜单</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />值除以 <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">系统会自动移除存在时长已超过 1 天的打印任务</translation>
+<translation id="3248791727258378769">不会创建转写内容</translation>
 <translation id="324961752321393509">您的管理员不允许关闭此应用</translation>
 <translation id="3263941347294171263">请拔下并重新插入<ph name="DEVICE_NAME" />，以继续更新流程</translation>
 <translation id="3268178239013324452">失败 - 机盖未关</translation>
@@ -672,6 +673,7 @@
 <translation id="420283545744377356">关闭屏保功能</translation>
 <translation id="4210636113897977670">保存并退出</translation>
 <translation id="4210659479607886331">冰川河</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" />转写模型下载完毕</translation>
 <translation id="42126664696688958">导出</translation>
 <translation id="4213104098953699324">USB 键盘</translation>
 <translation id="4227825898293920515">密码将于 <ph name="TIME" />后到期</translation>
@@ -942,6 +944,7 @@
 <translation id="5431318178759467895">彩色</translation>
 <translation id="5457599981699367932">以访客身份浏览</translation>
 <translation id="54609108002486618">受管理</translation>
+<translation id="5461608756903394951">正在下载<ph name="LANGUAGE_NAME" />转写模型</translation>
 <translation id="5470776029649730099">粗麻布</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{剩余尝试次数：{0}}other{剩余尝试次数：{0}}}</translation>
 <translation id="5488280942828718790">品红色</translation>
@@ -1029,6 +1032,7 @@
 <translation id="590746845088109442">猫</translation>
 <translation id="5907649332524363701">按键颜色</translation>
 <translation id="5908813850962688338">安装此更新需要几分钟时间。下载更新期间，请将设备接通电源并保持开机状态。在此过程中，设备可能会多次重启并显示黑屏。系统会提示您重启设备以完成安装。</translation>
+<translation id="5915794087373112615">老师将在 <ph name="NUM_SECONDS" /> 秒后查看您的屏幕</translation>
 <translation id="5916084858004523819">已禁止</translation>
 <translation id="5916664084637901428">已启用</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{系统已成功扫描完您的文件并已将扫描版保存至<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />。}other{系统已成功扫描完您的文件并已将扫描版保存至<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />。}}</translation>
@@ -1193,6 +1197,7 @@
 <translation id="6595046262780525922">要开启转写功能并下载转写模型吗？</translation>
 <translation id="6596816719288285829">IP 地址</translation>
 <translation id="6599673642868607614">感谢您提供反馈。您的反馈有助于我们改进 Chromebook 使用体验，会被我们的团队审核。由于举报数量众多，我们无法发送回复。</translation>
+<translation id="6608043585557830684">转写功能已关闭，请在“设置”或“<ph name="THREE_DOTS_MENU_ICON" />”菜单中开启。</translation>
 <translation id="660846213831377756">鼠标按键</translation>
 <translation id="6618744767048954150">正在运行</translation>
 <translation id="6620487321149975369">打印任务如未被手动移除，将会显示在历史记录中，</translation>
@@ -1429,6 +1434,7 @@
 <translation id="7618216277886673749">选择<ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">中性</translation>
 <translation id="7620771111601174153">在帮助中心内了解详情</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">上次重置时间</translation>
 <translation id="7633068090678117093">背景图片</translation>
 <translation id="763873111564339966">靛蓝色</translation>
@@ -1520,6 +1526,7 @@
 <translation id="8054112564438735763">米黄色</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /><ph name="CHARACTERS_SUBJECTS" />搭配<ph name="CHARACTERS_BACKGROUND" />背景</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">请连接麦克风，开始录制音频</translation>
 <translation id="8067126283828232460">已连接 APN。</translation>
 <translation id="8067208048261192356">棕色</translation>
 <translation id="8067224607978179455">删除<ph name="ACTION_NAME" /></translation>
@@ -1623,6 +1630,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">茶馆</translation>
 <translation id="8538236298648811558">Google AI 赋能</translation>
+<translation id="8543574988889671960">重新加载标签页</translation>
 <translation id="8550364285433943656">使用键盘按键控制游戏操作</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">您的运营商可能会要求您启用此选项以连接到其网络。如需了解详情，请联系您的运营商。</translation>

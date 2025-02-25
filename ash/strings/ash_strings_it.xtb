@@ -176,6 +176,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1546492247443594934">Scrivania 2</translation>
 <translation id="1546930421365146760">Chiedi all'amministratore di configurare questo dispositivo nella Console di amministrazione Google</translation>
 <translation id="1549512626801247439">gestione dello spazio di archiviazione</translation>
+<translation id="1549721333775633305">Mostra impostazioni di Quick Share. Quick Share disattivato</translation>
 <translation id="1550406609415860283">Dispositivi disponibili</translation>
 <translation id="1550523713251050646">Fai clic per visualizzare altre opzioni</translation>
 <translation id="1555130319947370107">Blu</translation>
@@ -1471,6 +1472,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5856638668464565213">La rete <ph name="NETWORK_NAME" /> non è attiva.</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Attiva</translation>
+<translation id="5864691701242730005">Mostra impostazioni di Quick Share. Visibilità selezionata: <ph name="VISIBILITY" /></translation>
 <translation id="5864748620896638071">Batteria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Raccolta delle informazioni della rete in corso…</translation>
 <translation id="5867606971598166637">L'amministratore di sistema sta monitorando i tuoi schermi</translation>
@@ -2259,6 +2261,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="851660987304951246">Usa Aiutami a leggere per riassumere rapidamente i contenuti o fare domande</translation>
 <translation id="8517041960877371778">Il tuo dispositivo <ph name="DEVICE_TYPE" /> potrebbe non caricarsi mentre è acceso.</translation>
 <translation id="8535393432370007982">Annulla l'ordinamento per colore</translation>
+<translation id="8536886494750559755">Mostra impostazioni di Quick Share. Opzione visibile a tutti per <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Testo copiato negli appunti</translation>
 <translation id="8541078764854166027">Zoom automat.</translation>
 <translation id="8542053257095774575">Nessuna scrivania o nessun modello salvati</translation>

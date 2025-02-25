@@ -1172,15 +1172,11 @@ void SellerWorklet::V8State::ScoreAd(
       !SetDataVersion(trusted_signals_relation_, scoring_signals_data_version,
                       browser_signals_dict) ||
       (base::FeatureList::IsEnabled(
-           blink::features::kBiddingAndScoringDebugReportingAPI) &&
-       base::FeatureList::IsEnabled(
            blink::features::kFledgeSampleDebugReports) &&
        !browser_signals_dict.Set(
            "forDebuggingOnlyInCooldownOrLockout",
            browser_signal_for_debugging_only_in_cooldown_or_lockout)) ||
       (base::FeatureList::IsEnabled(
-           blink::features::kBiddingAndScoringDebugReportingAPI) &&
-       base::FeatureList::IsEnabled(
            blink::features::kFledgeEnableSampleDebugReportOnCookieSetting) &&
        !browser_signals_dict.Set("forDebuggingOnlySampling",
                                  browser_signal_for_debugging_only_sampling)) ||

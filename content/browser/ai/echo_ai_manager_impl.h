@@ -71,7 +71,8 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
 
   void ReturnAILanguageModelCreationResult(
       mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
-          client_remote);
+          client_remote,
+      blink::mojom::AILanguageModelSamplingParamsPtr sampling_params);
   void ReturnAISummarizerCreationResult(
       mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient>
           client_remote);

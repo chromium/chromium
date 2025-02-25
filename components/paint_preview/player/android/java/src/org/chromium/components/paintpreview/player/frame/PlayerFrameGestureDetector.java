@@ -10,18 +10,21 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Detects scroll, fling, and scale gestures on calls to {@link #onTouchEvent} and reports back to
  * the provided {@link PlayerFrameGestureDetectorDelegate}.
  */
+@NullMarked
 class PlayerFrameGestureDetector
         implements GestureDetector.OnGestureListener, ScaleGestureDetector.OnScaleGestureListener {
     private GestureDetector mGestureDetector;
     private ScaleGestureDetector mScaleGestureDetector;
     private boolean mCanDetectZoom;
     private PlayerFrameGestureDetectorDelegate mDelegate;
-    private PlayerFrameGestureDetector mParentGestureDetector;
+    private @Nullable PlayerFrameGestureDetector mParentGestureDetector;
 
     /**
      * Last horizontal scroll distance that was detected by this {@link PlayerFrameGestureDetector}
@@ -98,7 +101,8 @@ class PlayerFrameGestureDetector
     }
 
     @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+    public boolean onScroll(
+            @Nullable MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         if (mDelegate.scrollBy(distanceX, distanceY)) {
             mLastParentScrollX = 0f;
             mLastParentScrollY = 0f;
@@ -128,7 +132,8 @@ class PlayerFrameGestureDetector
     }
 
     @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+    public boolean onFling(
+            @Nullable MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         if (mDelegate.onFling(velocityX, velocityY)) return true;
 
         if (mParentGestureDetector != null) {

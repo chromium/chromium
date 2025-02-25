@@ -4,9 +4,11 @@
 
 #include "chrome/browser/signin/signin_promo_util.h"
 
+#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/reauth_result.h"
+#include "chrome/browser/signin/signin_promo.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -14,6 +16,8 @@
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/sync/base/features.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/network_change_notifier.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -35,21 +39,21 @@
 
 namespace {
 
+using signin::SignInPromoType;
 using signin_util::SignedInState;
 
 constexpr int kSigninPromoShownThreshold = 5;
 constexpr int kSigninPromoDismissedThreshold = 2;
 
-// Maps to a subset of `signin_metrics::AccessPoint`.
-enum class AutofillSignInPromoType { kPassword, kAddress };
-
-syncer::DataType GetDataTypeFromAutofillSignInPromoType(
-    AutofillSignInPromoType type) {
+syncer::DataType GetDataTypeFromSignInPromoType(SignInPromoType type) {
   switch (type) {
-    case AutofillSignInPromoType::kPassword:
+    case SignInPromoType::kPassword:
       return syncer::PASSWORDS;
-    case AutofillSignInPromoType::kAddress:
+    case SignInPromoType::kAddress:
       return syncer::CONTACT_INFO;
+    case SignInPromoType::kBookmark:
+    case SignInPromoType::kExtension:
+      NOTREACHED();
   }
 }
 
@@ -57,8 +61,7 @@ syncer::DataType GetDataTypeFromAutofillSignInPromoType(
 // Needs additional checks depending on the type of the promo (see
 // `ShouldShowAddressSignInPromo` and `ShouldShowPasswordSignInPromo`).
 // `profile` is the profile of the tab the promo would be shown on.
-bool ShouldShowSignInPromoCommon(Profile& profile,
-                                 AutofillSignInPromoType type) {
+bool ShouldShowSignInPromoCommon(Profile& profile, SignInPromoType type) {
   // Don't show the promo if it does not pass the sync base checks.
   if (!signin::ShouldShowSyncPromo(profile)) {
     return false;
@@ -71,7 +74,7 @@ bool ShouldShowSignInPromoCommon(Profile& profile,
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(&profile);
-  syncer::DataType data_type = GetDataTypeFromAutofillSignInPromoType(type);
+  syncer::DataType data_type = GetDataTypeFromSignInPromoType(type);
 
   // Don't show the promo if policies disallow account storage.
   if (sync_service->GetUserSettings()->IsTypeManagedByPolicy(
@@ -119,7 +122,7 @@ bool ShouldShowSignInPromoCommon(Profile& profile,
 }
 
 bool ShouldShowPromoBasedOnImpressionCount(Profile& profile,
-                                           AutofillSignInPromoType type) {
+                                           SignInPromoType type) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile);
 
@@ -136,7 +139,7 @@ bool ShouldShowPromoBasedOnImpressionCount(Profile& profile,
 
   int show_count = 0;
   switch (type) {
-    case AutofillSignInPromoType::kAddress:
+    case SignInPromoType::kAddress:
       show_count =
           account.gaia.empty()
               ? profile.GetPrefs()->GetInteger(
@@ -144,30 +147,20 @@ bool ShouldShowPromoBasedOnImpressionCount(Profile& profile,
               : SigninPrefs(*profile.GetPrefs())
                     .GetAddressSigninPromoImpressionCount(account.gaia);
       break;
-    case AutofillSignInPromoType::kPassword:
+    case SignInPromoType::kPassword:
       show_count =
           account.gaia.empty()
               ? profile.GetPrefs()->GetInteger(
                     prefs::kPasswordSignInPromoShownCountPerProfile)
               : SigninPrefs(*profile.GetPrefs())
                     .GetPasswordSigninPromoImpressionCount(account.gaia);
+      break;
+    case SignInPromoType::kBookmark:
+    case SignInPromoType::kExtension:
+      return true;
   }
 
   return show_count < kSigninPromoShownThreshold;
-}
-
-AutofillSignInPromoType GetAutofillSignInPromoType(
-    signin_metrics::AccessPoint access_point) {
-  CHECK(signin::IsAutofillSigninPromo(access_point));
-
-  switch (access_point) {
-    case signin_metrics::AccessPoint::kPasswordBubble:
-      return AutofillSignInPromoType::kPassword;
-    case signin_metrics::AccessPoint::kAddressBubble:
-      return AutofillSignInPromoType::kAddress;
-    default:
-      NOTREACHED();
-  }
 }
 
 }  // namespace
@@ -227,14 +220,12 @@ bool ShouldShowSyncPromo(Profile& profile) {
 
 bool ShouldShowPasswordSignInPromo(Profile& profile) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-  if (!ShouldShowSignInPromoCommon(profile,
-                                   AutofillSignInPromoType::kPassword)) {
+  if (!ShouldShowSignInPromoCommon(profile, SignInPromoType::kPassword)) {
     return false;
   }
 
-  if (!ShouldShowPromoBasedOnImpressionCount(
-          profile, AutofillSignInPromoType::kPassword)) {
+  if (!ShouldShowPromoBasedOnImpressionCount(profile,
+                                             SignInPromoType::kPassword)) {
     return false;
   }
 
@@ -247,9 +238,7 @@ bool ShouldShowPasswordSignInPromo(Profile& profile) {
 bool ShouldShowAddressSignInPromo(Profile& profile,
                                   const autofill::AutofillProfile& address) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-  if (!ShouldShowSignInPromoCommon(profile,
-                                   AutofillSignInPromoType::kAddress)) {
+  if (!ShouldShowSignInPromoCommon(profile, SignInPromoType::kAddress)) {
     return false;
   }
 
@@ -262,8 +251,8 @@ bool ShouldShowAddressSignInPromo(Profile& profile,
     return false;
   }
 
-  if (!ShouldShowPromoBasedOnImpressionCount(
-          profile, AutofillSignInPromoType::kAddress)) {
+  if (!ShouldShowPromoBasedOnImpressionCount(profile,
+                                             SignInPromoType::kAddress)) {
     return false;
   }
 
@@ -278,6 +267,22 @@ bool IsAutofillSigninPromo(signin_metrics::AccessPoint access_point) {
          access_point == signin_metrics::AccessPoint::kAddressBubble;
 }
 
+SignInPromoType GetSignInPromoTypeFromAccessPoint(
+    signin_metrics::AccessPoint access_point) {
+  switch (access_point) {
+    case signin_metrics::AccessPoint::kPasswordBubble:
+      return SignInPromoType::kPassword;
+    case signin_metrics::AccessPoint::kAddressBubble:
+      return SignInPromoType::kAddress;
+    case signin_metrics::AccessPoint::kBookmarkBubble:
+      return SignInPromoType::kBookmark;
+    case signin_metrics::AccessPoint::kExtensionInstallBubble:
+      return SignInPromoType::kExtension;
+    default:
+      NOTREACHED();
+  }
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
                             Profile* profile) {
@@ -285,18 +290,21 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
 
   AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
       IdentityManagerFactory::GetForProfile(profile));
-  AutofillSignInPromoType promo_type = GetAutofillSignInPromoType(access_point);
+  SignInPromoType promo_type = GetSignInPromoTypeFromAccessPoint(access_point);
 
   // Record the pref per profile if there is no account present.
   if (account.gaia.empty()) {
     const char* pref_name;
     switch (promo_type) {
-      case AutofillSignInPromoType::kPassword:
+      case SignInPromoType::kPassword:
         pref_name = prefs::kPasswordSignInPromoShownCountPerProfile;
         break;
-      case AutofillSignInPromoType::kAddress:
+      case SignInPromoType::kAddress:
         pref_name = prefs::kAddressSignInPromoShownCountPerProfile;
         break;
+      case SignInPromoType::kBookmark:
+      case SignInPromoType::kExtension:
+        return;
     }
 
     int show_count = profile->GetPrefs()->GetInteger(pref_name);
@@ -307,13 +315,17 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
   // Record the pref for the account that was used for the promo, either because
   // it is signed into the web or in sign in pending state.
   switch (promo_type) {
-    case AutofillSignInPromoType::kPassword:
+    case SignInPromoType::kPassword:
       SigninPrefs(*profile->GetPrefs())
           .IncrementPasswordSigninPromoImpressionCount(account.gaia);
       return;
-    case AutofillSignInPromoType::kAddress:
+    case SignInPromoType::kAddress:
       SigninPrefs(*profile->GetPrefs())
           .IncrementAddressSigninPromoImpressionCount(account.gaia);
+      return;
+    case SignInPromoType::kBookmark:
+    case SignInPromoType::kExtension:
+      return;
   }
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

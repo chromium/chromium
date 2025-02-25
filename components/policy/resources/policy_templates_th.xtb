@@ -6673,25 +6673,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 ใน <ph name="MS_WIN_NAME" /> นโยบายนี้ใช้ได้เฉพาะในอินสแตนซ์ที่เข้าร่วมโดเมน <ph name="MS_AD_NAME" />, เข้าร่วม <ph name="MS_AAD_NAME" /> หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" />
 
 ใน <ph name="MAC_OS_NAME" /> นโยบายนี้ใช้ได้เฉพาะในอินสแตนซ์ที่จัดการผ่าน MDM, เข้าร่วมโดเมนผ่าน MCX หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" /></translation>
-<translation id="5904248258096038701">นโยบายนี้อนุญาตให้ผู้ดูแลระบบตั้งค่าเครื่องมือรวบรวมข้อมูลการค้นหาขององค์กรที่กำหนดซึ่งจะแสดงคำแนะนำและผลการค้นหาในแถบที่อยู่เมื่อถูกเรียกให้แสดงโดยคีย์เวิร์ดเฉพาะ ผู้ใช้เริ่มการค้นหาได้โดยการพิมพ์คีย์เวิร์ดที่ระบุในช่อง <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> โดยใส่หรือไม่ใส่คำนำหน้า @ (เช่น <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) ตามด้วยการกด Space หรือ Tab ในแถบที่อยู่
-
-ต้องใส่ข้อมูลในช่อง <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />
-
-ช่อง <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> สอดคล้องกับชื่อเครื่องมือค้นหาที่แสดงให้ผู้ใช้เห็นในแถบที่อยู่
-
-ช่อง <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> สอดคล้องกับคีย์เวิร์ดที่ผู้ใช้ป้อนเพื่อเรียกใช้การค้นหา ทางลัดมีคำและอักขระธรรมดาได้ แต่ต้องไม่มีการเว้นวรรคหรือเริ่มต้นด้วยสัญลักษณ์ @ และทางลัดต้องไม่ซ้ำกัน
-
-ช่อง <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ที่จะค้นหา ป้อนที่อยู่เว็บสำหรับหน้าผลการค้นหาของเครื่องมือค้นหา แล้วใช้ <ph name="SEARCH_TERM_MARKER" /> แทนตำแหน่งที่เป็นคำค้นหา
-
-ช่อง <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ที่ให้การแนะนำการค้นหา หาก <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> มี <ph name="SEARCH_TERM_MARKER" /> Chrome จะได้รับการแนะนำการค้นหาจากคำขอ GET ไปยัง URL ที่แทนที่ <ph name="SEARCH_TERM_MARKER" /> ด้วยคำค้นหาของผู้ใช้ มิเช่นนั้น ระบบจะสร้างคำขอ POST และส่งคำค้นหาของผู้ใช้ในพารามิเตอร์ POST ภายใต้คีย์ <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />
-
-ช่อง <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ไปยังรูปภาพที่จะใช้ในการแนะนำการค้นหา ระบบจะใช้ไอคอนเริ่มต้นเมื่อไม่ได้ตั้งค่าช่องนี้ ขอแนะนำให้ใช้ไอคอน Fav (ตัวอย่าง <ph name="ICON_URL_EXAMPLE" />)
-
-ช่อง <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุว่าต้องใช้แถบที่อยู่ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> เพื่อดูคำแนะนำในการค้นหาหรือไม่ หากไม่ได้ตั้งค่าช่องนี้ ก็ไม่จำเป็นต้องใช้แถบที่อยู่ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />
-
-ใน <ph name="MS_WIN_NAME" /> นโยบายนี้ใช้ได้เฉพาะในอินสแตนซ์ที่เข้าร่วมโดเมน <ph name="MS_AD_NAME" />, เข้าร่วม <ph name="MS_AAD_NAME" /> หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" />
-
-ใน <ph name="MAC_OS_NAME" /> นโยบายนี้ใช้ได้เฉพาะในอินสแตนซ์ที่จัดการผ่าน MDM, เข้าร่วมโดเมนผ่าน MCX หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" /></translation>
 <translation id="5905114360004248993">อนุญาตให้แสดงป๊อปอัปในเว็บไซต์เหล่านี้</translation>
 <translation id="5905473632148429217">เปิดใช้การตรวจสอบ OCSP/CRL ออนไลน์</translation>
 <translation id="5908808391744484238">เมื่อเปิดใช้ไว้หรือไม่ได้ตั้งค่า ตัวกรองพารามิเตอร์ของ URL อาจนำพารามิเตอร์บางรายการออกเมื่อผู้ใช้เลือก "เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตน" จากเมนูตามบริบท
@@ -10797,7 +10778,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="8908294717014659003">อนุญาตให้คุณตั้งค่าว่าจะอนุญาตให้เว็บไซต์เข้าถึงอุปกรณ์จับสื่อภาพ/เสียงหรือไม่ การเข้าถึงอุปกรณ์จับสื่อภาพ/เสียงอาจได้รับอนุญาตโดยค่าเริ่มต้น หรือผู้ใช้สามารถรับข้อความสอบถามทุกๆ ครั้งที่เว็บไซต์ต้องการเข้าถึงอุปกรณ์จับสื่อภาพ/เสียง
 
           หากไม่ตั้งค่านโยบายนี้ "PromptOnAccess" จะถูกใช้และผู้ใช้จะสามารถเปลี่ยนแปลงได้</translation>
-<translation id="8909400095164640684">การตั้งค่าเครื่องมือรวบรวมข้อมูลการค้นหาขององค์กร</translation>
 <translation id="8911348623012274122">ตั้งขีดจำกัดหน่วยความจำสำหรับอินสแตนซ์ของ Chrome</translation>
 <translation id="8911736066340032670">รายงานข้อมูลเกี่ยวกับการแสดงผล เช่น อัตราการรีเฟรช และข้อมูลเกี่ยวกับกราฟิก เช่น เวอร์ชันของไดรเวอร์
 

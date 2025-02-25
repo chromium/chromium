@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">ແມວ</translation>
 <translation id="5907649332524363701">ສີຂອງປຸ່ມ</translation>
 <translation id="5908813850962688338">ການຕິດຕັ້ງການອັບເດດນີ້ຈະໃຊ້ເວລາສອງສາມນາທີ. ສຽບອຸປະກອນຂອງທ່ານໄວ້ ແລະ ເປີດເຄື່ອງເມື່ອອັບເດດກຳລັງຖືກດາວໂຫຼດ. ອຸປະກອນຂອງທ່ານອາດຈະປິດ​ເປີດ​ໃໝ່ດ້ວຍຕົວມັນເອງເປັນເວລາຫຼາຍເທື່ອ ແລະ ສະແດງໜ້າຈໍດຳໃນລະຫວ່າງຂະບວນການນີ້. ທ່ານຈະໄດ້ຮັບການເຕືອນໃຫ້ຣີສະຕາດອຸປະກອນຂອງທ່ານເພື່ອສໍາເລັດການຕິດຕັ້ງ.</translation>
+<translation id="5915794087373112615">ຄູຂອງທ່ານຈະເບິ່ງໜ້າຈໍຂອງທ່ານໃນອີກ <ph name="NUM_SECONDS" /> ວິນາທີ</translation>
 <translation id="5916084858004523819">ຫ້າມໃຊ້</translation>
 <translation id="5916664084637901428">ເປີດ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ສະແກນ ແລະ ບັນທຶກໄຟລ໌ຂອງທ່ານໄວ້ໃນ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ແລ້ວ.}other{ສະແກນ ແລະ ບັນທຶກໄຟລ໌ຂອງທ່ານໄວ້ໃນ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ແລ້ວ.}}</translation>
@@ -1434,6 +1435,7 @@
 <translation id="7618216277886673749">ເລືອກ <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">ປານກາງ</translation>
 <translation id="7620771111601174153">ສຶກສາເພີ່ມເຕີມໃນສູນຊ່ວຍເຫຼືອ</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">ເວລາຣີເຊັດຫຼ້າສຸດ</translation>
 <translation id="7633068090678117093">ພາບພື້ນຫຼັງ</translation>
 <translation id="763873111564339966">ຄາມ</translation>
@@ -1525,6 +1527,7 @@
 <translation id="8054112564438735763">ສີເນື້ອ</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> ຢູ່ພື້ນຫຼັງສີ <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">ເຊື່ອມຕໍ່ໄມໂຄຣໂຟນເພື່ອເລີ່ມບັນທຶກສຽງ</translation>
 <translation id="8067126283828232460">ເຊື່ອມຕໍ່ APN ແລ້ວ.</translation>
 <translation id="8067208048261192356">ນ້ຳຕານ</translation>
 <translation id="8067224607978179455">ລຶບ <ph name="ACTION_NAME" /></translation>

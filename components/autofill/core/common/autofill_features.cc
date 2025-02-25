@@ -734,6 +734,14 @@ BASE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport,
              "AutofillBetterLocalHeuristicPlaceholderSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the address add/edit editor in the payments request would be
+// removed and instead, the address editor from the settings will be used.
+// TODO: crbug.com/399071964 - Remove when launched.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kUseSettingsAddressEditorInPaymentsRequest,
+             "UseSettingsAddressEditorInPaymentsRequest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // If enabled, other apps can open the Autofill Options in Chrome.
 BASE_FEATURE(kAutofillDeepLinkAutofillOptions,

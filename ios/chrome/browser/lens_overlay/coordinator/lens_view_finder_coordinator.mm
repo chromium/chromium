@@ -34,10 +34,6 @@ LensViewFinderTransition TransitionFromPresentationStyle(
   }
 }
 
-// The corner radius to be applied on the bottom of the image passed to post
-// capture
-const CGFloat kBottomCornerRadius = 108.0;
-
 }  // namespace
 
 @interface LensViewFinderCoordinator () <
@@ -145,38 +141,6 @@ const CGFloat kBottomCornerRadius = 108.0;
 #pragma mark - ChromeLensViewFinderDelegate
 
 - (void)lensController:(id<ChromeLensViewFinderController>)lensController
-             didSelectImage:(UIImage*)image
-    serializedViewportState:(NSString*)viewportState
-              isCameraImage:(BOOL)isCameraImage {
-  BOOL isPortrait = image.size.height > image.size.width;
-  if (isCameraImage && isPortrait) {
-    image = [self infilledImageForPortraitCameraCapture:image];
-  }
-
-  [_metricsRecorder
-      recordImageWithSource:isCameraImage
-                                ? LensViewFinderImageSource::kCamera
-                                : LensViewFinderImageSource::kGallery];
-
-  LensOverlayEntrypoint entrypoint =
-      isCameraImage ? LensOverlayEntrypoint::kLVFCameraCapture
-                    : LensOverlayEntrypoint::kLVFImagePicker;
-
-  id<LensOverlayCommands> _lensOverlayCommands = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), LensOverlayCommands);
-  __weak id<ChromeLensViewFinderController> weakLensViewController =
-      _lensViewController;
-
-  // Once post capture is presented, the live camera can be torn down.
-  [_lensOverlayCommands
-      searchImageWithLens:image
-               entrypoint:entrypoint
-               completion:^(BOOL success) {
-                 [weakLensViewController tearDownCaptureInfrastructure];
-               }];
-}
-
-- (void)lensController:(id<ChromeLensViewFinderController>)lensController
     didSelectImageWithMetadata:(id<LensImageMetadata>)imageMetadata {
   LensOverlayEntrypoint entrypoint =
       imageMetadata.isCameraImage ? LensOverlayEntrypoint::kLVFCameraCapture
@@ -239,45 +203,6 @@ const CGFloat kBottomCornerRadius = 108.0;
   if (AppState* appState = sceneState.profileState.appState) {
     _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
   }
-}
-
-// Rounds the bottom corners of the image and pads the bottom edge to match the
-// size of the viewport.
-- (UIImage*)infilledImageForPortraitCameraCapture:(UIImage*)image {
-  UIGraphicsImageRendererFormat* format =
-      [UIGraphicsImageRendererFormat preferredFormat];
-  format.scale = 1;
-
-  CGSize screenSize = [UIScreen mainScreen].bounds.size;
-  CGFloat scale = 3;
-  CGSize scaledScreenSize =
-      CGSizeMake(screenSize.width * scale, screenSize.height * scale);
-
-  CGFloat originalAspectRatio = image.size.width / image.size.height;
-
-  UIGraphicsImageRenderer* renderer =
-      [[UIGraphicsImageRenderer alloc] initWithSize:scaledScreenSize
-                                             format:format];
-
-  CGRect imageDrawRect =
-      CGRectMake(0, 0, scaledScreenSize.width,
-                 scaledScreenSize.width / originalAspectRatio);
-
-  UIBezierPath* path = [UIBezierPath
-      bezierPathWithRoundedRect:imageDrawRect
-              byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight
-                    cornerRadii:CGSizeMake(kBottomCornerRadius,
-                                           kBottomCornerRadius)];
-
-  UIImage* imageWithInfill =
-      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
-        [[UIColor whiteColor] setFill];
-        UIRectFill(context.format.bounds);
-        [path addClip];
-        [image drawInRect:imageDrawRect];
-      }];
-
-  return imageWithInfill;
 }
 
 @end

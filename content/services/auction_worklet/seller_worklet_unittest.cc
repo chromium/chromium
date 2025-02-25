@@ -6143,28 +6143,6 @@ TEST_F(SellerWorkletTest, CancelBeforeFetch) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(SellerWorkletTest, ForDebuggingOnlyReportsWithDebugFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      blink::features::kBiddingAndScoringDebugReportingAPI);
-
-  RunScoreAdWithJavascriptExpectingResult(
-      CreateScoreAdScript(
-          "1", R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url"))"),
-      1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/std::nullopt,
-      /*expected_debug_loss_report_url=*/std::nullopt,
-      /*expected_debug_win_report_url=*/std::nullopt);
-
-  RunScoreAdWithJavascriptExpectingResult(
-      CreateScoreAdScript(
-          "1", R"(forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
-      1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/std::nullopt,
-      /*expected_debug_loss_report_url=*/std::nullopt,
-      /*expected_debug_win_report_url=*/std::nullopt);
-}
-
 TEST_F(SellerWorkletTest, AuctionRequestedSizeIsPresentInScoreAdJavascript) {
   auction_ad_config_non_shared_params_.requested_size = blink::AdSize(
       /*width=*/1920,
@@ -7456,22 +7434,9 @@ TEST_F(SellerWorkletRealTimeTest, ReportResultTopLevelTimeout) {
       {"https://url.test/ top-level execution timed out."});
 }
 
-class SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest
-    : public SellerWorkletRealTimeTest {
- public:
-  SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kBiddingAndScoringDebugReportingAPI);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Test forDebuggingOnly.reportAdAuctionLoss() and
 // forDebuggingOnly.reportAdAuctionWin() called in scoreAd().
-TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       ForDebuggingOnlyReports) {
+TEST_F(SellerWorkletRealTimeTest, ForDebuggingOnlyReports) {
   RunScoreAdWithJavascriptExpectingResult(
       CreateScoreAdScript(
           "1",
@@ -7533,7 +7498,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
 
 // Debugging loss/win report URLs should be nullopt if scoreAd() parameters are
 // invalid.
-TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_F(SellerWorkletRealTimeTest,
        ForDebuggingOnlyReportsInvalidScoreAdParameter) {
   // Auction config param is invalid.
   auction_ad_config_non_shared_params_.auction_signals =
@@ -7563,8 +7528,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
 }
 
 // Loss report URLs before seller script times out should be kept.
-TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       ScoreAdHasError) {
+TEST_F(SellerWorkletRealTimeTest, ScoreAdHasError) {
   // The seller script has an endless while loop. It will time out due to
   // AuctionV8Helper's default script timeout (50 ms).
   RunScoreAdWithJavascriptExpectingResult(
@@ -7579,8 +7543,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
 }
 
 // Loss report URLs before seller script times out should be kept.
-TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       ScoreAdTimedOut) {
+TEST_F(SellerWorkletRealTimeTest, ScoreAdTimedOut) {
   // The seller script has an endless while loop. It will time out due to
   // AuctionV8Helper's default script timeout (50 ms).
   AddJavascriptResponse(
@@ -7613,8 +7576,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
 }
 
 // Subsequent runs of the same script should not affect each other.
-TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       ForDebuggingOnlyReportsScriptIsolation) {
+TEST_F(SellerWorkletRealTimeTest, ForDebuggingOnlyReportsScriptIsolation) {
   AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                         R"(
         function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
@@ -7705,11 +7667,8 @@ class SellerWorkletEnableSampleDebugReportOnCookieSettingTest
     : public SellerWorkletTest {
  public:
   SellerWorkletEnableSampleDebugReportOnCookieSettingTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {blink::features::kBiddingAndScoringDebugReportingAPI,
-         blink::features::kFledgeEnableSampleDebugReportOnCookieSetting},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kFledgeEnableSampleDebugReportOnCookieSetting);
   }
 
  private:

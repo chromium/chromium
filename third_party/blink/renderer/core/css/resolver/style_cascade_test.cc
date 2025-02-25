@@ -169,7 +169,8 @@ class TestCascade {
                           const CSSValue& value,
                           CascadeOrigin& origin) {
     TestCascadeResolver resolver;
-    return cascade_.Resolve(property, value, CascadePriority(origin), origin,
+    return cascade_.Resolve(property, value, /*tree_scope=*/&GetDocument(),
+                            CascadePriority(origin), origin,
                             resolver.InnerResolver());
   }
 

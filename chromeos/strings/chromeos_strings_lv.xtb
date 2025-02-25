@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">Lūdzu, uzgaidiet...</translation>
 <translation id="2740531572673183784">Labi</translation>
 <translation id="2744221223678373668">Koplietojamie</translation>
+<translation id="2749164457515831917">Ieteikumi tiek rādīti jauktā secībā</translation>
 <translation id="2751739896257479635">EAP 2. fāzes autentificēšana</translation>
 <translation id="2754757901767760034">lampa</translation>
 <translation id="2780756493585863768">Jaunākie foni, ko nodrošina Google MI</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">Izkārtojuma darbību izvēlne</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> jādala ar <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Drukas uzdevumi, kas ir vecāki par vienu dienu, tiks noņemti</translation>
+<translation id="3248791727258378769">Netiks izveidota transkripcija</translation>
 <translation id="324961752321393509">Jūsu administrators neļauj aizvērt šo lietotni.</translation>
 <translation id="3263941347294171263">Lai turpinātu atjaunināšanas procesu, atvienojiet un atkārtoti pievienojiet ierīci (<ph name="DEVICE_NAME" />).</translation>
 <translation id="3268178239013324452">Neizdevās — durtiņas ir atvērtas</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">Atlasīt temperatūras mērvienību</translation>
 <translation id="3661106764436337772">Rakstiet ātrāk un ar lielāku pārliecību</translation>
 <translation id="3662461537616691585">bordo un sarkanbrūna</translation>
+<translation id="3664755900672940272">Uzvedņu paraugi tiek rādīti jauktā secībā</translation>
 <translation id="3668449597372804501">Fona tapete Peldošie mākoņi</translation>
 <translation id="3668570675727296296">Valodas iestatījumi</translation>
 <translation id="3675132884790542448">cūkas</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">Izslēgt ekrānsaudzētāju</translation>
 <translation id="4210636113897977670">Saglabāt un iziet</translation>
 <translation id="4210659479607886331">ledāju upes</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> valodas transkribēšanas modeļa lejupielāde ir pabeigta</translation>
 <translation id="42126664696688958">Eksportēt</translation>
 <translation id="4213104098953699324">USB tastatūra</translation>
 <translation id="4227825898293920515">Paroles derīguma termiņš: <ph name="TIME" /></translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">Krāsās</translation>
 <translation id="5457599981699367932">Pārlūkot kā viesim</translation>
 <translation id="54609108002486618">Pārvaldītais</translation>
+<translation id="5461608756903394951">Notiek <ph name="LANGUAGE_NAME" /> valodas transkribēšanas modeļa lejupielāde</translation>
 <translation id="5470776029649730099">maisaudekls</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Atlicis {0} mēģinājums.}zero{Atlikuši {0} mēģinājumi.}one{Atlicis {0} mēģinājums.}other{Atlikuši {0} mēģinājumi.}}</translation>
 <translation id="5488280942828718790">fuksīna</translation>
@@ -1191,6 +1196,7 @@
 <translation id="6595046262780525922">Vai ieslēgt transkribēšanu un lejupielādēt transkribēšanas modeli?</translation>
 <translation id="6596816719288285829">IP adrese</translation>
 <translation id="6599673642868607614">Paldies par atsauksmēm! Jūsu atsauksmes palīdz mums uzlabot Chromebook datora lietošanas iespējas, un mūsu komanda tās pārskatīs. Tā kā mēs saņemam ļoti daudz ziņojumu, nevarēsim atbildēt uz tiem visiem.</translation>
+<translation id="6608043585557830684">Transkribēšana ir izslēgta. Ieslēdziet to iestatījumos vai trīs punktu izvēlnē <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Peles taustiņi</translation>
 <translation id="6618744767048954150">Notiek pārbaude</translation>
 <translation id="6620487321149975369">Drukas uzdevumi būs redzami vēsturē, ja vien tie netiks noņemti manuāli</translation>
@@ -1279,6 +1285,7 @@
 <translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" />, kurā mirdz <ph name="GLOWSCAPES_FEATURE" /></translation>
 <translation id="6975981640379148271">koalas</translation>
 <translation id="6977381486153291903">Aparātprogrammatūras pārskatīšana</translation>
+<translation id="6978396562261420054">Ģenerēts attēls</translation>
 <translation id="6981982820502123353">Pieejamība</translation>
 <translation id="6982462588253070448">smilšu kāpas</translation>
 <translation id="7005833343836210400">Ierīce ir bezsaistē</translation>
@@ -1620,6 +1627,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tējas namiņš</translation>
 <translation id="8538236298648811558">Nodrošina Google MI</translation>
+<translation id="8543574988889671960">Atkārtoti ielādēt cilni</translation>
 <translation id="8550364285433943656">Piešķiriet vadīklas spēles darbībām, lai spēlētu ar tastatūras taustiņiem</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Jūsu mobilo sakaru operators var pieprasīt šīs opcijas izmantošanu, lai varētu izveidot savienojumu ar attiecīgā operatora tīklu. Lai iegūtu detalizētu informāciju, sazinieties ar savu mobilo sakaru operatoru.</translation>

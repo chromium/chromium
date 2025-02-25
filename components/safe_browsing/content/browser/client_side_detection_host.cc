@@ -1156,6 +1156,7 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
       verdict->llama_forced_trigger_info().intelligent_scan();
 
   if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
+      csd_service_->IsOnDeviceModelAvailable() &&
       (is_keyboard_lock_requested || is_intelligent_scan_requested)) {
     delegate_->GetInnerText(
         base::BindOnce(&ClientSideDetectionHost::OnInnerTextComplete,

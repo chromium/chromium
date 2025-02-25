@@ -189,7 +189,7 @@ BASE_FEATURE(kEnableASWebAuthenticationSession,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 BASE_FEATURE(kBatchUploadDesktop,
              "BatchUploadDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 bool IsBatchUploadDesktopEnabled() {
@@ -204,7 +204,7 @@ bool IsBatchUploadDesktopEnabled() {
 // account.
 BASE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin,
              "ShowEnterpriseDialogForAllManagedAccountsSignin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableExtensionsExplicitBrowserSignin,
              "EnableExtensionsExplicitBrowserSignin",

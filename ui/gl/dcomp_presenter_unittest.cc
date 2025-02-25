@@ -1417,7 +1417,7 @@ TEST_P(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
   std::vector<uint8_t> nv12_pixmap(stride * 3 * y_size.height() / 2, 0xff);
 
   auto params = CreateParamsFromImage(
-      DCLayerOverlayImage(y_size, nv12_pixmap.data(), stride));
+      DCLayerOverlayImage(y_size, base::span(nv12_pixmap), stride));
   params.quad_rect = gfx::Rect(window_size);
   params.video_params.color_space = gfx::ColorSpace::CreateREC709();
   ScheduleOverlay(std::move(params));

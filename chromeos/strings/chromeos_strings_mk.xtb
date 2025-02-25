@@ -396,6 +396,7 @@
 <translation id="2731700343119398978">Почекајте...</translation>
 <translation id="2740531572673183784">Во ред</translation>
 <translation id="2744221223678373668">Споделени</translation>
+<translation id="2749164457515831917">Предлозите се измешани</translation>
 <translation id="2751739896257479635">Автентикација со EAP во фаза 2</translation>
 <translation id="2754757901767760034">ламба</translation>
 <translation id="2780756493585863768">Неодамнешни заднини овозможени од Google AI</translation>
@@ -472,6 +473,7 @@
 <translation id="3226657629376379887">Мени на дејства за распоред</translation>
 <translation id="3227186760713762082">Поделете ја вредноста на <ph name="CATEGORY_TEXT" /> со <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Задачите за печатење постари од 1 ден ќе се отстранат</translation>
+<translation id="3248791727258378769">Нема да се создаде транскрипција</translation>
 <translation id="324961752321393509">Администраторот не го дозволува затворање на апликацијава</translation>
 <translation id="3263941347294171263">Исклучете, па вклучете го повторно уредот <ph name="DEVICE_NAME" /> за да продолжите со процесот на ажурирање</translation>
 <translation id="3268178239013324452">Неуспешно - вратата е отворена</translation>
@@ -558,6 +560,7 @@
 <translation id="3651050199673793219">Изберете температурна единица</translation>
 <translation id="3661106764436337772">Пишувајте побрзо и со повеќе самодеоверба</translation>
 <translation id="3662461537616691585">темноцрвена и темнокафеава</translation>
+<translation id="3664755900672940272">Примероците на барања се измешани</translation>
 <translation id="3668449597372804501">Тапет Cloud Flow</translation>
 <translation id="3668570675727296296">Поставки за јазик</translation>
 <translation id="3675132884790542448">свињи</translation>
@@ -670,6 +673,7 @@
 <translation id="420283545744377356">Исклучете го штедачот на екранот</translation>
 <translation id="4210636113897977670">Зачувај и излези</translation>
 <translation id="4210659479607886331">глацијална река</translation>
+<translation id="4212169537710712814">Преземањето на моделот за транскрипции на <ph name="LANGUAGE_NAME" /> заврши</translation>
 <translation id="42126664696688958">Извези</translation>
 <translation id="4213104098953699324">Тастатура со USB</translation>
 <translation id="4227825898293920515">Лозинката истекува за <ph name="TIME" /></translation>
@@ -940,6 +944,7 @@
 <translation id="5431318178759467895">Боја</translation>
 <translation id="5457599981699367932">Прелистувај како гостин</translation>
 <translation id="54609108002486618">Управуван</translation>
+<translation id="5461608756903394951">Преземањето на моделот за транскрипции на <ph name="LANGUAGE_NAME" /> е во тек</translation>
 <translation id="5470776029649730099">грубо јутено платно</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Уште {0} обид}one{Уште {0} обид}other{Уште {0} обиди}}</translation>
 <translation id="5488280942828718790">магента</translation>
@@ -1191,6 +1196,7 @@
 <translation id="6595046262780525922">Да се вклучи транскрипција и да се преземе моделот за транскрипции?</translation>
 <translation id="6596816719288285829">IP-адреса</translation>
 <translation id="6599673642868607614">Благодариме за повратните информации. Вашите повратни информации ни помагаат да го подобриме доживувањето на Chromebook и ќе бидат разгледани од нашиот тим. Поради големиот број на извештаи, нема да можеме да испратиме одговор.</translation>
+<translation id="6608043585557830684">Транскрипцијата е исклучена. Вклучете ја во „Поставки“ или во менито <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Копчиња за глувче</translation>
 <translation id="6618744767048954150">Се извршува</translation>
 <translation id="6620487321149975369">Задачите за печатење ќе се појавуваат во историјата, освен ако не се отстранат рачно</translation>
@@ -1279,6 +1285,7 @@
 <translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" /> со сјајна <ph name="GLOWSCAPES_FEATURE" /></translation>
 <translation id="6975981640379148271">коали</translation>
 <translation id="6977381486153291903">Ревизија на фирмвер</translation>
+<translation id="6978396562261420054">Генерирана слика</translation>
 <translation id="6981982820502123353">Пристапност</translation>
 <translation id="6982462588253070448">песочни дини</translation>
 <translation id="7005833343836210400">Уредот е офлајн</translation>

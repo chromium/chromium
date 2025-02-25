@@ -13,6 +13,9 @@
 <translation id="3512634283363927263">Nämä sivut on tarkoitettu Chromen kehittäjille, eikä niitä välttämättä ylläpidetä tai testata aktiivisesti. Voit ottaa ne käyttöön siirtymällä osoitteeseen <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klikkaamalla painiketta, jolla voit ottaa virheenkorjaussivut käyttöön, ja siirtymällä sitten uudelleen tälle sivulle.</translation>
 <translation id="3875312571075912821">Myönnä Chromelle verkon käyttöoikeus palomuurin tai virustorjuntaohjelmiston
           asetuksissa</translation>
+<translation id="4949828774841497663">Siirry kohtaan Sovellukset &gt; Järjestelmäasetukset &gt; Verkko, valitse
+          aktiivinen verkko, klikkaa Tiedot…-painiketta ja poista valinta kaikista mahdollisesti
+          valituista välityspalvelimista.</translation>
 <translation id="5005121315113832363">Chrome on estänyt tämän sivun</translation>
 <translation id="6011049234605203654">Avaa
           Chrome-valikko &gt;

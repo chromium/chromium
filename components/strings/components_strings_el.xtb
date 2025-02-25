@@ -2255,6 +2255,7 @@
 <translation id="4989809363548539747">Αυτή η προσθήκη δεν υποστηρίζεται</translation>
 <translation id="4990241977441916452">Φάκελος A2</translation>
 <translation id="4992066212339426712">Κατάργηση σίγασης</translation>
+<translation id="4994095017621319069">1 ομάδα καρτελών δεν είναι πλέον διαθέσιμη</translation>
 <translation id="4994348767896109801">Το αν μια διαφήμιση που βλέπετε είναι εξατομικευμένη μπορεί να εξαρτάται από πολλούς παράγοντες, όπως είναι αυτή η ρύθμιση, τα <ph name="BEGIN_LINK_1" />θέματα διαφημίσεων<ph name="END_LINK_1" />, οι <ph name="BEGIN_LINK_2" />ρυθμίσεις cookie<ph name="END_LINK_2" /> και το κατά πόσο ο ιστότοπος που βλέπετε εξατομικεύει τις διαφημίσεις. Μάθετε περισσότερα σχετικά με τη <ph name="BEGIN_LINK_3" />διαχείριση του απορρήτου διαφημίσεων<ph name="END_LINK_3" />.</translation>
 <translation id="4995474875135717171">Τροποποιήθηκε:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να διαχειριστείτε την Αναζήτηση ιστοτόπου και την προεπιλεγμένη μηχανή αναζήτησης.</translation>
@@ -3334,7 +3335,6 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Τέχνη σώματος</translation>
 <translation id="692638818576287323">Επαγγελματικά οχήματα</translation>
-<translation id="6933282894115597956">Ο οργανισμός σας απαιτεί να συνδεθείτε</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Η προεπιλεγμένη μηχανή αναζήτησης σάς επιτρέπει να κάνετε αναζήτηση στον ιστό και υποστηρίζει διάφορες λειτουργίες του Chrome<ph name="END_BOLD" />, όπως είναι η αναζήτηση από τη γραμμή διευθύνσεων και από εικόνες σε ιστοσελίδες. Μια λειτουργία μπορεί να μην είναι διαθέσιμη εάν η μηχανή αναζήτησης που χρησιμοποιείτε δεν την υποστηρίζει.</translation>
 <translation id="6934672428414710184">Αυτό το όνομα προέρχεται από τον Λογαριασμό σας Google</translation>
 <translation id="6935082727755903526">Θέσεις εργασίας στον χώρο της λογιστικής και των χρηματοοικονομικών</translation>
@@ -3470,6 +3470,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}other{<ph name="PAYMENT_METHOD_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}}</translation>
 <translation id="7153618581592392745">Λιλά</translation>
 <translation id="7156870133441232244">Ο διακομιστής θα πρέπει να αναβαθμιστεί σε έκδοση TLS 1.2 ή μεταγενέστερη.</translation>
+<translation id="7156885531105222428">Δεν ήταν δυνατή η εύρεση της σελίδας που ζητήσατε στην εφαρμογή</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Για να στείλετε αυτό το αρχείο χρησιμοποιώντας την εφαρμογή <ph name="FEATURE_NAME" />, αποδεσμεύστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}other{Για να στείλετε αυτά τα αρχεία χρησιμοποιώντας την εφαρμογή <ph name="FEATURE_NAME" />, αποδεσμεύστε χώρο (<ph name="DISK_SPACE_SIZE" />) στη συσκευή σας}}</translation>
 <translation id="7160999678034985039">Αποθηκεύστε την εργασία σας και ξεκινήστε την ενημέρωση όταν είστε έτοιμοι.</translation>
 <translation id="7162277662076933695">Συσκευή ανάγνωσης έξυπνων καρτών</translation>
@@ -4257,6 +4258,7 @@
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Μεταβείτε στη διεύθυνση &lt;strong&gt;chrome://policy&lt;/strong&gt; για να δείτε τη λίστα των αποκλεισμένων URL και άλλες πολιτικές που έχουν τεθεί σε εφαρμογή από τον διαχειριστή του συστήματός σας.</translation>
 <translation id="8536234749087605613">Φάκελος (Παράθυρο)</translation>
+<translation id="8538228968820006247">Η ομάδα καρτελών είναι πλήρης, επομένως δεν μπορούν να συμμετάσχουν νέα μέλη μέσω του συνδέσμου</translation>
 <translation id="8539500321752640291">Να επιτρέπονται οι 2 άδειες;</translation>
 <translation id="8541158209346794904">Συσκευή Bluetooth</translation>
 <translation id="8541410041357371550">Αυτός ο ιστότοπος λαμβάνει τα θέματα διαφημίσεών σας από το Chrome, για να σας εμφανίζει πιο συναφείς διαφημίσεις.</translation>

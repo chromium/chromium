@@ -201,6 +201,7 @@ class MessageCenterController;
 class MouseCursorEventFilter;
 class MouseKeysController;
 class MruWindowTracker;
+class MultiCaptureService;
 class MultiDeviceNotificationPresenter;
 class MultiDisplayMetricsController;
 class NearbyShareControllerImpl;
@@ -280,7 +281,6 @@ class WindowTilingController;
 class WindowTreeHostManager;
 class WmModeController;
 class ArcInputMethodBoundsTracker;
-class MultiCaptureServiceClient;
 
 enum class LoginStatus;
 
@@ -726,8 +726,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   quick_pair::Mediator* quick_pair_mediator() {
     return quick_pair_mediator_.get();
   }
-  MultiCaptureServiceClient* multi_capture_service_client() {
-    return multi_capture_service_client_.get();
+  MultiCaptureService* multi_capture_service() {
+    return multi_capture_service_.get();
   }
   RasterScaleController* raster_scale_controller() {
     return raster_scale_controller_.get();
@@ -1303,7 +1303,7 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   std::unique_ptr<OcclusionTrackerPauser> occlusion_tracker_pauser_;
 
-  std::unique_ptr<MultiCaptureServiceClient> multi_capture_service_client_;
+  std::unique_ptr<MultiCaptureService> multi_capture_service_;
 
   std::unique_ptr<federated::FederatedServiceControllerImpl>
       federated_service_controller_;

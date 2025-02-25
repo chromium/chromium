@@ -176,6 +176,7 @@
 <translation id="1546492247443594934">桌面 2</translation>
 <translation id="1546930421365146760">请让您的管理员在 Google 管理控制台中设置此设备</translation>
 <translation id="1549512626801247439">存储空间管理</translation>
+<translation id="1549721333775633305">显示“快速分享”设置。已停用“快速分享”</translation>
 <translation id="1550406609415860283">有可用设备</translation>
 <translation id="1550523713251050646">点击即可查看更多选项</translation>
 <translation id="1555130319947370107">蓝色</translation>
@@ -1472,6 +1473,7 @@
 <translation id="5856638668464565213">尚未启用“<ph name="NETWORK_NAME" />”。</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5860491529813859533">启用</translation>
+<translation id="5864691701242730005">显示“快速分享”设置。已选择“<ph name="VISIBILITY" />”可见性设置</translation>
 <translation id="5864748620896638071">电池电量为 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">正在收集网络信息</translation>
 <translation id="5867606971598166637">您的系统管理员正在监控您的屏幕</translation>
@@ -2260,6 +2262,7 @@
 <translation id="851660987304951246">使用“帮我读”功能可快速总结内容或提问</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在开启时可能无法充电。</translation>
 <translation id="8535393432370007982">撤消按颜色排序</translation>
+<translation id="8536886494750559755">显示“快速分享”设置。<ph name="TIME_REMAINING" />内所有人都可以看到该设备</translation>
 <translation id="8539803091108018926">已将文本复制到剪贴板</translation>
 <translation id="8541078764854166027">相机取景</translation>
 <translation id="8542053257095774575">尚未保存任何桌面或模板</translation>

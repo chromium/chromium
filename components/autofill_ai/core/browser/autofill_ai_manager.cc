@@ -195,46 +195,7 @@ MaybeUpdateEntity(const autofill::EntityInstance& entity,
 
 AutofillAiManager::AutofillAiManager(AutofillAiClient* client,
                                      autofill::StrikeDatabase* strike_database)
-    : client_(CHECK_DEREF(client)) {
-  user_annotation_prompt_strike_database_ =
-      strike_database
-          ? std::make_unique<
-                AutofillPrectionImprovementsAnnotationPromptStrikeDatabase>(
-                strike_database)
-          : nullptr;
-}
-
-bool AutofillAiManager::IsFormBlockedForImport(
-    const autofill::FormStructure& form) const {
-  if (!user_annotation_prompt_strike_database_) {
-    return true;
-  }
-
-  return user_annotation_prompt_strike_database_->ShouldBlockFeature(
-      AutofillAiAnnotationPromptStrikeDatabaseTraits::GetId(
-          form.form_signature()));
-}
-void AutofillAiManager::AddStrikeForImportFromForm(
-    const autofill::FormStructure& form) {
-  if (!user_annotation_prompt_strike_database_) {
-    return;
-  }
-
-  user_annotation_prompt_strike_database_->AddStrike(
-      AutofillAiAnnotationPromptStrikeDatabaseTraits::GetId(
-          form.form_signature()));
-}
-
-void AutofillAiManager::RemoveStrikesForImportFromForm(
-    const autofill::FormStructure& form) {
-  if (!user_annotation_prompt_strike_database_) {
-    return;
-  }
-
-  user_annotation_prompt_strike_database_->ClearStrikes(
-      AutofillAiAnnotationPromptStrikeDatabaseTraits::GetId(
-          form.form_signature()));
-}
+    : client_(CHECK_DEREF(client)) {}
 
 base::flat_map<autofill::FieldGlobalId, bool>
 AutofillAiManager::GetFieldValueSensitivityMap(

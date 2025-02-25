@@ -83,16 +83,10 @@ namespace {
 
 namespace em = enterprise_management;
 
-constexpr test::UIPath kEnterprisePrimaryButton = {
-    "enterprise-enrollment", "step-signin", "primary-action-button"};
-constexpr test::UIPath kEnterpriseEnrollmentButton = {
-    "enterprise-enrollment", "step-signin", "enterprise-navigation-enterprise"};
-constexpr test::UIPath kKioskEnrollmentButton = {
-    "enterprise-enrollment", "step-signin", "enterprise-navigation-kiosk"};
-constexpr test::UIPath kKioskModeEnterpriseEnrollmentButton = {
-    "enterprise-enrollment", "step-signin", "kiosk-navigation-enterprise"};
-constexpr test::UIPath kKioskModeKioskEnrollmentButton = {
-    "enterprise-enrollment", "step-signin", "kiosk-navigation-kiosk"};
+constexpr test::UIPath kPrimaryButton = {"enterprise-enrollment", "step-signin",
+                                         "primary-action-button"};
+constexpr test::UIPath kAdditionalPrimaryButton = {
+    "enterprise-enrollment", "step-signin", "additional-primary-action-button"};
 
 const char kRemoraRequisition[] = "remora";
 
@@ -188,13 +182,13 @@ class EnrollmentEmbeddedPolicyServerBase : public OobeBaseTest {
 
     SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail,
                                  FakeGaiaMixin::kEmailPath);
-    test::OobeJS().ClickOnPath(kEnterprisePrimaryButton);
+    test::OobeJS().ClickOnPath(kPrimaryButton);
     SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
                                  FakeGaiaMixin::kPasswordPath);
     if (enroll_kiosk) {
-      test::OobeJS().ClickOnPath(kKioskEnrollmentButton);
+      test::OobeJS().ClickOnPath(kAdditionalPrimaryButton);
     } else {
-      test::OobeJS().ClickOnPath(kEnterpriseEnrollmentButton);
+      test::OobeJS().ClickOnPath(kPrimaryButton);
     }
   }
 
@@ -1285,13 +1279,13 @@ class KioskEnrollmentPolicyServerTest
 
     SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail,
                                  FakeGaiaMixin::kEmailPath);
-    test::OobeJS().ClickOnPath(kEnterprisePrimaryButton);
+    test::OobeJS().ClickOnPath(kPrimaryButton);
     SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
                                  FakeGaiaMixin::kPasswordPath);
     if (enroll_kiosk) {
-      test::OobeJS().ClickOnPath(kKioskModeKioskEnrollmentButton);
+      test::OobeJS().ClickOnPath(kPrimaryButton);
     } else {
-      test::OobeJS().ClickOnPath(kKioskModeEnterpriseEnrollmentButton);
+      test::OobeJS().ClickOnPath(kAdditionalPrimaryButton);
     }
   }
 };

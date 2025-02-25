@@ -196,7 +196,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1129348283834595293">Cyberpunk</translation>
 <translation id="1129420403709586868">Consulta las fotos y el contenido multimedia de tu teléfono</translation>
 <translation id="1129850422003387628">Gestionar aplicaciones</translation>
-<translation id="1130430615924359526">{0,plural, =1{Cerrar ventanas de Incógnito}other{Cerrar ventanas de Incógnito (# ventanas)}}</translation>
+<translation id="1130430615924359526">{0,plural, =1{Cerrar ventana de Incógnito}other{Cerrar ventanas de Incógnito (# ventanas)}}</translation>
 <translation id="113050636487300043">Elige un nombre y un tema de color para diferenciar entre perfiles</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />: parte del grupo <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Nivel de batería del auricular derecho: <ph name="PERCENTAGE" /> %.</translation>
@@ -585,7 +585,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1401216725754314428">Más información sobre los sitios relacionados en una nueva pestaña</translation>
 <translation id="1402426911829176748">Conectando con tu dispositivo</translation>
 <translation id="1403222014593521787">No se ha podido establecer conexión con el proxy</translation>
-<translation id="1405336513195181336">Esto incluye marcadores, extensiones y tu historial de navegación de sitios.</translation>
 <translation id="1405779994569073824">Error.</translation>
 <translation id="1406500794671479665">Verificando...</translation>
 <translation id="1407069428457324124">Tema oscuro</translation>
@@ -1513,9 +1512,8 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2040894699575719559">Ubicación bloqueada</translation>
 <translation id="2041246176170574368">Este dispositivo pronto dejará de recibir actualizaciones de seguridad. Ahorra 50 $ o más al adquirir un Chromebook nuevo.</translation>
 <translation id="2042279886444479655">Perfiles activos</translation>
-<translation id="2042427131767688936">Para asegurarse de que este dispositivo se puede usar de forma segura, tu organización puede ver información sobre su sistema operativo, navegador, configuración y el software instalado en el dispositivo.</translation>
 <translation id="2044014337866019681">Asegúrate de que estás verificando <ph name="ACCOUNT" /> para desbloquear la sesión.</translation>
-<translation id="2044750031738659219">{0,plural, =1{Cerrar ventanas de invitado}other{Cerrar ventanas de invitado (# ventanas)}}</translation>
+<translation id="2044750031738659219">{0,plural, =1{Cerrar ventana de invitado}other{Cerrar ventanas de invitado (# ventanas)}}</translation>
 <translation id="204497730941176055">Nombre de plantilla de certificado de Microsoft</translation>
 <translation id="2045211794962848221">No volverás a ver este mensaje concreto</translation>
 <translation id="2045838962742066664">Escritura abreviada</translation>
@@ -3652,7 +3650,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3566211766752891194">Mostrar el uso de memoria de las pestañas</translation>
 <translation id="3566325075220776093">De este dispositivo</translation>
 <translation id="3566721612727112615">No se ha añadido ningún sitio web</translation>
-<translation id="3566788242120166275">Tus datos de navegación actuales se mantendrán en el perfil actual. Este nuevo perfil no incluirá datos de navegación anteriores.</translation>
 <translation id="3567168891086460374">Guardar de otra forma</translation>
 <translation id="3567284462585300767">Para recibir y aceptar archivos de personas que estén cerca, haz que tu dispositivo sea visible</translation>
 <translation id="356738834800832239">Se ha guardado tu contraseña</translation>
@@ -3819,7 +3816,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3685598397738512288">Preferencias de USB en Linux</translation>
 <translation id="3687598459967813435">Permitir siempre las notificaciones de <ph name="WEBSITE" /></translation>
 <translation id="368789413795732264">Se ha producido un error al intentar escribir el archivo: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3687957587012862163">No, moverlos a este nuevo perfil</translation>
 <translation id="3688507211863392146">Escribe en archivos y carpetas que abras en la aplicación</translation>
 <translation id="3688526734140524629">Cambiar canal</translation>
 <translation id="3688578402379768763">Actualizado</translation>
@@ -3878,7 +3874,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="37143699183660101">Estabilidad del cursor</translation>
 <translation id="3714610938239537183">Paso 2 de 4: Selecciona los datos de diagnóstico que quieras exportar</translation>
 <translation id="3716065403310915079">Instalador de <ph name="VM_NAME" /></translation>
-<translation id="3717256685838828428">Tu organización gestiona este perfil, por lo que puede ver cierta información, como la siguiente:</translation>
 <translation id="3719245268140483218">Evento de dispositivo</translation>
 <translation id="3719310907809321183">Se ha rellenado <ph name="CARD_IDENTIFIER" />.</translation>
 <translation id="3719826155360621982">Página principal</translation>
@@ -4910,7 +4905,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4426857487270413362">No se pueden descargar los archivos de instalación. Comprueba tu conexión a Internet y si tienes suficiente espacio libre en disco, e inténtalo de nuevo. El código de error es <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">Detectado <ph name="COUNT" /> veces</translation>
 <translation id="4427365070557649936">Verificando el código de confirmación...</translation>
-<translation id="4428579202668721841">¿Mantener los datos de navegación actuales separados de tu perfil de trabajo?</translation>
 <translation id="4429163740524851942">Diseño de teclado físico</translation>
 <translation id="4430019312045809116">Volumen</translation>
 <translation id="443031431654216610">Usa solo dígitos numéricos</translation>
@@ -4946,7 +4940,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4453946976636652378">Buscar en <ph name="SEARCH_ENGINE_NAME" /> o escribir una URL</translation>
 <translation id="4457472090507035117">Selecciona la voz actual:</translation>
 <translation id="4459169140545916303">Activo hace <ph name="DEVICE_LAST_ACTIVATED_TIME" /> días</translation>
-<translation id="4460014764210899310">Sin agrupar</translation>
+<translation id="4460014764210899310">Desagrupar</translation>
 <translation id="4461483878391246134">Añadir idiomas para los que no ofrecer nunca una traducción</translation>
 <translation id="4462159676511157176">Servidores de nombres personalizados</translation>
 <translation id="4465236939126352372">Se ha definido un límite de tiempo de <ph name="TIME" /> para <ph name="APP_NAME" /></translation>
@@ -6076,7 +6070,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5276357196618041410">No se puede guardar la configuración sin iniciar sesión</translation>
 <translation id="5277127016695466621">Mostrar panel lateral</translation>
 <translation id="5278823018825269962">ID de estado</translation>
-<translation id="5279214046729249716">Sí, mantenerlos separados</translation>
 <translation id="5279600392753459966">Bloquear todos</translation>
 <translation id="5280064835262749532">Actualiza las credenciales de <ph name="SHARE_PATH" /></translation>
 <translation id="5280426389926346830">¿Quieres crear un acceso directo?</translation>
@@ -6401,7 +6394,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5503982651688210506">Permitir que <ph name="HOST" /> siga usando y moviendo tu cámara y usando tu micrófono</translation>
 <translation id="5505307013568720083">No hay tinta</translation>
 <translation id="5507756662695126555">Sin rechazo</translation>
-<translation id="5508864312047847614">¿Mantener los datos de navegación actuales separados de tu perfil de centro educativo?</translation>
 <translation id="5509693895992845810">Guardar &amp;como...</translation>
 <translation id="5509914365760201064">Emisor: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Obtener descripciones de imágenes de Google</translation>
@@ -6854,7 +6846,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5854066326260337683">La función LBS está inhabilitada actualmente. Puedes habilitarla estableciendo la política <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" />.</translation>
 <translation id="5854912040170951372">Pizza</translation>
 <translation id="5855267860608268405">Redes Wi-Fi conocidas</translation>
-<translation id="5855375823365231964">Acerca de este perfil</translation>
 <translation id="5855643921295613558">0,6 segundos</translation>
 <translation id="5856721540245522153">Habilitar funciones de depuración</translation>
 <translation id="5857090052475505287">Nueva carpeta</translation>
@@ -7217,7 +7208,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6113942107547980621">Si quieres usar Smart Lock, cambia al perfil del usuario principal en tu teléfono.</translation>
 <translation id="6116921718742659598">Cambiar configuración de idioma y de introducción de texto</translation>
 <translation id="6119008366402292080">No hay impresoras disponibles</translation>
-<translation id="6119068870709745878"><ph name="PROFILE_MANAGER" /> gestiona este perfil, por lo que puede ver cierta información, como la siguiente:</translation>
 <translation id="6119927814891883061">Elegir <ph name="DEVICE_NAME" /> como nombre del dispositivo</translation>
 <translation id="6119972796024789243">Corrección de color</translation>
 <translation id="6121773125605585883">Ver contraseña con el nombre de usuario <ph name="USERNAME" /> para <ph name="WEBSITE" /></translation>
@@ -7426,6 +7416,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6264060420924719834">Esta aplicación incluye contenido web de otros sitios</translation>
 <translation id="6264365405983206840">Seleccionar &amp;todo</translation>
 <translation id="6264376385120300461">Descargar de todos modos</translation>
+<translation id="6264485186158353794">Volver a un sitio seguro</translation>
 <translation id="6264520534872750757">Seguir usando el dispositivo</translation>
 <translation id="6264636978858465832">El Gestor de contraseñas necesita más acceso</translation>
 <translation id="626495329434552273">Tiene permiso para anular la entrada de tu teclado</translation>
@@ -7641,7 +7632,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6434104957329207050">Velocidad de búsqueda por punto</translation>
 <translation id="6434309073475700221">Descartar</translation>
 <translation id="6434325376267409267">Para usar <ph name="APP_NAME" />, debes actualizar el dispositivo.</translation>
-<translation id="6434690603850475457">Sí, mantenerlos separados (recomendado)</translation>
 <translation id="6434755719322447931">Caótico</translation>
 <translation id="6435339218366409950">Elige el idioma al que quieres traducir los subtítulos</translation>
 <translation id="6436164536244065364">Ver en Web Store</translation>

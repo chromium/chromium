@@ -473,6 +473,7 @@
 <translation id="3226657629376379887">Menu azioni del layout</translation>
 <translation id="3227186760713762082">Dividi il valore <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">I processi di stampa risalenti a oltre 1 giorno fa verranno rimossi</translation>
+<translation id="3248791727258378769">Non verrà creata alcuna trascrizione</translation>
 <translation id="324961752321393509">L'amministratore non consente di chiudere questa app</translation>
 <translation id="3263941347294171263">Scollega e ricollega <ph name="DEVICE_NAME" /> per continuare il processo di aggiornamento</translation>
 <translation id="3268178239013324452">Operazione non riuscita - Sportello aperto</translation>
@@ -672,6 +673,7 @@
 <translation id="420283545744377356">Disattiva salvaschermo</translation>
 <translation id="4210636113897977670">Salva ed esci</translation>
 <translation id="4210659479607886331">fiume glaciale</translation>
+<translation id="4212169537710712814">Download del modello di trascrizione <ph name="LANGUAGE_NAME" /> completato</translation>
 <translation id="42126664696688958">Esporta</translation>
 <translation id="4213104098953699324">Tastiera USB</translation>
 <translation id="4227825898293920515">La password scade tra <ph name="TIME" /></translation>
@@ -942,6 +944,7 @@
 <translation id="5431318178759467895">A colori</translation>
 <translation id="5457599981699367932">Naviga come ospite</translation>
 <translation id="54609108002486618">Gestito</translation>
+<translation id="5461608756903394951">Download del modello di trascrizione di <ph name="LANGUAGE_NAME" /> in corso…</translation>
 <translation id="5470776029649730099">iuta</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativo rimanente}other{{0} tentativi rimanenti}}</translation>
 <translation id="5488280942828718790">magenta</translation>
@@ -1193,6 +1196,7 @@
 <translation id="6595046262780525922">Vuoi attivare la trascrizione e scaricare il modello di trascrizione?</translation>
 <translation id="6596816719288285829">Indirizzo IP</translation>
 <translation id="6599673642868607614">Grazie per il tuo feedback. Il tuo feedback ci aiuta a migliorare l'esperienza con Chromebook e verrà esaminato dal nostro team. A causa dell'elevato numero di segnalazioni non potremo risponderti.</translation>
+<translation id="6608043585557830684">La trascrizione è disattivata. Attivala in Impostazioni o nel menu <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Tasti del mouse</translation>
 <translation id="6618744767048954150">In corso</translation>
 <translation id="6620487321149975369">I processi di stampa verranno mostrati nella cronologia a meno che non vengano rimossi manualmente</translation>

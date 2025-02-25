@@ -563,6 +563,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
   // `NAME_FULL` as main text, unless in field by field filling mode.
   FieldType main_text_field_type =
       GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kName &&
+              !IsAlternativeNameType(trigger_field_type) &&
               suggestion_type != SuggestionType::kAddressFieldByFieldFilling &&
               base::FeatureList::IsEnabled(features::kAutofillImprovedLabels) &&
               !features::kAutofillImprovedLabelsParamWithoutMainTextChangesParam

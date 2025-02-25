@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">ネコ</translation>
 <translation id="5907649332524363701">キーの色</translation>
 <translation id="5908813850962688338">このアップデートのインストールには数分かかります。アップデートのダウンロード中は、デバイスをコンセントにつなぎ、電源を入れたままにしてください。このプロセスの実行中、デバイスが数回再起動して黒い画面が表示されることがあります。デバイスを再起動するよう求められたら、手順に沿ってインストールを完了してください。</translation>
+<translation id="5915794087373112615"><ph name="NUM_SECONDS" /> 秒後に教師があなたの画面を表示します</translation>
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5916664084637901428">オン</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}other{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}}</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> を選択</translation>
 <translation id="7618774594543487847">中間色</translation>
 <translation id="7620771111601174153">詳しくはヘルプセンターをご覧ください</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">前回のリセット時間</translation>
 <translation id="7633068090678117093">背景画像</translation>
 <translation id="763873111564339966">藍色</translation>
@@ -1524,6 +1526,7 @@
 <translation id="8054112564438735763">ベージュ</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> の背景に <ph name="CHARACTERS_COLOR" /> の <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">音声の録音を開始するには、マイクを接続してください</translation>
 <translation id="8067126283828232460">APN に接続しました。</translation>
 <translation id="8067208048261192356">茶色</translation>
 <translation id="8067224607978179455">削除 <ph name="ACTION_NAME" /></translation>
@@ -1627,6 +1630,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ティーハウス</translation>
 <translation id="8538236298648811558">Google AI を搭載</translation>
+<translation id="8543574988889671960">タブを再読み込み</translation>
 <translation id="8550364285433943656">キーボードのキーでプレイするにはゲーム操作のコントロールを設定します</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ご利用の携帯通信会社でのネットワーク接続にこのオプションが必要な場合があります。詳しくは携帯通信会社にお問い合わせください。</translation>

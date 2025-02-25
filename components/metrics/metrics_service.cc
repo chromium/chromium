@@ -1523,6 +1523,8 @@ void MetricsService::PrepareProviderMetricsLogDone(
                       MetricsLogsEventManager::CreateReason::kIndependent,
                       /*done_callback=*/base::DoNothing(),
                       loader->ReleaseFinalizedLog());
+    // Allow new logs to be uploaded.
+    StartSchedulerIfNecessary();
   }
 
   independent_loader_active_ = false;

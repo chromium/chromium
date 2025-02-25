@@ -589,7 +589,6 @@
 <translation id="1401216725754314428">مزيد من المعلومات حول المواقع الإلكترونية ذات الصلة في علامة تبويب جديدة</translation>
 <translation id="1402426911829176748">جارٍ الربط بجهازك</translation>
 <translation id="1403222014593521787">تعذّر الاتصال بالخادم الوكيل.</translation>
-<translation id="1405336513195181336">يشمل ذلك الإشارات المرجعية والإضافات وسجلّ التصفّح للمواقع الإلكترونية.</translation>
 <translation id="1405779994569073824">علامة التبويب تعطَّلت.</translation>
 <translation id="1406500794671479665">جارٍ التحقق...</translation>
 <translation id="1407069428457324124">المظهر الداكن</translation>
@@ -841,6 +840,7 @@
 <translation id="1575741822946219011">اللغات وأساليب الإدخال</translation>
 <translation id="1576594961618857597">الأفاتار التلقائي الأبيض</translation>
 <translation id="1576729678809834061">الإبلاغ عن نتيجة البحث هذه</translation>
+<translation id="1578110287710452646">مقبض تغيير حجم الشاشات جنبًا إلى جنب</translation>
 <translation id="1578488449637163638">داكن</translation>
 <translation id="1578558981922970608">فرض الإغلاق</translation>
 <translation id="157931050206866263">مزيد من المعلومات حول عمليات التحقّق من عدم وجود برامج ضارة</translation>
@@ -1518,7 +1518,6 @@
 <translation id="2040894699575719559">تم حظر الموقع الجغرافي</translation>
 <translation id="2041246176170574368">‏سينتهي توفُّر تحديثات الأمان لهذا الجهاز قريبًا. يمكنك توفير 50 دولار أمريكي أو أكثر عند شراء جهاز Chromebook جديد.</translation>
 <translation id="2042279886444479655">الملفات التعريفية النشطة</translation>
-<translation id="2042427131767688936">للتأكّد من إمكانية استخدام هذا الجهاز بأمان، يُمكن لمؤسستك الاطّلاع على معلومات حول نظام التشغيل والمتصفّح والإعدادات والبرامج المثبَّتة عليه.</translation>
 <translation id="2044014337866019681">يُرجى إثبات ملكية الحساب <ph name="ACCOUNT" /> حتى تتمكّن من فتح قفل هذا الجهاز.</translation>
 <translation id="2044750031738659219">{0,plural, =1{إغلاق نافذة واحدة في وضع "الضيف"}zero{إغلاق # نافذة في وضع "الضيف"}two{إغلاق نافذتَين في وضع "الضيف"}few{إغلاق # نوافذ في وضع "الضيف"}many{إغلاق # نافذةً في وضع "الضيف"}other{إغلاق # نافذة في وضع "الضيف"}}</translation>
 <translation id="204497730941176055">‏اسم قالب الشهادات لـ Microsoft</translation>
@@ -3656,7 +3655,6 @@
 <translation id="3566211766752891194">عرض استخدام الذاكرة في علامات التبويب</translation>
 <translation id="3566325075220776093">من هذا الجهاز</translation>
 <translation id="3566721612727112615">لم تتم إضافة أي مواقع</translation>
-<translation id="3566788242120166275">ستظل بيانات التصفُّح الحالية في الملف الشخصي الحالي. ولن يتضمّن هذا الملف الشخصي الجديد أي بيانات تصفُّح سابقة.</translation>
 <translation id="3567168891086460374">الحفظ بطريقة أخرى</translation>
 <translation id="3567284462585300767">لاستلام الملفات وقبولها من الأشخاص من حولك، يجب إظهار جهازك.</translation>
 <translation id="356738834800832239">تم حفظ كلمة المرور</translation>
@@ -3823,7 +3821,6 @@
 <translation id="3685598397738512288">‏إعدادات USB المُفضَّلة في نظام التشغيل Linux</translation>
 <translation id="3687598459967813435">السماح دائمًا بالإشعارات من الموقع الإلكتروني <ph name="WEBSITE" /></translation>
 <translation id="368789413795732264">حدث خطأ أثناء محاولة كتابة الملف: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3687957587012862163">لا، أريد نقل البيانات إلى ملف العمل هذا الجديد</translation>
 <translation id="3688507211863392146">تحرير الملفات التي تفتحها في التطبيق</translation>
 <translation id="3688526734140524629">تغيير القناة</translation>
 <translation id="3688578402379768763">مُحَدّث</translation>
@@ -3882,7 +3879,6 @@
 <translation id="37143699183660101">ثبات المؤشر</translation>
 <translation id="3714610938239537183">الخطوة 2 من 4: اختيار بيانات التشخيص لتصديرها</translation>
 <translation id="3716065403310915079">أداة تثبيت "<ph name="VM_NAME" />"</translation>
-<translation id="3717256685838828428">تتولّى مؤسستك إدارة هذا الملف الشخصي، وبالتالي يمكنها الاطّلاع على بعض المعلومات، بما في ذلك:</translation>
 <translation id="3719245268140483218">حدث الجهاز</translation>
 <translation id="3719310907809321183">تم ملء نموذج بطاقة الائتمان <ph name="CARD_IDENTIFIER" />.</translation>
 <translation id="3719826155360621982">الصفحة الرئيسية</translation>
@@ -4913,7 +4909,6 @@
 <translation id="4426857487270413362">يتعذّر تنزيل ملفات أداة التثبيت. يُرجى التأكد من اتصالك بالإنترنت وتوفُّر مساحة كافية على القرص، ثم إعادة المحاولة. رمز الخطأ هو <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">عدد مرات رصد الإيماءة: <ph name="COUNT" /></translation>
 <translation id="4427365070557649936">جارٍ التحقّق من رمز تأكيد البيانات...</translation>
-<translation id="4428579202668721841">هل تريد الاحتفاظ ببيانات التصفّح الحالية منفصلة عن ملف العمل؟</translation>
 <translation id="4429163740524851942">تنسيق لوحة المفاتيح الفعلية</translation>
 <translation id="4430019312045809116">مستوى الصوت</translation>
 <translation id="443031431654216610">أدخِل أرقامًا فقط.</translation>
@@ -6080,7 +6075,6 @@
 <translation id="5276357196618041410">يجب تسجيل الدخول لحفظ الإعدادات.</translation>
 <translation id="5277127016695466621">إظهار اللوحة الجانبية</translation>
 <translation id="5278823018825269962">رقم تعريف الحالة</translation>
-<translation id="5279214046729249716">نعم، أريد الاحتفاظ بالبيانات منفصلة</translation>
 <translation id="5279600392753459966">حجب الكل</translation>
 <translation id="5280064835262749532">تحديث بيانات اعتماد <ph name="SHARE_PATH" /></translation>
 <translation id="5280426389926346830">هل تريد إنشاء اختصار؟</translation>
@@ -6406,7 +6400,6 @@
 <translation id="5503982651688210506">مواصلة السماح للمضيف <ph name="HOST" /> باستخدام الكاميرا وتحريكها واستخدام الميكروفون</translation>
 <translation id="5505307013568720083">نفد الحبر</translation>
 <translation id="5507756662695126555">عدم الإنكار</translation>
-<translation id="5508864312047847614">هل تريد الاحتفاظ ببيانات التصفُّح الحالية بشكل منفصل عن ملفك في المؤسسة التعليمية؟</translation>
 <translation id="5509693895992845810">&amp;حفظ باسم...</translation>
 <translation id="5509914365760201064">جهة الإصدار: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">‏الحصول على أوصاف الصور من Google</translation>
@@ -6859,7 +6852,6 @@
 <translation id="5854066326260337683">‏ميزة "الوصول إلى المتصفِّحات القديمة (LBS)" غير مُفعَّلة حاليًا. يمكنك تفعيل هذه الميزة من خلال ضبط السياسة <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" />.</translation>
 <translation id="5854912040170951372">الشريحة</translation>
 <translation id="5855267860608268405">‏شبكات Wi-Fi المعروفة</translation>
-<translation id="5855375823365231964">لمحة عن هذا الملف الشخصي</translation>
 <translation id="5855643921295613558">0,6 ثانية</translation>
 <translation id="5856721540245522153">تفعيل ميزات تصحيح الأخطاء</translation>
 <translation id="5857090052475505287">مجلد جديد</translation>
@@ -7222,7 +7214,6 @@
 <translation id="6113942107547980621">‏لاستخدام Smart Lock، يمكنك التبديل إلى الملف الشخصي للمستخدِم الأساسي على هاتفك.</translation>
 <translation id="6116921718742659598">تغيير إعدادات اللغة والإدخال</translation>
 <translation id="6119008366402292080">ما مِن طابعة متوفّرة</translation>
-<translation id="6119068870709745878">يتولّى الحساب <ph name="PROFILE_MANAGER" /> إدارة هذا الملف الشخصي، وبالتالي يمكنه الاطّلاع على بعض المعلومات، بما في ذلك:</translation>
 <translation id="6119927814891883061">تسمية الجهاز باسم <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">تصحيح الألوان</translation>
 <translation id="6121773125605585883">عرض كلمة المرور مع اسم المستخدم <ph name="USERNAME" /> للموقع الإلكتروني <ph name="WEBSITE" /></translation>
@@ -7431,6 +7422,7 @@
 <translation id="6264060420924719834">يحتوي هذا التطبيق على محتوى من مواقع إلكترونية أخرى.</translation>
 <translation id="6264365405983206840">تحديد &amp;الكل</translation>
 <translation id="6264376385120300461">التنزيل على أيّ حال</translation>
+<translation id="6264485186158353794">الرجوع</translation>
 <translation id="6264520534872750757">مواصلة استخدام الجهاز</translation>
 <translation id="6264636978858465832">يحتاج "مدير كلمات المرور" إلى مزيد من أذونات الوصول</translation>
 <translation id="626495329434552273">المواقع الإلكترونية المسموح لها بتجاوُز إدخالات لوحة المفاتيح</translation>
@@ -7646,7 +7638,6 @@
 <translation id="6434104957329207050">سرعة مؤشر فحص النقاط</translation>
 <translation id="6434309073475700221">تجاهل</translation>
 <translation id="6434325376267409267">يجب تحديث الجهاز للتمكّن من استخدام <ph name="APP_NAME" />.</translation>
-<translation id="6434690603850475457">نعم، أريد الاحتفاظ بالبيانات منفصلة (يُنصح بهذا الخيار)</translation>
 <translation id="6434755719322447931">فوضوية</translation>
 <translation id="6435339218366409950">اختَر اللغة التي تريد الترجمة إليها.</translation>
 <translation id="6436164536244065364">عرض في السوق الإلكتروني</translation>

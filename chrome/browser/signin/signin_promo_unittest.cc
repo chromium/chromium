@@ -123,7 +123,6 @@ class ShowPromoTest : public testing::Test {
       identity_test_env_adaptor_;
 };
 
-
 TEST_F(ShowPromoTest, DoNotShowAddressSignInPromoWithoutImprovedBrowserSignin) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -369,6 +368,31 @@ TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
                    .GetPasswordSigninPromoImpressionCount(account.gaia));
   EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
                    .GetAddressSigninPromoImpressionCount(account.gaia));
+
+  EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
+  EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+}
+
+TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
+       RecordSignInPromoShownWithoutAccount_PromoShouldShowForDifferentType) {
+  // Add an account without cookies. The per-profile pref will be recorded.
+  AccountInfo account =
+      MakeAccountAvailable(identity_manager(), "test@email.com");
+
+  // Show the password promo five times. This does not influence whether the
+  // address promo should be shown.
+  for (int i = 0; i < 5; i++) {
+    RecordSignInPromoShown(signin_metrics::AccessPoint::kPasswordBubble,
+                           profile());
+  }
+
+  EXPECT_EQ(5, profile()->GetPrefs()->GetInteger(
+                   prefs::kPasswordSignInPromoShownCountPerProfile));
+  EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
+                   .GetPasswordSigninPromoImpressionCount(account.gaia));
+
+  EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
+  EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
 }
 
 TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
@@ -413,6 +437,62 @@ TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
                    .GetPasswordSigninPromoImpressionCount(account.gaia));
   EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
                    .GetAddressSigninPromoImpressionCount(account.gaia));
+}
+
+TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
+       RecordSignInPromoShownWithAccount_PromoShouldShowForDifferentType) {
+  // Test setup for adding an account with cookies.
+  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
+  network::TestURLLoaderFactory url_loader_factory =
+      network::TestURLLoaderFactory();
+
+  TestingProfile::Builder builder;
+  builder.AddTestingFactories(
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+              {TestingProfile::TestingFactory{
+                   ChromeSigninClientFactory::GetInstance(),
+                   base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                       &url_loader_factory)},
+               TestingProfile::TestingFactory{
+                   SyncServiceFactory::GetInstance(),
+                   base::BindRepeating([](content::BrowserContext* context) {
+                     return static_cast<std::unique_ptr<KeyedService>>(
+                         std::make_unique<syncer::MockSyncService>());
+                   })}}));
+
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  auto identity_test_env_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
+  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  identity_test_env->SetTestURLLoaderFactory(&url_loader_factory);
+
+  ON_CALL(*static_cast<syncer::MockSyncService*>(
+              SyncServiceFactory::GetForProfile(profile.get())),
+          GetDataTypesForTransportOnlyMode())
+      .WillByDefault(testing::Return(syncer::DataTypeSet::All()));
+
+  // Add an account with cookies, which will record the per-account prefs.
+  AccountInfo account = identity_test_env->MakeAccountAvailable(
+      identity_test_env->CreateAccountAvailabilityOptionsBuilder()
+          .WithAccessPoint(signin_metrics::AccessPoint::kUnknown)
+          .WithCookie(true)
+          .Build("test@email.com"));
+
+  // Show the address promo five times. This does not influence whether the
+  // password promo should be shown.
+  for (int i = 0; i < 5; i++) {
+    RecordSignInPromoShown(signin_metrics::AccessPoint::kAddressBubble,
+                           profile.get());
+  }
+
+  EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
+                   prefs::kAddressSignInPromoShownCountPerProfile));
+  EXPECT_EQ(5, SigninPrefs(*profile.get()->GetPrefs())
+                   .GetAddressSigninPromoImpressionCount(account.gaia));
+
+  EXPECT_FALSE(ShouldShowAddressSignInPromo(*profile.get(), CreateAddress()));
+  EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile.get()));
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

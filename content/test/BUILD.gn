@@ -3050,7 +3050,10 @@ test("content_unittests") {
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
-    sources += [ "../browser/file_system_access/file_system_access_observer_observation_unittest.cc" ]
+    sources += [
+      "../browser/file_system_access/file_system_access_observer_observation_unittest.cc",
+      "../browser/renderer_host/delegated_frame_host_unittest.cc",
+    ]
   }
 
   if (is_android || is_linux || is_chromeos || is_mac || is_win || is_fuchsia) {

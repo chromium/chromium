@@ -7,12 +7,13 @@ package org.chromium.components.paintpreview.player.frame;
 import android.graphics.Matrix;
 import android.util.Size;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Handles scaling of the top level frame for the paint preview player. */
+@NullMarked
 public class PlayerFrameScaleController {
     private static final float MAX_SCALE_FACTOR = 5f;
 
@@ -27,8 +28,8 @@ public class PlayerFrameScaleController {
     /** Interface for calling shared methods on the mediator. */
     private final PlayerFrameMediatorDelegate mMediatorDelegate;
 
-    private Supplier<Boolean> mIsAccessibilityEnabled;
-    private final Callback<Boolean> mOnScaleListener;
+    private @Nullable Supplier<Boolean> mIsAccessibilityEnabled;
+    private final @Nullable Callback<Boolean> mOnScaleListener;
     private boolean mAcceptUserInput;
 
     PlayerFrameScaleController(

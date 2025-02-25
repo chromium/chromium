@@ -16,9 +16,8 @@ import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.accessibility.AccessibilityState;
 
@@ -30,15 +29,16 @@ import java.util.List;
  * with individual {@link View}s. {@link #mSubFrames} contains the list of all sub-frames and their
  * relative positions.
  */
+@NullMarked
 public class PlayerFrameView extends FrameLayout {
     private PlayerFrameBitmapPainter mBitmapPainter;
     private PlayerFrameGestureDetector mGestureDetector;
     private PlayerFrameViewDelegate mDelegate;
-    private List<View> mSubFrameViews;
-    private List<Rect> mSubFrameRects;
-    private Matrix mScaleMatrix;
+    private @Nullable List<View> mSubFrameViews;
+    private @Nullable List<Rect> mSubFrameRects;
+    private @Nullable Matrix mScaleMatrix;
     private Matrix mOffset = new Matrix();
-    protected WebContentsAccessibility mWebContentsAccessibility;
+    protected @Nullable WebContentsAccessibility mWebContentsAccessibility;
 
     /**
      * @param context                 Used for initialization.
@@ -47,7 +47,7 @@ public class PlayerFrameView extends FrameLayout {
      * @param playerFrameViewDelegate The interface used for forwarding events.
      */
     public PlayerFrameView(
-            @NonNull Context context,
+            Context context,
             boolean canDetectZoom,
             PlayerFrameViewDelegate playerFrameViewDelegate,
             PlayerFrameGestureDetectorDelegate gestureDetectorDelegate,
@@ -61,7 +61,8 @@ public class PlayerFrameView extends FrameLayout {
     }
 
     /** Sets the {@link WebContentsAccessibility} for this View. */
-    public void setWebContentsAccessibility(WebContentsAccessibility webContentsAccessibility) {
+    public void setWebContentsAccessibility(
+            @Nullable WebContentsAccessibility webContentsAccessibility) {
         mWebContentsAccessibility = webContentsAccessibility;
     }
 

@@ -698,11 +698,10 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
   SetBackingOnResource(resource);
 
   // More non-default values.
-  resource.backing()->set_shared_image(
-      gpu::ClientSharedImage::CreateForTesting());
+  resource.backing()->set_shared_image(gpu::ClientSharedImage::CreateForTesting(
+      gpu::SharedImageUsage::SHARED_IMAGE_USAGE_SCANOUT));
   resource.backing()->mailbox_sync_token = sync_token;
   resource.backing()->wait_on_fence_required = true;
-  resource.backing()->overlay_candidate = true;
 
   EXPECT_TRUE(resource_pool_->PrepareForExport(
       resource, viz::TransferableResource::ResourceSource::kTest));
@@ -751,7 +750,6 @@ TEST_F(ResourcePoolTest, InvalidResource) {
   // Keep a zero mailbox
   auto backing = std::make_unique<ResourcePool::Backing>();
   backing->wait_on_fence_required = true;
-  backing->overlay_candidate = true;
   resource.set_backing(std::move(backing));
 
   EXPECT_FALSE(resource_pool_->PrepareForExport(

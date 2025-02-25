@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">mačke</translation>
 <translation id="5907649332524363701">boja tipke</translation>
 <translation id="5908813850962688338">Instaliranje ovog ažuriranja potrajati će nekoliko minuta. Neka uređaj bude priključen i uključen dok se ažuriranje preuzima. Tijekom tog postupka uređaj se može nekoliko puta ponovno pokrenuti i prikazati crni zaslon. Za dovršetak instalacije trebat ćete ponovo pokrenuti uređaj.</translation>
+<translation id="5915794087373112615">Nastavnik će pregledati vaš zaslon za <ph name="NUM_SECONDS" /> s</translation>
 <translation id="5916084858004523819">Zabranjeno</translation>
 <translation id="5916664084637901428">Uključi</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Vaša je datoteka skenirana i spremljena u mapu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Vaše su datoteke skenirane i spremljene u mapu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Vaše su datoteke skenirane i spremljene u mapu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vaše su datoteke skenirane i spremljene u mapu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="7618216277886673749">Odaberite <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutralno</translation>
 <translation id="7620771111601174153">Saznajte više u centru za pomoć</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">Vrijeme posljednjeg poništavanja</translation>
 <translation id="7633068090678117093">Pozadinska slika</translation>
 <translation id="763873111564339966">indigo boje</translation>
@@ -1524,6 +1526,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="8054112564438735763">bež boje</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_COLOR" /> na pozadini <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Povežite mikrofon da biste pokrenuli snimanje zvuka</translation>
 <translation id="8067126283828232460">APN je povezan.</translation>
 <translation id="8067208048261192356">smeđe boje</translation>
 <translation id="8067224607978179455">Izbrišite <ph name="ACTION_NAME" /></translation>
@@ -1627,6 +1630,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">čajana</translation>
 <translation id="8538236298648811558">Omogućuje Googleov AI</translation>
+<translation id="8543574988889671960">Ponovo učitaj karticu</translation>
 <translation id="8550364285433943656">Postavite kontrole na radnje u igri koje ćete igrati pomoću tipki tipkovnice</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Vaš mobilni operater može zahtijevati tu opciju radi povezivanja s njegovom mrežom. Više informacija zatražite od svojeg operatera.</translation>

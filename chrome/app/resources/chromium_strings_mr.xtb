@@ -109,7 +109,6 @@
 <translation id="2483889755041906834">Chromium मध्ये</translation>
 <translation id="2485422356828889247">अनइंस्टॉल करा</translation>
 <translation id="2513154137948333830">रीबूट आवश्यक आहे: <ph name="INSTALL_SUCCESS" /></translation>
-<translation id="2522009821193247726">पुढे सुरू ठेवण्यासाठी, तुम्ही <ph name="EMAIL" /> वापरून Chromium मध्ये साइन इन करणे आवश्यक असेल. यामुळे तुमच्या संस्थेच्या धोरणांचे पालन केले जात असल्याची खात्री केली जाते.</translation>
 <translation id="2542968102051442371">इमेज शोध वापरून मजकूर निवडा</translation>
 <translation id="2554739539410784893">Chromium सध्याचे पासवर्ड बदलण्याचा प्रयत्न करत आहे. यासाठी अनुमती देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
 <translation id="2560420686485554789">फाइल डाउनलोड करण्यासाठी Chromium ला स्टोरेज ॲक्सेस हवा आहे</translation>
@@ -434,7 +433,6 @@
 <translation id="6964305034639999644">लिंक Chromium गुप्त विंडो मध्ये उघडा</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6978145336957848883">कमकुवत पासवर्ड ओळखणे सोपे असते. Chromium ला <ph name="BEGIN_LINK" />तुमच्यासाठी क्लिष्ट पासवर्ड तयार करून लक्षात ठेवू द्या<ph name="END_LINK" />.</translation>
-<translation id="6980074797973263542">तुमचे बुकमार्क, इतिहास आणि पासवर्ड यांसारखा ब्राउझिंग डेटा तुमची संस्था पाहू व व्यवस्थापित करू शकते. ती वैयक्तिक Chromium प्रोफाइलमधील ब्राउझिंग डेटा पाहू शकत नाही.</translation>
 <translation id="6985329841647292029">ChromiumOS अटी</translation>
 <translation id="6990124437352146030">या साइटसाठी Chromium ला तुमचा मायक्रोफोन ॲक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="7003299027384820442">तुमच्या <ph name="ACCOUNT_EMAIL" /> खात्यामध्ये Chromium डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी तुमचा पासफ्रेझ एंटर करा</translation>

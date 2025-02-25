@@ -20,6 +20,7 @@ source_set("ad_metrics") {
   deps = [
     "//components/blocklist/opt_out_blocklist",
     "//components/heavy_ad_intervention",
+    "//components/history/core/browser",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/common",
     "//components/page_load_metrics/common:page_load_metrics_mojom",
@@ -58,6 +59,7 @@ source_set("unit_tests") {
     ":ad_metrics",
     "//components/blocklist/opt_out_blocklist",
     "//components/heavy_ad_intervention",
+    "//components/history/core/test",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/browser:test_support",
     "//components/page_load_metrics/common",

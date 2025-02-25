@@ -69,7 +69,7 @@ bool ScanRun(VTTScanner& scanner, AlignSetting align) {
   return ScanRun(scanner, V8AlignSetting(align).AsString());
 }
 
-const auto kDisplayWritingModeMap = std::to_array<CSSValueID>(
+constexpr auto kDisplayWritingModeMap = std::to_array<CSSValueID>(
     {CSSValueID::kHorizontalTb, CSSValueID::kVerticalRl,
      CSSValueID::kVerticalLr});
 static_assert(std::size(kDisplayWritingModeMap) ==
@@ -77,7 +77,7 @@ static_assert(std::size(kDisplayWritingModeMap) ==
               "displayWritingModeMap should have the same number of elements "
               "as VTTCue::NumberOfWritingDirections");
 
-const auto kDisplayAlignmentMap = std::to_array<CSSValueID>(
+constexpr auto kDisplayAlignmentMap = std::to_array<CSSValueID>(
     {CSSValueID::kStart, CSSValueID::kCenter, CSSValueID::kEnd,
      CSSValueID::kLeft, CSSValueID::kRight});
 static_assert(std::size(kDisplayAlignmentMap) == V8AlignSetting::kEnumSize,
