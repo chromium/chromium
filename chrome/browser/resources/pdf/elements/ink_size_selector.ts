@@ -17,15 +17,7 @@ export interface SizeOption {
   size: number;
 }
 
-// LINT.IfChange(PenAndEraserSizes)
-export const ERASER_SIZES: SizeOption[] = [
-  {icon: 'eraser-size-1', label: 'ink2BrushSizeExtraThin', size: 1},
-  {icon: 'eraser-size-2', label: 'ink2BrushSizeThin', size: 2},
-  {icon: 'eraser-size-3', label: 'ink2BrushSizeMedium', size: 3},
-  {icon: 'eraser-size-4', label: 'ink2BrushSizeThick', size: 6},
-  {icon: 'eraser-size-5', label: 'ink2BrushSizeExtraThick', size: 8},
-];
-
+// LINT.IfChange(PenSizes)
 export const PEN_SIZES: SizeOption[] = [
   {icon: 'pen-size-1', label: 'ink2BrushSizeExtraThin', size: 1},
   {icon: 'pen-size-2', label: 'ink2BrushSizeThin', size: 2},
@@ -33,7 +25,7 @@ export const PEN_SIZES: SizeOption[] = [
   {icon: 'pen-size-4', label: 'ink2BrushSizeThick', size: 6},
   {icon: 'pen-size-5', label: 'ink2BrushSizeExtraThick', size: 8},
 ];
-// LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:PenAndEraserSizes)
+// LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:PenSizes)
 
 export const HIGHLIGHTER_SIZES: SizeOption[] = [
   // LINT.IfChange(HighlighterSizes)
@@ -111,14 +103,10 @@ export class InkSizeSelectorElement extends InkSizeSelectorElementBase {
   }
 
   protected getCurrentBrushSizes_(): SizeOption[] {
-    switch (this.currentType) {
-      case AnnotationBrushType.ERASER:
-        return ERASER_SIZES;
-      case AnnotationBrushType.HIGHLIGHTER:
-        return HIGHLIGHTER_SIZES;
-      case AnnotationBrushType.PEN:
-        return PEN_SIZES;
-    }
+    assert(this.currentType !== AnnotationBrushType.ERASER);
+    return this.currentType === AnnotationBrushType.HIGHLIGHTER ?
+        HIGHLIGHTER_SIZES :
+        PEN_SIZES;
   }
 
   private setBrushSize_(sizeButton: HTMLElement): void {

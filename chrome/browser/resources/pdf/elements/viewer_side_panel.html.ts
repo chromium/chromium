@@ -11,16 +11,16 @@ export function getHtml(this: ViewerSidePanelElement) {
   return html`
     <ink-brush-selector .currentType="${this.currentType}">
     </ink-brush-selector>
-    <div id="brush-options">
-      <h2>Size</h2>
-      <ink-size-selector .currentSize="${this.currentSize}"
-          .currentType="${this.currentType}"></ink-size-selector>
-      ${this.shouldShowColorOptions_() ? html`
-        <h2>Color</h2>
-        <ink-color-selector .currentColor="${this.currentColor}"
-            .currentType="${this.currentType}">
-        </ink-color-selector>` : ''}
-    </div>
+    ${this.shouldShowBrushOptions_() ? html`
+      <div id="brush-options">
+        <h2>Size</h2>
+        <ink-size-selector .currentSize="${this.currentSize}"
+            .currentType="${this.currentType}"></ink-size-selector>
+          <h2>Color</h2>
+          <ink-color-selector .currentColor="${this.currentColor}"
+              .currentType="${this.currentType}">
+          </ink-color-selector>
+      </div>` : ''}
   `;
   // clang-format on
 }

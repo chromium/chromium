@@ -16,7 +16,7 @@ import type {Color} from '../constants.js';
 import {record, UserAction} from '../metrics.js';
 import {blendHighlighterColorValue, colorToHex} from '../pdf_viewer_utils.js';
 
-import {ERASER_SIZES, HIGHLIGHTER_SIZES, PEN_SIZES} from './ink_size_selector.js';
+import {HIGHLIGHTER_SIZES, PEN_SIZES} from './ink_size_selector.js';
 import type {SizeOption} from './ink_size_selector.js';
 import {getCss} from './viewer_bottom_toolbar.css.js';
 import {getHtml} from './viewer_bottom_toolbar.html.js';
@@ -70,9 +70,6 @@ export class ViewerBottomToolbarElement extends CrLitElement {
   protected getSizeIcon_(): string {
     let options: SizeOption[];
     switch (this.currentType) {
-      case AnnotationBrushType.ERASER:
-        options = ERASER_SIZES;
-        break;
       case AnnotationBrushType.HIGHLIGHTER:
         options = HIGHLIGHTER_SIZES;
         break;
@@ -112,7 +109,7 @@ export class ViewerBottomToolbarElement extends CrLitElement {
     this.style.setProperty('--ink-brush-color', colorToHex(color));
   }
 
-  protected shouldShowColorOptions_(): boolean {
+  protected shouldShowBrushOptions_(): boolean {
     return this.currentType !== AnnotationBrushType.ERASER;
   }
 }

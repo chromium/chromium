@@ -62,6 +62,9 @@ namespace {
 
 constexpr ink::AffineTransform kIdentityTransform;
 
+constexpr SkColor kEraserColor = SK_ColorWHITE;
+constexpr int kEraserSize = 3;
+
 // `is_ink` represents the Ink thumbnail when true, and the PDF thumbnail when
 // false.
 base::Value::Dict CreateUpdateThumbnailMessage(
@@ -117,10 +120,10 @@ void CheckColorIsWithinRange(int color) {
   CHECK_LE(color, 255);
 }
 
-ink::Rect GetEraserRect(const gfx::PointF& center, int distance_to_center) {
+ink::Rect GetEraserRect(const gfx::PointF& center) {
   return ink::Rect::FromTwoPoints(
-      {center.x() - distance_to_center, center.y() - distance_to_center},
-      {center.x() + distance_to_center, center.y() + distance_to_center});
+      {center.x() - kEraserSize, center.y() - kEraserSize},
+      {center.x() + kEraserSize, center.y() + kEraserSize});
 }
 
 SkRect GetDrawPageClipRect(const gfx::Rect& content_rect,
@@ -326,13 +329,6 @@ void PdfInkModule::OnGeometryChanged() {
 
 const PdfInkBrush* PdfInkModule::GetPdfInkBrushForTesting() const {
   return is_drawing_stroke() ? &GetDrawingBrush() : nullptr;
-}
-
-std::optional<float> PdfInkModule::GetEraserSizeForTesting() const {
-  if (is_erasing_stroke()) {
-    return eraser_size_;
-  }
-  return std::nullopt;
 }
 
 PdfInkModule::DocumentStrokeInputPointsMap
@@ -772,7 +768,7 @@ bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position,
     RequestThumbnailUpdates(
         /*ink_updates=*/state.page_indices_with_stroke_erasures,
         /*pdf_updates=*/state.page_indices_with_partitioned_mesh_erasures);
-    ReportEraseStroke(eraser_size_, tool_type);
+    ReportEraseStroke(tool_type);
   }
 
   // Reset `state` now that the erase operation is done.
@@ -792,7 +788,7 @@ void PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
 
   const gfx::PointF canonical_position =
       ConvertEventPositionToCanonicalPosition(position, page_index);
-  const ink::Rect eraser_rect = GetEraserRect(canonical_position, eraser_size_);
+  const ink::Rect eraser_rect = GetEraserRect(canonical_position);
   ink::Envelope invalidate_envelope;
 
   bool erased_stroke = false;
@@ -914,7 +910,6 @@ void PdfInkModule::HandleGetAnnotationBrushMessage(
   data.Set("type", brush_type_string);
 
   if (brush_type_string == "eraser") {
-    data.Set("size", eraser_size_);
     reply.Set("data", std::move(data));
     client_->PostMessage(std::move(reply));
     return;
@@ -945,9 +940,6 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   const base::Value::Dict* data = message.FindDict("data");
   CHECK(data);
 
-  float size = base::checked_cast<float>(data->FindDouble("size").value());
-  CHECK(PdfInkBrush::IsToolSizeInRange(size));
-
   const std::string& brush_type_string = *data->FindString("type");
   if (brush_type_string == "eraser") {
     if (is_drawing_stroke()) {
@@ -972,10 +964,12 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
       }
     }
 
-    eraser_size_ = size;
     MaybeSetCursor();
     return;
   }
+
+  float size = base::checked_cast<float>(data->FindDouble("size").value());
+  CHECK(PdfInkBrush::IsToolSizeInRange(size));
 
   if (is_erasing_stroke()) {
     EraserState& state = erasing_stroke_state();
@@ -1338,9 +1332,8 @@ void PdfInkModule::MaybeSetCursor() {
     brush_size = ink_brush.GetSize();
   } else {
     CHECK(is_erasing_stroke());
-    constexpr SkColor kEraserColor = SK_ColorWHITE;
     color = kEraserColor;
-    brush_size = eraser_size_;
+    brush_size = kEraserSize;
   }
 
   client_->UpdateInkCursorImage(GenerateToolCursor(

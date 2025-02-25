@@ -111,37 +111,21 @@ chrome.test.runTests([
     chrome.test.assertTrue(viewer.$.toolbar.annotationMode);
 
     // Switch to eraser.
-    setGetAnnotationBrushReply(
-        mockPlugin, AnnotationBrushType.ERASER, /*size=*/ 3);
+    setGetAnnotationBrushReply(mockPlugin, AnnotationBrushType.ERASER);
     const bottomToolbar = getBottomToolbar();
     getBrushSelector(bottomToolbar).$.eraser.click();
     await microtasksFinished();
 
     assertAnnotationBrush(mockPlugin, {
       type: AnnotationBrushType.ERASER,
-      size: 3,
     });
-    assertDropdownSizeIcon('pdf:eraser-size-3');
-
-    // Change the eraser size.
-    await clickDropdownButton(bottomToolbar.$.size);
-    const sizeSelector = getRequiredElement<InkSizeSelectorElement>(
-        bottomToolbar, 'ink-size-selector');
-    const sizeButtons = getSizeButtons(sizeSelector);
-    assertSelectedSize(sizeButtons, /*buttonIndex=*/ 2);
-
-    sizeButtons[1]!.click();
-    await microtasksFinished();
-
-    assertAnnotationBrush(mockPlugin, {
-      type: AnnotationBrushType.ERASER,
-      size: 2,
-    });
-    assertDropdownSizeIcon('pdf:eraser-size-2');
 
     // There shouldn't be color options.
     chrome.test.assertTrue(
         !bottomToolbar.shadowRoot.querySelector<HTMLElement>('#color'));
+    // There shouldn't be size options.
+    chrome.test.assertTrue(
+        !bottomToolbar.shadowRoot.querySelector<HTMLElement>('#size'));
     chrome.test.succeed();
   },
 

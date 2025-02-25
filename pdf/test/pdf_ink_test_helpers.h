@@ -30,6 +30,7 @@ struct TestAnnotationBrushMessageParams {
   int color_r;
   int color_g;
   int color_b;
+  double size;
 };
 
 // Used to generate ink::StrokeInput. Many tests may need both a `position` and
@@ -47,7 +48,6 @@ base::Value::Dict CreateSetAnnotationModeMessageForTesting(bool enable);
 
 base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
     std::string_view type,
-    double size,
     const TestAnnotationBrushMessageParams* params);
 
 base::Value::Dict CreateSetAnnotationUndoRedoMessageForTesting(

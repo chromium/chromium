@@ -64,8 +64,6 @@ namespace {
 // Some commonly used points with InitializeSimpleSinglePageBasicLayout().
 constexpr gfx::PointF kLeftVerticalStrokePoint1(10.0f, 15.0f);
 constexpr gfx::PointF kLeftVerticalStrokePoint2(10.0f, 35.0f);
-constexpr gfx::PointF kMiddleVerticalStrokePoint1(25.0f, 15.0f);
-constexpr gfx::PointF kMiddleVerticalStrokePoint2(25.0f, 35.0f);
 constexpr gfx::PointF kRightVerticalStrokePoint1(40.0f, 15.0f);
 constexpr gfx::PointF kRightVerticalStrokePoint2(40.0f, 35.0f);
 
@@ -400,7 +398,6 @@ TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageEraser) {
             "messageId": "foo",
             "data": {
               "type": "eraser",
-              "size": 3.0,
             },
         })");
         EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
@@ -495,8 +492,8 @@ TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageCurrent) {
   EnableAnnotationMode();
 
   // Set the brush to eraser.
-  EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationBrushMessageForTesting(
-      "eraser", /*size=*/4.5, nullptr)));
+  EXPECT_TRUE(ink_module().OnMessage(
+      CreateSetAnnotationBrushMessageForTesting("eraser", nullptr)));
 
   EXPECT_CALL(client(), PostMessage)
       .WillOnce([](const base::Value::Dict& dict) {
@@ -505,7 +502,6 @@ TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageCurrent) {
             "messageId": "foo",
             "data": {
               "type": "eraser",
-              "size": 4.5,
             },
         })");
         EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
@@ -515,18 +511,17 @@ TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageCurrent) {
       ink_module().OnMessage(CreateGetAnnotationBrushMessageForTesting("")));
 }
 
-// Verify that a set eraser message sets the annotation brush to an eraser.
+// Verify that a set eraser message sets the annotation brush to an eraser. i.e.
+// There is no `PdfInkBrush`.
 TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageEraser) {
   EnableAnnotationMode();
 
-  base::Value::Dict message = CreateSetAnnotationBrushMessageForTesting(
-      "eraser", /*size=*/2.5, nullptr);
+  base::Value::Dict message =
+      CreateSetAnnotationBrushMessageForTesting("eraser", nullptr);
   EXPECT_TRUE(ink_module().OnMessage(message));
 
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
   EXPECT_FALSE(brush);
-  std::optional<float> eraser = ink_module().GetEraserSizeForTesting();
-  EXPECT_THAT(eraser, testing::Optional(2.5f));
 }
 
 // Verify that a set pen message sets the annotation brush to a pen, with the
@@ -536,9 +531,9 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
 
   TestAnnotationBrushMessageParams message_params{/*color_r=*/10,
                                                   /*color_g=*/255,
-                                                  /*color_b=*/50};
-  base::Value::Dict message = CreateSetAnnotationBrushMessageForTesting(
-      "pen", /*size=*/8.0, &message_params);
+                                                  /*color_b=*/50, /*size=*/8.0};
+  base::Value::Dict message =
+      CreateSetAnnotationBrushMessageForTesting("pen", &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
 
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
@@ -561,9 +556,9 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
 
   TestAnnotationBrushMessageParams message_params{/*color_r=*/240,
                                                   /*color_g=*/133,
-                                                  /*color_b=*/0};
-  base::Value::Dict message = CreateSetAnnotationBrushMessageForTesting(
-      "highlighter", /*size=*/4.5, &message_params);
+                                                  /*color_b=*/0, /*size=*/4.5};
+  base::Value::Dict message =
+      CreateSetAnnotationBrushMessageForTesting("highlighter", &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
 
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
@@ -585,9 +580,9 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   EnableAnnotationMode();
 
   TestAnnotationBrushMessageParams message_params{/*color_r=*/0, /*color_g=*/0,
-                                                  /*color_b=*/0};
-  base::Value::Dict message = CreateSetAnnotationBrushMessageForTesting(
-      "pen", /*size=*/4.5, &message_params);
+                                                  /*color_b=*/0, /*size=*/4.5};
+  base::Value::Dict message =
+      CreateSetAnnotationBrushMessageForTesting("pen", &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
 
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
@@ -675,8 +670,8 @@ TEST_F(PdfInkModuleTest, MaybeSetCursorWhenChangingBrushes) {
         });
     EXPECT_CALL(client(), UpdateInkCursorImage(_))
         .WillOnce([](SkBitmap bitmap) {
-          EXPECT_EQ(10, bitmap.width());
-          EXPECT_EQ(10, bitmap.height());
+          EXPECT_EQ(6, bitmap.width());
+          EXPECT_EQ(6, bitmap.height());
         });
   }
 
@@ -684,13 +679,12 @@ TEST_F(PdfInkModuleTest, MaybeSetCursorWhenChangingBrushes) {
 
   TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
                                                   /*color_g=*/255,
-                                                  /*color_b=*/0};
-  base::Value::Dict message = CreateSetAnnotationBrushMessageForTesting(
-      "pen", /*size=*/16.0, &message_params);
+                                                  /*color_b=*/0, /*size=*/16.0};
+  base::Value::Dict message =
+      CreateSetAnnotationBrushMessageForTesting("pen", &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
 
-  message = CreateSetAnnotationBrushMessageForTesting("eraser", /*size=*/8.0,
-                                                      nullptr);
+  message = CreateSetAnnotationBrushMessageForTesting("eraser", nullptr);
   EXPECT_TRUE(ink_module().OnMessage(message));
 }
 
@@ -718,9 +712,10 @@ TEST_F(PdfInkModuleTest, MaybeSetCursorWhenChangingZoom) {
 
   TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
                                                   /*color_g=*/255,
-                                                  /*color_b=*/0};
-  base::Value::Dict message = CreateSetAnnotationBrushMessageForTesting(
-      "pen", /*size=*/16.0, &message_params);
+                                                  /*color_b=*/0,
+                                                  /*size=*/16.0};
+  base::Value::Dict message =
+      CreateSetAnnotationBrushMessageForTesting("pen", &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
 
   client().set_zoom(0.5f);
@@ -976,16 +971,15 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
   }
 
   void SelectBrushTool(PdfInkBrush::Type type,
-                       float size,
                        const TestAnnotationBrushMessageParams& params) {
     EXPECT_TRUE(
         ink_module().OnMessage(CreateSetAnnotationBrushMessageForTesting(
-            PdfInkBrush::TypeToString(type), size, &params)));
+            PdfInkBrush::TypeToString(type), &params)));
   }
 
-  void SelectEraserToolOfSize(float size) {
+  void SelectEraserTool() {
     EXPECT_TRUE(ink_module().OnMessage(
-        CreateSetAnnotationBrushMessageForTesting("eraser", size, nullptr)));
+        CreateSetAnnotationBrushMessageForTesting("eraser", nullptr)));
   }
 
   PdfInkModule::DocumentStrokeInputPointsMap StrokeInputPositions() const {
@@ -1517,7 +1511,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStroke) {
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Stroke with the eraser tool.
-  SelectEraserToolOfSize(3.0f);
+  SelectEraserTool();
   ApplyStrokeWithMouseAtMouseDownPoint();
 
   // Now there are no visible strokes left.
@@ -1547,7 +1541,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseOnPageWithoutStrokes) {
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
 
   // Stroke with the eraser tool when there are no strokes on the page.
-  SelectEraserToolOfSize(3.0f);
+  SelectEraserTool();
   ApplyStrokeWithMouseAtMouseDownPoint();
 
   // Verify there are still no visible strokes and StrokeFinished() never got
@@ -1569,7 +1563,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeEntirelyOffPage) {
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Stroke with the eraser tool outside of the page.
-  SelectEraserToolOfSize(3.0f);
+  SelectEraserTool();
   constexpr gfx::PointF kOffPagePoint(99.0f, 99.0f);
   ApplyStrokeWithMouseAtPointsNotHandled(
       kOffPagePoint, base::span_from_ref(kOffPagePoint), kOffPagePoint);
@@ -1607,7 +1601,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
   // Stroke with the eraser tool at `kMouseMovePoint`, where it should
   // intersect with both strokes, but does not because InkStrokeModeler modeled
   // the "V" shaped input into an input with a much gentler line slope.
-  SelectEraserToolOfSize(3.0f);
+  SelectEraserTool();
   ApplyStrokeWithMouseAtPoints(
       kMouseMovePoint, base::span_from_ref(kMouseMovePoint), kMouseMovePoint);
 
@@ -1617,19 +1611,21 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
   EXPECT_EQ(2, client().stroke_finished_count());
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
-  // Stroke with the eraser tool again at `kMousePoints`, but now with a much
-  // bigger eraser size. This will actually intersect with both strokes.
-  SelectEraserToolOfSize(8.0f);
+  // Stroke with the eraser tool again, but follow the stroke inputs. This will
+  // intersect with both strokes and erase them.
+  SelectEraserTool();
   VerifyAndClearExpectations();
   ExpectNoStrokeAdded();
   ExpectUpdateStrokesActive(/*strokes_affected=*/2, /*expected_active=*/false);
   ApplyStrokeWithMouseAtPoints(
-      kMouseMovePoint, base::span_from_ref(kMouseMovePoint), kMouseMovePoint);
+      kMouseDownPoint, base::span_from_ref(kMouseMovePoint), kMouseUpPoint);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint2, base::span_from_ref(kMouseMovePoint), kMouseUpPoint2);
 
   // Check that there are now no visible strokes.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
-  EXPECT_EQ(3, client().stroke_finished_count());
-  EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0, 0));
+  EXPECT_EQ(4, client().stroke_finished_count());
+  EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0, 0, 0));
 }
 
 TEST_F(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
@@ -1664,7 +1660,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 1));
 
   // Erasing across the two pages should erase everything.
-  SelectEraserToolOfSize(3.0f);
+  SelectEraserTool();
   VerifyAndClearExpectations();
   ExpectNoStrokeAdded();
   ExpectUpdateStrokesActive(/*strokes_affected=*/2, /*expected_active=*/false);
@@ -1702,7 +1698,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokePageExitAndReentry) {
 
   // Select the eraser tool and call ApplyStrokeWithMouseAtPoints() again with
   // the same arguments.
-  SelectEraserToolOfSize(3.0f);
+  SelectEraserTool();
   ApplyStrokeWithMouseAtPoints(kTwoPageVerticalLayoutPoint1InsidePage0,
                                kTwoPageVerticalLayoutPageExitAndReentryPoints,
                                kTwoPageVerticalLayoutPoint3InsidePage0);
@@ -1734,7 +1730,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeWithTouch) {
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Stroke with the eraser tool.
-  SelectEraserToolOfSize(3.0f);
+  SelectEraserTool();
   const std::vector<base::span<const gfx::PointF>> touch_move_points{
       base::span_from_ref(kMouseMovePoint),
   };
@@ -1781,7 +1777,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeWithPen) {
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // Stroke with the eraser tool.
-  SelectEraserToolOfSize(3.0f);
+  SelectEraserTool();
   const std::vector<base::span<const gfx::PointF>> pen_move_points{
       base::span_from_ref(kMouseMovePoint),
   };
@@ -1831,7 +1827,7 @@ TEST_F(PdfInkModuleStrokeTest, RunStrokeMissedEndEventDuringErasing) {
   EnableAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
-  SelectEraserToolOfSize(3.0f);
+  SelectEraserTool();
 
   RunStrokeMissedEndEventCheckTest();
 }
@@ -1845,9 +1841,9 @@ TEST_F(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
   EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
   TestAnnotationBrushMessageParams black_pen_message_params{/*color_r=*/0,
                                                             /*color_g=*/0,
-                                                            /*color_b=*/0};
-  static constexpr float kPenSize = 3.0f;
-  SelectBrushTool(PdfInkBrush::Type::kPen, kPenSize, black_pen_message_params);
+                                                            /*color_b=*/0,
+                                                            /*size=*/3.0};
+  SelectBrushTool(PdfInkBrush::Type::kPen, black_pen_message_params);
 
   blink::WebMouseEvent mouse_down_event =
       MouseEventBuilder()
@@ -1859,8 +1855,9 @@ TEST_F(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
   // immediate effect on the in-progress stroke.
   TestAnnotationBrushMessageParams red_pen_message_params{/*color_r=*/242,
                                                           /*color_g=*/139,
-                                                          /*color_b=*/130};
-  SelectBrushTool(PdfInkBrush::Type::kPen, kPenSize, red_pen_message_params);
+                                                          /*color_b=*/130,
+                                                          /*size=*/3.0};
+  SelectBrushTool(PdfInkBrush::Type::kPen, red_pen_message_params);
   VerifyAndClearExpectations();
 
   // Continue with mouse movement and then mouse up at a new location.  Notice
@@ -1898,8 +1895,8 @@ TEST_F(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
   EXPECT_CALL(client(), UpdateInkCursorImage(BitmapImageSizeEq(SkISize(6, 6))));
   TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
                                                   /*color_g=*/0,
-                                                  /*color_b=*/0};
-  SelectBrushTool(PdfInkBrush::Type::kPen, 2.0f, message_params);
+                                                  /*color_b=*/0, /*size=*/2.0};
+  SelectBrushTool(PdfInkBrush::Type::kPen, message_params);
 
   blink::WebMouseEvent mouse_down_event =
       MouseEventBuilder()
@@ -1909,7 +1906,8 @@ TEST_F(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
 
   // While the stroke is still in progress, change the pen size.  This has no
   // immediate effect on the in-progress stroke.
-  SelectBrushTool(PdfInkBrush::Type::kPen, 6.0f, message_params);
+  message_params.size = 6.0;
+  SelectBrushTool(PdfInkBrush::Type::kPen, message_params);
   VerifyAndClearExpectations();
 
   // Continue with mouse movement and then mouse up at a new location.  Notice
@@ -1941,113 +1939,6 @@ TEST_F(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 }
 
-TEST_F(PdfInkModuleStrokeTest, ChangeSizeDuringErasing) {
-  EnableAnnotationMode();
-  InitializeSimpleSinglePageBasicLayout();
-
-  // Initialize to have three strokes, so there is something to erase.
-  static constexpr int kPageIndex = 0;
-  EXPECT_CALL(client(), StrokeAdded(kPageIndex, _, _)).Times(3);
-  EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
-
-  ApplyStrokeWithMouseAtPoints(kLeftVerticalStrokePoint1,
-                               base::span_from_ref(kLeftVerticalStrokePoint2),
-                               kLeftVerticalStrokePoint2);
-
-  ApplyStrokeWithMouseAtPoints(kMiddleVerticalStrokePoint1,
-                               base::span_from_ref(kMiddleVerticalStrokePoint2),
-                               kMiddleVerticalStrokePoint2);
-
-  ApplyStrokeWithMouseAtPoints(kRightVerticalStrokePoint1,
-                               base::span_from_ref(kRightVerticalStrokePoint2),
-                               kRightVerticalStrokePoint2);
-
-  // Set up for erasing.
-  SelectEraserToolOfSize(2.0f);
-  VerifyAndClearExpectations();
-
-  // Apply erase strokes at positions nearby the second and third strokes.
-  // They are not close enough for an eraser with a thin size to erase them.
-  EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
-
-  static constexpr gfx::PointF kNearbyPointAboveMiddleVerticalStroke(25.0f,
-                                                                     10.0f);
-  ApplyStrokeWithMouseAtPoints(
-      kNearbyPointAboveMiddleVerticalStroke,
-      base::span_from_ref(kNearbyPointAboveMiddleVerticalStroke),
-      kNearbyPointAboveMiddleVerticalStroke);
-
-  static constexpr gfx::PointF kNearbyPointAboveRightVerticalStroke(40.0f,
-                                                                    10.0f);
-  ApplyStrokeWithMouseAtPoints(
-      kNearbyPointAboveRightVerticalStroke,
-      base::span_from_ref(kNearbyPointAboveRightVerticalStroke),
-      kNearbyPointAboveRightVerticalStroke);
-
-  VerifyAndClearExpectations();
-
-  // Start erasing from where the first stroke was added.
-  EXPECT_CALL(client(),
-              UpdateStrokeActive(kPageIndex, InkStrokeId(0), /*active=*/false));
-
-  blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder()
-          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
-          .Build();
-  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
-
-  // While the stroke is still in progress, change the eraser size.
-  SelectEraserToolOfSize(6.0f);
-  VerifyAndClearExpectations();
-
-  // Continue the stroke, moving to the nearby-point above the second stroke.
-  // Since the eraser has immediately updated to the thick eraser size, it is
-  // now close enough that the stroke gets erased.
-  //
-  // Eraser stroke movement is like below, from the mouse down position D
-  // moving through position M before finishing at mouse up position U:
-  //
-  //           M............U
-  //           .
-  //           .
-  //    left   D            |  middle
-  //  stroke   |            |  stroke
-  //           |            |
-  //
-  // TODO(crbug.com/381908888): The in-progress stroke is affected by the
-  // size change.  Update the expectation to show the in-progress stroke is
-  // unchanged once the brush management in PdfInkModule protects against
-  // such changes.
-  EXPECT_CALL(client(),
-              UpdateStrokeActive(kPageIndex, InkStrokeId(1), /*active=*/false));
-
-  static constexpr gfx::PointF kNearbyPointAboveLeftVerticalStroke(10.0f,
-                                                                   10.0f);
-  blink::WebMouseEvent mouse_move_event =
-      CreateMouseMoveWithLeftButtonEventAtPoint(
-          kNearbyPointAboveLeftVerticalStroke);
-  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
-
-  blink::WebMouseEvent mouse_up_event =
-      MouseEventBuilder()
-          .CreateLeftMouseUpAtPosition(kNearbyPointAboveMiddleVerticalStroke)
-          .Build();
-  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
-
-  VerifyAndClearExpectations();
-
-  // Do another eraser stroke at the nearby-point above the third stroke.
-  // This point is close enough to be deleted with the thick eraser size
-  // that is now in effect.
-  EXPECT_CALL(client(),
-              UpdateStrokeActive(kPageIndex, InkStrokeId(2), /*active=*/false));
-
-  ApplyStrokeWithMouseAtPoints(
-      kNearbyPointAboveRightVerticalStroke,
-      base::span_from_ref(kNearbyPointAboveRightVerticalStroke),
-      kNearbyPointAboveRightVerticalStroke);
-}
-
 TEST_F(PdfInkModuleStrokeTest, ChangeToEraserDuringDrawing) {
   InitializeSimpleSinglePageBasicLayout();
 
@@ -2066,7 +1957,7 @@ TEST_F(PdfInkModuleStrokeTest, ChangeToEraserDuringDrawing) {
 
   // While the stroke is still in progress, change to the eraser tool.  This
   // causes the in-progress stroke to finish even before the mouse-up event.
-  SelectEraserToolOfSize(2.0f);
+  SelectEraserTool();
   VerifyAndClearExpectations();
 
   // Continue with mouse movement and then mouse up at a new location.  Notice
@@ -2113,7 +2004,7 @@ TEST_F(PdfInkModuleStrokeTest, ChangeToDrawingDuringErasing) {
                                kRightVerticalStrokePoint2);
 
   // Set up for erasing.
-  SelectEraserToolOfSize(2.0f);
+  SelectEraserTool();
   VerifyAndClearExpectations();
 
   // Start erasing from where the first stroke was added.
@@ -2130,8 +2021,8 @@ TEST_F(PdfInkModuleStrokeTest, ChangeToDrawingDuringErasing) {
   // before the mouse-up event.
   TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
                                                   /*color_g=*/0,
-                                                  /*color_b=*/0};
-  SelectBrushTool(PdfInkBrush::Type::kPen, 8.0f, message_params);
+                                                  /*color_b=*/0, /*size=*/8.0};
+  SelectBrushTool(PdfInkBrush::Type::kPen, message_params);
   VerifyAndClearExpectations();
 
   // Continue with mouse movement and then mouse up at a new location.  Notice
@@ -2168,8 +2059,9 @@ TEST_F(PdfInkModuleStrokeTest, ChangeDrawingBrushTypeDuringDrawing) {
   EXPECT_CALL(client(), UpdateInkCursorImage(BitmapImageSizeEq(SkISize(6, 6))));
   TestAnnotationBrushMessageParams pen_message_params{/*color_r=*/0,
                                                       /*color_g=*/0,
-                                                      /*color_b=*/0};
-  SelectBrushTool(PdfInkBrush::Type::kPen, 2.0f, pen_message_params);
+                                                      /*color_b=*/0,
+                                                      /*size=*/2.0};
+  SelectBrushTool(PdfInkBrush::Type::kPen, pen_message_params);
 
   blink::WebMouseEvent mouse_down_event =
       MouseEventBuilder()
@@ -2181,9 +2073,9 @@ TEST_F(PdfInkModuleStrokeTest, ChangeDrawingBrushTypeDuringDrawing) {
   // highlighter.  The entire stroke changes to this new type.
   TestAnnotationBrushMessageParams highlighter_message_params{/*color_r=*/221,
                                                               /*color_g=*/243,
-                                                              /*color_b=*/0};
-  SelectBrushTool(PdfInkBrush::Type::kHighlighter, 8.0f,
-                  highlighter_message_params);
+                                                              /*color_b=*/0,
+                                                              /*size=*/8.0};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, highlighter_message_params);
   VerifyAndClearExpectations();
 
   // Continue with mouse movement and then mouse up at a new location.  Notice
@@ -2626,7 +2518,7 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEraseLoadedV2Shapes) {
 
   // Stroke with the eraser tool in the corner opposite from `kCornerPoints`,
   // which does nothing.
-  SelectEraserToolOfSize(3.0f);
+  SelectEraserTool();
   ApplyStrokeWithMouseAtPoints(
       gfx::PointF(), base::span_from_ref(gfx::PointF()), gfx::PointF());
   VerifyAndClearExpectations();
@@ -2784,7 +2676,6 @@ class PdfInkModuleMetricsTest : public PdfInkModuleUndoRedoTest {
   static constexpr char kPenSizeMetric[] = "PDF.Ink2StrokePenSize";
   static constexpr char kHighlighterSizeMetric[] =
       "PDF.Ink2StrokeHighlighterSize";
-  static constexpr char kEraserSizeMetric[] = "PDF.Ink2StrokeEraserSize";
   static constexpr char kTypeMetric[] = "PDF.Ink2StrokeBrushType";
 };
 
@@ -2833,8 +2724,8 @@ TEST_F(PdfInkModuleMetricsTest, StrokeBrushColorPen) {
 
   // Draw a stroke with "Red 1" color.
   TestAnnotationBrushMessageParams params = {/*color_r=*/0xF2, /*color_g=*/0x8B,
-                                             /*color_b=*/0x82};
-  SelectBrushTool(PdfInkBrush::Type::kPen, 3.0f, params);
+                                             /*color_b=*/0x82, /*size=*/3.0};
+  SelectBrushTool(PdfInkBrush::Type::kPen, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
   histograms.ExpectBucketCount(kPenColorMetric, StrokeMetricPenColor::kRed1, 1);
@@ -2844,7 +2735,7 @@ TEST_F(PdfInkModuleMetricsTest, StrokeBrushColorPen) {
   params.color_r = 0x88;
   params.color_g = 0x59;
   params.color_b = 0x45;
-  SelectBrushTool(PdfInkBrush::Type::kPen, 3.0f, params);
+  SelectBrushTool(PdfInkBrush::Type::kPen, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
   histograms.ExpectBucketCount(kPenColorMetric, StrokeMetricPenColor::kTan3, 1);
@@ -2859,8 +2750,8 @@ TEST_F(PdfInkModuleMetricsTest, StrokeBrushColorHighlighter) {
 
   // Draw a stroke with "Light Red" color.
   TestAnnotationBrushMessageParams params = {/*color_r=*/0xF2, /*color_g=*/0x8B,
-                                             /*color_b=*/0x82};
-  SelectBrushTool(PdfInkBrush::Type::kHighlighter, 6.0f, params);
+                                             /*color_b=*/0x82, /*size=*/6.0};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
   histograms.ExpectBucketCount(kHighlighterColorMetric,
@@ -2871,7 +2762,7 @@ TEST_F(PdfInkModuleMetricsTest, StrokeBrushColorHighlighter) {
   params.color_r = 0xFF;
   params.color_g = 0x63;
   params.color_b = 0x0C;
-  SelectBrushTool(PdfInkBrush::Type::kHighlighter, 6.0f, params);
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
   histograms.ExpectBucketCount(kHighlighterColorMetric,
@@ -2891,22 +2782,22 @@ TEST_F(PdfInkModuleMetricsTest, StrokeBrushSizePen) {
                                 1);
 
   TestAnnotationBrushMessageParams params = {/*color_r=*/242, /*color_g=*/139,
-                                             /*color_b=*/130};
-  SelectBrushTool(PdfInkBrush::Type::kPen, 1.0f, params);
+                                             /*color_b=*/130, /*size=*/1.0};
+  SelectBrushTool(PdfInkBrush::Type::kPen, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
   histograms.ExpectBucketCount(kPenSizeMetric,
                                StrokeMetricBrushSize::kExtraThin, 1);
   histograms.ExpectTotalCount(kPenSizeMetric, 2);
 
-  SelectBrushTool(PdfInkBrush::Type::kPen, 8.0f, params);
+  params.size = 8.0;
+  SelectBrushTool(PdfInkBrush::Type::kPen, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
   histograms.ExpectBucketCount(kPenSizeMetric,
                                StrokeMetricBrushSize::kExtraThick, 1);
   histograms.ExpectTotalCount(kPenSizeMetric, 3);
   histograms.ExpectTotalCount(kHighlighterSizeMetric, 0);
-  histograms.ExpectTotalCount(kEraserSizeMetric, 0);
 }
 
 TEST_F(PdfInkModuleMetricsTest, StrokeBrushSizeHighlighter) {
@@ -2916,15 +2807,16 @@ TEST_F(PdfInkModuleMetricsTest, StrokeBrushSizeHighlighter) {
 
   // Draw a stroke with medium size.
   TestAnnotationBrushMessageParams params = {/*color_r=*/242, /*color_g=*/139,
-                                             /*color_b=*/130};
-  SelectBrushTool(PdfInkBrush::Type::kHighlighter, 8.0f, params);
+                                             /*color_b=*/130, /*size=*/8.0};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
   histograms.ExpectUniqueSample(kHighlighterSizeMetric,
                                 StrokeMetricBrushSize::kMedium, 1);
 
   // Draw a stroke with extra thin size.
-  SelectBrushTool(PdfInkBrush::Type::kHighlighter, 4.0f, params);
+  params.size = 4.0;
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
   histograms.ExpectBucketCount(kHighlighterSizeMetric,
@@ -2932,63 +2824,14 @@ TEST_F(PdfInkModuleMetricsTest, StrokeBrushSizeHighlighter) {
   histograms.ExpectTotalCount(kHighlighterSizeMetric, 2);
 
   // Draw a stroke with extra thick size.
-  SelectBrushTool(PdfInkBrush::Type::kHighlighter, 16.0f, params);
+  params.size = 16.0;
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
   histograms.ExpectBucketCount(kHighlighterSizeMetric,
                                StrokeMetricBrushSize::kExtraThick, 1);
   histograms.ExpectTotalCount(kPenSizeMetric, 0);
   histograms.ExpectTotalCount(kHighlighterSizeMetric, 3);
-  histograms.ExpectTotalCount(kEraserSizeMetric, 0);
-}
-
-TEST_F(PdfInkModuleMetricsTest, StrokeBrushSizeEraser) {
-  EnableAnnotationMode();
-  InitializeSimpleSinglePageBasicLayout();
-  base::HistogramTester histograms;
-
-  // Draw a pen stroke. Draw an eraser stroke that erases it with medium size.
-  TestAnnotationBrushMessageParams params = {/*color_r=*/242, /*color_g=*/139,
-                                             /*color_b=*/130};
-  SelectBrushTool(PdfInkBrush::Type::kPen, 3.0f, params);
-  ApplyStrokeWithMouseAtMouseDownPoint();
-  SelectEraserToolOfSize(3.0f);
-  ApplyStrokeWithMouseAtMouseDownPoint();
-
-  histograms.ExpectUniqueSample(kEraserSizeMetric,
-                                StrokeMetricBrushSize::kMedium, 1);
-
-  // Draw a pen stroke. Draw an eraser stroke that erases it with extra thin
-  // size.
-  SelectBrushTool(PdfInkBrush::Type::kPen, 3.0f, params);
-  ApplyStrokeWithMouseAtMouseDownPoint();
-  SelectEraserToolOfSize(1.0f);
-  ApplyStrokeWithMouseAtMouseDownPoint();
-
-  histograms.ExpectBucketCount(kEraserSizeMetric,
-                               StrokeMetricBrushSize::kExtraThin, 1);
-  histograms.ExpectTotalCount(kEraserSizeMetric, 2);
-
-  // Draw a pen stroke. Draw an eraser stroke that erases it with extra thick
-  // size.
-  SelectBrushTool(PdfInkBrush::Type::kPen, 3.0f, params);
-  ApplyStrokeWithMouseAtMouseDownPoint();
-  SelectEraserToolOfSize(8.0f);
-  ApplyStrokeWithMouseAtMouseDownPoint();
-
-  histograms.ExpectBucketCount(kEraserSizeMetric,
-                               StrokeMetricBrushSize::kExtraThick, 1);
-
-  // There should be no visible strokes on the page. Draw an eraser stroke that
-  // does not erase any other strokes. The metric should stay the same.
-  ApplyStrokeWithMouseAtMouseDownPoint();
-
-  histograms.ExpectBucketCount(kEraserSizeMetric,
-                               StrokeMetricBrushSize::kExtraThick, 1);
-
-  histograms.ExpectTotalCount(kPenSizeMetric, 3);
-  histograms.ExpectTotalCount(kHighlighterSizeMetric, 0);
-  histograms.ExpectTotalCount(kEraserSizeMetric, 3);
 }
 
 TEST_F(PdfInkModuleMetricsTest, StrokeBrushType) {
@@ -3006,8 +2849,8 @@ TEST_F(PdfInkModuleMetricsTest, StrokeBrushType) {
 
   // Draw a highlighter stroke.
   TestAnnotationBrushMessageParams params = {/*color_r=*/242, /*color_g=*/139,
-                                             /*color_b=*/130};
-  SelectBrushTool(PdfInkBrush::Type::kHighlighter, 6.0f, params);
+                                             /*color_b=*/130, /*size=*/6.0};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
   histograms.ExpectBucketCount(kTypeMetric, StrokeMetricBrushType::kHighlighter,
@@ -3015,7 +2858,7 @@ TEST_F(PdfInkModuleMetricsTest, StrokeBrushType) {
   histograms.ExpectTotalCount(kTypeMetric, 2);
 
   // Draw an eraser stroke.
-  SelectEraserToolOfSize(3.0f);
+  SelectEraserTool();
   ApplyStrokeWithMouseAtMouseDownPoint();
 
   histograms.ExpectBucketCount(kTypeMetric, StrokeMetricBrushType::kEraser, 1);
@@ -3030,7 +2873,8 @@ TEST_F(PdfInkModuleMetricsTest, StrokeBrushType) {
   histograms.ExpectTotalCount(kTypeMetric, 3);
 
   // Draw another pen stroke.
-  SelectBrushTool(PdfInkBrush::Type::kPen, 3.0f, params);
+  params.size = 3.0;
+  SelectBrushTool(PdfInkBrush::Type::kPen, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
   histograms.ExpectBucketCount(kTypeMetric, StrokeMetricBrushType::kPen, 2);
@@ -3052,7 +2896,7 @@ TEST_F(PdfInkModuleMetricsTest, StrokeInputDeviceMouse) {
                                 StrokeMetricInputDeviceType::kMouse, 1);
 
   // Draw an eraser stroke with a mouse that erases the first stroke.
-  SelectEraserToolOfSize(3.0f);
+  SelectEraserTool();
   ApplyStrokeWithMouseAtMouseDownPoint();
 
   histograms.ExpectUniqueSample(kInputDeviceMetric,
@@ -3080,7 +2924,7 @@ TEST_F(PdfInkModuleMetricsTest, StrokeInputDeviceTouch) {
                                 StrokeMetricInputDeviceType::kTouch, 1);
 
   // Draw an eraser stroke with touch that erases the first stroke.
-  SelectEraserToolOfSize(3.0f);
+  SelectEraserTool();
   const std::vector<base::span<const gfx::PointF>> move_point{
       base::span_from_ref(kMouseDownPoint),
   };
@@ -3113,7 +2957,7 @@ TEST_F(PdfInkModuleMetricsTest, StrokeInputDevicePen) {
                                 StrokeMetricInputDeviceType::kPen, 1);
 
   // Draw an eraser stroke with a pen that erases the first stroke.
-  SelectEraserToolOfSize(3.0f);
+  SelectEraserTool();
   const std::vector<base::span<const gfx::PointF>> move_point{
       base::span_from_ref(kMouseDownPoint),
   };
