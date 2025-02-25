@@ -185,9 +185,9 @@ action("updater_install_script") {
 
   args = [
     "-i",
-    rebase_path("setup/.install.sh"),
+    rebase_path("setup/.install.sh", root_build_dir),
     "-o",
-    rebase_path(root_out_dir + "/chrome/updater/.install"),
+    rebase_path(root_out_dir + "/chrome/updater/.install", root_build_dir),
     "-p",
     updater_product_full_name,
   ]
@@ -205,9 +205,9 @@ action("updater_test_install_script") {
 
   args = [
     "-i",
-    rebase_path("setup/.install.sh"),
+    rebase_path("setup/.install.sh", root_build_dir),
     "-o",
-    rebase_path(root_out_dir + "/.install"),
+    rebase_path(root_out_dir + "/.install", root_build_dir),
     "-p",
     updater_product_full_name + "_test",
   ]
@@ -225,10 +225,11 @@ action("browser_install_script") {
 
   args = [
     "-i",
-    rebase_path(".install.sh"),
+    rebase_path(".install.sh", root_build_dir),
     "-o",
     rebase_path(
-        root_out_dir + "/$browser_product_name Packaging/updater/.install"),
+        root_out_dir + "/$browser_product_name Packaging/updater/.install",
+        root_build_dir),
     "-v",
     chrome_version_full,
   ]
