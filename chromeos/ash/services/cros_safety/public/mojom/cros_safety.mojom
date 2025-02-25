@@ -1,7 +1,7 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 module ash.cros_safety.mojom;
 
@@ -48,6 +48,7 @@ enum SafetyRuleset {
   [MinVersion=1] kMantisOutputImage,
   [MinVersion=1] kMantisGeneratedRegion,
   [MinVersion=1] kCoral,
+  [MinVersion=3] kMantisGeneratedRegionOutpainting,
 };
 
 // CloudSafetySession is implemented within CrosSafetyService which connects
