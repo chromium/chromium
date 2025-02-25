@@ -342,7 +342,7 @@ group("gn_all") {
       ]
     }
 
-    if (use_aura || is_mac) {
+    if (!is_android && !is_ios && !is_fuchsia) {
       deps += [ "//ui/webui/examples:webui_examples" ]
     }
 
