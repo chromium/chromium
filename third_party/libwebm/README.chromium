@@ -8,6 +8,7 @@ License: BSD-3-Clause, Patent
 License File: source/LICENSE.TXT, source/PATENTS.TXT
 Security Critical: yes
 Shipped: yes
+License Android Compatible: yes
 
 Description:
 libwebm is a library to read and write WebM files. It's used by MediaStream
