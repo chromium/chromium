@@ -122,7 +122,7 @@ public class WebPaymentIntentHelper {
     public static void parsePaymentResponse(
             int resultCode,
             Intent data,
-            PaymentOptions requestedPaymentOptions,
+            @Nullable PaymentOptions requestedPaymentOptions,
             PaymentErrorCallback errorCallback,
             PaymentSuccessCallback successCallback) {
         if (data == null) {

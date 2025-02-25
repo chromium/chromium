@@ -9,13 +9,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.payments.intent.IsReadyToPayServiceHelper;
 import org.chromium.components.payments.intent.WebPaymentIntentHelper;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType;
@@ -40,31 +41,32 @@ import java.util.Set;
  * The point of interaction with a locally installed 3rd party native Android payment app.
  * https://web.dev/articles/android-payment-apps-developers-guide
  */
+@NullMarked
 public class AndroidPaymentApp extends PaymentApp
         implements IsReadyToPayServiceHelper.ResultHandler, WindowAndroid.IntentCallback {
     private final Handler mHandler;
     private final AndroidIntentLauncher mLauncher;
-    @Nullable private final DialogController mDialogController;
+    private final @Nullable DialogController mDialogController;
     private final Set<String> mMethodNames;
     private final boolean mIsIncognito;
     private final String mPackageName;
     private final String mPayActivityName;
-    @Nullable private final String mIsReadyToPayServiceName;
-    @Nullable private final String mPaymentDetailsUpdateServiceName;
+    private final @Nullable String mIsReadyToPayServiceName;
+    private final @Nullable String mPaymentDetailsUpdateServiceName;
     private final SupportedDelegations mSupportedDelegations;
     private final boolean mShowReadyToPayDebugInfo;
     private final boolean mRemoveDeprecatedFields;
 
-    private IsReadyToPayCallback mIsReadyToPayCallback;
-    private InstrumentDetailsCallback mInstrumentDetailsCallback;
-    private IsReadyToPayServiceHelper mIsReadyToPayServiceHelper;
-    private PaymentDetailsUpdateConnection mPaymentDetailsUpdateConnection;
-    @Nullable private String mApplicationIdentifierToHide;
+    private @Nullable IsReadyToPayCallback mIsReadyToPayCallback;
+    private @Nullable InstrumentDetailsCallback mInstrumentDetailsCallback;
+    private @Nullable IsReadyToPayServiceHelper mIsReadyToPayServiceHelper;
+    private @Nullable PaymentDetailsUpdateConnection mPaymentDetailsUpdateConnection;
+    private @Nullable String mApplicationIdentifierToHide;
     private boolean mBypassIsReadyToPayServiceInTest;
     private boolean mIsPreferred;
 
     // Set inside launchPaymentApp and used to validate the received response.
-    @Nullable private WebPaymentIntentHelperType.PaymentOptions mPaymentOptions;
+    private WebPaymentIntentHelperType.@Nullable PaymentOptions mPaymentOptions;
 
     /**
      * Builds the point of interaction with a locally installed 3rd party native Android payment
@@ -179,7 +181,7 @@ public class AndroidPaymentApp extends PaymentApp
             Map<String, PaymentMethodData> methodDataMap,
             String origin,
             String iframeOrigin,
-            @Nullable byte[][] certificateChain,
+            byte @Nullable [][] certificateChain,
             Map<String, PaymentDetailsModifier> modifiers,
             IsReadyToPayCallback callback) {
         ThreadUtils.assertOnUiThread();
@@ -243,8 +245,7 @@ public class AndroidPaymentApp extends PaymentApp
     }
 
     @Override
-    @Nullable
-    public String getApplicationIdentifierToHide() {
+    public @Nullable String getApplicationIdentifierToHide() {
         return mApplicationIdentifierToHide;
     }
 
@@ -259,7 +260,7 @@ public class AndroidPaymentApp extends PaymentApp
             final String merchantName,
             String origin,
             String iframeOrigin,
-            final byte[][] certificateChain,
+            final byte @Nullable [][] certificateChain,
             final Map<String, PaymentMethodData> methodDataMap,
             final PaymentItem total,
             final List<PaymentItem> displayItems,
@@ -348,7 +349,7 @@ public class AndroidPaymentApp extends PaymentApp
             String merchantName,
             String origin,
             String iframeOrigin,
-            byte[][] certificateChain,
+            byte @Nullable [][] certificateChain,
             Map<String, PaymentMethodData> methodDataMap,
             PaymentItem total,
             List<PaymentItem> displayItems,

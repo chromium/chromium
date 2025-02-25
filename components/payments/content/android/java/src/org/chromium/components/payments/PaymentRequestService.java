@@ -4,10 +4,11 @@
 
 package org.chromium.components.payments;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArrayMap;
 
@@ -17,6 +18,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -65,6 +68,7 @@ import java.util.Set;
  * class need to close them with {@link PaymentRequestService#close()}, after which no usage is
  * allowed.
  */
+@NullMarked
 public class PaymentRequestService
         implements PaymentAppFactoryDelegate,
                 PaymentAppFactoryParams,
@@ -80,29 +84,37 @@ public class PaymentRequestService
      * Hold the currently showing PaymentRequest. Used to prevent showing more than one
      * PaymentRequest UI per browser process.
      */
-    private static PaymentRequestService sShowingPaymentRequest;
+    private static @Nullable PaymentRequestService sShowingPaymentRequest;
 
-    private static PaymentRequestServiceObserverForTest sObserverForTest;
-    private static NativeObserverForTest sNativeObserverForTest;
+    private static @Nullable PaymentRequestServiceObserverForTest sObserverForTest;
+    private static @Nullable NativeObserverForTest sNativeObserverForTest;
     private static boolean sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest;
     private final Runnable mOnClosedListener;
     private final RenderFrameHost mRenderFrameHost;
     private final Delegate mDelegate;
     private final List<PaymentApp> mPendingApps = new ArrayList<>();
-    @Nullable private final Supplier<PaymentAppServiceBridge> mPaymentAppServiceBridgeSupplier;
+    private final @Nullable Supplier<PaymentAppServiceBridge> mPaymentAppServiceBridgeSupplier;
+    @SuppressWarnings("NullAway.Init") // When init() fails this can have null value
     private WebContents mWebContents;
+    @SuppressWarnings("NullAway.Init") // When init() fails this can have null value
     private JourneyLogger mJourneyLogger;
+    @SuppressWarnings("NullAway.Init") // When init() fails this can have null value
     private String mTopLevelOrigin;
+    @SuppressWarnings("NullAway.Init") // When init() fails this can have null value
     private String mPaymentRequestOrigin;
+    @SuppressWarnings("NullAway.Init") // When init() fails this can have null value
     private Origin mPaymentRequestSecurityOrigin;
+    @SuppressWarnings("NullAway.Init") // When init() fails this can have null value
     private String mMerchantName;
     private boolean mIsOffTheRecord;
+    @SuppressWarnings("NullAway.Init") // When init() fails this can have null value
     private PaymentOptions mPaymentOptions;
     private boolean mRequestShipping;
     private boolean mRequestPayerName;
     private boolean mRequestPayerPhone;
     private boolean mRequestPayerEmail;
     private int mShippingType;
+    @SuppressWarnings("NullAway.Init") // When init() fails this can have null value
     private PaymentRequestSpec mSpec;
     private boolean mHasClosed;
     private boolean mIsFinishedQueryingPaymentApps;
@@ -110,21 +122,22 @@ public class PaymentRequestService
     private boolean mIsShowWaitingForUpdatedDetails;
 
     /** If not empty, use this error message for rejecting PaymentRequest.show(). */
-    private String mRejectShowErrorMessage;
+    private @Nullable String mRejectShowErrorMessage;
 
     /** Internal reason for why PaymentRequest.show() should be rejected. */
     private @AppCreationFailureReason int mRejectShowErrorReason = AppCreationFailureReason.UNKNOWN;
 
     // mClient is null only when it has closed.
-    @Nullable private PaymentRequestClient mClient;
+    private @Nullable PaymentRequestClient mClient;
 
     // mBrowserPaymentRequest is null when it has closed or is uninitiated.
-    @Nullable private BrowserPaymentRequest mBrowserPaymentRequest;
+    private @Nullable BrowserPaymentRequest mBrowserPaymentRequest;
 
     /** The helper to create and fill the response to send to the merchant. */
-    @Nullable private PaymentResponseHelperInterface mPaymentResponseHelper;
+    private @Nullable PaymentResponseHelperInterface mPaymentResponseHelper;
 
     /** A mapping of the payment method names to the corresponding payment method specific data. */
+    @SuppressWarnings("NullAway.Init") // When init() fails this can have null value
     private HashMap<String, PaymentMethodData> mQueryForQuota;
 
     /**
@@ -142,7 +155,7 @@ public class PaymentRequestService
 
     private boolean mIsCanMakePaymentResponsePending;
     private boolean mIsHasEnrolledInstrumentResponsePending;
-    @Nullable private PaymentApp mInvokedPaymentApp;
+    private @Nullable PaymentApp mInvokedPaymentApp;
 
     /** True if a show() call is rejected for lack of a user activation. */
     private boolean mRejectShowForUserActivation;
@@ -162,7 +175,7 @@ public class PaymentRequestService
 
         void onHasEnrolledInstrumentReturned();
 
-        void onAppListReady(@Nullable List<PaymentApp> paymentApps, PaymentItem total);
+        void onAppListReady(@Nullable List<PaymentApp> paymentApps, @Nullable PaymentItem total);
 
         void onShippingSectionVisibilityChange(boolean isShippingSectionVisible);
 
@@ -223,8 +236,7 @@ public class PaymentRequestService
          *     returns the package name for Trusted Web Activity. Otherwise returns an empty string
          *     or null.
          */
-        @Nullable
-        String getTwaPackageName();
+        @Nullable String getTwaPackageName();
 
         /**
          * Gets the WebContents from a RenderFrameHost if the WebContents has not been destroyed;
@@ -234,8 +246,7 @@ public class PaymentRequestService
          *     WebContents contains.
          * @return The WebContents.
          */
-        @Nullable
-        default WebContents getLiveWebContents(RenderFrameHost renderFrameHost) {
+        default @Nullable WebContents getLiveWebContents(RenderFrameHost renderFrameHost) {
             return PaymentRequestServiceUtil.getLiveWebContents(renderFrameHost);
         }
 
@@ -318,8 +329,7 @@ public class PaymentRequestService
          *
          * @return The instance, can be null for testing.
          */
-        @Nullable
-        default PaymentAppFactoryInterface createAndroidPaymentAppFactory() {
+        default @Nullable PaymentAppFactoryInterface createAndroidPaymentAppFactory() {
             return new AndroidPaymentAppFactory();
         }
 
@@ -327,8 +337,7 @@ public class PaymentRequestService
          * @return The context of the current activity, can be null when WebContents has been
          *     destroyed, the activity is gone, the window is closed, etc.
          */
-        @Nullable
-        default Context getContext(RenderFrameHost renderFrameHost) {
+        default @Nullable Context getContext(RenderFrameHost renderFrameHost) {
             WindowAndroid window = getWindowAndroid(renderFrameHost);
             if (window == null) return null;
             return window.getContext().get();
@@ -338,8 +347,7 @@ public class PaymentRequestService
          * @return The WindowAndroid of the current activity, can be null when WebContents has been
          *     destroyed, the activity is gone, etc.
          */
-        @Nullable
-        default WindowAndroid getWindowAndroid(RenderFrameHost renderFrameHost) {
+        default @Nullable WindowAndroid getWindowAndroid(RenderFrameHost renderFrameHost) {
             WebContents webContents = PaymentRequestServiceUtil.getLiveWebContents(renderFrameHost);
             if (webContents == null) return null;
             return webContents.getTopLevelNativeWindow();
@@ -435,7 +443,7 @@ public class PaymentRequestService
      * @return Whether the initialization is successful.
      */
     public boolean init(
-            @Nullable PaymentMethodData[] rawMethodData,
+            PaymentMethodData @Nullable [] rawMethodData,
             @Nullable PaymentDetails details,
             @Nullable PaymentOptions options) {
         if (mRenderFrameHost.getLastCommittedOrigin() == null
@@ -448,11 +456,12 @@ public class PaymentRequestService
         mPaymentRequestOrigin =
                 mDelegate.formatUrlForSecurityDisplay(mRenderFrameHost.getLastCommittedURL());
 
-        mWebContents = mDelegate.getLiveWebContents(mRenderFrameHost);
-        if (mWebContents == null || mWebContents.isDestroyed()) {
+        WebContents webContents = mDelegate.getLiveWebContents(mRenderFrameHost);
+        if (webContents == null || webContents.isDestroyed()) {
             abortForInvalidDataFromRenderer(ErrorStrings.NO_WEB_CONTENTS);
             return false;
         }
+        mWebContents = webContents;
         // TODO(crbug.com/41475385): replace UrlFormatter with GURL operations.
         mTopLevelOrigin = mDelegate.formatUrlForSecurityDisplay(mWebContents.getLastCommittedUrl());
 
@@ -585,6 +594,7 @@ public class PaymentRequestService
             return false;
         }
         PaymentMethodData spcMethodData = methodData.get(MethodStrings.SECURE_PAYMENT_CONFIRMATION);
+        assumeNonNull(spcMethodData);
         if (spcMethodData.securePaymentConfirmation == null) return false;
 
         // TODO(crbug.com/40231121): Update checks to match desktop browser-side logic.
@@ -637,12 +647,12 @@ public class PaymentRequestService
      * @return The WebContents of the payment handler that's just opened when the opening is
      *     successful; null if failed.
      */
-    @Nullable
-    public static WebContents openPaymentHandlerWindow(GURL url) {
+    public static @Nullable WebContents openPaymentHandlerWindow(GURL url) {
         if (sShowingPaymentRequest == null) return null;
         PaymentApp invokedPaymentApp = sShowingPaymentRequest.mInvokedPaymentApp;
         assert invokedPaymentApp != null;
         assert invokedPaymentApp.getPaymentAppType() == PaymentAppType.SERVICE_WORKER_APP;
+        assumeNonNull(sShowingPaymentRequest.mBrowserPaymentRequest);
         return sShowingPaymentRequest.mBrowserPaymentRequest.openPaymentHandlerWindow(
                 url, invokedPaymentApp.getUkmSourceId());
     }
@@ -698,8 +708,7 @@ public class PaymentRequestService
     /**
      * @return Get the native=side observer, for testing purpose only.
      */
-    @Nullable
-    public static NativeObserverForTest getNativeObserverForTest() {
+    public static @Nullable NativeObserverForTest getNativeObserverForTest() {
         return sNativeObserverForTest;
     }
 
@@ -739,12 +748,14 @@ public class PaymentRequestService
     // Implements PaymentResponseHelper.PaymentResponseResultCallback:
     @Override
     public void onPaymentResponseReady(PaymentResponse response) {
+        assumeNonNull(mBrowserPaymentRequest);
         if (!mBrowserPaymentRequest.patchPaymentResponseIfNeeded(response)) {
             disconnectFromClientWithDebugMessage(
                     ErrorStrings.PAYMENT_APP_INVALID_RESPONSE, PaymentErrorReason.NOT_SUPPORTED);
             // Intentionally do not early-return.
         }
         if (response.methodName.equals(MethodStrings.SECURE_PAYMENT_CONFIRMATION)) {
+            assumeNonNull(mInvokedPaymentApp);
             assert mInvokedPaymentApp.getInstrumentMethodNames().contains(response.methodName);
             response = mInvokedPaymentApp.setAppSpecificResponseFields(response);
         }
@@ -825,13 +836,13 @@ public class PaymentRequestService
                         ? mSpec.getRawShippingOptions()
                         : Collections.unmodifiableList(new ArrayList<>());
         paymentApp.invokePaymentApp(
-                mSpec.getId(),
+                assumeNonNull(mSpec.getId()),
                 mMerchantName,
                 mTopLevelOrigin,
                 mPaymentRequestOrigin,
                 getCertificateChain(),
                 Collections.unmodifiableMap(methodData),
-                mSpec.getRawTotal(),
+                assumeNonNull(mSpec.getRawTotal()),
                 mSpec.getRawLineItems(),
                 Collections.unmodifiableMap(modifiers),
                 paymentOptions,
@@ -912,8 +923,7 @@ public class PaymentRequestService
         }
     }
 
-    @Nullable
-    private PaymentNotShownError onShowCalledAndAppsQueried() {
+    private @Nullable PaymentNotShownError onShowCalledAndAppsQueried() {
         assert mIsShowCalled;
         assert mIsFinishedQueryingPaymentApps;
         assert mBrowserPaymentRequest != null;
@@ -989,10 +999,10 @@ public class PaymentRequestService
      *
      * @return The error if the payment cannot be made; null otherwise.
      */
-    @Nullable
-    private PaymentNotShownError ensureHasSupportedPaymentMethods() {
+    private @Nullable PaymentNotShownError ensureHasSupportedPaymentMethods() {
         assert mIsShowCalled;
         assert mIsFinishedQueryingPaymentApps;
+        assumeNonNull(mBrowserPaymentRequest);
         if (!mCanMakePayment || !mBrowserPaymentRequest.hasAvailableApps()) {
             // All factories have responded, but none of them have apps. It's possible to add credit
             // cards, but the merchant does not support them either. The payment request must be
@@ -1166,12 +1176,14 @@ public class PaymentRequestService
     // Implements PaymentAppFactoryDelegate:
     @Override
     public DialogController getDialogController() {
+        assumeNonNull(mBrowserPaymentRequest);
         return mBrowserPaymentRequest.getDialogController();
     }
 
     // Implements PaymentAppFactoryDelegate:
     @Override
     public AndroidIntentLauncher getAndroidIntentLauncher() {
+        assumeNonNull(mBrowserPaymentRequest);
         return mBrowserPaymentRequest.getAndroidIntentLauncher();
     }
 
@@ -1180,8 +1192,7 @@ public class PaymentRequestService
      * @return The validated method data, a mapping of method names to its PaymentMethodData(s);
      *     when the given method data is invalid, returns null.
      */
-    @Nullable
-    private static Map<String, PaymentMethodData> getValidatedMethodData(
+    private static @Nullable Map<String, PaymentMethodData> getValidatedMethodData(
             PaymentMethodData[] methodDataList) {
         // Payment methodData are required.
         assert methodDataList != null;
@@ -1228,6 +1239,7 @@ public class PaymentRequestService
         if (!hadUserActivation) {
             PaymentRequestWebContentsData paymentRequestWebContentsData =
                     PaymentRequestWebContentsData.from(mWebContents);
+            assumeNonNull(paymentRequestWebContentsData);
             if (paymentRequestWebContentsData.hadActivationlessShow()) {
                 // Reject the call to show(), because only one activationless show is allowed per
                 // page.
@@ -1326,13 +1338,14 @@ public class PaymentRequestService
     }
 
     private boolean isPaymentDetailsUpdateValid(PaymentDetails details) {
+        assumeNonNull(mBrowserPaymentRequest);
         // ID cannot be updated. Updating the total is optional.
         return details.id == null
                 && mDelegate.validatePaymentDetails(details)
                 && mBrowserPaymentRequest.parseAndValidateDetailsFurtherIfNeeded(details);
     }
 
-    private String continueShowWithUpdatedDetails(@Nullable PaymentDetails details) {
+    private @Nullable String continueShowWithUpdatedDetails(@Nullable PaymentDetails details) {
         assert mIsShowWaitingForUpdatedDetails;
         assert mBrowserPaymentRequest != null;
         // mSpec.updateWith() can be used only when mSpec has not been destroyed.
@@ -1406,6 +1419,7 @@ public class PaymentRequestService
             // After a payment app has been invoked, all of the merchant's calls to update the price
             // via updateWith() should be forwarded to the invoked app, so it can reflect the
             // updated price in its UI.
+            assumeNonNull(mInvokedPaymentApp);
             mInvokedPaymentApp.updateWith(
                     PaymentDetailsConverter.convertToPaymentRequestDetailsUpdate(
                             details, /* methodChecker= */ this, mInvokedPaymentApp));
@@ -1601,8 +1615,7 @@ public class PaymentRequestService
     /**
      * @return An observer for the payment request service, if any; otherwise, null.
      */
-    @Nullable
-    public static PaymentRequestServiceObserverForTest getObserverForTest() {
+    public static @Nullable PaymentRequestServiceObserverForTest getObserverForTest() {
         return sObserverForTest;
     }
 
@@ -1685,7 +1698,7 @@ public class PaymentRequestService
 
     // PaymentAppFactoryParams implementation.
     @Override
-    public String getId() {
+    public @Nullable String getId() {
         assert !mHasClosed;
         assert !mSpec.isDestroyed();
         return mSpec.getId();
@@ -1711,8 +1724,8 @@ public class PaymentRequestService
 
     // PaymentAppFactoryParams implementation.
     @Override
-    @Nullable
-    public byte[][] getCertificateChain() {
+    public byte @Nullable [][] getCertificateChain() {
+        assumeNonNull(mBrowserPaymentRequest);
         return mBrowserPaymentRequest.getCertificateChain();
     }
 
@@ -1726,7 +1739,7 @@ public class PaymentRequestService
 
     // PaymentAppFactoryParams implementation.
     @Override
-    public PaymentItem getRawTotal() {
+    public @Nullable PaymentItem getRawTotal() {
         assert !mHasClosed;
         assert !mSpec.isDestroyed();
         return mSpec.getRawTotal();
@@ -1758,8 +1771,7 @@ public class PaymentRequestService
 
     // PaymentAppFactoryParams implementation.
     @Override
-    @Nullable
-    public String getTwaPackageName() {
+    public @Nullable String getTwaPackageName() {
         return mDelegate.getTwaPackageName();
     }
 
@@ -1881,8 +1893,7 @@ public class PaymentRequestService
     }
 
     @VisibleForTesting
-    @Nullable
-    public static BrowserPaymentRequest getBrowserPaymentRequestForTesting() {
+    public static @Nullable BrowserPaymentRequest getBrowserPaymentRequestForTesting() {
         return sShowingPaymentRequest != null
                 ? sShowingPaymentRequest.mBrowserPaymentRequest
                 : null;

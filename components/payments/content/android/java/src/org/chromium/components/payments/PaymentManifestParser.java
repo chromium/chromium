@@ -9,11 +9,13 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 /** Parses payment manifests in a utility process. */
 @JNINamespace("payments")
+@NullMarked
 public class PaymentManifestParser {
     /** Interface for the callback to invoke when finished parsing. */
     public interface ManifestParseCallback {

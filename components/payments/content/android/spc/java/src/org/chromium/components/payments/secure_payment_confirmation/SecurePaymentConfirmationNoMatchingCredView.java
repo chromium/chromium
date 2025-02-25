@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.payments.R;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.text.ChromeClickableSpan;
@@ -27,6 +28,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
  * peeked or half-open state. It has a fixed height, which is the height of the visible content
  * area. It informs the user that additional steps are needed to verify the payment.
  */
+@NullMarked
 public class SecurePaymentConfirmationNoMatchingCredView {
     private final RelativeLayout mContentView;
     private final ScrollView mScrollView;

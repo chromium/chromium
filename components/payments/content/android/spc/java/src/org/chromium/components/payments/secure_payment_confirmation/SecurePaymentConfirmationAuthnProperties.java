@@ -7,6 +7,7 @@ package org.chromium.components.payments.secure_payment_confirmation;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 
@@ -14,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
  * The properties of the SecurePaymentConfirmation Authn UI, which fully describe the state of the
  * UI.
  */
+@NullMarked
 /* package */ class SecurePaymentConfirmationAuthnProperties {
     /** The store value of the UI. */
     /* package */ static final ReadableObjectPropertyKey<String> STORE_LABEL =

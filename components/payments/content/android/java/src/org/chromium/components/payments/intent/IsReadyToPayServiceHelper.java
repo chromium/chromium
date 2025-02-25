@@ -17,9 +17,12 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.IsReadyToPayService;
 import org.chromium.IsReadyToPayServiceCallback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.payments.PrePurchaseQuery;
 
 /** A helper to query the payment app's IsReadyToPay service. */
+@NullMarked
 public class IsReadyToPayServiceHelper extends IsReadyToPayServiceCallback.Stub
         implements ServiceConnection {
     /** The maximum number of milliseconds to wait for a response from a READY_TO_PAY service. */
@@ -31,7 +34,7 @@ public class IsReadyToPayServiceHelper extends IsReadyToPayServiceCallback.Stub
     private final Context mContext;
 
     // This callback can be used only once, set to null after that.
-    private ResultHandler mResultHandler;
+    private @Nullable ResultHandler mResultHandler;
 
     private boolean mIsServiceBindingInitiated;
     private boolean mIsServiceConnected;

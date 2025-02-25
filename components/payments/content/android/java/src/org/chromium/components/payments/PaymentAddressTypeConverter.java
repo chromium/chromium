@@ -21,7 +21,9 @@ public final class PaymentAddressTypeConverter {
      * @param address The org.chromium.payments.mojom.PaymentAddress to be converted.
      * @return The converted address with type org.chromium.components.payments.Address.
      */
-    public static @Nullable Address convertPaymentAddressFromMojo(PaymentAddress address) {
+    @Contract("!null -> !null")
+    public static @Nullable Address convertPaymentAddressFromMojo(
+            @Nullable PaymentAddress address) {
         if (address == null) return null;
         return new Address(
                 address.country,
@@ -41,7 +43,8 @@ public final class PaymentAddressTypeConverter {
      * @return The converted address with type org.chromium.payments.mojom.PaymentAddress.
      */
     @Contract("!null -> !null")
-    public static @Nullable PaymentAddress convertAddressToMojoPaymentAddress(Address address) {
+    public static @Nullable PaymentAddress convertAddressToMojoPaymentAddress(
+            @Nullable Address address) {
         if (address == null) return null;
         PaymentAddress result = new PaymentAddress();
         result.country = address.country;

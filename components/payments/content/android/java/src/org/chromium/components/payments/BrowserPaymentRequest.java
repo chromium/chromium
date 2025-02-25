@@ -4,8 +4,8 @@
 
 package org.chromium.components.payments;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentComplete;
 import org.chromium.payments.mojom.PaymentDetails;
@@ -24,6 +24,7 @@ import java.util.Map;
  * The browser part of the PaymentRequest implementation. The browser here can be either the
  * Android Chrome browser or the WebLayer "browser".
  */
+@NullMarked
 public interface BrowserPaymentRequest {
     /**
      * The client of the interface calls this when it has received the payment details update
@@ -98,10 +99,9 @@ public interface BrowserPaymentRequest {
      *        implementer may consider other factors before deciding whether to show or skip.
      * @return The error of the showing if any; null if success.
      */
-    @Nullable
-    String showOrSkipAppSelector(
+    @Nullable String showOrSkipAppSelector(
             boolean isShowWaitingForUpdatedDetails,
-            PaymentItem total,
+            @Nullable PaymentItem total,
             boolean shouldSkipAppSelector);
 
     /**
@@ -128,8 +128,7 @@ public interface BrowserPaymentRequest {
      *
      * @return The error if it fails; null otherwise.
      */
-    @Nullable
-    default String onShowCalledAndAppsQueriedAndDetailsFinalized() {
+    default @Nullable String onShowCalledAndAppsQueriedAndDetailsFinalized() {
         return null;
     }
 
@@ -166,7 +165,7 @@ public interface BrowserPaymentRequest {
      * @param ukmSourceId The ukm source id assigned to the payment app.
      * @return The created WebContents.
      */
-    default WebContents openPaymentHandlerWindow(GURL url, long ukmSourceId) {
+    default @Nullable WebContents openPaymentHandlerWindow(GURL url, long ukmSourceId) {
         return null;
     }
 
@@ -178,8 +177,7 @@ public interface BrowserPaymentRequest {
      *         their payment apps.
      * @return The error if it fails; null otherwise.
      */
-    @Nullable
-    default String continueShowWithUpdatedDetails(
+    default @Nullable String continueShowWithUpdatedDetails(
             PaymentDetails details, boolean isFinishedQueryingPaymentApps) {
         return null;
     }
@@ -225,8 +223,7 @@ public interface BrowserPaymentRequest {
      *     Can return null when ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS is enabled or
      *     when the page is localhost or is a file.
      */
-    @Nullable
-    byte[][] getCertificateChain();
+    byte @Nullable [][] getCertificateChain();
 
     /**
      * @return The launcher for Android intent-based payment app.

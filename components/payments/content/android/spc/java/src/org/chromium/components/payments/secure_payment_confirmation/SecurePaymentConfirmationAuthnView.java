@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.payments.R;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
@@ -22,6 +23,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
  * state. It has a fixed height, which is the height of the visible content area. It shows the
  * payment details and provides the option to continue with the payment or to cancel.
  */
+@NullMarked
 /* package */ class SecurePaymentConfirmationAuthnView {
     /**
      * Bundles the information necessary to show the opt out UX, if requested by the caller.
