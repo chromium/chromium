@@ -17,7 +17,7 @@ class BubbleSignInPromoSignInButtonView;
 
 // A personalized sign in promo used when Desktop Identity Consistency is
 // enabled. Its display a message informing the user the benefits of signing in
-// and a button that allows the user to sign in. The button has 2 different
+// and a button that allows the user to sign in. The button has 3 different
 // displays:
 // * If Chrome has no accounts, then the promo button is a MD button allowing
 //   the user to sign in to Chrome.
@@ -31,20 +31,14 @@ class BubbleSignInPromoView : public views::View {
 
  public:
   // Creates a personalized sign in promo view.
-  // |delegate| is not owned by BubbleSignInPromoView.
-  // The promo message is set to |accounts_promo_message_resource_id| when
-  // Chrome has at least one account.
-  // |button_style| is used to style non-personalized signin button. Otherwise,
+  // `delegate` is not owned by BubbleSignInPromoView.
+  // `button_style` is used to style non-personalized signin button. Otherwise,
   // the button remains prominent.
-  // The promo message is set in a font given by |text_style|. It is defaulted
-  // to a primary style font.
   BubbleSignInPromoView(
       Profile* profile,
       BubbleSignInPromoDelegate* delegate,
       signin_metrics::AccessPoint access_point,
-      int accounts_promo_message_resource_id = 0,
-      ui::ButtonStyle button_style = ui::ButtonStyle::kProminent,
-      int text_style = views::style::STYLE_PRIMARY);
+      ui::ButtonStyle button_style = ui::ButtonStyle::kProminent);
   BubbleSignInPromoView(const BubbleSignInPromoView&) = delete;
   BubbleSignInPromoView& operator=(const BubbleSignInPromoView&) = delete;
   ~BubbleSignInPromoView() override;

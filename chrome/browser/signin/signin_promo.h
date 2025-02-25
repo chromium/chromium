@@ -65,6 +65,16 @@ enum class Flow {
   EMBEDDED_PROMO
 };
 
+// Maps to a subset of `signin_metrics::AccessPoint`. Is used for both signin
+// and sync promos.
+enum class SignInPromoType {
+  kPassword,
+  kAddress,
+  kBookmark,
+  kExtension,
+  // Add other types here if other access points will show a signin promo.
+};
+
 // Wraps arguments for `GetChromeSyncURLForDice()`. They are all optional.
 struct ChromeSyncUrlArgs {
   // If not empty, will be passed as hint to the page so that it will be

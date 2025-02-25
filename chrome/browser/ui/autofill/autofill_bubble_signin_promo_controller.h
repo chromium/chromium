@@ -9,9 +9,6 @@
 #include "components/sync/service/local_data_description.h"
 
 struct AccountInfo;
-namespace signin {
-enum class SignInAutofillBubblePromoType;
-}  // namespace signin
 
 namespace signin_metrics {
 enum class AccessPoint;
