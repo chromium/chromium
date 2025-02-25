@@ -88,6 +88,7 @@ const uint8_t kTestPublicKey[] = {
 };
 
 const uint8_t kKeyId = 3;
+const char kKeyIdStr[] = "03";
 
 // Helper to create a CompressionGroupResult given all field values.
 // `compression_group_data` is a string that will be CBOR encoded to form the
@@ -280,7 +281,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
-            kKeyId},
+            kKeyIdStr},
         compression_groups,
         base::BindLambdaForTesting(
             [&](TrustedSignalsFetcher::SignalsFetchResult result) {
@@ -311,7 +312,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
-            kKeyId},
+            kKeyIdStr},
         compression_groups,
         base::BindLambdaForTesting(
             [&](TrustedSignalsFetcher::SignalsFetchResult result) {
@@ -2374,7 +2375,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsIsolationInfo) {
       BiddingAndAuctionServerKey{
           std::string(reinterpret_cast<const char*>(kTestPublicKey),
                       sizeof(kTestPublicKey)),
-          kKeyId},
+          kKeyIdStr},
       CreateBasicBiddingSignalsRequest(),
       base::BindLambdaForTesting(
           [](TrustedSignalsFetcher::SignalsFetchResult result) {
@@ -2411,7 +2412,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsIsolationInfo) {
       BiddingAndAuctionServerKey{
           std::string(reinterpret_cast<const char*>(kTestPublicKey),
                       sizeof(kTestPublicKey)),
-          kKeyId},
+          kKeyIdStr},
       CreateBasicScoringSignalsRequest(),
       base::BindLambdaForTesting(
           [](TrustedSignalsFetcher::SignalsFetchResult result) {
@@ -2469,7 +2470,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsClientSecurityState) {
           BiddingAndAuctionServerKey{
               std::string(reinterpret_cast<const char*>(kTestPublicKey),
                           sizeof(kTestPublicKey)),
-              kKeyId},
+              kKeyIdStr},
           CreateBasicScoringSignalsRequest(),
           base::BindLambdaForTesting(
               [](TrustedSignalsFetcher::SignalsFetchResult result) {
@@ -2560,7 +2561,7 @@ TEST(TrustedSignalsFetcherTimeoutTest, BiddingSignalsTimeout) {
       BiddingAndAuctionServerKey{
           std::string(reinterpret_cast<const char*>(kTestPublicKey),
                       sizeof(kTestPublicKey)),
-          kKeyId},
+          kKeyIdStr},
       bidding_signals_request,
       base::BindLambdaForTesting(
           [&](TrustedSignalsFetcher::SignalsFetchResult result) {

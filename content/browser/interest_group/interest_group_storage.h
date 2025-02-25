@@ -32,8 +32,6 @@ struct InterestGroup;
 }
 
 namespace content {
-struct BiddingAndAuctionServerKey;
-
 // InterestGroupStorage controls access to the Interest Group Database. All
 // public functions perform operations on the database and may block. This
 // implementation is not thread-safe so all functions should be called from
@@ -208,15 +206,13 @@ class CONTENT_EXPORT InterestGroupStorage {
 
   // Update B&A keys for a coordinator. This function will overwrite any
   // existing keys for the coordinator.
-  void SetBiddingAndAuctionServerKeys(
-      const url::Origin& coordinator,
-      const std::vector<BiddingAndAuctionServerKey>& keys,
-      base::Time expiration);
+  void SetBiddingAndAuctionServerKeys(const url::Origin& coordinator,
+                                      std::string serialized_keys,
+                                      base::Time expiration);
   // Load stored B&A server keys for a coordinator along with the keys'
   // expiration.
-
-  std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
-  GetBiddingAndAuctionServerKeys(const url::Origin& coordinator);
+  std::pair<base::Time, std::string> GetBiddingAndAuctionServerKeys(
+      const url::Origin& coordinator);
 
   // Returns various resource limits, as configured by feature params.
   static size_t MaxOwnerRegularInterestGroups();

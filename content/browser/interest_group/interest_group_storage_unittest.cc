@@ -4173,7 +4173,7 @@ TEST_F(InterestGroupStorageTest, SetGetBiddingAndAuctionKeys) {
       url::Origin::Create(GURL("https://b.example.com"));
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
   // No keys should be returned before any values are set.
-  std::vector<BiddingAndAuctionServerKey> a_loaded_keys, b_loaded_keys;
+  std::string a_loaded_keys, b_loaded_keys;
   base::Time a_expiration, b_expiration;
   std::tie(a_expiration, a_loaded_keys) =
       storage->GetBiddingAndAuctionServerKeys(origin_a);
@@ -4183,44 +4183,32 @@ TEST_F(InterestGroupStorageTest, SetGetBiddingAndAuctionKeys) {
   EXPECT_TRUE(b_loaded_keys.empty());
 
   // The set values should be returned.
-  std::vector<BiddingAndAuctionServerKey> a_keys{{"1", 1}, {"2", 2}};
+  std::string a_keys = "A keys in binary proto";
   base::Time expiration = base::Time::Now() + base::Seconds(5);
   storage->SetBiddingAndAuctionServerKeys(origin_a, a_keys, expiration);
   std::tie(a_expiration, a_loaded_keys) =
       storage->GetBiddingAndAuctionServerKeys(origin_a);
   std::tie(b_expiration, b_loaded_keys) =
       storage->GetBiddingAndAuctionServerKeys(origin_b);
-  EXPECT_EQ(a_loaded_keys.size(), 2u);
-  EXPECT_NE(a_loaded_keys[0].id, a_loaded_keys[1].id);
-  for (const BiddingAndAuctionServerKey& key : a_loaded_keys) {
-    EXPECT_TRUE((key.id == 1 && key.key == "1") ||
-                (key.id == 2 && key.key == "2"));
-  }
+  EXPECT_EQ(a_loaded_keys, a_keys);
   EXPECT_TRUE(b_loaded_keys.empty());
   EXPECT_EQ(expiration, a_expiration);
 
   // Setting values for a different origin shouldn't affect the previously
   // set values.
-  std::vector<BiddingAndAuctionServerKey> b_keys{{"3", 3}};
+  std::string b_keys = "B keys in binary proto";
   storage->SetBiddingAndAuctionServerKeys(origin_b, b_keys, expiration);
   std::tie(a_expiration, a_loaded_keys) =
       storage->GetBiddingAndAuctionServerKeys(origin_a);
   std::tie(b_expiration, b_loaded_keys) =
       storage->GetBiddingAndAuctionServerKeys(origin_b);
-  EXPECT_EQ(a_loaded_keys.size(), 2u);
-  EXPECT_NE(a_loaded_keys[0].id, a_loaded_keys[1].id);
-  for (const BiddingAndAuctionServerKey& key : a_loaded_keys) {
-    EXPECT_TRUE((key.id == 1 && key.key == "1") ||
-                (key.id == 2 && key.key == "2"));
-  }
-  EXPECT_EQ(b_loaded_keys.size(), 1u);
-  EXPECT_EQ("3", b_loaded_keys[0].key);
-  EXPECT_EQ(3, b_loaded_keys[0].id);
+  EXPECT_EQ(a_loaded_keys, a_keys);
+  EXPECT_EQ(b_loaded_keys, b_keys);
   EXPECT_EQ(expiration, a_expiration);
   EXPECT_EQ(expiration, b_expiration);
 
   // Resetting the keys should overwrite the previous keys.
-  a_keys = {{"1", 1}};
+  a_keys = "New A keys in binary proto";
   task_environment().FastForwardBy(base::Seconds(2));
   expiration = base::Time::Now() + base::Days(7);
   storage->SetBiddingAndAuctionServerKeys(origin_a, a_keys, expiration);
@@ -4228,12 +4216,8 @@ TEST_F(InterestGroupStorageTest, SetGetBiddingAndAuctionKeys) {
       storage->GetBiddingAndAuctionServerKeys(origin_a);
   std::tie(b_expiration, b_loaded_keys) =
       storage->GetBiddingAndAuctionServerKeys(origin_b);
-  EXPECT_EQ(a_loaded_keys.size(), 1u);
-  EXPECT_EQ("1", a_loaded_keys[0].key);
-  EXPECT_EQ(1, a_loaded_keys[0].id);
-  EXPECT_EQ(b_loaded_keys.size(), 1u);
-  EXPECT_EQ("3", b_loaded_keys[0].key);
-  EXPECT_EQ(3, b_loaded_keys[0].id);
+  EXPECT_EQ(a_loaded_keys, a_keys);
+  EXPECT_EQ(b_loaded_keys, b_keys);
   EXPECT_EQ(expiration, a_expiration);
   EXPECT_NE(expiration, b_expiration);
 
@@ -4243,9 +4227,7 @@ TEST_F(InterestGroupStorageTest, SetGetBiddingAndAuctionKeys) {
       storage->GetBiddingAndAuctionServerKeys(origin_a);
   std::tie(b_expiration, b_loaded_keys) =
       storage->GetBiddingAndAuctionServerKeys(origin_b);
-  EXPECT_EQ(a_loaded_keys.size(), 1u);
-  EXPECT_EQ("1", a_loaded_keys[0].key);
-  EXPECT_EQ(1, a_loaded_keys[0].id);
+  EXPECT_EQ(a_loaded_keys, a_keys);
   EXPECT_TRUE(b_loaded_keys.empty());
   EXPECT_EQ(expiration, a_expiration);
 
@@ -4257,27 +4239,9 @@ TEST_F(InterestGroupStorageTest, SetGetBiddingAndAuctionKeys) {
       storage->GetBiddingAndAuctionServerKeys(origin_a);
   std::tie(b_expiration, b_loaded_keys) =
       storage->GetBiddingAndAuctionServerKeys(origin_b);
-  EXPECT_EQ(a_loaded_keys.size(), 1u);
-  EXPECT_EQ("1", a_loaded_keys[0].key);
-  EXPECT_EQ(1, a_loaded_keys[0].id);
+  EXPECT_EQ(a_loaded_keys, a_keys);
   EXPECT_EQ(expiration, a_expiration);
   EXPECT_TRUE(b_loaded_keys.empty());
-}
-
-TEST_F(InterestGroupStorageTest, SetGetBiddingAndAuctionKeysNonUtf8) {
-  const url::Origin origin = url::Origin::Create(GURL("https://b.example.com"));
-  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
-  std::string key(32, 0x00);
-  std::vector<BiddingAndAuctionServerKey> keys{{key, 2}};
-  storage->SetBiddingAndAuctionServerKeys(origin, keys,
-                                          base::Time::Now() + base::Days(1));
-  std::vector<BiddingAndAuctionServerKey> loaded_keys;
-  base::Time expiration;
-  std::tie(expiration, loaded_keys) =
-      storage->GetBiddingAndAuctionServerKeys(origin);
-  EXPECT_EQ(loaded_keys.size(), 1u);
-  EXPECT_EQ(loaded_keys[0].key, key);
-  EXPECT_EQ(loaded_keys[0].id, 2);
 }
 
 }  // namespace

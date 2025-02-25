@@ -438,6 +438,7 @@ class InterestGroupAuctionReporterTest
     return std::nullopt;
   }
   void GetBiddingAndAuctionServerKey(
+      const url::Origin& scope_origin,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
                                              std::string>)> callback) override {

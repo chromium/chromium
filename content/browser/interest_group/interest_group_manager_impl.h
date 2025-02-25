@@ -385,18 +385,15 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   // Update B&A keys for a coordinator. This function will overwrite any
   // existing keys for the coordinator.
-  void SetBiddingAndAuctionServerKeys(
-      const url::Origin& coordinator,
-      const std::vector<BiddingAndAuctionServerKey>& keys,
-      base::Time expiration);
+  void SetBiddingAndAuctionServerKeys(const url::Origin& coordinator,
+                                      std::string serialized_keys,
+                                      base::Time expiration);
 
   // Load stored B&A server keys for a coordinator along with the keys'
   // expiration.
   void GetBiddingAndAuctionServerKeys(
       const url::Origin& coordinator,
-      base::OnceCallback<
-          void(std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>)>
-          callback);
+      base::OnceCallback<void(std::pair<base::Time, std::string>)> callback);
 
   // Clears the InterestGroupPermissionsChecker's cache of the results of
   // .well-known fetches.
@@ -513,6 +510,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // called synchronously if the key is already available or the coordinator is
   // not recognized.
   void GetBiddingAndAuctionServerKey(
+      const url::Origin& seller,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback);

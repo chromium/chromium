@@ -29,6 +29,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_process_manager.h"
@@ -312,6 +313,7 @@ AuctionWorkletManager::WorkletOwner::WorkletOwner(
     if (!base::FeatureList::IsEnabled(features::kFledgeUseKVv2SignalsCache)) {
       waiting_on_trusted_signals_kvv2_public_key_ = true;
       worklet_manager->delegate()->GetBiddingAndAuctionServerKey(
+          url::Origin::Create(worklet_info_.signals_url.value_or(GURL())),
           std::move(worklet_info_.trusted_signals_coordinator),
           base::BindOnce(&AuctionWorkletManager::WorkletOwner::
                              OnTrustedSignalsKVv2KeyFetched,
@@ -524,9 +526,13 @@ void AuctionWorkletManager::WorkletOwner::OnTrustedSignalsKVv2KeyFetched(
   // more debugging information rather than just pass a nullptr to bidder/seller
   // worklet.
   if (key_or_error.has_value()) {
+    uint32_t key_id = 0;
+    bool success = base::HexStringToUInt(
+        std::string_view(key_or_error->id).substr(0, 2), &key_id);
+    DCHECK(success);
     trusted_signals_kvv2_public_key_ =
         auction_worklet::mojom::TrustedSignalsPublicKey::New(key_or_error->key,
-                                                             key_or_error->id);
+                                                             key_id);
   }
 
   LoadWorkletIfReady(number_of_bidder_threads);
