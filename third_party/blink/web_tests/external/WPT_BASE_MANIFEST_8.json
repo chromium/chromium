@@ -373717,11 +373717,15 @@
       []
      ],
      "ShadowRoot-init-customElements.tentative-expected.txt": [
-      "21f33d1dc1e9fc7821659157bc74fc12cd11f1c5",
+      "873d3c8c01e44c5a0273f9327826c8d94c2ab7a2",
       []
      ],
      "ShadowRoot-innerHTML.tentative-expected.txt": [
       "2a663df5f3583d8adb56642c510e32727fa6ed3e",
+      []
+     ],
+     "template.tentative.window-expected.txt": [
+      "ccb611112c0a0226fc2c5861016b7b57307103a0",
       []
      ]
     },
@@ -527730,7 +527734,7 @@
       ]
      ],
      "ShadowRoot-init-customElements.tentative.html": [
-      "b9240d8666b2aba583887ba4056c2bc773e03dd0",
+      "e8f13c6a5f2474ca2396ab8ba63cae7358b1ee45",
       [
        null,
        {}
@@ -527740,6 +527744,13 @@
       "9cfa1759d391fc80b96e9df229e9486f59d8b2a3",
       [
        null,
+       {}
+      ]
+     ],
+     "template.tentative.window.js": [
+      "68a247d346d43fe164b97c93d09ce4f6ce7e5645",
+      [
+       "custom-elements/revamped-scoped-registry/template.tentative.window.html",
        {}
       ]
      ]
