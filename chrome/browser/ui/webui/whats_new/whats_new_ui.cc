@@ -73,6 +73,7 @@ bool WhatsNewUIConfig::IsWebUIEnabled(
 void WhatsNewUI::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kWhatsNewEditionUsed);
   registry->RegisterListPref(prefs::kWhatsNewFirstEnabledOrder);
+  registry->RegisterIntegerPref(prefs::kWhatsNewVersionUsed, 0);
 }
 
 WhatsNewUI::WhatsNewUI(content::WebUI* web_ui)

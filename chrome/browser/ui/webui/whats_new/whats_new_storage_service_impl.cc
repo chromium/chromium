@@ -22,6 +22,11 @@ const base::Value::Dict& WhatsNewStorageServiceImpl::ReadEditionData() const {
   return editions;
 }
 
+std::optional<int> WhatsNewStorageServiceImpl::ReadVersionData() const {
+  return g_browser_process->local_state()->GetInteger(
+      prefs::kWhatsNewVersionUsed);
+}
+
 int WhatsNewStorageServiceImpl::GetModuleQueuePosition(
     std::string_view module_name) const {
   const base::Value::List& module_data = ReadModuleData();
@@ -63,6 +68,10 @@ bool WhatsNewStorageServiceImpl::IsUsedEdition(
   return GetUsedVersion(edition_name) != std::nullopt;
 }
 
+bool WhatsNewStorageServiceImpl::WasVersionPageUsedForCurrentMilestone() const {
+  return ReadVersionData() == CHROME_VERSION_MAJOR;
+}
+
 void WhatsNewStorageServiceImpl::SetEditionUsed(std::string_view edition_name) {
   // Edition should not be previously used.
   auto stored_version = GetUsedVersion(edition_name);
@@ -80,6 +89,11 @@ void WhatsNewStorageServiceImpl::SetEditionUsed(std::string_view edition_name) {
   }
 
   GetUsedEditions()->Set(edition_name, CHROME_VERSION_MAJOR);
+}
+
+void WhatsNewStorageServiceImpl::SetVersionUsed() {
+  g_browser_process->local_state()->SetInteger(prefs::kWhatsNewVersionUsed,
+                                               CHROME_VERSION_MAJOR);
 }
 
 void WhatsNewStorageServiceImpl::ClearModules(
