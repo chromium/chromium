@@ -20,6 +20,7 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -132,7 +133,13 @@ void BtmShortVisitObserver::DidFinishNavigation(
     return;
   }
 
-  const GURL& visit_url = navigation_handle->GetPreviousPrimaryMainFrameURL();
+  GURL visit_url = navigation_handle->GetPreviousPrimaryMainFrameURL();
+  if (visit_url.is_empty()) {
+    if (const std::optional<url::Origin>& origin =
+            navigation_handle->GetInitiatorOrigin()) {
+      visit_url = origin->GetURL();
+    }
+  }
   const std::string visit_site = GetSite(visit_url);
 
   if (prev_site_.has_value()) {

@@ -7,11 +7,13 @@
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/dips/dips_service_impl.h"
+#include "content/browser/dips/dips_test_utils.h"
 #include "content/public/browser/dips_redirect_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -413,6 +415,30 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
   ukm_recorder.ExpectEntryMetric(entries[0], "TimeSinceLastInteraction", -1);
   // "Future" interaction.
   ukm_recorder.ExpectEntryMetric(entries[1], "TimeSinceLastInteraction", -3);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
+                       NewTabUsesOpenerAsPreviousUrl) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html?a");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  const GURL url3 =
+      embedded_https_test_server().GetURL("a.test", "/empty.html?b");
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+  ASSERT_OK_AND_ASSIGN(WebContents * new_tab,
+                       OpenInNewTab(web_contents(), url2));
+  ASSERT_TRUE(NavigateToURLFromRenderer(new_tab, url3));
+
+  UkmEntryVector entries = GetBtmShortVisits(1, ukm_recorder);
+  // Only one UKM event is reported -- for `url2`.
+  ASSERT_THAT(EntryURLs(ukm_recorder, entries), testing::ElementsAre(url2));
+  // `url1` is considered the previous url for the visit.
+  ukm_recorder.ExpectEntryMetric(entries[0], "PreviousSiteSame", 0);
+  ukm_recorder.ExpectEntryMetric(entries[0], "NextSiteSame", 0);
+  ukm_recorder.ExpectEntryMetric(entries[0], "PreviousAndNextSiteSame", 1);
 }
 
 }  // namespace
