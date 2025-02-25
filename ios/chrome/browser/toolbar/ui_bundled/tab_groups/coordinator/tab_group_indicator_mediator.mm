@@ -37,8 +37,6 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/web_state.h"
 
-using PeopleGroupActionOutcome =
-    data_sharing::DataSharingService::PeopleGroupActionOutcome;
 using ScopedTabGroupSyncObservation =
     base::ScopedObservation<tab_groups::TabGroupSyncService,
                             tab_groups::TabGroupSyncService::Observer>;
@@ -392,7 +390,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 // TabGroupActionType must be kLeaveSharedTabGroup or kDeleteSharedTabGroup.
 - (void)takeActionForActionType:(TabGroupActionType)actionType
                  sharedTabGroup:(const TabGroup*)group {
-  CHECK(_dataSharingService);
+  CHECK(_collaborationService);
 
   const tab_groups::CollaborationId collabId =
       tab_groups::utils::GetTabGroupCollabID(group, _tabGroupSyncService);
@@ -400,8 +398,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());
 
   __weak TabGroupIndicatorMediator* weakSelf = self;
-  auto callback = base::BindOnce(^(PeopleGroupActionOutcome outcome) {
-    BOOL success = outcome == PeopleGroupActionOutcome::kSuccess;
+  auto callback = base::BindOnce(^(bool success) {
     [weakSelf handleTakeActionForActionTypeOutcome:success];
   });
 
@@ -410,10 +407,10 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   // Asynchronously call on the server.
   switch (actionType) {
     case TabGroupActionType::kLeaveSharedTabGroup:
-      _dataSharingService->LeaveGroup(groupId, std::move(callback));
+      _collaborationService->LeaveGroup(groupId, std::move(callback));
       break;
     case TabGroupActionType::kDeleteSharedTabGroup:
-      _dataSharingService->DeleteGroup(groupId, std::move(callback));
+      _collaborationService->DeleteGroup(groupId, std::move(callback));
       break;
     case TabGroupActionType::kUngroupTabGroup:
     case TabGroupActionType::kDeleteTabGroup:
