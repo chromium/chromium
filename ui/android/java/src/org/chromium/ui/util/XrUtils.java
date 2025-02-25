@@ -44,8 +44,10 @@ public class XrUtils {
         boolean xrDevice =
                 (sXrDeviceOverrideForTesting != null)
                         ? sXrDeviceOverrideForTesting
-                        : PackageManagerUtils.hasSystemFeature(
-                                PackageManagerUtils.XR_IMMERSIVE_FEATURE_NAME);
+                        : (PackageManagerUtils.hasSystemFeature(
+                                        PackageManagerUtils.XR_IMMERSIVE_FEATURE_NAME)
+                                || PackageManagerUtils.hasSystemFeature(
+                                        PackageManagerUtils.XR_OPENXR_FEATURE_NAME));
         return xrDevice;
     }
 

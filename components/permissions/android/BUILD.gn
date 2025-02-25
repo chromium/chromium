@@ -187,6 +187,7 @@ android_library("core_java") {
     "//components/content_settings/android:content_settings_enums_java",
     "//components/location/android:location_java",
     "//components/webxr/android:features_java",
+    "//device/vr/public:java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",

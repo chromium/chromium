@@ -24,7 +24,6 @@ import androidx.annotation.IntDef;
 import androidx.preference.Preference;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.PackageManagerUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -163,8 +162,7 @@ public class SiteSettingsCategory {
         } else if (type == Type.AUGMENTED_REALITY) {
             permission = android.Manifest.permission.CAMERA;
         } else if (type == Type.HAND_TRACKING
-                && PackageManagerUtils.hasSystemFeature(
-                        PackageManagerUtils.XR_IMMERSIVE_FEATURE_NAME)) {
+                && PermissionUtil.handTrackingNeedsAdditionalPermissions()) {
             permission = PermissionUtil.ANDROID_PERMISSION_HAND_TRACKING;
         } else {
             permission = "";
