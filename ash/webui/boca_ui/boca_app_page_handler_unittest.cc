@@ -1634,6 +1634,18 @@ TEST_F(BocaAppPageHandlerTest, OnSessionSessionStartedSucceed) {
   ASSERT_TRUE(result->is_config());
 }
 
+TEST_F(BocaAppPageHandlerTest, OnSessionSessionMetadataUpdatedSucceed) {
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillOnce(Return(&session));
+  base::test::TestFuture<mojom::ConfigResultPtr> future;
+  boca_app_handler()->SetSessionConfigInterceptorCallbackForTesting(
+      future.GetCallback());
+  boca_app_handler()->OnSessionMetadataUpdated(std::string());
+  auto result = future.Take();
+  ASSERT_TRUE(result->is_config());
+}
+
 TEST_F(BocaAppPageHandlerTest, OnSessionEndedSucceed) {
   base::test::TestFuture<mojom::ConfigResultPtr> future;
   boca_app_handler()->SetSessionConfigInterceptorCallbackForTesting(

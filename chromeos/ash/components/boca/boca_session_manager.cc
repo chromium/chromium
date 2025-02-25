@@ -84,6 +84,9 @@ BocaSessionManager::~BocaSessionManager() {
   }
 }
 
+void BocaSessionManager::Observer::OnSessionMetadataUpdated(
+    const std::string& session_id) {}
+
 void BocaSessionManager::Observer::OnBundleUpdated(
     const ::boca::Bundle& bundle) {}
 
@@ -415,6 +418,7 @@ void BocaSessionManager::HandleTakeOver(
 
 void BocaSessionManager::DispatchEvent() {
   NotifySessionUpdate();
+  NotifySessionMetadataUpdate();
   NotifyOnTaskUpdate();
   NotifySessionCaptionConfigUpdate();
   NotifyRosterUpdate();
@@ -451,6 +455,22 @@ void BocaSessionManager::NotifySessionUpdate() {
     StartSendingStudentHeartbeatRequests();
   } else {
     StopSendingStudentHeartbeatRequests();
+  }
+}
+
+void BocaSessionManager::NotifySessionMetadataUpdate() {
+  if (!IsSessionActive(current_session_.get()) ||
+      !IsSessionActive(previous_session_.get())) {
+    return;
+  }
+  if (current_session_->teacher().SerializeAsString() !=
+          previous_session_->teacher().SerializeAsString() ||
+      current_session_->duration().SerializeAsString() !=
+          previous_session_->duration().SerializeAsString()) {
+    for (auto& observer : observers_) {
+      observer.OnSessionMetadataUpdated(current_session_->session_id());
+    }
+    return;
   }
 }
 
