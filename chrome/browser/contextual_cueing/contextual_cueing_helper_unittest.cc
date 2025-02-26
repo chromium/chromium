@@ -6,6 +6,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
@@ -51,6 +53,13 @@ std::unique_ptr<KeyedService> CreatePageContentExtractionService(
     content::BrowserContext* context) {
   return std::make_unique<
       page_content_annotations::PageContentExtractionService>();
+}
+
+std::unique_ptr<KeyedService> CreateContextualCueingService(
+    content::BrowserContext* context) {
+  return std::make_unique<ContextualCueingService>(
+      page_content_annotations::PageContentExtractionServiceFactory::
+          GetForProfile(Profile::FromBrowserContext(context)));
 }
 
 class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
@@ -108,7 +117,10 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
             TestingProfile::TestingFactory{
                 page_content_annotations::PageContentExtractionServiceFactory::
                     GetInstance(),
-                base::BindRepeating(&CreatePageContentExtractionService)}};
+                base::BindRepeating(&CreatePageContentExtractionService)},
+            TestingProfile::TestingFactory{
+                ContextualCueingServiceFactory::GetInstance(),
+                base::BindRepeating(&CreateContextualCueingService)}};
   }
 
  private:

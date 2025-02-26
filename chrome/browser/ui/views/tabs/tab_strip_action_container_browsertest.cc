@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/glic/glic_test_environment.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,8 +43,13 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
  public:
   TabStripActionContainerBrowserTest() {
     feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kGlic,
-         features::kTabstripComboButton, features::kTabstripDeclutter},
+        {
+            features::kTabOrganization,
+            features::kGlic,
+            features::kTabstripComboButton,
+            features::kTabstripDeclutter,
+            contextual_cueing::kContextualCueing,
+        },
         {});
     TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   }

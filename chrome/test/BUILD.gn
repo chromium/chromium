@@ -3564,6 +3564,7 @@ if (!is_android) {
 
     deps += [
       "//chrome/browser/apps/link_capturing:app_service_browser_tests",
+      "//chrome/browser/contextual_cueing",
       "//chrome/browser/ui/web_applications:app_service_browser_tests",
       "//chrome/browser/web_applications:app_service_browser_tests",
       "//components/live_caption:live_translate",
