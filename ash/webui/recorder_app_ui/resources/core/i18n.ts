@@ -124,6 +124,8 @@ const noArgStringNames = [
   'recordExitDialogDescription',
   'recordExitDialogHeader',
   'recordExitDialogSaveAndExitButton',
+  'recordGeneralAudioErrorDialogDescription',
+  'recordGeneralAudioErrorDialogHeader',
   'recordHideTranscriptButtonTooltip',
   'recordInfoDialogDateLabel',
   'recordInfoDialogDurationLabel',
