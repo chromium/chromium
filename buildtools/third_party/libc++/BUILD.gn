@@ -82,6 +82,12 @@ builtin_modules("_Builtin_stddef") {
 }
 
 builtin_modules("_Builtin_stdint") {
+  if (is_mac) {
+    deps = [
+      ":_Builtin_stdarg",
+      ":_Builtin_stddef",
+    ]
+  }
 }
 
 configs_to_add = [
@@ -184,9 +190,15 @@ libcxx_modules("std_string_h") {
 
 libcxx_modules("std_uchar_h") {
   deps = [ ":_Builtin_stddef" ]
+  if (is_mac) {
+    deps += [ ":std_private_mbstate_t" ]
+  }
 }
 
 libcxx_modules("std_wctype_h") {
+  if (is_mac) {
+    deps = [ ":std_ctype_h" ]
+  }
 }
 
 if (libcxx_is_shared) {
