@@ -53,7 +53,8 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
     bool safe_for_autoreplace = false,
     TemplateURLData::PolicyOrigin policy_origin =
         TemplateURLData::PolicyOrigin::kNoPolicy,
-    int prepopulate_id = 999999);
+    int prepopulate_id = 999999,
+    int starter_pack_id = 0);
 
 class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
  public:
