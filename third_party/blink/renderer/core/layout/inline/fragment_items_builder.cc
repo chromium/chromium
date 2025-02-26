@@ -244,25 +244,18 @@ void FragmentItemsBuilder::AddListMarker(
 FragmentItemsBuilder::AddPreviousItemsResult
 FragmentItemsBuilder::AddPreviousItems(const PhysicalBoxFragment& container,
                                        const FragmentItems& items,
+                                       const FragmentItem& end_item,
                                        BoxFragmentBuilder* container_builder,
-                                       const FragmentItem* end_item,
                                        wtf_size_t max_lines) {
-  if (end_item) {
-    DCHECK(node_);
-    DCHECK(container_builder);
-    DCHECK(text_content_);
+  DCHECK(node_);
+  DCHECK(container_builder);
+  DCHECK(text_content_);
 
-    if (items.FirstLineText() && !first_line_text_content_) [[unlikely]] {
-      // Don't reuse previous items if they have different `::first-line` style
-      // but |this| doesn't. Reaching here means that computed style doesn't
-      // change, but |FragmentItem| has wrong |StyleVariant|.
-      return AddPreviousItemsResult();
-    }
-  } else {
-    DCHECK(!container_builder);
-    DCHECK(!text_content_);
-    text_content_ = items.NormalText();
-    first_line_text_content_ = items.FirstLineText();
+  if (items.FirstLineText() && !first_line_text_content_) [[unlikely]] {
+    // Don't reuse previous items if they have different `::first-line` style
+    // but |this| doesn't. Reaching here means that computed style doesn't
+    // change, but |FragmentItem| has wrong |StyleVariant|.
+    return AddPreviousItemsResult();
   }
 
   DCHECK(items_.empty());
@@ -285,99 +278,86 @@ FragmentItemsBuilder::AddPreviousItems(const PhysicalBoxFragment& container,
   LayoutUnit used_block_size;
   wtf_size_t line_count = 0;
 
-  for (InlineCursor cursor(container, items); cursor;) {
+  for (InlineCursor cursor(container, items); cursor;
+       cursor.MoveToNextSkippingChildren()) {
     DCHECK(cursor.Current().Item());
     const FragmentItem& item = *cursor.Current().Item();
-    if (&item == end_item)
+    if (&item == &end_item) {
       break;
+    }
     DCHECK(!item.IsDirty());
 
     const LogicalOffset item_offset =
         converter.ToLogical(item.OffsetInContainerFragment(), item.Size());
 
-    if (item.Type() == FragmentItem::kLine) {
-      DCHECK(item.LineBoxFragment());
-      if (end_item) {
-        // Check if this line has valid item_index and offset.
-        const PhysicalLineBoxFragment* line_fragment = item.LineBoxFragment();
-        // Block-in-inline should have been prevented by |EndOfReusableItems|.
-        DCHECK(!line_fragment->IsBlockInInline());
-        const auto* break_token =
-            To<InlineBreakToken>(line_fragment->GetBreakToken());
-        DCHECK(break_token);
-        const InlineItemsData* current_items_data;
-        if (break_token->UseFirstLineStyle()) [[unlikely]] {
-          current_items_data = &node_.ItemsData(true);
-        } else if (items_data) {
-          current_items_data = items_data;
-        } else {
-          current_items_data = items_data = &node_.ItemsData(false);
-        }
-        if (!current_items_data->IsValidOffset(break_token->Start()))
-            [[unlikely]] {
-          DUMP_WILL_BE_NOTREACHED();
-          break;
-        }
+    DCHECK_EQ(item.Type(), FragmentItem::kLine);
+    DCHECK(item.LineBoxFragment());
 
-        last_break_token = break_token;
-        container_builder->AddChild(*line_fragment, item_offset);
-        used_block_size +=
-            item.Size().ConvertToLogical(writing_mode).block_size;
-      }
-
-      items_.emplace_back(item_offset, item);
-      const PhysicalRect line_box_bounds = item.RectInContainerFragment();
-      line_converter.SetOuterSize(line_box_bounds.size);
-      for (InlineCursor line = cursor.CursorForDescendants(); line;
-           line.MoveToNext()) {
-        const FragmentItem& line_child = *line.Current().Item();
-        if (line_child.Type() != FragmentItem::kLine) {
-          if (end_item) {
-            // If |end_item| is given, the caller has computed the range safe
-            // to reuse by calling |EndOfReusableItems|. All children should
-            // be safe to reuse.
-            DCHECK(line_child.CanReuse());
-          } else if (!line_child.CanReuse()) {
-            // Abort and report the failure if any child is not reusable.
-            return AddPreviousItemsResult();
-          }
-        }
-#if DCHECK_IS_ON()
-        // |RebuildFragmentTreeSpine| does not rebuild spine if |NeedsLayout|.
-        // Such block needs to copy PostLayout fragment while running simplified
-        // layout.
-        std::optional<PhysicalBoxFragment::AllowPostLayoutScope>
-            allow_post_layout;
-        if (line_child.IsRelayoutBoundary())
-          allow_post_layout.emplace();
-#endif
-        items_.emplace_back(
-            line_converter.ToLogical(
-                line_child.OffsetInContainerFragment() - line_box_bounds.offset,
-                line_child.Size()),
-            line_child);
-
-        // Be sure to pick the post-layout fragment.
-        const FragmentItem& new_item = items_.back().item;
-        if (const PhysicalBoxFragment* box = new_item.BoxFragment()) {
-          box = box->PostLayout();
-          new_item.GetMutableForCloning().ReplaceBoxFragment(*box);
-        }
-      }
-      if (++line_count == max_lines)
-        break;
-      cursor.MoveToNextSkippingChildren();
-      continue;
+    // Check if this line has valid item_index and offset.
+    const PhysicalLineBoxFragment* line_fragment = item.LineBoxFragment();
+    // Block-in-inline should have been prevented by |EndOfReusableItems|.
+    DCHECK(!line_fragment->IsBlockInInline());
+    const auto* break_token =
+        To<InlineBreakToken>(line_fragment->GetBreakToken());
+    DCHECK(break_token);
+    const InlineItemsData* current_items_data;
+    if (break_token->UseFirstLineStyle()) [[unlikely]] {
+      current_items_data = &node_.ItemsData(true);
+    } else if (items_data) {
+      current_items_data = items_data;
+    } else {
+      current_items_data = items_data = &node_.ItemsData(false);
+    }
+    if (!current_items_data->IsValidOffset(break_token->Start())) [[unlikely]] {
+      DUMP_WILL_BE_NOTREACHED();
+      break;
     }
 
-    DCHECK_NE(item.Type(), FragmentItem::kLine);
-    DCHECK(!end_item);
+    last_break_token = break_token;
+    container_builder->AddChild(*line_fragment, item_offset);
+    used_block_size += item.Size().ConvertToLogical(writing_mode).block_size;
+
     items_.emplace_back(item_offset, item);
-    cursor.MoveToNext();
+    const PhysicalRect line_box_bounds = item.RectInContainerFragment();
+    line_converter.SetOuterSize(line_box_bounds.size);
+    for (InlineCursor line = cursor.CursorForDescendants(); line;
+         line.MoveToNext()) {
+      const FragmentItem& line_child = *line.Current().Item();
+      if (line_child.Type() != FragmentItem::kLine) {
+        // The caller has computed the range safe to reuse by calling
+        // |EndOfReusableItems|. All children should be safe to reuse.
+        DCHECK(line_child.CanReuse());
+      }
+#if DCHECK_IS_ON()
+      // |RebuildFragmentTreeSpine| does not rebuild spine if |NeedsLayout|.
+      // Such block needs to copy PostLayout fragment while running simplified
+      // layout.
+      std::optional<PhysicalBoxFragment::AllowPostLayoutScope>
+          allow_post_layout;
+      if (line_child.IsRelayoutBoundary()) {
+        allow_post_layout.emplace();
+      }
+#endif
+      items_.emplace_back(
+          line_converter.ToLogical(
+              line_child.OffsetInContainerFragment() - line_box_bounds.offset,
+              line_child.Size()),
+          line_child);
+
+      // Be sure to pick the post-layout fragment.
+      const FragmentItem& new_item = items_.back().item;
+      if (const PhysicalBoxFragment* box = new_item.BoxFragment()) {
+        box = box->PostLayout();
+        new_item.GetMutableForCloning().ReplaceBoxFragment(*box);
+      }
+    }
+    if (++line_count == max_lines) {
+      break;
+    }
   }
   DCHECK_LE(items_.size(), estimated_size);
 
-  if (end_item && last_break_token) {
+  if (last_break_token) {
     DCHECK_GT(line_count, 0u);
     DCHECK(!max_lines || line_count <= max_lines);
     return AddPreviousItemsResult{last_break_token, used_block_size, line_count,

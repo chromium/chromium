@@ -268,16 +268,9 @@ const LayoutResult* SimplifiedLayoutAlgorithm::Layout() {
         position.block_edge);
   }
 
-  // We add both items and line-box fragments for existing mechanisms to work.
-  // We may revisit this in future. See also |BoxFragmentBuilder::AddResult|.
-  if (const FragmentItems* previous_items = previous_fragment.Items()) {
-    auto* items_builder = container_builder_.ItemsBuilder();
-    DCHECK(items_builder);
-    DCHECK_EQ(items_builder->GetWritingDirection(), writing_direction_);
-    const auto result =
-        items_builder->AddPreviousItems(previous_fragment, *previous_items);
-    if (!result.succeeded)
-      return nullptr;
+  if (previous_fragment.Items()) {
+    // Simplified layout of fragments with items isn't supported. Give up.
+    return nullptr;
   }
 
   // Some layout types (grid) manually calculate their inflow-bounds rather
