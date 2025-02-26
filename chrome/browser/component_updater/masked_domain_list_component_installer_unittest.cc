@@ -38,9 +38,9 @@ constexpr char kUpdateProcessTimeHistogram[] =
     "NetworkService.IpProtection.ProxyAllowList.UpdateProcessTime";
 constexpr char kFlatbufferBuildTimeHistogram[] =
     "NetworkService.IpProtection.ProxyAllowList.FlatbufferBuildTime";
-constexpr char kMdlSizeHistogram[] = "NetworkService.MaskedDomainList.SizeInKB";
+constexpr char kMdlSizeHistogram[] = "NetworkService.MaskedDomainList.Size";
 constexpr char kDiskUsageHistogram[] =
-    "NetworkService.MaskedDomainList.DiskUsageInKB";
+    "NetworkService.MaskedDomainList.DiskUsage";
 
 }  // namespace
 

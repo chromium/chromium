@@ -172,6 +172,9 @@ class IpProtectionTelemetry {
   // This is measured for all types of MDLs.
   virtual void MdlEstimatedDiskUsage(int64_t) = 0;
 
+  // The size of the MDL protobuf data, in KB.
+  virtual void MdlSize(int64_t) = 0;
+
   // Time taken to create an Android IP Protection auth client, including
   // binding to the system-provided auth service.
   virtual void AndroidAuthClientCreationTime(base::TimeDelta duration) = 0;

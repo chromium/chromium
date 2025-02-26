@@ -236,18 +236,28 @@ void IpProtectionTelemetryUma::TokenExpirationRate(ProxyLayer proxy_layer,
 }
 
 void IpProtectionTelemetryUma::MdlEstimatedMemoryUsage(size_t usage) {
-  // TODO(crbug.com/356109549): Consider renaming this metric.
-  base::UmaHistogramMemoryKB(
-      "NetworkService.MaskedDomainList.NetworkServiceProxyAllowList."
-      "EstimatedMemoryUsageInKB",
-      // Convert to KB
-      usage / 1024);
+  base::UmaHistogramCustomCounts(
+      "NetworkService.MaskedDomainList.EstimatedMemoryUsage",
+      usage / 1024,  // Convert to KB
+      /*min=*/1,
+      /*exclusive_max=*/5000,  // Maximum of 5MB
+      /*buckets=*/50);
 }
 
 void IpProtectionTelemetryUma::MdlEstimatedDiskUsage(int64_t usage) {
-  base::UmaHistogramMemoryKB("NetworkService.MaskedDomainList.DiskUsageInKB",
-                             // Convert to KB
-                             usage / 1024);
+  base::UmaHistogramCustomCounts("NetworkService.MaskedDomainList.DiskUsage",
+                                 usage / 1024,  // Convert to KB
+                                 /*min=*/1,
+                                 /*exclusive_max=*/5000,  // Maximum of 5MB
+                                 /*buckets=*/50);
+}
+
+void IpProtectionTelemetryUma::MdlSize(int64_t size) {
+  base::UmaHistogramCustomCounts("NetworkService.MaskedDomainList.Size",
+                                 size / 1024,  // Convert to KB
+                                 /*min=*/1,
+                                 /*exclusive_max=*/5000,  // Maximum of 5MB
+                                 /*buckets=*/50);
 }
 
 void IpProtectionTelemetryUma::AndroidAuthClientCreationTime(
