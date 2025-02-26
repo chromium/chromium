@@ -823,8 +823,8 @@ void CookieMonster::GetCookieListWithOptions(
                              &excluded_cookies);
   }
 
-  MaybeRunCookieCallback(std::move(callback), included_cookies,
-                         excluded_cookies);
+  MaybeRunCookieCallback(std::move(callback), std::move(included_cookies),
+                         std::move(excluded_cookies));
 
   if (timer) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
