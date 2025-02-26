@@ -14305,6 +14305,32 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.AutoDeletion.IPH.DismissButtonTapped">
+  <owner>danieltwhite@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <description>
+    User pressed 'X' dismiss button from the Auto-deletion IPH. iOS only.
+  </description>
+</action>
+
+<action name="IOS.AutoDeletion.IPH.EnableButtonTapped">
+  <owner>danieltwhite@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <description>
+    User pressed 'Enable auto deletion' button from the Auto-deletion IPH. iOS
+    only.
+  </description>
+</action>
+
+<action name="IOS.AutoDeletion.IPH.RejectButtonTapped">
+  <owner>danieltwhite@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <description>
+    User pressed 'No thanks' dismiss button from the Auto-deletion IPH. iOS
+    only.
+  </description>
+</action>
+
 <action name="IOS.DefaultBrowserFullscreenPromo.Cancel">
   <owner>gayane@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
