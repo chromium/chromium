@@ -1480,11 +1480,17 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_NO_THANKS" desc="Text of the secondary button in the inital and 'Learn More' step views of the Credential Provider Exention Promo. [iOS only]">
         No thanks
       </message>
-      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16" desc="Text of the menu item on the iOS Settings -&gt; Passwords page to turn on crendential provider, for iOS 16 and above. Translate using the same text as the OS Settings in that language. [iOS only]">
-        Password options
+      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16" desc="Text of the menu item on the iOS Settings -&gt; Passwords page to turn on crendential provider, for iOS 16 and above. Translate using the same text as the OS Settings in that language. [iOS only]" meaning="This string is the name of the iOS Password Options settings (iOS settings > Passwords > Password Options). The translation of it and capitalization should match it.">
+        Password Options
       </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_REMIND_ME_LATER" desc="Text of the tertiary button in the inital step and 'Learn More' step views of the Credential Provider Exention Promo. [iOS only]">
         Remind me later
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE" desc="Title text of the Credential Provider Exention promo. [iOS only]">
+        Sign in with your saved passwords &amp; passkeys from any app
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_PROVIDER_SETTINGS_TURN_ON_AUTOFILL" desc="Title of the button that allows setting the app as a credential provider." meaning="The translation and capitalization of 'AutoFill' must match that of iOS settings." >
+        Turn on AutoFill…
       </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_VIEW_PASSKEY" desc="Button label to view a recently created passkey in the password manager. [iOS only]">
         View

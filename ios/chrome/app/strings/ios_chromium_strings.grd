@@ -243,11 +243,20 @@
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_SUBTITLE" desc="Subtitle text of the inital step view of Credential Provider Exention promo. [iOS only]">
         To easily get your saved passwords in your other apps, use Chromium for AutoFill
       </message>
+      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INSTRUCTIONS_SUBTITLE" desc="Subitle text of the instructions page on how to set up Chromium as the Credential Provider. [iOS only]">
+        From "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM">$1<ex>Password Options</ex></ph>" settings, toggle "Chromium" on
+      </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE_WITH_PH" desc="Title text of the 'Learn More' step Credential Provider Exention promo. [iOS only]">
         From your device's settings, open "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM">$1<ex>Password options</ex></ph>" and select "Chromium"
       </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_TITLE" desc="Title text of the 'Learn More' step Credential Provider Exention promo. [iOS only]">
         Choose Chromium for AutoFill
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_SUBTITLE" desc="Subtitle text of the Credential Provider Exention promo. [iOS only]">
+        Get easy access to your passwords and passkeys with Chromium for AutoFill
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE_IOS18" desc="Title text of the Credential Provider Exention promo for iOS 18 and above. [iOS only]">
+        Sign in with your saved passwords &amp; passkeys from any app using Chromium for AutoFill
       </message>
       <message name="IDS_IOS_DATA_NOT_UPLOADED_DIALOG_BODY" desc="Body of a dialog that is shown when the user starts to sign out; the user chooses to sync some or all data types, but some data hasn't been saved in their Google Account yet (for example, if there was an error). This string follows the heading 'Some Data Isn't Saved Yet', and the user can choose to tap on the buttons 'Cancel' or 'Delete and Sign Out'. If the user chooses to continue to sign out, then any of their data (such as bookmarks, passwords, history, settings, and more) that isn't saved in their account will be deleted. The tone should be helpful and instructive. [iOS only]">
         Some of your Chromium data hasn't been saved in your Google Account yet.
