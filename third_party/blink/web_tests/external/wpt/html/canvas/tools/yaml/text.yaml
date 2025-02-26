@@ -233,6 +233,43 @@
   code: |
     @assert ctx.textBaseline === 'alphabetic';
 
+- name: 2d.text.direction.default.tentative
+  code: |
+    @assert ctx.direction === 'inherit';
+
+- name: 2d.text.direction.valid.tentative
+  code: |
+    ctx.direction = 'ltr';
+    @assert ctx.direction === 'ltr';
+
+    ctx.direction = 'rtl';
+    @assert ctx.direction === 'rtl';
+
+    ctx.direction = 'inherit';
+    @assert ctx.direction === 'inherit';
+
+- name: 2d.text.direction.invalid
+  code: |
+    ctx.direction = 'ltr';
+    ctx.direction = 'rtl ';
+    @assert ctx.direction === 'ltr';
+
+    ctx.direction = 'rtl';
+    ctx.direction = 'LTR';
+    @assert ctx.direction === 'rtl';
+
+    ctx.direction = 'ltr';
+    ctx.direction = 'rtl\0';
+    @assert ctx.direction === 'ltr';
+
+    ctx.direction = 'ltr';
+    ctx.direction = 'bogus';
+    @assert ctx.direction === 'ltr';
+
+    ctx.direction = 'ltr';
+    ctx.direction = 'inheri';
+    @assert ctx.direction === 'ltr';
+
 - name: 2d.text.draw.baseline.top
   desc: textBaseline top is the top of the em square (not the bounding box)
   test_type: promise
