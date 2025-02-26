@@ -42,6 +42,8 @@ class FilledCardInformationBubbleViews : public AutofillLocationBarBubble {
  private:
   FRIEND_TEST_ALL_PREFIXES(FilledCardInformationBubbleViewsInteractiveUiTest,
                            TooltipAndAccessibleName);
+  FRIEND_TEST_ALL_PREFIXES(FilledCardInformationBubbleViewsInteractiveUiTest,
+                           BnplTooltipAndAccessibleName);
 
   // AutofillBubbleBase:
   void Hide() override;

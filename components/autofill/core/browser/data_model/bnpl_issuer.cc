@@ -7,7 +7,11 @@
 #include <optional>
 #include <string>
 
+#include "base/notreached.h"
 #include "components/autofill/core/browser/data_model/payment_instrument.h"
+#include "components/autofill/core/browser/payments/constants.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -71,6 +75,16 @@ bool BnplIssuer::IsEligibleAmount(uint64_t amount_in_micros,
       GetEligiblePriceRangeForCurrency(currency);
   return range.has_value() && amount_in_micros >= range->price_lower_bound &&
          amount_in_micros <= range->price_upper_bound;
+}
+
+std::u16string BnplIssuer::GetDisplayName() const {
+  if (issuer_id_ == kBnplAffirmIssuerId) {
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFFIRM);
+  }
+  if (issuer_id_ == kBnplZipIssuerId) {
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP);
+  }
+  NOTREACHED() << "Unknown issuer_id_ " << issuer_id_;
 }
 
 }  // namespace autofill

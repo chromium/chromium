@@ -96,6 +96,9 @@ class BnplIssuer {
   bool IsEligibleAmount(uint64_t amount_in_micros,
                         const std::string& currency) const;
 
+  // Returns the display name for the issuer when shown in UI.
+  std::u16string GetDisplayName() const;
+
  private:
   // Unique identifier for the BNPL partner.
   std::string issuer_id_;

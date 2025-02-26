@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -127,9 +126,14 @@ void FilledCardInformationBubbleViews::Init() {
 }
 
 void FilledCardInformationBubbleViews::AddedToWidget() {
-  GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAfterLabelView>(
-          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+  if (controller_->ShouldShowGooglePayIconInTitle()) {
+    GetBubbleFrameView()->SetTitleView(
+        std::make_unique<TitleWithIconAfterLabelView>(
+            GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+  } else {
+    GetBubbleFrameView()->SetTitleView(std::make_unique<views::Label>(
+        GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE));
+  }
 }
 
 std::u16string FilledCardInformationBubbleViews::GetWindowTitle() const {
@@ -303,8 +307,7 @@ void FilledCardInformationBubbleViews::
 
 void FilledCardInformationBubbleViews::LearnMoreLinkClicked() {
   if (controller_) {
-    controller_->OnLinkClicked(
-        autofill::payments::GetVirtualCardEnrollmentSupportUrl());
+    controller_->OnLinkClicked();
   }
 }
 

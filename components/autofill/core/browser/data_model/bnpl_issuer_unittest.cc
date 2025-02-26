@@ -6,9 +6,13 @@
 
 #include <string>
 
+#include "base/test/gtest_util.h"
 #include "components/autofill/core/browser/data_model/payment_instrument.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -118,6 +122,19 @@ TEST(BnplIssuerTest, IsEligibleAmount) {
   issuer.set_eligible_price_ranges({price_range});
   EXPECT_TRUE(issuer.IsEligibleAmount(/*amount_in_micros=*/60'000'000,
                                       /*currency=*/"USD"));
+}
+
+TEST(BnplIssuerTest, GetDisplayName) {
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
+  issuer.set_issuer_id(std::string{kBnplAffirmIssuerId});
+  EXPECT_EQ(issuer.GetDisplayName(),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFFIRM));
+  issuer.set_issuer_id(std::string{kBnplZipIssuerId});
+  EXPECT_EQ(issuer.GetDisplayName(),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP));
+  issuer.set_issuer_id("unknown_issuer");
+  EXPECT_CHECK_DEATH_WITH(issuer.GetDisplayName(),
+                          "Unknown issuer_id_ unknown_issuer");
 }
 
 // Test for the equality operator for the BNPL issuer data model.

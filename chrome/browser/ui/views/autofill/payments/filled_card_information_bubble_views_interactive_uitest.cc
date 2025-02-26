@@ -24,6 +24,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_event_waiter.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
@@ -507,6 +508,138 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
       GetIconView()->GetTextForTooltipAndAccessibleName(),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_FILLED_CARD_INFORMATION_ICON_TOOLTIP_VIRTUAL_CARD));
+}
+
+IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
+                       BnplFlowAffirm) {
+  CreditCard card;
+  test::SetCreditCardInfo(&card, "John Smith", "5454545454545454",
+                          test::NextMonth().c_str(), test::NextYear().c_str(),
+                          "1");
+  card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
+  card.SetNickname(l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFFIRM));
+  test_api(card).set_issuer_id_for_card(kBnplAffirmIssuerId);
+  ShowBubble(&card, u"345");
+
+  // Verify Affirm-specific title.
+  EXPECT_EQ(card.CardNameForAutofillDisplay(),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFFIRM));
+  EXPECT_EQ(
+      static_cast<views::Label*>(
+          static_cast<views::BubbleFrameView*>(
+              GetBubbleViews()->GetWidget()->non_client_view()->frame_view())
+              ->title())
+          ->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_TITLE,
+          card.CardNameForAutofillDisplay()));
+
+  // Verify the usual card information is displayed correctly.
+  EXPECT_EQ(GetValueForField(FilledCardInformationBubbleField::kCardNumber),
+            u"5454 5454 5454 5454");
+  EXPECT_EQ(
+      GetValueForField(FilledCardInformationBubbleField::kExpirationMonth),
+      base::ASCIIToUTF16(test::NextMonth().c_str()));
+  EXPECT_EQ(GetValueForField(FilledCardInformationBubbleField::kExpirationYear),
+            base::ASCIIToUTF16(test::NextYear().c_str()));
+  EXPECT_EQ(GetValueForField(FilledCardInformationBubbleField::kCardholderName),
+            u"John Smith");
+  EXPECT_EQ(GetValueForField(FilledCardInformationBubbleField::kCvc), u"345");
+}
+
+IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
+                       BnplFlowZip) {
+  CreditCard card;
+  test::SetCreditCardInfo(&card, "John Smith", "5454545454545454",
+                          test::NextMonth().c_str(), test::NextYear().c_str(),
+                          "1");
+  card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
+  card.SetNickname(l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP));
+  test_api(card).set_issuer_id_for_card(kBnplZipIssuerId);
+  ShowBubble(&card, u"345");
+
+  // Verify Zip-specific title.
+  EXPECT_EQ(card.CardNameForAutofillDisplay(),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP));
+  EXPECT_EQ(
+      static_cast<views::Label*>(
+          static_cast<views::BubbleFrameView*>(
+              GetBubbleViews()->GetWidget()->non_client_view()->frame_view())
+              ->title())
+          ->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_TITLE,
+          card.CardNameForAutofillDisplay()));
+
+  // Verify the usual card information is displayed correctly.
+  EXPECT_EQ(GetValueForField(FilledCardInformationBubbleField::kCardNumber),
+            u"5454 5454 5454 5454");
+  EXPECT_EQ(
+      GetValueForField(FilledCardInformationBubbleField::kExpirationMonth),
+      base::ASCIIToUTF16(test::NextMonth().c_str()));
+  EXPECT_EQ(GetValueForField(FilledCardInformationBubbleField::kExpirationYear),
+            base::ASCIIToUTF16(test::NextYear().c_str()));
+  EXPECT_EQ(GetValueForField(FilledCardInformationBubbleField::kCardholderName),
+            u"John Smith");
+  EXPECT_EQ(GetValueForField(FilledCardInformationBubbleField::kCvc), u"345");
+}
+
+IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
+                       BnplTooltipAndAccessibleName) {
+  CreditCard card;
+  test::SetCreditCardInfo(&card, "John Smith", "5454545454545454",
+                          test::NextMonth().c_str(), test::NextYear().c_str(),
+                          "1");
+  card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
+  card.SetNickname(l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP));
+  test_api(card).set_issuer_id_for_card(kBnplZipIssuerId);
+  ShowBubble(&card, u"345");
+  ASSERT_TRUE(GetBubbleViews());
+  ASSERT_TRUE(IsIconVisible());
+
+  EXPECT_EQ(5U, GetBubbleViews()->fields_to_buttons_map_.size());
+  std::u16string normal_button_tooltip = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_BUTTON_TOOLTIP_NORMAL_VIRTUAL_CARD);
+  std::u16string clicked_button_tooltip = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_BUTTON_TOOLTIP_CLICKED_VIRTUAL_CARD);
+  for (auto& [field, button] : GetBubbleViews()->fields_to_buttons_map_) {
+    SCOPED_TRACE(testing::Message()
+                 << "Checking button for field " << static_cast<int>(field));
+    EXPECT_EQ(normal_button_tooltip, button->GetTooltipText());
+    EXPECT_EQ(base::StrCat({button->GetText(), u" ", normal_button_tooltip}),
+              button->GetViewAccessibility().GetCachedName());
+  }
+
+  auto& card_number_button =
+      GetBubbleViews()->fields_to_buttons_map_
+          [FilledCardInformationBubbleField::kCardNumber];
+  auto& cardholder_name_button =
+      GetBubbleViews()->fields_to_buttons_map_
+          [FilledCardInformationBubbleField::kCardholderName];
+
+  GetBubbleViews()->OnFieldClicked(
+      FilledCardInformationBubbleField::kCardNumber);
+  EXPECT_EQ(clicked_button_tooltip, card_number_button->GetTooltipText());
+  EXPECT_EQ(u"5454 5454 5454 5454 " + clicked_button_tooltip,
+            card_number_button->GetViewAccessibility().GetCachedName());
+  EXPECT_EQ(normal_button_tooltip, cardholder_name_button->GetTooltipText());
+  EXPECT_EQ(u"John Smith " + normal_button_tooltip,
+            cardholder_name_button->GetViewAccessibility().GetCachedName());
+
+  GetBubbleViews()->OnFieldClicked(
+      FilledCardInformationBubbleField::kCardholderName);
+  EXPECT_EQ(normal_button_tooltip, card_number_button->GetTooltipText());
+  EXPECT_EQ(u"5454 5454 5454 5454 " + normal_button_tooltip,
+            card_number_button->GetViewAccessibility().GetCachedName());
+  EXPECT_EQ(clicked_button_tooltip, cardholder_name_button->GetTooltipText());
+  EXPECT_EQ(u"John Smith " + clicked_button_tooltip,
+            cardholder_name_button->GetViewAccessibility().GetCachedName());
 }
 
 class FilledCardInformationBubbleViewsPrerenderTest

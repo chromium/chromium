@@ -55,9 +55,10 @@ class FilledCardInformationBubbleControllerImpl
   std::u16string GetFieldButtonTooltip(
       FilledCardInformationBubbleField field) const override;
   bool ShouldIconBeVisible() const override;
-  void OnLinkClicked(const GURL& url) override;
+  void OnLinkClicked() override;
   void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
   void OnFieldClicked(FilledCardInformationBubbleField field) override;
+  bool ShouldShowGooglePayIconInTitle() const override;
 
  protected:
   explicit FilledCardInformationBubbleControllerImpl(
@@ -86,6 +87,12 @@ class FilledCardInformationBubbleControllerImpl
   bool IsWebContentsActive();
 
   void SetEventObserverForTesting(ObserverForTest* observer_for_test);
+
+  // Returns the URL for the learn more link.
+  GURL GetLearnMoreUrl() const;
+
+  // Returns whether the filled card information is part of a BNPL flow.
+  bool IsBnplFlow() const;
 
   // Options containing information to show in the bubble.
   FilledCardInformationBubbleOptions options_;
