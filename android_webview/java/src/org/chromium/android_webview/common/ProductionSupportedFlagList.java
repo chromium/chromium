@@ -700,7 +700,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8SingleThreadedGCInBackground"),
         Flag.baseFeature("V8SingleThreadedGCInBackgroundNoIncrementalMarking"),
         Flag.baseFeature("V8SingleThreadedGCInBackgroundParallelPause"),
-        Flag.baseFeature("V8UpdateLimitAfterLoading"),
         Flag.baseFeature("V8IncrementalMarkingStartUserVisible"),
         Flag.baseFeature("V8ExternalMemoryAccountedInGlobalLimit"),
         Flag.baseFeature("V8GCSpeedUsesCounters"),

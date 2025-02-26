@@ -25074,27 +25074,6 @@
             ]
         }
     ],
-    "V8UpdateLimitAfterLoading": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8UpdateLimitAfterLoading"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8WasmDeoptCallIndirectInlining": [
         {
             "platforms": [

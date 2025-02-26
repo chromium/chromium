@@ -237,10 +237,6 @@ BASE_FEATURE(kV8ConcurrentMarkingHighPriorityThreads,
              ("V8ConcurrentMarkingHighPriorityThreads"),
              kFeatureDefaultStateControlledByV8);
 
-BASE_FEATURE(kV8UpdateLimitAfterLoading,
-             ("V8UpdateLimitAfterLoading"),
-             kFeatureDefaultStateControlledByV8);
-
 BASE_FEATURE(kV8UseLibmTrigFunctions,
              ("V8UseLibmTrigFunctions"),
              kFeatureDefaultStateControlledByV8);
