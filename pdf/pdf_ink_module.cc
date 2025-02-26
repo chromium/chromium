@@ -392,6 +392,17 @@ bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
     return false;
   }
 
+  if (is_drawing_stroke()) {
+    DrawingStrokeState& state = drawing_stroke_state();
+    if (state.start_time.has_value()) {
+      CHECK(state.input_last_event.has_value());
+      const DrawingStrokeState::EventDetails& input_last_event =
+          state.input_last_event.value();
+      bool mouse_up_result = OnMouseUp(GenerateLeftMouseUpEvent(
+          input_last_event.position, input_last_event.timestamp));
+      CHECK(mouse_up_result);
+    }
+  }
   gfx::PointF position = normalized_event.PositionInWidget();
   return is_drawing_stroke()
              ? StartStroke(position, event.TimeStamp(),
