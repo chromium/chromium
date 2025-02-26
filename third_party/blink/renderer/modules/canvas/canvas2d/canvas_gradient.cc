@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -104,7 +103,7 @@ CanvasGradient::CanvasGradient(const gfx::PointF& p0, const gfx::PointF& p1)
     : gradient_(
           Gradient::CreateLinear(p0,
                                  p1,
-                                 kSpreadMethodPad,
+                                 Gradient::SpreadMethod::kPad,
                                  Gradient::PremultipliedAlpha::kUnpremultiplied,
                                  Gradient::DegenerateHandling::kDisallow)) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
@@ -123,7 +122,7 @@ CanvasGradient::CanvasGradient(const gfx::PointF& p0,
                                  p1,
                                  r1,
                                  1,
-                                 kSpreadMethodPad,
+                                 Gradient::SpreadMethod::kPad,
                                  Gradient::PremultipliedAlpha::kUnpremultiplied,
                                  Gradient::DegenerateHandling::kDisallow)) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
@@ -141,7 +140,7 @@ CanvasGradient::CanvasGradient(float startAngle, const gfx::PointF& center)
                                 startAngle,
                                 0,
                                 360,
-                                kSpreadMethodPad,
+                                Gradient::SpreadMethod::kPad,
                                 Gradient::PremultipliedAlpha::kUnpremultiplied,
                                 Gradient::DegenerateHandling::kDisallow)) {}
 

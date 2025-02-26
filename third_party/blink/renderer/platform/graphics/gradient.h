@@ -32,7 +32,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -68,10 +67,16 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
     kDisallow,
   };
 
+  enum class SpreadMethod {
+    kPad,
+    kReflect,
+    kRepeat,
+  };
+
   static scoped_refptr<Gradient> CreateLinear(
       const gfx::PointF& p0,
       const gfx::PointF& p1,
-      GradientSpreadMethod = kSpreadMethodPad,
+      SpreadMethod = SpreadMethod::kPad,
       PremultipliedAlpha = PremultipliedAlpha::kUnpremultiplied,
       DegenerateHandling = DegenerateHandling::kAllow);
 
@@ -81,7 +86,7 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
       const gfx::PointF& p1,
       float r1,
       float aspect_ratio = 1,
-      GradientSpreadMethod = kSpreadMethodPad,
+      SpreadMethod = SpreadMethod::kPad,
       PremultipliedAlpha = PremultipliedAlpha::kUnpremultiplied,
       DegenerateHandling = DegenerateHandling::kAllow);
 
@@ -90,7 +95,7 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
       float rotation,
       float start_angle,
       float end_angle,
-      GradientSpreadMethod = kSpreadMethodPad,
+      SpreadMethod = SpreadMethod::kPad,
       PremultipliedAlpha = PremultipliedAlpha::kUnpremultiplied,
       DegenerateHandling = DegenerateHandling::kAllow);
 
@@ -142,7 +147,7 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
   DarkModeFilter& EnsureDarkModeFilter();
 
  protected:
-  Gradient(Type, GradientSpreadMethod, PremultipliedAlpha, DegenerateHandling);
+  Gradient(Type, SpreadMethod, PremultipliedAlpha, DegenerateHandling);
 
   using ColorBuffer = Vector<SkColor4f, 8>;
   using OffsetBuffer = Vector<SkScalar, 8>;
@@ -166,7 +171,7 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
   bool HasNonLegacyColor() const;
 
   const Type type_;
-  const GradientSpreadMethod spread_method_;
+  const SpreadMethod spread_method_;
   PremultipliedAlpha premultiplied_alpha_ =
       PremultipliedAlpha::kUnpremultiplied;
   const DegenerateHandling degenerate_handling_;

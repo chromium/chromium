@@ -142,12 +142,6 @@ enum class RasterModeHint {
 
 enum AntiAliasingMode { kNotAntiAliased, kAntiAliased };
 
-enum GradientSpreadMethod {
-  kSpreadMethodPad,
-  kSpreadMethodReflect,
-  kSpreadMethodRepeat
-};
-
 enum TextPaintOrder { kFillStroke, kStrokeFill };
 
 enum TextDrawingMode {
