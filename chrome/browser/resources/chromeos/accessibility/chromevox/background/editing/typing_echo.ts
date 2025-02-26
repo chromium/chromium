@@ -17,19 +17,25 @@ import {ChromeVox} from '../chromevox.js';
  * WORD: echoes a word once a breaking character is typed (i.e. spacebar).
  * CHARACTER_AND_WORD: combines CHARACTER and WORD behavior.
  * NONE: speaks nothing when typing.
- * @enum
  */
-export const TypingEchoState = {
-  CHARACTER: 0,
-  WORD: 1,
-  CHARACTER_AND_WORD: 2,
-  NONE: 3,
-};
+export enum TypingEchoState {
+  CHARACTER = 0,
+  WORD = 1,
+  CHARACTER_AND_WORD = 2,
+  NONE = 3,
+}
+
 // STATE_COUNT is the number of possible echo levels.
-const STATE_COUNT = Object.entries(TypingEchoState).length;
+const STATE_COUNT = 4;
 
 export class TypingEcho {
-  static init() {
+  /**
+   * Stores the current choice of how ChromeVox should echo when entering text
+   * into an editable text field.
+   */
+  static current: TypingEchoState = TypingEchoState.NONE;
+
+  static init(): void {
     if (TypingEcho.current !== undefined) {
       throw new Error('TypingEcho should only be initialized once.');
     }
@@ -39,14 +45,14 @@ export class TypingEcho {
         'typingEcho', newValue => TypingEcho.current = newValue);
   }
   /**
-   * @param {number=} cur Current typing echo.
-   * @return {number} Next typing echo.
+   * @param cur Current typing echo.
+   * @return Next typing echo.
    */
-  static cycle(cur) {
+  static cycle(cur?: number): number {
     return ((cur ?? TypingEcho.current) + 1) % STATE_COUNT;
   }
 
-  static cycleWithAnnouncement() {
+  static cycleWithAnnouncement(): void {
     LocalStorage.set(
         'typingEcho', TypingEcho.cycle(LocalStorage.getNumber('typingEcho')));
     let announce = '';
@@ -69,20 +75,13 @@ export class TypingEcho {
 
   /**
    * Return if characters should be spoken given the typing echo option.
-   * @param {number} typingEcho Typing echo option.
-   * @return {boolean} Whether the character should be spoken.
+   * @param typingEcho Typing echo option.
+   * @return Whether the character should be spoken.
    */
-  static shouldSpeakChar(typingEcho) {
+  static shouldSpeakChar(typingEcho: number): boolean {
     return typingEcho === TypingEchoState.CHARACTER_AND_WORD ||
         typingEcho === TypingEchoState.CHARACTER;
   }
 }
-
-/**
- * Stores the current choice of how ChromeVox should echo when entering text
- * into an editable text field.
- * @type {TypingEchoState}
- */
-TypingEcho.current;
 
 TestImportManager.exportForTesting(['TypingEchoState', TypingEchoState]);
