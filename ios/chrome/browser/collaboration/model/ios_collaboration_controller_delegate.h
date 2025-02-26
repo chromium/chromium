@@ -12,10 +12,13 @@
 
 @class AlertCoordinator;
 class Browser;
+class FaviconLoader;
+@class ShareKitPreviewItem;
 class ShareKitService;
 typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 @protocol SystemIdentity;
 class TabGroup;
+class TabGroupFaviconsGridConfigurator;
 
 namespace collaboration {
 
@@ -55,6 +58,9 @@ class IOSCollaborationControllerDelegate
   void OnFlowFinished() override;
 
  private:
+  using PreviewItemsCallBack =
+      base::OnceCallback<void(NSArray<ShareKitPreviewItem*>*)>;
+
   // Called when the authentication ui flow is complete.
   void OnAuthenticationComplete(ResultCallback result,
                                 SigninCoordinatorResult sign_in_result,
@@ -63,8 +69,23 @@ class IOSCollaborationControllerDelegate
   // Returns the local tab group that matches `either_id`.
   const TabGroup* GetLocalGroup(const tab_groups::EitherGroupID& either_id);
 
+  // Fetches preview items for the `tabs` and executes `callback`.
+  void FetchPreviewItems(std::vector<data_sharing::TabPreview> tabs,
+                         PreviewItemsCallBack callback);
+
+  // Configures the shareKit config for the join flow and starts the join flow.
+  void ConfigureAndJoinTabGroup(const data_sharing::GroupToken& token,
+                                ResultCallback result,
+                                NSArray<ShareKitPreviewItem*>* preview_items);
+
+  // Returns the join group image displayed in the join flow.
+  UIImage* JoinGroupImage(NSArray<ShareKitPreviewItem*>* preview_items);
+
   raw_ptr<ShareKitService> share_kit_service_;
+  raw_ptr<FaviconLoader> favicon_loader_;
   raw_ptr<Browser> browser_;
+  std::unique_ptr<TabGroupFaviconsGridConfigurator> favicons_grid_configurator_;
+
   __weak UIViewController* base_view_controller_;
   NSString* session_id_ = nil;
   AlertCoordinator* alert_coordinator_ = nil;

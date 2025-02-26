@@ -20,8 +20,6 @@ source_set("model") {
     "share_kit_lookup_gaia_id_configuration.mm",
     "share_kit_manage_configuration.h",
     "share_kit_manage_configuration.mm",
-    "share_kit_preview_item.h",
-    "share_kit_preview_item.mm",
     "share_kit_read_configuration.h",
     "share_kit_read_configuration.mm",
     "share_kit_service.h",
@@ -39,7 +37,10 @@ source_set("model") {
     "//ios/chrome/browser/saved_tab_groups/favicon/ui",
     "//url",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    ":items",
+    "//base",
+  ]
 }
 
 source_set("factory") {
@@ -66,6 +67,14 @@ source_set("factory") {
 
 source_set("constants") {
   sources = [ "sharing_state.h" ]
+  deps = []
+}
+
+source_set("items") {
+  sources = [
+    "share_kit_preview_item.h",
+    "share_kit_preview_item.mm",
+  ]
   deps = []
 }
 

@@ -17,6 +17,7 @@
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/fake_share_kit_flow_view_controller.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
@@ -110,6 +111,9 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         ShareKitServiceFactory::GetInstance(),
         base::BindRepeating(&BuildTestShareKitService));
+    test_cbs_builder.AddTestingFactory(
+        IOSChromeFaviconLoaderFactory::GetInstance(),
+        IOSChromeFaviconLoaderFactory::GetDefaultFactory());
     profile_ = std::move(test_cbs_builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
