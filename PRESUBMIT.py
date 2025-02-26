@@ -154,7 +154,7 @@ _BANNED_JAVA_IMPORTS : Sequence[BanRule] = (
       ),
       excluded_paths=(
         (r'net/android/javatests/src/org/chromium/net/'
-         'AndroidProxySelectorTest\.java'),
+         r'AndroidProxySelectorTest\.java'),
         r'components/cronet/',
         r'third_party/robolectric/local/',
       ),
@@ -782,17 +782,17 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         True,
         [
             # Needed for interop with third-party library.
-            '^third_party/blink/renderer/core/typed_arrays/array_buffer/' +
-            'array_buffer_contents\.(cc|h)',
-            '^third_party/blink/renderer/core/typed_arrays/dom_array_buffer\.cc',
+            r'^third_party/blink/renderer/core/typed_arrays/array_buffer/' +
+            r'array_buffer_contents\.(cc|h)',
+            r'^third_party/blink/renderer/core/typed_arrays/dom_array_buffer\.cc',
             '^third_party/blink/renderer/bindings/core/v8/' +
             'v8_wasm_response_extensions.cc',
-            '^gin/array_buffer\.(cc|h)',
-            '^gin/per_isolate_data\.(cc|h)',
+            r'^gin/array_buffer\.(cc|h)',
+            r'^gin/per_isolate_data\.(cc|h)',
             '^chrome/services/sharing/nearby/',
             # Needed for interop with third-party library libunwindstack.
-            '^base/profiler/libunwindstack_unwinder_android\.(cc|h)',
-            '^base/profiler/native_unwinder_android_memory_regions_map_impl.(cc|h)',
+            r'^base/profiler/libunwindstack_unwinder_android\.(cc|h)',
+            r'^base/profiler/native_unwinder_android_memory_regions_map_impl.(cc|h)',
             # Needed for interop with third-party boringssl cert verifier
             '^third_party/boringssl/',
             '^net/cert/',
@@ -804,10 +804,10 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             '^chromeos/ash/services/libassistant/grpc/',
             '^chromecast/cast_core/grpc',
             '^chromecast/cast_core/runtime/browser',
-            '^ios/chrome/test/earl_grey/chrome_egtest_plugin_client\.(mm|h)',
+            r'^ios/chrome/test/earl_grey/chrome_egtest_plugin_client\.(mm|h)',
             # Fuchsia provides C++ libraries that use std::shared_ptr<>.
-            '^base/fuchsia/.*\.(cc|h)',
-            '.*fuchsia.*test\.(cc|h)',
+            r'^base/fuchsia/.*\.(cc|h)',
+            r'.*fuchsia.*test\.(cc|h)',
             # Clang plugins have different build config.
             '^tools/clang/plugins/',
             _THIRD_PARTY_EXCEPT_BLINK
@@ -1077,74 +1077,74 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'base/tracing/perfetto_task_runner\.h',
             # Needed for interop with the third-party nearby library type
             # location::nearby::connections::ResultCallback.
-            'chrome/services/sharing/nearby/nearby_connections_conversions\.cc'
+            r'chrome/services/sharing/nearby/nearby_connections_conversions\.cc'
             # Needed for interop with the internal libassistant library.
-            'chromeos/ash/services/libassistant/callback_utils\.h',
+            r'chromeos/ash/services/libassistant/callback_utils\.h',
             # Needed for interop with Fuchsia fidl APIs.
-            'fuchsia_web/webengine/browser/context_impl_browsertest\.cc',
-            'fuchsia_web/webengine/browser/cookie_manager_impl_unittest\.cc',
-            'fuchsia_web/webengine/browser/media_player_impl_unittest\.cc',
+            r'fuchsia_web/webengine/browser/context_impl_browsertest\.cc',
+            r'fuchsia_web/webengine/browser/cookie_manager_impl_unittest\.cc',
+            r'fuchsia_web/webengine/browser/media_player_impl_unittest\.cc',
             # Required to interop with interfaces from the third-party ChromeML
             # library API.
-            'services/on_device_model/ml/chrome_ml_api\.h',
-            'services/on_device_model/ml/on_device_model_executor\.cc',
-            'services/on_device_model/ml/on_device_model_executor\.h',
+            r'services/on_device_model/ml/chrome_ml_api\.h',
+            r'services/on_device_model/ml/on_device_model_executor\.cc',
+            r'services/on_device_model/ml/on_device_model_executor\.h',
             # Required to interop with interfaces from the third-party perfetto
             # library.
-            'components/tracing/common/etw_consumer_win_unittest\.cc',
-            'services/tracing/public/cpp/perfetto/custom_event_recorder\.cc',
-            'services/tracing/public/cpp/perfetto/perfetto_traced_process\.cc',
-            'services/tracing/public/cpp/perfetto/perfetto_traced_process\.h',
-            'services/tracing/public/cpp/perfetto/perfetto_tracing_backend\.cc',
-            'services/tracing/public/cpp/perfetto/producer_client\.cc',
-            'services/tracing/public/cpp/perfetto/producer_client\.h',
-            'services/tracing/public/cpp/perfetto/producer_test_utils\.cc',
-            'services/tracing/public/cpp/perfetto/producer_test_utils\.h',
+            r'components/tracing/common/etw_consumer_win_unittest\.cc',
+            r'services/tracing/public/cpp/perfetto/custom_event_recorder\.cc',
+            r'services/tracing/public/cpp/perfetto/perfetto_traced_process\.cc',
+            r'services/tracing/public/cpp/perfetto/perfetto_traced_process\.h',
+            r'services/tracing/public/cpp/perfetto/perfetto_tracing_backend\.cc',
+            r'services/tracing/public/cpp/perfetto/producer_client\.cc',
+            r'services/tracing/public/cpp/perfetto/producer_client\.h',
+            r'services/tracing/public/cpp/perfetto/producer_test_utils\.cc',
+            r'services/tracing/public/cpp/perfetto/producer_test_utils\.h',
             # Required for interop with the third-party webrtc library.
-            'third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl\.cc',
-            'third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl\.h',
+            r'third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl\.cc',
+            r'third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl\.h',
             # TODO(https://crbug.com/1364577): Various uses that should be
             # migrated to something else.
             # Should use base::OnceCallback or base::RepeatingCallback.
-            'base/allocator/dispatcher/initializer_unittest\.cc',
-            'chrome/browser/ash/accessibility/speech_monitor\.cc',
-            'chrome/browser/ash/accessibility/speech_monitor\.h',
-            'chrome/browser/ash/login/ash_hud_login_browsertest\.cc',
-            'chromecast/base/observer_unittest\.cc',
-            'chromecast/browser/cast_web_view\.h',
-            'chromecast/public/cast_media_shlib\.h',
-            'device/bluetooth/floss/exported_callback_manager\.h',
-            'device/bluetooth/floss/floss_dbus_client\.h',
-            'device/fido/cable/v2_handshake_unittest\.cc',
-            'device/fido/pin\.cc',
-            'services/tracing/perfetto/test_utils\.h',
+            r'base/allocator/dispatcher/initializer_unittest\.cc',
+            r'chrome/browser/ash/accessibility/speech_monitor\.cc',
+            r'chrome/browser/ash/accessibility/speech_monitor\.h',
+            r'chrome/browser/ash/login/ash_hud_login_browsertest\.cc',
+            r'chromecast/base/observer_unittest\.cc',
+            r'chromecast/browser/cast_web_view\.h',
+            r'chromecast/public/cast_media_shlib\.h',
+            r'device/bluetooth/floss/exported_callback_manager\.h',
+            r'device/bluetooth/floss/floss_dbus_client\.h',
+            r'device/fido/cable/v2_handshake_unittest\.cc',
+            r'device/fido/pin\.cc',
+            r'services/tracing/perfetto/test_utils\.h',
             # Should use base::FunctionRef.
-            'chrome/browser/media/webrtc/test_stats_dictionary\.cc',
-            'chrome/browser/media/webrtc/test_stats_dictionary\.h',
-            'chromeos/ash/services/libassistant/device_settings_controller\.cc',
-            'components/browser_ui/client_certificate/android/ssl_client_certificate_request\.cc',
-            'components/gwp_asan/client/sampling_malloc_shims_unittest\.cc',
-            'content/browser/font_unique_name_lookup/font_unique_name_lookup_unittest\.cc',
+            r'chrome/browser/media/webrtc/test_stats_dictionary\.cc',
+            r'chrome/browser/media/webrtc/test_stats_dictionary\.h',
+            r'chromeos/ash/services/libassistant/device_settings_controller\.cc',
+            r'components/browser_ui/client_certificate/android/ssl_client_certificate_request\.cc',
+            r'components/gwp_asan/client/sampling_malloc_shims_unittest\.cc',
+            r'content/browser/font_unique_name_lookup/font_unique_name_lookup_unittest\.cc',
             # Does not need std::function at all.
-            'components/omnibox/browser/autocomplete_result\.cc',
-            'device/fido/win/webauthn_api\.cc',
-            'media/audio/alsa/alsa_util\.cc',
-            'media/remoting/stream_provider\.h',
-            'sql/vfs_wrapper\.cc',
+            r'components/omnibox/browser/autocomplete_result\.cc',
+            r'device/fido/win/webauthn_api\.cc',
+            r'media/audio/alsa/alsa_util\.cc',
+            r'media/remoting/stream_provider\.h',
+            r'sql/vfs_wrapper\.cc',
             # TODO(https://crbug.com/1364585): Remove usage and exception list
             # entries.
-            'extensions/renderer/api/automation/automation_internal_custom_bindings\.cc',
-            'extensions/renderer/api/automation/automation_internal_custom_bindings\.h',
+            r'extensions/renderer/api/automation/automation_internal_custom_bindings\.cc',
+            r'extensions/renderer/api/automation/automation_internal_custom_bindings\.h',
             # TODO(https://crbug.com/1364579): Remove usage and exception list
             # entry.
-            'ui/views/controls/focus_ring\.h',
+            r'ui/views/controls/focus_ring\.h',
 
             # Various pre-existing uses in //tools that is low-priority to fix.
-            'tools/binary_size/libsupersize/viewer/caspian/diff\.cc',
-            'tools/binary_size/libsupersize/viewer/caspian/model\.cc',
-            'tools/binary_size/libsupersize/viewer/caspian/model\.h',
-            'tools/binary_size/libsupersize/viewer/caspian/tree_builder\.h',
-            'tools/clang/base_bind_rewriters/BaseBindRewriters\.cpp',
+            r'tools/binary_size/libsupersize/viewer/caspian/diff\.cc',
+            r'tools/binary_size/libsupersize/viewer/caspian/model\.cc',
+            r'tools/binary_size/libsupersize/viewer/caspian/model\.h',
+            r'tools/binary_size/libsupersize/viewer/caspian/tree_builder\.h',
+            r'tools/clang/base_bind_rewriters/BaseBindRewriters\.cpp',
 
             # Not an error in third_party folders.
             _THIRD_PARTY_EXCEPT_BLINK
@@ -1213,7 +1213,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         True,
         [
             # The demangler does not use this type but needs to know about it.
-            'base/third_party/symbolize/demangle\.cc',
+            r'base/third_party/symbolize/demangle\.cc',
             # Don't warn in third_party folders.
             _THIRD_PARTY_EXCEPT_BLINK
         ],
@@ -3302,7 +3302,7 @@ def CheckForVersionControlConflicts(input_api, output_api):
 
 
 def CheckGoogleSupportAnswerUrlOnUpload(input_api, output_api):
-    pattern = input_api.re.compile('support\.google\.com\/chrome.*/answer')
+    pattern = input_api.re.compile(r'support\.google\.com\/chrome.*/answer')
     errors = []
     for f in input_api.AffectedFiles():
         for line_num, line in f.ChangedContents():
@@ -3332,8 +3332,8 @@ def CheckHardcodedGoogleHostsInLowerLayers(input_api, output_api):
             files_to_skip=(_EXCLUDED_PATHS + _TEST_CODE_EXCLUDED_PATHS +
                            input_api.DEFAULT_FILES_TO_SKIP))
 
-    base_pattern = ('"[^"]*(google|googleapis|googlezip|googledrive|appspot)'
-                    '\.(com|net)[^"]*"')
+    base_pattern = (r'"[^"]*(google|googleapis|googlezip|googledrive|appspot)'
+                    r'\.(com|net)[^"]*"')
     comment_pattern = input_api.re.compile('//.*%s' % base_pattern)
     pattern = input_api.re.compile(base_pattern)
     problems = []  # items are (filename, line_number, line)
@@ -3414,7 +3414,7 @@ def CheckNoAbbreviationInPngFileName(input_api, output_api):
                     ]
     file_filter = lambda f: input_api.FilterSourceFile(
         f, files_to_check=files_to_check, files_to_skip=files_to_skip)
-    abbreviation = input_api.re.compile('.+_[a-z]\.png|.+_[a-z]_.*\.png')
+    abbreviation = input_api.re.compile(r'.+_[a-z]\.png|.+_[a-z]_.*\.png')
     for f in input_api.AffectedFiles(include_deletes=False,
                                      file_filter=file_filter):
         file_name = input_api.os_path.split(f.LocalPath())[1]
@@ -4473,8 +4473,8 @@ def _CheckChangeForIpcSecurityOwners(input_api, output_api):
     ]
 
     def IsMojoServiceManifestFile(input_api, file):
-        manifest_pattern = input_api.re.compile('manifests?\.(cc|h)$')
-        test_manifest_pattern = input_api.re.compile('test_manifests?\.(cc|h)')
+        manifest_pattern = input_api.re.compile(r'manifests?\.(cc|h)$')
+        test_manifest_pattern = input_api.re.compile(r'test_manifests?\.(cc|h)')
         if not manifest_pattern.search(file.LocalPath()):
             return False
 
