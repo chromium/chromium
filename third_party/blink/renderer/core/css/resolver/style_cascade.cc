@@ -207,10 +207,13 @@ const CSSSyntaxDefinition* FindOrNull(
   return it->value;
 }
 
+// The `container_tree_scope` is the tree scope holding the @container
+// rule being evaluated. For @container rules within @function, this is
+// the same tree scope as the enclosing @function is defined in.
 bool EvaluateContainerQuery(Element& element,
                             PseudoId pseudo_id,
                             const ContainerQuery& query,
-                            TreeScope& tree_scope,
+                            const TreeScope* container_tree_scope,
                             Element* nearest_size_container,
                             MatchResult& match_result) {
   const ContainerSelector& selector = query.Selector();
@@ -226,7 +229,7 @@ bool EvaluateContainerQuery(Element& element,
   Element* starting_element = ContainerQueryEvaluator::DetermineStartingElement(
       element, pseudo_id, selector, nearest_size_container);
   Element* container = ContainerQueryEvaluator::FindContainer(
-      starting_element, selector, &tree_scope);
+      starting_element, selector, container_tree_scope);
   if (!container) {
     return false;
   }
@@ -1796,7 +1799,8 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   // Flattens the function body, consisting of any number of
   // CSSFunctionDeclarations and conditional rules, into the final
   // (unresolved) values for 'result'/locals.
-  FlattenFunctionBody(*function, unresolved_result, unresolved_locals);
+  FlattenFunctionBody(*function, function_tree_scope, unresolved_result,
+                      unresolved_locals);
 
   if (!unresolved_result) {
     return false;
@@ -1962,6 +1966,7 @@ const CSSValue* StyleCascade::ResolveLocalVariable(
 
 void StyleCascade::FlattenFunctionBody(
     StyleRuleGroup& group,
+    const TreeScope* function_tree_scope,
     const CSSUnparsedDeclarationValue*& result,
     HeapHashMap<String, Member<const CSSValue>>& locals) {
   for (const Member<StyleRuleBase>& child : group.ChildRules()) {
@@ -1984,27 +1989,26 @@ void StyleCascade::FlattenFunctionBody(
     } else if (auto* supports_rule =
                    DynamicTo<StyleRuleSupports>(child.Get())) {
       if (supports_rule->ConditionIsSupported()) {
-        FlattenFunctionBody(*supports_rule, result, locals);
+        FlattenFunctionBody(*supports_rule, function_tree_scope, result,
+                            locals);
       }
     } else if (auto* media_rule = DynamicTo<StyleRuleMedia>(child.Get())) {
       state_.StyleBuilder().SetAffectedByFunctionalMedia();
       if (GetDocument().GetStyleEngine().EvaluateFunctionalMediaQuery(
               *media_rule->MediaQueries())) {
-        FlattenFunctionBody(*media_rule, result, locals);
+        FlattenFunctionBody(*media_rule, function_tree_scope, result, locals);
       }
     } else if (auto* container_rule =
                    DynamicTo<StyleRuleContainer>(child.Get())) {
       // TODO(crbug.com/394353319): Rename this flag to accommodate any
       // CQ-dependent value.
       state_.StyleBuilder().SetHasContainerRelativeUnits();
-      // TODO(crbug.com/394500599): This is the wrong tree-scope; we should use
-      // the tree scope of the current declaration.
-      TreeScope& tree_scope = state_.GetElement().GetTreeScope();
-      if (EvaluateContainerQuery(state_.GetElement(), state_.GetPseudoId(),
-                                 container_rule->GetContainerQuery(),
-                                 tree_scope, state_.NearestSizeContainer(),
-                                 match_result_)) {
-        FlattenFunctionBody(*container_rule, result, locals);
+      if (EvaluateContainerQuery(
+              state_.GetElement(), state_.GetPseudoId(),
+              container_rule->GetContainerQuery(), function_tree_scope,
+              state_.NearestSizeContainer(), match_result_)) {
+        FlattenFunctionBody(*container_rule, function_tree_scope, result,
+                            locals);
       }
     }
   }

@@ -606,8 +606,13 @@ class CORE_EXPORT StyleCascade {
   // seen value of the 'result' descriptor, and `locals` holds the last seen
   // values of all local variables.
   //
+  // Note that `function_tree_scope` is the tree scope holding
+  // the @function rule (not the tree scope where the function *call* takes
+  // place).
+  //
   // [1] https://drafts.csswg.org/css-mixins-1/#conditional-rules
-  void FlattenFunctionBody(StyleRuleGroup& group,
+  void FlattenFunctionBody(StyleRuleGroup&,
+                           const TreeScope* function_tree_scope,
                            const CSSUnparsedDeclarationValue*& result,
                            HeapHashMap<String, Member<const CSSValue>>& locals);
 
