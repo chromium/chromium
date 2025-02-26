@@ -32,6 +32,7 @@ import {QueueMode, TtsSettings, TtsSpeechProperties} from '../../common/tts_type
 import {AutoScrollHandler} from '../auto_scroll_handler.js';
 import {BrailleCaptionsBackground} from '../braille/braille_captions_background.js';
 import {BrailleTranslatorManager} from '../braille/braille_translator_manager.js';
+import {CaptionsHandler} from '../captions_handler.js';
 import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
 import {ChromeVoxState} from '../chromevox_state.js';
@@ -223,8 +224,7 @@ export class CommandHandler implements CommandHandlerInterface {
         return false;
       case Command.TOGGLE_CAPTIONS:
         if (Flags.isEnabled(FlagName.CAPTIONS_ON_BRAILLE)) {
-          // Placeholder behavior while feature is under development.
-          console.log('Keyboard shortcut to open captions pressed.');
+          CaptionsHandler.open();
           return false;
         }
         return true;  // Don't consume the key events.
