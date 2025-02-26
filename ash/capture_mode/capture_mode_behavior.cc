@@ -27,6 +27,7 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -119,23 +120,20 @@ class DefaultBehavior : public CaptureModeBehavior {
   }
   bool CanShowActionButtons() const override { return true; }
   void OnRegionSelectedOrAdjustedWhenActionContainerShowing() override {
-    // TODO: crbug.com/397296160 - Remove this redundant check, as it is always
-    // true when this function is called.
-    if (ShouldShowDefaultActionButtonsInActionContainer()) {
-      auto* capture_mode_controller = CaptureModeController::Get();
-      if (features::IsCaptureModeOnDeviceOcrEnabled()) {
-        // Perform text detection to determine whether the copy text and smart
-        // actions buttons should be shown.
-        capture_mode_controller->PerformCapture(
-            PerformCaptureType::kTextDetection);
-      } else {
-        // Show the smart actions button regardless of whether there is text
-        // in the selected area or not.
-        BaseCaptureModeSession* session =
-            capture_mode_controller->capture_mode_session();
-        CHECK(session);
-        session->AddSmartActionsButton();
-      }
+    CHECK(ShouldShowDefaultActionButtonsInActionContainer());
+    auto* capture_mode_controller = CaptureModeController::Get();
+    if (features::IsCaptureModeOnDeviceOcrEnabled()) {
+      // Perform text detection to determine whether the copy text and smart
+      // actions buttons should be shown.
+      capture_mode_controller->PerformCapture(
+          PerformCaptureType::kTextDetection);
+    } else {
+      // Show the smart actions button regardless of whether there is text
+      // in the selected area or not.
+      BaseCaptureModeSession* session =
+          capture_mode_controller->capture_mode_session();
+      CHECK(session);
+      session->AddSmartActionsButton();
     }
   }
 };
