@@ -100,6 +100,20 @@ std::vector<blink::PermissionType> GetPermissionTypesAndCheckDuplicates(
   return types;
 }
 
+// Helper check if permission types are all supported by Page Embedded
+// Permission.
+bool CheckPageEmbeddedPermissionTypes(
+    const std::vector<blink::PermissionType>& permission_types) {
+  for (auto permission_type : permission_types) {
+    if (permission_type != blink::PermissionType::GEOLOCATION &&
+        permission_type != blink::PermissionType::AUDIO_CAPTURE &&
+        permission_type != blink::PermissionType::VIDEO_CAPTURE) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // anonymous namespace
 
 class PermissionServiceImpl::PendingRequest {
@@ -197,7 +211,8 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
   if (auto* browser_context = context_->GetBrowserContext()) {
     std::vector<blink::PermissionType> permission_types =
         GetPermissionTypesAndCheckDuplicates(descriptor->permissions);
-    if (permission_types.empty()) {
+    if (permission_types.empty() ||
+        !CheckPageEmbeddedPermissionTypes(permission_types)) {
       ReceivedBadMessage();
       return;
     }
