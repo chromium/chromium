@@ -525,6 +525,14 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
 
 bool PersistedData::RemoveApp(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, the `ClientState` entry for the app is also
+  // removed.
+  base::win::RegKey(UpdaterScopeToHKeyRoot(scope_), L"", Wow6432(DELETE))
+      .DeleteKey(GetAppClientStateKey(base::UTF8ToWide(id)).c_str());
+#endif
+
   if (!pref_service_) {
     return false;
   }
