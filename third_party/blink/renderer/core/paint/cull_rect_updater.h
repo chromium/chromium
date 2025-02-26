@@ -75,7 +75,7 @@ class CORE_EXPORT CullRectUpdater {
   CullRect ComputeFragmentCullRect(Context&,
                                    PaintLayer&,
                                    const FragmentData& fragment,
-                                   const FragmentData& parent_fragment);
+                                   const FragmentData* parent_fragment);
   CullRect ComputeFragmentContentsCullRect(Context&,
                                            PaintLayer&,
                                            const FragmentData& fragment,
