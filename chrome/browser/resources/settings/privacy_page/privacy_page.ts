@@ -127,6 +127,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
+      enableDeleteBrowsingDataRevamp_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableDeleteBrowsingDataRevamp'),
+      },
+
       enablePaymentHandlerContentSetting_: {
         type: Boolean,
         value() {
@@ -360,6 +365,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableSafeBrowsingSubresourceFilter_: boolean;
   private enableBlockAutoplayContentSetting_: boolean;
   private blockAutoplayStatus_: BlockAutoplayStatus;
+  private enableDeleteBrowsingDataRevamp_: boolean;
   private enableFederatedIdentityApiContentSetting_: boolean;
   private enablePaymentHandlerContentSetting_: boolean;
   private enableHandTrackingContentSetting_: boolean;
