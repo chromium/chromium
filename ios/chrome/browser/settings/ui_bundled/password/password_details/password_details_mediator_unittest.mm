@@ -94,6 +94,9 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 - (void)setupRightShareButton:(BOOL)policyEnabled {
 }
 
+- (void)hideShareButton {
+}
+
 @end
 
 // Test fixture for testing PasswordDetailsMediator class.

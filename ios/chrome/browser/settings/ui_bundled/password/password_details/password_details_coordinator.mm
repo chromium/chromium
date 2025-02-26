@@ -438,6 +438,11 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
   }
 }
 
+- (void)stopPasswordSharingFlowIfActive {
+  [self stopPasswordSharingCoordinator];
+  [self stopPasswordSharingFirstRunCoordinatorWithCompletion:nil];
+}
+
 #pragma mark - ReauthenticationCoordinatorDelegate
 
 - (void)successfulReauthenticationWithCoordinator:
