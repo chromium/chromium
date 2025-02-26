@@ -47,12 +47,6 @@ namespace autofill_private = extensions::api::autofill_private;
 
 namespace {
 
-using autofill::AttributeInstance;
-using autofill::AttributeType;
-using autofill::EntityDataManager;
-using autofill::EntityInstance;
-using autofill::EntityType;
-
 // Gets the string corresponding to |type| from |profile|.
 std::string GetStringFromProfile(const autofill::AutofillProfile& profile,
                                  const autofill::FieldType& type) {
