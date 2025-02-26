@@ -343,6 +343,14 @@ export class AppElement extends AppElementBase {
     ColorChangeUpdater.forDocument().start();
   }
 
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    // Even though disconnectedCallback isn't always called reliably in prod,
+    // it is called in tests, and the speech extension timeout can cause
+    // flakiness.
+    this.cancelSpeechExtensionResponseTimeout();
+  }
+
   override connectedCallback() {
     super.connectedCallback();
 
