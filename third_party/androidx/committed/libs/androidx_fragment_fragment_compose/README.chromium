@@ -1,0 +1,16 @@
+Name: Fragment Compose
+Short Name: fragment-compose
+URL: https://developer.android.com/jetpack/androidx/releases/fragment#1.9.0-SNAPSHOT
+Version: 1.9.0-SNAPSHOT
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Integrate Fragments with Compose to provide helper APIs for using Fragments inCompose or Compose inside of Fragments
+
+Local Modifications:
+No modifications.

@@ -1,0 +1,10 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# To create CIPD package run the following command.
+# cipd create --pkg-def cipd.yaml -tag version:2@1.5.0-SNAPSHOT.cr1
+package: chromium/third_party/androidx/cipd/libs/androidx_credentials_credentials_play_services_auth
+description: "Credentials Play Services Auth"
+data:
+- file: credentials-play-services-auth-1.5.0-SNAPSHOT.aar
