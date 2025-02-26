@@ -3689,9 +3689,7 @@ if (!is_android) {
         "//chrome/browser/on_device_translation/on_device_translation_browsertest.cc",
       ]
       deps += [
-        "//chrome/browser/on_device_translation:constants",
-        "//chrome/browser/on_device_translation:language_pack_util",
-        "//chrome/browser/on_device_translation:prefs",
+        "//chrome/browser/on_device_translation",
         "//chrome/browser/on_device_translation:test_support",
         "//components/services/on_device_translation:test_support",
         "//components/services/on_device_translation/public/cpp:cpp",
