@@ -179,7 +179,6 @@ content/renderer 2 1
 content/renderer/pepper 1 1
 content/test/gpu 1 1
 content/web_test/renderer 2 1
-device/fido/enclave/verify/proto 1 1
 device/gamepad 5 3
 device/vr/public/mojom 2 1
 docs 29 17
@@ -303,7 +302,7 @@ third_party/afl/src/qemu_mode 1 1
 third_party/android_build_tools/compose_compiler 1 1
 third_party/android_build_tools/gradle_wrapper 1 1
 third_party/android_build_tools/json 1 1
-third_party/android_deps/buildSrc/src/main/groovy 36 2
+third_party/android_deps/buildSrc/src/main/groovy 35 2
 third_party/android_deps/libs 1 1
 third_party/android_deps/libs/com_google_auto_service_auto_service_annotations 1 1
 third_party/android_deps/libs/com_google_errorprone_error_prone_annotations 1 1
@@ -691,7 +690,7 @@ third_party/rust/chromium_crates_io/vendor/rand_chacha-0.3.1 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4/src 3 1
 third_party/rust/chromium_crates_io/vendor/rand_pcg-0.3.1 4 1
-third_party/rust/chromium_crates_io/vendor/read-fonts-0.23.2/src/tables 3 2
+third_party/rust/chromium_crates_io/vendor/read-fonts-0.25.3/src/tables 3 2
 third_party/rust/chromium_crates_io/vendor/regex-1.11.1 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.11.1/src 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.11.1/tests 7 6
