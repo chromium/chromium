@@ -233,6 +233,7 @@ class BackgroundTracingManagerImpl
 #endif
 
   bool RequestActivateScenario();
+  void DisableScenarios();
   void AddMetadataGeneratorFunction();
 
   // Named triggers
