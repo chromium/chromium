@@ -300,12 +300,26 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     // to be reached again if there are more redirects in the same navigation.
     const GURL& upstream = redirect_chain[redirect_chain.size() - 2];
     auto upstream_origin = url::Origin::Create(upstream);
+
+    // In the case of a server redirect where there's no initiator, the
+    // upstream (redirecting) URL is the initiator. For instance, example.com
+    // redirected to an extension resource, example.com will be treated as
+    // the initiator for the purpose of web-accessible resource checks. In other
+    // cases, the initiator associated with the request (if any) should be the
+    // right one to use.
+    std::optional<url::Origin> initiator_origin;
+    if (navigation_handle()->GetInitiatorOrigin().has_value()) {
+      initiator_origin = *navigation_handle()->GetInitiatorOrigin();
+    } else if (navigation_handle()->WasServerRedirect()) {
+      initiator_origin = upstream_origin;
+    }
+
     // Cross-origin-redirects require that the resource is accessible in the
     // "web_accessible_resources" section of the manifest.
     if (!upstream_origin.opaque() && upstream_origin != target_origin) {
       bool is_accessible =
           WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
-              target_extension, url, target_origin, upstream);
+              target_extension, url, initiator_origin, upstream);
 
       base::UmaHistogramBoolean(target_extension->manifest_version() < 3
                                     ? "Extensions.WAR.XOriginWebAccessible.MV2"

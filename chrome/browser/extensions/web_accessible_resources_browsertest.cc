@@ -436,6 +436,39 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
   }
 }
 
+// Server redirect to a web accessible resource whereby `matches` doesn't match.
+IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
+                       ServerRedirectMainframe) {
+  // Load extension.
+  TestExtensionDir extension_dir;
+  constexpr char kManifest[] = R"({
+    "name": "test",
+    "version": "1",
+    "manifest_version": 3,
+    "web_accessible_resources": [{
+      "resources": [ "accessible.html" ],
+      "matches": [ "http://no.example.com/*" ]
+    }]
+  })";
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("accessible.html"),
+                          "accessible.html");
+  const Extension* extension = LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  std::string url =
+      base::StringPrintf("/server-redirect?%s",
+                         extension->GetResourceURL("accessible.html").spec());
+  GURL gurl(embedded_test_server()->GetURL("an.example.org", url));
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver observer(web_contents);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  observer.WaitForNavigationFinished();
+  EXPECT_FALSE(observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, observer.last_net_error_code());
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // A test suite that will run both with and without the dynamic URL feature
