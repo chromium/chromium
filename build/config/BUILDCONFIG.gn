@@ -558,7 +558,8 @@ foreach(_target_type,
         deps = []
       }
 
-      if (!defined(invoker.use_libcxx_modules) || invoker.use_libcxx_modules) {
+      if (is_clang && (!defined(invoker.use_libcxx_modules) ||
+                       invoker.use_libcxx_modules)) {
         # This is necessary for Clang modules builds.
         deps += [ "//buildtools/third_party/libc++:std" ]
       }
@@ -647,7 +648,8 @@ foreach(_target_type,
         deps += [ "//build/config:${_target_type}_deps" ]
       }
 
-      if (!defined(invoker.use_libcxx_modules) || invoker.use_libcxx_modules) {
+      if (is_clang && (!defined(invoker.use_libcxx_modules) ||
+                       invoker.use_libcxx_modules)) {
         # These are necessary for Clang modules builds.
         deps += [
           "//buildtools/third_party/libc++:_Builtin_limits",
