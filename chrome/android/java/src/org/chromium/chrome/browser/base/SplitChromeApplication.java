@@ -198,7 +198,7 @@ public class SplitChromeApplication extends SplitCompatApplication {
                             // able to access all chrome classes.
                             BundleUtils.replaceClassLoader(
                                     SplitChromeApplication.this, chromeContext.getClassLoader());
-                            JNIUtils.setClassLoader(chromeContext.getClassLoader());
+                            JNIUtils.setDefaultClassLoader(chromeContext.getClassLoader());
 
                             if (GlobalAppLocaleController.getInstance().isOverridden()) {
                                 Configuration config =
