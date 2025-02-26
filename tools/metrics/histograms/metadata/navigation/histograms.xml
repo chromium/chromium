@@ -2454,19 +2454,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Navigation.Throttles.PolicyBlocklist.ResponseDeferDuration{Target}.SafeSitesFilterEnabled"
-    units="ms" expires_after="2025-04-06">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    Measures duration times from the time PolicyBlocklistNavigationThrottles
-    defers WillProcessResponse() to the time it calls Resume(). Recorded at
-    OnCommit() {Target} if the Safe Sites Filter is enabled.
-  </summary>
-  <token key="Target" variants="NavigationSite"/>
-</histogram>
-
 <histogram name="Navigation.ThrottleTotalDeferCount{Condition}"
     units="throttles" expires_after="2025-08-03">
   <owner>toyoshim@chromium.org</owner>

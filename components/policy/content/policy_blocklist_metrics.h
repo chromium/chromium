@@ -24,7 +24,6 @@ struct PolicyBlocklistMetrics : public base::SupportsUserData::Data {
 
   uint32_t redirect_count = 0u;
   base::TimeDelta request_to_response_time;
-  base::TimeDelta response_defer_duration;
   std::optional<bool> cache_hit;
 
  private:

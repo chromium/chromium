@@ -80,7 +80,7 @@ bool PolicyBlocklistNavigationThrottle::IsBlockedViewSourceNavigation() {
 content::NavigationThrottle::ThrottleCheckResult
 PolicyBlocklistNavigationThrottle::WillStartOrRedirectRequest(
     bool is_redirect) {
-  CHECK(!deferring_request_ && !deferring_response_);
+  CHECK(!deferring_);
   if (request_time_.is_null()) {
     request_time_ = base::TimeTicks::Now();
   }
@@ -109,7 +109,7 @@ PolicyBlocklistNavigationThrottle::WillStartOrRedirectRequest(
 
   ThrottleCheckResult result = CheckSafeSitesFilter(url, is_redirect);
   UpdateRequestThrottleAction(result.action());
-  deferring_request_ = result.action() == DEFER;
+  deferring_ = result.action() == DEFER;
   return result;
 }
 
@@ -150,7 +150,7 @@ PolicyBlocklistNavigationThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 PolicyBlocklistNavigationThrottle::WillProcessResponse() {
-  CHECK(!deferring_request_ && !deferring_response_);
+  CHECK(!deferring_);
   const base::TimeDelta request_to_response_time =
       base::TimeTicks::Now() - request_time_;
   base::UmaHistogramTimes(
@@ -164,7 +164,7 @@ PolicyBlocklistNavigationThrottle::WillProcessResponse() {
       safe_sites_navigation_throttle_->WillProcessResponse();
   UpdateRequestThrottleAction(result.action());
   if (result.action() == DEFER) {
-    deferring_response_ = true;
+    deferring_ = true;
   }
   return result;
 }
@@ -178,16 +178,8 @@ void PolicyBlocklistNavigationThrottle::OnDeferredSafeSitesResult(
     std::optional<ThrottleCheckResult> result) {
   base::TimeDelta defer_duration = base::TimeTicks::Now() - defer_time_;
   total_defer_duration_ += defer_duration;
-  if (deferring_response_) {
-    if (PolicyBlocklistMetrics* metrics =
-        PolicyBlocklistMetrics::Get(*navigation_handle())) {
-      metrics->response_defer_duration = defer_duration;
-    }
-    deferring_response_ = false;
-  } else {
-    CHECK(deferring_request_);
-    deferring_request_ = false;
-  }
+  CHECK(deferring_);
+  deferring_ = false;
   if (proceed) {
     Resume();
   } else {
