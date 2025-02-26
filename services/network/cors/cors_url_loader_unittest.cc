@@ -2625,5 +2625,91 @@ TEST_F(StorageAccessHeadersCorsURLLoaderTest, OmitsOriginWhenStatusIsActive) {
       GetRequest().headers.HasHeader(net::HttpRequestHeaders::kOrigin));
 }
 
+class RedirectCorsURLLoaderTest : public CorsURLLoaderTest {
+ protected:
+  void VerifyUpdateRequestForRedirect(int status_code,
+                                      const std::string& method) {
+    const GURL origin("https://example.com");
+    const GURL url("https://example.com/foo.json");
+    const GURL new_url("https://other.example.com/foo.json");
+
+    ResourceRequest request;
+    request.mode = mojom::RequestMode::kCors;
+    request.credentials_mode = mojom::CredentialsMode::kOmit;
+    request.method = method;
+    request.url = url;
+    request.request_initiator = url::Origin::Create(origin);
+    request.referrer = url;
+    request.headers.SetHeader("Content-Type", "application/json");
+    request.headers.SetHeader("Content-Encoding", "gzip");
+    request.headers.SetHeader("Content-Language", "en-US");
+    request.headers.SetHeader("Content-Location", new_url.spec());
+    request.request_body = new network::ResourceRequestBody();
+
+    CreateLoaderAndStart(request);
+    RunUntilCreateLoaderAndStartCalled();
+
+    EXPECT_EQ(1, num_created_loaders());
+    EXPECT_EQ(url, GetRequest().url);
+    EXPECT_EQ(method, GetRequest().method);
+    EXPECT_EQ(url, GetRequest().referrer);
+    EXPECT_EQ("application/json",
+              GetRequest().headers.GetHeader("Content-Type"));
+    EXPECT_EQ("gzip", GetRequest().headers.GetHeader("Content-Encoding"));
+    EXPECT_EQ("en-US", GetRequest().headers.GetHeader("Content-Language"));
+    EXPECT_EQ(new_url.spec(),
+              GetRequest().headers.GetHeader("Content-Location"));
+    EXPECT_NE(nullptr, GetRequest().request_body);
+
+    NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(
+        status_code, "GET", new_url, "https://other.example.com",
+        net::ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN));
+    RunUntilRedirectReceived();
+
+    EXPECT_TRUE(IsNetworkLoaderStarted());
+    EXPECT_FALSE(client().has_received_completion());
+    EXPECT_FALSE(client().has_received_response());
+    EXPECT_TRUE(client().has_received_redirect());
+
+    ClearHasReceivedRedirect();
+    FollowRedirect();
+    RunUntilCreateLoaderAndStartCalled();
+
+    EXPECT_EQ(2, num_created_loaders());
+    EXPECT_EQ(new_url, GetRequest().url);
+    EXPECT_EQ("GET", GetRequest().method);
+    EXPECT_EQ(GURL("https://other.example.com"), GetRequest().referrer);
+    EXPECT_EQ(net::ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN,
+              GetRequest().referrer_policy);
+    EXPECT_FALSE(GetRequest().headers.HasHeader("Content-Type"));
+    EXPECT_FALSE(GetRequest().headers.HasHeader("Content-Encoding"));
+    EXPECT_FALSE(GetRequest().headers.HasHeader("Content-Language"));
+    EXPECT_FALSE(GetRequest().headers.HasHeader("Content-Location"));
+    EXPECT_EQ(nullptr, GetRequest().request_body);
+
+    NotifyLoaderClientOnReceiveResponse(
+        {{"Access-Control-Allow-Origin", "https://example.com"}});
+    NotifyLoaderClientOnComplete(net::OK);
+    RunUntilComplete();
+
+    EXPECT_FALSE(client().has_received_redirect());
+    EXPECT_TRUE(client().has_received_response());
+    EXPECT_TRUE(client().has_received_completion());
+    EXPECT_EQ(net::OK, client().completion_status().error_code);
+  }
+};
+
+TEST_F(RedirectCorsURLLoaderTest, UpdateRequestFor301PostRedirect) {
+  VerifyUpdateRequestForRedirect(301, "POST");
+}
+
+TEST_F(RedirectCorsURLLoaderTest, UpdateRequestFor302PostRedirect) {
+  VerifyUpdateRequestForRedirect(302, "POST");
+}
+
+TEST_F(RedirectCorsURLLoaderTest, UpdateRequestFor303Redirect) {
+  VerifyUpdateRequestForRedirect(303, "FOO");
+}
+
 }  // namespace
 }  // namespace network::cors

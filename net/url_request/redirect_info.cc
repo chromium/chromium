@@ -76,6 +76,11 @@ RedirectInfo RedirectInfo::ComputeRedirectInfo(
   redirect_info.status_code = http_status_code;
 
   // The request method may change, depending on the status code.
+  // See 4.4. HTTP-redirect fetch
+  // (https://fetch.spec.whatwg.org/#http-redirect-fetch), step 12.
+  // The headers and request body are updated later using
+  // RedirectUtil::UpdateHttpRequest for requests whose method
+  // changed to GET.
   redirect_info.new_method =
       ComputeMethodForRedirect(original_method, http_status_code);
 
@@ -105,6 +110,8 @@ RedirectInfo RedirectInfo::ComputeRedirectInfo(
     redirect_info.new_site_for_cookies = original_site_for_cookies;
   }
 
+  // See 4.4. HTTP-redirect fetch
+  // (https://fetch.spec.whatwg.org/#http-redirect-fetch), step 19.
   redirect_info.new_referrer_policy = ProcessReferrerPolicyHeaderOnRedirect(
       original_referrer_policy, referrer_policy_header);
 
