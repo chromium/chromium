@@ -405,10 +405,13 @@ TranslationManagerImpl::GetServiceController() {
 }
 
 void TranslationManagerImpl::TranslationAvailable(
-    const std::string& source_language,
-    const std::string& target_language,
+    blink::mojom::TranslatorLanguageCodePtr source_lang,
+    blink::mojom::TranslatorLanguageCodePtr target_lang,
     TranslationAvailableCallback callback) {
   CHECK(browser_context_);
+  std::string source_language = std::move(source_lang->code);
+  std::string target_language = std::move(target_lang->code);
+
   RecordTranslationAPICallForLanguagePair("Availability", source_language,
                                           target_language);
 
@@ -431,7 +434,7 @@ void TranslationManagerImpl::TranslationAvailable(
        !IsInAcceptLanguage(accept_languages, target_language));
 
   GetServiceController().CanTranslate(
-      source_language, target_language,
+      std::move(source_language), std::move(target_language),
       base::BindOnce(
           [](bool mask_readily_result, TranslationAvailableCallback callback,
              blink::mojom::CanCreateTranslatorResult result) {
