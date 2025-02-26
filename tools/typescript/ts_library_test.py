@@ -434,7 +434,46 @@ class TsLibraryTest(unittest.TestCase):
       ])
     except AssertionError as err:
       self.assertTrue(
-          str(err).startswith('Invalid |composite| flag detected in '))
+          str(err).replace('\\', '/').startswith(
+              'Invalid |composite| flag detected in '
+              'tools/typescript/tests/project5/tsconfig_base.json.'
+          ))
+    else:
+      self.fail('Failed to detect error')
+
+  # Test error case where the project's tsconfig file inherits from another
+  # tsconfig file that should fail validation.
+  def testTsConfigValidationErrorInParent(self):
+    self._out_folder = tempfile.mkdtemp(dir=_CWD)
+    root_dir = os.path.join(_HERE_DIR, 'tests', 'project5')
+    gen_dir = os.path.join(self._out_folder, 'tools', 'typescript', 'tests',
+                           'project5')
+    try:
+      ts_library.main([
+          '--output_suffix',
+          'build_ts',
+          '--root_gen_dir',
+          os.path.relpath(self._out_folder, gen_dir),
+          '--root_src_dir',
+          os.path.relpath(os.path.join(_HERE_DIR, 'tests'), gen_dir),
+          '--root_dir',
+          os.path.relpath(root_dir, _CWD),
+          '--gen_dir',
+          os.path.relpath(gen_dir, _CWD),
+          '--out_dir',
+          os.path.relpath(gen_dir, _CWD),
+          '--in_files',
+          'bar.ts',
+          '--tsconfig_base',
+          os.path.relpath(os.path.join(root_dir, 'tsconfig_base2.json'),
+                          gen_dir),
+      ])
+    except AssertionError as err:
+      self.assertTrue(
+          str(err).replace('\\', '/').startswith(
+              'Invalid |composite| flag detected in '
+              'tools/typescript/tests/project5/tsconfig_base.json.'
+          ))
     else:
       self.fail('Failed to detect error')
 

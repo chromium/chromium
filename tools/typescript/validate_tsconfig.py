@@ -93,12 +93,12 @@ def validateTsconfigJson(tsconfig, tsconfig_file, is_base_tsconfig):
       for param, param_value in tsconfig['compilerOptions'].items():
         if param not in _allowed_compiler_options:
           return False, f'Disallowed |{param}| flag detected in '+ \
-              f'{tsconfig_file}.'
+              f'\'{tsconfig_file}\'.'
         else:
           allowed_values = _allowed_compiler_options[param]
           if (allowed_values is not None and param_value not in allowed_values):
             return False, f'Disallowed value |{param_value}| for |{param}| ' + \
-                f'flag detected in {tsconfig_file}. Must be one of ' + \
+                f'flag detected in \'{tsconfig_file}\'. Must be one of ' + \
                 f'{allowed_values}.'
 
   return True, None
