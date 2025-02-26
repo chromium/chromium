@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
+#include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/policy/skyvault/signin_notification_helper.h"
@@ -419,11 +420,17 @@ void OdfsMigrationUploader::Run(UploadDoneCallback upload_callback) {
 
 void OdfsMigrationUploader::RunInternal() {
   if (!upload_callback_) {
+    LOG(ERROR) << "RunInternal called but upload_callback_ is empty, ignoring.";
     return;
   }
 
   waiting_for_connection_ = content::GetNetworkConnectionTracker()->IsOffline();
-  if (!waiting_for_connection_) {
+  if (waiting_for_connection_) {
+    reconnection_timer_.Start(
+        FROM_HERE, policy::local_user_files::kReconnectionTimeout,
+        base::BindOnce(&OdfsMigrationUploader::OnReconnectionTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
     OdfsSkyvaultUploader::Run(std::move(upload_callback_));
   }
 }
@@ -451,11 +458,24 @@ void OdfsMigrationUploader::OnConnectionChanged(
   if (waiting_for_connection_) {
     bool is_online = !content::GetNetworkConnectionTracker()->IsOffline();
     if (is_online) {
+      LOG(ERROR) << "Reconnected to OneDrive";
       waiting_for_connection_ = false;
+      reconnection_timer_.Stop();
       RunInternal();
     }
   }
-  // TODO(395843884): Fail with NetworkError if lost during upload.
+  // TODO(399293918): Fail with NetworkError if lost during upload.
+}
+
+void OdfsMigrationUploader::OnReconnectionTimeout() {
+  if (!waiting_for_connection_) {
+    LOG(ERROR) << "Reconnection timer fired, but currently not waiting for "
+                  "connection; ignoring";
+    return;
+  }
+  LOG(ERROR)
+      << "Reconnection not established within the timeout, failing the upload";
+  OnEndUpload(/*url=*/{}, MigrationUploadError::kReconnectTimeout);
 }
 
 }  // namespace ash::cloud_upload

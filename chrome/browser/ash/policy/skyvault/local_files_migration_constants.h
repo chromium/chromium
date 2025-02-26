@@ -31,6 +31,10 @@ const base::FilePath::CharType kErrorLogFileBasePath[] =
 const base::FilePath::CharType kErrorLogFileName[] =
     FILE_PATH_LITERAL("local_files_upload");
 
+// The amount of time a file uploader waits for network reconnection before
+// failing.
+constexpr base::TimeDelta kReconnectionTimeout = base::Hours(4);
+
 }  // namespace policy::local_user_files
 
 #endif  // CHROME_BROWSER_POLICY_LOCAL_USER_FILES_LOCAL_FILES_MIGRATION_CONSTANTS_H_
