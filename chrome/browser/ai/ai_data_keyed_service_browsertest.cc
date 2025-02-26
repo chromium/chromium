@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
       testing::ElementsAre(expected_form.global_id()), testing::IsEmpty());
   driver->GetAutofillManager().OnFormsSeen(/*updated_forms=*/{expected_form},
                                            /*removed_forms=*/{});
-  std::move(wait_for_forms_seen).Wait();
+  ASSERT_TRUE(std::move(wait_for_forms_seen).Wait());
 
   // Query the API for `expected_form`'s first field.
   AiDataKeyedService::AiDataSpecifier specifier;
