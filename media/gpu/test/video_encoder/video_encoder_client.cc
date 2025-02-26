@@ -16,6 +16,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/bitrate.h"
 #include "media/base/media_log.h"
@@ -25,6 +26,10 @@
 #include "media/gpu/test/raw_video.h"
 #include "media/gpu/test/video_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "gpu/config/gpu_info_collector.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace media {
 namespace test {
@@ -523,9 +528,16 @@ void VideoEncoderClient::CreateEncoderTask(const RawVideo* video,
     config.gop_length = encoder_client_config_.gop_length;
   }
 
+  gpu::GPUInfo gpu_info;
+
+#if BUILDFLAG(IS_WIN)
+  gpu::CollectGraphicsInfoForTesting(&gpu_info);
+#endif  // BUILDFLAG(IS_WIN)
+
   encoder_ = GpuVideoEncodeAcceleratorFactory::CreateVEA(
       config, this, gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds(),
-      gpu::GPUInfo::GPUDevice());
+      gpu_info.active_gpu());
+
   *success = (encoder_ != nullptr);
 
   // Initialization is continued once the encoder notifies us of the coded size
