@@ -11,10 +11,11 @@ use crate::inherit::find_inherited_privilege_group;
 use crate::platforms::{self, Platform, PlatformSet};
 
 use std::collections::{hash_map::Entry, HashMap, HashSet};
-use std::iter;
 use std::path::PathBuf;
 
+use anyhow::{anyhow, Result};
 pub use cargo_metadata::DependencyKind;
+use itertools::Itertools;
 pub use semver::Version;
 
 /// Uniquely identifies a `Package` in a particular set of dependencies. The
@@ -161,9 +162,9 @@ impl std::fmt::Display for LibType {
 /// workspace members.
 pub fn collect_dependencies(
     metadata: &cargo_metadata::Metadata,
-    roots: Option<Vec<String>>,
+    root_package_name: &str,
     extra_config: &BuildConfig,
-) -> Vec<Package> {
+) -> Result<Vec<Package>> {
     // The metadata is split into two parts:
     // 1. A list of packages and associated info: targets (e.g. lib, bin, tests),
     //    source path, etc. This includes all workspace members and all transitive
@@ -202,23 +203,31 @@ pub fn collect_dependencies(
         dependencies: HashMap::new(),
     };
 
-    let traversal_roots: Vec<&cargo_metadata::PackageId> = match roots {
-        Some(roots) => metadata
-            .packages
-            .iter()
-            .filter_map(|pkg| if roots.contains(&pkg.name) { Some(&pkg.id) } else { None })
-            .collect(),
-        None => dep_graph.roots.clone(),
-    };
-
     // Do a depth-first traversal of the graph to find all relevant
-    // dependencies. Start from each workspace package ("chromium" and
-    // additional binary members used in the build).
-    for root_id in traversal_roots.iter() {
-        let node_map: &HashMap<&cargo_metadata::PackageId, &cargo_metadata::Node> =
-            &dep_graph.nodes;
-        explore_node(&mut traversal_state, node_map.get(*root_id).unwrap());
-    }
+    // dependencies. Start from the root package given as a parameter.
+    let traversal_root_id = metadata
+        .packages
+        .iter()
+        .filter(|pkg| pkg.name == root_package_name)
+        .map(|pkg| pkg.id.clone())
+        .exactly_one()
+        .map_err(|exactly_one_error| {
+            let found_ids = exactly_one_error.collect_vec();
+            if found_ids.is_empty() {
+                anyhow!(
+                    "Couldn't find the root package: {root_package_name}. \
+                     No package with this name."
+                )
+            } else {
+                anyhow!(
+                    "Couldn't find the root package: {root_package_name}. \
+                     More than one package with this name: {}",
+                    found_ids.into_iter().join(", ")
+                )
+            }
+        })?;
+    let node = dep_graph.nodes.get(&traversal_root_id).unwrap();
+    explore_node(&mut traversal_state, node);
 
     // TODO(danakj): Throw an error if any `safe` crate depends on a `sandbox`
     // crate.
@@ -349,7 +358,7 @@ pub fn collect_dependencies(
     }
 
     // Return a flat list of dependencies.
-    dependencies.into_values().collect()
+    Ok(dependencies.into_values().collect())
 }
 
 /// Graph traversal state shared by recursive calls of `explore_node`.
@@ -403,8 +412,7 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
         explore_node(state, target_node);
 
         // Merge this with the existing entry for the dep.
-        let dep: &mut Package =
-            state.dependencies.entry(dep_edge.pkg).or_insert_with(|| init_dep());
+        let dep: &mut Package = state.dependencies.entry(dep_edge.pkg).or_insert_with(&init_dep);
         let info: &mut PerKindInfo = dep
             .dependency_kinds
             .entry(dep_edge.kind)
@@ -415,7 +423,7 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
     // Initialize the dependency entry for this node's package if it's not our
     // fake root.
     if &node.id != state.root {
-        state.dependencies.entry(&node.id).or_insert_with(|| init_dep());
+        state.dependencies.entry(&node.id).or_insert_with(&init_dep);
     }
 }
 
@@ -472,7 +480,6 @@ fn iter_node_deps(node: &cargo_metadata::Node) -> impl Iterator<Item = Dependenc
 struct MetadataGraph<'a> {
     nodes: HashMap<&'a cargo_metadata::PackageId, &'a cargo_metadata::Node>,
     packages: HashMap<&'a cargo_metadata::PackageId, &'a cargo_metadata::Package>,
-    roots: Vec<&'a cargo_metadata::PackageId>,
 }
 
 /// Convert the flat lists in `metadata` to maps indexable by PackageId.
@@ -490,11 +497,7 @@ fn build_graph(metadata: &cargo_metadata::Metadata) -> MetadataGraph<'_> {
 
     let packages = metadata.packages.iter().map(|p| (&p.id, p)).collect();
 
-    let roots = iter::once(resolve.root.as_ref().unwrap())
-        .chain(metadata.workspace_members.iter())
-        .collect();
-
-    MetadataGraph { nodes: graph, packages, roots }
+    MetadataGraph { nodes: graph, packages }
 }
 
 /// A crate target type we support.
@@ -545,7 +548,8 @@ mod tests {
 
         let metadata: cargo_metadata::Metadata =
             serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
-        let mut dependencies = collect_dependencies(&metadata, None, &build_config);
+        let mut dependencies =
+            collect_dependencies(&metadata, "sample_package", &build_config).unwrap();
         dependencies.sort_by(|left, right| {
             left.package_name.cmp(&right.package_name).then(left.version.cmp(&right.version))
         });
@@ -893,8 +897,7 @@ mod tests {
             serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
 
         // Start from "foo" workspace member.
-        let mut dependencies =
-            collect_dependencies(&metadata, Some(vec!["foo".to_string()]), &config);
+        let mut dependencies = collect_dependencies(&metadata, "foo", &config).unwrap();
         dependencies.sort_by(|left, right| {
             left.package_name.cmp(&right.package_name).then(left.version.cmp(&right.version))
         });
