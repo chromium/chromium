@@ -92,6 +92,8 @@ static const char kErrorCardDataUnavailable[] = "Credit card data unavailable";
 static const char kErrorDataUnavailable[] = "Autofill data unavailable.";
 static const char kErrorAutofillAIUnavailable[] =
     "Autofill AI data unavailable.";
+static const char kErrorAutofillAiEntityOutOfBounds[] =
+    "The provided Autofill AI entity/attribute is out of bounds.";
 static const char kErrorDeviceAuthUnavailable[] = "Device auth is unvailable";
 
 // Constant to assign a user-verified verification status to the autofill
@@ -1147,9 +1149,12 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
 
   const autofill_private::EntityInstance& private_api_entity_instance =
       parameters->entity_instance;
-  EntityInstance entity_instance =
+  std::optional<EntityInstance> entity_instance =
       autofill_ai_util::PrivateApiEntityInstanceToEntityInstance(
           private_api_entity_instance);
+  if (!entity_instance.has_value()) {
+    return RespondNow(Error(kErrorAutofillAiEntityOutOfBounds));
+  }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   EntityDataManager* entity_data_manager =
@@ -1159,7 +1164,7 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
   if (!entity_data_manager) {
     return RespondNow(Error(kErrorAutofillAIUnavailable));
   }
-  entity_data_manager->AddOrUpdateEntityInstance(entity_instance);
+  entity_data_manager->AddOrUpdateEntityInstance(entity_instance.value());
   return RespondNow(NoArguments());
 }
 

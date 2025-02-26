@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/autofill_private/autofill_ai_util.h"
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -19,19 +21,26 @@ namespace autofill_private = extensions::api::autofill_private;
 namespace extensions::autofill_ai_util {
 
 using autofill::AttributeInstance;
+using autofill::AttributeTypeName;
 using autofill::EntityInstance;
 using autofill::EntityTypeName;
 
-EntityInstance PrivateApiEntityInstanceToEntityInstance(
+std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
     const autofill_private::EntityInstance& private_api_entity_instance) {
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
       attributes;
   for (const autofill_private::AttributeInstance&
            private_api_attribute_instance :
        private_api_entity_instance.attributes) {
+    if (private_api_attribute_instance.type < 0 ||
+        private_api_attribute_instance.type >
+            base::to_underlying(AttributeTypeName::kMaxValue)) {
+      return std::nullopt;
+    }
+
     autofill::AttributeType attribute_type(
-        autofill::AttributeTypeName(private_api_attribute_instance.type));
-    autofill::AttributeInstance attribute(attribute_type);
+        AttributeTypeName(private_api_attribute_instance.type));
+    AttributeInstance attribute(attribute_type);
     attribute.SetInfoWithVerificationStatus(
         attribute.GetTopLevelType(),
         base::UTF8ToUTF16(private_api_attribute_instance.value),
@@ -39,8 +48,17 @@ EntityInstance PrivateApiEntityInstanceToEntityInstance(
     attributes.emplace(std::move(attribute));
   }
 
-  autofill::EntityType entity_type(
-      autofill::EntityTypeName(private_api_entity_instance.type));
+  if (private_api_entity_instance.type < 0 ||
+      private_api_entity_instance.type >
+          base::to_underlying(EntityTypeName::kMaxValue)) {
+    return std::nullopt;
+  }
+  std::optional<EntityTypeName> entity_type_name =
+      autofill::ToSafeEntityTypeName(private_api_entity_instance.type);
+  if (!entity_type_name.has_value()) {
+    return std::nullopt;
+  }
+  autofill::EntityType entity_type(entity_type_name.value());
   return EntityInstance(
       std::move(entity_type), attributes,
       base::Uuid::ParseLowercase(private_api_entity_instance.guid),

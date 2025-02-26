@@ -7,6 +7,7 @@
 
 #include <ostream>
 #include <string_view>
+#include <type_traits>
 
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
@@ -267,6 +268,11 @@ class EntityType final {
  private:
   EntityTypeName name_{};
 };
+
+// Validates a raw value corresponding to an `EntityTypeName` object. Returns
+// the corresponding enum value if valid, or `std::nullopt` otherwise.
+std::optional<EntityTypeName> ToSafeEntityTypeName(
+    std::underlying_type_t<EntityTypeName> raw_value);
 
 template <>
 struct DenseSetTraits<EntityType> {
