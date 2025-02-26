@@ -123,7 +123,6 @@ message AutofillQueryResponse {
       // specify requirements for the generation of passwords.
       optional .autofill.PasswordRequirementsSpec password_requirements = 5;
       reserved 6;  // optional bool primary_type_prediction_is_override
-      optional string format_string = 7;
     };
     // Suggestions on the fields in the same form.
     repeated FieldSuggestion field_suggestions = 1;
