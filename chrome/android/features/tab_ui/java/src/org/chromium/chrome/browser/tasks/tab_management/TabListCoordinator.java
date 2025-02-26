@@ -112,7 +112,6 @@ public class TabListCoordinator
     private final @TabListMode int mMode;
     private final Activity mActivity;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final ObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
     private final TabListModel mModelList;
     private final boolean mHasEmptyView;
     private final @DrawableRes int mEmptyStateImageResId;
@@ -201,7 +200,6 @@ public class TabListCoordinator
         mTabActionState = initialTabActionState;
         mActivity = activity;
         mBrowserControlsStateProvider = browserControlsStateProvider;
-        mCurrentTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
         mModelList = new TabListModel();
         mAdapter =
                 new SimpleRecyclerViewAdapter(mModelList) {
@@ -850,14 +848,7 @@ public class TabListCoordinator
     }
 
     private int getIndexForTabId(int tabId) {
-        int index = mModelList.indexFromTabId(tabId);
-        if (index != TabModel.INVALID_TAB_INDEX) return index;
-
-        TabModel tabModel = mCurrentTabGroupModelFilterSupplier.get().getTabModel();
-        Tab tab = tabModel.getTabById(tabId);
-        if (tab == null) return TabModel.INVALID_TAB_INDEX;
-
-        return mMediator.getIndexForTabWithRelatedTabs(tab);
+        return mMediator.getIndexForTabIdWithRelatedTabs(tabId);
     }
 
     void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
