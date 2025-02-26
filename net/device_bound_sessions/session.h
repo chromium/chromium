@@ -13,6 +13,7 @@
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/cookie_craving.h"
+#include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_inclusion_rules.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_params.h"
@@ -43,7 +44,8 @@ class NET_EXPORT Session {
   ~Session();
 
   // Creates an instance of `Session` based on the `params`.
-  static std::unique_ptr<Session> CreateIfValid(const SessionParams& params);
+  static base::expected<std::unique_ptr<Session>, SessionError> CreateIfValid(
+      const SessionParams& params);
   static std::unique_ptr<Session> CreateFromProto(const proto::Session& proto);
   proto::Session ToProto() const;
 

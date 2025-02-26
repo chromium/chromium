@@ -529,7 +529,7 @@ TEST_F(RegistrationTest, TypeIsNotCookie) {
       callback.outcome();
   ASSERT_FALSE(out_params.has_value());
   EXPECT_EQ(out_params.error().type,
-            SessionError::ErrorType::kInvalidSessionConfig);
+            SessionError::ErrorType::kInvalidCredentials);
 }
 
 TEST_F(RegistrationTest, TwoTypesCookie_NotCookie) {
@@ -661,7 +661,7 @@ TEST_F(RegistrationTest, ReturnTextFile) {
   callback.WaitForCall();
   ASSERT_FALSE(callback.outcome().has_value());
   EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kInvalidSessionConfig);
+            SessionError::ErrorType::kInvalidConfigJson);
 }
 
 TEST_F(RegistrationTest, ReturnInvalidJson) {
@@ -681,7 +681,7 @@ TEST_F(RegistrationTest, ReturnInvalidJson) {
   callback.WaitForCall();
   EXPECT_FALSE(callback.outcome().has_value());
   EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kInvalidSessionConfig);
+            SessionError::ErrorType::kInvalidConfigJson);
 }
 
 TEST_F(RegistrationTest, ReturnEmptyJson) {
@@ -701,7 +701,7 @@ TEST_F(RegistrationTest, ReturnEmptyJson) {
   callback.WaitForCall();
   EXPECT_FALSE(callback.outcome().has_value());
   EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kInvalidSessionConfig);
+            SessionError::ErrorType::kInvalidSessionId);
 }
 
 TEST_F(RegistrationTest, NetworkErrorServerShutdown) {
@@ -721,7 +721,7 @@ TEST_F(RegistrationTest, NetworkErrorServerShutdown) {
 
   EXPECT_FALSE(callback.outcome().has_value());
   EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kEndpointUnreachable);
+            SessionError::ErrorType::kNetError);
 }
 
 TEST_F(RegistrationTest, NetworkErrorInvalidResponse) {
@@ -740,7 +740,7 @@ TEST_F(RegistrationTest, NetworkErrorInvalidResponse) {
 
   EXPECT_FALSE(callback.outcome().has_value());
   EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kEndpointUnreachable);
+            SessionError::ErrorType::kNetError);
 }
 
 TEST_F(RegistrationTest, ServerError500) {
@@ -760,7 +760,7 @@ TEST_F(RegistrationTest, ServerError500) {
 
   EXPECT_FALSE(callback.outcome().has_value());
   EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kEndpointUnreachable);
+            SessionError::ErrorType::kHttpError);
 }
 
 TEST_F(RegistrationTest, ServerErrorReturnOne401ThenSuccess) {
@@ -874,7 +874,7 @@ TEST_F(RegistrationTest, DontFollowHttpsToHttpRedirect) {
   EXPECT_FALSE(followed);
   EXPECT_FALSE(callback.outcome().has_value());
   EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kEndpointUnreachable);
+            SessionError::ErrorType::kHttpError);
 }
 
 // Should be allowed: http://localhost -> http://localhost/redirect.
@@ -945,7 +945,7 @@ TEST_F(RegistrationTest, FailOnSslErrorExpired) {
   callback.WaitForCall();
   EXPECT_FALSE(callback.outcome().has_value());
   EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kEndpointUnreachable);
+            SessionError::ErrorType::kNetError);
 }
 
 std::unique_ptr<test_server::HttpResponse> ReturnResponseForRefreshRequest(

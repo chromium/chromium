@@ -167,6 +167,18 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // Remove an observer by site and pointer.
   void RemoveObserver(net::SchemefulSite site, Observer* observer);
 
+  // Helper function encapsulating the processing of registration
+  SessionError::ErrorType OnRegistrationCompleteInternal(
+      OnAccessCallback on_access_callback,
+      base::expected<SessionParams, SessionError> params_or_error);
+
+  // Helper function encapsulating the processing of refresh
+  SessionError::ErrorType OnRefreshRequestCompletionInternal(
+      OnAccessCallback on_access_callback,
+      SchemefulSite site,
+      Session::Id session_id,
+      base::expected<SessionParams, SessionError> params_or_error);
+
   // Whether we are waiting on the initial load of saved sessions to complete.
   bool pending_initialization_ = false;
   // Functions to call once initialization completes.

@@ -79,7 +79,7 @@ std::unique_ptr<Session> CreateSessionHelper(
                        std::move(scope),
                        std::move(cookie_credentials),
                        GenerateNewKey(key_service)};
-  return Session::CreateIfValid(params);
+  return *Session::CreateIfValid(params);
 }
 
 proto::Session CreateSessionProto(

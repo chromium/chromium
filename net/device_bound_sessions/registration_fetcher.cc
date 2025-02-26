@@ -139,7 +139,8 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
                           bool* defer_redirect) override {
     if (!IsSecure(redirect_info.new_url)) {
       request->Cancel();
-      OnResponseCompleted();
+      OnResponseCompleted(
+          /*error_on_no_data=*/SessionError::ErrorType::kHttpError);
       // *this is deleted here
     }
   }
@@ -156,7 +157,8 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   // This is always called unless the request is deleted before it is called.
   void OnResponseStarted(URLRequest* request, int net_error) override {
     if (net_error != OK) {
-      OnResponseCompleted();
+      OnResponseCompleted(
+          /*error_on_no_data=*/SessionError::ErrorType::kNetError);
       // *this is deleted here
       return;
     }
@@ -174,7 +176,8 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
     }
 
     if (response_code < 200 || response_code >= 300) {
-      OnResponseCompleted();
+      OnResponseCompleted(
+          /*error_on_no_data=*/SessionError::ErrorType::kHttpError);
       // *this is deleted here
       return;
     }
@@ -184,7 +187,8 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
     if (bytes_read >= 0) {
       OnReadCompleted(request, bytes_read);
     } else if (bytes_read != ERR_IO_PENDING) {
-      OnResponseCompleted();
+      OnResponseCompleted(
+          /*error_on_no_data=*/SessionError::ErrorType::kNetError);
       // *this is deleted here
     }
   }
@@ -199,7 +203,8 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
     }
 
     if (bytes_read != ERR_IO_PENDING) {
-      OnResponseCompleted();
+      OnResponseCompleted(
+          /*error_on_no_data=*/SessionError::ErrorType::kNetError);
       // *this is deleted here
     }
   }
@@ -313,7 +318,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
       std::optional<std::vector<SessionChallengeParam>> challenge_params) {
     if (!challenge_params || challenge_params->empty()) {
       RunCallbackAndDeleteSelf(base::unexpected(SessionError{
-          SessionError::ErrorType::kInvalidSessionConfig,
+          SessionError::ErrorType::kInvalidChallenge,
           net::SchemefulSite(url::Origin::Create(fetcher_endpoint_)),
           *session_identifier_}));
       return;
@@ -325,10 +330,10 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
     Start(challenge, std::nullopt);
   }
 
-  void OnResponseCompleted() {
+  void OnResponseCompleted(SessionError::ErrorType error_on_no_data) {
     if (data_received_.empty()) {
       RunCallbackAndDeleteSelf(base::unexpected(SessionError{
-          SessionError::ErrorType::kEndpointUnreachable,
+          error_on_no_data,
           net::SchemefulSite(url::Origin::Create(fetcher_endpoint_)),
           session_identifier_}));
       return;
