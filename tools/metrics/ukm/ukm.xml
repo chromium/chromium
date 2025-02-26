@@ -10263,6 +10263,32 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Graphics.Smoothness.FrameSequence" singular="True">
+  <owner>animations-dev@chromium.org</owner>
+  <owner>gaiko@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <summary>
+    Measures the percentage of frames dropped in a sequence of frames.
+
+    The metric is reported once per page-load, and when the page closes (e.g.
+    the user closes the tab, or navigates away to a different page).
+  </summary>
+  <metric name="PercentDroppedFrames">
+    <summary>
+      The percentage of frames that have been dropped in the last 300 frame
+      window or 5 seconds, whichever came first.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Graphics.Smoothness.Latency">
   <owner>animations-dev@chromium.org</owner>
   <owner>jonross@chromium.org</owner>

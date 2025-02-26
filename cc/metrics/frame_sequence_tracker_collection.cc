@@ -264,8 +264,15 @@ void FrameSequenceTrackerCollection::DestroyTrackers() {
       }
 
       if (metrics->HasEnoughDataForReporting()) {
-        metrics->ReportMetrics();
-        // TODO(crbug.com/395868899): Write PDF4 metric here
+        // This value is guaranteed to be positive by the
+        // previous HasEnoughDataForReporting check.
+        int percent_dropped_frames4 = metrics->ReportMetrics();
+        CHECK_GE(percent_dropped_frames4, 0);
+        if (ukm_dropped_frames_data_) {
+          UkmDroppedFramesData dropped_frames_data;
+          dropped_frames_data.percent_dropped_frames = percent_dropped_frames4;
+          ukm_dropped_frames_data_->Write(dropped_frames_data);
+        }
       }
       if (metrics->HasDataLeftForReporting())
         accumulated_metrics_[key] = std::move(metrics);
