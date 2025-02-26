@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -44,6 +45,11 @@ enum class VerificationStatus {
   kServerParsed = 5,
   kMaxValue = kServerParsed
 };
+
+// Validates a raw value corresponding to a `VerificationStatus` object and
+// returns the corresponding enum value if valid and `std::nullopt` otherwise.
+std::optional<VerificationStatus> ToSafeVerificationStatus(
+    std::underlying_type_t<VerificationStatus> raw_value);
 
 // Prints the string representation of |status| to |os|.
 std::ostream& operator<<(std::ostream& os, VerificationStatus status);

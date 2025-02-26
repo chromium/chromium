@@ -54,6 +54,17 @@ class EntityTableTest : public testing::Test {
   WebDatabase db_;
 };
 
+// Tests that the entity and attribute tables preserve entity data between write
+// and read.
+TEST_F(EntityTableTest, BasicWriteThenRead) {
+  EntityInstance pp = test::GetPassportEntityInstance();
+  EntityInstance lc = test::GetLoyaltyCardEntityInstance();
+
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(pp));
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(lc));
+  EXPECT_THAT(table().GetEntityInstances(), UnorderedElementsAre(pp, lc));
+}
+
 // Tests updating entity instances.
 TEST_F(EntityTableTest, AddOrUpdateEntityInstance) {
   EntityInstance pp = test::GetPassportEntityInstance(
@@ -142,17 +153,16 @@ TEST_F(EntityTableTest, GetEntityInstancesSkipsEmptyInstances) {
 
   // Manipulate the attribute instances: changing their type simulates a change
   // of the entity schema.
-  sql::Statement s;
-  s.Assign(test_api(table()).db()->GetUniqueStatement(
+  sql::Statement attributes_update;
+  attributes_update.Assign(test_api(table()).db()->GetUniqueStatement(
       R"(UPDATE attributes
-         SET type = type || 'some-garbage-suffix'
+         SET attribute_type = attribute_type || 'some-garbage-suffix'
          WHERE entity_guid = ?)"));
-  s.BindString(0, pp.guid().AsLowercaseString());
-  ASSERT_TRUE(s.Run()) << "The UPDATE failed: "
-                       << test_api(table()).db()->GetErrorMessage()
-                       << " (Check the table and column names in the "
-                          "UpdateBuilder() call above.)";
-  ASSERT_GT(test_api(table()).db()->GetLastChangeCount(), 0);
+  attributes_update.BindString(0, pp.guid().AsLowercaseString());
+  ASSERT_TRUE(attributes_update.Run())
+      << "The UPDATE failed: " << test_api(table()).db()->GetErrorMessage()
+      << " (Check the table and column names in the "
+         "UpdateBuilder() call above.)";
 
   EXPECT_THAT(table().GetEntityInstances(), ElementsAre(lc));
 }

@@ -4,9 +4,12 @@
 
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <ranges>
+#include <string>
+#include <type_traits>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -15,8 +18,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -38,68 +44,25 @@ void* GetKey() {
 namespace version {
 constexpr char kTableName[] = "entities_version";
 constexpr char kVersion[] = "version";
-constexpr int kCurrentVersion = 5;
+constexpr int kCurrentVersion = 6;
 }  // namespace version
 
 namespace attributes {
 constexpr char kTableName[] = "attributes";
 constexpr char kEntityGuid[] = "entity_guid";
-constexpr char kType[] = "type";
+constexpr char kAttributeType[] = "attribute_type";
+constexpr char kFieldType[] = "field_type";
 constexpr char kValueEncrypted[] = "value_encrypted";
+constexpr char kVerificationStatus[] = "verification_status";
 }  // namespace attributes
 
 namespace entities {
 constexpr char kTableName[] = "entities";
 constexpr char kGuid[] = "guid";
-constexpr char kType[] = "type";
+constexpr char kEntityType[] = "entity_type";
 constexpr char kNickname[] = "nickname";
 constexpr char kDateModified[] = "date_modified";
 }  // namespace entities
-
-struct AttributeRecord {
-  std::string type_name;
-  std::u16string value;
-};
-
-std::optional<EntityInstance> ValidateInstance(
-    base::PassKey<EntityTable> pass_key,
-    std::string_view type_name,
-    std::vector<AttributeRecord> attribute_records,
-    base::Uuid guid,
-    std::string nickname,
-    base::Time date_modified) {
-  std::optional<EntityType> entity_type =
-      StringToEntityType(pass_key, type_name);
-  if (!entity_type || !guid.is_valid()) {
-    return std::nullopt;
-  }
-
-  std::vector<AttributeInstance> attributes;
-  attributes.reserve(attribute_records.size());
-  for (AttributeRecord& ar : attribute_records) {
-    if (std::optional<AttributeType> attribute_type =
-            StringToAttributeType(pass_key, *entity_type, ar.type_name)) {
-      attributes.emplace_back(*attribute_type);
-      attributes.back().SetInfo(attribute_type->field_type(), ar.value);
-    }
-  }
-  for (AttributeInstance& attribute : attributes) {
-    attribute.FinalizeInfo();
-  }
-
-  // Remove attributes that don't belong to the entity according to the schema.
-  // (The schema may have changed and this attribute may be outdated.)
-  std::erase_if(attributes, [&entity_type](const AttributeInstance& a) {
-    return *entity_type != a.type().entity_type();
-  });
-
-  if (attributes.empty()) {
-    return std::nullopt;
-  }
-
-  return EntityInstance(*entity_type, std::move(attributes), std::move(guid),
-                        std::move(nickname), date_modified);
-}
 
 // If "--autofill-wipe-entities" is present, drops the tables and creates
 // new ones.
@@ -215,16 +178,20 @@ bool EntityTable::CreateTablesIfNecessary() {
         db(), /*table_name=*/attributes::kTableName,
         /*column_names_and_types=*/
         {{attributes::kEntityGuid, "TEXT NOT NULL"},
-         {attributes::kType, "TEXT NOT NULL"},
-         {attributes::kValueEncrypted, "BLOB NOT NULL"}},
-        /*composite_primary_key=*/{attributes::kEntityGuid, attributes::kType});
+         {attributes::kAttributeType, "TEXT NOT NULL"},
+         {attributes::kFieldType, "INTEGER NOT NULL"},
+         {attributes::kValueEncrypted, "BLOB NOT NULL"},
+         {attributes::kVerificationStatus, "INTEGER NOT NULL"}},
+        /*composite_primary_key=*/
+        {attributes::kEntityGuid, attributes::kAttributeType,
+         attributes::kFieldType});
   };
   auto create_entities_table = [&] {
     return CreateTableIfNotExists(
         db(), /*table_name=*/entities::kTableName,
         /*column_names_and_types=*/
         {{entities::kGuid, "TEXT NOT NULL PRIMARY KEY"},
-         {entities::kType, "TEXT NOT NULL"},
+         {entities::kEntityType, "TEXT NOT NULL"},
          {entities::kNickname, "TEXT NOT NULL"},
          {entities::kDateModified, "INTEGER NOT NULL"}});
   };
@@ -255,6 +222,31 @@ bool EntityTable::MigrateToVersion(int version,
   return true;
 }
 
+bool EntityTable::AddAttribute(const EntityInstance& entity,
+                               const AttributeInstance& attribute) {
+  for (FieldType type : attribute.GetDatabaseStoredTypes()) {
+    sql::Statement s;
+    InsertBuilder(db(), s, attributes::kTableName,
+                  {attributes::kEntityGuid, attributes::kAttributeType,
+                   attributes::kFieldType, attributes::kValueEncrypted,
+                   attributes::kVerificationStatus});
+    s.BindString(0, entity.guid().AsLowercaseString());
+    s.BindString(1, attribute.type().name_as_string());
+    s.BindInt(2, type);
+    if (std::string encrypted_value; encryptor()->EncryptString16(
+            attribute.GetInfo(type), &encrypted_value)) {
+      s.BindString(3, encrypted_value);
+    } else {
+      return false;
+    }
+    s.BindInt(4, static_cast<int>(attribute.GetVerificationStatus(type)));
+    if (!s.Run()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
   HandleTestSwitchesIfNeeded(db(), *this);
 
@@ -262,29 +254,19 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
   if (!transaction.Begin()) {
     return false;
   }
-  // Add the attributes.
-  for (const AttributeInstance& attribute : entity.attributes()) {
-    sql::Statement s;
-    InsertBuilder(db(), s, attributes::kTableName,
-                  {attributes::kEntityGuid, attributes::kType,
-                   attributes::kValueEncrypted});
-    s.BindString(0, entity.guid().AsLowercaseString());
-    s.BindString(1, attribute.type().name_as_string());
-    std::string encrypted_value;
-    if (encryptor()->EncryptString16(attribute.value(), &encrypted_value)) {
-      s.BindString(2, encrypted_value);
-    } else {
-      return false;
-    }
-    if (!s.Run()) {
-      return false;
-    }
+  // Add the attributes. In case of failure for any attribute, do not add the
+  // entity.
+  if (!std::ranges::all_of(entity.attributes(),
+                           [&](const AttributeInstance& attribute) {
+                             return AddAttribute(entity, attribute);
+                           })) {
+    return false;
   }
 
   // Add the entity.
   sql::Statement s;
   InsertBuilder(db(), s, entities::kTableName,
-                {entities::kGuid, entities::kType, entities::kNickname,
+                {entities::kGuid, entities::kEntityType, entities::kNickname,
                  entities::kDateModified});
   s.BindString(0, entity.guid().AsLowercaseString());
   s.BindString(1, entity.type().name_as_string());
@@ -354,59 +336,122 @@ bool EntityTable::RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
          transaction.Commit();
 }
 
+std::map<base::Uuid,
+         std::map<std::string, std::vector<EntityTable::AttributeRecord>>>
+EntityTable::LoadAttributes() const {
+  std::map<base::Uuid, std::map<std::string, std::vector<AttributeRecord>>>
+      attribute_records;
+  sql::Statement s;
+  SelectBuilder(db(), s, attributes::kTableName,
+                {attributes::kEntityGuid, attributes::kAttributeType,
+                 attributes::kFieldType, attributes::kValueEncrypted,
+                 attributes::kVerificationStatus});
+  while (s.Step()) {
+    base::Uuid entity_guid = base::Uuid::ParseLowercase(s.ColumnString(0));
+    std::string attribute_type_name = s.ColumnString(1);
+    std::underlying_type_t<FieldType> underlying_field_type = s.ColumnInt(2);
+    std::u16string decrypted_value;
+    if (!encryptor()->DecryptString16(s.ColumnString(3), &decrypted_value)) {
+      continue;
+    }
+    std::underlying_type_t<VerificationStatus> underlying_verification_status =
+        s.ColumnInt(4);
+    attribute_records[entity_guid][attribute_type_name].push_back(
+        {.field_type = underlying_field_type,
+         .value = decrypted_value,
+         .verification_status = underlying_verification_status});
+  }
+  if (!s.Succeeded()) {
+    return {};
+  }
+  return attribute_records;
+}
+
 std::vector<EntityInstance> EntityTable::GetEntityInstances() const {
   HandleTestSwitchesIfNeeded(db(), const_cast<EntityTable&>(*this));
 
-  // Collects all attributes, keyed by the owning entity's GUID.
-  std::map<base::Uuid, std::vector<AttributeRecord>> attribute_records;
-  {
-    sql::Statement s;
-    SelectBuilder(db(), s, attributes::kTableName,
-                  {attributes::kEntityGuid, attributes::kType,
-                   attributes::kValueEncrypted});
-    while (s.Step()) {
-      base::Uuid entity_guid = base::Uuid::ParseLowercase(s.ColumnString(0));
-      std::string type_name = s.ColumnString(1);
-      std::u16string decrypted_value;
-      if (!encryptor()->DecryptString16(s.ColumnString(2), &decrypted_value)) {
-        continue;
-      }
-      attribute_records[entity_guid].push_back(
-          {.type_name = std::move(type_name),
-           .value = std::move(decrypted_value)});
-    }
-    if (!s.Succeeded()) {
-      return {};
-    }
-  }
+  // Collects all attributes, keyed by the owning entity's GUID and the
+  // `AttributeTypeName` of the attribute.
+  std::map<base::Uuid,
+           std::map<std::string, std::vector<EntityTable::AttributeRecord>>>
+      attribute_records = LoadAttributes();
 
   // Collects all entities and populates them with the attributes from the
   // previous query.
   std::vector<EntityInstance> entities;
-  {
-    sql::Statement s;
-    SelectBuilder(db(), s, entities::kTableName,
-                  {entities::kGuid, entities::kType, entities::kNickname,
-                   entities::kDateModified});
-    while (s.Step()) {
-      base::Uuid guid = base::Uuid::ParseLowercase(s.ColumnString(0));
-      std::string type_name = s.ColumnString(1);
-      std::string nickname = s.ColumnString(2);
-      base::Time date_modified = base::Time::FromTimeT(s.ColumnInt64(3));
+  sql::Statement s;
+  SelectBuilder(db(), s, entities::kTableName,
+                {entities::kGuid, entities::kEntityType, entities::kNickname,
+                 entities::kDateModified});
+  while (s.Step()) {
+    base::Uuid guid = base::Uuid::ParseLowercase(s.ColumnString(0));
+    std::string type_name = s.ColumnString(1);
+    std::string nickname = s.ColumnString(2);
+    base::Time date_modified = base::Time::FromTimeT(s.ColumnInt64(3));
 
-      if (auto attributes = attribute_records.extract(guid)) {
-        if (std::optional<EntityInstance> e = ValidateInstance(
-                /*pass_key=*/{}, type_name, std::move(attributes.mapped()),
-                std::move(guid), std::move(nickname), date_modified)) {
-          entities.push_back(*std::move(e));
+    if (auto attributes = attribute_records.extract(guid)) {
+      if (std::optional<EntityInstance> e =
+              ValidateInstance(type_name, std::move(guid), std::move(nickname),
+                               date_modified, std::move(attributes.mapped()))) {
+        entities.push_back(*std::move(e));
+      }
+    }
+  }
+  if (!s.Succeeded()) {
+    return {};
+  }
+  return entities;
+}
+
+std::optional<EntityInstance> EntityTable::ValidateInstance(
+    std::string_view type_name,
+    base::Uuid guid,
+    std::string nickname,
+    base::Time date_modified,
+    std::map<std::string, std::vector<AttributeRecord>> attribute_records)
+    const {
+  std::optional<EntityType> entity_type =
+      StringToEntityType(/*pass_key=*/{}, type_name);
+  if (!entity_type || !guid.is_valid()) {
+    return std::nullopt;
+  }
+
+  std::vector<AttributeInstance> attributes;
+
+  for (const auto& [attribute_type_name, records] : attribute_records) {
+    if (std::optional<AttributeType> attribute_type = StringToAttributeType(
+            /*pass_key=*/{}, *entity_type, attribute_type_name)) {
+      AttributeInstance& attribute = attributes.emplace_back(*attribute_type);
+      for (const auto& [underlying_field_type, value,
+                        underlying_verification_status] : records) {
+        FieldType field_type =
+            ToSafeFieldType(underlying_field_type, UNKNOWN_TYPE);
+        std::optional<VerificationStatus> verification_status =
+            ToSafeVerificationStatus(underlying_verification_status);
+        if (field_type != UNKNOWN_TYPE && verification_status) {
+          attribute.SetRawInfoWithVerificationStatus(
+              /*pass_key=*/{}, field_type, value, *verification_status);
         }
       }
     }
-    if (!s.Succeeded()) {
-      return {};
-    }
   }
-  return entities;
+
+  for (AttributeInstance& attribute : attributes) {
+    attribute.FinalizeInfo();
+  }
+
+  // Remove attributes that don't belong to the entity according to the schema.
+  // (The schema may have changed and this attribute may be outdated.)
+  std::erase_if(attributes, [&entity_type](const AttributeInstance& a) {
+    return *entity_type != a.type().entity_type();
+  });
+
+  if (attributes.empty()) {
+    return std::nullopt;
+  }
+
+  return EntityInstance(*entity_type, std::move(attributes), std::move(guid),
+                        std::move(nickname), date_modified);
 }
 
 }  // namespace autofill

@@ -137,9 +137,13 @@ constexpr bool AttributeType::is_structured_type() const {
   switch (name_) {
     case AttributeTypeName::kPassportName:
     case AttributeTypeName::kDriversLicenseName:
-    case AttributeTypeName::kPassportCountry:
-    case AttributeTypeName::kDriversLicenseRegion:
       return true;
+    case AttributeTypeName::kPassportCountry:
+      // TODO(crbug.com/389625753): Add special support for country types.
+      return false;
+    case AttributeTypeName::kDriversLicenseRegion:
+      // TODO(crbug.com/389625753): Add special support for state types.
+      return false;
     case AttributeTypeName::kPassportExpiryDate:
     case AttributeTypeName::kPassportIssueDate:
     case AttributeTypeName::kDriversLicenseExpirationDate:
