@@ -4,6 +4,7 @@
 
 use crate::{ContextPointer, Functions};
 use serde::de::{DeserializeSeed, Deserializer, Error, MapAccess, SeqAccess, Visitor};
+use std::borrow::Cow;
 use std::convert::TryFrom;
 use std::fmt;
 use std::pin::Pin;
@@ -22,11 +23,46 @@ impl RecursionDepthCheck {
 }
 
 /// What type of aggregate JSON type is being deserialized.
-pub enum DeserializationTarget<'c> {
+pub enum DeserializationTarget<'c, 'de> {
     /// Deserialize by appending to a list.
     List { ctx: Pin<&'c mut ContextPointer> },
     /// Deserialize by setting a dictionary key.
-    Dict { ctx: Pin<&'c mut ContextPointer>, key: String },
+    Dict { ctx: Pin<&'c mut ContextPointer>, key: Cow<'de, str> },
+}
+
+// `Cow<T>` has a blanket `Deserialize` impl, but due to the lack of
+// specialization, `Cow<str>::deserialize` always ends up copying the string,
+// even if it is borrowed: https://github.com/serde-rs/serde/issues/1852. This
+// wrapper effectively acts as a manual specialization that allows us to avoid
+// copying map keys when they contain no JSON escape sequences.
+struct CowStrVisitor;
+
+impl<'de> serde::de::Visitor<'de> for CowStrVisitor {
+    type Value = Cow<'de, str>;
+
+    fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str("a str or string")
+    }
+
+    fn visit_borrowed_str<E: serde::de::Error>(self, value: &'de str) -> Result<Self::Value, E> {
+        Ok(Cow::Borrowed(value))
+    }
+
+    fn visit_str<E: serde::de::Error>(self, value: &str) -> Result<Self::Value, E> {
+        Ok(Cow::Owned(value.to_owned()))
+    }
+
+    fn visit_string<E: serde::de::Error>(self, value: String) -> Result<Self::Value, E> {
+        Ok(Cow::Owned(value))
+    }
+}
+
+impl<'de> DeserializeSeed<'de> for CowStrVisitor {
+    type Value = Cow<'de, str>;
+
+    fn deserialize<D: Deserializer<'de>>(self, deserializer: D) -> Result<Self::Value, D::Error> {
+        deserializer.deserialize_any(self)
+    }
 }
 
 /// A deserializer and visitor type that is used to visit each value in the JSON
@@ -35,16 +71,16 @@ pub enum DeserializationTarget<'c> {
 /// Normally serde deserialization instantiates a new object, but this visitor
 /// is designed to call back into C++ for creating the deserialized objects. To
 /// achieve this we use a feature of serde called "stateful deserialization" (https://docs.serde.rs/serde/de/trait.DeserializeSeed.html).
-pub struct ValueVisitor<'c> {
+pub struct ValueVisitor<'c, 'de> {
     fns: &'static Functions,
-    aggregate: DeserializationTarget<'c>,
+    aggregate: DeserializationTarget<'c, 'de>,
     recursion_depth_check: RecursionDepthCheck,
 }
 
-impl<'c> ValueVisitor<'c> {
+impl<'c, 'de> ValueVisitor<'c, 'de> {
     pub fn new(
         fns: &'static Functions,
-        target: DeserializationTarget<'c>,
+        target: DeserializationTarget<'c, 'de>,
         max_depth: usize,
     ) -> Self {
         Self {
@@ -57,7 +93,7 @@ impl<'c> ValueVisitor<'c> {
     }
 }
 
-impl<'de, 'c> Visitor<'de> for ValueVisitor<'c> {
+impl<'de, 'c> Visitor<'de> for ValueVisitor<'c, 'de> {
     // We call out to C++ to construct the deserialized type, so no output from the
     // visitor.
     type Value = ();
@@ -141,7 +177,7 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c> {
             DeserializationTarget::List { ctx } => self.fns.list_append_dict(ctx),
             DeserializationTarget::Dict { ctx, key } => self.fns.dict_set_dict(ctx, &key),
         };
-        while let Some(key) = access.next_key::<String>()? {
+        while let Some(key) = access.next_key_seed(CowStrVisitor)? {
             access.next_value_seed(ValueVisitor {
                 fns: self.fns,
                 aggregate: DeserializationTarget::Dict { ctx: inner_ctx.as_mut(), key },
@@ -170,7 +206,7 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c> {
     }
 }
 
-impl<'de, 'c> DeserializeSeed<'de> for ValueVisitor<'c> {
+impl<'de, 'c> DeserializeSeed<'de> for ValueVisitor<'c, 'de> {
     // We call out to C++ to construct the deserialized type, so no output from
     // here.
     type Value = ();
