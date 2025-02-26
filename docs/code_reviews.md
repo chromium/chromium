@@ -51,6 +51,11 @@ these are advisory and not policy.
 *   Don't generally discourage people from sending you code reviews. This
     includes using a blanket "slow" in your status field.
 
+#### Expectations for all authors
+
+*   If a reviewer does not respond within 2 works days, add another
+    reviewer onto the CL. Do not remove the initial reviewer.
+
 ## OWNERS files
 
 In various directories there are files named `OWNERS` that list the email
