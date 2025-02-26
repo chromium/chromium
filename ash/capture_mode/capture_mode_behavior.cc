@@ -561,14 +561,7 @@ bool CaptureModeBehavior::ShouldReShowUisAtPerformingCapture(
 
 bool CaptureModeBehavior::ShouldShowDefaultActionButtonsInActionContainer()
     const {
-  // TODO: crbug.com/397296160 - Remove this redundant check, as it is always
-  // true when this function is called.
-  if (!CanShowSunfishOrScannerUi()) {
-    return false;
-  }
-  auto* controller = CaptureModeController::Get();
-  return controller->type() == CaptureModeType::kImage &&
-         controller->source() == CaptureModeSource::kRegion;
+  return true;
 }
 
 bool CaptureModeBehavior::CanShowSmartActionsButton() const {
