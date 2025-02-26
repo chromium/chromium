@@ -36,9 +36,11 @@
 
 namespace {
 
+// TODO(crbug.com/355925253): Consider removing one constant when a working
+// combination is found.
 base::TimeDelta kTimeElapsedSincePageLoadForDataCollection = base::Seconds(30);
 base::TimeDelta kTimeElapsedSinceTreeChangedForDataCollection =
-    base::Seconds(10);
+    base::Seconds(30);
 
 bool GetIsGoogleDocs(const GURL& url) {
   // A Google Docs URL is in the form of "https://docs.google.com/document*" or
@@ -568,6 +570,14 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
   } else {
     UnserializeUpdates(updates, tree_id);
   }
+
+  if (features::IsDataCollectionModeForScreen2xEnabled() && updates.size()) {
+    waiting_for_tree_change_timer_trigger_ = true;
+    timer_since_tree_changed_for_data_collection_.Start(
+        FROM_HERE, kTimeElapsedSinceTreeChangedForDataCollection,
+        base::BindRepeating(&ReadAnythingAppModel::OnTreeChangeTimerTriggered,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
@@ -775,6 +785,9 @@ void ReadAnythingAppModel::SetActiveTreeId(const ui::AXTreeID& active_tree_id) {
     // If tree does not change until the page load timer triggers, assume that
     // the page is not changing. `waiting_for_tree_change_timer_trigger_` is set
     // again when tree changes.
+    if (timer_since_tree_changed_for_data_collection_.IsRunning()) {
+      timer_since_tree_changed_for_data_collection_.Stop();
+    }
     waiting_for_tree_change_timer_trigger_ = false;
   }
 }
