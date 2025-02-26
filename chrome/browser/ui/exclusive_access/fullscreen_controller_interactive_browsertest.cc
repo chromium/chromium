@@ -1074,7 +1074,14 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, ImmediatelyAfterPopupExit) {
   EXPECT_TRUE(RequestFullscreen(/*gesture=*/true));
 }
 
-IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, EventuallyAfterPopupExit) {
+// TODO(crbug.com/399354373): Gardening
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_EventuallyAfterPopupExit DISABLED_EventuallyAfterPopupExit
+#else
+#define MAYBE_EventuallyAfterPopupExit EventuallyAfterPopupExit
+#endif
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest,
+                       MAYBE_EventuallyAfterPopupExit) {
   auto [success, popup] = OpenPopupAndRequestFullscreenOnLoad();
   EXPECT_TRUE(success);
   ASSERT_TRUE(popup);
