@@ -2160,7 +2160,16 @@ TEST_F(HostContentSettingsMapTest, MAYBE_MixedScopeSettings) {
 // We should act like no preference is specified if the value is
 // SessionModel::None; otherwise, only the preferences from the specified
 // scope should be returned (if any).
-TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithSessionModel) {
+// TODO(crbug.com/399254058): flaky on Android
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_GetSettingsForOneTypeWithSessionModel \
+  DISABLED_GetSettingsForOneTypeWithSessionModel
+#else
+#define MAYBE_GetSettingsForOneTypeWithSessionModel \
+  GetSettingsForOneTypeWithSessionModel
+#endif
+TEST_F(HostContentSettingsMapTest,
+       MAYBE_GetSettingsForOneTypeWithSessionModel) {
   TestingProfile profile;
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
