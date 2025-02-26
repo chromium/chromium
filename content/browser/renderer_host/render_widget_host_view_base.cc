@@ -792,6 +792,11 @@ RenderWidgetHostViewBase::GetTouchSelectionControllerInputObserver() {
   return nullptr;
 }
 
+RenderWidgetHost::InputEventObserver*
+RenderWidgetHostViewBase::GetInputTransferHandlerObserver() {
+  return nullptr;
+}
+
 void RenderWidgetHostViewBase::SynchronizeVisualProperties() {
   if (host())
     host()->SynchronizeVisualProperties();

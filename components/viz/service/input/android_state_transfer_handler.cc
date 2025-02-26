@@ -38,7 +38,9 @@ AndroidStateTransferHandler::TransferState::TransferState(
   transfer_state = std::move(other.transfer_state);
 }
 
-AndroidStateTransferHandler::AndroidStateTransferHandler() = default;
+AndroidStateTransferHandler::AndroidStateTransferHandler(
+    AndroidStateTransferHandlerClient& client)
+    : client_(client) {}
 
 AndroidStateTransferHandler::~AndroidStateTransferHandler() = default;
 
@@ -138,10 +140,6 @@ bool AndroidStateTransferHandler::CanStartProcessingVizEvents(
     const base::android::ScopedInputEvent& event) {
   CHECK(!state_for_curr_sequence_.has_value());
 
-  if (pending_transferred_states_.empty()) {
-    return false;
-  }
-
   const jlong j_event_down_time =
       base::TimeTicks::FromJavaNanoTime(
           AMotionEvent_getDownTime(event.a_input_event()))
@@ -149,15 +147,30 @@ bool AndroidStateTransferHandler::CanStartProcessingVizEvents(
   base::TimeTicks event_down_time =
       base::TimeTicks::FromUptimeMillis(j_event_down_time);
 
+  // Drop states with smaller down time i.e. the states corresponding to pointer
+  // down events.
+  while (!pending_transferred_states_.empty() &&
+         (pending_transferred_states_.front().transfer_state->down_time_ms <
+          event_down_time)) {
+    pending_transferred_states_.pop();
+  }
+
+  if (pending_transferred_states_.empty()) {
+    return false;
+  }
+
   auto& state = pending_transferred_states_.front();
   // Touch event corresponding to previous state transfer should be
   // processed before next sequence starts.
   if (event_down_time == state.transfer_state->down_time_ms) {
+    if (state.transfer_state->browser_would_have_handled) {
+      client_->TransferInputBackToBrowser();
+      ignore_remaining_touch_sequence_ = true;
+    }
     state_for_curr_sequence_.emplace(std::move(state));
     pending_transferred_states_.pop();
     return true;
   }
-  CHECK_LT(event_down_time, state.transfer_state->down_time_ms);
   return false;
 }
 
@@ -206,6 +219,12 @@ void AndroidStateTransferHandler::HandleTouchEvent(
     } else {
       ignore_remaining_touch_sequence_ = true;
     }
+    return;
+  }
+
+  // Ignore any already queued events for the touch sequence. This can happen if
+  // we are returning the sequence back to browser.
+  if (ignore_remaining_touch_sequence_) {
     return;
   }
 

@@ -170,11 +170,7 @@ public class InputTransferHandler
         mVizToken = token;
     }
 
-    public @TransferInputToVizResult int maybeTransferInputToViz(float rawX) {
-        Integer noTransferReason = canTransferInputToViz(rawX);
-        if (noTransferReason != null) {
-            return noTransferReason;
-        }
+    public @TransferInputToVizResult int transferInputToViz() {
         assert mVizToken != null;
         WindowManager wm =
                 ContextUtils.getApplicationContext().getSystemService(WindowManager.class);
@@ -183,6 +179,14 @@ public class InputTransferHandler
         } else {
             return TransferInputToVizResult.SYSTEM_SERVER_DID_NOT_TRANSFER;
         }
+    }
+
+    public @TransferInputToVizResult int maybeTransferInputToViz(float rawX) {
+        Integer noTransferReason = canTransferInputToViz(rawX);
+        if (noTransferReason != null) {
+            return noTransferReason;
+        }
+        return transferInputToViz();
     }
 
     @CalledByNative
@@ -195,5 +199,16 @@ public class InputTransferHandler
         }
 
         return handler.maybeTransferInputToViz(rawX);
+    }
+
+    @CalledByNative
+    private static @TransferInputToVizResult int transferInputToViz(int surfaceId) {
+        InputTransferHandler handler = SurfaceInputTransferHandlerMap.getMap().get(surfaceId);
+
+        if (handler == null) {
+            return TransferInputToVizResult.INPUT_TRANSFER_HANDLER_NOT_FOUND_IN_MAP;
+        }
+
+        return handler.transferInputToViz();
     }
 }

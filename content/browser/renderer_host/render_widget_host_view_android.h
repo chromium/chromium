@@ -233,6 +233,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   GetTouchSelectionControllerClientManager() override;
   TouchSelectionControllerInputObserver*
   GetTouchSelectionControllerInputObserver() override;
+  RenderWidgetHost::InputEventObserver* GetInputTransferHandlerObserver()
+      override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   void OnRendererWidgetCreated() override;
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
@@ -412,7 +414,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   // InputTransferHandlerAndroidClient implementation.
   gpu::SurfaceHandle GetRootSurfaceHandle() override;
-  void SendStateOnTouchTransfer(const ui::MotionEvent& event) override;
+  void SendStateOnTouchTransfer(const ui::MotionEvent& event,
+                                bool browser_would_have_handled) override;
 
   // Methods called from Java
   bool IsReady(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
