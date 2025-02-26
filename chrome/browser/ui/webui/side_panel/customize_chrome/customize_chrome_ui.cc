@@ -16,7 +16,6 @@
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler.h"
@@ -468,10 +467,6 @@ void CustomizeChromeUI::CreateCustomizeToolbarHandler(
     return;
   }
 
-  const raw_ptr<Browser> browser =
-      chrome::FindBrowserWithWindow(web_contents_->GetTopLevelNativeWindow());
-  CHECK(browser);
-
   customize_toolbar_handler_ = std::make_unique<CustomizeToolbarHandler>(
-      std::move(handler), std::move(client), browser);
+      std::move(handler), std::move(client), web_contents_);
 }

@@ -22,7 +22,7 @@ class CustomizeToolbarHandler
           side_panel::customize_chrome::mojom::CustomizeToolbarHandler> handler,
       mojo::PendingRemote<
           side_panel::customize_chrome::mojom::CustomizeToolbarClient> client,
-      raw_ptr<Browser> browser);
+      content::WebContents* web_contents);
 
   CustomizeToolbarHandler(const CustomizeToolbarHandler&) = delete;
   CustomizeToolbarHandler& operator=(const CustomizeToolbarHandler&) = delete;
@@ -58,7 +58,7 @@ class CustomizeToolbarHandler
   mojo::Receiver<side_panel::customize_chrome::mojom::CustomizeToolbarHandler>
       receiver_;
 
-  raw_ptr<Browser> browser_;
+  raw_ptr<content::WebContents> web_contents_;
   raw_ptr<PinnedToolbarActionsModel> model_;
 
   base::ScopedObservation<PinnedToolbarActionsModel,
