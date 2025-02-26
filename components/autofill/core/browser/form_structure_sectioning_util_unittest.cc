@@ -45,7 +45,8 @@ std::vector<std::unique_ptr<AutofillField>> CreateFields(
         result.emplace_back(std::make_unique<AutofillField>(FormFieldData()));
     f->set_renderer_id(test::MakeFieldRendererId());
     f->set_form_control_type(t.form_control_type);
-    f->SetTypeTo(AutofillType(t.field_type));
+    f->SetTypeTo(AutofillType(t.field_type),
+                 AutofillPredictionSource::kHeuristics);
     DCHECK_EQ(f->Type().GetStorableType(), t.field_type);
     if (!t.autocomplete_section.empty() ||
         t.autocomplete_mode != HtmlFieldMode::kNone) {
@@ -61,8 +62,9 @@ std::vector<Section> GetSections(
     const std::vector<std::unique_ptr<AutofillField>>& fields) {
   std::vector<Section> sections;
   sections.reserve(fields.size());
-  for (const auto& field : fields)
+  for (const auto& field : fields) {
     sections.push_back(field->section());
+  }
   return sections;
 }
 

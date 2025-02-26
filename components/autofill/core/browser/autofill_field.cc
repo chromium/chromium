@@ -283,7 +283,7 @@ void AutofillField::set_heuristic_type(HeuristicSource s, FieldType type) {
   }
   local_type_predictions_[static_cast<size_t>(s)] = type;
   if (s == GetActiveHeuristicSource()) {
-    overall_type_ = AutofillType(NO_SERVER_DATA);
+    overall_type_ = std::nullopt;
   }
 }
 
@@ -302,7 +302,7 @@ std::optional<FieldType> AutofillField::GetAutofillAiServerTypePredictions()
 
 void AutofillField::set_server_predictions(
     std::vector<FieldPrediction> predictions) {
-  overall_type_ = AutofillType(NO_SERVER_DATA);
+  overall_type_ = std::nullopt;
   // Ensures that AutofillField::server_type() is a valid enum value.
   for (auto& prediction : predictions) {
     prediction.set_type(ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
@@ -356,15 +356,43 @@ void AutofillField::set_server_predictions(
 void AutofillField::SetHtmlType(HtmlFieldType type, HtmlFieldMode mode) {
   html_type_ = type;
   html_mode_ = mode;
-  overall_type_ = AutofillType(NO_SERVER_DATA);
+  overall_type_ = std::nullopt;
 }
 
-void AutofillField::SetTypeTo(const AutofillType& type) {
+void AutofillField::SetTypeTo(const AutofillType& type,
+                              std::optional<AutofillPredictionSource> source) {
   DCHECK(type.GetStorableType() != NO_SERVER_DATA);
-  overall_type_ = type;
+  overall_type_ = {type, source};
 }
 
 AutofillType AutofillField::ComputedType() const {
+  return GetComputedPredictionResult().type;
+}
+
+AutofillType AutofillField::Type() const {
+  return GetOverallPredictionResult().type;
+}
+
+std::optional<AutofillPredictionSource> AutofillField::PredictionSource()
+    const {
+  return GetOverallPredictionResult().source;
+}
+
+AutofillField::PredictionResult AutofillField::GetOverallPredictionResult()
+    const {
+  // Server Overrides are granted precedence unconditionally.
+  if (server_type_prediction_is_override() && server_type() != NO_SERVER_DATA) {
+    return {AutofillType(server_type()),
+            AutofillPredictionSource::kServerOverride};
+  }
+  if (!overall_type_) {
+    overall_type_ = GetComputedPredictionResult();
+  }
+  return *overall_type_;
+}
+
+AutofillField::PredictionResult AutofillField::GetComputedPredictionResult()
+    const {
   // Some of these (in particular, heuristic_type()) are slow to compute, so
   // cache them in local variables.
   const HtmlFieldType html_type_local = html_type();
@@ -375,7 +403,8 @@ AutofillType AutofillField::ComputedType() const {
   // we always use the server prediction as html types are not very reliable.
   if (GroupTypeOfHtmlFieldType(html_type_local) == FieldTypeGroup::kPhone &&
       GroupTypeOfFieldType(server_type_local) == FieldTypeGroup::kPhone) {
-    return AutofillType(server_type_local);
+    return {AutofillType(server_type_local),
+            AutofillPredictionSource::kServerCrowdsourcing};
   }
 
   // TODO(crbug.com/40266396) Delete this if-statement when
@@ -390,11 +419,13 @@ AutofillType AutofillField::ComputedType() const {
           features::kAutofillEnableExpirationDateImprovements)) {
     if (server_type_local == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR ||
         server_type_local == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) {
-      return AutofillType(server_type_local);
+      return {AutofillType(server_type_local),
+              AutofillPredictionSource::kServerCrowdsourcing};
     }
     if (heuristic_type_local == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR ||
         heuristic_type_local == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) {
-      return AutofillType(heuristic_type_local);
+      return {AutofillType(heuristic_type_local),
+              AutofillPredictionSource::kHeuristics};
     }
   }
 
@@ -402,12 +433,14 @@ AutofillType AutofillField::ComputedType() const {
   // of field detection. Except for specific cases in PreferHeuristicOverHtml
   // and also those detailed in `BelievedHtmlTypes()`.
   if (PreferHeuristicOverHtml(heuristic_type_local, html_type_local)) {
-    return AutofillType(heuristic_type_local);
+    return {AutofillType(heuristic_type_local),
+            AutofillPredictionSource::kHeuristics};
   }
 
   if (BelievedHtmlTypes(heuristic_type_local, server_type_local)
           .contains(html_type_local)) {
-    return AutofillType(html_type_local);
+    return {AutofillType(html_type_local),
+            AutofillPredictionSource::kAutocomplete};
   }
 
   if (server_type_local != NO_SERVER_DATA &&
@@ -472,22 +505,15 @@ AutofillType AutofillField::ComputedType() const {
               features::kAutofillGivePrecedenceToEmailOverUsername));
 
     if (believe_server) {
-      return AutofillType(server_type_local);
+      return {AutofillType(server_type_local),
+              AutofillPredictionSource::kServerCrowdsourcing};
     }
   }
 
-  return AutofillType(heuristic_type_local);
-}
-
-AutofillType AutofillField::Type() const {
-  // Server Overrides are granted precedence unconditionally.
-  if (server_type_prediction_is_override() && server_type() != NO_SERVER_DATA) {
-    return AutofillType(server_type());
-  }
-  if (overall_type_.GetStorableType() == NO_SERVER_DATA) {
-    overall_type_ = ComputedType();
-  }
-  return overall_type_;
+  return {AutofillType(heuristic_type_local),
+          heuristic_type_local != UNKNOWN_TYPE
+              ? std::optional(AutofillPredictionSource::kHeuristics)
+              : std::nullopt};
 }
 
 const std::u16string& AutofillField::value_for_import() const {
@@ -590,7 +616,8 @@ void AutofillField::AppendLogEventIfNotRepeated(
 
 bool AutofillField::WasAutofilledWithFallback() const {
   return autofilled_type_ &&
-         autofilled_type_ != overall_type_.GetStorableType();
+         (!overall_type_ ||
+          autofilled_type_ != overall_type_->type.GetStorableType());
 }
 
 }  // namespace autofill

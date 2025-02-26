@@ -562,7 +562,8 @@ TEST_F(IbanManagerTest, NotIbanFieldFocused_NoSuggestionsShown) {
 
   autofill_field_->set_value(std::u16string(test::kIbanValue16));
   // Set the field type to any type than "IBAN_VALUE".
-  autofill_field_->SetTypeTo(AutofillType(CREDIT_CARD_VERIFICATION_CODE));
+  autofill_field_->SetTypeTo(AutofillType(CREDIT_CARD_VERIFICATION_CODE),
+                             AutofillPredictionSource::kHeuristics);
 
   // Setting up mock to verify that suggestions returning is not triggered if
   // we are not focused on an IBAN field.

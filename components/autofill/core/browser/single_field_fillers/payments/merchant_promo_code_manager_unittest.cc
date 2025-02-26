@@ -193,7 +193,8 @@ TEST_F(MerchantPromoCodeManagerTest,
   MockSuggestionsReturnedCallback mock_callback;
   EXPECT_CALL(mock_callback, Run).Times(0);
 
-  field().SetTypeTo(AutofillType(UNKNOWN_TYPE));
+  field().SetTypeTo(AutofillType(UNKNOWN_TYPE),
+                    AutofillPredictionSource::kHeuristics);
   // Simulate request for suggestions.
   EXPECT_FALSE(promo_manager().OnGetSingleFieldSuggestions(
       form(), field(), field(), client(), mock_callback.GetNewRef()));

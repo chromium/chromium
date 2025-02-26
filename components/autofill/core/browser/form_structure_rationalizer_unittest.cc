@@ -11,6 +11,7 @@
 #include "base/base64.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -1030,7 +1031,8 @@ class RationalizePhoneNumbersForFillingTest : public testing::Test {
     std::vector<std::unique_ptr<AutofillField>> fields;
     for (const auto& f : field_templates) {
       fields.push_back(std::make_unique<AutofillField>());
-      fields.back()->SetTypeTo(AutofillType(f.type));
+      fields.back()->SetTypeTo(AutofillType(f.type),
+                               AutofillPredictionSource::kHeuristics);
     }
 
     std::vector<bool> expected_only_fill_when_focused;

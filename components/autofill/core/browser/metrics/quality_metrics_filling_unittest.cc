@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/metrics/quality_metrics_filling.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -289,7 +290,8 @@ TEST_F(QualityMetricsFillingTest,
   std::unique_ptr<FormStructure> form_structure =
       GetFormStructure({.fields = {{.is_autofilled = true}}});
   form_structure->field(0)->set_possible_types({NAME_FIRST});
-  form_structure->field(0)->SetTypeTo(AutofillType(NAME_FIRST));
+  form_structure->field(0)->SetTypeTo(AutofillType(NAME_FIRST),
+                                      AutofillPredictionSource::kHeuristics);
 
   LogFillingQualityMetrics(*form_structure);
 
@@ -419,7 +421,8 @@ TEST_F(QualityMetricsFillingTest,
   std::unique_ptr<FormStructure> form_structure =
       GetFormStructure({.fields = {{.autocomplete_attribute = "garbage"}}});
   form_structure->field(0)->set_possible_types({NAME_FIRST});
-  form_structure->field(0)->SetTypeTo(AutofillType(NAME_FIRST));
+  form_structure->field(0)->SetTypeTo(AutofillType(NAME_FIRST),
+                                      AutofillPredictionSource::kHeuristics);
 
   LogFillingQualityMetrics(*form_structure);
 

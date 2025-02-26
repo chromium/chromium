@@ -320,12 +320,14 @@ TEST_F(FieldFillingAddressUtilTest, FillSelectWithCountryName) {
             GetValueForProfile(profile, kAppLocale, field.Type(), field,
                                /*address_normalizer=*/nullptr));
 
-  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryCode));
+  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryCode),
+                  AutofillPredictionSource::kHeuristics);
   EXPECT_EQ(u"Canada",
             GetValueForProfile(profile, kAppLocale, field.Type(), field,
                                /*address_normalizer=*/nullptr));
 
-  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryName));
+  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryName),
+                  AutofillPredictionSource::kHeuristics);
   EXPECT_EQ(u"Canada",
             GetValueForProfile(profile, kAppLocale, field.Type(), field,
                                /*address_normalizer=*/nullptr));
@@ -340,11 +342,13 @@ TEST_F(FieldFillingAddressUtilTest, FillSelectWithCountryCode) {
   EXPECT_EQ(u"CA", GetValueForProfile(profile, kAppLocale, field.Type(), field,
                                       /*address_normalizer=*/nullptr));
 
-  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryCode));
+  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryCode),
+                  AutofillPredictionSource::kHeuristics);
   EXPECT_EQ(u"CA", GetValueForProfile(profile, kAppLocale, field.Type(), field,
                                       /*address_normalizer=*/nullptr));
 
-  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryName));
+  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryName),
+                  AutofillPredictionSource::kHeuristics);
   EXPECT_EQ(u"CA", GetValueForProfile(profile, kAppLocale, field.Type(), field,
                                       /*address_normalizer=*/nullptr));
 }
@@ -362,12 +366,14 @@ TEST_F(FieldFillingAddressUtilTest, FillInputWithCountry) {
             GetValueForProfile(profile, kAppLocale, field.Type(), field,
                                /*address_normalizer=*/nullptr));
 
-  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryName));
+  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryName),
+                  AutofillPredictionSource::kHeuristics);
   EXPECT_EQ(u"Canada",
             GetValueForProfile(profile, kAppLocale, field.Type(), field,
                                /*address_normalizer=*/nullptr));
 
-  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryCode));
+  field.SetTypeTo(AutofillType(HtmlFieldType::kCountryCode),
+                  AutofillPredictionSource::kHeuristics);
   EXPECT_EQ(u"CA", GetValueForProfile(profile, kAppLocale, field.Type(), field,
                                       /*address_normalizer=*/nullptr));
 }

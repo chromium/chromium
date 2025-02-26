@@ -1757,10 +1757,13 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_NoSynthesizedTypes) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(type_value_pairs);
   form_structure->field(1)->SetTypeTo(
-      AutofillType(ADDRESS_HOME_STREET_LOCATION));
-  form_structure->field(2)->SetTypeTo(AutofillType(ADDRESS_HOME_LANDMARK));
+      AutofillType(ADDRESS_HOME_STREET_LOCATION),
+      AutofillPredictionSource::kHeuristics);
+  form_structure->field(2)->SetTypeTo(AutofillType(ADDRESS_HOME_LANDMARK),
+                                      AutofillPredictionSource::kHeuristics);
   form_structure->field(3)->SetTypeTo(
-      AutofillType(ADDRESS_HOME_DEPENDENT_LOCALITY));
+      AutofillType(ADDRESS_HOME_DEPENDENT_LOCALITY),
+      AutofillPredictionSource::kHeuristics);
   // Verify that the profile is imported.
   AutofillProfile in_profile(AddressCountryCode("IN"));
   in_profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"INFirst INSecond",
@@ -1810,9 +1813,11 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_ContainsSynthesizedTypes) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(type_value_pairs);
   form_structure->field(1)->SetTypeTo(
-      AutofillType(ADDRESS_HOME_STREET_LOCATION));
+      AutofillType(ADDRESS_HOME_STREET_LOCATION),
+      AutofillPredictionSource::kHeuristics);
   form_structure->field(2)->SetTypeTo(
-      AutofillType(ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK));
+      AutofillType(ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK),
+      AutofillPredictionSource::kHeuristics);
   // Verify that no profile is imported.
   ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
 }
@@ -4000,7 +4005,8 @@ TEST_F(FormDataImporterTest,
 TEST_F(FormDataImporterTest,
        GetObservedFieldValues_SkipFieldsFilledWithFallback) {
   AutofillField field;
-  field.SetTypeTo(AutofillType(NAME_FIRST));
+  field.SetTypeTo(AutofillType(NAME_FIRST),
+                  AutofillPredictionSource::kHeuristics);
   field.set_value(u"First");
 
   base::flat_map<FieldType, std::u16string> observed_field_types =
@@ -4025,7 +4031,8 @@ TEST_F(FormDataImporterTest,
        GetObservedFieldValues_ImportFromAutocompleteUnrecognized) {
   AutofillField field;
   field.SetHtmlType(HtmlFieldType::kUnrecognized, HtmlFieldMode::kNone);
-  field.SetTypeTo(AutofillType(NAME_FIRST));
+  field.SetTypeTo(AutofillType(NAME_FIRST),
+                  AutofillPredictionSource::kHeuristics);
   field.set_value(u"First");
   base::flat_map<FieldType, std::u16string> observed_field_types =
       test_api(form_data_importer())
@@ -4157,10 +4164,12 @@ class FormDataImporterTest_RelaxAddressImport : public FormDataImporterTest {
 TEST_F(FormDataImporterTest_RelaxAddressImport,
        DuplicateFieldsWithIdenticalValuesAreValid) {
   AutofillField field;
-  field.SetTypeTo(AutofillType(NAME_FIRST));
+  field.SetTypeTo(AutofillType(NAME_FIRST),
+                  AutofillPredictionSource::kHeuristics);
   field.set_value(u"First");
   AutofillField field2;
-  field2.SetTypeTo(AutofillType(NAME_FIRST));
+  field2.SetTypeTo(AutofillType(NAME_FIRST),
+                   AutofillPredictionSource::kHeuristics);
   field2.set_value(u"First");
   EXPECT_FALSE(test_api(form_data_importer())
                    .HasInvalidFieldTypes(
@@ -4172,10 +4181,12 @@ TEST_F(FormDataImporterTest_RelaxAddressImport,
 TEST_F(FormDataImporterTest_RelaxAddressImport,
        DuplicateFieldsWithDifferentValuesAreInvalid) {
   AutofillField field;
-  field.SetTypeTo(AutofillType(NAME_FIRST));
+  field.SetTypeTo(AutofillType(NAME_FIRST),
+                  AutofillPredictionSource::kHeuristics);
   field.set_value(u"First");
   AutofillField field2;
-  field2.SetTypeTo(AutofillType(NAME_FIRST));
+  field2.SetTypeTo(AutofillType(NAME_FIRST),
+                   AutofillPredictionSource::kHeuristics);
   field2.set_value(u"Other value");
   EXPECT_TRUE(test_api(form_data_importer())
                   .HasInvalidFieldTypes(
@@ -4189,12 +4200,14 @@ TEST_F(FormDataImporterTest_RelaxAddressImport,
 TEST_F(FormDataImporterTest_RelaxAddressImport,
        InputFollowedBySelectWithIdenticalValuesAreValid) {
   AutofillField field;
-  field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY));
+  field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
+                  AutofillPredictionSource::kHeuristics);
   field.set_value(u"US");
   AutofillField field2(
       test::CreateTestSelectField("Country", "country", "US", "country",
                                   {"DE", "US"}, {"Germany", "United States"}));
-  field2.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY));
+  field2.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
+                   AutofillPredictionSource::kHeuristics);
   const std::array<const autofill::AutofillField*, 2> section_fields =
       std::to_array<const AutofillField*>({&field, &field2});
 
@@ -4216,9 +4229,11 @@ TEST_F(FormDataImporterTest_RelaxAddressImport,
   AutofillField field(
       test::CreateTestSelectField("Country", "country", "US", "country",
                                   {"DE", "US"}, {"Germany", "United States"}));
-  field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY));
+  field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
+                  AutofillPredictionSource::kHeuristics);
   AutofillField field2;
-  field2.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY));
+  field2.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
+                   AutofillPredictionSource::kHeuristics);
   field2.set_value(u"US");
   const std::array<const autofill::AutofillField*, 2> section_fields =
       std::to_array<const AutofillField*>({&field, &field2});
