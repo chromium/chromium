@@ -203,6 +203,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UserEducation.MessageNotShown.TimeInQueue" units="ms"
+    expires_after="2025-06-29">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records the amount of time an IPH promo spends in queue before not being
+    shown. Is not recorded for promos that are immediately rejected due to
+    failed requirements, promos which are explicitly canceled, or promos which
+    are actually shown (see UserEducation.MessageShown.TimeInQueue).
+  </summary>
+</histogram>
+
 <histogram name="UserEducation.MessageShown.RotatingPromoIndex" units="Index"
     expires_after="2025-04-30">
   <expired_intentionally>
@@ -232,6 +244,17 @@ chromium-metrics-reviews@google.com.
     dictates special rules for when it can be shown. It can be normal, per-app
     (shown once each in multiple applications), or a legal notice (must be shown
     until explicitly acknowledged by the user).
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.MessageShown.TimeInQueue" units="ms"
+    expires_after="2025-06-29">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records the amount of time an IPH promo spends in queue before being shown.
+    Is not recorded if the promo is not shown (see
+    UserEducation.MessageNotShown.TimeInQueue).
   </summary>
 </histogram>
 

@@ -164,6 +164,10 @@ class FeaturePromoQueue {
   // `queued_promos_.end()` if not found.
   Queue::iterator FindQueuedPromo(const base::Feature& feature);
 
+  // Records time a promo spent in queue and whether it succeeded.
+  void RecordQueueTime(const internal::QueuedFeaturePromo& promo,
+                       bool succeeded);
+
   Queue queued_promos_;
 
   raw_ref<const PreconditionListProvider> required_preconditions_provider_;
