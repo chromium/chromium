@@ -63,12 +63,6 @@ AXVirtualView::~AXVirtualView() {
       << "Either |parent_view_| or |virtual_parent_view_| could be set but "
          "not both.";
 
-  if (ax_platform_node_) {
-    // Clear ax_platform_node_ and return another raw_ptr instance that is
-    // allowed to dangle.
-    ax_platform_node_.ExtractAsDangling()->Destroy();
-  }
-
 #if defined(USE_AURA)
   if (ax_aura_obj_cache_) {
     ax_aura_obj_cache_->Remove(this);

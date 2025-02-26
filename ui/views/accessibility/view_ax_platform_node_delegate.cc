@@ -160,9 +160,6 @@ ViewAXPlatformNodeDelegate::~ViewAXPlatformNodeDelegate() {
       ax_platform_node_->GetNativeViewAccessible()) {
     ui::AXPlatformNode::SetPopupFocusOverride(nullptr);
   }
-  // Call ExtractAsDangling() first to clear the underlying pointer and return
-  // another raw_ptr instance that is allowed to dangle.
-  ax_platform_node_.ExtractAsDangling()->Destroy();
 }
 
 void ViewAXPlatformNodeDelegate::EnsureAtomicViewAXTreeManager() {
@@ -197,7 +194,7 @@ void ViewAXPlatformNodeDelegate::EndPopupFocusOverride() {
 
 void ViewAXPlatformNodeDelegate::FireFocusAfterMenuClose() {
   ui::AXPlatformNodeBase* focused_node =
-      static_cast<ui::AXPlatformNodeBase*>(ax_platform_node_);
+      static_cast<ui::AXPlatformNodeBase*>(ax_platform_node_.get());
   // Continue to drill down focused nodes to get to the "deepest" node that is
   // focused. This is not necessarily a view. It could be web content.
   while (focused_node) {

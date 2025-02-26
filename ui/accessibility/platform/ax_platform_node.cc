@@ -52,13 +52,6 @@ void AXPlatformNode::SetAXModeChangeAllowed(bool allow) {
   allow_ax_mode_changes_ = allow;
 }
 
-AXPlatformNode::AXPlatformNode() = default;
-
-AXPlatformNode::~AXPlatformNode() = default;
-
-void AXPlatformNode::Destroy() {
-}
-
 AXPlatformNodeId AXPlatformNode::GetUniqueId() const {
   // Must not be called before `Init()`.
   return CHECK_DEREF(GetDelegate()).GetUniqueId();

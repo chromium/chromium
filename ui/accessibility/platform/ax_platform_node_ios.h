@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeIOS
   AXPlatformNodeIOS();
 
  private:
-  friend AXPlatformNode* AXPlatformNode::Create(
+  friend AXPlatformNode::Pointer AXPlatformNode::Create(
       AXPlatformNodeDelegate* delegate);
 
   // Creates a new wrapper node.

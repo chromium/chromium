@@ -5,8 +5,6 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_FRAGMENT_ROOT_WIN_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_FRAGMENT_ROOT_WIN_H_
 
-#include <wrl/client.h>
-
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
@@ -15,7 +13,6 @@
 namespace ui {
 
 class AXFragmentRootDelegateWin;
-class AXFragmentRootPlatformNodeWin;
 
 // UI Automation on Windows requires the root of a multi-element provider to
 // implement IRawElementProviderFragmentRoot. Our internal accessibility trees
@@ -84,8 +81,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFragmentRootWin
 
   gfx::AcceleratedWidget widget_;
   const raw_ptr<AXFragmentRootDelegateWin> delegate_;
-  Microsoft::WRL::ComPtr<AXFragmentRootPlatformNodeWin> platform_node_;
   const AXUniqueId unique_id_{AXUniqueId::Create()};
+  AXPlatformNode::Pointer platform_node_;
 };
 
 }  // namespace ui

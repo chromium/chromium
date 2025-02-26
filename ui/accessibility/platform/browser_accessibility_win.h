@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/win/atl.h"
 #include "base/component_export.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
@@ -60,7 +59,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityWin : public BrowserAcce
   friend class BrowserAccessibility;  // Needs access to our constructor.
 
  private:
-  raw_ptr<CComObject<BrowserAccessibilityComWin>> browser_accessibility_com_;
+  AXPlatformNode::Pointer browser_accessibility_com_;
 };
 
 COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityWin* ToBrowserAccessibilityWin(

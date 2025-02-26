@@ -26,8 +26,7 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
   COM_INTERFACE_ENTRY_CHAIN(AXPlatformNodeWin)
   END_COM_MAP()
 
-  static AXFragmentRootPlatformNodeWin* Create(
-      AXPlatformNodeDelegate* delegate) {
+  static Pointer Create(AXPlatformNodeDelegate* delegate) {
     // Make sure ATL is initialized in this module.
     win::CreateATLModuleIfNeeded();
 
@@ -37,7 +36,7 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
     CHECK(SUCCEEDED(hr));
     instance->Init(delegate);
     instance->AddRef();
-    return instance;
+    return Pointer(instance);
   }
 
   //
@@ -262,15 +261,14 @@ class AXFragmentRootMapWin {
 
 AXFragmentRootWin::AXFragmentRootWin(gfx::AcceleratedWidget widget,
                                      AXFragmentRootDelegateWin* delegate)
-    : widget_(widget), delegate_(delegate) {
-  platform_node_ = AXFragmentRootPlatformNodeWin::Create(this);
+    : widget_(widget),
+      delegate_(delegate),
+      platform_node_(AXFragmentRootPlatformNodeWin::Create(this)) {
   AXFragmentRootMapWin::GetInstance().AddFragmentRoot(widget, this);
 }
 
 AXFragmentRootWin::~AXFragmentRootWin() {
   AXFragmentRootMapWin::GetInstance().RemoveFragmentRoot(widget_);
-  platform_node_->Destroy();
-  platform_node_ = nullptr;
 }
 
 AXFragmentRootWin* AXFragmentRootWin::GetForAcceleratedWidget(
@@ -292,7 +290,7 @@ gfx::NativeViewAccessible AXFragmentRootWin::GetNativeViewAccessible() {
        GetWinAccessibilityAPIUsageObserverList()) {
     observer.OnBasicUIAutomationUsed();
   }
-  return platform_node_.Get();
+  return static_cast<AXFragmentRootPlatformNodeWin*>(platform_node_.get());
 }
 
 bool AXFragmentRootWin::IsControlElement() {

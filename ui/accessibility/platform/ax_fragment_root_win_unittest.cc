@@ -4,8 +4,7 @@
 
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 
-#include <UIAutomationClient.h>
-#include <UIAutomationCoreApi.h>
+#include <wrl/client.h>
 
 #include "base/auto_reset.h"
 #include "base/win/scoped_safearray.h"
@@ -15,6 +14,9 @@
 #include "ui/accessibility/platform/ax_platform_node_win_unittest.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
+
+#include <UIAutomationClient.h>
+#include <UIAutomationCoreApi.h>
 
 using base::win::ScopedVariant;
 using Microsoft::WRL::ComPtr;

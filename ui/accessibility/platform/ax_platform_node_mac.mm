@@ -45,10 +45,11 @@ void NotifyMacEvent(AXPlatformNodeCocoa* target, ax::mojom::Event event_type) {
 namespace ui {
 
 // static
-AXPlatformNode* AXPlatformNode::Create(AXPlatformNodeDelegate* delegate) {
+AXPlatformNode::Pointer AXPlatformNode::Create(
+    AXPlatformNodeDelegate* delegate) {
   AXPlatformNode* node = new AXPlatformNodeMac();
   node->Init(delegate);
-  return node;
+  return Pointer(node);
 }
 
 // static

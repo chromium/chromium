@@ -8078,14 +8078,13 @@ TEST_F(AXPlatformNodeWinTest, DormantDestroyed) {
   ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
             std::tuple(0U, 0U, 0U, 0U));
 
-  AXPlatformNodeWin* node =
-      static_cast<AXPlatformNodeWin*>(AXPlatformNode::Create(&test_delegate));
+  AXPlatformNode::Pointer node = AXPlatformNode::Create(&test_delegate);
 
   // One instance and one dormant node.
   ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
             std::tuple(1U, 1U, 0U, 0U));
 
-  std::exchange(node, nullptr)->Destroy();
+  node.reset();
 
   // Zero instances and no ghost nodes.
   ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
@@ -8100,15 +8099,16 @@ TEST_F(AXPlatformNodeWinTest, DormantLiveDormantDestroyed) {
   ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
             std::tuple(0U, 0U, 0U, 0U));
 
-  AXPlatformNodeWin* node =
-      static_cast<AXPlatformNodeWin*>(AXPlatformNode::Create(&test_delegate));
+  AXPlatformNode::Pointer node = AXPlatformNode::Create(&test_delegate);
 
   // One instance and one dormant node.
   ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
             std::tuple(1U, 1U, 0U, 0U));
 
   Microsoft::WRL::ComPtr<IAccessible> a_ref;
-  ASSERT_HRESULT_SUCCEEDED(node->QueryInterface(IID_PPV_ARGS(&a_ref)));
+  ASSERT_HRESULT_SUCCEEDED(
+      static_cast<AXPlatformNodeWin&>(*node).QueryInterface(
+          IID_PPV_ARGS(&a_ref)));
 
   // One instance and one live node.
   ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
@@ -8120,7 +8120,7 @@ TEST_F(AXPlatformNodeWinTest, DormantLiveDormantDestroyed) {
   ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
             std::tuple(1U, 1U, 0U, 0U));
 
-  std::exchange(node, nullptr)->Destroy();
+  node.reset();
 
   // Zero instances and no ghost nodes.
   ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
@@ -8135,15 +8135,16 @@ TEST_F(AXPlatformNodeWinTest, DormantLiveGhostDestroyed) {
   ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
             std::tuple(0U, 0U, 0U, 0U));
 
-  AXPlatformNodeWin* node =
-      static_cast<AXPlatformNodeWin*>(AXPlatformNode::Create(&test_delegate));
+  AXPlatformNode::Pointer node = AXPlatformNode::Create(&test_delegate);
 
   // One instance and one dormant node.
   ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
             std::tuple(1U, 1U, 0U, 0U));
 
   Microsoft::WRL::ComPtr<IAccessible> a_ref;
-  ASSERT_HRESULT_SUCCEEDED(node->QueryInterface(IID_PPV_ARGS(&a_ref)));
+  ASSERT_HRESULT_SUCCEEDED(
+      static_cast<AXPlatformNodeWin&>(*node).QueryInterface(
+          IID_PPV_ARGS(&a_ref)));
 
   // One instance and one live node.
   ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
@@ -8156,7 +8157,7 @@ TEST_F(AXPlatformNodeWinTest, DormantLiveGhostDestroyed) {
   ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
             std::tuple(1U, 0U, 1U, 0U));
 
-  std::exchange(node, nullptr)->Destroy();
+  node.reset();
 
   // Zero instances and one ghost node.
   ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),

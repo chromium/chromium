@@ -156,7 +156,7 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   virtual void Init();
 
   const ui::AXNodeData& data() const { return data_; }
-  ui::AXPlatformNode* ax_platform_node() { return ax_platform_node_; }
+  ui::AXPlatformNode* ax_platform_node() { return ax_platform_node_.get(); }
 
   // Manager for the accessibility tree for this view. The tree will only have
   // one node, which contains the AXNodeData for this view. It's a temporary
@@ -199,9 +199,7 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   // Gets the real (non-virtual) TableView, otherwise nullptr.
   TableView* GetAncestorTableView() const;
 
-  // We own this, but it is reference-counted on some platforms so we can't use
-  // a unique_ptr. It is destroyed in the destructor.
-  raw_ptr<ui::AXPlatformNode> ax_platform_node_ = nullptr;
+  ui::AXPlatformNode::Pointer ax_platform_node_;
 
   mutable ui::AXNodeData data_;
 };

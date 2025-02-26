@@ -18,10 +18,8 @@ using FuchsiaRole = fuchsia_accessibility_semantics::Role;
 BrowserAccessibilityFuchsia::BrowserAccessibilityFuchsia(
     BrowserAccessibilityManager* manager,
     AXNode* node)
-    : BrowserAccessibility(manager, node) {
-  platform_node_ =
-      static_cast<AXPlatformNodeFuchsia*>(AXPlatformNode::Create(this));
-}
+    : BrowserAccessibility(manager, node),
+      platform_node_(AXPlatformNode::Create(this)) {}
 
 AccessibilityBridgeFuchsia*
 BrowserAccessibilityFuchsia::GetAccessibilityBridge() const {
@@ -41,7 +39,6 @@ std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
 
 BrowserAccessibilityFuchsia::~BrowserAccessibilityFuchsia() {
   DeleteNode();
-  platform_node_->Destroy();
 }
 
 uint32_t BrowserAccessibilityFuchsia::GetFuchsiaNodeID() const {
@@ -87,7 +84,7 @@ void BrowserAccessibilityFuchsia::OnScrollChanged() {
 }
 
 AXPlatformNode* BrowserAccessibilityFuchsia::GetAXPlatformNode() const {
-  return platform_node_;
+  return platform_node_.get();
 }
 
 BrowserAccessibilityFuchsia* ToBrowserAccessibilityFuchsia(

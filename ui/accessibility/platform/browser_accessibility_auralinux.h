@@ -5,7 +5,6 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_BROWSER_ACCESSIBILITY_AURALINUX_H_
 #define UI_ACCESSIBILITY_PLATFORM_BROWSER_ACCESSIBILITY_AURALINUX_H_
 
-#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "base/component_export.h"
 #include "ui/accessibility/ax_node.h"
@@ -41,8 +40,7 @@ class BrowserAccessibilityAuraLinux : public BrowserAccessibility {
   bool IsPrimaryWebContentsForWindow() const override;
 
  private:
-  // TODO: use a unique_ptr since the node is owned by this class.
-  raw_ptr<AXPlatformNodeAuraLinux> platform_node_;
+  AXPlatformNode::Pointer platform_node_;
 };
 
 COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityAuraLinux* ToBrowserAccessibilityAuraLinux(
