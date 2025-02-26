@@ -109,35 +109,36 @@ const char* ViewTransition::StateToString(State state) {
 
 // static
 ViewTransition* ViewTransition::CreateFromScript(
-    Document* document,
+    Element* element,
     V8ViewTransitionCallback* callback,
     const std::optional<Vector<String>>& types,
     Delegate* delegate) {
-  CHECK(document->GetExecutionContext());
-  return MakeGarbageCollected<ViewTransition>(PassKey(), document, callback,
+  CHECK(element->GetExecutionContext());
+  return MakeGarbageCollected<ViewTransition>(PassKey(), element, callback,
                                               types, delegate);
 }
 
 ViewTransition* ViewTransition::CreateSkipped(
-    Document* document,
+    Element* element,
     V8ViewTransitionCallback* callback) {
-  return MakeGarbageCollected<ViewTransition>(PassKey(), document, callback);
+  return MakeGarbageCollected<ViewTransition>(PassKey(), element, callback);
 }
 
 ViewTransition::ViewTransition(PassKey,
-                               Document* document,
+                               Element* element,
                                V8ViewTransitionCallback* update_dom_callback,
                                const std::optional<Vector<String>>& types,
                                Delegate* delegate)
-    : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
+    : ExecutionContextLifecycleObserver(element->GetExecutionContext()),
       creation_type_(CreationType::kScript),
-      document_(document),
+      document_(element->GetDocument()),
+      scope_(element),
       delegate_(delegate),
       style_tracker_(
           MakeGarbageCollected<ViewTransitionStyleTracker>(*document_,
                                                            transition_token_)),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
-          *document->GetExecutionContext(),
+          *element->GetExecutionContext(),
           *this,
           update_dom_callback)) {
   InitTypes(types.value_or(Vector<String>()));
@@ -151,13 +152,14 @@ ViewTransition::ViewTransition(PassKey,
 }
 
 ViewTransition::ViewTransition(PassKey,
-                               Document* document,
+                               Element* element,
                                V8ViewTransitionCallback* update_dom_callback)
-    : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
+    : ExecutionContextLifecycleObserver(element->GetExecutionContext()),
       creation_type_(CreationType::kScript),
-      document_(document),
+      document_(element->GetDocument()),
+      scope_(element),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
-          *document->GetExecutionContext(),
+          *element->GetExecutionContext(),
           *this,
           update_dom_callback)) {
   SkipTransition();
@@ -184,6 +186,7 @@ ViewTransition::ViewTransition(PassKey,
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
       creation_type_(CreationType::kForSnapshot),
       document_(document),
+      scope_(document->documentElement()),
       delegate_(delegate),
       transition_token_(transition_token),
       style_tracker_(
@@ -215,6 +218,7 @@ ViewTransition::ViewTransition(PassKey,
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
       creation_type_(CreationType::kFromSnapshot),
       document_(document),
+      scope_(document->documentElement()),
       delegate_(delegate),
       transition_token_(transition_state.transition_token),
       style_tracker_(MakeGarbageCollected<ViewTransitionStyleTracker>(
@@ -637,6 +641,7 @@ void ViewTransition::InitTypes(const Vector<String>& types) {
 
 void ViewTransition::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
+  visitor->Trace(scope_);
   visitor->Trace(style_tracker_);
   visitor->Trace(script_delegate_);
   visitor->Trace(types_);
