@@ -523,7 +523,8 @@ class VIEWS_EXPORT Label : public View,
   SkColor actual_enabled_color_ = gfx::kPlaceholderColor;
 
   std::optional<ui::ColorVariant> requested_background_color_;
-  SkColor resolved_background_color_ = gfx::kPlaceholderColor;
+  std::optional<SkColor> resolved_background_color_;
+  SkColor actual_background_color_ = gfx::kPlaceholderColor;
 
   SkColor requested_selection_text_color_ = gfx::kPlaceholderColor;
   SkColor actual_selection_text_color_ = gfx::kPlaceholderColor;

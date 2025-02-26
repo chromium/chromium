@@ -263,13 +263,14 @@ std::optional<ui::ColorVariant> Label::GetRequestedEnabledColor() const {
 }
 
 SkColor Label::GetBackgroundColor() const {
-  return resolved_background_color_;
+  return actual_background_color_;
 }
 
 void Label::SetBackgroundColor(ui::ColorVariant color) {
   if (requested_background_color_ == color) {
     return;
   }
+
   requested_background_color_ = color;
   if (GetWidget()) {
     UpdateColorsFromTheme();
@@ -1438,15 +1439,24 @@ void Label::RecalculateColors() {
     enabled_color = *requested_enabled_color_->GetSkColor();
   }
 
-  actual_enabled_color_ =
-      GetForegroundColor(enabled_color, resolved_background_color_);
+  SkColor background_color = gfx::kPlaceholderColor;
+  if (resolved_background_color_) {
+    background_color = resolved_background_color_.value();
+  } else if (requested_background_color_ &&
+             requested_background_color_->GetSkColor()) {
+    background_color = *requested_background_color_->GetSkColor();
+  }
+
+  actual_enabled_color_ = GetForegroundColor(enabled_color, background_color);
+  actual_background_color_ = background_color;
+
   // Using GetResultingPaintColor() here allows non-opaque selection backgrounds
   // to still participate in auto color readability, assuming
   // |background_color_| is itself opaque.
   actual_selection_text_color_ = GetForegroundColor(
       requested_selection_text_color_,
       color_utils::GetResultingPaintColor(selection_background_color_,
-                                          resolved_background_color_));
+                                          GetBackgroundColor()));
 
   ApplyTextColors();
   SchedulePaint();
@@ -1461,8 +1471,9 @@ void Label::ApplyTextColors() const {
   display_text_->set_selection_color(actual_selection_text_color_);
   display_text_->set_selection_background_focused_color(
       selection_background_color_);
+
   const bool subpixel_rendering_enabled =
-      subpixel_rendering_enabled_ && IsOpaque(resolved_background_color_);
+      subpixel_rendering_enabled_ && IsOpaque(GetBackgroundColor());
   display_text_->set_subpixel_rendering_suppressed(!subpixel_rendering_enabled);
 }
 
