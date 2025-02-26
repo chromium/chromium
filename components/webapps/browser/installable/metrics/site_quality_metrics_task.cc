@@ -20,7 +20,6 @@
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -76,8 +75,7 @@ void SiteQualityMetricsTask::Start() {
   storage_partition_->GetQuotaManager()
       ->proxy()
       ->GetStorageKeyUsageWithBreakdown(
-          storage_key, blink::mojom::StorageType::kTemporary,
-          base::SequencedTaskRunner::GetCurrentDefault(),
+          storage_key, base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(&SiteQualityMetricsTask::OnQuotaUsageRetrieved,
                          weak_factory_.GetWeakPtr())
               .Then(barrier));

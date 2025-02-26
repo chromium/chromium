@@ -1743,6 +1743,16 @@
       'usage_time_limit_unittests': {
         'experiment_percentage': 100,
       },
+      'views_ax_chromeos_browser_tests': {
+        'test_common': {
+          'args': [
+            '--enable-features=ViewsAccessibilitySerializeOnDataChanged',
+            '--test-launcher-filter-file=../../testing/buildbot/filters/views_ax_chromeos.browser_tests.filter',
+          ],
+        },
+        'test': 'browser_tests',
+        'experiment_percentage': 10,
+      },
       'wayland_client_perftests': {},
       'wayland_client_tests': {},
     },

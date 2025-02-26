@@ -163,7 +163,7 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
   empty_list_label_ = content_scroll_view()->contents()->AddChildView(
       views::Builder<views::Label>()
           .SetProperty(views::kMarginsKey, kEmptyListLabelMargins)
-          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+          .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
           .SetFontList(typography_provider->ResolveTypographyToken(
               TypographyToken::kCrosButton2))
           .SetLineHeight(typography_provider->ResolveLineHeight(

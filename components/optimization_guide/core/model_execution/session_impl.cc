@@ -96,6 +96,10 @@ SessionImpl::SessionImpl(
 
 SessionImpl::~SessionImpl() {}
 
+on_device_model::mojom::Session& SessionImpl::GetSession() {
+  return *on_device_context_->GetOrCreateSession();
+}
+
 const TokenLimits& SessionImpl::GetTokenLimits() const {
   if (!on_device_context_) {
     static const TokenLimits null_limits{};

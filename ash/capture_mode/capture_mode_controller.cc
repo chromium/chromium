@@ -516,7 +516,7 @@ BehaviorType ToBehaviorType(CaptureModeEntryType entry_type) {
     case CaptureModeEntryType::kGameDashboard:
       return BehaviorType::kGameDashboard;
     case CaptureModeEntryType::kSunfish:
-      DCHECK(IsSunfishSessionAllowed());
+      DCHECK(CanShowSunfishOrScannerUi());
       return BehaviorType::kSunfish;
     default:
       return BehaviorType::kDefault;
@@ -971,7 +971,7 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
 void CaptureModeController::StartSunfishSession() {
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kSunfishScreenEnteredViaShortcut);
-  CHECK(IsSunfishSessionAllowed());
+  CHECK(CanShowSunfishOrScannerUi());
   // Close the launcher nudge if it is still visible.
   AnchoredNudgeManager::Get()->Cancel(capture_mode::kSunfishLauncherNudgeId);
   StartInternal(
@@ -2062,12 +2062,22 @@ void CaptureModeController::OnTextDetectionComplete(
     base::TimeTicks ocr_attempt_start_time,
     std::optional<std::string> detected_text) {
   RecordOnDeviceOcrTimerCompleted(ocr_attempt_start_time);
-  if (!image_search_token || !detected_text.has_value() ||
-      detected_text->empty()) {
+  if (!image_search_token || !detected_text.has_value()) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::
+            kSmartActionsButtonNotShownDueToTextDetectionCancelled);
     return;
   }
 
-  AddCopyTextAndSmartActionsButtons(*detected_text);
+  if (detected_text->empty()) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::
+            kSmartActionsButtonNotShownDueToNoTextDetected);
+    return;
+  }
+
+  AddCopyTextButton(*detected_text);
+  capture_mode_session_->AddSmartActionsButton();
 }
 
 void CaptureModeController::OnLensTextDetectionComplete(
@@ -2078,16 +2088,15 @@ void CaptureModeController::OnLensTextDetectionComplete(
     return;
   }
 
-  // Only use lens to automatically add Copy Text and Smart Actions buttons if
-  // we are in a sunfish session.
+  // Only use lens to automatically add a Copy Text button if we are in a
+  // sunfish session.
   if (capture_mode_session_->active_behavior()->behavior_type() ==
       BehaviorType::kSunfish) {
-    AddCopyTextAndSmartActionsButtons(*detected_text);
+    AddCopyTextButton(*detected_text);
   }
 }
 
-void CaptureModeController::AddCopyTextAndSmartActionsButtons(
-    std::string detected_text) {
+void CaptureModeController::AddCopyTextButton(std::string_view detected_text) {
   CHECK(!detected_text.empty());
 
   capture_mode_util::AddActionButton(
@@ -2098,7 +2107,6 @@ void CaptureModeController::AddCopyTextAndSmartActionsButtons(
       &vector_icons::kContentCopyIcon,
       ActionButtonRank{ActionButtonType::kCopyText, /*weight=*/0},
       ActionButtonViewID::kCopyTextButton);
-  capture_mode_session_->AddSmartActionsButton();
 }
 
 void CaptureModeController::OnCopyTextButtonClicked(

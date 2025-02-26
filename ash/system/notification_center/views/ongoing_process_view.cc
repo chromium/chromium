@@ -115,7 +115,7 @@ OngoingProcessView::OngoingProcessView(
                           .SetText(notification.title())
                           .SetTooltipText(notification.title())
                           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                          .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
                           .SetAutoColorReadabilityEnabled(false)
                           .SetSubpixelRenderingEnabled(false)
                           .SetFontList(
@@ -131,7 +131,7 @@ OngoingProcessView::OngoingProcessView(
                           .SetText(notification.message())
                           .SetTooltipText(notification.message())
                           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                          .SetEnabledColorId(
+                          .SetEnabledColor(
                               cros_tokens::kCrosSysOnSurfaceVariant)
                           .SetAutoColorReadabilityEnabled(false)
                           .SetSubpixelRenderingEnabled(false)

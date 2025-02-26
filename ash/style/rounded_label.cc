@@ -25,7 +25,7 @@ RoundedLabel::RoundedLabel(int horizontal_padding,
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(vertical_padding, horizontal_padding)));
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
-  SetEnabledColorId(kColorAshTextColorPrimary);
+  SetEnabledColor(kColorAshTextColorPrimary);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 

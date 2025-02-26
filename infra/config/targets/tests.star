@@ -2589,6 +2589,15 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "views_ax_chromeos_browser_tests",
+    args = [
+        "--enable-features=ViewsAccessibilitySerializeOnDataChanged",
+        "--test-launcher-filter-file=../../testing/buildbot/filters/views_ax_chromeos.browser_tests.filter",
+    ],
+    binary = "browser_tests",
+)
+
+targets.tests.gtest_test(
     name = "viz_unittests",
 )
 

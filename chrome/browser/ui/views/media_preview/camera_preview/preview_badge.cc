@@ -55,7 +55,7 @@ std::unique_ptr<views::View> CreatePreviewBadge() {
   auto* text_label =
       badge_view->AddChildView(std::make_unique<views::Label>(text));
   text_label->SetTextStyle(views::style::TextStyle::STYLE_BODY_5);
-  text_label->SetEnabledColorId(ui::kColorSysOnTertiaryContainer);
+  text_label->SetEnabledColor(ui::kColorSysOnTertiaryContainer);
   text_label->GetViewAccessibility().SetIsIgnored(true);
 
   return badge_view;

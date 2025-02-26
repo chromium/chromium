@@ -169,7 +169,7 @@ std::unique_ptr<views::View> IOSPromoBubble::CreateFooter(
               l10n_util::GetStringUTF16(ios_promo_config.promo_description_id))
           .SetTextContext(views::style::CONTEXT_BUBBLE_FOOTER)
           .SetTextStyle(views::style::STYLE_SECONDARY)
-          .SetEnabledColorId(kColorDesktopToIOSPromoFooterSubtitleLabel)
+          .SetEnabledColor(kColorDesktopToIOSPromoFooterSubtitleLabel)
           .SetMultiLine(true)
           .SetProperty(views::kFlexBehaviorKey,
                        views::FlexSpecification(

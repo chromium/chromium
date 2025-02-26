@@ -120,9 +120,9 @@ WebAuthnHoverButton::WebAuthnHoverButton(
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetProperty(views::kTableColAndRowSpanKey,
                       gfx::Size(/*width=*/1, /*height=*/1));
-  title_->SetEnabledColorId(GetEnabled()
-                                ? kColorWebAuthnHoverButtonForeground
-                                : kColorWebAuthnHoverButtonForegroundDisabled);
+  title_->SetEnabledColor(GetEnabled()
+                              ? kColorWebAuthnHoverButtonForeground
+                              : kColorWebAuthnHoverButtonForegroundDisabled);
 
   if (secondary_icon) {
     secondary_icon_view_ =
@@ -136,7 +136,7 @@ WebAuthnHoverButton::WebAuthnHoverButton(
         subtitle_text, views::style::CONTEXT_LABEL,
         views::style::STYLE_BODY_3));
     subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    subtitle_->SetEnabledColorId(
+    subtitle_->SetEnabledColor(
         GetEnabled() ? kColorWebAuthnHoverButtonForeground
                      : kColorWebAuthnHoverButtonForegroundDisabled);
   }

@@ -33,7 +33,7 @@ std::unique_ptr<views::Label> CreateShortcutTextLabel(
   auto label = std::make_unique<views::Label>(text);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation2,
                                         *label);
-  label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  label->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
   return label;
 }
 

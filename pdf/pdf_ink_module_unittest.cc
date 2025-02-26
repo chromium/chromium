@@ -919,7 +919,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
         /*expect_stroke_success=*/annotation_mode_enabled);
   }
 
-  void RunStrokeMissedEndEventCheckTest() {
+  void RunStrokeMissedEndEventThenMouseMoveTest() {
     {
       // Start a drawing or erase action.
       blink::WebMouseEvent mouse_down_event =
@@ -1812,7 +1812,24 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeWithPen) {
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 }
 
-TEST_F(PdfInkModuleStrokeTest, RunStrokeMissedEndEventDuringDrawing) {
+TEST_F(PdfInkModuleStrokeTest, StrokeMissedEndEventThenMouseDown) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder().CreateLeftClickAtPosition(kMouseDownPoint).Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  blink::WebMouseEvent mouse_move_event =
+      CreateMouseMoveWithLeftButtonEventAtPoint(kMouseMovePoint);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  // If the mouse up event went missing during stroking, the next mouse down
+  // event should not cause a crash.
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+}
+
+TEST_F(PdfInkModuleStrokeTest, StrokeMissedEndEventThenMouseMoveDuringDrawing) {
   EnableAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
@@ -1820,16 +1837,16 @@ TEST_F(PdfInkModuleStrokeTest, RunStrokeMissedEndEventDuringDrawing) {
   EXPECT_TRUE(
       ink_module().OnMessage(CreateGetAnnotationBrushMessageForTesting("pen")));
 
-  RunStrokeMissedEndEventCheckTest();
+  RunStrokeMissedEndEventThenMouseMoveTest();
 }
 
-TEST_F(PdfInkModuleStrokeTest, RunStrokeMissedEndEventDuringErasing) {
+TEST_F(PdfInkModuleStrokeTest, StrokeMissedEndEventThenMouseMoveDuringErasing) {
   EnableAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
   SelectEraserTool();
 
-  RunStrokeMissedEndEventCheckTest();
+  RunStrokeMissedEndEventThenMouseMoveTest();
 }
 
 TEST_F(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {

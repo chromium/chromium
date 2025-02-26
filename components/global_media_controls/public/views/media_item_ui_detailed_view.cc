@@ -107,7 +107,7 @@ class MediaLabelButton : public views::Button {
         AddChildView(std::make_unique<views::Label>(std::u16string(), font));
     label_->SetLineHeight(text_line_height);
     label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    label_->SetEnabledColorId(text_color_id);
+    label_->SetEnabledColor(text_color_id);
   }
 
   views::Label* label() { return label_; }
@@ -862,16 +862,14 @@ views::View* MediaItemUIDetailedView::CreateControlsRow() {
                               GetFormattedDuration(position_.GetPosition()))
                           .SetFontList(kTimestampFont)
                           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                          .SetEnabledColorId(
-                              theme_.primary_foreground_color_id),
+                          .SetEnabledColor(theme_.primary_foreground_color_id),
                       views::Builder<views::Label>()
                           .CopyAddressTo(&total_duration_view_)
                           .SetText(kTimestampDelimiter +
                                    GetFormattedDuration(position_.duration()))
                           .SetFontList(kTimestampFont)
                           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                          .SetEnabledColorId(
-                              theme_.primary_foreground_color_id)))
+                          .SetEnabledColor(theme_.primary_foreground_color_id)))
           .AddChildren(
               views::Builder<views::BoxLayoutView>()
                   .CopyAddressTo(&button_container)

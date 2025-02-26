@@ -86,7 +86,7 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
                                      views::style::CONTEXT_DIALOG_BODY_TEXT));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
-  title_->SetEnabledColorId(kColorPageInfoForeground);
+  title_->SetEnabledColor(kColorPageInfoForeground);
 
   // Without this, the title text inside the submenu of
   // |CAPTURED_SURFACE_CONTROL| permission type would be the same as in the main
@@ -99,7 +99,7 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   state_label_ = label_wrapper->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_LABEL,
       views::style::STYLE_BODY_4));
-  state_label_->SetEnabledColorId(kColorPageInfoSubtitleForeground);
+  state_label_->SetEnabledColor(kColorPageInfoSubtitleForeground);
   state_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Add extra details as sublabel.
@@ -108,7 +108,7 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
     auto detail_label = std::make_unique<views::Label>(
         detail, views::style::CONTEXT_LABEL, views::style::STYLE_BODY_4);
     detail_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    detail_label->SetEnabledColorId(kColorPageInfoSubtitleForeground);
+    detail_label->SetEnabledColor(kColorPageInfoSubtitleForeground);
     label_wrapper->AddChildView(std::move(detail_label));
   }
 

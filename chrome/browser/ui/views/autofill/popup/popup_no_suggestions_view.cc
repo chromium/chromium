@@ -21,7 +21,7 @@ PopupNoSuggestionsView::PopupNoSuggestionsView(const std::u16string& message) {
   AddChildView(
       views::Builder<views::Label>()
           .SetText(message)
-          .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
+          .SetEnabledColor(ui::kColorLabelForegroundSecondary)
           .SetTextStyle(views::style::TextStyle::STYLE_BODY_4)
           .SetLineHeight(kHeight)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)

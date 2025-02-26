@@ -173,6 +173,9 @@ export function createTranslationMap(): TranslationMap {
       [StaticMessageKey.ACTIVITY_LOGS]: loadTimeData.getString('activityLog'),
       [StaticMessageKey.YOUR_GROUP_IS_FULL_DESCRIPTION]:
           loadTimeData.getString('ownerCannotShare'),
+      [StaticMessageKey.CLOSE_FLOW_HEADER]: 'deleteLastDialogHeader',
+      [StaticMessageKey.KEEP_GROUP]: 'keepGroup',
+      [StaticMessageKey.DELETE_GROUP]: 'deleteGroup',
     },
     dynamic: {
       /** Invite flow */
@@ -256,6 +259,23 @@ export function createTranslationMap(): TranslationMap {
               getGroupOwnerEmail(params)),
       [DynamicMessageKey.GET_MANAGE_FLOW_HEADER]: () =>
           loadTimeData.getStringF('manageGroupTitle', getTabGroupName()),
+      [DynamicMessageKey.GET_CLOSE_FLOW_DESCRIPTION_FIRST_PARAGRAPH]:
+          (params: DynamicMessageParams) => {
+            if (params.displayedUser!.name! === getGroupOwnerName(params)) {
+              return loadTimeData.getStringF('ownerDeleteLastTimeBody');
+            } else {
+              return loadTimeData.getStringF('memberDeleteLastTimeBody');
+            }
+          },
+      [DynamicMessageKey.GET_CLOSE_FLOW_DESCRIPTION_SECOND_PARAGRAPH]:
+          (params: DynamicMessageParams) => {
+            if (params.displayedUser!.name! === getGroupOwnerName(params)) {
+              return loadTimeData.getStringF(
+                  'ownerDeleteLastTimeBody2', getTabGroupName());
+            } else {
+              return '';
+            }
+          },
     },
   };
 }

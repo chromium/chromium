@@ -12,8 +12,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/notreached.h"
-#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_manager.h"
@@ -27,6 +25,8 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
@@ -352,6 +352,34 @@ void AILanguageModel::PromptGetInputSizeCompletion(
                                    responder_id));
 }
 
+AILanguageModel::MultimodalResponder::MultimodalResponder(
+    mojo::PendingRemote<blink::mojom::ModelStreamingResponder> responder)
+    : responder_(std::move(responder)) {}
+
+AILanguageModel::MultimodalResponder::~MultimodalResponder() = default;
+
+mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
+AILanguageModel::MultimodalResponder::BindRemote() {
+  return receiver_.BindNewPipeAndPassRemote();
+}
+
+void AILanguageModel::MultimodalResponder::OnResponse(
+    on_device_model::mojom::ResponseChunkPtr chunk) {
+  current_response_ += chunk->text;
+  bool should_stream_full_response = base::FeatureList::IsEnabled(
+      features::kAILanguageModelForceStreamingFullResponse);
+  responder_->OnStreaming(
+      chunk->text, should_stream_full_response
+                       ? blink::mojom::ModelStreamingResponderAction::kReplace
+                       : blink::mojom::ModelStreamingResponderAction::kAppend);
+}
+
+void AILanguageModel::MultimodalResponder::OnComplete(
+    on_device_model::mojom::ResponseSummaryPtr summary) {
+  responder_->OnCompletion(blink::mojom::ModelExecutionContextInfo::New(
+      summary->input_token_count + summary->output_token_count));
+}
+
 void AILanguageModel::Prompt(
     on_device_model::mojom::InputPtr input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
@@ -364,9 +392,27 @@ void AILanguageModel::Prompt(
     return;
   }
 
-  CHECK_EQ(input->pieces.size(), 1u);
-  CHECK(std::holds_alternative<std::string>(input->pieces[0]));
-  const std::string& input_text = std::get<std::string>(input->pieces[0]);
+  // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
+  // This lacks history integration, token counting, overflow handling, etc.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAIPromptAPIMultimodalInput)) {
+    auto options = on_device_model::mojom::InputOptions::New();
+    options->input = std::move(input);
+    options->top_k = 3;
+    options->temperature = 1;
+    auto responder =
+        std::make_unique<MultimodalResponder>(std::move(pending_responder));
+    auto remote = responder->BindRemote();
+    multimodal_responders_.push_back(std::move(responder));
+    session_->GetSession().Execute(std::move(options), std::move(remote));
+    return;
+  }
+
+  CHECK_EQ(input->pieces.size(), 3u);
+  CHECK(std::holds_alternative<ml::Token>(input->pieces[0]));
+  CHECK(std::holds_alternative<std::string>(input->pieces[1]));
+  CHECK(std::holds_alternative<ml::Token>(input->pieces[2]));
+  const std::string& input_text = std::get<std::string>(input->pieces[1]);
 
   // Clear the response from the previous execution.
   current_response_ = "";
@@ -428,6 +474,7 @@ void AILanguageModel::Destroy() {
   }
 
   responder_set_.Clear();
+  multimodal_responders_.clear();
 }
 
 blink::mojom::AILanguageModelInstanceInfoPtr

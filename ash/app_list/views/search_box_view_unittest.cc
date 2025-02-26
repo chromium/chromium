@@ -1495,19 +1495,26 @@ TEST_P(SunfishLauncherButtonTest, ButtonVisibility) {
   ASSERT_EQ(sunfish_button->GetVisible(), IsSunfishEnabled());
 
   if (IsSunfishEnabled()) {
-    // `SetSunfishButtonVisibility` should control the visibility of the button.
+    // `SetSunfishButtonVisibility` should control the visibility and icon of
+    // the button.
     GetSearchModel()->search_box()->SetSunfishButtonVisibility(
         SearchBoxModel::SunfishButtonVisibility::kHidden);
     EXPECT_FALSE(sunfish_button->GetVisible());
     GetSearchModel()->search_box()->SetSunfishButtonVisibility(
         SearchBoxModel::SunfishButtonVisibility::kShownWithScannerIcon);
+    // There is no way of getting the exact `ui::ImageModel` for an
+    // `IconButton`, but we can indirectly get the icon by looking at the size.
     EXPECT_TRUE(sunfish_button->GetVisible());
+    EXPECT_NE(sunfish_button->GetImage(views::ImageButton::STATE_NORMAL).size(),
+              gfx::Size(24, 24));
     GetSearchModel()->search_box()->SetSunfishButtonVisibility(
         SearchBoxModel::SunfishButtonVisibility::kHidden);
     EXPECT_FALSE(sunfish_button->GetVisible());
     GetSearchModel()->search_box()->SetSunfishButtonVisibility(
         SearchBoxModel::SunfishButtonVisibility::kShownWithSunfishIcon);
     EXPECT_TRUE(sunfish_button->GetVisible());
+    EXPECT_EQ(sunfish_button->GetImage(views::ImageButton::STATE_NORMAL).size(),
+              gfx::Size(24, 24));
 
     // The app list will contain the sunfish launcher button next to the search
     // field.

@@ -387,7 +387,8 @@ public class CardUnmaskPrompt
                 mVerificationProgressBar.setVisibility(View.GONE);
                 mMainView.findViewById(R.id.verification_success).setVisibility(View.VISIBLE);
                 mVerificationView.setText(R.string.autofill_card_unmask_verification_success);
-                mVerificationView.announceForAccessibility(mVerificationView.getText());
+                ViewCompat.setAccessibilityPaneTitle(
+                        mVerificationView, mVerificationView.getText());
                 new Handler().postDelayed(dismissRunnable, mSuccessMessageDurationMilliseconds);
             } else {
                 new Handler().post(dismissRunnable);

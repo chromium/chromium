@@ -41,7 +41,7 @@ void StorageBucketClearSiteDataTester::GetBucketsForStorageKey(
     base::OnceCallback<
         void(storage::QuotaErrorOr<std::set<storage::BucketInfo>>)> callback) {
   storage_partition_impl_->GetQuotaManagerProxy()->GetBucketsForStorageKey(
-      storage_key, blink::mojom::StorageType::kTemporary,
+      storage_key,
       /*delete_expired=*/false, base::SequencedTaskRunner::GetCurrentDefault(),
       std::move(callback));
 }

@@ -203,7 +203,10 @@ def _process_build_gradle(template_path, output_path, androidx_repository_url,
     pathlib.Path(output_path).write_text(content)
 
 
-def _write_cipd_yaml(libs_dir, version, cipd_yaml_path, experimental=False):
+def _write_cipd_yaml(libs_dir,
+                     version,
+                     cipd_yaml_path,
+                     experimental=False):
     """Writes cipd.yaml file at the passed-in path."""
 
     lib_dirs = os.listdir(libs_dir)
@@ -211,8 +214,12 @@ def _write_cipd_yaml(libs_dir, version, cipd_yaml_path, experimental=False):
         raise Exception('No generated libraries in {}'.format(libs_dir))
 
     data_files = [
-        'BUILD.gn', 'VERSION.txt', 'additional_readme_paths.json',
-        'build.gradle'
+        'BUILD.gn',
+        'VERSION.txt',
+        'bill_of_materials.json',
+        'additional_readme_paths.json',
+        'build.gradle',
+        'to_commit.zip',
     ]
     for lib_dir in lib_dirs:
         abs_lib_dir = os.path.join(libs_dir, lib_dir)
@@ -339,11 +346,6 @@ def main():
         f.write(version)
 
     libs_dir = os.path.join(_CIPD_PATH, 'libs')
-    yaml_path = os.path.join(_CIPD_PATH, 'cipd.yaml')
-    _write_cipd_yaml(libs_dir,
-                     version,
-                     yaml_path,
-                     experimental=bool(args.local_repo))
 
     to_commit_paths = []
     for root, _, files in os.walk(libs_dir):
@@ -356,7 +358,10 @@ def main():
             to_commit_paths.append((file_path, file_path_in_committed))
 
     files_in_tree = [
-        'additional_readme_paths.json', 'BUILD.gn', 'build.gradle'
+        'additional_readme_paths.json',
+        'bill_of_materials.json',
+        'BUILD.gn',
+        'build.gradle',
     ]
     for file in files_in_tree:
         file_path = os.path.join(_CIPD_PATH, file)
@@ -367,6 +372,12 @@ def main():
     with zipfile.ZipFile(to_commit_zip_path, 'w') as zip_file:
         for filename, arcname in to_commit_paths:
             zip_file.write(filename, arcname=arcname)
+
+    yaml_path = os.path.join(_CIPD_PATH, 'cipd.yaml')
+    _write_cipd_yaml(libs_dir,
+                     version,
+                     yaml_path,
+                     experimental=bool(args.local_repo))
 
 if __name__ == '__main__':
     main()

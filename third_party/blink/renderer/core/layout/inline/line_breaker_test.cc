@@ -1298,5 +1298,14 @@ TEST_P(CanBreakInsideTest, Data) {
             data.can_break_insde);
 }
 
+// crbug.com/398527874
+TEST_F(LineBreakerTest, SplitTrailingBidiCrCrash) {
+  InlineNode node = CreateInlineNode(R"HTML(
+    <div id="container" dir="rtl" style="white-space: pre; font-size: 16px;">&#x0D; </div>
+  )HTML");
+  ComputeMinMaxSizes(node);
+  // Pass if no CHECK failure.
+}
+
 }  // namespace
 }  // namespace blink

@@ -22,7 +22,7 @@ namespace {
 
 std::vector<ResourceScaleFactor>* g_supported_resource_scale_factors = nullptr;
 
-const auto kResourceScaleFactorScales = std::to_array<float>({
+constexpr auto kResourceScaleFactorScales = std::to_array<float>({
     1.0f,
     1.0f,
     2.0f,

@@ -93,7 +93,7 @@ ChapterItemView::ChapterItemView(
                                   {"Google Sans"}, gfx::Font::NORMAL, 13,
                                   gfx::Font::Weight::NORMAL))
                               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                              .SetEnabledColorId(
+                              .SetEnabledColor(
                                   theme_.primary_foreground_color_id),
                           views::Builder<views::Label>()
                               .SetText(
@@ -103,7 +103,7 @@ ChapterItemView::ChapterItemView(
                                   {"Google Sans"}, gfx::Font::NORMAL, 12,
                                   gfx::Font::Weight::NORMAL))
                               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                              .SetEnabledColorId(
+                              .SetEnabledColor(
                                   theme_.secondary_foreground_color_id))))
       .BuildChildren();
 

@@ -21,7 +21,7 @@ void UpdateDeviceContainerColor(HoverHighlightView* device_name_view,
       is_active ? (is_muted ? cros_tokens::kCrosSysOnSurface
                             : cros_tokens::kCrosSysSystemOnPrimaryContainer)
                 : cros_tokens::kCrosSysOnSurfaceVariant;
-  device_name_view->text_label()->SetEnabledColorId(color_id);
+  device_name_view->text_label()->SetEnabledColor(color_id);
   TrayPopupUtils::UpdateCheckMarkColor(device_name_view, color_id);
 }
 

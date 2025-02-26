@@ -311,8 +311,9 @@ chromium-metrics-reviews@google.com.
   <owner>wanderview@chromium.org</owner>
   <summary>
     Measures how long a call to network::CookieSettings::GetContentSetting
-    takes. Logged each time a call is made. Note that histogram samples for
-    clients without high-resolution clocks are dropped.
+    takes. Logged each time a call is made. Starting M135 sub-sampled with
+    probability 0.001. Note that histogram samples for clients without
+    high-resolution clocks are dropped.
   </summary>
 </histogram>
 
@@ -322,8 +323,9 @@ chromium-metrics-reviews@google.com.
   <owner>wanderview@chromium.org</owner>
   <summary>
     Measures how long a call to CookieSettingBase::GetCookieSettingInternal
-    takes. Logged each time a call is made. Note that histogram samples for
-    clients without high-resolution clocks are dropped.
+    takes. Logged each time a call is made. Starting M135 sub-sampled with
+    probability 0.1. Note that histogram samples for clients without
+    high-resolution clocks are dropped.
   </summary>
 </histogram>
 

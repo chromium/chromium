@@ -102,7 +102,7 @@ views::Label* CreateLabel(const std::u16string& text, ui::ColorId color_id) {
   label->SetFontList(views::Label::GetDefaultFontList().Derive(
       0, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetEnabledColorId(color_id);
+  label->SetEnabledColor(color_id);
   return label;
 }
 
@@ -263,7 +263,7 @@ class SelectionButtonView : public LoginButton {
   }
 
   void SetTextColorId(ui::ColorId color_id) {
-    label_->SetEnabledColorId(color_id);
+    label_->SetEnabledColor(color_id);
   }
   void SetText(const std::u16string& text) {
     GetViewAccessibility().SetName(text);

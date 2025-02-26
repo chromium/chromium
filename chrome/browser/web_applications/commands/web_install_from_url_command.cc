@@ -44,8 +44,8 @@ constexpr webapps::WebappInstallSource kInstallSource =
 namespace web_app {
 WebInstallFromUrlCommand::WebInstallFromUrlCommand(
     Profile& profile,
-    const GURL& manifest_id,
     const GURL& install_url,
+    const std::optional<GURL>& manifest_id,
     WebInstallFromUrlCommandCallback installed_callback)
     : WebAppCommand<SharedWebContentsLock,
                     const GURL&,
@@ -62,7 +62,9 @@ WebInstallFromUrlCommand::WebInstallFromUrlCommand(
       install_url_(install_url),
       install_error_log_entry_(/*background_installation=*/false,
                                kInstallSource) {
-  GetMutableDebugValue().Set("manifest_id_param", manifest_id_.spec());
+  if (manifest_id_.has_value()) {
+    GetMutableDebugValue().Set("manifest_id_param", manifest_id_->spec());
+  }
   GetMutableDebugValue().Set("install_url_param", install_url_.spec());
 }
 
@@ -165,7 +167,10 @@ void WebInstallFromUrlCommand::OnDidPerformInstallableCheck(
   GetMutableDebugValue().Set("start_url", web_app_info_->start_url().spec());
   GetMutableDebugValue().Set("name", web_app_info_->title);
 
-  if (web_app_info_->manifest_id() != manifest_id_) {
+  // If the manifest_id parameter was provided, ensure it matches the resolved
+  // id of the manifest we just fetched.
+  if (manifest_id_.has_value() &&
+      web_app_info_->manifest_id() != manifest_id_.value()) {
     // TODO(crbug.com/333795265): Add custom WebInstallFromUrlCommand error
     // types for additional granularity.
     Abort(webapps::InstallResultCode::kNotInstallable);

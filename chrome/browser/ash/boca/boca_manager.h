@@ -48,7 +48,7 @@ class BocaManager : public KeyedService {
     return boca_session_manager_.get();
   }
 
-  boca::OnTaskSessionManager* GetOnTaskSessionManagerForTesting() {
+  boca::OnTaskSessionManager* GetOnTaskSessionManager() {
     return on_task_session_manager_.get();
   }
   boca::BabelOrcaManager* GetBabelOrcaManagerForTesting() {

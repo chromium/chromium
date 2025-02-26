@@ -678,9 +678,11 @@ FaviconBackend::GetFaviconsFromDB(const GURL& page_url,
   // Get FaviconIDs for `page_url` and one of `icon_types`.
   std::vector<IconMapping> icon_mappings;
   db_->GetIconMappingsForPageURL(page_url, icon_types, &icon_mappings);
+  bool fallback_to_host_attempted = false;
 
   if (icon_mappings.empty() && fallback_to_host &&
       page_url.SchemeIsHTTPOrHTTPS()) {
+    fallback_to_host_attempted = true;
     // We didn't find any matches, and the caller requested falling back to the
     // host of `page_url` for fuzzy matching. Query the database for a page_url
     // that is known to exist and matches the host of `page_url`. Do this only
@@ -698,7 +700,13 @@ FaviconBackend::GetFaviconsFromDB(const GURL& page_url,
   for (size_t i = 0; i < icon_mappings.size(); ++i)
     favicon_ids.push_back(icon_mappings[i].icon_id);
 
-  return GetFaviconBitmapResultsForBestMatch(favicon_ids, desired_sizes);
+  std::vector<favicon_base::FaviconRawBitmapResult> results =
+      GetFaviconBitmapResultsForBestMatch(favicon_ids, desired_sizes);
+  if (fallback_to_host_attempted) {
+    base::UmaHistogramBoolean("Favicons.FallbackToHostSuccess",
+                              results.size() > 0);
+  }
+  return results;
 }
 
 std::vector<favicon_base::FaviconRawBitmapResult>

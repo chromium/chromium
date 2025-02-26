@@ -62,10 +62,12 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::EventType::kGestureTap:
     case ui::EventType::kGestureTapCancel:
-      if (IsAssistantAvailable()) {
-        assistant_overlay_->EndAnimation();
-        assistant_animation_delay_timer_->Stop();
-      }
+      // Unconditionally stop the animation, even if Assistant is not currently
+      // available - because it could have been started when Assistant _was_
+      // available.
+      // These are no-ops if the animation did not start.
+      assistant_overlay_->EndAnimation();
+      assistant_animation_delay_timer_->Stop();
 
       // After animating the ripple, let the button handle the event.
       return false;
@@ -151,7 +153,7 @@ void HomeButtonController::OnUiVisibilityChanged(
 }
 
 void HomeButtonController::StartAssistantAnimation() {
-  assistant_overlay_->StartAnimation(false);
+  assistant_overlay_->StartAnimation();
 }
 
 void HomeButtonController::OnAppListShown() {

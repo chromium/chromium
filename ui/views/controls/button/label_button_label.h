@@ -25,24 +25,20 @@ class VIEWS_EXPORT LabelButtonLabel : public Label {
 
  public:
   LabelButtonLabel(std::u16string_view text, int text_context);
+
   LabelButtonLabel(const LabelButtonLabel&) = delete;
   LabelButtonLabel& operator=(const LabelButtonLabel&) = delete;
+
   ~LabelButtonLabel() override;
 
   // Set an explicit disabled color. This will stop the Label responding to
   // changes in the native theme for disabled colors.
-  void SetDisabledColor(SkColor color);
-
-  // Sets/Gets the explicit disable color as above, but using color_id.
-  void SetDisabledColorId(std::optional<ui::ColorId> color_id);
-  std::optional<ui::ColorId> GetDisabledColorId() const;
+  void SetDisabledColor(ui::ColorVariant color);
+  std::optional<ui::ColorVariant> GetDisabledColor() const;
 
   // Label:
-  void SetEnabledColor(SkColor color) override;
-
-  // Sets/Gets the explicit enabled color with color_id.
-  void SetEnabledColorId(std::optional<ui::ColorId> color_id);
-  std::optional<ui::ColorId> GetEnabledColorId() const;
+  void SetEnabledColor(ui::ColorVariant color) override;
+  std::optional<ui::ColorVariant> GetEnabledColor() const;
 
  protected:
   // Label:
@@ -62,8 +58,8 @@ class VIEWS_EXPORT LabelButtonLabel : public Label {
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, LabelButtonLabel, Label)
-VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, EnabledColorId)
-VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, DisabledColorId)
+VIEW_BUILDER_PROPERTY(std::optional<ui::ColorVariant>, EnabledColor)
+VIEW_BUILDER_PROPERTY(std::optional<ui::ColorVariant>, DisabledColor)
 END_VIEW_BUILDER
 
 }  // namespace views::internal

@@ -80,8 +80,9 @@ void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
 
   // No need to redo or restart the previous request/response if the input
   // hasn't changed.
-  if (minimal_changes)
+  if (minimal_changes) {
     return;
+  }
 
   if (input.omit_asynchronous_matches()) {
     return;
@@ -296,11 +297,14 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
 
     const base::Value::Dict& result = result_value.GetDict();
 
-    auto url = GetUrl(result, template_url->url_ref(), suggestion_type);
+    auto url = GetMatchDestinationUrl(result, template_url->url_ref(), suggestion_type);
     // All matches must have a URL.
     if (url.empty()) {
       continue;
     }
+
+    // Some matches are supplied with an associated image URL.
+    auto image_url = GetMatchImageUrl(result);
 
     auto description = GetMatchDescription(result, suggestion_type);
     // Nav matches must have a description.
@@ -316,13 +320,13 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
 
     AutocompleteMatch match = CreateMatch(
         input_, template_url->keyword(), suggestion_type, is_navigation,
-        1000 - int(matches_.size()), url, base::UTF8ToUTF16(description),
-        base::UTF8ToUTF16(contents));
+        1000 - int(matches_.size()), url, image_url,
+        base::UTF8ToUTF16(description), base::UTF8ToUTF16(contents));
     matches_.push_back(match);
   }
 }
 
-std::string EnterpriseSearchAggregatorProvider::GetUrl(
+std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
     const base::Value::Dict& result,
     const TemplateURLRef& url_ref,
     SuggestionType suggestion_type) const {
@@ -341,6 +345,12 @@ std::string EnterpriseSearchAggregatorProvider::GetUrl(
 
   return url_ref.ReplaceSearchTerms(
       TemplateURLRef::SearchTermsArgs(base::UTF8ToUTF16(query)), {}, nullptr);
+}
+
+std::string EnterpriseSearchAggregatorProvider::GetMatchImageUrl(
+    const base::Value::Dict& result) const {
+  return ptr_to_string(result.FindStringByDottedPath(
+      "document.derivedStructData.displayPhoto.url"));
 }
 
 std::string EnterpriseSearchAggregatorProvider::GetMatchDescription(
@@ -375,6 +385,7 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
     bool is_navigation,
     int relevance,
     const std::string& url,
+    const std::string& image_url,
     const std::u16string& description,
     const std::u16string& contents) {
   auto type = is_navigation ? AutocompleteMatchType::NAVSUGGEST
@@ -383,6 +394,10 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
 
   match.destination_url = GURL(url);
   match.fill_into_edit = base::UTF8ToUTF16(url);
+
+  if (!image_url.empty()) {
+    match.image_url = GURL(image_url);
+  }
 
   match.description = AutocompleteMatch::SanitizeString(description);
   match.description_class = ClassifyTermMatches(

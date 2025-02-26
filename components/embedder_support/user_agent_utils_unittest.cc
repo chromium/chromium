@@ -405,12 +405,12 @@ TEST_F(UserAgentUtilsTest, UserAgentStringOrdering) {
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
 
   // Do it for regular devices.
-  ASSERT_FALSE(command_line->HasSwitch(switches::kUseMobileUserAgent));
+  ASSERT_FALSE(command_line->HasSwitch(kUseMobileUserAgent));
   CheckUserAgentStringOrdering(false);
 
   // Do it for mobile devices.
-  command_line->AppendSwitch(switches::kUseMobileUserAgent);
-  ASSERT_TRUE(command_line->HasSwitch(switches::kUseMobileUserAgent));
+  command_line->AppendSwitch(kUseMobileUserAgent);
+  ASSERT_TRUE(command_line->HasSwitch(kUseMobileUserAgent));
   CheckUserAgentStringOrdering(true);
 #else
   CheckUserAgentStringOrdering(false);
@@ -478,13 +478,13 @@ TEST_F(UserAgentUtilsTest, UserAgentStringReduced) {
 
   // Verify the mobile user agent string is not returned when not using a mobile
   // user agent.
-  ASSERT_FALSE(command_line->HasSwitch(switches::kUseMobileUserAgent));
+  ASSERT_FALSE(command_line->HasSwitch(kUseMobileUserAgent));
   EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent());
 
   // Verify the mobile user agent string is returned when using a mobile user
   // agent.
-  command_line->AppendSwitch(switches::kUseMobileUserAgent);
-  ASSERT_TRUE(command_line->HasSwitch(switches::kUseMobileUserAgent));
+  command_line->AppendSwitch(kUseMobileUserAgent);
+  ASSERT_TRUE(command_line->HasSwitch(kUseMobileUserAgent));
   EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent(kMobileProductSuffix));
 #else
   EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent());
@@ -546,7 +546,7 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
       {blink::features::kReduceUserAgentAndroidVersionDeviceModel});
   // Verify the mobile platform and oscpu user agent string is not reduced when
   // not using a mobile user agent.
-  ASSERT_FALSE(command_line->HasSwitch(switches::kUseMobileUserAgent));
+  ASSERT_FALSE(command_line->HasSwitch(kUseMobileUserAgent));
   {
     EXPECT_NE(GetUserAgent(), GenerateExpectedUserAgent());
     EXPECT_NE(content::GetUnifiedPlatformForTesting().c_str(),
@@ -555,8 +555,8 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
 
   // Verify the mobile platform and oscpu user agent string is not reduced when
   // using a mobile user agent.
-  command_line->AppendSwitch(switches::kUseMobileUserAgent);
-  ASSERT_TRUE(command_line->HasSwitch(switches::kUseMobileUserAgent));
+  command_line->AppendSwitch(kUseMobileUserAgent);
+  ASSERT_TRUE(command_line->HasSwitch(kUseMobileUserAgent));
   {
     EXPECT_NE(GetUserAgent(), GenerateExpectedUserAgent(kMobileProductSuffix));
   }
@@ -567,7 +567,7 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
       {blink::features::kReduceUserAgentMinorVersion,
        blink::features::kReduceUserAgentPlatformOsCpu},
       {});
-  ASSERT_FALSE(command_line->HasSwitch(switches::kUseMobileUserAgent));
+  ASSERT_FALSE(command_line->HasSwitch(kUseMobileUserAgent));
   {
     // Verify unified platform user agent is returned.
     EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent());
@@ -577,8 +577,8 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
   // On iOS, also check the kUseMobileUserAgent flag with the features above.
   // This is similar to the Android case above, but we do not care about
   // kReduceUserAgentAndroidVersionDeviceModel here.
-  command_line->AppendSwitch(switches::kUseMobileUserAgent);
-  ASSERT_TRUE(command_line->HasSwitch(switches::kUseMobileUserAgent));
+  command_line->AppendSwitch(kUseMobileUserAgent);
+  ASSERT_TRUE(command_line->HasSwitch(kUseMobileUserAgent));
   {
     EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent(kMobileProductSuffix));
   }
@@ -620,7 +620,7 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentAndroidVersionDeviceModel) {
 
   // Verify the mobile deviceModel and androidVersion in the user agent string
   // is reduced when not using a mobile user agent.
-  ASSERT_FALSE(command_line->HasSwitch(switches::kUseMobileUserAgent));
+  ASSERT_FALSE(command_line->HasSwitch(kUseMobileUserAgent));
   {
     std::string buffer = GetUserAgent();
     EXPECT_EQ("Linux; Android 10; K", GetUserAgentPlatformOsCpu(buffer));
@@ -629,8 +629,8 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentAndroidVersionDeviceModel) {
 
   // Verify the mobile deviceModel and androidVersion in the user agent string
   // is reduced when using a mobile user agent.
-  command_line->AppendSwitch(switches::kUseMobileUserAgent);
-  ASSERT_TRUE(command_line->HasSwitch(switches::kUseMobileUserAgent));
+  command_line->AppendSwitch(kUseMobileUserAgent);
+  ASSERT_TRUE(command_line->HasSwitch(kUseMobileUserAgent));
   {
     std::string buffer = GetUserAgent();
     EXPECT_EQ("Linux; Android 10; K", GetUserAgentPlatformOsCpu(buffer));

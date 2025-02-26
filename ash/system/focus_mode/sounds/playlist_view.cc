@@ -67,7 +67,7 @@ PlaylistView::PlaylistView(focus_mode_util::SoundType type,
   title_label_->SetMaximumWidthSingleLine(kSinglePlaylistViewWidth);
   title_label_->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
       TypographyToken::kCrosAnnotation2));
-  title_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  title_label_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   title_label_->SetLineHeight(kPlaylistTitleLineHeight);
   title_label_->GetViewAccessibility().SetName(
       std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);

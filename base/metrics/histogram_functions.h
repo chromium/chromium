@@ -194,11 +194,15 @@ BASE_EXPORT void UmaHistogramMicrosecondsTimes(std::string_view name,
 
 // For recording memory-related histograms.
 // LINT.IfChange(UmaHistogramMemory)
-// Used to measure common KB-granularity memory stats. Range is up to 500M.
+//
+// Used to measure common KB-granularity memory stats. Sample is in KB. Range is
+// from 1000KB (see crbug.com/40526504) to 500M. For measuring sizes less than
+// 1000K, use `UmaHistogramCounts`.
 BASE_EXPORT void UmaHistogramMemoryKB(std::string_view name, int sample);
-// Used to measure common MB-granularity memory stats. Range is up to ~1G.
+// Used to measure common MB-granularity memory stats. Sample is in MB. Range is
+// 1MB to ~1G.
 BASE_EXPORT void UmaHistogramMemoryMB(std::string_view name, int sample);
-// Used to measure common MB-granularity memory stats. Range is up to ~64G.
+// Used to measure common MB-granularity memory stats. Range is 1G to ~64G.
 BASE_EXPORT void UmaHistogramMemoryLargeMB(std::string_view name, int sample);
 // LINT.ThenChange(/base/metrics/histogram_functions_internal_overloads.h:UmaHistogramMemory)
 

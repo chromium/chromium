@@ -38,7 +38,7 @@ std::unique_ptr<views::Label> CreateLabelView(
     raw_ptr<views::Label>* destination_view) {
   return views::Builder<views::Label>()
       .SetText(text)
-      .SetEnabledColorId(enabled_color_id)
+      .SetEnabledColor(enabled_color_id)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetMultiLine(false)
       .CopyAddressTo(destination_view)

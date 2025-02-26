@@ -92,7 +92,7 @@ GlanceablesListFooterView::GlanceablesListFooterView(
   title_label_ = AddChildView(
       views::Builder<views::Label>()
           .SetID(base::to_underlying(GlanceablesViewId::kListFooterTitleLabel))
-          .SetEnabledColorId(cros_tokens::kCrosSysSecondary)
+          .SetEnabledColor(cros_tokens::kCrosSysSecondary)
           .SetFontList(typography_provider->ResolveTypographyToken(
               TypographyToken::kCrosBody2))
           .SetLineHeight(typography_provider->ResolveLineHeight(

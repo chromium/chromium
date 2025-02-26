@@ -263,4 +263,10 @@ ExtensionsBrowserClient::GetMediaDeviceSaltService(
   return nullptr;
 }
 
+bool ExtensionsBrowserClient::HasControlledFrameCapability(
+    content::BrowserContext* context,
+    const GURL& url) {
+  return false;
+}
+
 }  // namespace extensions

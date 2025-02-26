@@ -36,7 +36,7 @@ class CullRectTest : public testing::Test, private CullRectTestConfig {
                      const std::optional<gfx::Rect>& bounds = std::nullopt,
                      const std::pair<bool, bool>& expanded = {true, true}) {
     return CullRect(new_rect).ChangedEnough(expanded, CullRect(old_rect),
-                                            bounds, 1.f);
+                                            bounds, t0(), 1.f);
   }
 
   float expansion_ratio_ = 1.f;
@@ -214,9 +214,7 @@ TEST_F(CullRectTest, ApplyScrollTranslationPartialScrollingContents1) {
             ApplyScrollTranslation(cull_rect, scroll_translation));
   // No expansion in the non-scrollable direction.
   if (RuntimeEnabledFeatures::ScrollCullRectFromContainerRectEnabled()) {
-    // The cull rect used small scroller minimum expansion because the
-    // intersection of the scrollport and the input cull rect is small.
-    EXPECT_EQ(gfx::Rect(20, 3986, 300, 2448), cull_rect.Rect());
+    EXPECT_EQ(gfx::Rect(20, 1010, 300, 7000), cull_rect.Rect());
   } else {
     EXPECT_EQ(gfx::Rect(30, 1010, 100, 7000), cull_rect.Rect());
   }

@@ -39,5 +39,5 @@ def main(request, response):
   response.headers.set(b'accept-signature', acceptSigs)
   response.headers.set(b'access-control-expose-headers', b'accept-signature')
 
-  response.status_code = 200
+  response.status = int(request.GET.first(b'status', "200"))
   response.content = request.GET.first(b'body', '')

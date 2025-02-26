@@ -200,7 +200,7 @@ void TabbedPaneTab::UpdateEnabledColor(bool enabled) {
     UpdateTitleColor();
     UpdateIconColor();
   } else {
-    title_->SetEnabledColorId(ui::kColorTabForegroundDisabled);
+    title_->SetEnabledColor(ui::kColorTabForegroundDisabled);
     if (icon_view_) {
       icon_view_->SetImage(
           GetImageModelForTab(ui::kColorTabForegroundDisabled));
@@ -375,7 +375,7 @@ void TabbedPaneTab::UpdatePreferredTitleWidth() {
 
 void TabbedPaneTab::UpdateTitleColor() {
   DCHECK(GetWidget());
-  title_->SetEnabledColorId(std::make_optional(GetIconTitleColor()));
+  title_->SetEnabledColor(GetIconTitleColor());
 }
 
 void TabbedPaneTab::UpdateIconColor() {

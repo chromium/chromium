@@ -322,8 +322,9 @@ void PersistedData::SetLang(const std::string& id, const std::string& lang) {
 #if BUILDFLAG(IS_WIN)
   // For backwards compatibility, record the lang in ClientState, since some
   // applications read it from there.
-  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_), base::UTF8ToWide(id),
-                 kRegValueLang, base::UTF8ToWide(lang));
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
+                 GetAppClientStateKey(base::UTF8ToWide(id)), kRegValueLang,
+                 base::UTF8ToWide(lang));
 #endif
 }
 
@@ -524,6 +525,14 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
 
 bool PersistedData::RemoveApp(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, the `ClientState` entry for the app is also
+  // removed.
+  base::win::RegKey(UpdaterScopeToHKeyRoot(scope_), L"", Wow6432(DELETE))
+      .DeleteKey(GetAppClientStateKey(base::UTF8ToWide(id)).c_str());
+#endif
+
   if (!pref_service_) {
     return false;
   }

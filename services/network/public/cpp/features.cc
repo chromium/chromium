@@ -412,4 +412,8 @@ BASE_FEATURE_PARAM(std::string,
                    "allowlist",
                    "");
 
+BASE_FEATURE(kUpdateRequestForCorsRedirect,
+             "UpdateRequestForCorsRedirect",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace network::features

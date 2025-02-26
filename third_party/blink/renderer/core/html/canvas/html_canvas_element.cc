@@ -1534,25 +1534,7 @@ CanvasHibernationHandler* HTMLCanvasElement::GetHibernationHandler() const {
                           : nullptr;
 }
 
-Canvas2DLayerBridge* HTMLCanvasElement::GetOrCreateCanvas2DLayerBridge() {
-  DCHECK(IsRenderingContext2D());
-
-  if (canvas2d_bridge_) {
-    return canvas2d_bridge_.get();
-  }
-
-  if (did_fail_to_create_resource_provider_) {
-    return nullptr;
-  }
-
-  if (!IsValidImageSize(Size())) {
-    did_fail_to_create_resource_provider_ = true;
-    if (!Size().IsEmpty() && context_) {
-      context_->LoseContext(CanvasRenderingContext::kSyntheticLostContext);
-    }
-    return nullptr;
-  }
-
+void HTMLCanvasElement::UpdatePreferred2DRasterMode() {
   // If the canvas meets the criteria to use accelerated-GPU rendering, and
   // the user signals that the canvas will not be read frequently through
   // getImageData, which is a slow operation with GPU, the canvas will try to
@@ -1572,6 +1554,29 @@ Canvas2DLayerBridge* HTMLCanvasElement::GetOrCreateCanvas2DLayerBridge() {
                             ? RasterModeHint::kPreferGPU
                             : RasterModeHint::kPreferCPU;
   SetPreferred2DRasterMode(hint);
+}
+
+Canvas2DLayerBridge* HTMLCanvasElement::GetOrCreateCanvas2DLayerBridge() {
+  DCHECK(IsRenderingContext2D());
+
+  if (canvas2d_bridge_) {
+    return canvas2d_bridge_.get();
+  }
+
+  if (did_fail_to_create_resource_provider_) {
+    return nullptr;
+  }
+
+  if (!IsValidImageSize(Size())) {
+    did_fail_to_create_resource_provider_ = true;
+    if (!Size().IsEmpty() && context_) {
+      context_->LoseContext(CanvasRenderingContext::kSyntheticLostContext);
+    }
+    return nullptr;
+  }
+
+  UpdatePreferred2DRasterMode();
+
   canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(*this);
 
   UpdateMemoryUsage();

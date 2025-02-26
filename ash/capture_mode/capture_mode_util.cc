@@ -320,7 +320,7 @@ std::unique_ptr<views::View> CreateClipboardShortcutView() {
       clipboard_shortcut_view->AddChildView(std::make_unique<views::Label>());
   shortcut_label->SetText(label_text);
   shortcut_label->SetBackgroundColor(cros_tokens::kCrosSysPrimary);
-  shortcut_label->SetEnabledColorId(cros_tokens::kCrosSysOnPrimary);
+  shortcut_label->SetEnabledColor(cros_tokens::kCrosSysOnPrimary);
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
                                              *shortcut_label);
   return clipboard_shortcut_view;
@@ -351,7 +351,7 @@ std::unique_ptr<views::View> CreateBannerView() {
           IDS_ASH_SCREEN_CAPTURE_SCREENSHOT_COPIED_TO_CLIPBOARD)));
   label->SetBackgroundColor(kColorAshControlBackgroundColorActive);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetEnabledColorId(cros_tokens::kCrosSysOnPrimary);
+  label->SetEnabledColor(cros_tokens::kCrosSysOnPrimary);
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
                                              *label);
 
@@ -492,7 +492,7 @@ aura::Window* GetPreferredRootWindow(
 }
 
 void ConfigLabelView(views::Label* label_view) {
-  label_view->SetEnabledColorId(kColorAshTextColorPrimary);
+  label_view->SetEnabledColor(kColorAshTextColorPrimary);
   label_view->SetBackgroundColor(SK_ColorTRANSPARENT);
   label_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label_view->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);

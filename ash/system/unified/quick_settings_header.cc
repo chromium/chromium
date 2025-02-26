@@ -110,7 +110,7 @@ class QuickSettingsHeader::ManagedStateView : public views::Button {
     label_->SetText(l10n_util::GetStringUTF16(label_id));
 
     image_->SetPreferredSize(kManagedStateImageSize);
-    label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    label_->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
     TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
                                           *label_);
     SetInstallFocusRingOnFocus(true);

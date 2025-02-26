@@ -232,7 +232,7 @@ MahiMenuView::MahiMenuView(ButtonStatus button_status, Surface surface)
       header_left_container->AddChildView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(IDS_ASH_MAHI_MENU_TITLE),
           views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_HEADLINE_5));
-  header_label->SetEnabledColorId(ui::kColorSysOnSurface);
+  header_label->SetEnabledColor(ui::kColorSysOnSurface);
   header_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   header_label->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
 

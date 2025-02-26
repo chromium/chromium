@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -33,8 +34,10 @@ class TestLabel : public internal::LabelButtonLabel {
   // LabelButtonLabel:
   void OnDidSchedulePaint(const gfx::Rect& r) override {
     LabelButtonLabel::OnDidSchedulePaint(r);
-    *last_color_ = GetEnabledColor();
-    *last_color_id_ = Label::GetEnabledColorId();
+    *last_color_ = Label::GetEnabledColor();
+    *last_color_id_ = Label::GetRequestedEnabledColor()
+                          ? Label::GetRequestedEnabledColor()->GetColorId()
+                          : std::nullopt;
   }
 
  private:
@@ -144,13 +147,13 @@ TEST_F(LabelButtonLabelTest, ColorIds) {
   EXPECT_TRUE(last_color_id_.has_value());
 
   // Override the theme for the enabled color.
-  label()->SetEnabledColorId(ui::kColorAccent);
+  label()->SetEnabledColor(ui::kColorAccent);
   EXPECT_EQ(last_color_id_.value(), ui::kColorAccent);
   EXPECT_EQ(last_color_,
             label()->GetColorProvider()->GetColor(ui::kColorAccent));
 
   label()->SetEnabled(false);
-  label()->SetDisabledColorId(ui::kColorBadgeBackground);
+  label()->SetDisabledColor(ui::kColorBadgeBackground);
   EXPECT_EQ(last_color_id_.value(), ui::kColorBadgeBackground);
   EXPECT_EQ(last_color_,
             label()->GetColorProvider()->GetColor(ui::kColorBadgeBackground));

@@ -352,20 +352,32 @@ TEST_F(ContentVerifierTest, NormalizeRelativePath) {
 // extension case isn't lower cased or even if they are specified as browser
 // image paths.
 TEST_F(ContentVerifierTest, JSAndHTMLAlwaysVerified) {
-  std::vector<std::string> paths = {
-      "a.js",  "b.html", "c.htm",  "a.JS",  "b.HTML",
-      "c.HTM", "a.Js",   "b.Html", "c.Htm",
+  std::vector<std::string> exts_lowercase = {
+      // Common extensions.
+      "js",
+      "html",
+      "htm",
+      // Less common extensions.
+      "mjs",
+      "shtml",
+      "shtm",
   };
 
-  for (const auto& path_str : paths) {
-    const base::FilePath path = base::FilePath().AppendASCII(path_str);
-    UpdateBrowserImagePaths({});
-    // |path| would be treated as unclassified resource, so it gets verified.
-    EXPECT_TRUE(ShouldVerifySinglePath(path)) << "for path " << path;
-    // Even if |path| was specified as browser image, as |path| is JS/html
-    // (sensitive) resource, it would still get verified.
-    UpdateBrowserImagePaths({path});
-    EXPECT_TRUE(ShouldVerifySinglePath(path)) << "for path " << path;
+  for (const auto& ext_lowercase : exts_lowercase) {
+    auto ext_uppercase = base::ToUpperASCII(ext_lowercase);
+    auto ext_capitalized = ext_lowercase;
+    ext_capitalized[0] = base::ToUpperASCII(ext_capitalized[0]);
+    for (const auto& ext : {ext_lowercase, ext_uppercase, ext_capitalized}) {
+      const auto path =
+          base::FilePath(FILE_PATH_LITERAL("x")).AddExtensionASCII(ext);
+      UpdateBrowserImagePaths({});
+      // |path| would be treated as unclassified resource, so it gets verified.
+      EXPECT_TRUE(ShouldVerifySinglePath(path)) << "for path " << path;
+      // Even if |path| was specified as browser image, as |path| is JS/html
+      // (sensitive) resource, it would still get verified.
+      UpdateBrowserImagePaths({path});
+      EXPECT_TRUE(ShouldVerifySinglePath(path)) << "for path " << path;
+    }
   }
 }
 

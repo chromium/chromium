@@ -35,9 +35,11 @@ class FakeDelegate : public URLRequest::Delegate {
 constexpr net::NetworkTrafficAnnotationTag kDummyAnnotation =
     net::DefineNetworkTrafficAnnotation("dbsc_registration", "");
 constexpr char kSessionId[] = "SessionId";
+constexpr char kRefreshUrlString[] = "https://example.test/refresh";
 constexpr char kUrlString[] = "https://example.test/index.html";
 constexpr char kUrlStringForWrongETLD[] = "https://example.co.uk/index.html";
 const GURL kTestUrl(kUrlString);
+const GURL kRefreshUrl(kRefreshUrlString);
 const GURL kTestUrlForWrongETLD(kUrlStringForWrongETLD);
 
 SessionParams CreateValidParams() {
@@ -48,7 +50,7 @@ SessionParams CreateValidParams() {
                                  "Secure; Domain=example.test"}});
   return SessionParams{kSessionId,
                        kTestUrl,
-                       kUrlString,
+                       kRefreshUrlString,
                        std::move(scope),
                        std::move(cookie_credentials),
                        unexportable_keys::UnexportableKeyId()};
@@ -462,6 +464,18 @@ TEST_F(SessionTest, NetLogNoRefresh) {
           .GetEntriesWithType(NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED)
           .size(),
       1u);
+}
+
+TEST_F(SessionTest, RefreshUrlExcludedFromSession) {
+  auto params = CreateValidParams();
+
+  // Make sure the refresh endpoint isn't explicitly excluded
+  EXPECT_TRUE(params.scope.specifications.empty());
+
+  auto session = Session::CreateIfValid(params);
+  ASSERT_TRUE(session);
+
+  EXPECT_FALSE(session->IncludesUrl(kRefreshUrl));
 }
 
 }  // namespace

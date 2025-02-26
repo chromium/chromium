@@ -273,7 +273,8 @@ void ExtensionRegistrar::DisableExtension(
     const ExtensionId& extension_id,
     const DisableReasonSet& disable_reasons) {
   auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
-  DisableExtensionWithRawReasons(passkey, extension_id, disable_reasons);
+  DisableExtensionWithRawReasons(passkey, extension_id,
+                                 DisableReasonSetToIntegerSet(disable_reasons));
 }
 
 void ExtensionRegistrar::DisableExtensionWithRawReasons(
@@ -837,6 +838,12 @@ void ExtensionRegistrar::GreylistExtensionForTest(
 void ExtensionRegistrar::OnUnpackedExtensionReloadFailed(
     const base::FilePath& path) {
   failed_to_reload_unpacked_extensions_.insert(path);
+}
+
+void ExtensionRegistrar::GrantPermissionsAndEnableExtension(
+    const Extension& extension) {
+  delegate_->GrantActivePermissions(&extension);
+  EnableExtension(extension.id());
 }
 
 void ExtensionRegistrar::TerminateExtension(const ExtensionId& extension_id) {

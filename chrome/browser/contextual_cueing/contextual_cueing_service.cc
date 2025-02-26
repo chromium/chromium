@@ -48,6 +48,8 @@ ContextualCueingService::ContextualCueingService(
     : recent_nudge_tracker_(kNudgeCapCount.Get(), kNudgeCapTime.Get()),
       recent_visited_origins_(kVisitedDomainsLimit.Get()),
       page_content_extraction_service_(page_content_extraction_service) {
+  CHECK(base::FeatureList::IsEnabled(contextual_cueing::kContextualCueing));
+
   if (kEnablePageContentExtraction.Get()) {
     page_content_extraction_service_->AddObserver(this);
   }

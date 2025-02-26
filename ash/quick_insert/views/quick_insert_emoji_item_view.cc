@@ -63,7 +63,7 @@ QuickInsertEmojiItemView::QuickInsertEmojiItemView(
                             .Build());
 
   if (style == Style::kEmoticon || style == Style::kSymbol) {
-    label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    label_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   }
   if (style == Style::kEmoticon) {
     label_->SetBorder(views::CreateEmptyBorder(kEmoticonItemMargins));

@@ -275,7 +275,6 @@ void QuotaManagerProxy::GetBucketByNameUnsafe(
 
 void QuotaManagerProxy::GetBucketsForStorageKey(
     const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
     bool delete_expired,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback) {
@@ -286,7 +285,7 @@ void QuotaManagerProxy::GetBucketsForStorageKey(
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&QuotaManagerProxy::GetBucketsForStorageKey, this,
-                       storage_key, type, delete_expired,
+                       storage_key, delete_expired,
                        std::move(callback_task_runner), std::move(callback)));
     return;
   }
@@ -301,7 +300,8 @@ void QuotaManagerProxy::GetBucketsForStorageKey(
   }
 
   quota_manager_impl_->GetBucketsForStorageKey(
-      storage_key, type, std::move(respond), delete_expired);
+      storage_key, blink::mojom::StorageType::kTemporary, std::move(respond),
+      delete_expired);
 }
 
 void QuotaManagerProxy::GetBucketById(
@@ -484,19 +484,18 @@ void QuotaManagerProxy::OnClientWriteFailed(const StorageKey& storage_key) {
 
 void QuotaManagerProxy::SetUsageCacheEnabled(QuotaClientType client_id,
                                              const StorageKey& storage_key,
-                                             blink::mojom::StorageType type,
                                              bool enabled) {
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&QuotaManagerProxy::SetUsageCacheEnabled,
-                                  this, client_id, storage_key, type, enabled));
+                                  this, client_id, storage_key, enabled));
     return;
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
   if (quota_manager_impl_) {
-    quota_manager_impl_->SetUsageCacheEnabled(client_id, storage_key, type,
-                                              enabled);
+    quota_manager_impl_->SetUsageCacheEnabled(
+        client_id, storage_key, blink::mojom::StorageType::kTemporary, enabled);
   }
 }
 
@@ -588,7 +587,6 @@ void QuotaManagerProxy::GetBucketSpaceRemaining(
 
 void QuotaManagerProxy::IsStorageUnlimited(
     const StorageKey& storage_key,
-    blink::mojom::StorageType type,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(bool)> callback) {
   DCHECK(callback_task_runner);
@@ -596,17 +594,17 @@ void QuotaManagerProxy::IsStorageUnlimited(
 
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&QuotaManagerProxy::IsStorageUnlimited, this,
-                       storage_key, type, std::move(callback_task_runner),
-                       std::move(callback)));
+        FROM_HERE, base::BindOnce(&QuotaManagerProxy::IsStorageUnlimited, this,
+                                  storage_key, std::move(callback_task_runner),
+                                  std::move(callback)));
     return;
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
   bool is_storage_unlimited =
       quota_manager_impl_
-          ? quota_manager_impl_->IsStorageUnlimited(storage_key, type)
+          ? quota_manager_impl_->IsStorageUnlimited(
+                storage_key, blink::mojom::StorageType::kTemporary)
           : false;
 
   auto respond =
@@ -616,7 +614,6 @@ void QuotaManagerProxy::IsStorageUnlimited(
 
 void QuotaManagerProxy::GetStorageKeyUsageWithBreakdown(
     const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     UsageWithBreakdownCallback callback) {
   CHECK(callback_task_runner);
@@ -626,7 +623,7 @@ void QuotaManagerProxy::GetStorageKeyUsageWithBreakdown(
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&QuotaManagerProxy::GetStorageKeyUsageWithBreakdown,
-                       this, storage_key, type, std::move(callback_task_runner),
+                       this, storage_key, std::move(callback_task_runner),
                        std::move(callback)));
     return;
   }
@@ -640,8 +637,8 @@ void QuotaManagerProxy::GetStorageKeyUsageWithBreakdown(
     return;
   }
 
-  quota_manager_impl_->GetStorageKeyUsageWithBreakdown(storage_key, type,
-                                                       std::move(respond));
+  quota_manager_impl_->GetStorageKeyUsageWithBreakdown(
+      storage_key, blink::mojom::StorageType::kTemporary, std::move(respond));
 }
 
 std::unique_ptr<QuotaOverrideHandle>

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Optimization of requestAnimationFrame callbacks that don't modify the DOM shouldn't break animations
+  assert_greater_than: expected a number greater than 500 but got 0
+Harness: the test ran to completion.
+

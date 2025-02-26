@@ -162,7 +162,7 @@ ash::LobsterSystemState LobsterSystemStateProvider::GetSystemState(
               kAccountCapabilitiesCheckFailed)) {
     system_state.status = ash::LobsterStatus::kBlocked;
     system_state.failed_checks.Put(
-        ash::LobsterSystemCheck::kUnsatisfiedAccountCapabilitiesCheck);
+        ash::LobsterSystemCheck::kInvalidAccountCapabilities);
   }
 
   // Performs a kiosk mode check

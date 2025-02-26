@@ -647,10 +647,23 @@ extern bool ShouldZstdCompressPdfBytes();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetZstdCompressionLevel();
 
+// Whether to show the upload progress bar in the side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool ShouldShowUploadProgressBar();
+
+// This is a heuristic value that determines when to show the upload progress
+// bar. The value is a percentage of the total page content upload that is
+// received in the progress handler. If one call to the progress handler
+// receives a value greater than this heuristic, the progress bar will not be
+// shown. For example, if the heuristic is 0.3, and the first call to the
+// progress handler receives 31% of the total page content, the progress bar
+// will not be shown because it is assumed that the upload will finish quickly.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern double GetUploadProgressBarShowHeuristic();
+
 // Whether to enable the simplified selection flow in the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsSimplifiedSelectionEnabled();
-
 
 // Whether to fix the request id for page content upload requests. When enabled,
 // this will not increment the image upload request ID when the page content

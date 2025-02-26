@@ -2064,6 +2064,14 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="46"
       label="Image captured from smart actions button, and actions started
              fetching"/>
+  <int value="47"
+      label="Smart actions button was not shown because UI access checks for
+             both Sunfish and Scanner resulted in &quot;do not show UI&quot;"/>
+  <int value="48"
+      label="Smart actions button was not shown because text detection was
+             cancelled"/>
+  <int value="49"
+      label="Smart actions button was not shown because no text was detected"/>
 </enum>
 
 <!-- LINT.ThenChange(//ash/scanner/scanner_metrics.h:ScannerFeatureUserState) -->

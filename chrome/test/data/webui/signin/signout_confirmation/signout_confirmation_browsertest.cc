@@ -17,3 +17,8 @@ IN_PROC_BROWSER_TEST_F(SignoutConfirmationBrowserTest, MainView) {
   RunTest("signin/signout_confirmation/signout_confirmation_view_test.js",
           "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(SignoutConfirmationBrowserTest, ExtensionsSection) {
+  RunTest("signin/signout_confirmation/extensions_section_test.js",
+          "mocha.run()");
+}

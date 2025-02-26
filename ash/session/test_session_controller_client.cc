@@ -16,27 +16,16 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user_type.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-
-namespace {
-
-// Returns the "canonicalized" email from a given |email| address. Note
-// production code should use gaia::CanonicalizeEmail. This is used in tests
-// without introducing dependency on google_api.
-std::string GetUserIdFromEmail(std::string_view email) {
-  return base::ToLowerASCII(email);
-}
-
-}  // namespace
 
 TestSessionControllerClient::TestSessionControllerClient(
     SessionControllerImpl* controller,
@@ -120,9 +109,8 @@ void TestSessionControllerClient::AddUserSession(
     bool is_new_profile,
     const std::string& given_name,
     bool is_account_managed) {
-  auto account_id = AccountId::FromUserEmail(
-      use_lower_case_user_id_ ? GetUserIdFromEmail(display_email)
-                              : display_email);
+  auto account_id =
+      AccountId::FromUserEmail(gaia::CanonicalizeEmail(display_email));
   AddUserSession(account_id, display_email, user_type, std::move(pref_service),
                  is_new_profile, given_name, is_account_managed);
 }

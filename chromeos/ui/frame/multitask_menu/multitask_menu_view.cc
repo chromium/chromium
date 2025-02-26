@@ -69,7 +69,7 @@ std::unique_ptr<views::View> CreateButtonContainer(
   views::Label* label = container->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(label_message_id)));
   label->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
-  label->SetEnabledColorId(ui::kColorSysOnSurface);
+  label->SetEnabledColor(ui::kColorSysOnSurface);
   label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
                                    kLabelFontSize, gfx::Font::Weight::NORMAL));
   label->SetHorizontalAlignment(gfx::ALIGN_CENTER);

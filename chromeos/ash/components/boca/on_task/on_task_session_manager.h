@@ -56,6 +56,10 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
                   const GURL url) override;
   void OnTabRemoved(const SessionID tab_id) override;
 
+  boca::OnTaskSystemWebAppManager* GetOnTaskSystemWebAppManager() {
+    return system_web_app_manager_.get();
+  }
+
  private:
   friend class OnTaskSessionManagerTest;
 

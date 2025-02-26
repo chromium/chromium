@@ -60,7 +60,7 @@ std::unique_ptr<views::View> CreateSectionHeader(const gfx::VectorIcon& icon,
 
   auto label =
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(name_id));
-  label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label);
   view->AddChildView(std::move(label));
 
@@ -103,7 +103,7 @@ SummaryOutlinesElucidationSection::SummaryOutlinesElucidationSection(
                    .SetID(mahi_constants::ViewId::kSummaryElucidationIndicator)
                    .SetSelectable(false)
                    .SetMultiLine(false)
-                   .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                   .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
                    .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                    .AfterBuild(base::BindOnce([](views::Label* self) {
                      TypographyProvider::Get()->StyleLabel(
@@ -124,7 +124,7 @@ SummaryOutlinesElucidationSection::SummaryOutlinesElucidationSection(
           // so we impose a maximum width constraint so that the first
           // layout handle the width and height constraint correctly.
           .SetMaximumWidth(kTextLabelDefaultMaximumWidth)
-          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+          .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
           .AfterBuild(base::BindOnce([](views::Label* self) {
             TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
@@ -249,7 +249,7 @@ void SummaryOutlinesElucidationSection::HandleOutlinesLoaded(
             .SetText(outline.outline_content)
             .SetSelectable(true)
             .SetMultiLine(true)
-            .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+            .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
             .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
             .AfterBuild(base::BindOnce([](views::Label* self) {
               TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,

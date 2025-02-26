@@ -21,6 +21,7 @@ interface LensSidePanelPageHandler {
   // Pops the most recent search query from the history stack to load in the
   // side panel.
   PopAndLoadQueryFromHistory();
+
   // Gets whether the current searchbox is contextual.
   GetIsContextualSearchbox() => (bool is_contextual_searchbox);
 };
@@ -37,6 +38,10 @@ interface LensSidePanelPage {
   // Instead, we listen for the start of the navigations in the browser and set
   // the loading state appropriately.
   SetIsLoadingResults(bool is_loading);
+
+  // Sets the progress of the page content upload. `progress` is a percentage
+  // value between 0 and 1.
+  SetPageContentUploadProgress(float progress);
 
   // Sets visibility for back arrow next to the searchbox.
   SetBackArrowVisible(bool visible);

@@ -333,7 +333,7 @@ SystemNudgeView::SystemNudgeView(
             .SetText(nudge_data.title_text)
             .SetTooltipText(nudge_data.title_text)
             .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-            .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+            .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
             .SetAutoColorReadabilityEnabled(false)
             .SetSubpixelRenderingEnabled(false)
             .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
@@ -350,7 +350,7 @@ SystemNudgeView::SystemNudgeView(
           .SetText(nudge_data.body_text)
           .SetTooltipText(nudge_data.body_text)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+          .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
           .SetAutoColorReadabilityEnabled(false)
           .SetSubpixelRenderingEnabled(false)
           .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(

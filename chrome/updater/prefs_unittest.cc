@@ -31,25 +31,7 @@
 
 namespace updater {
 
-class PrefsTest : public ::testing::Test {
-#if BUILDFLAG(IS_WIN)
- protected:
-  void SetUp() override { DeleteValuesInRegistry(); }
-  void TearDown() override { DeleteValuesInRegistry(); }
-
- private:
-  void DeleteValuesInRegistry() {
-    for (const auto value : {kRegValueBrandCode, kRegValueLang}) {
-      base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
-                        GetAppClientStateKey(L"someappid").c_str(),
-                        Wow6432(KEY_SET_VALUE))
-          .DeleteValue(value);
-    }
-  }
-#endif
-};
-
-TEST_F(PrefsTest, PrefsCommitPendingWrites) {
+TEST(PrefsTest, PrefsCommitPendingWrites) {
   base::test::TaskEnvironment task_environment;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
@@ -61,6 +43,16 @@ TEST_F(PrefsTest, PrefsCommitPendingWrites) {
   EXPECT_STREQ(metadata->GetBrandCode("someappid").c_str(), "brand");
 
   metadata->SetLang("someappid", "somelang");
+#if BUILDFLAG(IS_WIN)
+  std::wstring registry_lang_w;
+  EXPECT_EQ(
+      base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                        GetAppClientStateKey(L"someappid").c_str(),
+                        Wow6432(KEY_QUERY_VALUE))
+          .ReadValue(kRegValueLang, &registry_lang_w),
+      ERROR_SUCCESS);
+  EXPECT_EQ(registry_lang_w, L"somelang");
+#endif
   EXPECT_EQ(metadata->GetLang("someappid"), "somelang");
 
 #if BUILDFLAG(IS_WIN)
@@ -83,6 +75,21 @@ TEST_F(PrefsTest, PrefsCommitPendingWrites) {
 
   // Tests writing to storage completes.
   PrefsCommitPendingWrites(pref.get());
+
+#if BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(base::win::RegKey(
+                  UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                  GetAppClientStateKey(L"someappid").c_str(), Wow6432(KEY_READ))
+                  .Valid());
+#endif
+  metadata->RemoveApp("someappid");
+#if BUILDFLAG(IS_WIN)
+  EXPECT_FALSE(
+      base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                        GetAppClientStateKey(L"someappid").c_str(),
+                        Wow6432(KEY_READ))
+          .Valid());
+#endif
 }
 
 }  // namespace updater

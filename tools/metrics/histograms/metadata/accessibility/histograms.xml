@@ -3269,6 +3269,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.WinAPIs.UIAutomation" enum="BooleanEnabled"
+    expires_after="2025-07-06">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>almaher@microsoft.com</owner>
+  <owner>benjamin.beaudry@microsoft.com</owner>
+  <owner>janewman@microsoft.com</owner>
+  <owner>javiercon@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Tracks presence of UI Automation core library (in process).</summary>
+</histogram>
+
 <histogram name="Accessibility.WinHighContrastTheme"
     enum="AccessibilityHighContrastColorScheme" expires_after="2025-08-30">
   <owner>aleventhal@chromium.org</owner>

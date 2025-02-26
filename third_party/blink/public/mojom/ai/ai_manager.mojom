@@ -105,7 +105,7 @@ interface AIManagerCreateSummarizerClient {
 interface AIManager {
   // Returns language model availability info from the underlying service.
   CanCreateLanguageModel(
-    AILanguageModelAvailabilityOptions options
+    array<AILanguageCode>? expected_input_languages
   ) => (ModelAvailabilityCheckResult result);
   // Creates a new language model.
   // Note that this could return nullptr even if the previous

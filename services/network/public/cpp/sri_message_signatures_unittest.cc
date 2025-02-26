@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -731,8 +732,15 @@ class SRIMessageSignatureBaseTest : public testing::Test {
 
   scoped_refptr<net::HttpResponseHeaders> ValidHeadersPlusInput(
       const char* input) {
-    auto builder =
-        net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200");
+    return ValidHeadersPlusInputAndStatus(input, 200);
+  }
+
+  scoped_refptr<net::HttpResponseHeaders> ValidHeadersPlusInputAndStatus(
+      const char* input,
+      const int status_code) {
+    std::string status_string = base::NumberToString(status_code);
+    auto builder = net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1),
+                                                     status_string);
     builder.AddHeader("Unencoded-Digest", kValidDigestHeader);
     builder.AddHeader("Signature", kValidSignatureHeader);
     if (input) {
@@ -853,6 +861,40 @@ TEST_F(SRIMessageSignatureBaseTest, PathComponent) {
 
     std::optional<std::string> result =
         ConstructSignatureBase(parsed->signatures[0], GURL(test.url), *headers);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(expected_base.str(), result.value());
+  }
+}
+
+TEST_F(SRIMessageSignatureBaseTest, StatusComponent) {
+  for (int i = 0; i < net::HttpStatusCode::HTTP_STATUS_CODE_MAX; i++) {
+    std::optional<net::HttpStatusCode> test_code =
+        net::TryToGetHttpStatusCode(i);
+    if (!test_code) {
+      continue;
+    }
+
+    SCOPED_TRACE(i);
+
+    std::string input_header =
+        base::StrCat({"signature=(\"unencoded-digest\";sf \"@status\";req);",
+                      "keyid=\"", kPublicKey, "\";tag=\"sri\""});
+
+    std::stringstream expected_base;
+    expected_base
+        << "\"unencoded-digest\";sf: " << kValidDigestHeader << '\n'
+        << "\"@status\";req: " << *test_code << '\n'
+        << "\"@signature-params\": (\"unencoded-digest\";sf \"@status\";req);"
+        << "keyid=\"" << kPublicKey << "\";tag=\"sri\"";
+
+    auto headers =
+        ValidHeadersPlusInputAndStatus(input_header.c_str(), *test_code);
+    auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
+    ASSERT_EQ(1u, parsed->signatures.size());
+    EXPECT_EQ(0u, parsed->errors.size());
+
+    std::optional<std::string> result = ConstructSignatureBase(
+        parsed->signatures[0], GURL(kExampleURL), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
   }

@@ -48,7 +48,7 @@ class AuthFactorsLabel : public views::Label {
   AuthFactorsLabel(bool visible_to_screen_reader) {
     SetSubpixelRenderingEnabled(false);
     SetAutoColorReadabilityEnabled(false);
-    SetEnabledColorId(kColorAshTextColorSecondary);
+    SetEnabledColor(kColorAshTextColorSecondary);
     SetMultiLine(true);
     SetMaxLines(kLabelMaxLines);
     SetLineHeight(kLabelLineHeightDp);

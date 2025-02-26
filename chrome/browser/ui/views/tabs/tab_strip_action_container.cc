@@ -276,6 +276,8 @@ TabStripActionContainer::TabStripActionContainer(
       SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout_manager->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kStart);
+  layout_manager->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 }
 
 TabStripActionContainer::~TabStripActionContainer() {

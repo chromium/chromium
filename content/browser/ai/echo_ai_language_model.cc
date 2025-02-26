@@ -72,10 +72,22 @@ void EchoAILanguageModel::Prompt(
     return;
   }
 
-  CHECK_EQ(input->pieces.size(), 1u);
-  CHECK(std::holds_alternative<std::string>(input->pieces[0]));
-  const std::string& response = std::get<std::string>(input->pieces[0]);
-
+  std::string response = "";
+  for (const auto& piece : input->pieces) {
+    if (std::holds_alternative<std::string>(piece)) {
+      response += std::get<std::string>(piece);
+    } else if (std::holds_alternative<SkBitmap>(piece)) {
+      response += "<image>";
+    } else if (std::holds_alternative<::ml::Token>(piece)) {
+      NOTIMPLEMENTED_LOG_ONCE();
+    } else if (std::holds_alternative<bool>(piece)) {
+      NOTIMPLEMENTED_LOG_ONCE();
+    } else if (std::holds_alternative<ml::AudioBuffer>(piece)) {
+      NOTIMPLEMENTED_LOG_ONCE();
+    } else {
+      NOTIMPLEMENTED_LOG_ONCE();
+    }
+  }
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
   // Simulate the time taken by model execution.

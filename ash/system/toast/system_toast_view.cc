@@ -95,7 +95,7 @@ SystemToastView::SystemToastView(const std::u16string& text,
           .SetText(text)
           .SetTooltipText(text)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+          .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
           .SetAutoColorReadabilityEnabled(false)
           .SetSubpixelRenderingEnabled(false)
           .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(

@@ -104,7 +104,7 @@ std::unique_ptr<views::Label> CreateErrorLabel(std::u16string error_msg) {
       .SetText(std::move(error_msg))
       .SetTextStyle(views::style::STYLE_HINT)
       .SetTextContext(CONTEXT_DEEMPHASIZED)
-      .SetEnabledColorId(ui::kColorAlertHighSeverity)
+      .SetEnabledColor(ui::kColorAlertHighSeverity)
       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
       .SetVisible(false)
       .SetMultiLine(true)

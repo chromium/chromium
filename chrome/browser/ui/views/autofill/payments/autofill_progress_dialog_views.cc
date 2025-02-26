@@ -161,7 +161,7 @@ AutofillProgressDialogViews::AutofillProgressDialogViews(
       controller_->GetLoadingMessage(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY));
   label_->SetMultiLine(true);
-  label_->SetEnabledColorId(ui::kColorThrobber);
+  label_->SetEnabledColor(ui::kColorThrobber);
   // Set the maximum width of the label view so it will not compress the
   // throbber view.
   label_->SetMaximumWidth(views::LayoutProvider::Get()->GetDistanceMetric(

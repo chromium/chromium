@@ -212,8 +212,8 @@ class EditingList::AddContainerButton : public views::Button {
   // views::Button:
   void StateChanged(ButtonState old_state) override {
     bool enabled = GetState() != ButtonState::STATE_DISABLED;
-    title_->SetEnabledColorId(enabled ? cros_tokens::kCrosSysOnSurface
-                                      : cros_tokens::kCrosSysDisabled);
+    title_->SetEnabledColor(enabled ? cros_tokens::kCrosSysOnSurface
+                                    : cros_tokens::kCrosSysDisabled);
     if (auto* scroll_view = views::AsViewClass<views::ScrollView>(parent())) {
       UpdateBackground(/*add_background=*/scroll_view->GetVisibleRect().y() ==
                        0);

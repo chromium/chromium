@@ -380,7 +380,7 @@ GlanceablesTaskView::GlanceablesTaskView(
             TypographyToken::kCrosAnnotation1));
     due_date_label->SetLineHeight(TypographyProvider::Get()->ResolveLineHeight(
         TypographyToken::kCrosAnnotation1));
-    due_date_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    due_date_label->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
   }
 
   if (task && task->has_subtasks) {
@@ -581,7 +581,7 @@ void GlanceablesTaskView::AddExtraContentForEditState() {
     assigned_task_notice_label->SetLineHeight(
         TypographyProvider::Get()->ResolveLineHeight(
             TypographyToken::kCrosAnnotation1));
-    assigned_task_notice_label->SetEnabledColorId(
+    assigned_task_notice_label->SetEnabledColor(
         cros_tokens::kCrosSysOnSurfaceVariant);
 
     extra_content->AddChildView(std::move(assigned_task_notice));

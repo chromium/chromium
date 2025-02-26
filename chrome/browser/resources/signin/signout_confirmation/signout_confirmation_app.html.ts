@@ -14,6 +14,10 @@ export function getHtml(this: SignoutConfirmationAppElement) {
     <h1 id="title">${this.data_.dialogTitle}</h1>
     <div id="subtitle">${this.data_.dialogSubtitle}</div>
   </div>
+  ${this.showExtensionsSection_() ? html`
+    <extensions-section .accountExtensions="${this.data_.accountExtensions}">
+    </extensions-section>
+  ` : ``}
   <div id="action-row">
     <cr-button id="acceptButton" class="action-button"
         @click="${this.onAcceptButtonClick_}" autofocus>

@@ -25,7 +25,7 @@ StarRatingView::StarRatingView() {
   rating_label_ = AddChildView(std::make_unique<views::Label>());
   rating_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   rating_label_->SetTextStyle(views::style::TextStyle::STYLE_BODY_4);
-  rating_label_->SetEnabledColorId(kColorPageInfoSubtitleForeground);
+  rating_label_->SetEnabledColor(kColorPageInfoSubtitleForeground);
 
   const int distance_between_label_icons =
       views::LayoutProvider::Get()->GetDistanceMetric(

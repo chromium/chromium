@@ -15,6 +15,7 @@
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace optimization_guide {
 
@@ -234,6 +235,9 @@ class OptimizationGuideModelExecutor {
   class Session {
    public:
     virtual ~Session() = default;
+
+    // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
+    virtual on_device_model::mojom::Session& GetSession() = 0;
 
     virtual const TokenLimits& GetTokenLimits() const = 0;
 

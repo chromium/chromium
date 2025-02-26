@@ -105,7 +105,6 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // The `callback` parameter may be invoked synchronously or asynchronously,
   // and may fail.
   using GetCoordinatorKeyCallback = base::RepeatingCallback<void(
-      const url::Origin& scope_origin,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback)>;

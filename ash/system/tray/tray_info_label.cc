@@ -42,7 +42,7 @@ TrayInfoLabel::TrayInfoLabel(int message_id)
 TrayInfoLabel::~TrayInfoLabel() = default;
 
 void TrayInfoLabel::Update(int message_id) {
-  label_->SetEnabledColorId(kColorAshTextColorPrimary);
+  label_->SetEnabledColor(kColorAshTextColorPrimary);
   label_->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label_);
   label_->SetText(l10n_util::GetStringUTF16(message_id));

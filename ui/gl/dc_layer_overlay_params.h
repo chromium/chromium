@@ -17,6 +17,7 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/overlay_layer_id.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/dc_layer_overlay_image.h"
 #include "ui/gl/gl_export.h"
@@ -66,8 +67,9 @@ struct GL_EXPORT DCLayerOverlayParams {
   // blended behind |overlay_image|.
   std::optional<SkColor4f> background_color;
 
-  // Used to detect when multiple overlays are part of the same tile layer.
-  uint64_t aggregated_layer_id = 0;
+  // Expected to be unique in a frame.
+  // See |OverlayCandidate::layer_id|.
+  gfx::OverlayLayerId layer_id;
 
   // Parameters for video overlays, only used by |SwapChainPresenter|.
   struct VideoParams {

@@ -315,6 +315,7 @@ static_library("content_shell_lib") {
     "//components/cdm/renderer",
     "//components/custom_handlers",
     "//components/custom_handlers:test_support",
+    "//components/embedder_support",
     "//components/embedder_support:user_agent",
     "//components/input",
     "//components/keyed_service/content",

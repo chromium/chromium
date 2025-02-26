@@ -36,8 +36,10 @@ class ASH_EXPORT TabSliderButton : public views::Button {
 
  public:
   TabSliderButton(PressedCallback callback, const std::u16string& tooltip_text);
+
   TabSliderButton(const TabSliderButton&) = delete;
   TabSliderButton& operator=(const TabSliderButton&) = delete;
+
   ~TabSliderButton() override;
 
   bool selected() const { return selected_; }
@@ -49,7 +51,7 @@ class ASH_EXPORT TabSliderButton : public views::Button {
   void SetSelected(bool selected);
 
   // Returns the recommended color id for the current button state.
-  SkColor GetColorIdOnButtonState();
+  ui::ColorId GetColorIdOnButtonState();
 
  private:
   // Called when the button selected state is changed.

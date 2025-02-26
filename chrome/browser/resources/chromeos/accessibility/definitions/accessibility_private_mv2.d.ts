@@ -380,6 +380,8 @@ declare global {
 
       export function setNativeAccessibilityEnabled(enabled: boolean): void;
 
+      export function enableLiveCaption(enabled: boolean): void;
+
       export function setFocusRings(
           focusRings: FocusRingInfo[], atType: AssistiveTechnologyType): void;
 

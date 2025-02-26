@@ -333,7 +333,7 @@ void EmbeddedPermissionPromptBaseView::AddRequestLine(
   AddElementIdentifierToLabel(*label, index);
 
   label->SetTextStyle(views::style::STYLE_BODY_3);
-  label->SetEnabledColorId(kColorPermissionPromptRequestText);
+  label->SetEnabledColor(kColorPermissionPromptRequestText);
 
   line_container->SetProperty(views::kMarginsKey,
                               gfx::Insets().set_top(BODY_TOP_MARGIN));

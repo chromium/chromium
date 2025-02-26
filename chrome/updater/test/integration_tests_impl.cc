@@ -138,6 +138,9 @@ std::string GetHashHex(const base::FilePath& file) {
   return base::HexEncode(crypto::SHA256Hash(mmfile.bytes()));
 }
 
+// The fingerprint is formatted as app_id.1.hash_hex to make the fingerprint
+// unique in the scope of the integration tests, which sometimes reuse the
+// same update file payload for different app ids.
 std::string GetUpdateResponseForApp(
     const std::string& app_id,
     const std::string& install_data_index,
@@ -148,6 +151,7 @@ std::string GetUpdateResponseForApp(
     const std::string& arguments,
     std::optional<std::string> file_hash = std::nullopt,
     std::optional<std::string> status = std::nullopt) {
+  const std::string hash = file_hash.value_or(GetHashHex(update_file));
   return base::StringPrintf(
       R"(    {)"
       R"(      "appid":"%s",)"
@@ -162,13 +166,13 @@ std::string GetUpdateResponseForApp(
       R"(          "arguments":"%s",)"
       R"(          "packages":{)"
       R"(            "package":[)"
-      R"(              {"name":"%s","hash_sha256":"%s"})"
+      R"(              {"name":"%s","hash_sha256":"%s", "fp":"%s"})"
       R"(            ])"
       R"(          })"
       R"(        })"
       R"(      })"
       R"(    })",
-      base::ToLowerASCII(app_id).c_str(), status ? status->c_str() : "ok",
+      base::ToLowerASCII(app_id).c_str(), status.value_or("ok").c_str(),
       !install_data_index.empty()
           ? base::StringPrintf(
                 R"(     "data":[{ "status":"ok", "name":"install", )"
@@ -178,7 +182,7 @@ std::string GetUpdateResponseForApp(
           : "",
       codebase.c_str(), version.GetString().c_str(), run_action.c_str(),
       arguments.c_str(), update_file.BaseName().AsUTF8Unsafe().c_str(),
-      file_hash ? file_hash->c_str() : GetHashHex(update_file).c_str());
+      hash.c_str(), base::StrCat({app_id, ".1.", hash}).c_str());
 }
 
 std::string GetUpdateResponse(const std::vector<std::string>& app_responses) {
@@ -270,16 +274,16 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
   // Second request: event ping with an error because the update check response
   // is ignored by the client:
   // {errorCategory::kService, ServiceError::CHECK_FOR_UPDATE_ONLY}
-  test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
-                           request::GetUpdaterUserAgentMatcher(updater_version),
-                           request::GetContentMatcher({base::StringPrintf(
-                               R"(.*"errorcat":4,"errorcode":4,)"
-                               R"("eventresult":0,"eventtype":%d,)"
-                               R"("nextversion":"%s","previousversion":"%s".*)",
-                               event_type, to_version.GetString().c_str(),
-                               from_version.GetString().c_str())}),
-                           request::GetScopeMatcher(scope)},
-                          ")]}'\n");
+  test_server->ExpectOnce(
+      {request::GetPathMatcher(test_server->update_path()),
+       request::GetUpdaterUserAgentMatcher(updater_version),
+       request::GetContentMatcher({base::StringPrintf(
+           R"(.*"errorcat":4,"errorcode":4,"eventresult":0,"eventtype":%d,)"
+           R"(("nextfp":.*,)?"nextversion":"%s","previousversion":"%s".*)",
+           event_type, to_version.GetString().c_str(),
+           from_version.GetString().c_str())}),
+       request::GetScopeMatcher(scope)},
+      ")]}'\n");
 }
 
 void ExpectUpdateSequence(
@@ -339,16 +343,18 @@ void ExpectUpdateSequence(
   if (do_fault_injection) {
     test_server->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
   }
-  test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
-                           request::GetUpdaterUserAgentMatcher(updater_version),
-                           request::GetContentMatcher({base::StringPrintf(
-                               R"(.*"eventresult":1,"eventtype":%d,)"
-                               R"("nextversion":"%s","previousversion":"%s".*)",
-                               event_type, to_version.GetString().c_str(),
-                               from_version.GetString().c_str())}),
-                           request::GetContentMatcher({event_regex}),
-                           request::GetScopeMatcher(scope)},
-                          ")]}'\n");
+  test_server->ExpectOnce(
+      {request::GetPathMatcher(test_server->update_path()),
+       request::GetUpdaterUserAgentMatcher(updater_version),
+       request::GetContentMatcher({base::StringPrintf(
+           R"(.*"eventresult":1,"eventtype":%d,("nextfp":.*,)?)"
+           R"("nextversion":"%s",("previousfp":.*,)?)"
+           R"("previousversion":"%s".*)",
+           event_type, to_version.GetString().c_str(),
+           from_version.GetString().c_str())}),
+       request::GetContentMatcher({event_regex}),
+       request::GetScopeMatcher(scope)},
+      ")]}'\n");
 }
 
 void ExpectDeviceManagementRequest(ScopedServer* test_server,
@@ -817,7 +823,7 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
            request::GetUpdaterUserAgentMatcher(updater_version),
            request::GetContentMatcher({base::StringPrintf(
                R"(.*"appid":"%s",.*)"
-               R"("eventresult":1,"eventtype":%d,)"
+               R"("eventresult":1,"eventtype":%d,("nextfp":.*,)?)"
                R"("nextversion":"%s","previousversion":"%s".*)"
                R"("version":"%s".*)",
                app.app_id.c_str(), app.is_install ? 2 : 3,
@@ -833,7 +839,7 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
            request::GetContentMatcher({base::StringPrintf(
                R"(.*"appid":"%s",.*)"
                R"(.*"errorcat":%d,"errorcode":%d,)"
-               R"("eventresult":0,"eventtype":%d,)"
+               R"("eventresult":0,"eventtype":%d,("nextfp":.*,)?)"
                R"("nextversion":"%s","previousversion":"%s".*)"
                R"("version":"%s".*)",
                app.app_id.c_str(), static_cast<int>(app.error_category),
@@ -1308,7 +1314,7 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server) {
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
                            request::GetContentMatcher({base::StringPrintf(
                                R"(.*"eventresult":1,"eventtype":3,)"
-                               R"("nextversion":"%s",.*)",
+                               R"(("nextfp":.*,)?"nextversion":"%s",.*)",
                                kUpdaterVersion)}),
                            request::GetScopeMatcher(scope)},
                           ")]}'\n");
@@ -1401,7 +1407,7 @@ void ExpectUpdateSequenceBadHash(UpdaterScope scope,
        request::GetUpdaterUserAgentMatcher(),
        request::GetContentMatcher({base::StringPrintf(
            R"(.*"errorcat":1,"errorcode":12,"eventresult":0,"eventtype":3,)"
-           R"("nextversion":"%s","previousversion":"%s".*)",
+           R"(("nextfp":.*,)?"nextversion":"%s","previousversion":"%s".*)",
            to_version.GetString().c_str(), from_version.GetString().c_str())}),
        request::GetScopeMatcher(scope)},
       ")]}'\n");

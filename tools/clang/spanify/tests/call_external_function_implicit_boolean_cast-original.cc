@@ -27,7 +27,7 @@ bool test_with_internal_function_with_rewrite() {
   internal_function_rewritten()[UnsafeIndex()] = 1;  // Force rewrite.
 
   // Expected rewrite:
-  // if (internal_function_rewritten().size()) {
+  // if (!internal_function_rewritten().empty()) {
   if (internal_function_rewritten()) {
     return true;
   } else {

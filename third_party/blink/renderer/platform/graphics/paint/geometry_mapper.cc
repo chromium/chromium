@@ -474,6 +474,11 @@ bool GeometryMapper::MightOverlapForCompositing(
     const PropertyTreeState& state1,
     const gfx::RectF& rect2,
     const PropertyTreeState& state2) {
+  if (&state1.Transform() == &state2.Transform() &&
+      &state1.Clip() == &state2.Clip()) {
+    return rect1.Intersects(rect2);
+  }
+
   PropertyTreeState common_ancestor(
       state1.Transform().LowestCommonAncestor(state2.Transform()).Unalias(),
       state1.Clip().LowestCommonAncestor(state2.Clip()).Unalias(),

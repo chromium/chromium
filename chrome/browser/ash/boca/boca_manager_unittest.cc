@@ -170,7 +170,7 @@ class BocaManagerProducerTest : public BocaManagerTest {
 
 TEST_F(BocaManagerProducerTest, VerifyOnTaskObserverNotAddedForProducer) {
   ASSERT_FALSE(boca_manager_->GetBocaSessionManager()->observers().HasObserver(
-      boca_manager_->GetOnTaskSessionManagerForTesting()));
+      boca_manager_->GetOnTaskSessionManager()));
 }
 
 TEST_F(BocaManagerProducerTest, VerifyBabelOrcaObserverHasAddedForProducer) {
@@ -224,7 +224,7 @@ class BocaManagerConsumerTest : public BocaManagerTest {
 
 TEST_F(BocaManagerConsumerTest, VerifyOnTaskObserverHasAddedForConsumer) {
   ASSERT_TRUE(boca_manager_->GetBocaSessionManager()->observers().HasObserver(
-      boca_manager_->GetOnTaskSessionManagerForTesting()));
+      boca_manager_->GetOnTaskSessionManager()));
 }
 
 TEST_F(BocaManagerConsumerTest, VerifyBabelOrcaObserverHasAddedForConsumer) {

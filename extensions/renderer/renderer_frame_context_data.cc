@@ -27,6 +27,8 @@ RendererFrameContextData::CloneFrameContextData() const {
 
 bool RendererFrameContextData::HasControlledFrameCapability() const {
   CHECK(frame_);
+  // Checking admin policies happens in the browser process in
+  // BrowserFrameContextData.
   return frame_->IsFeatureEnabled(
              network::mojom::PermissionsPolicyFeature::kControlledFrame) &&
          RendererContextData::IsIsolatedWebAppContextAndEnabled();

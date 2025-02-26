@@ -27,6 +27,7 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -101,7 +102,7 @@ class DefaultBehavior : public CaptureModeBehavior {
     // TODO(crbug.com/376103983): Verify `CaptureRegionOverlayController` works
     // correctly. It is always created in Sunfish session to paint the region
     // selection UI, but should only support text overlay if Scanner is enabled.
-    return IsSunfishSessionAllowed();
+    return CanShowSunfishOrScannerUi();
   }
   bool CanPaintRegionOverlay() const override {
     auto* controller = CaptureModeController::Get();
@@ -118,22 +119,21 @@ class DefaultBehavior : public CaptureModeBehavior {
     return ScannerController::CanShowUiForShell();
   }
   bool CanShowActionButtons() const override { return true; }
-  void OnRegionSelectedOrAdjusted() override {
-    if (ShouldShowDefaultActionButtonsAfterRegionSelected()) {
-      auto* capture_mode_controller = CaptureModeController::Get();
-      if (features::IsCaptureModeOnDeviceOcrEnabled()) {
-        // Perform text detection to determine whether the copy text and smart
-        // actions buttons should be shown.
-        capture_mode_controller->PerformCapture(
-            PerformCaptureType::kTextDetection);
-      } else {
-        // Show the smart actions button regardless of whether there is text
-        // in the selected area or not.
-        BaseCaptureModeSession* session =
-            capture_mode_controller->capture_mode_session();
-        CHECK(session);
-        session->AddSmartActionsButton();
-      }
+  void OnRegionSelectedOrAdjustedWhenActionContainerShowing() override {
+    CHECK(ShouldShowDefaultActionButtonsInActionContainer());
+    auto* capture_mode_controller = CaptureModeController::Get();
+    if (features::IsCaptureModeOnDeviceOcrEnabled()) {
+      // Perform text detection to determine whether the copy text and smart
+      // actions buttons should be shown.
+      capture_mode_controller->PerformCapture(
+          PerformCaptureType::kTextDetection);
+    } else {
+      // Show the smart actions button regardless of whether there is text
+      // in the selected area or not.
+      BaseCaptureModeSession* session =
+          capture_mode_controller->capture_mode_session();
+      CHECK(session);
+      session->AddSmartActionsButton();
     }
   }
 };
@@ -362,7 +362,7 @@ class SunfishBehavior : public CaptureModeBehavior {
     }
   }
   bool ShouldRegionOverlayBeAllowed() const override {
-    return IsSunfishSessionAllowed();
+    return CanShowSunfishOrScannerUi();
   }
   bool CanPaintRegionOverlay() const override { return true; }
   bool ShouldShowGlowWhileProcessingCaptureType(
@@ -374,7 +374,7 @@ class SunfishBehavior : public CaptureModeBehavior {
       PerformCaptureType capture_type) const override {
     return true;
   }
-  bool ShouldShowDefaultActionButtonsAfterRegionSelected() const override {
+  bool ShouldShowDefaultActionButtonsInActionContainer() const override {
     // We show action buttons in Sunfish mode for individual Scanner actions,
     // which is a different set of buttons to the default action buttons shown
     // in normal capture mode (search, copy text, smart actions button).
@@ -396,7 +396,7 @@ class SunfishBehavior : public CaptureModeBehavior {
   std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView() override {
     return std::make_unique<SunfishCaptureBarView>();
   }
-  void OnRegionSelectedOrAdjusted() override {
+  void OnRegionSelectedOrAdjustedWhenActionContainerShowing() override {
     auto* controller = CaptureModeController::Get();
     controller->MaybeUpdateSearchResultsPanelBounds();
 
@@ -557,14 +557,9 @@ bool CaptureModeBehavior::ShouldReShowUisAtPerformingCapture(
   }
 }
 
-bool CaptureModeBehavior::ShouldShowDefaultActionButtonsAfterRegionSelected()
+bool CaptureModeBehavior::ShouldShowDefaultActionButtonsInActionContainer()
     const {
-  if (!IsSunfishSessionAllowed()) {
-    return false;
-  }
-  auto* controller = CaptureModeController::Get();
-  return controller->type() == CaptureModeType::kImage &&
-         controller->source() == CaptureModeSource::kRegion;
+  return true;
 }
 
 bool CaptureModeBehavior::CanShowSmartActionsButton() const {
@@ -684,7 +679,8 @@ void CaptureModeBehavior::OnAudioRecordingModeChanged() {}
 
 void CaptureModeBehavior::OnDemoToolsSettingsChanged() {}
 
-void CaptureModeBehavior::OnRegionSelectedOrAdjusted() {}
+void CaptureModeBehavior::
+    OnRegionSelectedOrAdjustedWhenActionContainerShowing() {}
 
 void CaptureModeBehavior::OnEnterKeyPressed() {
   CaptureModeController::Get()->PerformCapture();

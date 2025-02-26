@@ -16,12 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace auxiliary_search {
-class AuxiliarySearchBookmarkGroup;
-}
-namespace bookmarks {
-class BookmarkModel;
-}
 class TabAndroid;
 
 // AuxiliarySearchProvider is responsible for providing the necessary
@@ -30,11 +24,7 @@ class AuxiliarySearchProvider : public KeyedService {
  public:
   // DO NOT pass a Profile here, keyed services must have explicit dependencies
   // on other keyed services (crbug.com/368297674).
-  explicit AuxiliarySearchProvider(bookmarks::BookmarkModel* bookmark_model);
   ~AuxiliarySearchProvider() override;
-
-  base::android::ScopedJavaLocalRef<jbyteArray> GetBookmarksSearchableData(
-      JNIEnv* env) const;
 
   void GetNonSensitiveTabs(
       JNIEnv* env,
@@ -44,11 +34,6 @@ class AuxiliarySearchProvider : public KeyedService {
   static void EnsureFactoryBuilt();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderTest, QueryBookmarks);
-  FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderTest,
-                           QueryBookmarks_flagTest);
-  FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderTest,
-                           QueryBookmarks_nativePageShouldBeFiltered);
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest,
                            QuerySensitiveTab);
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest,
@@ -63,16 +48,12 @@ class AuxiliarySearchProvider : public KeyedService {
   using NonSensitiveTabsCallback =
       base::OnceCallback<void(std::vector<base::WeakPtr<TabAndroid>>)>;
 
-  auxiliary_search::AuxiliarySearchBookmarkGroup GetBookmarks() const;
-
   static void FilterTabsByScheme(
       std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs);
 
   void GetNonSensitiveTabsInternal(
       std::vector<raw_ptr<TabAndroid, VectorExperimental>> all_tabs,
       NonSensitiveTabsCallback callback) const;
-
-  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
 #endif  // CHROME_BROWSER_AUXILIARY_SEARCH_AUXILIARY_SEARCH_PROVIDER_H_

@@ -102,7 +102,7 @@ PinStatusView::PinStatusView() {
                                  views::style::STYLE_PRIMARY);
   text_label_->SetMultiLine(true);
   text_label_->SizeToFit(kTextLineWidthDp);
-  text_label_->SetEnabledColorId(kTextColorId);
+  text_label_->SetEnabledColor(kTextColorId);
   text_label_->SetFontList(
       TypographyProvider::Get()->ResolveTypographyToken(kTextFont));
   decorate_label(text_label_);

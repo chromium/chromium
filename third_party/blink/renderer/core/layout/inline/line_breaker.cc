@@ -2705,6 +2705,11 @@ void LineBreaker::SplitTrailingBidiPreservedSpace(LineInfo* line_info) {
       return;
     }
 
+    if (!item_result.Length()) {
+      item_result.has_only_bidi_trailing_spaces = true;
+      continue;
+    }
+
     DCHECK_GT(item_result.EndOffset(), 0u);
 
     wtf_size_t i = item_result.EndOffset();

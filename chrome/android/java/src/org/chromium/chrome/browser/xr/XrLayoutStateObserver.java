@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.xr;
 
 import android.app.Activity;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -109,7 +110,9 @@ public class XrLayoutStateObserver {
     }
 
     private void beginSpatialization() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
         assert mCompositorViewHolderSupplier.hasValue();
+
         Log.i(TAG, "SPA beginSpatialization");
         XrUtils.getInstance().viewInFullSpaceMode();
         mActivity.getWindow().getDecorView().setVisibility(View.INVISIBLE);
@@ -127,7 +130,9 @@ public class XrLayoutStateObserver {
     }
 
     private void endSpatialization() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
         assert mCompositorViewHolderSupplier.hasValue();
+
         Log.i(TAG, "SPA endSpatialization");
         XrUtils.getInstance().viewInHomeSpaceMode();
         ThreadUtils.postOnUiThreadDelayed(

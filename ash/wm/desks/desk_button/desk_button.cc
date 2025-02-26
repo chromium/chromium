@@ -215,7 +215,7 @@ void DeskButton::Init(DeskButtonContainer* desk_button_container) {
           .SetHandlesTooltips(false)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
           .SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE)
-          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+          .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
           .SetAutoColorReadabilityEnabled(false)
           .Build());
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
@@ -235,7 +235,7 @@ void DeskButton::SetActivation(bool is_activated) {
   is_activated_ = is_activated;
 
   UpdateBackground();
-  desk_name_label_->SetEnabledColorId(
+  desk_name_label_->SetEnabledColor(
       is_activated_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                     : cros_tokens::kCrosSysOnSurface);
 

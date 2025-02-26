@@ -161,7 +161,7 @@ std::unique_ptr<views::Label> CreateTitle() {
       std::u16string(), views::style::CONTEXT_LABEL,
       views::style::STYLE_HEADLINE_5);
 
-  title->SetEnabledColorId(kColorSidePanelEntryTitle);
+  title->SetEnabledColor(kColorSidePanelEntryTitle);
   title->SetBackgroundColor(kColorToolbar);
   title->SetSubpixelRenderingEnabled(false);
   const int horizontal_margin =

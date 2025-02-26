@@ -40,6 +40,14 @@ class AccessibilityPrivateEnableMouseEventsFunction : public ExtensionFunction {
                              ACCESSIBILITY_PRIVATE_ENABLEMOUSEEVENTS)
 };
 
+// API function that enables or disables the live caption feature.
+class AccessibilityPrivateEnableLiveCaptionFunction : public ExtensionFunction {
+  ~AccessibilityPrivateEnableLiveCaptionFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.enableLiveCaption",
+                             ACCESSIBILITY_PRIVATE_ENABLELIVECAPTION)
+};
+
 // API function that sets the cursor position on the screen in absolute
 // coordinates.
 class AccessibilityPrivateSetCursorPositionFunction : public ExtensionFunction {

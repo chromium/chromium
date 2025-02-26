@@ -224,6 +224,15 @@ AccessibilityPrivateEnableMouseEventsFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
+AccessibilityPrivateEnableLiveCaptionFunction::Run() {
+  std::optional<accessibility_private::EnableLiveCaption::Params> params =
+      accessibility_private::EnableLiveCaption::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  AccessibilityManager::Get()->EnableLiveCaption(params->enabled);
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
 AccessibilityPrivateSetCursorPositionFunction::Run() {
   std::optional<accessibility_private::SetCursorPosition::Params> params =
       accessibility_private::SetCursorPosition::Params::Create(args());

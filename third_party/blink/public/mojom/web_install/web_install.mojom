@@ -15,21 +15,28 @@ enum WebInstallServiceResult {
 };
 
 // Parameters passed into calls to Install.
+// `manifest_id` is optional to support the 1-parameter JS install API.
 struct InstallOptions {
-  url.mojom.Url manifest_id;
   url.mojom.Url install_url;
+  url.mojom.Url? manifest_id;
 };
 
 // Allows installation of web apps via JS. This mojo interface is only bound on
 // the main frame in browser contexts that support web app installation.
 interface WebInstallService {
-  // Installs a site as a web app. If `InstallOptions` is not set, it installs
-  // the current document as a web app if the app defines an 'id' in the web
-  // app manifest file or returns an 'AbortError' if the 'id' is not defined.
-  // if `InstallOptions` is set, it installs the web content at `install_url`,
-  // verifying that the provided `manifest_id` matches the app's computed id.
-  // Returns a success/failure result. If success, populates the absolute
-  // computed manifest id for the installed app.
+  // Installs a site as a web app. `InstallOptions` has three valid states:
+  // 1. `InstallOptions` is nullopt:
+  //    Installs the current document as a web app if the site defines an 'id'
+  //    in its manifest file. Returns a 'DataError' if the 'id' is not defined.
+  // 2. `install_url` set, `manifest_id` is nullopt:
+  //    Installs the web content at `install_url` as a web app if the site
+  //    defines an `id` in its manifest file. Returns a `DataError` if the `id`
+  //    is not defined.
+  // 3. `install_url` and `manifest_id` are set:
+  //    Installs the web content at `install_url` as a web app if the provided
+  //    `manifest_id` matches the content's computed id. Returns a success/
+  //    failure result. On success, populates the absolute computed manifest id
+  //    for the newly installed app.
   Install(InstallOptions? options)
       => (WebInstallServiceResult result, url.mojom.Url manifest_id);
 };

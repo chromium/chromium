@@ -314,9 +314,13 @@ class BASE_EXPORT MetricsSubSampler {
 
 // Returns true with `probability` using a pseudo-random number generator (or
 // always/never returns true if a `ScopedAlwaysSampleForTesting` or
-// `ScopedNeverSampleForTesting` is in scope).  This function is intended for
-// sub-sampled metric recording only. Do not use it for any other purpose,
-// especially where cryptographic randomness is required.
+// `ScopedNeverSampleForTesting` is in scope). Valid values for `probability`
+// are in range [0, 1].
+//
+// This function is intended for sub-sampled metric recording only. Do not use
+// it for any other purpose, especially where cryptographic randomness is
+// required.
+//
 // Uses a thread local MetricsSubSampler.
 BASE_EXPORT bool ShouldRecordSubsampledMetric(double probability);
 

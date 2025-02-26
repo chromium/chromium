@@ -217,7 +217,7 @@ FindBarView::FindBarView(FindBarHost* host) {
               views::Builder<FindBarMatchCountLabel>()
                   .CopyAddressTo(&match_count_text_)
                   .SetBackgroundColor(kColorFindBarBackground)
-                  .SetEnabledColorId(kColorFindBarMatchCount)
+                  .SetEnabledColor(kColorFindBarMatchCount)
                   .SetCanProcessEventsWithinSubtree(false)
                   .SetProperty(views::kMarginsKey,
                                gfx::Insets(toast_label_vertical_margin +

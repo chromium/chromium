@@ -29,7 +29,7 @@ class ASH_EXPORT AssistantOverlay : public views::View,
 
   ~AssistantOverlay() override;
 
-  void StartAnimation(bool show_icon);
+  void StartAnimation();
   void EndAnimation();
   void BurstAnimation();
   void HideAnimation();
@@ -60,9 +60,6 @@ class ASH_EXPORT AssistantOverlay : public views::View,
   raw_ptr<HomeButton> host_view_;
 
   AnimationState animation_state_ = AnimationState::HIDDEN;
-
-  // Whether showing the icon animation or not.
-  bool show_icon_ = false;
 
   views::CircleLayerDelegate circle_layer_delegate_;
   std::unique_ptr<HomeButton::ScopedNoClipRect> scoped_no_clip_rect_;

@@ -102,15 +102,15 @@ void SearchResultInlineIconView::SetText(const std::u16string& text) {
   label_->SetVisible(true);
 
   if (ash::features::IsSearchCustomizableShortcutsInLauncherEnabled()) {
-    label_->SetEnabledColorId(
-        use_modified_styling_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                              : cros_tokens::kCrosSysOnSurface);
+    label_->SetEnabledColor(use_modified_styling_
+                                ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                                : cros_tokens::kCrosSysOnSurface);
     label_->SetBackground(views::CreateThemedRoundedRectBackground(
         use_modified_styling_ ? cros_tokens::kCrosSysSystemPrimaryContainer
                               : cros_tokens::kCrosSysSurface,
         kContentCornerRadius));
   } else {
-    label_->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
+    label_->SetEnabledColor(cros_tokens::kCrosSysPrimary);
   }
 
   int label_left_right_margin =

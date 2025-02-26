@@ -58,7 +58,7 @@ CastDeviceFooterView::CastDeviceFooterView(
     device_name_->SetText(base::UTF8ToUTF16(device_name.value()));
   }
   device_name_->SetTextStyle(views::style::STYLE_BODY_2_MEDIUM);
-  device_name_->SetEnabledColorId(
+  device_name_->SetEnabledColor(
       media_color_theme.device_selector_foreground_color_id);
   device_name_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   layout->SetFlexForView(device_name_, 1);

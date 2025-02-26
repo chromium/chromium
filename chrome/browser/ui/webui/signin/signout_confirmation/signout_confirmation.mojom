@@ -14,11 +14,21 @@ interface PageHandlerFactory {
                            pending_receiver<PageHandler> handler);
 };
 
+// Represents an extension associated with a user's account.
+struct ExtensionInfo {
+  // The name of the extension.
+  string name;
+
+  // The url to the extension's icon.
+  string icon_url;
+};
+
 struct SignoutConfirmationData {
   string dialog_title;
   string dialog_subtitle;
   string accept_button_label;
   string cancel_button_label;
+  array<ExtensionInfo> account_extensions;
 };
 
 // Called from TS side of chrome://signout-confirmation (Renderer -> Browser)

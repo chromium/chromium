@@ -276,19 +276,19 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': 'c2984ca52be68103fa63b1199065bbc9e75780b2',
+  'src_internal_revision': '4e70a0656371b0007ef30a8e3716f8f3efd2b800',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '26014215c62fb58044bb54489fd7674182aeacd6',
+  'skia_revision': '5336e20498d9d95f28ea2d70dee8f2be5d949f22',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'c9c2dfc64081418697faba2815e5ce0d925946c1',
+  'v8_revision': '30c7b45d1547cee549f442567350d8ba35af6bfe',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '0151051b9084c9b0f30ea93b98fe579ef79d0d60',
+  'angle_revision': '8dbd2fe62ac34bcd1ba4a2f981b7278090719eb9',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'c7db9439faf491242e86eb354a60b706adc147ff',
+  'devtools_frontend_revision': '03afe5fb696860ec6a0e9e274c856748bfd6a4e3',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '5cd77862d456596b838ebcd545a26835142d1613',
+  'dawn_revision': '63deebde908557b95b5ae62bcdf15282a7356f9b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -500,10 +500,10 @@ vars = {
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
-  'libcxx_revision':       'cdc82e180c610aaa7153301fea4d6b4005da9f22',
+  'libcxx_revision':       'be0bacb5427a393417db49182e2c18d58ee3c54e',
 
   # GN CIPD package version.
-  'gn_version': 'git_revision:f98b6d7275c2e823e0983fa7f874facfe6980778',
+  'gn_version': 'git_revision:4a8016dc391553fa1644c0740cc04eaac844121e',
 
   # ninja CIPD package.
   'ninja_package': 'infra/3pp/tools/ninja/',
@@ -720,7 +720,7 @@ deps = {
       'packages': [
           {
               'package': 'chrome_internal/third_party/google3/data_sharing_sdk',
-              'version': '2s9UPnpZ2wm1Q4Ve00hkewkQQQCGMtAXn8cYFL-cfiEC',
+              'version': 'MQAHgcmytCkaFz2dNxX7gHv1cu2ser990_CBe5uBhssC',
           },
       ],
       'condition': 'checkout_src_internal and non_git_source',
@@ -1123,7 +1123,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '8f3981233f5acec328778d9a9324fae3f2b63434',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '1e519532f1a06d63303fc5e81b3ef97b72bc56dc',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1452,7 +1452,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '8965f2449a41bf855fc560ad2b9c502b1ca06f47',
+    '1e195f37a7d6f5cc51f7f5846c4d96c171f7e7b1',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1481,7 +1481,7 @@ deps = {
   },
 
   'src/ios/third_party/material_components_ios/src': {
-      'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + '11d6473f5b9d56940a38ce5e2220190befcaef49',
+      'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + '59075784b33f5db841a341fc130d95d6bfb45927',
       'condition': 'checkout_ios',
   },
 
@@ -1611,7 +1611,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'adIufYei7-g7cL1ZaLYKthVQkQKAZW5HfijJqaH64OMC',
+          'version': 'VXX1uuEndS2AW2fjXuiYLDy6N6-_R3QCesd1wwcL2lEC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -1947,7 +1947,7 @@ deps = {
 
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + 'f0b8c3b16c1a1246443c40d4025054b0312ef533',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + 'deb5575fbdc5b3f7cdd0a0aaed73b1f43af39eab',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
@@ -2811,7 +2811,7 @@ deps = {
     Var('chromium_git') + '/external/khronosgroup/webgl.git' + '@' + '450cceb587613ac1469c5a131fac15935c99e0e7',
 
   'src/third_party/webgpu-cts/src':
-    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '3d17e72b82c837b7832bdd5584d61e1f13d6416c',
+    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'ce91fc1d085136f9c7ddca684d1764689d49b337',
 
   'src/third_party/webpagereplay':
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
@@ -4282,7 +4282,7 @@ deps = {
 
   'src/chrome/app/theme/default_100_percent/google_chrome': {
       'url': Var('chrome_git') + '/chrome/theme/default_100_percent/google_chrome.git' + '@' +
-        'c5fa2fa6eebebdd7a8f6886cff6968b59b63284f',
+        '81b2baa33cbd50d608e82337459af222ec5facc2',
       'condition': 'checkout_src_internal',
   },
 
@@ -4490,7 +4490,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        '90699c3e63a2591ee7b78f9d82809336c391bf03',
+        '163a970b239a5f14f8093900d444ab03a9654780',
       'condition': 'checkout_src_internal',
   },
 

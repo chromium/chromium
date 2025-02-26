@@ -10,6 +10,7 @@ include_rules = [
   "+components/discardable_memory/service",
   "+components/download/database",
   "+components/download/public/common",
+  "+components/embedder_support/switches.h",
   "+components/file_access",
   "+components/filename_generation",
   "+components/grit",

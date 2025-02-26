@@ -144,7 +144,7 @@ void BucketManagerHost::GetBucketForDevtools(
 
 void BucketManagerHost::Keys(KeysCallback callback) {
   GetQuotaManagerProxy()->GetBucketsForStorageKey(
-      storage_key_, blink::mojom::StorageType::kTemporary,
+      storage_key_,
       /*delete_expired=*/true, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&BucketManagerHost::DidGetBuckets,
                      weak_factory_.GetWeakPtr(), std::move(callback)));

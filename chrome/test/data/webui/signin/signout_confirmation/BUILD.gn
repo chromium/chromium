@@ -9,6 +9,7 @@ assert(!is_chromeos && enable_dice_support)
 
 build_webui_tests("build") {
   files = [
+    "extensions_section_test.ts",
     "signout_confirmation_view_test.ts",
     "test_signout_confirmation_browser_proxy.ts",
   ]

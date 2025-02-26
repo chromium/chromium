@@ -90,7 +90,7 @@
 
   :host([is-error-page-visible]) #networkErrorPage {
     display: block;
-    z-index: 2;
+    z-index: 3;
   }
 
   :host([dark-mode]) #networkErrorBottomLine {
@@ -181,6 +181,28 @@
     top: 16px;
   }
 
+  #uploadProgressBar {
+    background-color: #4E8FF8;
+    height: 100%;
+    width: 0; /* Starts at 0% width and animates to 100% width via JS. */
+  }
+
+  #uploadProgressBarContainer {
+    background-color: #D0E4FF;
+    height: 3px;
+    inset-block-start: 76px;
+    inset-inline-start: 0;
+    position: fixed;
+    transform-origin: 50% 50%; /*  Sets the transform origin to the center */
+    width: 100%;
+    z-index: 2; /* Ensure that the progress bar is above the ghost loader. */
+  }
+
+  :host(:not([show-upload-progress])) #uploadProgressBarContainer,
+  :host([is-error-page-visible]) #uploadProgressBarContainer {
+    visibility: hidden;
+  }
+
   /**
    * Show the ghost loader when the searchbox is focused and the searchbox
    * dropdown isn't showing (no results available). Only show for contextual
@@ -228,6 +250,16 @@
   <div id="networkErrorBottomLine">
     $i18n{networkErrorPageBottomLine}
   </div>
+</div>
+
+<div id="uploadProgressBarContainer">
+  <div
+    id="uploadProgressBar"
+    role="progressbar"
+    aria-valuenow="[[uploadProgress]]"
+    aria-valuemin="0"
+    aria-valuemax="100"
+  ></div>
 </div>
 
 <side-panel-ghost-loader id="ghostLoader"

@@ -25,8 +25,6 @@ static const base::span<const char, 11u> kDlrowOlleh =
 static const std::map<IntegrityAlgorithm, const char*> kHelloWorlds = {
     {IntegrityAlgorithm::kSha256,
      "uU0nuZNNPgilLlLX2n2r+sSE7+N6U4DukIj3rOLvzek="},
-    {IntegrityAlgorithm::kSha384,
-     "/b2OdaZ/KfcBpOBAOF4uI5hjA+oQI5IRr5B/y7g1eLPkF8txzmRu/QgZ3YwIjeG9"},
     {IntegrityAlgorithm::kSha512,
      "MJ7MSJwS1utMxA9QyQLytNDtd+5RGnx6m808qG1M2G+"
      "YndNbxf9JlnDaNCVbRbDP2DDoH2Bdz33FVC6TrpzXbw=="},
@@ -34,8 +32,6 @@ static const std::map<IntegrityAlgorithm, const char*> kHelloWorlds = {
 static const std::map<IntegrityAlgorithm, const char*> kDlrowOllehs = {
     {IntegrityAlgorithm::kSha256,
      "vT+a3uWsoxRxVJEINKfH4XZpLqsneOzhFVY98Y3iIz0="},
-    {IntegrityAlgorithm::kSha384,
-     "rueKXz5kdtdmTpc6NbS9fCqr7z8h2mjNs43K9WUglTsZPJzKSUpR87dLs/FNemRN"},
     {IntegrityAlgorithm::kSha512,
      "N/"
      "peuevAy3l8KpS0bB6VTS8vc0fdAvjBJKYjVo2xb6sB6LpDfY6YlrXkWeeXGrP07UXDXEu1K3+"
@@ -46,10 +42,9 @@ String IntegrityAlgorithmToDictionaryName(IntegrityAlgorithm algorithm) {
   switch (algorithm) {
     case IntegrityAlgorithm::kSha256:
       return "sha-256";
-    case IntegrityAlgorithm::kSha384:
-      return "sha-384";
     case IntegrityAlgorithm::kSha512:
       return "sha-512";
+    case IntegrityAlgorithm::kSha384:
     case IntegrityAlgorithm::kEd25519:
       NOTREACHED();
   }
@@ -94,6 +89,13 @@ TEST(UnencodedDigestParserTest, MalformedHeader) {
       // (unknown key, recognized type)
       "key=:lS/LFS0xbMKoQ0JWBZySc9ChRIZMbAuWO69kAVCb12k=:",
 
+      // Special case of unknown key: `sha-384` isn't a valid digest header
+      // hashing algorithm:
+      //
+      // https://www.iana.org/assignments/http-digest-hash-alg/http-digest-hash-alg.xhtml
+      ("sha-384=:/b2OdaZ/KfcBpOBAOF4uI5hjA+oQI5IRr5B/y7g1eLPkF8txzmRu/"
+       "QgZ3YwIjeG9:"),
+
       // (known key, unrecognized type)
       "sha-256=",
       "sha-256=1",
@@ -107,7 +109,6 @@ TEST(UnencodedDigestParserTest, MalformedHeader) {
 
       // (known key, invalid digest)
       "sha-256=:YQ==:",
-      "sha-384=:YQ==:",
       "sha-512=:YQ==:",
   };
 
@@ -143,27 +144,6 @@ TEST(UnencodedDigestParserTest, WellFormedHeaderWithSingleDigest) {
       {"sha-256=:uU0nuZNNPgilLlLX2n2r+sSE7+N6U4DukIj3rOLvzek=:, "
        "unknown-key=:YQ==:",
        IntegrityAlgorithm::kSha256},
-
-      // SHA-384
-      //
-      // One well-formed digest.
-      {"sha-384=:/b2OdaZ/KfcBpOBAOF4uI5hjA+oQI5IRr5B/y7g1eLPkF8txzmRu/"
-       "QgZ3YwIjeG9:",
-       IntegrityAlgorithm::kSha384},
-      // Dictionary parsing takes the last value associated with a key.
-      {"sha-384=:YQ==:, "
-       "sha-384=:/b2OdaZ/KfcBpOBAOF4uI5hjA+oQI5IRr5B/y7g1eLPkF8txzmRu/"
-       "QgZ3YwIjeG9:",
-       IntegrityAlgorithm::kSha384},
-      // Unknown, Known => Known
-      {"unknown-key=:YQ==:, "
-       "sha-384=:/b2OdaZ/KfcBpOBAOF4uI5hjA+oQI5IRr5B/y7g1eLPkF8txzmRu/"
-       "QgZ3YwIjeG9:",
-       IntegrityAlgorithm::kSha384},
-      // Known, Unknown => Known
-      {"sha-384=:/b2OdaZ/KfcBpOBAOF4uI5hjA+oQI5IRr5B/y7g1eLPkF8txzmRu/"
-       "QgZ3YwIjeG9:, unknown-key=:YQ==:",
-       IntegrityAlgorithm::kSha384},
 
       // SHA-512
       //
@@ -210,31 +190,11 @@ TEST(UnencodedDigestParserTest, MultipleDigests) {
   } cases[] = {
       // Two digests.
       {"sha-256=:uU0nuZNNPgilLlLX2n2r+sSE7+N6U4DukIj3rOLvzek=:,"
-       "sha-384=:/b2OdaZ/KfcBpOBAOF4uI5hjA+oQI5IRr5B/y7g1eLPkF8txzmRu/"
-       "QgZ3YwIjeG9:",
-       {IntegrityAlgorithm::kSha256, IntegrityAlgorithm::kSha384}},
-      {"sha-384=:/b2OdaZ/KfcBpOBAOF4uI5hjA+oQI5IRr5B/y7g1eLPkF8txzmRu/"
-       "QgZ3YwIjeG9:,"
-       "sha-512=:MJ7MSJwS1utMxA9QyQLytNDtd+5RGnx6m808qG1M2G+"
-       "YndNbxf9JlnDaNCVbRbDP2DDoH2Bdz33FVC6TrpzXbw==:",
-       {IntegrityAlgorithm::kSha384, IntegrityAlgorithm::kSha512}},
-      {"sha-256=:uU0nuZNNPgilLlLX2n2r+sSE7+N6U4DukIj3rOLvzek=:,"
        "sha-512=:MJ7MSJwS1utMxA9QyQLytNDtd+5RGnx6m808qG1M2G+"
        "YndNbxf9JlnDaNCVbRbDP2DDoH2Bdz33FVC6TrpzXbw==:",
        {IntegrityAlgorithm::kSha256, IntegrityAlgorithm::kSha512}},
 
       // Two digests + unknown => Two digests
-      {"sha-256=:uU0nuZNNPgilLlLX2n2r+sSE7+N6U4DukIj3rOLvzek=:,"
-       "sha-384=:/b2OdaZ/KfcBpOBAOF4uI5hjA+oQI5IRr5B/y7g1eLPkF8txzmRu/"
-       "QgZ3YwIjeG9:,"
-       "unknown=:YQ==:",
-       {IntegrityAlgorithm::kSha256, IntegrityAlgorithm::kSha384}},
-      {"sha-384=:/b2OdaZ/KfcBpOBAOF4uI5hjA+oQI5IRr5B/y7g1eLPkF8txzmRu/"
-       "QgZ3YwIjeG9:,"
-       "sha-512=:MJ7MSJwS1utMxA9QyQLytNDtd+5RGnx6m808qG1M2G+"
-       "YndNbxf9JlnDaNCVbRbDP2DDoH2Bdz33FVC6TrpzXbw==:,"
-       "unknown=:YQ==:",
-       {IntegrityAlgorithm::kSha384, IntegrityAlgorithm::kSha512}},
       {"sha-256=:uU0nuZNNPgilLlLX2n2r+sSE7+N6U4DukIj3rOLvzek=:,"
        "sha-512=:MJ7MSJwS1utMxA9QyQLytNDtd+5RGnx6m808qG1M2G+"
        "YndNbxf9JlnDaNCVbRbDP2DDoH2Bdz33FVC6TrpzXbw==:,"
@@ -243,30 +203,10 @@ TEST(UnencodedDigestParserTest, MultipleDigests) {
 
       // Two digests + malformed => Two digests
       {"sha-256=:uU0nuZNNPgilLlLX2n2r+sSE7+N6U4DukIj3rOLvzek=:,"
-       "sha-384=:/b2OdaZ/KfcBpOBAOF4uI5hjA+oQI5IRr5B/y7g1eLPkF8txzmRu/"
-       "QgZ3YwIjeG9:,"
-       "sha-512=:YQ==:",
-       {IntegrityAlgorithm::kSha256, IntegrityAlgorithm::kSha384}},
-      {"sha-384=:/b2OdaZ/KfcBpOBAOF4uI5hjA+oQI5IRr5B/y7g1eLPkF8txzmRu/"
-       "QgZ3YwIjeG9:,"
-       "sha-512=:MJ7MSJwS1utMxA9QyQLytNDtd+5RGnx6m808qG1M2G+"
-       "YndNbxf9JlnDaNCVbRbDP2DDoH2Bdz33FVC6TrpzXbw==:,"
-       "sha-256=:YQ==:",
-       {IntegrityAlgorithm::kSha384, IntegrityAlgorithm::kSha512}},
-      {"sha-256=:uU0nuZNNPgilLlLX2n2r+sSE7+N6U4DukIj3rOLvzek=:,"
        "sha-512=:MJ7MSJwS1utMxA9QyQLytNDtd+5RGnx6m808qG1M2G+"
        "YndNbxf9JlnDaNCVbRbDP2DDoH2Bdz33FVC6TrpzXbw==:,"
        "sha-384=:YQ==:",
        {IntegrityAlgorithm::kSha256, IntegrityAlgorithm::kSha512}},
-
-      // Three digests
-      {"sha-256=:uU0nuZNNPgilLlLX2n2r+sSE7+N6U4DukIj3rOLvzek=:,"
-       "sha-384=:/b2OdaZ/KfcBpOBAOF4uI5hjA+oQI5IRr5B/y7g1eLPkF8txzmRu/"
-       "QgZ3YwIjeG9:,"
-       "sha-512=:MJ7MSJwS1utMxA9QyQLytNDtd+5RGnx6m808qG1M2G+"
-       "YndNbxf9JlnDaNCVbRbDP2DDoH2Bdz33FVC6TrpzXbw==:",
-       {IntegrityAlgorithm::kSha256, IntegrityAlgorithm::kSha384,
-        IntegrityAlgorithm::kSha512}},
   };
 
   for (const auto& test : cases) {
@@ -295,59 +235,6 @@ TEST(UnencodedDigestMatchingTest, MatchingSingleDigests) {
 
     HTTPHeaderMap headers;
     headers.Set(http_names::kUnencodedDigest, AtomicString(test));
-
-    auto unencoded_digest = UnencodedDigest::Create(headers);
-    ASSERT_TRUE(unencoded_digest.has_value());
-
-    WTF::SegmentedBuffer buffer;
-    buffer.Append(kHelloWorld);
-    EXPECT_TRUE(unencoded_digest->DoesMatch(&buffer));
-
-    buffer.Clear();
-    buffer.Append(kDlrowOlleh);
-    EXPECT_FALSE(unencoded_digest->DoesMatch(&buffer));
-  }
-}
-
-TEST(UnencodedDigestMatchingTest, MatchingMultipleDigests) {
-  std::vector<IntegrityAlgorithm> cases[] = {
-      {IntegrityAlgorithm::kSha256, IntegrityAlgorithm::kSha384},
-      {IntegrityAlgorithm::kSha256, IntegrityAlgorithm::kSha384},
-      {IntegrityAlgorithm::kSha384, IntegrityAlgorithm::kSha256},
-      {IntegrityAlgorithm::kSha384, IntegrityAlgorithm::kSha512},
-      {IntegrityAlgorithm::kSha512, IntegrityAlgorithm::kSha256},
-      {IntegrityAlgorithm::kSha512, IntegrityAlgorithm::kSha384},
-      {IntegrityAlgorithm::kSha256, IntegrityAlgorithm::kSha384,
-       IntegrityAlgorithm::kSha512},
-      {IntegrityAlgorithm::kSha256, IntegrityAlgorithm::kSha512,
-       IntegrityAlgorithm::kSha384},
-      {IntegrityAlgorithm::kSha384, IntegrityAlgorithm::kSha256,
-       IntegrityAlgorithm::kSha512},
-      {IntegrityAlgorithm::kSha384, IntegrityAlgorithm::kSha512,
-       IntegrityAlgorithm::kSha256},
-      {IntegrityAlgorithm::kSha512, IntegrityAlgorithm::kSha256,
-       IntegrityAlgorithm::kSha384},
-      {IntegrityAlgorithm::kSha512, IntegrityAlgorithm::kSha384,
-       IntegrityAlgorithm::kSha256},
-  };
-
-  for (const auto& test : cases) {
-    StringBuilder header_value;
-    for (const auto& alg : test) {
-      if (!header_value.empty()) {
-        header_value.Append(',');
-      }
-      header_value.Append(IntegrityAlgorithmToDictionaryName(alg));
-      header_value.Append("=:");
-      header_value.Append(kHelloWorlds.at(alg));
-      header_value.Append(':');
-    }
-    SCOPED_TRACE(testing::Message()
-                 << "Header value: `" << header_value.ToString() << "`");
-
-    HTTPHeaderMap headers;
-    headers.Set(http_names::kUnencodedDigest,
-                AtomicString(header_value.ToString()));
 
     auto unencoded_digest = UnencodedDigest::Create(headers);
     ASSERT_TRUE(unencoded_digest.has_value());

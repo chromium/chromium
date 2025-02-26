@@ -709,7 +709,10 @@ inline constexpr char kAccessibilityCaretBlinkInterval[] =
 // A boolean pref which determines whether cursor highlighting is enabled.
 inline constexpr char kAccessibilityCursorHighlightEnabled[] =
     "settings.a11y.cursor_highlight";
-// An integer pref which determines the custom cursor color if any.
+// A boolean pref which determines whether custom cursor color is enabled.
+inline constexpr char kAccessibilityCursorColorEnabled[] =
+    "settings.a11y.cursor_color_enabled";
+// An integer pref which determines the custom cursor color.
 inline constexpr char kAccessibilityCursorColor[] =
     "settings.a11y.cursor_color";
 // A boolean pref which determines whether flash screen for notifications is

@@ -170,7 +170,7 @@ FingerprintView::FingerprintView() {
   label_->SetAutoColorReadabilityEnabled(false);
 
   // kTextColorId, kTextFont defined in auth_common.h
-  label_->SetEnabledColorId(kTextColorId);
+  label_->SetEnabledColor(kTextColorId);
   label_->SetFontList(
       TypographyProvider::Get()->ResolveTypographyToken(kTextFont));
 

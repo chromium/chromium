@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/sync_helper.h"
@@ -48,7 +49,6 @@
 #else
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
@@ -309,19 +309,12 @@ base::Value::Dict GetExtensionInfo(const Extension* extension) {
 std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
     const Extension* extension,
     Profile* profile) {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/397766259): Implement this when PermissionsUpdater works
-  // on Android.
-  NOTIMPLEMENTED() << "GetInstallPromptPermissionSetForExtension";
-  return std::make_unique<PermissionSet>();
-#else
   // Initialize permissions if they have not already been set so that
   // any transformations are correctly reflected in the install prompt.
   PermissionsUpdater(profile, PermissionsUpdater::INIT_FLAG_TRANSIENT)
       .InitializePermissions(extension);
 
   return extension->permissions_data()->active_permissions().Clone();
-#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)

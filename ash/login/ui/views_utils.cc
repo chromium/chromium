@@ -162,7 +162,7 @@ std::unique_ptr<views::Label> CreateThemedBubbleLabel(
     int line_height) {
   auto label = CreateUnthemedBubbleLabel(message, view_defining_max_width,
                                          font_list, line_height);
-  label->SetEnabledColorId(enabled_color_type);
+  label->SetEnabledColor(enabled_color_type);
   return label;
 }
 

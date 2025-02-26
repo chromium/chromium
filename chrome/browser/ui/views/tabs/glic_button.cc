@@ -21,10 +21,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 
-namespace {
-constexpr int kIconSizePadding = 24;
-}  // namespace
-
 namespace glic {
 
 GlicButton::GlicButton(TabStripController* tab_strip_controller,
@@ -90,13 +86,10 @@ gfx::Size GlicButton::CalculatePreferredSize(
   const int full_width =
       GetLayoutManager()->GetPreferredSize(this, available_size).width();
 
-  int icon_width =
-      GetImage(views::Button::STATE_NORMAL).size().width() + kIconSizePadding;
-  const int width = (full_width - icon_width) * GetWidthFactor() + icon_width;
-
   const int height = TabStripControlButton::CalculatePreferredSize(
-                         views::SizeBounds(width, available_size.height()))
+                         views::SizeBounds(full_width, available_size.height()))
                          .height();
+  const int width = (full_width - height) * GetWidthFactor() + height;
 
   return gfx::Size(width, height);
 }

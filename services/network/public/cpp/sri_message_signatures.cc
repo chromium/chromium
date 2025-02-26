@@ -25,7 +25,7 @@ const size_t kEd25519SigLength = 64;
 constexpr std::string_view kAcceptSignature = "accept-signature";
 
 constexpr std::array<std::string_view, 9u> kDerivedComponents = {
-    "@path"
+    "@path", "@status"
     // TODO(383409584): We should support the remaining derived components from
     // https://www.rfc-editor.org/rfc/rfc9421.html#name-derived-components:
     //
@@ -197,12 +197,16 @@ std::string SerializeSignatureParams(
 }
 
 std::string SerializeDerivedComponent(const GURL& request_url,
+                                      const int response_status_code,
                                       const std::string& component) {
   DCHECK(base::Contains(kDerivedComponents, component));
 
   if (component == "@path") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#content-request-path
     return request_url.path();
+  } else if (component == "@status") {
+    // https://www.rfc-editor.org/rfc/rfc9421.html#content-status-code
+    return base::NumberToString(response_status_code);
   }
 
   // TODO(383409584): Support additional derived components.
@@ -473,7 +477,8 @@ std::optional<std::string> ConstructSignatureBase(
       if (!base::Contains(kDerivedComponents, component->name)) {
         return std::nullopt;
       }
-      component_value = SerializeDerivedComponent(request_url, component->name);
+      component_value = SerializeDerivedComponent(
+          request_url, headers.response_code(), component->name);
 
       //      *  If the component name does not start with an "at" (`@`)
       //         character, canonizalize the HTTP field value ... If the field

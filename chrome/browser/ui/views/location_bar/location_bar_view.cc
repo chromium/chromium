@@ -342,7 +342,7 @@ void LocationBarView::Init() {
     omnibox_additional_text_view->SetVisible(false);
     omnibox_additional_text_view_ =
         AddChildView(std::move(omnibox_additional_text_view));
-    omnibox_additional_text_view_->SetEnabledColorId(kColorOmniboxResultsUrl);
+    omnibox_additional_text_view_->SetEnabledColor(kColorOmniboxResultsUrl);
   }
 
   selected_keyword_view_ = AddChildView(

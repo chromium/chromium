@@ -72,7 +72,7 @@ std::unique_ptr<views::Label> CreateSubtitle(int text_message_id, int id) {
   return views::Builder<views::Label>()
       .SetText(l10n_util::GetStringUTF16(text_message_id))
       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-      .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+      .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
       .SetProperty(views::kMarginsKey, kSubtitleMargins)
       .SetID(id)
       .CustomConfigure(base::BindOnce([](views::Label* label) {
@@ -344,7 +344,7 @@ class TabAppSelectionView::UserFeedbackView : public views::BoxLayoutView {
     auto* feedback_label = AddChildView(std::make_unique<views::Label>());
     feedback_label->SetText(l10n_util::GetStringUTF16(
         IDS_ASH_BIRCH_CORAL_USER_FEEDBACK_DESCRIPTION));
-    feedback_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    feedback_label->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
     feedback_label->SetMultiLine(true);
     feedback_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation2,

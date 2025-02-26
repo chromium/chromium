@@ -88,9 +88,8 @@ AssistantOverlay::~AssistantOverlay() {
   StopObservingImplicitAnimations();
 }
 
-void AssistantOverlay::StartAnimation(bool show_icon) {
+void AssistantOverlay::StartAnimation() {
   animation_state_ = AnimationState::STARTING;
-  show_icon_ = show_icon;
   SetVisible(true);
 
   // Remove clip_rect from host_view_ and its ancestors as the animation goes

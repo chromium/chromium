@@ -88,7 +88,7 @@ PasswordCrossDomainConfirmationPopupViewViews::
           .SetText(controller->GetBodyText())
           .SetMultiLine(true)
           .SetTextStyle(views::style::TextStyle::STYLE_BODY_3)
-          .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
+          .SetEnabledColor(ui::kColorLabelForegroundSecondary)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
           .Build());
   EmphasizeTokens(label, views::style::TextStyle::STYLE_BODY_3_BOLD,

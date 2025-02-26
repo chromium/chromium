@@ -193,4 +193,8 @@ bool ShellExtensionLoader::ShouldBlockExtension(const Extension* extension) {
   return false;
 }
 
+void ShellExtensionLoader::GrantActivePermissions(const Extension* extension) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace extensions

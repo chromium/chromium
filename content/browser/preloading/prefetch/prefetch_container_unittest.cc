@@ -1383,7 +1383,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
       content = "Body";
       break;
     case BodySize::kLarge:
-      content = std::string(4 * producer_pipe_capacity, '-');
+      content = std::string(16 * producer_pipe_capacity, '-');
       break;
   }
 

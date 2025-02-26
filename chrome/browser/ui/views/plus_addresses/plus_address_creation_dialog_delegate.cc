@@ -196,7 +196,7 @@ std::unique_ptr<views::Label> CreateErrorMessageLabel() {
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetProperty(views::kElementIdentifierKey,
                    PlusAddressCreationView::kPlusAddressCreateErrorId)
-      .SetEnabledColorId(ui::kColorSysError)
+      .SetEnabledColor(ui::kColorSysError)
       .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(8, 0, 16, 0))
       .SetTextStyle(views::style::TextStyle::STYLE_BODY_5)
       .SetVisible(false)
@@ -351,7 +351,7 @@ std::unique_ptr<views::View> PlusAddressCreationDialogDelegate::
           .SetTextContext(views::style::CONTEXT_LABEL)
           .SetProperty(views::kElementIdentifierKey,
                        PlusAddressCreationView::kPlusAddressReserveErrorId)
-          .SetEnabledColorId(ui::kColorSysError)
+          .SetEnabledColor(ui::kColorSysError)
           .SetSelectable(true)
           .CopyAddressTo(&error_message_)
           .Build();

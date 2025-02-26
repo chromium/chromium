@@ -261,6 +261,17 @@ base::Value::List BitflagToList(int bit_flag) {
   return list;
 }
 
+DisableReasonSet IntegerSetToDisableReasonSet(const base::flat_set<int>& set) {
+  DisableReasonSet result;
+  for (int reason : set) {
+    // Static cast from integer to enum value is safe as long as the enum has an
+    // entry for the given integer.
+    CHECK(IsValidDisableReason(reason));
+    result.insert(static_cast<disable_reason::DisableReason>(reason));
+  }
+  return result;
+}
+
 // Serializes |time| as a string value mapped to |key| in |dictionary|.
 void SaveTime(prefs::DictionaryValueUpdate* dictionary,
               const char* key,
@@ -1004,8 +1015,13 @@ bool ExtensionPrefs::DidExtensionEscalatePermissions(
 
 DisableReasonSet ExtensionPrefs::GetDisableReasons(
     const ExtensionId& extension_id) const {
-  return ReadDisableReasonsFromPrefs(extension_id,
-                                     /*collapse_unknown_reasons=*/true);
+  base::flat_set<int> collapsed_reasons =
+      ReadDisableReasonsFromPrefs(extension_id,
+                                  /*collapse_unknown_reasons=*/true);
+
+  // Conversion to DisableReasonSet is safe because unknown values are collapsed
+  // to DISABLE_UNKNOWN.
+  return IntegerSetToDisableReasonSet(collapsed_reasons);
 }
 
 base::flat_set<int> ExtensionPrefs::GetRawDisableReasons(
@@ -1049,7 +1065,7 @@ void ExtensionPrefs::AddDisableReasons(
     const ExtensionId& extension_id,
     const DisableReasonSet& disable_reasons) {
   AddRawDisableReasons(disable_reason_raw_manipulation_passkey_, extension_id,
-                       disable_reasons);
+                       DisableReasonSetToIntegerSet(disable_reasons));
 }
 
 void ExtensionPrefs::AddRawDisableReasons(
@@ -1493,8 +1509,9 @@ void ExtensionPrefs::SetExtensionEnabled(const ExtensionId& extension_id) {
 void ExtensionPrefs::SetExtensionDisabled(
     const ExtensionId& extension_id,
     const DisableReasonSet& disable_reasons) {
-  SetExtensionDisabledWithRawReasons(disable_reason_raw_manipulation_passkey_,
-                                     extension_id, disable_reasons);
+  SetExtensionDisabledWithRawReasons(
+      disable_reason_raw_manipulation_passkey_, extension_id,
+      DisableReasonSetToIntegerSet(disable_reasons));
 }
 
 void ExtensionPrefs::SetExtensionDisabledWithRawReasons(

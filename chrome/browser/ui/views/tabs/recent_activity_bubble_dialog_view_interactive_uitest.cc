@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewInteractiveUiTest,
       WaitForImages(activity_log_index),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kSkipPixelTestsReason),
-      Screenshot(kRecentActivityBubbleDialogId, "", "6131072"), HoverTabAt(0),
+      Screenshot(kRecentActivityBubbleDialogId, "", "6267139"), HoverTabAt(0),
       ClickMouse(), WaitForHide(kRecentActivityBubbleDialogId));
 }
 
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewInteractiveUiTest,
       WaitForImages(1), WaitForImages(2),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kSkipPixelTestsReason),
-      Screenshot(kRecentActivityBubbleDialogId, "", "6259060"), HoverTabAt(0),
+      Screenshot(kRecentActivityBubbleDialogId, "", "6267139"), HoverTabAt(0),
       ClickMouse(), WaitForHide(kRecentActivityBubbleDialogId));
 }
 

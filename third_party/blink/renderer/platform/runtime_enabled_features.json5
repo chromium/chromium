@@ -3223,6 +3223,10 @@
       origin_trial_feature_name: "Parakeet",
     },
     {
+      name: "PartialCompletionNotAllowedInMoveParagraphs",
+      status: "stable",
+    },
+    {
       name: "PartitionedPopins",
       status: "experimental",
     },
@@ -3835,7 +3839,7 @@
       name: "ScrollbarWidth",
       status: "stable",
     },
-    // Killswitch in M134.
+    // Killswitch added in M134, changed in M135.
     {
       name: "ScrollCullRectFromContainerRect",
       status: "stable",

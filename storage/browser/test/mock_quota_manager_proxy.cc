@@ -75,13 +75,13 @@ void MockQuotaManagerProxy::GetBucketById(
 
 void MockQuotaManagerProxy::GetBucketsForStorageKey(
     const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
     bool delete_expired,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback) {
   if (mock_quota_manager_) {
     mock_quota_manager_->GetBucketsForStorageKey(
-        storage_key, type, std::move(callback), delete_expired);
+        storage_key, blink::mojom::StorageType::kTemporary, std::move(callback),
+        delete_expired);
   } else {
     std::move(callback).Run(std::set<BucketInfo>());
   }

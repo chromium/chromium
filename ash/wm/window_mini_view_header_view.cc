@@ -88,7 +88,7 @@ WindowMiniViewHeaderView::WindowMiniViewHeaderView(
   title_label_->SetSubpixelRenderingEnabled(false);
   title_label_->SetFontList(gfx::FontList().Derive(
       kLabelFontDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
-  title_label_->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
+  title_label_->SetEnabledColor(cros_tokens::kCrosSysPrimary);
   title_label_->SetPaintToLayer();
   title_label_->layer()->SetFillsBoundsOpaquely(false);
   icon_label_view_->SetFlexForView(title_label_, 1);

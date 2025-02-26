@@ -80,7 +80,7 @@ ErrorMessageToast::ErrorMessageToast(views::Button::PressedCallback callback,
   const auto* const typography_provider = TypographyProvider::Get();
   error_message_label_ = AddChildView(
       views::Builder<views::Label>()
-          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+          .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
           .SetFontList(typography_provider->ResolveTypographyToken(
               TypographyToken::kCrosAnnotation1))
           .SetLineHeight(typography_provider->ResolveLineHeight(

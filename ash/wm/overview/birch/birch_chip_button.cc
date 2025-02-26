@@ -256,12 +256,12 @@ BirchChipButton::BirchChipButton()
               .AddChildren(views::Builder<views::Label>()
                                .CopyAddressTo(&title_)
                                .SetAutoColorReadabilityEnabled(false)
-                               .SetEnabledColorId(kTitleColorId)
+                               .SetEnabledColor(kTitleColorId)
                                .SetHorizontalAlignment(gfx::ALIGN_LEFT),
                            views::Builder<views::Label>()
                                .CopyAddressTo(&subtitle_)
                                .SetAutoColorReadabilityEnabled(false)
-                               .SetEnabledColorId(kSubtitleColorId)
+                               .SetEnabledColor(kSubtitleColorId)
                                .SetHorizontalAlignment(gfx::ALIGN_LEFT)))
       .BuildChildren();
 

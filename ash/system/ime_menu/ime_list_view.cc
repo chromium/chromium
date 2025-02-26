@@ -84,7 +84,7 @@ class ImeListItemView : public views::Button {
 
     // |id_label| contains the IME short name (e.g., 'US', 'GB', 'IT').
     views::Label* id_label = TrayPopupUtils::CreateDefaultLabel();
-    id_label->SetEnabledColorId(
+    id_label->SetEnabledColor(
         static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface));
     id_label->SetAutoColorReadabilityEnabled(false);
     id_label->SetText(id);
@@ -108,7 +108,7 @@ class ImeListItemView : public views::Button {
     // The label shows the IME full name.
     auto* label_view = TrayPopupUtils::CreateDefaultLabel();
     label_view->SetText(label);
-    label_view->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    label_view->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label_view);
     label_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -192,7 +192,7 @@ class KeyboardStatusRow : public views::View {
     auto* label = TrayPopupUtils::CreateDefaultLabel();
     label->SetText(ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
         IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
-    label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label);
     tri_view->AddView(TriView::Container::CENTER, label);

@@ -285,7 +285,7 @@ DropDownCheckbox::DropDownCheckbox(const std::u16string& title,
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
                                         *title_.get());
   title_->SetAutoColorReadabilityEnabled(false);
-  title_->SetEnabledColorId(kInactiveTitleAndIconColorId);
+  title_->SetEnabledColor(kInactiveTitleAndIconColorId);
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
@@ -454,7 +454,7 @@ void DropDownCheckbox::ShowDropDownMenu() {
 
   SetBackground(views::CreateThemedRoundedRectBackground(
       kDropDownCheckboxActiveColorId, kDropDownCheckboxRoundedCorners));
-  title_->SetEnabledColorId(kActiveTitleAndIconColorId);
+  title_->SetEnabledColor(kActiveTitleAndIconColorId);
   drop_down_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kDropDownArrowIcon, kActiveTitleAndIconColorId, kArrowIconSize));
 
@@ -468,7 +468,7 @@ void DropDownCheckbox::CloseDropDownMenu() {
 
   closed_time_ = base::TimeTicks::Now();
   SetBackground(nullptr);
-  title_->SetEnabledColorId(kInactiveTitleAndIconColorId);
+  title_->SetEnabledColor(kInactiveTitleAndIconColorId);
   drop_down_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kDropDownArrowIcon, kInactiveTitleAndIconColorId, kArrowIconSize));
   NotifyAccessibilityEventDeprecated(ax::mojom::Event::kStateChanged, true);

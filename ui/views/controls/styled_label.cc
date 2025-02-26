@@ -587,11 +587,11 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
   }
 
   if (style_info.override_color_id) {
-    result->SetEnabledColorId(style_info.override_color_id.value());
+    result->SetEnabledColor(style_info.override_color_id.value());
   } else if (style_info.override_color) {
     result->SetEnabledColor(style_info.override_color.value());
   } else if (default_enabled_color_id_) {
-    result->SetEnabledColorId(default_enabled_color_id_);
+    result->SetEnabledColor(default_enabled_color_id_.value());
   }
   if (!style_info.tooltip.empty()) {
     result->SetCustomTooltipText(style_info.tooltip);

@@ -5,10 +5,7 @@
 package org.chromium.chrome.browser.auxiliary_search;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -16,7 +13,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -41,22 +37,6 @@ public class AuxiliarySearchBridge {
         } else {
             mNativeBridge = AuxiliarySearchBridgeJni.get().getForProfile(profile);
         }
-    }
-
-    /**
-     * @return AuxiliarySearchGroup for bookmarks, which is necessary for the auxiliary search.
-     */
-    public @Nullable AuxiliarySearchBookmarkGroup getBookmarksSearchableData() {
-        if (mNativeBridge != 0) {
-            try {
-                return AuxiliarySearchBookmarkGroup.parseFrom(
-                        AuxiliarySearchBridgeJni.get().getBookmarksSearchableData(mNativeBridge));
-
-            } catch (InvalidProtocolBufferException e) {
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -101,8 +81,6 @@ public class AuxiliarySearchBridge {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         long getForProfile(@JniType("Profile*") Profile profile);
-
-        byte[] getBookmarksSearchableData(long nativeAuxiliarySearchProvider);
 
         void getNonSensitiveTabs(
                 long nativeAuxiliarySearchProvider, Tab[] tabs, Callback<Object[]> callback);

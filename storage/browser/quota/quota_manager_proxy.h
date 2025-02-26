@@ -147,12 +147,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
-  // Retrieves all buckets for `storage_key` and `type` that are in the buckets
-  // table. If `delete_expired` is true, expired buckets will be filtered out of
-  // the reply and also deleted from disk.
+  // Retrieves all buckets for `storage_key` that are in the buckets table. If
+  // `delete_expired` is true, expired buckets will be filtered out of the reply
+  // and also deleted from disk.
   virtual void GetBucketsForStorageKey(
       const blink::StorageKey& storage_key,
-      blink::mojom::StorageType type,
       bool delete_expired,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback);
@@ -204,7 +203,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
 
   virtual void SetUsageCacheEnabled(QuotaClientType client_id,
                                     const blink::StorageKey& storage_key,
-                                    blink::mojom::StorageType type,
                                     bool enabled);
   virtual void GetUsageAndQuota(
       const blink::StorageKey& storage_key,
@@ -228,13 +226,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
 
   virtual void IsStorageUnlimited(
       const blink::StorageKey& storage_key,
-      blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(bool)> callback);
 
   void GetStorageKeyUsageWithBreakdown(
       const blink::StorageKey& storage_key,
-      blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageWithBreakdownCallback callback);
 

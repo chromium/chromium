@@ -168,7 +168,7 @@ void PermissionPromptBubbleBaseView::CreateExtraTextLabel(
                                          VIEW_ID_PERMISSION_PROMPT_EXTRA_TEXT)
                               .Build();
   extra_text_label->SetTextStyle(views::style::STYLE_BODY_3);
-  extra_text_label->SetEnabledColorId(kColorPermissionPromptRequestText);
+  extra_text_label->SetEnabledColor(kColorPermissionPromptRequestText);
   AddChildView(std::move(extra_text_label));
 }
 

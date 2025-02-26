@@ -257,7 +257,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
     label->SetSubpixelRenderingEnabled(false);
     label->SetAutoColorReadabilityEnabled(false);
 
-    label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
     label->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   };
 
@@ -343,7 +343,7 @@ void LocalAuthenticationRequestView::UpdateState(
                              : cros_tokens::kCrosSysError;
   title_label_->SetText(title);
   description_label_->SetText(description);
-  description_label_->SetEnabledColorId(color_id);
+  description_label_->SetEnabledColor(color_id);
 }
 
 gfx::Size LocalAuthenticationRequestView::CalculatePreferredSize(

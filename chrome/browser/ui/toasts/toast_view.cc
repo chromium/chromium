@@ -176,7 +176,7 @@ void ToastView::Init() {
 
   label_ = AddChildView(
       std::make_unique<views::Label>(toast_text_, CONTEXT_TOAST_BODY_TEXT));
-  label_->SetEnabledColorId(ui::kColorToastForeground);
+  label_->SetEnabledColor(ui::kColorToastForeground);
   label_->SetMultiLine(false);
   label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label_->SetAllowCharacterBreak(false);

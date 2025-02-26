@@ -248,8 +248,8 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
 
     return MakeGarbageCollected<ImageBitmap>(
         AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-            std::move(client_si), GenTestSyncToken(100), 0,
-            SkImageInfo::MakeN32Premul(100, 100),
+            std::move(client_si), GenTestSyncToken(100), 0, gfx::Size(100, 100),
+            kN32_SkColorType, kPremul_SkAlphaType, nullptr,
             SharedGpuContext::ContextProviderWrapper(),
             base::PlatformThread::CurrentRef(),
             base::MakeRefCounted<base::NullTaskRunner>(),

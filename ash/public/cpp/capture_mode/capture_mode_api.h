@@ -19,28 +19,17 @@ bool ASH_EXPORT IsSunfishFeatureEnabledWithFeatureKey();
 
 // Returns whether Sunfish-related UI can be shown. This function checks the
 // Sunfish-feature flag, Sunfish prefs and Sunfish policy.
-// If `CanShowSunfishUi`, then `IsSunfishSessionAllowed`, but the reverse may
-// not be true (if the Sunfish-feature flag is disabled and Scanner-related UI
-// is allowed to be shown, `IsSunfishSessionAllowed` but not
-// `CanShowSunfishUi`).
 bool ASH_EXPORT CanShowSunfishUi();
 
-// Returns whether a capture mode session with `kSunfish` behavior type is
-// is allowed by feature flags and user prefs / policies.
-// This is also the source of truth for whether any action buttons can be shown
-// in the default capture mode session.
+// Returns whether Sunfish-related UI or Scanner-related UI can be shown.
+// This is also the source of truth for:
+// - whether a capture mode session with `kSunfish` behavior type is allowed.
+// - whether any action buttons can be shown in the default capture mode
+//   session.
 //
-// This function checks:
-// - whether the Sunfish-feature flag is enabled OR Scanner-related UI is
-//   allowed to be shown, AND
-// - additional checks for Sunfish prefs and Sunfish policy.
-//
-// As Sunfish prefs and policy are checked even if Scanner's UI can be shown,
-// the Scanner and Sunfish features are coupled together.
-// TODO: crbug.com/397521940 - Remove the additional checks when Scanner's UI
-// can be shown, decoupling the two features.
-// TODO: crbug.com/397784915 - Rename this function to be more understandable.
-bool ASH_EXPORT IsSunfishSessionAllowed();
+// This function checks whether `CanShowSunfishUi` or
+// `ScannerController::CanShowUiForShell` are true.
+bool ASH_EXPORT CanShowSunfishOrScannerUi();
 
 }  // namespace ash
 

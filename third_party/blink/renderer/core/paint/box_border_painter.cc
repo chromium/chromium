@@ -342,7 +342,7 @@ static_assert(static_cast<unsigned>(BoxSide::kLeft) == 3,
 // Style-based paint order: non-solid edges (dashed/dotted/double) are painted
 // before solid edges (inset/outset/groove/ridge/solid) to maximize overdraw
 // opportunities.
-const auto kStylePriority = std::to_array<unsigned>({
+constexpr auto kStylePriority = std::to_array<unsigned>({
     0,  // EBorderStyle::kNone
     0,  // EBorderStyle::kHidden
     2,  // EBorderStyle::kInset
@@ -357,7 +357,7 @@ const auto kStylePriority = std::to_array<unsigned>({
 
 // Given the same style, prefer drawing in non-adjacent order to minimize the
 // number of sides which require miters.
-const auto kSidePriority = std::to_array<unsigned>({
+constexpr auto kSidePriority = std::to_array<unsigned>({
     0,  // BoxSide::kTop
     2,  // BoxSide::kRight
     1,  // BoxSide::kBottom

@@ -1288,6 +1288,10 @@
     "hanging",
     "mathematical",
 
+    // gap-rule-paint-order
+    "row-over-column",
+    "column-over-row",
+
     // column-rule-break
     // none
     "intersection",

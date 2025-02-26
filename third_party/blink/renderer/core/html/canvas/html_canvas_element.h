@@ -340,6 +340,10 @@ class CORE_EXPORT HTMLCanvasElement final
  private:
   void Dispose();
 
+  // Updates the preferred 2D raster mode based on the state of the context and
+  // GPU acceleration.
+  void UpdatePreferred2DRasterMode();
+
   // TODO(crbug.com/40280152): Remove parameter once the hibernation handler is
   // an instance variable of this class.
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderFor2DContext(

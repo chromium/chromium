@@ -17,13 +17,7 @@
 #signoutConfirmationDialog {
   display: flex;
   flex-direction: column;
-  padding-bottom: var(--dialog-padding);
-  padding-top: var(--dialog-padding);
-}
-
-#header {
-  padding-inline-end: var(--dialog-padding);
-  padding-inline-start: var(--dialog-padding);
+  padding: var(--dialog-padding);
 }
 
 #title {
@@ -40,13 +34,15 @@
   line-height: 20px;
 }
 
+extensions-section {
+  margin-top: 16px;
+}
+
 #action-row {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
   margin-top: 16px;
-  padding-inline-start: var(--dialog-padding);
-  padding-inline-end: var(--dialog-padding);
 }
 
 <if expr="is_macosx or is_linux">

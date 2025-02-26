@@ -7,6 +7,14 @@
 #include "base/trace_event/traced_value.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 
+namespace gfx {
+
+void PrintTo(const OverlayLayerId& layer_id, std::ostream* os) {
+  *os << layer_id.ToString();
+}
+
+}  // namespace gfx
+
 namespace viz {
 
 void PrintTo(const OverlayCandidate& candidate, std::ostream* os) {

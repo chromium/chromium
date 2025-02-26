@@ -85,7 +85,7 @@ void ApplyStyle(views::Label* label,
                 TypographyToken style,
                 ui::ColorId text_color_id) {
   label->SetAutoColorReadabilityEnabled(false);
-  label->SetEnabledColorId(text_color_id);
+  label->SetEnabledColor(text_color_id);
 
   TypographyProvider::Get()->StyleLabel(style, *label);
 }

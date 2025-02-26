@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Dummy implementation of data_sharing_sdk.js for non-branded build.
-import type {AddAccessTokenParams, AddAccessTokenResult, AddMemberParams, CreateGroupParams, CreateGroupResult, DataSharingSdk, DataSharingSdkResponse, DeleteGroupParams, LeaveGroupParams, ReadGroupsParams, ReadGroupsResult, RunJoinFlowParams, RunManageFlowParams, RunInviteFlowParams} from './data_sharing_sdk_types.js';
+import type {AddAccessTokenParams, AddAccessTokenResult, AddMemberParams, CreateGroupParams, CreateGroupResult, DataSharingSdk, DataSharingSdkResponse, DeleteGroupParams, LeaveGroupParams, ReadGroupsParams, ReadGroupsResult, RunCloseFlowParams, RunInviteFlowParams, RunJoinFlowParams, RunManageFlowParams} from './data_sharing_sdk_types.js';
 import {Code} from './data_sharing_sdk_types.js';
 
 // Add something to the dialog to tell which flow it is.
@@ -25,8 +25,10 @@ export class DataSharingSdkImpl implements DataSharingSdk {
   createGroup(
       _params: CreateGroupParams,
       ): Promise<{result?: CreateGroupResult, status: Code}> {
-    return Promise.resolve(
-        {result: {groupData: {groupId: '', members: []}}, status: Code.OK});
+    return Promise.resolve({
+      result: {groupData: {groupId: '', members: [], formerMembers: []}},
+      status: Code.OK,
+    });
   }
   readGroups(
       _params: ReadGroupsParams,
@@ -48,6 +50,7 @@ export class DataSharingSdkImpl implements DataSharingSdk {
                                               givenName: 'MEMBER_NAME',
                                             },
                                           ],
+                                          formerMembers: [],
                                         })),
         },
       });
@@ -78,6 +81,10 @@ export class DataSharingSdkImpl implements DataSharingSdk {
   }
   runManageFlow(_params: RunManageFlowParams): Promise<DataSharingSdkResponse> {
     appendTextForTesting('A fake manage dialog');
+    return new Promise(() => {});
+  }
+  runCloseFlow(_params: RunCloseFlowParams): Promise<DataSharingSdkResponse> {
+    appendTextForTesting('A fake close dialog');
     return new Promise(() => {});
   }
 

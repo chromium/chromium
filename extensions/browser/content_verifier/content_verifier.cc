@@ -38,7 +38,9 @@
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/utils/base_string.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/mime_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/common/mime_util/mime_util.h"
 
 namespace extensions {
 
@@ -73,16 +75,6 @@ base::FilePath NormalizeRelativePath(const base::FilePath& path) {
   if (path.EndsWithSeparator())
     normalized_relative_path.append(1, '/');
   return base::FilePath(normalized_relative_path);
-}
-
-bool HasScriptFileExt(const base::FilePath& requested_path) {
-  return requested_path.MatchesExtension(FILE_PATH_LITERAL(".js"));
-}
-
-bool HasPageFileExt(const base::FilePath& requested_path) {
-  base::FilePath::StringType file_extension = requested_path.Extension();
-  return requested_path.MatchesExtension(FILE_PATH_LITERAL(".html")) ||
-         requested_path.MatchesExtension(FILE_PATH_LITERAL(".htm"));
 }
 
 std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
@@ -455,13 +447,20 @@ class ContentVerifier::VerifiedFileTypeHelper {
       return ContentVerifier::VerifiedFileType::kContentScript;
     }
 
-    // JavaScript and HTML files should always be verified.
-    if (HasScriptFileExt(relative_path)) {
-      return ContentVerifier::VerifiedFileType::kMiscJsFile;
-    }
+    const base::FilePath canonical_path(canonical_path_value.value());
 
-    if (HasPageFileExt(relative_path)) {
-      return ContentVerifier::VerifiedFileType::kMiscHtmlFile;
+    // JavaScript and HTML files should always be verified.
+    if (const auto ext = canonical_path.Extension(); !ext.empty()) {
+      std::string mime_type;
+      if (net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type)) {
+        if (blink::IsSupportedJavascriptMimeType(mime_type)) {
+          return ContentVerifier::VerifiedFileType::kMiscJsFile;
+        }
+
+        if (mime_type == "text/html") {
+          return ContentVerifier::VerifiedFileType::kMiscHtmlFile;
+        }
+      }
     }
 
     // The browser re-writes image files during extension load, so they can't
@@ -477,7 +476,6 @@ class ContentVerifier::VerifiedFileTypeHelper {
       return ContentVerifier::VerifiedFileType::kNone;
     }
 
-    const base::FilePath canonical_path(canonical_path_value.value());
     if (locales_relative_dir_.IsParent(canonical_path)) {
       // TODO(asargent) - see if we can cache this list longer to avoid
       // having to fetch it more than once for a given run of the

@@ -661,6 +661,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableAiSettingsInPrivacyGuide",
       optimization_guide::features::IsPrivacyGuideAiSettingsEnabled());
 
+  // Delete Browsing Data
+  html_source->AddBoolean(
+      "enableDeleteBrowsingDataRevamp",
+      base::FeatureList::IsEnabled(features::kDbdRevampDesktop));
+
   TryShowHatsSurveyWithTimeout();
 }
 

@@ -402,7 +402,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       {"safetyHubHeader", IDS_OK /* placeholder to avoid crash */},
 #else
       {"safetyHubHeader", IDS_SETTINGS_SAFETY_HUB},
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
       {"safetyCheckRemoveButtonA11yLabel",
        IDS_EXTENSIONS_SC_REMOVE_BUTTON_A11Y_LABEL},
@@ -420,7 +420,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
        IDS_EXTENSIONS_KIOSK_DISABLE_BAILOUT_SHORTCUT_LABEL},
       {"kioskDisableBailoutWarningTitle",
        IDS_EXTENSIONS_KIOSK_DISABLE_BAILOUT_SHORTCUT_WARNING_TITLE},
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -492,7 +492,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
   source->AddBoolean(
       "MV2DeprecationNoticeDismissed",
       mv2_experiment_manager->DidUserAcknowledgeNoticeGlobally());
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
   source->AddString(
@@ -500,7 +500,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       l10n_util::GetStringFUTF16(
           IDS_EXTENSIONS_KIOSK_DISABLE_BAILOUT_SHORTCUT_WARNING_BODY,
           l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME)));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return source;
 }

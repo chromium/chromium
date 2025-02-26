@@ -112,7 +112,6 @@ crbug.com/1417006 [ fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVi
 
 # Fails on GL, Metal, Graphite and Ganesh, AMD and Intel
 crbug.com/377724727 [ amd-0x7340 angle-opengl debug graphite-disabled mac-x86_64 no-asan no-clang-coverage passthrough sonoma ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
-crbug.com/377724727 [ mac amd angle-metal graphite-enabled debug ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ RetryOnFailure ]
 crbug.com/377724727 [ android ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ RetryOnFailure ]
 crbug.com/377724727 [ linux ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ RetryOnFailure ]
 crbug.com/377724727 [ win ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ RetryOnFailure ]

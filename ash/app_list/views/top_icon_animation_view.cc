@@ -106,7 +106,7 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
           ? TypographyToken::kCrosAnnotation1
           : TypographyToken::kCrosButton2,
       *title_label);
-  title_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  title_label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   title_label->SetLineHeight(app_list_config->app_title_max_line_height());
   title_label->SetText(title);
   if (item_in_folder_icon_) {

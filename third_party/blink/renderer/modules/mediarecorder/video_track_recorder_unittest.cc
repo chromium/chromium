@@ -92,7 +92,7 @@ const VideoTrackRecorder::CodecId kTrackRecorderTestCodec[] = {
     VideoTrackRecorder::CodecId::kAv1,
 #endif
 };
-const auto kTrackRecorderTestSize = std::to_array<gfx::Size>(
+constexpr auto kTrackRecorderTestSize = std::to_array<gfx::Size>(
     {gfx::Size(kVEAEncoderMinResolutionWidth / 2,
                kVEAEncoderMinResolutionHeight / 2),
      gfx::Size(kVEAEncoderMinResolutionWidth, kVEAEncoderMinResolutionHeight)});

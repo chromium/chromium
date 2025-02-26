@@ -15,6 +15,7 @@
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_availability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_dict.h"
@@ -241,7 +242,7 @@ ScriptPromise<AILanguageModelCapabilities> AILanguageModelFactory::capabilities(
                                 AIMetrics::AIAPI::kCanCreateSession);
 
   ai_->GetAIRemote()->CanCreateLanguageModel(
-      mojom::blink::AILanguageModelAvailabilityOptions::New(),
+      std::nullopt,
       WTF::BindOnce(&AILanguageModelFactory::OnCanCreateSessionComplete,
                     WrapPersistent(this), WrapPersistent(resolver)));
 
@@ -274,23 +275,21 @@ ScriptPromise<V8AIAvailability> AILanguageModelFactory::availability(
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kCanCreateSession);
-
-  std::vector<std::string> expected_languages;
-  auto availability_options =
-      mojom::blink::AILanguageModelAvailabilityOptions::New();
-  if (options->hasTopK()) {
-    availability_options->top_k = options->topK();
-  }
-  if (options->hasTemperature()) {
-    availability_options->temperature = options->temperature();
-  }
-  if (options->hasExpectedInputLanguages()) {
-    availability_options->expected_input_languages =
+  std::optional<WTF::Vector<mojom::blink::AILanguageCodePtr>>
+      expected_language_codes;
+  if (options && options->hasExpectedInputLanguages()) {
+    expected_language_codes =
         ToMojoLanguageCodes(options->expectedInputLanguages());
   }
 
+  auto result = ResolveSamplingParamsOption(options);
+  if (!result.has_value()) {
+    resolver->Resolve(AIAvailabilityToV8(AIAvailability::kUnavailable));
+    return promise;
+  }
+
   ai_->GetAIRemote()->CanCreateLanguageModel(
-      std::move(availability_options),
+      std::move(expected_language_codes),
       WTF::BindOnce(&AILanguageModelFactory::OnCanCreateLanguageModelComplete,
                     WrapPersistent(this), WrapPersistent(resolver)));
 

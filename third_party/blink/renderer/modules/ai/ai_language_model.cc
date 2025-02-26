@@ -11,7 +11,13 @@
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_create_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_dict.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_role.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_ai_language_model_prompt_content.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_ai_language_model_prompt_input.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_ailanguagemodelpromptdict_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model_factory.h"
@@ -21,6 +27,7 @@
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
+#include "third_party/blink/renderer/modules/shapedetection/shape_detector.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -150,6 +157,116 @@ class CountPromptTokensClient
       receiver_;
 };
 
+// Return `prompt`'s role or the inferred default.
+on_device_model::mojom::blink::Token GetRole(
+    const V8AILanguageModelPrompt* prompt) {
+  if (prompt->IsAILanguageModelPromptDict()) {
+    switch (prompt->GetAsAILanguageModelPromptDict()->role().AsEnum()) {
+      case V8AILanguageModelPromptRole::Enum::kSystem:
+        return on_device_model::mojom::blink::Token::kSystem;
+      case V8AILanguageModelPromptRole::Enum::kUser:
+        return on_device_model::mojom::blink::Token::kUser;
+      case V8AILanguageModelPromptRole::Enum::kAssistant:
+        return on_device_model::mojom::blink::Token::kModel;
+    }
+  }
+  return on_device_model::mojom::blink::Token::kUser;
+}
+
+// Return `prompt`'s content as an InputPiece or an error.
+std::variant<on_device_model::mojom::blink::InputPiecePtr, DOMException*>
+GetContent(const V8AILanguageModelPrompt* prompt,
+           ScriptState* script_state,
+           ExceptionState& exception_state) {
+  if (prompt->IsString()) {
+    return on_device_model::mojom::blink::InputPiece::NewText(
+        prompt->GetAsString());
+  } else if (prompt->IsAILanguageModelPromptDict()) {
+    const AILanguageModelPromptDict* dict =
+        prompt->GetAsAILanguageModelPromptDict();
+    const V8AILanguageModelPromptContent* content = dict->content();
+    if (dict->type() == V8AILanguageModelPromptType::Enum::kText) {
+      if (!content->IsString()) {
+        return MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kSyntaxError,
+            "Content is not text, or subtype is not supported");
+      }
+      return on_device_model::mojom::blink::InputPiece::NewText(
+          content->GetAsString());
+    }
+    if (dict->type() == V8AILanguageModelPromptType::Enum::kImage) {
+      if (!content->IsV8ImageBitmapSource()) {
+        return MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kSyntaxError,
+            "Content is not image, or subtype is not supported");
+      }
+      std::optional<SkBitmap> bitmap = ShapeDetector::GetBitmapFromSource(
+          script_state, content->GetAsV8ImageBitmapSource(), exception_state);
+      if (!bitmap) {
+        return MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kSyntaxError,
+            "Unable to get bitmap from image content");
+      }
+      return on_device_model::mojom::blink::InputPiece::NewBitmap(
+          bitmap.value());
+    }
+    if (dict->type() == V8AILanguageModelPromptType::Enum::kAudio) {
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kSyntaxError, "Input type audio not yet supported");
+    }
+  }
+  return MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
+                                            "Input type not recognized");
+}
+
+// Returns the complete input sequence or an error.
+std::variant<on_device_model::mojom::blink::InputPtr, DOMException*>
+BuildOnDeviceModelInput(const V8AILanguageModelPromptInput* input,
+                        ScriptState* script_state,
+                        ExceptionState& exception_state) {
+  auto current_role = on_device_model::mojom::blink::Token::kDefaultValue;
+  auto on_device_model_input = on_device_model::mojom::blink::Input::New();
+
+  // Adds `prompt` to `on_device_model_input`, updates `current_role` as needed.
+  // Returns an exception if the content cannot be processed.
+  const auto add_prompt = [&](const V8AILanguageModelPrompt* prompt) {
+    auto new_role = GetRole(prompt);
+    if (new_role != current_role) {
+      on_device_model_input->pieces.push_back(
+          on_device_model::mojom::blink::InputPiece::NewToken(new_role));
+      current_role = new_role;
+    }
+    std::variant<on_device_model::mojom::blink::InputPiecePtr, DOMException*>
+        content = GetContent(prompt, script_state, exception_state);
+    if (std::holds_alternative<DOMException*>(content)) {
+      return std::get<DOMException*>(content);
+    }
+    on_device_model_input->pieces.push_back(std::move(
+        std::get<on_device_model::mojom::blink::InputPiecePtr>(content)));
+    // The content was added successfully; nullptr signifies no new exception.
+    return static_cast<DOMException*>(nullptr);
+  };
+
+  if (input->IsAILanguageModelPromptDictOrStringSequence()) {
+    for (const auto& prompt :
+         input->GetAsAILanguageModelPromptDictOrStringSequence()) {
+      if (DOMException* e = add_prompt(prompt)) {
+        return e;
+      }
+    }
+  } else {
+    CHECK(input->IsV8AILanguageModelPrompt());
+    if (DOMException* e = add_prompt(input->GetAsV8AILanguageModelPrompt())) {
+      return e;
+    }
+  }
+
+  on_device_model_input->pieces.push_back(
+      on_device_model::mojom::blink::InputPiece::NewToken(
+          on_device_model::mojom::blink::Token::kEnd));
+  return on_device_model_input;
+}
+
 }  // namespace
 
 AILanguageModel::AILanguageModel(
@@ -201,23 +318,33 @@ ScriptPromise<IDLString> AILanguageModel::prompt(
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
   auto promise = resolver->Promise();
 
-  // The API impl only accepts a string for now, more to come soon!
-  if (!input->IsString()) {
+  // The API impl only accepts a string by default for now, more to come soon!
+  if (!input->IsString() &&
+      !RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled()) {
     resolver->RejectWithTypeError("Input type not supported");
     return promise;
   }
-  const WTF::String& input_string = input->GetAsString();
-  auto odm_input = on_device_model::mojom::blink::Input::New();
-  odm_input->pieces.push_back(
-      on_device_model::mojom::blink::InputPiece::NewText(input_string));
+
+  auto on_device_model_input =
+      BuildOnDeviceModelInput(input, script_state, exception_state);
+  if (std::holds_alternative<DOMException*>(on_device_model_input)) {
+    resolver->Reject(std::get<DOMException*>(on_device_model_input));
+    return promise;
+  }
+  CHECK(std::holds_alternative<on_device_model::mojom::blink::InputPtr>(
+      on_device_model_input));
 
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kSessionPrompt);
 
-  base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
-                                 AIMetrics::AISessionType::kLanguageModel),
-                             int(input_string.CharactersSizeInBytes()));
+  // TODO(crbug.com/385173789): Aggregate other input type sizes for UMA.
+  if (input->IsString()) {
+    base::UmaHistogramCounts1M(
+        AIMetrics::GetAISessionRequestSizeMetricName(
+            AIMetrics::AISessionType::kLanguageModel),
+        int(input->GetAsString().CharactersSizeInBytes()));
+  }
 
   if (!language_model_remote_) {
     ThrowSessionDestroyedException(exception_state);
@@ -237,8 +364,10 @@ ScriptPromise<IDLString> AILanguageModel::prompt(
                     WrapWeakPersistent(this)),
       WTF::BindRepeating(&AILanguageModel::OnContextOverflow,
                          WrapWeakPersistent(this)));
-  language_model_remote_->Prompt(std::move(odm_input),
-                                 std::move(pending_remote));
+  language_model_remote_->Prompt(
+      std::move(std::get<on_device_model::mojom::blink::InputPtr>(
+          on_device_model_input)),
+      std::move(pending_remote));
   return promise;
 }
 
@@ -252,23 +381,35 @@ ReadableStream* AILanguageModel::promptStreaming(
     return nullptr;
   }
 
-  // The API impl only accepts a string for now, more to come soon!
-  if (!input->IsString()) {
+  // The API impl only accepts a string by default for now, more to come soon!
+  if (!input->IsString() &&
+      !RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled()) {
     exception_state.ThrowTypeError("Input type not supported");
     return nullptr;
   }
-  const WTF::String& input_string = input->GetAsString();
-  auto odm_input = on_device_model::mojom::blink::Input::New();
-  odm_input->pieces.push_back(
-      on_device_model::mojom::blink::InputPiece::NewText(input_string));
+  auto on_device_model_input =
+      BuildOnDeviceModelInput(input, script_state, exception_state);
+  if (std::holds_alternative<DOMException*>(on_device_model_input)) {
+    DOMException* e = std::get<DOMException*>(on_device_model_input);
+    CHECK(IsDOMExceptionCode(e->code()));
+    exception_state.ThrowDOMException(static_cast<DOMExceptionCode>(e->code()),
+                                      e->message());
+    return nullptr;
+  }
+  CHECK(std::holds_alternative<on_device_model::mojom::blink::InputPtr>(
+      on_device_model_input));
 
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kSessionPromptStreaming);
 
-  base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
-                                 AIMetrics::AISessionType::kLanguageModel),
-                             int(input_string.CharactersSizeInBytes()));
+  // TODO(crbug.com/385173789): Aggregate other input type sizes for UMA.
+  if (input->IsString()) {
+    base::UmaHistogramCounts1M(
+        AIMetrics::GetAISessionRequestSizeMetricName(
+            AIMetrics::AISessionType::kLanguageModel),
+        int(input->GetAsString().CharactersSizeInBytes()));
+  }
 
   if (!language_model_remote_) {
     ThrowSessionDestroyedException(exception_state);
@@ -289,8 +430,10 @@ ReadableStream* AILanguageModel::promptStreaming(
           WTF::BindRepeating(&AILanguageModel::OnContextOverflow,
                              WrapWeakPersistent(this)));
 
-  language_model_remote_->Prompt(std::move(odm_input),
-                                 std::move(pending_remote));
+  language_model_remote_->Prompt(
+      std::move(std::get<on_device_model::mojom::blink::InputPtr>(
+          on_device_model_input)),
+      std::move(pending_remote));
   return readable_stream;
 }
 

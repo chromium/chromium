@@ -35,6 +35,7 @@ constexpr apps::LaunchSource kLaunchSource =
     apps::LaunchSource::kFromWebInstallApi;
 constexpr char kNotAllowedError[] = "NotAllowedError";
 constexpr char kAbortError[] = "AbortError";
+constexpr char kTypeError[] = "TypeError";
 }  // namespace
 
 namespace web_app {
@@ -76,11 +77,12 @@ class WebInstallFromUrlCommandBrowserTest : public WebAppBrowserTestBase {
         ->set_auto_response_for_test(response);
   }
 
-  bool TryInstallApp(std::string manifest_id,
-                     std::string install_url,
+  // 2 param navigator.install()
+  bool TryInstallApp(std::string install_url,
+                     std::string manifest_id,
                      bool with_gesture = true) {
-    std::string script = "navigator.install('" + manifest_id + "', '" +
-                         install_url +
+    std::string script = "navigator.install('" + install_url + "', '" +
+                         manifest_id +
                          "').then(result => {"
                          "  webInstallResult = result;"
                          "}).catch(error => {"
@@ -93,6 +95,18 @@ class WebInstallFromUrlCommandBrowserTest : public WebAppBrowserTestBase {
       return ExecJs(web_contents(), script,
                     content::EXECUTE_SCRIPT_NO_USER_GESTURE);
     }
+  }
+
+  // 1 param navigator.install()
+  bool TryInstallAppFromInstallUrlOnly(std::string install_url) {
+    std::string script = "navigator.install('" + install_url +
+                         "').then(result => {"
+                         "  webInstallResult = result;"
+                         "}).catch(error => {"
+                         "  webInstallError = error;"
+                         "});";
+
+    return ExecJs(web_contents(), script);
   }
 
   bool ResultExists() {
@@ -132,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   std::string manifest_id = install_url;
   base::HistogramTester histograms;
   SetPermissionResponse(/*permission_granted=*/true);
-  ASSERT_TRUE(TryInstallApp(manifest_id, install_url));
+  ASSERT_TRUE(TryInstallApp(install_url, manifest_id));
 
   EXPECT_TRUE(ResultExists());
   EXPECT_EQ(GetManifestIdResult(), manifest_id);
@@ -165,11 +179,44 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   std::string install_url = GetInstallableAppURL().spec();
   std::string manifest_id = install_url;
   SetPermissionResponse(/*permission_granted=*/false);
-  ASSERT_TRUE(TryInstallApp(manifest_id, install_url));
+  ASSERT_TRUE(TryInstallApp(install_url, manifest_id));
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kAbortError);
+}
+
+// Basic test to exercise 1-param `navigator.install()` API end to end.
+IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
+                       InstallAppCrossOriginFromInstallUrlOnly) {
+  NavigateToValidUrl();
+
+  std::string install_url = GetInstallableAppURL().spec();
+  SetPermissionResponse(/*permission_granted=*/true);
+  base::HistogramTester histograms;
+  ASSERT_TRUE(TryInstallAppFromInstallUrlOnly(install_url));
+
+  EXPECT_TRUE(ResultExists());
+  EXPECT_FALSE(ErrorExists());
+
+  histograms.ExpectUniqueSample("WebApp.Install.Source.Success", kInstallSource,
+                                1);
+  histograms.ExpectUniqueSample("WebApp.LaunchSource", kLaunchSource, 1);
+  histograms.ExpectUniqueSample("WebApp.NewCraftedAppInstalled.ByUser",
+                                /*sample=*/true, 1);
+
+  EXPECT_THAT(histograms,
+              test::ForAllGetAllSamples(
+                  test::GetInstallCommandResultHistogramNames(
+                      ".WebInstallFromUrl", ".Crafted"),
+                  base::BucketsAre(base::Bucket(
+                      webapps::InstallResultCode::kSuccessNewInstall, 1))));
+  EXPECT_THAT(histograms,
+              test::ForAllGetAllSamples(
+                  test::GetInstallCommandSourceHistogramNames(
+                      ".WebInstallFromUrl", ".Crafted"),
+                  base::BucketsAre(base::Bucket(
+                      webapps::WebappInstallSource::WEB_INSTALL, 1))));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
@@ -178,11 +225,167 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
 
   std::string install_url = GetInstallableAppURL().spec();
   std::string manifest_id = install_url;
-  ASSERT_TRUE(TryInstallApp(manifest_id, install_url, /*with_gesture=*/false));
+  ASSERT_TRUE(TryInstallApp(install_url, manifest_id, /*with_gesture=*/false));
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kNotAllowedError);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
+                       InstallAppBadInput_OneParam_Undefined) {
+  NavigateToValidUrl();
+
+  std::string script =
+      "let install_url;"
+      "navigator.install(install_url).then(result => {"
+      "  webInstallResult = result;"
+      "}).catch(error => {"
+      "  webInstallError = error;"
+      "});";
+  ASSERT_TRUE(ExecJs(web_contents(), script));
+
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kTypeError);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
+                       InstallAppBadInput_OneParam_Null) {
+  NavigateToValidUrl();
+
+  std::string script =
+      "let install_url=null;"
+      "navigator.install(install_url).then(result => {"
+      "  webInstallResult = result;"
+      "}).catch(error => {"
+      "  webInstallError = error;"
+      "});";
+  ASSERT_TRUE(ExecJs(web_contents(), script));
+
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kTypeError);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
+                       InstallAppBadInput_OneParam_Number) {
+  NavigateToValidUrl();
+
+  std::string script =
+      "let install_url = new Number(1);"
+      "navigator.install(install_url).then(result => {"
+      "  webInstallResult = result;"
+      "}).catch(error => {"
+      "  webInstallError = error;"
+      "});";
+  ASSERT_TRUE(ExecJs(web_contents(), script));
+
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kTypeError);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
+                       InstallAppBadInput_OneParam_Empty) {
+  NavigateToValidUrl();
+
+  std::string script =
+      "let install_url='';"
+      "navigator.install(install_url).then(result => {"
+      "  webInstallResult = result;"
+      "}).catch(error => {"
+      "  webInstallError = error;"
+      "});";
+  ASSERT_TRUE(ExecJs(web_contents(), script));
+
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kTypeError);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
+                       InstallAppBadInput_TwoParams_UndefinedInstallUrl) {
+  NavigateToValidUrl();
+
+  std::string manifest_id = GetInstallableAppURL().spec();
+  std::string script =
+      "let install_url;"
+      "navigator.install(install_url, '" +
+      manifest_id +
+      "').then(result => {"
+      "  webInstallResult = result;"
+      "}).catch(error => {"
+      "  webInstallError = error;"
+      "});";
+  ASSERT_TRUE(ExecJs(web_contents(), script));
+
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kTypeError);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
+                       InstallAppBadInput_TwoParams_UndefinedManifestId) {
+  NavigateToValidUrl();
+
+  std::string install_url = GetInstallableAppURL().spec();
+  std::string script =
+      "let manifest_id;"
+      "navigator.install('" +
+      install_url +
+      "', manifest_id).then(result => {"
+      "  webInstallResult = result;"
+      "}).catch(error => {"
+      "  webInstallError = error;"
+      "});";
+  ASSERT_TRUE(ExecJs(web_contents(), script));
+
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kTypeError);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
+                       InstallAppBadInput_TwoParams_EmptyManifestId) {
+  NavigateToValidUrl();
+
+  std::string install_url = GetInstallableAppURL().spec();
+  std::string script =
+      "let manifest_id = '';"
+      "navigator.install('" +
+      install_url +
+      "', manifest_id).then(result => {"
+      "  webInstallResult = result;"
+      "}).catch(error => {"
+      "  webInstallError = error;"
+      "});";
+  ASSERT_TRUE(ExecJs(web_contents(), script));
+
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kTypeError);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
+                       InstallAppBadInput_TwoParams_NullManifestId) {
+  NavigateToValidUrl();
+
+  std::string install_url = GetInstallableAppURL().spec();
+  std::string script =
+      "let manifest_id = null;"
+      "navigator.install('" +
+      install_url +
+      "', manifest_id).then(result => {"
+      "  webInstallResult = result;"
+      "}).catch(error => {"
+      "  webInstallError = error;"
+      "});";
+  ASSERT_TRUE(ExecJs(web_contents(), script));
+
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kTypeError);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, NoManifest) {
@@ -194,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, NoManifest) {
   std::string manifest_id = install_url;
   base::HistogramTester histograms;
   SetPermissionResponse(/*permission_granted=*/true);
-  ASSERT_TRUE(TryInstallApp(manifest_id, install_url));
+  ASSERT_TRUE(TryInstallApp(install_url, manifest_id));
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
@@ -226,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InvalidManifest) {
   std::string manifest_id = install_url;
   base::HistogramTester histograms;
   SetPermissionResponse(/*permission_granted=*/true);
-  ASSERT_TRUE(TryInstallApp(manifest_id, install_url));
+  ASSERT_TRUE(TryInstallApp(install_url, manifest_id));
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
@@ -258,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   std::string manifest_id = https_server()->GetURL("/incorrect_id").spec();
   base::HistogramTester histograms;
   SetPermissionResponse(/*permission_granted=*/true);
-  ASSERT_TRUE(TryInstallApp(manifest_id, install_url));
+  ASSERT_TRUE(TryInstallApp(install_url, manifest_id));
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
@@ -290,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   std::string manifest_id = install_url;
   base::HistogramTester histograms;
   SetPermissionResponse(/*permission_granted=*/true);
-  ASSERT_TRUE(TryInstallApp(manifest_id, install_url));
+  ASSERT_TRUE(TryInstallApp(install_url, manifest_id));
 
   EXPECT_FALSE(ResultExists());
   EXPECT_EQ(GetErrorName(), kAbortError);
@@ -321,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InvalidInstallUrl) {
   std::string manifest_id = install_url;
   base::HistogramTester histograms;
   SetPermissionResponse(/*permission_granted=*/true);
-  ASSERT_TRUE(TryInstallApp(manifest_id, install_url));
+  ASSERT_TRUE(TryInstallApp(install_url, manifest_id));
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
@@ -357,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
       secondary_server_.GetURL("/banners/manifest_test_page.html").spec();
   base::HistogramTester histograms;
   SetPermissionResponse(/*permission_granted=*/true);
-  ASSERT_TRUE(TryInstallApp(manifest_id, install_url));
+  ASSERT_TRUE(TryInstallApp(install_url, manifest_id));
   EXPECT_TRUE(ResultExists());
   EXPECT_EQ(GetManifestIdResult(), manifest_id);
   EXPECT_FALSE(ErrorExists());
@@ -395,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   std::string manifest_id =
       secondary_server_.GetURL("/banners/manifest_test_page.html").spec();
   SetPermissionResponse(/*permission_granted=*/false);
-  ASSERT_TRUE(TryInstallApp(manifest_id, install_url));
+  ASSERT_TRUE(TryInstallApp(install_url, manifest_id));
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());

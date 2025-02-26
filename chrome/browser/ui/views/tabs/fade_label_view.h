@@ -78,7 +78,7 @@ class FadeLabelView : public FadeView<FadeLabel, FadeLabel, FadeLabelViewData> {
 
   std::u16string_view GetText() const;
 
-  void SetEnabledColorId(ui::ColorId color);
+  void SetEnabledColor(ui::ColorId color);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_FADE_LABEL_VIEW_H_

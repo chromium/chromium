@@ -784,9 +784,6 @@ const char kVideoImageTextureTarget[] = "video-image-texture-target";
 const char kUseContextSnapshotSwitch[] = "use-context-snapshot";
 #endif
 
-// Set when Chromium should use a mobile user agent.
-const char kUseMobileUserAgent[] = "use-mobile-user-agent";
-
 // Use the MockCertVerifier. This only works in test code.
 const char kUseMockCertVerifierForTesting[] =
     "use-mock-cert-verifier-for-testing";

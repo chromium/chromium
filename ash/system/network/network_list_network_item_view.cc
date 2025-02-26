@@ -285,7 +285,7 @@ void NetworkListNetworkItemView::UpdateViewForNetwork(
   }
 
   if (text_label()) {
-    text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    text_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *text_label());
   }
@@ -345,7 +345,7 @@ void NetworkListNetworkItemView::SetupCellularSubtext() {
   }
 
   SetSubText(l10n_util::GetStringUTF16(cellular_subtext_message_id));
-  sub_text_label()->SetEnabledColorId(cros_tokens::kCrosSysWarning);
+  sub_text_label()->SetEnabledColor(cros_tokens::kCrosSysWarning);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
                                         *sub_text_label());
 }

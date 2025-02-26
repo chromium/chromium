@@ -117,6 +117,9 @@ const char kPropertySelectToSpeakEnabled[] = "a11ySelectToSpeakEnabled";
 // Key which corresponds to the Switch Access A11Y property in JS.
 const char kPropertySwitchAccessEnabled[] = "a11ySwitchAccessEnabled";
 
+// Key which corresponds to the cursor color A11Y property in JS.
+const char kPropertyCursorColorEnabled[] = "a11yCursorColorEnabled";
+
 // Key which corresponds to the docked magnifier property in JS.
 const char kPropertyDockedMagnifierEnabled[] = "a11yDockedMagnifierEnabled";
 
@@ -228,6 +231,7 @@ const struct {
      ash::prefs::kAccessibilitySelectToSpeakEnabled},
     {kPropertySwitchAccessEnabled,
      ash::prefs::kAccessibilitySwitchAccessEnabled},
+    {kPropertyCursorColorEnabled, ash::prefs::kAccessibilityCursorColorEnabled},
     {kPropertyDockedMagnifierEnabled, ash::prefs::kDockedMagnifierEnabled},
     {kPropertySendFunctionsKeys, ash::prefs::kSendFunctionKeys}};
 

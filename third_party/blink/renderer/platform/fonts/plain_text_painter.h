@@ -19,6 +19,7 @@ class PaintFlags;
 
 namespace blink {
 
+class PlainTextNode;
 class TextRun;
 
 // PlainTextPainter provides functionality to render plain text, excluding
@@ -46,6 +47,10 @@ class PLATFORM_EXPORT PlainTextPainter
 
   // Return the shared instance for non-<canvas>.
   static PlainTextPainter& Shared();
+
+  // Returns a PlainTextNode instance for `run` and `font`.
+  // This function applied Bidi reorder and word segmentation.
+  const PlainTextNode& SegmentAndShape(const TextRun& run, const Font& font);
 
   // Draw the specified text. This doesn't apply BiDi reorder.
   void Draw(const TextRun& run,
@@ -95,7 +100,12 @@ class PLATFORM_EXPORT PlainTextPainter
                                   float height) const;
 
  private:
-  [[maybe_unused]] const Mode mode_;
+  const PlainTextNode& CreateNode(const TextRun& text_run,
+                                  const Font& font,
+                                  bool supports_bidi = true,
+                                  bool bidi_overridden = false);
+
+  const Mode mode_;
 };
 
 }  // namespace blink

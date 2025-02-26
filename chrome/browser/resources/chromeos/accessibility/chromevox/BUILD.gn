@@ -73,6 +73,7 @@ ts_modules = [
   "background/editing/intent_handler.ts",
   "background/editing/rich_editable_text.ts",
   "background/editing/text_edit_handler.ts",
+  "background/editing/typing_echo.ts",
   "background/es6_loader.ts",
   "background/event_source.ts",
   "background/event/base_automation_handler.ts",
@@ -168,7 +169,6 @@ ts_modules = [
 js_modules = [
   "background/automation_object_constructor_installer.js",
   "background/composite_tts.js",
-  "background/editing/typing_echo.js",
   "background/phonetic_data.js",
   "background/primary_tts.js",
 ]

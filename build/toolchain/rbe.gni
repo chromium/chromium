@@ -138,10 +138,13 @@ declare_args() {
 if (use_reclient_cfgs && current_toolchain == default_toolchain) {
   # Check existence of reclient configs and show user friendly error message if
   # it doesn't.
-  exec_script(rebase_path("//build/toolchain/check_rewrapper_cfg.py"),
-              [ reclient_cc_cfg_file ],
-              "",
-              [ rebase_path(reclient_cc_cfg_file, ".", root_build_dir) ])
+  if (!path_exists(reclient_cc_cfg_file)) {
+    # Use exec_script() to show a good error message.
+    exec_script(rebase_path("//build/toolchain/check_rewrapper_cfg.py"),
+                [ reclient_cc_cfg_file ],
+                "",
+                [ rebase_path(reclient_cc_cfg_file, ".", root_build_dir) ])
+  }
 }
 
 # TODO(crbug.com/326584510): Reclient does not upload `inputs` from C/C++

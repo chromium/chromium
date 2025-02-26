@@ -508,8 +508,9 @@ static constexpr const char* const kChromeUrls[] = {
 // "chrome://chrome-signin",
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/40250068): Uncomment when TrustedTypes are enabled.
-// "chrome://chrome-signin/?reason=5",
+    // TODO(crbug.com/40250068): Uncomment when TrustedTypes are enabled.
+    // "chrome://chrome-signin/?reason=5",
+    "chrome://signout-confirmation",
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     "chrome://webuijserror",

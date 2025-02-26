@@ -7,19 +7,20 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 // </if>
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 // By default this page only records metrics for a given period of time in order
 // to not waste too much memory. This constant defines the default period until
 // recording ceases.
-const kDefaultLoggingPeriodInSeconds = 300;
+const kDefaultLoggingPeriodInSeconds: number = 300;
 
 // Indicates whether logs should be recorded at the moment.
-let recordLogs = true;
+let recordLogs: boolean = true;
 
 // Renders a simple dialog with |text| as a message and a close button.
-function showModalDialog(text) {
+function showModalDialog(text: string) {
   const dialog = document.createElement('div');
   dialog.className = 'modal-dialog';
 
@@ -48,16 +49,18 @@ function showModalDialog(text) {
 // before modifying the DOM, check needsScrollDown(), and afterwards invoke
 // scrollDown() if needsScrollDown() was true.
 
-function isScrolledDown() {
+function isScrolledDown(): boolean {
   return window.innerHeight + window.scrollY >= document.body.offsetHeight;
 }
 
-let autoScrollActive = false;  // True iff autoscroll is currently scrolling.
-let autoScrollTimer = null;    // Timer for resetting |autoScrollActive|.
+// Whether autoscroll is currently scrolling.
+let autoScrollActive: boolean = false;
+let autoScrollTimer: number = 0;  // Timer for resetting |autoScrollActive|.
 
-function needsScrollDown() {
-  const checkbox = document.getElementById('EnableAutoscroll');
-  return autoScrollActive || (isScrolledDown() && checkbox && checkbox.checked);
+function needsScrollDown(): boolean {
+  const checkbox =
+      document.querySelector<HTMLInputElement>('#EnableAutoscroll');
+  return autoScrollActive || (isScrolledDown() && !!checkbox?.checked);
 }
 
 function scrollDown() {
@@ -76,11 +79,11 @@ function scrollDown() {
 // The configuration of log display can be represented in the URI fragment.
 // Below are utility functions for setting/getting these parameters.
 
-function makeKeyValueRegExp(key) {
+function makeKeyValueRegExp(key: string): RegExp {
   return new RegExp(`\\b${key}=([^&]*)`);
 }
 
-function setUrlHashParam(key, value) {
+function setUrlHashParam(key: string, value: string) {
   key = encodeURIComponent(key);
   value = encodeURIComponent(value);
   const keyValueRegExp = makeKeyValueRegExp(key);
@@ -94,7 +97,7 @@ function setUrlHashParam(key, value) {
   }
 }
 
-function getUrlHashParam(key) {
+function getUrlHashParam(key: string): string|undefined {
   key = encodeURIComponent(key);
   const match = window.location.hash.match(makeKeyValueRegExp(key));
   if (!match || match[1] === undefined) {
@@ -103,52 +106,56 @@ function getUrlHashParam(key) {
   return decodeURIComponent(match[1]);
 }
 
+interface InternalNode {
+  type: 'element'|'text'|'fragment';
+  value: string;
+  children?: InternalNode[];
+  attributes?: {[key: string]: string};
+}
+
 // Converts an internal representation of nodes to actual DOM nodes that can
-// be attached to the DOM. The internal representation has the following
-// properties for each node:
-// - type: 'element' | 'text'
-// - value: name of tag | text content
-// - children (opt): list of child nodes
-// - attributes (opt): dictionary of name/value pairs
+// be attached to the DOM. The internal representation.
 // If a node contains PII data, all its children texts are stripped, unless it
 // is explicit set by the user that PII values can be displayed.
-function nodeToDomNode(node, parentContainsPII = false) {
+function nodeToDomNode(node: InternalNode, parentContainsPII = false): Node {
   if (node.type === 'text') {
-    const displayPIIEnabled = document.getElementById('DisplayPii').checked;
+    const displayPIIEnabled =
+        getRequiredElement<HTMLInputElement>('DisplayPii').checked;
     const canDisplayNodeValue = !parentContainsPII || displayPIIEnabled;
     return document.createTextNode(
         canDisplayNodeValue ? node.value : 'PII stripped');
   }
   // Else the node is of type 'element'.
   const domNode = document.createElement(node.value);
-  if ('attributes' in node) {
-    for (const attribute in node.attributes) {
-      domNode.setAttribute(attribute, node.attributes[attribute]);
+  if (node.attributes) {
+    for (const [attribute, value] of Object.entries(node.attributes)) {
+      domNode.setAttribute(attribute, value);
     }
   }
-  if ('children' in node) {
-    parentContainsPII |=
-        node.attributes && node.attributes['data-pii'] === 'true';
-    node.children.forEach((child) => {
-      domNode.appendChild(nodeToDomNode(child, parentContainsPII));
+  if (node.children) {
+    const updatedParentContainsPII = parentContainsPII ||
+        (node.attributes && node.attributes['data-pii'] === 'true');
+    node.children.forEach(child => {
+      domNode.appendChild(nodeToDomNode(child, updatedParentContainsPII));
     });
   }
   return domNode;
 }
 
-function addStructuredLog(node, ignoreRecordLogs = false) {
+function addStructuredLog(
+    node: InternalNode, ignoreRecordLogs: boolean = false) {
   if (!recordLogs && !ignoreRecordLogs) {
     return;
   }
-  const logDiv = $('log-entries');
+  const logDiv = getRequiredElement('log-entries');
   if (!logDiv) {
     return;
   }
   const scrollAfterInsert = needsScrollDown();
   logDiv.appendChild(document.createElement('hr'));
   if (node.type === 'fragment') {
-    if ('children' in node) {
-      node.children.forEach((child) => {
+    if (node.children) {
+      node.children.forEach(child => {
         logDiv.appendChild(nodeToDomNode(child));
       });
     }
@@ -176,18 +183,18 @@ function addStructuredLog(node, ignoreRecordLogs = false) {
 function setUpStopRecording() {
   // Timestamp (in ms after epoch), when the countdown to stop recording should
   // happen.
-  let stopRecordingLogsAt = undefined;
+  let stopRecordingLogsAt: number|undefined;
   // Interval ID generated by setInterval, which is called every second to
   // update the remaining time.
-  let countdown = undefined;
+  let countdown: number|undefined;
 
   const currentlyRecordingChkBox =
-      document.getElementById('CurrentlyRecording');
+      getRequiredElement<HTMLInputElement>('CurrentlyRecording');
   const autoStopRecordingChkBox =
-      document.getElementById('AutomaticallyStopRecording');
+      getRequiredElement<HTMLInputElement>('AutomaticallyStopRecording');
 
   // Formats a number of seconds into a [M]M:SS format.
-  const secondsToString = (seconds) => {
+  const secondsToString = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     seconds = seconds % 60;
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
@@ -195,9 +202,10 @@ function setUpStopRecording() {
 
   // Updates the time label and reacts to the countdown reaching 0.
   const countdownHandler = () => {
+    assert(stopRecordingLogsAt);
     const remainingSeconds = Math.round(
         Math.max((stopRecordingLogsAt - new Date().getTime()) / 1000, 0));
-    document.getElementById('stop-recording-time').innerText =
+    getRequiredElement('stop-recording-time').innerText =
         secondsToString(remainingSeconds);
 
     if (remainingSeconds === 0) {
@@ -244,11 +252,11 @@ function setUpStopRecording() {
 
 function setUpAutofillInternals() {
   document.title = 'Autofill Internals';
-  document.getElementById('h1-title').textContent = 'Autofill Internals';
-  document.getElementById('logging-note').innerText =
+  getRequiredElement('h1-title').textContent = 'Autofill Internals';
+  getRequiredElement('logging-note').innerText =
       'Captured autofill logs are listed below. Logs are cleared and no longer \
       captured when all autofill-internals pages are closed.';
-  document.getElementById('logging-note-incognito').innerText =
+  getRequiredElement('logging-note-incognito').innerText =
       'Captured autofill logs are not available in Incognito.';
   setUpScopeCheckboxes();
   setUpSettingCheckboxe();
@@ -260,45 +268,46 @@ function setUpAutofillInternals() {
 
 function setUpPasswordManagerInternals() {
   document.title = 'Password Manager Internals';
-  document.getElementById('h1-title').textContent =
-      'Password Manager Internals';
-  document.getElementById('logging-note').innerText =
+  getRequiredElement('h1-title').textContent = 'Password Manager Internals';
+  getRequiredElement('logging-note').innerText =
       'Captured password manager logs are listed below. Logs are cleared and \
       no longer captured when all password-manager-internals pages are closed.';
-  document.getElementById('logging-note-incognito').innerText =
+  getRequiredElement('logging-note-incognito').innerText =
       'Captured password manager logs are not available in Incognito.';
   setUpSettingCheckboxe();
   setUpMarker();
   setUpDownload('password-manager');
   setUpStopRecording();
   // <if expr="is_android">
-  document.getElementById('reset-upm-eviction-fake-button').style.display =
-      'inline';
+  getRequiredElement('reset-upm-eviction-fake-button').style.display = 'inline';
   addWebUiListener(
       'enable-reset-upm-eviction-button', enableResetUpmEvictionButton);
   // </if>
 }
 
 function enableResetCacheButton() {
-  document.getElementById('reset-cache-fake-button').style.display = 'inline';
+  getRequiredElement('reset-cache-fake-button').style.display = 'inline';
 }
 
-function enableResetUpmEvictionButton(isEnabled) {
-  document.getElementById('reset-upm-eviction-fake-button').innerText =
+// <if expr="is_android">
+function enableResetUpmEvictionButton(isEnabled: boolean) {
+  getRequiredElement('reset-upm-eviction-fake-button').innerText =
       isEnabled ? 'Reset UPM eviction' : 'Evict from UPM';
 }
+// </if>
 
-function notifyAboutIncognito(isIncognito) {
-  document.body.dataset.incognito = isIncognito;
+function notifyAboutIncognito(isIncognito: boolean) {
+  document.body.dataset['incognito'] = isIncognito.toString();
 }
 
-function notifyAboutVariations(variations) {
+function notifyAboutVariations(variations: string[]) {
   const list = document.createElement('div');
   for (const item of variations) {
     list.appendChild(document.createTextNode(item));
     list.appendChild(document.createElement('br'));
   }
-  const variationsList = document.getElementById('variations-list');
+  const variationsList =
+      getRequiredElement<HTMLTableCellElement>('variations-list');
   variationsList.appendChild(list);
 }
 
@@ -307,7 +316,8 @@ function notifyAboutVariations(variations) {
 function setUpMarker() {
   // Initialize marker field: when pressed, add fake log event.
   let markerCounter = 0;
-  const markerFakeButton = document.getElementById('marker-fake-button');
+  const markerFakeButton =
+      getRequiredElement<HTMLButtonElement>('marker-fake-button');
   markerFakeButton.addEventListener('click', () => {
     ++markerCounter;
     const scrollAfterInsert = needsScrollDown();
@@ -322,21 +332,18 @@ function setUpMarker() {
     if (scrollAfterInsert) {
       scrollDown();
       // Focus marker div, set caret at end of line.
-      const logDiv = document.getElementById('log-entries');
-      if (!logDiv) {
-        return;
-      }
-      const markerNode = logDiv.lastChild;
-      const textNode = markerNode.lastChild;
+      const logDiv = getRequiredElement('log-entries');
+      const markerNode = logDiv.lastChild as HTMLElement;
+      const textNode = markerNode.lastChild as Text;
       markerNode.focus();
-      window.getSelection().collapse(textNode, textNode.length);
+      window.getSelection()!.collapse(textNode, textNode.length);
     }
   });
 }
 
 // Setup a (fake) download button to download html content of the page.
-function setUpDownload(moduleName) {
-  const downloadFakeButton = document.getElementById('download-fake-button');
+function setUpDownload(moduleName: string) {
+  const downloadFakeButton = getRequiredElement('download-fake-button');
   downloadFakeButton.addEventListener('click', () => {
     const html = document.documentElement.outerHTML;
     const blob = new Blob([html], {type: 'text/html'});
@@ -361,8 +368,14 @@ function setUpDownload(moduleName) {
   // Hide this until downloading a file works on iOS, see
   // https://bugs.webkit.org/show_bug.cgi?id=167341
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1252380
-  downloadFakeButton.style = 'display: none';
+  downloadFakeButton.style.display = 'none';
   // </if>
+}
+
+interface SubmittedFormTopLevelData {
+  timestamp: string;
+  'Renderer id:'?: string;
+  'URL:'?: string;
 }
 
 // Retrieve the top level data about a submitted form:
@@ -373,17 +386,19 @@ function setUpDownload(moduleName) {
 // Note that a form is not a html <form /> tag, but a <div> whose
 // scope attribute is "Submission". Such a div contains children information
 // related to a submitted form detected by Autofill.
-function getSubmittedFormTopLevelData(form) {
-  const formTopLevelData = {};
+function getSubmittedFormTopLevelData(form: HTMLElement):
+    SubmittedFormTopLevelData {
+  const formTopLevelData: Record<string, string> = {};
   const formLevelDataOfInterest = new Set(['Renderer id:', 'URL:']);
-  const childrenTableElements = form.getElementsByTagName('td');
+  const childrenTableElements: HTMLCollectionOf<HTMLTableCellElement> =
+      form.getElementsByTagName('td');
   for (const childTableElement of childrenTableElements) {
     if (!formLevelDataOfInterest.has(childTableElement.innerText)) {
       continue;
     }
 
     formTopLevelData[childTableElement.innerText] =
-        childTableElement.nextSibling.innerText;
+        (childTableElement.nextSibling! as HTMLElement).innerText;
     // If all interested top level entries were found, we can early return.
     if (Object.keys(formTopLevelData).length === formLevelDataOfInterest.size) {
       break;
@@ -391,17 +406,22 @@ function getSubmittedFormTopLevelData(form) {
   }
 
   // Include the submission timestamp information.
-  const getSubmissionTimestamp = () => {
+  const getSubmissionTimestamp = (): string => {
     // Find the substring "timestamp: 123456789";
-    const timestampSection = form.textContent.match(/timestamp: ([0-9]+)/);
-    return timestampSection ? timestampSection[1] : 'Not found';
+    const timestampSection = form.textContent!.match(/timestamp: ([0-9]+)/);
+    return timestampSection ? timestampSection[1]! : 'Not found';
   };
 
   return {timestamp: getSubmissionTimestamp(), ...formTopLevelData};
 }
 
+interface SubmittedFormFieldsData {
+  [key: string]: string;
+}
+
 // Retrieve the field level data about the submitted form.
-function getSubmittedFormFieldsData(form) {
+function getSubmittedFormFieldsData(form: HTMLElement):
+    SubmittedFormFieldsData[] {
   // The children are organized inside <td> tags.
   const childrenTableElements = form.getElementsByTagName('td');
   // Regex to match "Field: " strings.
@@ -430,8 +450,8 @@ function getSubmittedFormFieldsData(form) {
     //    </table>
     //  </td>
     const elementRows =
-        childTableElement.nextSibling.getElementsByTagName('tr');
-    const fieldData = {};
+        childTableElement.nextElementSibling!.querySelectorAll('tr');
+    const fieldData: Record<string, string> = {};
     for (const row of elementRows) {
       // It is expected two children, in the example above that would be:
       // <td>Label: </td>
@@ -440,14 +460,14 @@ function getSubmittedFormFieldsData(form) {
         continue;
       }
 
-      let name = row.children[0].innerText;
+      let name = (row.children[0] as HTMLElement).innerText;
       if (!fieldsOfInterest.has(name)) {
         continue;
       }
 
       // Remove trailing ":"
       name = name.substring(0, name.length - 1);
-      const value = row.children[1].innerText;
+      const value = (row.children[1] as HTMLElement).innerText;
       fieldData[name] = value;
     }
     fieldsData.push(fieldData);
@@ -455,7 +475,11 @@ function getSubmittedFormFieldsData(form) {
   return fieldsData;
 }
 
-function getSubmittedFormData(form) {
+interface SubmittedFormData extends SubmittedFormTopLevelData {
+  fields: SubmittedFormFieldsData[];
+}
+
+function getSubmittedFormData(form: HTMLElement): SubmittedFormData {
   const formData = getSubmittedFormTopLevelData(form);
   const formFieldsData = getSubmittedFormFieldsData(form);
   return {
@@ -468,11 +492,11 @@ function getSubmittedFormData(form) {
 // about the submitted forms.
 function setUpSubmittedFormsJSONDataDownload() {
   const downloadSubmittedFormJSONDataButton =
-      document.getElementById('download-submitted-forms-json-data-fake-button');
+      getRequiredElement('download-submitted-forms-json-data-fake-button');
   downloadSubmittedFormJSONDataButton.style.display = 'inline';
   downloadSubmittedFormJSONDataButton.addEventListener('click', () => {
     const formsSubmittedSection =
-        document.querySelectorAll('[scope="Submission"]');
+        document.querySelectorAll<HTMLElement>('[scope="Submission"]');
     const parsedFormData = [...formsSubmittedSection].map(
         submittedForm => getSubmittedFormData(submittedForm));
     const dataStr = 'data:application/json;charset=utf-8,' +
@@ -495,8 +519,14 @@ function setUpSubmittedFormsJSONDataDownload() {
   // Hide this until downloading a file works on iOS, see
   // https://bugs.webkit.org/show_bug.cgi?id=167341
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1252380
-  downloadSubmittedFormJSONData.style = 'display: none';
+  downloadSubmittedFormJSONDataButton.style.display = 'none';
   // </if>
+}
+
+interface CheckboxInfo {
+  id: string;
+  label?: string;
+  uncheckedByDefault?: boolean;
 }
 
 // Creates a checkbox for a given JSON struct `info`. Given
@@ -511,13 +541,13 @@ function setUpSubmittedFormsJSONDataDownload() {
 // `info.id` is mandatory.
 // `info.label` defaults to `info.id`.
 // `info.uncheckedByDefault` defaults to false.
-function createCheckbox(info) {
+function createCheckbox(info: CheckboxInfo): HTMLInputElement {
   const input = document.createElement('input');
   input.setAttribute('type', 'checkbox');
   input.setAttribute('id', info.id);
   input.checked = info.uncheckedByDefault ? getUrlHashParam(info.id) === 'y' :
                                             getUrlHashParam(info.id) !== 'n';
-  input.addEventListener('change', (event) => {
+  input.addEventListener('change', () => {
     setUrlHashParam(info.id, input.checked ? 'y' : 'n');
   });
   const label = document.createElement('label');
@@ -529,13 +559,12 @@ function createCheckbox(info) {
 // Sets up the top bar with checkboxes to show/hide the different sorts of log
 // event types.
 function setUpScopeCheckboxes() {
-  const logDiv = document.getElementById('log-entries');
-  const scopesPlaceholder =
-      document.getElementById('scopes-checkbox-placeholder');
+  const logDiv = getRequiredElement('log-entries');
+  const scopesPlaceholder = getRequiredElement('scopes-checkbox-placeholder');
 
   // Create and initialize filter checkboxes: remove/add hide-<Scope> class to
   // |logDiv| when (un)checked.
-  const SCOPES = [
+  const SCOPES: CheckboxInfo[] = [
     {id: 'Context'},
     {id: 'Parsing'},
     {id: 'AbortParsing'},
@@ -551,7 +580,7 @@ function setUpScopeCheckboxes() {
   ];
   for (const scope of SCOPES) {
     const input = createCheckbox(scope);
-    scopesPlaceholder.appendChild(input.parentElement);
+    scopesPlaceholder.appendChild(input.parentElement!);
     function changeHandler() {
       const cls = `hide-${scope.id}`;
       const scrollAfterInsert = needsScrollDown();
@@ -571,12 +600,11 @@ function setUpScopeCheckboxes() {
 
 // Sets up another bar of checkboxes to configure the page's behavior.
 function setUpSettingCheckboxe() {
-  const logDiv = document.getElementById('log-entries');
   const settingsPlaceholder =
-      document.getElementById('settings-checkbox-placeholder');
+      getRequiredElement('settings-checkbox-placeholder');
 
   // Create and initialize the settings checkboxes.
-  const SETTINGS = [
+  const SETTINGS: CheckboxInfo[] = [
     {id: 'EnableAutoscroll', label: 'Scroll down'},
     {id: 'CurrentlyRecording', label: 'Record new events'},
     {id: 'AutomaticallyStopRecording', label: 'Stop recording in '},
@@ -584,23 +612,24 @@ function setUpSettingCheckboxe() {
   ];
   for (const setting of SETTINGS) {
     const input = createCheckbox(setting);
-    settingsPlaceholder.appendChild(input.parentElement);
+    settingsPlaceholder.appendChild(input.parentElement!);
   }
   {
     // Add the timestamp for AutomaticallyStopRecording.
     const span = document.createElement('span');
     span.id = 'stop-recording-time';
     span.innerText = 'M:SS';
-    document.getElementById('AutomaticallyStopRecording')
-        .parentElement.appendChild(span);
+    getRequiredElement('AutomaticallyStopRecording')
+        .parentElement!.appendChild(span);
   }
 }
 
-document.addEventListener('DOMContentLoaded', function(event) {
+document.addEventListener('DOMContentLoaded', () => {
   addWebUiListener('enable-reset-cache-button', enableResetCacheButton);
   addWebUiListener('notify-about-incognito', notifyAboutIncognito);
   addWebUiListener('notify-about-variations', notifyAboutVariations);
-  addWebUiListener('notify-reset-done', message => showModalDialog(message));
+  addWebUiListener(
+      'notify-reset-done', (message: string) => showModalDialog(message));
   addWebUiListener('add-structured-log', addStructuredLog);
   addWebUiListener('setup-autofill-internals', setUpAutofillInternals);
   addWebUiListener(
@@ -608,14 +637,13 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
   chrome.send('loaded');
 
-  const resetCacheFakeButton =
-      document.getElementById('reset-cache-fake-button');
+  const resetCacheFakeButton = getRequiredElement('reset-cache-fake-button');
   resetCacheFakeButton.addEventListener('click', () => {
     chrome.send('resetCache');
   });
 
   const resetUpmEvictionButton =
-      document.getElementById('reset-upm-eviction-fake-button');
+      getRequiredElement('reset-upm-eviction-fake-button');
   resetUpmEvictionButton.addEventListener('click', () => {
     chrome.send('resetUpmEviction');
   });

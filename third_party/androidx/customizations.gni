@@ -115,6 +115,7 @@ template("_androidx_prebuilt") {
     } else if (filter_include([ target_name ], [ "androidx_xr_*" ]) != []) {
       # Configs are overly broad.
       ignore_proguard_configs = true
+      proguard_configs = [ "androidx_xr.flags" ]
 
       # We do not use the APIs that require the native code.
       ignore_native_libraries = true

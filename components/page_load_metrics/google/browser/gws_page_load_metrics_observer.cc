@@ -446,10 +446,6 @@ GWSPageLoadMetricsObserver::OnCommit(
         "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime2."
         "SafeSitesFilterEnabled",
         metrics->request_to_response_time);
-    base::UmaHistogramTimes(
-        "Navigation.Throttles.PolicyBlocklist.ResponseDeferDuration."
-        "SafeSitesFilterEnabled",
-        metrics->response_defer_duration);
     if (metrics->cache_hit.has_value()) {
       base::UmaHistogramBoolean(
           "Navigation.Throttles.PolicyBlocklist.CacheHit."
@@ -465,10 +461,6 @@ GWSPageLoadMetricsObserver::OnCommit(
           "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime2."
           "GoogleSearch.SafeSitesFilterEnabled",
           metrics->request_to_response_time);
-      base::UmaHistogramTimes(
-          "Navigation.Throttles.PolicyBlocklist.ResponseDeferDuration."
-          "GoogleSearch.SafeSitesFilterEnabled",
-          metrics->response_defer_duration);
       if (metrics->cache_hit.has_value()) {
         base::UmaHistogramBoolean(
             "Navigation.Throttles.PolicyBlocklist.CacheHit.GoogleSearch."

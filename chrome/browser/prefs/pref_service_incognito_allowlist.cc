@@ -115,6 +115,7 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityCaretHighlightEnabled,
     ash::prefs::kAccessibilityCaretBlinkInterval,
     ash::prefs::kAccessibilityCursorHighlightEnabled,
+    ash::prefs::kAccessibilityCursorColorEnabled,
     ash::prefs::kAccessibilityCursorColor,
     ash::prefs::kAccessibilityFocusHighlightEnabled,
     ash::prefs::kAccessibilitySelectToSpeakEnabled,
@@ -175,7 +176,6 @@ const char* const kPersistentPrefNames[] = {
     // Devtools preferences are stored cross profiles as they are not storing
     // user data and just keep debugging environment settings.
     prefs::kDevToolsAdbKey,
-    prefs::kDevToolsAutomaticFileSystems,
     prefs::kDevToolsAvailability,
     prefs::kDevToolsDiscoverUsbDevicesEnabled,
     prefs::kDevToolsEditedFiles,

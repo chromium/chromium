@@ -29,7 +29,7 @@ LoadingView::LoadingView() {
 
   first_line_label_ = AddChildView(
       views::Builder<views::Label>()
-          .SetEnabledColorId(ui::kColorLabelForeground)
+          .SetEnabledColor(ui::kColorLabelForeground)
           // Default is `ALIGN_CENTER`. See `Label::Init`.
           // `SetHorizontalAlignment` flips the value for RTL.
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
@@ -44,7 +44,7 @@ LoadingView::LoadingView() {
   second_line_label_ = AddChildView(
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_LOADING))
-          .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
+          .SetEnabledColor(ui::kColorLabelForegroundSecondary)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
           .SetProperty(
               views::kFlexBehaviorKey,

@@ -458,7 +458,7 @@ void AccountHoverButton::SetDisabledOpacity() {
   }
 
   title()->SetDefaultEnabledColorId(ui::kColorLabelForegroundDisabled);
-  subtitle()->SetEnabledColorId(ui::kColorLabelForegroundDisabled);
+  subtitle()->SetEnabledColor(ui::kColorLabelForegroundDisabled);
 
   // Recreates the StyledLabel with the new default enabled color id.
   title()->PreferredSizeChanged();

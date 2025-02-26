@@ -33,11 +33,15 @@ constexpr net::NetworkTrafficAnnotationTag kDummyAnnotation =
 // Constant variables
 constexpr char kUrlString[] = "https://example.com";
 const GURL kTestUrl(kUrlString);
+constexpr char kRefreshUrlString[] = "https://example.com/refresh";
+const GURL kTestRefreshUrl(kRefreshUrlString);
 const std::string kSessionId = "SessionId";
 const std::string kOrigin = "example.com";
 
 constexpr char kUrlString2[] = "https://example2.com";
 const GURL kTestUrl2(kUrlString2);
+constexpr char kRefreshUrlString2[] = "https://example2.com/refresh";
+const GURL kTestRefreshUrl2(kRefreshUrlString);
 const std::string kSessionId2 = "SessionId2";
 const std::string kOrigin2 = "example2.com";
 
@@ -136,7 +140,7 @@ class SessionServiceImplTest : public TestWithTaskEnvironment {
 };
 
 TEST_F(SessionServiceImplTest, RegisterSuccess) {
-  AddSessionsForTesting({{kSessionId, kUrlString, kOrigin}});
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -153,7 +157,7 @@ TEST_F(SessionServiceImplTest, RegisterSuccess) {
 }
 
 TEST_F(SessionServiceImplTest, RegisterNoId) {
-  AddSessionsForTesting({{/*session_id=*/"", kUrlString, kOrigin}});
+  AddSessionsForTesting({{/*session_id=*/"", kRefreshUrlString, kOrigin}});
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -169,7 +173,7 @@ TEST_F(SessionServiceImplTest, RegisterNoId) {
 
 TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
   auto scoped_null_fetcher =
-      ScopedTestRegistrationFetcher::CreateWithFailure(kUrlString);
+      ScopedTestRegistrationFetcher::CreateWithFailure(kRefreshUrlString);
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       kChallenge,
@@ -192,7 +196,7 @@ TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
 }
 
 TEST_F(SessionServiceImplTest, SetChallengeForBoundSession) {
-  AddSessionsForTesting({{kSessionId, kUrlString, kOrigin}});
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
 
   scoped_refptr<net::HttpResponseHeaders> headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
@@ -221,7 +225,7 @@ TEST_F(SessionServiceImplTest, SetChallengeForBoundSession) {
 }
 
 TEST_F(SessionServiceImplTest, ExpiryExtendedOnUser) {
-  AddSessionsForTesting({{kSessionId, kUrlString, kOrigin}});
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
 
   Session* session =
       service().GetSession(SchemefulSite(kTestUrl), Session::Id(kSessionId));
@@ -242,7 +246,7 @@ TEST_F(SessionServiceImplTest, ExpiryExtendedOnUser) {
 
 TEST_F(SessionServiceImplTest, NullAccessObserver) {
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
-      kSessionId, kUrlString, kOrigin);
+      kSessionId, kRefreshUrlString, kOrigin);
 
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
@@ -257,7 +261,7 @@ TEST_F(SessionServiceImplTest, NullAccessObserver) {
 
 TEST_F(SessionServiceImplTest, AccessObserverCalledOnRegistration) {
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
-      kSessionId, kUrlString, kOrigin);
+      kSessionId, kRefreshUrlString, kOrigin);
 
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
@@ -276,7 +280,7 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnRegistration) {
 }
 
 TEST_F(SessionServiceImplTest, AccessObserverCalledOnDeferral) {
-  AddSessionsForTesting({{kSessionId, kUrlString, kOrigin}});
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -298,7 +302,7 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnDeferral) {
 }
 
 TEST_F(SessionServiceImplTest, AccessObserverCalledOnSetChallenge) {
-  AddSessionsForTesting({{kSessionId, kUrlString, kOrigin}});
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
 
   scoped_refptr<net::HttpResponseHeaders> headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
@@ -319,8 +323,8 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnSetChallenge) {
 }
 
 TEST_F(SessionServiceImplTest, GetAllSessions) {
-  AddSessionsForTesting({{kSessionId, kUrlString, kOrigin},
-                         {kSessionId2, kUrlString2, kOrigin2}});
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin},
+                         {kSessionId2, kRefreshUrlString2, kOrigin2}});
 
   base::test::TestFuture<std::vector<SessionKey>> future;
   service().GetAllSessionsAsync(
@@ -330,7 +334,7 @@ TEST_F(SessionServiceImplTest, GetAllSessions) {
 }
 
 TEST_F(SessionServiceImplTest, DeleteSession) {
-  AddSessionsForTesting({{kSessionId, kUrlString, kOrigin}});
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
   auto site = SchemefulSite(kTestUrl);
   auto session_id = Session::Id(kSessionId);
 
@@ -349,9 +353,9 @@ TEST_F(SessionServiceImplTest, DeleteSession) {
 TEST_F(SessionServiceImplTest, DeleteAllSessionsByCreationTime) {
   net::SchemefulSite site(kTestUrl);
 
-  AddSessionsForTesting({{"SessionA", kUrlString, kOrigin},
-                         {"SessionB", kUrlString, kOrigin},
-                         {"SessionC", kUrlString, kOrigin}});
+  AddSessionsForTesting({{"SessionA", kRefreshUrlString, kOrigin},
+                         {"SessionB", kRefreshUrlString, kOrigin},
+                         {"SessionC", kRefreshUrlString, kOrigin}});
 
   service()
       .GetSession(site, Session::Id("SessionA"))
@@ -401,7 +405,7 @@ TEST_F(SessionServiceImplTest, DeleteAllSessionsBySite) {
 }
 
 TEST_F(SessionServiceImplTest, TestDeferWithRequestRestart) {
-  AddSessionsForTesting({{kSessionId, kUrlString, kOrigin}});
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
 
   SchemefulSite site(kTestUrl);
   ASSERT_TRUE(service().GetSession(site, Session::Id(kSessionId)));
@@ -431,7 +435,7 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestRestart) {
 
   // Set up the fetcher for a successful refresh.
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
-      kSessionId, kUrlString, kOrigin);
+      kSessionId, kRefreshUrlString, kOrigin);
   service().DeferRequestForRefresh(request.get(), Session::Id(kSessionId),
                                    defer_completion.GetRestartCb(),
                                    defer_completion.GetContinueCb());
@@ -449,7 +453,7 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestRestart) {
 }
 
 TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue) {
-  AddSessionsForTesting({{kSessionId, kUrlString, kOrigin}});
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
 
   SchemefulSite site_1(kTestUrl);
   ASSERT_TRUE(service().GetSession(site_1, Session::Id(kSessionId)));
@@ -479,7 +483,7 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue) {
 
   // Set up a null fetcher for failure refresh.
   auto scoped_null_fetcher =
-      ScopedTestRegistrationFetcher::CreateWithFailure(kUrlString);
+      ScopedTestRegistrationFetcher::CreateWithFailure(kRefreshUrlString);
   service().DeferRequestForRefresh(request.get(), Session::Id(kSessionId),
                                    defer_completion.GetRestartCb(),
                                    defer_completion.GetContinueCb());
@@ -497,7 +501,7 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue) {
 }
 
 TEST_F(SessionServiceImplTest, TestDeferRequestArbitrary) {
-  AddSessionsForTesting({{kSessionId, kUrlString, kOrigin}});
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
 
   // No session for site_2.
   SchemefulSite site_1(kTestUrl);
@@ -530,7 +534,7 @@ TEST_F(SessionServiceImplTest, TestDeferRequestArbitrary) {
 
   // Set up a successful fetcher.
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
-      kSessionId2, kUrlString2, kOrigin2);
+      kSessionId2, kRefreshUrlString2, kOrigin2);
   service().DeferRequestForRefresh(request.get(), Session::Id(kSessionId2),
                                    defer_completion.GetRestartCb(),
                                    defer_completion.GetContinueCb());
@@ -541,7 +545,7 @@ TEST_F(SessionServiceImplTest, TestDeferRequestArbitrary) {
 
 TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
   // Register a session with kSessionId.
-  AddSessionsForTesting({{kSessionId, kUrlString, kOrigin}});
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
 
   auto site = SchemefulSite(kTestUrl);
   ASSERT_TRUE(service().GetSession(site, Session::Id(kSessionId)));
@@ -572,7 +576,7 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
   // Set up the fetcher for a successful refresh with a new session ID
   // which doesn't equal to the refreshing one.
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
-      kSessionId2, kUrlString, kOrigin);
+      kSessionId2, kRefreshUrlString, kOrigin);
   service().DeferRequestForRefresh(request.get(), Session::Id(kSessionId),
                                    defer_completion.GetRestartCb(),
                                    defer_completion.GetContinueCb());
@@ -596,7 +600,7 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
 
 TEST_F(SessionServiceImplTest, RefreshWithInvalidParams) {
   // Register a session with kSessionId.
-  AddSessionsForTesting({{kSessionId, kUrlString, kOrigin}});
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
 
   auto site = SchemefulSite(kTestUrl);
   ASSERT_TRUE(service().GetSession(site, Session::Id(kSessionId)));
@@ -649,14 +653,14 @@ TEST_F(SessionServiceImplTest, RefreshWithInvalidParams) {
 }
 
 TEST_F(SessionServiceImplTest, SessionTerminationFromContinueFalse) {
-  AddSessionsForTesting({{kSessionId, kUrlString, kOrigin}});
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
 
   ASSERT_TRUE(
       service().GetSession(SchemefulSite(kTestUrl), Session::Id(kSessionId)));
 
   {
     auto scoped_fetcher = ScopedTestRegistrationFetcher::CreateWithTermination(
-        kSessionId, kUrlString);
+        kSessionId, kRefreshUrlString);
     auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
         kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
         "challenge", /*authorization=*/std::nullopt);
@@ -674,7 +678,7 @@ TEST_F(SessionServiceImplTest, NetLogRegistration) {
   RecordingNetLogObserver observer;
 
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
-      kSessionId, kUrlString, kOrigin);
+      kSessionId, kRefreshUrlString, kOrigin);
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt);
@@ -690,7 +694,7 @@ TEST_F(SessionServiceImplTest, NetLogRegistration) {
 }
 
 TEST_F(SessionServiceImplTest, NetLogRefresh) {
-  AddSessionsForTesting({{kSessionId, kUrlString, kOrigin}});
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
 
   SchemefulSite site(kTestUrl);
   ASSERT_TRUE(service().GetSession(site, Session::Id(kSessionId)));
@@ -706,7 +710,7 @@ TEST_F(SessionServiceImplTest, NetLogRefresh) {
 
   RecordingNetLogObserver observer;
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
-      kSessionId, kUrlString, kOrigin);
+      kSessionId, kRefreshUrlString, kOrigin);
   service().DeferRequestForRefresh(request.get(), Session::Id(kSessionId),
                                    defer_completion.GetRestartCb(),
                                    defer_completion.GetContinueCb());
@@ -765,7 +769,7 @@ TEST_F(SessionServiceImplWithStoreTest, UsesSessionStore) {
   service().LoadSessionsAsync();
 
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
-      kSessionId, kUrlString, kOrigin);
+      kSessionId, kRefreshUrlString, kOrigin);
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt);

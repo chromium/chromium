@@ -168,7 +168,7 @@ void RichHoverButton::SetSubtitleText(std::u16string_view subtitle_text) {
       subtitle_row_views_.push_back(AddChildView(
           std::make_unique<SubtitleLabelWrapper>(std::move(subtitle))));
       subtitle_->SetTextStyle(views::style::STYLE_BODY_5);
-      subtitle_->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
+      subtitle_->SetEnabledColor(ui::kColorLabelForegroundSecondary);
       subtitle_->SetMultiLine(subtitle_multiline_);
       subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       subtitle_->SetAutoColorReadabilityEnabled(false);
@@ -194,14 +194,14 @@ void RichHoverButton::SetSubtitleMultiline(bool subtitle_multiline) {
 void RichHoverButton::SetTitleTextStyleAndColor(int style,
                                                 ui::ColorId color_id) {
   title_->SetTextStyle(style);
-  title_->SetEnabledColorId(color_id);
+  title_->SetEnabledColor(color_id);
 }
 
 void RichHoverButton::SetSubtitleTextStyleAndColor(int style,
                                                    ui::ColorId color_id) {
   if (subtitle_) {
     subtitle_->SetTextStyle(style);
-    subtitle_->SetEnabledColorId(color_id);
+    subtitle_->SetEnabledColor(color_id);
   }
 }
 

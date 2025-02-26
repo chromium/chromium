@@ -91,6 +91,9 @@ INSTANTIATE_TEST_SUITE_P(
         kSunfishSessionImageCapturedAndActionsFetchStarted,
         kSmartActionsButtonImageCapturedAndActionsNotFetched,
         kSmartActionsButtonImageCapturedAndActionsFetchStarted,
+        kSmartActionsButtonNotShownDueToFeatureChecks,
+        kSmartActionsButtonNotShownDueToTextDetectionCancelled,
+        kSmartActionsButtonNotShownDueToNoTextDetected,
     }));
 
 TEST_P(ScannerMetricsParameterisedTest, Record) {
@@ -143,7 +146,7 @@ TEST_F(ScannerMetricsTest, ClamshellLauncherShownWithoutSunfishSessionButton) {
   ON_CALL(*delegate, CheckFeatureAccess)
       .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{
           specialized_features::FeatureAccessFailure::kDisabledInSettings}));
-  ASSERT_FALSE(IsSunfishSessionAllowed());
+  ASSERT_FALSE(CanShowSunfishOrScannerUi());
 
   // Open the app list by clicking on the home button.
   LeftClickOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
@@ -167,7 +170,7 @@ TEST_F(ScannerMetricsTest, ClamshellLauncherShownWithSunfishSessionButton) {
       scanner_controller->delegate_for_testing()->GetProfileScopedDelegate());
   ON_CALL(*delegate, CheckFeatureAccess)
       .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
-  ASSERT_TRUE(IsSunfishSessionAllowed());
+  ASSERT_TRUE(CanShowSunfishOrScannerUi());
 
   // Open the app list by clicking on the home button.
   LeftClickOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
@@ -191,7 +194,7 @@ TEST_F(ScannerMetricsTest, TabletLauncherShownWithoutSunfishSessionButton) {
   ON_CALL(*delegate, CheckFeatureAccess)
       .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{
           specialized_features::FeatureAccessFailure::kDisabledInSettings}));
-  ASSERT_FALSE(IsSunfishSessionAllowed());
+  ASSERT_FALSE(CanShowSunfishOrScannerUi());
 
   // The app list should be open by default when we enter tablet mode.
   SwitchToTabletMode();
@@ -215,7 +218,7 @@ TEST_F(ScannerMetricsTest, TabletLauncherShownWithSunfishSessionButton) {
       scanner_controller->delegate_for_testing()->GetProfileScopedDelegate());
   ON_CALL(*delegate, CheckFeatureAccess)
       .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
-  ASSERT_TRUE(IsSunfishSessionAllowed());
+  ASSERT_TRUE(CanShowSunfishOrScannerUi());
 
   // The app list should be open by default when we enter tablet mode.
   SwitchToTabletMode();

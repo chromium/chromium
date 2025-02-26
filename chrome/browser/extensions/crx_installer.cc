@@ -48,6 +48,7 @@
 #include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/install/crx_install_error.h"
@@ -830,7 +831,8 @@ void CrxInstaller::OnInstallPromptDone(
         DCHECK_NE(
             payload.result,
             ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS);
-        service_->GrantPermissionsAndEnableExtension(extension());
+        ExtensionRegistrar::Get(profile_)->GrantPermissionsAndEnableExtension(
+            *extension());
       } else {
         WithholdingBehavior withholding_behavior =
             payload.result == ExtensionInstallPrompt::Result::

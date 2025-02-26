@@ -177,9 +177,8 @@ enum BocaValidPref {
 };
 
 struct Session {
- Config config;
- array<IdentifiedActivity> activities;
-
+  Config config;
+  array<IdentifiedActivity> activities;
 };
 
 struct StudentActivity {
@@ -292,6 +291,9 @@ interface PageHandler {
   // Set the permission of a site.
   SetSitePermission(string url, Permission permission, PermissionSetting
     setting) => (bool success);
+  // Close a tab with the tab_id.
+  // NOTE: Ensure the param type is the same as SessionID::id_type.
+  CloseTab(int32 tab_id) => (bool success);
 };
 
 // Implemented by renderer process

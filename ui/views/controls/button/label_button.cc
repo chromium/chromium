@@ -158,9 +158,9 @@ void LabelButton::SetTextColor(ButtonState for_state, SkColor color) {
 void LabelButton::SetTextColorId(ButtonState for_state, ui::ColorId color_id) {
   button_state_colors_[for_state] = color_id;
   if (for_state == STATE_DISABLED) {
-    label_->SetDisabledColorId(color_id);
+    label_->SetDisabledColor(color_id);
   } else if (for_state == GetState()) {
-    label_->SetEnabledColorId(color_id);
+    label_->SetEnabledColor(color_id);
   }
   explicitly_set_colors_[for_state] = true;
 }
@@ -215,7 +215,7 @@ void LabelButton::SetEnabledTextColorIds(ui::ColorId color_id) {
 }
 
 SkColor LabelButton::GetCurrentTextColor() const {
-  return label_->GetEnabledColor();
+  return static_cast<Label*>(label_)->GetEnabledColor();
 }
 
 void LabelButton::SetTextShadows(const gfx::ShadowValues& shadows) {
@@ -724,7 +724,7 @@ void LabelButton::ResetLabelEnabledColor() {
     } else if (auto color_id = color_variant->GetColorId()) {
       // Omitting the check that the new color id differs from the existing
       // color id, because the setter already does that check.
-      label_->SetEnabledColorId(*color_id);
+      label_->SetEnabledColor(*color_id);
     }
   }
 }

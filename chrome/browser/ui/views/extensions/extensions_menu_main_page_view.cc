@@ -310,7 +310,7 @@ void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
               views::Builder<views::Label>()
                   .SetText(name)
                   .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
-                  .SetEnabledColorId(kColorExtensionsMenuText)
+                  .SetEnabledColor(kColorExtensionsMenuText)
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                   .SetProperty(views::kFlexBehaviorKey,
                                views::FlexSpecification(
@@ -436,7 +436,7 @@ ExtensionsMenuMainPageView::CreateHeaderBuilder(
               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
               .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
               .SetTextStyle(views::style::STYLE_HEADLINE_4)
-              .SetEnabledColorId(kColorExtensionsMenuText)
+              .SetEnabledColor(kColorExtensionsMenuText)
               .SetProperty(views::kFlexBehaviorKey, stretch_specification),
           // Close button.
           views::Builder<views::Button>(
@@ -467,7 +467,7 @@ ExtensionsMenuMainPageView::CreateSiteSettingsBuilder(
                       .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
                       .SetMultiLine(true)
                       .SetAllowCharacterBreak(true)
-                      .SetEnabledColorId(kColorExtensionsMenuText)
+                      .SetEnabledColor(kColorExtensionsMenuText)
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT),
                   views::Builder<views::TooltipIcon>(
                       std::make_unique<
@@ -530,7 +530,7 @@ ExtensionsMenuMainPageView::CreateContentsBuilder(
                                   ChromeTextContext::
                                       CONTEXT_DIALOG_BODY_TEXT_SMALL)
                               .SetTextStyle(views::style::STYLE_BODY_3)
-                              .SetEnabledColorId(
+                              .SetEnabledColor(
                                   kColorExtensionsMenuSecondaryText)
                               .SetMultiLine(true),
                           views::Builder<views::MdTextButton>()
@@ -558,7 +558,7 @@ ExtensionsMenuMainPageView::CreateContentsBuilder(
                               .SetTextContext(
                                   ChromeTextContext::
                                       CONTEXT_DIALOG_BODY_TEXT_SMALL)
-                              .SetEnabledColorId(kColorExtensionsMenuText)
+                              .SetEnabledColor(kColorExtensionsMenuText)
                               .SetTextStyle(views::style::STYLE_BODY_2_EMPHASIS)
                               .SetHorizontalAlignment(gfx::ALIGN_LEFT),
                           // Empty container for the requests entries.

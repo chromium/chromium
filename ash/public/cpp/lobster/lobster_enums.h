@@ -52,10 +52,6 @@ enum class ASH_PUBLIC_EXPORT LobsterSystemCheck {
   kInvalidInputMethod,
   kInvalidFeatureFlags,  // The feature flag disabled.
   kUnsupportedHardware,
-  kUnsatisfiedAccountCapabilitiesCheck,  // Does not have required account
-                                         // capabilities, which is a proxy to
-                                         // check user requirements such as the
-                                         // user inferred not to be a minor.
   kUnsupportedInKioskMode,               // In Kiosk mode.
   kMaxValue = kUnsupportedInKioskMode,
 };

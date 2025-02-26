@@ -50,8 +50,6 @@ component("views_examples_lib") {
     "examples_color_id.h",
     "examples_color_mixer.cc",
     "examples_color_mixer.h",
-    "examples_themed_label.cc",
-    "examples_themed_label.h",
     "examples_window.cc",
     "examples_window.h",
     "fade_animation.cc",

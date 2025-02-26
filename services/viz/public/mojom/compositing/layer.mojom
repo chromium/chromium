@@ -45,6 +45,12 @@ struct SurfaceLayerExtra {
   bool override_child_paint_flags;
 };
 
+// Extra properties that are specific to a LayerImpl type.
+union LayerExtra {
+  // Extra properties that are specific to SurfaceLayerImpl.
+  SurfaceLayerExtra surface_layer_extra;
+};
+
 // Details about a cc::LayerImpl that has been added to a tree or modified in
 // some interesting way since a prior tree update.
 struct Layer {
@@ -99,10 +105,8 @@ struct Layer {
   int32 effect_tree_index;
   int32 scroll_tree_index;
 
-  // Extra properties that are specific to SurfaceLayerImpl.
-  // TODO(zmo): This really should be a union of all LayerImpl subclasses'
-  // extra fields.
-  SurfaceLayerExtra? surface_layer_extra;
+  // Extra properties that are specific to a layerImpl type.
+  LayerExtra? layer_extra;
 };
 
 // See blink::AnchorPositionScrollData, from which the fields here are derived.

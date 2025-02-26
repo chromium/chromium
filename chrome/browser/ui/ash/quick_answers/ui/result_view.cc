@@ -71,7 +71,7 @@ ResultView::ResultView() {
               views::Builder<views::Label>()
                   .CopyAddressTo(&first_line_label_)
                   .SetVisible(false)
-                  .SetEnabledColorId(ui::kColorLabelForeground)
+                  .SetEnabledColor(ui::kColorLabelForeground)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                   // Set lower priority order for `first_line_label` compared to
                   // `first_line_sub_label` as primary text gets elided first
@@ -85,14 +85,14 @@ ResultView::ResultView() {
                         .CopyAddressTo(&separator_label_)
                         .SetVisible(false)
                         .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                        .SetEnabledColorId(ui::kColorLabelForeground)
+                        .SetEnabledColor(ui::kColorLabelForeground)
                         .SetText(kSeparatorText))
           .AddChild(
               views::Builder<views::Label>()
                   .CopyAddressTo(&first_line_sub_label_)
                   .SetVisible(false)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                  .SetEnabledColorId(ui::kColorLabelForeground)
+                  .SetEnabledColor(ui::kColorLabelForeground)
                   .SetProperty(
                       views::kFlexBehaviorKey,
                       views::FlexSpecification(
@@ -113,7 +113,7 @@ ResultView::ResultView() {
       views::Builder<views::Label>()
           .CopyAddressTo(&second_line_label_)
           .SetVisible(false)
-          .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
+          .SetEnabledColor(ui::kColorLabelForegroundSecondary)
           .SetMultiLine(true)
           .SetMaxLines(kMaxLines)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)

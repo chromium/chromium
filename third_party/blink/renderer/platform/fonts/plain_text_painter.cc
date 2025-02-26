@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 
+#include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 
 namespace blink {
@@ -18,6 +19,17 @@ PlainTextPainter& PlainTextPainter::Shared() {
   DEFINE_STATIC_LOCAL(Persistent<PlainTextPainter>, shared_instance,
                       (MakeGarbageCollected<PlainTextPainter>(kShared)));
   return *shared_instance;
+}
+
+const PlainTextNode& PlainTextPainter::SegmentAndShape(const TextRun& run,
+                                                       const Font& font) {
+  DCHECK(RuntimeEnabledFeatures::CanvasTextNgEnabled() ||
+         RuntimeEnabledFeatures::PlainTextPainterEnabled());
+  // This function doesn't support DirectionOverride because there are no such
+  // callers.
+  DCHECK(!run.DirectionalOverride());
+  FontCachePurgePreventer purge_preventer;
+  return CreateNode(run, font);
 }
 
 void PlainTextPainter::Draw(const TextRun& run,
@@ -86,6 +98,15 @@ gfx::RectF PlainTextPainter::SelectionRectForText(
   // Font::SelectionRectForText().
   return font.SelectionRectForText(run, left_baseline, height, from_index,
                                    to_index);
+}
+
+const PlainTextNode& PlainTextPainter::CreateNode(const TextRun& text_run,
+                                                  const Font& font,
+                                                  bool supports_bidi,
+                                                  bool bidi_overridden) {
+  // TODO(crbug.com/389726691): Introduce a cache.
+  return *MakeGarbageCollected<PlainTextNode>(
+      text_run, mode_ == kCanvas, bidi_overridden, font, supports_bidi);
 }
 
 }  // namespace blink

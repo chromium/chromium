@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_handler.h"
 
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/branded_strings.h"
@@ -90,6 +92,11 @@ ConstructSignoutConfirmationData(
       l10n_util::GetStringUTF8(ComputeAcceptButtonLabelId(variant));
   signout_confirmation_mojo->cancel_button_label =
       l10n_util::GetStringUTF8(ComputeCancelButtonLabelId(variant));
+
+  std::vector<signout_confirmation::mojom::ExtensionInfoPtr>
+      extensions_info_mojo;
+  signout_confirmation_mojo->account_extensions =
+      std::move(extensions_info_mojo);
   return signout_confirmation_mojo;
 }
 

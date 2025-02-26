@@ -1017,6 +1017,7 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS)
             blink::features::kWebPrinting,
 #endif
+            features::kDbdRevampDesktop,
             features::kEnableCertManagementUIV2,
         },
         {});
@@ -1119,6 +1120,12 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
                        EnableWebBluetoothNewPermissionsBackend) {
   RunTest("settings/privacy_page_test.js",
           "runMochaSuite('EnableWebBluetoothNewPermissionsBackend')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
+                       DeleteBrowsingDataRevampDisabled) {
+  RunTest("settings/privacy_page_test.js",
+          "runMochaSuite('DeleteBrowsingDataRevampDisabled')");
 }
 
 class SettingsPrivacySandboxPageTest : public SettingsBrowserTest {};

@@ -175,7 +175,7 @@ std::unique_ptr<views::Label> CreateMainTextLabel(
   }
 
   if (!suggestion.main_text.is_primary) {
-    label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
+    label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
   }
   return label;
 }
@@ -189,7 +189,7 @@ std::unique_ptr<views::Label> CreateMinorTextLabel(
   auto label = std::make_unique<views::Label>(
       suggestion.minor_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
       suggestion.HasDeactivatedStyle() ? kDisabledTextStyle : kMinorTextStyle);
-  label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
+  label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
   return label;
 }
 
@@ -227,9 +227,9 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
               IsDeactivatedPasswordOrPasskey(suggestion) ? kDisabledTextStyle
                                                          : kMinorTextStyle));
       if (suggestion.type == SuggestionType::kPlusAddressError) {
-        label->SetEnabledColorId(ui::kColorSysError);
+        label->SetEnabledColor(ui::kColorSysError);
       } else if (!IsDeactivatedPasswordOrPasskey(suggestion)) {
-        label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
+        label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
       }
       // To make sure the popup width will not exceed its maximum value,
       // divide the maximum label width by the number of labels.
@@ -272,7 +272,7 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
   // TODO(crbug.com/345709988): Move this to CreateMainTextLabel. See
   // https://crrev.com/c/5605735/comment/970405c2_cbb55e85
   if (!suggestion.HasDeactivatedStyle()) {
-    main_text_label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
+    main_text_label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
   }
   main_text_label->SetEnabled(!suggestion.is_loading);
   view->AddChildView(std::move(main_text_label));

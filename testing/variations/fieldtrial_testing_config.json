@@ -6444,21 +6444,6 @@
             ]
         }
     ],
-    "CrOSBluetoothA2dpAacCodec": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrOSLateBootAudioA2DPAdvancedCodecs"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSBluetoothFlossTelephony": [
         {
             "platforms": [
@@ -9408,6 +9393,30 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EventTimingSelectionAutoScrollNoInteractionId"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ExpandCompositedCullRect": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "LargeChangedEnough",
+                    "params": {
+                        "changed_enough": "1024"
+                    },
+                    "enable_features": [
+                        "ExpandCompositedCullRect"
                     ]
                 }
             ]
@@ -18653,6 +18662,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FledgeTrustedSignalsKVv1CreativeScanning"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ProtectedAudienceUseNonTransientNIKForSeller": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeUseNonTransientNIKForSeller"
                     ]
                 }
             ]

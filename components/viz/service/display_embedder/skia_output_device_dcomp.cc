@@ -269,7 +269,7 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
     params.opacity = dc_layer.opacity;
     params.rounded_corner_bounds = dc_layer.rounded_corners;
     params.nearest_neighbor_filter = dc_layer.nearest_neighbor_filter;
-    params.aggregated_layer_id = dc_layer.aggregated_layer_id;
+    params.layer_id = dc_layer.layer_id;
     params.video_params.protected_video_type = dc_layer.protected_video_type;
     params.video_params.color_space = dc_layer.color_space;
     params.video_params.hdr_metadata = dc_layer.hdr_metadata;

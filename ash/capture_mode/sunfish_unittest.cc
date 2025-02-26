@@ -230,6 +230,24 @@ TEST_F(SunfishDisabledScannerDisabledTest, AccelEntryPointIsNoop) {
   EXPECT_FALSE(controller->IsActive());
 }
 
+TEST_F(SunfishDisabledScannerDisabledTest,
+       SmartActionsButtonNotShownDueToFeatureChecksRecorded) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSmartActionsButtonNotShownDueToFeatureChecks,
+      0);
+
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSmartActionsButtonNotShownDueToFeatureChecks,
+      1);
+}
+
 // Tests that the feedback button is not shown in default capture mode if
 // neither Sunfish nor Scanner is enabled.
 TEST_F(SunfishDisabledScannerDisabledTest,
@@ -2835,6 +2853,36 @@ TEST_F(ScannerTest, CreatesScannerActionButtons) {
   EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(2));
 }
 
+// Tests that the "smart actions button not shown due to feature checks" metrics
+// is not recorded when a region is selected in a Sunfish-session after
+// `CanShowSunfishOrScannerUi` turns false. Removing the default session check
+// guarding the metric will cause this test to fail.
+TEST_F(ScannerTest, SmartActionsButtonNotShownDueToFeatureChecksNotRecorded) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSmartActionsButtonNotShownDueToFeatureChecks,
+      0);
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+
+  // Forcibly turn `CanShowSunfishOrScannerUi` off by disabling the Search
+  // policy and the Scanner policy.
+  auto* test_delegate = static_cast<TestCaptureModeDelegate*>(
+      capture_mode_controller->delegate_for_testing());
+  test_delegate->set_is_search_allowed_by_policy(false);
+  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSmartActionsButtonNotShownDueToFeatureChecks,
+      0);
+}
+
 TEST_F(ScannerTest, SunfishSessionImageCapturedAndActionsFetchedRecorded) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
@@ -3416,6 +3464,33 @@ TEST_F(ScannerTest, NoCopyTextButtonIfNoDetectedText) {
       ActionButtonViewID::kCopyTextButton));
 }
 
+// Tests that the "smart actions button not shown due to no text detected"
+// metric is emitted if no text is detected in the selected region.
+TEST_F(ScannerTest, NoDetectedTextMetrics) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSmartActionsButtonNotShownDueToNoTextDetected,
+      0);
+
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  detect_text_future.Take().Run("");
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSmartActionsButtonNotShownDueToNoTextDetected,
+      1);
+}
+
 // Tests that the copy text button is not shown in default capture mode if the
 // OCR request for the selected region fails.
 TEST_F(ScannerTest, NoCopyTextButtonIfOcrRequestFailed) {
@@ -3435,6 +3510,34 @@ TEST_F(ScannerTest, NoCopyTextButtonIfOcrRequestFailed) {
       controller->capture_mode_session());
   EXPECT_FALSE(session_test_api.GetActionButtonByViewId(
       ActionButtonViewID::kCopyTextButton));
+}
+
+// Tests that the "smart actions button not shown due to text detection
+// cancelled" metric is emitted if the OCR reports as cancelled.
+TEST_F(ScannerTest, OcrRequestFailedMetrics) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::
+          kSmartActionsButtonNotShownDueToTextDetectionCancelled,
+      0);
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  detect_text_future.Take().Run(std::nullopt);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::
+          kSmartActionsButtonNotShownDueToTextDetectionCancelled,
+      1);
 }
 
 // Tests that the copy text button is not shown if the selected region changes
@@ -3459,6 +3562,38 @@ TEST_F(ScannerTest, NoCopyTextButtonIfSelectedRegionChanges) {
       controller->capture_mode_session());
   EXPECT_FALSE(session_test_api.GetActionButtonByViewId(
       ActionButtonViewID::kCopyTextButton));
+}
+
+// Tests that the "smart actions button not shown due to text detection
+// cancelled" metric is emitted if the selected region changes before text
+// detection completes.
+TEST_F(ScannerTest, SelectedRegionChangesMetrics) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::
+          kSmartActionsButtonNotShownDueToTextDetectionCancelled,
+      0);
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 50),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  OnTextDetectionComplete callback = detect_text_future.Take();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 50, 50),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  std::move(callback).Run("detected text");
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::
+          kSmartActionsButtonNotShownDueToTextDetectionCancelled,
+      1);
 }
 
 // Tests that the copy text button is not shown if the selected region is
@@ -3490,6 +3625,45 @@ TEST_F(ScannerTest, NoCopyTextButtonIfSelectedRegionChangesByFineTuneNoop) {
       controller->capture_mode_session());
   EXPECT_FALSE(session_test_api.GetActionButtonByViewId(
       ActionButtonViewID::kCopyTextButton));
+}
+
+// Tests that the "smart actions button not shown due to text detection
+// cancelled" metric is emitted if the selected region is fine-tuned, but does
+// not change, before text detection completes.
+TEST_F(ScannerTest, SelectedRegionChangesByFineTuneNoopMetrics) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::
+          kSmartActionsButtonNotShownDueToTextDetectionCancelled,
+      0);
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .Times(2)
+      .WillRepeatedly(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  constexpr auto kCaptureRegion = gfx::Rect(0, 0, 50, 50);
+  SelectCaptureModeRegion(GetEventGenerator(), kCaptureRegion,
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  OnTextDetectionComplete callback = detect_text_future.Take();
+  const gfx::Point drag_affordance_location =
+      capture_mode_util::GetLocationForFineTunePosition(
+          kCaptureRegion, FineTunePosition::kBottomRightVertex);
+  GetEventGenerator()->MoveMouseTo(drag_affordance_location);
+  GetEventGenerator()->ClickLeftButton();
+  ASSERT_TRUE(detect_text_future.Wait())
+      << "Detect text was not called again after fine-tune";
+  std::move(callback).Run("detected text");
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::
+          kSmartActionsButtonNotShownDueToTextDetectionCancelled,
+      1);
 }
 
 // Records the time taken for the on device OCR.

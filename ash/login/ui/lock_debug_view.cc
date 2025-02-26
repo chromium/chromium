@@ -1260,7 +1260,7 @@ void LockDebugView::UpdatePerUserActionContainer() {
     auto* name = new views::Label();
     name->SetText(debug_data_dispatcher_->GetDisplayNameForUserIndex(i));
     name->SetSubpixelRenderingEnabled(false);
-    name->SetEnabledColorId(kColorAshTextColorPrimary);
+    name->SetEnabledColor(kColorAshTextColorPrimary);
     name->SetAutoColorReadabilityEnabled(false);
     row->AddChildView(name);
 

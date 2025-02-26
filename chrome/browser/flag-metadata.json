@@ -517,11 +517,6 @@
     "expiry_milestone": 126
   },
   {
-    "name": "audio-a2dp-advanced-codecs",
-    "owners": ["jrwu@chromium.org", "chromeos-audio@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "audio-ducking",
     "owners": ["steimel@chromium.org", "mfoltz@chromium.org"],
     "expiry_milestone": 150
@@ -5896,42 +5891,7 @@
     "expiry_milestone": 120
   },
   {
-    "name": "media-app-image-mantis-erase",
-    "owners": [
-      "cros-mantis@google.com"
-    ],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "media-app-image-mantis-expand-background",
-    "owners": [
-      "cros-mantis@google.com"
-    ],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "media-app-image-mantis-make-a-sticker",
-    "owners": [
-      "cros-mantis@google.com"
-    ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "media-app-image-mantis-model",
-    "owners": [
-      "cros-mantis@google.com"
-    ],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "media-app-image-mantis-reimagine",
-    "owners": [
-      "cros-mantis@google.com"
-    ],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "media-app-image-mantis-remove-background",
     "owners": [
       "cros-mantis@google.com"
     ],

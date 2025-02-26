@@ -1031,8 +1031,6 @@ inline const char kCryptAuthEnrollmentUserPrivateKey[] =
 inline const char kLacrosLaunchOnLogin[] = "lacros.launch_on_login";
 inline const char kLacrosLaunchSwitch[] = "lacros_launch_switch";
 inline const char kLacrosSelection[] = "lacros_selection";
-inline constexpr char kAccessibilityCursorColorEnabled[] =
-    "settings.a11y.cursor_color_enabled";
 #endif
 
 // Deprecated 12/2024.
@@ -1486,7 +1484,6 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterStringPref(kCryptAuthEnrollmentUserPrivateKey,
                                std::string());
   registry->RegisterBooleanPref(kLacrosLaunchOnLogin, false);
-  registry->RegisterBooleanPref(kAccessibilityCursorColorEnabled, false);
 #endif
 
   // Deprecated 12/2024.
@@ -2748,7 +2745,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kCryptAuthEnrollmentUserPublicKey);
   profile_prefs->ClearPref(kCryptAuthEnrollmentUserPrivateKey);
   profile_prefs->ClearPref(kLacrosLaunchOnLogin);
-  profile_prefs->ClearPref(kAccessibilityCursorColorEnabled);
 #endif
 
   // Added 12/2024.

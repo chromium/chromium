@@ -82,7 +82,7 @@ ResizeConfirmationDialogView::ResizeConfirmationDialogView(
           .Build());
   ash::TypographyProvider::Get()->StyleLabel(
       ash::TypographyToken::kCrosDisplay7, *title);
-  title->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  title->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
 
   AddChildView(MakeContentsView());
   AddChildView(MakeButtonsView());
@@ -146,7 +146,7 @@ std::unique_ptr<views::View> ResizeConfirmationDialogView::MakeContentsView() {
           .Build());
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody1,
                                              *body);
-  body->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  body->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
 
   const raw_ptr<ash::CheckboxGroup> checkbox_group =
       contents_view->AddChildView(std::make_unique<ash::CheckboxGroup>(

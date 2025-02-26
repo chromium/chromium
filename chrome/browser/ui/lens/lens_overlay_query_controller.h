@@ -79,6 +79,7 @@ class LensOverlayQueryController {
       LensOverlayInteractionResponseCallback interaction_callback,
       LensOverlaySuggestInputsCallback suggest_inputs_callback,
       LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
+      UploadProgressCallback page_content_upload_progress_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
       Profile* profile,
@@ -171,6 +172,10 @@ class LensOverlayQueryController {
   virtual void SendSemanticEventGen204IfEnabled(
       lens::mojom::SemanticEvent event);
 
+  bool IsPageContentUploadInProgress() const {
+    return page_content_endpoint_fetcher_.get() != nullptr;
+  }
+
   uint64_t gen204_id() const { return gen204_id_; }
 
   // Testing method to reset the cluster info state.
@@ -237,6 +242,9 @@ class LensOverlayQueryController {
 
   // Callback for when a thumbnail image is created from a region selection.
   LensOverlayThumbnailCreatedCallback thumbnail_created_callback_;
+
+  // Callback for when the page content upload progress is updated.
+  UploadProgressCallback page_content_upload_progress_callback_;
 
  private:
   enum class QueryControllerState {

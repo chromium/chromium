@@ -231,7 +231,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                 views::Builder<views::Label>()
                     .SetText(GetSiteAccessRadioButtonDescription(site_access))
                     .SetTextStyle(views::style::STYLE_BODY_5)
-                    .SetEnabledColorId(kColorExtensionsMenuSecondaryText)
+                    .SetEnabledColor(kColorExtensionsMenuSecondaryText)
                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                     .SetMultiLine(true)
                     .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
@@ -283,7 +283,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                           views::Builder<views::Label>()
                               .CopyAddressTo(&extension_name_)
                               .SetTextStyle(views::style::STYLE_HEADLINE_4)
-                              .SetEnabledColorId(
+                              .SetEnabledColor(
                                   kColorExtensionsMenuSecondaryText)
                               .SetProperty(views::kMarginsKey,
                                            gfx::Insets::TLBR(
@@ -309,7 +309,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                       .SetText(l10n_util::GetStringUTF16(
                           IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_LABEL))
                       .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
-                      .SetEnabledColorId(kColorExtensionsMenuText)
+                      .SetEnabledColor(kColorExtensionsMenuText)
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT),
                   create_radio_button_builder(
                       PermissionsManager::UserSiteAccess::kOnClick),
@@ -331,7 +331,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                               .SetText(l10n_util::GetStringUTF16(
                                   IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SHOW_REQUESTS_LABEL))
                               .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
-                              .SetEnabledColorId(kColorExtensionsMenuText)
+                              .SetEnabledColor(kColorExtensionsMenuText)
                               .SetProperty(views::kFlexBehaviorKey,
                                            stretch_specification)
                               .SetHorizontalAlignment(gfx::ALIGN_LEFT),

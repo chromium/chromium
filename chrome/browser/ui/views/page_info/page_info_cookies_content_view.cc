@@ -445,7 +445,7 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
                   .CopyAddressTo(&third_party_cookies_title_)
                   .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
                   .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
-                  .SetEnabledColorId(kColorPageInfoForeground)
+                  .SetEnabledColor(kColorPageInfoForeground)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                   .Build()));
 
@@ -454,7 +454,7 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
           std::make_unique<views::Label>());
   third_party_cookies_description_->SetTextContext(views::style::CONTEXT_LABEL);
   third_party_cookies_description_->SetTextStyle(views::style::STYLE_BODY_4);
-  third_party_cookies_description_->SetEnabledColorId(
+  third_party_cookies_description_->SetEnabledColor(
       kColorPageInfoSubtitleForeground);
   third_party_cookies_description_->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
@@ -473,7 +473,7 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
       third_party_cookies_row_->AddSecondaryLabel(std::u16string());
   third_party_cookies_toggle_subtitle_->SetTextStyle(
       views::style::STYLE_BODY_4);
-  third_party_cookies_toggle_subtitle_->SetEnabledColorId(
+  third_party_cookies_toggle_subtitle_->SetEnabledColor(
       kColorPageInfoSubtitleForeground);
 
   third_party_cookies_toggle_ = third_party_cookies_row_->AddControl(

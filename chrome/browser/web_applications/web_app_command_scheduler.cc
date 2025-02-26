@@ -642,13 +642,13 @@ void WebAppCommandScheduler::RunIconDiagnosticsForApp(
 }
 
 void WebAppCommandScheduler::InstallAppFromUrl(
-    const GURL& manifest_id,
     const GURL& install_url,
+    const std::optional<GURL>& manifest_id,
     WebInstallFromUrlCommandCallback installed_callback,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<WebInstallFromUrlCommand>(profile_.get(), manifest_id,
-                                                 install_url,
+      std::make_unique<WebInstallFromUrlCommand>(profile_.get(), install_url,
+                                                 manifest_id,
                                                  std::move(installed_callback)),
       location);
 }

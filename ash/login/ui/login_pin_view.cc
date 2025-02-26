@@ -246,7 +246,7 @@ class LoginPinView::DigitPinButton : public BasePinButton {
     label_->SetFontList(base_font_list.Derive(8 /*size_delta*/,
                                               gfx::Font::FontStyle::NORMAL,
                                               gfx::Font::Weight::NORMAL));
-    label_->SetEnabledColorId(kColorAshIconColorPrimary);
+    label_->SetEnabledColor(kColorAshIconColorPrimary);
 
     if (show_sub_label) {
       sub_label_ = AddChildView(new views::Label(
@@ -257,7 +257,7 @@ class LoginPinView::DigitPinButton : public BasePinButton {
       sub_label_->SetFontList(
           base_font_list.Derive(-1 /*size_delta*/, gfx::Font::FontStyle::NORMAL,
                                 gfx::Font::Weight::NORMAL));
-      sub_label_->SetEnabledColorId(kColorAshTextColorSecondary);
+      sub_label_->SetEnabledColor(kColorAshTextColorSecondary);
     }
   }
 
