@@ -1,0 +1,28 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_AI_UTIL_H_
+#define CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_AI_UTIL_H_
+
+#include "chrome/common/extensions/api/autofill_private.h"
+
+namespace autofill {
+class EntityInstance;
+}  // namespace autofill
+
+namespace extensions::autofill_ai_util {
+
+// Converts an `api::autofill_private::EntityInstance` object to an
+// `autofill::EntityInstance` object.
+autofill::EntityInstance PrivateApiEntityInstanceToEntityInstance(
+    const api::autofill_private::EntityInstance& private_api_entity_instance);
+
+// Converts an `autofill::EntityInstance` object to an
+// `api::autofill_private::EntityInstance` object.
+api::autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
+    const autofill::EntityInstance& entity_instance);
+
+}  // namespace extensions::autofill_ai_util
+
+#endif  // CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_AI_UTIL_H_

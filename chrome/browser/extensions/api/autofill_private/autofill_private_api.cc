@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill_ai/autofill_ai_util.h"
+#include "chrome/browser/extensions/api/autofill_private/autofill_ai_util.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -1147,7 +1148,7 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
   const autofill_private::EntityInstance& private_api_entity_instance =
       parameters->entity_instance;
   EntityInstance entity_instance =
-      autofill_util::PrivateApiEntityInstanceToEntityInstance(
+      autofill_ai_util::PrivateApiEntityInstanceToEntityInstance(
           private_api_entity_instance);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -1198,9 +1199,9 @@ AutofillPrivateLoadEntityInstancesFunction::Run() {
   if (!entity_data_manager) {
     return RespondNow(Error(kErrorAutofillAIUnavailable));
   }
-  std::vector<autofill_private::EntityInstance> result =
-      base::ToVector(entity_data_manager->GetEntityInstances(),
-                     &autofill_util::EntityInstanceToPrivateApiEntityInstance);
+  std::vector<autofill_private::EntityInstance> result = base::ToVector(
+      entity_data_manager->GetEntityInstances(),
+      &autofill_ai_util::EntityInstanceToPrivateApiEntityInstance);
   return RespondNow(ArgumentList(
       autofill_private::LoadEntityInstances::Results::Create(result)));
 }

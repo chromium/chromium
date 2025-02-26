@@ -16,9 +16,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
-#include "base/uuid.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/autofill_private.h"
@@ -28,9 +25,6 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
-#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
-#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -337,52 +331,6 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   }
 
   return card;
-}
-
-EntityInstance PrivateApiEntityInstanceToEntityInstance(
-    const autofill_private::EntityInstance& private_api_entity_instance) {
-  base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
-      attributes;
-  for (const autofill_private::AttributeInstance&
-           private_api_attribute_instance :
-       private_api_entity_instance.attributes) {
-    autofill::AttributeType attribute_type(
-        autofill::AttributeTypeName(private_api_attribute_instance.type));
-    autofill::AttributeInstance attribute(attribute_type);
-    attribute.SetInfoWithVerificationStatus(
-        attribute.GetTopLevelType(),
-        base::UTF8ToUTF16(private_api_attribute_instance.value),
-        autofill::VerificationStatus::kUserVerified);
-    attributes.emplace(std::move(attribute));
-  }
-
-  EntityType entity_type(
-      autofill::EntityTypeName(private_api_entity_instance.type));
-  return EntityInstance(
-      std::move(entity_type), attributes,
-      base::Uuid::ParseLowercase(private_api_entity_instance.guid),
-      private_api_entity_instance.nickname, base::Time::Now());
-}
-
-autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
-    const EntityInstance& entity_instance) {
-  std::vector<autofill_private::AttributeInstance> private_api_attributes;
-  for (const AttributeInstance& attribute_instance :
-       entity_instance.attributes()) {
-    private_api_attributes.emplace_back();
-    private_api_attributes.back().type =
-        base::to_underlying(attribute_instance.type().name());
-    private_api_attributes.back().value =
-        base::UTF16ToUTF8(attribute_instance.value());
-  }
-
-  autofill_private::EntityInstance private_api_entity_instance;
-  private_api_entity_instance.type =
-      base::to_underlying(entity_instance.type().name());
-  private_api_entity_instance.attributes = std::move(private_api_attributes);
-  private_api_entity_instance.guid = entity_instance.guid().AsLowercaseString();
-  private_api_entity_instance.nickname = entity_instance.nickname();
-  return private_api_entity_instance;
 }
 
 }  // namespace extensions::autofill_util
