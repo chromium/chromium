@@ -22,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -327,7 +328,8 @@ bool TranslationManagerImpl::PassAcceptLanguagesCheck(
     const std::string& accept_languages_str,
     const std::string& source_lang,
     const std::string& target_lang) {
-  if (!kTranslationAPIAcceptLanguagesCheck.Get()) {
+  if (base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) ||
+      !kTranslationAPIAcceptLanguagesCheck.Get()) {
     return true;
   }
   // When the TranslationAPIAcceptLanguagesCheck feature is enabled, the
@@ -424,6 +426,15 @@ void TranslationManagerImpl::TranslationAvailable(
     return;
   }
 
+  // TODO(crbug.com/385173766): Remove once V1 is launched.
+  if (!PassAcceptLanguagesCheck(
+          profile_pref->GetString(language::prefs::kAcceptLanguages),
+          source_language, target_language)) {
+    std::move(callback).Run(
+        blink::mojom::CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed);
+    return;
+  }
+
   const std::vector<std::string_view> accept_languages = base::SplitStringPiece(
       profile_pref->GetString(language::prefs::kAcceptLanguages), ",",
       base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -432,6 +443,11 @@ void TranslationManagerImpl::TranslationAvailable(
        !IsInAcceptLanguage(accept_languages, source_language)) ||
       (target_language != "en" &&
        !IsInAcceptLanguage(accept_languages, target_language));
+
+  // TODO(crbug.com/385173766): Remove once V1 is launched.
+  mask_readily_result =
+      base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) &&
+      mask_readily_result;
 
   GetServiceController().CanTranslate(
       std::move(source_language), std::move(target_language),
