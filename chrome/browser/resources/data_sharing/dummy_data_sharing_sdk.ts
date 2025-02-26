@@ -50,7 +50,16 @@ export class DataSharingSdkImpl implements DataSharingSdk {
                                               givenName: 'MEMBER_NAME',
                                             },
                                           ],
-                                          formerMembers: [],
+                                          formerMembers: [
+                                            {
+                                              focusObfuscatedGaiaId: 'GAIA_ID2',
+                                              displayName: 'MEMBER_NAME2',
+                                              email: 'test2@gmail.com',
+                                              role: 'former_member',
+                                              avatarUrl: 'http://example2.com',
+                                              givenName: 'MEMBER_NAME2',
+                                            },
+                                          ],
                                         })),
         },
       });
