@@ -254,6 +254,31 @@ void ClientSidePhishingModel::SubscribeToImageEmbedderOptimizationGuide() {
   }
 }
 
+void ClientSidePhishingModel::UnsubscribeToImageEmbedderOptimizationGuide() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (subscribed_to_image_embedder_ && opt_guide_) {
+    subscribed_to_image_embedder_ = false;
+    opt_guide_->RemoveObserverForOptimizationTargetModel(
+        optimization_guide::proto::
+            OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER,
+        this);
+    embedding_model_opt_guide_metadata_image_embedding_version_.reset();
+    if (image_embedding_model_) {
+      background_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&CloseModelFile, std::move(*image_embedding_model_)));
+
+      // We will only notify if there was an image embedding model available, so
+      // the renderer can remove it.
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ClientSidePhishingModel::NotifyCallbacksOnUI,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
+}
+
 bool ClientSidePhishingModel::IsSubscribedToImageEmbeddingModelUpdates() {
   return subscribed_to_image_embedder_;
 }

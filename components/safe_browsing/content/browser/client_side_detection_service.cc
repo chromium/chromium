@@ -187,6 +187,8 @@ void ClientSideDetectionService::OnPrefsUpdated() {
         delegate_->StopListeningToOnDeviceModelUpdate();
         on_device_model_available_ = false;
       }
+      client_side_phishing_model_
+          ->UnsubscribeToImageEmbedderOptimizationGuide();
     }
   } else {
     // Invoke pending callbacks with a false verdict.
