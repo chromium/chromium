@@ -3157,6 +3157,58 @@ TEST_F(PrivacySandboxServiceM1DelayCreation,
             static_cast<int>(PromptSuppressedReason::kRestricted));
 }
 
+TEST_F(PrivacySandboxServiceM1DelayCreation,
+       ActivateAllowPromptForBlocked3PCookiesWhenPrefSet) {
+  // Setup
+  base::FieldTrial* trial(
+      base::FieldTrialList::CreateFieldTrial("AllowPromptFor3PCStudy", "A"));
+
+  auto local_feature_list = std::make_unique<base::FeatureList>();
+  local_feature_list->RegisterFieldTrialOverride(
+      privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies.name,
+      base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial);
+  feature_list()->InitWithFeatureList(std::move(local_feature_list));
+
+  prefs()->SetBoolean(prefs::kPrivacySandboxAllowNoticeFor3PCBlockedTrial,
+                      true);
+
+  // Action
+  CreateService();
+
+  // Verification
+  auto* field_trial = base::FeatureList::GetFieldTrial(
+      privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies);
+
+  ASSERT_TRUE(field_trial);
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(field_trial->trial_name()));
+}
+
+TEST_F(PrivacySandboxServiceM1DelayCreation,
+       DoNotActivateAllowPromptForBlocked3PCookiesWhenPrefNotSet) {
+  // Setup
+  base::FieldTrial* trial(
+      base::FieldTrialList::CreateFieldTrial("AllowPromptFor3PCStudy", "A"));
+
+  auto local_feature_list = std::make_unique<base::FeatureList>();
+  local_feature_list->RegisterFieldTrialOverride(
+      privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies.name,
+      base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial);
+  feature_list()->InitWithFeatureList(std::move(local_feature_list));
+
+  prefs()->SetBoolean(prefs::kPrivacySandboxAllowNoticeFor3PCBlockedTrial,
+                      false);
+
+  // Action
+  CreateService();
+
+  // Verification
+  auto* field_trial = base::FeatureList::GetFieldTrial(
+      privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies);
+
+  ASSERT_TRUE(field_trial);
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(field_trial->trial_name()));
+}
+
 TEST_F(
     PrivacySandboxServiceM1DelayCreation,
     ThirdPartyCookieBlockedSuppressReasonClearedWhenAllowPromptFeatureEnabled) {
@@ -3171,6 +3223,8 @@ TEST_F(
 
   EXPECT_EQ(prefs()->GetValue(prefs::kPrivacySandboxM1PromptSuppressed),
             static_cast<int>(PromptSuppressedReason::kNone));
+  EXPECT_TRUE(
+      prefs()->GetBoolean(prefs::kPrivacySandboxAllowNoticeFor3PCBlockedTrial));
 }
 
 TEST_F(
@@ -3188,6 +3242,8 @@ TEST_F(
   EXPECT_EQ(
       prefs()->GetValue(prefs::kPrivacySandboxM1PromptSuppressed),
       static_cast<int>(PromptSuppressedReason::kThirdPartyCookiesBlocked));
+  EXPECT_TRUE(
+      prefs()->GetBoolean(prefs::kPrivacySandboxAllowNoticeFor3PCBlockedTrial));
 }
 
 class PrivacySandboxServiceM1DelayCreationRestricted
