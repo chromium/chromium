@@ -18,6 +18,7 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
 
+class GaiaId;
 class PrefRegistrySimple;
 class PrefService;
 class PrefValueMap;
@@ -101,8 +102,7 @@ class SyncPrefs {
   // Returns the set of types for the given gaia_id_hash for sign-in users.
   // If some types are force-disabled by policy, they will not be included.
   // Note: this is used for signed-in not syncing users.
-  UserSelectableTypeSet GetSelectedTypesForAccount(
-      const signin::GaiaIdHash& gaia_id_hash) const;
+  UserSelectableTypeSet GetSelectedTypesForAccount(const GaiaId& gaia_id) const;
 
   // Returns whether `type` is "managed" i.e. controlled by enterprise policy.
   bool IsTypeManagedByPolicy(UserSelectableType type) const;

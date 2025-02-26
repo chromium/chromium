@@ -24,6 +24,7 @@
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/account_pref_utils.h"
 #include "components/sync/base/features.h"
@@ -257,7 +258,9 @@ bool SyncPrefs::HasKeepEverythingSynced() const {
 }
 
 UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
-    const signin::GaiaIdHash& gaia_id_hash) const {
+    const GaiaId& gaia_id) const {
+  const signin::GaiaIdHash gaia_id_hash =
+      signin::GaiaIdHash::FromGaiaId(gaia_id);
   UserSelectableTypeSet selected_types;
 
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
@@ -311,9 +314,9 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
           type_enabled = false;
         }
       } else if (type == UserSelectableType::kExtensions) {
-        // Extensions require an explicit sign in.
-        type_enabled =
-            pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
+        // Extensions require a specific explicit sign in.
+        type_enabled = SigninPrefs(*pref_service_)
+                           .GetExtensionsExplicitBrowserSignin(gaia_id);
       } else if (type == UserSelectableType::kPreferences ||
                  type == UserSelectableType::kThemes) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

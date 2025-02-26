@@ -110,6 +110,9 @@ class SigninPrefs {
   void IncrementAutofillSigninPromoDismissCount(const GaiaId& gaia_id);
   int GetAutofillSigninPromoDismissCount(const GaiaId& gaia_id) const;
 
+  void SetExtensionsExplicitBrowserSignin(const GaiaId& gaia_id, bool enabled);
+  bool GetExtensionsExplicitBrowserSignin(const GaiaId& gaia_id) const;
+
   // Note: `callback` will be notified on every change in the main dictionary
   // and sub-dictionries (account dictionaries).
   static void ObserveSigninPrefsChanges(PrefChangeRegistrar& registrar,

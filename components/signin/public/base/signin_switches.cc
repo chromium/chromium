@@ -210,6 +210,10 @@ BASE_FEATURE(kEnableExtensionsExplicitBrowserSignin,
              "EnableExtensionsExplicitBrowserSignin",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsExtensionsExplicitBrowserSigninEnabled() {
+  return base::FeatureList::IsEnabled(kEnableExtensionsExplicitBrowserSignin);
+}
+
 BASE_FEATURE(kDeferWebSigninTrackerCreation,
              "DeferWebSigninTrackerCreation",
              base::FEATURE_ENABLED_BY_DEFAULT);

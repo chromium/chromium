@@ -14,6 +14,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace {
@@ -58,13 +59,22 @@ constexpr char kChromeSigninInterceptionDismissCount[] =
 // has been shown per account.
 constexpr char kPasswordSignInPromoShownCount[] =
     "PasswordSignInPromoShownCount";
+
 // Pref to store the number of times the address bubble signin promo
 // has been shown per account.
 constexpr char kAddressSignInPromoShownCount[] = "AddressSignInPromoShownCount";
+
 // Pref to store the number of times any autofill bubble signin promo
 // has been dismissed per account.
 constexpr char kAutofillSignInPromoDismissCount[] =
     "AutofillSignInPromoDismissCount";
+
+// Registers that the sign in occurred with an explicit user action from the
+// bubble that appears after installing an extension. False by default.
+// Note: this pref is only set to true when
+// `switches::kEnableExtensionsExplicitBrowserSignin` is enabled.
+constexpr char kExtensionsExplicitBrowserSigninEnabled[] =
+    "ExtensionsExplicitBrowserSigninEnabled";
 
 }  // namespace
 
@@ -226,6 +236,38 @@ void SigninPrefs::IncrementAutofillSigninPromoDismissCount(
 int SigninPrefs::GetAutofillSigninPromoDismissCount(
     const GaiaId& gaia_id) const {
   return GetIntPrefForAccount(gaia_id, kAutofillSignInPromoDismissCount);
+}
+
+void SigninPrefs::SetExtensionsExplicitBrowserSignin(const GaiaId& gaia_id,
+                                                     bool enabled) {
+  CHECK(!gaia_id.empty());
+
+  // The pref can only be set to true if the
+  // `switches::kEnableExtensionsExplicitBrowserSignin` flag is enabled.
+  CHECK(!enabled || switches::IsExtensionsExplicitBrowserSigninEnabled());
+  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
+  // `EnsureDict` gets or create the dictionary.
+  base::Value::Dict* account_dict =
+      scoped_update->EnsureDict(gaia_id.ToString());
+  // `Set` will add an entry if it doesn't already exists, or if it does, it
+  // will overwrite it.
+  account_dict->Set(kExtensionsExplicitBrowserSigninEnabled, enabled);
+}
+
+bool SigninPrefs::GetExtensionsExplicitBrowserSignin(
+    const GaiaId& gaia_id) const {
+  CHECK(!gaia_id.empty());
+
+  const base::Value::Dict* account_dict =
+      pref_service_->GetDict(kSigninAccountPrefs).FindDict(gaia_id.ToString());
+  // If the account dict does not exist yet; return the default value.
+  if (!account_dict) {
+    return false;
+  }
+
+  // Return the pref value if it exists, otherwise return the default value.
+  return account_dict->FindBool(kExtensionsExplicitBrowserSigninEnabled)
+      .value_or(false);
 }
 
 int SigninPrefs::IncrementIntPrefForAccount(const GaiaId& gaia_id,

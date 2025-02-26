@@ -31,11 +31,6 @@ bool IsSyncingExtensionsEnabled(Profile* profile);
 // extensions is enabled.
 bool IsSyncingExtensionsInTransportMode(Profile* profile);
 
-// Returns if the current browser supports an explicit sign in (signs the user
-// into transport mode, as defined above) for extension access points (e.g. the
-// `ExtensionInstalledBubbleView`).
-bool IsExtensionsExplicitSigninEnabled();
-
 }  // namespace sync_util
 }  // namespace extensions
 

@@ -165,6 +165,12 @@ BASE_DECLARE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableExtensionsExplicitBrowserSignin);
 
+// Returns if the current browser supports an explicit sign in (signs the user
+// into transport mode, as defined above) for extension access points (e.g. the
+// `ExtensionInstalledBubbleView`).
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+bool IsExtensionsExplicitBrowserSigninEnabled();
+
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kDeferWebSigninTrackerCreation);
 

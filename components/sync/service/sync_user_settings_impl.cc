@@ -119,9 +119,8 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetSelectedTypes() const {
       return UserSelectableTypeSet();
     }
     case SyncPrefs::SyncAccountState::kSignedInNotSyncing: {
-      signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+      types = prefs_->GetSelectedTypesForAccount(
           delegate_->GetSyncAccountInfoForPrefs().gaia);
-      types = prefs_->GetSelectedTypesForAccount(gaia_id_hash);
       break;
     }
     case SyncPrefs::SyncAccountState::kSyncing: {

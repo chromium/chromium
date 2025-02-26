@@ -12,6 +12,7 @@
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/ui_util.h"
@@ -55,7 +56,7 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
       ExtensionSystem::Get(profile)->extension_service()->allowlist());
   toolbar_actions_model_observation_.Observe(ToolbarActionsModel::Get(profile));
 
-  if (sync_util::IsExtensionsExplicitSigninEnabled()) {
+  if (switches::IsExtensionsExplicitBrowserSigninEnabled()) {
     account_extension_tracker_observation_.Observe(
         AccountExtensionTracker::Get(profile));
   }
