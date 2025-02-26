@@ -140,6 +140,11 @@
 #include "chrome/browser/ui/shortcuts/desktop_shortcuts_utils.h"
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#endif
+
 using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
 
 namespace chrome {
@@ -1145,6 +1150,15 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
           DefaultBrowserPromptManager::CloseReason::kAccept);
       break;
 #endif
+#if BUILDFLAG(ENABLE_GLIC)
+    case IDC_GLIC_TOGGLE_PIN: {
+      PrefService* profile_prefs = profile()->GetPrefs();
+      profile_prefs->SetBoolean(
+          glic::prefs::kGlicPinnedToTabstrip,
+          !profile_prefs->GetBoolean(glic::prefs::kGlicPinnedToTabstrip));
+      break;
+    }
+#endif
     default:
       LOG(WARNING) << "Received Unimplemented Command: " << id;
       break;
@@ -1465,6 +1479,12 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_ADD_TO_COMPARISON_TABLE_MENU, true);
   command_updater_.UpdateCommandEnabled(
       IDC_CREATE_NEW_COMPARISON_TABLE_WITH_TAB, true);
+
+#if BUILDFLAG(ENABLE_GLIC)
+  // Glic commands.
+  command_updater_.UpdateCommandEnabled(
+      IDC_GLIC_TOGGLE_PIN, glic::GlicEnabling::IsProfileEligible(profile()));
+#endif
 
   // Initialize other commands whose state changes based on various conditions.
   UpdateCommandsForFullscreenMode();
