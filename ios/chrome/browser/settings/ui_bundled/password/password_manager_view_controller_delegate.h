@@ -14,10 +14,6 @@ class AffiliatedGroup;
 struct CredentialUIEntry;
 }  // namespace password_manager
 
-namespace password_manager {
-struct CredentialUIEntry;
-}
-
 // Delegate for `PasswordManagerViewController`.
 @protocol PasswordManagerViewControllerDelegate
 

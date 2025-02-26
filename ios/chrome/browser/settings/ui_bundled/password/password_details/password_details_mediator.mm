@@ -456,30 +456,6 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   NOTREACHED();
 }
 
-- (void)checkForDuplicates:(NSString*)username {
-  NOTREACHED();
-}
-
-- (void)showExistingCredential:(NSString*)username {
-  NOTREACHED();
-}
-
-- (void)didCancelAddPasswordDetails {
-  NOTREACHED();
-}
-
-- (void)setWebsiteURL:(NSString*)website {
-  NOTREACHED();
-}
-
-- (BOOL)isURLValid {
-  return YES;
-}
-
-- (BOOL)isTLDMissing {
-  return NO;
-}
-
 - (BOOL)isUsernameReused:(NSString*)newUsername forDomain:(NSString*)domain {
   // It is more efficient to check set of the usernames for the same origin
   // instead of delegating this to the `_manager`.

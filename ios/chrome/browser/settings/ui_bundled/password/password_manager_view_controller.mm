@@ -19,7 +19,6 @@
 #import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
-#import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -87,7 +86,6 @@
 #import "url/gurl.h"
 
 using base::UmaHistogramEnumeration;
-using password_manager::metrics_util::PasswordCheckInteraction;
 
 namespace {
 

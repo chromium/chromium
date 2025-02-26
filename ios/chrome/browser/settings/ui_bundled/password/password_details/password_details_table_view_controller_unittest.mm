@@ -13,7 +13,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -149,26 +148,6 @@ NSString* DisplayName() {
             (PasswordDetailsTableViewController*)viewController
                 didAddPasswordDetails:(NSString*)username
                              password:(NSString*)password {
-}
-
-- (void)checkForDuplicates:(NSString*)username {
-}
-
-- (void)showExistingCredential:(NSString*)username {
-}
-
-- (void)didCancelAddPasswordDetails {
-}
-
-- (void)setWebsiteURL:(NSString*)website {
-}
-
-- (BOOL)isURLValid {
-  return YES;
-}
-
-- (BOOL)isTLDMissing {
-  return NO;
 }
 
 - (void)dismissWarningForPassword:(CredentialDetails*)password {
@@ -434,7 +413,6 @@ class PasswordDetailsTableViewControllerTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   id snack_bar_;
   FakePasswordDetailsHandler* handler_ = nil;
   FakePasswordDetailsDelegate* delegate_ = nil;

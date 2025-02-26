@@ -49,10 +49,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-using base::UmaHistogramEnumeration;
 using password_manager::GetWarningTypeForDetailsContext;
 using password_manager::constants::kMaxPasswordNoteLength;
-using password_manager::constants::kPasswordManagerAuthValidity;
 using password_manager::metrics_util::LogPasswordNoteActionInSettings;
 using password_manager::metrics_util::PasswordNoteAction;
 
@@ -1162,18 +1160,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     }
   }
   return YES;
-}
-
-// Removes the given section if it exists.
-- (void)removeSectionWithIdentifier:(NSInteger)sectionIdentifier
-                   withRowAnimation:(UITableViewRowAnimation)animation {
-  TableViewModel* model = self.tableViewModel;
-  if ([model hasSectionForSectionIdentifier:sectionIdentifier]) {
-    NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
-    [model removeSectionWithIdentifier:sectionIdentifier];
-    [[self tableView] deleteSections:[NSIndexSet indexSetWithIndex:section]
-                    withRowAnimation:animation];
-  }
 }
 
 // Enables/Disables the right bar button item in the navigation bar.

@@ -16,7 +16,6 @@ extern NSString* const kPasswordsScrimViewID;
 
 // The accessibility identifier of the password details table view.
 extern NSString* const kPasswordDetailsTableViewID;
-extern NSString* const kPasswordDetailsDeletionAlertViewID;
 extern NSString* const kPasswordsAddPasswordSaveButtonID;
 extern NSString* const kPasswordsAddPasswordCancelButtonID;
 

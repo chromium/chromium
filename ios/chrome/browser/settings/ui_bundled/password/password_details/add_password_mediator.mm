@@ -110,7 +110,7 @@ bool CheckForDuplicates(
                                                        _syncService);
   if (account) {
     CHECK(!account->empty());
-    [_consumer setAccountSavingPasswords:base::SysUTF8ToNSString(*account)];
+    [_consumer setAccountSavingPasswords:SysUTF8ToNSString(*account)];
   } else {
     [_consumer setAccountSavingPasswords:nil];
   }

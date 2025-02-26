@@ -47,8 +47,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using password_manager::WarningType;
-
 @interface PasswordsCoordinator () <
     AddPasswordCoordinatorDelegate,
     PasswordDetailsCoordinatorDelegate,
