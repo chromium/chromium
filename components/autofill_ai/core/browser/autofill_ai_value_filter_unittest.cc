@@ -51,7 +51,7 @@ TEST_P(AutofillAiFieldFilterTest, TestFilter) {
 
   // Use the heuristic type prediction to assign a type to the field.
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  field.set_heuristic_type(autofill::HeuristicSource::kDefaultRegexes,
+  field.set_heuristic_type(autofill::GetActiveHeuristicSource(),
                            test_case.field_type);
 #else
   field.set_heuristic_type(autofill::HeuristicSource::kLegacyRegexes,
