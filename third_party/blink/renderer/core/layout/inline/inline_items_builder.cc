@@ -367,7 +367,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
   if (InlineItem* last_item = LastItemToCollapseWith(items_)) {
     if (collapse_spaces) {
       switch (last_item->EndCollapseType()) {
-        case InlineItem::kCollapsible:
+        case InlineItem::kCollapsible: {
           switch (original_string[old_item0.StartOffset()]) {
             case kSpaceCharacter:
               // If the original string starts with a collapsible space, it may
@@ -377,8 +377,21 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
               // Collapsible spaces immediately before a preserved newline
               // should be removed to be consistent with
               // AppendForcedBreakCollapseWhitespace.
-              if (preserve_newlines)
+              if (preserve_newlines) {
                 return false;
+              }
+              break;
+            case kZeroWidthSpaceCharacter:
+              // `AppendBreakOpportunity` appends a zero width space to the
+              // `text_`. If the `original_string` starts with a zero width
+              // space, it should be collapsed. See
+              // https://issues.chromium.org/issues/389738294 for more details.
+              if (RuntimeEnabledFeatures::
+                      CollapseZeroWidthSpaceWhenReuseItemEnabled() &&
+                  old_item0.TextType() == TextItemType::kFlowControl) {
+                return false;
+              }
+              break;
           }
           // If the last item ended with a collapsible space run with segment
           // breaks, we need to run the full algorithm to apply segment break
@@ -393,6 +406,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
             }
           }
           break;
+        }
         case InlineItem::kNotCollapsible: {
           const String& source_text = layout_text->TransformedText();
           if (source_text.length() &&
