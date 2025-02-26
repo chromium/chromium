@@ -2599,7 +2599,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     @Override
-    void updateOptionalButton(ButtonData buttonData) {
+    protected void updateOptionalButton(ButtonData buttonData) {
         mButtonData = buttonData;
 
         if (mOptionalButtonCoordinator == null) {

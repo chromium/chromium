@@ -2873,15 +2873,16 @@ public class CustomTabActivityTest {
         CustomTabsIntentTestUtils.setShareState(intent, SHARE_STATE_ON);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
-        ViewGroup toolbarButtons =
-                mCustomTabActivityTestRule.getActivity().findViewById(R.id.action_buttons);
+        Activity activity = mCustomTabActivityTestRule.getActivity();
+        ViewGroup buttons = activity.findViewById(R.id.action_buttons);
         Assert.assertEquals(
-                "No action buttons should be added.", 0, toolbarButtons.getChildCount());
+                "No action buttons should be added.",
+                0,
+                CustomTabToolbar.getCustomActionButtonCountForTesting(buttons));
 
         openAppMenuAndAssertMenuShown();
         Assert.assertNull(
-                "Share option should be hidden.",
-                mCustomTabActivityTestRule.getActivity().findViewById(R.id.share_row_menu_id));
+                "Share option should be hidden.", activity.findViewById(R.id.share_row_menu_id));
     }
 
     @Test

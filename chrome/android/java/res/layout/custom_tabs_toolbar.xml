@@ -137,7 +137,15 @@ found in the LICENSE file.
         android:layout_marginEnd="42dp"
         android:layout_gravity="center_vertical|end"
         android:gravity="center_vertical"
-        android:orientation="horizontal" />
+        android:orientation="horizontal">
+        <ViewStub
+            android:id="@+id/optional_button_stub"
+            android:inflatedId="@+id/optional_toolbar_button_container"
+            android:layout_gravity="top"
+            android:visibility="gone"
+            android:layout_width="52dp"
+            style="@style/ToolbarHoverableButton" />
+      </LinearLayout>
 
 
     <org.chromium.chrome.browser.toolbar.menu_button.MenuButton

@@ -777,9 +777,10 @@ public abstract class ToolbarLayout extends FrameLayout
 
     /**
      * Update the optional toolbar button, showing it if currently hidden.
+     *
      * @param buttonData Display data for the button, e.g. the Drawable and content description.
      */
-    void updateOptionalButton(ButtonData buttonData) {}
+    protected void updateOptionalButton(ButtonData buttonData) {}
 
     /** Hide the optional toolbar button. */
     void hideOptionalButton() {}
