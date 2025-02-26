@@ -141,7 +141,9 @@ class InputBuilder final {
   void AddToken(ml::Token token) { out_->pieces.emplace_back(token); }
 
   void AddString(std::string_view str) {
-    out_->pieces.emplace_back(std::string(str));
+    if (!str.empty()) {
+      out_->pieces.emplace_back(std::string(str));
+    }
   }
 
   InputPtr out_;
