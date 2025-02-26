@@ -5,6 +5,7 @@
 
 load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 load("//lib/try.star", "try_")
 
 try_.defaults.set(
@@ -140,4 +141,17 @@ try_.builder(
     mirrors = ["ci/Win ASan Release Media"],
     gn_args = "ci/Win ASan Release Media",
     os = os.WINDOWS_DEFAULT,
+)
+
+try_.builder(
+    name = "linux-libfuzzer-high-end-asan-rel",
+    mirrors = ["ci/Libfuzzer High End Upload Linux ASan"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Libfuzzer High End Upload Linux ASan",
+            "no_symbols",
+            "skip_generate_fuzzer_owners",
+        ],
+    ),
+    contact_team_email = "chrome-deet-core@google.com",
 )
