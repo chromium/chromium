@@ -15,16 +15,23 @@ def __step_config(ctx, step_config):
             # TODO: crbug.com/380755128 - Make each compile unit smaller.
             "name": "fuzzer_large_compile",
             "action_outs": [
+                # keep-sorted start
                 "./obj/chrome/test/fuzzing/htmlfuzzer_proto_gen/htmlfuzzer_sub.pb.o",
                 "./obj/chrome/test/fuzzing/jsfuzzer/jsfuzzer.o",
                 "./obj/chrome/test/fuzzing/jsfuzzer_proto_gen/jsfuzzer.pb.o",
                 "./obj/chrome/test/fuzzing/jsfuzzer_proto_gen/jsfuzzer_sub.pb.o",
+                "./obj/chrome/test/fuzzing/renderer_fuzzing/renderer_in_process_mojolpm_fuzzer/renderer_in_process_mojolpm_fuzzer.o",
                 "./obj/chrome/test/fuzzing/webidl_fuzzing/webidl_fuzzer_grammar/webidl_fuzzer_grammar.o",
                 "./obj/chrome/test/fuzzing/webidl_fuzzing/webidl_fuzzer_grammar_proto_gen/webidl_fuzzer_grammar.pb.o",
+                "./obj/chrome/test/fuzzing/webidl_fuzzing/webidl_in_process_fuzzer/webidl_in_process_fuzzer.o",
                 "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer/webidlfuzzer.o",
+                "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer/webidlfuzzer_sub0.o",
+                "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer/webidlfuzzer_sub9.o",
                 "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer_proto_gen/webidlfuzzer.pb.o",
                 "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer_proto_gen/webidlfuzzer_sub0.pb.o",
                 "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer_proto_gen/webidlfuzzer_sub1.pb.o",
+                "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer_proto_gen/webidlfuzzer_sub10.pb.o",
+                "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer_proto_gen/webidlfuzzer_sub11.pb.o",
                 "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer_proto_gen/webidlfuzzer_sub2.pb.o",
                 "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer_proto_gen/webidlfuzzer_sub3.pb.o",
                 "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer_proto_gen/webidlfuzzer_sub4.pb.o",
@@ -33,8 +40,7 @@ def __step_config(ctx, step_config):
                 "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer_proto_gen/webidlfuzzer_sub7.pb.o",
                 "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer_proto_gen/webidlfuzzer_sub8.pb.o",
                 "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer_proto_gen/webidlfuzzer_sub9.pb.o",
-                "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer_proto_gen/webidlfuzzer_sub10.pb.o",
-                "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer_proto_gen/webidlfuzzer_sub11.pb.o",
+                # keep-sorted end
             ],
             "timeout": "15m",
             # need 9G for debug build
