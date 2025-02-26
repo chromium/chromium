@@ -7,20 +7,21 @@
 #include <memory>
 
 #include "base/task/thread_pool.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
 namespace glic {
 
 namespace {
-
-constexpr char16_t kName[] = u"Glic";  // TODO: internationalize?
 
 // Helper used to convert the captured DesktopFrame to a JPEG.
 std::vector<uint8_t> ConvertFrameToJpeg(
@@ -70,7 +71,8 @@ void GlicScreenshotCapturer::CaptureScreenshot(
   }
   // Construct picker.
   picker_controller_ = std::make_unique<DesktopMediaPickerController>();
-  const std::u16string name(kName);
+  const std::u16string name(
+      l10n_util::GetStringUTF16(IDS_GLIC_SCREEN_PICKER_REQUESTER));
   DesktopMediaPickerController::Params picker_params(
       DesktopMediaPickerController::Params::RequestSource::kGlic);
   picker_params.context = parent_window;

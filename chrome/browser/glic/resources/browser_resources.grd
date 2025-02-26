@@ -214,6 +214,9 @@ found in the LICENSE file.
       <message name="IDS_GLIC_UNPIN" translateable="false" desc="Name of the context menu item for toggling Glic pinning, when glic is pinned.">
         Unpin Glic
       </message>
+
+      <!-- Screenpicker Menu String -->
+      <message name="IDS_GLIC_SCREEN_PICKER_REQUESTER" desc="Text shown on screen picker dialog that indicates the requesting source is Glic." translateable="false">Glic</message>
     </messages>
   </release>
 </grit>
