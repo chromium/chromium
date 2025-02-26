@@ -15,9 +15,14 @@ namespace {
 NSString* const kCustomBottomSheetDetentIdentifier = @"customBottomSheetDetent";
 }  // namespace
 
+@interface ParentAccessBottomSheetViewController ()
+
+// WebView containing the parent access widget.
+@property(nonatomic, strong) UIView* webView;
+
+@end
+
 @implementation ParentAccessBottomSheetViewController {
-  // WebView containing the parent access widget.
-  UIView* _webView;
   // Whether the web view should be hidden.
   BOOL _webViewHidden;
 }
@@ -58,7 +63,21 @@ NSString* const kCustomBottomSheetDetentIdentifier = @"customBottomSheetDetent";
     return;
   }
   _webViewHidden = hidden;
-  _webView.hidden = hidden;
+
+  if (hidden) {
+    _webView.hidden = YES;
+  } else {
+    // Prevent a white flash in dark mode during WebView visibility changes by
+    // animating the transition.
+    __weak __typeof(self) weakSelf = self;
+    [UIView transitionWithView:_webView
+                      duration:0.3
+                       options:UIViewAnimationOptionTransitionCrossDissolve
+                    animations:^{
+                      weakSelf.webView.hidden = NO;
+                    }
+                    completion:nil];
+  }
 }
 
 #pragma mark - Private
