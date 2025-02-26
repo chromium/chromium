@@ -34,7 +34,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -397,32 +396,6 @@ public class EdgeToEdgeInstrumentationTest {
                 Color.TRANSPARENT,
                 mActivity.getWindow().getNavigationBarColor());
         assertNavigationBarColor(mActivity.getActivityTab().getBackgroundColor());
-    }
-
-    @Test
-    @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE})
-    public void testNavigationBarColor_KeyNativeDisabled() {
-        optOutOfToEdge();
-        assertNavigationBarColor(mActivity.getActivityTab().getBackgroundColor());
-
-        goToEdge();
-        assertEquals(
-                "Navigation bar should be transparent in edge to edge.",
-                Color.TRANSPARENT,
-                mActivity.getWindow().getNavigationBarColor());
-
-        TabUiTestHelper.enterTabSwitcher(mActivity);
-        assertNotEquals(
-                "Should not be drawing toEdge in the Tab Switcher.",
-                Color.TRANSPARENT,
-                mActivity.getWindow().getNavigationBarColor());
-
-        TabUiTestHelper.leaveTabSwitcher(mActivity);
-        assertEquals(
-                "Should return toEdge upon leaving the Tab Switcher.",
-                Color.TRANSPARENT,
-                mActivity.getWindow().getNavigationBarColor());
     }
 
     @Test
