@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_RESIZE_AREA_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_RESIZE_AREA_H_
 
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/resize_area.h"
 
@@ -16,6 +17,8 @@ class MultiContentsResizeHandle : public views::ImageView {
   METADATA_HEADER(MultiContentsResizeHandle, ImageView)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMultiContentsResizeHandleElementId);
+
   MultiContentsResizeHandle();
 };
 
@@ -25,6 +28,8 @@ class MultiContentsResizeArea : public views::ResizeArea {
   METADATA_HEADER(MultiContentsResizeArea, ResizeArea)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMultiContentsResizeAreaElementId);
+
   explicit MultiContentsResizeArea(MultiContentsView* multi_contents_view);
 
   bool OnKeyPressed(const ui::KeyEvent& event) override;

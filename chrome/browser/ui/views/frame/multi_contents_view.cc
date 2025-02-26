@@ -12,7 +12,12 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
+
+namespace {
+const int kMinWebContentsWidth = 20;
+}  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
                                       kMultiContentsViewElementId);
@@ -25,10 +30,6 @@ MultiContentsView::MultiContentsView(
       AddChildView(std::make_unique<ContentsWebView>(browser_context));
 
   resize_area_ = AddChildView(std::make_unique<MultiContentsResizeArea>(this));
-  resize_area_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                               views::MaximumFlexSizeRule::kPreferred));
   resize_area_->SetVisible(false);
 
   end_contents_view_ =
@@ -37,11 +38,7 @@ MultiContentsView::MultiContentsView(
 
   SetProperty(views::kElementIdentifierKey, kMultiContentsViewElementId);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetDefault(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                   views::MaximumFlexSizeRule::kUnbounded));
+      ->SetOrientation(views::LayoutOrientation::kHorizontal);
 }
 
 MultiContentsView::~MultiContentsView() = default;
@@ -95,7 +92,77 @@ bool MultiContentsView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
 }
 
 void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
-  // TODO(crbug.com/393450761): Implement this.
+  if (!initial_start_width_on_resize_.has_value()) {
+    initial_start_width_on_resize_ =
+        std::make_optional(start_contents_view_->size().width());
+  }
+  double total_width =
+      start_contents_view_->size().width() + end_contents_view_->size().width();
+  start_ratio_ =
+      (initial_start_width_on_resize_.value() + resize_amount) / total_width;
+  if (done_resizing) {
+    initial_start_width_on_resize_ = std::nullopt;
+  }
+  InvalidateLayout();
+}
+
+// TODO(crbug.com/397777917): Consider using FlexSpecification weights instead
+// of overriding layout once this bug is resolved.
+void MultiContentsView::Layout(PassKey) {
+  const gfx::Rect available_space(GetContentsBounds());
+  ViewWidths widths = GetViewWidths(available_space);
+  const gfx::Rect start_rect(
+      available_space.origin(),
+      gfx::Size(widths.start_width, available_space.height()));
+  const gfx::Rect resize_rect(
+      start_rect.top_right(),
+      gfx::Size(widths.resize_width, available_space.height()));
+  const gfx::Rect end_rect(
+      resize_rect.top_right(),
+      gfx::Size(widths.end_width, available_space.height()));
+  start_contents_view_->SetBoundsRect(start_rect);
+  resize_area_->SetBoundsRect(resize_rect);
+  end_contents_view_->SetBoundsRect(end_rect);
+}
+
+MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(
+    gfx::Rect available_space) {
+  ViewWidths widths;
+  if (resize_area_->GetVisible()) {
+    CHECK(start_contents_view_->GetVisible() &&
+          end_contents_view_->GetVisible());
+    widths.resize_width = resize_area_->GetPreferredSize().width();
+    widths.start_width =
+        start_ratio_ * (available_space.width() - widths.resize_width);
+    widths.end_width =
+        available_space.width() - widths.start_width - widths.resize_width;
+  } else if (start_contents_view_->GetVisible()) {
+    CHECK(!end_contents_view_->GetVisible());
+    widths.start_width = available_space.width();
+  } else {
+    CHECK(end_contents_view_->GetVisible());
+    widths.end_width = available_space.width();
+  }
+  return ClampToMinWidth(widths);
+}
+
+MultiContentsView::ViewWidths MultiContentsView::ClampToMinWidth(
+    ViewWidths widths) {
+  if (!resize_area_->GetVisible()) {
+    // Don't clamp if in a single-view state, where other views should be 0
+    // width.
+    return widths;
+  }
+  if (widths.start_width < kMinWebContentsWidth) {
+    const double diff = kMinWebContentsWidth - widths.start_width;
+    widths.start_width += diff;
+    widths.end_width -= diff;
+  } else if (widths.end_width < kMinWebContentsWidth) {
+    const double diff = kMinWebContentsWidth - widths.end_width;
+    widths.end_width += diff;
+    widths.start_width -= diff;
+  }
+  return widths;
 }
 
 BEGIN_METADATA(MultiContentsView)

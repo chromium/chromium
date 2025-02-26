@@ -26,6 +26,12 @@ const int kHandleWidth = 16;
 const int kHandlePadding = 8;
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsResizeHandle,
+                                      kMultiContentsResizeHandleElementId);
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsResizeArea,
+                                      kMultiContentsResizeAreaElementId);
+
 MultiContentsResizeHandle::MultiContentsResizeHandle() {
   SetPreferredSize(gfx::Size(kHandleWidth, kHandleHeight));
   SetCanProcessEventsWithinSubtree(false);
@@ -36,6 +42,8 @@ MultiContentsResizeHandle::MultiContentsResizeHandle() {
   GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_BY_SIDE_RESIZE));
+  SetProperty(views::kElementIdentifierKey,
+              kMultiContentsResizeHandleElementId);
 }
 
 BEGIN_METADATA(MultiContentsResizeHandle)
@@ -53,6 +61,7 @@ MultiContentsResizeArea::MultiContentsResizeArea(
 
   resize_handle_ = AddChildView(std::make_unique<MultiContentsResizeHandle>());
 
+  SetProperty(views::kElementIdentifierKey, kMultiContentsResizeAreaElementId);
   SetPreferredSize(gfx::Size(kHandleWidth + kHandlePadding, kHandleHeight));
 }
 

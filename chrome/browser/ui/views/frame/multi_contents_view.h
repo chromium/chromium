@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -34,6 +36,12 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   using WebContentsPressedCallback =
       base::RepeatingCallback<void(content::WebContents*)>;
 
+  struct ViewWidths {
+    double start_width = 0;
+    double resize_width = 0;
+    double end_width = 0;
+  };
+
   MultiContentsView(content::BrowserContext* browser_context,
                     WebContentsPressedCallback inactive_view_pressed_callback);
   MultiContentsView(const MultiContentsView&) = delete;
@@ -62,7 +70,26 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
 
+  // views::View:
+  void Layout(PassKey) override;
+
+  ContentsWebView* start_contents_view_for_testing() const {
+    return start_contents_view_;
+  }
+
+  MultiContentsResizeArea* resize_area_for_testing() const {
+    return resize_area_;
+  }
+
+  ContentsWebView* end_contents_view_for_testing() const {
+    return end_contents_view_;
+  }
+
  private:
+  ViewWidths GetViewWidths(gfx::Rect available_space);
+
+  ViewWidths ClampToMinWidth(ViewWidths widths);
+
   // The left contents view, in LTR.
   raw_ptr<ContentsWebView> start_contents_view_ = nullptr;
 
@@ -80,6 +107,14 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   // Callback to be executed when the user clicks anywhere within the bounds of
   // the inactive contents view.
   WebContentsPressedCallback inactive_view_pressed_callback_;
+
+  // Current ratio of `start_contents_view_` width / overall contents view
+  // width.
+  double start_ratio_ = 0.5;
+
+  // Width of `start_contents_view_` when a resize action began. Nullopt if not
+  // currently resizing.
+  std::optional<double> initial_start_width_on_resize_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_H_
