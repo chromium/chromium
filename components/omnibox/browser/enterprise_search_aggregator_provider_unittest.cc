@@ -329,6 +329,24 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, IsProviderAllowed) {
         u"", metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
     EXPECT_FALSE(provider_->IsProviderAllowed(unscoped_empty_input));
   }
+
+  {
+    // Query must not be a url in unscoped mode
+    EXPECT_TRUE(provider_->IsProviderAllowed(input));
+    AutocompleteInput query_input(u"https", metrics::OmniboxEventProto::OTHER,
+                                  TestSchemeClassifier());
+    EXPECT_TRUE(provider_->IsProviderAllowed(query_input));
+    AutocompleteInput person_query(
+        u"john doe", metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+    EXPECT_TRUE(provider_->IsProviderAllowed(person_query));
+    AutocompleteInput url_input(u"www.web.site",
+                                metrics::OmniboxEventProto::OTHER,
+                                TestSchemeClassifier());
+    EXPECT_FALSE(provider_->IsProviderAllowed(url_input));
+    AutocompleteInput url_no_prefix(
+        u"john.com", metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+    EXPECT_FALSE(provider_->IsProviderAllowed(url_no_prefix));
+  }
 }
 
 // Test that a call to `Start()` will stop old requests to prevent their results
