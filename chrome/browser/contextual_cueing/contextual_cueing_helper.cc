@@ -110,8 +110,9 @@ void ContextualCueingHelper::DidFinishNavigation(
   contextual_cueing_service_->ReportPageLoad();
   auto* glic_nudge_controller = GetGlicNudgeController();
   if (glic_nudge_controller) {
-    glic_nudge_controller->UpdateNudgeLabel(web_contents(), std::string(),
-                                            base::DoNothing());
+    glic_nudge_controller->UpdateNudgeLabel(
+        web_contents(), std::string(),
+        tabs::GlicNudgeActivity::kNudgeIgnoredNavigation, base::DoNothing());
   }
 }
 
@@ -227,7 +228,7 @@ void ContextualCueingHelper::OnCueingDecision(
   }
 
   GetGlicNudgeController()->UpdateNudgeLabel(
-      web_contents(), cue_label,
+      web_contents(), cue_label, /*activity=*/std::nullopt,
       base::BindRepeating(
           &ContextualCueingService::OnNudgeActivity,
           contextual_cueing_service_->GetWeakPtr(), url,
