@@ -9,16 +9,17 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
-#include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/common/aliases.h"
-#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/autofill_ai/core/browser/autofill_ai_logger.h"
+#include "components/autofill_ai/core/browser/strike_databases/autofill_ai_save_strike_database_by_host.h"
 
 namespace autofill {
+class FormData;
 class FormStructure;
 class LogManager;
+class StrikeDatabase;
 }  // namespace autofill
 
 namespace autofill_ai {
@@ -63,6 +64,13 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
  private:
   friend class AutofillAiManagerTestApi;
 
+  // Strike database related methods:
+  void AddStrikeForSaveAttempt(const GURL& url,
+                               const autofill::EntityInstance& entity);
+  bool IsSaveBlockedByStrikeDatabase(
+      const GURL& url,
+      const autofill::EntityInstance& entity) const;
+
   // Run after the user has either accepted, decline or ignored a save prompt.
   void OnSavePromptAcceptance(
       AutofillAiClient::SavePromptAcceptanceResult result);
@@ -82,6 +90,9 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   // A raw reference to the client, which owns `this` and therefore outlives
   // it.
   const raw_ref<AutofillAiClient> client_;
+
+  // A strike database for saved keyed by (entity_type_name, host) entries.
+  std::unique_ptr<AutofillAiSaveStrikeDatabaseByHost> save_strike_db_by_host_;
 
   base::WeakPtrFactory<AutofillAiManager> weak_ptr_factory_{this};
 };

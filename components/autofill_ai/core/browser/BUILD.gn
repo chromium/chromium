@@ -44,6 +44,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//base",
       "//components/autofill/core/browser",
       "//components/autofill/core/common",
+      "//components/autofill_ai/core/browser/strike_databases",
       "//components/keyed_service/core",
       "//components/optimization_guide/core",
       "//components/optimization_guide/proto:optimization_guide_proto",
