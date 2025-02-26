@@ -3,14 +3,7 @@
   "AAAAA2 See //tools/perf/generate_perf_data to make changes": {},
   "android-builder-perf": {},
   "android-builder-perf-pgo": {},
-  "android-go-processor-perf": {
-    "merge": {
-      "args": [
-        "--lightweight"
-      ],
-      "script": "//tools/perf/process_perf_results.py"
-    }
-  },
+  "android-go-processor-perf": {},
   "android-go-wembley-perf": {
     "isolated_scripts": [
       {
@@ -876,15 +869,7 @@
       }
     ]
   },
-  "linux-processor-perf": {
-    "merge": {
-      "args": [
-        "--lightweight",
-        "--upload-skia-json"
-      ],
-      "script": "//tools/perf/process_perf_results.py"
-    }
-  },
+  "linux-processor-perf": {},
   "linux-r350-perf": {
     "isolated_scripts": [
       {
@@ -1318,15 +1303,7 @@
       }
     ]
   },
-  "win-10-processor-perf": {
-    "merge": {
-      "args": [
-        "--lightweight",
-        "--upload-skia-json"
-      ],
-      "script": "//tools/perf/process_perf_results.py"
-    }
-  },
+  "win-10-processor-perf": {},
   "win-10_amd_laptop-perf": {
     "isolated_scripts": [
       {
@@ -1513,15 +1490,7 @@
       }
     ]
   },
-  "win-10_laptop_low_end-processor-perf": {
-    "merge": {
-      "args": [
-        "--lightweight",
-        "--upload-skia-json"
-      ],
-      "script": "//tools/perf/process_perf_results.py"
-    }
-  },
+  "win-10_laptop_low_end-processor-perf": {},
   "win-11-perf": {
     "isolated_scripts": [
       {
@@ -1616,15 +1585,7 @@
       }
     ]
   },
-  "win-11-processor-perf": {
-    "merge": {
-      "args": [
-        "--lightweight",
-        "--upload-skia-json"
-      ],
-      "script": "//tools/perf/process_perf_results.py"
-    }
-  },
+  "win-11-processor-perf": {},
   "win-11_laptop_low_end-perf": {
     "isolated_scripts": [
       {
