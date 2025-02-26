@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1009406586654360474">Google Нууц үгний менежерийг нээж, тохиргоо руу очно уу. “Импортлох“-ыг сонгож, таны экспортолсон нууц үгнүүдийг агуулсан CSV файлыг нэмнэ үү.</translation>
+<translation id="1010283278930414892">Энэ төхөөрөмж дээр хадгалсан ямар ч нууц үг байхгүй</translation>
 <translation id="1011749477052068769">Ийш зөөх</translation>
 <translation id="1014147525163127655">Энэ төхөөрөмжид <ph name="ORIGIN" />-д зориулсан нэвтрэх түлхүүр байхгүй байна</translation>
 <translation id="1016498331642356377">Дуу хоолойгоороо шуурхай хайгаарай. Энэ товчлолыг засахын тулд хүрээд удаан дарна уу.</translation>
@@ -142,6 +143,7 @@
 <translation id="1568636008098739136">Энэ хуудсыг сонсоно уу. Энэ товчлолыг засахын тулд хүрээд удаан дарна уу.</translation>
 <translation id="1571041387761170095">Ямар ч сул эсвэл дахин ашигласан нууц үг байхгүй</translation>
 <translation id="1571304935088121812">Хэрэглэгчийн нэрийг хуулах</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{Энэ төхөөрөмж дээр 1 алдагдсан нууц үг байна}other{Энэ төхөөрөмж дээр # алдагдсан нууц үг байна}}</translation>
 <translation id="1594635596540195766">Доорх жагсаалтад санал болгосон <ph name="SUGGESTIONS_COUNT" /> зүйл байна.</translation>
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" />-г <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р ашиглаарай</translation>
 <translation id="160275202205869636">Асаалттай үед таны Google Бүртгэлийн өгөгдлийг ашиглаж, үүнд хадгалдаг. Унтраалттай үед өгөгдлийг зөвхөн энэ төхөөрөмжид хадгалдаг.</translation>
@@ -163,6 +165,7 @@
 <translation id="1724977129262658800">Нууц үгээ засахын тулд түгжээг тайлна уу</translation>
 <translation id="1726477445370128854">Chrome таныг зочилж магадгүй гэж бодсон хуудаснуудыг урьдчилан ачаалсан үед та илүү хурдан үзэж, хайх боломжтой</translation>
 <translation id="1728803206919861584">Нууцлалтай горимоос гадуур нэвтрэх түлхүүрийг хадгалах уу?</translation>
+<translation id="1732514748744806741">Бид таны нууц үг алдагдсан тохиолдолд танд мэдэгдэнэ</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 сайт саяхан олон мэдэгдэл илгээсэн}other{# сайт саяхан олон мэдэгдэл илгээсэн}}</translation>
 <translation id="1749561566933687563">Хавчуургаа синхрончлоорой</translation>
 <translation id="1750238553597293878">Google Бүртгэлдээ нууц үгнүүдийг үргэлжлүүлэн ашиглана уу</translation>
@@ -1336,6 +1339,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7022756207310403729">Хөтчид нээх</translation>
 <translation id="7025769836128625875">Энэ нь ХОУ-ы туршилтын онцлог бөгөөд үүнийг үргэлж зөв хийхгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="7029809446516969842">Нууц үг</translation>
+<translation id="7053256416619638731">Энэ төхөөрөмж дээрх нууц үгээ сайжруулах</translation>
 <translation id="7053983685419859001">Блоклох</translation>
 <translation id="7054588988317389591">Зургийн тайлбар авах уу?</translation>
 <translation id="7057969023583258980">Chrome-н бүтэн түүхийг нээх</translation>
@@ -1586,6 +1590,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8110024788458304985">Chrome-н онцлогууд болон гүйцэтгэлийг сайжруулахад туслах</translation>
 <translation id="8110087112193408731">Chrome-н үйл ажиллагаагаа Дижитал хэрэглээнд харуулах уу?</translation>
 <translation id="8118117428362942925">Хэрэв танд тусламж хэрэгтэй бол эцэг эхээсээ (<ph name="PARENT_NAME" />) хүснэ үү</translation>
+<translation id="8120286190326371840">Энэ төхөөрөмж дээр алдагдсан ямар ч нууц үг байхгүй</translation>
 <translation id="8122623268651408616">Хамгийн шинээр нь эрэмбэлж байна</translation>
 <translation id="8127542551745560481">Нүүр хуудсыг засах</translation>
 <translation id="8130309322784422030">Таны хадгалсан нэвтрэх мэдээлэл хуучирсан байж болзошгүй</translation>

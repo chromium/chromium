@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">חתולים</translation>
 <translation id="5907649332524363701">הצבע העיקרי</translation>
 <translation id="5908813850962688338">התקנת העדכון הזה תימשך כמה דקות. צריך להשאיר את המכשיר מחובר למטען ומופעל בזמן הורדת העדכון. יכול להיות שהמכשיר יופעל מחדש מעצמו כמה פעמים ויוצג מסך שחור במהלך התהליך. תוצג לך בקשה להפעיל מחדש את המכשיר כדי להשלים את ההתקנה.</translation>
+<translation id="5915794087373112615">המסך שלך יוצג בפני המורה בעוד <ph name="NUM_SECONDS" /> שניות</translation>
 <translation id="5916084858004523819">אסור</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{הקובץ נסרק בהצלחה ונשמר בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7618216277886673749">בחירת <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">ניטרלי</translation>
 <translation id="7620771111601174153">מידע נוסף במרכז העזרה</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">זמן האיפוס האחרון</translation>
 <translation id="7633068090678117093">תמונת הרקע</translation>
 <translation id="763873111564339966">אינדיגו</translation>
@@ -1524,6 +1526,7 @@
 <translation id="8054112564438735763">בז'</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> בצבע <ph name="CHARACTERS_COLOR" /> על רקע <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">כדי להתחיל להקליט אודיו, צריך לחבר מיקרופון</translation>
 <translation id="8067126283828232460">‏ה-APN מחובר.</translation>
 <translation id="8067208048261192356">חום</translation>
 <translation id="8067224607978179455">מחיקת <ph name="ACTION_NAME" /></translation>
@@ -1627,6 +1630,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">בית תה</translation>
 <translation id="8538236298648811558">‏מבוסס על AI מבית Google</translation>
+<translation id="8543574988889671960">טעינה מחדש של הכרטיסייה</translation>
 <translation id="8550364285433943656">הגדרת אמצעי בקרה לפעולות במשחק כדי לשחק באמצעות המקלדת</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ייתכן שהספק שלך ידרוש את האפשרות הזו כדי להתחבר לרשת שלו. למידע נוסף, ניתן לפנות לספק.</translation>

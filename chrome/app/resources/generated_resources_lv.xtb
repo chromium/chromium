@@ -17,7 +17,6 @@
 <translation id="1007057452468855774">Ieslēgt Google Play veikalu</translation>
 <translation id="1008186147501209563">Grāmatzīmju eksportēšana</translation>
 <translation id="1008261151167010035">Pakalpojumā <ph name="BRAND" /> tiek saglabāti pierakstīšanās akreditācijas dati un, kad iespējams, jūsu vārdā automātiski veikta pierakstīšanās. Ja šī funkcija ir izslēgta, jums katru reizi tiek prasīts apstiprinājums.</translation>
-<translation id="1008544602823861396">tika liegts izmantot jūsu informāciju vietnē</translation>
 <translation id="1008557486741366299">Vēlāk</translation>
 <translation id="100881991356161927">Vietnes nosaukums</translation>
 <translation id="1009663062402466586">Tagad ir pieejamas spēļu vadīklas</translation>
@@ -2402,7 +2401,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2653659639078652383">Iesniegt</translation>
 <translation id="265390580714150011">Lauka vērtība</translation>
 <translation id="2654553774144920065">Drukas pieprasījums</translation>
-<translation id="265680054508313161">Turpināt kā lietotājam <ph name="USERNAME" /></translation>
 <translation id="265748523151262387">Nezaudējiet savienojumu ar savu tālruni</translation>
 <translation id="2657612187216250073">Rādītāja pieejamības iestatījumi</translation>
 <translation id="2658510146844889864">Piekļuves atslēgas un drošības atslēgas</translation>
@@ -2531,6 +2529,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2739191690716947896">Atkļūdot</translation>
 <translation id="2739240477418971307">Mainītu jūsu pieejamības iestatījumus</translation>
 <translation id="2739331588276254426">Izveidots savienojums ar internetu, izmantojot šo ierīci: <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="2739887572830526131">Paturiet šo grupu, lai vēlāk pievienotu cilnes, vai izdzēsiet to, ja tā jums vairs nav vajadzīga.</translation>
 <translation id="274029851662193272">Pazemināta</translation>
 <translation id="2740531572673183784">Labi</translation>
 <translation id="2740876196999178364">Šīs piekļuves atslēgas ir saglabātas tikai šajā ierīcē. Tās nav saglabātas jūsu Google kontā.</translation>
@@ -4035,6 +4034,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3813358687923336574">Lapu un ātro atbilžu tulkojuma valoda</translation>
 <translation id="3813458570141926987">To tēmu saraksts, kas noteiktas pārlūkā Chrome, ņemot vērā jūsu neseno pārlūkošanas vēsturi</translation>
 <translation id="3814529970604306954">Mācību iestādes konts</translation>
+<translation id="3815668647912194650">Varat paturēt šo grupu, lai tai vēlāk pievienotu cilnes, vai pamest to, ja vairs nevēlaties tai piekļūt.</translation>
 <translation id="3816118180265633665">Chrome krāsas</translation>
 <translation id="3817524650114746564">Atvērt datora starpniekservera iestatījumus.</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Atļaujot ChromeOS ierīcēm sūtīt automātiskos pārskatus, varat palīdzēt mums noteikt ChromeOS problēmu un uzlabojumu prioritāti. Šie pārskati var ietvert, piemēram, ChromeOS avāriju datus, kā arī informāciju par izmantotajām funkcijām un atmiņas lietojuma parasto apjomu.<ph name="END_PARAGRAPH1" />
@@ -4271,7 +4271,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="3971764089670057203">Šai drošības atslēgai ir pirkstu nospiedumi</translation>
 <translation id="3973005893595042880">Lietotājs nav atļauts</translation>
 <translation id="3973660817924297510">Notiek paroļu pārbaude (<ph name="CHECKED_PASSWORDS" /> no <ph name="TOTAL_PASSWORDS" />)…</translation>
-<translation id="3974105241379491420">Atļaut vietnēm pieprasīt atļauju izmantot tajās par jums saglabāto informāciju</translation>
 <translation id="3974514184580396500">Lai ekrānā izceltu nākamo vienumu, izmantojiet slēdzi Tālāk</translation>
 <translation id="3975017815357433345">Šoseja</translation>
 <translation id="3975201861340929143">Paskaidrojums</translation>
@@ -4518,7 +4517,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4146785383423576110">Atiestatiet un tīriet</translation>
 <translation id="4147099377280085053">Atlasiet Braila raksta tabulu</translation>
 <translation id="4147911968024186208">Lūdzu, mēģiniet vēlreiz. Ja atkal tiek parādīta šī kļūda, sazinieties ar atbalsta dienesta pārstāvi.</translation>
-<translation id="414800391140809654">var izmantot jūsu informāciju, kad pārlūkojat tīmekli</translation>
 <translation id="4148195018520464922">Varat norādīt, ka tikai noteikti lietotāji var pierakstīties. Tādējādi no pierakstīšanās ekrāna tiks noņemta opcija “Pievienot personu”. Varat arī noņemt pašreizējos lietotājus.</translation>
 <translation id="4148957013307229264">Notiek instalēšana...</translation>
 <translation id="4149385644005013189">Viss kārtībā!</translation>
@@ -5308,7 +5306,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4728558894243024398">Platforma</translation>
 <translation id="4730492586225682674">Skārienekrāna pildspalva: pēdējā piezīme bloķēšanas ekrānā</translation>
 <translation id="4730888769809690665">Vietnei <ph name="SITE" /> ir atļauts rādīt paziņojumus</translation>
-<translation id="4731306954230393087">Atļauts izmantot informāciju, kas attiecīgajā vietnē saglabāta par jums</translation>
 <translation id="4732799736617504962">Pievienotais mikrofons var atbalstīt tikai trokšņu mazināšanu.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (kreisā)</translation>
 <translation id="4733793249294335256">Atrašanās vieta</translation>
@@ -6211,7 +6208,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Tika atrasta viena vietne ar daudziem paziņojumiem}zero{Tika atrastas {NUM_SITES} vietnes ar daudziem paziņojumiem}one{Tika atrasta {NUM_SITES} vietne ar daudziem paziņojumiem}other{Tika atrastas {NUM_SITES} vietnes ar daudziem paziņojumiem}}</translation>
 <translation id="5388885445722491159">Sapārots</translation>
 <translation id="5389224261615877010">Varavīksne</translation>
-<translation id="5389626883706033615">Vietnēm ir liegts lūgt atļauju izmantot informāciju, kas tajās ir saglabāta par jums</translation>
 <translation id="5389794555912875905">Skatīt brīdinājumus pirms nedrošu vietņu apmeklēšanas (ieteicams)</translation>
 <translation id="5389943529251318913">Samazināt peles ātrumu par</translation>
 <translation id="5390112241331447203">Iekļaut atsauksmju ziņojumos nosūtīto failu system_logs.txt.</translation>
@@ -6896,7 +6892,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5888889603768021126">Pierakstījies kā</translation>
 <translation id="5889282057229379085">Vidējā līmeņa CA maksimālais skaits: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Šifrējiet sinhronizētos datus, izmantojot savu <ph name="BEGIN_LINK" />sinhronizācijas ieejas frāzi<ph name="END_LINK" />. Maksājuma veidi un adreses no pakalpojuma Google Pay netiks šifrētas. Pārlūkā Chrome saglabātā pārlūkošanas vēsture netiks sinhronizēta.</translation>
-<translation id="5891084409170578560">Jūsu apmeklētajās vietnēs var būt iegults citu vietņu saturs, piemēram, attēli, reklāmas un teksts. Šīs citas vietnes var lūgt atļauju izmantot par jums saglabāto informāciju, kamēr pārlūkojat vietni.</translation>
 <translation id="5891688036610113830">Vēlamie Wi-Fi tīkli</translation>
 <translation id="5894056653502215961">Noņemt mapes <ph name="FOLDER_TITLE" /> atlasi</translation>
 <translation id="5895138241574237353">Restartēt</translation>
@@ -9266,7 +9261,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7619937211696316184">Apkope ir pabeigta</translation>
 <translation id="7620616707541471029">Lai turpinātu, izvēlieties kontu.</translation>
 <translation id="7621382409404463535">Diemžēl sistēmā neizdevās saglabāt ierīces konfigurāciju.</translation>
-<translation id="7621480263311228380">Nav atļauts izmantot informāciju, kas par jums ir saglabāta</translation>
 <translation id="7621595347123595643">Ja aizmirsīsiet paroli vai PIN, nevarēsiet atkopt lokālos datus.</translation>
 <translation id="7622114377921274169">Notiek uzlāde.</translation>
 <translation id="7622768823216805500">Parasti vietnes instalē maksājumu apdarinātājus, lai nodrošinātu iepirkšanās funkcijas, piemēram, ērtāku norēķināšanos.</translation>
@@ -10719,6 +10713,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8633979878370972178">Pēc 2022. gada decembra Chrome lietotņu iepriekšējās versijas netiks atvērtas Linux ierīcēs. Varat pārbaudīt, vai ir pieejama jauna versija.</translation>
 <translation id="8634348081024879304">Jūs vairs nevarēsiet izmantot savu virtuālo karti pakalpojumā Google Pay. <ph name="BEGIN_LINK" />Uzziniet vairāk par virtuālajām kartēm<ph name="END_LINK" />.</translation>
 <translation id="8634703204743010992">ChromeOS virtuālā tastatūra</translation>
+<translation id="8635399646025169806">Vai paturēt ciļņu grupu?</translation>
 <translation id="8635628933471165173">Notiek atkārtota ielāde...</translation>
 <translation id="8636284842992792762">Notiek paplašinājumu inicializēšana...</translation>
 <translation id="8636323803535540285">Lai ātrāk piekļūtu pakalpojumam <ph name="BRAND" />, pievienojiet saīsni.</translation>
@@ -10981,6 +10976,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
     <ph name="BEGIN_PARAGRAPH2" />Neidentificējot jūs, Google izmanto šo informāciju, lai uzlabotu atrašanās vietas precizitāti un ar atrašanās vietu saistītus pakalpojumus, kā arī kopumā uzlabotu, nodrošinātu un uzturētu Google pakalpojumus. Mēs apstrādājam šo informāciju, pamatojoties uz Google un trešo pušu likumīgajām interesēm sniegt lietotāju vajadzībām atbilstošu pakalpojumus.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Jūs jebkurā brīdī varat izslēgt iestatījumu “Atrašanās vietas precizitāte” savas ierīces atrašanās vietas iestatījumos sadaļā Iestatījumi &gt; Konfidencialitāte un drošība &gt; Konfidencialitātes vadīklas &gt; Piekļuve atrašanās vietai &gt; Atrašanās vietas papildu iestatījumi. Ja iestatījums “Atrašanās vietas precizitāte” ir izslēgts, netiek vākti nekādi atrašanās vietas precizitātes dati. Android lietotnēs un pakalpojumos jūsu ierīces atrašanās vietas noteikšanai tiek izmantota tikai IP adrese (ja tā ir pieejama). Tas var ietekmēt Android lietotņu un pakalpojumu, piemēram, Google Maps, pieejamību un atrašanās vietu precizitāti.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Pārlūks, kurā atvērt</translation>
+<translation id="8804742093141782941">Paturēt grupu</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Cilnes pārvietošana uz citu logu}zero{Ciļņu pārvietošana uz citu logu}one{Ciļņu pārvietošana uz citu logu}other{Ciļņu pārvietošana uz citu logu}}</translation>
 <translation id="8805140816472474147">Lai sāktu sinhronizēšanu, apstipriniet sinhronizēšanas iestatījumus.</translation>
 <translation id="8805255531353778052">Milzīgs ietaupījums</translation>

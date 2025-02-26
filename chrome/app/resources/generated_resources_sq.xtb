@@ -17,7 +17,6 @@
 <translation id="1007057452468855774">Aktivizo "Dyqanin e Google Play"</translation>
 <translation id="1008186147501209563">Eksporto faqeshënuesit</translation>
 <translation id="1008261151167010035">"<ph name="BRAND" />" mban mend se si je identifikuar dhe të identifikon automatikisht kur është e mundur. Kur është joaktiv, do të të kërkohet gjithmonë konfirmimi.</translation>
-<translation id="1008544602823861396">është bllokuar që të mos përdorë informacionet e tua në</translation>
 <translation id="1008557486741366299">Jo tani</translation>
 <translation id="100881991356161927">Emri i sajtit</translation>
 <translation id="1009663062402466586">Kontrollet e lojës janë të disponueshme tani</translation>
@@ -2398,7 +2397,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2653659639078652383">Dërgoje</translation>
 <translation id="265390580714150011">Vlera e fushës</translation>
 <translation id="2654553774144920065">Kërkesa për printim</translation>
-<translation id="265680054508313161">Vazhdo si <ph name="USERNAME" /></translation>
 <translation id="265748523151262387">Qëndro i lidhur me telefonin tënd</translation>
 <translation id="2657612187216250073">Cilësimet e qasshmërisë të treguesit</translation>
 <translation id="2658510146844889864">Çelësat e kalimit dhe çelësat e sigurisë</translation>
@@ -2527,6 +2525,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2739191690716947896">Korrigjo</translation>
 <translation id="2739240477418971307">Ndrysho cilësimet e qasjes</translation>
 <translation id="2739331588276254426">Lidhur me internetin nëpërmjet pajisjes <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="2739887572830526131">Mbaje këtë grup për të shtuar skeda më vonë ose fshije atë nëse nuk të nevojitet më.</translation>
 <translation id="274029851662193272">I ulur</translation>
 <translation id="2740531572673183784">Në rregull</translation>
 <translation id="2740876196999178364">Këta çelësa kalimi ruhen vetëm në këtë pajisje. Ata nuk ruhen në "Llogarinë tënde të Google".</translation>
@@ -4031,6 +4030,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3813358687923336574">Gjuha e përdorur për përkthimin e faqeve dhe "Përgjigjet e shpejta"</translation>
 <translation id="3813458570141926987">Lista e temave të përllogaritura nga Chrome bazuar në historikun tënd të fundit të shfletimit</translation>
 <translation id="3814529970604306954">Llogaria e shkollës</translation>
+<translation id="3815668647912194650">Mbaje këtë grup për të shtuar skeda më vonë ose largohu nga ai nëse nuk dëshiron më të kesh qasje në të.</translation>
 <translation id="3816118180265633665">Ngjyrat e Chrome</translation>
 <translation id="3817524650114746564">Hap cilësimet e përfaqësuesit të kompjuterit tënd</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Nëse lejon që pajisjet me ChromeOS të dërgojnë raporte automatike, kjo na ndihmon t'i japim përparësi gjërave që do të rregullojmë dhe përmirësojmë në ChromeOS. Këto raporte mund të përfshijnë gjëra të tilla si ndërprerjet aksidentale të ChromeOS, cilat veçori përdor dhe sa memorie përdor ti zakonisht.<ph name="END_PARAGRAPH1" />
@@ -4267,7 +4267,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="3971764089670057203">Gjurmët e gishtave në këtë çelës sigurie</translation>
 <translation id="3973005893595042880">Përdoruesi nuk lejohet</translation>
 <translation id="3973660817924297510">Po kontrollon fjalëkalimet (<ph name="CHECKED_PASSWORDS" /> nga <ph name="TOTAL_PASSWORDS" />)…</translation>
-<translation id="3974105241379491420">Sajtet mund të kërkojnë që të përdorin informacionet që kanë ruajtur në lidhje me ty</translation>
 <translation id="3974514184580396500">Përdor butonin “Para” për ta zhvendosur fokusin përpara në ekran</translation>
 <translation id="3975017815357433345">Autostradë</translation>
 <translation id="3975201861340929143">Shpjegimi</translation>
@@ -4514,7 +4513,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4146785383423576110">Rivendos dhe pastro</translation>
 <translation id="4147099377280085053">Zgjidh një tabelë të shkrimit breil</translation>
 <translation id="4147911968024186208">Provo përsëri. Nëse e shikon përsëri këtë gabim, kontakto me përfaqësuesin e shërbimit të mbështetjes.</translation>
-<translation id="414800391140809654">mund të përdorë informacionet e tua kur ti shfleton</translation>
 <translation id="4148195018520464922">Mund ta kufizosh identifikimin për përdorues të caktuar. Kjo heq opsionin "Shto person" në ekranin e identifikimit. Gjithashtu, mund të heqësh të gjithë përdoruesit aktualë.</translation>
 <translation id="4148957013307229264">Po instalohet...</translation>
 <translation id="4149385644005013189">Gjërat duken të organizuara!</translation>
@@ -5304,7 +5302,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4728558894243024398">Platforma</translation>
 <translation id="4730492586225682674">Shënimi më i fundit me stilolaps në ekranin e kyçjes</translation>
 <translation id="4730888769809690665">Njoftimet lejohen për <ph name="SITE" /></translation>
-<translation id="4731306954230393087">Lejohet që të përdorë informacionet që ka ruajtur për ty</translation>
 <translation id="4732799736617504962">Mikrofoni i lidhur mund të mbështesë vetëm anulimin e zhurmës</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (majtas)</translation>
 <translation id="4733793249294335256">Vendndodhja</translation>
@@ -6206,7 +6203,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{U gjet 1 sajt me shumë njoftime}other{U gjetën {NUM_SITES} sajte me shumë njoftime}}</translation>
 <translation id="5388885445722491159">I çiftuar</translation>
 <translation id="5389224261615877010">Ylber</translation>
-<translation id="5389626883706033615">Sajtet janë bllokuar që të mos të kërkojnë të përdorin informacionet që kanë ruajtur në lidhje me ty</translation>
 <translation id="5389794555912875905">Shiko paralajmërime para se të shkosh në sajte të pasigurta (rekomandohet)</translation>
 <translation id="5389943529251318913">Zvogëlo shpejtësinë e miut me</translation>
 <translation id="5390112241331447203">Përfshi skedarin system_logs.txt të dërguar në raportet e reagimeve.</translation>
@@ -6893,7 +6889,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5888889603768021126">Identifikuar me</translation>
 <translation id="5889282057229379085">Numri maksimal i autoriteteve ndërmjetëse të certifikatave: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Enkripto të gjitha të dhënat e sinkronizuara me <ph name="BEGIN_LINK" />frazën tënde të kalimit për sinkronizimin<ph name="END_LINK" />. Mënyrat e pagesës dhe adresat nga Google Pay nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.</translation>
-<translation id="5891084409170578560">Sajtet që viziton mund të integrojnë përmbajtje nga sajte të tjera, p.sh. imazhe, reklama dhe tekste. Këto sajte të tjera mund të kërkojnë leje që të përdorin informacionet që kanë ruajtur në lidhje me ty kur ti shfleton në sajt.</translation>
 <translation id="5891688036610113830">Rrjetet e preferuara Wi-Fi</translation>
 <translation id="5894056653502215961">Hiq përzgjedhjen për dosjen "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="5895138241574237353">Rinis</translation>
@@ -9259,7 +9254,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7619937211696316184">Mirëmbajtja përfundoi</translation>
 <translation id="7620616707541471029">Zgjidh një llogari për të vazhduar</translation>
 <translation id="7621382409404463535">Sistemi nuk arriti të ruante konfigurimin e pajisjes.</translation>
-<translation id="7621480263311228380">Nuk lejohet të përdorë informacionet që ka ruajtur rreth teje</translation>
 <translation id="7621595347123595643">Nuk do të mund t'i rikuperosh të dhënat lokale nëse harron fjalëkalimin ose kodin PIN.</translation>
 <translation id="7622114377921274169">Po ngarkohet.</translation>
 <translation id="7622768823216805500">Sajtet instalojnë zakonisht përpunues të pagesave për veçoritë e blerjeve, si p.sh. përfundimin e blerjeve me më shumë lehtësi</translation>
@@ -10711,6 +10705,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8633979878370972178">Versionet e vjetra të aplikacioneve të Chrome nuk do të hapen në pajisjet me Linux pas dhjetorit 2022. Mund të kontrollosh nëse ofrohet një version i ri.</translation>
 <translation id="8634348081024879304">Nuk do të mund ta përdorësh më kartën virtuale me Google Pay. <ph name="BEGIN_LINK" />Mëso rreth kartave virtuale<ph name="END_LINK" /></translation>
 <translation id="8634703204743010992">Tastiera virtuale e ChromeOS</translation>
+<translation id="8635399646025169806">Të mbahet grupi i skedave?</translation>
 <translation id="8635628933471165173">Po ringarkohet...</translation>
 <translation id="8636284842992792762">Po nis shtesat...</translation>
 <translation id="8636323803535540285">Për të ardhur këtu më shpejt, shto një shkurtore për te "<ph name="BRAND" />"</translation>
@@ -10971,6 +10966,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
     <ph name="BEGIN_PARAGRAPH2" />Google i përdor këto informacione pa të identifikuar ty: për të përmirësuar saktësinë e vendndodhjes dhe shërbimet bazuar te vendndodhja, si dhe për të përmirësuar, ofruar dhe mirëmbajtur në përgjithësi shërbimet e Google. Ne i përpunojmë këto informacione bazuar në interesat legjitimë të Google dhe palëve të treta për t'u shërbyer nevojave të përdoruesve.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Mund ta çaktivizosh "Saktësinë e vendndodhjes" në çdo kohë te cilësimet e vendndodhjes së pajisjes sate te Cilësimet &gt; Privatësia dhe siguria &gt; Kontrollet e privatësisë &gt; Qasja te vendndodhja &gt; Cilësimet e përparuara të vendndodhjes. Nëse "Saktësia e vendndodhjes" është joaktive, nuk do të mblidhen të dhëna të "Saktësisë së vendndodhjes". Për shërbimet dhe aplikacionet për Android, vetëm adresa IP përdoret, nëse ofrohet, për të përcaktuar vendndodhjen e pajisjes sate, gjë që mund të ketë ndikim në disponueshmërinë dhe saktësinë e vendndodhjeve për shërbimet dhe aplikacionet për Android, si p.sh. Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Hapet në</translation>
+<translation id="8804742093141782941">Mbaje grupin</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Zhvendose skedën në një dritare të re}other{Zhvendosi skedat në një dritare të re}}</translation>
 <translation id="8805140816472474147">Konfirmo cilësimet e sinkronizimit për të nisur sinkronizimin.</translation>
 <translation id="8805255531353778052">Kursime shumë të mëdha</translation>

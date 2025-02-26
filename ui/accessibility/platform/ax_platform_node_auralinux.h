@@ -409,7 +409,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
 
   bool window_activate_event_postponed_ = false;
 
-  friend AXPlatformNode* AXPlatformNode::Create(
+  friend AXPlatformNode::Pointer AXPlatformNode::Create(
       AXPlatformNodeDelegate* delegate);
 };
 

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="1009406586654360474">Deschide Google Password Manager și accesează setările. Selectează Importă și adaugă fișierul CSV care conține parolele exportate.</translation>
+<translation id="1010283278930414892">Nu există parole salvate pe acest dispozitiv</translation>
 <translation id="1011749477052068769">Mută aici</translation>
 <translation id="1014147525163127655">Nu există chei de acces pentru <ph name="ORIGIN" /> pe acest dispozitiv</translation>
 <translation id="1016498331642356377">Caută rapid cu ajutorul vocii. Pentru a edita comanda rapidă, atinge-o lung.</translation>
@@ -142,6 +143,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1568636008098739136">Ascultă pagina. Pentru a edita comanda rapidă, atinge-o lung.</translation>
 <translation id="1571041387761170095">Nu există parole slabe sau refolosite</translation>
 <translation id="1571304935088121812">Copiază numele de utilizator</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{O parolă compromisă pe acest dispozitiv}few{# parole compromise pe acest dispozitiv}other{# de parole compromise pe acest dispozitiv}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> elemente sugerate în lista de mai jos.</translation>
 <translation id="1598163867407640634">Folosește <ph name="SITE_ETLD_PLUS_ONE" /> cu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Când opțiunea este activată, folosești și salvezi date în Contul Google. Când este dezactivată, datele sunt salvate numai pe acest dispozitiv.</translation>
@@ -163,6 +165,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1724977129262658800">Deblochează pentru a modifica parola</translation>
 <translation id="1726477445370128854">Poți să navighezi și să cauți mai repede când Chrome preîncarcă pagini pe care crede că le-ai putea accesa</translation>
 <translation id="1728803206919861584">Salvezi cheia de acces în afara modului incognito?</translation>
+<translation id="1732514748744806741">Te vom anunța dacă îți sunt compromise parolele</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Un site a trimis recent multe notificări}few{# site-uri au trimis recent multe notificări}other{# de site-uri au trimis recent multe notificări}}</translation>
 <translation id="1749561566933687563">Sincronizează marcajele</translation>
 <translation id="1750238553597293878">Folosește în continuare parolele din Contul Google</translation>
@@ -1336,6 +1339,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7022756207310403729">Deschide în browser</translation>
 <translation id="7025769836128625875">Aceasta este o funcție AI experimentală și nu va răspunde întotdeauna corect. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="7029809446516969842">Parole</translation>
+<translation id="7053256416619638731">Creează parole mai puternice pe acest dispozitiv</translation>
 <translation id="7053983685419859001">Blochează</translation>
 <translation id="7054588988317389591">Vrei să generezi descrieri ale imaginilor?</translation>
 <translation id="7057969023583258980">Deschide istoricul Chrome complet</translation>
@@ -1586,6 +1590,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8110024788458304985">Contribuie la îmbunătățirea funcțiilor și a performanței Chrome</translation>
 <translation id="8110087112193408731">Afișezi activitatea din Chrome în Bunăstare digitală?</translation>
 <translation id="8118117428362942925">Dacă ai nevoie de ajutor, vorbește cu un părinte (<ph name="PARENT_NAME" />)</translation>
+<translation id="8120286190326371840">Nicio parolă compromisă pe acest dispozitiv</translation>
 <translation id="8122623268651408616">Se sortează după cele mai noi</translation>
 <translation id="8127542551745560481">Editează pagina de pornire</translation>
 <translation id="8130309322784422030">Este posibil ca informațiile de conectare stocate să fie învechite</translation>

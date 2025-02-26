@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
+<translation id="1045448422538531528">Tambahkan pada kumpulan</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Dibuat <ph name="NUM_WEEKS_ONE" /> minggu yang lalu}other{Dibuat <ph name="NUM_WEEKS_MANY" /> minggu yang lalu}}</translation>
 <translation id="1063300264396686489">Buka kumpulan tab daripada peranti lain secara automatik</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> daripada tab anda sudah lama tidak digunakan. Tutup tab?</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
+<translation id="1045448422538531528">Добавить в группу</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Создано <ph name="NUM_WEEKS_ONE" /> неделю назад}one{Создано <ph name="NUM_WEEKS_MANY" /> неделю назад}few{Создано <ph name="NUM_WEEKS_MANY" /> недели назад}many{Создано <ph name="NUM_WEEKS_MANY" /> недель назад}other{Создано <ph name="NUM_WEEKS_MANY" /> недели назад}}</translation>
 <translation id="1063300264396686489">Автоматически открывать группы вкладок с других устройств</translation>
 <translation id="1075622780330595106">Вы давно не использовали некоторые вкладки (всего: <ph name="NUMBER_OF_TABS" />). Закрыть их?</translation>
@@ -11,6 +12,7 @@
 <translation id="1293272072740285747">Вы сможете пользоваться ей в дальнейшем. Если группа больше не нужна, удалите ее.
 
 Тогда группа вкладок "<ph name="TITLE_OF_GROUP" />" сразу станет недоступна всем пользователям и будет удалена с каждого устройства.</translation>
+<translation id="1326654401173629446">Группа вкладок "<ph name="TAB_GROUP_NAME" />" больше не доступна.</translation>
 <translation id="1329584516321524826">Обновлено только что</translation>
 <translation id="1340839264183302272">Покинуть группу</translation>
 <translation id="1419023007528516122">Группа будет навсегда удалена с устройства.</translation>

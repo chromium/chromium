@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="1045448422538531528">Дадаць да групы</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Створана <ph name="NUM_WEEKS_ONE" /> тыдзень таму}one{Створана <ph name="NUM_WEEKS_MANY" /> тыдзень таму}few{Створана <ph name="NUM_WEEKS_MANY" /> тыдні таму}many{Створана <ph name="NUM_WEEKS_MANY" /> тыдняў таму}other{Створана <ph name="NUM_WEEKS_MANY" /> тыдня таму}}</translation>
 <translation id="1063300264396686489">Аўтаматычна адкрываць групы ўкладак з іншых прылад</translation>
 <translation id="1075622780330595106">Некалькі (<ph name="NUMBER_OF_TABS" />) укладак пэўны час не выкарыстоўваліся. Закрыць іх?</translation>
@@ -11,6 +12,7 @@
 <translation id="1293272072740285747">Вы можаце захаваць гэту групу, каб дадаць укладкі пазней, ці выдаліць яе, калі яна вам больш не патрэбная.
 
 Калі вы выдаліце яе, усе карыстальнікі адразу страцяць доступ да групы ўкладак "<ph name="TITLE_OF_GROUP" />" і яна будзе выдалена з усіх прылад.</translation>
+<translation id="1326654401173629446">Група ўкладак "<ph name="TAB_GROUP_NAME" />" больш не даступная</translation>
 <translation id="1329584516321524826">Абноўлена толькі што</translation>
 <translation id="1340839264183302272">Пакінуць групу</translation>
 <translation id="1419023007528516122">Гэта дзеянне незваротна выдаліць групу з вашай прылады</translation>

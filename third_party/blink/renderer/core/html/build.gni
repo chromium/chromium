@@ -678,6 +678,7 @@ blink_core_tests_html = [
   "html_anchor_element_test.cc",
   "html_attribute_fuzztest.cc",
   "html_dimension_test.cc",
+  "html_element_container_timing_test.cc",
   "html_element_test.cc",
   "html_embed_element_test.cc",
   "html_frame_element_test.cc",

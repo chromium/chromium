@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-// The UIViewController that manages the Auto-deletion IPH's view.
-@interface AutoDeletionIPHViewController : UIViewController
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
-- (instancetype)init;
+// The UIViewController that manages the Auto-deletion IPH's view.
+@interface AutoDeletionIPHViewController : ConfirmationAlertViewController
 
 @end
 

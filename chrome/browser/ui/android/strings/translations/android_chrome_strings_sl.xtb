@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
 <translation id="1009406586654360474">Odprite Googlovega upravitelja gesel in odprite nastavitve. Izberite »Uvozi« in dodajte datoteko CSV, ki vsebuje izvožena gesla.</translation>
+<translation id="1010283278930414892">V tej napravi ni shranjenih gesel</translation>
 <translation id="1011749477052068769">Premik sem</translation>
 <translation id="1014147525163127655">V tej napravi ni ključev za dostop za aplikacijo <ph name="ORIGIN" />.</translation>
 <translation id="1016498331642356377">Hitro iščite z glasom. Če želite urediti to bližnjico, pridržite.</translation>
@@ -142,6 +143,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1568636008098739136">Poslušanje te strani. Če želite urediti to bližnjico, pridržite.</translation>
 <translation id="1571041387761170095">Ni šibkih ali znova uporabljenih gesel</translation>
 <translation id="1571304935088121812">Kopiranje uporabniškega imena</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 ogroženo geslo v tej napravi}one{# ogroženo geslo v tej napravi}two{# ogroženi gesli v tej napravi}few{# ogrožena gesla v tej napravi}other{# ogroženih gesel v tej napravi}}</translation>
 <translation id="1594635596540195766">Št. predlaganih elementov na seznamu spodaj: <ph name="SUGGESTIONS_COUNT" />.</translation>
 <translation id="1598163867407640634">Uporabite <ph name="SITE_ETLD_PLUS_ONE" /> z računom pri ponudniku <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Če je ta možnost vklopljena, uporabljate in shranjujete podatke v računu Google. Če je izklopljena, se podatki shranjujejo samo v tej napravi.</translation>
@@ -163,6 +165,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1724977129262658800">Odklenite, če želite urediti geslo.</translation>
 <translation id="1726477445370128854">Brskanje in iskanje sta hitrejša, ko Chrome vnaprej naloži strani, za katere meni, da jih boste morda obiskali.</translation>
 <translation id="1728803206919861584">Želite ključ za dostop shraniti zunaj anonimnega načina?</translation>
+<translation id="1732514748744806741">Če bodo vaša gesla ogrožena, vas bomo o tem obvestili</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 spletno mesto je nedavno poslalo veliko obvestil}one{# spletno mesto je nedavno poslalo veliko obvestil}two{# spletni mesti sta nedavno poslali veliko obvestil}few{# spletna mesta so nedavno poslala veliko obvestil}other{# spletnih mest je nedavno poslalo veliko obvestil}}</translation>
 <translation id="1749561566933687563">Sinhroniziranje zaznamkov</translation>
 <translation id="1750238553597293878">Še naprej uporabljajte gesla v računu Google</translation>
@@ -1336,6 +1339,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7022756207310403729">Odpiranje v brskalniku</translation>
 <translation id="7025769836128625875">To je preizkusna funkcija umetne inteligence in se lahko včasih tudi zmoti. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="7029809446516969842">Gesla</translation>
+<translation id="7053256416619638731">Okrepite gesla v tej napravi</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7054588988317389591">Želite pridobiti opise slik?</translation>
 <translation id="7057969023583258980">Odpiranje celotne zgodovine v Chromu</translation>
@@ -1586,6 +1590,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8110024788458304985">Pomagajte izboljšati Chromove funkcije in njegovo delovanje</translation>
 <translation id="8110087112193408731">Ali želite svojo dejavnost v Chromu prikazati v Digitalni dobrobiti?</translation>
 <translation id="8118117428362942925">Če potrebuješ pomoč, se obrni na starša (<ph name="PARENT_NAME" />).</translation>
+<translation id="8120286190326371840">V tej napravi ni ogroženih gesel</translation>
 <translation id="8122623268651408616">Razvrščanje po najnovejših</translation>
 <translation id="8127542551745560481">Urejanje domače strani</translation>
 <translation id="8130309322784422030">Shranjeni podatki za prijavo so morda zastareli.</translation>

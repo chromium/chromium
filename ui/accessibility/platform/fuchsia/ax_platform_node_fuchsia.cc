@@ -11,10 +11,11 @@ AXPlatformNodeFuchsia::AXPlatformNodeFuchsia() = default;
 AXPlatformNodeFuchsia::~AXPlatformNodeFuchsia() = default;
 
 // static
-AXPlatformNode* AXPlatformNode::Create(AXPlatformNodeDelegate* delegate) {
+AXPlatformNode::Pointer AXPlatformNode::Create(
+    AXPlatformNodeDelegate* delegate) {
   AXPlatformNodeFuchsia* node = new AXPlatformNodeFuchsia();
   node->Init(delegate);
-  return node;
+  return Pointer(node);
 }
 
 gfx::NativeViewAccessible AXPlatformNodeFuchsia::GetNativeViewAccessible() {

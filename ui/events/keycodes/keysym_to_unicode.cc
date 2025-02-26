@@ -18,7 +18,7 @@ struct KeysymToUnicode {
   uint32_t keysym;
   uint16_t unicode;
 };
-const auto g_keysym_to_unicode_table = std::to_array<KeysymToUnicode>({
+constexpr auto g_keysym_to_unicode_table = std::to_array<KeysymToUnicode>({
     // Control characters
     {XK_BackSpace, 0x0008},
     {XK_Tab, 0x0009},

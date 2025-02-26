@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
+<translation id="1045448422538531528">Топко кошуу</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> апта мурун түзүлдү}other{<ph name="NUM_WEEKS_MANY" /> апта мурун түзүлдү}}</translation>
 <translation id="1063300264396686489">Башка түзмөктөрдөгү өтмөк топторун автоматтык түрдө ачуу</translation>
 <translation id="1075622780330595106">Өтмөктөрүңүздүн <ph name="NUMBER_OF_TABS" /> акыркы убакта колдонулган жок. Алар жабылсынбы?</translation>

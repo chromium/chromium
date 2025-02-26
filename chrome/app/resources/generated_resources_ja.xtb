@@ -17,7 +17,6 @@
 <translation id="1007057452468855774">Google Play ストアを有効にする</translation>
 <translation id="1008186147501209563">ブックマークをエクスポート</translation>
 <translation id="1008261151167010035"><ph name="BRAND" /> でログイン方法を記憶し、可能な場合は自動的にログインします。オフにすると、毎回確認を求められます。</translation>
-<translation id="1008544602823861396">では次のサイトであなたの情報を使用できません:</translation>
 <translation id="1008557486741366299">後で</translation>
 <translation id="100881991356161927">サイト名</translation>
 <translation id="1009663062402466586">ゲーム操作キーをご利用いただけるようになりました</translation>
@@ -2395,7 +2394,6 @@
 <translation id="2653659639078652383">送信</translation>
 <translation id="265390580714150011">フィールド値</translation>
 <translation id="2654553774144920065">印刷リクエスト</translation>
-<translation id="265680054508313161"><ph name="USERNAME" /> として続行</translation>
 <translation id="265748523151262387">スマートフォンと常に接続</translation>
 <translation id="2657612187216250073">ポインタのユーザー補助設定</translation>
 <translation id="2658510146844889864">パスキーとセキュリティ キー</translation>
@@ -2524,6 +2522,7 @@
 <translation id="2739191690716947896">デバッグ</translation>
 <translation id="2739240477418971307">ユーザー補助設定の変更</translation>
 <translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" />経由でインターネットに接続されています</translation>
+<translation id="2739887572830526131">後でタブを追加できるようにこのグループを保持するか、今後使用しない場合は削除します。</translation>
 <translation id="274029851662193272">沈み彫り</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">これらのパスキーは、このデバイスのみに保存されます。Google アカウントには保存されません。</translation>
@@ -4027,6 +4026,7 @@
 <translation id="3813358687923336574">ページの翻訳とクイック アンサーに使用する言語</translation>
 <translation id="3813458570141926987">最近の閲覧履歴に基づき Chrome で抽出されたトピックのリスト</translation>
 <translation id="3814529970604306954">学校用アカウント</translation>
+<translation id="3815668647912194650">後でタブを追加できるようにこのグループを保持するか、今後使用しない場合は退出します。</translation>
 <translation id="3816118180265633665">Chrome の色</translation>
 <translation id="3817524650114746564">パソコンのプロキシ設定を開く</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />ChromeOS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に ChromeOS を修正および改善する取り組みにご協力ください。自動レポートでは、ChromeOS がクラッシュした時間、使用されている機能、通常のメモリ使用量などの情報が送信されます。<ph name="END_PARAGRAPH1" />
@@ -4263,7 +4263,6 @@
 <translation id="3971764089670057203">このセキュリティ キーのフィンガープリント</translation>
 <translation id="3973005893595042880">ユーザーは許可されていません</translation>
 <translation id="3973660817924297510">パスワードを確認しています（<ph name="CHECKED_PASSWORDS" /> 件目 / <ph name="TOTAL_PASSWORDS" /> 件中）…</translation>
-<translation id="3974105241379491420">保存したあなたに関する情報の使用をサイトが求めることを許可する</translation>
 <translation id="3974514184580396500">画面上のフォーカスを次に移動させるには [次へ] を使用します</translation>
 <translation id="3975017815357433345">高速道路</translation>
 <translation id="3975201861340929143">説明</translation>
@@ -4510,7 +4509,6 @@
 <translation id="4146785383423576110">リセットとクリーンアップ</translation>
 <translation id="4147099377280085053">点字表を選択</translation>
 <translation id="4147911968024186208">もう一度お試しください。このエラーが再び表示される場合は、サポート担当者にお問い合わせください。</translation>
-<translation id="414800391140809654">では次のサイトの閲覧時にあなたの情報を使用できます:</translation>
 <translation id="4148195018520464922">ログインを特定のユーザーに制限できます。制限すると、ログイン画面から [ユーザーを追加] オプションが削除されます。現在のユーザーを削除することもできます。</translation>
 <translation id="4148957013307229264">インストール中...</translation>
 <translation id="4149385644005013189">よく整理されています</translation>
@@ -5298,7 +5296,6 @@
 <translation id="4728558894243024398">プラットフォーム</translation>
 <translation id="4730492586225682674">ロック画面でタッチペンによる最新メモを表示</translation>
 <translation id="4730888769809690665"><ph name="SITE" /> で通知を許可されています</translation>
-<translation id="4731306954230393087">保存したあなたに関する情報の使用を許可する</translation>
 <translation id="4732799736617504962">接続されているマイクはノイズ キャンセルのみをサポートしています</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左）</translation>
 <translation id="4733793249294335256">保存先</translation>
@@ -6198,7 +6195,6 @@
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{通知の数が多いサイトが 1 件見つかりました}other{通知の数が多いサイトが {NUM_SITES} 件見つかりました}}</translation>
 <translation id="5388885445722491159">ペア設定済み</translation>
 <translation id="5389224261615877010">虹</translation>
-<translation id="5389626883706033615">保存したあなたに関する情報の使用をサイトが求めることをブロックする</translation>
 <translation id="5389794555912875905">安全でないサイトにアクセスする前に警告を表示する（推奨）</translation>
 <translation id="5389943529251318913">マウスの速度を遅くする</translation>
 <translation id="5390112241331447203">送信された system_logs.txt ファイルをフィードバック レポートに含める。</translation>
@@ -6884,7 +6880,6 @@
 <translation id="5888889603768021126">ログインに使用した ID プロバイダ</translation>
 <translation id="5889282057229379085">中間認証局の最大数: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">同期データを<ph name="BEGIN_LINK" />同期パスフレーズ<ph name="END_LINK" />で暗号化します。Google Pay のお支払い方法と住所は暗号化されません。また、Chrome の閲覧履歴は同期されません。</translation>
-<translation id="5891084409170578560">アクセスしたサイトに他のサイトのコンテンツ（画像、広告、テキストなど）が埋め込まれている場合があります。サイトを閲覧する際、それらのサイトから、保存したあなたに関する情報の使用許可を求められることがあります。</translation>
 <translation id="5891688036610113830">優先 Wi-Fi ネットワーク</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> フォルダの選択を解除する</translation>
 <translation id="5895138241574237353">再起動</translation>
@@ -9249,7 +9244,6 @@
 <translation id="7619937211696316184">メンテナンスが完了しました</translation>
 <translation id="7620616707541471029">続行するには、アカウントを選択してください</translation>
 <translation id="7621382409404463535">デバイスの設定を保存できませんでした。</translation>
-<translation id="7621480263311228380">保存したあなたに関する情報の使用を許可しない</translation>
 <translation id="7621595347123595643">パスワードや PIN を忘れた場合、ローカルデータを復元できなくなります。</translation>
 <translation id="7622114377921274169">充電しています。</translation>
 <translation id="7622768823216805500">多くのサイトは、お支払い手続きを簡易化するなど、ショッピングをより快適にするために支払いハンドラをインストールします。</translation>
@@ -10702,6 +10696,7 @@
 <translation id="8633979878370972178">古いバージョンの Chrome アプリを Linux デバイスで使用できるのは、2022 年 12 月までです。新しいバージョンが利用可能かどうか確認してみてください。</translation>
 <translation id="8634348081024879304">Google Pay で仮想カードを使用できなくなります。<ph name="BEGIN_LINK" />仮想カードについて<ph name="END_LINK" /></translation>
 <translation id="8634703204743010992">ChromeOS 仮想キーボード</translation>
+<translation id="8635399646025169806">タブグループを保持しますか？</translation>
 <translation id="8635628933471165173">再読み込みしています...</translation>
 <translation id="8636284842992792762">拡張機能を初期化しています…</translation>
 <translation id="8636323803535540285">すばやくアクセスできるよう、<ph name="BRAND" /> へのショートカットを追加できます</translation>
@@ -10962,6 +10957,7 @@
 　　　　<ph name="BEGIN_PARAGRAPH2" />Google は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善し、Google のサービスを全般的に改善、提供、維持する目的で、この情報を使用します。また、ユーザーのニーズに応えるうえでの Google およびサードパーティの正当な利益に基づき、この情報を処理します。<ph name="END_PARAGRAPH2" />
 　　　　<ph name="BEGIN_PARAGRAPH3" />[位置情報の精度] は、デバイスの位置情報の設定（[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] &gt; [位置情報の詳細設定]）でいつでもオフにできます。[位置情報の精度] をオフにした場合、位置情報の精度に関するデータは一切収集されません。Android アプリやサービスでは、IP アドレスのみを使用して（可能な場合）、このデバイスの位置情報を判断します。そのため、Google マップなどの Android アプリやサービスでの位置情報の利用範囲と精度に影響する可能性があります。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">次で開く</translation>
+<translation id="8804742093141782941">グループを保持</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{タブを別のウィンドウに移動}other{タブを別のウィンドウに移動}}</translation>
 <translation id="8805140816472474147">同期を開始するには同期設定を確認してください。</translation>
 <translation id="8805255531353778052">非常に大量の節約</translation>

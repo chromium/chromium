@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">টেবৰ কাৰ্ডত দাম কমাটো লুকুৱাওক</translation>
 <translation id="1510341833810331442">ছাইটসমূহক আপোনাৰ ডিভাইচত ডেটা ছেভ কৰাৰ অনুমতি দিয়া নহয়</translation>
 <translation id="1547123415014299762">তৃতীয় পক্ষৰ কুকিৰ অনুমতি দিয়া হয়</translation>
-<translation id="1568470248891039841">আপুনি চোৱা ছাইটসমূহে অন্য এটা ছাইটৰ পৰা প্ৰতিচ্ছবি, বিজ্ঞাপন আৰু পাঠৰ দৰে সমল এম্বেড কৰিব পাৰে। এই ছাইটসমূহে আপুনি ছাইটটো ব্ৰাউজ কৰাৰ সময়ত আপোনাৰ বিষয়ে ছেভ কৰা তথ্য ব্যৱহাৰ কৰাৰ অনুমতি বিচাৰিব পাৰে। <ph name="BEGIN_LINK" />এম্বেড কৰা সমলৰ বিষয়ে অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">স্ক্ৰীনখনৰ একেবাৰে ওপৰৰ অংশৰ ওচৰত নতুন কাৰ্য উপলব্ধ</translation>
 <translation id="1620510694547887537">কেমেৰা</translation>
 <translation id="1633720957382884102">সম্পৰ্কিত ছাইটসমূহ</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">অনাকাংক্ষিত অনুৰোধ সংকোচন কৰক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="3955193568934677022">ছাইটসমূহক সুৰক্ষিত সমল প্লে’ কৰিবলৈ অনুমতি দিয়ক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="3967822245660637423">ডাউনল’ড সম্পূৰ্ণ হ’ল</translation>
-<translation id="3974105241379491420">ছাইটসমূহে আপোনাৰ বিষয়ে ছেভ কৰা তথ্য ব্যৱহাৰ কৰিবলৈ অনুমতি বিচাৰিব পাৰে</translation>
 <translation id="3987993985790029246">লিংক প্ৰতিলিপি কৰক</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">এই পৃষ্ঠাখনৰ বিষয়ে</translation>
@@ -291,7 +289,6 @@
 <translation id="5264323282659631142">‘<ph name="CHIP_LABEL" />’ আঁতৰাওক</translation>
 <translation id="528192093759286357">সম্পূৰ্ণ স্ক্ৰীনৰ পৰা প্ৰস্থান কৰিবলৈ ওপৰৰ পৰা টানি আনক আৰু বেক বুটামটো টিপক।</translation>
 <translation id="5292915569214461965">আপুনি ব্ৰাউজ কৰি থাকোঁতে ছাইটসমূহে আপোনাক ট্ৰেক কৰিবলৈ তৃতীয় পক্ষৰ কুকিৰ ব্যৱহাৰ কৰাটো আপুনি অৱৰোধ কৰিছে। <ph name="BEGIN_LINK" />তৃতীয় পক্ষৰ কুকিসমূহলৈ এক্সেছ পৰিচালনা কৰিবলৈ<ph name="END_LINK" /> ছেটিঙলৈ যাওক।</translation>
-<translation id="5295729974480418933">অন কৰা থাকিলে, ছাইটে আপোনাৰ বিষয়ে ছেভ কৰা তথ্য ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে আপোনাৰ বিষয়ে ছেভ কৰা তথ্য ব্যৱহাৰ কৰিবলৈ বিচাৰিব নোৱাৰে।</translation>
 <translation id="5300589172476337783">দেখুৱাওক</translation>
 <translation id="5301954838959518834">ঠিক আছে, বুজি পালোঁ</translation>
 <translation id="5317780077021120954">ছেভ কৰক</translation>
@@ -299,7 +296,6 @@
 <translation id="534295439873310000">NFC ডিভাইচসমূহ</translation>
 <translation id="5344522958567249764">বিজ্ঞাপনৰ গোপনীয়তা পৰিচালনা কৰক</translation>
 <translation id="5373874281522292782">আপোনাৰ টেবৰ গোট ছেভ কৰা হৈছে</translation>
-<translation id="5389626883706033615">ছাইটসমূহে আপোনাৰ বিষয়ে ছেভ কৰা তথ্য ব্যৱহাৰ কৰিবলৈ অনুমতি বিচৰাৰ পৰা অৱৰোধ কৰা হৈছে</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(আৰু ১টা)}one{(আৰু #টা)}other{(আৰু #টা)}}</translation>
 <translation id="5403592356182871684">নামসমূহ</translation>
 <translation id="5438097262470833822">এই বাছনিটোৱে <ph name="WEBSITE" />ৰ বাবে অনুমতি ৰিছেট কৰিব</translation>
@@ -320,7 +316,6 @@
 <translation id="5677928146339483299">অৱৰোধিত</translation>
 <translation id="5689516760719285838">অৱস্থান</translation>
 <translation id="5690795753582697420">Android ছেটিংসমূহত কেমেৰাটো অফ কৰা হ’ল</translation>
-<translation id="5691080386278724773">আপুনি ব্ৰাউজ কৰি থাকোঁতে <ph name="SITE" />এ আপোনাৰ তথ্য ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="5700761515355162635">তৃতীয় পক্ষৰ কুকিসমূহক অনুমতি দিয়া হৈছে</translation>
 <translation id="5706552988683188916">এইটোৱে <ph name="WEBSITE" />ৰ বাবে কুকি আৰু ছাইটৰ অন্য ডেটা মচে</translation>
 <translation id="5723967018671998714">ইনক'গনিট' ম'ডত তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা হয়</translation>
@@ -370,7 +365,6 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> আৰু <ph name="PERMISSION_2" />ক অৱৰোধ কৰা আছে</translation>
 <translation id="6270391203985052864">ছাইটসমূহে জাননী পঠিয়াবলৈ ক’ব পাৰে</translation>
 <translation id="6295158916970320988">সকলো ছাইট</translation>
-<translation id="6304434827459067558">ইয়াত আপোনাৰ তথ্য ব্যৱহাৰ কৰাৰ পৰা <ph name="SITE" />ক অৱৰোধ কৰা হৈছে</translation>
 <translation id="6320088164292336938">কম্পন</translation>
 <translation id="6344622098450209924">ট্ৰেক কৰাৰ পৰা সুৰক্ষিত কৰাৰ সুবিধা</translation>
 <translation id="6367753977865761591">নিৰ্দিষ্ট কোনো ছাইটৰ বাবে তৃতীয় পক্ষৰ ছাইন ইন অৱৰোধ কৰক।</translation>

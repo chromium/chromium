@@ -3564,19 +3564,10 @@ void PaintPropertyTreeBuilder::UpdateFragmentData() {
     object_.GetMutableForPainting().FragmentList().Shrink(1);
 
     if (context_.fragment_context.current.fragmentainer_idx == WTF::kNotFound) {
-      // We're not fragmented, but we may have been previously. Reset the
-      // fragmentainer index.
-      fragment.SetFragmentID(0);
-
+      // We're not fragmented, but we may have been previously.
       if (old_fragment_count > 1u) {
         object_.GetMutableForPainting().FragmentCountChanged();
       }
-    } else {
-      // We're inside monolithic content, but further out there's a
-      // fragmentation context. Keep the fragmentainer index, so that the
-      // contents end up in the right one.
-      fragment.SetFragmentID(
-          context_.fragment_context.current.fragmentainer_idx);
     }
   }
 }

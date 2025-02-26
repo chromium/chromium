@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">Sakrij karticu Padovi cijena na karticama</translation>
 <translation id="1510341833810331442">Web lokacijama nije dozvoljeno da pohranjuju podatke na uređaj</translation>
 <translation id="1547123415014299762">Kolačići treće strane su dozvoljeni</translation>
-<translation id="1568470248891039841">Web lokacije koje posjetite mogu ugraditi sadržaj s drugih web lokacija, npr. slike, oglase i tekst. Te druge web lokacije mogu tražiti odobrenje za korištenje informacija o vama koje su sačuvale dok ste pregledali web lokaciju. <ph name="BEGIN_LINK" />Saznajte više o ugrađenom sadržaju<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Nove radnje su dostupne pri vrhu ekrana</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Srodne web lokacije</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">Suzi neželjene zahtjeve (preporučeno)</translation>
 <translation id="3955193568934677022">Dozvoljava web lokacijama da reproduciraju zaštićeni sadržaj (preporučeno)</translation>
 <translation id="3967822245660637423">Preuzimanje je završeno</translation>
-<translation id="3974105241379491420">Web lokacije mogu tražiti da koriste informacije koje su sačuvale o vama</translation>
 <translation id="3987993985790029246">Kopiraj link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992684624889376114">O ovoj stranici</translation>
@@ -291,7 +289,6 @@
 <translation id="5264323282659631142">Uklanjanje stavke "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Povucite s vrha i dodirnite dugme za nazad da napustite prikaz preko cijelog ekrana.</translation>
 <translation id="5292915569214461965">Onemogućili ste web lokacijama da koriste kolačiće trećih strana da vas prate dok pregledate. Idite u postavke da <ph name="BEGIN_LINK" />upravljate pristupom kolačićima trećih strana<ph name="END_LINK" />.</translation>
-<translation id="5295729974480418933">Kada je postavka uključena, web lokacije mogu zatražiti da koriste informacije koje su sačuvale o vama. Kada je postavka isključena, web lokacije ne mogu zatražiti da koriste informacije koje su sačuvale o vama.</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5301954838959518834">Uredu, razumijem</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
@@ -299,7 +296,6 @@
 <translation id="534295439873310000">NFC uređaji</translation>
 <translation id="5344522958567249764">Upravljajte privatnošću pri izloženosti oglasima</translation>
 <translation id="5373874281522292782">Grupe kartica su sačuvane</translation>
-<translation id="5389626883706033615">Web lokacije su blokirane tako da vas ne pitaju za korištenje sačuvanih informacija o vama</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i još 1)}one{(i još #)}few{(i još #)}other{(i još #)}}</translation>
 <translation id="5403592356182871684">Imena</translation>
 <translation id="5438097262470833822">Ovim odabirom će se poništiti odobrenja za web lokaciju <ph name="WEBSITE" /></translation>
@@ -320,7 +316,6 @@
 <translation id="5677928146339483299">Blokirano</translation>
 <translation id="5689516760719285838">Lokacija</translation>
 <translation id="5690795753582697420">Kamera je isključena u postavkama Androida</translation>
-<translation id="5691080386278724773">Web lokacija <ph name="SITE" /> može koristiti informacije o vama dok pregledate</translation>
 <translation id="5700761515355162635">Kolačići treće strane su dozvoljeni</translation>
 <translation id="5706552988683188916">Ovim se brišu kolačići i drugi podaci web lokacije za <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Kolačići trećih strana su blokirani u anonimnom načinu rada</translation>
@@ -370,7 +365,6 @@
 <translation id="6262279340360821358">Blokirano: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Web lokacije mogu tražiti da šalju obavještenja</translation>
 <translation id="6295158916970320988">Sve web lokacije</translation>
-<translation id="6304434827459067558">Web lokacija <ph name="SITE" /> je blokirana i ne može koristiti informacije o vama na</translation>
 <translation id="6320088164292336938">Vibracija</translation>
 <translation id="6344622098450209924">Zaštita od praćenja</translation>
 <translation id="6367753977865761591">Blokirajte prijavu trećih stana za određenu web lokaciju.</translation>

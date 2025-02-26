@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
+<translation id="1045448422538531528">Бүлэгт нэмэх</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> долоо хоногийн өмнө үүсгэсэн}other{<ph name="NUM_WEEKS_MANY" /> долоо хоногийн өмнө үүсгэсэн}}</translation>
 <translation id="1063300264396686489">Бусад төхөөрөмжөөс табын бүлгийг автоматаар нээх</translation>
 <translation id="1075622780330595106">Таны табуудаас <ph name="NUMBER_OF_TABS" />-г нь сүүлийн үед ашиглаагүй байна. Тэдгээрийг хаах уу?</translation>
@@ -11,6 +12,7 @@
 <translation id="1293272072740285747">Дараа таб нэмэхийн тулд энэ бүлгийг үлдээх эсвэл уг бүлэг танд цаашид хэрэггүй болсон бол устгана уу.
 
 Хэрэв та бүлгийг устгавал хүн бүр "<ph name="TITLE_OF_GROUP" />" табын бүлэгт хандах эрхээ тэр даруй алдах бөгөөд тус бүлгийг бүх төхөөрөмжөөс устгана.</translation>
+<translation id="1326654401173629446">"<ph name="TAB_GROUP_NAME" />" табын бүлэг цаашид боломжгүй болсон</translation>
 <translation id="1329584516321524826">Дөнгөж сая шинэчилсэн</translation>
 <translation id="1340839264183302272">Бүлгээс гарах</translation>
 <translation id="1419023007528516122">Энэ нь бүлгийг таны төхөөрөмжөөс бүрмөсөн устгана</translation>

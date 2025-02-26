@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">Ukryj kartę Obniżki cen na kartach</translation>
 <translation id="1510341833810331442">Witryny nie mogą zapisywać danych na Twoim urządzeniu</translation>
 <translation id="1547123415014299762">Pliki cookie innych firm są dozwolone</translation>
-<translation id="1568470248891039841">Witryny, które odwiedzasz, mogą wykorzystywać treści z innych witryn, np. obrazy, reklamy i tekst. Te inne witryny mogą prosić o zgodę na korzystanie z informacji o Tobie zapisanych przez nie podczas przeglądania tych witryn. <ph name="BEGIN_LINK" />Więcej informacji o ustawieniu „Umieszczona treść”<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Nowe działania są dostępne u góry ekranu</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Powiązane witryny</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">Zwiń niechciane żądania (zalecane)</translation>
 <translation id="3955193568934677022">Zezwalaj stronom na odtwarzanie treści chronionej (zalecane)</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
-<translation id="3974105241379491420">Strony mogą prosić o zgodę na używanie zapisanych o Tobie informacji</translation>
 <translation id="3987993985790029246">Skopiuj link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">Informacje o tej stronie</translation>
@@ -291,7 +289,6 @@
 <translation id="5264323282659631142">Usuń: „<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">Przeciągnij od góry i kliknij przycisk Wstecz, by wyjść z trybu pełnoekranowego.</translation>
 <translation id="5292915569214461965">Witryny nie mogą używać plików cookie innych firm, aby uzyskiwać informacje na temat przeglądania przez Ciebie internetu. Aby <ph name="BEGIN_LINK" />zarządzać dostępem do plików cookie innych firm<ph name="END_LINK" />, otwórz ustawienia.</translation>
-<translation id="5295729974480418933">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na wykorzystanie zapisanych informacji o Tobie. Gdy jest wyłączona, nie mogą o to prosić.</translation>
 <translation id="5300589172476337783">Pokaż</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5317780077021120954">Zapisz</translation>
@@ -299,7 +296,6 @@
 <translation id="534295439873310000">Urządzenia z funkcją NFC</translation>
 <translation id="5344522958567249764">Zarządzaj prywatnością w reklamach</translation>
 <translation id="5373874281522292782">Twoje grupy kart zostały zapisane</translation>
-<translation id="5389626883706033615">Strony nie mogą prosić Cię o korzystanie z informacji, które o Tobie zapisały</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i jeszcze 1)}few{(i jeszcze #)}many{(i jeszcze #)}other{(i jeszcze #)}}</translation>
 <translation id="5403592356182871684">Nazwy</translation>
 <translation id="5438097262470833822">Spowoduje to zresetowanie uprawnień witryny <ph name="WEBSITE" /></translation>
@@ -320,7 +316,6 @@
 <translation id="5677928146339483299">Zablokowane</translation>
 <translation id="5689516760719285838">Lokalizacja</translation>
 <translation id="5690795753582697420">Kamera jest wyłączona w ustawieniach Androida</translation>
-<translation id="5691080386278724773">Witryna <ph name="SITE" /> może używać Twoich danych podczas przeglądania przez Ciebie stron internetowych</translation>
 <translation id="5700761515355162635">Pliki cookie innych firm są dozwolone</translation>
 <translation id="5706552988683188916">Spowoduje to usunięcie plików cookie i innych danych witryny <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Pliki cookie innych firm są blokowane w trybie incognito</translation>
@@ -370,7 +365,6 @@
 <translation id="6262279340360821358">Zablokowane: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Witryny mogą prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="6295158916970320988">Wszystkie witryny</translation>
-<translation id="6304434827459067558">Witryna <ph name="SITE" /> nie może używać Twoich danych na</translation>
 <translation id="6320088164292336938">Wibracje</translation>
 <translation id="6344622098450209924">Ochrona przed śledzeniem</translation>
 <translation id="6367753977865761591">Blokowanie logowania przez usługę zewnętrzną w określonej witrynie.</translation>

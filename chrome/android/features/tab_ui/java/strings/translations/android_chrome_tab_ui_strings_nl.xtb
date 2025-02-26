@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1045448422538531528">Toevoegen aan groep</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> week geleden gemaakt}other{<ph name="NUM_WEEKS_MANY" /> weken geleden gemaakt}}</translation>
 <translation id="1063300264396686489">Tabbladgroepen van andere apparaten automatisch openen</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> van je tabbladen zijn niet recent gebruikt. Wil je ze sluiten?</translation>

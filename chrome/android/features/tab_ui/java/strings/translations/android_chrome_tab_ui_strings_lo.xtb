@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
+<translation id="1045448422538531528">ເພີ່ມໃສ່ກຸ່ມ</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{ສ້າງເມື່ອ <ph name="NUM_WEEKS_ONE" /> ອາທິດກ່ອນ}other{ສ້າງເມື່ອ <ph name="NUM_WEEKS_MANY" /> ອາທິດກ່ອນ}}</translation>
 <translation id="1063300264396686489">ເປີດກຸ່ມແຖບຈາກອຸປະກອນອື່ນໆໂດຍອັດຕະໂນມັດ</translation>
 <translation id="1075622780330595106">ທ່ານບໍ່ໄດ້ໃຊ້ແຖບ <ph name="NUMBER_OF_TABS" /> ແຖບມາໄລຍະໜຶ່ງແລ້ວ. ປິດພວກມັນບໍ?</translation>

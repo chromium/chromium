@@ -45,6 +45,14 @@ struct TouchTransferState {
   // Device scale factor being used to create MotionEventAndroid objects for
   // converting device pixels to device independent pixels.
   float dip_scale;
+
+  // A touch sequence that Browser would have handled, and should be returned to
+  // Browser if it were a new sequence.
+  // With Android 15 QPR2 update, the touches are always split across windows:
+  // https://cs.android.com/android/_/android/platform/frameworks/native/+/a3fe664ce5d4931e2717a1ed48c8ea8e66b03ac8
+  // What it means for Chrome is the pointer downs hit Browser process instead
+  // of coming directly to Viz. They need to be transferred individually to Viz.
+  bool browser_would_have_handled = false;
 };
 
 // Implemented by Viz, an interface between Browser and Viz. It defines methods

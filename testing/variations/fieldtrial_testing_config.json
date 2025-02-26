@@ -1651,6 +1651,26 @@
             ]
         }
     ],
+    "AutofillDeduplicateAccountAdresses": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillDeduplicateAccountAdresses"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillDisableLocalCardMigration": [
         {
             "platforms": [
@@ -2089,28 +2109,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillGreekRegexes"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillI18nAddressModelAndRegexesGEITPL": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillUseITAddressModel",
-                        "AutofillUsePLAddressModel"
                     ]
                 }
             ]
@@ -25096,27 +25094,6 @@
             ]
         }
     ],
-    "V8UpdateLimitAfterLoading": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8UpdateLimitAfterLoading"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8WasmDeoptCallIndirectInlining": [
         {
             "platforms": [
@@ -26374,6 +26351,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "WebViewPrefetchFromRenderer": "true"
+                    },
                     "enable_features": [
                         "WebViewPrefetchNativeLibrary"
                     ]

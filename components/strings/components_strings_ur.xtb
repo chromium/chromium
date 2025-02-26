@@ -772,6 +772,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> کی میعاد <ph name="EXPIRATION_DATE_ABBR" /> کو ختم ہو جائے گی</translation>
 <translation id="2337852623177822836">ترتیب آپ کے منتظم کی جانب سے کنٹرول کی جاتی ہے</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> جوڑا بنانا چاہتی ہے</translation>
+<translation id="2344529975040861103">‏آپ اس کارڈ کو آٹو فل کر سکتے ہیں کیونکہ آپ کا اکاؤنٹ Google Pay سے لنک ہے</translation>
 <translation id="2346319942568447007">آپ کی کاپی کردہ تصویر</translation>
 <translation id="2348509731468399833">قیمت کی ٹریکنگ بند ہو گئی۔</translation>
 <translation id="2349957959687031096">پوشیدگی ٹیب کھولیں بٹن، نجی طور پر براؤز کرنے کے لیے ایک نیا پوشیدگی ٹیب کھولنے کے لیے فعال کریں</translation>
@@ -1031,7 +1032,6 @@
 <translation id="2833637280516285136">ٹاک ریڈیو</translation>
 <translation id="2835170189407361413">فارم صاف کریں</translation>
 <translation id="2837891525090413132">آپ کے کی بورڈ کو مقفل کرنے اور استعمال کرنے کے لیے کہہ سکتی ہے</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> آپ کے بارے میں محفوظ کردہ معلومات کو استعمال کرنا چاہتا ہے</translation>
 <translation id="2839032553903800133">اطلاعات مسدود ہیں</translation>
 <translation id="2839501879576190149">آگے جعلی سائٹ ہے</translation>
 <translation id="2843623755398178332">اپنے مشترکہ ٹیب کو اسکرول اور زوم کریں؟</translation>
@@ -4580,6 +4580,7 @@
 <translation id="9139318394846604261">خریداری</translation>
 <translation id="9140198744651252040">‏‫Chrome براؤزر پاس ورڈز کو آٹو فل کرنے کے لیے فنگر پرنٹ استعمال کرنا چاہے گا</translation>
 <translation id="9141013498910525015">پتوں کا نظم کریں</translation>
+<translation id="9143898823728499852">‏آپ اس کارڈ کو آٹو فل کر سکتے ہیں کیونکہ آپ کا <ph name="CARD_ISSUER_NAME" /> اکاؤنٹ Google Pay سے لنک ہے</translation>
 <translation id="9144951720726881238">اختتامی تاریخ:</translation>
 <translation id="9145910032514306808">دوبارہ <ph name="BEGIN_LINK" />سائن ان کریں<ph name="END_LINK" />، پھر تحریری مدد حاصل کرنے کیلئے اس ٹیب پر واپس آئیں</translation>
 <translation id="9145936855791010051">موازنہ کریں</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
+<translation id="1045448422538531528">ಗುಂಪಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> ವಾರದ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}one{<ph name="NUM_WEEKS_MANY" /> ವಾರಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}other{<ph name="NUM_WEEKS_MANY" /> ವಾರಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}}</translation>
 <translation id="1063300264396686489">ಇತರ ಸಾಧನಗಳಿಂದ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯಿರಿ</translation>
 <translation id="1075622780330595106">ನೀವು ಈ ನಡುವೆ ಬಳಸದ <ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳಿವೆ. ಅವುಗಳನ್ನು ಮುಚ್ಚುವುದೇ?</translation>
@@ -11,6 +12,7 @@
 <translation id="1293272072740285747">ನಂತರ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಲು ಈ ಗುಂಪನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮಗೆ ಅಗತ್ಯವಿಲ್ಲದಿದ್ದರೆ ಅದನ್ನು ಅಳಿಸಿ.
 
 ನೀವು ಅದನ್ನು ಅಳಿಸಿದರೆ, ಎಲ್ಲರೂ ತಕ್ಷಣವೇ "<ph name="TITLE_OF_GROUP" />" ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತಾರೆ ಮತ್ತು ಅದನ್ನು ಎಲ್ಲಾ ಸಾಧನಗಳಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
+<translation id="1326654401173629446">"<ph name="TAB_GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="1329584516321524826">ಇದೀಗ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1340839264183302272">ಗುಂಪನ್ನು ತೊರೆಯಿರಿ</translation>
 <translation id="1419023007528516122">ಇದು ನಿಮ್ಮ ಸಾಧನದಿಂದ ಗುಂಪನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸುತ್ತದೆ</translation>

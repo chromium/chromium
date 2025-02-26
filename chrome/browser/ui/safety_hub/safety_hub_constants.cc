@@ -33,6 +33,7 @@ const char kAbusiveRevocationLifetimeKey[] = "abusiveRevocationLifetime";
 const char kRevokedStatusDictKeyStr[] = "revoked_status";
 const char kIgnoreStr[] = "ignore";
 const char kRevokeStr[] = "revoke";
+const char kProposedStr[] = "proposed";
 
 const char kOrigin[] = "origin";
 const char kUsername[] = "username";

@@ -669,6 +669,7 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
   if (input::IsTransferInputToVizSupported()) {
     input_transfer_handler_ =
         std::make_unique<InputTransferHandlerAndroid>(this);
+    host()->AddInputEventObserver(&input_transfer_handler_->GetInputObserver());
   }
 }
 
@@ -1342,7 +1343,8 @@ gpu::SurfaceHandle RenderWidgetHostViewAndroid::GetRootSurfaceHandle() {
 }
 
 void RenderWidgetHostViewAndroid::SendStateOnTouchTransfer(
-    const ui::MotionEvent& event) {
+    const ui::MotionEvent& event,
+    bool browser_would_have_handled) {
   TRACE_EVENT("input", "RenderWidgetHostViewAndroid::StateOnTouchTransfer");
   CHECK(host());
   auto* remote = host()->delegate()->GetRenderInputRouterDelegateRemote();
@@ -1351,8 +1353,8 @@ void RenderWidgetHostViewAndroid::SendStateOnTouchTransfer(
   // GetY.
   int y_offset_pix = -(std::round(event.GetRawOffsetY() * view_.GetDipScale()));
   remote->StateOnTouchTransfer(input::mojom::TouchTransferState::New(
-      event.GetDownTime(), GetFrameSinkId(), y_offset_pix,
-      view_.GetDipScale()));
+      event.GetDownTime(), GetFrameSinkId(), y_offset_pix, view_.GetDipScale(),
+      browser_would_have_handled));
 }
 
 viz::FrameSinkId RenderWidgetHostViewAndroid::GetRootFrameSinkId() {
@@ -1654,6 +1656,10 @@ void RenderWidgetHostViewAndroid::Destroy() {
   host()->ViewDestroyed();
   host()->RemoveInputEventObserver(
       touch_selection_controller_input_observer_.get());
+  if (input_transfer_handler_) {
+    host()->RemoveInputEventObserver(
+        &input_transfer_handler_->GetInputObserver());
+  }
   UpdateNativeViewTree(/*parent_native_view=*/nullptr,
                        /*parent_layer=*/nullptr);
   delegated_frame_host_.reset();
@@ -1901,6 +1907,8 @@ void RenderWidgetHostViewAndroid::OnSelectionEvent(
     // latency of the selection to the user hides any latency from this input
     // transfer request.
     if (input_transfer_handler_) {
+      // TODO(397429301): Handle potential pointer inversion which might happen
+      // if a new pointer down is racing with request input back.
       input_transfer_handler_->RequestInputBack();
     }
     if (gesture_provider_.GetCurrentDownEvent()) {
@@ -2614,6 +2622,14 @@ RenderWidgetHostViewAndroid::GetTouchSelectionControllerClientManager() {
 TouchSelectionControllerInputObserver*
 RenderWidgetHostViewAndroid::GetTouchSelectionControllerInputObserver() {
   return touch_selection_controller_input_observer_.get();
+}
+
+RenderWidgetHost::InputEventObserver*
+RenderWidgetHostViewAndroid::GetInputTransferHandlerObserver() {
+  if (!input_transfer_handler_) {
+    return nullptr;
+  }
+  return &input_transfer_handler_->GetInputObserver();
 }
 
 const viz::LocalSurfaceId& RenderWidgetHostViewAndroid::GetLocalSurfaceId()

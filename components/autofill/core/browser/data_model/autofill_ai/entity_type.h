@@ -7,6 +7,7 @@
 
 #include <ostream>
 #include <string_view>
+#include <type_traits>
 
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
@@ -137,9 +138,13 @@ constexpr bool AttributeType::is_structured_type() const {
   switch (name_) {
     case AttributeTypeName::kPassportName:
     case AttributeTypeName::kDriversLicenseName:
-    case AttributeTypeName::kPassportCountry:
-    case AttributeTypeName::kDriversLicenseRegion:
       return true;
+    case AttributeTypeName::kPassportCountry:
+      // TODO(crbug.com/389625753): Add special support for country types.
+      return false;
+    case AttributeTypeName::kDriversLicenseRegion:
+      // TODO(crbug.com/389625753): Add special support for state types.
+      return false;
     case AttributeTypeName::kPassportExpiryDate:
     case AttributeTypeName::kPassportIssueDate:
     case AttributeTypeName::kDriversLicenseExpirationDate:
@@ -263,6 +268,11 @@ class EntityType final {
  private:
   EntityTypeName name_{};
 };
+
+// Validates a raw value corresponding to an `EntityTypeName` object. Returns
+// the corresponding enum value if valid, or `std::nullopt` otherwise.
+std::optional<EntityTypeName> ToSafeEntityTypeName(
+    std::underlying_type_t<EntityTypeName> raw_value);
 
 template <>
 struct DenseSetTraits<EntityType> {

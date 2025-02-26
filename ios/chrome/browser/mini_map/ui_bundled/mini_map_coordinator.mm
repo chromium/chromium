@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -177,12 +178,11 @@
   [self.miniMapController
       configureFooterWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_MINI_MAP_FOOTER_STRING)
-      leadingButtonTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_SETTINGS_TITLE)
+      leadingButtonTitle:l10n_util::GetNSString(IDS_IOS_MINI_MAP_DISABLE_STRING)
       trailingButtonTitle:l10n_util::GetNSString(
                               IDS_IOS_OPTIONS_REPORT_AN_ISSUE)
       leadingButtonAction:^(UIViewController* viewController) {
-        [weakSelf
-            showContentSettingsFromMiniMapInViewController:viewController];
+        [weakSelf disableOneTapMinimapFromViewController:viewController];
       }
       trailingButtonAction:^(UIViewController* viewController) {
         [weakSelf reportAnIssueFromMiniMapInViewController:viewController];
@@ -236,6 +236,36 @@
       self.browser->GetCommandDispatcher(), SettingsCommands);
   [settingsCommandHandler
       showContentsSettingsFromViewController:viewController];
+}
+
+- (void)disableOneTapMinimapFromViewController:
+    (UIViewController*)viewController {
+  [self.mediator userDisabledSettingFromMiniMap];
+
+  [viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                              completion:nil];
+  id<SnackbarCommands> snackbarCommandHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
+  __weak __typeof(self) weakSelf = self;
+  [snackbarCommandHandler
+      showSnackbarWithMessage:l10n_util::GetNSString(
+                                  IDS_IOS_MINI_MAP_DISABLE_CONFIRMATION_STRING)
+      buttonText:l10n_util::GetNSString(
+                     IDS_IOS_MINI_MAP_DISABLE_CONFIRMATION_BUTTON_STRING)
+      messageAction:^{
+        [weakSelf userOpenedSettingsFromConfirmation];
+      }
+      completionAction:^(BOOL) {
+        [weakSelf workflowEnded];
+      }];
+}
+
+- (void)userOpenedSettingsFromConfirmation {
+  [self.mediator userOpenedSettingsFromDisableConfirmation];
+  id<SettingsCommands> settingsCommandHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
+  [settingsCommandHandler
+      showContentsSettingsFromViewController:self.baseViewController];
 }
 
 - (void)reportAnIssueFromMiniMapInViewController:

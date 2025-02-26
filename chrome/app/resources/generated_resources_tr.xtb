@@ -17,7 +17,6 @@
 <translation id="1007057452468855774">Google Play Store'u aç</translation>
 <translation id="1008186147501209563">Yer işaretlerini dışa aktar</translation>
 <translation id="1008261151167010035"><ph name="BRAND" />, nasıl oturum açtığınızı hatırlar ve mümkün olduğunda oturumunuzu otomatik olarak açar. Bu özellik kapalıyken her defasında işlemi onaylamanız istenir.</translation>
-<translation id="1008544602823861396">sitesinin, şu sitelerdeki bilgilerinizi kullanması engellendi</translation>
 <translation id="1008557486741366299">Şimdi Değil</translation>
 <translation id="100881991356161927">Site adı</translation>
 <translation id="1009663062402466586">Oyun denetimleri artık kullanılabilir</translation>
@@ -837,6 +836,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1575741822946219011">Diller ve girişler</translation>
 <translation id="1576594961618857597">Varsayılan beyaz avatar</translation>
 <translation id="1576729678809834061">Bu arama sonucunu bildir</translation>
+<translation id="1578110287710452646">Yan Yana Yeniden Boyutlandırma Tutamacı</translation>
 <translation id="1578488449637163638">Koyu</translation>
 <translation id="1578558981922970608">Kapanmaya zorla</translation>
 <translation id="157931050206866263">Kötü amaçlı yazılım taramaları hakkında daha fazla bilgi</translation>
@@ -2398,7 +2398,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2653659639078652383">Gönder</translation>
 <translation id="265390580714150011">Alan Değeri</translation>
 <translation id="2654553774144920065">Yazdırma isteği</translation>
-<translation id="265680054508313161"><ph name="USERNAME" /> olarak devam et</translation>
 <translation id="265748523151262387">Telefonunuzla bağlantıda kalın</translation>
 <translation id="2657612187216250073">İşaretçi erişilebilirlik ayarları</translation>
 <translation id="2658510146844889864">Geçiş anahtarları ve güvenlik anahtarları</translation>
@@ -2527,6 +2526,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2739191690716947896">Hata ayıkla</translation>
 <translation id="2739240477418971307">Erişilebilirlik ayarlarını değiştirme</translation>
 <translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" /> üzerinden internete bağlanıldı</translation>
+<translation id="2739887572830526131">Daha sonra sekme eklemek için bu grubu tutun ya da artık ihtiyacınız yoksa silin.</translation>
 <translation id="274029851662193272">Bastırılmış</translation>
 <translation id="2740531572673183784">Tamam</translation>
 <translation id="2740876196999178364">Bu geçiş anahtarları yalnızca bu cihaza kaydedilir. Google Hesabınıza kaydedilmezler.</translation>
@@ -4031,6 +4031,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3813358687923336574">Sayfaları ve Bil bakalım'ı çevirmek için kullanılan dil</translation>
 <translation id="3813458570141926987">Chrome'un, son tarama geçmişinize göre tahmin ettiği konuların listesi</translation>
 <translation id="3814529970604306954">Okul Hesabı</translation>
+<translation id="3815668647912194650">Daha sonra sekme eklemek için bu grubu tutun veya artık erişmek istemiyorsanız gruptan ayrılın.</translation>
 <translation id="3816118180265633665">Chrome Renkleri</translation>
 <translation id="3817524650114746564">Bilgisayarınızın proxy ayarlarını açın</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazların otomatik raporlar göndermesine izin vererek ChromeOS ile ilgili düzeltme ve iyileştirme çalışmalarımızda nelere öncelik verileceğini belirlememize yardımcı olursunuz. ChromeOS kilitlenme zamanı, kullandığınız özellikler ve genellikle kullandığınız bellek miktarı gibi bilgiler bu raporlarda yer alabilir.<ph name="END_PARAGRAPH1" />
@@ -4267,7 +4268,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="3971764089670057203">Bu güvenlik anahtarındaki parmak izleri</translation>
 <translation id="3973005893595042880">Kullanıcıya izin verilmiyor</translation>
 <translation id="3973660817924297510">Şifreler kontrol ediliyor (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
-<translation id="3974105241379491420">Siteler, hakkınızda kaydettikleri bilgileri kullanmak için izin isteyebilir</translation>
 <translation id="3974514184580396500">Ekrandaki odağınızı sonraki öğeye kaydırmak için "Sonraki" seçeneğini kullanın</translation>
 <translation id="3975017815357433345">Otoyol</translation>
 <translation id="3975201861340929143">Açıklama</translation>
@@ -4514,7 +4514,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4146785383423576110">Sıfırla ve temizle</translation>
 <translation id="4147099377280085053">Braille tablosu seç</translation>
 <translation id="4147911968024186208">Lütfen yeniden deneyin. Bu hatayı tekrar görürseniz lütfen destek temsilcinizle iletişime geçin.</translation>
-<translation id="414800391140809654">siz gezinirken bilgilerinizi kullanabilir</translation>
 <translation id="4148195018520464922">Oturum açabilecek kişileri belirli kullanıcılarla sınırlandırabilirsiniz. Bu işlem, oturum açma ekranındaki "Kişi ekle" seçeneğini kaldırır. Ayrıca, mevcut kullanıcıları da kaldırabilirsiniz.</translation>
 <translation id="4148957013307229264">Yükleniyor...</translation>
 <translation id="4149385644005013189">Her şey yolunda görünüyor.</translation>
@@ -5304,7 +5303,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4730492586225682674">Kilit ekranında ekran kalemiyle alınan en son not</translation>
 <translation id="4730888769809690665"><ph name="SITE" /> için bildirimlere izin veriliyor</translation>
-<translation id="4731306954230393087">Sizinle ilgili kaydettiği bilgileri kullanmasına izin verilen siteler</translation>
 <translation id="4732799736617504962">Bağlı mikrofon yalnızca gürültü giderme özelliğini destekleyebilir</translation>
 <translation id="4733161265940833579">%<ph name="BATTERY_PERCENTAGE" /> (Sol)</translation>
 <translation id="4733793249294335256">Konum</translation>
@@ -6207,7 +6205,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Çok sayıda bildirim gönderen 1 site bulundu}other{Çok sayıda bildirim gönderen {NUM_SITES} site bulundu}}</translation>
 <translation id="5388885445722491159">Eşleştirilmiş</translation>
 <translation id="5389224261615877010">Gökkuşağı</translation>
-<translation id="5389626883706033615">Sitelerin, hakkınızda kaydettikleri bilgileri kullanmak için izin istemesi engellenir</translation>
 <translation id="5389794555912875905">Güvenli olmayan sitelere gitmeden önce uyarı göster (önerilir)</translation>
 <translation id="5389943529251318913">Fare hızını şu kadar azalt:</translation>
 <translation id="5390112241331447203">Geri bildirim raporlarında gönderilen system_logs.txt dosyasını dahil et.</translation>
@@ -6895,7 +6892,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5888889603768021126">Şununla oturum açıldı:</translation>
 <translation id="5889282057229379085">Ara CA sayısı üst sınırı: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Senkronize edilen verileri kendi <ph name="BEGIN_LINK" />senkronizasyon parolanızla<ph name="END_LINK" /> şifreleyin. Google Pay'deki ödeme yöntemleri ve adresler şifrelenmez. Chrome'daki tarama geçmişi senkronize edilmez.</translation>
-<translation id="5891084409170578560">Ziyaret ettiğiniz siteler, diğer sitelerdeki resim, reklam ve metin gibi içerikleri yerleştirebilir. Bu diğer siteler, sitede gezinirken hakkınızda kaydettikleri bilgileri kullanmak için izin isteyebilir.</translation>
 <translation id="5891688036610113830">Tercih edilen kablosuz ağlar</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> klasörünün seçimini kaldır</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
@@ -9261,7 +9257,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7619937211696316184">Bakım işlemi tamamlandı</translation>
 <translation id="7620616707541471029">Devam etmek için bir hesap seçin</translation>
 <translation id="7621382409404463535">Sistem cihaz yapılandırmasını kaydedemedi.</translation>
-<translation id="7621480263311228380">Sizinle ilgili kaydettiği bilgileri kullanmasına izin verilmeyen siteler</translation>
 <translation id="7621595347123595643">Şifrenizi veya PIN'inizi unutursanız yerel verileri kurtaramazsınız.</translation>
 <translation id="7622114377921274169">Şarj oluyor.</translation>
 <translation id="7622768823216805500">Daha kolay ödeme gibi alışveriş özelliklerinin kullanılması için siteler genellikle ödeme işleyiciler yükler</translation>
@@ -10715,6 +10710,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8633979878370972178">Chrome Uygulamalarının eski sürümleri Aralık 2022'den sonra Linux cihazlarda açılmayacaktır. Yeni bir sürümün olup olmadığını kontrol edebilirsiniz.</translation>
 <translation id="8634348081024879304">Sanal kartınızı artık Google Pay'de kullanamazsınız. <ph name="BEGIN_LINK" />Sanal kartlar hakkında bilgi<ph name="END_LINK" /></translation>
 <translation id="8634703204743010992">ChromeOS Sanal Klavye</translation>
+<translation id="8635399646025169806">Sekme grubu tutulsun mu?</translation>
 <translation id="8635628933471165173">Yeniden yükleniyor...</translation>
 <translation id="8636284842992792762">Uzantılar başlatılıyor...</translation>
 <translation id="8636323803535540285">Buraya daha hızlı ulaşmak için <ph name="BRAND" /> hizmetinin kısayolunu ekleyin</translation>
@@ -10975,6 +10971,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
     <ph name="BEGIN_PARAGRAPH2" />Google, bu bilgileri kimliğinizi belirlemeden şu amaçlarla kullanır: konum doğruluğu ve konuma dayalı hizmetleri iyileştirme; Google hizmetlerini genel anlamda geliştirme, sunma ve sürdürme. Bu bilgileri, Google'ın ve üçüncü tarafların meşru menfaatleri doğrultusunda kullanıcı ihtiyaçlarını karşılamak için işleriz.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Konum Doğruluğu'nu dilediğiniz zaman cihazınızın konum ayarlarından (Ayarlar &gt; Gizlilik ve güvenlik &gt; Gizlilik denetimleri &gt; Konum erişimi &gt; Gelişmiş konum ayarları) devre dışı bırakabilirsiniz. Konum Doğruluğu devre dışıyken bu özellikle ilgili veri toplanmaz. Android uygulamaları ve hizmetlerinde cihazınızın konumunu belirlemek için mevcutsa yalnızca IP adresi kullanılır. Bu durum, Google Haritalar gibi Android uygulamaları ve hizmetlerindeki konumların kullanılabilirliğini ve doğruluğunu etkileyebilir.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Şurada açılır:</translation>
+<translation id="8804742093141782941">Grubu silme</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Sekmeyi Başka Bir Pencereye Taşı}other{Sekmeleri Başka Bir Pencereye Taşı}}</translation>
 <translation id="8805140816472474147">Senkronizasyonu başlatmak için senkronizasyon ayarlarını onaylayın.</translation>
 <translation id="8805255531353778052">Çok Büyük Tasarruf</translation>

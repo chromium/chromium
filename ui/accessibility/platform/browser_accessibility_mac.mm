@@ -30,16 +30,11 @@ BrowserAccessibilityMac::BrowserAccessibilityMac(
     AXNode* node)
     : BrowserAccessibility(manager, node) {}
 
-BrowserAccessibilityMac::~BrowserAccessibilityMac() {
-  if (platform_node_) {
-    // `Destroy()` also deletes the object.
-    platform_node_.ExtractAsDangling()->Destroy();
-  }
-}
+BrowserAccessibilityMac::~BrowserAccessibilityMac() = default;
 
 BrowserAccessibilityCocoa* BrowserAccessibilityMac::GetNativeWrapper() const {
   return platform_node_ ? static_cast<BrowserAccessibilityCocoa*>(
-                              platform_node_->GetNativeWrapper())
+                              platform_node()->GetNativeWrapper())
                         : nullptr;
 }
 
@@ -67,7 +62,7 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
   // We need to keep the old native wrapper alive until we set up the new one
   // because we need to retrieve some information from the old wrapper in order
   // to add it to the new one, e.g. its list of children.
-  AXPlatformNodeCocoa* old_native_obj = platform_node_->ReleaseNativeWrapper();
+  AXPlatformNodeCocoa* old_native_obj = platform_node()->ReleaseNativeWrapper();
 
   // We should have never called this method if a native wrapper has not been
   // created, but keep a null check just in case.
@@ -197,13 +192,12 @@ gfx::NativeViewAccessible BrowserAccessibilityMac::GetNativeViewAccessible() {
 }
 
 AXPlatformNode* BrowserAccessibilityMac::GetAXPlatformNode() const {
-  return platform_node_;
+  return platform_node_.get();
 }
 
 void BrowserAccessibilityMac::CreatePlatformNodes() {
   DCHECK(!platform_node_);
-  platform_node_ =
-      static_cast<AXPlatformNodeMac*>(AXPlatformNode::Create(this));
+  platform_node_ = AXPlatformNode::Create(this);
   CreateNativeWrapper();
 }
 
@@ -212,9 +206,9 @@ BrowserAccessibilityCocoa* BrowserAccessibilityMac::CreateNativeWrapper() {
 
   BrowserAccessibilityCocoa* node_cocoa =
       [[BrowserAccessibilityCocoa alloc] initWithObject:this
-                                       withPlatformNode:platform_node_];
+                                       withPlatformNode:platform_node()];
 
-  platform_node_->SetNativeWrapper(node_cocoa);
+  platform_node()->SetNativeWrapper(node_cocoa);
   return node_cocoa;
 }
 

@@ -2516,6 +2516,7 @@ interface Element : Node
     getter clientWidth
     getter computedName
     getter computedRole
+    getter containerTiming
     getter currentCSSZoom
     getter elementTiming
     getter firstElementChild
@@ -2660,6 +2661,7 @@ interface Element : Node
     setter ariaVirtualContent
     setter classList
     setter className
+    setter containerTiming
     setter elementTiming
     setter id
     setter innerHTML

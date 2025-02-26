@@ -5,6 +5,7 @@
 #include "components/user_education/common/feature_promo/impl/feature_promo_queue.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -127,6 +128,7 @@ EligibleFeaturePromo FeaturePromoQueue::UnqueueEligiblePromo(
     const base::Feature& iph_feature) {
   const auto it = FindQueuedPromo(iph_feature);
   CHECK(it != queued_promos_.end());
+  RecordQueueTime(*it, /*succeeded=*/true);
   EligibleFeaturePromo eligible_promo(std::move(it->params));
   it->required_preconditions.ExtractCachedData(eligible_promo.cached_data);
   it->wait_for_preconditions.ExtractCachedData(eligible_promo.cached_data);
@@ -172,6 +174,7 @@ FeaturePromoQueue::RemovePromosWithFailedPreconditions() {
         it->required_preconditions.CheckPreconditions(temp);
     if (!check_result) {
       temp.release_all_references();
+      RecordQueueTime(*it, /*succeeded=*/false);
       SendFailureReport(std::move(it->params.show_promo_result_callback),
                         *check_result.failure());
       it = queued_promos_.erase(it);
@@ -194,6 +197,7 @@ void FeaturePromoQueue::RemoveTimedOutPromos(ComputedDataMap& data) {
           it->wait_for_preconditions.CheckPreconditions(temp->second);
       data.erase(temp);
       // If there was no identifiable reason, fall back to "timed out".
+      RecordQueueTime(*it, /*succeeded=*/false);
       SendFailureReport(
           std::move(it->params.show_promo_result_callback),
           latest_result.failure().value_or(FeaturePromoResult::kTimedOut));
@@ -223,6 +227,25 @@ FeaturePromoQueue::Queue::iterator FeaturePromoQueue::FindQueuedPromo(
   return std::find_if(
       queued_promos_.begin(), queued_promos_.end(),
       [&feature](auto& entry) { return &feature == &*entry.params.feature; });
+}
+
+void FeaturePromoQueue::RecordQueueTime(
+    const internal::QueuedFeaturePromo& promo,
+    bool succeeded) {
+  std::string name = succeeded ? "UserEducation.MessageShown.TimeInQueue"
+                               : "UserEducation.MessageNotShown.TimeInQueue";
+
+  // Record generic queue time histogram (all promos).
+  base::UmaHistogramCustomTimes(
+      name, time_provider_->GetCurrentTime() - promo.queue_time,
+      base::Milliseconds(250), base::Seconds(30), 50);
+
+  // Record promo-specific queue time histogram.
+  name += ".";
+  name += promo.params.feature->name;
+  base::UmaHistogramCustomTimes(
+      name, time_provider_->GetCurrentTime() - promo.queue_time,
+      base::Milliseconds(250), base::Seconds(30), 50);
 }
 
 }  // namespace user_education::internal

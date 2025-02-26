@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
+<translation id="1045448422538531528">Qrupa əlavə edin</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> həftə əvvəl yaradıldı}other{<ph name="NUM_WEEKS_MANY" /> həftə əvvəl yaradıldı}}</translation>
 <translation id="1063300264396686489">Digər cihazlardan tab qruplarını avtomatik açın</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> tab son zamanlarda istifadə edilməyib. Onlar bağlansın?</translation>

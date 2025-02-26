@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
 <translation id="1009406586654360474">Բացեք Google գաղտնաբառերի կառավարիչը և անցեք կարգավորումներ։ Ընտրեք «Ներմուծել» և ավելացրեք ձեր արտահանված գաղտնաբառերով CSV ֆայլը։</translation>
+<translation id="1010283278930414892">Այս սարքում պահված գաղտնաբառեր չկան</translation>
 <translation id="1011749477052068769">Տեղափոխել այստեղ</translation>
 <translation id="1014147525163127655">Այս սարքում <ph name="ORIGIN" />-ի համար մուտքի բանալիներ չկան</translation>
 <translation id="1016498331642356377">Արագ որոնեք ձայնային հրահանգների օգնությամբ։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
@@ -142,6 +143,7 @@
 <translation id="1568636008098739136">Հնչեցնել այս էջը։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
 <translation id="1571041387761170095">Թույլ կամ կրկնվող գաղտնաբառեր չեն հայտնաբերվել</translation>
 <translation id="1571304935088121812">Պատճենել օգտանունը</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 կոտրված գաղտնաբառ այս սարքում}one{# կոտրված գաղտնաբառ այս սարքում}other{# կոտրված գաղտնաբառ այս սարքում}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> առաջարկվող տարր ներքևի ցուցակում։</translation>
 <translation id="1598163867407640634">Օգտագործեք <ph name="SITE_ETLD_PLUS_ONE" /> կայքը <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշվով</translation>
 <translation id="160275202205869636">Երբ պարամետրը միացված է, կարող եք օգտագործել և պահել տվյալները ձեր Google հաշվում։ Հակառակ դեպքում տվյալները կպահվեն միայն այս սարքում։</translation>
@@ -163,6 +165,7 @@
 <translation id="1724977129262658800">Ապակողպեք էկրանը՝ ձեր գաղտնաբառը փոխելու համար</translation>
 <translation id="1726477445370128854">Դուք կարող եք արագացնել Chrome-ի աշխատանքը, եթե թույլատրեք, որ այն նախապես էջեր բեռնի։</translation>
 <translation id="1728803206919861584">Պահե՞լ մուտքի բանալին ինկոգնիտո ռեժիմից դուրս</translation>
+<translation id="1732514748744806741">Եթե ձեր գաղտնաբառերը կոտրվեն, մենք ձեզ կտեղեկացնենք այդ մասին</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 կայք վերջերս չափազանց շատ ծանուցումներ է ուղարկել}one{# կայք վերջերս չափազանց շատ ծանուցումներ է ուղարկել}other{# կայք վերջերս չափազանց շատ ծանուցումներ է ուղարկել}}</translation>
 <translation id="1749561566933687563">Համաժամացրեք ձեր էջանիշները</translation>
 <translation id="1750238553597293878">Շարունակեք օգտագործել գաղտնաբառերը ձեր Google հաշվում</translation>
@@ -295,6 +298,7 @@
 <translation id="2390510615457643724">Նորից ներբեռնե՞լ <ph name="FILE_NAME" /> ֆայլը (<ph name="FILE_SIZE" />)։</translation>
 <translation id="2395004545133500011">Ամփոփիչ թերթի փոխանցման պատուհանը բացված է</translation>
 <translation id="2410754283952462441">Ընտրեք հաշիվ</translation>
+<translation id="2413014528833954543">Հնարավոր չէ ստուգել գաղտնաբառեր այս սարքում</translation>
 <translation id="2414886740292270097">Մուգ</translation>
 <translation id="2421705177906985956">Այս պահին կայքեր չկան</translation>
 <translation id="2426805022920575512">Ընտրել այլ հաշիվ</translation>
@@ -1335,6 +1339,7 @@
 <translation id="7022756207310403729">Բացել դիտարկիչով</translation>
 <translation id="7025769836128625875">Սա արհեստական բանականության փորձառական գործառույթ է և երբեմն կարող է սխալներով աշխատել։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="7029809446516969842">Գաղտնաբառեր</translation>
+<translation id="7053256416619638731">Ուժեղացրեք ձեր գաղտնաբառերը այս սարքում</translation>
 <translation id="7053983685419859001">Արգելափակել</translation>
 <translation id="7054588988317389591">Ուզո՞ւմ եք ստանալ պատկերների նկարագրություններ</translation>
 <translation id="7057969023583258980">Բացել Chrome-ի ամբողջ պատմությունը</translation>
@@ -1585,6 +1590,7 @@
 <translation id="8110024788458304985">Օգնել բարելավել Chrome-ի գործառույթներն ու աշխատանքը</translation>
 <translation id="8110087112193408731">Ցուցադրե՞լ Chrome-ի պատմությունը Թվային բարեկեցության մեջ</translation>
 <translation id="8118117428362942925">Եթե օգնության կարիք ունենաս, դիմիր ծնողիդ (<ph name="PARENT_NAME" />)</translation>
+<translation id="8120286190326371840">Այս սարքում կոտրված գաղտնաբառեր չկան</translation>
 <translation id="8122623268651408616">Սկզբում նորերը</translation>
 <translation id="8127542551745560481">Փոփոխել գլխավոր էջը</translation>
 <translation id="8130309322784422030">Հնարավոր է՝ մուտքի պահված տվյալները հնացել են</translation>

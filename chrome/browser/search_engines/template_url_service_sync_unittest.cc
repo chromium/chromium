@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
@@ -36,6 +37,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
+#include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/search_engine_specifics.pb.h"
@@ -51,6 +53,7 @@ namespace {
 using base::Time;
 using testing::AllOf;
 using testing::Contains;
+using testing::Eq;
 using testing::Field;
 using testing::IsEmpty;
 using testing::IsNull;
@@ -4288,4 +4291,862 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
   EXPECT_THAT(GetKeywordsFromDatabase(),
               ElementsAre(AllOf(Field(&TemplateURLData::sync_guid, "guid"),
                                 Property(&TemplateURLData::keyword, u"key"))));
+}
+
+class TemplateURLServiceSyncMergeTest : public TemplateURLServiceSyncTest {
+ public:
+  void ShouldOverrideLocalWithSameGuidIfBetter();
+  void ShouldNotOverrideLocalWithSameGuidIfNotBetter();
+  void ShouldOverrideDuplicateLocalIfBetter();
+  void ShouldNotOverrideDuplicateLocalIfNotBetter();
+  void ShouldNotOverrideDuplicateLocalDefaultSearchProvider();
+  void ShouldUpdateConflictingDefaultSearchEngineIfBetter();
+  void ShouldNotUpdateConflictingDefaultSearchEngineIfNotBetter();
+  void ShouldUpdateConflictingStarterPackSearchEngineIfBetter();
+  void ShouldNotUpdateConflictingStarterPackSearchEngineIfNotBetter();
+  void ShouldUpdateConflictingPrepopulatedSearchEngineIfBetter();
+  void ShouldNotUpdateConflictingPrepopulatedSearchEngineIfNotBetter();
+};
+
+class
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesDisabled
+    : public TemplateURLServiceSyncMergeTest {
+ public:
+  TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesDisabled() {
+    feature_list_.InitAndDisableFeature(
+        syncer::kSeparateLocalAndAccountSearchEngines);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesEnabled
+    : public TemplateURLServiceSyncMergeTest {
+ public:
+  TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesEnabled()
+      : feature_list_(syncer::kSeparateLocalAndAccountSearchEngines) {}
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+void TemplateURLServiceSyncMergeTest::
+    ShouldOverrideLocalWithSameGuidIfBetter() {
+  // Add local template url.
+  const TemplateURL* turl = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey", /*url=*/"http://localurl.com", /*guid=*/"guid",
+      /*last_modified=*/base::Time::FromTimeT(10)));
+  ASSERT_EQ(turl, model()->GetTemplateURLForKeyword(u"localkey"));
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey", /*url=*/"http://accounturl.com",
+          /*guid=*/"guid",
+          /*last_modified=*/base::Time::FromTimeT(100))
+          ->data()));
+  ASSERT_FALSE(model()->MergeDataAndStartSyncing(
+      syncer::SEARCH_ENGINES, initial_data, PassProcessor()));
+
+  // Account keyword has more recent timestamp and thus wins.
+  ASSERT_FALSE(model()->GetTemplateURLForKeyword(u"localkey"));
+  ASSERT_EQ(turl, model()->GetTemplateURLForKeyword(u"accountkey"));
+
+  // Nothing is committed to the server.
+  ASSERT_EQ(0u, processor()->change_list_size());
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesDisabled,
+    ShouldOverrideLocalWithSameGuidIfBetter) {
+  ASSERT_NO_FATAL_FAILURE(ShouldOverrideLocalWithSameGuidIfBetter());
+
+  // Stopping sync should leave the sync value.
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"localkey"));
+  EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"accountkey"));
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldOverrideLocalWithSameGuidIfBetter) {
+  ASSERT_NO_FATAL_FAILURE(ShouldOverrideLocalWithSameGuidIfBetter());
+
+  // Account keyword should not replace but only override the local keyword.
+  const TemplateURL* turl = model()->GetTemplateURLForKeyword(u"accountkey");
+  EXPECT_THAT(turl->GetLocalData(),
+              Optional(Property(&TemplateURLData::keyword, u"localkey")));
+
+  // Stopping sync should remove the sync value.
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_EQ(turl, model()->GetTemplateURLForKeyword(u"localkey"));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"accountkey"));
+}
+
+void TemplateURLServiceSyncMergeTest::
+    ShouldNotOverrideLocalWithSameGuidIfNotBetter() {
+  // Add local template url.
+  const TemplateURL* turl = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey", /*url=*/"http://localurl.com", /*guid=*/"guid",
+      /*last_modified=*/base::Time::FromTimeT(100)));
+  ASSERT_EQ(turl, model()->GetTemplateURLForKeyword(u"localkey"));
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey", /*url=*/"http://accounturl.com",
+          /*guid=*/"guid",
+          /*last_modified=*/base::Time::FromTimeT(10))
+          ->data()));
+  ASSERT_FALSE(model()->MergeDataAndStartSyncing(
+      syncer::SEARCH_ENGINES, initial_data, PassProcessor()));
+
+  // Local keyword has a more recent timestamp and thus wins.
+  ASSERT_EQ(turl, model()->GetTemplateURLForKeyword(u"localkey"));
+  ASSERT_FALSE(model()->GetTemplateURLForKeyword(u"accountkey"));
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesDisabled,
+    ShouldNotOverrideLocalWithSameGuidIfNotBetter) {
+  ASSERT_NO_FATAL_FAILURE(ShouldNotOverrideLocalWithSameGuidIfNotBetter());
+
+  // Local keyword is committed to the server.
+  ASSERT_TRUE(processor()->contains_guid("guid"));
+  EXPECT_EQ(processor()->change_for_guid("guid").change_type(),
+            syncer::SyncChange::ACTION_UPDATE);
+  EXPECT_EQ(processor()
+                ->change_for_guid("guid")
+                .sync_data()
+                .GetSpecifics()
+                .search_engine()
+                .keyword(),
+            "localkey");
+
+  // Stopping sync should not affect the value.
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"localkey"));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"accountkey"));
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldNotOverrideLocalWithSameGuidIfNotBetter) {
+  ASSERT_NO_FATAL_FAILURE(ShouldNotOverrideLocalWithSameGuidIfNotBetter());
+
+  EXPECT_EQ(processor()->change_list_size(), 0u);
+
+  // Account keyword is not ignored but is only overridden by the local keyword.
+  const TemplateURL* turl = model()->GetTemplateURLForKeyword(u"localkey");
+  EXPECT_THAT(turl->GetAccountData(),
+              Optional(Property(&TemplateURLData::keyword, u"accountkey")));
+
+  // Stopping sync should remove the sync value.
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_EQ(turl, model()->GetTemplateURLForKeyword(u"localkey"));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"accountkey"));
+}
+
+void TemplateURLServiceSyncMergeTest::ShouldOverrideDuplicateLocalIfBetter() {
+  // Add local template url.
+  model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"key", /*url=*/"http://localurl.com", /*guid=*/"localguid",
+      /*last_modified=*/base::Time::FromTimeT(10)));
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"key", /*url=*/"http://accounturl.com",
+          /*guid=*/"accountguid",
+          /*last_modified=*/base::Time::FromTimeT(100))
+          ->data()));
+  ASSERT_FALSE(model()->MergeDataAndStartSyncing(
+      syncer::SEARCH_ENGINES, initial_data, PassProcessor()));
+
+  // Nothing is committed to the server.
+  ASSERT_EQ(0u, processor()->change_list_size());
+  // Account keyword wins.
+  const TemplateURL* turl = model()->GetTemplateURLForGUID("accountguid");
+  ASSERT_THAT(turl,
+              Pointee(Property(&TemplateURL::url, "http://accounturl.com")));
+  ASSERT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesDisabled,
+    ShouldOverrideDuplicateLocalIfBetter) {
+  ASSERT_NO_FATAL_FAILURE(ShouldOverrideDuplicateLocalIfBetter());
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  // Local keyword has been removed and the account keyword stays.
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  EXPECT_THAT(model()->GetTemplateURLForGUID("accountguid"),
+              Pointee(Property(&TemplateURL::url, "http://accounturl.com")));
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldOverrideDuplicateLocalIfBetter) {
+  ASSERT_NO_FATAL_FAILURE(ShouldOverrideDuplicateLocalIfBetter());
+
+  // Sync guid of the local keyword should be updated.
+  const TemplateURL* turl = model()->GetTemplateURLForKeyword(u"key");
+  EXPECT_THAT(
+      turl->GetLocalData(),
+      Optional(AllOf(Field(&TemplateURLData::sync_guid, "accountguid"),
+                     Property(&TemplateURLData::url, "http://localurl.com"))));
+  EXPECT_THAT(turl->GetAccountData(),
+              Optional(AllOf(
+                  Field(&TemplateURLData::sync_guid, "accountguid"),
+                  Property(&TemplateURLData::url, "http://accounturl.com"))));
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  // Account keyword is removed, but the local keyword stays behind, with
+  // updated sync guid.
+  EXPECT_EQ(turl, model()->GetTemplateURLForGUID("accountguid"));
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  EXPECT_FALSE(turl->GetAccountData());
+  EXPECT_THAT(turl,
+              Pointee(Property(&TemplateURL::url, "http://localurl.com")));
+}
+
+void TemplateURLServiceSyncMergeTest::
+    ShouldNotOverrideDuplicateLocalIfNotBetter() {
+  // Add local template url.
+  const TemplateURL* turl = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"key", /*url=*/"http://localurl.com", /*guid=*/"localguid",
+      /*last_modified=*/base::Time::FromTimeT(100)));
+  ASSERT_EQ(turl, model()->GetTemplateURLForKeyword(u"key"));
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"key", /*url=*/"http://accounturl.com",
+          /*guid=*/"accountguid",
+          /*last_modified=*/base::Time::FromTimeT(10))
+          ->data()));
+  ASSERT_FALSE(model()->MergeDataAndStartSyncing(
+      syncer::SEARCH_ENGINES, initial_data, PassProcessor()));
+
+  ASSERT_FALSE(processor()->contains_guid("localguid"));
+  // Sync guid of local turl is updated.
+  ASSERT_EQ(turl, model()->GetTemplateURLForGUID("accountguid"));
+  ASSERT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  ASSERT_EQ(turl->url(), "http://localurl.com");
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesDisabled,
+    ShouldNotOverrideDuplicateLocalIfNotBetter) {
+  ASSERT_NO_FATAL_FAILURE(ShouldNotOverrideDuplicateLocalIfNotBetter());
+
+  // Local keyword is committed to the server.
+  ASSERT_TRUE(processor()->contains_guid("accountguid"));
+  EXPECT_EQ(processor()->change_for_guid("accountguid").change_type(),
+            syncer::SyncChange::ACTION_UPDATE);
+  EXPECT_EQ(processor()
+                ->change_for_guid("accountguid")
+                .sync_data()
+                .GetSpecifics()
+                .search_engine()
+                .url(),
+            "http://localurl.com");
+
+  // Stopping sync should not change anything.
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  EXPECT_THAT(model()->GetTemplateURLForGUID("accountguid"),
+              Pointee(Property(&TemplateURL::url, "http://localurl.com")));
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldNotOverrideDuplicateLocalIfNotBetter) {
+  ASSERT_NO_FATAL_FAILURE(ShouldNotOverrideDuplicateLocalIfNotBetter());
+
+  // Nothing is committed to the server.
+  EXPECT_FALSE(processor()->contains_guid("accountguid"));
+
+  // Sync guid of the local keyword should be updated.
+  const TemplateURL* turl = model()->GetTemplateURLForKeyword(u"key");
+  EXPECT_THAT(
+      turl->GetLocalData(),
+      Optional(AllOf(Field(&TemplateURLData::sync_guid, "accountguid"),
+                     Property(&TemplateURLData::url, "http://localurl.com"))));
+  EXPECT_THAT(turl->GetAccountData(),
+              Optional(AllOf(
+                  Field(&TemplateURLData::sync_guid, "accountguid"),
+                  Property(&TemplateURLData::url, "http://accounturl.com"))));
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  // Account keyword is removed, but the local keyword stays behind, with
+  // updated sync guid.
+  EXPECT_EQ(turl, model()->GetTemplateURLForGUID("accountguid"));
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  EXPECT_FALSE(turl->GetAccountData());
+  EXPECT_THAT(turl,
+              Pointee(Property(&TemplateURL::url, "http://localurl.com")));
+}
+
+void TemplateURLServiceSyncMergeTest::
+    ShouldNotOverrideDuplicateLocalDefaultSearchProvider() {
+  // Add local template url.
+  TemplateURL* turl = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"key", /*url=*/"http://localurl.com", /*guid=*/"localguid",
+      /*last_modified=*/base::Time::FromTimeT(10)));
+  model()->SetUserSelectedDefaultSearchProvider(turl);
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"key", /*url=*/"http://accounturl.com",
+          /*guid=*/"accountguid",
+          /*last_modified=*/base::Time::FromTimeT(100))
+          ->data()));
+  ASSERT_FALSE(model()->MergeDataAndStartSyncing(
+      syncer::SEARCH_ENGINES, initial_data, PassProcessor()));
+
+  ASSERT_FALSE(processor()->contains_guid("localguid"));
+  // Sync guid of local turl is updated.
+  ASSERT_EQ(turl, model()->GetDefaultSearchProvider());
+  ASSERT_EQ(turl->sync_guid(), "accountguid");
+  ASSERT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  ASSERT_EQ(turl->url(), "http://localurl.com");
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesDisabled,
+    ShouldNotOverrideDuplicateLocalDefaultSearchProvider) {
+  ASSERT_NO_FATAL_FAILURE(
+      ShouldNotOverrideDuplicateLocalDefaultSearchProvider());
+
+  // Local keyword is committed to the server.
+  ASSERT_TRUE(processor()->contains_guid("accountguid"));
+  EXPECT_EQ(processor()->change_for_guid("accountguid").change_type(),
+            syncer::SyncChange::ACTION_UPDATE);
+  EXPECT_EQ(processor()
+                ->change_for_guid("accountguid")
+                .sync_data()
+                .GetSpecifics()
+                .search_engine()
+                .url(),
+            "http://localurl.com");
+
+  // Stopping sync should not change anything.
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  const TemplateURL* turl = model()->GetTemplateURLForGUID("accountguid");
+  EXPECT_THAT(turl,
+              Pointee(Property(&TemplateURL::url, "http://localurl.com")));
+  EXPECT_EQ(turl, model()->GetDefaultSearchProvider());
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldNotOverrideDuplicateLocalDefaultSearchProvider) {
+  ASSERT_NO_FATAL_FAILURE(
+      ShouldNotOverrideDuplicateLocalDefaultSearchProvider());
+
+  // Nothing is committed to the server.
+  EXPECT_EQ(processor()->change_list_size(), 0u);
+
+  // Sync guid of the local keyword should be updated.
+  const TemplateURL* turl = model()->GetTemplateURLForKeyword(u"key");
+  EXPECT_THAT(
+      turl->GetLocalData(),
+      Optional(AllOf(Field(&TemplateURLData::sync_guid, "accountguid"),
+                     Property(&TemplateURLData::url, "http://localurl.com"))));
+  // Account data is ignored.
+  EXPECT_FALSE(turl->GetAccountData());
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  // The local keyword stays behind with updated sync guid.
+  EXPECT_EQ(turl, model()->GetTemplateURLForGUID("accountguid"));
+  EXPECT_EQ(turl, model()->GetDefaultSearchProvider());
+  EXPECT_THAT(turl,
+              Pointee(Property(&TemplateURL::url, "http://localurl.com")));
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+}
+
+void TemplateURLServiceSyncMergeTest::
+    ShouldUpdateConflictingDefaultSearchEngineIfBetter() {
+  // Add local template url.
+  TemplateURL* turl = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey", /*url=*/"http://localurl.com",
+      /*guid=*/"localguid",
+      /*last_modified=*/base::Time::FromTimeT(10),
+      /*safe_for_autoreplace=*/false,
+      /*policy_origin=*/TemplateURLData::PolicyOrigin::kNoPolicy,
+      /*prepopulate_id=*/99999, /*starter_pack_id=*/0));
+  model()->SetUserSelectedDefaultSearchProvider(turl);
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey", /*url=*/"http://accounturl.com",
+          /*guid=*/"accountguid",
+          /*last_modified=*/base::Time::FromTimeT(100),
+          /*safe_for_autoreplace=*/false,
+          /*policy_origin=*/TemplateURLData::PolicyOrigin::kNoPolicy,
+          /*prepopulate_id=*/99999, /*starter_pack_id=*/0)
+          ->data()));
+  ASSERT_FALSE(model()->MergeDataAndStartSyncing(
+      syncer::SEARCH_ENGINES, initial_data, PassProcessor()));
+
+  ASSERT_EQ(turl, model()->GetDefaultSearchProvider());
+  ASSERT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  ASSERT_EQ(turl, model()->GetTemplateURLForGUID("accountguid"));
+  ASSERT_THAT(turl,
+              Pointee(AllOf(Property(&TemplateURL::keyword, u"accountkey"),
+                            Property(&TemplateURL::sync_guid, "accountguid"))));
+  ASSERT_EQ(0u, processor()->change_list_size());
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesDisabled,
+    ShouldUpdateConflictingDefaultSearchEngineIfBetter) {
+  ASSERT_NO_FATAL_FAILURE(ShouldUpdateConflictingDefaultSearchEngineIfBetter());
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  const TemplateURL* turl = model()->GetDefaultSearchProvider();
+  EXPECT_EQ(turl, model()->GetTemplateURLForGUID("accountguid"));
+  EXPECT_THAT(turl,
+              Pointee(AllOf(Property(&TemplateURL::keyword, u"accountkey"),
+                            Property(&TemplateURL::sync_guid, "accountguid"))));
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldUpdateConflictingDefaultSearchEngineIfBetter) {
+  ASSERT_NO_FATAL_FAILURE(ShouldUpdateConflictingDefaultSearchEngineIfBetter());
+
+  const TemplateURL* turl = model()->GetTemplateURLForKeyword(u"accountkey");
+  EXPECT_THAT(
+      turl->GetLocalData(),
+      Optional(AllOf(Property(&TemplateURLData::keyword, u"localkey"),
+                     Field(&TemplateURLData::sync_guid, "accountguid"))));
+  EXPECT_THAT(
+      turl->GetAccountData(),
+      Optional(AllOf(Property(&TemplateURLData::keyword, u"accountkey"),
+                     Field(&TemplateURLData::sync_guid, "accountguid"))));
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_EQ(turl, model()->GetDefaultSearchProvider());
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  EXPECT_EQ(turl, model()->GetTemplateURLForGUID("accountguid"));
+  EXPECT_FALSE(turl->GetAccountData());
+  EXPECT_THAT(turl,
+              Pointee(AllOf(Property(&TemplateURL::keyword, u"localkey"),
+                            Property(&TemplateURL::sync_guid, "accountguid"))));
+}
+
+void TemplateURLServiceSyncMergeTest::
+    ShouldNotUpdateConflictingDefaultSearchEngineIfNotBetter() {
+  // Add local template url.
+  TemplateURL* local = model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey", /*url=*/"http://localurl.com",
+      /*guid=*/"localguid",
+      /*last_modified=*/base::Time::FromTimeT(100),
+      /*safe_for_autoreplace=*/false,
+      /*policy_origin=*/TemplateURLData::PolicyOrigin::kNoPolicy,
+      /*prepopulate_id=*/99999, /*starter_pack_id=*/0));
+  model()->SetUserSelectedDefaultSearchProvider(local);
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey", /*url=*/"http://accounturl.com",
+          /*guid=*/"accountguid",
+          /*last_modified=*/base::Time::FromTimeT(10),
+          /*safe_for_autoreplace=*/false,
+          /*policy_origin=*/TemplateURLData::PolicyOrigin::kNoPolicy,
+          /*prepopulate_id=*/99999, /*starter_pack_id=*/0)
+          ->data()));
+  ASSERT_FALSE(model()->MergeDataAndStartSyncing(
+      syncer::SEARCH_ENGINES, initial_data, PassProcessor()));
+  ASSERT_FALSE(processor()->contains_guid("accountguid"));
+
+  ASSERT_EQ(local, model()->GetDefaultSearchProvider());
+  ASSERT_THAT(local,
+              Pointee(AllOf(Property(&TemplateURL::keyword, u"localkey"),
+                            Property(&TemplateURL::sync_guid, "localguid"))));
+
+  const TemplateURL* account = model()->GetTemplateURLForGUID("accountguid");
+  ASSERT_NE(local, account);
+  ASSERT_THAT(account, Pointee(Property(&TemplateURL::keyword, u"accountkey")));
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesDisabled,
+    ShouldNotUpdateConflictingDefaultSearchEngineIfNotBetter) {
+  ASSERT_NO_FATAL_FAILURE(
+      ShouldNotUpdateConflictingDefaultSearchEngineIfNotBetter());
+
+  // Local turl is committed to the server as-is.
+  ASSERT_TRUE(processor()->contains_guid("localguid"));
+  EXPECT_EQ(processor()->change_for_guid("localguid").change_type(),
+            syncer::SyncChange::ACTION_ADD);
+  EXPECT_EQ(processor()
+                ->change_for_guid("localguid")
+                .sync_data()
+                .GetSpecifics()
+                .search_engine()
+                .url(),
+            "http://localurl.com");
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  const TemplateURL* local = model()->GetTemplateURLForGUID("localguid");
+  EXPECT_THAT(local,
+              AllOf(Pointee(Property(&TemplateURL::keyword, u"localkey")),
+                    Eq(model()->GetDefaultSearchProvider())));
+  EXPECT_THAT(model()->GetTemplateURLForGUID("accountguid"),
+              Pointee(Property(&TemplateURL::keyword, u"accountkey")));
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldNotUpdateConflictingDefaultSearchEngineIfNotBetter) {
+  ASSERT_NO_FATAL_FAILURE(
+      ShouldNotUpdateConflictingDefaultSearchEngineIfNotBetter());
+
+  // Nothing is committed to the server.
+  EXPECT_EQ(processor()->change_list_size(), 0u);
+
+  const TemplateURL* local = model()->GetTemplateURLForGUID("localguid");
+  EXPECT_FALSE(local->GetAccountData());
+  EXPECT_THAT(local,
+              Pointee(AllOf(Property(&TemplateURL::keyword, u"localkey"),
+                            Property(&TemplateURL::sync_guid, "localguid"))));
+
+  const TemplateURL* account = model()->GetTemplateURLForGUID("accountguid");
+  EXPECT_FALSE(account->GetLocalData());
+  EXPECT_THAT(account,
+              Pointee(AllOf(Property(&TemplateURL::keyword, u"accountkey"),
+                            Property(&TemplateURL::sync_guid, "accountguid"))));
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_EQ(local, model()->GetTemplateURLForGUID("localguid"));
+  EXPECT_THAT(local,
+              AllOf(Pointee(Property(&TemplateURL::keyword, u"localkey")),
+                    Eq(model()->GetDefaultSearchProvider())));
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("accountguid"));
+}
+
+void TemplateURLServiceSyncMergeTest::
+    ShouldUpdateConflictingStarterPackSearchEngineIfBetter() {
+  // Add local template url.
+  model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey", /*url=*/"http://localurl.com",
+      /*guid=*/"localguid",
+      /*last_modified=*/base::Time::FromTimeT(10),
+      /*safe_for_autoreplace=*/false,
+      /*policy_origin=*/TemplateURLData::PolicyOrigin::kNoPolicy,
+      /*prepopulate_id=*/0, /*starter_pack_id=*/1));
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey", /*url=*/"http://accounturl.com",
+          /*guid=*/"accountguid",
+          /*last_modified=*/base::Time::FromTimeT(100),
+          /*safe_for_autoreplace=*/false,
+          /*policy_origin=*/TemplateURLData::PolicyOrigin::kNoPolicy,
+          /*prepopulate_id=*/0, /*starter_pack_id=*/1)
+          ->data()));
+  ASSERT_FALSE(model()->MergeDataAndStartSyncing(
+      syncer::SEARCH_ENGINES, initial_data, PassProcessor()));
+
+  ASSERT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  const TemplateURL* turl =
+      model()->FindStarterPackTemplateURL(/*starter_pack_id=*/1);
+  ASSERT_THAT(turl,
+              Pointee(AllOf(Property(&TemplateURL::keyword, u"accountkey"),
+                            Property(&TemplateURL::sync_guid, "accountguid"))));
+  ASSERT_EQ(turl, model()->GetTemplateURLForGUID("accountguid"));
+  ASSERT_EQ(0u, processor()->change_list_size());
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesDisabled,
+    ShouldUpdateConflictingStarterPackSearchEngineIfBetter) {
+  ASSERT_NO_FATAL_FAILURE(
+      ShouldUpdateConflictingStarterPackSearchEngineIfBetter());
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  const TemplateURL* turl =
+      model()->FindStarterPackTemplateURL(/*starter_pack_id=*/1);
+  EXPECT_EQ(turl, model()->GetTemplateURLForGUID("accountguid"));
+  EXPECT_THAT(turl,
+              Pointee(AllOf(Property(&TemplateURL::keyword, u"accountkey"),
+                            Property(&TemplateURL::sync_guid, "accountguid"))));
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldUpdateConflictingStarterPackSearchEngineIfBetter) {
+  ASSERT_NO_FATAL_FAILURE(
+      ShouldUpdateConflictingStarterPackSearchEngineIfBetter());
+
+  const TemplateURL* turl = model()->GetTemplateURLForKeyword(u"accountkey");
+  EXPECT_THAT(
+      turl->GetLocalData(),
+      Optional(AllOf(Property(&TemplateURLData::keyword, u"localkey"),
+                     Field(&TemplateURLData::sync_guid, "accountguid"))));
+  EXPECT_THAT(
+      turl->GetAccountData(),
+      Optional(AllOf(Property(&TemplateURLData::keyword, u"accountkey"),
+                     Field(&TemplateURLData::sync_guid, "accountguid"))));
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_EQ(turl, model()->FindStarterPackTemplateURL(/*starter_pack_id=*/1));
+  EXPECT_FALSE(turl->GetAccountData());
+  EXPECT_THAT(turl,
+              Pointee(AllOf(Property(&TemplateURL::keyword, u"localkey"),
+                            Property(&TemplateURL::sync_guid, "accountguid"))));
+}
+
+void TemplateURLServiceSyncMergeTest::
+    ShouldNotUpdateConflictingStarterPackSearchEngineIfNotBetter() {
+  // Add local template url.
+  model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey", /*url=*/"http://localurl.com",
+      /*guid=*/"localguid",
+      /*last_modified=*/base::Time::FromTimeT(100),
+      /*safe_for_autoreplace=*/false,
+      /*policy_origin=*/TemplateURLData::PolicyOrigin::kNoPolicy,
+      /*prepopulate_id=*/0, /*starter_pack_id=*/1));
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey", /*url=*/"http://accounturl.com",
+          /*guid=*/"accountguid",
+          /*last_modified=*/base::Time::FromTimeT(10),
+          /*safe_for_autoreplace=*/false,
+          /*policy_origin=*/TemplateURLData::PolicyOrigin::kNoPolicy,
+          /*prepopulate_id=*/0, /*starter_pack_id=*/1)
+          ->data()));
+  ASSERT_FALSE(model()->MergeDataAndStartSyncing(
+      syncer::SEARCH_ENGINES, initial_data, PassProcessor()));
+
+  ASSERT_FALSE(processor()->contains_guid("accountguid"));
+  const TemplateURL* local = model()->GetTemplateURLForGUID("localguid");
+  ASSERT_THAT(local, Pointee(Property(&TemplateURL::keyword, u"localkey")));
+  ASSERT_EQ(local, model()->FindStarterPackTemplateURL(/*starter_pack_id=*/1));
+  const TemplateURL* account = model()->GetTemplateURLForGUID("accountguid");
+  ASSERT_THAT(account, Pointee(Property(&TemplateURL::keyword, u"accountkey")));
+  ASSERT_NE(local, account);
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesDisabled,
+    ShouldNotUpdateConflictingStarterPackSearchEngineIfNotBetter) {
+  ASSERT_NO_FATAL_FAILURE(
+      ShouldNotUpdateConflictingStarterPackSearchEngineIfNotBetter());
+
+  // Local turl is committed to the server as-is.
+  ASSERT_TRUE(processor()->contains_guid("localguid"));
+  EXPECT_EQ(processor()->change_for_guid("localguid").change_type(),
+            syncer::SyncChange::ACTION_ADD);
+  EXPECT_EQ(processor()
+                ->change_for_guid("localguid")
+                .sync_data()
+                .GetSpecifics()
+                .search_engine()
+                .url(),
+            "http://localurl.com");
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  const TemplateURL* local = model()->GetTemplateURLForGUID("localguid");
+  EXPECT_THAT(
+      local,
+      AllOf(Pointee(Property(&TemplateURL::keyword, u"localkey")),
+            Eq(model()->FindStarterPackTemplateURL(/*starter_pack_id=*/1))));
+  EXPECT_THAT(model()->GetTemplateURLForGUID("accountguid"),
+              Pointee(Property(&TemplateURL::keyword, u"accountkey")));
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldNotUpdateConflictingStarterPackSearchEngineIfNotBetter) {
+  ASSERT_NO_FATAL_FAILURE(
+      ShouldNotUpdateConflictingStarterPackSearchEngineIfNotBetter());
+
+  // Nothing is committed to the server.
+  EXPECT_EQ(processor()->change_list_size(), 0u);
+
+  const TemplateURL* local = model()->GetTemplateURLForGUID("localguid");
+  EXPECT_FALSE(local->GetAccountData());
+  EXPECT_THAT(local,
+              Pointee(AllOf(Property(&TemplateURL::keyword, u"localkey"),
+                            Property(&TemplateURL::sync_guid, "localguid"))));
+
+  const TemplateURL* account = model()->GetTemplateURLForGUID("accountguid");
+  EXPECT_FALSE(account->GetLocalData());
+  EXPECT_THAT(account,
+              Pointee(AllOf(Property(&TemplateURL::keyword, u"accountkey"),
+                            Property(&TemplateURL::sync_guid, "accountguid"))));
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_EQ(local, model()->GetTemplateURLForGUID("localguid"));
+  EXPECT_THAT(
+      local,
+      AllOf(Pointee(Property(&TemplateURL::keyword, u"localkey")),
+            Eq(model()->FindStarterPackTemplateURL(/*starter_pack_id=*/1))));
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("accountguid"));
+}
+
+void TemplateURLServiceSyncMergeTest::
+    ShouldUpdateConflictingPrepopulatedSearchEngineIfBetter() {
+  // Add local template url.
+  model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey", /*url=*/"http://localurl.com",
+      /*guid=*/"localguid",
+      /*last_modified=*/base::Time::FromTimeT(10),
+      /*safe_for_autoreplace=*/false,
+      /*policy_origin=*/TemplateURLData::PolicyOrigin::kNoPolicy,
+      /*prepopulate_id=*/99999, /*starter_pack_id=*/0));
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey", /*url=*/"http://accounturl.com",
+          /*guid=*/"accountguid",
+          /*last_modified=*/base::Time::FromTimeT(100),
+          /*safe_for_autoreplace=*/false,
+          /*policy_origin=*/TemplateURLData::PolicyOrigin::kNoPolicy,
+          /*prepopulate_id=*/99999, /*starter_pack_id=*/0)
+          ->data()));
+  ASSERT_FALSE(model()->MergeDataAndStartSyncing(
+      syncer::SEARCH_ENGINES, initial_data, PassProcessor()));
+
+  ASSERT_EQ(processor()->change_list_size(), 0u);
+  ASSERT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  const TemplateURL* turl = model()->GetTemplateURLForGUID("accountguid");
+  ASSERT_THAT(turl, Pointee(Property(&TemplateURL::keyword, u"accountkey")));
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesDisabled,
+    ShouldUpdateConflictingPrepopulatedSearchEngineIfBetter) {
+  ASSERT_NO_FATAL_FAILURE(
+      ShouldUpdateConflictingPrepopulatedSearchEngineIfBetter());
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_THAT(model()->GetTemplateURLForGUID("accountguid"),
+              Pointee(AllOf(Property(&TemplateURL::keyword, u"accountkey"),
+                            Property(&TemplateURL::sync_guid, "accountguid"))));
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldUpdateConflictingPrepopulatedSearchEngineIfBetter) {
+  ASSERT_NO_FATAL_FAILURE(
+      ShouldUpdateConflictingPrepopulatedSearchEngineIfBetter());
+
+  const TemplateURL* turl = model()->GetTemplateURLForKeyword(u"accountkey");
+  EXPECT_THAT(
+      turl->GetLocalData(),
+      Optional(AllOf(Property(&TemplateURLData::keyword, u"localkey"),
+                     Field(&TemplateURLData::sync_guid, "accountguid"))));
+  EXPECT_THAT(
+      turl->GetAccountData(),
+      Optional(AllOf(Property(&TemplateURLData::keyword, u"accountkey"),
+                     Field(&TemplateURLData::sync_guid, "accountguid"))));
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("localguid"));
+  EXPECT_EQ(turl, model()->GetTemplateURLForGUID("accountguid"));
+  EXPECT_FALSE(turl->GetAccountData());
+  EXPECT_THAT(turl,
+              Pointee(AllOf(Property(&TemplateURL::keyword, u"localkey"),
+                            Property(&TemplateURL::sync_guid, "accountguid"))));
+}
+
+void TemplateURLServiceSyncMergeTest::
+    ShouldNotUpdateConflictingPrepopulatedSearchEngineIfNotBetter() {
+  // Add local template url.
+  model()->Add(CreateTestTemplateURL(
+      /*keyword=*/u"localkey", /*url=*/"http://localurl.com",
+      /*guid=*/"localguid",
+      /*last_modified=*/base::Time::FromTimeT(100),
+      /*safe_for_autoreplace=*/false,
+      /*policy_origin=*/TemplateURLData::PolicyOrigin::kNoPolicy,
+      /*prepopulate_id=*/99999, /*starter_pack_id=*/0));
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(
+          /*keyword=*/u"accountkey", /*url=*/"http://accounturl.com",
+          /*guid=*/"accountguid",
+          /*last_modified=*/base::Time::FromTimeT(10),
+          /*safe_for_autoreplace=*/false,
+          /*policy_origin=*/TemplateURLData::PolicyOrigin::kNoPolicy,
+          /*prepopulate_id=*/99999, /*starter_pack_id=*/0)
+          ->data()));
+  ASSERT_FALSE(model()->MergeDataAndStartSyncing(
+      syncer::SEARCH_ENGINES, initial_data, PassProcessor()));
+
+  ASSERT_FALSE(processor()->contains_guid("accountguid"));
+  const TemplateURL* local = model()->GetTemplateURLForGUID("localguid");
+  ASSERT_THAT(local, Pointee(Property(&TemplateURL::keyword, u"localkey")));
+  const TemplateURL* account = model()->GetTemplateURLForGUID("accountguid");
+  ASSERT_THAT(account, Pointee(Property(&TemplateURL::keyword, u"accountkey")));
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesDisabled,
+    ShouldNotUpdateConflictingPrepopulatedSearchEngineIfNotBetter) {
+  ASSERT_NO_FATAL_FAILURE(
+      ShouldNotUpdateConflictingPrepopulatedSearchEngineIfNotBetter());
+
+  // Local turl is committed to the server as-is.
+  ASSERT_TRUE(processor()->contains_guid("localguid"));
+  EXPECT_EQ(processor()->change_for_guid("localguid").change_type(),
+            syncer::SyncChange::ACTION_ADD);
+  EXPECT_EQ(processor()
+                ->change_for_guid("localguid")
+                .sync_data()
+                .GetSpecifics()
+                .search_engine()
+                .url(),
+            "http://localurl.com");
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  const TemplateURL* local = model()->GetTemplateURLForGUID("localguid");
+  EXPECT_EQ(local->keyword(), u"localkey");
+  EXPECT_THAT(model()->GetTemplateURLForGUID("accountguid"),
+              Pointee(Property(&TemplateURL::keyword, u"accountkey")));
+}
+
+TEST_F(
+    TemplateURLServiceSyncMergeTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldNotUpdateConflictingPrepopulatedSearchEngineIfNotBetter) {
+  ASSERT_NO_FATAL_FAILURE(
+      ShouldNotUpdateConflictingPrepopulatedSearchEngineIfNotBetter());
+
+  // Nothing is committed to the server.
+  ASSERT_EQ(0u, processor()->change_list_size());
+
+  const TemplateURL* local = model()->GetTemplateURLForGUID("localguid");
+  EXPECT_FALSE(local->GetAccountData());
+  EXPECT_THAT(local,
+              Pointee(AllOf(Property(&TemplateURL::keyword, u"localkey"),
+                            Property(&TemplateURL::sync_guid, "localguid"))));
+
+  const TemplateURL* account = model()->GetTemplateURLForGUID("accountguid");
+  EXPECT_FALSE(account->GetLocalData());
+  EXPECT_THAT(account,
+              Pointee(AllOf(Property(&TemplateURL::keyword, u"accountkey"),
+                            Property(&TemplateURL::sync_guid, "accountguid"))));
+
+  model()->StopSyncing(syncer::SEARCH_ENGINES);
+  EXPECT_EQ(local, model()->GetTemplateURLForGUID("localguid"));
+  EXPECT_EQ(local->keyword(), u"localkey");
+  EXPECT_FALSE(model()->GetTemplateURLForGUID("accountguid"));
 }

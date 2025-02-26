@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
 <translation id="1009406586654360474">Abra o Gerenciador de senhas do Google e acesse as configurações. Selecione "Importar" e adicione o arquivo CSV que contém as senhas exportadas.</translation>
+<translation id="1010283278930414892">Nenhuma senha salva neste dispositivo</translation>
 <translation id="1011749477052068769">Mover para cá</translation>
 <translation id="1014147525163127655">Não há chaves de acesso para <ph name="ORIGIN" /> neste dispositivo</translation>
 <translation id="1016498331642356377">Pesquisar rapidamente usando sua voz. Para editar este atalho, toque e pressione.</translation>
@@ -142,6 +143,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1568636008098739136">Ouvir esta página. Para editar este atalho, toque e pressione.</translation>
 <translation id="1571041387761170095">Nenhuma senha fraca ou reutilizada</translation>
 <translation id="1571304935088121812">Copiar nome de usuário</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 senha comprometida neste dispositivo}one{# senha comprometida neste dispositivo}other{# senhas comprometidas neste dispositivo}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> itens sugeridos na lista abaixo.</translation>
 <translation id="1598163867407640634">Usar <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Quando essa opção está ativada, você usa e salva dados na sua Conta do Google. Quando está desativada, os dados são salvos apenas neste dispositivo.</translation>
@@ -163,6 +165,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1724977129262658800">Desbloqueie para editar sua senha</translation>
 <translation id="1726477445370128854">Você pode navegar e fazer buscas mais rápido quando o Chrome pré-carrega páginas que acredita serem de seu interesse</translation>
 <translation id="1728803206919861584">Salvar chave de acesso fora da navegação anônima?</translation>
+<translation id="1732514748744806741">Vamos avisar você se as senhas forem comprometidas</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 site enviou muitas notificações recentemente}one{# site enviou muitas notificações recentemente}other{# sites enviaram muitas notificações recentemente}}</translation>
 <translation id="1749561566933687563">Sincronize seus favoritos</translation>
 <translation id="1750238553597293878">Continue usando as senhas na sua Conta do Google</translation>
@@ -295,6 +298,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2390510615457643724">Quer baixar <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) novamente?</translation>
 <translation id="2395004545133500011">Compartilhar com a planilha de resumo aberta</translation>
 <translation id="2410754283952462441">Escolher uma conta</translation>
+<translation id="2413014528833954543">Não é possível verificar as senhas neste dispositivo</translation>
 <translation id="2414886740292270097">Escuro</translation>
 <translation id="2421705177906985956">Nenhum site para mostrar no momento</translation>
 <translation id="2426805022920575512">Escolher outra conta</translation>
@@ -1336,6 +1340,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7022756207310403729">Abrir no navegador</translation>
 <translation id="7025769836128625875">Esse é um recurso de IA experimental e nem sempre acerta. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7029809446516969842">Senhas</translation>
+<translation id="7053256416619638731">Fortaleça suas senhas neste dispositivo</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7054588988317389591">Ver descrições de imagens?</translation>
 <translation id="7057969023583258980">Abrir o histórico completo do Chrome</translation>
@@ -1586,6 +1591,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8110024788458304985">Ajudar a melhorar os recursos e o desempenho do Chrome</translation>
 <translation id="8110087112193408731">Mostrar sua atividade do Chrome no Bem-estar digital?</translation>
 <translation id="8118117428362942925">Se precisar de ajuda, entre em contato com seu familiar responsável (<ph name="PARENT_NAME" />)</translation>
+<translation id="8120286190326371840">Nenhuma senha comprometida neste dispositivo</translation>
 <translation id="8122623268651408616">Ordenar por mais recentes</translation>
 <translation id="8127542551745560481">Editar página inicial</translation>
 <translation id="8130309322784422030">Suas informações de login armazenadas podem estar desatualizadas</translation>

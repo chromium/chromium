@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
@@ -382,6 +383,15 @@ UnusedSitePermissionsService::UnusedSitePermissionsService(
 #endif
             hcsm());
 
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kSafetyHubDisruptiveNotificationRevocation)) {
+      disruptive_notification_manager_ =
+          std::make_unique<DisruptiveNotificationPermissionsManager>(
+              hcsm(),
+              site_engagement::SiteEngagementServiceFactory::GetForProfile(
+                  browser_context_));
+    }
+
     pref_change_registrar_->Add(
         prefs::kSafeBrowsingEnabled,
         base::BindRepeating(&UnusedSitePermissionsService::
@@ -714,6 +724,9 @@ UnusedSitePermissionsService::UpdateOnUIThread(
           result.get());
   recently_unused_permissions_ = interim_result->GetRecentlyUnusedPermissions();
   RevokeUnusedPermissions();
+  if (disruptive_notification_manager_) {
+    disruptive_notification_manager_->RevokeDisruptiveNotifications();
+  }
   // TODO(crbug.com/40250875): Clean up these checks.
   if (IsAbusiveNotificationAutoRevocationEnabled()) {
     abusive_notification_manager_->CheckNotificationPermissionOrigins();

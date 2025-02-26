@@ -112,6 +112,13 @@ message ContactInfoSpecifics {
   // All StringTokens, and the `profile_label` are considered non-metadata.
   optional int32 last_modifier_id = 40;
 
+  // Used to hide account addresses in Chrome.
+  // Chrome will set this value to true if the address should be filtered out
+  // on the server side and not passed to Chrome again.
+  // If Chrome set this value to false or if the value is not set, the address
+  // will be passed to Chrome.
+  optional bool invisible_in_autofill = 62;
+
   // Contact info name fields.
   optional StringToken name_first = 7;
   optional StringToken name_middle = 8;

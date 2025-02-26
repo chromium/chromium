@@ -32,9 +32,9 @@ enum class AuthenticationFlowInProfileState {
   kBegin,
   kSignOutIfNeeded,
   kSignInIfNeeded,
-  kRegisterForUserPolicy,
-  kFetchUserPolicy,
-  kFetchCapabilities,
+  kRegisterForUserPolicyIfNeeded,
+  kFetchUserPolicyIfNeeded,
+  kFetchCapabilitiesIfNeeded,
   kCompletionWithSuccess,
   kCompletionWithFailure,
   kCleanupBeforeDone,
@@ -54,7 +54,6 @@ enum class AuthenticationFlowInProfileState {
   AuthenticationFlowInProfile* _selfRetainer;
   signin_ui::SigninCompletionCallback _signInCompletion;
   BOOL _error;
-  BOOL _shouldFetchUserPolicy;
   id<SystemIdentity> _identityToSignIn;
   // `YES` if `_identityToSignIn` is a managed identity.
   BOOL _isManagedIdentity;
@@ -146,9 +145,9 @@ enum class AuthenticationFlowInProfileState {
       NOTREACHED();
     case AuthenticationFlowInProfileState::kSignOutIfNeeded:
     case AuthenticationFlowInProfileState::kSignInIfNeeded:
-    case AuthenticationFlowInProfileState::kRegisterForUserPolicy:
-    case AuthenticationFlowInProfileState::kFetchUserPolicy:
-    case AuthenticationFlowInProfileState::kFetchCapabilities:
+    case AuthenticationFlowInProfileState::kRegisterForUserPolicyIfNeeded:
+    case AuthenticationFlowInProfileState::kFetchUserPolicyIfNeeded:
+    case AuthenticationFlowInProfileState::kFetchCapabilitiesIfNeeded:
       return AuthenticationFlowInProfileState::kCompletionWithFailure;
     case AuthenticationFlowInProfileState::kCompletionWithFailure:
     case AuthenticationFlowInProfileState::kCompletionWithSuccess:
@@ -169,28 +168,12 @@ enum class AuthenticationFlowInProfileState {
     case AuthenticationFlowInProfileState::kSignOutIfNeeded:
       return AuthenticationFlowInProfileState::kSignInIfNeeded;
     case AuthenticationFlowInProfileState::kSignInIfNeeded:
-      if (policy::IsAnyUserPolicyFeatureEnabled() && _isManagedIdentity) {
-        return AuthenticationFlowInProfileState::kRegisterForUserPolicy;
-      } else if ([self shouldFetchCapabilities]) {
-        return AuthenticationFlowInProfileState::kFetchCapabilities;
-      }
-      return AuthenticationFlowInProfileState::kCompletionWithSuccess;
-    case AuthenticationFlowInProfileState::kRegisterForUserPolicy:
-      if (!_dmToken.length || !_clientID.length) {
-        // Skip fetching user policies when registration failed.
-        if ([self shouldFetchCapabilities]) {
-          return AuthenticationFlowInProfileState::kFetchCapabilities;
-        }
-        return AuthenticationFlowInProfileState::kCompletionWithSuccess;
-      }
-      // Fetch user policies when registration is successful.
-      return AuthenticationFlowInProfileState::kFetchUserPolicy;
-    case AuthenticationFlowInProfileState::kFetchUserPolicy:
-      if ([self shouldFetchCapabilities]) {
-        return AuthenticationFlowInProfileState::kFetchCapabilities;
-      }
-      return AuthenticationFlowInProfileState::kCompletionWithSuccess;
-    case AuthenticationFlowInProfileState::kFetchCapabilities:
+      return AuthenticationFlowInProfileState::kRegisterForUserPolicyIfNeeded;
+    case AuthenticationFlowInProfileState::kRegisterForUserPolicyIfNeeded:
+      return AuthenticationFlowInProfileState::kFetchUserPolicyIfNeeded;
+    case AuthenticationFlowInProfileState::kFetchUserPolicyIfNeeded:
+      return AuthenticationFlowInProfileState::kFetchCapabilitiesIfNeeded;
+    case AuthenticationFlowInProfileState::kFetchCapabilitiesIfNeeded:
       return AuthenticationFlowInProfileState::kCompletionWithSuccess;
     case AuthenticationFlowInProfileState::kCompletionWithSuccess:
     case AuthenticationFlowInProfileState::kCompletionWithFailure:
@@ -202,7 +185,6 @@ enum class AuthenticationFlowInProfileState {
 }
 
 - (void)continueFlow {
-  ProfileIOS* profile = [self originalProfile];
   _state = [self nextState];
   switch (_state) {
     case AuthenticationFlowInProfileState::kBegin:
@@ -213,18 +195,14 @@ enum class AuthenticationFlowInProfileState {
     case AuthenticationFlowInProfileState::kSignInIfNeeded:
       [self signInIfNeededStep];
       return;
-    case AuthenticationFlowInProfileState::kRegisterForUserPolicy:
-      [_performer registerUserPolicy:profile forIdentity:_identityToSignIn];
+    case AuthenticationFlowInProfileState::kRegisterForUserPolicyIfNeeded:
+      [self registerForUserPolicyIfNeededStep];
       return;
-    case AuthenticationFlowInProfileState::kFetchUserPolicy:
-      [_performer fetchUserPolicy:profile
-                      withDmToken:_dmToken
-                         clientID:_clientID
-               userAffiliationIDs:_userAffiliationIDs
-                         identity:_identityToSignIn];
+    case AuthenticationFlowInProfileState::kFetchUserPolicyIfNeeded:
+      [self fetchUserPolicyIfNeededStep];
       return;
-    case AuthenticationFlowInProfileState::kFetchCapabilities:
-      [self fetchCapabilitiesStep];
+    case AuthenticationFlowInProfileState::kFetchCapabilitiesIfNeeded:
+      [self fetchCapabilitiesIfNeededStep];
       return;
     case AuthenticationFlowInProfileState::kCompletionWithSuccess:
       [self successCompleteFlowStep];
@@ -287,12 +265,42 @@ enum class AuthenticationFlowInProfileState {
   [self continueFlow];
 }
 
+// Registers to DM Server to get a DM token and client ID, to fetch user
+// policies in the next step.
+- (void)registerForUserPolicyIfNeededStep {
+  if (!policy::IsAnyUserPolicyFeatureEnabled() || !_isManagedIdentity) {
+    [self continueFlow];
+    return;
+  }
+  ProfileIOS* profile = [self originalProfile];
+  [_performer registerUserPolicy:profile forIdentity:_identityToSignIn];
+}
+
+// Fetches user policy.
+- (void)fetchUserPolicyIfNeededStep {
+  if (!_dmToken.length || !_clientID.length) {
+    // Skip fetching user policies when registration failed or was not required.
+    [self continueFlow];
+    return;
+  }
+  CHECK(policy::IsAnyUserPolicyFeatureEnabled(), base::NotFatalUntil::M140);
+  CHECK(_isManagedIdentity, base::NotFatalUntil::M140);
+  ProfileIOS* profile = [self originalProfile];
+  [_performer fetchUserPolicy:profile
+                  withDmToken:_dmToken
+                     clientID:_clientID
+           userAffiliationIDs:_userAffiliationIDs
+                     identity:_identityToSignIn];
+}
+
 // Fetches capabilities on successful authentication for the upcoming History
 // Sync Opt-In screen.
-- (void)fetchCapabilitiesStep {
-  CHECK([self shouldFetchCapabilities], base::NotFatalUntil::M138);
+- (void)fetchCapabilitiesIfNeededStep {
+  if (![self shouldFetchCapabilities]) {
+    [self continueFlow];
+    return;
+  }
   ProfileIOS* profile = [self originalProfile];
-
   // Create the capability fetcher and start fetching capabilities.
   __weak __typeof(self) weakSelf = self;
   _capabilitiesFetcher = [[HistorySyncCapabilitiesFetcher alloc]
@@ -379,8 +387,8 @@ enum class AuthenticationFlowInProfileState {
                                    clientID:(NSString*)clientID
                          userAffiliationIDs:
                              (NSArray<NSString*>*)userAffiliationIDs {
-  CHECK_EQ(AuthenticationFlowInProfileState::kRegisterForUserPolicy, _state,
-           base::NotFatalUntil::M138);
+  CHECK_EQ(AuthenticationFlowInProfileState::kRegisterForUserPolicyIfNeeded,
+           _state, base::NotFatalUntil::M138);
   _dmToken = dmToken;
   _clientID = clientID;
   _userAffiliationIDs = userAffiliationIDs;
@@ -389,7 +397,7 @@ enum class AuthenticationFlowInProfileState {
 
 - (void)didFetchUserPolicyWithSuccess:(BOOL)success {
   // The result can be ignored, the goal was to prefetch the user policy.
-  CHECK_EQ(AuthenticationFlowInProfileState::kFetchUserPolicy, _state,
+  CHECK_EQ(AuthenticationFlowInProfileState::kFetchUserPolicyIfNeeded, _state,
            base::NotFatalUntil::M138);
   DLOG_IF(ERROR, !success) << "Error fetching policy for user";
   [self continueFlow];

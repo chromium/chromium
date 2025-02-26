@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="1045448422538531528">Pridať do skupiny</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Vytvorená pred <ph name="NUM_WEEKS_ONE" /> týždňom}few{Vytvorená pred <ph name="NUM_WEEKS_MANY" /> týždňami}many{Vytvorená pred <ph name="NUM_WEEKS_MANY" /> týždňa}other{Vytvorená pred <ph name="NUM_WEEKS_MANY" /> týždňami}}</translation>
 <translation id="1063300264396686489">Automaticky otvárať skupiny kariet z iných zariadení</translation>
 <translation id="1075622780330595106">V poslednom čase ste nepoužili tento počet kariet: <ph name="NUMBER_OF_TABS" />. Chcete ich zavrieť?</translation>

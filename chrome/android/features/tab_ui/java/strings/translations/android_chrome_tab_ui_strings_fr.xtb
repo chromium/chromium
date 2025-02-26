@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
+<translation id="1045448422538531528">Ajouter au groupe</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Créé il y a <ph name="NUM_WEEKS_ONE" /> semaine}one{Créé il y a <ph name="NUM_WEEKS_MANY" /> semaine}other{Créé il y a <ph name="NUM_WEEKS_MANY" /> semaines}}</translation>
 <translation id="1063300264396686489">Ouvrir automatiquement les groupes d'onglets d'autres appareils</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> des onglets ouverts n'ont pas été utilisés récemment. Voulez-vous les fermer ?</translation>

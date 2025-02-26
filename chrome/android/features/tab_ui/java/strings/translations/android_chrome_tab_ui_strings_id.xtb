@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="1045448422538531528">Tambahkan ke grup</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Dibuat <ph name="NUM_WEEKS_ONE" /> minggu lalu}other{Dibuat <ph name="NUM_WEEKS_MANY" /> minggu lalu}}</translation>
 <translation id="1063300264396686489">Buka otomatis grup tab dari perangkat lain</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dari beberapa tab Anda belum digunakan akhir-akhir ini. Tutup?</translation>
@@ -11,6 +12,7 @@
 <translation id="1293272072740285747">Simpan grup ini untuk menambahkan tab nanti, atau hapus grup jika Anda tidak lagi memerlukannya.
 
 Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<ph name="TITLE_OF_GROUP" />", dan grup tersebut akan dihapus dari semua perangkat.</translation>
+<translation id="1326654401173629446">Grup tab "<ph name="TAB_GROUP_NAME" />" tidak lagi tersedia</translation>
 <translation id="1329584516321524826">Baru saja diupdate</translation>
 <translation id="1340839264183302272">Keluar dari grup</translation>
 <translation id="1419023007528516122">Tindakan ini akan menghapus permanen grup dari perangkat Anda</translation>

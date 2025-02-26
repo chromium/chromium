@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
+<translation id="1045448422538531528">Hozzáadás csoporthoz</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> hete létrehozva}other{<ph name="NUM_WEEKS_MANY" /> hete létrehozva}}</translation>
 <translation id="1063300264396686489">Más eszközökről származó lapcsoportok automatikus megnyitása</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> lapot nem használt mostanában. Szeretné bezárni őket?</translation>
@@ -11,6 +12,7 @@
 <translation id="1293272072740285747">Tartsa meg ezt a csoportot, ha később szeretne hozzáadni lapokat, vagy törölje, ha már nem lesz rá szüksége.
 
 Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name="TITLE_OF_GROUP" />” lapcsoporthoz, és a lapcsoport az összes eszközről törlődik.</translation>
+<translation id="1326654401173629446">A(z) „<ph name="TAB_GROUP_NAME" />” már nem áll rendelkezésre</translation>
 <translation id="1329584516321524826">Most frissítve</translation>
 <translation id="1340839264183302272">Kilépés a csoportból</translation>
 <translation id="1419023007528516122">Ezzel véglegesen törli a csoportot az eszközről.</translation>

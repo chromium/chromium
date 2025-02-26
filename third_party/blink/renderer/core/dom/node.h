@@ -1046,6 +1046,17 @@ class CORE_EXPORT Node : public EventTarget {
   }
   void SetCachedDirectionality(TextDirection direction);
 
+  bool SelfOrAncestorHasContainerTiming() const {
+    return GetFlag(kSelfOrAncestorHasContainerTiming);
+  }
+  void SetSelfOrAncestorHasContainerTiming() {
+    SetFlag(kSelfOrAncestorHasContainerTiming);
+  }
+  void ClearSelfOrAncestorHasContainerTiming() {
+    ClearFlag(kSelfOrAncestorHasContainerTiming);
+  }
+  bool HasContainerTiming() const;
+
   void Trace(Visitor*) const override;
 
   bool IsModifiedBySoftNavigation() const {
@@ -1121,6 +1132,10 @@ class CORE_EXPORT Node : public EventTarget {
 
     // Bits indicating this Node is a NodePart or a ChildNodePart endpoint.
     kHasNodePart = 1u << 30,
+
+    // Indicate the node is in a hierarchy that needs to be considered for
+    // ContainerTiming events.
+    kSelfOrAncestorHasContainerTiming = 1u << 31,
 
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,
 

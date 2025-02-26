@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -50,6 +51,7 @@
 #include "components/autofill_ai/core/browser/autofill_ai_logger.h"
 #include "components/autofill_ai/core/browser/autofill_ai_utils.h"
 #include "components/autofill_ai/core/browser/autofill_ai_value_filter.h"
+#include "components/autofill_ai/core/browser/strike_databases/autofill_ai_save_strike_database_by_host.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_suggestions.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -195,7 +197,12 @@ MaybeUpdateEntity(const autofill::EntityInstance& entity,
 
 AutofillAiManager::AutofillAiManager(AutofillAiClient* client,
                                      autofill::StrikeDatabase* strike_database)
-    : client_(CHECK_DEREF(client)) {}
+    : client_(CHECK_DEREF(client)) {
+  if (strike_database) {
+    save_strike_db_by_host_ =
+        std::make_unique<AutofillAiSaveStrikeDatabaseByHost>(strike_database);
+  }
+}
 
 base::flat_map<autofill::FieldGlobalId, bool>
 AutofillAiManager::GetFieldValueSensitivityMap(
@@ -390,6 +397,27 @@ bool AutofillAiManager::ShouldDisplayIph(
 
 autofill::LogManager* AutofillAiManager::GetCurrentLogManager() {
   return client_->GetAutofillClient().GetCurrentLogManager();
+}
+
+void AutofillAiManager::AddStrikeForSaveAttempt(
+    const GURL& url,
+    const autofill::EntityInstance& entity) {
+  if (!save_strike_db_by_host_ || !url.has_host()) {
+    return;
+  }
+  save_strike_db_by_host_->AddStrike(AutofillAiSaveStrikeDatabaseByHost::GetId(
+      entity.type().name_as_string(), url.host()));
+}
+
+bool AutofillAiManager::IsSaveBlockedByStrikeDatabase(
+    const GURL& url,
+    const autofill::EntityInstance& entity) const {
+  if (!save_strike_db_by_host_) {
+    return true;
+  }
+  return save_strike_db_by_host_->ShouldBlockFeature(
+      AutofillAiSaveStrikeDatabaseByHost::GetId(entity.type().name_as_string(),
+                                                url.host()));
 }
 
 base::WeakPtr<AutofillAiManager> AutofillAiManager::GetWeakPtr() {

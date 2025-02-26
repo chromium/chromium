@@ -114,6 +114,7 @@
 <translation id="1445276840641906250">Todas tus pestañas en un solo navegador</translation>
 <translation id="1450170672351507823">La protección estándar está activada. Para tener aún más seguridad, usa la protección mejorada.</translation>
 <translation id="1455660774629812862">No ocultar</translation>
+<translation id="1456545332132818232">Reseñas de productos en <ph name="PRODUCT_NAME" />, <ph name="STARS" /> de <ph name="MAX_STARS" />, <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">Ahorra tiempo, escribe menos</translation>
 <translation id="1466035273550360103">No hay pestañas abiertas</translation>
 <translation id="1469381646033328562">Tu padre o madre gestiona tu cuenta.
@@ -292,6 +293,7 @@
 <translation id="2199562093267256223">Se eliminará el grupo de todos los dispositivos en los que se haya iniciado sesión con <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">No hay cuentas de correo</translation>
 <translation id="2214453882118345682">Compra, traduce e identifica lo que ves con tu cámara.</translation>
+<translation id="2215819824168709130">Ocultar tarjeta Seguir precio</translation>
 <translation id="2220529011494928058">Notificar un problema</translation>
 <translation id="2220887224562128152">Una vez que se ha programado la eliminación de un archivo, no se puede recuperar.</translation>
 <translation id="2223461067862937305">Crear un código QR</translation>
@@ -458,6 +460,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="2893168226686371498">Navegador predeterminado</translation>
 <translation id="2894757982205307093">Nueva pestaña en el grupo</translation>
 <translation id="2902312830803030883">Más acciones</translation>
+<translation id="2904788871580817212">Bajada de precio en tu pestaña abierta, de <ph name="PREVIOUS_PRICE" /> a <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Tienes <ph name="NUMBER_OF_PASSWORDS" /> contraseñas reutilizadas que podrían poner en riesgo tu seguridad.</translation>
 <translation id="29153882450867370">Ocultar Seguir precio</translation>
 <translation id="291754862089661335">Coloca el código QR o de barras en este marco</translation>
@@ -642,6 +645,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3831560640878483188">¿Cerrar advertencia?</translation>
 <translation id="3832419617903252251">Contraseña guardada solo en este dispositivo</translation>
 <translation id="3838691874161539578">Comprueba tus contraseñas guardadas para reforzar tu seguridad y mejorar tu protección online</translation>
+<translation id="3838985624086228724">Bajada de precio en tu producto seguido, de <ph name="PREVIOUS_PRICE" /> a <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Volver</translation>
 <translation id="3851938967634752633">Se eliminarán las contraseñas de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> y <ph name="NUMBER_OF_ACCOUNTS" /> cuentas más. Tus cuentas no se eliminarán.</translation>
 <translation id="3858860766373142691">Nombre</translation>
@@ -760,6 +764,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4322394346347055525">Cerrar las demás pestañas</translation>
 <translation id="4324735664183300693">Activar notificaciones</translation>
 <translation id="4326912346867677256">Toca Usar contraseña para iniciar sesión de forma segura.</translation>
+<translation id="4327017157997423717">Seguir precio de <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Mi Drive</translation>
 <translation id="4331177082088332784">Puedes gestionar esto en BEGIN_LINKConfiguración de contenidoEND_LINK</translation>
 <translation id="4334428914252001502">1 artículo no leído.</translation>
@@ -943,6 +948,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5127538504377457572">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="5128788795241319992">Explora el nuevo menú</translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, tu historial y más en todos tus dispositivos</translation>
+<translation id="5141363746588976328">Ocultar tarjeta Bajadas de precio en tus pestañas</translation>
 <translation id="5145331760738811130">Salir de la función de cambio de pestaña</translation>
 <translation id="5157638238828697074">Se ha producido un error. No se ha podido abrir la aplicación.</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -994,6 +1000,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5352128922772839949">Guardar archivo</translation>
 <translation id="5355191726083956201">La protección mejorada está activada</translation>
 <translation id="537853552771686272">Gestiona los temas y los sitios que te interesan</translation>
+<translation id="5394975111793637642">Ocultar tarjeta Reseñas de productos para ti</translation>
 <translation id="5395707839134961196">Ocultar detalles del buscador</translation>
 <translation id="5414763847370083940">Recibirás una alerta si el precio baja en algún sitio.</translation>
 <translation id="5415289094036440596">Las llaves de acceso no se pueden compartir</translation>
@@ -1235,6 +1242,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="634878792104344809">Sincroniza tus contraseñas, tu historial y mucho más en todos tus dispositivos</translation>
 <translation id="6351147166808964033">Acceder a la función de cambio de pestaña</translation>
 <translation id="63519665078626091">Para usar el inspector web, conéctate a Safari en tu ordenador mediante un cable y accede a tu iPad desde el menú Desarrollo. Puedes habilitar el menú Desarrollo en la sección Avanzado de los ajustes de Safari de tu ordenador.</translation>
+<translation id="6355820183143562453">Ocultar tarjeta Seguimiento de precios</translation>
 <translation id="6355820205320395730">Las contraseñas poco seguras son fáciles de adivinar. Asegúrate de que tus contraseñas sean seguras. <ph name="BEGIN_LINK" />Consulta más consejos sobre seguridad<ph name="END_LINK" />.</translation>
 <translation id="6361848730467328243">Seguir a <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Elige un buscador de la lista.</translation>
@@ -1533,6 +1541,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7638584964844754484">Frase de contraseña incorrecta</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Contraseñas vulneradas}=1{{COUNT} contraseña vulnerada}other{{COUNT} contraseñas vulneradas}}</translation>
 <translation id="7640669552036055091">Pestañas de Android</translation>
+<translation id="7642277834834046856">Bajadas de precio en tus pestañas</translation>
 <translation id="7646263789464975852">Menú → Configuración → Comprobación de seguridad</translation>
 <translation id="7646772052135772216">La sincronización de contraseñas no funciona</translation>
 <translation id="764827086632467055">Toca App del navegador por omisión</translation>
@@ -1843,6 +1852,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="886477344907998366">Mostrar marcadores</translation>
 <translation id="8869239474428371589">Sácale el máximo partido a tu navegador favorito</translation>
 <translation id="8871974300055371298">Configuración de contenido</translation>
+<translation id="8877788021141246043">Añadir un recordatorio</translation>
 <translation id="8879604564928138696">Toca dos veces para probar</translation>
 <translation id="8879952635974818770">Contenido personalizado</translation>
 <translation id="8887595428614802520">Cerrar todas las pestañas y grupos</translation>

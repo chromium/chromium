@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1045448422538531528">Thêm vào nhóm</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Tạo <ph name="NUM_WEEKS_ONE" /> tuần trước}other{Tạo <ph name="NUM_WEEKS_MANY" /> tuần trước}}</translation>
 <translation id="1063300264396686489">Tự động mở nhóm thẻ từ các thiết bị khác</translation>
 <translation id="1075622780330595106">Gần đây, bạn không sử dụng <ph name="NUMBER_OF_TABS" /> trong tổng số các thẻ của mình. Bạn có muốn đóng các thẻ này không?</translation>
@@ -11,6 +12,7 @@
 <translation id="1293272072740285747">Giữ lại nhóm này để thêm thẻ vào lúc khác hoặc xoá nhóm này nếu bạn không cần nữa.
 
 Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào nhóm thẻ "<ph name="TITLE_OF_GROUP" />" và nhóm thẻ này sẽ bị xoá khỏi tất cả thiết bị.</translation>
+<translation id="1326654401173629446">Nhóm thẻ "<ph name="TAB_GROUP_NAME" />" không còn nữa</translation>
 <translation id="1329584516321524826">Vừa cập nhật xong</translation>
 <translation id="1340839264183302272">Rời khỏi nhóm</translation>
 <translation id="1419023007528516122">Thao tác này sẽ xoá vĩnh viễn nhóm khỏi thiết bị của bạn</translation>

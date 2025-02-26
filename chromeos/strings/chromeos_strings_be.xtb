@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">кошкі</translation>
 <translation id="5907649332524363701">колер клавіш</translation>
 <translation id="5908813850962688338">Усталяванне абнаўлення зойме некалькі хвілін. Падчас спампоўвання абнаўлення не адключайце прыладу ад крыніцы сілкавання. Прылада можа перазагружацца некалькі разоў, а экран – гаснуць. Каб завяршыць усталяванне, вам трэба будзе перазапусціць прыладу.</translation>
+<translation id="5915794087373112615">Ваш выкладчык праглядзіць экран праз <ph name="NUM_SECONDS" /> с</translation>
 <translation id="5916084858004523819">Забароненая</translation>
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Сканіраванне завершана. Файл захаваны ў папку <ph name="LINK_BEGIN" />"<ph name="FOLDER_NAME" />"<ph name="LINK_END" />.}one{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1522,6 +1523,7 @@
 <translation id="8054112564438735763">бэжавы</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" />, колер – <ph name="CHARACTERS_COLOR" />, фон – <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Каб пачаць запіс аўдыя, падключыце мікрафон</translation>
 <translation id="8067126283828232460">APN падключана.</translation>
 <translation id="8067208048261192356">карычневы</translation>
 <translation id="8067224607978179455">Выдаліць <ph name="ACTION_NAME" /></translation>
@@ -1625,6 +1627,7 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чайная</translation>
 <translation id="8538236298648811558">На аснове штучнага інтэлекту ад Google</translation>
+<translation id="8543574988889671960">Перазагрузіць укладку</translation>
 <translation id="8550364285433943656">Выберыце элементы кіравання для дзеянняў, каб гуляць з дапамогай клавіш клавіятуры</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Магчыма, вам спатрэбіцца ўключыць гэту наладу, каб падключыцца да сеткі вашага аператара. Звяжыцеся з аператарам, каб даведацца больш.</translation>

@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">муурууд</translation>
 <translation id="5907649332524363701">товчны өнгө</translation>
 <translation id="5908813850962688338">Энэ шинэчлэлтийг суулгахад хэдэн минут зарцуулна. Шинэчлэлт татаж байхад төхөөрөмжөө залгаатай бөгөөд асаалттай байлгаарай. Энэ явцын үеэр таны төхөөрөмж автоматаар хэд хэдэн удаа дахин асаж, хар дэлгэц харуулж болзошгүй. Суулгаж дуусгахын тулд таныг төхөөрөмжөө дахин эхлүүлэхийг сануулна.</translation>
+<translation id="5915794087373112615">Танай багш дэлгэцийг тань <ph name="NUM_SECONDS" /> секундийн дараа харна</translation>
 <translation id="5916084858004523819">Хориглосон</translation>
 <translation id="5916664084637901428">Асаах</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Таны файлыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}other{Таны файлуудыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}}</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" />-г сонгох</translation>
 <translation id="7618774594543487847">Завсрын</translation>
 <translation id="7620771111601174153">Тусламжийн төвөөс нэмэлт мэдээлэл авах</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">Хамгийн сүүлд шинэчилсэн цаг</translation>
 <translation id="7633068090678117093">Дэвсгэр зураг</translation>
 <translation id="763873111564339966">хөх нил ягаан</translation>
@@ -1524,6 +1526,7 @@
 <translation id="8054112564438735763">цайвар шар</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> дэвсгэр дээрх <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Аудио бичиж эхлэхийн тулд микрофон холбоно уу</translation>
 <translation id="8067126283828232460">APN холбогдсон.</translation>
 <translation id="8067208048261192356">бор</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" />-г устгах</translation>

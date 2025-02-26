@@ -4450,7 +4450,9 @@ message CertProvBackendError {
   // accessing such an unknown enum field returns the enum's default value
   // which is the first defined enum value, i.e., `ERROR_UNSPECIFIED`. ChromeOS
   // clients treat this error by marking the associated certificate provisioning
-  // process as failing.
+  // process as failing. These values are persisted to logs. Entries should not
+  // be renumbered and numeric values should never be reused. Keep in sync with
+  // the CertProvBackendError UMA enum.
   enum Error {
     ERROR_UNSPECIFIED = 0;
     // The attempted request is invalid in the current state of the certificate

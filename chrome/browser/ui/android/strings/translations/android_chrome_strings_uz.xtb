@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1009406586654360474">Google Parollar menejeri va sozlamalarni oching. "Import qilish" bandini tanlang va eksport qilingan parollardan iborat CSV faylini qoʻshing.</translation>
+<translation id="1010283278930414892">Bu qurilmaga parol saqlanmagan</translation>
 <translation id="1011749477052068769">Bu yerga koʻchirish</translation>
 <translation id="1014147525163127655">Bu qurilmada <ph name="ORIGIN" /> uchun hech qanday kod mavjud emas</translation>
 <translation id="1016498331642356377">Ovoz bilan tezda qidiring. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
@@ -142,6 +143,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1568636008098739136">Bu sahifani tinglash. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
 <translation id="1571041387761170095">Kuchsiz yoki qayta ishlatilgan parollar yoʻq.</translation>
 <translation id="1571304935088121812">Foydalanuvchi nomidan nusxa olish</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{Bu qurilmada 1 ta oshkor etilgan parol aniqlandi}other{Bu qurilmada # ta oshkor etilgan parol aniqlandi}}</translation>
 <translation id="1594635596540195766">quyidagi roʻyxatdan <ph name="SUGGESTIONS_COUNT" /> ta taklif.</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bilan <ph name="SITE_ETLD_PLUS_ONE" /> ishlatish</translation>
 <translation id="160275202205869636">Yoniq boʻlsa, maʼlumotlar Google hisobida saqlanadi va ishlatiladi Oʻchiq boʻlsa, maʼlumotlar faqat shu qurilmada saqlanadi.</translation>
@@ -163,6 +165,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1724977129262658800">Parolni almashtirish uchun qurilma qulfini oching</translation>
 <translation id="1726477445370128854">Sahifalarni tezroq koʻrib chiqish va qidirishingiz uchun Chrome sizni ochishi mumkin deb hisoblagan sahifalarni oldindan yuklaydi</translation>
 <translation id="1728803206919861584">Kalit Inkognito rejimidan tashqarida saqlansinmi?</translation>
+<translation id="1732514748744806741">Parollar oshkor qilinsa, sizga xabar qilamiz</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 ta sayt yaqinda juda koʻp bildirishnomalar yuborgan}other{# ta sayt yaqinda juda koʻp bildirishnomalar yuborgan}}</translation>
 <translation id="1749561566933687563">Xatcho‘plarni sinxronlang</translation>
 <translation id="1750238553597293878">Parollar Google hisobingizda saqlanishda davom etsin</translation>
@@ -1336,6 +1339,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7022756207310403729">Brauzerda ochish</translation>
 <translation id="7025769836128625875">Bu tajribaviy AI funksiya ishlashida xatolar chiqishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="7029809446516969842">Parollar</translation>
+<translation id="7053256416619638731">Bu qurilmadagi parollar mustahkamligini oshiring</translation>
 <translation id="7053983685419859001">Taqiqlash</translation>
 <translation id="7054588988317389591">Rasm tavsiflari chiqsinmi?</translation>
 <translation id="7057969023583258980">Chrome butun tarixini ochish</translation>
@@ -1586,6 +1590,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8110024788458304985">Chrome OS funksiyalari va unumdorligini yaxshilashga yordam bering</translation>
 <translation id="8110087112193408731">Raqamli muvozanat xizmatida Chrome amallari chiqsinmi?</translation>
 <translation id="8118117428362942925">Ota-onangizdan (<ph name="PARENT_NAME" />) yordam oling</translation>
+<translation id="8120286190326371840">Bu qurilmada oshkor etilgan parollar topilmadi</translation>
 <translation id="8122623268651408616">Avval yangilari</translation>
 <translation id="8127542551745560481">Bosh sahifani oʻzgartirish</translation>
 <translation id="8130309322784422030">Kirishga oid saqlangan axborotingiz eskirgan</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="1045448422538531528">Додајте у групу</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Направљено је пре <ph name="NUM_WEEKS_ONE" /> недеље}one{Направљено је пре <ph name="NUM_WEEKS_MANY" /> недеље}few{Направљено је пре <ph name="NUM_WEEKS_MANY" /> недеље}other{Направљено је пре <ph name="NUM_WEEKS_MANY" /> недеља}}</translation>
 <translation id="1063300264396686489">Аутоматски отварај групе картица са других уређаја</translation>
 <translation id="1075622780330595106">Имате више картица (<ph name="NUMBER_OF_TABS" />) које нисте користили у скорије време. Желите ли да их затворите?</translation>

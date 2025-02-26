@@ -17,7 +17,6 @@
 <translation id="1007057452468855774">Google Play Store aktivieren</translation>
 <translation id="1008186147501209563">Lesezeichen exportieren</translation>
 <translation id="1008261151167010035"><ph name="BRAND" /> merkt sich, wie du dich angemeldet hast, und meldet dich wenn möglich automatisch an. Wenn diese Funktion deaktiviert ist, wirst du jedes Mal um eine Bestätigung gebeten.</translation>
-<translation id="1008544602823861396">wird daran gehindert, deine Informationen zu nutzen auf</translation>
 <translation id="1008557486741366299">Jetzt nicht</translation>
 <translation id="100881991356161927">Name der Website</translation>
 <translation id="1009663062402466586">Spielsteuerung jetzt verfügbar</translation>
@@ -2397,7 +2396,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2653659639078652383">Senden</translation>
 <translation id="265390580714150011">Feldwert</translation>
 <translation id="2654553774144920065">Druckanfrage</translation>
-<translation id="265680054508313161">Weiter als <ph name="USERNAME" /></translation>
 <translation id="265748523151262387">Smartphoneverbindung nicht trennen</translation>
 <translation id="2657612187216250073">Einstellungen für Bedienungshilfen (Mauszeiger)</translation>
 <translation id="2658510146844889864">Passkeys und Sicherheitsschlüssel</translation>
@@ -2526,6 +2524,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2739191690716947896">Fehlerbehebung</translation>
 <translation id="2739240477418971307">Einstellungen für Bedienungshilfen ändern</translation>
 <translation id="2739331588276254426">Über <ph name="HOST_DEVICE_NAME" /> mit dem Internet verbunden</translation>
+<translation id="2739887572830526131">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie löschen, wenn du sie nicht mehr benötigst.</translation>
 <translation id="274029851662193272">Vertieft</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2740876196999178364">Diese Passkeys sind nur auf diesem Gerät gespeichert. Sie sind nicht in deinem Google-Konto gespeichert.</translation>
@@ -4030,6 +4029,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3813358687923336574">Verwendete Sprache zum Übersetzen von Seiten und Schnellinfos</translation>
 <translation id="3813458570141926987">Liste der von Chrome geschätzten Themen basierend auf deinem aktuellen Browserverlauf</translation>
 <translation id="3814529970604306954">Konto einer Bildungseinrichtung</translation>
+<translation id="3815668647912194650">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie verlassen, wenn du keinen Zugriff mehr darauf haben möchtest.</translation>
 <translation id="3816118180265633665">Chrome-Farben</translation>
 <translation id="3817524650114746564">Proxy-Einstellungen des Computers öffnen</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Wenn du zulässt, dass deine ChromeOS-Geräte automatisch erstellte Berichte an Google senden, hilfst du uns dabei, Probleme in ChromeOS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Informationen über ChromeOS-Abstürze und Angaben dazu enthalten, welche Funktionen verwendet wurden und wie viel Speicher in der Regel genutzt wurde.<ph name="END_PARAGRAPH1" />
@@ -4266,7 +4266,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3971764089670057203">Fingerabdrücke für diesen Sicherheitsschlüssel</translation>
 <translation id="3973005893595042880">Nutzer nicht zulässig</translation>
 <translation id="3973660817924297510">Passwörter werden geprüft (<ph name="CHECKED_PASSWORDS" /> von <ph name="TOTAL_PASSWORDS" />)…</translation>
-<translation id="3974105241379491420">Websites dürfen darum bitten, Informationen nutzen zu dürfen, die sie zu deiner Person gespeichert haben</translation>
 <translation id="3974514184580396500">Mit „Weiter“ bewegst du den Fokus auf dem Bildschirm nach vorn</translation>
 <translation id="3975017815357433345">Autobahn</translation>
 <translation id="3975201861340929143">Erklärung</translation>
@@ -4513,7 +4512,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4146785383423576110">Zurücksetzen und bereinigen</translation>
 <translation id="4147099377280085053">Brailletabelle auswählen</translation>
 <translation id="4147911968024186208">Bitte versuche es noch einmal. Wenn dieser Fehler wieder auftritt, wende dich an deinen Support-Mitarbeiter.</translation>
-<translation id="414800391140809654">kann deine Informationen während des Surfens verwenden</translation>
 <translation id="4148195018520464922">Du kannst die Anmeldung auf bestimmte Nutzer beschränken. Dadurch wird die Option „Person hinzufügen“ vom Anmeldebildschirm entfernt. Du kannst auch bestehende Nutzer entfernen.</translation>
 <translation id="4148957013307229264">Installation wird ausgeführt...</translation>
 <translation id="4149385644005013189">Sieht gut aus!</translation>
@@ -5303,7 +5301,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4728558894243024398">Plattform</translation>
 <translation id="4730492586225682674">Letzte Notiz mit Eingabestift auf Sperrbildschirm</translation>
 <translation id="4730888769809690665">Benachrichtigungen zugelassen für <ph name="SITE" /></translation>
-<translation id="4731306954230393087">Darf Informationen nutzen, die zu deiner Person gespeichert wurden</translation>
 <translation id="4732799736617504962">Das verbundene Mikrofon unterstützt nur die Geräuschunterdrückung</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (links)</translation>
 <translation id="4733793249294335256">Speicherort</translation>
@@ -6205,7 +6202,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{1 Website mit vielen Benachrichtigungen gefunden}other{{NUM_SITES} Websites mit vielen Benachrichtigungen gefunden}}</translation>
 <translation id="5388885445722491159">Gepaart</translation>
 <translation id="5389224261615877010">Regenbogen</translation>
-<translation id="5389626883706033615">Websites dürfen nicht darum bitten, Informationen verwenden zu dürfen, die sie zu deiner Person gespeichert haben</translation>
 <translation id="5389794555912875905">Vor dem Aufrufen unsicherer Websites Warnungen einblenden (empfohlen)</translation>
 <translation id="5389943529251318913">Mausgeschwindigkeit verringern um</translation>
 <translation id="5390112241331447203">Datei system_logs.txt, die in Feedbackberichten gesendet wird, einbeziehen.</translation>
@@ -6890,7 +6886,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5888889603768021126">Angemeldet mit</translation>
 <translation id="5889282057229379085">Maximal zulässige Anzahl an Zwischenzertifizierungsstellen: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Alle synchronisierten Daten werden mit meiner eigenen <ph name="BEGIN_LINK" />Passphrase für die Synchronisierung verschlüsselt<ph name="END_LINK" />. Zahlungsmethoden und Adressen bei Google Pay werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.</translation>
-<translation id="5891084409170578560">Auf Websites, die du besuchst, können von anderen Websites stammende Inhalte eingebettet sein, z. B. Bilder, Werbung und Text. Diese anderen Websites dürfen die Berechtigung anfordern, Informationen zu nutzen, die sie zu deiner Person gespeichert haben, wenn du auf der Website surfst.</translation>
 <translation id="5891688036610113830">Bevorzugte WLANs</translation>
 <translation id="5894056653502215961">Auswahl des Ordners „<ph name="FOLDER_TITLE" />“ aufheben</translation>
 <translation id="5895138241574237353">Neu starten</translation>
@@ -9256,7 +9251,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7619937211696316184">Wartung ist abgeschlossen</translation>
 <translation id="7620616707541471029">Konto auswählen, um fortzufahren</translation>
 <translation id="7621382409404463535">Das System konnte die Gerätekonfiguration nicht speichern.</translation>
-<translation id="7621480263311228380">Dürfen keine Informationen verwenden, die sie über dich gespeichert haben</translation>
 <translation id="7621595347123595643">Wenn du dein Passwort oder deine PIN vergisst, kannst du keine lokalen Daten wiederherstellen.</translation>
 <translation id="7622114377921274169">Wird aufgeladen.</translation>
 <translation id="7622768823216805500">Websites installieren normalerweise Zahlungs-Handler für Einkaufsfunktionen wie eine schnellere Bezahlung</translation>
@@ -10710,6 +10704,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8633979878370972178">Ältere Versionen von Chrome-Apps können nach Dezember 2022 auf Linux-Geräten nicht mehr geöffnet werden. Du kannst nachsehen, ob eine neue Version verfügbar ist.</translation>
 <translation id="8634348081024879304">Du kannst deine virtuelle Karte dann nicht mehr mit Google Pay verwenden. <ph name="BEGIN_LINK" />Informationen zu virtuellen Karten<ph name="END_LINK" /></translation>
 <translation id="8634703204743010992">Virtuelle ChromeOS-Tastatur</translation>
+<translation id="8635399646025169806">Tabgruppe beibehalten?</translation>
 <translation id="8635628933471165173">Wird neu geladen…</translation>
 <translation id="8636284842992792762">Erweiterungen werden initialisiert…</translation>
 <translation id="8636323803535540285">Du kannst eine Verknüpfung zu <ph name="BRAND" /> hinzufügen, um schneller hierher zurückzukehren.</translation>
@@ -10970,6 +10965,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
     <ph name="BEGIN_PARAGRAPH2" />Google verwendet diese Informationen, ohne dich persönlich zu identifizieren, um die Standortgenauigkeit und standortbezogene Dienste zu verbessern und um Google-Dienste allgemein zu optimieren, bereitzustellen und zu verwalten. Wir verarbeiten diese Daten auf Grundlage der berechtigten Interessen von Google und Dritten, um den Anforderungen von Nutzern gerecht zu werden.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Du kannst die Standortgenauigkeit jederzeit in den Standorteinstellungen deines Geräts unter den Einstellungen &gt; Datenschutz und Sicherheit &gt; Datenschutzeinstellungen &gt; Standortzugriff &gt; Erweiterte Standorteinstellungen deaktivieren. Wenn die Standortgenauigkeit deaktiviert ist, werden keine Daten zur Standortgenauigkeit erhoben. Für Android-Apps und ‑Dienste wird zur Bestimmung des Standorts deines Geräts nur die IP‑Adresse verwendet, sofern verfügbar. Dies kann die Verfügbarkeit und Genauigkeit des Standorts für Android-Apps und ‑Dienste, etwa Google Maps, beeinträchtigen.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Wird geöffnet in</translation>
+<translation id="8804742093141782941">Gruppe beibehalten</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Tab in ein anderes Fenster verschieben}other{Tabs in ein anderes Fenster verschieben}}</translation>
 <translation id="8805140816472474147">Synchronisierungseinstellungen bestätigen, um die Synchronisierung zu starten.</translation>
 <translation id="8805255531353778052">Sehr große Einsparungen</translation>

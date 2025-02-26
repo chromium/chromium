@@ -382,7 +382,8 @@ WinAccessibilityAPIUsageScopedUIAEventsNotifier::
 //
 
 // static
-AXPlatformNode* AXPlatformNode::Create(AXPlatformNodeDelegate* delegate) {
+AXPlatformNode::Pointer AXPlatformNode::Create(
+    AXPlatformNodeDelegate* delegate) {
   // Make sure ATL is initialized in this module.
   win::CreateATLModuleIfNeeded();
 
@@ -391,7 +392,7 @@ AXPlatformNode* AXPlatformNode::Create(AXPlatformNodeDelegate* delegate) {
   DCHECK(SUCCEEDED(hr));
   instance->Init(delegate);
   instance->AddRef();
-  return instance;
+  return Pointer(instance);
 }
 
 // static

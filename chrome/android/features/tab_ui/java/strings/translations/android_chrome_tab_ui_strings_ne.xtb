@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
+<translation id="1045448422538531528">समूहमा थप्नुहोस्</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> हप्ताअघि बनाइएको}other{<ph name="NUM_WEEKS_MANY" /> हप्ताअघि बनाइएको}}</translation>
 <translation id="1063300264396686489">अन्य डिभाइसहरूमा भएका ट्याब समूह स्वतः खोल्नुहोस्</translation>
 <translation id="1075622780330595106">तपाईंले केही समय यता आफ्ना <ph name="NUMBER_OF_TABS" /> वटा ट्याबहरू प्रयोग गर्नुभएको छैन। तिनलाई बन्द गर्ने हो?</translation>

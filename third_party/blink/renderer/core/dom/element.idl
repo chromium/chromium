@@ -172,6 +172,7 @@ dictionary SetHTMLUnsafeOptions {
 
     // Element Timing
     [CEReactions, Reflect=elementtiming] attribute DOMString elementTiming;
+    [RuntimeEnabled=ContainerTiming, CEReactions, Reflect=containertiming] attribute DOMString containerTiming;
 };
 
 Element includes ParentNode;

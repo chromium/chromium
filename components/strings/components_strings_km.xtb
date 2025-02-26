@@ -774,6 +774,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> ផុតកំណត់នៅថ្ងៃទី <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">ការកំណត់​គ្រប់គ្រង​ដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ចង់ផ្គូផ្គង</translation>
+<translation id="2344529975040861103">អ្នកអាច​បំពេញ​កាតនេះបាន​ដោយ​ស្វ័យប្រវត្តិ ដោយសារ​គណនី​របស់អ្នក​ត្រូវបានភ្ជាប់​ជាមួយ Google Pay</translation>
 <translation id="2346319942568447007">រូបភាព​ដែលអ្នក​បានចម្លង</translation>
 <translation id="2348509731468399833">បាន​បញ្ឈប់​ការ​តាម​ដាន​តម្លៃ។</translation>
 <translation id="2349957959687031096">ប៊ូតុង "បើកផ្ទាំងឯកជន", បើកដំណើរការ ដើម្បីបើកផ្ទាំងឯកជនថ្មីសម្រាប់រុករកជាលក្ខណៈឯកជន</translation>
@@ -1034,7 +1035,6 @@
 <translation id="2833637280516285136">វិទ្យុ​ជជែក</translation>
 <translation id="2835170189407361413">ជម្រះបែបបទ</translation>
 <translation id="2837891525090413132">អាចស្នើឱ្យ​ចាក់សោ និង​ប្រើក្ដារចុច​របស់អ្នក</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> ចង់ប្រើ​ព័ត៌មាន​ពាក់ព័ន្ធនឹងអ្នក​ដែលខ្លួន​បានរក្សាទុក</translation>
 <translation id="2839032553903800133">បាន​ទប់ស្កាត់​ការជូនដំណឹង</translation>
 <translation id="2839501879576190149">គេហទំព័រ​ក្លែងក្លាយ​នៅខាងមុខ</translation>
 <translation id="2843623755398178332">រំកិល និង​ពង្រីកបង្រួម​ផ្ទាំងដែល​អ្នកបានចែករំលែក​ឬ?</translation>
@@ -4583,6 +4583,7 @@
 <translation id="9139318394846604261">ទិញទំនិញ</translation>
 <translation id="9140198744651252040">កម្មវិធីរុករកតាមអ៊ីនធឺណិត Chrome ចង់ប្រើស្នាម​ម្រាមដៃ ដើម្បីបំពេញពាក្យ​សម្ងាត់ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="9141013498910525015">គ្រប់គ្រង​អាសយដ្ឋាន</translation>
+<translation id="9143898823728499852">អ្នកអាច​បំពេញ​កាតនេះបាន​ដោយ​ស្វ័យប្រវត្តិ ដោយសារ​គណនី <ph name="CARD_ISSUER_NAME" /> របស់អ្នក​ត្រូវបានភ្ជាប់​ជាមួយ Google Pay</translation>
 <translation id="9144951720726881238">កាល​បរិច្ឆេទ​ផុតកំណត់៖</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />ចូលគណនី<ph name="END_LINK" />ម្ដងទៀត រួច​ត្រឡប់មក​ផ្ទាំងនេះ​វិញ ដើម្បី​ទទួលបាន​ជំនួយ​ក្នុងការ​សរសេរ</translation>
 <translation id="9145936855791010051">ប្រៀបធៀប</translation>

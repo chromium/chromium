@@ -75,6 +75,13 @@ BASE_FEATURE(kAutofillAddressUserDeclinedSuggestionSurvey,
              "AutofillAddressUserDeclinedSuggestionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature flag controlling the deduplication of GAS addresses. When disabled
+// GAS addresses will never be deleted as part of the deduplication flow.
+// TODO(crbug.com/357074792): Remove when launched.
+BASE_FEATURE(kAutofillDeduplicateAccountAdresses,
+             "AutofillDeduplicateAccountAdresses",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch for Autofill filling.
 BASE_FEATURE(kAutofillDisableFilling,
              "AutofillDisableFilling",
@@ -408,7 +415,7 @@ BASE_FEATURE(kAutofillUseINAddressModel,
 // Enables using a custom address model for Italy, overriding the legacy one.
 BASE_FEATURE(kAutofillUseITAddressModel,
              "AutofillUseITAddressModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables using a custom address model for Japan, overriding the legacy one.
 BASE_FEATURE(kAutofillSupportPhoneticNameForJP,
@@ -429,7 +436,7 @@ BASE_FEATURE(kAutofillUseNLAddressModel,
 // Enables using a custom address model for Poland, overriding the legacy one.
 BASE_FEATURE(kAutofillUsePLAddressModel,
              "AutofillUsePLAddressModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the form field parser won't try to match other attributes if
 // any of the negative patterns matched.

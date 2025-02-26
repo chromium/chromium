@@ -77,6 +77,18 @@
   <message desc="Badge for experimental state of generative AI features." name="IDS_RECORDER_GEN_AI_EXPERIMENT_BADGE">
     Experiment
   </message>
+  <message desc="Field for model input in the GenAI feedback template." name="IDS_RECORDER_GEN_AI_FEEDBACK_MODEL_INPUT_FIELD">
+    Transcript:
+  </message>
+  <message desc="Prompt for user feedback in the GenAI feedback template." name="IDS_RECORDER_GEN_AI_FEEDBACK_PROMPT">
+    Share your feedback or describe your issue
+  </message>
+  <message desc="Field for generated summary in the GenAI feedback template." name="IDS_RECORDER_GEN_AI_FEEDBACK_SUMMARY_OUTPUT_FIELD">
+    Generated summary:
+  </message>
+  <message desc="Field for generated titles in the GenAI feedback template." name="IDS_RECORDER_GEN_AI_FEEDBACK_TITLE_SUGGESTION_OUTPUT_FIELD">
+    Generated names:
+  </message>
   <message desc="Link to more information about generative AI disclaimer." name="IDS_RECORDER_GEN_AI_LEARN_MORE_LINK">
     Learn more
   </message>
@@ -401,6 +413,12 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
   <message desc="Button to save and exit in the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_SAVE_AND_EXIT_BUTTON">
     Save and exit
+  </message>
+  <message desc="Description of general audio error dialog during recording." name="IDS_RECORDER_RECORD_GENERAL_AUDIO_ERROR_DIALOG_DESCRIPTION">
+    Make sure your mic is connected or try restarting your Chromebook
+  </message>
+  <message desc="Header of general audio error dialog during recording." name="IDS_RECORDER_RECORD_GENERAL_AUDIO_ERROR_DIALOG_HEADER">
+    Something went wrong
   </message>
   <message desc="Tooltip of the button to hide the live transcription of the recording." name="IDS_RECORDER_RECORD_HIDE_TRANSCRIPT_BUTTON_TOOLTIP">
     Hide transcript

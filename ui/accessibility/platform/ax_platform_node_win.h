@@ -1588,7 +1588,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // Start and end offsets of an active composition
   gfx::Range active_composition_range_;
 
-  friend AXPlatformNode* AXPlatformNode::Create(
+  friend AXPlatformNode::Pointer AXPlatformNode::Create(
       AXPlatformNodeDelegate* delegate);
 };
 

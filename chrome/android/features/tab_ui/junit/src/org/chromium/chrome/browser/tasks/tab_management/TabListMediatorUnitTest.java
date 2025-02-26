@@ -3388,10 +3388,10 @@ public class TabListMediatorUnitTest {
         addSpecialItem(1, TabProperties.UiType.LARGE_MESSAGE, PRICE_MESSAGE);
 
         assertThat(mModelList.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(1));
-        assertThat(mMediator.getIndexOfNthTabCard(-1), equalTo(TabModel.INVALID_TAB_INDEX));
-        assertThat(mMediator.getIndexOfNthTabCard(0), equalTo(0));
-        assertThat(mMediator.getIndexOfNthTabCard(1), equalTo(2));
-        assertThat(mMediator.getIndexOfNthTabCard(2), equalTo(TabModel.INVALID_TAB_INDEX));
+        assertThat(mModelList.indexOfNthTabCardOrInvalid(-1), equalTo(TabModel.INVALID_TAB_INDEX));
+        assertThat(mModelList.indexOfNthTabCardOrInvalid(0), equalTo(0));
+        assertThat(mModelList.indexOfNthTabCardOrInvalid(1), equalTo(2));
+        assertThat(mModelList.indexOfNthTabCardOrInvalid(2), equalTo(TabModel.INVALID_TAB_INDEX));
     }
 
     @Test

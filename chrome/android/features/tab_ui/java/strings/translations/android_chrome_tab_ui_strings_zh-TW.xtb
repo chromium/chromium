@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
+<translation id="1045448422538531528">新增至群組</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> 週前建立}other{<ph name="NUM_WEEKS_MANY" /> 週前建立}}</translation>
 <translation id="1063300264396686489">自動開啟其他裝置建立的分頁群組</translation>
 <translation id="1075622780330595106">你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近沒有使用過。要關閉這些分頁嗎？</translation>
@@ -11,6 +12,7 @@
 <translation id="1293272072740285747">如果保留，之後可以新增分頁；如果不會再使用，可以刪除群組。
 
 假如選擇刪除，所有人將隨即無法存取「<ph name="TITLE_OF_GROUP" />」分頁群組，而且該群組將從所有裝置中刪除。</translation>
+<translation id="1326654401173629446">「<ph name="TAB_GROUP_NAME" />」分頁群組已無法使用</translation>
 <translation id="1329584516321524826">剛才更新</translation>
 <translation id="1340839264183302272">退出群組</translation>
 <translation id="1419023007528516122">這麼做會將群組從裝置中永久刪除</translation>

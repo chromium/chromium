@@ -895,6 +895,10 @@ targets.tests.gtest_test(
     name = "cronet_unittests_android",
 )
 
+targets.tests.isolated_script_test(
+    name = "crossbench_smoketests",
+)
+
 targets.tests.gtest_test(
     name = "crypto_unittests",
 )

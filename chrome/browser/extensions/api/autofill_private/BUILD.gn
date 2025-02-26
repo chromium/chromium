@@ -9,6 +9,8 @@ assert(enable_extensions,
 
 source_set("autofill_private") {
   sources = [
+    "autofill_ai_util.cc",
+    "autofill_ai_util.h",
     "autofill_private_api.cc",
     "autofill_private_api.h",
     "autofill_private_event_router.cc",

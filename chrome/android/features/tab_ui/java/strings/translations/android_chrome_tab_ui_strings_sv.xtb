@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="1045448422538531528">Lägg till i grupp</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Skapades för <ph name="NUM_WEEKS_ONE" /> vecka sedan}other{Skapades för <ph name="NUM_WEEKS_MANY" /> veckor sedan}}</translation>
 <translation id="1063300264396686489">Öppna flikgrupper automatiskt från andra enheter</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> av flikarna har inte använts på länge. Vill du stänga dem?</translation>

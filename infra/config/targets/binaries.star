@@ -834,6 +834,22 @@ targets.binaries.console_test_launcher(
     skip_usage_check = True,
 )
 
+targets.binaries.generated_script(
+    name = "crossbench_smoketests",
+    label = "//chrome/test:crossbench_smoketests",
+    skip_usage_check = True,
+    args = [
+        "../../third_party/crossbench/cb.py",
+        "--benchmarks=speedometer_3.0",
+        "--isolated-script-test-output=${ISOLATED_OUTDIR}",
+        "--repeat=1",
+        "--iterations=2",
+        "--fast",
+        "--fileserver",
+        "--luci-chromium",
+    ],
+)
+
 targets.binaries.console_test_launcher(
     name = "crypto_unittests",
     label = "//crypto:crypto_unittests",

@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">kassid</translation>
 <translation id="5907649332524363701">klahvistiku värv</translation>
 <translation id="5908813850962688338">Selle värskenduse installimiseks kulub mõni minut. Hoidke oma seade ühendatuna ja sisselülitatuna, kui värskendust alla laaditakse. Teie seade võib selle protsessi käigus mitu korda taaskäivituda ja musta ekraani kuvada. Teil palutakse oma seade installimise lõpuleviimiseks taaskäivitada.</translation>
+<translation id="5915794087373112615">Õpetaja vaatab ekraanikuva <ph name="NUM_SECONDS" /> sekundi pärast</translation>
 <translation id="5916084858004523819">Keelatud</translation>
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Teie faili skannimine õnnestus ja see salvestati kausta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Teie failide skannimine õnnestus ja need salvestati kausta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1524,6 +1525,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8054112564438735763">beežides toonides</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_BACKGROUND" /> taustal</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Heli salvestamiseks ühendage mikrofon</translation>
 <translation id="8067126283828232460">APN on ühendatud.</translation>
 <translation id="8067208048261192356">pruunides toonides</translation>
 <translation id="8067224607978179455">Kustuta tegevus <ph name="ACTION_NAME" /></translation>

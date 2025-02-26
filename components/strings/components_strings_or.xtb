@@ -772,6 +772,7 @@
 <translation id="2330137317877982892"><ph name="EXPIRATION_DATE_ABBR" />ରେ <ph name="CREDIT_CARD" />ର ମିଆଦ ସମାପ୍ତ ହେଉଛି</translation>
 <translation id="2337852623177822836">ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ବାରା ସେଟିଂ ନିୟନ୍ତ୍ରଣ କରାଯାଇଛି</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ପେୟାର୍ କରିବାକୁ ଚାହୁଁଛି</translation>
+<translation id="2344529975040861103">ଆପଣଙ୍କ ଆକାଉଣ୍ଟକୁ Google Pay ସହ ଲିଙ୍କ କରାଯାଇଥିବା ଯୋଗୁଁ ଆପଣ ଏହି କାର୍ଡକୁ ଅଟୋଫିଲ କରିପାରିବେ</translation>
 <translation id="2346319942568447007">ଆପଣ ଯେଉଁ ଛବି କପି କରିଥିଲେ</translation>
 <translation id="2348509731468399833">ମୂଲ୍ୟ ଟ୍ରାକିଂ ବନ୍ଦ ହୋଇଯାଇଛି।</translation>
 <translation id="2349957959687031096">'ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲନ୍ତୁ' ବଟନ, ପ୍ରାଇଭେଟ ଭାବେ ବ୍ରାଉଜ କରିବାକୁ ଏକ ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
@@ -1031,7 +1032,6 @@
 <translation id="2833637280516285136">ଟକ ରେଡିଓ</translation>
 <translation id="2835170189407361413">ଫର୍ମ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="2837891525090413132">ଆପଣଙ୍କ କୀବୋର୍ଡକୁ ଲକ କରି ବ୍ୟବହାର କରିବା ପାଇଁ କହିପାରିବ</translation>
-<translation id="2838682941130655229">ଆପଣଙ୍କ ବିଷୟରେ <ph name="EMBEDDED_URL" /> ସେଭ କରିଥିବା ସୂଚନାକୁ ଏହା ବ୍ୟବହାର କରିବା ପାଇଁ ଚାହେଁ</translation>
 <translation id="2839032553903800133">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="2839501879576190149">ନକଲି ସାଇଟ୍ ଆଗରେ ଅଛି</translation>
 <translation id="2843623755398178332">ଆପଣଙ୍କ ସେୟାର କରାଯାଇଥିବା ଟାବକୁ ସ୍କ୍ରୋଲ କରି ଜୁମ କରିବେ?</translation>
@@ -4573,6 +4573,7 @@
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">Chrome ବ୍ରାଉଜର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଅଟୋଫିଲ କରିବା ପାଇଁ ଟିପଚିହ୍ନ ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="9141013498910525015">ଠିକଣାଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="9143898823728499852">ଆପଣଙ୍କ <ph name="CARD_ISSUER_NAME" /> ଆକାଉଣ୍ଟକୁ Google Pay ସହ ଲିଙ୍କ କରାଯାଇଥିବା ଯୋଗୁଁ ଆପଣ ଏହି କାର୍ଡକୁ ଅଟୋଫିଲ କରିପାରିବେ</translation>
 <translation id="9144951720726881238">ମିଆଦ ଶେଷ ହେଉଥିବା ତାରିଖ:</translation>
 <translation id="9145910032514306808">ଲେଖିବାରେ ସହାୟତା ପାଇବା ପାଇଁ ପୁଣି <ph name="BEGIN_LINK" />ସାଇନ ଇନ<ph name="END_LINK" /> କରି ଏହି ଟାବକୁ ଫେରନ୍ତୁ</translation>
 <translation id="9145936855791010051">କମ୍ପେୟାର</translation>

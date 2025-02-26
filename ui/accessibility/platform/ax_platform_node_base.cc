@@ -136,10 +136,11 @@ const std::string AXPlatformNodeBase::kAriaActionsPrefix = "custom";
 // fuchsia has native accessibility.
 #if !BUILDFLAG(HAS_NATIVE_ACCESSIBILITY) && !BUILDFLAG(IS_FUCHSIA)
 // static
-AXPlatformNode* AXPlatformNode::Create(AXPlatformNodeDelegate* delegate) {
+AXPlatformNode::Pointer AXPlatformNode::Create(
+    AXPlatformNodeDelegate* delegate) {
   AXPlatformNodeBase* node = new AXPlatformNodeBase();
   node->Init(delegate);
-  return node;
+  return Pointer(node);
 }
 #endif
 

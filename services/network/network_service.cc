@@ -39,6 +39,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "components/network_session_configurator/common/network_features.h"
 #include "components/os_crypt/sync/os_crypt.h"
@@ -937,8 +938,7 @@ void NetworkService::UpdateMaskedDomainList(
   const base::Time start_time = base::Time::Now();
   auto mdl = masked_domain_list.As<masked_domain_list::MaskedDomainList>();
   if (mdl.has_value()) {
-    UMA_HISTOGRAM_MEMORY_KB("NetworkService.MaskedDomainList.SizeInKB",
-                            mdl->ByteSizeLong() / 1024);
+    ip_protection::Telemetry().MdlSize(mdl->ByteSizeLong());
     masked_domain_list_manager_->UpdateMaskedDomainList(mdl.value(),
                                                         exclusion_list);
   }

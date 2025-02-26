@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">Slėpti sumažintų kainų skirtukuose kortelę</translation>
 <translation id="1510341833810331442">Svetainėms neleidžiama išsaugoti duomenų įrenginyje</translation>
 <translation id="1547123415014299762">Trečiųjų šalių slapukai leidžiami</translation>
-<translation id="1568470248891039841">Svetainėse, kuriose lankotės, gali būti įterpta turinio iš kitų svetainių, pvz., vaizdų, skelbimų ir teksto. Šios kitos svetainės gali prašyti leidimo naudoti savo išsaugotą informaciją apie jus, kai naršote svetainę. <ph name="BEGIN_LINK" />Sužinokite daugiau apie įterptą turinį<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Nauji veiksmai pasiekiami netoli ekrano viršaus</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Susijusios svetainės</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">Sutraukti nepageidaujamas užklausas (rekomenduojama)</translation>
 <translation id="3955193568934677022">Leisti svetainėms paleisti apsaugotą turinį (rekomenduojama)</translation>
 <translation id="3967822245660637423">Atsisiuntimas baigtas</translation>
-<translation id="3974105241379491420">Svetainės gali prašyti naudoti savo išsaugotą informaciją apie jus</translation>
 <translation id="3987993985790029246">Kop. nuor.</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> iš ?</translation>
 <translation id="3992684624889376114">Apie šį puslapį</translation>
@@ -291,7 +289,6 @@
 <translation id="5264323282659631142">Pašalinti „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Vilkite žymeklį nuo viršaus ir palieskite mygtuką „Atgal“, kad išeitumėte iš viso ekrano režimo.</translation>
 <translation id="5292915569214461965">Užblokavote svetaines, kad nebūtų naudojami trečiųjų šalių slapukai, siekiant jus stebėti, kai naršote. Apsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti prieigą prie trečiųjų šalių slapukų<ph name="END_LINK" />.</translation>
-<translation id="5295729974480418933">Įjungus svetainėse gali būti prašoma naudoti apie jus išsaugotą informaciją. Išjungus svetainėse negali būti prašoma naudoti apie jus išsaugotos informacijos.</translation>
 <translation id="5300589172476337783">Rodyti</translation>
 <translation id="5301954838959518834">Gerai, supratau</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
@@ -299,7 +296,6 @@
 <translation id="534295439873310000">ALR įrenginiai</translation>
 <translation id="5344522958567249764">Tvarkyti su skelbimais susijusį privatumą</translation>
 <translation id="5373874281522292782">Skirtukų grupės išsaugotos</translation>
-<translation id="5389626883706033615">Svetainės blokuojamos, kad neprašytų naudoti savo išsaugotos informacijos apie jus</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ir dar 1)}one{(ir dar #)}few{(ir dar #)}many{(ir dar #)}other{(ir dar #)}}</translation>
 <translation id="5403592356182871684">Pavadinimai</translation>
 <translation id="5438097262470833822">Bus iš naujo nustatyti svetainės <ph name="WEBSITE" /> leidimai</translation>
@@ -320,7 +316,6 @@
 <translation id="5677928146339483299">Užblokuoti</translation>
 <translation id="5689516760719285838">Vieta</translation>
 <translation id="5690795753582697420">Fotoaparatas išjungtas „Android“ nustatymuose</translation>
-<translation id="5691080386278724773"><ph name="SITE" /> gali naudoti jūsų informaciją, kai naršote</translation>
 <translation id="5700761515355162635">Trečiųjų šalių slapukai leidžiami</translation>
 <translation id="5706552988683188916">Bus ištrinti <ph name="WEBSITE" /> slapukai ir kiti svetainės duomenys</translation>
 <translation id="5723967018671998714">Trečiosios šalies slapukai užblokuoti inkognito režimu</translation>
@@ -370,7 +365,6 @@
 <translation id="6262279340360821358">Užblokuota: <ph name="PERMISSION_1" /> ir <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Svetainės gali prašyti siųsti pranešimus</translation>
 <translation id="6295158916970320988">Visos svetainės</translation>
-<translation id="6304434827459067558"><ph name="SITE" /> blokuojamas jūsų informacijos naudojimas</translation>
 <translation id="6320088164292336938">Vibruoti</translation>
 <translation id="6344622098450209924">Apsauga nuo stebėjimo</translation>
 <translation id="6367753977865761591">Blokuoti trečiosios šalies prisijungimą prie konkrečios svetainės.</translation>

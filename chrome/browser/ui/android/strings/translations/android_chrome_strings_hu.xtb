@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="1009406586654360474">Nyissa meg a Google Jelszókezelőt, és lépjen a beállításokhoz. Válassza az „Importálás” lehetőséget, és adja hozzá az exportált jelszavakat tartalmazó CSV-fájlt.</translation>
+<translation id="1010283278930414892">Nincsenek mentett jelszavak ezen az eszközön</translation>
 <translation id="1011749477052068769">Áthelyezés ide</translation>
 <translation id="1014147525163127655">Nincsenek a következőhöz társított azonosítókulcsok az eszközön: <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Gyorsan végezhet hangalapú keresést. A gyorsparancs szerkesztéséhez tartsa lenyomva.</translation>
@@ -142,6 +143,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1568636008098739136">Oldal meghallgatása. A gyorsparancs szerkesztéséhez tartsa lenyomva.</translation>
 <translation id="1571041387761170095">Nincsenek gyenge vagy újrafelhasznált jelszavak</translation>
 <translation id="1571304935088121812">Felhasználónév másolása</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 olyan jelszó található ezen az eszközön, amelyhez illetéktelenül fértek hozzá}other{# olyan jelszó található ezen az eszközön, amelyhez illetéktelenül fértek hozzá}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> javasolt elem az alábbi listában.</translation>
 <translation id="1598163867407640634">Használja a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyet a következővel: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Bekapcsolva: a rendszer használja a Google-fiókjában lévő adatokat, és ment oda újakat. Kikapcsolva: a rendszer csak az eszközre menti az adatokat.</translation>
@@ -163,6 +165,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1724977129262658800">Oldja fel a képernyőzárat a jelszó szerkesztéséhez</translation>
 <translation id="1726477445370128854">Gyorsabban böngészhet és kereshet, ha a Chrome betölti előre azokat az oldalakat, amelyeket a böngésző szerint Ön már felkeresett.</translation>
 <translation id="1728803206919861584">Menti az azonosítókulcsot az inkognitó módon kívül?</translation>
+<translation id="1732514748744806741">Ha jelszavaihoz illetéktelenül fértek hozzá, értesítjük Önt</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Az utóbbi időben 1 webhely sok értesítést küldött}other{Az utóbbi időben # webhely sok értesítést küldött}}</translation>
 <translation id="1749561566933687563">Könyvjelzők szinkronizálása</translation>
 <translation id="1750238553597293878">Továbbra is használhatja a Google-fiókjában lévő jelszavakat</translation>
@@ -1336,6 +1339,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7022756207310403729">Megnyitás böngészőben</translation>
 <translation id="7025769836128625875">Ez egy kísérleti AI-funkció, amely nem mindig működik megfelelően. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="7029809446516969842">Jelszavak</translation>
+<translation id="7053256416619638731">Erősítse meg jelszavait ezen az eszközön</translation>
 <translation id="7053983685419859001">Letiltás</translation>
 <translation id="7054588988317389591">Lekéri a képleírásokat?</translation>
 <translation id="7057969023583258980">A teljes Chrome-előzmények megnyitása</translation>
@@ -1586,6 +1590,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8110024788458304985">Hozzájárulás a Chrome funkcióinak és teljesítményének javításához</translation>
 <translation id="8110087112193408731">Chrome-beli tevékenysége megjelenjen a digitális jóllét funkcióban?</translation>
 <translation id="8118117428362942925">Ha segítségre van szükséged, fordulj a szülődhöz (<ph name="PARENT_NAME" />)</translation>
+<translation id="8120286190326371840">Nincsenek olyan jelszavak ezen az eszközön, amelyekhez illetéktelenül fértek hozzá</translation>
 <translation id="8122623268651408616">Rendezés folyamatban: legújabb elöl</translation>
 <translation id="8127542551745560481">Kezdőlap szerkesztése</translation>
 <translation id="8130309322784422030">A tárolt bejelentkezési adatai elavultak lehetnek</translation>

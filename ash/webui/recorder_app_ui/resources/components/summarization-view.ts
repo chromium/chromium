@@ -239,7 +239,7 @@ export class SummarizationView extends ReactiveLitElement {
     });
   }
 
-  private renderSummaryFooter() {
+  private renderSummaryFooter(result: string) {
     return html`
       <div id="footer">
         ${i18n.genAiDisclaimerText}
@@ -251,8 +251,11 @@ export class SummarizationView extends ReactiveLitElement {
           ${i18n.genAiLearnMoreLink}
         </a>
       </div>
-      <genai-feedback-buttons .resultType=${GenaiResultType.SUMMARY}>
-      </genai-feedback-buttons>
+      <genai-feedback-buttons
+        .resultType=${GenaiResultType.SUMMARY}
+        .result=${result}
+        .transcription=${this.transcription?.toPlainText() ?? ''}
+      ></genai-feedback-buttons>
     `;
   }
 
@@ -292,7 +295,7 @@ export class SummarizationView extends ReactiveLitElement {
           <ul id="summary" ${ref(this.summaryContainer)}>
             ${this.renderSummaryResult(summary.result)}
           </ul>
-          ${this.renderSummaryFooter()}`;
+          ${this.renderSummaryFooter(summary.result)}`;
       default:
         assertExhaustive(summary);
     }

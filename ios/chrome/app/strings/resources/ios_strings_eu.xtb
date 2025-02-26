@@ -1843,6 +1843,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="886477344907998366">Erakutsi laster-markak</translation>
 <translation id="8869239474428371589">Atera etekinik handiena gogoko duzun arakatzaileari</translation>
 <translation id="8871974300055371298">Edukiaren ezarpenak</translation>
+<translation id="8877788021141246043">Ezarri gogorarazpen bat</translation>
 <translation id="8879604564928138696">Saiatzeko, sakatu birritan</translation>
 <translation id="8879952635974818770">Pertsonalizatutako edukia</translation>
 <translation id="8887595428614802520">Itxi fitxa eta talde guztiak</translation>
@@ -1943,6 +1944,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="963102227019621224">Sareko eta aplikazioetako jarduerak</translation>
 <translation id="966593914872420832">Ahozko bilaketa</translation>
 <translation id="968653181266955408">Jaso edukiari buruzko jakinarazpenak</translation>
+<translation id="972084300091883657">{COUNT,plural, =0{Sartu fitxa taldean <ph name="OWNER_NAME" /> erabiltzailearekin}=1{Sartu fitxa taldean <ph name="OWNER_NAME" /> eta beste {COUNT} erabiltzailerekin}other{Sartu fitxa taldean <ph name="OWNER_NAME" /> eta beste {COUNT} erabiltzailerekin}}</translation>
 <translation id="973493300226275298">Egin produktu baten prezioaren jarraipena sareko denda guztietan. Alerta bat jasoko duzu prezioa jaisten denean.</translation>
 <translation id="973788791897303708">Fitxa talde hau beteta dago</translation>
 <translation id="976392601789283511">Ireki itxitako azken fitxa</translation>

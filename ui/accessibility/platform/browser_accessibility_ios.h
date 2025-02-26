@@ -5,7 +5,6 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_BROWSER_ACCESSIBILITY_IOS_H_
 #define UI_ACCESSIBILITY_PLATFORM_BROWSER_ACCESSIBILITY_IOS_H_
 
-#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/ax_platform_node_ios.h"
@@ -42,9 +41,12 @@ class BrowserAccessibilityIOS : public BrowserAccessibility,
   // Creates platform node if not yet created.
   void CreatePlatformNode();
 
-  // Manager of the native wrapper node. This should be a unique_ptr but
-  // currently AXPlatformNodeBase manually manages deleting itself.
-  raw_ptr<AXPlatformNodeIOS> platform_node_;
+  AXPlatformNodeIOS* platform_node() {
+    return static_cast<AXPlatformNodeIOS*>(platform_node_.get());
+  }
+
+  // Manager of the native wrapper node.
+  AXPlatformNode::Pointer platform_node_;
 };
 
 }  // namespace ui

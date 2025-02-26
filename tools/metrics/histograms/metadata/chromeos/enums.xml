@@ -344,6 +344,31 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kBlurAndRelight"/>
 </enum>
 
+<enum name="CertProvBackendError">
+  <int value="0" label="Error unspecified"/>
+  <int value="1" label="Invalid operation"/>
+  <int value="2" label="Incosistent data"/>
+  <int value="3" label="Identity verification error"/>
+  <int value="4" label="CPP already exists"/>
+  <int value="5" label="Bad public key"/>
+  <int value="6" label="Invalid signature"/>
+  <int value="7" label="Instruction not yet available"/>
+  <int value="8" label="CA unavailable"/>
+  <int value="9" label="CA failure"/>
+  <int value="10" label="Profile not found"/>
+  <int value="11" label="User primary email not found"/>
+  <int value="12" label="CA connection not found"/>
+  <int value="13" label="Pubsub topic not found"/>
+  <int value="14" label="Bad adapter certifciate received"/>
+  <int value="15" label="Certificate provisioning process not found"/>
+  <int value="16" label="Immediate retry error zero"/>
+  <int value="17" label="Immediate retry error one"/>
+  <int value="18" label="Immediate retry error two"/>
+  <int value="19" label="Immediate retry error three"/>
+  <int value="20" label="Immediate retry error four"/>
+  <int value="21" label="Missing pubsub publisher permission"/>
+</enum>
+
 <enum name="CertProvisioningEvent">
   <int value="0" label="kRegisteredToInvalidationTopic"/>
   <int value="1" label="kInvalidationReceived"/>

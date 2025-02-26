@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -54,6 +55,20 @@ VerificationStatus GetMoreSignificantVerificationStatus(
     return right;
 
   return left;
+}
+
+std::optional<VerificationStatus> ToSafeVerificationStatus(
+    std::underlying_type_t<VerificationStatus> raw_value) {
+  switch (auto status = static_cast<VerificationStatus>(raw_value)) {
+    case VerificationStatus::kNoStatus:
+    case VerificationStatus::kParsed:
+    case VerificationStatus::kFormatted:
+    case VerificationStatus::kObserved:
+    case VerificationStatus::kUserVerified:
+    case VerificationStatus::kServerParsed:
+      return status;
+  }
+  return std::nullopt;
 }
 
 std::ostream& operator<<(std::ostream& os, VerificationStatus status) {

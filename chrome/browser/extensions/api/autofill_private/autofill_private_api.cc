@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill_ai/autofill_ai_util.h"
+#include "chrome/browser/extensions/api/autofill_private/autofill_ai_util.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -91,6 +92,8 @@ static const char kErrorCardDataUnavailable[] = "Credit card data unavailable";
 static const char kErrorDataUnavailable[] = "Autofill data unavailable.";
 static const char kErrorAutofillAIUnavailable[] =
     "Autofill AI data unavailable.";
+static const char kErrorAutofillAiEntityOutOfBounds[] =
+    "The provided Autofill AI entity/attribute is out of bounds.";
 static const char kErrorDeviceAuthUnavailable[] = "Device auth is unvailable";
 
 // Constant to assign a user-verified verification status to the autofill
@@ -1146,9 +1149,12 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
 
   const autofill_private::EntityInstance& private_api_entity_instance =
       parameters->entity_instance;
-  EntityInstance entity_instance =
-      autofill_util::PrivateApiEntityInstanceToEntityInstance(
+  std::optional<EntityInstance> entity_instance =
+      autofill_ai_util::PrivateApiEntityInstanceToEntityInstance(
           private_api_entity_instance);
+  if (!entity_instance.has_value()) {
+    return RespondNow(Error(kErrorAutofillAiEntityOutOfBounds));
+  }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   EntityDataManager* entity_data_manager =
@@ -1158,7 +1164,7 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
   if (!entity_data_manager) {
     return RespondNow(Error(kErrorAutofillAIUnavailable));
   }
-  entity_data_manager->AddOrUpdateEntityInstance(entity_instance);
+  entity_data_manager->AddOrUpdateEntityInstance(entity_instance.value());
   return RespondNow(NoArguments());
 }
 
@@ -1198,9 +1204,9 @@ AutofillPrivateLoadEntityInstancesFunction::Run() {
   if (!entity_data_manager) {
     return RespondNow(Error(kErrorAutofillAIUnavailable));
   }
-  std::vector<autofill_private::EntityInstance> result =
-      base::ToVector(entity_data_manager->GetEntityInstances(),
-                     &autofill_util::EntityInstanceToPrivateApiEntityInstance);
+  std::vector<autofill_private::EntityInstance> result = base::ToVector(
+      entity_data_manager->GetEntityInstances(),
+      &autofill_ai_util::EntityInstanceToPrivateApiEntityInstance);
   return RespondNow(ArgumentList(
       autofill_private::LoadEntityInstances::Results::Create(result)));
 }

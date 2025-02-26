@@ -268,6 +268,7 @@ export class RecordingTitle extends ReactiveLitElement {
       @change=${this.onSuggestTitle}
       .suggestedTitles=${this.suggestedTitles}
       .wordCount=${this.transcription.value?.getWordCount() ?? 0}
+      .transcription=${this.transcription.value?.toPlainText() ?? ''}
       ${ref(this.recordingTitleSuggestion)}
     ></recording-title-suggestion>`;
   }

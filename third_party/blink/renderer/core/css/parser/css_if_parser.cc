@@ -38,7 +38,8 @@ const IfCondition* CSSIfParser::ConsumeIfTest(CSSParserTokenStream& stream) {
           MediaQueryExpNode::Function(query, AtomicString("style")));
     }
   }
-  if (stream.Peek().GetType() == kFunctionToken &&
+  if (RuntimeEnabledFeatures::CSSInlineIfForMediaQueriesEnabled() &&
+      stream.Peek().GetType() == kFunctionToken &&
       stream.Peek().FunctionId() == CSSValueID::kMedia) {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();

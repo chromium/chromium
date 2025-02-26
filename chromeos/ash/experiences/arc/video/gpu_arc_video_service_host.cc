@@ -326,6 +326,19 @@ void GpuArcVideoServiceHost::OnBootstrapVideoAcceleratorFactory(
           std::move(server_pipe)));
 }
 
+void GpuArcVideoServiceHost::CreateVideoAcceleratorFactory(
+    CreateVideoAcceleratorFactoryCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  mojo::PendingRemote<mojom::VideoAcceleratorFactory> remote;
+
+  video_accelerator_factory_receivers_.Add(
+      video_accelerator_factory_.get(),
+      remote.InitWithNewPipeAndPassReceiver());
+
+  std::move(callback).Run(std::move(remote));
+}
+
 // static
 void GpuArcVideoKeyedService::EnsureFactoryBuilt() {
   GpuArcVideoKeyedServiceFactory::GetInstance();

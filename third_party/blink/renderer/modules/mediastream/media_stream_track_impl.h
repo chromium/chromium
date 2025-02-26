@@ -155,6 +155,9 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
 
   std::optional<int> GetZoomLevelForTesting() const { return zoom_level_; }
 
+  bool IsCapturedSurfaceResolutionActive(
+      const MediaStreamTrackPlatform::Settings& platform_settings) const;
+
  protected:
   // Given a partially built MediaStreamTrackImpl, finishes the job of making it
   // into a clone of |this|.

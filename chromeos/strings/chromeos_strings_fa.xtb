@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">گربه</translation>
 <translation id="5907649332524363701">رنگ کلید</translation>
 <translation id="5908813850962688338">نصب این به‌روزرسانی چند دقیقه طول خواهد کشید. هنگامی که به‌روزرسانی درحال بارگیری است، دستگاهتان را از برق جدا نکنید و آن را روشن نگه دارید. ممکن است در طول این روند، دستگاهتان چندین بار بازراه‌اندازی شود و صفحه سیاهی نمایش داده شود. از شما خواسته می‌شود که دستگاهتان را بازراه‌اندازی کنید تا نصب کامل شود.</translation>
+<translation id="5915794087373112615">معلمتان صفحه‌نمایش شما را تا <ph name="NUM_SECONDS" /> ثانیه دیگر مشاهده خواهد کرد</translation>
 <translation id="5916084858004523819">ممنوع</translation>
 <translation id="5916664084637901428">روشن</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{فایل شما باموفقیت اسکن شد و در <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ذخیره شد.}one{فایل شما باموفقیت اسکن شد و در <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ذخیره شد.}other{فایل‌های شما باموفقیت اسکن شد و در <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ذخیره شد.}}</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7618216277886673749">انتخاب <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">خنثی</translation>
 <translation id="7620771111601174153">اطلاعات بیشتر در «مرکز راهنمایی»</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">آخرین زمان بازنشانی</translation>
 <translation id="7633068090678117093">تصویر پس‌زمینه</translation>
 <translation id="763873111564339966">نیلی</translation>
@@ -1524,6 +1526,7 @@
 <translation id="8054112564438735763">بژ</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> روی پس‌زمینه <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">برای ضبط صدا، میکروفون را وصل کنید</translation>
 <translation id="8067126283828232460">«نام نقطه دستیابی» متصل است.</translation>
 <translation id="8067208048261192356">قهوه‌ای</translation>
 <translation id="8067224607978179455">حذف <ph name="ACTION_NAME" /></translation>

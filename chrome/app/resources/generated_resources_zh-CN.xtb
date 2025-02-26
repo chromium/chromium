@@ -17,7 +17,6 @@
 <translation id="1007057452468855774">开启 Google Play 商店</translation>
 <translation id="1008186147501209563">导出书签</translation>
 <translation id="1008261151167010035"><ph name="BRAND" />会记住您的登录方式，并在可能的情况下自动为您登录。关闭此功能后，您每次登录时，系统都会要求您确认。</translation>
-<translation id="1008544602823861396">已被禁止在以下网站上使用您的相关信息：</translation>
 <translation id="1008557486741366299">以后再说</translation>
 <translation id="100881991356161927">网站名称</translation>
 <translation id="1009663062402466586">游戏控件现已可供使用</translation>
@@ -2393,7 +2392,6 @@
 <translation id="2653659639078652383">提交</translation>
 <translation id="265390580714150011">字段值</translation>
 <translation id="2654553774144920065">打印请求</translation>
-<translation id="265680054508313161">继续以<ph name="USERNAME" />的身份登录</translation>
 <translation id="265748523151262387">保持与手机的连接</translation>
 <translation id="2657612187216250073">指针无障碍设置</translation>
 <translation id="2658510146844889864">通行密钥和安全密钥</translation>
@@ -2522,6 +2520,7 @@
 <translation id="2739191690716947896">调试</translation>
 <translation id="2739240477418971307">更改您的无障碍设置</translation>
 <translation id="2739331588276254426">已通过“<ph name="HOST_DEVICE_NAME" />”连接到互联网</translation>
+<translation id="2739887572830526131">您可以保留此分组，以便日后添加标签页；如果不再需要，也可以将其删除。</translation>
 <translation id="274029851662193272">凹陷</translation>
 <translation id="2740531572673183784">确定</translation>
 <translation id="2740876196999178364">这些通行密钥只会保存在此设备上，不会保存到您的 Google 账号中。</translation>
@@ -4026,6 +4025,7 @@
 <translation id="3813358687923336574">翻译页面和快速解答时使用的语言</translation>
 <translation id="3813458570141926987">主题列表，这些主题是 Chrome 根据您近期的浏览记录推测的</translation>
 <translation id="3814529970604306954">学校账号</translation>
+<translation id="3815668647912194650">您可以保留此分组，以便日后添加标签页；如果不再想访问它，也可以退出分组。</translation>
 <translation id="3816118180265633665">Chrome 颜色</translation>
 <translation id="3817524650114746564">打开您计算机的代理设置</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：ChromeOS 的崩溃时间、使用的功能、通常占用的内存量，等等。<ph name="END_PARAGRAPH1" />
@@ -4261,7 +4261,6 @@
 <translation id="3971764089670057203">此安全密钥上的指纹</translation>
 <translation id="3973005893595042880">不允许此用户运行虚拟机</translation>
 <translation id="3973660817924297510">正在检查密码 (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
-<translation id="3974105241379491420">网站可以请求使用它们保存的与您相关的信息</translation>
 <translation id="3974514184580396500">使用“下一项”即可在屏幕上向前移动焦点</translation>
 <translation id="3975017815357433345">公路</translation>
 <translation id="3975201861340929143">说明</translation>
@@ -4508,7 +4507,6 @@
 <translation id="4146785383423576110">重置并清理</translation>
 <translation id="4147099377280085053">选择一种盲文表</translation>
 <translation id="4147911968024186208">请重试。如果系统仍提示此错误，请与您的支持代表联系。</translation>
-<translation id="414800391140809654">可以在您浏览时使用您的相关信息</translation>
 <translation id="4148195018520464922">您可以设置限制，只允许某些用户登录。此操作会移除登录界面上的“添加用户”选项。您还可以移除当前用户。</translation>
 <translation id="4148957013307229264">正在安装...</translation>
 <translation id="4149385644005013189">看起来很整洁！</translation>
@@ -5298,7 +5296,6 @@
 <translation id="4728558894243024398">平台</translation>
 <translation id="4730492586225682674">在锁定屏幕上显示触控笔最新记事</translation>
 <translation id="4730888769809690665">允许 <ph name="SITE" /> 传送通知</translation>
-<translation id="4731306954230393087">允许使用其保存的与您相关的信息</translation>
 <translation id="4732799736617504962">已连接的麦克风只能支持降噪</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左侧）</translation>
 <translation id="4733793249294335256">位置</translation>
@@ -6200,7 +6197,6 @@
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{发现了 1 个向用户发送大量通知的网站}other{发现了 {NUM_SITES} 个向用户发送大量通知的网站}}</translation>
 <translation id="5388885445722491159">已配对</translation>
 <translation id="5389224261615877010">彩虹</translation>
-<translation id="5389626883706033615">禁止网站向您请求使用它们保存的与您相关的信息</translation>
 <translation id="5389794555912875905">在您访问不安全的网站前发出警告（推荐）</translation>
 <translation id="5389943529251318913">鼠标速度降低幅度</translation>
 <translation id="5390112241331447203">将所发送的 system_logs.txt 文件添加到反馈报告中。</translation>
@@ -6885,7 +6881,6 @@
 <translation id="5888889603768021126">所用登录身份</translation>
 <translation id="5889282057229379085">中级 CA 证书数目的上限为：<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">使用您自己的<ph name="BEGIN_LINK" />同步口令<ph name="END_LINK" />加密已同步的数据。Google Pay 中的付款方式和地址不会加密。Chrome 中的浏览记录不会同步。</translation>
-<translation id="5891084409170578560">您访问的网站可以嵌入来自其他网站的内容，例如图片、广告和文字。这些其他网站可以向您请求权限，以便使用它们在您浏览某个网站时保存的与您相关的信息。</translation>
 <translation id="5891688036610113830">首选的 WLAN 网络</translation>
 <translation id="5894056653502215961">取消选择“<ph name="FOLDER_TITLE" />”文件夹</translation>
 <translation id="5895138241574237353">重新启动</translation>
@@ -9251,7 +9246,6 @@
 <translation id="7619937211696316184">维护已完成</translation>
 <translation id="7620616707541471029">选择账号以继续</translation>
 <translation id="7621382409404463535">系统未能保存设备配置。</translation>
-<translation id="7621480263311228380">不允许使用其保存的与您相关的信息</translation>
 <translation id="7621595347123595643">如果忘记了密码或 PIN 码，您将无法恢复本地数据。</translation>
 <translation id="7622114377921274169">正在充电。</translation>
 <translation id="7622768823216805500">网站通常会安装付款处理程序以实现购物功能（例如更轻松的结算）</translation>
@@ -10705,6 +10699,7 @@
 <translation id="8633979878370972178">2022 年 12 月之后，旧版 Chrome 应用将无法在 Linux 设备上开启。您可查看是否有可用的新版本。</translation>
 <translation id="8634348081024879304">您将无法再通过 Google Pay 使用此虚拟卡。<ph name="BEGIN_LINK" />了解虚拟卡<ph name="END_LINK" /></translation>
 <translation id="8634703204743010992">ChromeOS 虚拟键盘</translation>
+<translation id="8635399646025169806">要保留标签页分组吗？</translation>
 <translation id="8635628933471165173">正在重新加载…</translation>
 <translation id="8636284842992792762">正在初始化扩展程序…</translation>
 <translation id="8636323803535540285">如果想更快速地访问 <ph name="BRAND" />，请添加相应的快捷方式</translation>
@@ -10965,6 +10960,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Google 会在不识别您个人身份的情况下，使用这些信息来满足以下目的：提高位置信息精确度和改善基于地理位置的服务；以及改进、提供和维护 Google 服务。我们会根据 Google 和第三方的合法权益来处理这些信息，以满足用户的需求。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />您随时可在设备的位置信息设置中关闭“位置信息精确度”；为此，请前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”&gt;“高级位置信息设置”。如果“位置信息精确度”设置处于关闭状态，则系统不会收集任何“位置信息精确度”数据。对于 Android 应用和服务，系统仅会使用 IP 地址（如果可用）来确定您设备的位置，这可能会影响 Google 地图等 Android 应用和服务中位置信息的可用性和精确度。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">会在…中打开</translation>
+<translation id="8804742093141782941">保留分组</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{将标签页移至另一个窗口}other{将标签页移至另一个窗口}}</translation>
 <translation id="8805140816472474147">请确认同步设置以开始同步。</translation>
 <translation id="8805255531353778052">节省超大量内存</translation>

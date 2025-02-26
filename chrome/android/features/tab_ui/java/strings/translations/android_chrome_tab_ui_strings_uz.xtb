@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
+<translation id="1045448422538531528">Guruh chatiga kiritish</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> hafta oldin yaratilgan}other{<ph name="NUM_WEEKS_MANY" /> hafta oldin yaratilgan}}</translation>
 <translation id="1063300264396686489">Boshqa qurilmalardagi varaqlar guruhini avtomatik ochish</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ta varaq oxirgi vaqtlarda ishlatilmayapti. Ular yopilsinmi?</translation>
@@ -11,6 +12,7 @@
 <translation id="1293272072740285747">Keyinroq varaqlar kiritish uchun ushbu guruhni saqlab qoling yoki kerak boʻlmasa, uni oʻchirib tashlang.
 
 Agar tark etsangiz, “<ph name="TITLE_OF_GROUP" />” varaqlar guruhiga boshqa kira olmaysiz hamda u barcha qurilmalardan oʻchirib tashlanadi.</translation>
+<translation id="1326654401173629446">“<ph name="TAB_GROUP_NAME" />” varaqlar guruhi endi mavjud emas</translation>
 <translation id="1329584516321524826">Hozir yangilandi</translation>
 <translation id="1340839264183302272">Guruhni tark etish</translation>
 <translation id="1419023007528516122">Bunda guruh qurilmadan butunlay oʻchirib tashlanadi.</translation>

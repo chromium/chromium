@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">Fihla ukwehla kwentengo ekhadini lamathebhu</translation>
 <translation id="1510341833810331442">Amasayithi awavunyelwe ukulondoloza idatha kudivayisi yakho</translation>
 <translation id="1547123415014299762">Amakhukhi wongahlangene ngqo awavunyelwe</translation>
-<translation id="1568470248891039841">Amasayithi owavakashelayo angashumeka okuqukethwe okuvela kwamanye amasayithi, ngokwesibonelo, imifanekiso, izikhangiso, nombhalo. La masayithi amanye angacela imvume yokusebenzisa imininingwane ayilondolozile ngawe njengoba ubhrawuza isayithi. <ph name="BEGIN_LINK" />Funda kabanzi ngokuqukethwe okushumekiwe<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Izenzo ezintsha ziyatholakala eduze kwaphezulu kwesikrini</translation>
 <translation id="1620510694547887537">Ikhamela</translation>
 <translation id="1633720957382884102">Amasayithi ahambisanayo</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">Goqa izicelo ezingafunwa (okunconywayo)</translation>
 <translation id="3955193568934677022">Vumela amasayithi ukudlala okuqukethwe okuvikelwe (kunconyiwe)</translation>
 <translation id="3967822245660637423">Ukulanda kuqedile</translation>
-<translation id="3974105241379491420">Amasayithi angacela ukusebenzisa imininingwane elondoloziwe ngawe</translation>
 <translation id="3987993985790029246">Kopisha isixhumanisi</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">Mayelana naleli khasi</translation>
@@ -291,7 +289,6 @@
 <translation id="5264323282659631142">Susa i-'<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Hudula kusukela phezulu uphinde uthinte inkinobho yokubuyela emuva ukuze uphume kusikrini esigcwele.</translation>
 <translation id="5292915569214461965">Uvimbe amasayithi ekusebenziseni amakhukhi ongahlangene ngqo ukuze akulandelele njengoba ubhrawuza. Vakashela amasethingi ukuze <ph name="BEGIN_LINK" />uphathe ukufinyelela kumakhukhi ongahlangene ngqo<ph name="END_LINK" />.</translation>
-<translation id="5295729974480418933">Lapho ivuliwe, amasayithi angacela ukusebenzisa ulwazi alulondolozile olumayelana nawe. Lapho ivaliwe, amasayithi awakwazi ukukucela ukuthi asebenzise ulwazi alulondolozile olumayelana nawe.</translation>
 <translation id="5300589172476337783">Bonisa</translation>
 <translation id="5301954838959518834">OK, ngiyezwa</translation>
 <translation id="5317780077021120954">Londoloza</translation>
@@ -299,7 +296,6 @@
 <translation id="534295439873310000">Amadivayisi e-NFC</translation>
 <translation id="5344522958567249764">Phatha ubumfihlo besikhangiso</translation>
 <translation id="5373874281522292782">Amaqembu wakho wamathebhu alondoloziwe</translation>
-<translation id="5389626883706033615">Amasayithi avinjelwe ekukuceleni ukuba asebenzise imininingwane ayilondolozile ngawe</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 okuningi)}one{(+ # okuningi)}other{(+ # okuningi)}}</translation>
 <translation id="5403592356182871684">Amagama</translation>
 <translation id="5438097262470833822">Le nketho izosetha kabusha izimvume ze-<ph name="WEBSITE" /></translation>
@@ -320,7 +316,6 @@
 <translation id="5677928146339483299">Kuvinjelwe</translation>
 <translation id="5689516760719285838">Indawo</translation>
 <translation id="5690795753582697420">Ikhamera ivaliwe kuzilungiselelo ze-Android</translation>
-<translation id="5691080386278724773">I-<ph name="SITE" /> ingasebenzisa imininingwane yakho njengoba ubhrawuza</translation>
 <translation id="5700761515355162635">Amakhukhi enkampani engahlangene ngqo avunyelwe</translation>
 <translation id="5706552988683188916">Lokhu kusula amakhukhi nenye idatha yesayithi le-<ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Amakhukhi enkampani yangaphandle avinjelwe kumodi ye-incognito</translation>
@@ -370,7 +365,6 @@
 <translation id="6262279340360821358">I-<ph name="PERMISSION_1" /> ne-<ph name="PERMISSION_2" /> kuvinjelwe</translation>
 <translation id="6270391203985052864">Amasayithi angacela ukuthumela izaziso</translation>
 <translation id="6295158916970320988">Wonke amasayithi</translation>
-<translation id="6304434827459067558">I-<ph name="SITE" /> ivinjelwe ekusebenziseni imininingwane yakho kokuthi</translation>
 <translation id="6320088164292336938">Dlidliza</translation>
 <translation id="6344622098450209924">Ilandelela Ukuvikelwa</translation>
 <translation id="6367753977865761591">Vimba ukungena ngemvume kwenkampani engahlangene ngqo kusayithi elithile.</translation>

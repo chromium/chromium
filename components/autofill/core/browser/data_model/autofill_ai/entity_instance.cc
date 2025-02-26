@@ -9,6 +9,7 @@
 
 #include "base/functional/overloaded.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
@@ -118,11 +119,40 @@ void AttributeInstance::SetInfoWithVerificationStatus(
               info_);
 }
 
+void AttributeInstance::SetRawInfoWithVerificationStatus(
+    base::PassKey<EntityTable> pass_key,
+    FieldType type,
+    const std::u16string& value,
+    VerificationStatus status) {
+  type = GetNormalizedType(type);
+  if (type == UNKNOWN_TYPE) {
+    return;
+  }
+  absl::visit(base::Overloaded{
+                  [&](NameInfo& name) {
+                    name.SetRawInfoWithVerificationStatus(type, value, status);
+                  },
+                  [&](std::u16string& old_value) {
+                    SetInfoWithVerificationStatus(type, value, status);
+                  }},
+              info_);
+}
+
 FieldTypeSet AttributeInstance::GetSupportedTypes() const {
   return absl::visit(base::Overloaded{[&](const NameInfo& name) {
                                         return name.GetSupportedTypes();
                                       },
                                       [&](const std::u16string& value) {
+                                        return FieldTypeSet{type_.field_type()};
+                                      }},
+                     info_);
+}
+
+FieldTypeSet AttributeInstance::GetDatabaseStoredTypes() const {
+  return absl::visit(base::Overloaded{[&](const NameInfo&) {
+                                        return NameInfo::kDatabaseStoredTypes;
+                                      },
+                                      [&](const std::u16string&) {
                                         return FieldTypeSet{type_.field_type()};
                                       }},
                      info_);
@@ -145,7 +175,7 @@ FieldType AttributeInstance::GetNormalizedType(FieldType info_type) const {
     // corresponding to a structured attribute (e.g., PASSPORT_NAME_TAG). This
     // should not usually happen but for now can, only in case a field couldn't
     // be classified by Autofill's logic but was classified by the ML model. In
-    // that case, we assume the type is the top level type of the attribute.
+    // that case, we assume the type is the top-level type of the attribute.
     return GetTopLevelType();
   }
   // In case the field classification is totally unrelated to the

@@ -30,6 +30,7 @@ class MockJniDelegate : public InputTransferHandlerAndroid::JniDelegate {
   ~MockJniDelegate() override = default;
 
   MOCK_METHOD((int), MaybeTransferInputToViz, (int, float), (override));
+  MOCK_METHOD((int), TransferInputToViz, (int), (override));
 };
 
 }  // namespace

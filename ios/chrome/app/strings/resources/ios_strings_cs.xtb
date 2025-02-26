@@ -1843,6 +1843,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="886477344907998366">Zobrazit záložky</translation>
 <translation id="8869239474428371589">Získejte to nejlepší ze svého oblíbeného prohlížeče</translation>
 <translation id="8871974300055371298">Nastavení obsahu</translation>
+<translation id="8877788021141246043">Nastavit připomenutí</translation>
 <translation id="8879604564928138696">Dvojitým klepnutím vyzkoušíte</translation>
 <translation id="8879952635974818770">Přizpůsobený obsah</translation>
 <translation id="8887595428614802520">Zavřít všechny karty a skupiny</translation>
@@ -1943,6 +1944,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="963102227019621224">Aktivita na webu a v aplikacích</translation>
 <translation id="966593914872420832">Hlasové vyhledávání</translation>
 <translation id="968653181266955408">Aktivujte si oznámení ohledně obsahu</translation>
+<translation id="972084300091883657">{COUNT,plural, =0{Přidat se ke skupině karet s uživatelem <ph name="OWNER_NAME" />}=1{Přidat se ke skupině karet s uživatelem <ph name="OWNER_NAME" /> a {COUNT} dalším}few{Přidat se ke skupině karet s uživatelem <ph name="OWNER_NAME" /> a {COUNT} dalšími}many{Přidat se ke skupině karet s uživatelem <ph name="OWNER_NAME" /> a {COUNT} dalšího}other{Přidat se ke skupině karet s uživatelem <ph name="OWNER_NAME" /> a {COUNT} dalšími}}</translation>
 <translation id="973493300226275298">Sledujte cenu produktu v internetových obchodech. Když cena klesne, obdržíte upozornění.</translation>
 <translation id="973788791897303708">Tato skupina karet je plná</translation>
 <translation id="976392601789283511">Znovu otevřít naposledy zavřenou kartu</translation>

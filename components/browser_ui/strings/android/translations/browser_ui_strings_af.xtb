@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">Versteek Prysdalings op oortjies-kaart</translation>
 <translation id="1510341833810331442">Werwe word nie toegelaat om data op jou toestel te stoor nie</translation>
 <translation id="1547123415014299762">Derdepartywebkoekies word toegelaat</translation>
-<translation id="1568470248891039841">Werwe wat jy tans bekyk, kan inhoud van ander werwe af inbed, byvoorbeeld prente, advertensies en teks. Hierdie ander werwe kan toestemming vra om inligting wat hulle oor jou gestoor het te gebruik terwyl jy deur die webwerf blaai. <ph name="BEGIN_LINK" />Kom meer te wete oor ingebedde inhoud<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Nuwe handelinge is naby die bokant van die skerm beskikbaar</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Verwante werwe</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">Vou ongewenste versoeke in (aanbeveel)</translation>
 <translation id="3955193568934677022">Laat werwe toe om beskermde inhoud te speel (aanbeveel)</translation>
 <translation id="3967822245660637423">Aflaai is voltooi</translation>
-<translation id="3974105241379491420">Werwe kan vra om inligting te gebruik wat hulle oor jou gestoor het</translation>
 <translation id="3987993985790029246">Kopieer skakel</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> van ?</translation>
 <translation id="3992684624889376114">Meer oor hierdie bladsy</translation>
@@ -291,7 +289,6 @@
 <translation id="5264323282659631142">Verwyder "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Sleep van bo af en raak die terugknoppie om volskerm te verlaat.</translation>
 <translation id="5292915569214461965">Jy het werwe geblokkeer om derdepartywebkoekies te gebruik om jou blaai-aktiwiteit na te spoor. Besoek instellings om <ph name="BEGIN_LINK" />toegang tot derdepartywebkoekies te bestuur<ph name="END_LINK" />.</translation>
-<translation id="5295729974480418933">Wanneer dit aan is, kan werwe vra om inligting te gebruik wat hulle oor jou gestoor het. Wanneer dit af is, kan werwe jou nie vra om inligting te gebruik wat hulle oor jou gestoor het nie.</translation>
 <translation id="5300589172476337783">Wys</translation>
 <translation id="5301954838959518834">OK, het dit</translation>
 <translation id="5317780077021120954">Berg</translation>
@@ -299,7 +296,6 @@
 <translation id="534295439873310000">NFC-toestelle</translation>
 <translation id="5344522958567249764">Bestuur advertensieprivaatheid</translation>
 <translation id="5373874281522292782">Jou oortjiegroepe is gestoor</translation>
-<translation id="5389626883706033615">Werwe word geblokkeer om jou te vra om inligting te gebruik wat hulle oor jou gestoor het</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ nog 1)}other{(+ nog #)}}</translation>
 <translation id="5403592356182871684">Name</translation>
 <translation id="5438097262470833822">Hierdie keuse sal toestemmings vir <ph name="WEBSITE" /> terugstel</translation>
@@ -320,7 +316,6 @@
 <translation id="5677928146339483299">Geblokkeer</translation>
 <translation id="5689516760719285838">Ligging</translation>
 <translation id="5690795753582697420">Kamera is afgeskakel in Android-instellings</translation>
-<translation id="5691080386278724773"><ph name="SITE" /> kan jou inligting gebruik terwyl jy blaai</translation>
 <translation id="5700761515355162635">Derdepartywebkoekies toegelaat</translation>
 <translation id="5706552988683188916">Dit vee webkoekies en ander werfdata vir <ph name="WEBSITE" /> uit</translation>
 <translation id="5723967018671998714">Derdepartywebkoekies word in incognitomodus geblokkeer</translation>
@@ -370,7 +365,6 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> word geblokkeer.</translation>
 <translation id="6270391203985052864">Werwe kan vra om kennisgewings te stuur</translation>
 <translation id="6295158916970320988">Alle werwe</translation>
-<translation id="6304434827459067558"><ph name="SITE" /> is geblokkeer om jou inligting te gebruik op</translation>
 <translation id="6320088164292336938">Vibreer</translation>
 <translation id="6344622098450209924">Nasporing-beskerming</translation>
 <translation id="6367753977865761591">Blokkeer aanmelding deur derde partye vir ’n spesifieke werf.</translation>

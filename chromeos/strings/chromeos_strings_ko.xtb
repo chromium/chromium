@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">고양이</translation>
 <translation id="5907649332524363701">키 색상</translation>
 <translation id="5908813850962688338">업데이트 설치에는 몇 분 정도 걸립니다. 업데이트를 다운로드하는 동안에는 기기를 전원에 연결하고 전원을 켜 두세요. 이 과정에서 기기가 여러 번 재부팅되고 검은색 화면이 표시될 수 있습니다. 설치를 완료하려면 기기를 다시 시작해야 합니다.</translation>
+<translation id="5915794087373112615"><ph name="NUM_SECONDS" />초 후에 선생님이 내 화면을 볼 수 있습니다.</translation>
 <translation id="5916084858004523819">금지됨</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}other{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}}</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> 선택</translation>
 <translation id="7618774594543487847">중성 색상</translation>
 <translation id="7620771111601174153">고객센터에서 자세히 알아보기</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">마지막 재설정 시간</translation>
 <translation id="7633068090678117093">배경 이미지</translation>
 <translation id="763873111564339966">남색</translation>
@@ -1524,6 +1526,7 @@
 <translation id="8054112564438735763">베이지색</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> 배경의 <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">오디오 녹음을 시작하려면 마이크를 연결하세요.</translation>
 <translation id="8067126283828232460">APN이 연결되었습니다.</translation>
 <translation id="8067208048261192356">갈색</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> 삭제</translation>

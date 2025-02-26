@@ -164,7 +164,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/page_info/ui_bundled/requirements",
     "//ios/chrome/browser/parcel_tracking:features",
     "//ios/chrome/browser/parcel_tracking:opt_in_status",
-    "//ios/chrome/browser/parcel_tracking:parcel_tracking_step",
     "//ios/chrome/browser/parcel_tracking:prefs",
     "//ios/chrome/browser/parcel_tracking:tracking_source",
     "//ios/chrome/browser/passwords/model",

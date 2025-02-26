@@ -4147,6 +4147,7 @@ Observação: se a configuração resultar em métodos de autenticação aceitos
 <translation id="3979738908158213640">URLs que terão acesso para realizar o atestado do dispositivo durante a autenticação SAML</translation>
 <translation id="3982322576186033243">Não permitir hashes não seguros em handshakes do TLS</translation>
 <translation id="3982465141749620677">Pedir a reautenticação em uma guia</translation>
+<translation id="3982624306233556415">Lista de bloqueio de provedores de identidade que não podem usar o SSO empresarial extensível para o navegador</translation>
 <translation id="3982849521386211220">Permite configurar a lista de endpoints da API Reporting[1] para
 enviar relatórios corporativos.
 
@@ -7216,6 +7217,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="6123052603197028610">Não permitir consultas aos servidores do Google para recuperar carimbos de data/hora</translation>
 <translation id="6128539430475678271">Bloquear a API Controlled Frame nestes sites</translation>
 <translation id="6130360423841559818">Controlar novo comportamento para a caixa de diálogo de cancelamento produzida pelo evento beforeunload</translation>
+<translation id="6131672297549089047">Todos os provedores de identidade</translation>
 <translation id="6131803221304830537">Desativar integridade do código renderizador</translation>
 <translation id="6132506775968708399">Bloquear cookies de terceiros</translation>
 <translation id="6133088669883929098">Permitir que todos os sites usem a geração de chaves</translation>
@@ -8893,6 +8895,7 @@ Se esta política for desativada, as senhas nunca serão lembradas e todas as se
 <translation id="7136237405361383549">Usar o renderizador padrão com base na configuração do teste de campo.</translation>
 <translation id="7138762292550697459">Controle o tempo limite mínimo da função setTimeout() do JavaScript.</translation>
 <translation id="7138792262152376158">Segue cronogramas regulares de descontinuação para a API PrefixedVideoFullscreen</translation>
+<translation id="7140760943584613237">Provedor de identidade na nuvem da Microsoft®</translation>
 <translation id="714219487865269980">Ativar destaque de foco do teclado</translation>
 <translation id="7144022711746703451">
       Esta política foi removida na versão M80 porque não é mais necessária, já que o

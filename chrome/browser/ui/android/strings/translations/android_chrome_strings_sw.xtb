@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
 <translation id="1009406586654360474">Fungua Kidhibiti cha Manenosiri cha Google na uende kwenye mipangilio. Chagua "Pakia" na uweke faili ya CSV iliyo na manenosiri uliyohamisha.</translation>
+<translation id="1010283278930414892">Hujahifadhi manenosiri kwenye kifaa hiki</translation>
 <translation id="1011749477052068769">Hamishia hapa</translation>
 <translation id="1014147525163127655">Hakuna funguo za siri zozote za <ph name="ORIGIN" /> kwenye kifaa hiki</translation>
 <translation id="1016498331642356377">Tafuta kwa haraka ukitumia sauti yako. Ili ubadilishe njia hii ya mkato, gusa na ushikilie.</translation>
@@ -142,6 +143,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="1568636008098739136">Sikiliza maudhui yaliyo kwenye ukurasa huu. Ili ubadilishe njia hii ya mkato, gusa na ushikilie.</translation>
 <translation id="1571041387761170095">Hakuna manenosiri dhaifu au ambayo yametumiwa kwingine</translation>
 <translation id="1571304935088121812">Nakili jina la mtumiaji</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{Nenosiri 1 lililoathiriwa kwenye kifaa hiki}other{Manenosiri # yaliyoathiriwa kwenye kifaa hiki}}</translation>
 <translation id="1594635596540195766">Vipengee <ph name="SUGGESTIONS_COUNT" /> vilivyopendekezwa katika orodha iliyo hapa chini.</translation>
 <translation id="1598163867407640634">Tumia <ph name="SITE_ETLD_PLUS_ONE" /> ukiwa na <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Ukiwasha, tumia na uhifadhi data kwenye Akaunti yako ya Google. Ukizima, data inahifadhiwa kwenye kifaa hiki tu.</translation>
@@ -163,6 +165,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="1724977129262658800">Fungua ili ubadilishe nenosiri lako</translation>
 <translation id="1726477445370128854">Unaweza kuvinjari na kutafuta kwa haraka zaidi Chrome inapopakia mapema kurasa ambazo inafikiri kuwa huenda ukazitembelea</translation>
 <translation id="1728803206919861584">Ungependa kuhifadhi ufunguo wa siri nje ya Hali fiche?</translation>
+<translation id="1732514748744806741">Tutakuarifu iwapo manenosiri yako yameathiriwa</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{Tovuti 1 ilituma arifa nyingi hivi majuzi}other{Tovuti # zilituma arifa nyingi hivi majuzi}}</translation>
 <translation id="1749561566933687563">Sawazisha alamisho zako</translation>
 <translation id="1750238553597293878">Endelea kutumia manenosiri katika Akaunti yako ya Google</translation>
@@ -1336,6 +1339,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7022756207310403729">Fungua katika kivinjari</translation>
 <translation id="7025769836128625875">Hiki ni kipengele cha AI kinachofanyiwa majaribio na hakitakuwa sahihi kila wakati. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="7029809446516969842">Manenosiri</translation>
+<translation id="7053256416619638731">Weka manenosiri thabiti katika kifaa hiki</translation>
 <translation id="7053983685419859001">Zuia</translation>
 <translation id="7054588988317389591">Ungependa kupata maelezo ya picha?</translation>
 <translation id="7057969023583258980">Fungua historia kamili kwenye Chrome</translation>
@@ -1586,6 +1590,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8110024788458304985">Tusaidie kuboresha utendaji na vipengele vya Chrome</translation>
 <translation id="8110087112193408731">Ungependa kuonyesha shughuli zako za Chrome katika mpango wa Nidhamu Dijitali?</translation>
 <translation id="8118117428362942925">Ukihitaji usaidizi, mwombe mzazi wako (<ph name="PARENT_NAME" />)</translation>
+<translation id="8120286190326371840">Hakuna manenosiri yaliyoathiriwa kwenye kifaa hiki</translation>
 <translation id="8122623268651408616">Inapanga kulingana na mpya zaidi</translation>
 <translation id="8127542551745560481">Badilisha ukurasa wa kwanza</translation>
 <translation id="8130309322784422030">Huenda maelezo yako ya kuingia katika akaunti yaliyohifadhiwa yamepitwa na wakati</translation>

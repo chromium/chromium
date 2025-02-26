@@ -17,6 +17,10 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/favicon/coordinator/tab_group_favicons_grid_configurator.h"
+#import "ios/chrome/browser/saved_tab_groups/favicon/ui/tab_group_favicons_grid.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -33,13 +37,29 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace collaboration {
 
 namespace {
+
+// The size in point of the join group image.
+const CGFloat kJoinGroupImageSize = 64.0;
+
+// The minimum size of tab favicons in points.
+const CGFloat kFaviconMinimumSize = 8.0;
+
+// The desired size of tab favicons in points.
+const CGFloat kFaviconSize = 16.0;
+
+// Maximum delay to return preview items.
+constexpr base::TimeDelta kFetchPreviewItemsTimeDelay = base::Seconds(15);
 
 // Converts `outcome` between the two enums.
 CollaborationControllerDelegate::Outcome ConvertOutcome(
@@ -62,9 +82,18 @@ IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate(
     : browser_(browser), base_view_controller_(base_view_controller) {
   CHECK(browser_);
   CHECK(base_view_controller_);
-  share_kit_service_ =
-      ShareKitServiceFactory::GetForProfile(browser_->GetProfile());
+  ProfileIOS* profile = browser_->GetProfile();
+
+  share_kit_service_ = ShareKitServiceFactory::GetForProfile(profile);
+  tab_groups::TabGroupSyncService* tab_group_sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
+  favicon_loader_ = IOSChromeFaviconLoaderFactory::GetForProfile(profile);
+  favicons_grid_configurator_ =
+      std::make_unique<TabGroupFaviconsGridConfigurator>(tab_group_sync_service,
+                                                         favicon_loader_);
   CHECK(share_kit_service_);
+  CHECK(favicon_loader_);
+  CHECK(favicons_grid_configurator_);
 }
 
 IOSCollaborationControllerDelegate::~IOSCollaborationControllerDelegate() {}
@@ -155,34 +184,24 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
     const data_sharing::GroupToken& token,
     const data_sharing::SharedDataPreview& preview_data,
     ResultCallback result) {
-  ShareKitJoinConfiguration* config = [[ShareKitJoinConfiguration alloc] init];
-  config.token = token;
-  config.baseViewController = base_view_controller_;
-  config.applicationHandler =
-      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
-  if (const auto& tab_group_preview = preview_data.shared_tab_group_preview) {
-    config.displayName = base::SysUTF8ToNSString(tab_group_preview->title);
-    NSMutableArray<ShareKitPreviewItem*>* preview_items =
-        [NSMutableArray array];
-    for (const auto& tab : tab_group_preview->tabs) {
-      ShareKitPreviewItem* preview_item = [[ShareKitPreviewItem alloc] init];
-      preview_item.title = base::SysUTF8ToNSString(tab.url.host());
-      // TODO(crbug.com/396642722): Fetch the favicon for `tab.url`
-      // (asynchronous) and assign to `preview_item.image`. Default to querying
-      // Google servers if needed.
-      [preview_items addObject:preview_item];
-    }
-    config.previewItems = preview_items;
-  }
-  // TODO(crbug.com/396642759): Pass a composite image containing 4 favicons
-  // from the tab group, similar to what is done in the Share flow.
-  config.previewImage = [[UIImage alloc] init];
-  auto completion_block = base::CallbackToBlock(std::move(result));
-  config.completion = ^(ShareKitFlowOutcome outcome) {
-    completion_block(ConvertOutcome(outcome));
-  };
+  base::WeakPtr<IOSCollaborationControllerDelegate> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
 
-  session_id_ = share_kit_service_->JoinTabGroup(config);
+  auto callback = base::BindOnce(
+      &IOSCollaborationControllerDelegate::ConfigureAndJoinTabGroup, weak_this,
+      token, std::move(result));
+
+  // Check if preview data contains shared tab group preview information.
+  if (const auto& tab_group_preview = preview_data.shared_tab_group_preview) {
+    // If a preview is available, fetch the favicons for the tabs in the
+    // preview. Once favicons are fetched and ShareKitPreviewItems are created,
+    // the callback block is executed.
+    FetchPreviewItems(tab_group_preview->tabs, std::move(callback));
+  } else {
+    // If no preview is available, immediately execute the callback
+    // block with an empty array of preview items.
+    std::move(callback).Run(@[]);
+  }
 }
 
 void IOSCollaborationControllerDelegate::ShowShareDialog(
@@ -332,6 +351,94 @@ const TabGroup* IOSCollaborationControllerDelegate::GetLocalGroup(
     }
   }
   return tab_group;
+}
+
+void IOSCollaborationControllerDelegate::FetchPreviewItems(
+    std::vector<data_sharing::TabPreview> tabs,
+    PreviewItemsCallBack callback) {
+  const int tabs_count = static_cast<int>(tabs.size());
+
+  __block NSMutableArray<ShareKitPreviewItem*>* preview_items =
+      [NSMutableArray arrayWithCapacity:tabs_count];
+
+  // Init `preview_items` with default ShareKitPreviewItems.
+  for (int i = 0; i < tabs_count; ++i) {
+    ShareKitPreviewItem* preview_item = [[ShareKitPreviewItem alloc] init];
+    preview_item.title = base::SysUTF8ToNSString(tabs[i].url.host());
+    preview_item.image = SymbolWithPalette(
+        DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kFaviconSize),
+        @[ [UIColor colorNamed:kGrey400Color] ]);
+    [preview_items addObject:preview_item];
+  }
+
+  __block int completed_count = 0;
+  __block auto completion_block = base::CallbackToBlock(std::move(callback));
+  __block bool completion_block_executed = false;
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                               kFetchPreviewItemsTimeDelay.InNanoseconds()),
+                 dispatch_get_main_queue(), ^{
+                   if (!completion_block_executed) {
+                     completion_block_executed = true;
+                     completion_block(preview_items);
+                   }
+                 });
+
+  for (int i = 0; i < tabs_count; ++i) {
+    const auto& tab = tabs[i];
+    // Asynchronously load the favicon for the tab's URL.
+    favicon_loader_->FaviconForPageUrl(
+        tab.url, kFaviconSize, kFaviconMinimumSize,
+        /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
+          // Skip synchronously returned default favicon.
+          if (completion_block_executed || attributes.usesDefaultImage) {
+            return;
+          }
+          if (attributes.faviconImage) {
+            ShareKitPreviewItem* item = preview_items[i];
+            item.image = attributes.faviconImage;
+          }
+          completed_count++;
+
+          // Check if all items have been fetched.
+          if (completed_count == tabs_count) {
+            completion_block_executed = true;
+            completion_block(preview_items);
+          }
+        });
+  }
+}
+
+void IOSCollaborationControllerDelegate::ConfigureAndJoinTabGroup(
+    const data_sharing::GroupToken& token,
+    ResultCallback result,
+    NSArray<ShareKitPreviewItem*>* preview_items) {
+  ShareKitJoinConfiguration* config = [[ShareKitJoinConfiguration alloc] init];
+  config.token = token;
+  config.baseViewController = base_view_controller_;
+  config.applicationHandler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
+  config.previewItems = preview_items;
+  config.previewImage = JoinGroupImage(preview_items);
+
+  auto completion_block = base::CallbackToBlock(std::move(result));
+  config.completion = ^(ShareKitFlowOutcome outcome) {
+    completion_block(ConvertOutcome(outcome));
+  };
+
+  session_id_ = share_kit_service_->JoinTabGroup(config);
+}
+
+UIImage* IOSCollaborationControllerDelegate::JoinGroupImage(
+    NSArray<ShareKitPreviewItem*>* preview_items) {
+  CGRect frame = CGRectMake(0, 0, kJoinGroupImageSize, kJoinGroupImageSize);
+  TabGroupFaviconsGrid* favicons_grid =
+      [[TabGroupFaviconsGrid alloc] initWithFrame:frame];
+  favicons_grid.translatesAutoresizingMaskIntoConstraints = NO;
+  favicons_grid.numberOfTabs = [preview_items count];
+  favicons_grid_configurator_->ConfigureFaviconsGrid(favicons_grid,
+                                                     preview_items);
+  [favicons_grid layoutIfNeeded];
+  return ImageFromView(favicons_grid, nil, UIEdgeInsetsZero);
 }
 
 }  // namespace collaboration

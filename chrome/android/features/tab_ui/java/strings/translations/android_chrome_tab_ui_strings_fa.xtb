@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
+<translation id="1045448422538531528">افزودن به گروه</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{‫<ph name="NUM_WEEKS_ONE" /> هفته پیش ایجاد شد}one{‫<ph name="NUM_WEEKS_MANY" /> هفته پیش ایجاد شد}other{‫<ph name="NUM_WEEKS_MANY" /> هفته پیش ایجاد شد}}</translation>
 <translation id="1063300264396686489">باز شدن خودکار گروه‌های برگه از دستگاه‌های دیگر</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
@@ -11,6 +12,7 @@
 <translation id="1293272072740285747">این گروه را نگه دارید تا بعداً به آن برگه اضافه کنید یا اگر دیگر به این گروه نیاز ندارید، آن را حذف کنید.
 
 اگر گروه را حذف کنید، دسترسی همه به گروه برگه «<ph name="TITLE_OF_GROUP" />» فوراً برداشته خواهد شد و این گروه برگه از همه دستگاه‌ها حذف خواهد شد.</translation>
+<translation id="1326654401173629446">گروه برگه «<ph name="TAB_GROUP_NAME" />» دیگر دردسترس نیست</translation>
 <translation id="1329584516321524826">لحظاتی پیش به‌روزرسانی شد</translation>
 <translation id="1340839264183302272">ترک گروه</translation>
 <translation id="1419023007528516122">با این کار، گروه برای همیشه از دستگاهتان حذف خواهد شد</translation>

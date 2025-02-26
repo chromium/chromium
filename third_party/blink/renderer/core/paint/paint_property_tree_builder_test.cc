@@ -4527,19 +4527,15 @@ TEST_P(PaintPropertyTreeBuilderTest, FragmentsUnderMultiColumn) {
   EXPECT_EQ(4u, NumFragments(relpos));
 
   EXPECT_EQ(PhysicalOffset(), FragmentAt(relpos, 0).PaintOffset());
-  EXPECT_EQ(0u, FragmentAt(relpos, 0).FragmentID());
   EXPECT_EQ(nullptr, FragmentAt(relpos, 0).PaintProperties());
 
   EXPECT_EQ(PhysicalOffset(100, 0), FragmentAt(relpos, 1).PaintOffset());
-  EXPECT_EQ(1u, FragmentAt(relpos, 1).FragmentID());
   EXPECT_EQ(nullptr, FragmentAt(relpos, 1).PaintProperties());
 
   EXPECT_EQ(PhysicalOffset(0, 80), FragmentAt(relpos, 2).PaintOffset());
-  EXPECT_EQ(2u, FragmentAt(relpos, 2).FragmentID());
   EXPECT_EQ(nullptr, FragmentAt(relpos, 2).PaintProperties());
 
   EXPECT_EQ(PhysicalOffset(100, 80), FragmentAt(relpos, 3).PaintOffset());
-  EXPECT_EQ(3u, FragmentAt(relpos, 3).FragmentID());
   EXPECT_EQ(nullptr, FragmentAt(relpos, 3).PaintProperties());
 
   // Above the spanner.
@@ -4608,17 +4604,13 @@ TEST_P(PaintPropertyTreeBuilderTest,
   EXPECT_TRUE(thread->IsLayoutFlowThread());
   ASSERT_EQ(2u, NumFragments(container));
   EXPECT_EQ(PhysicalOffset(100, 0), FragmentAt(container, 0).PaintOffset());
-  EXPECT_EQ(0u, FragmentAt(container, 0).FragmentID());
   EXPECT_EQ(PhysicalOffset(200, 100), FragmentAt(container, 1).PaintOffset());
-  EXPECT_EQ(1u, FragmentAt(container, 1).FragmentID());
 
   LayoutObject* content = GetLayoutObjectByElementId("content");
   EXPECT_EQ(2u, NumFragments(content));
 
-    EXPECT_EQ(PhysicalOffset(), FragmentAt(content, 0).PaintOffset());
-    EXPECT_EQ(0u, FragmentAt(content, 0).FragmentID());
-    EXPECT_EQ(PhysicalOffset(0, 100), FragmentAt(content, 1).PaintOffset());
-    EXPECT_EQ(1u, FragmentAt(content, 1).FragmentID());
+  EXPECT_EQ(PhysicalOffset(), FragmentAt(content, 0).PaintOffset());
+  EXPECT_EQ(PhysicalOffset(0, 100), FragmentAt(content, 1).PaintOffset());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, LayerUnderOverflowClipUnderMultiColumn) {
@@ -4657,15 +4649,10 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowClipUnderMultiColumn) {
   ASSERT_EQ(2u, NumFragments(child1));
   ASSERT_EQ(1u, NumFragments(child2));
   EXPECT_EQ(PhysicalOffset(), FragmentAt(clip, 0).PaintOffset());
-  EXPECT_EQ(0u, FragmentAt(clip, 0).FragmentID());
   EXPECT_EQ(PhysicalOffset(200, 0), FragmentAt(clip, 1).PaintOffset());
-  EXPECT_EQ(1u, FragmentAt(clip, 1).FragmentID());
   EXPECT_EQ(PhysicalOffset(), FragmentAt(child1, 0).PaintOffset());
-  EXPECT_EQ(0u, FragmentAt(child1, 0).FragmentID());
   EXPECT_EQ(PhysicalOffset(200, 0), FragmentAt(child1, 1).PaintOffset());
-  EXPECT_EQ(1u, FragmentAt(child1, 1).FragmentID());
   EXPECT_EQ(PhysicalOffset(200, 300), FragmentAt(child2, 0).PaintOffset());
-  EXPECT_EQ(1u, FragmentAt(child2, 0).FragmentID());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, CompositedUnderMultiColumn) {
@@ -4687,11 +4674,8 @@ TEST_P(PaintPropertyTreeBuilderTest, CompositedUnderMultiColumn) {
   LayoutObject* wrapper = GetLayoutObjectByElementId("wrapper");
   ASSERT_EQ(3u, NumFragments(wrapper));
   EXPECT_EQ(PhysicalOffset(0, 0), FragmentAt(wrapper, 0).PaintOffset());
-  EXPECT_EQ(0u, FragmentAt(wrapper, 0).FragmentID());
   EXPECT_EQ(PhysicalOffset(100, 0), FragmentAt(wrapper, 1).PaintOffset());
-  EXPECT_EQ(1u, FragmentAt(wrapper, 1).FragmentID());
   EXPECT_EQ(PhysicalOffset(200, 0), FragmentAt(wrapper, 2).PaintOffset());
-  EXPECT_EQ(2u, FragmentAt(wrapper, 2).FragmentID());
 
   LayoutObject* composited = GetLayoutObjectByElementId("composited");
   LayoutObject* non_composited_child =
@@ -4701,20 +4685,15 @@ TEST_P(PaintPropertyTreeBuilderTest, CompositedUnderMultiColumn) {
 
   EXPECT_EQ(2u, NumFragments(composited));
   EXPECT_EQ(PhysicalOffset(0, 0), FragmentAt(composited, 0).PaintOffset());
-  EXPECT_EQ(1u, FragmentAt(composited, 0).FragmentID());
   EXPECT_EQ(PhysicalOffset(0, 0), FragmentAt(composited, 1).PaintOffset());
-  EXPECT_EQ(2u, FragmentAt(composited, 1).FragmentID());
   EXPECT_EQ(2u, NumFragments(non_composited_child));
   EXPECT_EQ(PhysicalOffset(0, 0),
             FragmentAt(non_composited_child, 0).PaintOffset());
-  EXPECT_EQ(1u, FragmentAt(non_composited_child, 0).FragmentID());
   EXPECT_EQ(PhysicalOffset(0, 0),
             FragmentAt(non_composited_child, 1).PaintOffset());
-  EXPECT_EQ(2u, FragmentAt(non_composited_child, 1).FragmentID());
   EXPECT_EQ(1u, NumFragments(composited_child));
   EXPECT_EQ(PhysicalOffset(0, 0),
             FragmentAt(composited_child, 0).PaintOffset());
-  EXPECT_EQ(2u, FragmentAt(composited_child, 0).FragmentID());
 }
 
 // Ensures no crash with multi-column containing relative-position inline with
@@ -4810,7 +4789,6 @@ TEST_P(PaintPropertyTreeBuilderTest, BecomingUnfragmented) {
   )HTML");
 
   LayoutObject* target = GetLayoutObjectByElementId("target");
-  EXPECT_EQ(1u, target->FirstFragment().FragmentID());
   EXPECT_EQ(PhysicalOffset(LayoutUnit(208), LayoutUnit(8)),
             target->FirstFragment().PaintOffset());
   Element* target_element =
@@ -4819,7 +4797,6 @@ TEST_P(PaintPropertyTreeBuilderTest, BecomingUnfragmented) {
   target_element->setAttribute(html_names::kStyleAttr,
                                AtomicString("position: absolute"));
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(0u, target->FirstFragment().FragmentID());
   EXPECT_EQ(PhysicalOffset(LayoutUnit(8), LayoutUnit(28)),
             target->FirstFragment().PaintOffset());
 }
@@ -6032,7 +6009,6 @@ TEST_P(PaintPropertyTreeBuilderTest,
               properties->Transform()->Get2dTranslation());
     EXPECT_EQ(properties->PaintOffsetTranslation(),
               properties->Transform()->Parent());
-    EXPECT_EQ(fragment.FragmentID(), i);
   }
 
   for (wtf_size_t i = 0; i < 3; i++) {
@@ -6040,7 +6016,6 @@ TEST_P(PaintPropertyTreeBuilderTest,
     EXPECT_EQ(PhysicalOffset(0, 10), fragment.PaintOffset());
     EXPECT_EQ(FragmentAt(fixed, i).PaintProperties()->Transform(),
               &fragment.LocalBorderBoxProperties().Transform());
-    EXPECT_EQ(fragment.FragmentID(), i);
   }
 
   GetFrame().EndPrinting();
@@ -6199,9 +6174,6 @@ TEST_P(PaintPropertyTreeBuilderTest, EmptyClipFragments) {
       GetDocument().getElementById(AtomicString("wrapper"))->GetLayoutObject();
 
   ASSERT_EQ(3u, NumFragments(wrapper));
-  ASSERT_EQ(0u, FragmentAt(wrapper, 0).FragmentID());
-  ASSERT_EQ(1u, FragmentAt(wrapper, 1).FragmentID());
-  ASSERT_EQ(2u, FragmentAt(wrapper, 2).FragmentID());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, StickyConstraintChain) {

@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">Fela spjaldið „Verðlækkun á flipum“</translation>
 <translation id="1510341833810331442">Vefsvæði mega ekki vista gögn í tækinu þínu</translation>
 <translation id="1547123415014299762">Fótspor þriðju aðila eru leyfð</translation>
-<translation id="1568470248891039841">Vefsvæði sem þú heimsækir geta fellt inn efni frá öðrum vefsvæðum, til dæmis myndir, auglýsingar og texta. Hin vefsvæðin kunna að biðja um að fá að nota upplýsingar sem þau hafa vistað um þig þegar þú vafrar um vefsvæðið. <ph name="BEGIN_LINK" />Nánar um innfellt efni<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Nýjar aðgerðir tiltækar nálægt efsta hluta skjásins</translation>
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="1633720957382884102">Tengd vefsvæði</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">Minnka óumbeðnar beiðnir (ráðlagt)</translation>
 <translation id="3955193568934677022">Leyfa vefsvæðum að spila varið efni (ráðlagt)</translation>
 <translation id="3967822245660637423">Niðurhali lokið</translation>
-<translation id="3974105241379491420">Vefsvæði geta beðið um að fá að nota upplýsingar sem þau hafa vistað um þig</translation>
 <translation id="3987993985790029246">Afrita tengil</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992684624889376114">Um þessa síðu</translation>
@@ -291,7 +289,6 @@
 <translation id="5264323282659631142">Fjarlægja „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Dragðu ofan frá og snertu bakkhnappinn til að hætta birtingu á öllum skjánum.</translation>
 <translation id="5292915569214461965">Þú lokaðir á getu vefsvæða til að nota fótspor þriðju aðila til að fylgjast með ferðum þínum um vefinn. Farðu í stillingarnar til að <ph name="BEGIN_LINK" />stjórna aðgangi að fótsporum þriðju aðila<ph name="END_LINK" />.</translation>
-<translation id="5295729974480418933">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota upplýsingar sem þau hafa vistað um þig. Þegar slökkt er á þessu geta vefsvæði ekki beðið þig um að fá að nota upplýsingar sem þau hafa vistað um þig.</translation>
 <translation id="5300589172476337783">Sýna</translation>
 <translation id="5301954838959518834">Ég skil</translation>
 <translation id="5317780077021120954">Vista</translation>
@@ -299,7 +296,6 @@
 <translation id="534295439873310000">NFC-tæki</translation>
 <translation id="5344522958567249764">Stjórna persónuvernd auglýsinga</translation>
 <translation id="5373874281522292782">Flipahóparnir þínir eru vistaðir</translation>
-<translation id="5389626883706033615">Lokað er á að vefsvæði geti beðið um að fá að nota upplýsingar sem þau hafa vistað um þig</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 í viðbót)}one{(+ # í viðbót)}other{(+ # í viðbót)}}</translation>
 <translation id="5403592356182871684">Heiti</translation>
 <translation id="5438097262470833822">Þetta val endurstillir heimildir fyrir <ph name="WEBSITE" /></translation>
@@ -320,7 +316,6 @@
 <translation id="5677928146339483299">Lokað fyrir aðgang</translation>
 <translation id="5689516760719285838">Staðsetning</translation>
 <translation id="5690795753582697420">Slökkt er á myndavél í stillingum Android</translation>
-<translation id="5691080386278724773"><ph name="SITE" /> getur notað upplýsingarnar þínar við vefskoðun</translation>
 <translation id="5700761515355162635">Fótspor þriðju aðila leyfð</translation>
 <translation id="5706552988683188916">Þetta eyðir fótsporum og öðrum vefsvæðagögnum fyrir <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Lokað er á fótspor frá þriðja aðila í huliðsstillingu</translation>
@@ -370,7 +365,6 @@
 <translation id="6262279340360821358">Lokað er fyrir <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Vefsvæði geta óskað eftir því að senda tilkynningar</translation>
 <translation id="6295158916970320988">Öll vefsvæði</translation>
-<translation id="6304434827459067558"><ph name="SITE" /> hefur ekki leyfi til að nota upplýsingarnar þínar á</translation>
 <translation id="6320088164292336938">Titringur</translation>
 <translation id="6344622098450209924">Rakningarvörn</translation>
 <translation id="6367753977865761591">Loka á innskráningu þriðja aðila á tilteknu vefsvæði.</translation>

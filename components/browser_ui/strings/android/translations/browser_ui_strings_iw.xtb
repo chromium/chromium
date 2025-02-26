@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">הסתרת הכרטיס 'הנחות בכרטיסיות'</translation>
 <translation id="1510341833810331442">לאתרים אין הרשאה לשמור נתונים במכשיר שלך</translation>
 <translation id="1547123415014299762">‏מותר להשתמש בקובצי cookie של צד שלישי</translation>
-<translation id="1568470248891039841">לאתרים שמבקרים בהם יש אפשרות להטמיע תוכן מאתרים אחרים, למשל תמונות, מודעות וטקסט. האתרים האחרים האלה יכולים לבקש הרשאה להשתמש במידע שהם שמרו עליך בזמן הגלישה באתר. <ph name="BEGIN_LINK" />מידע נוסף על תוכן מוטמע<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">פעולות חדשות זמינות באזור החלק העליון של המסך</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1633720957382884102">אתרים קשורים</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">כיווץ בקשות לא רצויות (מומלץ)</translation>
 <translation id="3955193568934677022">אתרים יוכלו להפעיל תוכן מוגן (מומלץ)</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
-<translation id="3974105241379491420">אתרים יכולים לבקש הרשאה להשתמש במידע שנשמר עליך</translation>
 <translation id="3987993985790029246">העתקת קישור</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">מידע על הדף הזה</translation>
@@ -292,7 +290,6 @@
 <translation id="5264323282659631142">הסרת '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">כדי לצאת ממסך מלא, יש לגרור מלמעלה ולגעת בכפתור 'הקודם'.</translation>
 <translation id="5292915569214461965">‏חסמת אתרים כך שלא יוכלו להשתמש בקובצי Cookie של צד שלישי כדי לעקוב אחריך במהלך הגלישה. בהגדרות ניתן <ph name="BEGIN_LINK" />לנהל את הגישה לקובצי Cookie של צד שלישי<ph name="END_LINK" />.</translation>
-<translation id="5295729974480418933">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במידע עליך שנשמר בהם. כשהאפשרות מושבתת, אתרים לא יכולים לבקש הרשאה להשתמש במידע עליך שנשמר בהם.</translation>
 <translation id="5300589172476337783">הצגה</translation>
 <translation id="5301954838959518834">בסדר, הבנתי</translation>
 <translation id="5317780077021120954">שמירה</translation>
@@ -300,7 +297,6 @@
 <translation id="534295439873310000">‏מכשירי NFC</translation>
 <translation id="5344522958567249764">ניהול של הגדרות הפרטיות בפרסום</translation>
 <translation id="5373874281522292782">קבוצות הכרטיסיות שלך נשמרות</translation>
-<translation id="5389626883706033615">אתרים לא יכולים לבקש ממך הרשאה להשתמש במידע שנשמר עליך</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ועוד 1)}one{(ועוד #)}two{(ועוד #)}other{(ועוד #)}}</translation>
 <translation id="5403592356182871684">שמות</translation>
 <translation id="5438097262470833822">הבחירה הזו תגרום לאיפוס ההרשאות של <ph name="WEBSITE" /></translation>
@@ -321,7 +317,6 @@
 <translation id="5677928146339483299">חסום</translation>
 <translation id="5689516760719285838">מיקום</translation>
 <translation id="5690795753582697420">‏המצלמה מושבתת בהגדרות Android</translation>
-<translation id="5691080386278724773">לאתר <ph name="SITE" /> יש אפשרות להשתמש בפרטים שלך בזמן הגלישה</translation>
 <translation id="5700761515355162635">‏יש אישור לקובצי cookie של צד שלישי</translation>
 <translation id="5706552988683188916">‏הפעולה הזו מוחקת קובצי cookie ונתונים אחרים מאתרים ב-<ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">‏קובצי cookie של צד שלישי חסומים במצב אנונימי</translation>
@@ -371,7 +366,6 @@
 <translation id="6262279340360821358">ההרשאות <ph name="PERMISSION_1" /> וגם <ph name="PERMISSION_2" /> חסומות</translation>
 <translation id="6270391203985052864">אתרים יכולים לבקש לשלוח התראות</translation>
 <translation id="6295158916970320988">כל האתרים</translation>
-<translation id="6304434827459067558">לאתר <ph name="SITE" /> אין אפשרות להשתמש במידע שלך</translation>
 <translation id="6320088164292336938">רטט</translation>
 <translation id="6344622098450209924">חסימת מעקב</translation>
 <translation id="6367753977865761591">חסימת הכניסה של צד שלישי לאתר ספציפי.</translation>

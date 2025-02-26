@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">Ocultar tarxeta Baixadas de prezo nas pestanas</translation>
 <translation id="1510341833810331442">Os sitios non teñen permiso para gardar datos no teu dispositivo</translation>
 <translation id="1547123415014299762">Permítense as cookies de terceiros</translation>
-<translation id="1568470248891039841">Os sitios que visites poderán inserir contido doutros sitios (por exemplo, imaxes, anuncios e texto) que, á súa vez, poderán pedir permiso para usar a información que garden sobre ti mentres navegas. <ph name="BEGIN_LINK" />Máis información acerca do contido inserido<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Novas accións dispoñibles preto da parte superior da pantalla</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1633720957382884102">Sitios relacionados</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">Contraer solicitudes non desexadas (recomendado)</translation>
 <translation id="3955193568934677022">Permitir que os sitios reproduzan contido protexido (recomendado)</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
-<translation id="3974105241379491420">Os sitios poderán usar a información que garden sobre ti</translation>
 <translation id="3987993985790029246">Copiar ligazón</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992684624889376114">Acerca desta páxina</translation>
@@ -291,7 +289,6 @@
 <translation id="5264323282659631142">Quitar <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Arrastra desde a parte superior e toca o botón Volver para saír da pantalla completa.</translation>
 <translation id="5292915569214461965">Non permites que os sitios usen cookies de terceiros para facer un seguimento da túa actividade mentres navegas. Vai á configuración para <ph name="BEGIN_LINK" />xestionar o acceso ás cookies de terceiros<ph name="END_LINK" />.</translation>
-<translation id="5295729974480418933">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar a información que gardasen sobre ti. Cando esta opción está desactivada, os sitios non poden pedirche permiso para utilizar a información que gardasen sobre ti.</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5301954838959518834">Entendido</translation>
 <translation id="5317780077021120954">Gardar</translation>
@@ -299,7 +296,6 @@
 <translation id="534295439873310000">Dispositivos con NFC</translation>
 <translation id="5344522958567249764">Xestionar privacidade nos anuncios</translation>
 <translation id="5373874281522292782">Os teus grupos de pestanas están gardados</translation>
-<translation id="5389626883706033615">Os sitios non poderán pedirche usar a información que garden sobre ti</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(e 1 máis)}other{(e # máis)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
 <translation id="5438097262470833822">Con esta opción restableceranse os permisos de <ph name="WEBSITE" /></translation>
@@ -320,7 +316,6 @@
 <translation id="5677928146339483299">Bloqueada</translation>
 <translation id="5689516760719285838">Localización</translation>
 <translation id="5690795753582697420">A cámara está desactivada na sección Configuración de Android</translation>
-<translation id="5691080386278724773"><ph name="SITE" /> poderá usar a túa información mentres navegas</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidas</translation>
 <translation id="5706552988683188916">Esta acción eliminará as cookies e outros datos dos sitios de <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">As cookies de terceiros bloquéanse no modo de incógnito</translation>
@@ -370,7 +365,6 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> (bloqueados)</translation>
 <translation id="6270391203985052864">Os sitios poden pedir permiso para enviar notificacións</translation>
 <translation id="6295158916970320988">Todos os sitios</translation>
-<translation id="6304434827459067558"><ph name="SITE" /> non ten permitido usar a túa información en</translation>
 <translation id="6320088164292336938">Vibrar</translation>
 <translation id="6344622098450209924">Protección contra o seguimento</translation>
 <translation id="6367753977865761591">Bloquea o inicio de sesión de terceiros para un sitio específico.</translation>

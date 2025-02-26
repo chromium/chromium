@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">kucing</translation>
 <translation id="5907649332524363701">warna tombol</translation>
 <translation id="5908813850962688338">Penginstalan update ini akan memerlukan waktu beberapa menit. Pastikan perangkat Anda tetap dicolokkan dan dinyalakan saat update didownload. Perangkat Anda mungkin akan memulai ulang beberapa kali dan menampilkan layar hitam selama proses ini. Anda akan diminta untuk memulai ulang perangkat guna menyelesaikan penginstalan.</translation>
+<translation id="5915794087373112615">Pengajar akan melihat layar Anda dalam <ph name="NUM_SECONDS" /> detik</translation>
 <translation id="5916084858004523819">Terlarang</translation>
 <translation id="5916664084637901428">Aktif</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{File Anda berhasil dipindai dan disimpan ke <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{File Anda berhasil dipindai dan disimpan ke <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1433,6 +1434,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="7618216277886673749">Pilih <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Netral</translation>
 <translation id="7620771111601174153">Pelajari lebih lanjut di Pusat Bantuan</translation>
+<translation id="7623327321610992184">Pod OnTask</translation>
 <translation id="763165478673169849">Waktu Reset Terakhir</translation>
 <translation id="7633068090678117093">Gambar latar</translation>
 <translation id="763873111564339966">nila</translation>
@@ -1524,6 +1526,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8054112564438735763">beige</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_COLOR" /> pada latar belakang <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Hubungkan mikrofon untuk mulai merekam audio</translation>
 <translation id="8067126283828232460">APN terhubung.</translation>
 <translation id="8067208048261192356">cokelat</translation>
 <translation id="8067224607978179455">Hapus <ph name="ACTION_NAME" /></translation>

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_value.h"
+#include "third_party/blink/renderer/core/css/if_condition.h"
 #include "third_party/blink/renderer/core/css/kleene_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -505,6 +506,12 @@ class CORE_EXPORT StyleCascade {
                      FunctionContext*,
                      TokenSequence&);
 
+  KleeneValue EvalIfTest(const IfCondition& node,
+                         const TreeScope* tree_scope,
+                         CascadeResolver& resolver,
+                         const CSSParserContext& context,
+                         FunctionContext* function_context,
+                         bool& is_attr_tainted);
   bool EvalIfCondition(CSSParserTokenStream&,
                        const TreeScope*,
                        CascadeResolver&,
@@ -599,8 +606,13 @@ class CORE_EXPORT StyleCascade {
   // seen value of the 'result' descriptor, and `locals` holds the last seen
   // values of all local variables.
   //
+  // Note that `function_tree_scope` is the tree scope holding
+  // the @function rule (not the tree scope where the function *call* takes
+  // place).
+  //
   // [1] https://drafts.csswg.org/css-mixins-1/#conditional-rules
-  void FlattenFunctionBody(StyleRuleGroup& group,
+  void FlattenFunctionBody(StyleRuleGroup&,
+                           const TreeScope* function_tree_scope,
                            const CSSUnparsedDeclarationValue*& result,
                            HeapHashMap<String, Member<const CSSValue>>& locals);
 

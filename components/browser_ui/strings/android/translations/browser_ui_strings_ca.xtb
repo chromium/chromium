@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">Amaga la targeta Baixades de preu en pestanyes</translation>
 <translation id="1510341833810331442">Els llocs web no tenen permís per desar dades al dispositiu</translation>
 <translation id="1547123415014299762">Les galetes de tercers estan permeses</translation>
-<translation id="1568470248891039841">Els llocs web que visites poden inserir contingut d'altres llocs web, com ara imatges, anuncis i text. Aquests altres llocs web poden demanar permís per utilitzar la informació que han desat sobre tu a mesura que navegues pel lloc web. <ph name="BEGIN_LINK" />Més informació sobre el contingut inserit<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Hi ha noves accions disponibles a prop de la part superior de la pantalla</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1633720957382884102">Llocs web relacionats</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">Replega les sol·licituds no desitjades (opció recomanada)</translation>
 <translation id="3955193568934677022">Permet que els llocs web reprodueixin contingut protegit (opció recomanada)</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
-<translation id="3974105241379491420">Els llocs web poden demanar-te permís per utilitzar la informació que han desat sobre tu</translation>
 <translation id="3987993985790029246">Copia l'enllaç</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992684624889376114">Sobre aquesta pàgina</translation>
@@ -291,7 +289,6 @@
 <translation id="5264323282659631142">Suprimeix <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Arrossegueu la pantalla des de la part superior i toqueu el botó Enrere per sortir de la pantalla completa.</translation>
 <translation id="5292915569214461965">Has bloquejat els llocs web perquè no utilitzin galetes de tercers per fer un seguiment de la teva activitat mentre navegues. Ves a la configuració per <ph name="BEGIN_LINK" />gestionar l'accés a les galetes de tercers<ph name="END_LINK" />.</translation>
-<translation id="5295729974480418933">Quan aquesta opció està activada, els llocs web poden demanar-te permís per utilitzar la informació que han desat sobre tu. Quan aquesta opció està desactivada, els llocs web no poden demanar-te permís per utilitzar la informació que han desat sobre tu.</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5301954838959518834">D'acord</translation>
 <translation id="5317780077021120954">Desa</translation>
@@ -299,7 +296,6 @@
 <translation id="534295439873310000">Dispositius amb NFC</translation>
 <translation id="5344522958567249764">Gestiona la privadesa d'anuncis</translation>
 <translation id="5373874281522292782">Els teus grups de pestanyes es desen</translation>
-<translation id="5389626883706033615">Els llocs web no poden demanar-te si poden utilitzar la informació que han desat sobre tu</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i 1 més)}other{(i # més)}}</translation>
 <translation id="5403592356182871684">Noms</translation>
 <translation id="5438097262470833822">Amb aquesta opció, es restabliran els permisos per a <ph name="WEBSITE" /></translation>
@@ -320,7 +316,6 @@
 <translation id="5677928146339483299">Bloquejat</translation>
 <translation id="5689516760719285838">Ubicació</translation>
 <translation id="5690795753582697420">La càmera està desactivada a la configuració d'Android</translation>
-<translation id="5691080386278724773"><ph name="SITE" /> pot utilitzar la teva informació mentre navegues</translation>
 <translation id="5700761515355162635">Galetes de tercers permeses</translation>
 <translation id="5706552988683188916">Aquesta acció suprimeix les galetes i altres dades de llocs web per a <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Les galetes de tercers estan bloquejades en mode d'incògnit</translation>
@@ -370,7 +365,6 @@
 <translation id="6262279340360821358">S'han bloquejat <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Els llocs web poden demanar-te permís per enviar-te notificacions</translation>
 <translation id="6295158916970320988">Tots els llocs web</translation>
-<translation id="6304434827459067558"><ph name="SITE" /> no pot utilitzar la teva informació a</translation>
 <translation id="6320088164292336938">Vibració</translation>
 <translation id="6344622098450209924">Protecció antiseguiment</translation>
 <translation id="6367753977865761591">Bloqueja l'inici de sessió de tercers en un lloc web concret.</translation>

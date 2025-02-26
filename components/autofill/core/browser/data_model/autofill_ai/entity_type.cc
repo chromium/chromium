@@ -132,6 +132,19 @@ std::u16string EntityType::GetNameForI18n() const {
   NOTREACHED();
 }
 
+std::optional<EntityTypeName> ToSafeEntityTypeName(
+    std::underlying_type_t<EntityTypeName> raw_value) {
+  // We rely here and elsewhere (such as in iteration over
+  // `DenseSet<EntityType>::all()`) on the fact that `EntityTypeName` is
+  // auto-generated and its value range is contiguous. If it were not, this
+  // check would not be sufficient.
+  if (raw_value < 0 ||
+      raw_value > base::to_underlying(EntityTypeName::kMaxValue)) {
+    return std::nullopt;
+  }
+  return EntityTypeName(raw_value);
+}
+
 std::ostream& operator<<(std::ostream& os, AttributeType a) {
   return os << a.name_as_string();
 }

@@ -32,6 +32,7 @@
 #include "content/browser/renderer_host/display_feature.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/widget_type.h"
@@ -439,6 +440,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // This only returns non-null on root view on Android.
   virtual TouchSelectionControllerInputObserver*
   GetTouchSelectionControllerInputObserver();
+
+  virtual RenderWidgetHost::InputEventObserver*
+  GetInputTransferHandlerObserver();
 
   virtual void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) = 0;

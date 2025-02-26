@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1045448422538531528">Engadir a un grupo</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Creouse hai <ph name="NUM_WEEKS_ONE" /> semana}other{Creouse hai <ph name="NUM_WEEKS_MANY" /> semanas}}</translation>
 <translation id="1063300264396686489">Abrir automaticamente grupos de pestanas doutros dispositivos</translation>
 <translation id="1075622780330595106">Ultimamente non se utilizaron <ph name="NUMBER_OF_TABS" /> das túas pestanas. Queres pechalas?</translation>
@@ -11,6 +12,7 @@
 <translation id="1293272072740285747">Mantén este grupo para engadir pestanas máis adiante ou elimínao se xa non o necesitas.
 
 Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pestanas "<ph name="TITLE_OF_GROUP" />", que se eliminará de todos os dispositivos.</translation>
+<translation id="1326654401173629446">O grupo de pestanas "<ph name="TAB_GROUP_NAME" />" xa non está dispoñible</translation>
 <translation id="1329584516321524826">Actualizouse agora mesmo</translation>
 <translation id="1340839264183302272">Saír do grupo</translation>
 <translation id="1419023007528516122">Con esta acción eliminarase permanentemente o grupo do teu dispositivo</translation>

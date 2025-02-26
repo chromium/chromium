@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
+<translation id="1045448422538531528">Lisää ryhmään</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Luotu <ph name="NUM_WEEKS_ONE" /> viikko sitten}other{Luotu <ph name="NUM_WEEKS_MANY" /> viikkoa sitten}}</translation>
 <translation id="1063300264396686489">Avaa välilehtiryhmät automaattisesti muilta laitteilta</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> välilehteä ei ole käytetty vähään aikaan. Suljetaanko ne?</translation>

@@ -9,13 +9,11 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
-#include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
@@ -25,8 +23,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/content_settings.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -1116,75 +1112,6 @@ IN_PROC_BROWSER_TEST_P(ControlledFrameAvailabilityTest, Verify) {
     EXPECT_EQ(kEvalSuccessStr, VerifyBackgroundColorIsRed(web_view_guest));
   }
 }
-
-class ControlledFrameAvailabilityAdminPolicyTest
-    : public ControlledFrameApiTest,
-      public testing::WithParamInterface<ContentSetting> {};
-
-IN_PROC_BROWSER_TEST_P(ControlledFrameAvailabilityAdminPolicyTest,
-                       VerifyPolicy) {
-  // Get the expected content setting and set it up.
-  const ContentSetting content_setting = GetParam();
-
-  bool expected_enabled =
-      content_setting != ContentSetting::CONTENT_SETTING_BLOCK;
-
-  HostContentSettingsMapFactory::GetForProfile(profile())
-      ->SetDefaultContentSetting(ContentSettingsType::CONTROLLED_FRAME,
-                                 content_setting);
-
-  // Install and open an IWA.
-  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
-      web_app::IsolatedWebAppBuilder(
-          web_app::ManifestBuilder().AddPermissionsPolicy(
-              network::mojom::PermissionsPolicyFeature::kControlledFrame,
-              /*self=*/true,
-              /*origins=*/{}))
-          // Insert the controlledframe with the src attribute in the manifest
-          // step, so that the test doesn't time out when doing ExecJS.
-          .AddHtml(
-              "controlled_frame_availability_admin_policy_test.html",
-              "<controlledframe id=\"cf\" src=\"" +
-                  embedded_https_test_server().GetURL("/index.html").spec() +
-                  "\" />")
-          .BuildBundle();
-  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
-                       app->Install(profile()));
-  content::RenderFrameHost* app_frame =
-      OpenApp(url_info.app_id(),
-              "/controlled_frame_availability_admin_policy_test.html");
-  ASSERT_TRUE(app_frame);
-
-  // Wait for the page and the controlled frame to actually load (or struggle to
-  // load and finally give up).
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    const content::EvalJsResult cf_did_load_result =
-        content::EvalJs(app_frame,
-                        "document.readyState === \"complete\" && "
-                        "!!document.getElementById('cf');");
-    return cf_did_load_result.ExtractBool();
-  }));
-
-  // Run some code via |executeScript| to make sure if the Controlled Frame API
-  // is available.
-  const content::EvalJsResult execute_script_result = content::EvalJs(
-      app_frame,
-      "document.getElementById('cf').executeScript({code: 'console."
-      "log(\"this is some great code\")' });");
-  if (expected_enabled) {
-    ASSERT_THAT(execute_script_result, content::EvalJsResult::IsOk());
-  } else {
-    ASSERT_THAT(execute_script_result, content::EvalJsResult::IsError());
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    /* */,
-    ControlledFrameAvailabilityAdminPolicyTest,
-    /* Per-channel tests examine the extensions-based availability system. */
-    testing::Values(ContentSetting::CONTENT_SETTING_DEFAULT,
-                    ContentSetting::CONTENT_SETTING_ALLOW,
-                    ContentSetting::CONTENT_SETTING_BLOCK));
 
 class ControlledFrameRequestHeaderTest : public ControlledFrameTestBase {
  public:

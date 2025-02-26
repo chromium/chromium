@@ -18,6 +18,11 @@
 
 namespace viz {
 
+class AndroidStateTransferHandlerClient {
+ public:
+  virtual bool TransferInputBackToBrowser() = 0;
+};
+
 // AndroidStateTransferHandler listens to input events coming from Android
 // platform and receives |TouchTransferState| coming from Browser. Input events
 // are queued until state for corresponding touch sequence is received from
@@ -26,7 +31,8 @@ namespace viz {
 class VIZ_SERVICE_EXPORT AndroidStateTransferHandler
     : public input::AndroidInputCallbackClient {
  public:
-  AndroidStateTransferHandler();
+  explicit AndroidStateTransferHandler(
+      AndroidStateTransferHandlerClient& client);
   ~AndroidStateTransferHandler();
 
   // AndroidInputCallbackClient implementation.
@@ -41,6 +47,9 @@ class VIZ_SERVICE_EXPORT AndroidStateTransferHandler
       base::WeakPtr<RenderInputRouterSupportAndroidInterface> rir_support);
 
   size_t GetEventsBufferSizeForTesting() const { return events_buffer_.size(); }
+  size_t GetPendingTransferredStatesSizeForTesting() const {
+    return pending_transferred_states_.size();
+  }
 
   static constexpr const char* kPendingTransfersHistogramNonNull =
       "Android.InputOnViz.Viz.PendingStateTransfers.NonNullCurrentState";
@@ -84,6 +93,8 @@ class VIZ_SERVICE_EXPORT AndroidStateTransferHandler
   // Stores input events until we have received state from Browser for the
   // currently transferred touch sequence.
   base::queue<base::android::ScopedInputEvent> events_buffer_;
+
+  const raw_ref<AndroidStateTransferHandlerClient> client_;
 };
 
 }  // namespace viz

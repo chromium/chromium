@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
+<translation id="1045448422538531528">గ్రూప్‌నకు జోడించండి</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> వారం క్రితం క్రియేట్ చేయడం జరిగింది}other{<ph name="NUM_WEEKS_MANY" /> వారాల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
 <translation id="1063300264396686489">ఇతర పరికరాల నుండి ట్యాబ్ గ్రూప్‌లను ఆటోమేటిక్‌గా తెరవండి</translation>
 <translation id="1075622780330595106">మీ <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు ఇటీవల ఉపయోగించబడలేదు. వాటిని మూసివేయాలా?</translation>

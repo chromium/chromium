@@ -772,6 +772,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> – utløper <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Innstillingen kontrolleres av administratoren din</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vil koble til</translation>
+<translation id="2344529975040861103">Du kan autofylle dette kortet fordi kontoen din er knyttet til Google Pay</translation>
 <translation id="2346319942568447007">Bildet du kopierte</translation>
 <translation id="2348509731468399833">Prissporingen er stoppet.</translation>
 <translation id="2349957959687031096">Knappen «Åpne en inkognitofane» – aktiver for å åpne en ny inkognitofane for privat surfing</translation>
@@ -1031,7 +1032,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2833637280516285136">Prateradio</translation>
 <translation id="2835170189407361413">Slett skjemaet</translation>
 <translation id="2837891525090413132">Kan be om å få låse og bruke tastaturet</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> vil bruke informasjon de har lagret om deg</translation>
 <translation id="2839032553903800133">Varsler er blokkert</translation>
 <translation id="2839501879576190149">Falskt nettsted i sikte</translation>
 <translation id="2843623755398178332">Vil du rulle og zoome på den delte fanen?</translation>
@@ -4577,6 +4577,7 @@ Mer informasjon:
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">Chrome-nettleseren vil bruke fingeravtrykk til å autofylle passord</translation>
 <translation id="9141013498910525015">Administrer adresser</translation>
+<translation id="9143898823728499852">Du kan autofylle dette kortet fordi <ph name="CARD_ISSUER_NAME" />-kontoen din er knyttet til Google Pay</translation>
 <translation id="9144951720726881238">Utløpsdato:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Logg på<ph name="END_LINK" />
     igjen, og kom tilbake til denne fanen for å få skrivehjelp</translation>

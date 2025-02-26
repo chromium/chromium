@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">隱藏「在分頁上啟用減價通知」資訊卡</translation>
 <translation id="1510341833810331442">不允許網站在裝置上儲存資料</translation>
 <translation id="1547123415014299762">已允許第三方 Cookie</translation>
-<translation id="1568470248891039841">你瀏覽的網站可以嵌入其他網站的內容，例如圖片、廣告和文字。這些其他網站可要求授權，在你瀏覽網站時使用與你相關的既有資料。<ph name="BEGIN_LINK" />進一步瞭解已嵌入的內容<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">喺螢幕頂部附近有可以執行嘅新操作</translation>
 <translation id="1620510694547887537">相機</translation>
 <translation id="1633720957382884102">相關網站</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">收合不需要的要求 (建議)</translation>
 <translation id="3955193568934677022">允許網站播放受保護的內容 (建議)</translation>
 <translation id="3967822245660637423">下載完成</translation>
-<translation id="3974105241379491420">網站可要求使用與你相關的既有資料</translation>
 <translation id="3987993985790029246">複製連結</translation>
 <translation id="3991845972263764475">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：不明</translation>
 <translation id="3992684624889376114">關於本頁</translation>
@@ -291,7 +289,6 @@
 <translation id="5264323282659631142">移除「<ph name="CHIP_LABEL" />」</translation>
 <translation id="528192093759286357">由上而下拖曳，然後輕觸返回按鈕即可退出全螢幕。</translation>
 <translation id="5292915569214461965">你已禁止網站使用第三方 Cookie 追蹤你的瀏覽活動。你可前往設定<ph name="BEGIN_LINK" />管理第三方 Cookie 存取權<ph name="END_LINK" />。</translation>
-<translation id="5295729974480418933">開咗之後，網站可以要求使用同你相關嘅既有資料。閂咗之後，網站唔可以要求使用同你相關嘅既有資料。</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5301954838959518834">好，我知道了</translation>
 <translation id="5317780077021120954">儲存</translation>
@@ -299,7 +296,6 @@
 <translation id="534295439873310000">NFC 裝置</translation>
 <translation id="5344522958567249764">管理廣告私隱權</translation>
 <translation id="5373874281522292782">已儲存分頁群組</translation>
-<translation id="5389626883706033615">已禁止網站要求使用與你相關的既有資料</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
 <translation id="5403592356182871684">名稱</translation>
 <translation id="5438097262470833822">此選項將會清除 <ph name="WEBSITE" /> 的權限</translation>
@@ -320,7 +316,6 @@
 <translation id="5677928146339483299">已封鎖</translation>
 <translation id="5689516760719285838">位置</translation>
 <translation id="5690795753582697420">相機已在 Android 設定中關閉</translation>
-<translation id="5691080386278724773"><ph name="SITE" /> 可在你瀏覽時使用你的資料</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
 <translation id="5706552988683188916">此操作會刪除 <ph name="WEBSITE" /> 的 Cookie 和其他網站資料</translation>
 <translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
@@ -370,7 +365,6 @@
 <translation id="6262279340360821358">已封鎖「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
 <translation id="6270391203985052864">網站將可以要求向您傳送通知</translation>
 <translation id="6295158916970320988">所有網站</translation>
-<translation id="6304434827459067558"><ph name="SITE" /> 無法在以下位置使用你的資料：</translation>
 <translation id="6320088164292336938">震動</translation>
 <translation id="6344622098450209924">追蹤保護功能</translation>
 <translation id="6367753977865761591">禁止特定網站使用第三方登入功能。</translation>

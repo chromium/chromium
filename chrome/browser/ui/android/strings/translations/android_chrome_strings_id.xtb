@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1009406586654360474">Buka Pengelola Sandi Google dan buka setelan. Pilih “Impor“ dan tambahkan file CSV yang berisi sandi yang diekspor.</translation>
+<translation id="1010283278930414892">Tidak ada sandi tersimpan di perangkat ini</translation>
 <translation id="1011749477052068769">Pindahkan ke sini</translation>
 <translation id="1014147525163127655">Tidak ada kunci sandi untuk <ph name="ORIGIN" /> di perangkat ini</translation>
 <translation id="1016498331642356377">Telusuri dengan cepat menggunakan suara Anda. Sentuh lama untuk mengedit pintasan ini.</translation>
@@ -142,6 +143,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1568636008098739136">Dengarkan halaman ini. Sentuh lama untuk mengedit pintasan ini.</translation>
 <translation id="1571041387761170095">Tidak ada sandi yang lemah atau digunakan ulang</translation>
 <translation id="1571304935088121812">Salin nama pengguna</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 sandi telah dibobol di perangkat ini}other{# sandi telah dibobol di perangkat ini}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> item yang disarankan dalam daftar di bawah ini.</translation>
 <translation id="1598163867407640634">Gunakan <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Jika diaktifkan, data akan digunakan dan disimpan di Akun Google Anda. Jika dinonaktifkan, data hanya disimpan di perangkat ini.</translation>
@@ -163,6 +165,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1724977129262658800">Buka kunci untuk mengedit sandi Anda</translation>
 <translation id="1726477445370128854">Anda dapat menjelajah dan menelusuri lebih cepat saat Chrome melakukan pramuat halaman yang menurutnya mungkin akan Anda buka</translation>
 <translation id="1728803206919861584">Simpan kunci sandi di luar mode Samaran?</translation>
+<translation id="1732514748744806741">Jika sandi Anda dibobol, kami akan memberi tahu Anda</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 situs baru-baru ini mengirim banyak notifikasi}other{# situs baru-baru ini mengirim banyak notifikasi}}</translation>
 <translation id="1749561566933687563">Sinkronisasikan bookmark Anda</translation>
 <translation id="1750238553597293878">Tetap gunakan sandi yang tersimpan di Akun Google Anda</translation>
@@ -1336,6 +1339,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7022756207310403729">Buka di browser</translation>
 <translation id="7025769836128625875">Fitur ini adalah fitur AI eksperimental dan tidak selalu benar. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="7029809446516969842">Sandi</translation>
+<translation id="7053256416619638731">Perkuat sandi Anda di perangkat ini</translation>
 <translation id="7053983685419859001">Blokir</translation>
 <translation id="7054588988317389591">Dapatkan deskripsi gambar?</translation>
 <translation id="7057969023583258980">Buka histori Chrome lengkap</translation>
@@ -1586,6 +1590,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8110024788458304985">Bantu tingkatkan fitur dan performa Chrome</translation>
 <translation id="8110087112193408731">Tampilkan aktivitas Chrome Anda di Kesehatan Digital?</translation>
 <translation id="8118117428362942925">Jika kamu perlu bantuan, minta kepada orang tuamu (<ph name="PARENT_NAME" />)</translation>
+<translation id="8120286190326371840">Tidak ada sandi yang dibobol di perangkat ini</translation>
 <translation id="8122623268651408616">Mengurutkan berdasarkan yang terbaru</translation>
 <translation id="8127542551745560481">Edit halaman beranda</translation>
 <translation id="8130309322784422030">Info login tersimpan Anda mungkin sudah tidak berlaku</translation>

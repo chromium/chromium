@@ -38,8 +38,8 @@ enum class SCContentSharingPickerOperation {
 
 void API_AVAILABLE(macos(14.0))
     LogToUma(SCContentSharingPickerOperation operation) {
-  base::UmaHistogramEnumeration("Media.ScreenCaptureKit.SCContentSharingPicker",
-                                operation);
+  base::UmaHistogramEnumeration(
+      "Media.ScreenCaptureKit.SCContentSharingPicker2", operation);
 }
 
 void API_AVAILABLE(macos(14.0))
@@ -79,6 +79,7 @@ API_AVAILABLE(macos(14.0))
   PickerErrorCallback _errorCallback;
   int _assignedSourceId;
   content::DesktopMediaID::Type _type;
+  bool _receivedFirstResponse;
 }
 
 @synthesize contentFilter;
@@ -94,6 +95,7 @@ API_AVAILABLE(macos(14.0))
     _errorCallback = std::move(errorCallback);
     _assignedSourceId = assignedSourceId;
     _type = type;
+    _receivedFirstResponse = false;
   }
   return self;
 }
@@ -103,7 +105,10 @@ API_AVAILABLE(macos(14.0))
                    forStream:(SCStream*)stream {
   VLOG(1) << "NSCPM::contentSharingPicker:didUpdateWithFilter: source_id = "
           << _assignedSourceId;
-  LogUpdateToUma(_type);
+  if (!_receivedFirstResponse) {
+    _receivedFirstResponse = true;
+    LogUpdateToUma(_type);
+  }
   contentFilter = filter;
 
   Source source;
@@ -117,7 +122,10 @@ API_AVAILABLE(macos(14.0))
           didCancelForStream:(SCStream*)stream {
   VLOG(1) << "NSCPM:contentSharingPicker:didCancelForStream: source_id = "
           << _assignedSourceId;
-  LogCancelToUma(_type);
+  if (!_receivedFirstResponse) {
+    _receivedFirstResponse = true;
+    LogCancelToUma(_type);
+  }
   if (_cancelCallback) {
     std::move(_cancelCallback).Run();
   }
@@ -128,7 +136,10 @@ API_AVAILABLE(macos(14.0))
           << _assignedSourceId << ", code = " << [error code]
           << ", domain = " << [error domain]
           << ", description = " << [error localizedDescription];
-  LogErrorToUma(_type);
+  if (!_receivedFirstResponse) {
+    _receivedFirstResponse = true;
+    LogErrorToUma(_type);
+  }
   if (_errorCallback) {
     std::move(_errorCallback).Run();
   }

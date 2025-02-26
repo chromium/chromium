@@ -208,22 +208,23 @@ struct ConvertAndNormalizeCases {
   bool expected_success;
   const char* expected_value;
 };
-const auto kConvertAndNormalizeCases = std::to_array<ConvertAndNormalizeCases>({
-    {"foo-\xe4.html", "iso-8859-1", true, "foo-\xc3\xa4.html"},
-    {"foo-\xe4.html", "iso-8859-7", true, "foo-\xce\xb4.html"},
-    {"foo-\xe4.html", "foo-bar", false, ""},
-    // HTML Encoding spec treats US-ASCII as synonymous with windows-1252
-    {"foo-\xff.html", "ascii", true, "foo-\xc3\xbf.html"},
-    {"foo.html", "ascii", true, "foo.html"},
-    {"foo-a\xcc\x88.html", "utf-8", true, "foo-\xc3\xa4.html"},
-    {"\x95\x32\x82\x36\xD2\xBB", "gb18030", true,
-     "\xF0\xA0\x80\x80\xE4\xB8\x80"},
-    {"\xA7\x41\xA6\x6E", "big5", true, "\xE4\xBD\xA0\xE5\xA5\xBD"},
-    // Windows-1258 does have a combining character at xD2 (which is U+0309).
-    // The sequence of (U+00E2, U+0309) is also encoded as U+1EA9.
-    {"foo\xE2\xD2", "windows-1258", true, "foo\xE1\xBA\xA9"},
-    {"", "iso-8859-1", true, ""},
-});
+constexpr auto kConvertAndNormalizeCases =
+    std::to_array<ConvertAndNormalizeCases>({
+        {"foo-\xe4.html", "iso-8859-1", true, "foo-\xc3\xa4.html"},
+        {"foo-\xe4.html", "iso-8859-7", true, "foo-\xce\xb4.html"},
+        {"foo-\xe4.html", "foo-bar", false, ""},
+        // HTML Encoding spec treats US-ASCII as synonymous with windows-1252
+        {"foo-\xff.html", "ascii", true, "foo-\xc3\xbf.html"},
+        {"foo.html", "ascii", true, "foo.html"},
+        {"foo-a\xcc\x88.html", "utf-8", true, "foo-\xc3\xa4.html"},
+        {"\x95\x32\x82\x36\xD2\xBB", "gb18030", true,
+         "\xF0\xA0\x80\x80\xE4\xB8\x80"},
+        {"\xA7\x41\xA6\x6E", "big5", true, "\xE4\xBD\xA0\xE5\xA5\xBD"},
+        // Windows-1258 does have a combining character at xD2 (which is
+        // U+0309). The sequence of (U+00E2, U+0309) is also encoded as U+1EA9.
+        {"foo\xE2\xD2", "windows-1258", true, "foo\xE1\xBA\xA9"},
+        {"", "iso-8859-1", true, ""},
+    });
 TEST(ICUStringConversionsTest, ConvertToUtf8AndNormalize) {
   std::string result;
   for (size_t i = 0; i < std::size(kConvertAndNormalizeCases); ++i) {

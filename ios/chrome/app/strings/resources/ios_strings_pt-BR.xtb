@@ -114,6 +114,7 @@
 <translation id="1445276840641906250">Todas as guias em um só navegador</translation>
 <translation id="1450170672351507823">A proteção padrão está ativada. Para ter ainda mais segurança, use a Proteção reforçada.</translation>
 <translation id="1455660774629812862">Não ocultar</translation>
+<translation id="1456545332132818232">Avaliações do produto <ph name="PRODUCT_NAME" />, <ph name="STARS" /> de <ph name="MAX_STARS" />, em <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">Poupe tempo digitando menos</translation>
 <translation id="1466035273550360103">Não há guias abertas</translation>
 <translation id="1469381646033328562">Sua conta é gerenciada pelo seu familiar responsável.
@@ -292,6 +293,7 @@
 <translation id="2199562093267256223">Essa ação vai excluir o grupo de todos os dispositivos conectados à conta <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Sem contas de e-mail</translation>
 <translation id="2214453882118345682">Compre, traduza e identifique o que está ao seu redor usando a câmera.</translation>
+<translation id="2215819824168709130">Ocultar o card "Monitorar preço"</translation>
 <translation id="2220529011494928058">Informar um problema</translation>
 <translation id="2220887224562128152">Não é possível recuperar um arquivo depois que ele é programado para exclusão.</translation>
 <translation id="2223461067862937305">Criar um QR code</translation>
@@ -458,6 +460,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2893168226686371498">Navegador padrão</translation>
 <translation id="2894757982205307093">Nova guia no grupo</translation>
 <translation id="2902312830803030883">Mais ações</translation>
+<translation id="2904788871580817212">Redução no preço na sua guia aberta: <ph name="PRODUCT_NAME" /> de <ph name="PREVIOUS_PRICE" /> por <ph name="PRICE" /> em <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Você tem <ph name="NUMBER_OF_PASSWORDS" /> senhas reutilizadas que podem colocar sua segurança em risco.</translation>
 <translation id="29153882450867370">Ocultar "Monitorar preço"</translation>
 <translation id="291754862089661335">Posicione o QR code ou o código de barras neste quadro</translation>
@@ -642,6 +645,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3831560640878483188">Dispensar aviso?</translation>
 <translation id="3832419617903252251">Senha salva apenas neste dispositivo</translation>
 <translation id="3838691874161539578">Verifique suas senhas salvas para melhorar a segurança on-line</translation>
+<translation id="3838985624086228724">Redução no preço do produto que você está monitorando: de <ph name="PREVIOUS_PRICE" /> por <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, em <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Voltar</translation>
 <translation id="3851938967634752633">As senhas de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e mais <ph name="NUMBER_OF_ACCOUNTS" /> outras contas vão ser excluídas. Suas contas não serão excluídas.</translation>
 <translation id="3858860766373142691">Nome</translation>
@@ -760,6 +764,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4322394346347055525">Fechar outras guias</translation>
 <translation id="4324735664183300693">Ativar notificações</translation>
 <translation id="4326912346867677256">Toque em "Usar senha" para fazer login com segurança.</translation>
+<translation id="4327017157997423717">Monitorar preço de <ph name="PRODUCT_NAME" />, por <ph name="PRICE" />, em <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Meu Drive</translation>
 <translation id="4331177082088332784">Você pode gerenciar isso em BEGIN_LINK Configurações de conteúdo END_LINK</translation>
 <translation id="4334428914252001502">1 artigo não lido.</translation>
@@ -943,6 +948,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5127538504377457572">Ativado há <ph name="DAYS" /> dias</translation>
 <translation id="5128788795241319992">Conhecer o novo menu</translation>
 <translation id="5132942445612118989">Sincronize suas senhas, seu histórico e muito mais em todos os dispositivos</translation>
+<translation id="5141363746588976328">Ocultar o card "Redução do preço nas suas guias"</translation>
 <translation id="5145331760738811130">Sair do seletor guias</translation>
 <translation id="5157638238828697074">Ocorreu um erro. Não foi possível abrir o aplicativo.</translation>
 <translation id="5163417375525818870">PDFs</translation>
@@ -994,6 +1000,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5352128922772839949">Salvar arquivo</translation>
 <translation id="5355191726083956201">A Proteção reforçada está ativa</translation>
 <translation id="537853552771686272">Gerencie os temas e os sites do seu interesse</translation>
+<translation id="5394975111793637642">Ocultar o card "Avaliações de produtos para você"</translation>
 <translation id="5395707839134961196">Ocultar detalhes do mecanismo de pesquisa</translation>
 <translation id="5414763847370083940">Você vai receber um alerta se houver uma redução no preço em algum site.</translation>
 <translation id="5415289094036440596">Chaves de acesso não podem ser compartilhadas</translation>
@@ -1235,6 +1242,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="634878792104344809">Sincronize senhas, histórico e muito mais em todos os seus dispositivos</translation>
 <translation id="6351147166808964033">Entrar no Seletor de guias</translation>
 <translation id="63519665078626091">Para usar o Web Inspector, conecte-se ao Safari no computador usando um cabo e acesse o iPad no menu de desenvolvimento. Você pode ativar o menu de desenvolvimento na seção "Avançado" das configurações do Safari no computador.</translation>
+<translation id="6355820183143562453">Ocultar o card "Monitoramento de preços"</translation>
 <translation id="6355820205320395730">Senhas fracas são fáceis de adivinhar. Você precisa criar senhas fortes. <ph name="BEGIN_LINK" />Confira mais dicas de segurança<ph name="END_LINK" />.</translation>
 <translation id="6361848730467328243">Seguir <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Selecione um mecanismo de pesquisa na lista.</translation>
@@ -1345,6 +1353,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6722623263381062480">Guias recebidas</translation>
 <translation id="6723740634201835758">Na Conta do Google</translation>
 <translation id="672735642903863329">Acesse seus favoritos, senhas e mais em todos os seus dispositivos.</translation>
+<translation id="6729493062119577923">Atividade do grupo de guias compartilhado</translation>
 <translation id="6732087373923685049">câmera</translation>
 <translation id="6746338529702829275">Analise os dados da sua conta</translation>
 <translation id="6755200887046212842">Gerenciar contas</translation>
@@ -1533,6 +1542,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7638584964844754484">Senha incorreta</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Senha comprometida}=1{{COUNT} senha comprometida}one{{COUNT} senha comprometida}other{{COUNT} senhas comprometidas}}</translation>
 <translation id="7640669552036055091">Guias do Android</translation>
+<translation id="7642277834834046856">Reduções no preço nas suas guias</translation>
 <translation id="7646263789464975852">Menu → Configurações → Confirmação de segurança</translation>
 <translation id="7646772052135772216">A sincronização de senha não está funcionando</translation>
 <translation id="764827086632467055">Toque em "App do navegador padrão"</translation>
@@ -1843,6 +1853,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="886477344907998366">Mostrar favoritos</translation>
 <translation id="8869239474428371589">Aproveite o melhor do navegador que você adora</translation>
 <translation id="8871974300055371298">Configurações de conteúdo</translation>
+<translation id="8877788021141246043">Definir um lembrete</translation>
 <translation id="8879604564928138696">Toque duas vezes para testar</translation>
 <translation id="8879952635974818770">Conteúdo personalizado</translation>
 <translation id="8887595428614802520">Fechar todos os grupos e guias</translation>
@@ -1943,6 +1954,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="963102227019621224">Atividade na Web e de apps</translation>
 <translation id="966593914872420832">Pesquisa por voz</translation>
 <translation id="968653181266955408">Receber notificações de conteúdo</translation>
+<translation id="972084300091883657">{COUNT,plural, =0{Participe do grupo de guias com <ph name="OWNER_NAME" />}=1{Participe do grupo de guias com <ph name="OWNER_NAME" /> e mais {COUNT} pessoa}one{Participe do grupo de guias com <ph name="OWNER_NAME" /> e mais {COUNT} pessoa}other{Participe do grupo de guias com <ph name="OWNER_NAME" /> e mais {COUNT} pessoas}}</translation>
 <translation id="973493300226275298">Rastreie o preço de um produto em lojas on-line. Você vai receber alertas quando houver uma redução no preço.</translation>
 <translation id="973788791897303708">Este grupo de guias está cheio</translation>
 <translation id="976392601789283511">Reabrir a última guia fechada</translation>

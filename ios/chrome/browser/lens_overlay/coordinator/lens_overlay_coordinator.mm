@@ -83,6 +83,10 @@ namespace {
 // The expected number of animations happening at the same time when exiting.
 const int kExpectedExitAnimationCount = 2;
 
+// TODO(crbug.com/399297003): Use the value provided by the dynamic framework.
+// The ammount of padding needed to compensate for the top header.
+const CGFloat kTopHeaderPadding = 52;
+
 // The delay for showing the search with camera tooltip hint.
 const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
@@ -675,8 +679,10 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 }
 
 - (void)onResultsPageVerticalOcclusionInsetsSettled:(CGFloat)offsetNeeded {
+  UIWindow* sceneWindow = self.browser->GetSceneState().window;
+  CGFloat topOffset = kTopHeaderPadding + sceneWindow.safeAreaInsets.top;
   [_selectionViewController
-      setOcclusionInsets:UIEdgeInsetsMake(0, 0, offsetNeeded, 0)
+      setOcclusionInsets:UIEdgeInsetsMake(topOffset, 0, offsetNeeded, 0)
               reposition:YES
                 animated:YES];
 }

@@ -67,6 +67,8 @@ base::android::ScopedInputEvent GetInputEvent(jlong down_time_ms,
 struct TestInputStream {
   base::TimeTicks down_time_ms;
   std::vector<base::android::ScopedInputEvent> events;
+
+  size_t size() const { return events.size(); }
 };
 
 TestInputStream GenerateEventsForSequence(int num_moves,
@@ -125,8 +127,15 @@ class MockRenderInputRouterSupportAndroid
       this};
 };
 
+class MockAndroidStateTransferHandlerClient
+    : public AndroidStateTransferHandlerClient {
+ public:
+  MOCK_METHOD((bool), TransferInputBackToBrowser, (), (override));
+};
+
 class AndroidStateTransferHandlerTest : public testing::Test {
  public:
+  AndroidStateTransferHandlerTest() : handler_(mock_handler_client_) {}
   void SetUp() override {
     if (base::android::BuildInfo::GetInstance()->sdk_int() <
         base::android::SDK_VERSION_V) {
@@ -138,6 +147,7 @@ class AndroidStateTransferHandlerTest : public testing::Test {
 
  protected:
   MockRenderInputRouterSupportAndroid mock_rir_support_;
+  MockAndroidStateTransferHandlerClient mock_handler_client_;
   AndroidStateTransferHandler handler_;
 };
 
@@ -485,6 +495,86 @@ TEST_F(AndroidStateTransferHandlerTest,
   EXPECT_CALL(mock_rir_support_, OnTouchEvent(EqXYInPixels(0, expected_y), _));
   handler_.OnMotionEvent(base::android::ScopedInputEvent(native_event),
                          kRootCompositorFrameSinkId);
+}
+
+// Sequence1: |-----|
+// Sequence2:        |-----|
+// If the touch end of Sequence1 didn't arrive on Browser in time, Browser would
+// assume it is a pointer down and transfer the Sequence 2 to Viz, while in some
+// cases it would have wanted to handle it.
+TEST_F(AndroidStateTransferHandlerTest,
+       ReturnBackSequenceThatBrowserWouldHaveHandled) {
+  TestInputStream event_stream_1 = GenerateEventsForSequence(
+      /*num_moves*/ 1,
+      /*include_touch_up*/ true);
+  auto state1 = input::mojom::TouchTransferState::New();
+  state1->down_time_ms = event_stream_1.down_time_ms;
+  state1->root_widget_frame_sink_id = kRootWidgetFrameSinkId;
+
+  TestInputStream event_stream_2 = GenerateEventsForSequence(
+      /*num_moves*/ 2,
+      /*include_touch_up*/ true);
+  auto state2 = input::mojom::TouchTransferState::New();
+  state2->down_time_ms = event_stream_2.down_time_ms;
+  state2->root_widget_frame_sink_id = kRootWidgetFrameSinkId;
+  state2->browser_would_have_handled = true;
+
+  handler_.StateOnTouchTransfer(std::move(state1),
+                                mock_rir_support_.GetWeakPtr());
+  handler_.StateOnTouchTransfer(std::move(state2),
+                                mock_rir_support_.GetWeakPtr());
+  EXPECT_CALL(mock_rir_support_, OnTouchEvent(_, _)).Times(3);
+  for (auto& event : event_stream_1.events) {
+    handler_.OnMotionEvent(std::move(event), kRootCompositorFrameSinkId);
+  }
+
+  EXPECT_CALL(mock_handler_client_, TransferInputBackToBrowser()).Times(1);
+  EXPECT_CALL(mock_rir_support_, OnTouchEvent(_, _)).Times(0);
+  for (auto& event : event_stream_2.events) {
+    handler_.OnMotionEvent(std::move(event), kRootCompositorFrameSinkId);
+  }
+}
+
+TEST_F(AndroidStateTransferHandlerTest, OlderStatesAreDropped) {
+  TestInputStream event_stream_1 = GenerateEventsForSequence(
+      /*num_moves*/ 2,
+      /*include_touch_up*/ true);
+
+  TestInputStream event_stream_2 = GenerateEventsForSequence(
+      /*num_moves*/ 2,
+      /*include_touch_up*/ false);
+
+  auto state1 = input::mojom::TouchTransferState::New();
+  state1->down_time_ms = event_stream_1.down_time_ms;
+  state1->root_widget_frame_sink_id = kRootWidgetFrameSinkId;
+  auto state1_pointer_down = input::mojom::TouchTransferState::New();
+  state1_pointer_down->down_time_ms =
+      event_stream_1.down_time_ms + base::Milliseconds(10);
+  state1_pointer_down->root_widget_frame_sink_id = kRootWidgetFrameSinkId;
+  auto state2 = input::mojom::TouchTransferState::New();
+  state2->down_time_ms = event_stream_2.down_time_ms;
+  state2->root_widget_frame_sink_id = kRootWidgetFrameSinkId;
+
+  handler_.StateOnTouchTransfer(std::move(state1),
+                                mock_rir_support_.GetWeakPtr());
+  handler_.StateOnTouchTransfer(std::move(state1_pointer_down),
+                                mock_rir_support_.GetWeakPtr());
+  handler_.StateOnTouchTransfer(std::move(state2),
+                                mock_rir_support_.GetWeakPtr());
+
+  EXPECT_EQ(handler_.GetPendingTransferredStatesSizeForTesting(), 3u);
+
+  EXPECT_CALL(mock_rir_support_, OnTouchEvent(_, _))
+      .Times(event_stream_1.size() + event_stream_2.size());
+
+  for (auto& event : event_stream_1.events) {
+    handler_.OnMotionEvent(std::move(event), kRootCompositorFrameSinkId);
+  }
+  for (auto& event : event_stream_2.events) {
+    handler_.OnMotionEvent(std::move(event), kRootCompositorFrameSinkId);
+  }
+  EXPECT_EQ(handler_.GetPendingTransferredStatesSizeForTesting(), 0u);
+  EXPECT_EQ(handler_.GetEventsBufferSizeForTesting(), 0u);
 }
 
 }  // namespace viz

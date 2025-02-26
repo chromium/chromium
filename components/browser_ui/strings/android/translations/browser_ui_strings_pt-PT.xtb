@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">Ocultar cartão Descidas de preços nos separadores</translation>
 <translation id="1510341833810331442">Os sites não têm autorização para guardar dados no dispositivo</translation>
 <translation id="1547123415014299762">Os cookies de terceiros são permitidos</translation>
-<translation id="1568470248891039841">Os sites que visitar podem incorporar conteúdo de outros sites, por exemplo, imagens, anúncios e texto. Estes outros sites podem pedir autorização para usar as informações que guardaram sobre si enquanto navega no site. <ph name="BEGIN_LINK" />Saiba mais sobre conteúdo incorporado<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Novas ações disponíveis junto à parte superior do ecrã</translation>
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="1633720957382884102">Sites relacionados</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">Reduzir pedidos indesejados (recomendado)</translation>
 <translation id="3955193568934677022">Permitir que os sites reproduzam conteúdo protegido (recomendado)</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
-<translation id="3974105241379491420">Os sites podem pedir para usar as informações guardadas sobre si</translation>
 <translation id="3987993985790029246">Cop. link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992684624889376114">Acerca desta página</translation>
@@ -291,7 +289,6 @@
 <translation id="5264323282659631142">Remover "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Arraste a partir da parte superior e toque no botão de retrocesso para sair do ecrã inteiro.</translation>
 <translation id="5292915569214461965">Impediu os sites de usarem cookies de terceiros para monitorização do seu perfil enquanto navega. Aceda às definições para <ph name="BEGIN_LINK" />gerir o acesso a cookies de terceiros<ph name="END_LINK" />.</translation>
-<translation id="5295729974480418933">Quando esta opção está ativada, os sites podem pedir para usar informações que guardaram sobre si. Quando esta opção está desativada, os sites não lhe podem pedir para usar informações que guardaram sobre si.</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5317780077021120954">Guardar</translation>
@@ -299,7 +296,6 @@
 <translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5344522958567249764">Gerir privacidade dos anúncios</translation>
 <translation id="5373874281522292782">Os seus grupos de separadores são guardados</translation>
-<translation id="5389626883706033615">Os sites estão impedidos de pedir para usar informações que guardaram sobre si</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(mais 1)}other{(mais #)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
 <translation id="5438097262470833822">Esta opção repõe as autorizações de <ph name="WEBSITE" /></translation>
@@ -320,7 +316,6 @@
 <translation id="5677928146339483299">Bloqueado</translation>
 <translation id="5689516760719285838">Local</translation>
 <translation id="5690795753582697420">A câmara está desativada nas Definições do Android</translation>
-<translation id="5691080386278724773"><ph name="SITE" /> pode usar as suas informações enquanto navega</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidos</translation>
 <translation id="5706552988683188916">Esta ação elimina os cookies e outros dados de sites de <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Os cookies de terceiros estão bloqueados no Modo de navegação anónima</translation>
@@ -370,7 +365,6 @@
 <translation id="6262279340360821358">Bloqueio de <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" />.</translation>
 <translation id="6270391203985052864">Os sites podem pedir para enviar notificações.</translation>
 <translation id="6295158916970320988">Todos os sites</translation>
-<translation id="6304434827459067558"><ph name="SITE" /> está impedido de usar as suas informações em</translation>
 <translation id="6320088164292336938">Vibrar</translation>
 <translation id="6344622098450209924">Proteção contra monitorização</translation>
 <translation id="6367753977865761591">Bloqueie o início de sessão de terceiros para um site específico.</translation>

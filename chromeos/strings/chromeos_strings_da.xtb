@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">katte</translation>
 <translation id="5907649332524363701">farve på taster</translation>
 <translation id="5908813850962688338">Installationen af denne opdatering tager et par minutter. Lad din enhed være tilsluttet og tændt, mens opdateringen downloades. Din enhed genstarter muligvis flere gange og viser en sort skærm under denne proces. Du bliver bedt om at genstarte din enhed for at gennemføre installationen.</translation>
+<translation id="5915794087373112615">Din underviser ser din skærm om <ph name="NUM_SECONDS" /> sekunder</translation>
 <translation id="5916084858004523819">Forbudt</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Din fil blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Din fil blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Dine filer blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1524,6 +1525,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8054112564438735763">beige</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> i farven <ph name="CHARACTERS_COLOR" /> på en <ph name="CHARACTERS_BACKGROUND" /> baggrund</translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />, <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Tilslut en mikrofon for at starte lydoptagelsen</translation>
 <translation id="8067126283828232460">APN er forbundet.</translation>
 <translation id="8067208048261192356">brun</translation>
 <translation id="8067224607978179455">Slet <ph name="ACTION_NAME" /></translation>

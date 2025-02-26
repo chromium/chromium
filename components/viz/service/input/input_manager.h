@@ -58,6 +58,7 @@ class VIZ_SERVICE_EXPORT InputManager
       public input::RenderWidgetHostInputEventRouter::Delegate,
 #if BUILDFLAG(IS_ANDROID)
       public FlingSchedulerAndroid::Delegate,
+      public AndroidStateTransferHandlerClient,
 #endif
       public RenderInputRouterSupportBase::Delegate,
       public RenderInputRouterDelegateImpl::Delegate,
@@ -102,6 +103,9 @@ class VIZ_SERVICE_EXPORT InputManager
   // FlingSchedulerAndroid::Delegate implementation.
   BeginFrameSource* GetBeginFrameSourceForFrameSink(
       const FrameSinkId& id) override;
+
+  // AndroidStateTransferHandlerClient implementation.
+  bool TransferInputBackToBrowser() override;
 #endif
 
   // RenderInputRouterDelegateImpl::Delegate implementation.

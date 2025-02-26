@@ -14,10 +14,11 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/optional_ref.h"
+#include "base/types/pass_key.h"
 #include "base/uuid.h"
-#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/is_required.h"
@@ -36,8 +37,9 @@ namespace autofill {
 //
 // Entity instances are loaded from a webdata table and exposed through
 // EntityDataManager.
-class EntityInstance;
 class AttributeInstance;
+class EntityInstance;
+class EntityTable;
 
 // An attribute instance is a typed string value with additional metadata.
 // It is associated with an EntityInstance. Attributes are used in order to fill
@@ -118,10 +120,21 @@ class AttributeInstance final {
   // value.
   void SetInfoWithVerificationStatus(FieldType type,
                                      const std::u16string& value,
-                                     VerificationStatus status);
+                                     const VerificationStatus status);
+  // Same as `SetInfoWithVerificationStatus`, but for structured types this
+  // function does nothing but modify the information in `type`, while the other
+  // function might perform additional steps (e.g., name formatting).
+  void SetRawInfoWithVerificationStatus(base::PassKey<EntityTable> pass_key,
+                                        FieldType type,
+                                        const std::u16string& value,
+                                        VerificationStatus status);
   // Returns the set of `FieldType`s for which the setter/getter functions above
   // may be called.
   FieldTypeSet GetSupportedTypes() const;
+
+  // Returns the types which are stored in the database for this attribute
+  // to be able to correctly reconstruct it at database loading time.
+  FieldTypeSet GetDatabaseStoredTypes() const;
 
   // Returns the FieldType that represents the whole value stored in this
   // attribute.

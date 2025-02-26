@@ -1115,6 +1115,7 @@
 <translation id="5817176759448082654">การตรวจสอบรหัสผ่าน</translation>
 <translation id="5819208479324046259">จัดการโดย <ph name="MANAGER" /> <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">กำลังซิงค์…</translation>
+<translation id="583923961930319521">ใช้รหัสผ่านในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="5844284118433003733">เมื่อลงชื่อเข้าใช้ ข้อมูลนี้จะลิงก์กับบัญชี Google ของคุณเพื่อปกป้องคุณในบริการต่างๆ ของ Google เช่น เพิ่มการปกป้องใน Gmail หลังจากเกิดเหตุการณ์ด้านความปลอดภัย</translation>
 <translation id="5854790677617711513">เกิน 30 วัน</translation>
 <translation id="5857770089550859117">ต้องระบุรหัสผ่านเพื่อเริ่มการซิงค์</translation>
@@ -1689,6 +1690,7 @@
 <translation id="8221665793629393739">การช่วยเตือนให้กลับมาดูอีกครั้ง</translation>
 <translation id="8230355548492839438">ค้นหาก่อนหน้า</translation>
 <translation id="8232956427053453090">เก็บข้อมูลไว้</translation>
+<translation id="8233237502828137700">ปิดการโปรโมตแบนเนอร์</translation>
 <translation id="8238711781852526820">ซ่อน "การติดตามราคา"</translation>
 <translation id="8258999165172757081">มีแล้ว</translation>
 <translation id="8261506727792406068">ลบ</translation>
@@ -1853,6 +1855,7 @@
 <translation id="886477344907998366">แสดงบุ๊กมาร์ก</translation>
 <translation id="8869239474428371589">รับสิ่งที่ดีที่สุดจากเบราว์เซอร์ที่คุณชื่นชอบ</translation>
 <translation id="8871974300055371298">การตั้งค่าเนื้อหา</translation>
+<translation id="8877788021141246043">ตั้งการช่วยเตือน</translation>
 <translation id="8879604564928138696">แตะสองครั้งเพื่อลองใช้</translation>
 <translation id="8879952635974818770">เนื้อหาที่ปรับเปลี่ยนในแบบของคุณ</translation>
 <translation id="8887595428614802520">ปิดแท็บและกลุ่มทั้งหมด</translation>

@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">Skrij kartico z znižanji cen na zavihkih</translation>
 <translation id="1510341833810331442">Spletna mesta ne smejo shranjevati podatkov v napravi.</translation>
 <translation id="1547123415014299762">Piškotki tretjih oseb so dovoljeni.</translation>
-<translation id="1568470248891039841">Spletna mesta, ki jih obiščete, lahko vdelajo vsebino z drugih spletnih mest, na primer slike, oglase in besedilo. Ta druga spletna mesta lahko zahtevajo dovoljenje za uporabo podatkov, ki so jih shranila o vas med brskanjem po spletnem mestu. <ph name="BEGIN_LINK" />Preberite več o vdelani vsebini<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Nova dejanja so na voljo pri vrhu zaslona.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Povezana spletna mesta</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">Strni neželene zahteve (priporočeno)</translation>
 <translation id="3955193568934677022">Dovoli spletnim mestom predvajanje zaščitene vsebine (priporočeno)</translation>
 <translation id="3967822245660637423">Prenos končan</translation>
-<translation id="3974105241379491420">Spletna mesta lahko zahtevajo uporabo podatkov, ki so jih shranila o vas</translation>
 <translation id="3987993985790029246">Kopiranje povezave</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992684624889376114">O tej strani</translation>
@@ -291,7 +289,6 @@
 <translation id="5264323282659631142">Odstranitev vnosa »<ph name="CHIP_LABEL" />«</translation>
 <translation id="528192093759286357">Povlecite z vrha in se dotaknite gumba za nazaj, če želite zapreti celozaslonski način.</translation>
 <translation id="5292915569214461965">Spletnim mestom ste blokirali uporabo piškotkov tretjih oseb za vaše sledenje med brskanjem. Obiščite nastavitve, če želite <ph name="BEGIN_LINK" />upravljati dostop do piškotkov tretjih oseb<ph name="END_LINK" />.</translation>
-<translation id="5295729974480418933">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo, da dovolite uporabo podatkov, ki so jih shranila o vas. Če je ta možnost izklopljena, spletna mesta ne smejo zahtevati, da dovolite uporabo podatkov, ki so jih shranila o vas.</translation>
 <translation id="5300589172476337783">Pokaži</translation>
 <translation id="5301954838959518834">V redu, razumem</translation>
 <translation id="5317780077021120954">Shrani</translation>
@@ -299,7 +296,6 @@
 <translation id="534295439873310000">Naprave s tehnologijo NFC</translation>
 <translation id="5344522958567249764">Upravljanje zasebnosti pri oglaševanju</translation>
 <translation id="5373874281522292782">Skupine zavihkov so shranjene</translation>
-<translation id="5389626883706033615">Spletnim mestom je preprečeno, da bi od vas zahtevala uporabo podatkov, ki so jih shranila o vas.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(in še 1)}one{(in še #)}two{(in še #)}few{(in še #)}other{(in še #)}}</translation>
 <translation id="5403592356182871684">Imena</translation>
 <translation id="5438097262470833822">S to izbiro bodo ponastavljena dovoljenja za spletno mesto <ph name="WEBSITE" />.</translation>
@@ -320,7 +316,6 @@
 <translation id="5677928146339483299">Blokirano</translation>
 <translation id="5689516760719285838">Lokacija</translation>
 <translation id="5690795753582697420">Fotoaparat je izklopljen v nastavitvah za Android</translation>
-<translation id="5691080386278724773"><ph name="SITE" /> lahko med brskanjem uporablja vaše podatke</translation>
 <translation id="5700761515355162635">Piškotki tretjih oseb so dovoljeni</translation>
 <translation id="5706552988683188916">S tem izbrišete piškotke in druge podatke spletnega mesta za <ph name="WEBSITE" />.</translation>
 <translation id="5723967018671998714">Piškotki tretjih oseb so blokirani v anonimnem načinu</translation>
@@ -370,7 +365,6 @@
 <translation id="6262279340360821358">Blokirano: <ph name="PERMISSION_1" /> in <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Spletna mesta vas lahko vprašajo, ali želite, da vam pošiljajo obvestila</translation>
 <translation id="6295158916970320988">Vsa spletna mesta</translation>
-<translation id="6304434827459067558"><ph name="SITE" /> ne sme uporabljati vaših podatkov na</translation>
 <translation id="6320088164292336938">Vibriranje</translation>
 <translation id="6344622098450209924">Zaščita pred sledenjem</translation>
 <translation id="6367753977865761591">Blokiranje prijave prek zunanjih ponudnikov za določeno spletno mesto.</translation>

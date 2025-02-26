@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1009406586654360474">Abre o xestor de contrasinais de Google e vai á configuración. Selecciona Importar e engade o ficheiro CSV que contén os contrasinais exportados.</translation>
+<translation id="1010283278930414892">Non hai ningún contrasinal gardado neste dispositivo</translation>
 <translation id="1011749477052068769">Mover aquí</translation>
 <translation id="1014147525163127655">Non hai ningunha clave de acceso para <ph name="ORIGIN" /> neste dispositivo</translation>
 <translation id="1016498331642356377">Buscar rapidamente coa voz. Para editar este atallo, mantén premido o botón.</translation>
@@ -142,6 +143,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1568636008098739136">Escoitar esta páxina. Mantén premido este atallo para editalo.</translation>
 <translation id="1571041387761170095">Non se atopou ningún contrasinal pouco seguro nin reutilizado</translation>
 <translation id="1571304935088121812">Copia o nome de usuario</translation>
+<translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 contrasinal vulnerado neste dispositivo}other{# contrasinais vulnerados neste dispositivo}}</translation>
 <translation id="1594635596540195766">A lista de abaixo contén <ph name="SUGGESTIONS_COUNT" /> elementos suxeridos.</translation>
 <translation id="1598163867407640634">Usa <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Se esta opción está activada, podes utilizar e gardar os datos na túa Conta de Google. Cando está desactivada, os datos gárdanse só no dispositivo.</translation>
@@ -163,6 +165,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1724977129262658800">Para poder editar o contrasinal, desbloquea a pantalla</translation>
 <translation id="1726477445370128854">Podes navegar e facer buscas máis rápido se Chrome precarga as páxinas que considera que poderías visitar</translation>
 <translation id="1728803206919861584">Queres gardar a clave de acceso fóra do modo de incógnito?</translation>
+<translation id="1732514748744806741">Avisarémoste se se vulneran os teus contrasinais</translation>
 <translation id="1747593111377567311">{NUM_SITES,plural, =1{1 sitio enviou recentemente moitas notificacións}other{# sitios enviaron recentemente moitas notificacións}}</translation>
 <translation id="1749561566933687563">Sincroniza os teus marcadores</translation>
 <translation id="1750238553597293878">Sigue usando os contrasinais na túa Conta de Google</translation>
@@ -1336,6 +1339,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7022756207310403729">Abrir no navegador</translation>
 <translation id="7025769836128625875">Esta función de IA é experimental, polo que non sempre acerta. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="7029809446516969842">Contrasinais</translation>
+<translation id="7053256416619638731">Reforza os contrasinais deste dispositivo</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7054588988317389591">Queres obter descricións de imaxes?</translation>
 <translation id="7057969023583258980">Abrir historial completo de Chrome</translation>
@@ -1586,6 +1590,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8110024788458304985">Axudar a mellorar o rendemento e as funcións de Chrome</translation>
 <translation id="8110087112193408731">Queres mostrar a túa actividade de Chrome en Benestar dixital?</translation>
 <translation id="8118117428362942925">Se necesitas axuda, pídella ao teu pai ou á túa nai (<ph name="PARENT_NAME" />)</translation>
+<translation id="8120286190326371840">Non hai ningún contrasinal vulnerado neste dispositivo</translation>
 <translation id="8122623268651408616">Ordenando por máis recente</translation>
 <translation id="8127542551745560481">Editar páxina de inicio</translation>
 <translation id="8130309322784422030">A información de inicio de sesión que gardaches podería estar desactualizada</translation>

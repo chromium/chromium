@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_H_
 
+#include <memory>
 #include <ostream>
 #include <string>
 
@@ -28,6 +29,16 @@ class AXPlatformNodeDelegate;
 // own the AXPlatformNode instance (or otherwise manage its lifecycle).
 class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
  public:
+  // A Deleter for a std::unique_ptr<AXPlatformNode>.
+  struct Deleter {
+    void operator()(AXPlatformNode* platform_node) const {
+      platform_node->Destroy();
+    }
+  };
+
+  // A smart pointer for an AXPlatformNode.
+  using Pointer = std::unique_ptr<AXPlatformNode, Deleter>;
+
   enum class AnnouncementType { kAlert, kPolite };
 
   using NativeWindowHandlerCallback =
@@ -35,7 +46,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
 
   // Create an appropriate platform-specific instance. The delegate owns the
   // AXPlatformNode instance (or manages its lifecycle in some other way).
-  static AXPlatformNode* Create(AXPlatformNodeDelegate* delegate);
+  static Pointer Create(AXPlatformNodeDelegate* delegate);
 
   // Cast a gfx::NativeViewAccessible to an AXPlatformNode if it is one,
   // or return nullptr if it's not an instance of this class.
@@ -45,7 +56,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   // Return the AXPlatformNode at the root of the tree for a native window.
   static AXPlatformNode* FromNativeWindow(gfx::NativeWindow native_window);
 
-  virtual ~AXPlatformNode();
+  virtual ~AXPlatformNode() = default;
   AXPlatformNode(const AXPlatformNode&) = delete;
   AXPlatformNode& operator=(const AXPlatformNode&) = delete;
 
@@ -69,10 +80,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   // The focus override is the perceived focus within the popup, and it changes
   // each time a user navigates to a new item within the popup.
   static void SetPopupFocusOverride(gfx::NativeViewAccessible focus_override);
-
-  // Call Destroy rather than deleting this, because the subclass may
-  // use reference counting.
-  virtual void Destroy();
 
   // Get the platform-specific accessible object type for this instance.
   // On some platforms this is just a type cast, on others it may be a
@@ -117,7 +124,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   friend std::ostream& operator<<(std::ostream& stream, AXPlatformNode& node);
 
  protected:
-  AXPlatformNode();
+  AXPlatformNode() = default;
 
   // Associates a node delegate object to the platform node.
   // Keep it protected. Only AXPlatformNode::Create should be calling this.
@@ -127,6 +134,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   // create a platform node instance, and it doesn't allow to pass arguments to
   // the constructor.
   virtual void Init(AXPlatformNodeDelegate* delegate) = 0;
+
+  // Call Destroy rather than deleting this, because the subclass may
+  // use reference counting.
+  virtual void Destroy() {}
 
  private:
   static base::LazyInstance<NativeWindowHandlerCallback>::Leaky

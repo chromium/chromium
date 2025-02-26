@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">Hide price drops on tabs card</translation>
 <translation id="1510341833810331442">Sites aren't allowed to save data on your device</translation>
 <translation id="1547123415014299762">Third-party cookies are allowed</translation>
-<translation id="1568470248891039841">Sites you visit can embed content from other sites. For example, images, ads and text. These other sites can ask for permission to use info they've saved about you as you browse the site. <ph name="BEGIN_LINK" />Learn more about embedded content<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">New actions available near top of the screen</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1633720957382884102">Related sites</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">Collapse unwanted requests (recommended)</translation>
 <translation id="3955193568934677022">Allow sites to play protected content (recommended)</translation>
 <translation id="3967822245660637423">Download complete</translation>
-<translation id="3974105241379491420">Sites can ask to use info they've saved about you</translation>
 <translation id="3987993985790029246">Copy link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992684624889376114">About this page</translation>
@@ -291,7 +289,6 @@
 <translation id="5264323282659631142">Remove '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Drag from top and touch the back button to exit full screen.</translation>
 <translation id="5292915569214461965">You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK" />manage access to third-party cookies<ph name="END_LINK" />.</translation>
-<translation id="5295729974480418933">When on, sites can ask to use info that they've saved about you. When off, sites can't ask to use info that they've saved about you.</translation>
 <translation id="5300589172476337783">Show</translation>
 <translation id="5301954838959518834">OK, got it</translation>
 <translation id="5317780077021120954">Save</translation>
@@ -299,7 +296,6 @@
 <translation id="534295439873310000">NFC devices</translation>
 <translation id="5344522958567249764">Manage ads privacy</translation>
 <translation id="5373874281522292782">Your tab groups are saved</translation>
-<translation id="5389626883706033615">Sites are blocked from asking you to use info they've saved about you</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 more)}other{(+ # more)}}</translation>
 <translation id="5403592356182871684">Names</translation>
 <translation id="5438097262470833822">This choice will reset permissions for <ph name="WEBSITE" /></translation>
@@ -320,7 +316,6 @@
 <translation id="5677928146339483299">Blocked</translation>
 <translation id="5689516760719285838">Location</translation>
 <translation id="5690795753582697420">Camera is turned off in Android settings</translation>
-<translation id="5691080386278724773"><ph name="SITE" /> can use your info as you browse</translation>
 <translation id="5700761515355162635">Third-party cookies allowed</translation>
 <translation id="5706552988683188916">This deletes cookies and other site data for <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Third-party cookies are blocked in Incognito mode</translation>
@@ -370,7 +365,6 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> and <ph name="PERMISSION_2" /> blocked</translation>
 <translation id="6270391203985052864">Sites can ask to send notifications</translation>
 <translation id="6295158916970320988">All sites</translation>
-<translation id="6304434827459067558"><ph name="SITE" /> is blocked from using your info on</translation>
 <translation id="6320088164292336938">Vibrate</translation>
 <translation id="6344622098450209924">Tracking Protection</translation>
 <translation id="6367753977865761591">Block third-party sign-in for a specific site.</translation>

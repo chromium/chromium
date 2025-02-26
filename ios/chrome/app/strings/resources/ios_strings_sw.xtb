@@ -114,6 +114,7 @@
 <translation id="1445276840641906250">Vichupo vyako vyote katika kivinjari kimoja</translation>
 <translation id="1450170672351507823">Kipengele cha ulinzi wa kawaida kimewashwa. Kwa usalama zaidi, tumia kipengele cha usalama Ulioboreshwa.</translation>
 <translation id="1455660774629812862">Usivifiche</translation>
+<translation id="1456545332132818232">Maoni ya bidhaa kwenye <ph name="PRODUCT_NAME" />, <ph name="STARS" /> kati ya <ph name="MAX_STARS" />, <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">Okoa muda, andika kidogo</translation>
 <translation id="1466035273550360103">Hakuna vichupo vilivyofunguliwa</translation>
 <translation id="1469381646033328562">Akaunti yako inadhibitiwa na mzazi wako.
@@ -292,6 +293,7 @@
 <translation id="2199562093267256223">Hatua hii itafuta kikundi kwenye vifaa vyote ulivyotumia kuingia katika akaunti ya <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Hakuna barua pepe ya akaunti</translation>
 <translation id="2214453882118345682">Nunua, tafsiri na utambue unachokiona ukitumia kamera yako.</translation>
+<translation id="2215819824168709130">Ficha kadi ya kufuatilia bei</translation>
 <translation id="2220529011494928058">Ripoti tatizo</translation>
 <translation id="2220887224562128152">Faili ikisharatibiwa kufutwa, haiwezi kurejeshwa.</translation>
 <translation id="2223461067862937305">Buni Msimbo wa QR</translation>
@@ -458,6 +460,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="2893168226686371498">Kivinjari chaguomsingi</translation>
 <translation id="2894757982205307093">Kichupo kipya katika kikundi</translation>
 <translation id="2902312830803030883">Vitendo zaidi</translation>
+<translation id="2904788871580817212">Punguzo la bei kwenye kichupo chako kilichofunguliwa, kutoka <ph name="PREVIOUS_PRICE" /> hadi <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Una manenosiri <ph name="NUMBER_OF_PASSWORDS" /> yaliyotumiwa kwingine yanayoweza kuhatarisha usalama wako.</translation>
 <translation id="29153882450867370">Ficha "Fuatilia Bei"</translation>
 <translation id="291754862089661335">Weka msimbo wa QR au msimbo upau katika fremu hii</translation>
@@ -642,6 +645,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3831560640878483188">Ungependa kuondoa tahadhari?</translation>
 <translation id="3832419617903252251">Nenosiri limehifadhiwa kwenye kifaa hiki pekee</translation>
 <translation id="3838691874161539578">Kagua manenosiri uliyohifadhi ili uimarishe ulinzi na uwe salama ukiwa mtandaoni</translation>
+<translation id="3838985624086228724">Punguzo la bei kwenye bidha unayofuatilia, kutoka <ph name="PREVIOUS_PRICE" /> hadi <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Rudi nyuma</translation>
 <translation id="3851938967634752633">Manenosiri ya <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> na tovuti zingine <ph name="NUMBER_OF_ACCOUNTS" /> yatafutwa. Akaunti zako hazitafutwa.</translation>
 <translation id="3858860766373142691">Jina</translation>
@@ -760,6 +764,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4322394346347055525">Funga Vichupo Vingine</translation>
 <translation id="4324735664183300693">Ruhusu kupokea arifa</translation>
 <translation id="4326912346867677256">Gusa "Tumia Nenosiri" ili uingie katika akaunti kwa usalama.</translation>
+<translation id="4327017157997423717">Fuatilia bei kwenye <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Hifadhi Yangu</translation>
 <translation id="4331177082088332784">Unaweza kudhibiti hili kwenye BEGIN_LINK Mipangilio ya Maudhui END_LINK</translation>
 <translation id="4334428914252001502">Hujasoma makala 1.</translation>
@@ -943,6 +948,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="5127538504377457572">Ilitumika siku <ph name="DAYS" /> zilizopita</translation>
 <translation id="5128788795241319992">Vinjari menyu mpya</translation>
 <translation id="5132942445612118989">Sawazisha historia, manenosiri na mambo yako mengine kwenye vifaa vyote</translation>
+<translation id="5141363746588976328">Ficha mapunguzo ya bei kwenye kadi ya vichupo vyako</translation>
 <translation id="5145331760738811130">Ondoka kwenye kibadilishaji cha kichupo</translation>
 <translation id="5157638238828697074">Hitilafu fulani imetokea. Imeshindwa kufungua programu.</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -994,6 +1000,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="5352128922772839949">Hifadhi faili</translation>
 <translation id="5355191726083956201">Umewasha Kipengele cha Ulinzi Ulioboreshwa</translation>
 <translation id="537853552771686272">Dhibiti mada na tovuti zinazokuvutia</translation>
+<translation id="5394975111793637642">Ficha maoni ya bidhaa kwenye kadi yako</translation>
 <translation id="5395707839134961196">Ficha maelezo ya mtambo wa kutafuta</translation>
 <translation id="5414763847370083940">Utapata arifa iwapo bei itapungua kwenye tovuti yoyote.</translation>
 <translation id="5415289094036440596">Funguo za siri haziwezi kufikiwa</translation>
@@ -1235,6 +1242,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="634878792104344809">Sawazisha manenosiri, historia na mipangilio yako mingine kwenye vifaa vyako vyote</translation>
 <translation id="6351147166808964033">Weka kibadilishaji cha vichupo</translation>
 <translation id="63519665078626091">Ili utumie Kikaguzi cha Wavuti, unganisha kwenye kivinjari cha Safari katika kompyuta yako ukitumia kebo na ufikie iPad yako kupitia menyu ya Kuendeleza. Unaweza kuwasha menyu ya kuendeleza katika sehemu ya Kina ya mipangilio ya kivinjari cha Safari kwenye kompyuta yako.</translation>
+<translation id="6355820183143562453">Ficha kadi ya kufuatilia bei</translation>
 <translation id="6355820205320395730">Manenosiri dhaifu ni rahisi kukisia. Hakikisha kwamba unatunga manenosiri thabiti. <ph name="BEGIN_LINK" />Angalia vidokezo zaidi vya usalama.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Fuata <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Chagua mtambo wa kutafuta kwenye orodha.</translation>
@@ -1345,6 +1353,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="6722623263381062480">Vichupo Ulivyopokea</translation>
 <translation id="6723740634201835758">Katika Akaunti yako ya Google</translation>
 <translation id="672735642903863329">Pata alamisho, manenosiri na zaidi kwenye vifaa vyako vyote.</translation>
+<translation id="6729493062119577923">Shughuli za kikundi cha vichupo cha pamoja</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6746338529702829275">Kagua data ya akaunti yako</translation>
 <translation id="6755200887046212842">Dhibiti Akaunti</translation>
@@ -1533,6 +1542,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7638584964844754484">Kaulisiri si sahihi</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Manenosiri yaliyoathiriwa}=1{Nenosiri {COUNT} limeathiriwa}other{Manenosiri {COUNT} yameathiriwa}}</translation>
 <translation id="7640669552036055091">Vichupo kwenye Android</translation>
+<translation id="7642277834834046856">Mapunguzo ya bei kwenye vichupo vyako</translation>
 <translation id="7646263789464975852">Menyu → Mipangilio → Ukaguzi wa Usalama</translation>
 <translation id="7646772052135772216">Kipengele cha usawazishaji wa nenosiri hakifanyi kazi</translation>
 <translation id="764827086632467055">Gusa Programu ya Kivinjari Chaguomsingi</translation>
@@ -1843,6 +1853,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="886477344907998366">Onyesha alamisho</translation>
 <translation id="8869239474428371589">Kupata hali bora ya utumiaji kwenye Kivinjari unachopenda</translation>
 <translation id="8871974300055371298">Mipangilio ya maudhui</translation>
+<translation id="8877788021141246043">Weka kikumbusho</translation>
 <translation id="8879604564928138696">Gusa mara mbili ili ujaribu</translation>
 <translation id="8879952635974818770">Maudhui yaliyowekewa mapendeleo</translation>
 <translation id="8887595428614802520">Funga Vikundi na Vichupo Vyote</translation>

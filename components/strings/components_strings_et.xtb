@@ -772,6 +772,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, aegub <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Seadet juhib administraator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> soovib siduda</translation>
+<translation id="2344529975040861103">Saate selle kaardi teabe automaatselt täita, kuna teie konto on Google Payga lingitud</translation>
 <translation id="2346319942568447007">Teie kopeeritud pilt</translation>
 <translation id="2348509731468399833">Hinna jälgimine on peatatud.</translation>
 <translation id="2349957959687031096">Nupp Inkognito vahelehe avamine nupp, aktiveerige nupp, et avada uus inkognito vaheleht ja sirvida privaatselt</translation>
@@ -1031,7 +1032,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2833637280516285136">Raadiojutusaated</translation>
 <translation id="2835170189407361413">Tühjenda vorm</translation>
 <translation id="2837891525090413132">Võib küsida teie klaviatuuri lukustamist ja kasutamist</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> soovib kasutada teavet, mille on teie kohta salvestanud</translation>
 <translation id="2839032553903800133">Märguanded on blokeeritud</translation>
 <translation id="2839501879576190149">Ees on võltssait</translation>
 <translation id="2843623755398178332">Kas kerida ja suumida teie jagatud vahelehte?</translation>
@@ -4578,6 +4578,7 @@ Lisateave:
 <translation id="9139318394846604261">Ostlemine</translation>
 <translation id="9140198744651252040">Chrome'i brauser soovib kasutada paroolide automaattäitmiseks sõrmejälge</translation>
 <translation id="9141013498910525015">Aadresside haldamine</translation>
+<translation id="9143898823728499852">Saate selle kaardi teabe automaatselt täita, kuna teie konto teenuses <ph name="CARD_ISSUER_NAME" /> on Google Payga lingitud</translation>
 <translation id="9144951720726881238">Aegumiskuupäev:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Logige<ph name="END_LINK" />
     uuesti sisse ja naaske sellele vahelehele, et kirjutamisabi saada</translation>

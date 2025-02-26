@@ -465,6 +465,9 @@ MediaStreamTrack* MediaStreamTrackImpl::clone(
 
 MediaTrackCapabilities* MediaStreamTrackImpl::getCapabilities() const {
   MediaTrackCapabilities* capabilities = MediaTrackCapabilities::Create();
+  MediaStreamTrackPlatform::Settings platform_settings;
+  component_->GetSettings(platform_settings);
+
   if (image_capture_) {
     image_capture_->GetMediaTrackCapabilities(capabilities);
   }
@@ -528,13 +531,17 @@ MediaTrackCapabilities* MediaStreamTrackImpl::getCapabilities() const {
     if (platform_capabilities.width.size() == 2) {
       LongRange* width = LongRange::Create();
       width->setMin(platform_capabilities.width[0]);
-      width->setMax(platform_capabilities.width[1]);
+      width->setMax(IsCapturedSurfaceResolutionActive(platform_settings)
+                        ? platform_settings.physical_frame_size->width()
+                        : platform_capabilities.width[1]);
       capabilities->setWidth(width);
     }
     if (platform_capabilities.height.size() == 2) {
       LongRange* height = LongRange::Create();
       height->setMin(platform_capabilities.height[0]);
-      height->setMax(platform_capabilities.height[1]);
+      height->setMax(IsCapturedSurfaceResolutionActive(platform_settings)
+                         ? platform_settings.physical_frame_size->height()
+                         : platform_capabilities.height[1]);
       capabilities->setHeight(height);
     }
     if (platform_capabilities.aspect_ratio.size() == 2) {
@@ -685,9 +692,7 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (RuntimeEnabledFeatures::CapturedSurfaceResolutionEnabled(
-          execution_context_) &&
-      platform_settings.display_surface) {
+  if (IsCapturedSurfaceResolutionActive(platform_settings)) {
     std::optional<float> ratio = platform_settings.device_scale_factor;
     if (platform_settings.display_surface ==
             media::mojom::DisplayCaptureSurfaceType::BROWSER &&
@@ -1178,6 +1183,18 @@ void MediaStreamTrackImpl::SendLogMessage(const WTF::String& message) {
           muted() ? "true" : "false", readyState().AsCStr(),
           component_->Remote() ? "true" : "false")
           .Utf8());
+}
+
+bool MediaStreamTrackImpl::IsCapturedSurfaceResolutionActive(
+    const MediaStreamTrackPlatform::Settings& platform_settings) const {
+#if BUILDFLAG(IS_WIN)
+  if (RuntimeEnabledFeatures::CapturedSurfaceResolutionEnabled(
+          execution_context_) &&
+      platform_settings.physical_frame_size) {
+    return true;
+  }
+#endif
+  return false;
 }
 
 }  // namespace blink

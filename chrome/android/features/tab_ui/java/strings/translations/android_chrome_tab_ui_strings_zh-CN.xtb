@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1045448422538531528">添加到群组</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{创建时间：<ph name="NUM_WEEKS_ONE" /> 周前}other{创建时间：<ph name="NUM_WEEKS_MANY" /> 周前}}</translation>
 <translation id="1063300264396686489">自动打开其他设备的标签页分组</translation>
 <translation id="1075622780330595106">您有 <ph name="NUMBER_OF_TABS" /> 个标签页最近未被使用过。关闭它们？</translation>

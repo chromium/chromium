@@ -17,7 +17,6 @@
 <translation id="1007057452468855774">Hidupkan Google Play Store</translation>
 <translation id="1008186147501209563">Eksport penanda halaman</translation>
 <translation id="1008261151167010035"><ph name="BRAND" /> mengingat cara anda log masuk dan secara automatik akan log masuk anda jika dibolehkan. Apabila tetapan dimatikan, anda akan diminta untuk memberikan pengesahan setiap kali sebelum log masuk.</translation>
-<translation id="1008544602823861396">disekat daripada menggunakan maklumat anda pada</translation>
 <translation id="1008557486741366299">Bukan Sekarang</translation>
 <translation id="100881991356161927">Nama laman</translation>
 <translation id="1009663062402466586">Kini kawalan permainan tersedia</translation>
@@ -2414,7 +2413,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2653659639078652383">Serah</translation>
 <translation id="265390580714150011">Nilai Medan</translation>
 <translation id="2654553774144920065">Permintaan cetak</translation>
-<translation id="265680054508313161">Teruskan sebagai <ph name="USERNAME" /></translation>
 <translation id="265748523151262387">Kekal bersambung dengan telefon anda</translation>
 <translation id="2657612187216250073">Tetapan kebolehaksesan penuding</translation>
 <translation id="2658510146844889864">Kunci laluan &amp; Kunci Keselamatan</translation>
@@ -2543,6 +2541,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2739191690716947896">Nyahpepijat</translation>
 <translation id="2739240477418971307">Ubah tetapan kebolehaksesan anda</translation>
 <translation id="2739331588276254426">Disambungkan kepada Internet melalui <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="2739887572830526131">Simpan kumpulan ini untuk menambahkan tab kemudian atau padamkan jika anda tidak memerlukan kumpulan ini lagi.</translation>
 <translation id="274029851662193272">Direndahkan</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2740876196999178364">Kunci laluan ini hanya disimpan pada peranti ini. Kunci laluan ini tidak disimpan pada Google Account anda.</translation>
@@ -4049,6 +4048,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3813358687923336574">Bahasa yang digunakan untuk menterjemahkan halaman dan Jawapan segera</translation>
 <translation id="3813458570141926987">Senarai topik yang dianggarkan oleh Chrome berdasarkan sejarah penyemakan imbas terbaharu anda</translation>
 <translation id="3814529970604306954">Akaun Sekolah</translation>
+<translation id="3815668647912194650">Simpan kumpulan ini untuk menambahkan tab kemudian atau keluar daripada kumpulan ini jika anda tidak mahu akses kepada kumpulan ini lagi.</translation>
 <translation id="3816118180265633665">Warna Chrome</translation>
 <translation id="3817524650114746564">Buka tetapan proksi komputer anda</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Tindakan membenarkan peranti ChromeOS anda menghantar laporan automatik dapat membantu kami memberikan keutamaan terhadap perkara yang perlu dibetulkan dan diperbaik pada ChromeOS. Laporan ini boleh merangkumi perkara seperti waktu ranap sistem ChromeOS, ciri yang anda gunakan dan jumlah memori yang biasa anda digunakan.<ph name="END_PARAGRAPH1" />
@@ -4285,7 +4285,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="3971764089670057203">Cap jari pada kunci keselamatan ini</translation>
 <translation id="3973005893595042880">Pengguna tidak dibenarkan</translation>
 <translation id="3973660817924297510">Menyemak kata laluan (<ph name="CHECKED_PASSWORDS" /> daripada <ph name="TOTAL_PASSWORDS" />)…</translation>
-<translation id="3974105241379491420">Laman boleh meminta untuk menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="3974514184580396500">Gunakan “Seterusnya” untuk menggerakkan fokus anda ke hadapan pada skrin</translation>
 <translation id="3975017815357433345">Lebuh Raya</translation>
 <translation id="3975201861340929143">Penjelasan</translation>
@@ -4532,7 +4531,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4146785383423576110">Tetapkan semula dan padam bersih</translation>
 <translation id="4147099377280085053">Pilih jadual braille</translation>
 <translation id="4147911968024186208">Sila cuba semula. Jika ralat ini dipaparkan sekali lagi, sila hubungi wakil sokongan anda.</translation>
-<translation id="414800391140809654">boleh menggunakan maklumat anda ketika anda menyemak imbas</translation>
 <translation id="4148195018520464922">Anda boleh mengehadkan log masuk kepada pengguna tertentu. Tindakan ini akan mengalih keluar pilihan "Tambahkan orang" pada skrin log masuk. Anda juga boleh mengalih keluar pengguna semasa.</translation>
 <translation id="4148957013307229264">Memasang...</translation>
 <translation id="4149385644005013189">Nampak kemas!</translation>
@@ -5322,7 +5320,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4730492586225682674">Nota terkini stilus pada skrin kunci</translation>
 <translation id="4730888769809690665">Pemberitahuan dibenarkan untuk <ph name="SITE" /></translation>
-<translation id="4731306954230393087">Dibenarkan menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="4732799736617504962">Mikrofon yang disambungkan hanya boleh menyokong pembatalan hingar</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kiri)</translation>
 <translation id="4733793249294335256">Lokasi</translation>
@@ -6226,7 +6223,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Menemukan 1 laman dengan pemberitahuan yang banyak}other{Menemukan {NUM_SITES} laman dengan pemberitahuan yang banyak}}</translation>
 <translation id="5388885445722491159">Dipasangkan</translation>
 <translation id="5389224261615877010">Pelangi</translation>
-<translation id="5389626883706033615">Laman disekat daripada meminta anda menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="5389794555912875905">Berikan amaran sebelum mengakses laman yang tidak selamat (disyorkan)</translation>
 <translation id="5389943529251318913">Kurangkan kelajuan tetikus sebanyak</translation>
 <translation id="5390112241331447203">Sertakan fail system_logs.txt yang dihantar dalam laporan maklum balas.</translation>
@@ -6913,7 +6909,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5888889603768021126">Dilog masuk dengan</translation>
 <translation id="5889282057229379085">Bilangan maksimum CA pengantara: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Sulitkan data yang disegerakkan dengan <ph name="BEGIN_LINK" />ungkapan laluan penyegerakan<ph name="END_LINK" /> anda sendiri. Kaedah pembayaran dan alamat daripada Google Pay tidak akan disulitkan. Sejarah penyemakan imbas daripada Chrome tidak akan disegerakkan.</translation>
-<translation id="5891084409170578560">Laman yang anda lawati boleh membenamkan kandungan daripada laman lain, contohnya imej, iklan dan teks. Laman lain boleh meminta kebenaran anda untuk menggunakan maklumat yang disimpan tentang anda ketika anda menyemak imbas laman tersebut.</translation>
 <translation id="5891688036610113830">Rangkaian Wi-Fi pilihan</translation>
 <translation id="5894056653502215961">Nyahpilih <ph name="FOLDER_TITLE" /> folder</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
@@ -9280,7 +9275,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7619937211696316184">Penyenggaraan selesai</translation>
 <translation id="7620616707541471029">Pilih akaun untuk meneruskan proses</translation>
 <translation id="7621382409404463535">Sistem gagal menyimpan konfigurasi peranti.</translation>
-<translation id="7621480263311228380">Tidak dibenarkan untuk menggunakan maklumat yang mereka simpan tentang anda</translation>
 <translation id="7621595347123595643">Anda tidak akan dapat memulihkan data setempat jika anda terlupa kata laluan atau PIN anda.</translation>
 <translation id="7622114377921274169">Mengecas.</translation>
 <translation id="7622768823216805500">Tapak biasanya memasang pengendali pembayaran untuk ciri beli-belah seperti daftar keluar yang lebih mudah</translation>
@@ -10735,6 +10729,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8633979878370972178">Versi lama Apl Chrome tidak akan dibuka pada peranti Linux selepas Disember 2022. Anda boleh menyemak jika terdapat versi baharu.</translation>
 <translation id="8634348081024879304">Anda tidak akan dapat menggunakan kad maya anda dengan Google Pay lagi. <ph name="BEGIN_LINK" />Ketahui tentang kad maya<ph name="END_LINK" /></translation>
 <translation id="8634703204743010992">Papan Kekunci Maya ChromeOS</translation>
+<translation id="8635399646025169806">Simpan kumpulan tab?</translation>
 <translation id="8635628933471165173">Memuat semula...</translation>
 <translation id="8636284842992792762">Memulakan sambungan...</translation>
 <translation id="8636323803535540285">Untuk sampai dengan lebih pantas, tambah pintasan kepada <ph name="BRAND" /></translation>
@@ -10995,6 +10990,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Google menggunakan maklumat ini tanpa mengenal pasti identiti anda untuk: meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi; dan secara amnya meningkatkan, menyediakan dan mengekalkan perkhidmatan Google. Kami memproses maklumat ini berdasarkan kepentingan sah Google dan pihak ketiga untuk memenuhi keperluan pengguna.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Anda boleh mematikan Ketepatan Lokasi pada bila-bila masa dalam tetapan lokasi peranti anda dalam bahagian Tetapan &gt; Privasi dan keselamatan &gt; Kawalan privasi &gt; Akses lokasi &gt; Tetapan lokasi lanjutan. Jika Ketepatan Lokasi dimatikan, tiada data Ketepatan Lokasi akan dikumpulkan. Untuk apl dan perkhidmatan Android, hanya alamat IP digunakan, jika tersedia, untuk menentukan lokasi peranti anda yang mungkin memberikan kesan kepada ketersediaan dan ketepatan lokasi untuk apl dan perkhidmatan Android seperti Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Dibuka dalam</translation>
+<translation id="8804742093141782941">Simpan kumpulan</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Alihkan Tab ke Tetingkap Lain}other{Alihkan Tab ke Tetingkap Lain}}</translation>
 <translation id="8805140816472474147">Sahkan tetapan penyegerakan untuk memulakan penyegerakan.</translation>
 <translation id="8805255531353778052">Penjimatan Sangat Besar</translation>

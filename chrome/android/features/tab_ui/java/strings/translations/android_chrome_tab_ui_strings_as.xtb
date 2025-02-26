@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
+<translation id="1045448422538531528">গোটত যোগ দিয়ক</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> সপ্তাহ পূৰ্বে সৃষ্টি কৰা হৈছে}one{<ph name="NUM_WEEKS_MANY" /> সপ্তাহ পূৰ্বে সৃষ্টি কৰা হৈছে}other{<ph name="NUM_WEEKS_MANY" /> সপ্তাহ পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="1063300264396686489">অন্য ডিভাইচসমূহৰ পৰা টেবৰ গোটসমূহ স্বয়ংক্ৰিয়ভাৱে খোলক</translation>
 <translation id="1075622780330595106">শেহতীয়াকৈ আপোনাৰ <ph name="NUMBER_OF_TABS" />টা টেব ব্যৱহাৰ কৰা হোৱা নাই। সেইকেইটা বন্ধ কৰিবনে?</translation>

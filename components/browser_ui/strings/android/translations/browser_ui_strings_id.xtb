@@ -33,7 +33,6 @@
 <translation id="1500473259453106018">Sembunyikan kartu penurunan harga di tab</translation>
 <translation id="1510341833810331442">Situs tidak diizinkan menyimpan data di perangkat Anda</translation>
 <translation id="1547123415014299762">Cookie pihak ketiga diizinkan</translation>
-<translation id="1568470248891039841">Situs yang Anda buka dapat menyematkan konten dari situs lain, misalnya gambar, iklan, dan teks. Situs lain tersebut dapat meminta izin untuk menggunakan info tentang Anda yang disimpannya ketika Anda menjelajahi situs. <ph name="BEGIN_LINK" />Pelajari konten sematan lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Tindakan baru tersedia di dekat bagian atas layar</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Situs terkait</translation>
@@ -205,7 +204,6 @@
 <translation id="3933121352599513978">Ciutkan permintaan yang tidak diinginkan (direkomendasikan)</translation>
 <translation id="3955193568934677022">Izinkan situs memutar konten yang dilindungi (direkomendasikan)</translation>
 <translation id="3967822245660637423">Download selesai</translation>
-<translation id="3974105241379491420">Situs dapat meminta untuk menggunakan info tentang Anda yang disimpannya</translation>
 <translation id="3987993985790029246">Salin link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">Tentang halaman ini</translation>
@@ -291,7 +289,6 @@
 <translation id="5264323282659631142">Hapus '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Tarik dari atas dan ketuk tombol kembali untuk keluar dari mode layar penuh.</translation>
 <translation id="5292915569214461965">Anda memblokir situs agar tidak menggunakan cookie pihak ketiga untuk melacak Anda saat menjelajah. Buka setelan untuk <ph name="BEGIN_LINK" />mengelola akses ke cookie pihak ketiga<ph name="END_LINK" />.</translation>
-<translation id="5295729974480418933">Jika diaktifkan, situs dapat meminta untuk menggunakan info tentang Anda yang disimpannya. Jika dinonaktifkan, situs tidak dapat meminta untuk menggunakan info tentang Anda yang disimpannya.</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
 <translation id="5301954838959518834">Oke, mengerti</translation>
 <translation id="5317780077021120954">Simpan</translation>
@@ -299,7 +296,6 @@
 <translation id="534295439873310000">Perangkat NFC</translation>
 <translation id="5344522958567249764">Kelola privasi iklan</translation>
 <translation id="5373874281522292782">Grup tab Anda disimpan</translation>
-<translation id="5389626883706033615">Situs diblokir agar tidak meminta izin Anda untuk menggunakan info tentang Anda yang disimpannya</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lainnya)}other{(+ # lainnya)}}</translation>
 <translation id="5403592356182871684">Nama</translation>
 <translation id="5438097262470833822">Pilihan ini akan mereset izin untuk <ph name="WEBSITE" /></translation>
@@ -320,7 +316,6 @@
 <translation id="5677928146339483299">Diblokir</translation>
 <translation id="5689516760719285838">Lokasi</translation>
 <translation id="5690795753582697420">Kamera dinonaktifkan di setelan Android</translation>
-<translation id="5691080386278724773"><ph name="SITE" /> dapat menggunakan info Anda ketika Anda menjelajah</translation>
 <translation id="5700761515355162635">Cookie pihak ketiga diizinkan</translation>
 <translation id="5706552988683188916">Tindakan ini akan menghapus cookie dan data situs lainnya untuk <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Cookie pihak ketiga diblokir dalam mode Samaran</translation>
@@ -370,7 +365,6 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> dan <ph name="PERMISSION_2" /> diblokir</translation>
 <translation id="6270391203985052864">Situs dapat meminta izin mengirimkan notifikasi</translation>
 <translation id="6295158916970320988">Semua situs</translation>
-<translation id="6304434827459067558"><ph name="SITE" /> diblokir agar tidak dapat menggunakan info Anda di</translation>
 <translation id="6320088164292336938">Getar</translation>
 <translation id="6344622098450209924">Perlindungan Pelacakan</translation>
 <translation id="6367753977865761591">Blokir login pihak ketiga untuk situs tertentu.</translation>

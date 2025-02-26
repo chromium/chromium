@@ -5351,7 +5351,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="NetworkService.MaskedDomainList.DiskUsageInKB" units="KB"
+<histogram name="NetworkService.MaskedDomainList.DiskUsage" units="KB"
     expires_after="2025-06-08">
   <owner>djmitche@chromium.org</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
@@ -5362,6 +5362,16 @@ chromium-metrics-reviews@google.com.
     record is emitted when the flatbuffer MDL is generated. The generated
     flatbuffer MDL may be cached and reused for multiple network service
     instances, or may be re-generated for each one.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.MaskedDomainList.EstimatedMemoryUsage"
+    units="KB" expires_after="2025-08-10">
+  <owner>aakallam@chromium.org</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Records the estimated memory usage of the MaskedDomainListManager every time
+    the Masked Domain List is updated.
   </summary>
 </histogram>
 
@@ -5402,18 +5412,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="NetworkService.MaskedDomainList.NetworkServiceProxyAllowList.EstimatedMemoryUsageInKB"
-    units="KB" expires_after="2025-08-10">
-  <owner>aakallam@chromium.org</owner>
-  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
-  <summary>
-    Records the estimated memory usage of the MaskedDomainListManager every time
-    the Masked Domain List is updated.
-  </summary>
-</histogram>
-
-<histogram name="NetworkService.MaskedDomainList.SizeInKB" units="KB"
+<histogram name="NetworkService.MaskedDomainList.Size" units="KB"
     expires_after="2025-08-10">
   <owner>aakallam@chromium.org</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>

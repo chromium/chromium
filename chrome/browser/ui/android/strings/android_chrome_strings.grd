@@ -884,6 +884,24 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PWD_ACCESS_LOSS_WARNING_CLOSED" desc="Accessibility string read when the password access loss warning sheet closes.">
         Google Password Manager update closed
       </message>
+      <message name="IDS_PWM_DISABLED_NO_GMS_DIALOG_TITLE" desc="Title for the dialog shown to users without saved passwords for whom the password manager is unavailble because they don't have Google Play services.">
+        Google Password Manager stopped working
+      </message>
+      <message name="IDS_PWM_DISABLED_NO_GMS_DIALOG_DESCRIPTION_PARAGRAPH1" desc="First paragraph of the description text for the dialog shown to users without saved passwords for whom the password manager is unavailble because they don't have access to Google Play services.">
+        You don’t have passwords saved in Google Password Manager.
+      </message>
+      <message name="IDS_PWM_DISABLED_NO_GMS_DIALOG_DESCRIPTION_PARAGRAPH2" desc="Second paragraph of the description text for dialog shown to users without saved passowrds for whom the password manager is unavailble because they don't have access to Google Play services.">
+        If you previously exported passwords, look for a CSV file on your device and import them to your preferred password manager.
+      </message>
+      <message name="IDS_PWM_DISABLED_NO_GMS_DIALOG_BUTTON_TEXT" desc="Button text for dialog shown to users without saved passowrds for whom the password manager is unavailble because they don't have access to Google Play services.">
+        Got it
+      </message>
+      <message name="IDS_PWM_DISABLED_UPDATE_DIALOG_DESCRIPTION" desc="Description text for the dialog shown to users without saved passwords for whom the password manager is unavailble because the Google Play services version installed is outdated.">
+        To start saving and using passwords with Google Password Manager, update Google Play services.
+      </message>
+      <message name="IDS_PWM_DISABLED_UPDATE_DIALOG_CANCEL" desc="Button used to dimsiss the dialog shown to users without saved passwords who need to update Google Play services to regain access to the password manager.">
+       Cancel
+      </message>
       <message name="IDS_POST_PASSWORD_MIGRATION_SHEET_TITLE" desc="The title of the post password migration sheet that informs the user that the migration happened." formatter_data="android_java">
         We changed how passwords are saved on this device
       </message>

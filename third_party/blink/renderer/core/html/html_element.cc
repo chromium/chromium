@@ -436,6 +436,8 @@ const AttributeTriggers* HTMLElement::TriggersForAttributeName(
        &HTMLElement::OnNonceAttrChanged},
       {html_names::kPopoverAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnPopoverChanged},
+      {html_names::kContainertimingAttr, kNoWebFeature, kNoEvent,
+       &HTMLElement::OnContainerTimingAttrChanged},
 
       {html_names::kOnabortAttr, kNoWebFeature, event_type_names::kAbort,
        nullptr},
@@ -3059,6 +3061,28 @@ void HTMLElement::OnNonceAttrChanged(
     const AttributeModificationParams& params) {
   if (params.new_value != g_empty_atom)
     setNonce(params.new_value);
+}
+
+void HTMLElement::OnContainerTimingAttrChanged(
+    const AttributeModificationParams& params) {
+  if (!RuntimeEnabledFeatures::ContainerTimingEnabled()) {
+    return;
+  }
+  bool had_container_timing = !params.old_value.IsNull();
+  bool has_container_timing = !params.new_value.IsNull();
+  if (had_container_timing == has_container_timing) {
+    return;
+  }
+
+  if (had_container_timing && !has_container_timing) {
+    if (!RecalcSelfOrAncestorHasContainerTiming()) {
+      ClearSelfOrAncestorHasContainerTiming();
+      UpdateDescendantHasContainerTiming(false /* has_container_timing */);
+    }
+  } else if (!had_container_timing && has_container_timing) {
+    SetSelfOrAncestorHasContainerTiming();
+    UpdateDescendantHasContainerTiming(true /* has_container_timing */);
+  }
 }
 
 ElementInternals* HTMLElement::attachInternals(

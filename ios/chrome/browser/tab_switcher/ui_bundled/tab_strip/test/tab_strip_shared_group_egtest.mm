@@ -11,10 +11,12 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_app_interface.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/swift_constants_for_objective_c.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/query_title_server_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -27,15 +29,19 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::DeleteSharedConfirmationButton;
 using chrome_test_util::DeleteSharedGroupButton;
+using chrome_test_util::KeepSharedConfirmationButton;
 using chrome_test_util::LeaveSharedGroupButton;
 using chrome_test_util::LeaveSharedGroupConfirmationButton;
+using chrome_test_util::TabStripCellAtIndex;
 using chrome_test_util::UngroupButton;
 
 namespace {
 
 NSString* const kGroupTitle = @"shared group";
+NSString* const kSharedTabTitle = @"Google";
 
 // Returns a matcher for a tab strip group cell with `title` as title.
 id<GREYMatcher> TabStripGroupCellMatcher(NSString* title) {
@@ -85,7 +91,9 @@ void AddSharedGroup() {
   // `fakeIdentity2` joins shared groups as member.
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   if ([self
-          isRunningTest:@selector(testTabStripSharedGroupDeleteSharedGroup)]) {
+          isRunningTest:@selector(testTabStripSharedGroupDeleteSharedGroup)] ||
+      [self isRunningTest:@selector
+            (testTabStripLastTabCloseInSharedGroupAlertAsOwner)]) {
     // `fakeIdentity2` joins shared groups as owner.
     identity = [FakeSystemIdentity fakeIdentity2];
   }
@@ -172,6 +180,168 @@ void AddSharedGroup() {
                                  }];
   bool groupsLeaved = [groupsLeavedCheck waitWithTimeout:10];
   GREYAssertTrue(groupsLeaved, @"Failed to leave the shared group");
+}
+
+// Tests that when closing the last tab of shared group as an member of the
+// group, an alert is displayed and works.
+- (void)testTabStripLastTabCloseInSharedGroupAlertAsMember {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+  if ([ChromeEarlGrey isCompactWidth]) {
+    EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
+  }
+
+  AddSharedGroup();
+
+  // Open the tab in shared group.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(kSharedTabTitle),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForMainTabCount:2];
+
+  // Close the tab outside the group.
+  [[EarlGrey selectElementWithMatcher:TabStripCellAtIndex(0)]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                          IDS_IOS_CONTENT_CONTEXT_CLOSETAB)]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Tap the close button of the current tab cell and verify the alert.
+  id<GREYMatcher> currentTabCloseButtonMatcher = grey_allOf(
+      grey_accessibilityID(
+          TabStripTabItemConstants.closeButtonAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:currentTabCloseButtonMatcher]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:DeleteSharedConfirmationButton()]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:LeaveSharedGroupConfirmationButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Tap on "Keep Group".
+  [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Verify that the tab group cell is still displayed.
+  [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle)]
+      assertWithMatcher:grey_notNil()];
+
+  // Wait until the page has finished loading.
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Ensure the new tab is a new tab page.
+  const GURL currentURL = [ChromeEarlGrey webStateVisibleURL];
+  const GURL expectedURL(kChromeUINewTabURL);
+  GREYAssertEqual(expectedURL, currentURL, @"Page navigated unexpectedly to %s",
+                  currentURL.spec().c_str());
+
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Close the tab and this time, leave the group.
+  currentTabCloseButtonMatcher = grey_allOf(
+      grey_accessibilityID(
+          TabStripTabItemConstants.closeButtonAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:currentTabCloseButtonMatcher]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForMainTabCount:1];
+  [[EarlGrey selectElementWithMatcher:LeaveSharedGroupConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Check that the group is deleted.
+  [ChromeEarlGrey waitForMainTabCount:0];
+}
+
+// Tests that when closing the last tab of shared group as owner of the group,
+// an alert is displayed and works.
+- (void)testTabStripLastTabCloseInSharedGroupAlertAsOwner {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+  if ([ChromeEarlGrey isCompactWidth]) {
+    EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
+  }
+
+  AddSharedGroup();
+
+  // Open the tab in shared group.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(kSharedTabTitle),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForMainTabCount:2];
+
+  // Close the tab outside the group.
+  [[EarlGrey selectElementWithMatcher:TabStripCellAtIndex(0)]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                          IDS_IOS_CONTENT_CONTEXT_CLOSETAB)]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Tap the close button of the current tab cell and verify the alert.
+  id<GREYMatcher> currentTabCloseButtonMatcher = grey_allOf(
+      grey_accessibilityID(
+          TabStripTabItemConstants.closeButtonAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:currentTabCloseButtonMatcher]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:DeleteSharedConfirmationButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:LeaveSharedGroupConfirmationButton()]
+      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Tap on "Keep Group".
+  [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Verify that the tab group cell is still displayed.
+  [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle)]
+      assertWithMatcher:grey_notNil()];
+
+  // Wait until the page has finished loading.
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Ensure the new tab is a new tab page.
+  const GURL currentURL = [ChromeEarlGrey webStateVisibleURL];
+  const GURL expectedURL(kChromeUINewTabURL);
+  GREYAssertEqual(expectedURL, currentURL, @"Page navigated unexpectedly to %s",
+                  currentURL.spec().c_str());
+
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Close the tab and this time, leave the group.
+  currentTabCloseButtonMatcher = grey_allOf(
+      grey_accessibilityID(
+          TabStripTabItemConstants.closeButtonAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:currentTabCloseButtonMatcher]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForMainTabCount:1];
+  [[EarlGrey selectElementWithMatcher:DeleteSharedConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Check that the group is deleted.
+  [ChromeEarlGrey waitForMainTabCount:0];
 }
 
 @end

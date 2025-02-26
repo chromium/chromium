@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
+<translation id="1045448422538531528">ગ્રૂપમાં ઉમેરો</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> અઠવાડિયા પહેલાં બનાવ્યું}one{<ph name="NUM_WEEKS_MANY" /> અઠવાડિયા પહેલાં બનાવ્યું}other{<ph name="NUM_WEEKS_MANY" /> અઠવાડિયા પહેલાં બનાવ્યું}}</translation>
 <translation id="1063300264396686489">અન્ય ડિવાઇસમાંથી ટૅબના ગ્રૂપ ઑટોમૅટિક રીતે ખોલો</translation>
 <translation id="1075622780330595106">હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>

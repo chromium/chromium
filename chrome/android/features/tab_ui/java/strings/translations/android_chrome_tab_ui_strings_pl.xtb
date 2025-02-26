@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1045448422538531528">Dodaj do grupy</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Utworzono <ph name="NUM_WEEKS_ONE" /> tydzień temu}few{Utworzono <ph name="NUM_WEEKS_MANY" /> tygodnie temu}many{Utworzono <ph name="NUM_WEEKS_MANY" /> tygodni temu}other{Utworzono <ph name="NUM_WEEKS_MANY" /> tygodnia temu}}</translation>
 <translation id="1063300264396686489">Automatycznie otwieraj grupy kart z innych urządzeń</translation>
 <translation id="1075622780330595106">Karty, które ostatnio nie były używane: <ph name="NUMBER_OF_TABS" />. Zamknąć je?</translation>

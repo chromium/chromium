@@ -114,6 +114,7 @@
 <translation id="1445276840641906250">একই ব্রাউজারে আপনার সব ট্যাব দেখুন</translation>
 <translation id="1450170672351507823">'স্ট্যান্ডার্ড সুরক্ষা' ফিচারটি চালু করা আছে। আরও উন্নত নিরাপত্তার জন্য 'স্ট্যান্ডার্ড সুরক্ষা' ফিচারটি চালু করুন।</translation>
 <translation id="1455660774629812862">লুকাবেন না</translation>
+<translation id="1456545332132818232"><ph name="PRODUCT_NAME" />-এ প্রোডাক্টের পর্যালোচনা, <ph name="MAX_STARS" />-এর মধ্যে <ph name="STARS" />, <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">সময় বাঁচান, কম টাইপ করুন</translation>
 <translation id="1466035273550360103">কোন খোলা ট্যাব নেই</translation>
 <translation id="1469381646033328562">তোমার অ্যাকাউন্ট তোমার অভিভাবক ম্যানেজ করেন।
@@ -292,6 +293,7 @@
 <translation id="2199562093267256223">এর ফলে, <ph name="USER_EMAIL" /> দিয়ে সাইন-ইন করা হয়েছে এমন সব ডিভাইস থেকে গ্রুপ মুছে যাবে।</translation>
 <translation id="2202084845446535117">কোনও ইমেল অ্যাকাউন্ট নেই</translation>
 <translation id="2214453882118345682">আপনার ক্যামেরা ব্যবহার করে যা দেখেন তা কিনুন, অনুবাদ ও শনাক্ত করুন।</translation>
+<translation id="2215819824168709130">"দাম ট্র্যাক করুন" কার্ড লুকান</translation>
 <translation id="2220529011494928058">কোনো সমস্যার অভিযোগ করুন</translation>
 <translation id="2220887224562128152">কোনও ফাইল একবার মুছে দেওয়ার জন্য শিডিউল করা হলে, সেটি ফিরিয়ে আগের অবস্থায় ফিরিয়ে আনা যাবে না।</translation>
 <translation id="2223461067862937305">একটি QR কোড তৈরি করুন</translation>
@@ -458,6 +460,7 @@
 <translation id="2893168226686371498">ডিফল্ট ব্রাউজার</translation>
 <translation id="2894757982205307093">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
 <translation id="2902312830803030883">আরও অ্যাকশন</translation>
+<translation id="2904788871580817212">আপনার খোলা ট্যাবে দাম কমার তথ্য, <ph name="PREVIOUS_PRICE" /> থেকে <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">আপনার <ph name="NUMBER_OF_PASSWORDS" />টি একই পাসওয়ার্ড আছে যা আবার ব্যবহার করা হয়েছে এবং এগুলি আপনার সুরক্ষাকে ঝুঁকির মুখে ফেলতে পারে।</translation>
 <translation id="29153882450867370">"দাম ট্র্যাক করুন" লুকান</translation>
 <translation id="291754862089661335">এই ফ্রেমের মধ্যে QR কোড বা বারকোড স্থাপন করুন</translation>
@@ -642,6 +645,7 @@
 <translation id="3831560640878483188">সতর্কতা বাতিল করবেন?</translation>
 <translation id="3832419617903252251">পাসওয়ার্ড শুধুমাত্র এই ডিভাইসে সেভ আছে</translation>
 <translation id="3838691874161539578">আপনার নিরাপত্তা আরও জোরালো করতে সেভ করা পাসওয়ার্ড চেক করুন এবং অনলাইনে নিরাপদ থাকুন</translation>
+<translation id="3838985624086228724">আপনার ট্র্যাক করা প্রোডাক্টে দাম কমার তথ্য, <ph name="PREVIOUS_PRICE" /> থেকে <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />-এর পাসওয়ার্ড এবং অন্য <ph name="NUMBER_OF_ACCOUNTS" />টি পাসওয়ার্ড মুছে ফেলা হবে। আপনার অ্যাকাউন্ট মুছে ফেলা হবে না।</translation>
 <translation id="3858860766373142691">নাম</translation>
@@ -760,6 +764,7 @@
 <translation id="4322394346347055525">অন্যান্য ট্যাব বন্ধ করুন</translation>
 <translation id="4324735664183300693">বিজ্ঞপ্তি চালু করুন</translation>
 <translation id="4326912346867677256">নিরাপদে সাইন-ইন করতে, "পাসওয়ার্ড ব্যবহার করুন" বিকল্পে ট্যাপ করুন।</translation>
+<translation id="4327017157997423717"><ph name="PRODUCT_NAME" />-এ দাম ট্র্যাক করুন, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">আমার ড্রাইভ</translation>
 <translation id="4331177082088332784">আপনি এটি BEGIN_LINK কন্টেন্ট সেটিংস END_LINK থেকে ম্যানেজ করতে পারবেন</translation>
 <translation id="4334428914252001502">পড়া হয়নি এমন ১টি নিবন্ধ।</translation>
@@ -943,6 +948,7 @@
 <translation id="5127538504377457572"><ph name="DAYS" /> দিন আগে অ্যাক্টিভ ছিলেন</translation>
 <translation id="5128788795241319992">নতুন মেনু দেখুন</translation>
 <translation id="5132942445612118989">সমস্ত ডিভাইসে আপনার পাসওয়ার্ড, ইতিহাস ও আরও অনেক কিছু সিঙ্ক করুন</translation>
+<translation id="5141363746588976328">'আপনার ট্যাবে দাম কমার তথ্য সংক্রান্ত' কার্ড লুকান</translation>
 <translation id="5145331760738811130">ট্যাব পাল্টানোর ফিচার থেকে বেরিয়ে আসুন</translation>
 <translation id="5157638238828697074">কোনও সমস্যা হয়েছে। অ্যাপ্লিকেশনটি খোলা যায়নি।</translation>
 <translation id="5163417375525818870">PDF</translation>
@@ -994,6 +1000,7 @@
 <translation id="5352128922772839949">ফাইল সেভ করুন</translation>
 <translation id="5355191726083956201">"উন্নত সুরক্ষা" ফিচার চালু করা আছে</translation>
 <translation id="537853552771686272">আপনার আগ্রহের বিষয় ও সাইট ম্যানেজ করুন</translation>
+<translation id="5394975111793637642">'আপনার জন্য প্রোডাক্টের পর্যালোচনা' কার্ড লুকান</translation>
 <translation id="5395707839134961196">সার্চ ইঞ্জিনের বিবরণ লুকান</translation>
 <translation id="5414763847370083940">কোনও সাইটে দাম কমলে সেই সম্পর্কে আপনি বিজ্ঞপ্তি পাবেন।</translation>
 <translation id="5415289094036440596">পাসকী শেয়ার করা যাবে না</translation>
@@ -1236,6 +1243,7 @@
 <translation id="634878792104344809">আপনার সমস্ত ডিভাইসে বুকমার্ক, পাসওয়ার্ড, ইতিহাস এবং আরও অনেক কিছু সিঙ্ক করুন</translation>
 <translation id="6351147166808964033">ট্যাব পাল্টানোর ফিচারে ঢুকুন</translation>
 <translation id="63519665078626091">ওয়েব ইন্সপেক্টর ব্যবহার করতে, আপনার কম্পিউটারে কেবেলের মাধ্যমে Safari ব্রাউজারের সাথে কানেক্ট করুন এবং 'ডেভেলপ' মেনু থেকে iPad অ্যাক্সেস করুন। আপনার কম্পিউটারে, Safari সেটিংসের 'উন্নত' বিভাগ থেকে আপনি 'ডেভেলপ' মেনু চালু করতে পারবেন।</translation>
+<translation id="6355820183143562453">'প্রাইস ট্র্যাকিং কার্ড' লুকান</translation>
 <translation id="6355820205320395730">দুর্বল পাসওয়ার্ড সহজেই অনুমান করা যায়। শক্তিশালী পাসওয়ার্ড তৈরি করছেন কিনা তা ভাল করে দেখে নিন। <ph name="BEGIN_LINK" />নিরাপত্তা সংক্রান্ত আরও পরামর্শ দেখুন।<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> ফলো করুন</translation>
 <translation id="6368038301482806847">তালিকা থেকে একটি সার্চ ইঞ্জিন বেছে নিন।</translation>
@@ -1534,6 +1542,7 @@
 <translation id="7638584964844754484">ত্রুটিপূর্ণ পাসফ্রেজ</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{চুরি হয়ে যাওয়া পাসওয়ার্ড}=1{{COUNT}টি চুরি হয়ে যাওয়া পাসওয়ার্ড}one{{COUNT}টি চুরি হয়ে যাওয়া পাসওয়ার্ড}other{{COUNT}টি চুরি হয়ে যাওয়া পাসওয়ার্ড}}</translation>
 <translation id="7640669552036055091">Android-এ অ্যাক্টিভ থাকা ট্যাব</translation>
+<translation id="7642277834834046856">আপনার ট্যাবে দাম কমার তথ্য</translation>
 <translation id="7646263789464975852">মেনু → সেটিংস → নিরাপত্তা সংক্রান্ত পরীক্ষা</translation>
 <translation id="7646772052135772216">পাসওয়ার্ড সিঙ্ক ফিচার কাজ করছে না</translation>
 <translation id="764827086632467055">'ডিফল্ট ব্রাউজার অ্যাপ' বিকল্পে ট্যাপ করুন</translation>
@@ -1844,6 +1853,7 @@
 <translation id="886477344907998366">বুকমার্ক দেখুন</translation>
 <translation id="8869239474428371589">আপনার পছন্দের ব্রাউজার থেকে সেরা অভিজ্ঞতা পান</translation>
 <translation id="8871974300055371298">কন্টেন্ট সেটিংস</translation>
+<translation id="8877788021141246043">রিমাইন্ডার সেট করুন</translation>
 <translation id="8879604564928138696">চেষ্টা করতে ডবল ট্যাপ করুন</translation>
 <translation id="8879952635974818770">পছন্দমতো কন্টেন্ট</translation>
 <translation id="8887595428614802520">সব ট্যাব ও গ্রুপ বন্ধ করুন</translation>
@@ -1944,6 +1954,7 @@
 <translation id="963102227019621224">ওয়েব ও অ্যাপ অ্যাক্টিভিটি</translation>
 <translation id="966593914872420832">ভয়েস সার্চ</translation>
 <translation id="968653181266955408">কন্টেন্ট সংক্রান্ত বিজ্ঞপ্তি পান</translation>
+<translation id="972084300091883657">{COUNT,plural, =0{<ph name="OWNER_NAME" />-এর সাথে ট্যাব গ্রুপে যোগ দিন}=1{<ph name="OWNER_NAME" /> এবং অন্য {COUNT} জনের সাথে ট্যাব গ্রুপে যোগ দিন}one{<ph name="OWNER_NAME" /> এবং অন্য {COUNT} জনের সাথে ট্যাব গ্রুপে যোগ দিন}other{<ph name="OWNER_NAME" /> এবং অন্য {COUNT} জনের সাথে ট্যাব গ্রুপে যোগ দিন}}</translation>
 <translation id="973493300226275298">অনলাইন স্টোর জুড়ে প্রোডাক্টের দাম ট্র্যাক করুন। দাম কমে গেলে আপনি বিজ্ঞপ্তি পাবেন।</translation>
 <translation id="973788791897303708">এই ট্যাব গ্রুপে আর জায়গা নেই</translation>
 <translation id="976392601789283511">শেষবার বন্ধ করা ট্যাবটি আবার খুলুন</translation>

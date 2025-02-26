@@ -1391,19 +1391,26 @@ bool TestRecipeReplayer::ExecuteAutofillAction(base::Value::Dict action) {
 bool TestRecipeReplayer::ExecuteClickAction(base::Value::Dict action) {
   std::string xpath;
   content::RenderFrameHost* frame;
-  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
+  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
     return false;
+  }
 
   VLOG(1) << "Left mouse clicking `" << xpath << "`.";
-  if (!ScrollElementIntoView(xpath, frame))
+  if (!ScrollElementIntoView(xpath, frame)) {
     return false;
+  }
   WaitTillPageIsIdle(scroll_wait_timeout);
+  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
+    return false;
+  }
 
   gfx::Rect rect;
-  if (!GetBoundingRectOfTargetElement(xpath, frame, &rect))
+  if (!GetBoundingRectOfTargetElement(xpath, frame, &rect)) {
     return false;
-  if (!SimulateLeftMouseClickAt(rect.CenterPoint(), frame))
+  }
+  if (!SimulateLeftMouseClickAt(rect.CenterPoint(), frame)) {
     return false;
+  }
 
   WaitTillPageIsIdle();
   return true;
@@ -1457,21 +1464,28 @@ bool TestRecipeReplayer::ExecuteCoolOffAction(base::Value::Dict action) {
 bool TestRecipeReplayer::ExecuteHoverAction(base::Value::Dict action) {
   std::string xpath;
   content::RenderFrameHost* frame;
-  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
+  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
     return false;
+  }
 
   VLOG(1) << "Hovering over `" << xpath << "`.";
 
-  if (!ScrollElementIntoView(xpath, frame))
+  if (!ScrollElementIntoView(xpath, frame)) {
     return false;
+  }
   WaitTillPageIsIdle(scroll_wait_timeout);
+  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
+    return false;
+  }
 
   gfx::Rect rect;
-  if (!GetBoundingRectOfTargetElement(xpath, frame, &rect))
+  if (!GetBoundingRectOfTargetElement(xpath, frame, &rect)) {
     return false;
+  }
 
-  if (!SimulateMouseHoverAt(frame, rect.CenterPoint()))
+  if (!SimulateMouseHoverAt(frame, rect.CenterPoint())) {
     return false;
+  }
 
   if (!WaitForVisualUpdate()) {
     ADD_FAILURE() << "The page did not respond to a mouse hover action!";
@@ -1821,13 +1835,11 @@ bool TestRecipeReplayer::ExecuteWaitForStateAction(base::Value::Dict action) {
   }
 
   content::RenderFrameHost* frame;
-  if (!GetTargetFrameFromAction(action, &frame))
-    return false;
-
   VLOG(1) << "Waiting for page to reach a state.";
 
   // Wait for all of the assertions to become true on the current page.
-  return WaitForStateChange(frame, state_assertions, default_action_timeout);
+  return WaitForStateChange(action, &frame, state_assertions,
+                            default_action_timeout);
 }
 
 bool TestRecipeReplayer::GetTargetHTMLElementXpathFromAction(
@@ -1940,26 +1952,28 @@ bool TestRecipeReplayer::ExtractFrameAndVerifyElement(
     bool set_focus,
     bool relaxed_visibility,
     bool ignore_failure) {
-  if (!GetTargetHTMLElementXpathFromAction(action, xpath))
+  if (!GetTargetHTMLElementXpathFromAction(action, xpath)) {
     return false;
+  }
 
   int visibility_enum_val;
   if (!GetTargetHTMLElementVisibilityEnumFromAction(action,
-                                                    &visibility_enum_val))
+                                                    &visibility_enum_val)) {
     return false;
-  if (!GetTargetFrameFromAction(action, frame))
-    return false;
+  }
 
   // If we're just validating we don't care about on_top-ness, as copied from
   // chrome/test/data/web_page_replay_go_helper_scripts/automation_helper.js
   // to TestRecipeReplayer::DomElementReadyState enum
   // So remove (DomElementReadyState::kReadyStateOnTop)
-  if (relaxed_visibility)
+  if (relaxed_visibility) {
     visibility_enum_val &= ~kReadyStateOnTop;
+  }
 
-  if (!WaitForElementToBeReady(*xpath, visibility_enum_val, *frame,
-                               ignore_failure))
+  if (!WaitForElementToBeReady(*xpath, visibility_enum_val, action, frame,
+                               ignore_failure)) {
     return false;
+  }
 
   if (set_focus) {
     std::vector<std::string> frame_path;
@@ -2042,25 +2056,33 @@ bool TestRecipeReplayer::GetIFrameOffsetFromIFramePath(
 bool TestRecipeReplayer::WaitForElementToBeReady(
     const std::string& xpath,
     const int visibility_enum_val,
-    content::RenderFrameHost* frame,
+    const base::Value::Dict& action,
+    content::RenderFrameHost** frame,
     bool ignore_failure) {
   std::vector<std::string> state_assertions;
   state_assertions.push_back(base::StringPrintf(
       "return automation_helper.isElementWithXpathReady(`%s`, %d);",
       xpath.c_str(), visibility_enum_val));
   return WaitForStateChange(
-      frame, state_assertions,
+      action, frame, state_assertions,
       ignore_failure ? click_fallback_timeout : default_action_timeout,
       ignore_failure);
 }
 
 bool TestRecipeReplayer::WaitForStateChange(
-    content::RenderFrameHost* frame,
+    const base::Value::Dict& action,
+    content::RenderFrameHost** frame,
     const std::vector<std::string>& state_assertions,
     const base::TimeDelta& timeout,
     bool ignore_failure) {
   base::TimeTicks start_time = base::TimeTicks::Now();
-  while (!AllAssertionsPassed(frame, state_assertions)) {
+  while (true) {
+    if (!GetTargetFrameFromAction(action, frame)) {
+      return false;
+    }
+    if (AllAssertionsPassed(*frame, state_assertions)) {
+      return true;
+    }
     if (base::TimeTicks::Now() - start_time > timeout) {
       if (!ignore_failure) {
         ADD_FAILURE() << "State change hasn't completed within timeout.";
@@ -2069,7 +2091,6 @@ bool TestRecipeReplayer::WaitForStateChange(
     }
     WaitTillPageIsIdle();
   }
-  return true;
 }
 
 bool TestRecipeReplayer::AllAssertionsPassed(

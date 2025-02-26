@@ -270119,7 +270119,7 @@
     },
     "filter-effects": {
      "backdrop-filter-backdrop-root-backdrop-filter.html": [
-      "6be85d5cf24ca4fd605c428fb8d6d0c109210cc4",
+      "b942eca87ac06aaadc174f7df89bc0bfe26d3334",
       [
        null,
        [
@@ -270128,7 +270128,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2696
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "backdrop-filter-backdrop-root-clip-path.html": [
@@ -270187,7 +270203,7 @@
       ]
      ],
      "backdrop-filter-backdrop-root-opacity.html": [
-      "b11d064cb3b2d9a860964c682aa4f02ebc4061b6",
+      "b3d13af1c23e06daeaf5806b1df39d51dbd82eb2",
       [
        null,
        [
@@ -270371,7 +270387,7 @@
       ]
      ],
      "backdrop-filter-clip-rect-zoom.html": [
-      "faf239913075e5bcc22c70c0d4dcbabba0bfe5b7",
+      "22bc03f910d3ebffe5210f9c52dd5d933387be2c",
       [
        null,
        [
@@ -270380,7 +270396,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            3
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "backdrop-filter-clip-rect.html": [
@@ -271404,7 +271436,7 @@
       ]
      ],
      "css-filters-animation-brightness.html": [
-      "7cd51abe87bf208b94385008dde3cdfefdce4c9c",
+      "f24aea54199fedc57f95346fb852142299e927a8",
       [
        null,
        [
@@ -271413,7 +271445,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            37500
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "css-filters-animation-combined-001.html": [
@@ -432788,10 +432836,6 @@
     ],
     "send-no-response-event-order-expected.txt": [
      "e0ee49351a4c8064271dbce0f9b6a1c8cff3297e",
-     []
-    ],
-    "send-redirect-to-cors-expected.txt": [
-     "88aa418f21786afba36789fb3ce4ffb732075aa4",
      []
     ],
     "setrequestheader-combining.window-expected.txt": [

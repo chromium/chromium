@@ -3989,6 +3989,7 @@ Opmerking: Als de instelling resulteert in geen verificatiemethoden die wederzij
 <translation id="3979738908158213640">URL's die toegang krijgen om apparaatattesten uit te voeren tijdens SAML-verificatie</translation>
 <translation id="3982322576186033243">Onveilige hashes niet toestaan in TLS-handshakes</translation>
 <translation id="3982465141749620677">Vragen om opnieuw te verifiëren in een tabblad</translation>
+<translation id="3982624306233556415">Blokkeerlijst van identiteitsproviders die Extensible Enterprise SSO niet kunnen gebruiken voor de browser</translation>
 <translation id="3982849521386211220">Hiermee kun je de lijst met Reporting API-eindpunten[1] instellen waarnaar bedrijfsrapporten kunnen worden gestuurd.
 
 [1] https://www.w3.org/TR/reporting-1/#endpoint</translation>
@@ -6902,6 +6903,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="6123052603197028610">Geen query's naar Google-servers toestaan om tijdstempels op te halen</translation>
 <translation id="6128539430475678271">Controlled Frame API blokkeren op deze sites</translation>
 <translation id="6130360423841559818">Nieuw gedrag beheren voor het annuleringsdialoogvenster dat door de beforeunload-gebeurtenis wordt gegenereerd</translation>
+<translation id="6131672297549089047">Alle identiteitsproviders</translation>
 <translation id="6131803221304830537">Code-integriteit van weergaveprogramma uitzetten</translation>
 <translation id="6132506775968708399">Cookies van derden blokkeren</translation>
 <translation id="6133088669883929098">Alle sites toestaan sleutels te genereren</translation>
@@ -8465,6 +8467,7 @@ Als je dit beleid niet toepast, worden wachtwoorden nooit onthouden en worden al
 <translation id="7136237405361383549">Gebruik het standaard weergaveprogramma op basis van de configuratie voor praktijktests.</translation>
 <translation id="7138762292550697459">Minimale time-out van de JavaScript-functie setTimeout() beheren.</translation>
 <translation id="7138792262152376158">Volgt de reguliere beëindigingstijdlijnen voor de PrefixedVideoFullscreen API</translation>
+<translation id="7140760943584613237">Microsoft®-cloudidentiteitsprovider</translation>
 <translation id="714219487865269980">Markering toetsenbordfocus aanzetten</translation>
 <translation id="7144022711746703451">
       Dit beleid is verwijderd in M80 omdat WebDriver nu werkt met alle bestaande beleidsregels, en het dus niet langer nodig is.

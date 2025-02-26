@@ -772,6 +772,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" />ত ম্যাদ উকলিব</translation>
 <translation id="2337852623177822836">ছেটিংটো আপোনাৰ প্ৰশাসকৰ দ্বাৰা নিয়ন্ত্ৰণ কৰা হয়</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" />এ পেয়াৰ কৰিব বিচাৰে</translation>
+<translation id="2344529975040861103">আপুনি এই কাৰ্ডখন স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিব পাৰে কাৰণ আপোনাৰ একাউণ্টটো Google Payৰ সৈতে লিংক কৰা আছে</translation>
 <translation id="2346319942568447007">আপুনি প্ৰতিলিপি কৰা প্ৰতিচ্ছবি</translation>
 <translation id="2348509731468399833">মূল্য ট্ৰেক কৰা সুবিধাটো বন্ধ হৈছে।</translation>
 <translation id="2349957959687031096">ইনক’গনিট’ ৱিণ্ড’ খোলাৰ বুটাম, ব্যক্তিগতভাৱে ব্ৰাউজ কৰিবৰ বাবে এখন নতুন ইনক’গনিট’ ৱিণ্ড’ খুলিবলৈ সক্ৰিয় কৰক</translation>
@@ -1031,7 +1032,6 @@
 <translation id="2833637280516285136">টক ৰেডিঅ’</translation>
 <translation id="2835170189407361413">ফর্ম মচক</translation>
 <translation id="2837891525090413132">আপোনাৰ কীব’ৰ্ড লক আৰু ব্যৱহাৰ কৰিবলৈ ক’ব পাৰে</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" />এ আপোনাৰ বিষয়ে ছেভ কৰি ৰখা তথ্য ব্যৱহাৰ কৰিব বিচাৰে</translation>
 <translation id="2839032553903800133">জাননীসমূহ অৱৰোধ কৰা হৈছে</translation>
 <translation id="2839501879576190149">আপুনি চাব বিচৰা ছাইটটো ভুৱা</translation>
 <translation id="2843623755398178332">স্ক্ৰ’ল কৰি আপোনাৰ শ্বেয়াৰ কৰা টেবৰ সমল জুম কৰিবনে?</translation>
@@ -4572,6 +4572,7 @@
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">Chrome ব্ৰাউজাৰে পাছৱৰ্ড স্বয়ংক্রিয়ভাৱে পূৰ কৰিবলৈ ফিংগাৰপ্ৰিণ্ট ব্যৱহাৰ কৰিবলৈ বিচাৰিব</translation>
 <translation id="9141013498910525015">ঠিকনাসমূহ পৰিচালনা কৰক</translation>
+<translation id="9143898823728499852">আপুনি এই কাৰ্ডখন স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিব পাৰে কাৰণ আপোনাৰ <ph name="CARD_ISSUER_NAME" /> একাউণ্টটো Google Payৰ সৈতে লিংক কৰা আছে</translation>
 <translation id="9144951720726881238">ম্যাদ উকলাৰ তাৰিখ:</translation>
 <translation id="9145910032514306808">পুনৰ <ph name="BEGIN_LINK" />ছাইন ইন কৰক<ph name="END_LINK" />,
     তাৰ পাছত লিখাৰ ক্ষেত্ৰত সহায় পাবলৈ এই টেবটোলৈ উভতি আহক</translation>

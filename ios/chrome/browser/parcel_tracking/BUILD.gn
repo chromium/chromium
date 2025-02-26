@@ -17,10 +17,6 @@ source_set("tracking_source") {
   sources = [ "tracking_source.h" ]
 }
 
-source_set("parcel_tracking_step") {
-  sources = [ "parcel_tracking_step.h" ]
-}
-
 source_set("features") {
   sources = [
     "features.h",

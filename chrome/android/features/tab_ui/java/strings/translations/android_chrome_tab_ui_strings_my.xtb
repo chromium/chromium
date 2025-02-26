@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
+<translation id="1045448422538531528">အုပ်စုသို့ ထည့်ရန်</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{ပြီးခဲ့သော <ph name="NUM_WEEKS_ONE" /> ပတ်က ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_WEEKS_MANY" /> ပတ်က ပြုလုပ်ထားသည်}}</translation>
 <translation id="1063300264396686489">အခြားစက်များမှ တဘ်အုပ်စုများကို အလိုအလျောက်ဖွင့်ရန်</translation>
 <translation id="1075622780330595106">သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို နောက်ပိုင်းတွင် အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
@@ -11,6 +12,7 @@
 <translation id="1293272072740285747">တဘ်များကို နောက်မှထည့်ရန် ဤအုပ်စုကို ဆက်ထားနိုင်သည်။ သို့မဟုတ် ၎င်းကို သင်မလိုအပ်တော့ပါက ဖျက်နိုင်သည်။
 
 ဖျက်လိုက်ပါက လူတိုင်းသည် “<ph name="TITLE_OF_GROUP" />” တဘ်အုပ်စုသုံးခွင့် ချက်ချင်းဆုံးရှုံးမည်ဖြစ်ပြီး ၎င်းကို စက်အားလုံးမှ ဖျက်ပါမည်။</translation>
+<translation id="1326654401173629446">“<ph name="TAB_GROUP_NAME" />” တဘ်အုပ်စုကို မရနိုင်တော့ပါ</translation>
 <translation id="1329584516321524826">ယခုလေးတင် အပ်ဒိတ်လုပ်ထားသည်</translation>
 <translation id="1340839264183302272">အဖွဲ့မှထွက်ရန်</translation>
 <translation id="1419023007528516122">၎င်းသည် သင့်စက်မှအဖွဲ့ကို အပြီးဖျက်ပါမည်</translation>

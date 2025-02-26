@@ -18,7 +18,7 @@ struct CombiningKeyMapping {
   uint16_t combining;
   uint16_t printable;
 };
-const auto kCombiningKeyMapping = std::to_array<CombiningKeyMapping>({
+constexpr auto kCombiningKeyMapping = std::to_array<CombiningKeyMapping>({
     {0x0300, 0x0060},  // Grave
     {0x0301, 0x0027},  // Acute
     {0x0302, 0x005e},  // Circumflex

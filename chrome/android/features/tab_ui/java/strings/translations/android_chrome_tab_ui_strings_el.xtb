@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
+<translation id="1045448422538531528">Προσθήκη στην ομάδα</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_WEEKS_ONE" /> εβδομάδα}other{Δημιουργήθηκε πριν από <ph name="NUM_WEEKS_MANY" /> εβδομάδες}}</translation>
 <translation id="1063300264396686489">Αυτόματο άνοιγμα ομάδων καρτελών από άλλες συσκευές</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> από τις καρτέλες σας δεν έχουν χρησιμοποιηθεί πρόσφατα. Κλείσιμο αυτών των καρτελών;</translation>

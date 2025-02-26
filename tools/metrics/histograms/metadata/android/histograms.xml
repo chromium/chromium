@@ -2330,6 +2330,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.InputOnViz.Browser.EventTypesInDroppedSequence"
+    enum="MotionEventAction" expires_after="2025-06-30">
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    The metric is recorded when a touch sequence in Browser fails to transfer
+    while while there's a potentially ongoing touch sequence on Viz. The metric
+    records the type of event that was dropped.
+  </summary>
+</histogram>
+
+<histogram name="Android.InputOnViz.Browser.NumEventsInDroppedSequence"
+    units="counts" expires_after="2025-06-30">
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    The metric is recorded when a touch sequence in Browser fails to transfer
+    while while there's a potentially ongoing touch sequence on Viz. The metric
+    records the number of events lost in such cases.
+  </summary>
+</histogram>
+
 <histogram name="Android.InputOnViz.Browser.TouchMovesSeenAfterTransfer"
     units="counts" expires_after="2025-06-30">
   <owner>kartarsingh@google.com</owner>

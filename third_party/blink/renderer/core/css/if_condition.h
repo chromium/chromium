@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_IF_CONDITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_IF_CONDITION_H_
 
+#include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 
@@ -78,14 +79,17 @@ class CORE_EXPORT IfTestStyle : public IfCondition {
 
 class CORE_EXPORT IfTestMedia : public IfCondition {
  public:
-  explicit IfTestMedia(const MediaQuery* media_test)
-      : media_test_(media_test) {}
+  explicit IfTestMedia(const MediaQuery* query) {
+    HeapVector<Member<const MediaQuery>> queries;
+    queries.push_back(query);
+    media_test_ = MakeGarbageCollected<MediaQuerySet>(std::move(queries));
+  }
   void Trace(Visitor*) const override;
   Type GetType() const override { return Type::kMedia; }
-  const MediaQuery* GetMediaQuery() const { return media_test_; }
+  const MediaQuerySet* GetMediaQuerySet() const { return media_test_; }
 
  private:
-  Member<const MediaQuery> media_test_;
+  Member<const MediaQuerySet> media_test_;
 };
 
 class CORE_EXPORT IfConditionUnknown : public IfCondition {

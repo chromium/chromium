@@ -1067,6 +1067,16 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.CertProvisioning.CertProvBackendError.Dynamic"
+    enum="CertProvBackendError" expires_after="2026-02-01">
+  <owner>miersh@google.com</owner>
+  <owner>gschwarz@google.com</owner>
+  <summary>
+    The error returned by the certificate provisioning back-end after a
+    provisioning request (for the dynamic flow).
+  </summary>
+</histogram>
+
 <histogram
     name="ChromeOS.CertProvisioning.CsrSignTime{CertProvisioningProtocolVersion}.{CertProvisioningScope}"
     units="ms" expires_after="2025-04-01">
@@ -1080,6 +1090,16 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <token key="CertProvisioningScope" variants="AllCertProvisioningScopes"/>
   <token key="CertProvisioningProtocolVersion"
       variants="AllCertProvisioningProtocolVersions"/>
+</histogram>
+
+<histogram name="ChromeOS.CertProvisioning.DmStatus.Dynamic"
+    enum="EnterpriseDeviceManagementStatus" expires_after="2026-02-01">
+  <owner>miersh@google.com</owner>
+  <owner>gschwarz@google.com</owner>
+  <summary>
+    The Device Management Status returned by the DMServer after a certifciate
+    provisioning request (for the dynamic flow).
+  </summary>
 </histogram>
 
 <histogram

@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">chats</translation>
 <translation id="5907649332524363701">couleur de touche</translation>
 <translation id="5908813850962688338">L'installation de cette mise à jour prendra quelques minutes. Gardez votre appareil branché et allumé lorsque la mise à jour est en cours de téléchargement. Votre appareil peut redémarrer plusieurs fois et afficher un écran noir pendant ce processus. Vous serez invité à redémarrer votre appareil pour terminer l'installation.</translation>
+<translation id="5915794087373112615">Votre enseignant verra votre écran dans <ph name="NUM_SECONDS" /> secondes</translation>
 <translation id="5916084858004523819">Interdit</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Votre fichier a été numérisé et enregistré dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Votre fichier a été numérisé et enregistré dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vos fichiers ont été numérisés et enregistrés dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1524,6 +1525,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8054112564438735763">beige</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_COLOR" /> sur un arrière-plan <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Branchez un micro pour démarrer l'enregistrement audio</translation>
 <translation id="8067126283828232460">Le nom de point d'accès (APN) est connecté.</translation>
 <translation id="8067208048261192356">brun</translation>
 <translation id="8067224607978179455">Supprimer <ph name="ACTION_NAME" /></translation>
@@ -1627,6 +1629,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">salon de thé</translation>
 <translation id="8538236298648811558">Propulsé par l'IA de Google</translation>
+<translation id="8543574988889671960">Actualiser l'onglet</translation>
 <translation id="8550364285433943656">Placez des commandes sur les actions du jeu pour jouer avec les touches du clavier</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Votre fournisseur de services peut exiger l'activation de cette option pour vous connecter à son réseau. Communiquez avec votre fournisseur de services pour en savoir davantage.</translation>

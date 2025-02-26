@@ -1032,6 +1032,7 @@
 <translation id="590746845088109442">gatos</translation>
 <translation id="5907649332524363701">color de las teclas</translation>
 <translation id="5908813850962688338">La instalación de esta actualización tardará unos minutos. Mantén tu dispositivo conectado y encendido mientras se descarga la actualización. Es posible que tu dispositivo se reinicie varias veces y muestre una pantalla en negro durante este proceso. Se te pedirá que reinicies tu dispositivo para completar la instalación.</translation>
+<translation id="5915794087373112615">Tu profesor verá tu pantalla en <ph name="NUM_SECONDS" /> segundos</translation>
 <translation id="5916084858004523819">Prohibida</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tu archivo se ha escaneado correctamente y se ha guardado en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Tus archivos se han escaneado correctamente y se han guardado en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1525,6 +1526,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8054112564438735763">beige</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> de color <ph name="CHARACTERS_COLOR" /> sobre un fondo <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">Conecta un micrófono para empezar a grabar audio</translation>
 <translation id="8067126283828232460">El APN está conectado.</translation>
 <translation id="8067208048261192356">marrón</translation>
 <translation id="8067224607978179455">Eliminar <ph name="ACTION_NAME" /></translation>

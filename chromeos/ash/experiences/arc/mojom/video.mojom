@@ -15,7 +15,7 @@ import "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 // Deprecated method IDs: 0
-// Next method ID: 2
+// Next method ID: 3
 interface VideoHost {
   // Requests an IPC channel from Chrome's browser process to bootstrap a new
   // mojo child process and a token which can be used to create a message pipe
@@ -23,6 +23,17 @@ interface VideoHost {
   [MinVersion=4]
   OnBootstrapVideoAcceleratorFactory@1() => (handle channel_handle,
                                              string token);
+
+  // Similar to OnBootstrapVideoAcceleratorFactory, but returns a remote
+  // to a VideoAcceleratorFactory directly, instead of returning a channel
+  // and token to create a message pipe.
+  [MinVersion=5]
+  CreateVideoAcceleratorFactory@2() =>
+      (pending_remote<VideoAcceleratorFactory> remote);
+
+  // TODO(b/399291964): Deprecate OnBootstrapVideoAcceleratorFactory(), once
+  // migration to CreateVideoAcceleratorFactory is complete for both ARC++
+  // and ARCVM.
 };
 
 // Deprecated method IDs: 0

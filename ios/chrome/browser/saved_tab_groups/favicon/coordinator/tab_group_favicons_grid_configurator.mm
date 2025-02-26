@@ -9,6 +9,7 @@
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/saved_tab_groups/favicon/ui/tab_group_favicons_grid.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_preview_item.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -105,5 +106,23 @@ void TabGroupFaviconsGridConfigurator::ConfigureFaviconsGrid(
             UpdateFaviconsGrid(favicons_grid, attributes.faviconImage, index);
           }
         });
+  }
+}
+
+void TabGroupFaviconsGridConfigurator::ConfigureFaviconsGrid(
+    TabGroupFaviconsGrid* favicons_grid,
+    NSArray<ShareKitPreviewItem*>* preview_items) {
+  [favicons_grid resetFavicons];
+
+  const int tabs_count = (int)[preview_items count];
+
+  // Display up to 4 favicons. If there are more than 4 tabs,
+  // the last slot will display the total number of tabs.
+  int end = tabs_count > 4 ? 3 : tabs_count;
+
+  // Update the favicons.
+  for (int index = 0; index < end; index++) {
+    ShareKitPreviewItem* item = preview_items[index];
+    UpdateFaviconsGrid(favicons_grid, item.image, index);
   }
 }

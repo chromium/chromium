@@ -772,6 +772,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, 만료일: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">관리자가 제어하는 설정</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" />에서 페어링하려고 함</translation>
+<translation id="2344529975040861103">계정이 Google Pay에 연결되어 있으므로 이 카드를 자동 완성할 수 있습니다.</translation>
 <translation id="2346319942568447007">복사한 이미지</translation>
 <translation id="2348509731468399833">가격 추적이 중지됨</translation>
 <translation id="2349957959687031096">시크릿 탭 열기 버튼, 새 시크릿 탭을 열어 비공개로 탐색하려면 활성화하세요.</translation>
@@ -1031,7 +1032,6 @@
 <translation id="2833637280516285136">라디오 토크쇼</translation>
 <translation id="2835170189407361413">서식 지우기</translation>
 <translation id="2837891525090413132">키보드 잠금 및 사용을 요청할 수 있음</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" />에서 나에 관해 저장된 정보를 사용하려고 합니다</translation>
 <translation id="2839032553903800133">알림 차단됨</translation>
 <translation id="2839501879576190149">가짜 사이트 주의</translation>
 <translation id="2843623755398178332">공유한 탭을 스크롤하고 확대/축소하시겠습니까?</translation>
@@ -4577,6 +4577,7 @@
 <translation id="9139318394846604261">쇼핑</translation>
 <translation id="9140198744651252040">Chrome 브라우저에서 비밀번호 자동 완성에 지문을 사용하려 합니다.</translation>
 <translation id="9141013498910525015">주소 관리</translation>
+<translation id="9143898823728499852"><ph name="CARD_ISSUER_NAME" /> 계정이 Google Pay에 연결되어 있으므로 이 카드를 자동 완성할 수 있습니다.</translation>
 <translation id="9144951720726881238">유효기간:</translation>
 <translation id="9145910032514306808">다시 <ph name="BEGIN_LINK" />로그인<ph name="END_LINK" />한 후 이 탭으로 돌아와 작성 지원 기능을 이용하세요.</translation>
 <translation id="9145936855791010051">비교</translation>

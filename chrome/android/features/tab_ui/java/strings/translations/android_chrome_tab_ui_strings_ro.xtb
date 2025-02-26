@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1045448422538531528">Adaugă în grup</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Creat acum <ph name="NUM_WEEKS_ONE" /> săptămână}few{Creat acum <ph name="NUM_WEEKS_MANY" /> săptămâni}other{Creat acum <ph name="NUM_WEEKS_MANY" /> de săptămâni}}</translation>
 <translation id="1063300264396686489">Deschide automat grupuri de file de pe alte dispozitive</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dintre file nu au fost folosite în ultima vreme. Vrei să le închizi?</translation>
@@ -11,6 +12,7 @@
 <translation id="1293272072740285747">Păstrează acest grup pentru a adăuga file mai târziu sau șterge-l dacă nu mai ai nevoie de el.
 
 Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de file <ph name="TITLE_OF_GROUP" />, iar acesta va fi șters de pe toate dispozitivele.</translation>
+<translation id="1326654401173629446">Grupul de file <ph name="TAB_GROUP_NAME" /> nu mai este disponibil</translation>
 <translation id="1329584516321524826">Actualizată chiar acum</translation>
 <translation id="1340839264183302272">Ieși din grup</translation>
 <translation id="1419023007528516122">Astfel, grupul va fi șters definitiv de pe dispozitiv</translation>

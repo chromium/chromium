@@ -772,6 +772,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> için kullanım süresi sonu: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Ayar yöneticinizin kontrolü altındadır</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> eşlenmek istiyor</translation>
+<translation id="2344529975040861103">Hesabınız Google Pay'e bağlı olduğu için bu kartı otomatik olarak doldurabilirsiniz.</translation>
 <translation id="2346319942568447007">Kopyalanan resim</translation>
 <translation id="2348509731468399833">Fiyat takibi duraklatıldı.</translation>
 <translation id="2349957959687031096">Gizli sekme aç düğmesi, yeni gizli sekme açıp gizli olarak göz atmak için etkinleştirin</translation>
@@ -1031,7 +1032,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2833637280516285136">Radyo Sohbet Programları</translation>
 <translation id="2835170189407361413">Formu temizle</translation>
 <translation id="2837891525090413132">Klavyenizi kilitlemek ve kullanmak için izin isteyebilir</translation>
-<translation id="2838682941130655229"><ph name="EMBEDDED_URL" />, hakkınızda kaydettiği bilgileri kullanmak istiyor</translation>
 <translation id="2839032553903800133">Bildirimler engellendi</translation>
 <translation id="2839501879576190149">Sahte bir siteyi ziyaret etmek üzeresiniz</translation>
 <translation id="2843623755398178332">Paylaşılan sekmeniz kaydırılıp yakınlaştırılsın mı?</translation>
@@ -4579,6 +4579,7 @@ Ek ayrıntılar:
 <translation id="9139318394846604261">Alışveriş</translation>
 <translation id="9140198744651252040">Chrome tarayıcı, şifreleri otomatik olarak doldurmak için parmak izi kullanılmasını istiyor</translation>
 <translation id="9141013498910525015">Adresleri yönet</translation>
+<translation id="9143898823728499852"><ph name="CARD_ISSUER_NAME" /> hesabınız Google Pay'e bağlı olduğu için bu kartı otomatik olarak doldurabilirsiniz.</translation>
 <translation id="9144951720726881238">Son kullanma tarihi:</translation>
 <translation id="9145910032514306808">Tekrar <ph name="BEGIN_LINK" />oturum açın<ph name="END_LINK" /> ve ardından yazma konusunda yardım almak için bu sekmeye dönün.</translation>
 <translation id="9145936855791010051">Karşılaştır</translation>

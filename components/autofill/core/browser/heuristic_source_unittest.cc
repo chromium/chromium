@@ -87,9 +87,9 @@ INSTANTIATE_TEST_SUITE_P(
 
         HeuristicSourceParams{
             .model_predictions_feature = false,
-            .expected_active_source = HeuristicSource::kDefaultRegexes},
+            .expected_active_source = GetActiveHeuristicSource()},
         HeuristicSourceParams{
-            .expected_active_source = HeuristicSource::kDefaultRegexes}
+            .expected_active_source = GetActiveHeuristicSource()}
 #endif
         ));
 

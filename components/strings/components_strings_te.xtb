@@ -767,6 +767,7 @@
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, గడువు <ph name="EXPIRATION_DATE_ABBR" />న ముగుస్తుంది</translation>
 <translation id="2337852623177822836">సెట్టింగ్‌ను మీ నిర్వాహకులు నియంత్రిస్తున్నారు</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> దీనితో జత చేయాలనుకుంటోంది</translation>
+<translation id="2344529975040861103">మీ ఖాతా Google Payకు లింక్ అయి ఉన్నందున మీరు ఈ కార్డ్‌ను ఆటోఫిల్ చేయవచ్చు</translation>
 <translation id="2346319942568447007">మీరు కాపీ చేసిన చిత్రం</translation>
 <translation id="2348509731468399833">ధర ట్రాకింగ్ ఆగిపోయింది.</translation>
 <translation id="2349957959687031096">'అజ్ఞాత ట్యాబ్‌ను తెరవండి' బటన్, ప్రైవేట్‌గా బ్రౌజ్ చేసేందుకు కొత్త అజ్ఞాత ట్యాబ్‌ను తెరవడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
@@ -1026,7 +1027,6 @@
 <translation id="2833637280516285136">టాక్ రేడియో</translation>
 <translation id="2835170189407361413">ఫారమ్‌ను క్లియర్ చేయండి</translation>
 <translation id="2837891525090413132">లాక్ చేసి, మీ కీబోర్డ్‌ను ఉపయోగించమని అడగవచ్చు</translation>
-<translation id="2838682941130655229">సర్వీస్‌లు మీ గురించి సేవ్ చేసిన సమాచారాన్ని ఉపయోగించడానికి <ph name="EMBEDDED_URL" /> అనుమతి కోరుతోంది</translation>
 <translation id="2839032553903800133">నోటిఫికేషన్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="2839501879576190149">ముందున్న సైట్ నకిలీది</translation>
 <translation id="2843623755398178332">షేర్ చేసిన మీ ట్యాబ్‌ను స్క్రోల్ చేయడంతో పాటు, జూమ్ చేయాలనుకుంటున్నారా?</translation>
@@ -4573,6 +4573,7 @@
 <translation id="9139318394846604261">షాపింగ్</translation>
 <translation id="9140198744651252040">పాస్‌వర్డ్‌లను ఆటోఫిల్ చేయడానికి Chrome బ్రౌజర్ వేలిముద్రను ఉపయోగించాలనుకుంటోంది</translation>
 <translation id="9141013498910525015">అడ్రస్‌లను నిర్వహించండి</translation>
+<translation id="9143898823728499852">మీ <ph name="CARD_ISSUER_NAME" /> ఖాతా Google Payకి లింక్ చేసినందున మీరు ఈ కార్డ్‌ను ఆటోఫిల్ చేయవచ్చు</translation>
 <translation id="9144951720726881238">గడువు తేదీ:</translation>
 <translation id="9145910032514306808">మళ్లీ <ph name="BEGIN_LINK" />సైన్ ఇన్ చేసి<ph name="END_LINK" />,
     తర్వాత తిరిగి ఈ ట్యాబ్‌కు వచ్చి రాయడంలో సహాయం పొందండి</translation>

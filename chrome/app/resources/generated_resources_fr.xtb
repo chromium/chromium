@@ -17,7 +17,6 @@
 <translation id="1007057452468855774">Activer le Google Play Store</translation>
 <translation id="1008186147501209563">Exporter les favoris</translation>
 <translation id="1008261151167010035">Le <ph name="BRAND" /> mémorise votre mode de connexion et vous connecte automatiquement quand c'est possible. Lorsque la connexion automatique est désactivée, vous êtes invité à confirmer votre choix à chaque fois.</translation>
-<translation id="1008544602823861396">ne peut pas utiliser vos informations sur</translation>
 <translation id="1008557486741366299">Pas maintenant</translation>
 <translation id="100881991356161927">Nom du site</translation>
 <translation id="1009663062402466586">Commandes de jeu désormais disponibles</translation>
@@ -2401,7 +2400,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="265390580714150011">Valeur du champ</translation>
 <translation id="2654553774144920065">Requête d'impression</translation>
-<translation id="265680054508313161">Continuer en tant que <ph name="USERNAME" /></translation>
 <translation id="265748523151262387">Restez connecté avec votre téléphone</translation>
 <translation id="2657612187216250073">Paramètres d'accessibilité du pointeur</translation>
 <translation id="2658510146844889864">Clés d'accès et clés de sécurité</translation>
@@ -2530,6 +2528,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2739191690716947896">Déboguer</translation>
 <translation id="2739240477418971307">Modifier vos paramètres d'accessibilité</translation>
 <translation id="2739331588276254426">Connecté à Internet via <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="2739887572830526131">Conservez ce groupe pour y ajouter des onglets plus tard, ou supprimez-le si vous n'en avez plus besoin.</translation>
 <translation id="274029851662193272">Bord en retrait</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Ces clés d'accès ne sont enregistrées que sur cet appareil. Elles ne sont pas enregistrées dans votre compte Google.</translation>
@@ -4034,6 +4033,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3813358687923336574">Langue utilisée pour la traduction des pages et les Réponses rapides</translation>
 <translation id="3813458570141926987">Liste des thèmes estimés par Chrome en fonction de votre historique de navigation récent</translation>
 <translation id="3814529970604306954">Compte scolaire</translation>
+<translation id="3815668647912194650">Conservez ce groupe pour y ajouter des onglets plus tard, ou quittez-le si ne souhaitez plus y avoir accès.</translation>
 <translation id="3816118180265633665">Couleurs de Chrome</translation>
 <translation id="3817524650114746564">Accéder aux paramètres de proxy de votre ordinateur</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Autoriser les appareils ChromeOS à envoyer automatiquement des rapports nous aide à prioriser ce qu'il faut corriger et améliorer dans ChromeOS. Ces rapports peuvent inclure diverses informations (plantages de ChromeOS, fonctionnalités utilisées, quantité de mémoire généralement utilisée, etc.).<ph name="END_PARAGRAPH1" />
@@ -4270,7 +4270,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3971764089670057203">Empreintes sur cette clé de sécurité</translation>
 <translation id="3973005893595042880">Utilisateur non autorisé</translation>
 <translation id="3973660817924297510">Vérification des mots de passe (<ph name="CHECKED_PASSWORDS" /> sur <ph name="TOTAL_PASSWORDS" />)…</translation>
-<translation id="3974105241379491420">Les sites peuvent demander à utiliser les informations qu'ils ont enregistrées vous concernant</translation>
 <translation id="3974514184580396500">Utilisez "Suivant" pour sélectionner l'élément suivant à l'écran</translation>
 <translation id="3975017815357433345">Autoroute</translation>
 <translation id="3975201861340929143">Explication</translation>
@@ -4517,7 +4516,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4146785383423576110">Réinitialiser et nettoyer</translation>
 <translation id="4147099377280085053">Sélectionner une table braille</translation>
 <translation id="4147911968024186208">Veuillez réessayer. Si l'erreur se reproduit, veuillez contacter le service d'assistance.</translation>
-<translation id="414800391140809654">peut utiliser vos informations lorsque vous le parcourez</translation>
 <translation id="4148195018520464922">Vous pouvez limiter la connexion à certains utilisateurs. L'option "Ajouter une personne" est alors supprimée de l'écran de connexion. Vous pouvez également supprimer les utilisateurs actuels.</translation>
 <translation id="4148957013307229264">Installation...</translation>
 <translation id="4149385644005013189">Rien à signaler !</translation>
@@ -5307,7 +5305,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4728558894243024398">Plate-forme</translation>
 <translation id="4730492586225682674">Dernière note prise avec le stylet sur l'écran de verrouillage</translation>
 <translation id="4730888769809690665">Notifications autorisées pour <ph name="SITE" /></translation>
-<translation id="4731306954230393087">Autorisé à utiliser les informations qu'il a enregistrées vous concernant</translation>
 <translation id="4732799736617504962">Le micro connecté ne prend en charge que la suppression du bruit</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (gauche)</translation>
 <translation id="4733793249294335256">Emplacement</translation>
@@ -6209,7 +6206,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{1 site avec de nombreuses notifications trouvé}one{{NUM_SITES} site avec de nombreuses notifications trouvé}other{{NUM_SITES} sites avec de nombreuses notifications trouvés}}</translation>
 <translation id="5388885445722491159">Associé</translation>
 <translation id="5389224261615877010">Arc-en-ciel</translation>
-<translation id="5389626883706033615">Les sites ne peuvent pas vous demander d'utiliser les informations qu'ils ont enregistrées vous concernant</translation>
 <translation id="5389794555912875905">Voir des avertissements avant d'accéder à des sites non sécurisés (recommandé)</translation>
 <translation id="5389943529251318913">Réduire la vitesse de la souris de</translation>
 <translation id="5390112241331447203">Ajouter le fichier system_logs.txt envoyé dans les rapports de commentaires.</translation>
@@ -6897,7 +6893,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5888889603768021126">Connecté avec</translation>
 <translation id="5889282057229379085">Le nombre maximal d'autorités de certification intermédiaires a été dépassé : <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Chiffrer les données synchronisées avec votre propre <ph name="BEGIN_LINK" />phrase secrète de synchronisation<ph name="END_LINK" />. Les adresses et les modes de paiement Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.</translation>
-<translation id="5891084409170578560">Les sites que vous consultez peuvent intégrer des contenus provenant d'autres sites (par exemple, des images, des annonces et du texte). Ces autres sites peuvent demander l'autorisation d'utiliser les informations qu'ils ont enregistrées vous concernant lorsque vous les parcourez.</translation>
 <translation id="5891688036610113830">Réseaux Wi-Fi favoris</translation>
 <translation id="5894056653502215961">Désélectionner le dossier <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Redémarrer</translation>
@@ -9266,7 +9261,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7619937211696316184">Maintenance terminée</translation>
 <translation id="7620616707541471029">Sélectionnez un compte pour continuer</translation>
 <translation id="7621382409404463535">Échec de l'enregistrement de la configuration de l'appareil.</translation>
-<translation id="7621480263311228380">Non autorisé à utiliser les informations qu'il a enregistrées vous concernant</translation>
 <translation id="7621595347123595643">Vous ne pourrez pas récupérer de données locales si vous oubliez votre mot de passe ou votre code.</translation>
 <translation id="7622114377921274169">En charge.</translation>
 <translation id="7622768823216805500">Les sites installent généralement des gestionnaires de paiement pour proposer certaines fonctionnalités d'achat, comme un règlement plus simple</translation>
@@ -10720,6 +10714,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8633979878370972178">Les anciennes versions des applis Chrome ne s'ouvriront plus sur les appareils Linux après décembre 2022. Vous pouvez vérifier si une nouvelle version est disponible.</translation>
 <translation id="8634348081024879304">Vous ne pourrez plus utiliser votre carte virtuelle avec Google Pay. <ph name="BEGIN_LINK" />En savoir plus sur les cartes virtuelles<ph name="END_LINK" /></translation>
 <translation id="8634703204743010992">Clavier virtuel ChromeOS</translation>
+<translation id="8635399646025169806">Conserver le groupe d'onglets ?</translation>
 <translation id="8635628933471165173">Actualisation…</translation>
 <translation id="8636284842992792762">Initialisation des extensions…</translation>
 <translation id="8636323803535540285">Pour accéder à cette page plus rapidement, ajoutez un raccourci vers le <ph name="BRAND" /></translation>
@@ -10981,6 +10976,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
     <ph name="BEGIN_PARAGRAPH2" />Google utilise ces informations sans vous identifier pour améliorer la précision de la localisation et les services basés sur la localisation, et plus généralement pour améliorer, fournir et gérer les services Google. Nous traitons ces informations sur la base des intérêts légitimes de Google et de tiers pour répondre aux besoins des utilisateurs.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Vous pouvez désactiver la précision de la localisation à tout moment dans les paramètres de localisation de votre appareil depuis Paramètres &gt; Confidentialité et sécurité &gt; Paramètres de confidentialité &gt; Accès à la position &gt; Paramètres de localisation avancés. Si la précision de la localisation est désactivée, aucune donnée de précision de la localisation ne sera collectée. Pour les applis et services Android, seule l'adresse IP est utilisée, si disponible, pour déterminer la position de votre appareil. Cela peut avoir un impact sur la disponibilité et la précision de la localisation pour des applis et services Android tels que Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">S'ouvre dans</translation>
+<translation id="8804742093141782941">Conserver le groupe</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Déplacer l'onglet vers une autre fenêtre}one{Déplacer l'onglet vers une autre fenêtre}other{Déplacer les onglets vers une autre fenêtre}}</translation>
 <translation id="8805140816472474147">Confirmez les paramètres de synchronisation pour lancer la synchronisation.</translation>
 <translation id="8805255531353778052">Économies considérables</translation>

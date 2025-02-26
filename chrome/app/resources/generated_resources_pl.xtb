@@ -17,7 +17,6 @@
 <translation id="1007057452468855774">Włącz Sklep Google Play</translation>
 <translation id="1008186147501209563">Eksportuj zakładki</translation>
 <translation id="1008261151167010035">Aplikacja <ph name="BRAND" /> pamięta Twoje dane logowania i automatycznie loguje Cię, gdy jest to możliwe. Jeśli ta funkcja jest wyłączona, przed każdym zalogowaniem się zobaczysz prośbę o potwierdzenie.</translation>
-<translation id="1008544602823861396">nie może używać Twoich danych na</translation>
 <translation id="1008557486741366299">Nie teraz</translation>
 <translation id="100881991356161927">Nazwa witryny</translation>
 <translation id="1009663062402466586">Opcje gry są już dostępne</translation>
@@ -2387,7 +2386,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2653659639078652383">Prześlij</translation>
 <translation id="265390580714150011">Wartość pola</translation>
 <translation id="2654553774144920065">Żądanie drukowania</translation>
-<translation id="265680054508313161">Kontynuuj jako <ph name="USERNAME" /></translation>
 <translation id="265748523151262387">Utrzymuj połączenie z telefonem</translation>
 <translation id="2657612187216250073">Ustawienia ułatwień dostępu dotyczące wskaźnika</translation>
 <translation id="2658510146844889864">Klucze dostępu i klucze bezpieczeństwa</translation>
@@ -2516,6 +2514,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2739191690716947896">Debugowanie</translation>
 <translation id="2739240477418971307">Zmiana ustawień ułatwień dostępu</translation>
 <translation id="2739331588276254426">Połączenie z internetem przez: <ph name="HOST_DEVICE_NAME" /></translation>
+<translation id="2739887572830526131">Zachowaj tę grupę, aby później dodać karty, lub usuń ją, jeśli nie będzie Ci już potrzebna.</translation>
 <translation id="274029851662193272">Obniżony</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Te klucze dostępu są zapisywane tylko na tym urządzeniu. Nie są one zapisywane na Twoim koncie Google.</translation>
@@ -4018,6 +4017,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3813358687923336574">Język używany do tłumaczenia stron i podawania szybkich odpowiedzi</translation>
 <translation id="3813458570141926987">Lista tematów określona przez Chrome na podstawie Twojej najnowszej historii przeglądania</translation>
 <translation id="3814529970604306954">Konto szkolne</translation>
+<translation id="3815668647912194650">Zachowaj tę grupę, aby później dodać karty, lub opuść ją, jeśli nie chcesz już mieć do niej dostępu.</translation>
 <translation id="3816118180265633665">Kolory Chrome</translation>
 <translation id="3817524650114746564">Otwórz ustawienia serwera proxy dla komputera</translation>
 <translation id="3817873131406403663"><ph name="BEGIN_PARAGRAPH1" />Jeśli pozwolisz na wysyłanie automatycznych raportów z urządzeń z ChromeOS, pomożesz nam w ustalaniu, co przede wszystkim należy naprawić i ulepszyć w tym systemie operacyjnym. Raporty mogą zawierać na przykład informacje o czasie wystąpienia awarii ChromeOS, używanych funkcjach i typowym wykorzystaniu pamięci.<ph name="END_PARAGRAPH1" />
@@ -4254,7 +4254,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="3971764089670057203">Odciski cyfrowe na tym kluczu bezpieczeństwa</translation>
 <translation id="3973005893595042880">Użytkownik nie został dopuszczony</translation>
 <translation id="3973660817924297510">Sprawdzam hasła (<ph name="CHECKED_PASSWORDS" /> z <ph name="TOTAL_PASSWORDS" />)…</translation>
-<translation id="3974105241379491420">Strony mogą prosić o zgodę na używanie zapisanych o Tobie informacji</translation>
 <translation id="3974514184580396500">Kliknij „Dalej”, aby przejść do następnego elementu na ekranie</translation>
 <translation id="3975017815357433345">Autostrada</translation>
 <translation id="3975201861340929143">Objaśnienie</translation>
@@ -4501,7 +4500,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4146785383423576110">Resetowanie komputera i czyszczenie danych</translation>
 <translation id="4147099377280085053">Wybierz tabelę brajlowską</translation>
 <translation id="4147911968024186208">Spróbuj jeszcze raz. Jeśli ten błąd pojawi się ponownie, skontaktuj się z przedstawicielem pomocy.</translation>
-<translation id="414800391140809654">może używać Twoich danych podczas przeglądania przez Ciebie stron internetowych</translation>
 <translation id="4148195018520464922">Możesz ograniczyć logowanie do wybranych użytkowników. Spowoduje to usunięcie opcji „Dodaj osobę” z ekranu logowania. Możesz też usunąć bieżących użytkowników.</translation>
 <translation id="4148957013307229264">Trwa instalowanie...</translation>
 <translation id="4149385644005013189">Wszystko wygląda świetnie.</translation>
@@ -5291,7 +5289,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4728558894243024398">Platforma</translation>
 <translation id="4730492586225682674">Ostatnia notatka zapisana rysikiem na ekranie blokady</translation>
 <translation id="4730888769809690665">Witryna <ph name="SITE" /> może wysyłać powiadomienia</translation>
-<translation id="4731306954230393087">Z uprawnieniami do używania zapisanych informacji o Tobie</translation>
 <translation id="4732799736617504962">Podłączony mikrofon może obsługiwać tylko redukcję szumów</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (lewa)</translation>
 <translation id="4733793249294335256">Lokalizacja</translation>
@@ -6193,7 +6190,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Znaleziono 1 witrynę z dużą liczbą powiadomień}few{Znaleziono {NUM_SITES} witryny z dużą liczbą powiadomień}many{Znaleziono {NUM_SITES} witryn z dużą liczbą powiadomień}other{Znaleziono {NUM_SITES} witryny z dużą liczbą powiadomień}}</translation>
 <translation id="5388885445722491159">Sparowane</translation>
 <translation id="5389224261615877010">Tęcza</translation>
-<translation id="5389626883706033615">Strony nie mogą prosić Cię o korzystanie z informacji, które o Tobie zapisały</translation>
 <translation id="5389794555912875905">Wyświetlaj ostrzeżenia przed wejściem na niezabezpieczone strony (zalecane)</translation>
 <translation id="5389943529251318913">Zmniejsz prędkość myszy o</translation>
 <translation id="5390112241331447203">Uwzględnij plik system_logs.txt przesłany razem z opiniami.</translation>
@@ -6879,7 +6875,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5888889603768021126">Zalogowano za pomocą</translation>
 <translation id="5889282057229379085">Maksymalna liczba pośrednich urzędów certyfikacji: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Szyfruj synchronizowane dane własnym <ph name="BEGIN_LINK" />hasłem wielowyrazowym do synchronizacji<ph name="END_LINK" />. Formy płatności ani adresy z Google Pay nie będą szyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.</translation>
-<translation id="5891084409170578560">Witryny, które odwiedzasz, mogą wykorzystywać treści z innych witryn, np. obrazy, reklamy i tekst. Te inne witryny mogą prosić o zgodę na korzystanie z informacji o Tobie zapisanych przez nie podczas przeglądania tych witryn.</translation>
 <translation id="5891688036610113830">Preferowane sieci Wi-Fi</translation>
 <translation id="5894056653502215961">Odznacz folder <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
@@ -9247,7 +9242,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7619937211696316184">Konserwacja została zakończona</translation>
 <translation id="7620616707541471029">Wybierz konto, aby kontynuować</translation>
 <translation id="7621382409404463535">Systemowi nie udało się zapisać konfiguracji urządzenia.</translation>
-<translation id="7621480263311228380">Nie może używać zapisanych informacji o Tobie</translation>
 <translation id="7621595347123595643">Jeśli zapomnisz hasło lub kod PIN, nie będzie można odzyskać danych lokalnych.</translation>
 <translation id="7622114377921274169">Ładuję.</translation>
 <translation id="7622768823216805500">Strony zwykle instalują moduły obsługi płatności na przykład w celu ułatwienia płatności za zakupy</translation>
@@ -10701,6 +10695,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8633979878370972178">Z końcem grudnia 2022 r. stare wersje aplikacji Chrome przestaną działać na urządzeniach z Linuksem. Możesz sprawdzić, czy jest dostępna nowa wersja.</translation>
 <translation id="8634348081024879304">Stracisz możliwość korzystania z karty wirtualnej w Google Pay. <ph name="BEGIN_LINK" />Dowiedz się więcej o kartach wirtualnych<ph name="END_LINK" /></translation>
 <translation id="8634703204743010992">Klawiatura wirtualna ChromeOS</translation>
+<translation id="8635399646025169806">Zachować grupę kart?</translation>
 <translation id="8635628933471165173">Ładuję ponownie…</translation>
 <translation id="8636284842992792762">Inicjuję rozszerzenia…</translation>
 <translation id="8636323803535540285">Aby móc szybciej otwierać tę stronę, dodaj skrót do: <ph name="BRAND" /></translation>
@@ -10959,6 +10954,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
     <ph name="BEGIN_PARAGRAPH2" />Google wykorzystuje te informacje (bez identyfikowania Ciebie) do zwiększania dokładności lokalizacji i usprawniania działania usług wykorzystujących lokalizację oraz ulepszania, świadczenia i utrzymywania usług Google. Przetwarzamy te dane na podstawie uzasadnionego interesu Google i innych firm w spełnianiu potrzeb użytkowników.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Możesz w każdej chwili wyłączyć dokładność lokalizacji w ustawieniach lokalizacji na urządzeniu. Aby to zrobić, wybierz Ustawienia &gt; Prywatność i bezpieczeństwo &gt; Ustawienia prywatności &gt; Dostęp do lokalizacji &gt; Zaawansowane ustawienia lokalizacji. Gdy ustawienie Dokładność lokalizacji jest wyłączone, dane poprawiające dokładność lokalizacji nie są zbierane. W przypadku aplikacji i usług na Androida do określania lokalizacji urządzenia używany jest tylko adres IP (jeśli jest dostępny). Może to wpływać na dostępność i dokładność lokalizacji w aplikacjach i usługach na Androida takich jak Mapy Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Otwiera się w</translation>
+<translation id="8804742093141782941">Zachowaj grupę</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Przenieś kartę do innego okna}few{Przenieś karty do innego okna}many{Przenieś karty do innego okna}other{Przenieś karty do innego okna}}</translation>
 <translation id="8805140816472474147">Potwierdź ustawienia synchronizacji, by ją rozpocząć.</translation>
 <translation id="8805255531353778052">Bardzo duża oszczędność</translation>

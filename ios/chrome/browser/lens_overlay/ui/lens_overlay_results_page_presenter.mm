@@ -15,8 +15,8 @@
 
 namespace {
 
-// THe vertical offset padding
-const CGFloat kSelectionOffsetPadding = 100.0f;
+// The vertical offset padding.
+const CGFloat kSelectionOffsetPadding = 72.0f;
 
 // The preferred corner radius for the bottom sheet.
 const CGFloat kPreferredCornerRadius = 14.0;

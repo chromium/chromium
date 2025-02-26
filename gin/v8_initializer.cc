@@ -490,10 +490,6 @@ void SetFeatureFlags() {
                          "--intel-jcc-erratum-mitigation",
                          "--no-intel-jcc-erratum-mitigation");
 
-  SetV8FlagsIfOverridden(features::kV8UpdateLimitAfterLoading,
-                         "--update-allocation-limits-after-loading",
-                         "--no-update-allocation-limits-after-loading");
-
   SetV8FlagsIfOverridden(features::kV8UseLibmTrigFunctions,
                          "--use-libm-trig-functions",
                          "--no-use-libm-trig-functions");

@@ -772,6 +772,7 @@
 <translation id="2330137317877982892">تنتهي صلاحية <ph name="CREDIT_CARD" /> في <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">يتم التحكّم في الإعداد من قبل المشرف</translation>
 <translation id="2340263603246777781">يريد <ph name="ORIGIN" /> الاقتران</translation>
+<translation id="2344529975040861103">‏يمكنك ملء بيانات هذه البطاقة تلقائيًا لأنّ حسابك مرتبط بحساب Google Pay</translation>
 <translation id="2346319942568447007">الصورة التي نسختها</translation>
 <translation id="2348509731468399833">توقّفت عملية تتبُّع السعر.</translation>
 <translation id="2349957959687031096">زر فتح علامة تبويب في وضع التصفّح المتخفي: انقر على هذا الزر للتصفّح بخصوصية تامة.</translation>
@@ -1032,7 +1033,6 @@
 <translation id="2833637280516285136">برامج حوارية على الراديو</translation>
 <translation id="2835170189407361413">محو النموذج</translation>
 <translation id="2837891525090413132">بإمكان الموقع الإلكتروني طلب قفل لوحة المفاتيح واستخدامها</translation>
-<translation id="2838682941130655229">يطلب <ph name="EMBEDDED_URL" /> استخدام المعلومات التي تم حفظها بشأنك</translation>
 <translation id="2839032553903800133">تم حظر الإشعارات.</translation>
 <translation id="2839501879576190149">الموقع الذي تطلب الدخول إليه مزيّف</translation>
 <translation id="2843623755398178332">هل تسمح بالانتقال للأعلى أو للأسفل في محتوى علامة التبويب التي تمّت مشاركتها وتكبيره أو تصغيره؟</translation>
@@ -4583,6 +4583,7 @@
 <translation id="9139318394846604261">التسوّق</translation>
 <translation id="9140198744651252040">‏يطلب متصفِّح Chrome استخدام بصمة الإصبع لملء كلمات المرور تلقائيًا</translation>
 <translation id="9141013498910525015">إدارة العناوين الجغرافية</translation>
+<translation id="9143898823728499852">‏يمكنك ملء بيانات هذه البطاقة تلقائيًا لأنّ حسابك على <ph name="CARD_ISSUER_NAME" /> مرتبط بحساب Google Pay</translation>
 <translation id="9144951720726881238">تاريخ انتهاء الصلاحية:</translation>
 <translation id="9145910032514306808">يجب <ph name="BEGIN_LINK" />تسجيل الدخول<ph name="END_LINK" />
     مجددًا ثم الرجوع إلى علامة التبويب هذه للحصول على مساعدة في الكتابة</translation>
