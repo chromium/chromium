@@ -40,6 +40,7 @@
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_storage.pb.h"
+#include "content/browser/interest_group/interest_group_storage_metric_types.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -68,104 +69,6 @@ using PassKey = base::PassKey<InterestGroupStorage>;
 using blink::mojom::BiddingBrowserSignalsPtr;
 using blink::mojom::PreviousWinPtr;
 using SellerCapabilitiesType = blink::SellerCapabilitiesType;
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(AdProtoDecompressionOutcome)
-enum class AdProtoDecompressionOutcome {
-  kSuccess = 0,
-  kFailure = 1,
-
-  kMaxValue = kFailure,
-};
-
-// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:AdProtoDecompressionOutcome)
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(InterestGroupStorageInitializationResult)
-enum class InterestGroupStorageInitializationResult {
-  kSuccessAlreadyCurrent = 0,
-  kSuccessUpgraded = 1,
-  kSuccessCreateSchema = 2,
-  kSuccessCreateSchemaAfterIncompatibleRaze = 3,
-  kSuccessCreateSchemaAfterNoMetaTableRaze = 4,
-  kFailedCreateInMemory = 5,
-  kFailedCreateDirectory = 6,
-  kFailedCreateFile = 7,
-  kFailedToRazeIncompatible = 8,
-  kFailedToRazeNoMetaTable = 9,
-  kFailedMetaTableInit = 10,
-  kFailedCreateSchema = 11,
-  kFailedCreateSchemaAfterIncompatibleRaze = 12,
-  kFailedCreateSchemaAfterNoMetaTableRaze = 13,
-  kFailedUpgradeDB = 14,
-
-  kMaxValue = kFailedUpgradeDB,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:InterestGroupStorageInitializationResult)
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(InterestGroupStorageJSONDeserializationResult)
-enum class InterestGroupStorageJSONDeserializationResult {
-  kSucceeded = 0,
-  kFailed = 1,
-
-  kMaxValue = kFailed,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:InterestGroupStorageJSONDeserializationResult)
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(InterestGroupStorageJSONSerializationResult)
-enum class InterestGroupStorageJSONSerializationResult {
-  kSucceeded = 0,
-  kFailed = 1,
-
-  kMaxValue = kFailed,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:InterestGroupStorageJSONSerializationResult)
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(InterestGroupStorageProtoDeserializationResult)
-enum class InterestGroupStorageProtoDeserializationResult {
-  kSucceeded = 0,
-  kFailed = 1,
-
-  kMaxValue = kFailed,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:InterestGroupStorageProtoDeserializationResult)
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(InterestGroupStorageProtoSerializationResult)
-enum class InterestGroupStorageProtoSerializationResult {
-  kSucceeded = 0,
-  kFailed = 1,
-
-  kMaxValue = kFailed,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:InterestGroupStorageProtoSerializationResult)
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(InterestGroupStorageVacuumResult)
-enum class InterestGroupStorageVacuumResult {
-  kSucceeded = 0,
-  kFailed = 1,
-
-  kMaxValue = kFailed,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:InterestGroupStorageVacuumResult)
 
 const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("InterestGroups");
@@ -5607,18 +5510,10 @@ bool ClearExpiredBiddingAndAuctionKeys(sql::Database& db, base::Time now) {
   return clear_expired_keys.Run();
 }
 
-bool DoSetBiddingAndAuctionServerKeys(
-    sql::Database& db,
-    const url::Origin& coordinator,
-    const std::vector<BiddingAndAuctionServerKey>& keys,
-    base::Time expiration) {
-  BiddingAndAuctionServerKeyProtos key_protos;
-  for (const BiddingAndAuctionServerKey& key : keys) {
-    BiddingAndAuctionServerKeyProtos_BiddingAndAuctionServerKeyProto*
-        key_proto = key_protos.add_keys();
-    key_proto->set_key(key.key);
-    key_proto->set_id(key.id);
-  }
+bool DoSetBiddingAndAuctionServerKeys(sql::Database& db,
+                                      const url::Origin& coordinator,
+                                      std::string serialized_keys,
+                                      base::Time expiration) {
   sql::Statement insert_keys_statement(db.GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT OR REPLACE INTO "
@@ -5627,27 +5522,15 @@ bool DoSetBiddingAndAuctionServerKeys(
 
   insert_keys_statement.Reset(true);
   insert_keys_statement.BindString(0, Serialize(coordinator));
-  std::string key_protos_str;
-  if (key_protos.SerializeToString(&key_protos_str)) {
-    base::UmaHistogramEnumeration(
-        "Storage.InterestGroup.ProtoSerializationResult."
-        "BiddingAndAuctionServerKeyProtos",
-        InterestGroupStorageProtoSerializationResult::kSucceeded);
-  } else {
-    base::UmaHistogramEnumeration(
-        "Storage.InterestGroup.ProtoSerializationResult."
-        "BiddingAndAuctionServerKeyProtos",
-        InterestGroupStorageProtoSerializationResult::kFailed);
-    // TODO(crbug.com/355010821): Consider bubbling out the failure.
-  }
-  insert_keys_statement.BindBlob(1, key_protos_str);
+
+  insert_keys_statement.BindBlob(1, serialized_keys);
   insert_keys_statement.BindTime(2, expiration);
   return insert_keys_statement.Run();
 }
 
-std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
-DoGetBiddingAndAuctionServerKeys(sql::Database& db,
-                                 const url::Origin& coordinator) {
+std::pair<base::Time, std::string> DoGetBiddingAndAuctionServerKeys(
+    sql::Database& db,
+    const url::Origin& coordinator) {
   sql::Statement keys_statement(
       db.GetCachedStatement(SQL_FROM_HERE,
                             "SELECT expiration, keys "
@@ -5666,30 +5549,7 @@ DoGetBiddingAndAuctionServerKeys(sql::Database& db,
   if (keys_statement.Step()) {
     base::Time expiration = keys_statement.ColumnTime(0);
     std::string key_blob = keys_statement.ColumnString(1);
-    BiddingAndAuctionServerKeyProtos key_protos;
-    bool success = key_protos.ParseFromString(key_blob);
-    if (success) {
-      base::UmaHistogramEnumeration(
-          "Storage.InterestGroup.ProtoDeserializationResult."
-          "BiddingAndAuctionServerKeyProtos",
-          InterestGroupStorageProtoDeserializationResult::kSucceeded);
-    } else {
-      base::UmaHistogramEnumeration(
-          "Storage.InterestGroup.ProtoDeserializationResult."
-          "BiddingAndAuctionServerKeyProtos",
-          InterestGroupStorageProtoDeserializationResult::kFailed);
-      // TODO(crbug.com/355010821): Consider bubbling out the failure.
-    }
-
-    if (not success || key_protos.keys().empty()) {
-      return {base::Time::Min(), {}};
-    }
-    std::vector<BiddingAndAuctionServerKey> keys;
-    keys.reserve(key_protos.keys_size());
-    for (auto& key_proto : *key_protos.mutable_keys()) {
-      keys.emplace_back(std::move(*key_proto.mutable_key()), key_proto.id());
-    }
-    return {expiration, keys};
+    return {expiration, key_blob};
   }
   return {base::Time::Min(), {}};
 }
@@ -6481,16 +6341,17 @@ InterestGroupStorage::GetAllInterestGroupsUnfilteredForTesting() {
 
 void InterestGroupStorage::SetBiddingAndAuctionServerKeys(
     const url::Origin& coordinator,
-    const std::vector<BiddingAndAuctionServerKey>& keys,
+    std::string serialized_keys,
     base::Time expiration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
     return;
   }
-  DoSetBiddingAndAuctionServerKeys(*db_, coordinator, keys, expiration);
+  DoSetBiddingAndAuctionServerKeys(*db_, coordinator,
+                                   std::move(serialized_keys), expiration);
 }
 
-std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
+std::pair<base::Time, std::string>
 InterestGroupStorage::GetBiddingAndAuctionServerKeys(
     const url::Origin& coordinator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

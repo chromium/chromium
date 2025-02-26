@@ -24,6 +24,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -786,11 +787,12 @@ std::optional<std::string> AdAuctionServiceImpl::GetCookieDeprecationLabel() {
 }
 
 void AdAuctionServiceImpl::GetBiddingAndAuctionServerKey(
+    const url::Origin& scope_origin,
     const std::optional<url::Origin>& coordinator,
     base::OnceCallback<void(
         base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
   GetInterestGroupManager().GetBiddingAndAuctionServerKey(
-      std::move(coordinator), std::move(callback));
+      scope_origin, coordinator, std::move(callback));
 }
 
 AdAuctionServiceImpl::AdAuctionServiceImpl(
@@ -1179,7 +1181,7 @@ void AdAuctionServiceImpl::LoadAuctionDataAndKeyForNextQueuedRequest() {
       // GetBiddingAndAuctionServerKey can call its callback synchronously, and
       // during the last loop iteration the callback may invalidate `state`.
       GetInterestGroupManager().GetBiddingAndAuctionServerKey(
-          coordinator,
+          seller, coordinator,
           base::BindOnce(
               &AdAuctionServiceImpl::OnGotOneBiddingAndAuctionServerKey,
               weak_ptr_factory_.GetWeakPtr(), state.request_id, seller));
@@ -1246,8 +1248,12 @@ void AdAuctionServiceImpl::OnGotAuctionDataAndKey(
     return;
   }
 
+  uint32_t key_id = 0;
+  bool success =
+      base::HexStringToUInt(std::string_view(ba_key.id).substr(0, 2), &key_id);
+  DCHECK(success);
   auto maybe_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-      ba_key.id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+      key_id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
       EVP_HPKE_AES_256_GCM);
   CHECK(maybe_key_config.ok()) << maybe_key_config.status();
 
