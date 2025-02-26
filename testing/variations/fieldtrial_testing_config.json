@@ -26352,6 +26352,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "WebViewPrefetchFromRenderer": "true"
+                    },
                     "enable_features": [
                         "WebViewPrefetchNativeLibrary"
                     ]
