@@ -102,7 +102,8 @@ class AIManager : public base::SupportsUserData::Data,
 
   // `blink::mojom::AIManager` implementation.
   void CanCreateLanguageModel(
-      blink::mojom::AILanguageModelAvailabilityOptionsPtr options,
+      std::optional<std::vector<blink::mojom::AILanguageCodePtr>>
+          expected_input_languages,
       CanCreateLanguageModelCallback callback) override;
   void CreateLanguageModel(
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>

@@ -935,18 +935,14 @@ TEST_P(AILanguageModelTest, CanCreate_IsLanguagesSupported) {
               GetOnDeviceModelEligibility(_))
       .WillRepeatedly(testing::Return(
           optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
-  auto options = blink::mojom::AILanguageModelAvailabilityOptions::New(
-      /*top_k=*/std::nullopt,
-      /*temperature=*/std::nullopt,
-      /*expected_input_languages=*/
-      std::vector<blink::mojom::AILanguageCodePtr>{
-          AITestUtils::ToMojoLanguageCodes({"en"})});
 
   base::MockCallback<AIManager::CanCreateLanguageModelCallback> callback;
   EXPECT_CALL(callback,
               Run(blink::mojom::ModelAvailabilityCheckResult::kAvailable));
-  GetAIManagerInterface()->CanCreateLanguageModel(std::move(options),
-                                                  callback.Get());
+  GetAIManagerInterface()->CanCreateLanguageModel(
+      std::vector<blink::mojom::AILanguageCodePtr>{
+          AITestUtils::ToMojoLanguageCodes({"en"})},
+      callback.Get());
 }
 
 TEST_P(AILanguageModelTest, CanCreate_UnIsLanguagesSupported) {
@@ -955,18 +951,14 @@ TEST_P(AILanguageModelTest, CanCreate_UnIsLanguagesSupported) {
               GetOnDeviceModelEligibility(_))
       .WillRepeatedly(testing::Return(
           optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
-  auto options = blink::mojom::AILanguageModelAvailabilityOptions::New(
-      /*top_k=*/std::nullopt,
-      /*temperature=*/std::nullopt,
-      /*expected_input_languages=*/
-      std::vector<blink::mojom::AILanguageCodePtr>{
-          AITestUtils::ToMojoLanguageCodes({"ja"})});
 
   base::MockCallback<AIManager::CanCreateLanguageModelCallback> callback;
   EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableUnsupportedLanguage));
-  GetAIManagerInterface()->CanCreateLanguageModel(std::move(options),
-                                                  callback.Get());
+  GetAIManagerInterface()->CanCreateLanguageModel(
+      std::vector<blink::mojom::AILanguageCodePtr>{
+          AITestUtils::ToMojoLanguageCodes({"ja"})},
+      callback.Get());
 }
 
 // Tests `AILanguageModel::Context` creation without initial prompts.

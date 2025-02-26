@@ -65,10 +65,11 @@ void EchoAIManagerImpl::Create(
 }
 
 void EchoAIManagerImpl::CanCreateLanguageModel(
-    blink::mojom::AILanguageModelAvailabilityOptionsPtr options,
+    std::optional<std::vector<blink::mojom::AILanguageCodePtr>>
+        expected_input_languages,
     CanCreateLanguageModelCallback callback) {
-  if (options && options->expected_input_languages.has_value() &&
-      !IsLanguagesSupported(options->expected_input_languages.value())) {
+  if (expected_input_languages.has_value() &&
+      !IsLanguagesSupported(expected_input_languages.value())) {
     std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableUnsupportedLanguage);
     return;

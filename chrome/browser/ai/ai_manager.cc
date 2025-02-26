@@ -249,17 +249,15 @@ void AIManager::AddReceiver(
 }
 
 void AIManager::CanCreateLanguageModel(
-    blink::mojom::AILanguageModelAvailabilityOptionsPtr options,
+    std::optional<std::vector<blink::mojom::AILanguageCodePtr>>
+        expected_input_languages,
     CanCreateLanguageModelCallback callback) {
-  if (options && options->expected_input_languages.has_value() &&
-      !IsLanguagesSupported(options->expected_input_languages.value())) {
+  if (expected_input_languages.has_value() &&
+      !IsLanguagesSupported(expected_input_languages.value())) {
     std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableUnsupportedLanguage);
     return;
   }
-
-  // TODO(crbug.com/390459309): check if the sampling params can be supported.
-  // We are doing clamping anyway so maybe this is not needed.
 
   CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kPromptApi,
                    std::move(callback));

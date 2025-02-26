@@ -72,13 +72,6 @@ struct AILanguageModelCreateOptions {
   array<AILanguageCode>? expected_input_languages;
 };
 
-// This is used when checking if the AILanguageModel can be created.
-struct AILanguageModelAvailabilityOptions {
-  uint32? top_k;
-  float? temperature;
-  array<AILanguageCode>? expected_input_languages;
-};
-
 // The client interface that receives an AILanguageModel or errors from an
 // AIManager.
 interface AIManagerCreateLanguageModelClient {
