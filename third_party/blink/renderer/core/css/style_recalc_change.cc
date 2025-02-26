@@ -13,18 +13,18 @@ namespace blink {
 
 bool StyleRecalcChange::TraverseChildren(const Element& element) const {
   return RecalcChildren() || RecalcContainerQueryDependent() ||
-         element.ChildNeedsStyleRecalc();
+         element.ChildNeedsStyleRecalc() || RecalcDescendantContentVisibility();
 }
 
 bool StyleRecalcChange::TraversePseudoElements(const Element& element) const {
   return UpdatePseudoElements() || RecalcContainerQueryDependent() ||
-         element.ChildNeedsStyleRecalc();
+         element.ChildNeedsStyleRecalc() || RecalcDescendantContentVisibility();
 }
 
 bool StyleRecalcChange::TraverseChild(const Node& node) const {
   return ShouldRecalcStyleFor(node) || node.ChildNeedsStyleRecalc() ||
          node.GetForceReattachLayoutTree() || RecalcContainerQueryDependent() ||
-         node.NeedsLayoutSubtreeUpdate();
+         node.NeedsLayoutSubtreeUpdate() || RecalcDescendantContentVisibility();
 }
 
 bool StyleRecalcChange::RecalcContainerQueryDependent(const Node& node) const {

@@ -3760,6 +3760,9 @@ const ComputedStyle* Element::StyleForLayoutObject(
       context = &EnsureDisplayLockContext();
     }
     context->SetRequestedState(style->ContentVisibility());
+    context->SetHasScrollerWithScrollMarkerGroup(
+        style_recalc_context
+            .has_scroller_ancestor_with_scroll_marker_group_property);
     style = context->AdjustElementStyle(style);
   }
 
@@ -4365,6 +4368,20 @@ StyleRecalcChange Element::RecalcOwnStyle(
       (old_style && new_style &&
        old_style->ContainsStyle() != new_style->ContainsStyle())) {
     GetDocument().GetStyleEngine().MarkCountersDirty();
+  }
+
+  bool old_style_has_scroll_marker_group =
+      old_style && !old_style->ScrollMarkerGroupNone();
+  bool new_style_has_scroll_marker_group =
+      new_style && !new_style->ScrollMarkerGroupNone();
+  // If the scroll-marker-group and there may be content-visibility: auto locked
+  // locks, then we need to recurse. If there are non-locked content-visibility:
+  // auto locks we'll reach those when the lock gets acquired again.
+  if (old_style_has_scroll_marker_group != new_style_has_scroll_marker_group &&
+      GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount() >
+          0 &&
+      GetDocument().GetDisplayLockDocumentState().HasActivatableLocks()) {
+    child_change = child_change.ForceRecalcDescendantContentVisibility();
   }
 
   // Update style containment tree if the style containment of the element
