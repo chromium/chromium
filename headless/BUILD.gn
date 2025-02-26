@@ -300,8 +300,6 @@ component("headless_non_renderer") {
     "public/internal/message_dispatcher.h",
     "public/internal/value_conversions.h",
     "public/switches.h",
-    "public/util/user_agent.cc",
-    "public/util/user_agent.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
