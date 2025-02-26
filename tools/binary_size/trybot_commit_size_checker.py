@@ -50,10 +50,8 @@ _BASE_RESOURCE_SIZES_LOG = 'base_resource_sizes_log'
 _MUTABLE_CONSTANTS_LOG = 'mutable_contstants_log'
 _FOR_TESTING_LOG = 'for_test_log'
 _DEX_SYMBOLS_LOG = 'dex_symbols_log'
-_SIZEDIFF_FILENAME = 'supersize_diff.sizediff'
-_HTML_REPORT_URL = (
-    'https://chrome-supersize.firebaseapp.com/viewer.html?load_url={{' +
-    _SIZEDIFF_FILENAME + '}}')
+_HTML_REPORT_URL_TEMPLATE = (
+    'https://chrome-supersize.firebaseapp.com/viewer.html?load_url={{%s}}')
 _MAX_PAK_INCREASE = 1024
 _TRYBOT_MD_URL = ('https://chromium.googlesource.com/chromium/src/+/main/docs/'
                   'speed/binary_size/android_binary_size_trybot.md')
@@ -345,7 +343,7 @@ def _CreateTestingSymbolsDeltas(before_mapping_paths, after_mapping_paths):
                            len(added_symbols) - len(removed_symbols))
 
 
-def _GenerateBinarySizePluginDetails(metrics):
+def _GenerateBinarySizePluginDetails(metrics, sizediff_filename):
   binary_size_listings = []
   for delta, log_name in metrics:
     # Give more friendly names to Normalized APK Size metrics.
@@ -371,7 +369,7 @@ def _GenerateBinarySizePluginDetails(metrics):
   binary_size_extras = [
       {
           'text': 'APK Breakdown',
-          'url': _HTML_REPORT_URL
+          'url': _HTML_REPORT_URL_TEMPLATE % sizediff_filename
       },
   ]
 
@@ -562,7 +560,8 @@ def main():
 
   # .sizediff can be consumed by the html viewer.
   logging.info('Creating HTML Report')
-  sizediff_path = os.path.join(args.staging_dir, _SIZEDIFF_FILENAME)
+  sizediff_filename = os.path.basename(size_filename) + 'diff'
+  sizediff_path = os.path.join(args.staging_dir, sizediff_filename)
   file_format.SaveDeltaSizeInfo(delta_size_info, sizediff_path)
 
   passing_deltas = set(d for d in size_deltas if d.IsAllowable())
@@ -612,7 +611,7 @@ To understand what those checks are and how to pass them, see:
       },
       {
           'name': 'SuperSize HTML Diff',
-          'url': _HTML_REPORT_URL,
+          'url': _HTML_REPORT_URL_TEMPLATE % sizediff_filename,
       },
   ]
   if config_32:
@@ -640,12 +639,13 @@ To understand what those checks are and how to pass them, see:
   # Remove empty diffs (Mutable Constants, Dex Method, ...).
   links_json = [o for o in links_json if o.get('lines') or o.get('url')]
 
-  binary_size_plugin_json = _GenerateBinarySizePluginDetails(metrics)
+  binary_size_plugin_json = _GenerateBinarySizePluginDetails(
+      metrics, sizediff_filename)
 
   results_json = {
       'status_code': status_code,
       'summary': summary,
-      'archive_filenames': [_SIZEDIFF_FILENAME],
+      'archive_filenames': [sizediff_filename],
       'links': links_json,
       'gerrit_plugin_details': binary_size_plugin_json,
   }
