@@ -7663,6 +7663,13 @@
          null,
          {}
         ]
+       ],
+       "form-controls-nested-id-crash.html": [
+        "ed6c7e6e2b961fd1cc2699da9e8e29f04ce2718c",
+        [
+         null,
+         {}
+        ]
        ]
       },
       "the-input-element": {
@@ -9374,6 +9381,13 @@
      "crashtests": {
       "firefox-bug-1930221.html": [
        "52e3d7fb8abbd7a9a94f13dfbb78d4e2946f951f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "firefox-bug-1949899.html": [
+       "a89605a0d4d68c2130a0ad64b89089e0e87bc513",
        [
         null,
         {}
@@ -145063,6 +145077,19 @@
         [
          [
           "/css/css-images/gradient/gradient-single-stop-none-interpolation-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "gradient-to-transparent.html": [
+       "ad70ae3a65ec1a83b0abcbc2c76ed91696880dc1",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-to-transparent-ref.html",
           "=="
          ]
         ],
@@ -346117,6 +346144,10 @@
        "b4a36ff6d0e43b38d670472dd56a0eb44b31ea2c",
        []
       ],
+      "gradient-eval-010-ref.html": [
+       "8d191b42b50cc9f71008b897c08f5d5c91376e3e",
+       []
+      ],
       "gradient-eval-predefined-color-spaces-ref.html": [
        "6ead48c4a0d62866029e6e609b9382df59890703",
        []
@@ -346251,6 +346282,10 @@
       ],
       "gradient-single-stop-none-interpolation-ref.html": [
        "0bc56ce194404786ecd18646cc1d0c1ea03a8b12",
+       []
+      ],
+      "gradient-to-transparent-ref.html": [
+       "626e1d5105d2dcad11cd40d94e47c811f6358d27",
        []
       ],
       "oklab-gradient-ref.html": [
@@ -419691,12 +419726,12 @@
     ],
     "signatures": {
      "resource.py": [
-      "9890a61ca459254bfcd671dee3b21e95401081b6",
+      "52bf48c3ac85fb8ca81c86bea2b85846e934170b",
       []
      ],
      "tentative": {
       "helper.js": [
-       "5c1c0b5c78e7ace51f704e2c773c595fd2bb83a1",
+       "93cc2c6ae584b119bb406ea103acb053a60b5dd7",
        []
       ]
      }
@@ -495732,6 +495767,27 @@
        ],
        "rule-outset-valid.html": [
         "6ad45bbc7acd1eb95fd0b015b31dc41667c480d1",
+        [
+         null,
+         {}
+        ]
+       ],
+       "rule-paint-order-computed.html": [
+        "441be8670d782ccc6dbb252bea4288f87e43918e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "rule-paint-order-invalid.html": [
+        "b18349a1aedadf9eda10fdea21ab03c99d9b0825",
+        [
+         null,
+         {}
+        ]
+       ],
+       "rule-paint-order-valid.html": [
+        "6a4294f7f4b5c07ea3b556e6cade62f47c6f72b3",
         [
          null,
          {}
@@ -716267,6 +716323,20 @@
          ]
         }
        ]
+      ],
+      "status.window.js": [
+       "2257968c5ad33d5af197ff067ba5fb9e41a894bb",
+       [
+        "subresource-integrity/signatures/tentative/status.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "helper.js"
+          ]
+         ]
+        }
+       ]
       ]
      }
     },
@@ -716280,7 +716350,7 @@
     "unencoded-digest": {
      "tentative": {
       "fetch.any.js": [
-       "c8b298d69fc1e4fc2d6ad926c4b267f035654828",
+       "8b845ace481005907e26e8aeaf9dd13a474030ca",
        [
         "subresource-integrity/unencoded-digest/tentative/fetch.any.html?include=integrity-fail",
         {
@@ -716571,7 +716641,7 @@
        ]
       ],
       "script.window.js": [
-       "c839243c7b29b85af6192f0e7ce94883cb4d077a",
+       "845e30e388d9ed6044cc6500d24ffbfcc8bff4be",
        [
         "subresource-integrity/unencoded-digest/tentative/script.window.html?include=integrity-fail",
         {
@@ -808391,6 +808461,15 @@
      }
     },
     "css-images": {
+     "gradient": {
+      "gradient-eval-010.html": [
+       "b5da4cab87bad9cbf0c76e07c9751d83f1da82ca",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "image-fit-001.xht": [
       "169d55c0f2e9bf93fd9851f7fb43eb4493d14b39",
       [
