@@ -15,8 +15,9 @@ BASE_FEATURE(kPrefetchReusable,
              "PrefetchReusable",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// 4MiB, 2**20 * 4.
 const base::FeatureParam<int> kPrefetchReusableBodySizeLimit{
-    &kPrefetchReusable, "prefetch_reusable_body_size_limit", 65536};
+    &kPrefetchReusable, "prefetch_reusable_body_size_limit", 4194304};
 
 BASE_FEATURE_PARAM(bool,
                    kPrefetchReusableUseNewWaitLoop,
