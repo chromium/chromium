@@ -519,6 +519,7 @@ source_set("web_applications") {
     "//components/device_event_log",
     "//components/keep_alive_registry:keep_alive_registry",
     "//components/keyed_service/content",
+    "//components/page_load_metrics/browser:browser",
     "//components/password_manager/content/common",
     "//components/performance_manager",
     "//components/permissions:permissions",

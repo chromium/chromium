@@ -375,6 +375,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kBeforeInstallPrompt},
           {WebFeature::kV8BeforeInstallPromptEvent_Platforms_AttributeGetter,
            WebDXFeature::kBeforeInstallPrompt},
+          {WebFeature::kWebAppManifestUpdate, WebDXFeature::kManifest},
       }};
 
   return *kMap;

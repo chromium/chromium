@@ -84,6 +84,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/web_feature_histogram_tester.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
@@ -886,6 +887,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckIgnoresNameChange) {
+  WebFeatureHistogramTester web_feature_histogram_tester;
   constexpr char kManifestTemplate[] = R"(
     {
       "name": "$1",
@@ -904,6 +906,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
             ManifestUpdateResult::kAppUpToDate);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpToDate, 1);
+  EXPECT_EQ(0, web_feature_histogram_tester.GetCount(
+                   blink::mojom::WebFeature::kWebAppManifestUpdate));
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
@@ -1182,6 +1186,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsBackgroundColorChange) {
+  WebFeatureHistogramTester web_feature_histogram_tester;
   constexpr char kManifestTemplate[] = R"(
     {
       "name": "Test app name",
@@ -1203,7 +1208,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
-
+  EXPECT_EQ(1, web_feature_histogram_tester.GetCount(
+                   blink::mojom::WebFeature::kWebAppManifestUpdate));
   EXPECT_EQ(GetProvider().registrar_unsafe().GetAppBackgroundColor(app_id),
             SkColorSetARGB(0xFF, 0xFF, 0x00, 0x00));
 }
