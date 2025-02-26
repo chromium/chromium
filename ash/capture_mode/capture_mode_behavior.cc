@@ -115,9 +115,6 @@ class DefaultBehavior : public CaptureModeBehavior {
            capture_type == PerformCaptureType::kScanner;
   }
   bool ShouldEndSessionOnShowingSearchResults() const override { return true; }
-  bool CanShowSmartActionsButton() const override {
-    return ScannerController::CanShowUiForShell();
-  }
   bool CanShowActionButtons() const override { return true; }
   void OnRegionSelectedOrAdjustedWhenActionContainerShowing() override {
     CHECK(ShouldShowDefaultActionButtonsInActionContainer());
@@ -560,10 +557,6 @@ bool CaptureModeBehavior::ShouldReShowUisAtPerformingCapture(
 bool CaptureModeBehavior::ShouldShowDefaultActionButtonsInActionContainer()
     const {
   return true;
-}
-
-bool CaptureModeBehavior::CanShowSmartActionsButton() const {
-  return false;
 }
 
 bool CaptureModeBehavior::CanShowActionButtons() const {

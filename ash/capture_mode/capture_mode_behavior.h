@@ -105,7 +105,6 @@ class CaptureModeBehavior {
   // search, copy text and smart actions in the action container IF the action
   // container is shown.
   virtual bool ShouldShowDefaultActionButtonsInActionContainer() const;
-  virtual bool CanShowSmartActionsButton() const;
   // Returns true if the behavior can show action buttons at all.
   // TODO(b/377570562): Consolidate these APIs.
   virtual bool CanShowActionButtons() const;

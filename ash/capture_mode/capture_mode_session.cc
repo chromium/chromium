@@ -58,6 +58,7 @@
 #include "ash/wm/window_dimmer.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -1530,7 +1531,14 @@ ActionButtonView* CaptureModeSession::AddActionButton(
 }
 
 void CaptureModeSession::AddSmartActionsButton() {
-  if (active_behavior_->CanShowSmartActionsButton() &&
+  // This should only be called from the default behavior.
+  // This method is only called from `DefaultBehavior::OnRegionSelected…` and
+  // `CaptureModeController::OnTextDetectionComplete`, which should only be
+  // called by the default behavior, and early returns if the session changes
+  // via `image_search_token`.
+  CHECK_EQ(active_behavior_->behavior_type(), BehaviorType::kDefault);
+
+  if (ScannerController::CanShowUiForShell() &&
       !controller_->IsNetworkConnectionOffline()) {
     RecordScannerFeatureUserState(
         ScannerFeatureUserState::kScreenCaptureModeScannerButtonShown);
