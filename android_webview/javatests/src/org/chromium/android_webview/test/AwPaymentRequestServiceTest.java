@@ -212,6 +212,21 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
     }
 
+    /** Tests that retrying payment is disabled in the WebView implementation of PaymentRequest. */
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testCannotRetry() throws Exception {
+        installPaymentApp();
+        loadMerchantCheckoutPage();
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "retryPayment");
+
+        Assert.assertEquals(
+                "NotSupportedError: PaymentResponse.retry() is disabled in WebView.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
     /** Loads a test web-page for exercising the PaymentRequest API. */
     private void loadMerchantCheckoutPage() throws Exception {
         String checkoutPageHtmlFormat =
@@ -221,6 +236,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
             <button id="checkCanMakePayment">Check can make payment</button>
             <button id="checkHasEnrolledInstrument">Check has enrolled instrument</button>
             <button id="launchPaymentApp">Launch payment app</button>
+            <button id="retryPayment">Retry payment</button>
 
             <script>
               const supportedMethods = '%s';
@@ -271,6 +287,18 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                 }
               }
 
+              async function retryPayment() {
+                try {
+                  const request = new PaymentRequest([{supportedMethods}], {total});
+                  let response = await request.show();
+                  response = await response.retry();
+                  await response.complete('success');
+                  resultListener.postMessage(JSON.stringify(response));
+                } catch (e) {
+                  resultListener.postMessage(e.toString());
+                }
+              }
+
               document.getElementById('checkPaymentRequestDefined')
                   .addEventListener('click', checkPaymentRequestDefined);
               document.getElementById('checkCanMakePayment')
@@ -279,6 +307,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                   .addEventListener('click', checkHasEnrolledInstrument);
               document.getElementById('launchPaymentApp')
                   .addEventListener('click', launchPaymentApp);
+              document.getElementById('retryPayment')
+                  .addEventListener('click', retryPayment);
 
               resultListener.postMessage('Page loaded.');
             </script>

@@ -49,6 +49,19 @@ public interface BrowserPaymentRequest {
     void complete(int result, Runnable onCompleteHandled);
 
     /**
+     * If retrying payments is supported, this method returns false.
+     *
+     * If retrying payments is not supported, this method disconnects the Mojo IPC pipe and returns
+     * true.
+     *
+     * @return Whether the Mojo IPC pipe was disconnected due to lack of support for retrying
+     * payments.
+     */
+    default boolean disconnectIfNoRetrySupport() {
+        return false;
+    }
+
+    /**
      * Called when {@link PaymentRequest#retry} is invoked.
      * @param errors The merchant-defined error message strings, which are used to indicate to the
      *         end-user that something is wrong with the data of the payment response.

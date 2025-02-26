@@ -1489,7 +1489,9 @@ public class PaymentRequestService
      * PaymentRequest#retry} for the parameters' specification.
      */
     /* package */ void retry(PaymentValidationErrors errors) {
-        if (mBrowserPaymentRequest == null) return;
+        if (mBrowserPaymentRequest == null || mBrowserPaymentRequest.disconnectIfNoRetrySupport()) {
+            return;
+        }
         if (!PaymentValidator.validatePaymentValidationErrors(errors)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(
