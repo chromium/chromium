@@ -478,10 +478,17 @@ std::optional<ui::ImageModel> ToolbarController::GetMenuIcon(
               ui::VectorIconModel vector_icon_model =
                   pinned_icon_image.GetVectorIcon();
 
-              return std::make_optional(ui::ImageModel::FromVectorIcon(
-                  *vector_icon_model.vector_icon(),
-                  vector_icon_model.color_id(),
-                  ui::SimpleMenuModel::kDefaultIconSize));
+              if (vector_icon_model.has_color()) {
+                return std::make_optional(ui::ImageModel::FromVectorIcon(
+                    *vector_icon_model.vector_icon(), vector_icon_model.color(),
+                    ui::SimpleMenuModel::kDefaultIconSize));
+
+              } else {
+                return std::make_optional(ui::ImageModel::FromVectorIcon(
+                    *vector_icon_model.vector_icon(),
+                    vector_icon_model.color_id(),
+                    ui::SimpleMenuModel::kDefaultIconSize));
+              }
             } else {
               return std::make_optional(pinned_icon_image);
             }
