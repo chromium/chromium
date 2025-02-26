@@ -1,0 +1,158 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/enterprise/signin/enterprise_identity_service.h"
+
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace enterprise {
+
+class EnterpriseIdentityServiceTest : public testing::Test {
+ protected:
+  EnterpriseIdentityServiceTest() {
+    identity_env_.WaitForRefreshTokensLoaded();
+  }
+
+  std::unique_ptr<EnterpriseIdentityService> CreateService() {
+    return EnterpriseIdentityService::Create(identity_env_.identity_manager());
+  }
+
+  const signin::IdentityManager* identity_manager() const {
+    return identity_env_.identity_manager();
+  }
+
+  base::test::SingleThreadTaskEnvironment task_env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  signin::IdentityTestEnvironment identity_env_;
+};
+
+TEST_F(EnterpriseIdentityServiceTest,
+       GetManagedAccountsWithRefreshTokens_NoUser) {
+  ASSERT_TRUE(identity_manager()->AreRefreshTokensLoaded());
+  ASSERT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
+
+  auto service = CreateService();
+  ASSERT_TRUE(service);
+  base::test::TestFuture<std::vector<CoreAccountInfo>> test_future;
+  service->GetManagedAccountsWithRefreshTokens(test_future.GetCallback());
+
+  EXPECT_TRUE(test_future.Get().empty());
+}
+
+TEST_F(EnterpriseIdentityServiceTest,
+       GetManagedAccountsWithRefreshTokens_SingleManagedUser_Async) {
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@enterprise.com");
+
+  auto service = CreateService();
+  base::test::TestFuture<std::vector<CoreAccountInfo>> test_future;
+  service->GetManagedAccountsWithRefreshTokens(test_future.GetCallback());
+
+  // Value not already available.
+  EXPECT_FALSE(test_future.IsReady());
+
+  // Full info becomes available.
+  identity_env_.SimulateSuccessfulFetchOfAccountInfo(
+      account.account_id, account.email, account.gaia,
+      /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
+      /*picture_url=*/"");
+
+  auto managed_accounts = test_future.Get();
+  ASSERT_EQ(managed_accounts.size(), 1U);
+  EXPECT_EQ(managed_accounts.front(), account);
+}
+
+TEST_F(EnterpriseIdentityServiceTest,
+       GetManagedAccountsWithRefreshTokens_SingleManagedUser_Sync) {
+  // google.com accounts are determined as managed accounts synchronously.
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@google.com");
+
+  auto service = CreateService();
+  base::test::TestFuture<std::vector<CoreAccountInfo>> test_future;
+  service->GetManagedAccountsWithRefreshTokens(test_future.GetCallback());
+
+  // Value is already available.
+  EXPECT_TRUE(test_future.IsReady());
+
+  auto managed_accounts = test_future.Get();
+  ASSERT_EQ(managed_accounts.size(), 1U);
+  EXPECT_EQ(managed_accounts.front(), account);
+}
+
+TEST_F(EnterpriseIdentityServiceTest,
+       GetManagedAccountsWithRefreshTokens_NoRefreshTokens_ThenOneUser) {
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@enterprise.com");
+  identity_env_.ResetToAccountsNotYetLoadedFromDiskState();
+  EXPECT_FALSE(identity_manager()->AreRefreshTokensLoaded());
+
+  auto service = CreateService();
+  base::test::TestFuture<std::vector<CoreAccountInfo>> test_future;
+  service->GetManagedAccountsWithRefreshTokens(test_future.GetCallback());
+
+  // Value not already available, as the request is waiting for refresh tokens
+  // to have been loaded.
+  EXPECT_FALSE(test_future.IsReady());
+
+  identity_env_.ReloadAccountsFromDisk();
+  identity_env_.WaitForRefreshTokensLoaded();
+
+  EXPECT_FALSE(test_future.IsReady());
+
+  identity_env_.SimulateSuccessfulFetchOfAccountInfo(
+      account.account_id, account.email, account.gaia,
+      /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
+      /*picture_url=*/"");
+
+  auto managed_accounts = test_future.Get();
+  ASSERT_EQ(managed_accounts.size(), 1U);
+  EXPECT_EQ(managed_accounts.front(), account);
+}
+
+TEST_F(EnterpriseIdentityServiceTest,
+       GetManagedAccountsWithRefreshTokens_MultipleMixedUsers) {
+  AccountInfo google_account =
+      identity_env_.MakeAccountAvailable("account@google.com");
+  AccountInfo async_enterprise_account =
+      identity_env_.MakeAccountAvailable("account@enterprise.com");
+  AccountInfo gmail_account =
+      identity_env_.MakeAccountAvailable("account@gmail.com");
+  AccountInfo async_consumer_account =
+      identity_env_.MakeAccountAvailable("account@consumer.com");
+
+  auto service = CreateService();
+  base::test::TestFuture<std::vector<CoreAccountInfo>> test_future;
+  service->GetManagedAccountsWithRefreshTokens(test_future.GetCallback());
+
+  EXPECT_FALSE(test_future.IsReady());
+
+  identity_env_.SimulateSuccessfulFetchOfAccountInfo(
+      async_enterprise_account.account_id, async_enterprise_account.email,
+      async_enterprise_account.gaia,
+      /*hosted_domain=*/"enterprise.com", "Full Name", "Given Name", "en-US",
+      /*picture_url=*/"");
+
+  EXPECT_FALSE(test_future.IsReady());
+
+  identity_env_.SimulateSuccessfulFetchOfAccountInfo(
+      async_consumer_account.account_id, async_consumer_account.email,
+      async_consumer_account.gaia,
+      /*hosted_domain=*/"", "Full Name", "Given Name", "en-US",
+      /*picture_url=*/"");
+
+  auto managed_accounts = test_future.Get();
+  ASSERT_EQ(managed_accounts.size(), 2U);
+  ASSERT_THAT(managed_accounts, testing::UnorderedElementsAre(
+                                    google_account, async_enterprise_account));
+}
+
+}  // namespace enterprise
