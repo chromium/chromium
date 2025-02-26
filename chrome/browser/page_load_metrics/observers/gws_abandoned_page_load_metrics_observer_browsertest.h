@@ -58,7 +58,7 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
   }
 
  protected:
-  virtual std::vector<NavigationMilestone> all_milestones();
+  std::vector<NavigationMilestone> all_milestones();
   std::vector<NavigationMilestone> all_testable_milestones();
   std::vector<NavigationMilestone> all_throttleable_milestones();
 
@@ -132,6 +132,7 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
   }
 
  private:
+  std::vector<NavigationMilestone> all_milestones_with_performance_mark();
   content::test::PrerenderTestHelper prerender_helper_;
 };
 

@@ -95,10 +95,6 @@ GWSAbandonedPageLoadMetricsObserverBrowserTest::all_milestones() {
       NavigationMilestone::kDidCommit,
       // TODO(crbug.com/352578800): Add other loading milestones.
       NavigationMilestone::kParseStart,
-      NavigationMilestone::kHeaderChunkStart,
-      NavigationMilestone::kHeaderChunkEnd,
-      NavigationMilestone::kBodyChunkStart,
-      NavigationMilestone::kBodyChunkEnd,
   };
 }
 
@@ -114,6 +110,21 @@ GWSAbandonedPageLoadMetricsObserverBrowserTest::all_throttleable_milestones() {
   return {NavigationMilestone::kNavigationStart,
           NavigationMilestone::kFirstRedirectResponseLoaderCallback,
           NavigationMilestone::kNonRedirectResponseLoaderCallback};
+}
+
+std::vector<NavigationMilestone>
+GWSAbandonedPageLoadMetricsObserverBrowserTest::
+    all_milestones_with_performance_mark() {
+  auto milestones = all_milestones();
+
+  milestones.insert(milestones.end(),
+                    {
+                        NavigationMilestone::kHeaderChunkStart,
+                        NavigationMilestone::kHeaderChunkEnd,
+                        NavigationMilestone::kBodyChunkStart,
+                        NavigationMilestone::kBodyChunkEnd,
+                    });
+  return milestones;
 }
 
 GURL GWSAbandonedPageLoadMetricsObserverBrowserTest::url_srp() {
@@ -266,7 +277,7 @@ void GWSAbandonedPageLoadMetricsObserverBrowserTest::
     ExpectTotalCountForAllNavigationMilestones(bool include_redirect,
                                                int count,
                                                std::string histogram_suffix) {
-  for (auto milestone : all_milestones()) {
+  for (auto milestone : all_milestones_with_performance_mark()) {
     SCOPED_TRACE(testing::Message()
                  << " ExpectTotalCountForAllNavigationMilestones on milestone "
                  << static_cast<int>(milestone) << " with suffix "
@@ -288,7 +299,7 @@ void GWSAbandonedPageLoadMetricsObserverBrowserTest::
   // milestones because in most tests when we do multiple navigations one
   // after another, the previous page hasn't reached all its loading
   // milestones, and we would log that as an abandonment.
-  for (auto milestone : all_milestones()) {
+  for (auto milestone : all_milestones_with_performance_mark()) {
     if (milestone > NavigationMilestone::kDidCommit) {
       continue;
     }
@@ -405,7 +416,7 @@ void GWSAbandonedPageLoadMetricsObserverBrowserTest::TestNavigationAbandonment(
 
   // There should be new entries for the navigation milestone metrics up until
   // the abandonment, but no entries for milestones after that.
-  for (auto milestone : all_milestones()) {
+  for (auto milestone : all_milestones_with_performance_mark()) {
     if (abandon_milestone < milestone ||
         (!has_redirect &&
          (milestone >= NavigationMilestone::kFirstRedirectedRequestStart &&
@@ -491,7 +502,7 @@ void GWSAbandonedPageLoadMetricsObserverBrowserTest::TestNavigationAbandonment(
                 })));
   }
 
-  for (auto milestone : all_milestones()) {
+  for (auto milestone : all_milestones_with_performance_mark()) {
     if (abandon_milestone == milestone) {
       // Check that the milestone to abandonment time is recorded.
       EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
@@ -663,7 +674,7 @@ void GWSAbandonedPageLoadMetricsObserverBrowserTest::TestNavigationAbandonment(
         static_cast<int>(
             NavigationMilestone::kNonRedirectResponseLoaderCallback));
   }
-  for (auto milestone : all_milestones()) {
+  for (auto milestone : all_milestones_with_performance_mark()) {
     if (abandon_milestone < milestone ||
         (!has_redirect &&
          milestone >= NavigationMilestone::kFirstRedirectedRequestStart &&
