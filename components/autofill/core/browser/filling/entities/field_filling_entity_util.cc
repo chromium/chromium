@@ -85,8 +85,14 @@ GetFillValueAndTypeForEntity(const EntityInstance& entity,
       action_persistence != mojom::ActionPersistence::kFill &&
       attribute_instance->type().is_obfuscated();
   // TODO(crbug.com/397620383): Which type should we return here?
-  return {should_obfuscate ? GetObfuscatedAttributeValue(*attribute_instance)
-                           : attribute_instance->value(),
+  return {should_obfuscate
+              ? GetObfuscatedAttributeValue(*attribute_instance)
+              // TODO(crbug.com/389625753): Investigate whether only passing the
+              // field type is the right choice here. This would for example
+              // fail the fill a PASSPORT_NUMBER field that gets a
+              // PHONE_HOME_WHOLE_NUMBER classification from regular autofill
+              // prediction logic.
+              : attribute_instance->GetInfo(field.Type().GetStorableType()),
           std::nullopt};
 }
 
