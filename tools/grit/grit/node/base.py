@@ -472,13 +472,10 @@ class Node:
     '''Worker for EvaluateCondition (below) and conditions in XTB files.'''
 
     if target_platform == 'chromeos':
-      assert defs.get('chromeos_ash', False) != defs.get(
-          'chromeos_lacros',
-          False), 'The chromeos target must be either ash or lacros'
+      assert defs.get('chromeos_ash', False), 'The chromeos target must be ash'
     else:
-      assert not defs.get('chromeos_ash', False) and not defs.get(
-          'chromeos_lacros',
-          False), 'Non-chromeos targets cannot be ash or lacros'
+      assert not defs.get('chromeos_ash',
+                          False), 'Non-chromeos targets cannot be ash'
 
     if expr in cls.eval_expr_cache:
       code, variables_in_expr = cls.eval_expr_cache[expr]
