@@ -901,9 +901,13 @@ public class StripLayoutHelperManager
         // Opacity is already the desired value, return early.
         if (newOpacity == mStripTransitionScrimOpacity) return;
 
-        assert !mIsHeightTransitioning
-                : "Fade transition is requested when height transition to update the scrim is in"
-                        + " progress.";
+        if (mIsHeightTransitioning) {
+            // If a height transition is currently running to update the scrim when a fade
+            // transition is also requested, the fade transition should be prioritized to update the
+            // strip visibility so immediately set this boolean to false to avoid a race to update
+            // the strip scrim opacity.
+            mIsHeightTransitioning = false;
+        }
         boolean showStrip = newOpacity == 0f;
 
         // Update the status bar color to ensure that it reflects the current strip visibility state
@@ -976,11 +980,6 @@ public class StripLayoutHelperManager
     float calculateScrimOpacityDuringHeightTransition(float visibleHeight) {
         if (!duringTabStripHeightTransition()) {
             return 0.0f;
-        }
-
-        // Stop any running fade transition animation that is updating the scrim opacity.
-        if (isFadeTransitionRunning()) {
-            mFadeTransitionAnimator.cancel();
         }
 
         // Otherwise, the alpha fraction is based on the percent of the tab strip visibility.
