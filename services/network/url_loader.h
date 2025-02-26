@@ -152,10 +152,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // `dev_tools_observer`, `cookie_access_observer`,
   // `url_loader_network_observer`, or `device_bound_session_observer`
   // are not provided.
-  //
-  // `third_party_cookies_enabled` is also false if all cookies are disabled.
-  // The mojom::kURLLoadOptionBlockThirdPartyCookies can be set or unset
-  // independently of this option.
   URLLoader(
       URLLoaderContext& context,
       DeleteCallback delete_callback,
