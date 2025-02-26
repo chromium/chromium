@@ -70,20 +70,19 @@ export function getSessionConfigMojomToUI(session: Config|
                 photoUrl: item.photoUrl ? item.photoUrl.url : undefined,
               };
             }),
-    onTaskConfig:
-        {
-          isLocked: session.onTaskConfig.isLocked,
-          tabs: session.onTaskConfig.tabs.map((item: ControlledTabMojom) => {
-            return {
-              tab: {
-                url: item.tab.url.url,
-                title: item.tab.title,
-                favicon: item.tab.favicon,
-              },
-              navigationType: item.navigationType.valueOf(),
-            };
-          }),
-        },
+    onTaskConfig: {
+      isLocked: session.onTaskConfig.isLocked,
+      tabs: session.onTaskConfig.tabs.map((item: ControlledTabMojom) => {
+        return {
+          tab: {
+            url: item.tab.url.url,
+            title: item.tab.title,
+            favicon: item.tab.favicon.url,
+          },
+          navigationType: item.navigationType.valueOf(),
+        };
+      }),
+    },
     captionConfig: session.captionConfig,
     accessCode: session.accessCode ? session.accessCode : '',
   };
@@ -118,7 +117,7 @@ export class ClientDelegateFactory {
               return {
                 title: tab.title,
                 url: tab.url.url,
-                favicon: tab.favicon,
+                favicon: tab.favicon.url,
               };
             }),
           };
@@ -185,7 +184,7 @@ export class ClientDelegateFactory {
                     tab: {
                       url: {url: item.tab.url},
                       title: item.tab.title,
-                      favicon: item.tab.favicon,
+                      favicon: {url: item.tab.favicon},
                     },
                     navigationType: item.navigationType.valueOf(),
                   };
@@ -229,7 +228,7 @@ export class ClientDelegateFactory {
                   tab: {
                     url: {url: item.tab.url},
                     title: item.tab.title,
-                    favicon: item.tab.favicon,
+                    favicon: {url: item.tab.favicon},
                   },
                   navigationType: item.navigationType.valueOf(),
                 };

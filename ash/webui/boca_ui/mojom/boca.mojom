@@ -19,8 +19,8 @@ struct TabInfo {
   string title;
   // Tab URL.
   url.mojom.Url url;
-  //Tab favicon in the format of data url.
-  string favicon;
+  // Tab favicon URL.
+  url.mojom.Url favicon;
 };
 
 

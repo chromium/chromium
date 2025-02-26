@@ -74,12 +74,9 @@ BocaUI::BocaUI(content::WebUI* web_ui,
       "trusted-types polymer_resin lit-html goog#html polymer-html-literal "
       "polymer-template-event-attribute-policy;");
 
-  // Enables the page to load images. The page is restricted to only loading
-  // images from data URLs passed to the page.
+  // For loading favicon and profile photo.
   host_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ImgSrc,
-      "img-src data: 'self' https://lh3.googleusercontent.com "
-      "https://www.gstatic.com/chromecast/home/chromeos;");
+      network::mojom::CSPDirectiveName::ImgSrc, "img-src 'self' https: data:;");
 
   // For testing
   host_source->OverrideContentSecurityPolicy(

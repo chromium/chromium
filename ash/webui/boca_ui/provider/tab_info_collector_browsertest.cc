@@ -22,7 +22,6 @@
 #include "partition_alloc/pointers/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/models/image_model.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 using ::testing::_;
@@ -36,19 +35,11 @@ constexpr char kTabUrl2[] = "https://foo/2";
 constexpr char kTabUrl3[] = "https://foo/3";
 constexpr char kTabUrl4[] = "https://foo/4";
 
-constexpr char kDataUrl[] = "url:image";
-
 constexpr char kDefaultTitle[] = "foo";
 
 }  // namespace
 
 namespace ash::boca {
-
-class MockImageGenerator : public TabInfoCollector::ImageGenerator {
- public:
-  MockImageGenerator() = default;
-  MOCK_METHOD(std::string, StringifyImage, (ui::ImageModel));
-};
 
 class TabInfoCollectorTest : public InProcessBrowserTest {
  public:
@@ -73,16 +64,13 @@ class TabInfoCollectorTest : public InProcessBrowserTest {
 
 
   void TearDown() override {
-    image_generator_ = nullptr;
     tab_info_collector_.reset();
   }
 
   TabInfoCollector* tab_info_collector() { return tab_info_collector_.get(); }
-  MockImageGenerator* image_generator() { return image_generator_.get(); }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<StrictMock<MockImageGenerator>> image_generator_;
   std::unique_ptr<TabInfoCollector> tab_info_collector_;
 };
 
@@ -91,10 +79,8 @@ class TabInfoCollectorConsumerTest : public TabInfoCollectorTest {
     scoped_feature_list_.InitWithFeatures(
         {ash::features::kBoca, ash::features::kBocaConsumer},
         /*disabled_features=*/{});
-    auto mock = std::make_unique<StrictMock<MockImageGenerator>>();
-    image_generator_ = mock.get();
-    tab_info_collector_ = std::make_unique<TabInfoCollector>(
-        std::move(mock), /*is_producer=*/false);
+    tab_info_collector_ =
+        std::make_unique<TabInfoCollector>(/*is_producer=*/false);
     TabInfoCollectorTest::SetUp();
   }
 };
@@ -103,10 +89,8 @@ class TabInfoCollectorProducerTest : public TabInfoCollectorTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({ash::features::kBoca},
                                           /*disabled_features=*/{});
-    auto mock = std::make_unique<StrictMock<MockImageGenerator>>();
-    image_generator_ = mock.get();
     tab_info_collector_ = std::make_unique<TabInfoCollector>(
-        std::move(mock), /*is_producer=*/true);
+        /*is_producer=*/true);
     TabInfoCollectorTest::SetUp();
   }
 };
@@ -123,8 +107,7 @@ IN_PROC_BROWSER_TEST_F(TabInfoCollectorProducerTest,
 
   // Create browser 3 and navigate to url4
   CreateBrowser({GURL(kTabUrl4)});
-  EXPECT_CALL(*image_generator(), StringifyImage(_))
-      .WillRepeatedly(Return(kDataUrl));
+
   base::test::TestFuture<std::vector<mojom::WindowPtr>> future;
   tab_info_collector()->GetWindowTabInfo(future.GetCallback());
   auto window_list = future.Take();
@@ -147,12 +130,6 @@ IN_PROC_BROWSER_TEST_F(TabInfoCollectorProducerTest,
   EXPECT_EQ(kTabUrl4, window_list[0]->tab_list[0]->url);
   EXPECT_EQ(kTabUrl3, window_list[1]->tab_list[0]->url);
 
-  // Verify image data url is generated
-  EXPECT_EQ(kDataUrl, window_list[2]->tab_list[0]->favicon);
-  EXPECT_EQ(kDataUrl, window_list[2]->tab_list[1]->favicon);
-  EXPECT_EQ(kDataUrl, window_list[0]->tab_list[0]->favicon);
-  EXPECT_EQ(kDataUrl, window_list[1]->tab_list[0]->favicon);
-
   // Verify title is set
   EXPECT_EQ(kDefaultTitle, window_list[2]->tab_list[0]->title);
   EXPECT_EQ(kDefaultTitle, window_list[2]->tab_list[1]->title);
@@ -165,8 +142,6 @@ IN_PROC_BROWSER_TEST_F(TabInfoCollectorProducerTest,
   // Close the browser and verify that all browser windows are closed.
   CloseBrowserSynchronously(browser());
   ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
-
-  EXPECT_CALL(*image_generator(), StringifyImage(_)).Times(0);
 
   base::test::TestFuture<std::vector<mojom::WindowPtr>> future;
   tab_info_collector()->GetWindowTabInfo(future.GetCallback());
@@ -195,11 +170,8 @@ IN_PROC_BROWSER_TEST_F(TabInfoCollectorConsumerTest,
         // Verify tab is listed in non-ascending order inside window based on
         // last access time.
         EXPECT_EQ(kTabUrl1, window_list[0]->tab_list[0]->url);
-        // Verify image data url is generated.
-        EXPECT_EQ(kDataUrl, window_list[0]->tab_list[0]->favicon);
       }));
-  EXPECT_CALL(*image_generator(), StringifyImage(_))
-      .WillRepeatedly(Return(kDataUrl));
+
   // Create browser 1 and navigate to url1 and then url2
   CreateBrowser({GURL(kTabUrl1)});
 }

@@ -80,11 +80,12 @@ constexpr char kTestUrlBase[] = "https://test";
 mojom::OnTaskConfigPtr GetCommonTestLockOnTaskConfig() {
   std::vector<mojom::ControlledTabPtr> tabs;
   tabs.push_back(mojom::ControlledTab::New(
-      mojom::TabInfo::New("google", ::GURL("http://google.com/"), "data/image"),
+      mojom::TabInfo::New("google", GURL("http://google.com/"),
+                          GURL("http://data/image")),
       /*=navigation_type*/ mojom::NavigationType::kOpen));
   tabs.push_back(mojom::ControlledTab::New(
-      mojom::TabInfo::New("youtube", ::GURL("http://youtube.com/"),
-                          "data/image"),
+      mojom::TabInfo::New("youtube", GURL("http://youtube.com/"),
+                          GURL("http://data/image")),
       /*=navigation_type*/ mojom::NavigationType::kBlock));
   return mojom::OnTaskConfig::New(/*=is_locked*/ true, std::move(tabs));
 }
@@ -92,7 +93,8 @@ mojom::OnTaskConfigPtr GetCommonTestLockOnTaskConfig() {
 mojom::OnTaskConfigPtr GetCommonTestUnLockedOnTaskConfig() {
   std::vector<mojom::ControlledTabPtr> tabs;
   tabs.push_back(mojom::ControlledTab::New(
-      mojom::TabInfo::New("google", ::GURL("http://google.com/"), "data/image"),
+      mojom::TabInfo::New("google", GURL("http://google.com/"),
+                          GURL("http://data/image")),
       /*=navigation_type*/ mojom::NavigationType::kOpen));
   return mojom::OnTaskConfig::New(/*=is_locked*/ false, std::move(tabs));
 }
@@ -103,13 +105,13 @@ mojom::OnTaskConfigPtr GetCommonTestUnLockedOnTaskConfig() {
   active_bundle->set_locked(true);
   auto* content = active_bundle->mutable_content_configs()->Add();
   content->set_url("http://google.com/");
-  content->set_favicon_url("data/image");
+  content->set_favicon_url("http://data/image");
   content->set_title("google");
   content->mutable_locked_navigation_options()->set_navigation_type(
       ::boca::LockedNavigationOptions_NavigationType_OPEN_NAVIGATION);
   auto* content_1 = active_bundle->mutable_content_configs()->Add();
   content_1->set_url("http://youtube.com/");
-  content_1->set_favicon_url("data/image");
+  content_1->set_favicon_url("http://data/image");
   content_1->set_title("youtube");
   content_1->mutable_locked_navigation_options()->set_navigation_type(
       ::boca::LockedNavigationOptions_NavigationType_BLOCK_NAVIGATION);
@@ -122,7 +124,7 @@ mojom::OnTaskConfigPtr GetCommonTestUnLockedOnTaskConfig() {
   active_bundle->set_locked(false);
   auto* content = active_bundle->mutable_content_configs()->Add();
   content->set_url("http://google.com/");
-  content->set_favicon_url("data/image");
+  content->set_favicon_url("http://data/image");
   content->set_title("google");
   content->mutable_locked_navigation_options()->set_navigation_type(
       ::boca::LockedNavigationOptions_NavigationType_OPEN_NAVIGATION);
@@ -158,7 +160,7 @@ mojom::CaptionConfigPtr GetCommonCaptionConfig() {
   active_bundle->set_locked(false);
   auto* content = active_bundle->mutable_content_configs()->Add();
   content->set_url("http://default.com/");
-  content->set_favicon_url("data/image");
+  content->set_favicon_url("http://data/image");
   content->set_title("default");
   content->mutable_locked_navigation_options()->set_navigation_type(
       ::boca::LockedNavigationOptions_NavigationType_OPEN_NAVIGATION);
@@ -477,10 +479,10 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
                                                 ->active_bundle()
                                                 .content_configs()[0]
                                                 .url());
-            EXPECT_EQ("data/image", request->on_task_config()
-                                        ->active_bundle()
-                                        .content_configs()[0]
-                                        .favicon_url());
+            EXPECT_EQ("http://data/image", request->on_task_config()
+                                               ->active_bundle()
+                                               .content_configs()[0]
+                                               .favicon_url());
             EXPECT_EQ(
                 ::boca::LockedNavigationOptions::NavigationType::
                     LockedNavigationOptions_NavigationType_OPEN_NAVIGATION,
@@ -498,10 +500,10 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
                                                  ->active_bundle()
                                                  .content_configs()[1]
                                                  .url());
-            EXPECT_EQ("data/image", request->on_task_config()
-                                        ->active_bundle()
-                                        .content_configs()[1]
-                                        .favicon_url());
+            EXPECT_EQ("http://data/image", request->on_task_config()
+                                               ->active_bundle()
+                                               .content_configs()[1]
+                                               .favicon_url());
             EXPECT_EQ(
                 ::boca::LockedNavigationOptions::NavigationType::
                     LockedNavigationOptions_NavigationType_BLOCK_NAVIGATION,
@@ -637,7 +639,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
         active_bundle->set_locked(true);
         auto* content = active_bundle->mutable_content_configs()->Add();
         content->set_url("http://google.com/");
-        content->set_favicon_url("data/image");
+        content->set_favicon_url("http://data/image");
         content->set_title("google");
         content->mutable_locked_navigation_options()->set_navigation_type(
             ::boca::LockedNavigationOptions_NavigationType_OPEN_NAVIGATION);
@@ -706,7 +708,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
   EXPECT_EQ("http://google.com/",
             result->on_task_config->tabs[0]->tab->url.spec());
   EXPECT_EQ("google", result->on_task_config->tabs[0]->tab->title);
-  EXPECT_EQ("data/image", result->on_task_config->tabs[0]->tab->favicon);
+  EXPECT_EQ("http://data/image", result->on_task_config->tabs[0]->tab->favicon);
 
   auto activities = std::move(result0->activities);
   EXPECT_EQ(2u, activities.size());
