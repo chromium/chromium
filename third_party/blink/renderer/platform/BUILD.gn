@@ -730,6 +730,8 @@ component("platform") {
     "fonts/orientation_iterator.h",
     "fonts/palette_interpolation.cc",
     "fonts/palette_interpolation.h",
+    "fonts/plain_text_node.cc",
+    "fonts/plain_text_node.h",
     "fonts/plain_text_painter.cc",
     "fonts/plain_text_painter.h",
     "fonts/resolved_font_features.h",
