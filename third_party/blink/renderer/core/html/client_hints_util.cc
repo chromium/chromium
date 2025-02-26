@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/permissions_policy/client_hints_permissions_policy_mapping.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
@@ -62,7 +63,8 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
       local_dom_window->GetSecurityContext().GetPermissionsPolicy();
   network::ParsedPermissionsPolicy container_policy;
   for (const auto& pair : parsed_ch.map) {
-    const auto& policy_name = GetClientHintToPolicyFeatureMap().at(pair.first);
+    const auto& policy_name =
+        network::GetClientHintToPolicyFeatureMap().at(pair.first);
 
     // We need to retain any preexisting settings, just adding new origins.
     const auto& allow_list =
@@ -114,7 +116,8 @@ void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
 
   // Promote client hint features to container policy so any modified by HTML
   // via an accept-ch meta tag can propagate to the iframe.
-  for (const auto& feature_and_hint : GetPolicyFeatureToClientHintMap()) {
+  for (const auto& feature_and_hint :
+       network::GetPolicyFeatureToClientHintMap()) {
     // This is the policy which may have been overridden by the meta tag via
     // UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints we want
     // the iframe loader to use instead of the one it got earlier.

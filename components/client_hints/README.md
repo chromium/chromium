@@ -167,7 +167,7 @@ The canonical enum for client hint tokens is [network::mojom::WebClientHintsType
 *   Update the `static_assert` for `network::mojom::WebClientHintsType::kMaxValue` in [/content/browser/client_hints/client_hints.cc], leaving a TODO for your implementation.
 *   Add a permissions policy in [/third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5]. Note that the entries in this file are in lexical order by name.
 *   Add an entry to the end of [/services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom] and run [/tools/metrics/histograms/update_permissions_policy_enum.py] to update [tools/metrics/histograms/enums.xml].
-*   Map the hint to the permissions policy in `MakeClientHintToPolicyFeatureMap` in [/third_party/blink/common/client_hints/client_hints.cc].
+*   Map the hint to the permissions policy in `MakeClientHintToPolicyFeatureMap` in [/services/network/public/cpp/permissions_policy/client_hints_permissions_policy_mapping.cc].
 *   Add the permissions policy name to:
     * `third_party/blink/public/devtools_protocol/browser_protocol.pdl`
     * `third_party/blink/web_tests/virtual/stable/webexposed/feature-policy-features-expected.txt`

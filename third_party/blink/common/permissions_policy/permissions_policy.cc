@@ -8,13 +8,13 @@
 #include "base/containers/map_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "services/network/public/cpp/permissions_policy/client_hints_permissions_policy_mapping.h"
 #include "services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
-#include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "url/gurl.h"
@@ -33,12 +33,15 @@ PermissionsPolicy::Allowlist PermissionsPolicy::Allowlist::FromDeclaration(
   if (parsed_declaration.self_if_matches) {
     result.AddSelf(parsed_declaration.self_if_matches);
   }
-  if (parsed_declaration.matches_all_origins)
+  if (parsed_declaration.matches_all_origins) {
     result.AddAll();
-  if (parsed_declaration.matches_opaque_src)
+  }
+  if (parsed_declaration.matches_opaque_src) {
     result.AddOpaqueSrc();
-  for (const auto& value : parsed_declaration.allowed_origins)
+  }
+  for (const auto& value : parsed_declaration.allowed_origins) {
     result.Add(value);
+  }
 
   return result;
 }
@@ -65,11 +68,13 @@ bool PermissionsPolicy::Allowlist::Contains(const url::Origin& origin) const {
     return true;
   }
   for (const auto& allowed_origin : allowed_origins_) {
-    if (allowed_origin.DoesMatchOrigin(origin))
+    if (allowed_origin.DoesMatchOrigin(origin)) {
       return true;
+    }
   }
-  if (origin.opaque())
+  if (origin.opaque()) {
     return matches_opaque_src_;
+  }
   return matches_all_origins_;
 }
 
@@ -105,8 +110,9 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CopyStateFrom(
     const PermissionsPolicy* source) {
-  if (!source)
+  if (!source) {
     return nullptr;
+  }
 
   std::unique_ptr<PermissionsPolicy> new_policy = base::WrapUnique(
       new PermissionsPolicy(source->origin_, {source->allowlists_, {}},
@@ -253,13 +259,15 @@ bool PermissionsPolicy::GetFeatureValueForOrigin(
 const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForDevTools(
     network::mojom::PermissionsPolicyFeature feature) const {
   // Return an empty allowlist when disabled through inheritance.
-  if (!IsFeatureEnabledByInheritedPolicy(feature))
+  if (!IsFeatureEnabledByInheritedPolicy(feature)) {
     return PermissionsPolicy::Allowlist();
+  }
 
   // Return defined policy if exists; otherwise return default policy.
   const auto& maybe_allow_list = GetAllowlistForFeatureIfExists(feature);
-  if (maybe_allow_list.has_value())
+  if (maybe_allow_list.has_value()) {
     return maybe_allow_list.value();
+  }
 
   // Note: |allowlists_| purely comes from HTTP header. If a feature is not
   // declared in HTTP header, all origins are implicitly allowed unless the
@@ -286,13 +294,15 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
     network::mojom::PermissionsPolicyFeature feature) const {
   DCHECK(base::Contains(*feature_list_, feature));
   // Return an empty allowlist when disabled through inheritance.
-  if (!IsFeatureEnabledByInheritedPolicy(feature))
+  if (!IsFeatureEnabledByInheritedPolicy(feature)) {
     return PermissionsPolicy::Allowlist();
+  }
 
   // Return defined policy if exists; otherwise return default policy.
   const auto& maybe_allow_list = GetAllowlistForFeatureIfExists(feature);
-  if (maybe_allow_list.has_value())
+  if (maybe_allow_list.has_value()) {
     return maybe_allow_list.value();
+  }
 
   const PermissionsPolicyFeatureDefault default_policy =
       feature_list_->at(feature);
@@ -321,13 +331,15 @@ std::optional<const PermissionsPolicy::Allowlist>
 PermissionsPolicy::GetAllowlistForFeatureIfExists(
     network::mojom::PermissionsPolicyFeature feature) const {
   // Return an empty allowlist when disabled through inheritance.
-  if (!IsFeatureEnabledByInheritedPolicy(feature))
+  if (!IsFeatureEnabledByInheritedPolicy(feature)) {
     return std::nullopt;
+  }
 
   // Only return allowlist if actually in `allowlists_`.
   auto allowlist = allowlists_.find(feature);
-  if (allowlist != allowlists_.end())
+  if (allowlist != allowlists_.end()) {
     return allowlist->second;
+  }
   return std::nullopt;
 }
 
@@ -429,7 +441,7 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::WithClientHints(
        parsed_header) {
     network::mojom::PermissionsPolicyFeature feature =
         parsed_declaration.feature;
-    DCHECK(GetPolicyFeatureToClientHintMap().contains(feature));
+    DCHECK(network::GetPolicyFeatureToClientHintMap().contains(feature));
     allowlists[feature] = Allowlist::FromDeclaration(parsed_declaration);
   }
 

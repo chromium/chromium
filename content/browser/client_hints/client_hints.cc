@@ -51,6 +51,7 @@
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
+#include "services/network/public/cpp/permissions_policy/client_hints_permissions_policy_mapping.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
@@ -609,7 +610,8 @@ bool IsClientHintAllowed(const ClientHintsExtendedData& data,
     return true;
   }
   return (data.permissions_policy->IsFeatureEnabledForOrigin(
-      blink::GetClientHintToPolicyFeatureMap().at(type), data.resource_origin));
+      network::GetClientHintToPolicyFeatureMap().at(type),
+      data.resource_origin));
 }
 
 bool ShouldAddClientHint(const ClientHintsExtendedData& data,
@@ -641,9 +643,9 @@ void UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
   // via an accept-ch meta tag can be respected.
   network::ParsedPermissionsPolicy client_hints_container_policy;
   for (const auto& container_policy_item : container_policy) {
-    const auto& it = blink::GetPolicyFeatureToClientHintMap().find(
+    const auto& it = network::GetPolicyFeatureToClientHintMap().find(
         container_policy_item.feature);
-    if (it != blink::GetPolicyFeatureToClientHintMap().end()) {
+    if (it != network::GetPolicyFeatureToClientHintMap().end()) {
       client_hints_container_policy.push_back(container_policy_item);
 
       // We need to ensure `blink::EnabledClientHints` is updated where the

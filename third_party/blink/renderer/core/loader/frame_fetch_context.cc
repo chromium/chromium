@@ -43,6 +43,7 @@
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/permissions_policy/client_hints_permissions_policy_mapping.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
@@ -225,7 +226,8 @@ bool ShouldSendClientHint(const PermissionsPolicy& policy,
   // For subresource requests, sending the hint in the fetch request based on
   // the permissions policy.
   if (!policy.IsFeatureEnabledForOrigin(
-          GetClientHintToPolicyFeatureMap().at(type), resource_origin)) {
+          network::GetClientHintToPolicyFeatureMap().at(type),
+          resource_origin)) {
     return false;
   }
 
