@@ -19,17 +19,19 @@ namespace blink {
 namespace {
 
 const char kSHA256Token[] = "sha-256";
-const char kSHA384Token[] = "sha-384";
 const char kSHA512Token[] = "sha-512";
 
 HashAlgorithm GetHashAlgorithm(IntegrityAlgorithm integrity) {
   switch (integrity) {
     case IntegrityAlgorithm::kSha256:
       return kHashAlgorithmSha256;
-    case IntegrityAlgorithm::kSha384:
-      return kHashAlgorithmSha384;
     case IntegrityAlgorithm::kSha512:
       return kHashAlgorithmSha512;
+
+    // `sha-384` is not a valid algorithm for digest headers:
+    // https://www.iana.org/assignments/http-digest-hash-alg/http-digest-hash-alg.xhtml
+    case IntegrityAlgorithm::kSha384:
+      NOTREACHED();
 
     // We don't parse signature algorithms, so we should never generate
     // a parsed `Unencoded-Digest` header with such a prefix:
@@ -65,9 +67,6 @@ std::optional<UnencodedDigest> UnencodedDigest::Create(
     if (entry.first == kSHA256Token) {
       parsed_digest.SetAlgorithm(IntegrityAlgorithm::kSha256);
       expected_digest_length = 32;
-    } else if (entry.first == kSHA384Token) {
-      parsed_digest.SetAlgorithm(IntegrityAlgorithm::kSha384);
-      expected_digest_length = 48;
     } else if (entry.first == kSHA512Token) {
       parsed_digest.SetAlgorithm(IntegrityAlgorithm::kSha512);
       expected_digest_length = 64;
