@@ -3311,6 +3311,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MINI_MAP_CONSENT_TITLE" desc="The title of the consent screen for mini map [iOS only].">
         Address found
       </message>
+      <message name="IDS_IOS_MINI_MAP_DISABLE_CONFIRMATION_BUTTON_STRING" desc="The text in the button of the snackbar after disabling address detection [iOS only].">
+        DONE
+      </message>
+      <message name="IDS_IOS_MINI_MAP_DISABLE_CONFIRMATION_STRING" desc="The text in the snackbar after disabling address detection [iOS only].">
+        Address detection off. Turn it back on in Settings.
+      </message>
+      <message name="IDS_IOS_MINI_MAP_DISABLE_STRING" desc="The text button to disable the address detecion [iOS only].">
+        Turn off address detection
+      </message>
       <message name="IDS_IOS_MINI_MAP_IPH_SUBTITLE" desc="The text of the iph string displayed on Mini Map screen on first trigger [iOS only].">
         You can manage this in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Content Settings<ph name="END_LINK">END_LINK</ph>.
       </message>
