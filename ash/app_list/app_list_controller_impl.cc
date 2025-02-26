@@ -289,7 +289,7 @@ bool IsAssistantExitPointInsideLauncher(
 }
 
 SearchBoxModel::SunfishButtonVisibility GetSunfishButtonVisibility() {
-  if (!IsSunfishSessionAllowed()) {
+  if (!CanShowSunfishOrScannerUi()) {
     return SearchBoxModel::SunfishButtonVisibility::kHidden;
   }
 
@@ -2146,7 +2146,7 @@ void AppListControllerImpl::MaybeShowSunfishLauncherNudge(
     return;
   }
 
-  if (!IsSunfishSessionAllowed()) {
+  if (!CanShowSunfishOrScannerUi()) {
     return;
   }
 

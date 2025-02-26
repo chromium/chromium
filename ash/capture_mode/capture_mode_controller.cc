@@ -516,7 +516,7 @@ BehaviorType ToBehaviorType(CaptureModeEntryType entry_type) {
     case CaptureModeEntryType::kGameDashboard:
       return BehaviorType::kGameDashboard;
     case CaptureModeEntryType::kSunfish:
-      DCHECK(IsSunfishSessionAllowed());
+      DCHECK(CanShowSunfishOrScannerUi());
       return BehaviorType::kSunfish;
     default:
       return BehaviorType::kDefault;
@@ -971,7 +971,7 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
 void CaptureModeController::StartSunfishSession() {
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kSunfishScreenEnteredViaShortcut);
-  CHECK(IsSunfishSessionAllowed());
+  CHECK(CanShowSunfishOrScannerUi());
   // Close the launcher nudge if it is still visible.
   AnchoredNudgeManager::Get()->Cancel(capture_mode::kSunfishLauncherNudgeId);
   StartInternal(

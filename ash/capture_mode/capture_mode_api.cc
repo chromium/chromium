@@ -56,7 +56,7 @@ bool CanShowSunfishUi() {
   return features::IsSunfishFeatureEnabled() && ExtraSunfishChecks();
 }
 
-bool IsSunfishSessionAllowed() {
+bool CanShowSunfishOrScannerUi() {
   return CanShowSunfishUi() || ScannerController::CanShowUiForShell();
 }
 

@@ -337,7 +337,7 @@ void HandleShowSystemNudge() {
 }
 
 void HandleStartSunfishSession() {
-  if (IsSunfishSessionAllowed() &&
+  if (CanShowSunfishOrScannerUi() &&
       !Shell::Get()->session_controller()->IsUserSessionBlocked()) {
     CaptureModeController::Get()->StartSunfishSession();
   }

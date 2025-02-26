@@ -1268,7 +1268,7 @@ void SearchBoxView::SunfishButtonPressed() {
     view_delegate_->DismissAppList();
   }
 
-  if (!IsSunfishSessionAllowed()) {
+  if (!CanShowSunfishOrScannerUi()) {
     // The Sunfish-session allowed state changed between when the launcher was
     // shown and when the the button was clicked. Hide the Sunfish-session
     // button immediately for tablet mode.
