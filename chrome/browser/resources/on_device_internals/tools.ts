@@ -347,10 +347,14 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     if (this.session_ === null) {
       return;
     }
-    this.session_.append(
+    this.session_.addContext(
         {
+          ignoreContext: false,
           maxTokens: 0,
           tokenOffset: 0,
+          maxOutputTokens: 0,
+          topK: null,
+          temperature: null,
           input: {pieces: textToInputPieces(this.contextText_)},
         },
         null);
@@ -452,20 +456,15 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
         return;
       }
     }
-    const clonedSession = new SessionRemote();
-    this.session_.clone(clonedSession.$.bindNewPipeAndPassReceiver());
-    clonedSession.append(
+    this.session_.execute(
         {
+          ignoreContext: false,
           maxTokens: 0,
           tokenOffset: 0,
-          input: {pieces: pieces},
-        },
-        null);
-    clonedSession.generate(
-        {
           maxOutputTokens: 0,
           topK: this.topK_,
           temperature: this.temperature_,
+          input: {pieces: pieces},
         },
         this.responseRouter_.$.bindNewPipeAndPassRemote());
     const onResponseId =
