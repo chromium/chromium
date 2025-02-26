@@ -73,6 +73,7 @@ class ShellExtensionLoader : public ExtensionRegistrar::Delegate {
   bool CanEnableExtension(const Extension* extension) override;
   bool CanDisableExtension(const Extension* extension) override;
   bool ShouldBlockExtension(const Extension* extension) override;
+  void GrantActivePermissions(const Extension* extension) override;
 
   raw_ptr<content::BrowserContext> browser_context_;  // Not owned.
 

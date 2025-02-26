@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/value_store/value_store_factory_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -133,6 +134,9 @@ class DesktopAndroidExtensionRegistrarDelegate
   bool CanDisableExtension(const Extension* extension) override { return true; }
   bool ShouldBlockExtension(const Extension* extension) override {
     return false;
+  }
+  void GrantActivePermissions(const Extension* extension) override {
+    PermissionsUpdater(browser_context_).GrantActivePermissions(extension);
   }
 
  private:

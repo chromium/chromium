@@ -884,8 +884,7 @@ void ExtensionService::UnblockAllExtensions() {
 
 void ExtensionService::GrantPermissionsAndEnableExtension(
     const Extension* extension) {
-  GrantPermissions(extension);
-  EnableExtension(extension->id());
+  extension_registrar_->GrantPermissionsAndEnableExtension(*extension);
 }
 
 void ExtensionService::GrantPermissions(const Extension* extension) {

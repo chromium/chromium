@@ -66,6 +66,7 @@ class ChromeExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   bool CanEnableExtension(const Extension* extension) override;
   bool CanDisableExtension(const Extension* extension) override;
   bool ShouldBlockExtension(const Extension* extension) override;
+  void GrantActivePermissions(const Extension* extension) override;
 
  private:
   // Disables the extension if the privilege level has increased

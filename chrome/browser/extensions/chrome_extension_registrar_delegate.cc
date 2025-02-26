@@ -344,6 +344,11 @@ bool ChromeExtensionRegistrarDelegate::ShouldBlockExtension(
   return !extension || extension_registrar_->CanBlockExtension(extension);
 }
 
+void ChromeExtensionRegistrarDelegate::GrantActivePermissions(
+    const Extension* extension) {
+  PermissionsUpdater(profile_).GrantActivePermissions(extension);
+}
+
 void ChromeExtensionRegistrarDelegate::CheckPermissionsIncrease(
     const Extension* extension,
     bool is_extension_loaded) {

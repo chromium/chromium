@@ -840,6 +840,12 @@ void ExtensionRegistrar::OnUnpackedExtensionReloadFailed(
   failed_to_reload_unpacked_extensions_.insert(path);
 }
 
+void ExtensionRegistrar::GrantPermissionsAndEnableExtension(
+    const Extension& extension) {
+  delegate_->GrantActivePermissions(&extension);
+  EnableExtension(extension.id());
+}
+
 void ExtensionRegistrar::TerminateExtension(const ExtensionId& extension_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

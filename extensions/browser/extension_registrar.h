@@ -121,6 +121,10 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
 
     // Returns true if the extension should be blocked.
     virtual bool ShouldBlockExtension(const Extension* extension) = 0;
+
+    // Updates the `extension`s granted permissions lists to include all
+    // permissions in the `extensions`s manifest.
+    virtual void GrantActivePermissions(const Extension* extension) = 0;
   };
 
   explicit ExtensionRegistrar(content::BrowserContext* browser_context);
@@ -300,6 +304,11 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   void DidCreateMainFrameForBackgroundPage(ExtensionHost* host);
 
   void OnUnpackedExtensionReloadFailed(const base::FilePath& path);
+
+  // Updates the `extension`s granted permissions lists to include all
+  // permissions in the `extension`s manifest and re-enables the
+  // extension.
+  void GrantPermissionsAndEnableExtension(const Extension& extension);
 
  private:
   // Adds the extension to the appropriate registry set, based on ExtensionPrefs
