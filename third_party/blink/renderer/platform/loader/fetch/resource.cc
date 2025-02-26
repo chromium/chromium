@@ -95,7 +95,7 @@ void GetSharedBufferMemoryDump(SharedBuffer* buffer,
 // These response headers are not copied from a revalidated response to the
 // cached response headers. For compatibility, this list is based on Chromium's
 // net/http/http_response_headers.cc.
-const auto kHeadersToIgnoreAfterRevalidation = std::to_array<const char*>({
+constexpr auto kHeadersToIgnoreAfterRevalidation = std::to_array<const char*>({
     "allow",
     "connection",
     "etag",
