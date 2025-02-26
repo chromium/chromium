@@ -536,6 +536,10 @@ TESTONLY_AND_VISIBILITY = [
 ]
 
 # Sets default dependencies for static_library and source_set targets.
+#
+# Variables
+#   use_libcxx_modules: If true, libc++'s modules are added to deps.
+#       This is true by default.
 foreach(_target_type,
         [
           "source_set",
@@ -545,7 +549,7 @@ foreach(_target_type,
     target(_target_type, target_name) {
       forward_variables_from(invoker,
                              "*",
-                             TESTONLY_AND_VISIBILITY + [ "no_default_deps" ])
+                             TESTONLY_AND_VISIBILITY + [ "use_libcxx_modules" ])
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (!defined(inputs)) {
         inputs = []
@@ -554,8 +558,7 @@ foreach(_target_type,
         deps = []
       }
 
-      if (is_clang &&
-          (!defined(invoker.no_default_deps) || !invoker.no_default_deps)) {
+      if (!defined(invoker.use_libcxx_modules) || invoker.use_libcxx_modules) {
         # This is necessary for Clang modules builds.
         deps += [ "//buildtools/third_party/libc++:std" ]
       }
@@ -589,6 +592,8 @@ foreach(_target_type,
 #       Targets that set this usually also want to remove
 #       "//build/config/compiler:runtime_library" from configs (to remove
 #       its subconfig "//build/config/c++:runtime_library").
+#   use_libcxx_modules: If true, libc++'s modules are added to deps.
+#       This is true by default.
 foreach(_target_type,
         [
           "executable",
@@ -601,7 +606,10 @@ foreach(_target_type,
     target(_target_type, _target_name) {
       forward_variables_from(invoker,
                              "*",
-                             TESTONLY_AND_VISIBILITY + [ "no_default_deps" ])
+                             TESTONLY_AND_VISIBILITY + [
+                                   "no_default_deps",
+                                   "use_libcxx_modules",
+                                 ])
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (!defined(inputs)) {
         inputs = []
@@ -637,16 +645,16 @@ foreach(_target_type,
         # (This explicit list is so that grepping for these configs finds where
         # they are used.)
         deps += [ "//build/config:${_target_type}_deps" ]
+      }
 
-        if (is_clang) {
-          # These are necessary for Clang modules builds.
-          deps += [
-            "//buildtools/third_party/libc++:_Builtin_limits",
-            "//buildtools/third_party/libc++:_Builtin_stdarg",
-            "//buildtools/third_party/libc++:_Builtin_stddef",
-            "//buildtools/third_party/libc++:std",
-          ]
-        }
+      if (!defined(invoker.use_libcxx_modules) || invoker.use_libcxx_modules) {
+        # These are necessary for Clang modules builds.
+        deps += [
+          "//buildtools/third_party/libc++:_Builtin_limits",
+          "//buildtools/third_party/libc++:_Builtin_stdarg",
+          "//buildtools/third_party/libc++:_Builtin_stddef",
+          "//buildtools/third_party/libc++:std",
+        ]
       }
 
       # On Android, write shared library output file to metadata. We will use

@@ -48,7 +48,7 @@ config("winver") {
 template("builtin_modules") {
   # This is a template to build clang builtin's module file.
   source_set(target_name) {
-    no_default_deps = true
+    use_libcxx_modules = false
     if (use_explicit_libcxx_modules) {
       sources = [ "//third_party/llvm-build/Release+Asserts/lib/clang/21/include/module.modulemap" ]
     }
@@ -101,7 +101,7 @@ configs_to_remove = [
 template("libcxx_modules") {
   # This is a template to build libc++'s module file.
   source_set(target_name) {
-    no_default_deps = true
+    use_libcxx_modules = false
     if (use_explicit_libcxx_modules) {
       sources = [ "//third_party/libc++/src/include/module.modulemap" ]
     }
@@ -327,6 +327,10 @@ target(_libcxx_target_type, "libc++") {
     # libc++'s build performance much.
     # (https://crrev.com/c/6248376/4#message-0ddf8e6a0f3ce1eb1654f7025280d8ed75cf2e81)
     configs -= [ "//build/config/compiler:libcxx_module" ]
+
+    # This removes deps to libc++'s modules from libc++'s build as libc++
+    # doesn't support modules build itself.
+    use_libcxx_modules = false
   }
   if ((is_android || is_apple) && libcxx_is_shared) {
     # Use libc++_chrome to avoid conflicting with system libc++
