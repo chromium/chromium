@@ -24,6 +24,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "storage/browser/blob/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -205,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, ReplaceStateToAddAuthorityToBlob) {
 }
 
 IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
-                       TestUseCounterForCrossPartitionBlobURLFetch) {
+                       TestUseCounterForCrossPartitionSameOriginBlobURLFetch) {
   GURL main_url = embedded_test_server()->GetURL(
       "c.com", "/cross_site_iframe_factory.html?c(b(c))");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -227,21 +228,33 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
   EXPECT_CALL(
       GetMockClient(),
       LogWebFeatureForCurrentPage(
-          testing::_, blink::mojom::WebFeature::kCrossPartitionBlobURLFetch))
+          testing::_,
+          blink::mojom::WebFeature::kCrossPartitionSameOriginBlobURLFetch))
       .Times(1);
 
-  EXPECT_TRUE(ExecJs(
-      rfh_c_2,
-      JsReplace(
-          "async function test() {"
-          "const blob = await fetch($1).then(response => response.blob());"
-          "await blob.text();}"
-          "test();",
-          blob_url)));
+  std::string fetch_blob_url_js = JsReplace(
+      "async function test() {"
+      " const blob = await fetch($1).then(response => response.blob());"
+      " await blob.text();}"
+      "test();",
+      blob_url);
+
+  EXPECT_FALSE(ExecJs(rfh_b, JsReplace(fetch_blob_url_js, blob_url)));
+
+  EXPECT_TRUE(ExecJs(rfh_c_2, JsReplace(fetch_blob_url_js, blob_url)));
+
+  EXPECT_TRUE(ExecJs(rfh_c, JsReplace("URL.revokeObjectURL($1)", blob_url)));
+
+  EXPECT_FALSE(ExecJs(rfh_c_2, JsReplace(fetch_blob_url_js, blob_url)));
 }
 
 class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
  protected:
+  BlobUrlDevToolsIssueTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kBlockCrossPartitionBlobUrlFetching);
+  }
+
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -286,6 +299,8 @@ class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
     // `url` against old notifications.
     client->ClearNotifications();
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(BlobUrlDevToolsIssueTest, PartitioningBlobUrlIssue) {
@@ -315,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(BlobUrlDevToolsIssueTest, PartitioningBlobUrlIssue) {
   client->SendCommandSync("Audits.enable");
   client->ClearNotifications();
 
-  EXPECT_TRUE(ExecJs(
+  EXPECT_FALSE(ExecJs(
       rfh_c_2,
       JsReplace(
           "async function test() {"

@@ -36,6 +36,20 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
 
   ~BlobUrlRegistry();
 
+  enum class MappingStatus {
+    kIsMapped,
+    // TODO(crbug.com/387655548): Remove this case once there's sufficient data
+    // from the CrossPartitionSameOriginBlobURLFetch UseCounter. Currently, this
+    // case is treated separately because cross-origin Blob URL access is
+    // already blocked and shouldn't be measured w.r.t. deciding whether it's
+    // safe to restrict further based on storage partition. Once
+    // CrossPartitionSameOriginBlobURLFetch is removed, it'd be
+    // beneficial to show the DevTools Issue even in the cross-origin access
+    // case and simplify IsUrlMapped to return a bool.
+    kNotMappedCrossPartitionSameOrigin,
+    kNotMappedOther
+  };
+
   // Binds receivers corresponding to connections from renderer frame
   // contexts and stores them in `frame_receivers_`.
   // `partitioning_blob_url_closure` runs when the storage_key check fails
@@ -46,8 +60,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
       const url::Origin& renderer_origin,
       int render_process_host_id,
       mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver,
-      base::RepeatingCallback<void(const GURL&,
-                                   blink::mojom::PartitioningBlobURLInfo)>
+      base::RepeatingCallback<
+          void(const GURL&,
+               std::optional<blink::mojom::PartitioningBlobURLInfo>)>
           partitioning_blob_url_closure,
       bool partitioning_disabled_by_policy = false);
 
@@ -87,8 +102,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
 
   // Returns whether the URL is mapped to a blob and whether the URL is
   // associated with `storage_key`.
-  bool IsUrlMapped(const GURL& blob_url,
-                   const blink::StorageKey& storage_key) const;
+  MappingStatus IsUrlMapped(const GURL& blob_url,
+                            const blink::StorageKey& storage_key) const;
 
   // TODO(crbug.com/40775506): Remove this once experiment is over.
   std::optional<base::UnguessableToken> GetUnsafeAgentClusterID(

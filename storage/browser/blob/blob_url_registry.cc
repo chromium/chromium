@@ -34,8 +34,8 @@ void BlobUrlRegistry::AddReceiver(
     const url::Origin& renderer_origin,
     int render_process_host_id,
     mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver,
-    base::RepeatingCallback<void(const GURL&,
-                                 blink::mojom::PartitioningBlobURLInfo)>
+    base::RepeatingCallback<
+        void(const GURL&, std::optional<blink::mojom::PartitioningBlobURLInfo>)>
         partitioning_blob_url_closure,
     bool partitioning_disabled_by_policy) {
   mojo::ReceiverId receiver_id = frame_receivers_.Add(
@@ -77,7 +77,8 @@ bool BlobUrlRegistry::AddUrlMapping(
     const std::optional<net::SchemefulSite>& unsafe_top_level_site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!BlobUrlUtils::UrlHasFragment(blob_url));
-  if (IsUrlMapped(blob_url, storage_key)) {
+  if (IsUrlMapped(blob_url, storage_key) ==
+      BlobUrlRegistry::MappingStatus::kIsMapped) {
     return false;
   }
   url_to_unsafe_agent_cluster_id_[blob_url] = unsafe_agent_cluster_id;
@@ -142,18 +143,28 @@ url::Origin BlobUrlRegistry::GetOriginForNavigation(
   return url::Origin::Resolve(url, precursor_origin);
 }
 
-bool BlobUrlRegistry::IsUrlMapped(const GURL& blob_url,
-                                  const blink::StorageKey& storage_key) const {
+BlobUrlRegistry::MappingStatus BlobUrlRegistry::IsUrlMapped(
+    const GURL& blob_url,
+    const blink::StorageKey& storage_key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (base::Contains(url_to_blob_, blob_url) &&
-      base::Contains(url_to_storage_key_, blob_url) &&
-      url_to_storage_key_.at(blob_url) == storage_key) {
-    return true;
+      base::Contains(url_to_storage_key_, blob_url)) {
+    const blink::StorageKey& blob_url_key = url_to_storage_key_.at(blob_url);
+    if (blob_url_key == storage_key) {
+      return BlobUrlRegistry::MappingStatus::kIsMapped;
+    }
+    if (blob_url_key.origin() == storage_key.origin()) {
+      return BlobUrlRegistry::MappingStatus::kNotMappedCrossPartitionSameOrigin;
+    }
+    // A fallback_ check isn't needed because a given Blob URL will either be
+    // registered in this BlobUrlRegistry or registered in the fallback
+    // BlobUrlRegistry but not both.
+    return BlobUrlRegistry::MappingStatus::kNotMappedOther;
   }
   if (fallback_) {
     return fallback_->IsUrlMapped(blob_url, storage_key);
   }
-  return false;
+  return BlobUrlRegistry::MappingStatus::kNotMappedOther;
 }
 
 // TODO(crbug.com/40775506): Remove this once experiment is over.

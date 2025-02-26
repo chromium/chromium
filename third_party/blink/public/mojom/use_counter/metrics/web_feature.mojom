@@ -4582,7 +4582,7 @@ enum WebFeature {
   kMoveEvent = 5196,
   kCanvas2DDrawText = 5197,
   kCanvas2DMeasureText = 5198,
-  kCrossPartitionBlobURLFetch = 5199,
+  kOBSOLETE_CrossPartitionBlobURLFetch = 5199,
   kCrossTopLevelSiteBlobURLNavigation = 5200,
   kGeolocationSucceeded = 5201,
   kGeolocationSucceededWithoutInjectionMitigation = 5202,
@@ -4712,6 +4712,8 @@ enum WebFeature {
   kGeolocationWouldSucceedWhenAdScriptInStack = 5326,
   kAdScriptInStackOnWatchGeoLocation = 5327,
   kDeviceBoundSessionRegistered = 5328,
+  kV8AILanguageDetectorFactory_Availability_Method = 5329,
+  kCrossPartitionSameOriginBlobURLFetch = 5330,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

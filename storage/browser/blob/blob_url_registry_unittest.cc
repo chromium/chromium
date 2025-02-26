@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
+#include "blob_url_registry.h"
 #include "net/base/features.h"
 #include "storage/browser/test/fake_blob.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -91,7 +92,8 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
   FakeBlob blob2(kBlobId2);
 
   BlobUrlRegistry registry;
-  EXPECT_FALSE(registry.IsUrlMapped(kURL1, storageKey1));
+  EXPECT_EQ(registry.IsUrlMapped(kURL1, storageKey1),
+            BlobUrlRegistry::MappingStatus::kNotMappedOther);
   EXPECT_FALSE(registry.GetBlobFromUrl(kURL1));
   EXPECT_FALSE(registry.RemoveUrlMapping(kURL1, storageKey1));
   EXPECT_EQ(0u, registry.url_count());
@@ -105,7 +107,8 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
   EXPECT_EQ(kTokenId1, registry.GetUnsafeAgentClusterID(kURL1));
   EXPECT_EQ(kTopLevelSite1, registry.GetUnsafeTopLevelSite(kURL1));
 
-  EXPECT_TRUE(registry.IsUrlMapped(kURL1, storageKey1));
+  EXPECT_EQ(registry.IsUrlMapped(kURL1, storageKey1),
+            BlobUrlRegistry::MappingStatus::kIsMapped);
   EXPECT_EQ(kBlobId1, UuidFromBlob(registry.GetBlobFromUrl(kURL1)));
   EXPECT_TRUE(registry.GetBlobFromUrl(kURL1));
   EXPECT_EQ(1u, registry.url_count());
@@ -117,7 +120,8 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
   EXPECT_EQ(kTopLevelSite2, registry.GetUnsafeTopLevelSite(kURL2));
   EXPECT_EQ(2u, registry.url_count());
   EXPECT_TRUE(registry.RemoveUrlMapping(kURL2, storageKey2));
-  EXPECT_FALSE(registry.IsUrlMapped(kURL2, storageKey2));
+  EXPECT_EQ(registry.IsUrlMapped(kURL2, storageKey2),
+            BlobUrlRegistry::MappingStatus::kNotMappedOther);
   EXPECT_EQ(std::nullopt, registry.GetUnsafeAgentClusterID(kURL2));
   EXPECT_EQ(std::nullopt, registry.GetUnsafeTopLevelSite(kURL2));
 
@@ -135,9 +139,11 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
 
   // Test using a storage key that doesn't correspond to the Blob URL.
   EXPECT_NE(storageKey1, storageKey2);
-  EXPECT_FALSE(registry.IsUrlMapped(kURL1, storageKey2));
+  EXPECT_EQ(registry.IsUrlMapped(kURL1, storageKey2),
+            BlobUrlRegistry::MappingStatus::kNotMappedOther);
   EXPECT_FALSE(registry.RemoveUrlMapping(kURL1, storageKey2));
-  EXPECT_TRUE(registry.IsUrlMapped(kURL1, storageKey1));
+  EXPECT_EQ(registry.IsUrlMapped(kURL1, storageKey1),
+            BlobUrlRegistry::MappingStatus::kIsMapped);
   EXPECT_TRUE(registry.RemoveUrlMapping(kURL1, storageKey1));
 
   EXPECT_EQ(0u, registry.url_count());
@@ -155,13 +161,16 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
         registry.AddUrlMapping(kURL1, blob1.Clone(), partitionedStorageKey1,
                                partitionedStorageKey1.origin(), /*rph_id=*/0,
                                kTokenId1, kTopLevelSite1));
-    EXPECT_TRUE(registry.IsUrlMapped(kURL1, partitionedStorageKey1));
+    EXPECT_EQ(registry.IsUrlMapped(kURL1, partitionedStorageKey1),
+              BlobUrlRegistry::MappingStatus::kIsMapped);
     EXPECT_EQ(kBlobId1, UuidFromBlob(registry.GetBlobFromUrl(kURL1)));
     EXPECT_TRUE(registry.GetBlobFromUrl(kURL1));
 
-    EXPECT_FALSE(registry.IsUrlMapped(kURL1, partitionedStorageKey2));
+    EXPECT_EQ(registry.IsUrlMapped(kURL1, partitionedStorageKey2),
+              BlobUrlRegistry::MappingStatus::kNotMappedOther);
     EXPECT_FALSE(registry.RemoveUrlMapping(kURL1, partitionedStorageKey2));
-    EXPECT_TRUE(registry.IsUrlMapped(kURL1, partitionedStorageKey1));
+    EXPECT_EQ(registry.IsUrlMapped(kURL1, partitionedStorageKey1),
+              BlobUrlRegistry::MappingStatus::kIsMapped);
     EXPECT_TRUE(registry.RemoveUrlMapping(kURL1, partitionedStorageKey1));
   }
   EXPECT_EQ(0u, registry.url_count());

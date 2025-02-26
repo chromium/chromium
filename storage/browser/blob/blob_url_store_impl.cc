@@ -72,8 +72,8 @@ BlobURLStoreImpl::BlobURLStoreImpl(
     int render_process_host_id,
     base::WeakPtr<BlobUrlRegistry> registry,
     BlobURLValidityCheckBehavior validity_check_behavior,
-    base::RepeatingCallback<void(const GURL&,
-                                 blink::mojom::PartitioningBlobURLInfo)>
+    base::RepeatingCallback<
+        void(const GURL&, std::optional<blink::mojom::PartitioningBlobURLInfo>)>
         partitioning_blob_url_closure,
     bool partitioning_disabled_by_policy)
     : storage_key_(storage_key),
@@ -131,19 +131,25 @@ void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
     std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
-  if (!registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
-                              storage_key_)) {
-    partitioning_blob_url_closure_.Run(
-        url,
-        blink::mojom::PartitioningBlobURLInfo::kBlockedCrossPartitionFetching);
-    if (base::FeatureList::IsEnabled(
+
+  if (registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
+                             storage_key_) ==
+      BlobUrlRegistry::MappingStatus::kNotMappedCrossPartitionSameOrigin) {
+    const bool feature_and_policy_check =
+        base::FeatureList::IsEnabled(
             features::kBlockCrossPartitionBlobUrlFetching) &&
-        !partitioning_disabled_by_policy_) {
+        !partitioning_disabled_by_policy_;
+    if (feature_and_policy_check) {
+      partitioning_blob_url_closure_.Run(url,
+                                         blink::mojom::PartitioningBlobURLInfo::
+                                             kBlockedCrossPartitionFetching);
+
       BlobURLLoaderFactory::Create(mojo::NullRemote(), url,
                                    std::move(receiver));
       std::move(callback).Run(std::nullopt, std::nullopt);
       return;
     }
+    partitioning_blob_url_closure_.Run(url, std::nullopt);
   }
 
   BlobURLLoaderFactory::Create(registry_->GetBlobFromUrl(url), url,
@@ -167,17 +173,21 @@ void BlobURLStoreImpl::ResolveForNavigation(
   }
 
   if (!is_top_level_navigation &&
-      !registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
-                              storage_key_)) {
-    partitioning_blob_url_closure_.Run(
-        url,
-        blink::mojom::PartitioningBlobURLInfo::kBlockedCrossPartitionFetching);
-    if (base::FeatureList::IsEnabled(
+      (registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
+                              storage_key_) ==
+       BlobUrlRegistry::MappingStatus::kNotMappedCrossPartitionSameOrigin)) {
+    const bool feature_and_policy_check =
+        base::FeatureList::IsEnabled(
             features::kBlockCrossPartitionBlobUrlFetching) &&
-        !partitioning_disabled_by_policy_) {
+        !partitioning_disabled_by_policy_;
+    if (feature_and_policy_check) {
+      partitioning_blob_url_closure_.Run(url,
+                                         blink::mojom::PartitioningBlobURLInfo::
+                                             kBlockedCrossPartitionFetching);
       std::move(callback).Run(std::nullopt);
       return;
     }
+    partitioning_blob_url_closure_.Run(url, std::nullopt);
   }
 
   mojo::PendingRemote<blink::mojom::Blob> blob = registry_->GetBlobFromUrl(url);
