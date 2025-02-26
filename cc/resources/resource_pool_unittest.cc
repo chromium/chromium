@@ -4,6 +4,7 @@
 
 #include "cc/resources/resource_pool.h"
 
+#include <GLES2/gl2extchromium.h>
 #include <stddef.h>
 
 #include <array>
@@ -685,21 +686,24 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
   resource_pool_->SetResourceUsageLimits(bytes_limit, count_limit);
 
   // These values are all non-default values so we can tell they are propagated.
-  gfx::Size size(100, 101);
-  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_4444;
+  gpu::SharedImageMetadata metadata;
+  metadata.size = gfx::Size(100, 101);
+  metadata.format = viz::SinglePlaneFormat::kRGBA_4444;
   EXPECT_NE(gfx::BufferFormat::RGBA_8888,
-            viz::SinglePlaneSharedImageFormatToBufferFormat(format));
-  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+            viz::SinglePlaneSharedImageFormatToBufferFormat(metadata.format));
+  metadata.color_space = gfx::ColorSpace::CreateSRGB();
   gpu::SyncToken sync_token(gpu::CommandBufferNamespace::GPU_IO,
                             gpu::CommandBufferId::FromUnsafeValue(0x123), 7);
+  metadata.usage = gpu::SharedImageUsage::SHARED_IMAGE_USAGE_SCANOUT;
 
-  ResourcePool::InUsePoolResource resource =
-      resource_pool_->AcquireResource(size, format, color_space);
+  ResourcePool::InUsePoolResource resource = resource_pool_->AcquireResource(
+      metadata.size, metadata.format, metadata.color_space);
   SetBackingOnResource(resource);
 
-  // More non-default values.
   resource.backing()->set_shared_image(gpu::ClientSharedImage::CreateForTesting(
-      gpu::SharedImageUsage::SHARED_IMAGE_USAGE_SCANOUT));
+      metadata, GL_TEXTURE_RECTANGLE_ARB));
+
+  // More non-default values.
   resource.backing()->mailbox_sync_token = sync_token;
   resource.backing()->wait_on_fence_required = true;
 
@@ -722,7 +726,8 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
   EXPECT_EQ(transfer[0].sync_token(), sync_token);
   EXPECT_EQ(transfer[0].texture_target(),
             resource.backing()->shared_image()->GetTextureTarget());
-  EXPECT_EQ(transfer[0].format, format);
+  EXPECT_EQ(transfer[0].size, metadata.size);
+  EXPECT_EQ(transfer[0].format, metadata.format);
   EXPECT_EQ(
       transfer[0].synchronization_type,
       viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);
