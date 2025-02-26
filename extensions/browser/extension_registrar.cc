@@ -273,7 +273,8 @@ void ExtensionRegistrar::DisableExtension(
     const ExtensionId& extension_id,
     const DisableReasonSet& disable_reasons) {
   auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
-  DisableExtensionWithRawReasons(passkey, extension_id, disable_reasons);
+  DisableExtensionWithRawReasons(passkey, extension_id,
+                                 DisableReasonSetToIntegerSet(disable_reasons));
 }
 
 void ExtensionRegistrar::DisableExtensionWithRawReasons(

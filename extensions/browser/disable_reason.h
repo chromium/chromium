@@ -74,25 +74,7 @@ static_assert(DISABLE_REASON_LAST - 1 <= std::numeric_limits<int>::max(),
 
 }  // namespace disable_reason
 
-// TODO(crbug.com/372186532): Change this to `flat_set<DisableReason>`.
-//
-// We want the public methods in `ExtensionPrefs` to return / accept a
-// `flat_set<DisableReason>` instead of a bitflag. To construct that set, all
-// unknown integer values should be collapsed to `DISABLE_UNKNOWN`. Otherwise,
-// it will trigger undefined behavior while type casting unknown integers to
-// `DisableReason`. This collapsing logic hasn't been added yet. Thus, we can
-// not construct a set of `DisableReason` yet. We are constructing a set of
-// integers as a stopgap.
-//
-// The collapsing logic will be added once we are sure that all callers are
-// ready to handle it. There might be some callers which need the actual values,
-// and not the collapsed value. Such callers will be updated to use dedicated
-// code paths to read / write raw integer values (see
-// `ExtensionPrefs::DisableReasonRawManipulationPasskey`). Callers which don't
-// care about the actual unknown values will be updated to use this type. We
-// will ensure that this happens systematically while updating the
-// `ExtensionPrefs` method signatures.
-using DisableReasonSet = base::flat_set<int>;
+using DisableReasonSet = base::flat_set<disable_reason::DisableReason>;
 
 // Validates that `reason` is a valid `DisableReason` (i.e. we have an enum
 // value for it).
@@ -104,6 +86,11 @@ bool IsValidDisableReason(int reason);
 int IntegerSetToBitflag(const base::flat_set<int>& set);
 base::flat_set<int> BitflagToIntegerSet(int bit_flag);
 
+// Utility method to convert a DisableReasonSet to a set of integers. This is
+// useful for code which works with ExtensionPrefs's raw disable reason setters.
+// This conversion is safe because the enums values are restricted such that the
+// underlying type will always be `int`.
+base::flat_set<int> DisableReasonSetToIntegerSet(const DisableReasonSet& set);
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_DISABLE_REASON_H_

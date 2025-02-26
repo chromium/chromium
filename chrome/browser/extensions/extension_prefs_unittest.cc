@@ -197,10 +197,18 @@ class ExtensionPrefsDisableReasonsBitflagToListMigration
     constexpr const char kPrefDisableReasons[] = "disable_reasons";
     prefs()->UpdateExtensionPref(
         extension_1_->id(), kPrefDisableReasons,
-        base::Value(IntegerSetToBitflag(extension_1_disable_reasons_)));
+        base::Value(DisableReasonSetToBitflag(extension_1_disable_reasons_)));
     prefs()->UpdateExtensionPref(
         extension_2_->id(), kPrefDisableReasons,
-        base::Value(IntegerSetToBitflag(extension_2_disable_reasons_)));
+        base::Value(DisableReasonSetToBitflag(extension_2_disable_reasons_)));
+  }
+
+  int DisableReasonSetToBitflag(const DisableReasonSet& set) {
+    int flag = 0;
+    for (disable_reason::DisableReason reason : set) {
+      flag |= reason;
+    }
+    return flag;
   }
 
   scoped_refptr<Extension> extension_1_;
