@@ -797,3 +797,45 @@ suite('SyncAccountControl', function() {
         assertFalse(deleteProfile);
       });
 });
+
+suite('SyncAccountControlHideBanner', function() {
+  let browserProxy: TestSyncBrowserProxy;
+  let testElement: SettingsSyncAccountControlElement;
+
+  setup(async function() {
+    browserProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(browserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testElement = Object.assign(
+        document.createElement('settings-sync-account-control'),
+        {hideBanner: true});
+
+    testElement.syncStatus = {
+      signedInState: SignedInState.SIGNED_OUT,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    testElement.prefs = {
+      signin: {
+        allowed_on_next_startup:
+            {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true},
+      },
+    };
+
+    document.body.appendChild(testElement);
+
+    await browserProxy.whenCalled('getStoredAccounts');
+    flush();
+    simulateStoredAccounts([]);
+  });
+
+  teardown(function() {
+    testElement.remove();
+  });
+
+  test('hide banner', function() {
+    loadTimeData.overrideValues({isImprovedSettingsUIOnDesktopEnabled: true});
+
+    assertFalse(isVisible(testElement.shadowRoot!.querySelector('#banner')));
+  });
+});
