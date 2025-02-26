@@ -249,7 +249,7 @@ INSTANTIATE_TEST_SUITE_P(
     LobsterSystemStateProviderAccountCapabilityTest,
     testing::Values(
         std::make_tuple(/*satisfied=*/true, ash::LobsterStatus::kEnabled),
-        std::make_tuple(/*satisfied=*/false, ash::LobsterStatus::kBlocked), ));
+        std::make_tuple(/*satisfied=*/false, ash::LobsterStatus::kBlocked)));
 
 TEST_P(LobsterSystemStateProviderAccountCapabilityTest,
        ChecksTheSystemStateStatus) {
@@ -341,7 +341,7 @@ INSTANTIATE_TEST_SUITE_P(
     LobsterSystemStateProviderNetworkStatusTest,
     testing::Values(
         std::make_tuple(/*is_online=*/true, ash::LobsterStatus::kEnabled),
-        std::make_tuple(/*is_online=*/false, ash::LobsterStatus::kBlocked), ));
+        std::make_tuple(/*is_online=*/false, ash::LobsterStatus::kBlocked)));
 
 TEST_P(LobsterSystemStateProviderNetworkStatusTest,
        ChecksTheSystemStateStatus) {
@@ -397,8 +397,7 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(/*ime=*/"xkb:za:gb:eng", ash::LobsterStatus::kEnabled),
         std::make_tuple(/*ime=*/"xkb:fr::fra", ash::LobsterStatus::kBlocked),
         std::make_tuple(/*ime=*/"xkb:de::ger", ash::LobsterStatus::kBlocked),
-        std::make_tuple(/*ime=*/"xkb:ru::rus",
-                        ash::LobsterStatus::kBlocked), ));
+        std::make_tuple(/*ime=*/"xkb:ru::rus", ash::LobsterStatus::kBlocked)));
 
 TEST_P(LobsterSystemStateProviderImeTest, ChecksTheSystemStateStatus) {
   EXPECT_EQ(GetSystemState(GetValidTextInputContext()).status,

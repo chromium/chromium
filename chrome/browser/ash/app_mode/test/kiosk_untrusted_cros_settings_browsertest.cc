@@ -54,10 +54,9 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(KioskMixin::Config{/*name=*/"WebApp",
                                        /*auto_launch_account_id=*/{},
                                        {KioskMixin::SimpleWebAppOption()}},
-                    KioskMixin::Config{
-                        /*name=*/"ChromeApp",
-                        /*auto_launch_account_id=*/{},
-                        {KioskMixin::SimpleChromeAppOption()}}, ),
+                    KioskMixin::Config{/*name=*/"ChromeApp",
+                                       /*auto_launch_account_id=*/{},
+                                       {KioskMixin::SimpleChromeAppOption()}}),
     KioskMixin::ConfigName);
 
 }  // namespace ash

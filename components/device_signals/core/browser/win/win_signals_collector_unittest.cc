@@ -225,6 +225,6 @@ INSTANTIATE_TEST_SUITE_P(
                           InstalledAntivirusState::kDisabled},
         AntivirusTestCase{{AvProductState::kOff, AvProductState::kSnoozed,
                            AvProductState::kExpired, AvProductState::kOn},
-                          InstalledAntivirusState::kEnabled}, ));
+                          InstalledAntivirusState::kEnabled}));
 
 }  // namespace device_signals

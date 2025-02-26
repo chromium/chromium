@@ -348,7 +348,7 @@ TEST_F(QuickInsertSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
               ElementsAre(VariantWith<QuickInsertBrowsingHistoryResult>(
                               FieldsAre(GURL("https://a.com"), u"a", _, _)),
                           VariantWith<QuickInsertBrowsingHistoryResult>(
-                              FieldsAre(GURL("https://b.com"), u"b", _, _)), ));
+                              FieldsAre(GURL("https://b.com"), u"b", _, _))));
 }
 
 TEST_F(QuickInsertSuggestionsControllerTest,
