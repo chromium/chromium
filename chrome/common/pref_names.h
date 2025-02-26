@@ -2456,12 +2456,6 @@ inline constexpr char kDevToolsDiscoverUsbDevicesEnabled[] =
 // Maps of files edited locally using DevTools.
 inline constexpr char kDevToolsEditedFiles[] = "devtools.edited_files";
 
-// List of automatic file systems added in DevTools. This holds a dictionary
-// of `fileSystemPath`, `fileSystemUUID` pairs.
-// See http://go/chrome-devtools:automatic-workspace-folders-design for details.
-inline constexpr char kDevToolsAutomaticFileSystems[] =
-    "devtools.automatic_file_systems";
-
 // List of file system paths added in DevTools.
 inline constexpr char kDevToolsFileSystemPaths[] = "devtools.file_system_paths";
 
