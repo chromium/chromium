@@ -110,8 +110,11 @@ size_t MaxNumSkSurface() {
 // Correct when a suitable Skia object is added.
 void PerformPrecompilation(
     std::unique_ptr<skgpu::graphite::PrecompileContext> precompileContext) {
-  constexpr skgpu::graphite::RenderPassProperties kProps = {
+  static const skgpu::graphite::RenderPassProperties kProps = {
       skgpu::graphite::DepthStencilFlags::kDepth, kBGRA_8888_SkColorType,
+#if !defined(SK_IGNORE_RENDER_PASS_PROPERTIES_COLOR_SPACE)
+      /* dstColorSpace= */ nullptr,
+#endif
       /* requiresMSAA= */ false};
 
   // TODO: crbug.com/358074434 - add actually relevant precompilation
