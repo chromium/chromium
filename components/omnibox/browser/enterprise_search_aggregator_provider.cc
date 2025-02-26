@@ -257,7 +257,7 @@ void EnterpriseSearchAggregatorProvider::
                   /*is_navigation=*/false);
   ParseResultList(peopleResults,
                   /*suggestion_type=*/SuggestionType::PEOPLE,
-                  /*is_navigation=*/false);
+                  /*is_navigation=*/true);
   ParseResultList(contentResults,
                   /*suggestion_type=*/SuggestionType::CONTENT,
                   /*is_navigation=*/true);
@@ -346,7 +346,7 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDescription(
     SuggestionType suggestion_type) const {
   if (suggestion_type == SuggestionType::PEOPLE) {
     return ptr_to_string(result.FindStringByDottedPath(
-        "document.derivedStructData.name.userName"));
+        "document.derivedStructData.name.displayName"));
   } else if (suggestion_type == SuggestionType::CONTENT) {
     return ptr_to_string(
         result.FindStringByDottedPath("document.derivedStructData.title"));
@@ -361,7 +361,7 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchContents(
     return ptr_to_string(result.FindString("suggestion"));
   } else if (suggestion_type == SuggestionType::PEOPLE) {
     return ptr_to_string(result.FindStringByDottedPath(
-        "document.derivedStructData.name.displayName"));
+        "document.derivedStructData.name.userName"));
   }
   return "";
 }

@@ -436,9 +436,9 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
   EXPECT_EQ(matches[0].destination_url,
             GURL("http://www.yahoo.com/Document%201"));
 
-  EXPECT_EQ(matches[1].type, AutocompleteMatchType::SEARCH_SUGGEST);
-  EXPECT_EQ(matches[1].contents, u"John Doe");
-  EXPECT_EQ(matches[1].description, u"john@example.com");
+  EXPECT_EQ(matches[1].type, AutocompleteMatchType::NAVSUGGEST);
+  EXPECT_EQ(matches[1].contents, u"john@example.com");
+  EXPECT_EQ(matches[1].description, u"John Doe");
   EXPECT_EQ(matches[1].destination_url,
             GURL("http://www.yahoo.com/john@example.com"));
   EXPECT_EQ(matches[1].image_url, GURL("https://example.com/image.png"));
