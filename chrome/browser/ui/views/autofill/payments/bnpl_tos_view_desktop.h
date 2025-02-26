@@ -8,6 +8,8 @@
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_view.h"
 #include "ui/views/widget/widget.h"
 
+class GURL;
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -29,7 +31,9 @@ class BnplTosViewDesktop : public BnplTosView {
 
  private:
   void CloseWidget(views::Widget::ClosedReason reason);
+  void OpenLink(const GURL& url);
 
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> dialog_widget_;
 
   base::WeakPtrFactory<BnplTosViewDesktop> weak_ptr_factory_{this};
