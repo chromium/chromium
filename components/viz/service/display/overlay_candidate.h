@@ -26,6 +26,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/overlay_layer_id.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/overlay_type.h"
@@ -251,9 +252,10 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // |tracking_id|.
   TrackingId tracking_id = kDefaultTrackingId;
 
-  // A layer ID packing that includes the namespace.
-  // See |SharedQuadState::layer_id| and |SharedQuadState::layer_namespace_id|.
-  uint64_t aggregated_layer_id = 0;
+#if BUILDFLAG(IS_WIN)
+  // Used to identify overlays that originate from the same cc layer.
+  gfx::OverlayLayerId layer_id;
+#endif
 
   // Transformation to apply to layer during composition.
   // Note: A |gfx::OverlayTransform| transforms the buffer within its bounds and

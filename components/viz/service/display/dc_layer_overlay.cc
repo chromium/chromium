@@ -27,6 +27,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/overlay_layer_id.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -1222,6 +1223,9 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
   FromDrawQuad(resource_provider, render_pass,
                is_possible_full_screen_letterboxing, *it,
                global_overlay_state.processed_yuv_overlay_count, dc_layer);
+  dc_layer.layer_id =
+      gfx::OverlayLayerId(it->shared_quad_state->layer_namespace_id,
+                          it->shared_quad_state->layer_id);
 
   // Underlays are less efficient, so attempt regular overlays first. We can
   // only check for occlusion within a render pass.

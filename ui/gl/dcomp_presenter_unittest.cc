@@ -33,6 +33,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/overlay_layer_id.h"
 #include "ui/gfx/test/sk_color_eq.h"
 #include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/dc_layer_tree.h"
@@ -2756,7 +2757,7 @@ TEST_P(DCompPresenterSkiaGoldTest, EdgeAANoSeamsOnSameLayerComplexTransform) {
   ScheduleOverlays(GetOverlaysForSeamsWithComplexTransformTest(
       base::BindRepeating([](int x, int y, DCLayerOverlayParams& overlay) {
         // All on the same layer.
-        overlay.aggregated_layer_id = 1;
+        overlay.layer_id = gfx::OverlayLayerId::MakeForVizInternal(1);
       })));
 
   PresentAndCheckScreenshot();
@@ -2772,7 +2773,8 @@ TEST_P(DCompPresenterSkiaGoldTest, EdgeAASeamsOnNotSameLayerComplexTransform) {
   ScheduleOverlays(GetOverlaysForSeamsWithComplexTransformTest(
       base::BindRepeating([](int x, int y, DCLayerOverlayParams& overlay) {
         // Reuse layer IDs but have no two adjacent overlays have the same ID.
-        overlay.aggregated_layer_id = (x + y * 4) % 2 + 1;
+        overlay.layer_id =
+            gfx::OverlayLayerId::MakeForVizInternal((x + y * 4) % 2 + 1);
       })));
 
   PresentAndCheckScreenshot();

@@ -18,6 +18,7 @@
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/gfx/overlay_layer_id.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/swap_chain_presenter.h"
@@ -889,18 +890,19 @@ base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
 
   IDCompositionVisual2* left_sibling_visual = nullptr;
 
-  base::flat_set<uint64_t> layers_with_multiple_overlays;
+  base::flat_set<std::pair<uint32_t, uint32_t>> layers_with_multiple_overlays;
   for (size_t i = 1; i < overlays.size(); i++) {
-    if (overlays[i].aggregated_layer_id == 0) {
-      // A layer ID of 0 is invalid and implies no explicit layer, which should
-      // be treated as different from every other layer ID, including 0 itself.
+    const std::pair<uint32_t, uint32_t> sqs_layer_id =
+        overlays[i].layer_id.shared_quad_state_layer_id();
+    if (sqs_layer_id == std::pair<uint32_t, uint32_t>()) {
+      // A default layer ID implies no explicit layer, which should be treated
+      // as different from every other layer ID, including itself.
       continue;
     }
 
-    if (overlays[i].aggregated_layer_id ==
-        overlays[i - 1].aggregated_layer_id) {
+    if (overlays[i].layer_id == overlays[i - 1].layer_id) {
       // There were at least two contiguous quads in the same layer.
-      layers_with_multiple_overlays.emplace(overlays[i].aggregated_layer_id);
+      layers_with_multiple_overlays.emplace(sqs_layer_id);
     }
   }
 
@@ -956,7 +958,7 @@ base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
     // content in full delegation, we'll need to parent overlays in the same
     // layer under the same transform visual.
     const bool allow_antialiasing = !layers_with_multiple_overlays.contains(
-        overlays[i].aggregated_layer_id);
+        overlays[i].layer_id.shared_quad_state_layer_id());
 
     needs_commit |= visual_subtrees[i]->Update(
         dc_layer_tree_->dcomp_device_.Get(), dcomp_visual_content,

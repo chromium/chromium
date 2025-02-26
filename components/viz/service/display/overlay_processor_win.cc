@@ -563,6 +563,10 @@ OverlayProcessorWin::TryDelegatedCompositing(
       }
     }
 
+    dc_layer->layer_id =
+        gfx::OverlayLayerId(quad->shared_quad_state->layer_namespace_id,
+                            quad->shared_quad_state->layer_id);
+
     // Store metadata on RPDQ overlays for post-processing in
     // |UpdatePromotedRenderPassProperties| to support partially delegated
     // compositing.
