@@ -280,6 +280,7 @@ NSString* const kArrowUTurnForwardCircleFillSymbol =
     @"arrow.uturn.forward.circle.fill";
 NSString* const kIPhoneAndArrowForwardSymbol = @"iphone.and.arrow.forward";
 NSString* const kPersonPlusSymbol = @"person.crop.circle.badge.plus";
+NSString* const kArrowUpTrashSymbol = @"arrow.up.trash";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

@@ -16,23 +16,6 @@
 
 - (void)start {
   _viewController = [[AutoDeletionIPHViewController alloc] init];
-
-  UISheetPresentationController* sheetPresentationController =
-      _viewController.sheetPresentationController;
-  if (sheetPresentationController) {
-    sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
-    sheetPresentationController
-        .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
-
-    sheetPresentationController.detents =
-        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
-            ? @[ [UISheetPresentationControllerDetent largeDetent] ]
-            : @[
-                [UISheetPresentationControllerDetent mediumDetent],
-                [UISheetPresentationControllerDetent largeDetent]
-              ];
-  }
-
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
