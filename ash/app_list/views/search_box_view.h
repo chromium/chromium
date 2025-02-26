@@ -261,6 +261,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void SearchEngineChanged() override;
   void ShowAssistantChanged() override;
   void ShowAssistantNewEntryPointChanged() override;
+  // Updates the visibility and the icon of the Sunfish-session button.
   void SunfishButtonVisibilityChanged() override;
 
   // Updates the visibility of an IPH view.

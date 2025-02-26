@@ -68,6 +68,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -816,23 +817,8 @@ void SearchBoxView::OnThemeChanged() {
       views::ImageButton::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(views::kIcCloseIcon, button_icon_color,
                                      GetSearchBoxIconSize()));
-
-  SearchBoxModel::SunfishButtonVisibility sunfish_button_visibility =
-      AppListModelProvider::Get()
-          ->search_model()
-          ->search_box()
-          ->sunfish_button_visibility();
-  if (sunfish_button_visibility !=
-      SearchBoxModel::SunfishButtonVisibility::kHidden) {
-    bool is_sunfish_icon =
-        sunfish_button_visibility ==
-        SearchBoxModel::SunfishButtonVisibility::kShownWithSunfishIcon;
-    sunfish_button()->SetImageModel(
-        views::ImageButton::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(
-            is_sunfish_icon ? kLensColorIcon : kScannerIcon, button_icon_color,
-            is_sunfish_icon ? kLensColorIconSize : GetSearchBoxIconSize()));
-  }
+  // Update the icon of the Sunfish-session button.
+  SunfishButtonVisibilityChanged();
   assistant_button()->SetImageModel(
       views::ImageButton::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(
@@ -1801,14 +1787,25 @@ void SearchBoxView::ShowAssistantNewEntryPointChanged() {
 }
 
 void SearchBoxView::SunfishButtonVisibilityChanged() {
-  // TODO: crbug.com/397301161 - Update the icon based on the visibility.
   SearchBoxModel::SunfishButtonVisibility visibility =
       AppListModelProvider::Get()
           ->search_model()
           ->search_box()
           ->sunfish_button_visibility();
-  SetShowSunfishButton(visibility !=
-                       SearchBoxModel::SunfishButtonVisibility::kHidden);
+  bool shown = visibility != SearchBoxModel::SunfishButtonVisibility::kHidden;
+  SetShowSunfishButton(shown);
+
+  if (shown) {
+    bool is_sunfish_icon =
+        visibility ==
+        SearchBoxModel::SunfishButtonVisibility::kShownWithSunfishIcon;
+    sunfish_button()->SetImageModel(
+        views::ImageButton::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(
+            is_sunfish_icon ? kLensColorIcon : kScannerIcon,
+            kColorAshButtonIconColor,
+            is_sunfish_icon ? kLensColorIconSize : GetSearchBoxIconSize()));
+  }
 }
 
 void SearchBoxView::UpdateIphViewVisibility(bool can_show_iph) {
