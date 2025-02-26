@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_ai/save_or_update_autofill_ai_data_controller_impl.h"
 
 #include <algorithm>
 
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/types/optional_ref.h"
-#include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/save_or_update_autofill_ai_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
@@ -29,12 +29,13 @@ namespace autofill_ai {
 namespace {
 
 using autofill::AutofillAiDelegate;
-using enum SaveAutofillAiDataController::EntityAttributeUpdateType;
+using enum SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType;
 
 // Returns whether user interacted with the bubble, based on its closed reason.
 bool GetUserInteractionFromAutofillAiBubbleClosedReason(
-    SaveAutofillAiDataController::AutofillAiBubbleClosedReason closed_reason) {
-  using enum SaveAutofillAiDataController::AutofillAiBubbleClosedReason;
+    SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason
+        closed_reason) {
+  using enum SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason;
   switch (closed_reason) {
     case kAccepted:
     case kCancelled:
@@ -49,29 +50,32 @@ bool GetUserInteractionFromAutofillAiBubbleClosedReason(
 
 }  // namespace
 
-SaveAutofillAiDataControllerImpl::SaveAutofillAiDataControllerImpl(
-    content::WebContents* web_contents)
+SaveOrUpdateAutofillAiDataControllerImpl::
+    SaveOrUpdateAutofillAiDataControllerImpl(content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents),
-      content::WebContentsUserData<SaveAutofillAiDataControllerImpl>(
+      content::WebContentsUserData<SaveOrUpdateAutofillAiDataControllerImpl>(
           *web_contents) {}
 
-SaveAutofillAiDataControllerImpl::~SaveAutofillAiDataControllerImpl() = default;
+SaveOrUpdateAutofillAiDataControllerImpl::
+    ~SaveOrUpdateAutofillAiDataControllerImpl() = default;
 
 // static
-SaveAutofillAiDataController* SaveAutofillAiDataController::GetOrCreate(
+SaveOrUpdateAutofillAiDataController*
+SaveOrUpdateAutofillAiDataController::GetOrCreate(
     content::WebContents* web_contents) {
   if (!web_contents) {
     return nullptr;
   }
 
-  SaveAutofillAiDataControllerImpl::CreateForWebContents(web_contents);
-  return SaveAutofillAiDataControllerImpl::FromWebContents(web_contents);
+  SaveOrUpdateAutofillAiDataControllerImpl::CreateForWebContents(web_contents);
+  return SaveOrUpdateAutofillAiDataControllerImpl::FromWebContents(
+      web_contents);
 }
 
-void SaveAutofillAiDataControllerImpl::OfferSave(
+void SaveOrUpdateAutofillAiDataControllerImpl::ShowPrompt(
     autofill::EntityInstance new_entity,
     std::optional<autofill::EntityInstance> old_entity,
-    AutofillAiClient::SavePromptAcceptanceCallback
+    AutofillAiClient::SaveOrUpdatePromptResultCallback
         save_prompt_acceptance_callback) {
   // Don't show the bubble if it's already visible.
   if (bubble_view()) {
@@ -83,17 +87,18 @@ void SaveAutofillAiDataControllerImpl::OfferSave(
   DoShowBubble();
 }
 
-void SaveAutofillAiDataControllerImpl::OnSaveButtonClicked() {
+void SaveOrUpdateAutofillAiDataControllerImpl::OnSaveButtonClicked() {
   OnBubbleClosed(AutofillAiBubbleClosedReason::kAccepted);
 }
 
-bool SaveAutofillAiDataControllerImpl::IsSavePrompt() const {
+bool SaveOrUpdateAutofillAiDataControllerImpl::IsSavePrompt() const {
   return !old_entity_.has_value();
 }
 
-std::vector<SaveAutofillAiDataController::EntityAttributeUpdateDetails>
-SaveAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
-  std::vector<SaveAutofillAiDataController::EntityAttributeUpdateDetails>
+std::vector<SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails>
+SaveOrUpdateAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
+  std::vector<
+      SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails>
       details;
 
   auto get_attribute_update_type = [&](const autofill::AttributeInstance&
@@ -137,14 +142,15 @@ SaveAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
 
   // Move new entity values that were either added or updated to the top.
   std::ranges::stable_sort(
-      details,
-      [](const SaveAutofillAiDataController::EntityAttributeUpdateDetails& a,
-         const SaveAutofillAiDataController::EntityAttributeUpdateDetails& b) {
+      details, [](const SaveOrUpdateAutofillAiDataController::
+                      EntityAttributeUpdateDetails& a,
+                  const SaveOrUpdateAutofillAiDataController::
+                      EntityAttributeUpdateDetails& b) {
         // Returns true if `attribute` is a new entity attribute that was either
         // added or updated.
         auto added_or_updated =
-            [](const SaveAutofillAiDataController::EntityAttributeUpdateDetails&
-                   attribute) {
+            [](const SaveOrUpdateAutofillAiDataController::
+                   EntityAttributeUpdateDetails& attribute) {
               return attribute.update_type == kNewEntityAttributeAdded ||
                      attribute.update_type == kNewEntityAttributeUpdated;
             };
@@ -160,7 +166,8 @@ SaveAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
   return details;
 }
 
-std::u16string SaveAutofillAiDataControllerImpl::GetDialogTitle() const {
+std::u16string SaveOrUpdateAutofillAiDataControllerImpl::GetDialogTitle()
+    const {
   if (IsSavePrompt()) {
     switch (new_entity_->type().name()) {
       case autofill::EntityTypeName::kVehicle:
@@ -200,8 +207,9 @@ std::u16string SaveAutofillAiDataControllerImpl::GetDialogTitle() const {
   NOTREACHED();
 }
 
-void SaveAutofillAiDataControllerImpl::OnBubbleClosed(
-    SaveAutofillAiDataController::AutofillAiBubbleClosedReason closed_reason) {
+void SaveOrUpdateAutofillAiDataControllerImpl::OnBubbleClosed(
+    SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason
+        closed_reason) {
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
   if (!save_prompt_acceptance_callback_.is_null()) {
@@ -215,12 +223,13 @@ void SaveAutofillAiDataControllerImpl::OnBubbleClosed(
   }
 }
 
-PageActionIconType SaveAutofillAiDataControllerImpl::GetPageActionIconType() {
+PageActionIconType
+SaveOrUpdateAutofillAiDataControllerImpl::GetPageActionIconType() {
   // TODO(crbug.com/362227379): Update icon.
   return PageActionIconType::kAutofillAddress;
 }
 
-void SaveAutofillAiDataControllerImpl::DoShowBubble() {
+void SaveOrUpdateAutofillAiDataControllerImpl::DoShowBubble() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   set_bubble_view(browser->window()
                       ->GetAutofillBubbleHandler()
@@ -228,16 +237,16 @@ void SaveAutofillAiDataControllerImpl::DoShowBubble() {
   CHECK(bubble_view());
 }
 
-base::WeakPtr<SaveAutofillAiDataController>
-SaveAutofillAiDataControllerImpl::GetWeakPtr() {
+base::WeakPtr<SaveOrUpdateAutofillAiDataController>
+SaveOrUpdateAutofillAiDataControllerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
 base::optional_ref<const autofill::EntityInstance>
-SaveAutofillAiDataControllerImpl::GetAutofillAiData() const {
+SaveOrUpdateAutofillAiDataControllerImpl::GetAutofillAiData() const {
   return new_entity_;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SaveAutofillAiDataControllerImpl);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SaveOrUpdateAutofillAiDataControllerImpl);
 
 }  // namespace autofill_ai

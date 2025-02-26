@@ -11,29 +11,29 @@
 
 namespace autofill_ai {
 
-AutofillAiClient::SavePromptAcceptanceResult::SavePromptAcceptanceResult(
+AutofillAiClient::SaveOrUpdatePromptResult::SaveOrUpdatePromptResult(
     bool did_user_interact,
     std::optional<autofill::EntityInstance> entity)
     : did_user_interact(did_user_interact), entity(std::move(entity)) {}
 
-AutofillAiClient::SavePromptAcceptanceResult::SavePromptAcceptanceResult() =
+AutofillAiClient::SaveOrUpdatePromptResult::SaveOrUpdatePromptResult() =
     default;
 
-AutofillAiClient::SavePromptAcceptanceResult::SavePromptAcceptanceResult(
-    const AutofillAiClient::SavePromptAcceptanceResult&) = default;
+AutofillAiClient::SaveOrUpdatePromptResult::SaveOrUpdatePromptResult(
+    const AutofillAiClient::SaveOrUpdatePromptResult&) = default;
 
-AutofillAiClient::SavePromptAcceptanceResult::SavePromptAcceptanceResult(
-    AutofillAiClient::SavePromptAcceptanceResult&&) = default;
+AutofillAiClient::SaveOrUpdatePromptResult::SaveOrUpdatePromptResult(
+    AutofillAiClient::SaveOrUpdatePromptResult&&) = default;
 
-AutofillAiClient::SavePromptAcceptanceResult&
-AutofillAiClient::SavePromptAcceptanceResult::operator=(
-    const AutofillAiClient::SavePromptAcceptanceResult&) = default;
+AutofillAiClient::SaveOrUpdatePromptResult&
+AutofillAiClient::SaveOrUpdatePromptResult::operator=(
+    const AutofillAiClient::SaveOrUpdatePromptResult&) = default;
 
-AutofillAiClient::SavePromptAcceptanceResult&
-AutofillAiClient::SavePromptAcceptanceResult::operator=(
-    AutofillAiClient::SavePromptAcceptanceResult&&) = default;
+AutofillAiClient::SaveOrUpdatePromptResult&
+AutofillAiClient::SaveOrUpdatePromptResult::operator=(
+    AutofillAiClient::SaveOrUpdatePromptResult&&) = default;
 
-AutofillAiClient::SavePromptAcceptanceResult::~SavePromptAcceptanceResult() =
+AutofillAiClient::SaveOrUpdatePromptResult::~SaveOrUpdatePromptResult() =
     default;
 
 }  // namespace autofill_ai

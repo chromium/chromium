@@ -70,9 +70,9 @@ source_set("autofill") {
       "address_bubbles_controller.h",
       "address_bubbles_icon_controller.h",
       "address_editor_controller.h",
-      "autofill_ai/save_autofill_ai_data_controller.cc",
-      "autofill_ai/save_autofill_ai_data_controller.h",
-      "autofill_ai/save_autofill_ai_data_controller_impl.h",
+      "autofill_ai/save_or_update_autofill_ai_data_controller.cc",
+      "autofill_ai/save_or_update_autofill_ai_data_controller.h",
+      "autofill_ai/save_or_update_autofill_ai_data_controller_impl.h",
       "autofill_context_menu_manager.h",
       "autofill_field_promo_controller.h",
       "autofill_field_promo_controller_impl.h",
@@ -186,7 +186,7 @@ source_set("impl") {
       "address_bubbles_controller.cc",
       "address_bubbles_icon_controller.cc",
       "address_editor_controller.cc",
-      "autofill_ai/save_autofill_ai_data_controller_impl.cc",
+      "autofill_ai/save_or_update_autofill_ai_data_controller_impl.cc",
       "autofill_context_menu_manager.cc",
       "autofill_field_promo_controller_impl.cc",
       "autofill_popup_controller_impl.cc",
@@ -445,7 +445,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     sources = [
-      "autofill_ai/save_autofill_ai_data_controller_impl_browsertest.cc",
+      "autofill_ai/save_or_update_autofill_ai_data_controller_impl_browsertest.cc",
       "autofill_context_menu_manager_browsertest.cc",
     ]
 

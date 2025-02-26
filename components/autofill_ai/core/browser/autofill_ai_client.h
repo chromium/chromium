@@ -33,23 +33,23 @@ class AutofillAiClient {
  public:
   // Contains the result of a user interaction with the save/update AutofillAi
   // prompt.
-  struct SavePromptAcceptanceResult final {
-    SavePromptAcceptanceResult();
-    SavePromptAcceptanceResult(bool did_user_interact,
-                               std::optional<autofill::EntityInstance> entity);
-    SavePromptAcceptanceResult(const SavePromptAcceptanceResult&);
-    SavePromptAcceptanceResult(SavePromptAcceptanceResult&&);
-    SavePromptAcceptanceResult& operator=(const SavePromptAcceptanceResult&);
-    SavePromptAcceptanceResult& operator=(SavePromptAcceptanceResult&&);
-    ~SavePromptAcceptanceResult();
+  struct SaveOrUpdatePromptResult final {
+    SaveOrUpdatePromptResult();
+    SaveOrUpdatePromptResult(bool did_user_interact,
+                             std::optional<autofill::EntityInstance> entity);
+    SaveOrUpdatePromptResult(const SaveOrUpdatePromptResult&);
+    SaveOrUpdatePromptResult(SaveOrUpdatePromptResult&&);
+    SaveOrUpdatePromptResult& operator=(const SaveOrUpdatePromptResult&);
+    SaveOrUpdatePromptResult& operator=(SaveOrUpdatePromptResult&&);
+    ~SaveOrUpdatePromptResult();
 
     bool did_user_interact = false;
 
     // Non-empty iff the prompt was accepted.
     std::optional<autofill::EntityInstance> entity;
   };
-  using SavePromptAcceptanceCallback =
-      base::OnceCallback<void(SavePromptAcceptanceResult result)>;
+  using SaveOrUpdatePromptResultCallback =
+      base::OnceCallback<void(SaveOrUpdatePromptResult result)>;
 
   // The callback to extract the accessibility tree snapshot.
   using AXTreeCallback =
@@ -97,10 +97,10 @@ class AutofillAiClient {
   // Shows a bubble asking whether the user wants to save or update Autofill AI
   // data. `old_entity` is present in the update cases. It is used to give users
   // a better understanding of what was updated.
-  virtual void ShowSaveAutofillAiBubble(
+  virtual void ShowSaveOrUpdateBubble(
       autofill::EntityInstance new_entity,
       std::optional<autofill::EntityInstance> old_entity,
-      SavePromptAcceptanceCallback save_prompt_acceptance_callback) = 0;
+      SaveOrUpdatePromptResultCallback save_prompt_acceptance_callback) = 0;
 };
 
 }  // namespace autofill_ai

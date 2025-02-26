@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/autofill_ai/save_autofill_ai_data_bubble_view.h"
+#include "chrome/browser/ui/views/autofill/autofill_ai/save_or_update_autofill_ai_data_bubble_view.h"
 
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/save_or_update_autofill_ai_data_controller.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_icon_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -47,19 +47,20 @@ constexpr int kBubbleWidth = 320;
 // This is intended to give users feedback about which entity value will be
 // changed.
 std::unique_ptr<views::Label> GetAttributeValueView(
-    const SaveAutofillAiDataController::EntityAttributeUpdateDetails& detail) {
+    const SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails&
+        detail) {
   std::unique_ptr<views::Label> label =
       std::make_unique<views::Label>(detail.attribute_value);
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
 
   const bool should_add_strike_through =
       detail.update_type ==
-      SaveAutofillAiDataController::EntityAttributeUpdateType::
+      SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
           kOldEntityAttributeUpdated;
   if (!should_add_strike_through) {
     const bool is_new_or_updated_attribute_from_new_entity =
         detail.update_type !=
-        SaveAutofillAiDataController::EntityAttributeUpdateType::
+        SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
             kNewEntityAttributeUnchanged;
     label->SetTextStyle(is_new_or_updated_attribute_from_new_entity
                             ? views::style::STYLE_BODY_3_MEDIUM
@@ -77,12 +78,12 @@ std::unique_ptr<views::Label> GetAttributeValueView(
 // about the entity to be saved and possibly information about the old entity
 // value that was updated.
 std::unique_ptr<views::View> BuildEntityAttributeRow(
-    const SaveAutofillAiDataController::EntityAttributeUpdateDetails& detail) {
-  auto row =
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-          .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
-          .Build();
+    const SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails&
+        detail) {
+  auto row = views::Builder<views::BoxLayoutView>()
+                 .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+                 .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+                 .Build();
   row->AddChildView(
       views::Builder<views::Label>()
           .SetText(detail.attribute_name)
@@ -98,39 +99,40 @@ std::unique_ptr<views::View> BuildEntityAttributeRow(
   return row;
 }
 
-SaveAutofillAiDataController::AutofillAiBubbleClosedReason
+SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason
 GetAutofillAiBubbleClosedReasonFromWidget(const views::Widget* widget) {
   DCHECK(widget);
   if (!widget->IsClosed()) {
-    return SaveAutofillAiDataController::AutofillAiBubbleClosedReason::kUnknown;
+    return SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason::
+        kUnknown;
   }
 
   switch (widget->closed_reason()) {
     case views::Widget::ClosedReason::kUnspecified:
-      return SaveAutofillAiDataController::AutofillAiBubbleClosedReason::
-          kNotInteracted;
+      return SaveOrUpdateAutofillAiDataController::
+          AutofillAiBubbleClosedReason::kNotInteracted;
     case views::Widget::ClosedReason::kEscKeyPressed:
     case views::Widget::ClosedReason::kCloseButtonClicked:
-      return SaveAutofillAiDataController::AutofillAiBubbleClosedReason::
-          kClosed;
+      return SaveOrUpdateAutofillAiDataController::
+          AutofillAiBubbleClosedReason::kClosed;
     case views::Widget::ClosedReason::kLostFocus:
-      return SaveAutofillAiDataController::AutofillAiBubbleClosedReason::
-          kLostFocus;
+      return SaveOrUpdateAutofillAiDataController::
+          AutofillAiBubbleClosedReason::kLostFocus;
     case views::Widget::ClosedReason::kAcceptButtonClicked:
-      return SaveAutofillAiDataController::AutofillAiBubbleClosedReason::
-          kAccepted;
+      return SaveOrUpdateAutofillAiDataController::
+          AutofillAiBubbleClosedReason::kAccepted;
     case views::Widget::ClosedReason::kCancelButtonClicked:
-      return SaveAutofillAiDataController::AutofillAiBubbleClosedReason::
-          kCancelled;
+      return SaveOrUpdateAutofillAiDataController::
+          AutofillAiBubbleClosedReason::kCancelled;
   }
 }
 
 }  // namespace
 
-SaveAutofillAiDataBubbleView::SaveAutofillAiDataBubbleView(
+SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
     views::View* anchor_view,
     content::WebContents* web_contents,
-    SaveAutofillAiDataController* controller)
+    SaveOrUpdateAutofillAiDataController* controller)
     : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller->GetWeakPtr()) {
   set_fixed_width(kBubbleWidth);
@@ -176,16 +178,17 @@ SaveAutofillAiDataBubbleView::SaveAutofillAiDataBubbleView(
         kNewEntityUnchagedOrOldEntityUpdatedAttributesContainer);
   }
 
-  const std::vector<SaveAutofillAiDataController::EntityAttributeUpdateDetails>
+  const std::vector<
+      SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails>
       attributes_details = controller_->GetUpdatedAttributesDetails();
-  for (const SaveAutofillAiDataController::EntityAttributeUpdateDetails&
+  for (const SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails&
            detail : attributes_details) {
     const bool new_entity_added_or_updated_attibute =
         (detail.update_type ==
-         SaveAutofillAiDataController::EntityAttributeUpdateType::
+         SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
              kNewEntityAttributeUpdated) ||
         (detail.update_type ==
-         SaveAutofillAiDataController::EntityAttributeUpdateType::
+         SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
              kNewEntityAttributeAdded);
     if (new_entity_added_or_updated_attibute) {
       new_entity_added_or_updated_attributes_container->AddChildView(
@@ -205,14 +208,16 @@ SaveAutofillAiDataBubbleView::SaveAutofillAiDataBubbleView(
       ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON));
-  SetAcceptCallback(base::BindOnce(
-      &SaveAutofillAiDataBubbleView::OnDialogAccepted, base::Unretained(this)));
+  SetAcceptCallback(
+      base::BindOnce(&SaveOrUpdateAutofillAiDataBubbleView::OnDialogAccepted,
+                     base::Unretained(this)));
   SetShowCloseButton(true);
 }
 
-SaveAutofillAiDataBubbleView::~SaveAutofillAiDataBubbleView() = default;
+SaveOrUpdateAutofillAiDataBubbleView::~SaveOrUpdateAutofillAiDataBubbleView() =
+    default;
 
-void SaveAutofillAiDataBubbleView::Hide() {
+void SaveOrUpdateAutofillAiDataBubbleView::Hide() {
   CloseBubble();
   if (controller_) {
     controller_->OnBubbleClosed(
@@ -221,7 +226,7 @@ void SaveAutofillAiDataBubbleView::Hide() {
   controller_ = nullptr;
 }
 
-void SaveAutofillAiDataBubbleView::AddedToWidget() {
+void SaveOrUpdateAutofillAiDataBubbleView::AddedToWidget() {
   const int kHorizontalSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
   auto header_container =
@@ -250,7 +255,7 @@ void SaveAutofillAiDataBubbleView::AddedToWidget() {
   GetBubbleFrameView()->SetHeaderView(std::move(header_container));
 }
 
-void SaveAutofillAiDataBubbleView::WindowClosing() {
+void SaveOrUpdateAutofillAiDataBubbleView::WindowClosing() {
   CloseBubble();
   if (controller_) {
     controller_->OnBubbleClosed(
@@ -259,12 +264,12 @@ void SaveAutofillAiDataBubbleView::WindowClosing() {
   controller_ = nullptr;
 }
 
-void SaveAutofillAiDataBubbleView::OnDialogAccepted() {
+void SaveOrUpdateAutofillAiDataBubbleView::OnDialogAccepted() {
   if (controller_) {
     controller_->OnSaveButtonClicked();
   }
 }
 
-BEGIN_METADATA(SaveAutofillAiDataBubbleView)
+BEGIN_METADATA(SaveOrUpdateAutofillAiDataBubbleView)
 END_METADATA
 }  // namespace autofill_ai

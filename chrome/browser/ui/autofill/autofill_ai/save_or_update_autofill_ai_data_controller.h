@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_AUTOFILL_AI_DATA_CONTROLLER_H_
-#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_AUTOFILL_AI_DATA_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_CONTROLLER_H_
+#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_CONTROLLER_H_
 
 #include <optional>
 #include <string>
@@ -22,9 +22,8 @@ namespace autofill_ai {
 
 // Interface that exposes controller functionality to the save Autofill AI data
 // bubble.
-class SaveAutofillAiDataController {
+class SaveOrUpdateAutofillAiDataController {
  public:
-
   enum class AutofillAiBubbleClosedReason {
     // Bubble closed reason not specified.
     kUnknown,
@@ -67,24 +66,25 @@ class SaveAutofillAiDataController {
     EntityAttributeUpdateType update_type{};
   };
 
-  SaveAutofillAiDataController() = default;
-  SaveAutofillAiDataController(const SaveAutofillAiDataController&) = delete;
-  SaveAutofillAiDataController& operator=(const SaveAutofillAiDataController&) =
-      delete;
-  virtual ~SaveAutofillAiDataController() = default;
+  SaveOrUpdateAutofillAiDataController() = default;
+  SaveOrUpdateAutofillAiDataController(
+      const SaveOrUpdateAutofillAiDataController&) = delete;
+  SaveOrUpdateAutofillAiDataController& operator=(
+      const SaveOrUpdateAutofillAiDataController&) = delete;
+  virtual ~SaveOrUpdateAutofillAiDataController() = default;
 
-  static SaveAutofillAiDataController* GetOrCreate(
+  static SaveOrUpdateAutofillAiDataController* GetOrCreate(
       content::WebContents* web_contents);
 
-  // Shows a save Autofill AI data bubble which the user can accept or decline.
-  // `old_entity` is used in the update case to give users an overview of what
-  // was changed.
-  virtual void OfferSave(autofill::EntityInstance new_entity,
-                         std::optional<autofill::EntityInstance> old_entity,
-                         AutofillAiClient::SavePromptAcceptanceCallback
-                             save_prompt_acceptance_callback) = 0;
+  // Shows a save or update Autofill AI data bubble which the user can accept or
+  // decline. `old_entity` is used in the update case to give users an overview
+  // of what was changed.
+  virtual void ShowPrompt(autofill::EntityInstance new_entity,
+                          std::optional<autofill::EntityInstance> old_entity,
+                          AutofillAiClient::SaveOrUpdatePromptResultCallback
+                              save_prompt_acceptance_callback) = 0;
 
-  // Called when the user accepts to save Autofill AI data.
+  // Called when the user accepts to save or update Autofill AI data.
   virtual void OnSaveButtonClicked() = 0;
 
   virtual std::u16string GetDialogTitle() const = 0;
@@ -106,9 +106,9 @@ class SaveAutofillAiDataController {
   // Called when the Autofill AI data bubble is closed.
   virtual void OnBubbleClosed(AutofillAiBubbleClosedReason closed_reason) = 0;
 
-  virtual base::WeakPtr<SaveAutofillAiDataController> GetWeakPtr() = 0;
+  virtual base::WeakPtr<SaveOrUpdateAutofillAiDataController> GetWeakPtr() = 0;
 };
 
 }  // namespace autofill_ai
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_AUTOFILL_AI_DATA_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_CONTROLLER_H_
