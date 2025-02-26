@@ -168,7 +168,7 @@ class MockCloudPolicyClient : public CloudPolicyClient {
               (override));
   MOCK_METHOD(void,
               DeterminePromotionEligibility,
-              (ResultCallback callback),
+              (PromotionEligibilityCallback callback),
               (override));
 
   // Sets the DMToken.

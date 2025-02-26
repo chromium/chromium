@@ -3445,25 +3445,27 @@ TEST_F(CloudPolicyClientTest, DeterminePromotionEligibilityRequest) {
   em::DeviceManagementRequest expected_request;
   expected_request.mutable_determine_promotion_eligibility_request();
 
-  em::DeviceManagementResponse fake_response;
-  em::GetUserEligiblePromotionsResponse* inner_response =
-      fake_response.mutable_get_user_eligible_promotions_response();
+  em::DeviceManagementResponse outer_response;
+  em::GetUserEligiblePromotionsResponse* fake_response =
+      outer_response.mutable_get_user_eligible_promotions_response();
+
   em::PromotionEligibilityList* promotion_eligibility_list =
-      inner_response->mutable_promotions();
+      fake_response->mutable_promotions();
+
   promotion_eligibility_list->set_policy_page_promotion(
       em::PromotionType::CHROME_ENTERPRISE_CORE);
 
-  ExpectAndCaptureJob(fake_response);
+  ExpectAndCaptureJob(outer_response);
 
   base::test::TestFuture<
-      CloudPolicyClient::Result>
+      const em::GetUserEligiblePromotionsResponse>
       result_future;
 
 
   base::RunLoop run_loop;
   client_->DeterminePromotionEligibility(
-      result_future.GetCallback().Then(run_loop.QuitClosure())
-      );
+      result_future.GetCallback().Then(run_loop.QuitClosure()));
+
   client_->SetOAuthTokenAsAdditionalAuth(kOAuthToken);
   run_loop.Run();
 

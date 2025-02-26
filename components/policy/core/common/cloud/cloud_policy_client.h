@@ -96,6 +96,9 @@ class POLICY_EXPORT CloudPolicyClient {
       const enterprise_management::ClientCertificateProvisioningResponse&
           response)>;
 
+  using PromotionEligibilityCallback = base::OnceCallback<void(
+      enterprise_management::GetUserEligiblePromotionsResponse)>;
+
   using MacAddress = std::array<uint8_t, 6>;
 
   // Observer interface for state and policy changes.
@@ -512,7 +515,8 @@ class POLICY_EXPORT CloudPolicyClient {
   // policy client and notify observers.
   void UpdateServiceAccount(const std::string& account_email);
 
-  virtual void DeterminePromotionEligibility(ResultCallback callback);
+  virtual void DeterminePromotionEligibility(
+      PromotionEligibilityCallback callback);
 
   // Adds an observer to be called back upon policy and state changes.
   void AddObserver(Observer* observer);
@@ -755,8 +759,8 @@ class POLICY_EXPORT CloudPolicyClient {
       ClientCertProvisioningRequestCallback callback,
       DMServerJobResult result);
 
-  void OnPromotionEligibilityDetermined(ResultCallback callback,
-                                       DMServerJobResult result);
+  void OnPromotionEligibilityDetermined(PromotionEligibilityCallback callback,
+                                        DMServerJobResult result);
 
   // Callback for `UploadFmRegistrationToken` request.
   void OnUploadFmRegistrationTokenResponse(ResultCallback callback,
