@@ -56,7 +56,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   // We don't mock them.
   void SetUsageCacheEnabled(QuotaClientType client_id,
                             const blink::StorageKey& storage_key,
-                            blink::mojom::StorageType type,
                             bool enabled) override {}
 
   void NotifyBucketModified(

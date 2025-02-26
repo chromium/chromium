@@ -405,7 +405,7 @@ class StorageHandler::QuotaManagerObserver
       return;
     }
     manager->GetBucketsForStorageKey(
-        storage_key, blink::mojom::StorageType::kTemporary, false,
+        storage_key, /*delete_expired=*/false,
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::BindOnce(
             [](base::WeakPtr<StorageHandler> owner_storage_handler,

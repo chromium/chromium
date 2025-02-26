@@ -134,7 +134,6 @@ void StorageAccessHandle::Estimate(EstimateCallback callback) {
       ->GetBucketsForStorageKey(
           blink::StorageKey::CreateFirstParty(
               render_frame_host().GetStorageKey().origin()),
-          blink::mojom::StorageType::kTemporary,
           /*delete_expired=*/false,
           base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(&StorageAccessHandle::EstimateImpl,

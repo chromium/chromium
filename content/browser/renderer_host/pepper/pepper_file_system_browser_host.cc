@@ -279,11 +279,8 @@ void PepperFileSystemBrowserHost::IOThreadState::ShouldCreateQuotaReservation(
   const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy =
       file_system_context_->quota_manager_proxy();
   CHECK(quota_manager_proxy);
-  storage::FileSystemType file_system_type =
-      PepperFileSystemTypeToFileSystemType(type_);
   quota_manager_proxy->IsStorageUnlimited(
       blink::StorageKey::CreateFirstParty(url::Origin::Create(root_url_)),
-      storage::FileSystemTypeToQuotaStorageType(file_system_type),
       base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(
           [](base::OnceCallback<void(bool)> callback,

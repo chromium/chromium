@@ -136,7 +136,6 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
   // Not needed for our tests.
   void SetUsageCacheEnabled(QuotaClientType client_id,
                             const blink::StorageKey& storage_key,
-                            blink::mojom::StorageType type,
                             bool enabled) override {}
   void GetUsageAndQuota(
       const blink::StorageKey& storage_key,
