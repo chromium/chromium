@@ -381,10 +381,12 @@ class TestRecipeReplayer {
       bool expect_to_be_shown);
   bool WaitForElementToBeReady(const std::string& xpath,
                                const int visibility_enum_val,
-                               content::RenderFrameHost* frame,
+                               const base::Value::Dict& action,
+                               content::RenderFrameHost** frame,
                                bool ignore_failure = false);
   bool WaitForStateChange(
-      content::RenderFrameHost* frame,
+      const base::Value::Dict& action,
+      content::RenderFrameHost** frame,
       const std::vector<std::string>& state_assertions,
       const base::TimeDelta& timeout = default_action_timeout,
       bool ignore_failure = false);
@@ -419,6 +421,8 @@ class TestRecipeReplayer {
   // If Chrome finishes loading a page but continues to paint every half
   // second, exit after `continuous_paint_timeout` expires since Chrome
   // finished loading the page.
+  // After calling `WaitTillPageIsIdle()` all RenderFrameHost pointers should
+  // be considered potentially invalid because a navigation may have happened.
   void WaitTillPageIsIdle(
       base::TimeDelta continuous_paint_timeout = default_action_timeout);
   // Wait until Chrome makes at least 1 visual update, or until timeout
