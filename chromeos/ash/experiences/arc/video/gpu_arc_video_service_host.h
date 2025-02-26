@@ -33,6 +33,8 @@ class GpuArcVideoServiceHost : public mojom::VideoHost {
   // arc::mojom::VideoHost implementation.
   void OnBootstrapVideoAcceleratorFactory(
       OnBootstrapVideoAcceleratorFactoryCallback callback) override;
+  void CreateVideoAcceleratorFactory(
+      CreateVideoAcceleratorFactoryCallback callback) override;
 
   GpuArcVideoServiceHost(const GpuArcVideoServiceHost&) = delete;
   GpuArcVideoServiceHost& operator=(const GpuArcVideoServiceHost&) = delete;
