@@ -1968,6 +1968,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "devtools-css-value-tracing",
+    "owners": [ "pfaffe@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "devtools-privacy-ui",
     "owners": [ "jalonthomas@chromium.com", "shuuran@chromium.org", "masnoble@chromium.com" ],
     "expiry_milestone": 150

@@ -17127,6 +17127,7 @@ from previous Chrome versions.
   <int value="1142788238" label="FontCacheScaling:disabled"/>
   <int value="1142970266"
       label="SignedExchangePrefetchCacheForNavigations:disabled"/>
+  <int value="1146728529" label="DevToolsCssValueTracing:enabled"/>
   <int value="1146944555" label="CrosExpandSodaLanguages:enabled"/>
   <int value="1147703885" label="SecondaryGoogleAccountUsage:enabled"/>
   <int value="1147924185" label="enable-navigation-predictor-renderer-warmup"/>
@@ -17790,6 +17791,7 @@ from previous Chrome versions.
   <int value="1393722373" label="SaveEditedPDFForm:disabled"/>
   <int value="1393729379" label="BackToHomeAnimation:enabled"/>
   <int value="1393802350" label="InsecureDownloadWarnings:disabled"/>
+  <int value="1393970632" label="DevToolsCssValueTracing:disabled"/>
   <int value="1394896630" label="PrinterStatusDialog:enabled"/>
   <int value="1395175083" label="PrivacyGuide:enabled"/>
   <int value="1397053154" label="ContextualSearchLiteralSearchTap:enabled"/>
