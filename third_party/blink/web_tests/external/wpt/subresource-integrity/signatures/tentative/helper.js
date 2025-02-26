@@ -80,6 +80,30 @@ function generate_fetch_test(request_data, options, expectation, description) {
   }, "`fetch()`: " + description);
 }
 
+function generate_query_test(query, options, expectation, description) {
+  promise_test(test => {
+    let url = new URL("/subresource-integrity/signatures/query-resource.py?" + query, self.location);
+
+    let fetch_options = {};
+    if (options.mode) {
+      fetch_options.mode = options.mode;
+    }
+    if (options.integrity) {
+      fetch_options.integrity = options.integrity;
+    }
+
+    let fetcher = fetch(url, fetch_options);
+    if (expectation == EXPECT_LOADED) {
+      return fetcher.then(r => {
+        const expected_status = options.mode == "no-cors" ? 0 : 200;
+        assert_equals(r.status, expected_status, `Response status is ${expected_status}.`);
+      });
+    } else {
+      return promise_rejects_js(test, TypeError, fetcher);
+    }
+  }, "`fetch()`: " + description);
+}
+
 /*
  * Script tests
  *

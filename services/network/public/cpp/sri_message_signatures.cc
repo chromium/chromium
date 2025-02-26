@@ -25,7 +25,7 @@ const size_t kEd25519SigLength = 64;
 constexpr std::string_view kAcceptSignature = "accept-signature";
 
 constexpr std::array<std::string_view, 9u> kDerivedComponents = {
-    "@path", "@status"
+    "@query", "@path", "@status"
     // TODO(383409584): We should support the remaining derived components from
     // https://www.rfc-editor.org/rfc/rfc9421.html#name-derived-components:
     //
@@ -203,7 +203,10 @@ std::string SerializeDerivedComponent(const GURL& request_url,
                                       const std::string& component) {
   DCHECK(base::Contains(kDerivedComponents, component));
 
-  if (component == "@path") {
+  if (component == "@query") {
+    // https://www.rfc-editor.org/rfc/rfc9421.html#name-query
+    return base::StrCat({"?", request_url.query()});
+  } else if (component == "@path") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#content-request-path
     return request_url.path();
   } else if (component == "@status") {
