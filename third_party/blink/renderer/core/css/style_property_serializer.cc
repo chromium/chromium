@@ -1820,7 +1820,8 @@ String StylePropertySerializer::GetLayeredShorthandValue(
         } else if (property->IDEquals(CSSPropertyID::kWebkitMaskPositionY)) {
           omit_value = true;
 
-          if (!IsZeroPercent(mask_position_x) || !IsZeroPercent(value)) {
+          if (mask_position_x &&
+              (!IsZeroPercent(mask_position_x) || !IsZeroPercent(value))) {
             is_position_x_serialized = true;
             is_position_y_serialized = true;
 
