@@ -44,6 +44,9 @@ struct BaseFormActivityParams {
   bool is_main_frame = false;
 };
 
+std::ostream& operator<<(std::ostream& buffer,
+                         const BaseFormActivityParams& form);
+
 // Wraps information about event happening on an input field.
 // Example HTML
 // <form name="np" id="np1" action="https://example.com/" method="post">
@@ -106,6 +109,8 @@ struct FormActivityParams : public BaseFormActivityParams {
   // a user action, and not by an event created and dispatched by JavaScript.
   bool has_user_gesture = false;
 };
+
+std::ostream& operator<<(std::ostream& buffer, const FormActivityParams& form);
 
 // Wraps information about the form removal.
 struct FormRemovalParams : public BaseFormActivityParams {
