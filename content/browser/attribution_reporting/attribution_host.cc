@@ -441,8 +441,7 @@ void AttributionHost::MaybeLogClientBounce(
   int64_t num_data_hosts_registered_bucket =
       ukm::GetExponentialBucketMinForCounts1000(num_data_hosts_registered);
 
-  ukm::builders::Conversions_ClientBounce ukm_builder(
-      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+  ukm::builders::Conversions_ClientBounce ukm_builder(GetPageUkmSourceId());
 
   if (!primary_main_frame_data_->has_user_activation) {
     if (time_since_last_navigation < base::Seconds(1)) {

@@ -56,6 +56,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/net_errors.h"
@@ -92,6 +93,14 @@ using ::testing::StrictMock;
 using attribution_reporting::kAttributionReportingRegisterSourceHeader;
 
 constexpr char kRegistrationMethod[] = "Conversions.RegistrationMethod2";
+
+constexpr char
+    kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName[] =
+        "Conversions.NumDataHostsRegisteredOnClientBounce.UserActivation.5s";
+
+constexpr char
+    kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName[] =
+        "Conversions.NumDataHostsRegisteredOnClientBounce.UserInteraction.5s";
 
 }  // namespace
 
@@ -1096,6 +1105,66 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcPrerenderBrowserTest,
   loop.Run();
 }
 
+IN_PROC_BROWSER_TEST_P(
+    AttributionSrcPrerenderBrowserTest,
+    SourceRegisteredOnActivatedPrerender_ClientBounceMetricRecorded) {
+  base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_attribution_manager(), HandleSource)
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  // Navigate to a starting same origin page with the to-be-prerendered page
+  // url.
+  const GURL kEmptyUrl = https_server()->GetURL("b.test", "/empty.html");
+  {
+    auto url_loader_interceptor =
+        content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
+            "content/test/data", kEmptyUrl.DeprecatedGetOriginAsURL());
+    EXPECT_TRUE(NavigateToURL(web_contents(), kEmptyUrl));
+  }
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(page_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+
+  ExecuteScriptAsyncWithoutUserGesture(
+      prerender_rfh, JsReplace("createAttributionSrcImg($1);",
+                               https_server()->GetURL(
+                                   "c.test", "/register_source_headers.html")));
+
+  prerender_helper_.NavigatePrimaryPage(page_url);
+  ASSERT_EQ(page_url, web_contents()->GetLastCommittedURL());
+
+  run_loop.Run();
+
+  GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
+  EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents(),
+                                                          redirected_url));
+
+  histograms.ExpectBucketCount(
+      kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName, 1, 1);
+  histograms.ExpectBucketCount(
+      kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName, 1, 1);
+
+  std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ukm_entries =
+      ukm_recorder.GetEntries("Conversions.ClientBounce",
+                              {"UserActivation.5s", "UserInteraction.5s"});
+  ASSERT_EQ(ukm_entries.size(), 1u);
+  EXPECT_EQ(ukm_recorder.GetSourceForSourceId(ukm_entries[0].source_id)->url(),
+            page_url);
+  EXPECT_THAT(ukm_entries[0].metrics,
+              ElementsAre(testing::Pair("UserActivation.5s", 1),
+                          testing::Pair("UserInteraction.5s", 1)));
+}
+
 class AttributionSrcFencedFrameBrowserTest : public AttributionSrcBrowserTest {
  public:
   AttributionSrcFencedFrameBrowserTest() {
@@ -1473,18 +1542,6 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebEnabledBrowserTest,
     run_loop.Run();
   }
 }
-
-namespace {
-
-constexpr char
-    kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName[] =
-        "Conversions.NumDataHostsRegisteredOnClientBounce.UserActivation.5s";
-
-constexpr char
-    kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName[] =
-        "Conversions.NumDataHostsRegisteredOnClientBounce.UserInteraction.5s";
-
-}  // namespace
 
 IN_PROC_BROWSER_TEST_P(
     AttributionSrcBrowserTest,
