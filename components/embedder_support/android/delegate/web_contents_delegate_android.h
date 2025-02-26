@@ -85,8 +85,6 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
       const std::string& frame_name,
       const GURL& target_url) override;
   void CloseContents(content::WebContents* source) override;
-  void SetContentsBounds(content::WebContents* source,
-                         const gfx::Rect& bounds) override;
   bool DidAddMessageToConsole(content::WebContents* source,
                               blink::mojom::ConsoleMessageLevel log_level,
                               const std::u16string& message,

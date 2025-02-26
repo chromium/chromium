@@ -8726,6 +8726,21 @@
             ]
         }
     ],
+    "EdgeToEdgeEverywhere": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_134",
+                    "enable_features": [
+                        "EdgeToEdgeEverywhere"
+                    ]
+                }
+            ]
+        }
+    ],
     "EducationalTipModule": [
         {
             "platforms": [
@@ -18505,25 +18520,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FledgeStartAnticipatoryProcesses"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ProtectedAudienceMorePAggMetrics": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrivateAggregationApiProtectedAudienceAdditionalExtensions"
                     ]
                 }
             ]

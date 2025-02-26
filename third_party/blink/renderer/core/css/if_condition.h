@@ -17,7 +17,16 @@ class CORE_EXPORT IfCondition : public GarbageCollected<IfCondition> {
   virtual ~IfCondition() = default;
   virtual void Trace(Visitor*) const {}
 
-  enum class Type { kStyle, kMedia, kNot, kAnd, kOr, kUnknown, kElse };
+  enum class Type {
+    kStyle,
+    kMedia,
+    kSupports,
+    kNot,
+    kAnd,
+    kOr,
+    kUnknown,
+    kElse
+  };
   virtual Type GetType() const = 0;
 
   // These helper functions return nullptr if any argument is nullptr.
@@ -92,6 +101,17 @@ class CORE_EXPORT IfTestMedia : public IfCondition {
   Member<const MediaQuerySet> media_test_;
 };
 
+class CORE_EXPORT IfTestSupports : public IfCondition {
+ public:
+  explicit IfTestSupports(bool result) : result_(result) {}
+  void Trace(Visitor*) const override;
+  Type GetType() const override { return Type::kSupports; }
+  bool GetResult() const { return result_; }
+
+ private:
+  bool result_;
+};
+
 class CORE_EXPORT IfConditionUnknown : public IfCondition {
  public:
   explicit IfConditionUnknown(String string) : string_(string) {}
@@ -142,6 +162,13 @@ template <>
 struct DowncastTraits<IfTestMedia> {
   static bool AllowFrom(const IfCondition& node) {
     return node.GetType() == IfCondition::Type::kMedia;
+  }
+};
+
+template <>
+struct DowncastTraits<IfTestSupports> {
+  static bool AllowFrom(const IfCondition& node) {
+    return node.GetType() == IfCondition::Type::kSupports;
   }
 };
 

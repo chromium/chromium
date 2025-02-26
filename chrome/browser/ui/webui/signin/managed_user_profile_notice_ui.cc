@@ -131,6 +131,7 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
   source->AddLocalizedString("enterpriseProfileWelcomeTitle",
                              IDS_ENTERPRISE_PROFILE_WELCOME_TITLE);
   source->AddLocalizedString("cancelLabel", IDS_CANCEL);
+  source->AddLocalizedString("backLabel", IDS_ENTERPRISE_PROFILE_WELCOME_BACK);
   source->AddLocalizedString(
       "cancelValueProp",
       IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT);

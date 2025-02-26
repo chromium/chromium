@@ -461,32 +461,6 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
           });
 }
 
-void EventReportValidator::ExpectLoginEvent(
-    const std::string& expected_url,
-    const bool expected_is_federated,
-    const std::string& expected_federated_origin,
-    const std::string& expected_profile_username,
-    const std::string& expected_profile_identifier,
-    const std::u16string& expected_login_username) {
-  event_key_ = enterprise_connectors::kKeyLoginEvent;
-  url_ = expected_url;
-  is_federated_ = expected_is_federated;
-  federated_origin_ = expected_federated_origin;
-  username_ = expected_profile_username;
-  profile_identifier_ = expected_profile_identifier;
-  login_user_name_ = expected_login_username;
-  EXPECT_CALL(*client_, UploadSecurityEventReport)
-      .WillOnce(
-          [this](bool include_device_info, base::Value::Dict report,
-                 base::OnceCallback<void(policy::CloudPolicyClient::Result)>
-                     callback) {
-            ValidateReport(&report);
-            if (!done_closure_.is_null()) {
-              done_closure_.Run();
-            }
-          });
-}
-
 void EventReportValidator::ExpectPasswordBreachEvent(
     const std::string& expected_trigger,
     const std::vector<std::pair<std::string, std::u16string>>&
@@ -745,10 +719,6 @@ void EventReportValidator::ValidateDataMaskingAttributes(
   }
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-void EventReportValidator::ExpectNoReport() {
-  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(0);
-}
 
 void EventReportValidator::SetDoneClosure(base::RepeatingClosure closure) {
   done_closure_ = std::move(closure);

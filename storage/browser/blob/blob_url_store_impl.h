@@ -35,9 +35,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
                    base::WeakPtr<BlobUrlRegistry> registry,
                    BlobURLValidityCheckBehavior validity_check_options =
                        BlobURLValidityCheckBehavior::DEFAULT,
-                   base::RepeatingCallback<
-                       void(const GURL&, blink::mojom::PartitioningBlobURLInfo)>
-                       partitioning_blob_url_closure_ = base::DoNothing(),
+                   base::RepeatingCallback<void(
+                       const GURL&,
+                       std::optional<blink::mojom::PartitioningBlobURLInfo>)>
+                       partitioning_blob_url_closure = base::DoNothing(),
                    bool partitioning_disabled_by_policy = false);
 
   BlobURLStoreImpl(const BlobURLStoreImpl&) = delete;
@@ -89,8 +90,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
 
   std::set<GURL> urls_;
 
-  base::RepeatingCallback<void(const GURL&,
-                               blink::mojom::PartitioningBlobURLInfo)>
+  base::RepeatingCallback<
+      void(const GURL&, std::optional<blink::mojom::PartitioningBlobURLInfo>)>
       partitioning_blob_url_closure_;
 
   const bool partitioning_disabled_by_policy_;

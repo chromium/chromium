@@ -89,8 +89,8 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
   // Finish the authentication request. Called after CreateForWebContents to
   // simulate an async callback.
   void ReturnAuthorizedResponse() {
-    FinishRequest(authorization_request_.get(), authorization_result_,
-                  ContentAnalysisResponse());
+    FinishAndCleanupRequest(authorization_request_.get(), authorization_result_,
+                            ContentAnalysisResponse());
   }
 
   void SetResponseForText(BinaryUploadService::Result result,

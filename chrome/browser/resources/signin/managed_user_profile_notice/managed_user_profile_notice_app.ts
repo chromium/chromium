@@ -185,7 +185,16 @@ export class ManagedUserProfileNoticeAppElement extends
 
   /** Called when the cancel button is clicked. */
   protected onCancel_() {
+    if (this.allowValuePropStateBackFromDisclosure_()) {
+      this.updateCurrentState_(State.VALUE_PROPOSITION);
+      return;
+    }
     this.managedUserProfileNoticeBrowserProxy_.cancel();
+  }
+
+  protected allowValuePropStateBackFromDisclosure_() {
+    return this.currentState_ === State.DISCLOSURE &&
+        loadTimeData.getInteger('initialState') !== State.DISCLOSURE;
   }
 
   private setProfileInfo_(info: ManagedUserProfileInfo) {
@@ -224,10 +233,14 @@ export class ManagedUserProfileNoticeAppElement extends
   }
 
   private computeCancelLabel_() {
-    return this.currentState_ === State.VALUE_PROPOSITION &&
-            !loadTimeData.getBoolean('enforcedByPolicy') ?
-        this.i18n('cancelValueProp') :
-        this.i18n('cancelLabel');
+    if (this.currentState_ === State.VALUE_PROPOSITION &&
+        !loadTimeData.getBoolean('enforcedByPolicy')) {
+      return this.i18n('cancelValueProp');
+    }
+    if (this.allowValuePropStateBackFromDisclosure_()) {
+      return this.i18n('backLabel');
+    }
+    return this.i18n('cancelLabel');
   }
 
   protected allowProceedButton_() {

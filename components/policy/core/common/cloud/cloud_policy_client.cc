@@ -759,6 +759,10 @@ void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
 #endif
   }
 
+  void OnPromotionEligibilityDetermined(
+      CloudPolicyClient::PromotionEligibilityCallback callback,
+      DMServerJobResult result);
+
   // Add device state keys.
   if (!state_keys_to_upload_.empty()) {
     em::DeviceStateKeyUpdateRequest* key_update_request =
@@ -790,7 +794,8 @@ void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
   unique_request_job_ = service_->CreateJob(std::move(config));
 }
 
-void CloudPolicyClient::DeterminePromotionEligibility(ResultCallback callback) {
+void CloudPolicyClient::DeterminePromotionEligibility(
+    CloudPolicyClient::PromotionEligibilityCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(service_);
 
@@ -1856,14 +1861,15 @@ void CloudPolicyClient::OnClientCertProvisioningRequestResponse(
 }
 
 void CloudPolicyClient::OnPromotionEligibilityDetermined(
-    ResultCallback callback,
+    PromotionEligibilityCallback callback,
     DMServerJobResult result) {
   last_dm_status_ = result.dm_status;
   if (result.dm_status != DM_STATUS_SUCCESS) {
     NotifyClientError();
   }
 
-  std::move(callback).Run(Result(result.dm_status));
+  std::move(callback).Run(
+      result.response.get_user_eligible_promotions_response());
   RemoveJob(result.job);
 }
 

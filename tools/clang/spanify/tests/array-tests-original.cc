@@ -19,11 +19,21 @@ struct Type1 {
 
 int UnsafeIndex();  // This function might return an out-of-bound index.
 
+struct Component {
+  // Expected rewrite:
+  // std::array<int, 10> values;
+  int values[10];
+};
+
 void fct() {
   // Expected rewrite:
   // auto buf = std::to_array<int>({1, 2, 3, 4});
   int buf[] = {1, 2, 3, 4};
   buf[UnsafeIndex()] = 11;
+
+  Component component;
+  // Triggers the rewrite of Component::values
+  component.values[UnsafeIndex()]++;
 
   // Expected rewrite:
   // std::array<int, 5> buf2 = {1, 1, 1, 1, 1};

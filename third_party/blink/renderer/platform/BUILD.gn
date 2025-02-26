@@ -850,7 +850,6 @@ component("platform") {
     "geometry/path.h",
     "geometry/path_types.h",
     "geometry/physical_direction.h",
-    "geometry/skia_geometry_utils.cc",
     "geometry/skia_geometry_utils.h",
     "geometry/stroke_data.cc",
     "geometry/stroke_data.h",

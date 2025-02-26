@@ -149,8 +149,6 @@ source_set("platform_impls") {
     "desktop_resizer_linux.cc",
     "desktop_resizer_x11.cc",
     "desktop_resizer_x11.h",
-    "ei_event_watcher_glib.cc",
-    "ei_event_watcher_glib.h",
     "input_injector_constants_linux.h",
     "input_injector_linux.cc",
     "input_injector_x11.cc",

@@ -11,14 +11,14 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/save_or_update_autofill_ai_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
-#include "chrome/browser/ui/views/autofill/autofill_ai/save_autofill_ai_data_bubble_view.h"
+#include "chrome/browser/ui/views/autofill/autofill_ai/save_or_update_autofill_ai_data_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_bubble_views.h"
@@ -213,8 +213,8 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowAddressSignInPromo(
 
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAutofillAiDataBubble(
     content::WebContents* web_contents,
-    autofill_ai::SaveAutofillAiDataController* controller) {
-  return ShowBubble<autofill_ai::SaveAutofillAiDataBubbleView>(
+    autofill_ai::SaveOrUpdateAutofillAiDataController* controller) {
+  return ShowBubble<autofill_ai::SaveOrUpdateAutofillAiDataBubbleView>(
       toolbar_button_provider_, kActionShowAddressesBubbleOrPage,
       PageActionIconType::kAutofillAddress, /*is_user_gesture=*/false,
       web_contents, controller);

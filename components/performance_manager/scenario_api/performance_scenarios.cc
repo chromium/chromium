@@ -95,4 +95,20 @@ SharedAtomicRef<InputScenario> GetInputScenario(ScenarioScope scope) {
       mapping, GetScenarioStateFromMapping(mapping.get()).input);
 }
 
+bool CurrentScenariosMatch(ScenarioScope scope, ScenarioPattern pattern) {
+  return ScenariosMatch(
+      GetLoadingScenario(scope)->load(std::memory_order_relaxed),
+      GetInputScenario(scope)->load(std::memory_order_relaxed), pattern);
+}
+
+bool ScenariosMatch(LoadingScenario loading_scenario,
+                    InputScenario input_scenario,
+                    ScenarioPattern pattern) {
+  bool loading_matches =
+      pattern.loading.empty() || pattern.loading.Has(loading_scenario);
+  bool input_matches =
+      pattern.input.empty() || pattern.input.Has(input_scenario);
+  return loading_matches && input_matches;
+}
+
 }  // namespace performance_scenarios

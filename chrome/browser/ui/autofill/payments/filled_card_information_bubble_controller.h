@@ -101,10 +101,13 @@ class FilledCardInformationBubbleController {
   virtual void OnBubbleClosed(PaymentsUiClosedReason closed_reason) = 0;
 
   // Handles the event on the learn more link being clicked.
-  virtual void OnLinkClicked(const GURL& url) = 0;
+  virtual void OnLinkClicked() = 0;
 
   // Handles the event of clicking the |field|'s button.
   virtual void OnFieldClicked(FilledCardInformationBubbleField field) = 0;
+
+  // Returns whether the Google Pay icon should be shown in the bubble title.
+  virtual bool ShouldShowGooglePayIconInTitle() const = 0;
 };
 
 }  // namespace autofill

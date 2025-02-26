@@ -346,8 +346,7 @@ void CanvasRenderingContext2DState::SetGlobalAlpha(double alpha) {
 void CanvasRenderingContext2DState::ClipPath(
     const SkPath& path,
     AntiAliasingMode anti_aliasing_mode) {
-  clip_list_.ClipPath(path, anti_aliasing_mode,
-                      AffineTransformToSkMatrix(transform_));
+  clip_list_.ClipPath(path, anti_aliasing_mode, transform_.ToSkMatrix());
   has_clip_ = true;
   if (!path.isRect(nullptr))
     has_complex_clip_ = true;

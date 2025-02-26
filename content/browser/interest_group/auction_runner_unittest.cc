@@ -64,6 +64,7 @@
 #include "content/browser/interest_group/trusted_signals_fetcher.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/auction_result.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -1829,12 +1830,13 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
     CHECK(coordinator_key_callback_);
     std::move(coordinator_key_callback_)
         .Run(BiddingAndAuctionServerKey{"key whose value does not matter",
-                                        /*id=*/42});
+                                        /*id=*/"42"});
   }
 
  private:
   // Expects only to see requests for `kCoordinatorOrigin`.
   void GetCoordinatorKeyCallback(
+      const url::Origin& scope_origin,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
@@ -1864,6 +1866,7 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
 
     void FetchBiddingSignals(
         network::mojom::URLLoaderFactory* url_loader_factory,
+        FrameTreeNodeId /*frame_tree_node_id*/,
         const url::Origin& main_frame_origin,
         network::mojom::IPAddressSpace /*ip_address_space*/,
         base::UnguessableToken /*network_partition_nonce*/,
@@ -1899,6 +1902,7 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
 
     void FetchScoringSignals(
         network::mojom::URLLoaderFactory* url_loader_factory,
+        FrameTreeNodeId /*frame_tree_node_id*/,
         const url::Origin& main_frame_origin,
         network::mojom::IPAddressSpace /*ip_address_space*/,
         base::UnguessableToken /*network_partition_nonce*/,
@@ -2898,6 +2902,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     return std::nullopt;
   }
   void GetBiddingAndAuctionServerKey(
+      const url::Origin& scope_origin,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
                                              std::string>)> callback) override {

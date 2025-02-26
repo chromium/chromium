@@ -127,7 +127,7 @@ class DoneButton : public views::LabelButton {
 
     ash::TypographyProvider::Get()->StyleLabel(
         ash::TypographyToken::kCrosButton2, *label());
-    SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface);
+    SetEnabledTextColors(cros_tokens::kCrosSysOnSurface);
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
     // Set highlight path.

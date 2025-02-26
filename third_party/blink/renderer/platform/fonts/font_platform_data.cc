@@ -25,6 +25,7 @@
 #include "build/build_config.h"
 #include "hb-ot.h"
 #include "hb.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/platform/linux/web_sandbox_support.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -319,9 +320,7 @@ IdentifiableToken FontPlatformData::ComputeTypefaceDigest() const {
     base::span<const uint8_t> table_data_span;
     sk_sp<SkData> table_data = typeface_->copyTableData(table_tag);
     if (table_data) {
-      // SAFETY: `size()` bytes available at `data()`
-      table_data_span = UNSAFE_BUFFERS(
-          base::span<const uint8_t>(table_data->bytes(), table_data->size()));
+      table_data_span = skia::as_byte_span(*table_data);
     }
     builder.AddAtomic(table_data_span);
   }

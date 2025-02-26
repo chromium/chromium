@@ -498,6 +498,11 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                        double x,
                        double y,
                        const TextClusterOptions* cluster_options);
+  void strokeTextCluster(const TextCluster* text_cluster, double x, double y);
+  void strokeTextCluster(const TextCluster* text_cluster,
+                         double x,
+                         double y,
+                         const TextClusterOptions* cluster_options);
 
   void Trace(Visitor*) const override;
 

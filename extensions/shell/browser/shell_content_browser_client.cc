@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/guest_view/common/guest_view.mojom.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"
@@ -388,7 +389,7 @@ ShellContentBrowserClient::GetSandboxedStorageServiceDataDirectory() {
 std::string ShellContentBrowserClient::GetUserAgent() {
   // Must contain a user agent string for version sniffing. For example,
   // pluginless WebRTC Hangouts checks the Chrome version number.
-  return content::BuildUserAgentFromProduct("Chrome/" PRODUCT_VERSION);
+  return embedder_support::GetUserAgent();
 }
 
 std::unique_ptr<ShellBrowserMainParts>

@@ -34,6 +34,7 @@
 #include "base/values.h"
 #include "components/cbor/writer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
@@ -88,6 +89,7 @@ const uint8_t kTestPublicKey[] = {
 };
 
 const uint8_t kKeyId = 3;
+const char kKeyIdStr[] = "03";
 
 // Helper to create a CompressionGroupResult given all field values.
 // `compression_group_data` is a string that will be CBOR encoded to form the
@@ -274,13 +276,13 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchBiddingSignals(
-        url_loader_factory_.get(), kDefaultMainFrameOrigin,
+        url_loader_factory_.get(), FrameTreeNodeId(), kDefaultMainFrameOrigin,
         network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
         GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
-            kKeyId},
+            kKeyIdStr},
         compression_groups,
         base::BindLambdaForTesting(
             [&](TrustedSignalsFetcher::SignalsFetchResult result) {
@@ -305,13 +307,13 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchScoringSignals(
-        url_loader_factory_.get(), kDefaultMainFrameOrigin,
+        url_loader_factory_.get(), FrameTreeNodeId(), kDefaultMainFrameOrigin,
         network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
         GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
-            kKeyId},
+            kKeyIdStr},
         compression_groups,
         base::BindLambdaForTesting(
             [&](TrustedSignalsFetcher::SignalsFetchResult result) {
@@ -2368,13 +2370,13 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsIsolationInfo) {
   network::TestURLLoaderFactory url_loader_factory;
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchBiddingSignals(
-      &url_loader_factory, kDefaultMainFrameOrigin,
+      &url_loader_factory, FrameTreeNodeId(), kDefaultMainFrameOrigin,
       network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
       GetScriptOrigin(), TrustedBiddingSignalsUrl(),
       BiddingAndAuctionServerKey{
           std::string(reinterpret_cast<const char*>(kTestPublicKey),
                       sizeof(kTestPublicKey)),
-          kKeyId},
+          kKeyIdStr},
       CreateBasicBiddingSignalsRequest(),
       base::BindLambdaForTesting(
           [](TrustedSignalsFetcher::SignalsFetchResult result) {
@@ -2405,13 +2407,13 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsIsolationInfo) {
   network::TestURLLoaderFactory url_loader_factory;
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchScoringSignals(
-      &url_loader_factory, kDefaultMainFrameOrigin,
+      &url_loader_factory, FrameTreeNodeId(), kDefaultMainFrameOrigin,
       network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
       GetScriptOrigin(), TrustedScoringSignalsUrl(),
       BiddingAndAuctionServerKey{
           std::string(reinterpret_cast<const char*>(kTestPublicKey),
                       sizeof(kTestPublicKey)),
-          kKeyId},
+          kKeyIdStr},
       CreateBasicScoringSignalsRequest(),
       base::BindLambdaForTesting(
           [](TrustedSignalsFetcher::SignalsFetchResult result) {
@@ -2463,13 +2465,13 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsClientSecurityState) {
       network::TestURLLoaderFactory url_loader_factory;
       TrustedSignalsFetcher trusted_signals_fetcher;
       trusted_signals_fetcher.FetchScoringSignals(
-          &url_loader_factory, kDefaultMainFrameOrigin, ip_address_space,
-          network_partition_nonce_, GetScriptOrigin(),
+          &url_loader_factory, FrameTreeNodeId(), kDefaultMainFrameOrigin,
+          ip_address_space, network_partition_nonce_, GetScriptOrigin(),
           TrustedScoringSignalsUrl(),
           BiddingAndAuctionServerKey{
               std::string(reinterpret_cast<const char*>(kTestPublicKey),
                           sizeof(kTestPublicKey)),
-              kKeyId},
+              kKeyIdStr},
           CreateBasicScoringSignalsRequest(),
           base::BindLambdaForTesting(
               [](TrustedSignalsFetcher::SignalsFetchResult result) {
@@ -2553,14 +2555,15 @@ TEST(TrustedSignalsFetcherTimeoutTest, BiddingSignalsTimeout) {
   TrustedSignalsFetcher::SignalsFetchResult out;
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchBiddingSignals(
-      &url_loader_factory, /*main_frame_origin=*/kSignalsOrigin,
+      &url_loader_factory, FrameTreeNodeId(),
+      /*main_frame_origin=*/kSignalsOrigin,
       network::mojom::IPAddressSpace::kPublic,
       /*network_partition_nonce=*/base::UnguessableToken::Create(),
       kSignalsOrigin, kSignalsUrl,
       BiddingAndAuctionServerKey{
           std::string(reinterpret_cast<const char*>(kTestPublicKey),
                       sizeof(kTestPublicKey)),
-          kKeyId},
+          kKeyIdStr},
       bidding_signals_request,
       base::BindLambdaForTesting(
           [&](TrustedSignalsFetcher::SignalsFetchResult result) {

@@ -1730,13 +1730,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 // rather than token count.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kTimedHTMLParserBudget);
 
-// Treat HTTP header `Expires: "0"` as expired value according section 5.3 on
-// RFC 9111.
-// TODO(https://crbug.com/853508): Remove after the bug fix will go well for a
-// while on stable channels.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUACHOverrideBlank);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

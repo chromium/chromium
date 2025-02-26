@@ -114,7 +114,9 @@ class DBSCSessionStorePerfTest : public testing::Test {
                          std::move(scope),
                          std::move(cookie_credentials),
                          GenerateNewKey()};
-    std::unique_ptr<Session> session = Session::CreateIfValid(params);
+    auto session_or_error = Session::CreateIfValid(params);
+    ASSERT_TRUE(session_or_error.has_value());
+    std::unique_ptr<Session> session = std::move(*session_or_error);
     ASSERT_TRUE(session);
 
     store_->SaveSession(SchemefulSite(GURL(url_str)), *session);

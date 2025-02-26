@@ -605,7 +605,7 @@ void AuthDialogContentsView::AddActionButtonsView() {
                               base::Unretained(this)),
           l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_HELP),
           views::style::CONTEXT_BUTTON));
-  help_button_->SetEnabledTextColorIds(kColorAshTextColorPrimary);
+  help_button_->SetEnabledTextColors(kColorAshTextColorPrimary);
 
   auto* spacing = action_view_container_->AddChildView(
       std::make_unique<NonAccessibleView>());

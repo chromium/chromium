@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
@@ -51,6 +50,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_gfx.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_skia.h"
@@ -667,7 +667,7 @@ ScriptPromise<ImageBitmap> ImageBitmap::CreateAsync(
     auto affineTransform =
         input->CurrentFrameOrientation().TransformFromDefault(
             gfx::SizeF(draw_dst_rect.size()));
-    canvas->concat(AffineTransformToSkM44(affineTransform));
+    canvas->concat(affineTransform.ToSkM44());
     if (input->CurrentFrameOrientation().UsesWidthAsHeight()) {
       draw_dst_rect.set_size(gfx::TransposeSize(draw_dst_rect.size()));
     }

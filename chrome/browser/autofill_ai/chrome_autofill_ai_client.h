@@ -46,10 +46,11 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   bool IsUserEligible() override;
   autofill::FormStructure* GetCachedFormStructure(
       const autofill::FormGlobalId& form_id) override;
-  void ShowSaveAutofillAiBubble(
+  void ShowSaveOrUpdateBubble(
       autofill::EntityInstance new_entity,
       std::optional<autofill::EntityInstance> old_entity,
-      SavePromptAcceptanceCallback save_prompt_acceptance_callback) override;
+      SaveOrUpdatePromptResultCallback save_prompt_acceptance_callback)
+      override;
 
   void SetModelExecutorForTesting(
       std::unique_ptr<autofill_ai::AutofillAiModelExecutor> model_executor) {

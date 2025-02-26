@@ -165,7 +165,7 @@ class GifsButton : public views::LabelButton {
         .SetCallback(base::BindRepeating(&GifsButton::OnButtonPressed,
                                          base::Unretained(this))
                          .Then(std::move(pressed_callback)))
-        .SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface)
+        .SetEnabledTextColors(cros_tokens::kCrosSysOnSurface)
         .SetImageLabelSpacing(kGifsButtonIconLabelSpacing)
         .BuildChildren();
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(

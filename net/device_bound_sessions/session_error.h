@@ -10,18 +10,27 @@
 namespace net::device_bound_sessions {
 
 struct NET_EXPORT SessionError {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(DeviceBoundSessionError)
   enum class ErrorType {
     kSuccess = 0,  // Only used for metrics, a session error will never have
                    // this error type.
     kKeyError = 1,
     kSigningError = 2,
-    kEndpointUnreachable = 3,  // Includes both net errors and HTTP errors.
-    kServerRequestedTermination = 4,
-    // TODO(crbug.com/388557900): This bucket is very broad. Divide it
-    // into more actionable error types.
-    kInvalidSessionConfig = 6,
-    kTooManyChallenges = 7,
+    kNetError = 3,
+    kHttpError = 4,
+    kServerRequestedTermination = 5,
+    kInvalidConfigJson = 6,
+    kInvalidSessionId = 7,
+    kInvalidCredentials = 8,
+    kInvalidChallenge = 9,
+    kTooManyChallenges = 10,
+    kInvalidFetcherUrl = 11,
+    kInvalidRefreshUrl = 12,
+    kMaxValue = kInvalidRefreshUrl
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionError)
 
   SessionError(ErrorType type,
                net::SchemefulSite site,

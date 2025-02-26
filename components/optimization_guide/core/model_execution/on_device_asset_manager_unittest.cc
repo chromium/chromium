@@ -112,7 +112,7 @@ class OnDeviceAssetManagerTest : public testing::Test {
   void CreateAssetManager() {
     asset_manager_ = std::make_unique<OnDeviceAssetManager>(
         &local_state_, service_controller_->GetWeakPtr(),
-        component_manager_.get()->GetWeakPtr(), &model_provider_, );
+        component_manager_.get()->GetWeakPtr(), &model_provider_);
   }
 
   OnDeviceAssetManager* asset_manager() { return asset_manager_.get(); }

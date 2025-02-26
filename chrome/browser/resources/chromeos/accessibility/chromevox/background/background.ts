@@ -24,6 +24,7 @@ import type {AbstractEarcons} from './abstract_earcons.js';
 import {AutoScrollHandler} from './auto_scroll_handler.js';
 import {BrailleBackground} from './braille/braille_background.js';
 import {BrailleCommandHandler} from './braille/braille_command_handler.js';
+import {CaptionsHandler} from './captions_handler.js';
 import {ChromeVox} from './chromevox.js';
 import {ChromeVoxRange} from './chromevox_range.js';
 import {ChromeVoxState} from './chromevox_state.js';
@@ -104,6 +105,7 @@ export class Background extends ChromeVoxState {
     AutoScrollHandler.init();
     BackgroundKeyboardHandler.init();
     BrailleCommandHandler.init();
+    CaptionsHandler.init();
     ClipboardHandler.init();
     CommandHandler.init();
     DownloadHandler.init();

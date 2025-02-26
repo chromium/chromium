@@ -30,6 +30,7 @@
 #include "cc/paint/skottie_wrapper.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -500,7 +501,7 @@ void PaintOpWriter::Write(const SkHighContrastConfig& config) {
 void PaintOpWriter::Write(const sk_sp<SkData>& data) {
   if (data.get() && data->size()) {
     WriteSize(data->size());
-    WriteData(base::span<const uint8_t>(data->bytes(), data->size()));
+    WriteData(skia::as_byte_span(*data));
   } else {
     // Differentiate between nullptr and valid but zero size.  It's not clear
     // that this happens in practice, but seems better to be consistent.

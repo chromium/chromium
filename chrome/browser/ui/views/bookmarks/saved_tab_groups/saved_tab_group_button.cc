@@ -227,8 +227,7 @@ void SavedTabGroupButton::SetTextProperties(const SavedTabGroup& group) {
 }
 
 void SavedTabGroupButton::UpdateButtonLayout() {
-  SetEnabledTextColorIds(
-      GetSavedTabGroupForegroundColorId(tab_group_color_id_));
+  SetEnabledTextColors(GetSavedTabGroupForegroundColorId(tab_group_color_id_));
   SetBackground(views::CreateThemedRoundedRectBackground(
       GetTabGroupBookmarkColorId(tab_group_color_id_), kButtonRadius));
 

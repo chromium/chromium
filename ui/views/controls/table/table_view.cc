@@ -517,6 +517,16 @@ void TableView::SetVisibleColumnWidth(size_t index, int width) {
   UpdateVirtualAccessibilityChildrenBounds();
 }
 
+std::vector<int> TableView::GetVisibleColumnIds() const {
+  std::vector<int> visible_column_ids;
+  visible_column_ids.reserve(visible_columns_.size());
+  std::ranges::transform(visible_columns_,
+                         std::back_inserter(visible_column_ids),
+                         [](const auto& ir) { return ir.column.id; });
+
+  return visible_column_ids;
+}
+
 size_t TableView::ModelToView(size_t model_index) const {
   if (!GetIsSorted()) {
     return model_index;
@@ -839,8 +849,8 @@ void TableView::UpdateHover(std::optional<gfx::Point> view_coordinates) {
                           static_cast<float>(row_height_);
   const int row = static_cast<int>(std::floor(row_float));
   const bool in_bounds = row >= 0 && static_cast<size_t>(row) < GetRowCount();
-  hovered_rows_ = in_bounds ? std::make_optional<GroupRange>(GetGroupRange(
-                                  ViewToModel(static_cast<size_t>(row))))
+  hovered_rows_ = in_bounds ? std::make_optional<GroupRange>(
+                                  GetGroupRange(static_cast<size_t>(row)))
                             : std::nullopt;
 
   if (previous_hovered_rows != hovered_rows_) {
@@ -1713,7 +1723,6 @@ void TableView::SetActiveVisibleColumnIndex(std::optional<size_t> index) {
     UpdateAccessibleSelectionForColumnIndex(
         active_visible_column_index_.value());
   }
-
   UpdateFocusRings();
   ScheduleUpdateAccessibilityFocusIfNeeded();
   OnPropertyChanged(&active_visible_column_index_, kPropertyEffectsNone);
@@ -1920,8 +1929,12 @@ void TableView::UpdateAccessibleNameForIndex(size_t start_view_index,
     // We only need to update the name if the column is visible.
     if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
       if (visible_columns_.size()) {
-        ax_row->SetName(
-            model_->GetText(model_index, GetVisibleColumn(0).column.id));
+        const std::u16string& new_name =
+            model()->GetAXNameForRow(model_index, GetVisibleColumnIds());
+
+        if (ax_row->GetCachedName() != new_name) {
+          ax_row->SetName(new_name);
+        }
       }
     }
 

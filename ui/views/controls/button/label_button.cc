@@ -33,6 +33,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/painter.h"
@@ -145,22 +146,12 @@ void LabelButton::ShrinkDownThenClearText() {
   ClearTextIfShrunkDown();
 }
 
-void LabelButton::SetTextColor(ButtonState for_state, SkColor color) {
+void LabelButton::SetTextColor(ButtonState for_state, ui::ColorVariant color) {
   button_state_colors_[for_state] = color;
   if (for_state == STATE_DISABLED) {
     label_->SetDisabledColor(color);
   } else if (for_state == GetState()) {
     label_->SetEnabledColor(color);
-  }
-  explicitly_set_colors_[for_state] = true;
-}
-
-void LabelButton::SetTextColorId(ButtonState for_state, ui::ColorId color_id) {
-  button_state_colors_[for_state] = color_id;
-  if (for_state == STATE_DISABLED) {
-    label_->SetDisabledColor(color_id);
-  } else if (for_state == GetState()) {
-    label_->SetEnabledColor(color_id);
   }
   explicitly_set_colors_[for_state] = true;
 }
@@ -195,8 +186,8 @@ void LabelButton::SetFocusRingCornerRadius(float radius) {
   SetFocusRingCornerRadii(gfx::RoundedCornersF(radius));
 }
 
-void LabelButton::SetEnabledTextColors(std::optional<SkColor> color) {
-  if (color.has_value()) {
+void LabelButton::SetEnabledTextColors(std::optional<ui::ColorVariant> color) {
+  if (color) {
     for (auto state : kEnabledStates) {
       SetTextColor(state, color.value());
     }
@@ -206,12 +197,6 @@ void LabelButton::SetEnabledTextColors(std::optional<SkColor> color) {
     explicitly_set_colors_[state] = false;
   }
   ResetColorsFromNativeTheme();
-}
-
-void LabelButton::SetEnabledTextColorIds(ui::ColorId color_id) {
-  for (auto state : kEnabledStates) {
-    SetTextColorId(state, color_id);
-  }
 }
 
 SkColor LabelButton::GetCurrentTextColor() const {
@@ -705,7 +690,7 @@ void LabelButton::ResetColorsFromNativeTheme() {
 
   for (size_t state = STATE_NORMAL; state < STATE_COUNT; ++state) {
     if (!explicitly_set_colors_[state]) {
-      SetTextColorId(static_cast<ButtonState>(state), color_ids[state]);
+      SetTextColor(static_cast<ButtonState>(state), color_ids[state]);
       explicitly_set_colors_[state] = false;
     }
   }

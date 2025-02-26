@@ -957,9 +957,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
         mHistogramRecorder.beginAccessibilityNodeInfoConstruction();
 
-        if (mCurrentRootId == View.NO_ID) {
-            mCurrentRootId = WebContentsAccessibilityImplJni.get().getRootId(mNativeObj);
-        }
+        // This was previously behind a check `mCurrentRootId == View.NO_ID`, but this was causing
+        // issues in navigation. The reason for the check was to reduce JNI calls per node created,
+        // but caching this value Java-side may not be necessary.
+        // TODO(mschillaci): Revisit the need for this member variable, see: crbug.com/396447488.
+        mCurrentRootId = WebContentsAccessibilityImplJni.get().getRootId(mNativeObj);
 
         if (virtualViewId == View.NO_ID) {
             return createNodeForHost(mCurrentRootId);

@@ -89,6 +89,14 @@ class PageActionUiTestBase {
     page_action_controller()->ShowSuggestionChip(action_id);
   }
 
+  PageActionView* GetTranslatePageActionView() const {
+    return GetPageActionView(kActionShowTranslate);
+  }
+
+  PageActionView* GetMemorySaverPageActionView() const {
+    return GetPageActionView(kActionShowMemorySaverChip);
+  }
+
   void ShowPageAction(actions::ActionId action_id) const {
     EnsurePageActionEnabled(kActionShowTranslate);
     page_action_controller()->Show(action_id);
@@ -99,6 +107,24 @@ class PageActionUiTestBase {
   void ShowTestSuggestionChip() const {
     ShowPageAction(kActionShowTranslate);
     ShowSuggestionChip(kActionShowTranslate);
+  }
+
+  void ShowTranslatePageActionIcon() const {
+    ShowPageAction(kActionShowTranslate);
+  }
+
+  void ShowTranslateSuggestionChip() const {
+    ShowPageAction(kActionShowTranslate);
+    ShowSuggestionChip(kActionShowTranslate);
+  }
+
+  void ShowMemorySaverPageActionIcon() const {
+    ShowSuggestionChip(kActionShowMemorySaverChip);
+  }
+
+  void ShowMemorySaverSuggestionChip() const {
+    ShowPageAction(kActionShowMemorySaverChip);
+    ShowSuggestionChip(kActionShowMemorySaverChip);
   }
 
   // Dynamically adjust the available space in the location bar by setting
@@ -246,6 +272,62 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   EXPECT_TRUE(IsAtMinimumSize(view));
 }
 
+// Tests that toggling the suggestion chip state for two actions reorders their
+// views appropriately.
+IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
+                       SuggestionChipReordersMultipleActions) {
+  PageActionContainerView* container = page_action_container();
+  ASSERT_TRUE(container);
+
+  PageActionView* memory_saver_view = GetMemorySaverPageActionView();
+  ASSERT_TRUE(memory_saver_view);
+  PageActionView* translate_view = GetTranslatePageActionView();
+  ASSERT_TRUE(translate_view);
+
+  auto initial_memory_saver_index = container->GetIndexOf(memory_saver_view);
+  ASSERT_TRUE(initial_memory_saver_index.has_value());
+  auto initial_translate_index = container->GetIndexOf(translate_view);
+  ASSERT_TRUE(initial_translate_index.has_value());
+
+  // For this test, we assume that the translate page action appears before the
+  // memory saver page action.
+  EXPECT_LT(initial_translate_index.value(),
+            initial_memory_saver_index.value());
+
+  // Step 1: Activate suggestion chip for the translate action only.
+  ShowTranslateSuggestionChip();
+
+  // Expect translate view to move to the front (index 0).
+  {
+    auto new_translate_index = container->GetIndexOf(translate_view);
+    ASSERT_TRUE(new_translate_index.has_value());
+    EXPECT_EQ(new_translate_index.value(), 0u);
+  }
+  // The memory saver should at the initial index.
+  {
+    auto new_memory_saver_index = container->GetIndexOf(memory_saver_view);
+    ASSERT_TRUE(new_memory_saver_index.has_value());
+    EXPECT_EQ(new_memory_saver_index.value(),
+              initial_memory_saver_index.value());
+  }
+
+  // Step 2: Activate suggestion chip for the memory saver page action as well.
+  ShowMemorySaverSuggestionChip();
+
+  // Now the memory saver view should move to the front.
+  {
+    auto new_memory_saver_index = container->GetIndexOf(memory_saver_view);
+    ASSERT_TRUE(new_memory_saver_index.has_value());
+    EXPECT_EQ(new_memory_saver_index.value(), 0u);
+  }
+  // And the translate view should now be at index 1.
+  {
+    auto new_translate_index = container->GetIndexOf(translate_view);
+    ASSERT_TRUE(new_translate_index.has_value());
+    EXPECT_EQ(new_translate_index.value(), 1u);
+  }
+}
+
 class PageActionPixelTestBase : public UiBrowserTest,
                                 public PageActionUiTestBase {
  public:
@@ -373,6 +455,50 @@ class PageActionPixelShowChipReducedTest : public PageActionPixelTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(PageActionPixelShowChipReducedTest, InvokeUi_Default) {
+  ShowAndVerifyUi();
+}
+
+class PageActionPixelReorderTest : public PageActionPixelTestBase {
+ public:
+  PageActionPixelReorderTest() = default;
+  PageActionPixelReorderTest(const PageActionPixelReorderTest&) = delete;
+  PageActionPixelReorderTest& operator=(const PageActionPixelReorderTest&) =
+      delete;
+  ~PageActionPixelReorderTest() override = default;
+
+  // UiBrowserTest:
+  void ShowUi(const std::string& name) override {
+    ShowMemorySaverPageActionIcon();
+
+    // Now, activate the suggestion chip for the translate action.
+    ShowSuggestionChip(kActionShowTranslate);
+
+    // Run any pending layout tasks.
+    PageActionPixelTestBase::ShowUi(name);
+  }
+
+  bool VerifyUi() override {
+    PageActionContainerView* container = page_action_container();
+    PageActionView* memory_saver_view = GetMemorySaverPageActionView();
+    PageActionView* translate_view = GetTranslatePageActionView();
+
+    // Get the current indices as optionals.
+    auto memory_saver_index = container->GetIndexOf(memory_saver_view);
+    auto translate_index = container->GetIndexOf(translate_view);
+    if (!memory_saver_index.has_value() || !translate_index.has_value()) {
+      return false;
+    }
+
+    // Expect the Translate action (suggestion chip) to be at index 0,
+    // and the memory saver page action to be at index 1.
+    EXPECT_EQ(translate_index.value(), 0u);
+    EXPECT_EQ(memory_saver_index.value(), 1u);
+
+    return true;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PageActionPixelReorderTest, InvokeUi_Default) {
   ShowAndVerifyUi();
 }
 

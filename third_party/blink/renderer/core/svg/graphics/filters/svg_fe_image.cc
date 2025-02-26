@@ -186,7 +186,7 @@ sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
 
   PaintRecorder paint_recorder;
   cc::PaintCanvas* canvas = paint_recorder.beginRecording();
-  canvas->concat(AffineTransformToSkM44(transform));
+  canvas->concat(transform.ToSkM44());
   {
     PaintRecordBuilder builder;
     SVGObjectPainter(layout_object, nullptr)

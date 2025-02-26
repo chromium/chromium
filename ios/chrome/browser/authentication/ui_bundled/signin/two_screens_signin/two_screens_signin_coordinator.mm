@@ -180,6 +180,7 @@ using base::UserMetricsAction;
     case kDefaultBrowserPromo:
     case kChoice:
     case kDockingPromo:
+    case kBestFeatures:
     case kStepsCompleted:
       break;
   }

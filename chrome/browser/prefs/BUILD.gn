@@ -129,6 +129,10 @@ source_set("impl") {
     "//services/preferences/tracked",
   ]
 
+  if (enable_background_mode) {
+    deps += [ "//chrome/browser/background/extensions:extensions" ]
+  }
+
   if (is_chromeos) {
     deps += [
       "//ash",

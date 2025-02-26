@@ -68,7 +68,7 @@ class SeeAllButton : public views::LabelButton {
         ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
                                        cros_tokens::kCrosSysOnSurface));
     SetImageLabelSpacing(kSeeAllIconLabelSpacing);
-    SetTextColorId(views::Button::STATE_NORMAL, cros_tokens::kCrosSysOnSurface);
+    SetTextColor(views::Button::STATE_NORMAL, cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label());
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);

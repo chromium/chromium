@@ -24,7 +24,6 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
@@ -35,7 +34,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_mediator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_metrics_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_controller_delegate.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #import "base/command_line.h"
@@ -178,7 +177,8 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 
 @interface PasswordDetailsMediator () <
     PasswordCheckObserver,
-    PasswordDetailsTableViewControllerDelegate> {
+    PasswordDetailsTableViewControllerDelegate,
+    SyncObserverModelBridge> {
   // Password Check manager.
   scoped_refptr<IOSChromePasswordCheckManager> _manager;
 
@@ -193,6 +193,9 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 
   // Delegate for this mediator.
   id<PasswordDetailsMediatorDelegate> _delegate;
+
+  // Sync observer.
+  std::unique_ptr<SyncObserverBridge> _syncObserver;
 }
 
 // Dictionary of usernames of a same domain. Key: domain and value: NSSet of
@@ -211,28 +214,30 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 
 @implementation PasswordDetailsMediator
 
-- (instancetype)
-    initWithPasswords:(const std::vector<CredentialUIEntry>&)credentials
-          displayName:(NSString*)displayName
-              profile:(ProfileIOS*)profile
-              context:(DetailsContext)context
-             delegate:(id<PasswordDetailsMediatorDelegate>)delegate {
-  DCHECK(profile);
-  DCHECK(!credentials.empty());
+- (instancetype)initWithPasswords:
+                    (const std::vector<CredentialUIEntry>&)credentials
+                      displayName:(NSString*)displayName
+                          context:(DetailsContext)context
+                         delegate:(id<PasswordDetailsMediatorDelegate>)delegate
+             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+                      prefService:(PrefService*)prefService
+                      syncService:(syncer::SyncService*)syncService {
+  CHECK(!credentials.empty());
 
   self = [super init];
   if (!self) {
     return nil;
   }
 
-  _manager = IOSChromePasswordCheckManagerFactory::GetForProfile(profile).get();
+  _manager = manager;
   _passwordCheckObserver =
       std::make_unique<PasswordCheckObserverBridge>(self, _manager.get());
   _credentials = credentials;
   _displayName = displayName;
   _context = context;
-  _prefService = profile->GetPrefs();
-  _syncService = SyncServiceFactory::GetForProfile(profile);
+  _prefService = prefService;
+  _syncService = syncService;
+  _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
   _delegate = delegate;
 
   return self;
@@ -513,6 +518,19 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   _passwordCheckObserver.reset();
 }
 
+#pragma mark - SyncObserverModelBridge
+
+- (void)onSyncStateChanged {
+  if ([self shouldDisplayShareButton]) {
+    [_consumer setupRightShareButton:
+                   _prefService->GetBoolean(
+                       password_manager::prefs::kPasswordSharingEnabled)];
+  } else {
+    [_delegate stopPasswordSharingFlowIfActive];
+    [_consumer hideShareButton];
+  }
+}
+
 #pragma mark - Private
 
 - (NSMutableDictionary<NSString*, NSMutableSet<NSString*>*>*)
@@ -631,9 +649,8 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
 }
 
 // Returns YES if all of the following conditions are met:
-// * User is syncing or signed in with account storage enabled.
-// * Password sending feature is enabled.
 // * Build is branded (bypassed with a command line switch in EG tests).
+// * User is syncing or signed in with account storage enabled.
 - (BOOL)shouldDisplayShareButton {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(

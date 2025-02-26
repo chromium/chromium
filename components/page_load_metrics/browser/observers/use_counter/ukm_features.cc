@@ -457,6 +457,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kCredentialManagerGetPasswordCredential,
           WebFeature::kGeolocationWouldSucceedWhenAdScriptInStack,
           WebFeature::kAdScriptInStackOnWatchGeoLocation,
+          WebFeature::kCrossPartitionSameOriginBlobURLFetch,
       }));
   return *opt_in_features;
 }

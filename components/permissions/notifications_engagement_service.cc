@@ -143,11 +143,26 @@ int NotificationsEngagementService::GetDailyAverageNotificationCount(
 
 // static
 int NotificationsEngagementService::GetDailyAverageNotificationCount(
-    ContentSettingPatternSource setting) {
+    const ContentSettingPatternSource& setting) {
   if (!setting.setting_value.is_dict()) {
     return 0;
   }
   return GetDailyAverageNotificationCount(setting.setting_value.GetDict());
+}
+
+// static
+std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
+NotificationsEngagementService::GetNotificationCountMapPerPatternPair(
+    const HostContentSettingsMap* hcsm) {
+  std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
+      result;
+  for (auto& item : hcsm->GetSettingsForOneType(
+           ContentSettingsType::NOTIFICATION_INTERACTIONS)) {
+    result[std::pair{item.primary_pattern, item.secondary_pattern}] =
+        GetDailyAverageNotificationCount(item);
+  }
+
+  return result;
 }
 
 void NotificationsEngagementService::IncrementCounts(const GURL& url,

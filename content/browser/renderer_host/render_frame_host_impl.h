@@ -4235,7 +4235,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // counter.
   void ReportBlockingCrossPartitionBlobURL(
       const GURL& blocked_url,
-      blink::mojom::PartitioningBlobURLInfo info);
+      std::optional<blink::mojom::PartitioningBlobURLInfo> info);
 
   // For frames and main thread worklets we use a navigation-associated
   // interface and bind `receiver` to a `BlobURLStore` instance, which

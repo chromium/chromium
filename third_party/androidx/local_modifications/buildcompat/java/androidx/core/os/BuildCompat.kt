@@ -109,9 +109,9 @@ public object BuildCompat {
     @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.O)
     @Deprecated(
         message =
-        "Android O is a finalized release and this method is no longer necessary. " +
-          "It will be removed in a future release of this library. Instead use " +
-          "`Build.VERSION.SDK_INT >= 26`.",
+            "Android O is a finalized release and this method is no longer necessary. " +
+                "It will be removed in a future release of this library. Instead use " +
+                "`Build.VERSION.SDK_INT >= 26`.",
         ReplaceWith("android.os.Build.VERSION.SDK_INT >= 26")
     )
     public fun isAtLeastO(): Boolean = Build.VERSION.SDK_INT >= 26
@@ -302,8 +302,8 @@ public object BuildCompat {
     @ChecksSdkIntAtLeast(api = 36, codename = "Baklava")
     public fun isAtLeastB(): Boolean =
         Build.VERSION.SDK_INT >= 36 ||
-          (Build.VERSION.SDK_INT >= 35 &&
-            isAtLeastPreReleaseCodename("Baklava", Build.VERSION.CODENAME))
+            (Build.VERSION.SDK_INT >= 35 &&
+                isAtLeastPreReleaseCodename("Baklava", Build.VERSION.CODENAME))
 
     /**
      * Experimental feature set for pre-release SDK checks.

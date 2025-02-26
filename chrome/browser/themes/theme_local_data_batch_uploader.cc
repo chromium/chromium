@@ -8,17 +8,51 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/themes/theme_service_utils.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
+#include "chrome/browser/ui/webui/cr_components/theme_color_picker/customize_chrome_colors.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
 #include "components/sync/service/local_data_description.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
-constexpr char kThemesLocalDataItemModelId[] = "current-theme";
+std::string BuildTitle(const sync_pb::ThemeSpecifics& specifics) {
+  if (specifics.use_custom_theme()) {
+    return specifics.custom_theme_name();
+  }
+  if (specifics.has_ntp_background() &&
+      !specifics.ntp_background().attribution_line_1().empty()) {
+    return specifics.ntp_background().attribution_line_1();
+  }
+  if (specifics.has_grayscale_theme_enabled()) {
+    return l10n_util::GetStringUTF8(IDS_NTP_CUSTOMIZE_GREY_DEFAULT_LABEL);
+  }
+  if (specifics.has_user_color_theme()) {
+    auto it = std::ranges::find_if(
+        kDynamicCustomizeChromeColors,
+        [&](const DynamicColorInfo& dynamic_color) {
+          return dynamic_color.color == specifics.user_color_theme().color() &&
+                 dynamic_color.variant ==
+                     ProtoEnumToBrowserColorVariant(
+                         specifics.user_color_theme().browser_color_variant());
+        });
+    if (it != kDynamicCustomizeChromeColors.end()) {
+      return l10n_util::GetStringFUTF8(IDS_NTP_COLORS_BATCH_UPLOAD_DESCRIPTION,
+                                       l10n_util::GetStringUTF16(it->label_id));
+    }
+  }
+  return l10n_util::GetStringUTF8(IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL);
+}
 }  // namespace
+
+// static
+const char ThemeLocalDataBatchUploader::kThemesLocalDataItemModelId[] =
+    "current-theme";
 
 ThemeLocalDataBatchUploader::ThemeLocalDataBatchUploader(
     ThemeLocalDataBatchUploaderDelegate* delegate)
@@ -31,10 +65,12 @@ void ThemeLocalDataBatchUploader::GetLocalDataDescription(
   syncer::LocalDataDescription desc;
   desc.type = syncer::THEMES;
   // Avoid offering batch upload for local default theme.
-  if (base::FeatureList::IsEnabled(syncer::kThemesBatchUpload) &&
-      HasNonDefaultSavedLocalTheme()) {
+  if (std::optional<sync_pb::ThemeSpecifics> specifics =
+          GetNonDefaultSavedLocalTheme();
+      base::FeatureList::IsEnabled(syncer::kThemesBatchUpload) && specifics) {
     syncer::LocalDataItemModel item;
     item.id = kThemesLocalDataItemModelId;
+    item.title = BuildTitle(*specifics);
     desc.local_data_models.push_back(std::move(item));
   }
   std::move(callback).Run(desc);
@@ -43,7 +79,7 @@ void ThemeLocalDataBatchUploader::GetLocalDataDescription(
 void ThemeLocalDataBatchUploader::TriggerLocalDataMigration() {
   CHECK(base::FeatureList::IsEnabled(syncer::kThemesBatchUpload));
   // Avoid migrating local default theme.
-  if (HasNonDefaultSavedLocalTheme()) {
+  if (GetNonDefaultSavedLocalTheme()) {
     delegate_->ApplySavedLocalThemeIfExistsAndClear();
   }
 }
@@ -58,8 +94,11 @@ void ThemeLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
   TriggerLocalDataMigration();
 }
 
-bool ThemeLocalDataBatchUploader::HasNonDefaultSavedLocalTheme() const {
+std::optional<sync_pb::ThemeSpecifics>
+ThemeLocalDataBatchUploader::GetNonDefaultSavedLocalTheme() const {
   std::optional<sync_pb::ThemeSpecifics> specifics =
       delegate_->GetSavedLocalTheme();
-  return specifics && ThemeSyncableService::HasNonDefaultTheme(*specifics);
+  return (specifics && ThemeSyncableService::HasNonDefaultTheme(*specifics))
+             ? specifics
+             : std::nullopt;
 }

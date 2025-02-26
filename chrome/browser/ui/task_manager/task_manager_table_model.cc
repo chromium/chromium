@@ -23,6 +23,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -708,6 +709,23 @@ int TaskManagerTableModel::CompareValues(size_t row1,
     default:
       NOTREACHED();
   }
+}
+
+std::u16string TaskManagerTableModel::GetAXNameForRow(
+    size_t row,
+    const std::vector<int>& visible_column_ids) {
+  DCHECK_LT(row, RowCount());
+  DCHECK(!visible_column_ids.empty());
+
+  std::vector<std::u16string> column_names;
+  column_names.reserve(visible_column_ids.size());
+
+  std::ranges::transform(
+      visible_column_ids, std::back_inserter(column_names),
+      [this, row](const auto& ir) { return GetText(row, ir); });
+  std::erase_if(column_names, [](const auto& ir) { return ir.empty(); });
+
+  return base::JoinString(column_names, u" ");
 }
 
 void TaskManagerTableModel::GetRowsGroupRange(size_t row_index,

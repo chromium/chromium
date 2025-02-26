@@ -331,7 +331,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_signature = {0x20, 0x21, 0x22, 0x23},
             .expected_browser_bound_key = {0x50, 0x51, 0x52, 0x53},
             .test_description = "UsingBrowserBoundPubKeyCredParams",
-        }, ),
+        }),
     [](const ::testing::TestParamInfo<CredentialTestParams>& info) {
       return info.param.test_description;
     });

@@ -136,9 +136,9 @@
                   syncStatus.firstSetupInProgress,
                   prefs.signin.allowed_on_next_startup.value)]]"
           hidden="[[shouldShowAvatarRow_]]">
-          [[getSignInLabel_(
-            '$i18nPolymer{peopleSignIn}',
-            '$i18nPolymer{peopleSignInNoAccountAwareness}')]]
+        [[getSignInLabel_(
+          '$i18nPolymer{peopleSignIn}',
+          '$i18nPolymer{peopleSignInNoAccountAwareness}')]]
       </cr-button>
     </div>
     <template is="dom-if" if="[[shouldShowAvatarRow_]]">
@@ -170,7 +170,7 @@
                 syncStatus.statusAction, syncStatus.disabled)]]
           </div>
           <div class="secondary text-elide"
-          hidden="[[shouldHideSubtitleWithAccountInfoText_(syncStatus)]]">
+              hidden="[[shouldHideSubtitleWithAccountInfoText_(syncStatus)]]">
             [[getAccountLabel_(
                 '$i18nPolymer{signedInTo}',
                 '$i18nPolymer{syncingTo}',
@@ -180,12 +180,12 @@
                 shownAccount_.isPrimaryAccount)]]
           </div>
           <div class="secondary"
-          hidden="[[!shouldHideSubtitleWithAccountInfoText_(syncStatus)]]">
-          [[getAvatarSubtitleLabel_(
-            '$i18nPolymer{accountAwareRowSubtitle}',
-            '$i18nPolymer{pendingStateAvatarRowSubtitle}',
-            shownAccount_.email,
-            this.syncStatus.signedInState)]]
+              hidden="[[!shouldHideSubtitleWithAccountInfoText_(syncStatus)]]">
+            [[getAvatarSubtitleLabel_(
+              '$i18nPolymer{accountAwareRowSubtitle}',
+              '$i18nPolymer{pendingStateAvatarRowSubtitle}',
+              shownAccount_.email,
+              this.syncStatus.signedInState)]]
           </div>
         </div>
         <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
@@ -221,9 +221,9 @@
                 syncStatus.domain, showSetupButtons_)]]"
             on-click="onTurnOffButtonClick_"
             disabled="[[syncStatus.firstSetupInProgress]]">
-            [[getTurnOffSyncLabel_(
-              '$i18nPolymer{turnOffSync}',
-              syncStatus.secondaryButtonActionText)]]
+          [[getTurnOffSyncLabel_(
+            '$i18nPolymer{turnOffSync}',
+            syncStatus.secondaryButtonActionText)]]
         </cr-button>
         <cr-button id="sync-error-button" class="action-button cr-button-gap"
             hidden="[[!shouldShowErrorActionButton_(syncStatus,
@@ -254,7 +254,10 @@
         <div id="signin-paused-buttons"
             hidden="[[!shouldShowSigninPausedButtons_(
                 syncStatus.signinPaused)]]">
-          <cr-button class="cr-button-gap" on-click="onSignoutClick_">
+          <cr-button class="cr-button-gap" id="remove-account-button"
+              hidden="[[shouldHideRemoveAccountButton_(
+                  syncStatus.signedInState)]]"
+              on-click="onSignoutClick_">
             [[getSigninPausedLabel_(
               '$i18n{peopleSignOut}',
               '$i18nPolymer{pendingSecondaryButton}')]]
@@ -278,11 +281,10 @@
               <span>[[item.email]]</span>
             </button>
           </template>
-          <button class="dropdown-item" on-click="onSigninClick_" 
-                  disabled="[[syncStatus.firstSetupInProgress]]" 
+          <button class="dropdown-item" on-click="onSigninClick_"
+                  disabled="[[syncStatus.firstSetupInProgress]]"
                   id="sign-in-item">
-              <cr-icon icon="cr:add" class="account-icon small" alt="">
-              </cr-icon>
+            <cr-icon icon="cr:add" class="account-icon small" alt=""></cr-icon>
             <span>$i18n{useAnotherAccount}</span>
           </button>
           <button class="dropdown-item" on-click="onSignoutClick_"

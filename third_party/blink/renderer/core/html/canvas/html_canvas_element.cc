@@ -757,15 +757,13 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
   did_notify_listeners_for_current_frame_ = false;
 }
 
-void HTMLCanvasElement::DisableAcceleration(
-    std::unique_ptr<CanvasResourceProvider> new_provider_for_testing) {
+void HTMLCanvasElement::DisableAcceleration() {
   DisabledAccelerationCounterSupplement::From(GetDocument())
       .IncrementDisabledCount();
   // Create and configure an unaccelerated CanvasResourceProvider.
   SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
 
-  ReplaceExistingResourceProviderFor2DContext(
-      std::move(new_provider_for_testing));
+  ReplaceExistingResourceProviderFor2DContext();
 
   // We must force a paint invalidation on the canvas even if it's
   // content did not change because it layer was destroyed.
@@ -2034,8 +2032,7 @@ size_t HTMLCanvasElement::GetMemoryUsage() const {
   return base::saturated_cast<size_t>(externally_allocated_memory_);
 }
 
-void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext(
-    std::unique_ptr<CanvasResourceProvider> new_provider_for_testing) {
+void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext() {
   CanvasResourceProvider* old_provider = ResourceProvider();
   if (old_provider == nullptr) {
     return;
@@ -2053,10 +2050,6 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext(
       old_provider->ReleaseRecorder();
   ResetLayer();
   ReplaceResourceProvider(nullptr);
-
-  if (new_provider_for_testing) {
-    ReplaceResourceProvider(std::move(new_provider_for_testing));
-  }
 
   // Bail out if it's not possible to create a new provider.
   CanvasResourceProvider* new_provider =

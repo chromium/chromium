@@ -159,7 +159,8 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
         extension->id(), apps::LaunchContainer::kLaunchContainerNone,
         WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
     params.command_line = *base::CommandLine::ForCurrentProcess();
-    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+    apps::AppServiceProxyFactory::GetForProfile(
+        run_options.profile ? run_options.profile.get() : browser()->profile())
         ->BrowserAppLauncher()
         ->LaunchAppWithParamsForTesting(std::move(params));
   }

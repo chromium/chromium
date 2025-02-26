@@ -71,9 +71,12 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
       const GURL& url,
       const autofill::EntityInstance& entity) const;
 
-  // Run after the user has either accepted, decline or ignored a save prompt.
-  void OnSavePromptAcceptance(
-      AutofillAiClient::SavePromptAcceptanceResult result);
+  // Updates the `EntityDataManager` and the strike databases depending on
+  // whether the prompt was accepted.
+  enum class PromptType { kUpdate, kSave };
+  void HandleSaveOrUpdatePromptResult(
+      PromptType prompt_type,
+      AutofillAiClient::SaveOrUpdatePromptResult result);
 
   void OnReceivedAXTree(const autofill::FormData& form,
                         const autofill::FormFieldData& trigger_field,

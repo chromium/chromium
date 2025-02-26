@@ -271,16 +271,7 @@ BackgroundTracingManagerImpl::BackgroundTracingManagerImpl()
 
 BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() {
   DCHECK_EQ(this, g_background_tracing_manager_impl);
-  if (active_scenario_) {
-    active_scenario_->Abort();
-  } else {
-    for (auto& scenario : enabled_scenarios_) {
-      scenario->Disable();
-    }
-  }
-  for (auto& rule : trigger_rules_) {
-    rule->Uninstall();
-  }
+  DisableScenarios();
   BackgroundTracingManager::SetInstance(nullptr);
   NamedTriggerManager::SetInstance(nullptr);
   g_background_tracing_manager_impl = nullptr;
@@ -438,13 +429,11 @@ void BackgroundTracingManagerImpl::AddMetadataGeneratorFunction() {
 
 bool BackgroundTracingManagerImpl::RequestActivateScenario() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RecordMetric(Metrics::SCENARIO_ACTIVATION_REQUESTED);
   // Multi-scenarios sessions can't be initialized twice.
   DCHECK(field_scenarios_.empty());
+  DCHECK(enabled_scenarios_.empty());
+  RecordMetric(Metrics::SCENARIO_ACTIVATION_REQUESTED);
 
-  if (!enabled_scenarios_.empty()) {
-    return false;
-  }
   // Bail on scenario activation if trigger rules are already setup to be
   // forwarded to system tracing.
   if (!trigger_rules_.empty()) {
@@ -458,6 +447,22 @@ bool BackgroundTracingManagerImpl::RequestActivateScenario() {
     return false;
   }
   return true;
+}
+
+void BackgroundTracingManagerImpl::DisableScenarios() {
+  if (active_scenario_) {
+    enabled_scenarios_.clear();
+    active_scenario_->Abort();
+  } else {
+    for (auto& scenario : enabled_scenarios_) {
+      scenario->Disable();
+    }
+    enabled_scenarios_.clear();
+  }
+  for (auto& rule : trigger_rules_) {
+    rule->Uninstall();
+  }
+  trigger_rules_.clear();
 }
 
 void BackgroundTracingManagerImpl::SetReceiveCallback(
@@ -510,9 +515,6 @@ bool BackgroundTracingManagerImpl::InitializeFieldScenarios(
       (data_filtering == ANONYMIZE_DATA_AND_FILTER_PACKAGE_NAME);
   InitializeTraceReportDatabase();
 
-  // Guaranteed by RequestActivateScenario() above.
-  DCHECK(enabled_scenarios_.empty());
-
   if (preferences_->GetBackgroundStartupTracingEnabled()) {
     perfetto::protos::gen::ScenarioConfig scenario_config;
     scenario_config.set_scenario_name("Startup");
@@ -552,6 +554,8 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
     const perfetto::protos::gen::ChromeFieldTracingConfig& config,
     DataFiltering data_filtering) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DisableScenarios();
+
   bool enable_privacy_filter = (data_filtering != NO_DATA_FILTERING);
   bool enable_package_name_filter =
       (data_filtering == ANONYMIZE_DATA_AND_FILTER_PACKAGE_NAME);
@@ -565,7 +569,7 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
       continue;
     }
     added_scenarios.push_back(scenario->scenario_name());
-    preset_scenarios_.emplace(scenario->scenario_name(), std::move(scenario));
+    preset_scenarios_[scenario->scenario_name()] = std::move(scenario);
   }
   return added_scenarios;
 }
@@ -594,19 +598,7 @@ BackgroundTracingManagerImpl::GetAllPresetScenarios() const {
 
 bool BackgroundTracingManagerImpl::SetEnabledScenarios(
     std::vector<std::string> enabled_scenarios) {
-  if (active_scenario_) {
-    enabled_scenarios_.clear();
-    active_scenario_->Abort();
-  } else {
-    for (auto& scenario : enabled_scenarios_) {
-      scenario->Disable();
-    }
-    enabled_scenarios_.clear();
-  }
-  for (auto& rule : trigger_rules_) {
-    rule->Uninstall();
-  }
-  trigger_rules_.clear();
+  DisableScenarios();
   InitializeTraceReportDatabase();
   for (const std::string& hash : enabled_scenarios) {
     auto it = preset_scenarios_.find(hash);

@@ -166,7 +166,8 @@ ScriptPromise<V8AIAvailability> AITranslatorFactory::availability(
   ExecutionContext* execution_context = GetExecutionContext();
 
   GetTranslationManagerRemote()->TranslationAvailable(
-      options->sourceLanguage(), options->targetLanguage(),
+      mojom::blink::TranslatorLanguageCode::New(options->sourceLanguage()),
+      mojom::blink::TranslatorLanguageCode::New(options->targetLanguage()),
       WTF::BindOnce(
           [](ExecutionContext* execution_context,
              ScriptPromiseResolver<V8AIAvailability>* resolver,

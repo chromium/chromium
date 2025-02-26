@@ -17,14 +17,22 @@
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#endif
 
 namespace {
 
-class TestPeriodicBackgroundSyncPermissionContext
+class MockPeriodicBackgroundSyncPermissionContext
     : public PeriodicBackgroundSyncPermissionContext {
  public:
-  explicit TestPeriodicBackgroundSyncPermissionContext(Profile* profile)
+  explicit MockPeriodicBackgroundSyncPermissionContext(Profile* profile)
       : PeriodicBackgroundSyncPermissionContext(profile) {}
 
   void InstallPwa(const GURL& url) { installed_pwas_.insert(url); }
@@ -52,6 +60,13 @@ class TestPeriodicBackgroundSyncPermissionContext
     default_search_engine_url_ = default_search_engine_url;
   }
 
+  MOCK_METHOD(void,
+              OnContentSettingChanged,
+              (const ContentSettingsPattern& primary_pattern,
+               const ContentSettingsPattern& secondary_pattern,
+               ContentSettingsTypeSet content_type_set),
+              (override));
+
  private:
   std::set<GURL> installed_pwas_;
 #if BUILDFLAG(IS_ANDROID)
@@ -74,14 +89,18 @@ class PeriodicBackgroundSyncPermissionContextTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    permission_context_ =
-        std::make_unique<TestPeriodicBackgroundSyncPermissionContext>(
+    mock_permission_context_ =
+        std::make_unique<MockPeriodicBackgroundSyncPermissionContext>(
             profile());
+#if !BUILDFLAG(IS_ANDROID)
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   void TearDown() override {
-    // The destructor for |permission_context_| needs a valid thread bundle.
-    permission_context_.reset();
+    // The destructor for |mock_permission_context_| needs a valid thread
+    // bundle.
+    mock_permission_context_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -93,7 +112,7 @@ class PeriodicBackgroundSyncPermissionContextTest
       render_frame_host = web_contents()->GetPrimaryMainFrame();
     }
 
-    auto permission_result = permission_context_->GetPermissionStatus(
+    auto permission_result = mock_permission_context_->GetPermissionStatus(
         render_frame_host, /* requesting_origin= */ url,
         /* embedding_origin= */ url);
     return permissions::PermissionUtil::PermissionStatusToContentSetting(
@@ -110,9 +129,13 @@ class PeriodicBackgroundSyncPermissionContextTest
         ContentSettingsType::BACKGROUND_SYNC, setting);
   }
 
-  void InstallPwa(const GURL& url) { permission_context_->InstallPwa(url); }
+  void InstallPwa(const GURL& url) {
+    mock_permission_context_->InstallPwa(url);
+  }
 #if BUILDFLAG(IS_ANDROID)
-  void InstallTwa(const GURL& url) { permission_context_->InstallTwa(url); }
+  void InstallTwa(const GURL& url) {
+    mock_permission_context_->InstallTwa(url);
+  }
 #endif
 
   void SetUpPwaAndContentSettings(const GURL& url) {
@@ -121,12 +144,11 @@ class PeriodicBackgroundSyncPermissionContextTest
   }
 
   void SetDefaultSearchEngineUrl(const GURL& url) {
-    permission_context_->set_default_search_engine_url(url);
+    mock_permission_context_->set_default_search_engine_url(url);
   }
 
- private:
-  std::unique_ptr<TestPeriodicBackgroundSyncPermissionContext>
-      permission_context_;
+  std::unique_ptr<MockPeriodicBackgroundSyncPermissionContext>
+      mock_permission_context_;
 };
 
 TEST_F(PeriodicBackgroundSyncPermissionContextTest, DenyWhenFeatureDisabled) {
@@ -178,6 +200,37 @@ TEST_F(PeriodicBackgroundSyncPermissionContextTest, Twa) {
 
   InstallTwa(url);
   EXPECT_EQ(GetPermissionStatus(url), CONTENT_SETTING_ALLOW);
+}
+#else  // !BUILDFLAG(IS_ANDROID)
+TEST_F(PeriodicBackgroundSyncPermissionContextTest, OnWebAppInstalled) {
+  GURL url("https://example.com");
+  // Both both `OnWebAppInstalled` and `OnWebAppInstalledWithOsHooks`
+  // can be called. So there might be more than 1 times.
+  EXPECT_CALL(*mock_permission_context_,
+              OnContentSettingChanged(
+                  ContentSettingsPattern::FromURL(url),
+                  ContentSettingsPattern::Wildcard(),
+                  ContentSettingsTypeSet(
+                      ContentSettingsType::PERIODIC_BACKGROUND_SYNC)))
+      .Times(testing::AtLeast(1));
+
+  web_app::test::InstallDummyWebApp(profile(), "Test App", url);
+}
+
+TEST_F(PeriodicBackgroundSyncPermissionContextTest, OnWebAppUninstalled) {
+  GURL url("https://example.com");
+  const webapps::AppId app_id =
+      web_app::test::InstallDummyWebApp(profile(), "Test App", url);
+
+  EXPECT_CALL(*mock_permission_context_,
+              OnContentSettingChanged(
+                  ContentSettingsPattern::FromURL(url),
+                  ContentSettingsPattern::Wildcard(),
+                  ContentSettingsTypeSet(
+                      ContentSettingsType::PERIODIC_BACKGROUND_SYNC)))
+      .Times(1);
+
+  web_app::test::UninstallWebApp(profile(), app_id);
 }
 #endif
 

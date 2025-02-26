@@ -57,6 +57,7 @@ static_library("webui_examples_lib") {
     "resources/browser:resources",
     "//base",
     "//chrome/browser/resources/webui_gallery:resources",
+    "//components/embedder_support:user_agent",
     "//components/guest_view/browser",
     "//components/guest_view/common:mojom",
     "//components/guest_view/renderer",

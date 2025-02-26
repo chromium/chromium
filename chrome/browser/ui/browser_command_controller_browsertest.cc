@@ -62,6 +62,11 @@
 #include "chrome/common/chrome_features.h"
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "components/prefs/pref_service.h"
+#endif
+
 namespace chrome {
 
 class BrowserCommandControllerBrowserTest : public InProcessBrowserTest {
@@ -660,5 +665,32 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestCompare,
   EXPECT_FALSE(browser()->command_controller()->IsCommandEnabled(
       IDC_ADD_TO_COMPARISON_TABLE_MENU));
 }
+
+#if BUILDFLAG(ENABLE_GLIC)
+class BrowserCommandControllerBrowserTestGlic
+    : public BrowserCommandControllerBrowserTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlic, features::kTabstripComboButton}, {});
+    BrowserCommandControllerBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
+                       ExecuteGlicTogglePin) {
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  profile_prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
+
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_GLIC_TOGGLE_PIN));
+  EXPECT_TRUE(profile_prefs->GetBoolean(glic::prefs::kGlicPinnedToTabstrip));
+
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_GLIC_TOGGLE_PIN));
+  EXPECT_FALSE(profile_prefs->GetBoolean(glic::prefs::kGlicPinnedToTabstrip));
+}
+#endif
 
 }  // namespace chrome

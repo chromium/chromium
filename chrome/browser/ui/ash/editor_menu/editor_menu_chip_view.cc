@@ -34,7 +34,7 @@ EditorMenuChipView::EditorMenuChipView(views::Button::PressedCallback callback,
                     ui::kColorSysOnSurface, kIconSizeDip));
 
   SetLabelStyle(views::style::STYLE_BODY_4_EMPHASIS);
-  SetTextColorId(ButtonState::STATE_NORMAL, ui::kColorSysOnSurface);
+  SetTextColor(ButtonState::STATE_NORMAL, ui::kColorSysOnSurface);
   SetImageLabelSpacing(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DistanceMetric::DISTANCE_VECTOR_ICON_PADDING));
   SetCornerRadius(views::LayoutProvider::Get()->GetCornerRadiusMetric(

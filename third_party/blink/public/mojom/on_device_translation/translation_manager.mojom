@@ -175,6 +175,7 @@ interface TranslationManager {
   GetTranslatorAvailabilityInfo() => (TranslatorAvailabilityInfo info);
 
   // Returns the availability of the language pair translation.
-  TranslationAvailable(string source_lang, string target_lang) =>
-      (CanCreateTranslatorResult result);
+  TranslationAvailable(
+      TranslatorLanguageCode source_lang, TranslatorLanguageCode target_lang)
+      => (CanCreateTranslatorResult result);
 };

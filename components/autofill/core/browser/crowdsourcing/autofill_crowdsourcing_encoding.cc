@@ -96,11 +96,12 @@ std::deque<FieldSuggestion> MergeManualAndServerOverrides(
     std::deque<FieldSuggestion> server_overrides) {
   std::deque<FieldSuggestion> result;
   while (!manual_overrides.empty() && !server_overrides.empty()) {
-    // If the manual override has a no type specified, it means that the
-    // server prediction should be used.
-    result.push_back(manual_overrides.front().predictions().empty()
-                         ? server_overrides.front()
-                         : manual_overrides.front());
+    // If the manual override has a no type or format string specified, it means
+    // that the server prediction should be used.
+    result.push_back(!manual_overrides.front().predictions().empty() ||
+                             manual_overrides.front().has_format_string()
+                         ? manual_overrides.front()
+                         : server_overrides.front());
 
     manual_overrides.pop_front();
     // Generally consume the first element of each override source. However,
@@ -631,18 +632,20 @@ GetSuggestionsMapFromResponse(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(
           features::test::kAutofillOverridePredictions)) {
-    auto maybe_insert_overrides =
-        [&fields_suggestions](const base::FeatureParam<std::string>& param) {
-          if (std::string param_value = param.Get(); !param_value.empty()) {
-            InsertParsedOverrides(ParseServerPredictionOverrides(param_value),
-                                  fields_suggestions);
-          }
-        };
-    maybe_insert_overrides(
-        features::test::kAutofillOverridePredictionsSpecification);
-    maybe_insert_overrides(
-        features::test::
-            kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification);
+    if (std::string param =
+            features::test::kAutofillOverridePredictionsSpecification.Get();
+        !param.empty()) {
+      InsertParsedOverrides(
+          ParseServerPredictionOverrides(param, OverrideFormat::kSpec),
+          fields_suggestions);
+    }
+    if (std::string param =
+            features::test::kAutofillOverridePredictionsJson.Get();
+        !param.empty()) {
+      InsertParsedOverrides(
+          ParseServerPredictionOverrides(param, OverrideFormat::kJson),
+          fields_suggestions);
+    }
   }
 #endif
   return fields_suggestions;
@@ -877,6 +880,11 @@ void ProcessServerPredictionsQueryResponse(
       if (field_suggestion->has_password_requirements()) {
         field->SetPasswordRequirements(
             field_suggestion->password_requirements());
+      }
+      if (field_suggestion->has_format_string()) {
+        field->set_format_string_unless_overruled(
+            field_suggestion->format_string(),
+            AutofillField::FormatStringSource::kServer);
       }
       ++field_rank_map[field->GetFieldSignature()];
 

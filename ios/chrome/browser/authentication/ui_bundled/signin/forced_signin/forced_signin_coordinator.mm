@@ -128,6 +128,7 @@
     case kDefaultBrowserPromo:
     case kChoice:
     case kDockingPromo:
+    case kBestFeatures:
     case kStepsCompleted:
       NOTREACHED() << "Type of screen not supported." << static_cast<int>(type);
   }

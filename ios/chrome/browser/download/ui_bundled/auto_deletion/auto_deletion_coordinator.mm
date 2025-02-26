@@ -68,7 +68,8 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
     if (!hasIPHBeenShown && [self shouldIPHBeShown]) {
       _IPHCoordinator = [[AutoDeletionIPHCoordinator alloc]
           initWithBaseViewController:self.baseViewController
-                             browser:self.browser];
+                             browser:self.browser
+                        downloadTask:_downloadTask];
       [_IPHCoordinator start];
       localState->SetBoolean(prefs::kDownloadAutoDeletionIPHShown, true);
       return;

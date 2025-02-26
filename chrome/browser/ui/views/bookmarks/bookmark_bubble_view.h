@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/signin/bubble_signin_promo_delegate.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 #include "ui/base/interaction/element_identifier.h"
 
 class GURL;

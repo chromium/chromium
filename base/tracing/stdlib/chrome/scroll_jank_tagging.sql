@@ -55,7 +55,7 @@ CREATE PERFETTO TABLE chrome_scroll_jank_tags(
 _chrome_scroll_jank_tag_long_stage!(
   first_input_generation_to_browser_main_dur,
   'long_generation_to_browser_main',
-  16
+  6
 )
 UNION ALL
 _chrome_scroll_jank_tag_long_stage!(
@@ -189,7 +189,31 @@ SELECT
   'infrequent_input_viz_scheduling' AS tag
 FROM _chrome_janky_scroll_frames
 WHERE previous_input_delta_to_vsync_ratio BETWEEN 0.75 AND 1.2
-  AND viz_wait_for_draw_to_vsync_ratio > 0.66;
+  AND viz_wait_for_draw_to_vsync_ratio > 0.66
+UNION ALL
+SELECT
+  frame.id AS frame_id,
+  printf(
+    'dropped_previous_frame/%s',
+    extract_arg(
+      drop_frame_slice.arg_set_id,
+      'chrome_graphics_pipeline.frame_skipped_reason')
+  ) AS tag
+FROM _chrome_janky_scroll_frames frame
+JOIN chrome_scroll_update_refs previous_input
+  ON previous_input.scroll_update_latency_id = last_input_before_this_frame_id
+JOIN chrome_graphics_pipeline_surface_frame_steps drop_frame_step
+  ON drop_frame_step.surface_frame_trace_id = previous_input.surface_frame_id
+  AND drop_frame_step.step = 'STEP_DID_NOT_PRODUCE_COMPOSITOR_FRAME'
+JOIN slice drop_frame_slice
+  ON drop_frame_step.id = drop_frame_slice.id
+UNION ALL
+-- Tag janks where the delta for generation_to_browser_main is > 3 ms.
+SELECT
+  id AS frame_id,
+  'generation_to_browser_main_spike' AS tag
+FROM _chrome_janky_scroll_frames
+WHERE first_input_generation_to_browser_main_delta_dur > time_from_ms(3);
 
 -- Consolidated list of tags for each janky scroll frame.
 CREATE PERFETTO TABLE chrome_tagged_janky_scroll_frames(

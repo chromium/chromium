@@ -264,8 +264,8 @@ TEST_F(AutofillAiManagerImportFormTest,
 
   std::optional<autofill::EntityInstance> new_entity;
   std::optional<autofill::EntityInstance> old_entity;
-  AutofillAiClient::SavePromptAcceptanceCallback save_callback;
-  EXPECT_CALL(client(), ShowSaveAutofillAiBubble)
+  AutofillAiClient::SaveOrUpdatePromptResultCallback save_callback;
+  EXPECT_CALL(client(), ShowSaveOrUpdateBubble)
       .WillOnce(DoAll(SaveArg<0>(&new_entity), SaveArg<1>(&old_entity),
                       MoveArg<2>(&save_callback)));
   base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
@@ -281,7 +281,7 @@ TEST_F(AutofillAiManagerImportFormTest,
 
   // Accept the bubble.
   std::move(save_callback)
-      .Run(AutofillAiClient::SavePromptAcceptanceResult(
+      .Run(AutofillAiClient::SaveOrUpdatePromptResult(
           /*did_user_interact=*/true, new_entity));
   // Tests that the expected entity was saved.
   base::span<const autofill::EntityInstance> saved_entities =
@@ -306,8 +306,8 @@ TEST_F(AutofillAiManagerImportFormTest,
   form->field(0)->set_value(u"Jon Doe");
   form->field(1)->set_value(u"1234321");
 
-  AutofillAiClient::SavePromptAcceptanceCallback save_callback;
-  EXPECT_CALL(client(), ShowSaveAutofillAiBubble)
+  AutofillAiClient::SaveOrUpdatePromptResultCallback save_callback;
+  EXPECT_CALL(client(), ShowSaveOrUpdateBubble)
       .WillOnce(MoveArg<2>(&save_callback));
   base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
       autofill_callback;
@@ -317,7 +317,7 @@ TEST_F(AutofillAiManagerImportFormTest,
   EXPECT_TRUE(autofill_ai_shows_bubble);
 
   // Decline the bubble.
-  std::move(save_callback).Run(AutofillAiClient::SavePromptAcceptanceResult());
+  std::move(save_callback).Run(AutofillAiClient::SaveOrUpdatePromptResult());
   // Tests that the no entity was saved.
   base::span<const autofill::EntityInstance> saved_entities =
       GetEntityInstances();
@@ -332,7 +332,7 @@ TEST_F(AutofillAiManagerImportFormTest,
   form->field(0)->set_value(u"Germany");
   form->field(1)->set_value(u"1234321");
 
-  EXPECT_CALL(client(), ShowSaveAutofillAiBubble).Times(0);
+  EXPECT_CALL(client(), ShowSaveOrUpdateBubble).Times(0);
   base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
       autofill_callback;
   manager().MaybeImportForm(std::move(form), autofill_callback.GetCallback());
@@ -362,7 +362,7 @@ TEST_F(AutofillAiManagerImportFormTest, EntityAlreadyStored_DoNotShowPrompt) {
 
   base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
       autofill_callback;
-  EXPECT_CALL(client(), ShowSaveAutofillAiBubble).Times(0);
+  EXPECT_CALL(client(), ShowSaveOrUpdateBubble).Times(0);
   manager().MaybeImportForm(std::move(form), autofill_callback.GetCallback());
   // The prompt is not shown.
   const bool autofill_ai_shows_bubble = std::get<1>(autofill_callback.Take());
@@ -387,8 +387,8 @@ TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
 
   std::optional<autofill::EntityInstance> entity;
   std::optional<autofill::EntityInstance> old_entity;
-  AutofillAiClient::SavePromptAcceptanceCallback save_callback;
-  EXPECT_CALL(client(), ShowSaveAutofillAiBubble)
+  AutofillAiClient::SaveOrUpdatePromptResultCallback save_callback;
+  EXPECT_CALL(client(), ShowSaveOrUpdateBubble)
       .WillOnce(DoAll(SaveArg<0>(&entity), SaveArg<1>(&old_entity),
                       MoveArg<2>(&save_callback)));
   base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
@@ -404,7 +404,7 @@ TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
 
   // Accept the bubble.
   std::move(save_callback)
-      .Run(AutofillAiClient::SavePromptAcceptanceResult(
+      .Run(AutofillAiClient::SaveOrUpdatePromptResult(
           /*did_user_interact=*/true, entity));
   // Tests that the expected entity was saved.
   base::span<const autofill::EntityInstance> saved_entities =
@@ -451,8 +451,8 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
 
   std::optional<autofill::EntityInstance> entity;
   std::optional<autofill::EntityInstance> old_entity;
-  AutofillAiClient::SavePromptAcceptanceCallback save_callback;
-  EXPECT_CALL(client(), ShowSaveAutofillAiBubble)
+  AutofillAiClient::SaveOrUpdatePromptResultCallback save_callback;
+  EXPECT_CALL(client(), ShowSaveOrUpdateBubble)
       .WillOnce(DoAll(SaveArg<0>(&entity), SaveArg<1>(&old_entity),
                       MoveArg<2>(&save_callback)));
   base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
@@ -469,7 +469,7 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
 
   // Accept the bubble.
   std::move(save_callback)
-      .Run(AutofillAiClient::SavePromptAcceptanceResult(
+      .Run(AutofillAiClient::SaveOrUpdatePromptResult(
           /*did_user_interact=*/true, entity));
   // Tests that the expected entity was updated.
   base::span<const autofill::EntityInstance> saved_entities =

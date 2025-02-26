@@ -97,10 +97,10 @@ void StyleMenuButton(views::LabelButton* button, const gfx::VectorIcon& icon) {
   button->SetImageModel(views::Button::ButtonState::STATE_DISABLED,
                         ui::ImageModel::FromVectorIcon(
                             icon, ui::kColorSysStateDisabled, kButtonHeight));
-  button->SetTextColorId(views::LabelButton::ButtonState::STATE_NORMAL,
-                         ui::kColorSysOnSurface);
-  button->SetTextColorId(views::LabelButton::ButtonState::STATE_DISABLED,
-                         ui::kColorSysStateDisabled);
+  button->SetTextColor(views::LabelButton::ButtonState::STATE_NORMAL,
+                       ui::kColorSysOnSurface);
+  button->SetTextColor(views::LabelButton::ButtonState::STATE_DISABLED,
+                       ui::kColorSysStateDisabled);
   button->SetImageLabelSpacing(kButtonImageLabelSpacing);
 
   auto color_id = button->GetEnabled() ? ui::kColorSysTonalOutline

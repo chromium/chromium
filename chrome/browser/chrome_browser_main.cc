@@ -229,8 +229,8 @@
 // Feature-specific #includes, in alphabetical order.
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-#include "chrome/browser/background/background_mode_manager.h"
-#endif
+#include "chrome/browser/background/extensions/background_mode_manager.h"
+#endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/components/javascript_dialog_extensions_client/javascript_dialog_extension_client_impl.h"

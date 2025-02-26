@@ -78,6 +78,11 @@ class CloudBinaryUploadService : public BinaryUploadService {
                      Result result,
                      enterprise_connectors::ContentAnalysisResponse response);
 
+  void FinishAndCleanupRequest(
+      Request* request,
+      Result result,
+      enterprise_connectors::ContentAnalysisResponse response);
+
   // This may destroy `request`.
   // Virtual for testing.
   virtual void OnGetRequestData(Request::Id request_id,
@@ -147,9 +152,8 @@ class CloudBinaryUploadService : public BinaryUploadService {
       Result result,
       const enterprise_connectors::ContentAnalysisResponse& response);
 
-  // Called at the end of the FinishRequest method.
-  void FinishRequestCleanup(Request* request);
-
+  // Clears request and associated data from memory and starts the next queued
+  // request, if present.
   void CleanupRequest(Request* request);
 
   // Tries to start uploads from `request_queue_` depending on the number of

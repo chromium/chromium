@@ -41,6 +41,7 @@ namespace chrome_pdf {
 
 class PDFiumEngine;
 class Thumbnail;
+struct AccessibilityCharInfo;
 struct AccessibilityHighlightInfo;
 struct AccessibilityImageInfo;
 struct AccessibilityLinkInfo;
@@ -69,6 +70,7 @@ class PDFiumPage {
 
   // Unloads the PDFium data for this page from memory.
   void Unload();
+
   // Gets the FPDF_PAGE for this page, loading and parsing it if necessary.
   FPDF_PAGE GetPage();
 
@@ -80,6 +82,11 @@ class PDFiumPage {
 
   // Resets loaded text and loads it again.
   void ReloadTextPage();
+
+  // Get all the chars, text runs and images from the page.
+  void GetTextAndImageInfo(std::vector<AccessibilityTextRunInfo>& text_runs,
+                           std::vector<AccessibilityCharInfo>& chars,
+                           std::vector<AccessibilityImageInfo>& images);
 
   // Given a start char index, find the longest continuous run of text that's
   // in a single direction and with the same text style. Return a filled out
@@ -109,6 +116,7 @@ class PDFiumPage {
   // bounding boxes.
   std::vector<AccessibilityLinkInfo> GetLinkInfo(
       const std::vector<AccessibilityTextRunInfo>& text_runs);
+
   // For all the images on the page, get their alt texts and bounding boxes. If
   // the alt text is empty or unavailable, and if the user has requested that
   // the OCR service tag the PDF so that it is made accessible, transfer the raw
@@ -142,13 +150,6 @@ class PDFiumPage {
   // value, bounding boxes, etc.
   std::vector<AccessibilityTextFieldInfo> GetTextFieldInfo(
       uint32_t text_run_count);
-
-  // Traverses the entire struct tree of the page recursively and extracts the
-  // text run type or the alt text from struct tree elements corresponding to
-  // the marked content IDs associated with `text_runs` or present in
-  // `marked_content_id_image_map_` respectively.
-  void PopulateTextRunTypeAndImageAltText(
-      std::vector<AccessibilityTextRunInfo>& text_runs);
 
   enum Area {
     NONSELECTABLE_AREA,
@@ -446,6 +447,13 @@ class PDFiumPage {
   // struct tree.
   // Value  :  Index of the image in the `images_` vector.
   using MarkedContentIdToImageMap = std::map<int, size_t>;
+
+  // Traverses the entire struct tree of the page recursively and extracts the
+  // text run type or the alt text from struct tree elements corresponding to
+  // the marked content IDs associated with `text_runs` or present in
+  // `marked_content_id_image_map_` respectively.
+  void PopulateTextRunTypeAndImageAltText(
+      std::vector<AccessibilityTextRunInfo>& text_runs);
 
   // Traverses a struct element and its sub-tree recursively and extracts the
   // text run type or the alt text from struct elements corresponding to the

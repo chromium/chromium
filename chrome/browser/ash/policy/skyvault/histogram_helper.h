@@ -36,6 +36,10 @@ void SkyVaultMigrationDoneHistograms(CloudProvider provider,
 void SkyVaultMigrationWriteAccessErrorHistogram(bool value);
 void SkyVaultMigrationUploadErrorHistogram(CloudProvider provider,
                                            MigrationUploadError error);
+void SkyVaultMigrationWaitForConnectionHistogram(CloudProvider provider,
+                                                 bool waiting_for_connection);
+void SkyVaultMigrationReconnectionDurationHistogram(CloudProvider provider,
+                                                    base::TimeDelta duration);
 
 // Helper functions to log UMA stats on migration dialog interactions.
 void SkyVaultMigrationDialogActionHistogram(CloudProvider provider,

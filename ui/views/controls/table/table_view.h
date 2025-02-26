@@ -238,6 +238,9 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   const VisibleColumn& GetVisibleColumn(size_t index);
 
+  // Get the column ids for visible columns.
+  std::vector<int> GetVisibleColumnIds() const;
+
   // Sets the width of the column. |index| is in terms of |visible_columns_|.
   void SetVisibleColumnWidth(size_t index, int width);
 

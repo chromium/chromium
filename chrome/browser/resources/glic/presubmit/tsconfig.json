@@ -1,0 +1,10 @@
+{
+  "extends": "../../../../../tools/typescript/tsconfig_base.json",
+  "files": [
+    "check_api_compatibility.ts"
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDirs": ["."]
+  }
+}

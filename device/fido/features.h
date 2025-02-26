@@ -140,6 +140,11 @@ BASE_DECLARE_FEATURE(kSyncSecurityDomainBeforePINRenewal);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnRemoteDesktopAllowedOriginsPolicy);
 
+// Enables using the Microsoft Software Key Storage Provider to store
+// unexportable keys when a TPM is not available.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnMicrosoftSoftwareUnexportableKeyProvider);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

@@ -49,21 +49,6 @@ GetIgnoredPatternPairs(scoped_refptr<HostContentSettingsMap> hcsm) {
   return result;
 }
 
-std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
-GetNotificationCountMapPerPatternPair(
-    scoped_refptr<HostContentSettingsMap> hcsm) {
-  std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
-      result;
-  for (auto& item : hcsm->GetSettingsForOneType(
-           ContentSettingsType::NOTIFICATION_INTERACTIONS)) {
-    result[std::pair{item.primary_pattern, item.secondary_pattern}] =
-        permissions::NotificationsEngagementService::
-            GetDailyAverageNotificationCount(item);
-  }
-
-  return result;
-}
-
 }  // namespace
 
 NotificationPermissions::NotificationPermissions(
@@ -284,7 +269,8 @@ NotificationPermissionsReviewService::UpdateOnUIThread(
 
   // Get daily average notification count of pattern pairs.
   std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
-      notification_count_map = GetNotificationCountMapPerPatternPair(hcsm_);
+      notification_count_map = permissions::NotificationsEngagementService::
+          GetNotificationCountMapPerPatternPair(hcsm_.get());
 
   // Get the permissions with notification counts that needs to be reviewed.
   // This list is filtered based on notification count and site engagement

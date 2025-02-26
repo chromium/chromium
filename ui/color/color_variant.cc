@@ -5,12 +5,14 @@
 #include "ui/color/color_variant.h"
 
 #include <optional>
+#include <string>
 
 #include "base/check.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_utils.h"
 #include "ui/gfx/color_palette.h"
 
 namespace ui {
@@ -43,6 +45,14 @@ SkColor ColorVariant::ConvertToSkColor(
   }
 
   return color_provider->GetColor(GetColorId().value());
+}
+
+std::string ColorVariant::ToString() const {
+  if (auto color = GetSkColor()) {
+    return ui::SkColorName(*color);
+  }
+
+  return ui::ColorIdName(*GetColorId());
 }
 
 }  // namespace ui

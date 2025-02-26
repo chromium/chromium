@@ -22,7 +22,12 @@ struct SRIMessageSignatureComponent {
   };
 
   string name;
-  array<Parameter> params;
+
+  // The `@query-param` component requires a `name` parameter with a string
+  // value. All other params are boolean: they'll be stored with an empty
+  // string value, and we'll simply evaluate their presence or absence in
+  // the map.
+  map<Parameter, string> params;
 };
 
 

@@ -882,7 +882,7 @@ std::string GenerateClassName(std::string var_name) {
 //     case.
 std::pair<std::string, std::string> maybeGetUnnamedAndDefinition(
     const clang::QualType element_type,
-    const clang::VarDecl* array_variable,
+    const clang::DeclaratorDecl* array_decl,
     const std::string& array_variable_as_string,
     const clang::ASTContext& ast_context) {
   std::string new_class_name_string;
@@ -898,7 +898,7 @@ std::pair<std::string, std::string> maybeGetUnnamedAndDefinition(
   if (auto record_decl = element_type->getAsRecordDecl()) {
     // If the `VarDecl` contains the `RecordDecl`'s {}, the `VarDecl` contains
     // the struct/class definition.
-    bool has_definition = array_variable->getSourceRange().fullyContains(
+    bool has_definition = array_decl->getSourceRange().fullyContains(
         record_decl->getBraceRange());
     bool is_unnamed = record_decl->getDeclName().isEmpty();
 
@@ -1003,10 +1003,22 @@ std::string RewriteCArrayToStdArray(const clang::QualType& type,
   return result.str();
 }
 
+static const clang::Expr* GetInitExpr(const clang::DeclaratorDecl* decl) {
+  const clang::Expr* init_expr = nullptr;
+  if (auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
+    init_expr = var_decl->getInit();
+  } else if (auto* field_decl =
+                 clang::dyn_cast_or_null<clang::FieldDecl>(decl)) {
+    init_expr = field_decl->getInClassInitializer();
+  }
+  return init_expr;
+}
+
 // Returns an initializer list(`initListExpr`) of the given
-// `var_decl`(`clang::VarDecl`) if exists. Otherwise, returns `nullptr`.
-const clang::InitListExpr* GetArrayInitList(const clang::VarDecl* var_decl) {
-  const clang::Expr* init_expr = var_decl->getInit();
+// `decl`(`clang::VarDecl` OR `clang::FieldDecl`) if exists. Otherwise, returns
+// `nullptr`.
+const clang::InitListExpr* GetArrayInitList(const clang::DeclaratorDecl* decl) {
+  const clang::Expr* init_expr = GetInitExpr(decl);
   if (!init_expr) {
     return nullptr;
   }
@@ -1203,20 +1215,34 @@ std::pair<std::string, std::string> RewriteStdArrayWithInitList(
       closing_brackets_replacement_directive);
 }
 
-// This function handles local c-style array variables.
+static bool IsConstexpr(const clang::DeclaratorDecl* decl) {
+  if (const auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
+    return var_decl->isConstexpr();
+  }
+  return false;
+}
+
+static bool IsStaticLocal(const clang::DeclaratorDecl* decl) {
+  if (const auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
+    return var_decl->isStaticLocal();
+  }
+  return false;
+}
+
+// This function handles local c-style array variables and field decls.
 // It creates a proxy_node (marked as a sink) that all other nodes are linked
 // to.
-// In the case of an unsafe buffer access on the array variable, it emits the
+// In the case of an unsafe buffer access on the array decl, it emits the
 // necessary replacements to rewrite the array type to a std::array.
-std::string getNodeFromArrayVariable(const clang::TypeLoc* type_loc,
-                                     const clang::VarDecl* array_variable,
-                                     const clang::ArrayType* array_type,
-                                     const MatchFinder::MatchResult& result) {
+std::string getNodeFromArrayDecl(const clang::TypeLoc* type_loc,
+                                 const clang::DeclaratorDecl* array_decl,
+                                 const clang::ArrayType* array_type,
+                                 const MatchFinder::MatchResult& result) {
   clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
 
   // C-style arrays only need to be rewritten when there's an unsafe buffer
-  // access on the array variable itself.
+  // access on the array decl itself.
   // Example1:
   //  int a[10]; // => a is never directly used with an unsafe access
   //             // => no need to rewrite a to std::array.
@@ -1229,19 +1255,25 @@ std::string getNodeFromArrayVariable(const clang::TypeLoc* type_loc,
   //  int* b = a;
   //  b[UnsafeIndex()]; // => b is used as an usafe buffer
   //                    // => rewrite b's type to base::span.
+  // Example 3:
+  //  struct Foo {
+  //    int a[10];
+  //  };
+  //  Foo foo;
+  //  foo.a[UnsafeIndex()]; // => Foo::a is directly used as an unsafe buffer
+  //                        // => rewrite Foo::a's type to std::array.
   //
   // To handle this:
-  //   - We create a proxy_node for array variables.
+  //   - We create a proxy_node for array decl.
   //   - All other nodes are linked to the proxy node.
   //   - The proxy_node is marked as a sink.
-  // In the case of unsafe_buffer_access on the array variable:
+  // In the case of unsafe_buffer_access on the array decl:
   //   - We create an edge from the node n to the proxy_node(n -> proxy_node).
   //   - Emit n as a source node.
   //   - This leads n to be rewritten since the proxy_node is a sink.
-  auto proxy_node =
-      NodeKeyFromRange(clang::SourceRange(array_variable->getBeginLoc(),
-                                          array_variable->getBeginLoc()),
-                       *result.SourceManager);
+  auto proxy_node = NodeKeyFromRange(
+      clang::SourceRange(array_decl->getBeginLoc(), array_decl->getBeginLoc()),
+      *result.SourceManager);
   EmitSink(proxy_node);
   if (!result.Nodes.getNodeAs<clang::Expr>("unsafe_buffer_access")) {
     // Early return to avoid uselessly determining the array replacement.
@@ -1249,24 +1281,23 @@ std::string getNodeFromArrayVariable(const clang::TypeLoc* type_loc,
   }
 
   // Unsafe Buffer Access => Need to rewrite the array's type.
-  std::string key = NodeKey(array_variable, *result.SourceManager);
+  std::string key = NodeKey(array_decl, *result.SourceManager);
   EmitEdge(key, proxy_node);
   EmitSource(key);
 
   const clang::ArrayTypeLoc& array_type_loc =
       type_loc->getUnqualifiedLoc().getAs<clang::ArrayTypeLoc>();
   assert(!array_type_loc.isNull());
-  const std::string& array_variable_as_string =
-      array_variable->getNameAsString();
+  const std::string& array_variable_as_string = array_decl->getNameAsString();
   const std::string& array_size_as_string =
       GetArraySize(array_type_loc, source_manager, ast_context);
   const clang::QualType& original_element_type = array_type->getElementType();
 
   std::stringstream qualifier_string;
-  if (array_variable->isConstexpr()) {
+  if (IsConstexpr(array_decl)) {
     qualifier_string << "constexpr ";
   }
-  if (array_variable->isStaticLocal()) {
+  if (IsStaticLocal(array_decl)) {
     qualifier_string << "static ";
   }
 
@@ -1285,7 +1316,7 @@ std::string getNodeFromArrayVariable(const clang::TypeLoc* type_loc,
   clang::QualType new_element_type = original_element_type;
   new_element_type.removeLocalConst();
   if (original_element_type.isConstant(ast_context) &&
-      !array_variable->isConstexpr()) {
+      !IsConstexpr(array_decl)) {
     qualifier_string << "const ";
   }
 
@@ -1299,7 +1330,7 @@ std::string getNodeFromArrayVariable(const clang::TypeLoc* type_loc,
   //   - Multi-dimensional array with redundant struct/class keyword
   std::string element_type_as_string;
   const auto& [unnamed_class, class_definition] = maybeGetUnnamedAndDefinition(
-      new_element_type, array_variable, array_variable_as_string, ast_context);
+      new_element_type, array_decl, array_variable_as_string, ast_context);
   if (!unnamed_class.empty()) {
     element_type_as_string = unnamed_class;
   } else if (original_element_type->isElaboratedTypeSpecifier()) {
@@ -1326,15 +1357,15 @@ std::string getNodeFromArrayVariable(const clang::TypeLoc* type_loc,
         ast_context);
   }
 
-  const clang::InitListExpr* init_list_expr = GetArrayInitList(array_variable);
+  const clang::InitListExpr* init_list_expr = GetArrayInitList(array_decl);
   const clang::StringLiteral* init_string_literal =
-      clang::dyn_cast_or_null<clang::StringLiteral>(array_variable->getInit());
+      clang::dyn_cast_or_null<clang::StringLiteral>(GetInitExpr(array_decl));
 
   //   static const char* array[] = {...};
   //   |            |
   //   |            +-- type_loc->getSourceRange().getBegin()
   //   |
-  //   +---- array_variable->getSourceRange().getBegin()
+  //   +---- array_decl->getSourceRange().getBegin()
   //
   // The `static` is a part of `VarDecl`, but the `const` is a part of
   // the element type, i.e. `const char*`.
@@ -1343,10 +1374,10 @@ std::string getNodeFromArrayVariable(const clang::TypeLoc* type_loc,
   //
   //   static auto array = std::to_array<const char*>({...});
   //
-  // So the `replacement_range` need to include the `const` and
+  // So the `replacement_range` needs to include the `const` and
   // `init_list_expr` if any.
   clang::SourceRange replacement_range = {
-      array_variable->getSourceRange().getBegin(),
+      array_decl->getSourceRange().getBegin(),
       init_list_expr ? init_list_expr->getBeginLoc()
                      : type_loc->getSourceRange().getEnd().getLocWithOffset(1)};
 
@@ -1432,9 +1463,17 @@ std::string getArrayNode(bool is_lhs, const MatchFinder::MatchResult& result) {
     return getNodeFromFunctionArrayParameter(type_loc, array_param, result);
   }
 
-  auto* array_var = result.Nodes.getNodeAs<clang::VarDecl>(begin_id);
+  auto* array_decl = result.Nodes.getNodeAs<clang::DeclaratorDecl>(begin_id);
   auto* array_type = result.Nodes.getNodeAs<clang::ArrayType>(array_type_id);
-  return getNodeFromArrayVariable(type_loc, array_var, array_type, result);
+  if (array_decl) {
+    return getNodeFromArrayDecl(type_loc, array_decl, array_type, result);
+  }
+  // Not supposed to get here.
+  llvm::errs() << "\n"
+                  "Error: getArrayNode() encountered an unexpected match.\n"
+                  "Expected a clang::DeclaratorDecl \n";
+  DumpMatchResult(result);
+  assert(false && "Unexpected match in getArrayNode()");
 }
 
 // Extracts the lhs node from the match result.

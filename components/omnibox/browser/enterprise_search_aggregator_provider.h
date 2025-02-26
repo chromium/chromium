@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_ENTERPRISE_SEARCH_AGGREGATOR_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -98,7 +99,6 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   //  policy,
   //  - `match.relevance` = 1001.
   void ParseResultList(const base::Value::List* results,
-                       const TemplateURL* template_url,
                        SuggestionType suggestion_type,
                        bool is_navigation);
 
@@ -122,9 +122,7 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
                                SuggestionType suggestion_type) const;
 
   // Helper to create a match.
-  AutocompleteMatch CreateMatch(const AutocompleteInput& input,
-                                const std::u16string& keyword,
-                                SuggestionType suggestion_type,
+  AutocompleteMatch CreateMatch(SuggestionType suggestion_type,
                                 bool is_navigation,
                                 int relevance,
                                 const std::string& destination_url,
@@ -138,9 +136,10 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   // Used to ensure that we don't send multiple requests in quick succession.
   std::unique_ptr<AutocompleteProviderDebouncer> debouncer_;
 
-  // Saved when starting a new autocomplete request so that it can be retrieved
-  // when responses return asynchronously.
-  AutocompleteInput input_;
+  // Saved when starting a new autocomplete request so that they can be
+  // retrieved when responses return asynchronously.
+  AutocompleteInput adjusted_input_;
+  raw_ptr<const TemplateURL> template_url_;
 
   // Loader used to retrieve results.
   std::unique_ptr<network::SimpleURLLoader> loader_;

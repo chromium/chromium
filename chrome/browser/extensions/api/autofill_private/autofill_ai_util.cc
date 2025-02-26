@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/containers/flat_set.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -15,6 +16,8 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill_private = extensions::api::autofill_private;
 
@@ -23,7 +26,38 @@ namespace extensions::autofill_ai_util {
 using autofill::AttributeInstance;
 using autofill::AttributeTypeName;
 using autofill::EntityInstance;
+using autofill::EntityType;
 using autofill::EntityTypeName;
+
+std::string GetAddEntityStringForI18n(EntityType entity_type) {
+  switch (entity_type.name()) {
+    case EntityTypeName::kPassport:
+      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY);
+    case EntityTypeName::kLoyaltyCard:
+      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_LOYALTY_CARD_ENTITY);
+    case EntityTypeName::kVehicle:
+      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY);
+    case EntityTypeName::kDriversLicense:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY);
+  }
+  NOTREACHED();
+}
+
+std::string GetEditEntityStringForI18n(EntityType entity_type) {
+  switch (entity_type.name()) {
+    case EntityTypeName::kPassport:
+      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_EDIT_PASSPORT_ENTITY);
+    case EntityTypeName::kLoyaltyCard:
+      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_EDIT_LOYALTY_CARD_ENTITY);
+    case EntityTypeName::kVehicle:
+      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_EDIT_VEHICLE_ENTITY);
+    case EntityTypeName::kDriversLicense:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_EDIT_DRIVERS_LICENSE_ENTITY);
+  }
+  NOTREACHED();
+}
 
 std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
     const autofill_private::EntityInstance& private_api_entity_instance) {
@@ -58,7 +92,7 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
   if (!entity_type_name.has_value()) {
     return std::nullopt;
   }
-  autofill::EntityType entity_type(entity_type_name.value());
+  EntityType entity_type(entity_type_name.value());
   return EntityInstance(
       std::move(entity_type), attributes,
       base::Uuid::ParseLowercase(private_api_entity_instance.guid),

@@ -26,6 +26,7 @@ static_library("boca") {
     "//chrome/browser/ash/boca/babelorca",
     "//chrome/browser/ash/boca/spotlight",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca:invalidations",

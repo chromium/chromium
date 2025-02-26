@@ -167,7 +167,7 @@ TabSharingInfoBar::TabSharingInfoBar(
         GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
     csc_indicator_button_->SetCustomPadding(
         kCapturedSurfaceControlIndicatorButtonInsets);
-    csc_indicator_button_->SetTextColorId(
+    csc_indicator_button_->SetTextColor(
         views::Button::ButtonState::STATE_NORMAL, ui::kColorSysOnSurface);
   }
 

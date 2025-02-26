@@ -63,6 +63,25 @@ bool RemoveNode(bookmarks::BookmarkModel* model,
 void GetMetaInfo(const bookmarks::BookmarkNode& node,
                  base::Value::Dict& id_to_meta_info_map);
 
+// Return the API index of |node| among its siblings on the extensions API.
+//
+// Nodes which are not visible (see `BookmarkModel::IsNodeVisible()`) are not
+// exposed on the extensions API. This means that the child indices of nodes as
+// viewed on the extensions API differ from the BookmarkModel. For example:
+//
+// Model:
+// - Root
+//   - [0] A (visible)
+//   - [1] B (not visible)
+//   - [2] C (visible)
+//
+// Extensions API:
+// - Root
+//   - [0] A
+//   - [1] C
+size_t GetAPIIndexOf(const bookmarks::BookmarkModel& model,
+                     const bookmarks::BookmarkNode& node);
+
 }  // namespace bookmarks_helpers
 }  // namespace extensions
 

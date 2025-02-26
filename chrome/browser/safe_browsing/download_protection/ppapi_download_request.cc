@@ -199,6 +199,8 @@ void PPAPIDownloadRequest::SendRequest() {
         base::FilePath(default_file_path_.FinalExtension()).AsUTF8Unsafe();
   }
 
+  CHECK(service_);
+
   service_->AddReferrerChainToPPAPIClientDownloadRequest(
       web_contents(), initiating_frame_url_,
       initiating_outermost_main_frame_id_, initiating_main_frame_url_, tab_id_,
@@ -261,7 +263,7 @@ void PPAPIDownloadRequest::SendRequest() {
         deprecated_policies: "SafeBrowsingEnabled"
       })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = DownloadProtectionService::GetDownloadRequestUrl();
+  resource_request->url = service_->GetDownloadRequestUrl();
   resource_request->method = "POST";
   resource_request->site_for_cookies =
       net::SiteForCookies::FromUrl(resource_request->url);

@@ -8,12 +8,14 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/layout/box_layout_view.h"
 
 class GURL;
@@ -24,6 +26,21 @@ class Widget;
 }  // namespace views
 
 namespace autofill {
+
+// Used for providing additional information needed to add links in text labels.
+struct TextLinkInfo {
+  TextLinkInfo();
+
+  TextLinkInfo(const TextLinkInfo& other);
+  TextLinkInfo& operator=(const TextLinkInfo& other);
+  TextLinkInfo(TextLinkInfo&& other);
+  TextLinkInfo& operator=(TextLinkInfo&& other);
+
+  ~TextLinkInfo();
+
+  gfx::Range offset;
+  base::RepeatingCallback<void()> callback;
+};
 
 // Gets the user avatar icon if available, or else a placeholder.
 ui::ImageModel GetProfileAvatar(const AccountInfo& account_info);
@@ -40,6 +57,12 @@ class TitleWithIconAfterLabelView : public views::BoxLayoutView {
     GOOGLE_PAY,
     // Google super G.
     GOOGLE_G,
+    // Google Pay logo next to an Affirm logo separated by a vertical line.
+    GOOGLE_PAY_AND_AFFIRM,
+    // Google Pay logo next to an Afterpay logo separated by a vertical line.
+    GOOGLE_PAY_AND_AFTERPAY,
+    // Google Pay logo next to an Zip logo separated by a vertical line.
+    GOOGLE_PAY_AND_ZIP,
   };
 
   TitleWithIconAfterLabelView(const std::u16string& window_title,
@@ -67,6 +90,14 @@ std::unique_ptr<views::View> CreateLegalMessageView(
 // Creates a progress bar with an explanatory text below.
 std::unique_ptr<views::View> CreateProgressBarWithTextView(
     const std::u16string& progress_bar_text);
+
+// Creates a view with a left-aligned icon and right-aligned text. This is
+// useful for creating rows of text with an accompanying icon in a list. The
+// optional `text_link_info` can be used to add a link in the text.
+std::unique_ptr<views::View> CreateTextWithIconView(
+    const std::u16string& text,
+    std::optional<TextLinkInfo> text_link_info,
+    const gfx::VectorIcon& icon);
 
 }  // namespace autofill
 

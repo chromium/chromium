@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/inspector/devtools_session.h"
 
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -53,7 +49,9 @@ bool ShouldInterruptForMethod(const String& method) {
 std::vector<uint8_t> Get8BitStringFrom(v8_inspector::StringBuffer* msg) {
   const v8_inspector::StringView& s = msg->string();
   DCHECK(s.is8Bit());
-  return std::vector<uint8_t>(s.characters8(), s.characters8() + s.length());
+  // SAFETY: `s.characters8()` valid for `s.length()` bytes.
+  return std::vector<uint8_t>(s.characters8(),
+                              UNSAFE_BUFFERS(s.characters8() + s.length()));
 }
 }  // namespace
 

@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "base/compiler_specific.h"
+#include "skia/ext/skia_utils_base.h"
 
 namespace gfx {
 
@@ -36,9 +37,7 @@ base::span<const uint8_t> SkDataToSpan(sk_sp<SkData> data) {
   if (!data) {
     return {};
   }
-  // SAFETY: SkData is a container of bytes but the non-standard bytes()
-  // accessor prevents automatic conversion to span.
-  return UNSAFE_BUFFERS(base::span(data->bytes(), data->size()));
+  return skia::as_byte_span(*data);
 }
 
 sk_sp<SkData> MakeSkDataFromSpanWithCopy(base::span<const uint8_t> data) {

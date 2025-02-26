@@ -36,6 +36,7 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/service_worker_process_manager.h"
 #include "content/common/features.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_mode.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -540,6 +541,7 @@ class AuctionProcessManagerTest
       case AuctionProcessManager::WorkletType::kBidder:
         trusted_signals_handle =
             trusted_signals_cache_.RequestTrustedBiddingSignals(
+                FrameTreeNodeId(1),
                 url::Origin::Create(GURL("https://main-frame-origin.test")),
                 network::mojom::IPAddressSpace::kPublic, origin,
                 "Interest Group Name",
@@ -553,6 +555,7 @@ class AuctionProcessManagerTest
       case AuctionProcessManager::WorkletType::kSeller:
         trusted_signals_handle =
             trusted_signals_cache_.RequestTrustedScoringSignals(
+                FrameTreeNodeId(1),
                 url::Origin::Create(GURL("https://main-frame-origin.test")),
                 network::mojom::IPAddressSpace::kPublic, origin,
                 GURL("https://trusted-signals-url/"),
@@ -723,7 +726,8 @@ class AuctionProcessManagerTest
   TrustedSignalsCacheImpl trusted_signals_cache_{
       /*url_loader_factory=*/nullptr,
       base::BindRepeating(
-          [](const std::optional<url::Origin>& coordinator,
+          [](const url::Origin& scope_origin,
+             const std::optional<url::Origin>& coordinator,
              base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
                                                     std::string>)> callback) {
             std::move(callback).Run(

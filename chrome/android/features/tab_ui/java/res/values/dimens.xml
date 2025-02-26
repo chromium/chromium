@@ -144,4 +144,10 @@ found in the LICENSE file.
     <dimen name="tab_strip_tooltip_corner_radius">4dp</dimen>
     <dimen name="tab_strip_favicon_background_elevation">@dimen/default_elevation_2</dimen>
 
+    <!-- Dimens for tab group list bottom sheet. -->
+    <dimen name="tab_group_list_bottom_sheet_horizontal_padding">18dp</dimen>
+    <dimen name="tab_group_list_bottom_sheet_drag_handlebar_margin_top">12dp</dimen>
+    <dimen name="tab_group_list_bottom_sheet_title_text_margin_top">22dp</dimen>
+    <dimen name="tab_group_list_new_group_row_height">60dp</dimen>
+    <dimen name="tab_group_list_new_group_icon_height">30dp</dimen>
 </resources>

@@ -506,15 +506,13 @@ TEST_F(BookmarksApiUnittest, GetTree_SucceedsWhenLocalAndAccountFolders) {
   EXPECT_EQ(other_node.children.value()[1].id,
             base::NumberToString(folder_node()->id()));
 
-  // TODO(crbug.com/395071423): the child indices for the permanent folders
-  // should be sequential.
   EXPECT_EQ(root_node->children.value()[2].id,
             base::NumberToString(model()->account_bookmark_bar_node()->id()));
-  EXPECT_EQ(root_node->children.value()[2].index, 4);
+  EXPECT_EQ(root_node->children.value()[2].index, 2);
 
   EXPECT_EQ(root_node->children.value()[3].id,
             base::NumberToString(model()->account_other_node()->id()));
-  EXPECT_EQ(root_node->children.value()[3].index, 5);
+  EXPECT_EQ(root_node->children.value()[3].index, 3);
 }
 
 // Tests that moving from local to account storage is allowed.

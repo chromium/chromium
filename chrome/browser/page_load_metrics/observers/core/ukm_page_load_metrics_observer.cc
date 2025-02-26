@@ -1538,7 +1538,11 @@ void UkmPageLoadMetricsObserver::RecordDroppedFramesMetrics() {
   if (!success) {
     return;
   }
-  // TODO(crbug.com/395868899): Read PDF4 metric here.
+
+  ukm::builders::Graphics_Smoothness_FrameSequence builder(
+      GetDelegate().GetPageUkmSourceId());
+  builder.SetPercentDroppedFrames(dropped_frames_data.percent_dropped_frames);
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {

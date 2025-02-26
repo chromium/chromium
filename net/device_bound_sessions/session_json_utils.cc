@@ -92,8 +92,8 @@ base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
       response_json, base::JSON_PARSE_RFC, /*max_depth=*/5u);
   if (!maybe_root) {
     return base::unexpected(
-        SessionError{SessionError::ErrorType::kInvalidSessionConfig,
-                     fetcher_site, /*session_id=*/std::nullopt});
+        SessionError{SessionError::ErrorType::kInvalidConfigJson, fetcher_site,
+                     /*session_id=*/std::nullopt});
   }
 
   base::Value::Dict* scope_dict = maybe_root->FindDict("scope");
@@ -101,8 +101,8 @@ base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
   std::string* session_id = maybe_root->FindString("session_identifier");
   if (!session_id || session_id->empty()) {
     return base::unexpected(
-        SessionError{SessionError::ErrorType::kInvalidSessionConfig,
-                     fetcher_site, /*session_id=*/std::nullopt});
+        SessionError{SessionError::ErrorType::kInvalidSessionId, fetcher_site,
+                     /*session_id=*/std::nullopt});
   }
 
   std::optional<bool> continue_value = maybe_root->FindBool("continue");
@@ -123,8 +123,8 @@ base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
 
   if (credentials.empty()) {
     return base::unexpected(
-        SessionError{SessionError::ErrorType::kInvalidSessionConfig,
-                     fetcher_site, /*session_id=*/std::nullopt});
+        SessionError{SessionError::ErrorType::kInvalidCredentials, fetcher_site,
+                     /*session_id=*/std::nullopt});
   }
 
   return SessionParams(

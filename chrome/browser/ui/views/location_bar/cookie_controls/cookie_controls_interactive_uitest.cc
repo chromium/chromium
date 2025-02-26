@@ -411,9 +411,8 @@ class CookieControlsWithIphUiTest : public CookieControlsInteractiveTestBase {
   ~CookieControlsWithIphUiTest() override = default;
 };
 
-// TODO(crbug.com/398716530): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
-                       DISABLED_ShowAndDismissIphOnHighSiteEngagement) {
+                       ShowAndDismissIphOnHighSiteEngagement) {
   BlockThirdPartyCookies();
   SetHighSiteEngagement();
   RunTestSequence(

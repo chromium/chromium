@@ -29,6 +29,10 @@ class ThemeLocalDataBatchUploaderDelegate {
 class ThemeLocalDataBatchUploader
     : public syncer::DataTypeLocalDataBatchUploader {
  public:
+  // ID for the themes batch upload data item. There can only ever be at most
+  // one item.
+  static const char kThemesLocalDataItemModelId[];
+
   explicit ThemeLocalDataBatchUploader(
       ThemeLocalDataBatchUploaderDelegate* delegate);
   // Retrieves information about the existing local data.
@@ -46,7 +50,7 @@ class ThemeLocalDataBatchUploader
       std::vector<syncer::LocalDataItemModel::DataId> items) override;
 
  private:
-  bool HasNonDefaultSavedLocalTheme() const;
+  std::optional<sync_pb::ThemeSpecifics> GetNonDefaultSavedLocalTheme() const;
 
   raw_ptr<ThemeLocalDataBatchUploaderDelegate> delegate_;
 };

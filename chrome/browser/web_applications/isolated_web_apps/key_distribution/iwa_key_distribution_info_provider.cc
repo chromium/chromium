@@ -12,7 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -83,6 +83,14 @@ base::OneShotEvent& AlreadySignalled() {
   return *kEvent;
 }
 
+base::TaskPriority GetLoadTaskPriority() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return base::TaskPriority::USER_VISIBLE;
+#else
+  return base::TaskPriority::BEST_EFFORT;
+#endif
+}
+
 }  // namespace
 
 BASE_FEATURE(kIwaKeyDistributionDevMode,
@@ -146,19 +154,18 @@ void IwaKeyDistributionInfoProvider::LoadKeyDistributionData(
                                  IwaComponentUpdateError::kStaleVersion);
     return;
   }
+
   // `base::Unretained(this)` is fine as this is a singleton that never goes
   // away.
-  task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&LoadKeyDistributionDataImpl, file_path),
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), GetLoadTaskPriority()},
+      base::BindOnce(&LoadKeyDistributionDataImpl, file_path),
       base::BindOnce(
           &IwaKeyDistributionInfoProvider::OnKeyDistributionDataLoaded,
           base::Unretained(this), component_version, is_preloaded));
 }
 
-IwaKeyDistributionInfoProvider::IwaKeyDistributionInfoProvider()
-    : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {}
-
+IwaKeyDistributionInfoProvider::IwaKeyDistributionInfoProvider() = default;
 IwaKeyDistributionInfoProvider::~IwaKeyDistributionInfoProvider() = default;
 
 void IwaKeyDistributionInfoProvider::OnKeyDistributionDataLoaded(

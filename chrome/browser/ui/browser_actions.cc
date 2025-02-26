@@ -276,7 +276,9 @@ void BrowserActions::InitializeBrowserActions() {
               },
               base::Unretained(browser)))
           .SetActionId(kActionShowMemorySaverChip)
-          // Text properties aren't needed here; they are set dynamically.
+          .SetText(l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_CHIP_LABEL))
+          .SetTooltipText(
+              l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_CHIP_ACCNAME))
           .SetImage(ui::ImageModel::FromVectorIcon(
               kPerformanceSpeedometerIcon, ui::kColorIcon,
               ui::SimpleMenuModel::kDefaultIconSize))

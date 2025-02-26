@@ -86,7 +86,7 @@ class FileAnalyzer {
   explicit FileAnalyzer(
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor);
   ~FileAnalyzer();
-  void Start(const base::FilePath& target_path,
+  void Start(const base::FilePath& target_file_name,
              const base::FilePath& tmp_path,
              base::optional_ref<const std::string> password,
              base::OnceCallback<void(Results)> callback);
@@ -118,8 +118,14 @@ class FileAnalyzer {
 
   void LogAnalysisDurationWithAndWithoutSuffix(const std::string& suffix);
 
-  base::FilePath target_path_;
+  // The ultimate destination/filename for the download. This is used to
+  // determine the filetype from the filename extension/suffix, and should be a
+  // human-readable filename (i.e. not a content-URI, on Android).
+  base::FilePath target_file_name_;
+
+  // The current path to the file contents.
   base::FilePath tmp_path_;
+
   std::optional<std::string> password_;
   scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor_;
   base::OnceCallback<void(Results)> callback_;

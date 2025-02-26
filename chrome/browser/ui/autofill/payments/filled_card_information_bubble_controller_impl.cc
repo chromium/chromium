@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/bnpl_manager.h"
+#include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -107,6 +109,11 @@ FilledCardInformationBubbleControllerImpl::GetCardIndicatorLabel() const {
 
 std::u16string FilledCardInformationBubbleControllerImpl::GetBubbleTitleText()
     const {
+  if (IsBnplFlow()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_TITLE,
+        options_.filled_card.CardNameForAutofillDisplay());
+  }
   return options_.filled_card.record_type() ==
                  CreditCard::RecordType::kVirtualCard
              ? l10n_util::GetStringUTF16(
@@ -117,6 +124,11 @@ std::u16string FilledCardInformationBubbleControllerImpl::GetBubbleTitleText()
 
 std::u16string FilledCardInformationBubbleControllerImpl::GetLearnMoreLinkText()
     const {
+  if (IsBnplFlow()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL,
+        options_.filled_card.CardNameForAutofillDisplay());
+  }
   return options_.filled_card.record_type() ==
                  CreditCard::RecordType::kVirtualCard
              ? l10n_util::GetStringUTF16(
@@ -127,6 +139,11 @@ std::u16string FilledCardInformationBubbleControllerImpl::GetLearnMoreLinkText()
 
 std::u16string
 FilledCardInformationBubbleControllerImpl::GetEducationalBodyLabel() const {
+  if (IsBnplFlow()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_EDUCATIONAL_BODY_LABEL,
+        GetLearnMoreLinkText());
+  }
   return options_.filled_card.record_type() ==
                  CreditCard::RecordType::kVirtualCard
              ? l10n_util::GetStringFUTF16(
@@ -193,9 +210,9 @@ bool FilledCardInformationBubbleControllerImpl::ShouldIconBeVisible() const {
   return should_icon_be_visible_;
 }
 
-void FilledCardInformationBubbleControllerImpl::OnLinkClicked(const GURL& url) {
+void FilledCardInformationBubbleControllerImpl::OnLinkClicked() {
   web_contents()->OpenURL(
-      content::OpenURLParams(url, content::Referrer(),
+      content::OpenURLParams(GetLearnMoreUrl(), content::Referrer(),
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
                              ui::PAGE_TRANSITION_LINK, false),
       /*navigation_handle_callback=*/{});
@@ -233,6 +250,11 @@ void FilledCardInformationBubbleControllerImpl::OnFieldClicked(
   UpdateClipboard(field == FilledCardInformationBubbleField::kCardNumber
                       ? StripCardNumberSeparators(GetValueForField(field))
                       : GetValueForField(field));
+}
+
+bool FilledCardInformationBubbleControllerImpl::ShouldShowGooglePayIconInTitle()
+    const {
+  return !IsBnplFlow();
 }
 
 void FilledCardInformationBubbleControllerImpl::UpdateClipboard(
@@ -340,6 +362,18 @@ bool FilledCardInformationBubbleControllerImpl::IsWebContentsActive() {
 void FilledCardInformationBubbleControllerImpl::SetEventObserverForTesting(
     ObserverForTest* observer_for_test) {
   observer_for_test_ = observer_for_test;
+}
+
+GURL FilledCardInformationBubbleControllerImpl::GetLearnMoreUrl() const {
+  return IsBnplFlow()
+             ? autofill::payments::GetBnplTermsUrl(
+                   options_.filled_card.issuer_id())
+             : autofill::payments::GetVirtualCardEnrollmentSupportUrl();
+}
+
+bool FilledCardInformationBubbleControllerImpl::IsBnplFlow() const {
+  return base::Contains(payments::BnplManager::GetSupportedBnplIssuerIds(),
+                        options_.filled_card.issuer_id());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FilledCardInformationBubbleControllerImpl);

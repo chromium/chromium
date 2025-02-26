@@ -172,6 +172,62 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       assertFalse(linkDataCheckbox.checked);
     });
 
+    test('stateChangesWithBackButton', async function() {
+      if (!useUpdatedUi) {
+        return;
+      }
+
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      app = document.createElement('managed-user-profile-notice-app');
+      document.body.appendChild(app);
+      await browserProxy.whenCalled('initialized');
+
+      loadTimeData.overrideValues({
+        'initialState': State.VALUE_PROPOSITION,
+        'enforcedByPolicy': false,
+        'cancelLabel': 'cancel',
+        'backLabel': 'back',
+        'cancelValueProp': 'cancel_value_prop',
+      });
+      const cancelButton =
+          app.shadowRoot.querySelector<HTMLElement>('#cancel-button')!;
+
+      webUIListenerCallback('on-state-changed', State.VALUE_PROPOSITION);
+      await microtasksFinished();
+
+      assertTrue(
+          isChildVisible(app, '#cancel-button'),
+          'Value proposition State: #cancel-button');
+      assertTrue(
+          isChildVisible(app, '#value-prop'),
+          'Value proposition State: #value-prop');
+      assertEquals(
+          'cancel_value_prop', cancelButton.textContent!.trim(),
+          'Value proposition State: Cancel label');
+
+      webUIListenerCallback('on-state-changed', State.DISCLOSURE);
+      await microtasksFinished();
+      assertTrue(
+          isChildVisible(app, '#cancel-button'),
+          'Disclosure State: #cancel-button');
+      assertEquals(
+          'back', cancelButton.textContent!.trim(),
+          'Disclosure State: Cancel label');
+
+      // Brings us back to disclosure.
+      cancelButton!.click();
+      await microtasksFinished();
+      assertTrue(
+          isChildVisible(app, '#value-prop'),
+          'Value proposition State: #value-prop');
+      assertTrue(
+          isChildVisible(app, '#cancel-button'),
+          'Disclosure State: #cancel-button');
+      assertEquals(
+          'cancel_value_prop', cancelButton.textContent!.trim(),
+          'Disclosure State: Cancel label');
+    });
+
     test('stateChanges', async function() {
       if (!useUpdatedUi) {
         return;

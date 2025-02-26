@@ -6,10 +6,10 @@
  * @fileoverview Class to manage Chrome settings prefs for ChromeVox. Wraps
  * around Settings for the underlying gets and sets. Acts as a translation layer
  * for key names, and for migrating. Will automatically migrate the ChromeVox
- * prefs that are listed in the |PREFS| constant at the bottom of the file. The
- * prefs will move out of chrome.storage.local (used by the LocalStorage class)
- * into the Chrome settings prefs system (used by other Accessibility
- * services).
+ * prefs that are listed in the |CHROMEVOX_PREFS| constant at the bottom of the
+ * file. The prefs will move out of chrome.storage.local (used by the
+ * LocalStorage class) into the Chrome settings prefs system (used by other
+ * Accessibility services).
  *
  */
 import {LocalStorage} from '/common/local_storage.js';
@@ -19,7 +19,8 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 export class SettingsManager {
   static instance: SettingsManager;
-  static PREFS: string[];
+  static CHROMEVOX_PREFS: string[];
+  static LIVE_CAPTION_PREF: string;
   static EVENT_STREAM_FILTERS: string[];
 
   static async init() {
@@ -49,14 +50,15 @@ export class SettingsManager {
    * Gets all Chrome settings pref names.
    */
   private static getAllPrefNames(): string[] {
-    return SettingsManager.PREFS.map(SettingsManager.getPrefName_);
+    return SettingsManager.CHROMEVOX_PREFS.map(SettingsManager.getPrefName_)
+        .concat([SettingsManager.LIVE_CAPTION_PREF]);
   }
 
   /**
    * Migrates prefs from chrome.storage.local to Chrome settings prefs.
    */
   private static migrateFromChromeStorage_(): void {
-    for (const key of SettingsManager.PREFS) {
+    for (const key of SettingsManager.CHROMEVOX_PREFS) {
       let value = LocalStorage.get(key);
       if (value === undefined) {
         continue;
@@ -102,8 +104,11 @@ export class SettingsManager {
     Settings.addListener(pref, callback);
   }
 
-  static get(key: string): any {
-    const pref = SettingsManager.getPrefName_(key);
+  static get(key: string, isChromeVox = true): any {
+    let pref = key;
+    if (isChromeVox) {
+      pref = SettingsManager.getPrefName_(key);
+    }
     return Settings.get(pref);
   }
 
@@ -112,8 +117,8 @@ export class SettingsManager {
    * @param type A string (for primitives) or type constructor
    *     (for classes) corresponding to the expected type
    */
-  static getTypeChecked(key: string, type: string): any {
-    const value = SettingsManager.get(key);
+  static getTypeChecked(key: string, type: string, isChromeVox = true): any {
+    const value = SettingsManager.get(key, isChromeVox);
     if ((typeof type === 'string') && (typeof value === type)) {
       return value;
     }
@@ -121,8 +126,8 @@ export class SettingsManager {
         'Value in SettingsManager for key "' + key + '" is not a ' + type);
   }
 
-  static getBoolean(key: string): boolean {
-    const value = SettingsManager.getTypeChecked(key, 'boolean');
+  static getBoolean(key: string, isChromeVox = true): boolean {
+    const value = SettingsManager.getTypeChecked(key, 'boolean', isChromeVox);
     return Boolean(value);
   }
 
@@ -171,7 +176,7 @@ export class SettingsManager {
  * as a Chrome settings pref.
  * @const {!Array<string>}
  */
-SettingsManager.PREFS = [
+SettingsManager.CHROMEVOX_PREFS = [
   'announceDownloadNotifications',
   'announceRichTextAttributes',
   'audioStrategy',
@@ -202,6 +207,12 @@ SettingsManager.PREFS = [
   'virtualBrailleRows',
   'voiceName',
 ];
+
+/**
+ * The preference for when live caption is enabled.
+ */
+SettingsManager.LIVE_CAPTION_PREF =
+    'accessibility.captions.live_caption_enabled';
 
 /**
  * List of event stream filters used on the ChromeVox options page to indicate

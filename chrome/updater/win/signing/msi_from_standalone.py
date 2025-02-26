@@ -42,59 +42,6 @@ import subprocess
 _GOOGLE_UPDATE_NAMESPACE_GUID = 'BE19B3E4502845af8B3E67A99FCDCFB1'
 
 
-def convert_to_msi_version_number_if_needed(product_version):
-    """Change product_version to fit in an MSI version number if needed.
-
-  Some products use a 4-field version numbering scheme whereas MSI looks only
-  at the first three fields when considering version numbers. Furthermore, MSI
-  version fields have documented width restrictions of 8bits.8bits.16bits as
-  per http://msdn.microsoft.com/en-us/library/aa370859(VS.85).aspx
-
-  As such, the following scheme is used:
-
-  Product a.b.c.d -> MSI X.Y.Z:
-    X = (1 << 6) | ((C & 0xffff) >> 10)
-    Y = (C >> 2) & 0xff
-    Z = ((C & 0x3) << 14) | (D & 0x3FFF)
-
-  So eg. 6.1.420.8 would become 64.105.8
-
-  This assumes:
-  1) we care about neither the product major number nor the product minor
-     number, e.g. we will never reset the 'c' number after an increase in
-     either 'a' or 'b'.
-  2) 'd' will always be <= 16383
-  3) 'c' is <= 65535
-
-  We assert on assumptions 2) and 3)
-
-  Args:
-    product_version: A version string in "#.#.#.#" format.
-
-  Returns:
-    An MSI-compatible version string, or if product_version is not of the
-    expected format, then the original product_version value.
-  """
-
-    try:
-        version_field_strings = product_version.split('.')
-        (build, patch) = [int(x) for x in version_field_strings[2:]]
-    except:  # pylint: disable=bare-except
-        # Couldn't parse the version number as a 4-term period-separated number,
-        # just return the original string.
-        return product_version
-
-    # Check that the input version number is in range.
-    assert patch <= 16383, 'Error, patch number %s out of range.' % patch
-    assert build <= 65535, 'Error, build number %s out of range.' % build
-
-    msi_major = (1 << 6) | ((build & 0xffff) >> 10)
-    msi_minor = (build >> 2) & 0xff
-    msi_build = ((build & 0x3) << 14) | (patch & 0x3FFF)
-
-    return str(msi_major) + '.' + str(msi_minor) + '.' + str(msi_build)
-
-
 def get_installer_namespace():
     return binascii.a2b_hex(_GOOGLE_UPDATE_NAMESPACE_GUID)
 
@@ -188,7 +135,7 @@ def get_wix_flags(product_name, product_name_legal_identifier,
     return flags
 
 
-def BuildInstaller(wix_path, product_name, product_version, appid,
+def BuildInstaller(wix_path, product_name, msi_product_version, appid,
                    product_custom_params, product_uninstaller_additional_args,
                    product_installer_data, standalone_installer_path,
                    custom_action_dll_path, msi_base_name,
@@ -197,8 +144,6 @@ def BuildInstaller(wix_path, product_name, product_version, appid,
     """Creates an enterprise installer from a standalone installer."""
     product_name_legal_identifier = product_name.replace(' ', '')
     msi_name = msi_base_name + '.msi'
-    msi_product_version = convert_to_msi_version_number_if_needed(
-        product_version)
 
     updater_installer_namespace = get_installer_namespace()
 

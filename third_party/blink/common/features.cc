@@ -2130,7 +2130,7 @@ BASE_FEATURE_PARAM(bool,
 // kPrivateAggregationApiProtectedAudienceExtensionsEnabled.
 BASE_FEATURE(kPrivateAggregationApiProtectedAudienceAdditionalExtensions,
              "PrivateAggregationApiProtectedAudienceAdditionalExtensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProcessHtmlDataImmediately,
              "ProcessHtmlDataImmediately",
@@ -2582,10 +2582,6 @@ BASE_FEATURE_PARAM(int,
 
 BASE_FEATURE(kTimedHTMLParserBudget,
              "TimedHTMLParserBudget",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink,
-             "TreatHTTPExpiresHeaderValueZeroAsExpiredInBlink",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Changes behavior of User-Agent Client Hints to send blank headers when the

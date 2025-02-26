@@ -189,7 +189,7 @@ void LeakDetectionRequest::LookupSingleLeak(
     resource_request->headers.SetHeader(kAuthHeaderApiKey, api_key.value());
   }
 
-  // TODO: crbug.com/375211530 - clean up kill switch once change is in stable
+  // TODO: crbug.com/399358532 - clean up kill switch once change is in stable
   // release for a month.
   if (base::FeatureList::IsEnabled(
           password_manager::features::kSetLeakCheckRequestCriticality)) {

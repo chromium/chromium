@@ -19,9 +19,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/elapsed_timer.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -558,8 +561,7 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
     result.reserve(maybe_included_cookies.size());
   mojom::CookieMatchType match_type = options->match_type;
   const std::string& match_name = options->name;
-  for (const net::CookieWithAccessResult& cookie_item :
-       maybe_included_cookies) {
+  for (net::CookieWithAccessResult& cookie_item : maybe_included_cookies) {
     const net::CanonicalCookie& cookie = cookie_item.cookie;
     net::CookieAccessResult access_result = cookie_item.access_result;
     const std::string& cookie_name = cookie.Name();
@@ -577,21 +579,11 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
     }
 
     if (access_result.status.IsInclude()) {
-      result.push_back(cookie_item);
+      result.push_back(std::move(cookie_item));
     }
   }
 
-  auto notify_observer = [&]() {
-    if (cookie_observer_ && !on_cookies_accessed_result.empty()) {
-      OnCookiesAccessed(mojom::CookieAccessDetails::New(
-          mojom::CookieAccessDetails::Type::kRead, url,
-          isolated_top_frame_origin, site_for_cookies,
-          std::move(on_cookies_accessed_result), std::nullopt, is_ad_tagged,
-          cookie_setting_overrides));
-    }
-  };
-
-  if (!maybe_included_cookies.empty() && IsPartitionedCookiesEnabled()) {
+  if (!result.empty() && IsPartitionedCookiesEnabled()) {
     UMA_HISTOGRAM_COUNTS_100(
         "Net.RestrictedCookieManager.PartitionedCookiesInScript",
         std::ranges::count_if(result, [](const net::CookieWithAccessResult& c) {
@@ -635,7 +627,12 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
             cookie.access_result));
   }
 
-  notify_observer();
+  if (cookie_observer_ && !on_cookies_accessed_result.empty()) {
+    OnCookiesAccessed(mojom::CookieAccessDetails::New(
+        mojom::CookieAccessDetails::Type::kRead, url, isolated_top_frame_origin,
+        site_for_cookies, std::move(on_cookies_accessed_result), std::nullopt,
+        is_ad_tagged, cookie_setting_overrides));
+  }
 }
 
 void RestrictedCookieManager::UpdateSharedMemoryVersionInvalidationTimer(
@@ -904,7 +901,9 @@ void RestrictedCookieManager::SetCookieFromString(
     bool apply_devtools_overrides,
     const std::string& cookie,
     SetCookieFromStringCallback callback) {
+  TRACE_EVENT("net", "RestrictedCookieManager::SetCookieFromString");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ElapsedTimer timer;
 
   // The cookie is about to be set. Proactively increment the version so it's
   // instantly reflected. This ensures that changes a reflected before the
@@ -947,6 +946,11 @@ void RestrictedCookieManager::SetCookieFromString(
   SetCanonicalCookie(*parsed_cookie, url, site_for_cookies, top_frame_origin,
                      storage_access_api_status, status,
                      apply_devtools_overrides, base::DoNothing());
+  if (metrics_subsampler_.ShouldSample(0.001)) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Cookie.SetCookieFromString.Duration", timer.Elapsed(),
+        base::Microseconds(1), base::Milliseconds(128), 100);
+  }
 }
 
 void RestrictedCookieManager::GetCookiesString(
@@ -959,7 +963,9 @@ void RestrictedCookieManager::GetCookiesString(
     bool apply_devtools_overrides,
     bool force_disable_third_party_cookies,
     GetCookiesStringCallback callback) {
+  TRACE_EVENT("net", "RestrictedCookieManager::GetCookiesString");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ElapsedTimer timer;
   // Checks done by GetAllForUrl
 
   if (metrics_updater_) {
@@ -1010,6 +1016,12 @@ void RestrictedCookieManager::GetCookiesString(
                                      cookies) {
                  return net::CanonicalCookie::BuildCookieLine(cookies);
                }).Then(std::move(bound_callback)));
+
+  if (metrics_subsampler_.ShouldSample(0.001)) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Cookie.GetCookiesString.Duration", timer.Elapsed(),
+        base::Microseconds(1), base::Milliseconds(128), 100);
+  }
 }
 
 void RestrictedCookieManager::CookiesEnabledFor(

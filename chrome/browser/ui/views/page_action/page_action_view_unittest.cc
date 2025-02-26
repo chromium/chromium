@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -102,7 +103,8 @@ class PageActionViewTest : public ChromeViewsTestBase {
         PageActionViewParams{
             .icon_size = kDefaultIconSize,
             .icon_label_bubble_delegate = &icon_label_view_delegate_,
-        });
+        },
+        /*chip_state_changed_callback=*/base::DoNothing());
 
     profile_ = std::make_unique<TestingProfile>();
     pinned_actions_model_ =
@@ -158,7 +160,8 @@ class PageActionViewWithMockModelTest : public ChromeViewsTestBase {
         action_item_.get(),
         PageActionViewParams{
             .icon_size = view_icon_size_,
-            .icon_label_bubble_delegate = &icon_label_view_delegate_});
+            .icon_label_bubble_delegate = &icon_label_view_delegate_},
+        /*chip_state_changed_callback=*/base::DoNothing());
 
     ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
     ON_CALL(mock_model_, GetShowSuggestionChip()).WillByDefault(Return(false));

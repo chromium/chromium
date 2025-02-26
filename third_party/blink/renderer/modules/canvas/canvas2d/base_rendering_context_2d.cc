@@ -136,6 +136,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
@@ -720,7 +721,7 @@ void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
 
     if (AffineTransform curr_transform = curr_state->GetTransform();
         prev_transform != curr_transform) {
-      c->setMatrix(AffineTransformToSkM44(curr_transform));
+      c->setMatrix(curr_transform.ToSkM44());
       prev_transform = curr_transform;
     }
   }
@@ -1474,7 +1475,7 @@ void BaseRenderingContext2D::transform(double m11,
   }
 
   SetTransform(new_transform);
-  c->concat(AffineTransformToSkM44(transform));
+  c->concat(transform.ToSkM44());
 
   if (IsTransformInvertible()) [[likely]] {
     GetModifiablePath().Transform(transform.Inverse());
@@ -3506,6 +3507,43 @@ void BaseRenderingContext2D::strokeText(const String& text,
   DrawTextInternal(text, x, y, CanvasRenderingContext2DState::kStrokePaintType,
                    state.GetTextAlign(), state.GetTextBaseline(), 0,
                    text.length(), &max_width);
+}
+
+void BaseRenderingContext2D::strokeTextCluster(const TextCluster* text_cluster,
+                                               double x,
+                                               double y) {
+  strokeTextCluster(text_cluster, x, y, /*cluster_options=*/nullptr);
+}
+
+void BaseRenderingContext2D::strokeTextCluster(
+    const TextCluster* text_cluster,
+    double x,
+    double y,
+    const TextClusterOptions* cluster_options) {
+  DCHECK(text_cluster);
+  V8CanvasTextAlign cluster_align = text_cluster->align();
+  V8CanvasTextBaseline cluster_baseline = text_cluster->baseline();
+  double cluster_x = text_cluster->x();
+  double cluster_y = text_cluster->y();
+  if (cluster_options != nullptr) {
+    if (cluster_options->hasX()) {
+      cluster_x = cluster_options->x();
+    }
+    if (cluster_options->hasY()) {
+      cluster_y = cluster_options->y();
+    }
+    if (cluster_options->hasAlign()) {
+      cluster_align = cluster_options->align();
+    }
+    if (cluster_options->hasBaseline()) {
+      cluster_baseline = cluster_options->baseline();
+    }
+  }
+  DrawTextInternal(text_cluster->text(), cluster_x + x, cluster_y + y,
+                   CanvasRenderingContext2DState::kStrokePaintType,
+                   cluster_align, cluster_baseline, text_cluster->begin(),
+                   text_cluster->end(), nullptr,
+                   text_cluster->textMetrics()->GetFont());
 }
 
 const Font* BaseRenderingContext2D::AccessFont(HTMLCanvasElement* canvas) {

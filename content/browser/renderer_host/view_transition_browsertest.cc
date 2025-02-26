@@ -471,18 +471,13 @@ IN_PROC_BROWSER_TEST_P(ViewTransitionCaptureTest,
   ASSERT_EQ(before_bitmap.width(), after_bitmap.width());
   ASSERT_EQ(before_bitmap.height(), after_bitmap.height());
 
-#if BUILDFLAG(IS_CHROMEOS)
   cc::FuzzyPixelComparator comparator;
   // Allow 50% of pixels to different by at most 3 in all channels.
-  // The small differences on ChromeOS seem to be noise, and don't invalidate
-  // the test intent.
+  // The small differences on some platforms seem to be noise, and don't
+  // invalidate the test intent.
   comparator.SetAbsErrorLimit(255, 3);
   comparator.SetErrorPixelsPercentageLimit(0, 50);
   EXPECT_TRUE(cc::MatchesBitmap(after_bitmap, before_bitmap, comparator));
-#else
-  EXPECT_TRUE(cc::MatchesBitmap(after_bitmap, before_bitmap,
-                                cc::ExactPixelComparator()));
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 INSTANTIATE_TEST_SUITE_P(

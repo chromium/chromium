@@ -318,13 +318,24 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
   [self.toolbarConsumer setCanGoBack:canGoBack];
 }
 
-- (void)onSRPLoadWithOmniboxText:(NSString*)omniboxText {
-  if (![omniboxText isEqualToString:_currentLensResult.queryText]) {
-    if (!_currentLensResult.isTextSelection) {
+- (void)onSRPLoadWithOmniboxText:(NSString*)omniboxText
+                    isMultimodal:(BOOL)isMultimodal {
+  if (_currentLensResult.isTextSelection) {
+    // On text selection, hide the user selection on text change.
+    if (![omniboxText isEqualToString:_currentLensResult.queryText]) {
+      [self.lensHandler hideUserSelection];
+    }
+    // Multimodal query on a text selection are not handled. Thumbnail is not
+    // updated.
+    CHECK(!isMultimodal, kLensOverlayNotFatalUntil);
+  } else {
+    // On image selection, hide the thumbnail and user selection when loading an
+    // unimodal query.
+    if (!isMultimodal) {
       [self.omniboxCoordinator setThumbnailImage:nil];
       _thumbnailRemoved = YES;
+      [self.lensHandler hideUserSelection];
     }
-    [self.lensHandler hideUserSelection];
   }
   [self updateOmniboxText:omniboxText];
 }

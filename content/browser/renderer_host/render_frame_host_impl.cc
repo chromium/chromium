@@ -12599,18 +12599,22 @@ void RenderFrameHostImpl::LogWebFeatureForCurrentPage(
 
 void RenderFrameHostImpl::ReportBlockingCrossPartitionBlobURL(
     const GURL& blocked_url,
-    blink::mojom::PartitioningBlobURLInfo info) {
+    std::optional<blink::mojom::PartitioningBlobURLInfo> info) {
   // Log the use of the web feature (increment the use counter).
   LogWebFeatureForCurrentPage(
-      blink::mojom::WebFeature::kCrossPartitionBlobURLFetch);
+      blink::mojom::WebFeature::kCrossPartitionSameOriginBlobURLFetch);
 
+  if (!info) {
+    return;
+  }
   // Report the DevTools issue.
   auto details = blink::mojom::InspectorIssueDetails::New();
   auto partitioning_blob_url_issue_details =
       blink::mojom::PartitioningBlobURLIssueDetails::New();
 
   partitioning_blob_url_issue_details->url = blocked_url;
-  partitioning_blob_url_issue_details->partitioning_blob_url_info = info;
+  partitioning_blob_url_issue_details->partitioning_blob_url_info =
+      *std::move(info);
 
   details->partitioning_blob_url_issue_details =
       std::move(partitioning_blob_url_issue_details);

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/input/pointer_event_manager.h"
 
+#include "base/compiler_specific.h"
 #include "base/metrics/field_trial_params.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
@@ -242,8 +238,8 @@ void PointerEventManager::SendMouseAndPointerBoundaryEvents(
   // compatibility mouse event and we do not need to change pointer event
   // behavior regarding preventMouseEvent state in that case.
   if (dummy_pointer_event->buttons() == 0 && dummy_pointer_event->isPrimary()) {
-    prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
-        mouse_event.pointer_type)] = false;
+    UNSAFE_TODO(prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
+        mouse_event.pointer_type)]) = false;
   }
 
   ProcessCaptureAndPositionOfPointerEvent(dummy_pointer_event, entered_element,
@@ -1030,8 +1026,8 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
     ProcessPendingPointerCapture(pointer_event);
 
     if (pointer_event->isPrimary()) {
-      prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
-          web_pointer_event.pointer_type)] = false;
+      UNSAFE_TODO(prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
+          web_pointer_event.pointer_type)]) = false;
     }
   }
 
@@ -1065,14 +1061,14 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
   if (result != WebInputEventResult::kNotHandled &&
       pointer_event->type() == event_type_names::kPointerdown &&
       pointer_event->isPrimary()) {
-    prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
-        mouse_event.pointer_type)] = true;
+    UNSAFE_TODO(prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
+        mouse_event.pointer_type)]) = true;
   }
 
   bool send_compat_mouse =
       pointer_event->isPrimary() &&
-      !prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
-          mouse_event.pointer_type)];
+      UNSAFE_TODO(!prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
+          mouse_event.pointer_type)]);
   bool consider_click_dispatch = !skip_click_dispatch &&
                                  pointer_event->isPrimary() &&
                                  event_type == WebInputEvent::Type::kPointerUp;
@@ -1118,8 +1114,8 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
     ReleasePointerCapture(pointer_event->pointerId());
 
     if (pointer_event->isPrimary()) {
-      prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
-          mouse_event.pointer_type)] = false;
+      UNSAFE_TODO(prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
+          mouse_event.pointer_type)]) = false;
     }
   }
 

@@ -859,7 +859,7 @@ bool IsSuggestionRefreshAllowed() {
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
                     atIndex:(NSInteger)index
                      params:(const autofill::FormActivityParams&)params {
-  CHECK(_lastSeenParams == params);
+  CHECK_EQ(_lastSeenParams, params);
   [self didSelectSuggestion:formSuggestion atIndex:index];
 }
 

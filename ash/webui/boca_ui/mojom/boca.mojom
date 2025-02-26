@@ -19,8 +19,8 @@ struct TabInfo {
   string title;
   // Tab URL.
   url.mojom.Url url;
-  //Tab favicon in the format of data url.
-  string favicon;
+  // Tab favicon URL.
+  url.mojom.Url favicon;
 };
 
 
@@ -294,6 +294,8 @@ interface PageHandler {
   // Close a tab with the tab_id.
   // NOTE: Ensure the param type is the same as SessionID::id_type.
   CloseTab(int32 tab_id) => (bool success);
+  // Request from the Boca SWA to open the ChromeOS feedback dialog.
+  OpenFeedbackDialog() => ();
 };
 
 // Implemented by renderer process

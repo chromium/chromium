@@ -929,6 +929,10 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       @[ self.navigationItem.rightBarButtonItem, shareButton ];
 }
 
+- (void)hideShareButton {
+  _shareButton.hidden = YES;
+}
+
 #pragma mark - TableViewTextEditItemDelegate
 
 - (void)tableViewItemDidBeginEditing:(TableViewTextEditItem*)tableViewItem {

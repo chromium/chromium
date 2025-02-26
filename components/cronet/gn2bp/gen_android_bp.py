@@ -2232,10 +2232,6 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     modules = (Module('cc_library_static', bp_module_name, gn_target_name), )
   elif target.type == 'shared_library':
     modules = (Module('cc_library_shared', bp_module_name, gn_target_name), )
-  elif target.type == 'group':
-    # "group" targets are resolved recursively by gn_utils.get_target().
-    # There's nothing we need to do at this level for them.
-    return ()
   elif target.type == 'proto_library':
     # TODO: change create_proto_modules() to return both modules.
     module = create_proto_modules(blueprint, gn, target)
@@ -2282,6 +2278,9 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
       module.defaults.add(java_framework_defaults_module)
     modules = (module, )
   else:
+    # Note we don't have to handle `group` targets because parse_gn_desc() never
+    # returns any; it just recurses through them and bubbles their dependencies
+    # upwards.
     raise Exception('Unknown target %s (%s)' % (target.name, target.type))
 
   for module in modules:

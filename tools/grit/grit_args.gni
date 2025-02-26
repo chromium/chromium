@@ -25,7 +25,6 @@ _grit_defines = [
   "_google_chrome=${is_chrome_branded}",
   "_is_chrome_for_testing_branded=${is_chrome_for_testing_branded}",
   "chromeos_ash=${is_chromeos_ash}",
-  "chromeos_lacros=${is_chromeos_lacros}",
 
   # This is related to Chrome OS.
   "reven=${is_reven}",

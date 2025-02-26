@@ -6,6 +6,47 @@ import("//components/services/on_device_translation/buildflags/features.gni")
 
 assert(enable_on_device_translation)
 
+source_set("on_device_translation") {
+  sources = [
+    "../component_updater/translate_kit_component_installer.cc",
+    "../component_updater/translate_kit_component_installer.h",
+    "../component_updater/translate_kit_language_pack_component_installer.cc",
+    "../component_updater/translate_kit_language_pack_component_installer.h",
+    "component_manager.cc",
+    "component_manager.h",
+    "file_operation_proxy_impl.cc",
+    "file_operation_proxy_impl.h",
+    "service_controller.cc",
+    "service_controller.h",
+    "service_controller_manager.cc",
+    "service_controller_manager.h",
+    "service_controller_manager_factory.cc",
+    "service_controller_manager_factory.h",
+    "translation_manager_impl.cc",
+    "translation_manager_impl.h",
+    "translator.cc",
+    "translator.h",
+  ]
+  public_deps = [
+    "//chrome/browser/on_device_translation:constants",
+    "//chrome/browser/on_device_translation:language_pack_util",
+    "//chrome/browser/on_device_translation:prefs",
+    "//chrome/browser/on_device_translation:translation_metrics",
+  ]
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//components/component_updater:component_updater",
+    "//components/crx_file:crx_file",
+    "//components/keyed_service/content",
+    "//components/language/core/browser",
+    "//components/prefs:prefs",
+    "//components/services/on_device_translation:on_device_translation_service",
+    "//components/update_client:update_client",
+    "//content/public/browser",
+  ]
+}
+
 source_set("prefs") {
   sources = [
     "pref_names.cc",
@@ -70,6 +111,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/on_device_translation:on_device_translation",
     "//components/component_updater:test_support",
     "//components/crx_file",
     "//components/prefs",
@@ -94,6 +136,7 @@ source_set("test_support") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser/on_device_translation:on_device_translation",
     "//components/services/on_device_translation/:test_support",
     "//content/test:test_support",
   ]

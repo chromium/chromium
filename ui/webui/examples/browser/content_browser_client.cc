@@ -4,6 +4,7 @@
 
 #include "ui/webui/examples/browser/content_browser_client.h"
 
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/guest_view/common/guest_view.mojom.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/render_process_host.h"
@@ -71,7 +72,7 @@ void ContentBrowserClient::RegisterAssociatedInterfaceBindersForRenderFrameHost(
 }
 
 std::string ContentBrowserClient::GetUserAgent() {
-  return content::BuildUserAgentFromProduct("Chrome/119.0.5994.0");
+  return embedder_support::GetUserAgent();
 }
 
 }  // namespace webui_examples

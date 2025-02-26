@@ -10,6 +10,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_STRIP_CONTEXT_MENU;
+
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +36,7 @@ import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -53,6 +56,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -63,8 +67,11 @@ import java.util.List;
 public class TabContextMenuCoordinatorUnitTest {
     private static final int TAB_ID = 1;
     private static final int TAB_OUTSIDE_OF_GROUP_ID = 2;
+    private static final int NON_URL_TAB_ID = 3;
     private static final Token TAB_GROUP_ID = Token.createRandom();
     private static final String COLLABORATION_ID = "CollaborationId";
+    private static final GURL EXAMPLE_URL = new GURL("https://example.com");
+    private static final GURL CHROME_SCHEME_URL = new GURL("chrome://history");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -78,11 +85,13 @@ public class TabContextMenuCoordinatorUnitTest {
     private final SavedTabGroup mSavedTabGroup = new SavedTabGroup();
     @Mock private Tab mTab1;
     @Mock private Tab mTabOutsideOfGroup;
+    @Mock private Tab mNonUrlTab;
     @Mock private TabRemover mTabRemover;
     @Mock private View mMenuView;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private Profile mProfile;
+    @Mock private ShareDelegate mShareDelegate;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabCreator mTabCreator;
@@ -111,10 +120,15 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabModel.isIncognito()).thenReturn(false);
         when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab1);
         when(mTabModel.getTabById(TAB_OUTSIDE_OF_GROUP_ID)).thenReturn(mTabOutsideOfGroup);
+        when(mTabModel.getTabById(NON_URL_TAB_ID)).thenReturn(mNonUrlTab);
         mTabModel.setTabRemoverForTesting(mTabRemover);
         mTabModel.setTabCreatorForTesting(mTabCreator);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTab1.getUrl()).thenReturn(EXAMPLE_URL);
         when(mTabOutsideOfGroup.getTabGroupId()).thenReturn(null);
+        when(mTabOutsideOfGroup.getUrl()).thenReturn(EXAMPLE_URL);
+        when(mNonUrlTab.getTabGroupId()).thenReturn(null);
+        when(mNonUrlTab.getUrl()).thenReturn(CHROME_SCHEME_URL);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mProfile.isOffTheRecord()).thenReturn(true);
@@ -124,6 +138,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         activity,
                         () -> mTabModel,
                         mTabGroupModelFilter,
+                        mShareDelegate,
                         mActionConfirmationManager,
                         mModalDialogManager,
                         mDataSharingTabManager);
@@ -131,6 +146,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 TabContextMenuCoordinator.createContextMenuCoordinator(
                         mTabModel,
                         mTabGroupModelFilter,
+                        mShareDelegate,
                         mActionConfirmationManager,
                         mModalDialogManager,
                         mWindowAndroid,
@@ -203,8 +219,38 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
+    public void testListMenuItems_nonShareableUrl() {
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.buildMenuActionItems(modelList, NON_URL_TAB_ID);
+
+        assertEquals("Number of items in the list menu is incorrect", 2, modelList.size());
+
+        // List item 1
+        assertEquals(
+                R.string.add_tab_to_group,
+                modelList.get(0).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.add_to_tab_group,
+                modelList.get(0).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 2
+        assertEquals(
+                R.string.close_tab, modelList.get(1).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(1).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
     public void testRemoveFromGroup() {
         mOnItemClickedCallback.onClick(R.id.remove_from_tab_group, TAB_ID, COLLABORATION_ID);
         verify(mTabUngrouper, times(1)).ungroupTabs(List.of(mTab1), true, true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testShareUrl() {
+        mOnItemClickedCallback.onClick(R.id.share_tab, TAB_ID, COLLABORATION_ID);
+        verify(mShareDelegate, times(1)).share(mTab1, false, TAB_STRIP_CONTEXT_MENU);
     }
 }

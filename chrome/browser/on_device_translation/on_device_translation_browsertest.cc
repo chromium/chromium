@@ -768,6 +768,44 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   WaitForConsoleObserver(*console_observer);
 }
 
+// Tests V1 behavior.
+class OnDeviceTranslationV1BrowserTest : public OnDeviceTranslationBrowserTest {
+ public:
+  OnDeviceTranslationV1BrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kTranslationAPIV1);
+  }
+  ~OnDeviceTranslationV1BrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that `ai.translator.availability()` for a translation
+// containing a language outside of English + the user's preferred languages.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
+                       TranslatorAvailabilityMaskedForNonPreferredLanguages) {
+  SetSelectedLanguages("fr");
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.InstallMockTranslateKitComponent();
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Fr);
+  NavigateToEmptyPage();
+
+  // Translation is not available for unsupported languages.
+  TestTranslationAvailable(browser(), "fr", "abcxyz", "unavailable");
+
+  // The Japanese language pack needs to be downloaded in order for
+  // translation between Japanese and French to be available.
+  TestTranslationAvailable(browser(), "ja", "fr", "downloadable");
+
+  // Even if all required language packs are installed, the
+  // Japanese <-> French translation availability status remains
+  // "downloadable" because Japanese is not included in English +
+  // preferred languages.
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
+  TestTranslationAvailable(browser(), "ja", "fr", "downloadable");
+}
+
 // Tests the behavior of the crash of calling createTranslator() and
 // canTranslate().
 class OnDeviceTranslationCrashingLangBrowserTest
@@ -1439,31 +1477,6 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   TestTranslationAvailable(browser(), "ja", "fr", "downloadable");
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Fr);
   TestTranslationAvailable(browser(), "ja", "fr", "available");
-}
-
-// Test the behavior of `ai.translator.availability()` for a translation
-// containing a language outside of English + the user's preferred languages.
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
-                       TranslatorAvailabilityNonPreferredLanguages) {
-  SetSelectedLanguages("fr");
-  MockComponentManager mock_component_manager(GetTempDir());
-  mock_component_manager.InstallMockTranslateKitComponent();
-  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Fr);
-  NavigateToEmptyPage();
-
-  // Translation is not available for unsupported languages.
-  TestTranslationAvailable(browser(), "fr", "abcxyz", "unavailable");
-
-  // The Japanese language pack needs to be downloaded in order for
-  // translation between Japanese and French to be available.
-  TestTranslationAvailable(browser(), "ja", "fr", "downloadable");
-
-  // Even if all required language packs are installed, the
-  // Japanese <-> French translation availability status remains
-  // "downloadable" because Japanese is not included in English +
-  // preferred languages.
-  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
-  TestTranslationAvailable(browser(), "ja", "fr", "downloadable");
 }
 
 // Test that calling both the legacy and new API works.

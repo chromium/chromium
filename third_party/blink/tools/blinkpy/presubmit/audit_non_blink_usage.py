@@ -2469,6 +2469,14 @@ _CONFIG = [
             'gfx::SkPixmapToWritableSpan',
         ]
     },
+    {
+        'paths': [
+            'third_party/blink/common/client_hints/client_hints.cc',
+        ],
+        'allowed': [
+            'network::GetClientHintToPolicyFeatureMap',
+        ]
+    },
 ]
 
 

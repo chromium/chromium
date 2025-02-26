@@ -529,17 +529,15 @@ void InterestGroupCachingStorage::UpdateInterestGroupPriorityOverrides(
 
 void InterestGroupCachingStorage::SetBiddingAndAuctionServerKeys(
     const url::Origin& coordinator,
-    const std::vector<BiddingAndAuctionServerKey>& keys,
+    std::string serialized_keys,
     base::Time expiration) {
   interest_group_storage_
       .AsyncCall(&InterestGroupStorage::SetBiddingAndAuctionServerKeys)
-      .WithArgs(coordinator, keys, expiration);
+      .WithArgs(coordinator, std::move(serialized_keys), expiration);
 }
 void InterestGroupCachingStorage::GetBiddingAndAuctionServerKeys(
     const url::Origin& coordinator,
-    base::OnceCallback<
-        void(std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>)>
-        callback) {
+    base::OnceCallback<void(std::pair<base::Time, std::string>)> callback) {
   interest_group_storage_
       .AsyncCall(&InterestGroupStorage::GetBiddingAndAuctionServerKeys)
       .WithArgs(coordinator)

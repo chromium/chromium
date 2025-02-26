@@ -396,20 +396,16 @@ void PillButton::Init() {
 }
 
 void PillButton::UpdateTextColor() {
-  SetTextColorId(views::Button::STATE_DISABLED, cros_tokens::kCrosSysDisabled);
+  SetTextColor(views::Button::STATE_DISABLED, cros_tokens::kCrosSysDisabled);
 
   // If custom text color is set, use it to set text color.
   if (text_color_) {
-    if (auto color = text_color_->GetSkColor()) {
-      SetEnabledTextColors(*color);
-    } else {
-      SetEnabledTextColorIds(*text_color_->GetColorId());
-    }
+    SetEnabledTextColors(text_color_);
   } else {
     // Otherwise, use default color ID to set text color.
     auto default_color_id = GetDefaultButtonTextIconColorId(type_);
     DCHECK(default_color_id);
-    SetEnabledTextColorIds(default_color_id.value());
+    SetEnabledTextColors(default_color_id.value());
   }
 }
 

@@ -55,7 +55,7 @@ class ActionLabelButton : public views::LabelButton {
     SetText(l10n_util::GetStringUTF16(string_id));
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
     SetProperty(views::kMarginsKey, kButtonInsets);
-    SetEnabledTextColorIds(cros_tokens::kCrosSysPrimary);
+    SetEnabledTextColors(cros_tokens::kCrosSysPrimary);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label());
     label()->SetAutoColorReadabilityEnabled(false);

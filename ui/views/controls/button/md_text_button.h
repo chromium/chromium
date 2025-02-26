@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/label_button_image_container.h"
@@ -82,7 +83,7 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
 
   // LabelButton:
   void OnThemeChanged() override;
-  void SetEnabledTextColors(std::optional<SkColor> color) override;
+  void SetEnabledTextColors(std::optional<ui::ColorVariant> color) override;
   void SetText(std::u16string_view text) override;
   PropertyEffects UpdateStyleToIndicateDefaultStatus() override;
   void StateChanged(ButtonState old_state) override;

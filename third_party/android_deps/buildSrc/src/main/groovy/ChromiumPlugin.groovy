@@ -78,16 +78,24 @@ class ChromiumPlugin implements Plugin<Project> {
             }
         }
 
-        project.configurations.compileLatest {
-            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                overrideVersionIfNecessary(project, details)
+        def resolutionStrategyClosure = {
+            if (project.hasProperty('versionCache') && project.versionCache) {
+                project.ext.versionCache.each { String selector, String version ->
+                    force "${selector}:${version}"
+                }
+            } else {
+                eachDependency { DependencyResolveDetails details ->
+                    overrideVersionIfNecessary(project, details)
+                }
             }
         }
 
+        project.configurations.compileLatest {
+            resolutionStrategy(resolutionStrategyClosure)
+        }
+
         project.configurations.androidTestCompileLatest {
-            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                overrideVersionIfNecessary(project, details)
-            }
+            resolutionStrategy(resolutionStrategyClosure)
         }
 
         // testCompile config is for host side tests (Robolectric) so we prefer
@@ -109,14 +117,6 @@ class ChromiumPlugin implements Plugin<Project> {
     private static void overrideVersionIfNecessary(Project project, DependencyResolveDetails details) {
         String group = details.requested.group
         String requestedVersion = details.requested.version
-        if (project.ext.has('versionCache') && project.ext.versionCache) {
-            String module = "${group}:${details.requested.name}"
-            String cachedVersion = project.ext.versionCache[module]
-            if (cachedVersion != null) {
-                details.useVersion cachedVersion
-                return
-            }
-        }
         if (group.startsWith('androidx') && requestedVersion != '+' && !requestedVersion.contains('-SNAPSHOT')) {
             details.useVersion '+'
         }

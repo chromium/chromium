@@ -160,14 +160,19 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   bool MaybeConsumeUpdateCheck(const GURL& origin,
                                const webapps::AppId& app_id,
                                base::Time check_time);
+
   std::optional<base::Time> GetLastUpdateCheckTime(
       const webapps::AppId& app_id) const;
+
   void SetLastUpdateCheckTime(const GURL& origin,
                               const webapps::AppId& app_id,
                               base::Time time);
-  void OnUpdateStopped(const GURL& url,
+
+  void OnUpdateStopped(base::WeakPtr<content::WebContents> web_contents,
+                       const GURL& url,
                        const webapps::AppId& app_id,
                        ManifestUpdateResult result);
+
   void NotifyResult(const GURL& url,
                     const std::optional<webapps::AppId>& app_id,
                     ManifestUpdateResult result);

@@ -29,7 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_STYLED_STROKE_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_STYLED_STROKE_DATA_H_
 
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -40,6 +39,15 @@ class PaintFlags;
 namespace blink {
 
 class StrokeData;
+
+enum StrokeStyle {
+  kNoStroke,
+  kSolidStroke,
+  kDottedStroke,
+  kDashedStroke,
+  kDoubleStroke,
+  kWavyStroke,
+};
 
 // Stroke geometry information based on a specified style (StrokeStyle).
 //

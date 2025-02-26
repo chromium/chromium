@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/bnpl_tos_view_desktop.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
@@ -23,10 +24,12 @@ std::unique_ptr<BnplTosView> CreateAndShowBnplTos(
 
 BnplTosViewDesktop::BnplTosViewDesktop(
     base::WeakPtr<BnplTosController> controller,
-    content::WebContents* web_contents) {
-  std::unique_ptr<BnplTosDialog> dialog_view =
-      std::make_unique<BnplTosDialog>(controller);
-  TabInterface* tab_interface = TabInterface::GetFromContents(web_contents);
+    content::WebContents* web_contents)
+    : web_contents_(web_contents) {
+  std::unique_ptr<BnplTosDialog> dialog_view = std::make_unique<BnplTosDialog>(
+      controller, base::BindRepeating(&BnplTosViewDesktop::OpenLink,
+                                      weak_ptr_factory_.GetWeakPtr()));
+  TabInterface* tab_interface = TabInterface::GetFromContents(web_contents_);
   CHECK(tab_interface);
   dialog_widget_ =
       tab_interface->GetTabFeatures()
@@ -45,7 +48,16 @@ void BnplTosViewDesktop::CloseWidget(
   CHECK(dialog_view);
   // The following call will result in the destruction of this and, indirectly,
   // the `dialog_widget_`. Do not access this after the following call.
-  dialog_view->controller()->OnViewClosing();
+  dialog_view->controller()->OnViewClosing(
+      closed_reason == views::Widget::ClosedReason::kAcceptButtonClicked);
+}
+
+void BnplTosViewDesktop::OpenLink(const GURL& url) {
+  web_contents_->OpenURL(
+      content::OpenURLParams(
+          url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
 }
 
 }  // namespace autofill

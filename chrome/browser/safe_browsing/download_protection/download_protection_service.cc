@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
-#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -52,7 +51,6 @@
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
-#include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
 #include "net/cert/x509_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -82,9 +80,6 @@ inline constexpr int kDownloadAttributionUserGestureLimitForExtendedReporting =
 const int64_t kDownloadRequestTimeoutMs = 7000;
 // We sample 1% of allowlisted downloads to still send out download pings.
 const double kAllowlistDownloadSampleRate = 0.01;
-
-const char kDownloadRequestUrl[] =
-    "https://sb-ssl.google.com/safebrowsing/clientreport/download";
 
 bool IsDownloadSecuritySensitive(safe_browsing::DownloadCheckResult result) {
   using Result = safe_browsing::DownloadCheckResult;
@@ -136,9 +131,10 @@ const void* const DownloadProtectionService::kDownloadProtectionDataKey =
     &kDownloadProtectionDataKey;
 
 DownloadProtectionService::DownloadProtectionService(
-    SafeBrowsingServiceImpl* sb_service)
+    SafeBrowsingServiceImpl* sb_service,
+    std::unique_ptr<DownloadProtectionDelegate> delegate)
     : sb_service_(sb_service),
-      enabled_(false),
+      delegate_(std::move(delegate)),
       binary_feature_extractor_(new BinaryFeatureExtractor()),
       download_request_timeout_ms_(kDownloadRequestTimeoutMs),
 #if !BUILDFLAG(IS_ANDROID)
@@ -150,12 +146,19 @@ DownloadProtectionService::DownloadProtectionService(
 #endif
       allowlist_sample_rate_(kAllowlistDownloadSampleRate),
       weak_ptr_factory_(this) {
+  CHECK(delegate_);
   if (sb_service) {
     ui_manager_ = sb_service->ui_manager();
     database_manager_ = sb_service->database_manager();
     ParseManualBlocklistFlag();
   }
 }
+
+DownloadProtectionService::DownloadProtectionService(
+    SafeBrowsingServiceImpl* sb_service)
+    : DownloadProtectionService(
+          sb_service,
+          DownloadProtectionDelegate::CreateForPlatform()) {}
 
 DownloadProtectionService::~DownloadProtectionService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -214,10 +217,6 @@ void DownloadProtectionService::CheckClientDownload(
 bool DownloadProtectionService::MaybeCheckClientDownload(
     download::DownloadItem* item,
     CheckDownloadRepeatingCallback callback) {
-  Profile* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(item));
-  bool safe_browsing_enabled =
-      profile && IsSafeBrowsingEnabled(*profile->GetPrefs());
   auto settings = ShouldUploadBinaryForDeepScanning(item);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -245,13 +244,17 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
   CHECK(!settings.has_value());
 #endif
 
-  if (safe_browsing_enabled) {
+  if (delegate_->ShouldCheckClientDownload(item)) {
     CheckClientDownload(item, std::move(callback), /*password=*/std::nullopt);
     return true;
   }
 
 #if !BUILDFLAG(IS_ANDROID)
   if (settings.has_value()) {
+    Profile* profile = Profile::FromBrowserContext(
+        content::DownloadItemUtils::GetBrowserContext(item));
+    bool safe_browsing_enabled =
+        profile && IsSafeBrowsingEnabled(*profile->GetPrefs());
     DCHECK(report_only_scan);
     DCHECK(!safe_browsing_enabled);
     // Since this branch implies that Safe Browsing is disabled, the pre-deep
@@ -287,9 +290,7 @@ void DownloadProtectionService::CancelChecksForDownload(
 
 bool DownloadProtectionService::ShouldCheckDownloadUrl(
     download::DownloadItem* item) {
-  Profile* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(item));
-  return profile && IsSafeBrowsingEnabled(*profile->GetPrefs());
+  return delegate_->ShouldCheckDownloadUrl(item);
 }
 
 void DownloadProtectionService::CheckDownloadUrl(
@@ -322,13 +323,7 @@ void DownloadProtectionService::CheckDownloadUrl(
 bool DownloadProtectionService::IsSupportedDownload(
     const download::DownloadItem& item,
     const base::FilePath& target_path) const {
-  DownloadCheckResultReason reason = REASON_MAX;
-  // TODO(nparker): Remove the CRX check here once can support
-  // UNKNOWN types properly.  http://crbug.com/581044
-  return (CheckClientDownloadRequest::IsSupportedDownload(item, target_path,
-                                                          &reason) &&
-          download_type_util::GetDownloadType(target_path) !=
-              ClientDownloadRequest::CHROME_EXTENSION);
+  return delegate_->IsSupportedDownload(item, target_path);
 }
 
 void DownloadProtectionService::CheckPPAPIDownloadRequest(
@@ -627,16 +622,8 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
-// static
-GURL DownloadProtectionService::GetDownloadRequestUrl() {
-  GURL url(kDownloadRequestUrl);
-  std::string api_key = google_apis::GetAPIKey();
-  if (!api_key.empty()) {
-    url = url.Resolve("?key=" +
-                      base::EscapeQueryParamValue(api_key, /*use_plus=*/true));
-  }
-  CHECK(url.is_valid());
-  return url;
+const GURL& DownloadProtectionService::GetDownloadRequestUrl() const {
+  return delegate_->GetDownloadRequestUrl();
 }
 
 base::TimeDelta DownloadProtectionService::GetDownloadRequestTimeout() const {

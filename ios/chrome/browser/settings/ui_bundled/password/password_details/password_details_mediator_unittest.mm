@@ -12,6 +12,7 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
@@ -27,13 +28,15 @@
 
 namespace {
 
-using password_manager::CredentialUIEntry;
-using password_manager::InsecureType;
-using password_manager::PasswordForm;
-using password_manager::TestPasswordStore;
-using testing::ElementsAre;
-using testing::IsEmpty;
-using testing::Pair;
+using ::password_manager::CredentialUIEntry;
+using ::password_manager::InsecureType;
+using ::password_manager::PasswordForm;
+using ::password_manager::TestPasswordStore;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using ::testing::Pair;
+using SyncServiceForPasswordTests =
+    ::testing::NiceMock<syncer::MockSyncService>;
 
 constexpr char kExampleSignonRealm[] = "https://www.example.com/";
 constexpr char kExampleURL1[] = "https://www.example.com/1";
@@ -91,6 +94,9 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 - (void)setupRightShareButton:(BOOL)policyEnabled {
 }
 
+- (void)hideShareButton {
+}
+
 @end
 
 // Test fixture for testing PasswordDetailsMediator class.
@@ -130,11 +136,13 @@ class PasswordDetailsMediatorTest : public PlatformTest {
         stringWithUTF8String:affiliated_group().GetDisplayName().c_str()];
 
     mediator_ = [[PasswordDetailsMediator alloc]
-        initWithPasswords:GetAffiliatedGroupCredentials()
-              displayName:display_name()
-                  profile:profile_.get()
-                  context:DetailsContext::kPasswordSettings
-                 delegate:nil];
+           initWithPasswords:GetAffiliatedGroupCredentials()
+                 displayName:display_name()
+                     context:DetailsContext::kPasswordSettings
+                    delegate:nil
+        passwordCheckManager:password_check_manager_.get()
+                 prefService:profile_->GetPrefs()
+                 syncService:&sync_service_];
     mediator_.consumer = consumer_;
   }
 
@@ -145,8 +153,6 @@ class PasswordDetailsMediatorTest : public PlatformTest {
   }
 
   PasswordDetailsMediator* mediator() { return mediator_; }
-
-  ProfileIOS* profile() { return profile_.get(); }
 
   FakePasswordDetailsConsumer* consumer() { return consumer_; }
 
@@ -271,6 +277,7 @@ class PasswordDetailsMediatorTest : public PlatformTest {
   FakePasswordDetailsConsumer* consumer_;
   PasswordDetailsMediator* mediator_;
   password_manager::AffiliatedGroup affiliated_group_;
+  SyncServiceForPasswordTests sync_service_;
 
   NSString* display_name_;
 };

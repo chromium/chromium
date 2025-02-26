@@ -36,49 +36,31 @@ namespace {
 
 const char* kDefaultNestedConfig = R"pb(
   scenario_name: "test_nested_scenario"
-  start_rules: { name: "start_trigger" manual_trigger_name: "start_trigger" }
-  stop_rules: { name: "stop_trigger" manual_trigger_name: "stop_trigger" }
-  upload_rules: { name: "upload_trigger" manual_trigger_name: "upload_trigger" }
+  start_rules: { manual_trigger_name: "start_trigger" }
+  stop_rules: { manual_trigger_name: "stop_trigger" }
+  upload_rules: { manual_trigger_name: "upload_trigger" }
 )pb";
 
 const char* kDefaultConfig = R"pb(
   scenario_name: "test_scenario"
-  setup_rules: { name: "setup_trigger" manual_trigger_name: "setup_trigger" }
-  start_rules: { name: "start_trigger" manual_trigger_name: "start_trigger" }
-  stop_rules: { name: "stop_trigger" manual_trigger_name: "stop_trigger" }
-  upload_rules: { name: "upload_trigger" manual_trigger_name: "upload_trigger" }
+  setup_rules: { manual_trigger_name: "setup_trigger" }
+  start_rules: { manual_trigger_name: "start_trigger" }
+  stop_rules: { manual_trigger_name: "stop_trigger" }
+  upload_rules: { manual_trigger_name: "upload_trigger" }
   trace_config: {
     data_sources: { config: { name: "org.chromium.trace_metadata" } }
   }
   nested_scenarios: {
     scenario_name: "nested_scenario"
-    start_rules: {
-      name: "nested_start_trigger"
-      manual_trigger_name: "nested_start_trigger"
-    }
-    stop_rules: {
-      name: "nested_stop_trigger"
-      manual_trigger_name: "nested_stop_trigger"
-    }
-    upload_rules: {
-      name: "nested_upload_trigger"
-      manual_trigger_name: "nested_upload_trigger"
-    }
+    start_rules: { manual_trigger_name: "nested_start_trigger" }
+    stop_rules: { manual_trigger_name: "nested_stop_trigger" }
+    upload_rules: { manual_trigger_name: "nested_upload_trigger" }
   }
   nested_scenarios: {
     scenario_name: "other_nested_scenario"
-    start_rules: {
-      name: "other_nested_start_trigger"
-      manual_trigger_name: "other_nested_start_trigger"
-    }
-    stop_rules: {
-      name: "other_nested_stop_trigger"
-      manual_trigger_name: "other_nested_stop_trigger"
-    }
-    upload_rules: {
-      name: "other_nested_upload_trigger"
-      manual_trigger_name: "other_nested_upload_trigger"
-    }
+    start_rules: { manual_trigger_name: "other_nested_start_trigger" }
+    stop_rules: { manual_trigger_name: "other_nested_stop_trigger" }
+    upload_rules: { manual_trigger_name: "other_nested_upload_trigger" }
   }
 )pb";
 
@@ -554,7 +536,7 @@ TEST_F(TracingScenarioTest, SetupStartStop) {
 
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario)).Times(0);
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
-  EXPECT_EQ(TracingScenario::State::kRecording,
+  EXPECT_EQ(TracingScenario::State::kStarting,
             tracing_scenario.current_state());
 
   base::RunLoop run_loop;
@@ -582,7 +564,7 @@ TEST_F(TracingScenarioTest, SetupNestedStartStop) {
 
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario)).Times(0);
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
-  EXPECT_EQ(TracingScenario::State::kRecording,
+  EXPECT_EQ(TracingScenario::State::kStarting,
             tracing_scenario.current_state());
   EXPECT_FALSE(
       base::trace_event::EmitNamedTrigger("other_nested_start_trigger"));
@@ -610,7 +592,7 @@ TEST_F(TracingScenarioTest, Abort) {
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
-  EXPECT_EQ(TracingScenario::State::kRecording,
+  EXPECT_EQ(TracingScenario::State::kStarting,
             tracing_scenario.current_state());
 
   base::RunLoop run_loop;
@@ -634,7 +616,17 @@ TEST_F(TracingScenarioTest, Upload) {
   tracing_scenario.Enable();
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(delegate, OnScenarioRecording(&tracing_scenario))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+    EXPECT_EQ(TracingScenario::State::kStarting,
+              tracing_scenario.current_state());
+    run_loop.Run();
+    EXPECT_EQ(TracingScenario::State::kRecording,
+              tracing_scenario.current_state());
+  }
 
   base::Token trace_uuid = tracing_scenario.GetSessionID();
   base::RunLoop run_loop;
@@ -658,7 +650,13 @@ TEST_F(TracingScenarioTest, StopUpload) {
   tracing_scenario.Enable();
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(delegate, OnScenarioRecording(&tracing_scenario))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+    run_loop.Run();
+  }
 
   base::Token trace_uuid = tracing_scenario.GetSessionID();
   base::RunLoop run_loop;
@@ -683,8 +681,16 @@ TEST_F(TracingScenarioTest, NestedUpload) {
   tracing_scenario.Enable();
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
-  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(delegate, OnScenarioRecording(&tracing_scenario))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+    EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
+    run_loop.Run();
+  }
+  EXPECT_EQ(TracingScenario::State::kRecording,
+            tracing_scenario.current_state());
 
   {
     base::RunLoop run_loop;

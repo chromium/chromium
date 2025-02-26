@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "content/browser/interest_group/trusted_signals_fetcher.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -105,6 +106,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // The `callback` parameter may be invoked synchronously or asynchronously,
   // and may fail.
   using GetCoordinatorKeyCallback = base::RepeatingCallback<void(
+      const url::Origin& scope_origin,
       const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback)>;
@@ -239,7 +241,11 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   //
   // Never starts a network fetch synchronously. Bidder signals are requested
   // over the network after a post task.
+  //
+  // `rfh_token` is needed to treat the request as if it came from a specific
+  // frame.
   std::unique_ptr<Handle> RequestTrustedBiddingSignals(
+      FrameTreeNodeId frame_tree_node_id,
       const url::Origin& main_frame_origin,
       network::mojom::IPAddressSpace ip_address_space,
       const url::Origin& interest_group_owner,
@@ -265,7 +271,11 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   //
   // Never starts a network fetch synchronously. Scoring signals are requested
   // over the network after a post task.
+  //
+  // `rfh_token` is needed to treat the request as if it came from a specific
+  // frame.
   std::unique_ptr<TrustedSignalsCacheImpl::Handle> RequestTrustedScoringSignals(
+      FrameTreeNodeId frame_tree_node_id,
       const url::Origin& main_frame_origin,
       network::mojom::IPAddressSpace ip_address_space,
       const url::Origin& seller,
@@ -372,7 +382,8 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
     // response. For bidding signals fetches, it's the interest group owner. For
     // scoring signals fetches, it's the seller origin (component or top-level,
     // depending on which seller will be receiving the signals).
-    FetchKey(const url::Origin& main_frame_origin,
+    FetchKey(FrameTreeNodeId frame_tree_node_id,
+             const url::Origin& main_frame_origin,
              network::mojom::IPAddressSpace ip_address_space,
              SignalsType signals_type,
              const url::Origin& script_origin,
@@ -402,6 +413,10 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
     // guess on what order will result in the most performant comparisons.
 
     NetworkPartitionNonceKey network_partition_nonce_key;
+
+    // Live requests cannot be merged across frames, due to devtools and
+    // extensions hooks.
+    FrameTreeNodeId frame_tree_node_id;
 
     // The origin of the frame running the auction that needs the signals. This
     // could potentially be used to separate compression groups instead of
@@ -442,6 +457,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
                     std::optional<std::string> interest_group_name,
                     const GURL& trusted_signals_url,
                     const url::Origin& coordinator,
+                    FrameTreeNodeId frame_tree_node_id,
                     const url::Origin& main_frame_origin,
                     network::mojom::IPAddressSpace ip_address_space,
                     const url::Origin& joining_origin,
@@ -498,6 +514,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
     ScoringCacheKey(const url::Origin& seller,
                     const GURL& trusted_signals_url,
                     const url::Origin& coordinator,
+                    FrameTreeNodeId frame_tree_node_id,
                     const url::Origin& main_frame_origin,
                     network::mojom::IPAddressSpace ip_address_space,
                     const url::Origin& interest_group_owner,

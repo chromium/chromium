@@ -68,11 +68,6 @@ class GinJavaBridgeDispatcherHost
       GinJavaBoundObject::ObjectID object_id) override;
 
   // Run on the background thread.
-  void OnGetMethods(GinJavaBoundObject::ObjectID object_id,
-                    std::vector<std::string>* returned_method_names);
-  void OnHasMethod(GinJavaBoundObject::ObjectID object_id,
-                   const std::string& method_name,
-                   bool* result);
   void OnInvokeMethod(const GlobalRenderFrameHostId& routing_id,
                       GinJavaBoundObject::ObjectID object_id,
                       const std::string& method_name,

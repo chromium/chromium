@@ -293,7 +293,7 @@ void Path::Apply(void* info, PathApplierFunction function) const {
 }
 
 Path& Path::Transform(const AffineTransform& xform) {
-  path_.transform(AffineTransformToSkMatrix(xform));
+  path_.transform(xform.ToSkMatrix());
   return *this;
 }
 
@@ -599,7 +599,7 @@ void Path::AddRoundedRect(const FloatRoundedRect& rect, bool clockwise) {
 }
 
 void Path::AddPath(const Path& src, const AffineTransform& transform) {
-  path_.addPath(src.GetSkPath(), AffineTransformToSkMatrix(transform));
+  path_.addPath(src.GetSkPath(), transform.ToSkMatrix());
 }
 
 void Path::Translate(const gfx::Vector2dF& offset) {

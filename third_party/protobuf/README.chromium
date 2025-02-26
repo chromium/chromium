@@ -245,3 +245,8 @@ Description of the patches:
 
   Add the compatability dir to .gitignore as it's unnecessary and contains files
   that trip CheckForTooLargeFiles presubmit.
+
+- 0054-remove-usage-if-absl-internal-if_constexpr.patch
+
+  Remove usage of absl internal if_constexpr. This has been upstreamed in
+  02/19/2025, so this patch can be removed on the roll in v31.

@@ -295,10 +295,10 @@ ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithFailure(
     std::string_view refresh_url_string) {
   return ScopedTestRegistrationFetcher(base::BindRepeating(
       [](const GURL& refresh_url) {
-        return base::expected<SessionParams, SessionError>(base::unexpected(
-            SessionError{SessionError::ErrorType::kEndpointUnreachable,
-                         net::SchemefulSite(refresh_url),
-                         /*session_id=*/std::nullopt}));
+        return base::expected<SessionParams, SessionError>(
+            base::unexpected(SessionError{SessionError::ErrorType::kNetError,
+                                          net::SchemefulSite(refresh_url),
+                                          /*session_id=*/std::nullopt}));
       },
       GURL(refresh_url_string)));
 }

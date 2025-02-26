@@ -26,6 +26,7 @@
 #include "base/types/optional_ref.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_delegate.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_observer.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
@@ -73,8 +74,14 @@ class DownloadFeedbackService;
 // client download is malicious or not.
 class DownloadProtectionService {
  public:
-  // Creates a download service.  The service is initially disabled.  You need
-  // to call SetEnabled() to start it.  |sb_service| owns this object.
+  // Creates a download service. The service is initially disabled.  You need
+  // to call SetEnabled() to start it. `sb_service` owns this object via the
+  // ServicesDelegate. `delegate` must not be null.
+  DownloadProtectionService(
+      SafeBrowsingServiceImpl* sb_service,
+      std::unique_ptr<DownloadProtectionDelegate> delegate);
+
+  // Same as above, but creates the default delegate instance.
   explicit DownloadProtectionService(SafeBrowsingServiceImpl* sb_service);
 
   DownloadProtectionService(const DownloadProtectionService&) = delete;
@@ -159,8 +166,10 @@ class DownloadProtectionService {
 
   bool enabled() const { return enabled_; }
 
+  DownloadProtectionDelegate* delegate() { return delegate_.get(); }
+
   // Returns the URL that will be contacted for download protection requests.
-  static GURL GetDownloadRequestUrl();
+  const GURL& GetDownloadRequestUrl() const;
 
   // Returns the timeout that is used by CheckClientDownload().
   base::TimeDelta GetDownloadRequestTimeout() const;
@@ -383,7 +392,9 @@ class DownloadProtectionService {
       CheckDownloadRepeatingCallback callback,
       DownloadCheckResult result);
 
-  raw_ptr<SafeBrowsingServiceImpl> sb_service_;
+  raw_ptr<SafeBrowsingServiceImpl> sb_service_ = nullptr;
+  // Delegate providing platform-specific logic. Never null.
+  std::unique_ptr<DownloadProtectionDelegate> delegate_;
   // These pointers may be NULL if SafeBrowsing is disabled.
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
@@ -406,12 +417,12 @@ class DownloadProtectionService {
 #endif
 
   // Keeps track of the state of the service.
-  bool enabled_;
+  bool enabled_ = false;
 
   // BinaryFeatureExtractor object, may be overridden for testing.
   scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor_;
 
-  int64_t download_request_timeout_ms_;
+  int64_t download_request_timeout_ms_ = 0;
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<DownloadFeedbackService> feedback_service_;

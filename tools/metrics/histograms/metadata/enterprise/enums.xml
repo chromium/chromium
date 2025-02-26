@@ -2402,6 +2402,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Generic move failed error"/>
   <int value="11" label="Cancelled"/>
   <int value="12" label="NetworkError"/>
+  <int value="13" label="ReconnectTimeout"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ash/policy/skyvault/policy_utils.h:MigrationUploadError) -->

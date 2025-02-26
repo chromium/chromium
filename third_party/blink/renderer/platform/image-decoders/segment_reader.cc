@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/skia/include/core/SkData.h"
 
@@ -138,8 +139,7 @@ base::span<const uint8_t> DataSegmentReader::GetSomeData(
   if (position >= data_->size()) {
     return {};
   }
-  auto data_span = base::span(data_->bytes(), data_->size());
-  return data_span.subspan(position);
+  return skia::as_byte_span(*data_).subspan(position);
 }
 
 sk_sp<SkData> DataSegmentReader::GetAsSkData() const {

@@ -47,6 +47,9 @@ class RectF;
 class Transform;
 }  // namespace gfx
 
+class SkMatrix;
+class SkM44;
+
 namespace blink {
 
 class PLATFORM_EXPORT AffineTransform {
@@ -136,6 +139,8 @@ class PLATFORM_EXPORT AffineTransform {
   [[nodiscard]] static AffineTransform FromTransform(const gfx::Transform&);
 
   [[nodiscard]] gfx::Transform ToTransform() const;
+  [[nodiscard]] SkMatrix ToSkMatrix() const;
+  [[nodiscard]] SkM44 ToSkM44() const;
 
   bool operator==(const AffineTransform& m2) const {
     return gfx::AllTrue(gfx::LoadDouble4(transform_) ==

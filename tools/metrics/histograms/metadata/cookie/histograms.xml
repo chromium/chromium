@@ -566,6 +566,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.GetCookiesString.Duration" units="microseconds"
+    expires_after="2025-07-30">
+  <owner>acondor@chromium.org</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Records the time spent executing RestrictedCookieManager::GetCookiesString,
+    plus its callback if the callback is invoked synchronously.
+
+    Subsampled to 1/1000. Not reported for clients with low-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.HasNonASCII.{CookieField}" enum="Boolean"
     expires_after="2025-07-27">
   <owner>bingler@chromium.org</owner>
@@ -1049,6 +1061,18 @@ chromium-metrics-reviews@google.com.
     from the store. Unlike Cookie.SessionAgeSinceLastUpdateInHoursLTEOneWeek
     this metric records the time since the last refresh (if any) instead of
     initial creation.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SetCookieFromString.Duration" units="microseconds"
+    expires_after="2025-07-30">
+  <owner>acondor@chromium.org</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Records the time spent executing
+    RestrictedCookieManager::SetCookieFromString, plus its callback.
+
+    Subsampled to 1/1000. Not reported for clients with low-resolution clocks.
   </summary>
 </histogram>
 

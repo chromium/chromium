@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_BUBBLE_SIGN_IN_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/signin/bubble_signin_promo_delegate.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 
 class Profile;
 

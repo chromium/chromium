@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_STRIP_CONTEXT_MENU;
+
 import android.app.Activity;
 
 import androidx.annotation.DimenRes;
@@ -17,6 +19,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -48,6 +52,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
     private TabContextMenuCoordinator(
             Supplier<TabModel> tabModelSupplier,
             TabGroupModelFilter tabGroupModelFilter,
+            ShareDelegate shareDelegate,
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
             WindowAndroid windowAndroid,
@@ -60,6 +65,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                         windowAndroid.getActivity().get(),
                         tabModelSupplier,
                         tabGroupModelFilter,
+                        shareDelegate,
                         actionConfirmationManager,
                         modalDialogManager,
                         dataSharingTabManager),
@@ -83,6 +89,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
     public static TabContextMenuCoordinator createContextMenuCoordinator(
             TabModel tabModel,
             TabGroupModelFilter tabGroupModelFilter,
+            ShareDelegate shareDelegate,
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
             WindowAndroid windowAndroid,
@@ -98,6 +105,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
         return new TabContextMenuCoordinator(
                 () -> tabModel,
                 tabGroupModelFilter,
+                shareDelegate,
                 actionConfirmationManager,
                 modalDialogManager,
                 windowAndroid,
@@ -111,6 +119,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
             Activity activity,
             Supplier<TabModel> tabModelSupplier,
             TabGroupModelFilter tabGroupModelFilter,
+            ShareDelegate shareDelegate,
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
             DataSharingTabManager dataSharingTabManager) {
@@ -128,6 +137,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                         .ungroupTabs(List.of(tab), /* trailing= */ true, /* allowDialog= */ true);
                 recordUserAction("RemoveFromTabGroup");
             } else if (menuId == R.id.share_tab) {
+                shareDelegate.share(tab, /* shareDirectly= */ false, TAB_STRIP_CONTEXT_MENU);
                 recordUserAction("ShareTab");
             } else if (menuId == R.id.close_tab) {
                 recordUserAction("CloseTab");
@@ -173,9 +183,11 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                             /* startIconId= */ 0));
         }
 
-        itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItem(
-                        R.string.share, R.id.share_tab, /* startIconId= */ 0));
+        if (ShareUtils.shouldEnableShare(tab)) {
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItem(
+                            R.string.share, R.id.share_tab, /* startIconId= */ 0));
+        }
 
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItem(

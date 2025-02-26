@@ -2964,27 +2964,11 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
-       DisableAccelerationPreservesRasterAndRecording) {
+       DisableAccelerationPreservesRecording) {
   ScopedCanvas2dLayersForTest layer_feature{/*enabled=*/true};
   CreateContext(kNonOpaque);
 
-  gfx::Size size(100, 100);
-  auto gpu_provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferGPU, &CanvasElement(),
-      CompositingMode::kSupportsDirectCompositing);
-  auto cpu_provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferCPU, &CanvasElement(),
-      CompositingMode::kSupportsDirectCompositing);
-
-  // When disabling acceleration, the raster content is read from the
-  // accelerated provider and written to the unaccelerated provider.
-  InSequence s;
-  EXPECT_CALL(*gpu_provider, Snapshot(FlushReason::kReplaceLayerBridge, _))
-      .Times(1);
-  EXPECT_CALL(*cpu_provider, WritePixels).Times(1);
-
-  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  CanvasElement().SetResourceProviderForTesting(std::move(gpu_provider), size);
+  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
 
   NonThrowableExceptionState exception_state;
   Context2D()->fillRect(10, 10, 20, 20);
@@ -2994,12 +2978,15 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   Context2D()->fillRect(10, 20, 30, 40);
 
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
-  CanvasElement().DisableAcceleration(std::move(cpu_provider));
+  CanvasElement().DisableAcceleration();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 
   Context2D()->endLayer(exception_state);
   Context2D()->restore(exception_state);
 
+  // Disabling acceleration caused pending paint ops to be rasterized. The
+  // resulting raster is drawn into the the new CPU surface. We are only left
+  // with the paint ops that could not be rasterized.
   EXPECT_THAT(
       Context2D()->FlushCanvas(FlushReason::kTesting),
       Optional(RecordedOpsAre(

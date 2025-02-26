@@ -117,6 +117,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -213,6 +214,7 @@ import java.util.function.Consumer;
         reason =
                 "Some tests are Testing CCT start up behavior. "
                         + "Unit test conversion tracked in crbug.com/1217031")
+@Features.DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
 public class CustomTabActivityTest {
     private static final int TIMEOUT_PAGE_LOAD_SECONDS = 10;
     private static final String TEST_PACKAGE = "org.chromium.chrome.tests";
@@ -2871,15 +2873,16 @@ public class CustomTabActivityTest {
         CustomTabsIntentTestUtils.setShareState(intent, SHARE_STATE_ON);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
-        ViewGroup toolbarButtons =
-                mCustomTabActivityTestRule.getActivity().findViewById(R.id.action_buttons);
+        Activity activity = mCustomTabActivityTestRule.getActivity();
+        ViewGroup buttons = activity.findViewById(R.id.action_buttons);
         Assert.assertEquals(
-                "No action buttons should be added.", 0, toolbarButtons.getChildCount());
+                "No action buttons should be added.",
+                0,
+                CustomTabToolbar.getCustomActionButtonCountForTesting(buttons));
 
         openAppMenuAndAssertMenuShown();
         Assert.assertNull(
-                "Share option should be hidden.",
-                mCustomTabActivityTestRule.getActivity().findViewById(R.id.share_row_menu_id));
+                "Share option should be hidden.", activity.findViewById(R.id.share_row_menu_id));
     }
 
     @Test

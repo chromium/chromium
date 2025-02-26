@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/services/on_device_translation/buildflags/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 # This target should be the default place for adding public interface things
@@ -371,6 +372,10 @@ source_set("profiles_extra_parts_impl") {
 
   if (enable_glic) {
     deps += [ "//chrome/browser/glic" ]
+  }
+
+  if (enable_on_device_translation) {
+    deps += [ "//chrome/browser/on_device_translation" ]
   }
 }
 

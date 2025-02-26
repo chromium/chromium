@@ -102,11 +102,11 @@ INSTANTIATE_TEST_SUITE_P(
                                  LobsterMode::kNoSelectedText,
                                  EditorMenuCardTextSelectionMode::kNoSelection,
                                  TextAndImageMode::kEditorWriteAndLobster},
-        TextAndImageModeTestCase{
-            /*magic_boost_revamp_enabled=*/true, EditorMode::kRewrite,
-            LobsterMode::kSelectedText,
-            EditorMenuCardTextSelectionMode::kHasSelection,
-            TextAndImageMode::kEditorRewriteAndLobster}, ));
+        TextAndImageModeTestCase{/*magic_boost_revamp_enabled=*/true,
+                                 EditorMode::kRewrite,
+                                 LobsterMode::kSelectedText,
+                                 EditorMenuCardTextSelectionMode::kHasSelection,
+                                 TextAndImageMode::kEditorRewriteAndLobster}));
 
 TEST_P(EditorMenuCardContextTextAndImageModeTest, TextAndImageModeIsCorrect) {
   base::test::ScopedFeatureList feature_list;

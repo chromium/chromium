@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/user_verifying_key.h"
+#include "device/fido/enclave/constants.h"
 #include "device/fido/features.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -49,7 +50,17 @@ GetWebAuthnUnexportableKeyProvider() {
   config.keychain_access_group =
       EnclaveManager::kEnclaveKeysKeychainAccessGroup;
 #endif  // BUILDFLAG(IS_MAC)
-  return crypto::GetUnexportableKeyProvider(std::move(config));
+  std::unique_ptr<crypto::UnexportableKeyProvider> provider =
+      crypto::GetUnexportableKeyProvider(std::move(config));
+  if ((!provider || provider->SelectAlgorithm(
+                        device::enclave::kSigningAlgorithms) == std::nullopt) &&
+      base::FeatureList::IsEnabled(
+          device::kWebAuthnMicrosoftSoftwareUnexportableKeyProvider)) {
+    // On Windows, if there is no TPM support, use the Microsoft Software Key
+    // Storage Provider instead.
+    provider = crypto::GetMicrosoftSoftwareUnexportableKeyProvider();
+  }
+  return provider;
 }
 
 std::unique_ptr<crypto::UserVerifyingKeyProvider>

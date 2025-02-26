@@ -169,9 +169,9 @@ views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
       views::Builder<HoverButton>(
           std::make_unique<HoverButton>(std::move(callback), std::u16string()))
           .SetLabelStyle(views::style::STYLE_BODY_5)
-          .SetEnabledTextColorIds(kColorExtensionsMenuSecondaryText)
-          .SetTextColorId(views::Button::ButtonState::STATE_DISABLED,
-                          kColorExtensionsMenuSecondaryText)
+          .SetEnabledTextColors(kColorExtensionsMenuSecondaryText)
+          .SetTextColor(views::Button::ButtonState::STATE_DISABLED,
+                        kColorExtensionsMenuSecondaryText)
           .SetImageLabelSpacing(button_icon_label_spacing)
           // Align the main and secondary row text by adding the primary
           // action button's icon size as margin.

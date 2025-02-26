@@ -800,9 +800,11 @@ TEST_F(SessionServiceImplWithStoreTest, GetAllSessionsWaitsForSessionsToLoad) {
 
   SessionParams::Scope scope;
   scope.origin = "example.com";
-  std::unique_ptr<Session> session = Session::CreateIfValid(SessionParams(
+  auto session_or_error = Session::CreateIfValid(SessionParams(
       "session_id", kTestUrl, "https://example.com/refresh", std::move(scope),
       /*creds=*/{}, unexportable_keys::UnexportableKeyId()));
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);
 
   // Complete loading. If we did not defer, we'd miss this session.

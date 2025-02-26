@@ -31,7 +31,6 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/plus_address_survey_type.h"
-#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_allocator.h"
@@ -307,7 +306,7 @@ bool PlusAddressServiceImpl::IsFieldEligibleForPlusAddress(
   return base::FeatureList::IsEnabled(
              features::kPlusAddressSuggestionsOnUsernameFields) &&
          (field.server_type() == autofill::FieldType::USERNAME ||
-          password_manager_util::IsSingleUsernameType(field.server_type())) &&
+          field.server_type() == autofill::FieldType::SINGLE_USERNAME) &&
          field.heuristic_type() == autofill::FieldType::EMAIL_ADDRESS;
 }
 

@@ -679,6 +679,8 @@ struct AuctionDataBuyerConfig {
 };
 
 // Configuration to pass to GetInterestGroupAdAuctionData().
+// The behavior of `request_size` and `per_buyer_configs` is described in
+// https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#buyer-controls
 struct AuctionDataConfig {
   // A specific list of buyers to include in the encrypted request and any
   // specific options for them.

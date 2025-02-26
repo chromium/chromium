@@ -56,7 +56,7 @@ def MaybeRunCommand(name, argv, stamp_file, use_build_server=False):
   # If we get a bad tty (happens when autoninja is not run from the terminal
   # directly but as part of another script), ignore the build server and build
   # normally since the build server will not know where to output to otherwise.
-  if not os.path.exists(stdout_name):
+  if not stdout_name or not os.path.exists(stdout_name):
     return False
 
   with contextlib.closing(socket.socket(socket.AF_UNIX)) as sock:

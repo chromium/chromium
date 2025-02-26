@@ -198,7 +198,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
+// TODO(crbug.com/399407539): Gardening. This test has been very flaky.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AppFieldsChangeDoesNotSync DISABLED_AppFieldsChangeDoesNotSync
+#else
+#define MAYBE_AppFieldsChangeDoesNotSync AppFieldsChangeDoesNotSync
+#endif
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest,
+                       MAYBE_AppFieldsChangeDoesNotSync) {
   const WebAppRegistrar& registrar0 = GetRegistrar(GetProfile(0));
   const WebAppRegistrar& registrar1 = GetRegistrar(GetProfile(1));
 

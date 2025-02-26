@@ -247,6 +247,26 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="kPrivateNetworkAccessPermissionDenied"/>
 </enum>
 
+<!-- LINT.IfChange(DeviceBoundSessionError) -->
+
+<enum name="DeviceBoundSessionError">
+  <int value="0" label="Success"/>
+  <int value="1" label="Key error"/>
+  <int value="2" label="Signing error"/>
+  <int value="3" label="Network error"/>
+  <int value="4" label="HTTP error"/>
+  <int value="5" label="Server requested termination"/>
+  <int value="6" label="Invalid configuration JSON"/>
+  <int value="7" label="Invalid session ID"/>
+  <int value="8" label="Invalid credentials"/>
+  <int value="9" label="Invalid challenge"/>
+  <int value="10" label="Too many challenges"/>
+  <int value="11" label="Invalid fetcher URL"/>
+  <int value="12" label="Invalid refresh URL"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->
+
 <enum name="DNS.AttemptType">
   <int value="0" label="DnsUDPAttempt"/>
   <int value="1" label="DnsTCPAttempt due to low UDP entropy"/>

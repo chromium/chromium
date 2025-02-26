@@ -320,7 +320,7 @@ std::unique_ptr<HoverButton> CastDeviceSelectorView::BuildCastDeviceEntryView(
     device_entry_button->SetBorder(
         views::CreateEmptyBorder(kIconHoverButtonInsets));
     device_entry_button->SetLabelStyle(views::style::STYLE_BODY_2);
-    device_entry_button->SetEnabledTextColorIds(
+    device_entry_button->SetEnabledTextColors(
         media_color_theme_.secondary_foreground_color_id);
     device_entry_button->SetImageLabelSpacing(kDeviceEntrySeparator);
   }

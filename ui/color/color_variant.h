@@ -6,6 +6,7 @@
 #define UI_COLOR_COLOR_VARIANT_H_
 
 #include <optional>
+#include <string>
 
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -57,6 +58,8 @@ class COMPONENT_EXPORT(COLOR) ColorVariant {
   // ColorId, it will be resolved to an SkColor using the provided
   // ColorProvider.
   SkColor ConvertToSkColor(const ui::ColorProvider* color_provider) const;
+
+  std::string ToString() const;
 
  private:
   absl::variant<ColorId, SkColor> color_variant_ = gfx::kPlaceholderColor;

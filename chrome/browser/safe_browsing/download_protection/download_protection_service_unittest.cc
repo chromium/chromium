@@ -611,7 +611,7 @@ class DownloadProtectionServiceTestBase
     response.set_request_deep_scan(request_deep_scan);
     response.set_token("response_token");
     sb_service_->GetTestURLLoaderFactory(profile)->AddResponse(
-        DownloadProtectionService::GetDownloadRequestUrl().spec(),
+        download_service_->GetDownloadRequestUrl().spec(),
         response.SerializeAsString());
   }
 
@@ -623,7 +623,7 @@ class DownloadProtectionServiceTestBase
     if (net_error != net::OK) {
       network::URLLoaderCompletionStatus status;
       sb_service_->GetTestURLLoaderFactory(profile())->AddResponse(
-          DownloadProtectionService::GetDownloadRequestUrl(),
+          download_service_->GetDownloadRequestUrl(),
           network::mojom::URLResponseHead::New(), std::string(),
           network::URLLoaderCompletionStatus(net_error));
       return;
@@ -1373,7 +1373,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
     // Invalid response should result in SAFE (default value in proto).
     ClientDownloadResponse invalid_response;
     sb_service_->GetTestURLLoaderFactory(profile())->AddResponse(
-        DownloadProtectionService::GetDownloadRequestUrl().spec(),
+        download_service_->GetDownloadRequestUrl().spec(),
         invalid_response.SerializePartialAsString());
     RunLoop run_loop;
     download_service_->CheckClientDownload(
@@ -2887,8 +2887,7 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_InvalidResponse) {
   base::FilePath default_file_path(FILE_PATH_LITERAL("/foo/bar/test.crx"));
   std::vector<base::FilePath::StringType> alternate_extensions;
   sb_service_->GetTestURLLoaderFactory(profile())->AddResponse(
-      DownloadProtectionService::GetDownloadRequestUrl().spec(),
-      "Hello world!");
+      download_service_->GetDownloadRequestUrl().spec(), "Hello world!");
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_, _))
       .WillRepeatedly(
@@ -3999,7 +3998,7 @@ TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_Success) {
     // Invalid response should result in SAFE (default value in proto).
     ClientDownloadResponse invalid_response;
     sb_service_->GetTestURLLoaderFactory(profile())->AddResponse(
-        DownloadProtectionService::GetDownloadRequestUrl().spec(),
+        download_service_->GetDownloadRequestUrl().spec(),
         invalid_response.SerializePartialAsString());
     RunLoop run_loop;
     download_service_->CheckFileSystemAccessWrite(
@@ -4546,7 +4545,7 @@ TEST_F(DownloadProtectionServiceTest,
     ClientDownloadResponse response;
     response.set_verdict(ClientDownloadResponse::SAFE);
     sb_service_->GetTestURLLoaderFactory(profile1)->AddResponse(
-        DownloadProtectionService::GetDownloadRequestUrl().spec(),
+        download_service_->GetDownloadRequestUrl().spec(),
         response.SerializeAsString());
 
     EXPECT_CALL(*sb_service_->mock_database_manager(),
@@ -4583,7 +4582,7 @@ TEST_F(DownloadProtectionServiceTest,
     ClientDownloadResponse response;
     response.set_verdict(ClientDownloadResponse::SAFE);
     sb_service_->GetTestURLLoaderFactory(profile2)->AddResponse(
-        DownloadProtectionService::GetDownloadRequestUrl().spec(),
+        download_service_->GetDownloadRequestUrl().spec(),
         response.SerializeAsString());
 
     EXPECT_CALL(*sb_service_->mock_database_manager(),

@@ -275,7 +275,7 @@ void SVGShapePainter::PaintMarker(const PaintInfo& paint_info,
   cc::PaintCanvas* canvas = paint_info.context.Canvas();
 
   canvas->save();
-  canvas->concat(AffineTransformToSkM44(transform));
+  canvas->concat(transform.ToSkM44());
   if (SVGLayoutSupport::IsOverflowHidden(marker))
     canvas->clipRect(gfx::RectFToSkRect(marker.Viewport()));
   PaintRecordBuilder builder(paint_info.context);

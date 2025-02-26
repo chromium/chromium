@@ -78,7 +78,7 @@ CastDeviceFooterView::CastDeviceFooterView(
   stop_casting_button_->SetBorder(
       views::CreateEmptyBorder(kStopCastingButtonInsets));
   stop_casting_button_->SetLabelStyle(views::style::STYLE_BODY_5);
-  stop_casting_button_->SetEnabledTextColorIds(
+  stop_casting_button_->SetEnabledTextColors(
       media_color_theme.error_foreground_color_id);
   stop_casting_button_->SetImageLabelSpacing(kStopCastingButtonSeparator);
   stop_casting_button_->SetBackground(views::CreateThemedRoundedRectBackground(

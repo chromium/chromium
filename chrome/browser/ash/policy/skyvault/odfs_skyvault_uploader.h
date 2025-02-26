@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -107,6 +108,9 @@ class OdfsSkyvaultUploader
   // Starts the upload flow.
   virtual void Run(UploadDoneCallback upload_callback);
 
+  void OnEndUpload(storage::FileSystemURL url,
+                   std::optional<MigrationUploadError> error = std::nullopt);
+
   raw_ptr<Profile> profile_;
 
   // Absolute path to the device's upload root folder on Drive. This is
@@ -115,9 +119,6 @@ class OdfsSkyvaultUploader
 
  private:
   friend base::RefCounted<OdfsSkyvaultUploader>;
-
-  void OnEndUpload(storage::FileSystemURL url,
-                   std::optional<MigrationUploadError> error = std::nullopt);
 
   void GetODFSMetadataAndStartIOTask();
 
@@ -216,17 +217,28 @@ class OdfsMigrationUploader
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
+  // Starts the upload process after establishing network connection.
   void RunInternal();
 
-  UploadDoneCallback upload_callback_;
+  // Called when waiting for connection times out.
+  void OnReconnectionTimeout();
+
   // Indicates whether there was no connection on starting the task.
   bool waiting_for_connection_ = false;
+  // Time at which we started waiting for connection. Used for UMA.
+  std::optional<base::Time> connection_wait_start_time_;
+  // Ensures that we don't wait for connection indefinitely
+  base::OneShotTimer reconnection_timer_;
+
+  UploadDoneCallback upload_callback_;
   // Part of the source path relative to MyFiles
   const base::FilePath relative_source_path_;
   // The name of the device-unique upload root folder on Drive
   const std::string upload_root_;
 
   base::CallbackListSubscription subscription_;
+
+  base::WeakPtrFactory<OdfsMigrationUploader> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::cloud_upload

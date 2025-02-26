@@ -12,25 +12,6 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "url/gurl.h"
-namespace {
-
-std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
-GetNotificationCountMapPerPatternPair(
-    scoped_refptr<HostContentSettingsMap> hcsm) {
-  // TODO(crbug.com/397363276): Move this helper method to the service.
-  std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
-      result;
-  for (const auto& item : hcsm->GetSettingsForOneType(
-           ContentSettingsType::NOTIFICATION_INTERACTIONS)) {
-    result[std::pair{item.primary_pattern, item.secondary_pattern}] =
-        permissions::NotificationsEngagementService::
-            GetDailyAverageNotificationCount(item);
-  }
-
-  return result;
-}
-
-}  // namespace
 
 DisruptiveNotificationPermissionsManager::
     DisruptiveNotificationPermissionsManager(
@@ -52,7 +33,8 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
 
   // Get daily average notification count of pattern pairs.
   std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
-      notification_count_map = GetNotificationCountMapPerPatternPair(hcsm_);
+      notification_count_map = permissions::NotificationsEngagementService::
+          GetNotificationCountMapPerPatternPair(hcsm_.get());
 
   for (const auto& item :
        hcsm_->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS)) {

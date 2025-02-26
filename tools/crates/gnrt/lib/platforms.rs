@@ -101,7 +101,10 @@ fn supported_cfg_expr(e: &CfgExpr) -> bool {
 // If a Cfg option is always true/false in Chromium, or needs to be conditional
 // in the build file's rules.
 fn supported_cfg_value(cfg: &Cfg) -> ExprValidity {
-    if supported_os_cfgs().contains(cfg) || supported_arch_cfgs().contains(cfg) {
+    if supported_os_cfgs().contains(cfg)
+        || supported_arch_cfgs().contains(cfg)
+        || supported_family_cfgs().contains(cfg)
+    {
         // OS and Arch are always conditional, as we support more than one.
         ExprValidity::Valid
     } else {
@@ -277,6 +280,19 @@ fn supported_arch_cfgs() -> &'static [Cfg] {
         ]
         .into_iter()
         .map(|a| Cfg::KeyPair("target_arch".to_string(), a.to_string()))
+        .collect()
+    })
+}
+
+fn supported_family_cfgs() -> &'static [Cfg] {
+    static CFG_SET: OnceCell<Vec<Cfg>> = OnceCell::new();
+    CFG_SET.get_or_init(|| {
+        [
+            // Set of supported families for `cfg(target_family = ...)`.
+            "unix", "windows",
+        ]
+        .into_iter()
+        .map(|a| Cfg::KeyPair("target_family".to_string(), a.to_string()))
         .collect()
     })
 }

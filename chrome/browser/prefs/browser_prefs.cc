@@ -197,7 +197,7 @@
 #include "rlz/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-#include "chrome/browser/background/background_mode_manager.h"
+#include "chrome/browser/background/extensions/background_mode_manager.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -2774,7 +2774,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if BUILDFLAG(IS_ANDROID)
   // Added 02/2025.
   profile_prefs->ClearPref(kLocalPasswordsMigrationWarningShownTimestamp);
-  profile_prefs->ClearPref(kLocalPasswordMigrationWarningShownAtStartup, );
+  profile_prefs->ClearPref(kLocalPasswordMigrationWarningShownAtStartup);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

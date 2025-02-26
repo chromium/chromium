@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -308,8 +309,8 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
     canvas->translate(adjusted_dst_rect.x(), adjusted_dst_rect.y());
     adjusted_dst_rect.set_origin(gfx::PointF());
 
-    canvas->concat(AffineTransformToSkM44(
-        orientation.TransformFromDefault(adjusted_dst_rect.size())));
+    canvas->concat(
+        orientation.TransformFromDefault(adjusted_dst_rect.size()).ToSkM44());
 
     if (orientation.UsesWidthAsHeight()) {
       // The destination rect will have its width and height already reversed

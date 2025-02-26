@@ -19,6 +19,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -220,7 +221,7 @@ void MdTextButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   OnCornerRadiusValueChanged();
 }
 
-void MdTextButton::SetEnabledTextColors(std::optional<SkColor> color) {
+void MdTextButton::SetEnabledTextColors(std::optional<ui::ColorVariant> color) {
   LabelButton::SetEnabledTextColors(std::move(color));
   UpdateColors();
 }
@@ -295,14 +296,14 @@ void MdTextButton::UpdateTextColor() {
 
   const auto& typography_provider = TypographyProvider::Get();
   const auto colors = explicitly_set_colors();
-  LabelButton::SetEnabledTextColorIds(
+  LabelButton::SetEnabledTextColors(
       typography_provider.GetColorId(label()->GetTextContext(), text_style));
   // Disabled buttons need the disabled color explicitly set.
   // This ensures that label()->GetEnabledColor() returns the correct color as
   // the basis for calculating the stroke color. enabled text color id isn't
   // used since a descendant could have overridden the label enabled color.
   if (GetState() == STATE_DISABLED) {
-    LabelButton::SetTextColorId(
+    LabelButton::SetTextColor(
         STATE_DISABLED, typography_provider.GetColorId(
                             label()->GetTextContext(), style::STYLE_DISABLED));
   }

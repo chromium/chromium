@@ -48,7 +48,7 @@ class DownloadRequestMaker {
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
       content::BrowserContext* browser_context,
       TabUrls tab_urls,
-      base::FilePath target_file_path,
+      base::FilePath target_file_name,
       base::FilePath full_path,
       GURL source_url,
       std::string sha256_hash,
@@ -94,8 +94,13 @@ class DownloadRequestMaker {
   // referrer.
   TabUrls tab_urls_;
 
-  // The ultimate destination for the download.
-  const base::FilePath target_file_path_;
+  // The ultimate destination/filename for the download. This is used to
+  // determine the filetype and populate request fields requiring a
+  // human-readable filename. On platforms where the target file *path* does not
+  // contain file name but is instead a different identifier (e.g. a content-URI
+  // on Android), this should be populated with the file *name* i.e. a display
+  // name for the download.
+  const base::FilePath target_file_name_;
 
   // The current path to the file contents.
   const base::FilePath full_path_;

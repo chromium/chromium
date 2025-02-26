@@ -22,7 +22,15 @@ class BnplTosControllerImpl : public BnplTosController {
   ~BnplTosControllerImpl() override;
 
   // BnplTosController:
-  void OnViewClosing() override;
+  void OnViewClosing(bool user_accepted) override;
+  std::u16string GetOkButtonLabel() const override;
+  std::u16string GetCancelButtonLabel() const override;
+  std::u16string GetTitle() const override;
+  std::u16string GetReviewText() const override;
+  std::u16string GetApproveText() const override;
+  TextWithLink GetLinkText() const override;
+  const LegalMessageLines& GetLegalMessageLines() const override;
+  AccountInfo GetAccountInfo() const override;
   base::WeakPtr<BnplTosController> GetWeakPtr() override;
 
   // Show the BNPL ToS view. The `create_and_show_view_callback` will
@@ -33,6 +41,8 @@ class BnplTosControllerImpl : public BnplTosController {
  private:
   friend class BnplTosControllerImplTest;
   std::unique_ptr<BnplTosView> view_;
+  std::u16string issuer_name_;
+  LegalMessageLines legal_message_lines_;
 
   base::WeakPtrFactory<BnplTosControllerImpl> weak_ptr_factory_{this};
 };

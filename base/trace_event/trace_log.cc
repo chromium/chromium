@@ -348,7 +348,7 @@ struct TraceLog::RegisteredAsyncObserver {
 
 // static
 TraceLog* TraceLog::GetInstance() {
-  static base::NoDestructor<TraceLog> instance(0);
+  static base::NoDestructor<TraceLog> instance{};
   return instance.get();
 }
 
@@ -362,7 +362,7 @@ void TraceLog::ResetForTesting() {
   self->InitializePerfettoIfNeeded();
 }
 
-TraceLog::TraceLog(int generation) : process_id_(base::kNullProcessId) {
+TraceLog::TraceLog() : process_id_(base::kNullProcessId) {
 #if BUILDFLAG(IS_NACL)  // NaCl shouldn't expose the process id.
   SetProcessID(0);
 #else
@@ -761,26 +761,6 @@ void TraceLog::OnTraceData(const char* data, size_t size, bool has_more) {
 
 void TraceLog::SetProcessID(ProcessId process_id) {
   process_id_ = process_id;
-}
-
-int TraceLog::GetNewProcessLabelId() {
-  AutoLock lock(lock_);
-  return next_process_label_id_++;
-}
-
-void TraceLog::UpdateProcessLabel(int label_id,
-                                  const std::string& current_label) {
-  if (!current_label.length()) {
-    return RemoveProcessLabel(label_id);
-  }
-
-  AutoLock lock(lock_);
-  process_labels_[label_id] = current_label;
-}
-
-void TraceLog::RemoveProcessLabel(int label_id) {
-  AutoLock lock(lock_);
-  process_labels_.erase(label_id);
 }
 
 size_t TraceLog::GetObserverCountForTest() const {

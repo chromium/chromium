@@ -9,8 +9,8 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/signin/signin_promo_util.h"
-#include "chrome/browser/ui/autofill/autofill_bubble_signin_promo_controller.h"
-#include "chrome/browser/ui/views/promos/bubble_signin_promo_view.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
+#include "components/sync/service/local_data_description.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -20,10 +20,6 @@ enum class AccessPoint;
 namespace content {
 class WebContents;
 }
-namespace autofill {
-class AutofillBubbleSignInPromoController;
-}
-class AutofillBubbleSignInPromoView;
 
 // A view that can show up after saving a piece of autofill data without being
 // signed in to offer signing users in so they can access their credentials
@@ -56,9 +52,8 @@ class AutofillBubbleSignInPromoView : public views::View,
   // views::View:
   void AddedToWidget() override;
 
-  autofill::AutofillBubbleSignInPromoController controller_;
   const signin_metrics::AccessPoint access_point_;
-  std::unique_ptr<DiceSigninPromoDelegate> dice_sign_in_promo_delegate_;
+  std::unique_ptr<BubbleSignInPromoDelegate> delegate_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       scoped_widget_observation_{this};
   raw_ptr<BubbleSignInPromoView> bubble_sign_in_promo_view_ = nullptr;

@@ -106,16 +106,11 @@ size_t MaxNumSkSurface() {
 #endif
 }
 
-// TODO: crbug.com/376667859 - passing the graphite::Context to here isn't safe.
-// Correct when a suitable Skia object is added.
 void PerformPrecompilation(
     std::unique_ptr<skgpu::graphite::PrecompileContext> precompileContext) {
-  static const skgpu::graphite::RenderPassProperties kProps = {
+  const skgpu::graphite::RenderPassProperties kProps = {
       skgpu::graphite::DepthStencilFlags::kDepth, kBGRA_8888_SkColorType,
-#if !defined(SK_IGNORE_RENDER_PASS_PROPERTIES_COLOR_SPACE)
-      /* dstColorSpace= */ nullptr,
-#endif
-      /* requiresMSAA= */ false};
+      /* dstColorSpace= */ nullptr, /* requiresMSAA= */ false};
 
   // TODO: crbug.com/358074434 - add actually relevant precompilation
   skgpu::graphite::PaintOptions paintOptions;

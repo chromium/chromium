@@ -19,6 +19,7 @@ source_set("connectors") {
     "//components/keyed_service/core",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
+    "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/web/public",

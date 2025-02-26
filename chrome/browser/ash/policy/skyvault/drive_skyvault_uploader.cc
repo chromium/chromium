@@ -12,8 +12,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/delete_io_task.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
+#include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/chrome_features.h"
@@ -114,9 +117,18 @@ void DriveSkyvaultUploader::Run() {
     return;
   }
 
-  if (drive_status != drive::util::ConnectionStatus::kConnected) {
+  waiting_for_connection_ =
+      drive_status != drive::util::ConnectionStatus::kConnected;
+  SkyVaultMigrationWaitForConnectionHistogram(CloudProvider::kGoogleDrive,
+                                              waiting_for_connection_);
+  if (waiting_for_connection_) {
     LOG(ERROR) << "Waiting for connection to Drive";
-    waiting_for_connection_ = true;
+    connection_wait_start_time_ = base::Time::Now();
+
+    reconnection_timer_.Start(
+        FROM_HERE, kReconnectionTimeout,
+        base::BindOnce(&DriveSkyvaultUploader::OnReconnectionTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
@@ -427,6 +439,12 @@ void DriveSkyvaultUploader::OnDriveConnectionStatusChanged(
     if (status == drive::util::ConnectionStatus::kConnected) {
       LOG(ERROR) << "Reconnected to Drive";
       waiting_for_connection_ = false;
+      CHECK(connection_wait_start_time_.has_value());
+      SkyVaultMigrationReconnectionDurationHistogram(
+          CloudProvider::kGoogleDrive,
+          base::Time::Now() - connection_wait_start_time_.value());
+      connection_wait_start_time_.reset();
+      reconnection_timer_.Stop();
       drive::DriveIntegrationService::Observer::Reset();
       Run();
     }
@@ -439,9 +457,19 @@ void DriveSkyvaultUploader::OnDriveConnectionStatusChanged(
   }
   if (status != drive::util::ConnectionStatus::kConnected) {
     LOG(ERROR) << "Lost connection to Drive during upload";
-    // TODO: wait for reconnection, but not indefinitely?
     OnEndCopy(MigrationUploadError::kNetworkError);
   }
+}
+
+void DriveSkyvaultUploader::OnReconnectionTimeout() {
+  if (!waiting_for_connection_) {
+    LOG(ERROR) << "Reconnection timer fired, but currently not waiting for "
+                  "connection; ignoring";
+    return;
+  }
+  LOG(ERROR)
+      << "Reconnection not established within the timeout, failing the upload";
+  OnEndCopy(MigrationUploadError::kReconnectTimeout);
 }
 
 }  // namespace policy::local_user_files

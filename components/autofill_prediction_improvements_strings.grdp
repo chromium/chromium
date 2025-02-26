@@ -15,6 +15,36 @@
     Driver's license
   </message>
 
+  <!-- TODO(crbug.com/395807244): Make entity strings translateable. -->
+  <!-- Add entity strings -->
+  <message name="IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY" desc="The title of the &quot;Add passport&quot; settings UI." translateable="false">
+    Add passport
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_LOYALTY_CARD_ENTITY" desc="The title of the &quot;Add loyalty card&quot; settings UI." translateable="false">
+    Add loyalty card
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY" desc="The title of the &quot;Add car&quot; settings UI." translateable="false">
+    Add car
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY" desc="The title of the &quot;Add driver's license&quot; settings UI." translateable="false">
+    Add driver's license
+  </message>
+
+  <!-- TODO(crbug.com/395807244): Make entity strings translateable. -->
+  <!-- Edit entity strings -->
+  <message name="IDS_AUTOFILL_AI_EDIT_PASSPORT_ENTITY" desc="The title of the &quot;Edit passport&quot; settings UI." translateable="false">
+    Edit passport
+  </message>
+  <message name="IDS_AUTOFILL_AI_EDIT_LOYALTY_CARD_ENTITY" desc="The title of the &quot;Edit loyalty card&quot; settings UI." translateable="false">
+    Edit loyalty card
+  </message>
+  <message name="IDS_AUTOFILL_AI_EDIT_VEHICLE_ENTITY" desc="The title of the &quot;Edit car&quot; settings UI." translateable="false">
+    Edit car
+  </message>
+  <message name="IDS_AUTOFILL_AI_EDIT_DRIVERS_LICENSE_ENTITY" desc="The title of the &quot;Edit driver's license&quot; settings UI." translateable="false">
+    Edit driver's license
+  </message>
+
   <!-- TODO(crbug.com/395807244): Make passport strings translateable. -->
   <!-- Attributes of the passport entity -->
   <message name="IDS_AUTOFILL_AI_PASSPORT_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the passport name attribute." translateable="false">

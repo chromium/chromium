@@ -2352,7 +2352,7 @@ void LockContentsView::UpdateBottomStatusIndicatorColors() {
     case BottomIndicatorState::kManagedDevice: {
       bottom_status_indicator_->SetIcon(chromeos::kEnterpriseIcon,
                                         cros_tokens::kCrosSysOnSurface, 20);
-      bottom_status_indicator_->SetEnabledTextColorIds(
+      bottom_status_indicator_->SetEnabledTextColors(
           cros_tokens::kCrosSysOnSurface);
       bottom_status_indicator_->SetImageLabelSpacing(16);
       break;
@@ -2360,7 +2360,7 @@ void LockContentsView::UpdateBottomStatusIndicatorColors() {
     case BottomIndicatorState::kAdbSideLoadingEnabled: {
       bottom_status_indicator_->SetIcon(kLockScreenAlertIcon,
                                         cros_tokens::kCrosSysError, 20);
-      bottom_status_indicator_->SetEnabledTextColorIds(
+      bottom_status_indicator_->SetEnabledTextColors(
           cros_tokens::kCrosSysError);
       bottom_status_indicator_->SetImageLabelSpacing(16);
       break;

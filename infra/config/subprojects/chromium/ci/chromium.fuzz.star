@@ -455,6 +455,60 @@ Those fuzzers require more resources to run correctly.\
 )
 
 ci.builder(
+    name = "Libfuzzer High End Upload Linux ASan",
+    description_html = """This builder uploads centipede high end fuzzers.\
+Those fuzzers require more resources to run correctly.\
+""",
+    executable = "recipe:chromium/fuzz",
+    triggering_policy = scheduler.greedy_batching(
+        max_concurrent_invocations = 1,
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "optimize_for_fuzzing",
+            "shared",
+            "release",
+            "remoteexec",
+            "disable_seed_corpus",
+            "high_end_fuzzer_targets",
+            "linux",
+            "x64",
+        ],
+    ),
+    # TODO(399002817): add this to the gardener_rotations.
+    gardener_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "libfuzz",
+        short_name = "linux high end",
+    ),
+    contact_team_email = "chrome-deet-core@google.com",
+    properties = {
+        "upload_bucket": "chromium-browser-libfuzzer",
+        "upload_directory": "asan",
+        "archive_prefix": "libfuzzer-high-end",
+    },
+)
+
+ci.builder(
     name = "ASan Release Media (32-bit x86 with V8-ARM)",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,

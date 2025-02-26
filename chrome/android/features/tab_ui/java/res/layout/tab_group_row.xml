@@ -48,7 +48,6 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="1"
-        android:scrollHorizontally="true"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
     </LinearLayout>

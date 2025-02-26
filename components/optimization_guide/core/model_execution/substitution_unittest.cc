@@ -31,6 +31,10 @@ namespace optimization_guide {
 
 namespace {
 
+using ::google::protobuf::RepeatedPtrField;
+
+using Substitutions = RepeatedPtrField<proto::SubstitutedString>;
+
 class SubstitutionTest : public testing::Test {
  public:
   SubstitutionTest() = default;
@@ -530,6 +534,44 @@ TEST_F(SubstitutionTest, Image) {
       CreateSubstitutions(request.read(), ImageSubstitutionConfig());
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "<image>");
+}
+
+TEST_F(SubstitutionTest, ExcludesEmptyPieces) {
+  // We should not omit pieces for empty strings, so that empty outputs
+  // can be filtered.
+  using RequestProto = ::optimization_guide::proto::ExampleForTestingRequest;
+
+  Substitutions substitutions = []() {
+    Substitutions result;
+    auto expr1 = result.Add();
+    // Empty strings between placeholders
+    expr1->set_string_template("%s%s%s");
+    {
+      // Empty range
+      auto* range =
+          expr1->add_substitutions()->add_candidates()->mutable_range_expr();
+      *range->mutable_proto_field() =
+          ProtoField({RequestProto::kRepeatedFieldFieldNumber});
+      range->mutable_expr()->set_string_template("item");
+    }
+    {
+      // Empty string field
+      *expr1->add_substitutions()->add_candidates()->mutable_proto_field() =
+          ProtoField({RequestProto::kStringValueFieldNumber});
+    }
+    {
+      // Empty raw string
+      expr1->add_substitutions()->add_candidates()->set_raw_string("");
+    }
+    return result;
+  }();
+
+  MultimodalMessage request{RequestProto()};
+  std::optional<SubstitutionResult> result =
+      CreateSubstitutions(request.read(), substitutions);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->ToString(), "");
+  EXPECT_EQ(result->input->pieces.size(), 0u);
 }
 
 }  // namespace

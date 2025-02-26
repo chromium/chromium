@@ -20,6 +20,7 @@ include_rules = [
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/test_extension_environment.h",
   "+chrome/browser/extensions/test_extension_system.h",
+  "+chrome/browser/feedback/show_feedback_page.h",
   "+chrome/browser/gcm/gcm_profile_service_factory.h",
   "+chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h",
   "+chrome/browser/login_detection/login_detection_util.h",

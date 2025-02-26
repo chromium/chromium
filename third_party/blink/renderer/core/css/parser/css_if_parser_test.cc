@@ -29,6 +29,7 @@ class CSSIfParserTest : public PageTestBase {
 TEST_F(CSSIfParserTest, ConsumeValidCondition) {
   ScopedCSSInlineIfForStyleQueriesForTest scoped_style_feature(true);
   ScopedCSSInlineIfForMediaQueriesForTest scoped_media_feature(true);
+  ScopedCSSInlineIfForSupportsQueriesForTest scoped_supports_feature(true);
   const char* valid_tests[] = {
       // clang-format off
     "style(--x)",
@@ -46,6 +47,14 @@ TEST_F(CSSIfParserTest, ConsumeValidCondition) {
     "media(not (min-width : -100px))",
     "media(only screen and (color))",
     "media((min-width: 30em) and (max-width: 50em))",
+    "supports(transform-origin: 5% 5%)",
+    "supports(not (transform-origin: 10em 10em 10em))",
+    "supports(display: table-cell)",
+    "supports((display: table-cell))",
+    "supports((display: table-cell) and (display: list-item))",
+    "media(screen) and supports(display: table-cell)",
+    "media(screen) and (supports(display: table-cell) or style(--x))",
+    "supports(general-enclosed)",
     "not (media(screen))",
     "(media(screen and (color))) and (style(--x))",
     "(media(screen and (color)) and style(--x)) or (style(not (--y)))",
@@ -65,12 +74,15 @@ TEST_F(CSSIfParserTest, ConsumeValidCondition) {
 TEST_F(CSSIfParserTest, ConsumeInvalidCondition) {
   ScopedCSSInlineIfForStyleQueriesForTest scoped_style_feature(true);
   ScopedCSSInlineIfForMediaQueriesForTest scoped_media_feature(true);
+  ScopedCSSInlineIfForSupportsQueriesForTest scoped_supports_feature(true);
   const char* invalid_parse_time_tests[] = {
       // clang-format off
     "invalid",
     "style(invalid) and invalid",
     "media(invalid) or invalid",
     "invalid or style(invalid)",
+    "invalid or supports(invalid)",
+    "supports(invalid) and invalid",
       // clang-format on
   };
 

@@ -11,6 +11,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
@@ -103,25 +104,30 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
     InitializeActionIdStringMapping();
     BrowserWithTestWindowTest::SetUp();
 
+    // Open a tab to get a webcontents in the same browser.
+    AddTab(browser(), GURL("about:blank"));
+
     mock_pinned_toolbar_actions_model_ =
         static_cast<MockPinnedToolbarActionsModel*>(
             PinnedToolbarActionsModelFactory::GetForProfile(profile()));
 
     EXPECT_CALL(mock_pinned_toolbar_actions_model(), AddObserver)
-        .Times(1)
-        .WillOnce(SaveArg<0>(&pinned_toolbar_actions_model_observer_));
+        .Times(testing::AtLeast(1))
+        .WillOnce(SaveArg<0>(&pinned_toolbar_actions_model_observer_))
+        .WillRepeatedly(testing::Return());
 
     handler_ = std::make_unique<CustomizeToolbarHandler>(
         mojo::PendingReceiver<
             side_panel::customize_chrome::mojom::CustomizeToolbarHandler>(),
-        mock_page_.BindAndGetRemote(), browser());
+        mock_page_.BindAndGetRemote(),
+        browser()->tab_strip_model()->GetTabAtIndex(0)->GetContents());
     mock_page_.FlushForTesting();
     EXPECT_EQ(handler_.get(), pinned_toolbar_actions_model_observer_);
 
     task_environment()->RunUntilIdle();
 
     auto* const template_url_service =
-        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+        TemplateURLServiceFactory::GetForProfile(profile());
     search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
   }
 
@@ -368,4 +374,38 @@ TEST_F(CustomizeToolbarHandlerTest, ActionsUpdatedOnVisibilityChange) {
   handler().ListActions(callback.Get());
   EXPECT_FALSE(contains_action(
       side_panel::customize_chrome::mojom::ActionId::kDevTools));
+}
+
+TEST_F(CustomizeToolbarHandlerTest, ChangeBrowserWhileOpen) {
+  // Open a second browser with a new tab.
+  std::unique_ptr<BrowserWindow> window_2 = CreateBrowserWindow();
+  std::unique_ptr<Browser> browser_2 =
+      CreateBrowser(profile(), Browser::TYPE_NORMAL, false, window_2.get());
+  AddTab(browser_2.get(), GURL("about:blank"));
+
+  // Set up a second handler associated with that tab in the second browser.
+  testing::NiceMock<MockPage> mock_page_2;
+  std::unique_ptr<CustomizeToolbarHandler> handler_2 =
+      std::make_unique<CustomizeToolbarHandler>(
+          mojo::PendingReceiver<
+              side_panel::customize_chrome::mojom::CustomizeToolbarHandler>(),
+          mock_page_2.BindAndGetRemote(),
+          browser_2->tab_strip_model()->GetTabAtIndex(0)->GetContents());
+  task_environment()->RunUntilIdle();
+
+  // Move that tab into the first browser.
+  std::unique_ptr<tabs::TabModel> tab =
+      browser_2->tab_strip_model()->DetachTabAtForInsertion(0);
+  browser()->tab_strip_model()->InsertDetachedTabAt(0, std::move(tab),
+                                                    AddTabTypes::ADD_NONE);
+
+  // Close the second browser.
+  browser_2->tab_strip_model()->CloseAllTabs();
+  browser_2.reset();
+
+  // Pinning should not crash, and should instead pin.
+  ASSERT_EQ(false, profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
+  handler().PinAction(side_panel::customize_chrome::mojom::ActionId::kHome,
+                      true);
+  EXPECT_EQ(true, profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 }

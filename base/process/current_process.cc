@@ -106,8 +106,7 @@ const char* GetNameForProcessType(CurrentProcessType process_type) {
 // Used for logging histograms for IPC metrics based on their process type.
 ShortProcessType CurrentProcess::GetShortType(TypeKey key) {
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-  CurrentProcessType process = static_cast<CurrentProcessType>(
-      process_type_.load(std::memory_order_relaxed));
+  CurrentProcessType process = process_type_.load(std::memory_order_relaxed);
   switch (process) {
     case CurrentProcessType::PROCESS_UNSPECIFIED:
       return ShortProcessType::kUnspecified;
@@ -184,12 +183,22 @@ void CurrentProcess::SetProcessType(CurrentProcessType process_type) {
 
 void CurrentProcess::SetProcessNameAndType(const std::string& process_name,
                                            CurrentProcessType process_type) {
+  Delegate* delegate;
   {
     AutoLock lock(lock_);
     process_name_ = process_name;
-    process_type_.store(static_cast<CurrentProcessType>(process_type),
-                        std::memory_order_relaxed);
+    process_type_.store(process_type, std::memory_order_relaxed);
+    delegate = delegate_;
   }
+  if (delegate) {
+    delegate->OnProcessNameChanged(process_name, process_type);
+  }
+}
+
+void CurrentProcess::SetDelegate(Delegate* delegate, NameKey) {
+  AutoLock lock(lock_);
+  DCHECK(delegate == nullptr || delegate_ == nullptr);
+  delegate_ = delegate;
 }
 
 }  // namespace base

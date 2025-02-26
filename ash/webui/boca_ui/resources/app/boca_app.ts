@@ -337,6 +337,8 @@ export declare interface ClientApiDelegate {
    * Close the tab with tabId.
    */
   closeTab(tabId: number): Promise<boolean>;
+
+  openFeedbackDialog(): Promise<void>;
 }
 
 /**

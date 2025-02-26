@@ -43,11 +43,11 @@
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
+#include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
 #include "third_party/blink/renderer/platform/graphics/gradient_generated_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -219,20 +219,20 @@ struct CSSGradientValue::GradientDesc {
  public:
   GradientDesc(const gfx::PointF& p0,
                const gfx::PointF& p1,
-               GradientSpreadMethod spread_method)
+               Gradient::SpreadMethod spread_method)
       : p0(p0), p1(p1), spread_method(spread_method) {}
   GradientDesc(const gfx::PointF& p0,
                const gfx::PointF& p1,
                float r0,
                float r1,
-               GradientSpreadMethod spread_method)
+               Gradient::SpreadMethod spread_method)
       : p0(p0), p1(p1), r0(r0), r1(r1), spread_method(spread_method) {}
 
   Vector<Gradient::ColorStop> stops;
   gfx::PointF p0, p1;
   float r0 = 0, r1 = 0;
   float start_angle = 0, end_angle = 360;
-  GradientSpreadMethod spread_method;
+  Gradient::SpreadMethod spread_method;
 };
 
 static void ReplaceColorHintsWithColorStops(
@@ -460,7 +460,7 @@ bool RequiresStopsNormalization(const Vector<GradientStop>& stops,
 
   // Repeating gradients are implemented using a normalized stop offset range
   // with the point/radius pairs aligned on the interval endpoints.
-  if (desc.spread_method == kSpreadMethodRepeat) {
+  if (desc.spread_method == Gradient::SpreadMethod::kRepeat) {
     return true;
   }
 
@@ -491,7 +491,7 @@ bool NormalizeAndAddStops(const Vector<GradientStop>& stops,
     // image with the color of the last color-stop in the rule.
     // For non-repeating gradients, both the first color and the last color can
     // be significant (padding on both sides of the offset).
-    if (desc.spread_method != kSpreadMethodRepeat) {
+    if (desc.spread_method != Gradient::SpreadMethod::kRepeat) {
       desc.stops.emplace_back(clamped_offset, stops.front().color);
     }
     desc.stops.emplace_back(clamped_offset, stops.back().color);
@@ -588,7 +588,7 @@ void AdjustGradientRadiiForOffsetRange(CSSGradientValue::GradientDesc& desc,
     // For the non-repeat case, this can never happen: clampNegativeOffsets()
     // ensures we don't have to deal with negative offsets at this point.
 
-    DCHECK_EQ(desc.spread_method, kSpreadMethodRepeat);
+    DCHECK_EQ(desc.spread_method, Gradient::SpreadMethod::kRepeat);
 
     // When in repeat mode, we deal with it by repositioning both radii in the
     // positive domain - shifting them by a multiple of the radius span (which
@@ -1203,7 +1203,8 @@ scoped_refptr<Gradient> CSSLinearGradientValue::CreateGradient(
   }
 
   GradientDesc desc(first_point, second_point,
-                    repeating_ ? kSpreadMethodRepeat : kSpreadMethodPad);
+                    repeating_ ? Gradient::SpreadMethod::kRepeat
+                               : Gradient::SpreadMethod::kPad);
   AddStops(desc, conversion_data, document, style);
 
   scoped_refptr<Gradient> gradient =
@@ -1674,7 +1675,8 @@ scoped_refptr<Gradient> CSSRadialGradientValue::CreateGradient(
   bool is_degenerate = !second_radius.width() || !second_radius.height();
   GradientDesc desc(first_point, second_point, first_radius,
                     is_degenerate ? 0 : second_radius.width(),
-                    repeating_ ? kSpreadMethodRepeat : kSpreadMethodPad);
+                    repeating_ ? Gradient::SpreadMethod::kRepeat
+                               : Gradient::SpreadMethod::kPad);
   AddStops(desc, conversion_data, document, style);
 
   scoped_refptr<Gradient> gradient = Gradient::CreateRadial(
@@ -1837,7 +1839,8 @@ scoped_refptr<Gradient> CSSConicGradientValue::CreateGradient(
          : size.height() / 2);
 
   GradientDesc desc(position, position,
-                    repeating_ ? kSpreadMethodRepeat : kSpreadMethodPad);
+                    repeating_ ? Gradient::SpreadMethod::kRepeat
+                               : Gradient::SpreadMethod::kPad);
   AddStops(desc, conversion_data, document, style);
 
   scoped_refptr<Gradient> gradient = Gradient::CreateConic(
@@ -1914,7 +1917,7 @@ scoped_refptr<Gradient> CSSConstantGradientValue::CreateGradient(
     const ComputedStyle& style) const {
   DCHECK(!size.IsEmpty());
 
-  GradientDesc desc({0.0f, 0.0f}, {1.0f, 1.0f}, kSpreadMethodPad);
+  GradientDesc desc({0.0f, 0.0f}, {1.0f, 1.0f}, Gradient::SpreadMethod::kPad);
   const Color color =
       ResolveStopColor(conversion_data, *color_, document, style);
   desc.stops.emplace_back(0.0f, color);

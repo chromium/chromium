@@ -7886,6 +7886,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COLORS_VIOLET" desc="A color option in the customization menu on the New Tab Page.">
         Violet
       </message>
+      <message name="IDS_NTP_COLORS_BATCH_UPLOAD_DESCRIPTION" desc="Text for the Themes batch upload dialog entry.">
+        <ph name="COLOR_NAME">$1<ex>Red</ex></ph> color
+      </message>
       <message name="IDS_NTP_UNDO_DISMISS_PROMO_BUTTON_TOAST" desc="Undo toast for dismissing middle slot promo on New Tab Page.">
         You won't see this specific message again
       </message>

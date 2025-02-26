@@ -181,36 +181,6 @@ QuotaErrorOr<BucketInfo> QuotaManagerProxy::GetOrCreateBucketSync(
   return bucket;
 }
 
-void QuotaManagerProxy::GetOrCreateBucketDeprecated(
-    const BucketInitParams& params,
-    blink::mojom::StorageType storage_type,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
-  DCHECK(callback_task_runner);
-  DCHECK(callback);
-
-  if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
-    quota_manager_impl_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&QuotaManagerProxy::GetOrCreateBucketDeprecated, this,
-                       params, storage_type, std::move(callback_task_runner),
-                       std::move(callback)));
-    return;
-  }
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
-
-  auto respond =
-      base::BindPostTask(std::move(callback_task_runner), std::move(callback));
-  if (!quota_manager_impl_) {
-    std::move(respond).Run(base::unexpected(QuotaError::kUnknownError));
-    return;
-  }
-
-  quota_manager_impl_->GetOrCreateBucketDeprecated(params, storage_type,
-                                                   std::move(respond));
-}
-
 void QuotaManagerProxy::CreateBucketForTesting(
     const StorageKey& storage_key,
     const std::string& bucket_name,

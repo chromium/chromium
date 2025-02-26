@@ -3485,4 +3485,51 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
             "Context: <image> off:0 max:22\nContext: <image> off:0 max:1024\n");
 }
 
+proto::SubstitutedString EmptySubstitution() {
+  proto::SubstitutedString result;
+  result.set_string_template("%s");
+  result.add_substitutions()->add_candidates()->set_raw_string("");
+  return result;
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, OmitEmptyInputs) {
+  // Avoid calling Append with empty inputs.
+  FakeAdaptationAsset compose_asset({
+      .config =
+          []() {
+            proto::OnDeviceModelExecutionFeatureConfig config;
+            config.set_feature(ToModelExecutionFeatureProto(
+                ModelBasedCapabilityKey::kCompose));
+            auto& input_config = *config.mutable_input_config();
+            input_config.set_request_base_name(
+                proto::ExampleForTestingRequest().GetTypeName());
+            *input_config.add_input_context_substitutions() =
+                EmptySubstitution();
+            *input_config.add_execute_substitutions() = EmptySubstitution();
+            {
+              auto& output_config = *config.mutable_output_config();
+              output_config.set_proto_type(
+                  proto::ComposeResponse().GetTypeName());
+              *output_config.mutable_proto_field() = OutputField();
+            }
+            return config;
+          }(),
+  });
+  Initialize(InitializeParams{
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset},
+  });
+  auto session = CreateSession();
+  ASSERT_TRUE(session);
+  MultimodalMessage request((proto::ExampleForTestingRequest()));
+  session->SetInput(std::move(request));
+  session->ExecuteModel(proto::ExampleForTestingRequest(),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  // No "Context:" chunks should appear in the output.
+  EXPECT_EQ(*response_.value(), "");
+}
+
 }  // namespace optimization_guide

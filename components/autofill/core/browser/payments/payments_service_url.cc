@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -45,6 +46,14 @@ const char kSandboxPaymentsManageCardsUrl[] =
 const char kVirtualCardEnrollmentSupportUrl[] =
     "https://support.google.com/googlepay/answer/11234179";
 // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/ChromeStringConstants.java)
+
+// BNPL provider terms support URLs.
+// TODO(crbug.com/397446359): Change URL once terms redirect support pages are
+// finalized.
+constexpr char kBnplAffirmTermsUrl[] =
+    "https://support.google.com/googlepay?p=bnpl_autofill_chrome";
+constexpr char kBnplZipTermsUrl[] =
+    "https://support.google.com/googlepay?p=bnpl_autofill_chrome";
 }  // namespace
 
 namespace payments {
@@ -90,6 +99,15 @@ GURL GetManageAddressesUrl() {
 
 GURL GetVirtualCardEnrollmentSupportUrl() {
   return GURL(kVirtualCardEnrollmentSupportUrl);
+}
+
+GURL GetBnplTermsUrl(std::string_view issuer_id) {
+  if (issuer_id == kBnplAffirmIssuerId) {
+    return GURL(kBnplAffirmTermsUrl);
+  } else if (issuer_id == kBnplZipIssuerId) {
+    return GURL(kBnplZipTermsUrl);
+  }
+  NOTREACHED() << "Unknown issuer_id " << issuer_id;
 }
 
 }  // namespace payments

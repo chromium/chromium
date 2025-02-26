@@ -111,6 +111,9 @@ class DriveSkyvaultUploader
   void OnDriveConnectionStatusChanged(
       drive::util::ConnectionStatus status) override;
 
+  // Called when waiting for connection times out.
+  void OnReconnectionTimeout();
+
   // Test-only: Simulates a delete failure if true. Actual result of the
   // DeleteIO task is ignored.
   bool fail_delete_for_testing_ = false;
@@ -149,6 +152,11 @@ class DriveSkyvaultUploader
 
   // Indicates whether there was no connection on starting the task.
   bool waiting_for_connection_ = false;
+  // Time at which we started waiting for connection. Used for UMA.
+  std::optional<base::Time> connection_wait_start_time_;
+
+  // Ensures that we don't wait for connection indefinitely
+  base::OneShotTimer reconnection_timer_;
 
   // Stores the first encountered error, if any.
   std::optional<MigrationUploadError> error_;

@@ -168,7 +168,9 @@ void CookieControlsIconView::OnIPHClosed() {
 bool CookieControlsIconView::IsManagedIPHActive() const {
   CHECK(browser_->window());
   return browser_->window()->IsFeaturePromoActive(
-      feature_engagement::kIPHCookieControlsFeature);
+             feature_engagement::kIPHCookieControlsFeature) ||
+         browser_->window()->IsFeaturePromoQueued(
+             feature_engagement::kIPHCookieControlsFeature);
 }
 
 void CookieControlsIconView::SetLabelForStatus() {

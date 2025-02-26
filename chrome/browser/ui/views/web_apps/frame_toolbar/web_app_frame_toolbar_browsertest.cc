@@ -2119,9 +2119,17 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
+// TODO(crbug.com/362078628): Gardening. This test has been flaky for long.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability \
+  DISABLED_NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability
+#else
+#define MAYBE_NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability \
+  NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability) {
+    MAYBE_NavigatingOutsideTheAppScopeAndBackResetsAndThenRestoresResizability) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
 

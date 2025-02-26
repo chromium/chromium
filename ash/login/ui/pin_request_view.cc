@@ -373,7 +373,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   help_button_->SetPaintToLayer();
   help_button_->layer()->SetFillsBoundsOpaquely(false);
   help_button_->SetTextSubpixelRenderingEnabled(false);
-  help_button_->SetEnabledTextColorIds(cros_tokens::kCrosSysSecondary);
+  help_button_->SetEnabledTextColors(cros_tokens::kCrosSysSecondary);
   help_button_->SetVisible(request.help_button_enabled);
   footer->AddChildView(help_button_.get());
 

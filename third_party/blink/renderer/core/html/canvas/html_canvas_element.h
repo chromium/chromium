@@ -236,8 +236,7 @@ class CORE_EXPORT HTMLCanvasElement final
   // CanvasRenderingContextHost implementation.
   UkmParameters GetUkmParameters() override;
 
-  void DisableAcceleration(std::unique_ptr<CanvasResourceProvider>
-                               new_provider_for_testing = nullptr);
+  void DisableAcceleration();
   bool EnableAcceleration() final;
 
   // ImageBitmapSource implementation
@@ -424,11 +423,8 @@ class CORE_EXPORT HTMLCanvasElement final
   std::unique_ptr<Canvas2DLayerBridge> canvas2d_bridge_;
 
   // If the ResourceProvider currently exists, replaces it with a
-  // CanvasResourceProvider that was newly created for usage with a 2D context
-  // (or with `new_provider_for_testing` if non-null).
-  void ReplaceExistingResourceProviderFor2DContext(
-      std::unique_ptr<CanvasResourceProvider> new_provider_for_testing =
-          nullptr);
+  // CanvasResourceProvider that was newly created for usage with a 2D context.
+  void ReplaceExistingResourceProviderFor2DContext();
 
   // Used for OffscreenCanvas that controls this HTML canvas element
   // and for low latency mode.

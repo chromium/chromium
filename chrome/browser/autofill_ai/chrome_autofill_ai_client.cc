@@ -19,7 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/save_or_update_autofill_ai_data_controller.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -133,19 +133,20 @@ bool ChromeAutofillAiClient::IsAutofillAiEnabledPref() const {
       autofill::prefs::kAutofillPredictionImprovementsEnabled);
 }
 
-void ChromeAutofillAiClient::ShowSaveAutofillAiBubble(
+void ChromeAutofillAiClient::ShowSaveOrUpdateBubble(
     autofill::EntityInstance new_entity,
     std::optional<autofill::EntityInstance> old_entity,
-    SavePromptAcceptanceCallback prompt_acceptance_callback) {
+    SaveOrUpdatePromptResultCallback prompt_acceptance_callback) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (auto* controller = autofill_ai::SaveAutofillAiDataController::GetOrCreate(
-          &*web_contents_)) {
-    controller->OfferSave(std::move(new_entity), std::move(old_entity),
-                          std::move(prompt_acceptance_callback));
+  if (auto* controller =
+          autofill_ai::SaveOrUpdateAutofillAiDataController::GetOrCreate(
+              &*web_contents_)) {
+    controller->ShowPrompt(std::move(new_entity), std::move(old_entity),
+                           std::move(prompt_acceptance_callback));
     return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
-  std::move(prompt_acceptance_callback).Run(SavePromptAcceptanceResult());
+  std::move(prompt_acceptance_callback).Run(SaveOrUpdatePromptResult());
 }
 
 bool ChromeAutofillAiClient::IsUserEligible() {

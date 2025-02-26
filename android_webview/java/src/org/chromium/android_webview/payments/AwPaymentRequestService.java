@@ -77,15 +77,26 @@ import java.util.List;
         onCompleteHandled.run();
     }
 
+    // BrowserPaymentRequest
+    @Override
+    public boolean disconnectIfNoRetrySupport() {
+        // WebView implementation of PaymentRequest API does not support retrying payments, because
+        // that requires either browser UI or payment handler support. However, WebView is not
+        // supposed to have any UI and Android payment apps do not have support for retrying
+        // payments.
+        if (mPaymentRequestService != null) {
+            mPaymentRequestService.disconnectFromClientWithDebugMessage(
+                    RETRY_DISABLED, PaymentErrorReason.NOT_SUPPORTED);
+        }
+        close();
+        return true; // Indicate that the Mojo IPC connection has been closed.
+    }
+
     // BrowserPaymentRequest:
     @Override
     public void onRetry(PaymentValidationErrors errors) {
-        // No UI in WebView.
-        if (mPaymentRequestService != null) {
-            mPaymentRequestService.disconnectFromClientWithDebugMessage(
-                    RETRY_DISABLED, PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
-        }
-        close();
+        // This code path cannot happen because disconnectIfNoRetrySupport() returned true.
+        assert false;
     }
 
     // BrowserPaymentRequest:

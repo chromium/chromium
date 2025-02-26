@@ -70,15 +70,6 @@ enum ImageEncodingMimeType {
   kMimeTypeWebp,
 };
 
-enum StrokeStyle {
-  kNoStroke,
-  kSolidStroke,
-  kDottedStroke,
-  kDashedStroke,
-  kDoubleStroke,
-  kWavyStroke,
-};
-
 enum InterpolationQuality {
   kInterpolationNone = static_cast<int>(cc::PaintFlags::FilterQuality::kNone),
   kInterpolationLow = static_cast<int>(cc::PaintFlags::FilterQuality::kLow),
@@ -150,12 +141,6 @@ enum class RasterModeHint {
 };
 
 enum AntiAliasingMode { kNotAntiAliased, kAntiAliased };
-
-enum GradientSpreadMethod {
-  kSpreadMethodPad,
-  kSpreadMethodReflect,
-  kSpreadMethodRepeat
-};
 
 enum TextPaintOrder { kFillStroke, kStrokeFill };
 

@@ -22,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -327,7 +328,8 @@ bool TranslationManagerImpl::PassAcceptLanguagesCheck(
     const std::string& accept_languages_str,
     const std::string& source_lang,
     const std::string& target_lang) {
-  if (!kTranslationAPIAcceptLanguagesCheck.Get()) {
+  if (base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) ||
+      !kTranslationAPIAcceptLanguagesCheck.Get()) {
     return true;
   }
   // When the TranslationAPIAcceptLanguagesCheck feature is enabled, the
@@ -405,10 +407,13 @@ TranslationManagerImpl::GetServiceController() {
 }
 
 void TranslationManagerImpl::TranslationAvailable(
-    const std::string& source_language,
-    const std::string& target_language,
+    blink::mojom::TranslatorLanguageCodePtr source_lang,
+    blink::mojom::TranslatorLanguageCodePtr target_lang,
     TranslationAvailableCallback callback) {
   CHECK(browser_context_);
+  std::string source_language = std::move(source_lang->code);
+  std::string target_language = std::move(target_lang->code);
+
   RecordTranslationAPICallForLanguagePair("Availability", source_language,
                                           target_language);
 
@@ -421,6 +426,15 @@ void TranslationManagerImpl::TranslationAvailable(
     return;
   }
 
+  // TODO(crbug.com/385173766): Remove once V1 is launched.
+  if (!PassAcceptLanguagesCheck(
+          profile_pref->GetString(language::prefs::kAcceptLanguages),
+          source_language, target_language)) {
+    std::move(callback).Run(
+        blink::mojom::CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed);
+    return;
+  }
+
   const std::vector<std::string_view> accept_languages = base::SplitStringPiece(
       profile_pref->GetString(language::prefs::kAcceptLanguages), ",",
       base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -430,8 +444,13 @@ void TranslationManagerImpl::TranslationAvailable(
       (target_language != "en" &&
        !IsInAcceptLanguage(accept_languages, target_language));
 
+  // TODO(crbug.com/385173766): Remove once V1 is launched.
+  mask_readily_result =
+      base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) &&
+      mask_readily_result;
+
   GetServiceController().CanTranslate(
-      source_language, target_language,
+      std::move(source_language), std::move(target_language),
       base::BindOnce(
           [](bool mask_readily_result, TranslationAvailableCallback callback,
              blink::mojom::CanCreateTranslatorResult result) {

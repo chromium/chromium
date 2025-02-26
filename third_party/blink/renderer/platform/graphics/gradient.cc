@@ -31,11 +31,11 @@
 #include <optional>
 
 #include "third_party/blink/renderer/platform/geometry/blend.h"
+#include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkMatrix.h"
@@ -45,7 +45,7 @@
 namespace blink {
 
 Gradient::Gradient(Type type,
-                   GradientSpreadMethod spread_method,
+                   SpreadMethod spread_method,
                    PremultipliedAlpha premultiplied_alpha,
                    DegenerateHandling degenerate_handling)
     : type_(type),
@@ -316,13 +316,13 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
 
   SkTileMode tile = SkTileMode::kClamp;
   switch (spread_method_) {
-    case kSpreadMethodReflect:
+    case SpreadMethod::kReflect:
       tile = SkTileMode::kMirror;
       break;
-    case kSpreadMethodRepeat:
+    case SpreadMethod::kRepeat:
       tile = SkTileMode::kRepeat;
       break;
-    case kSpreadMethodPad:
+    case SpreadMethod::kPad:
       tile = SkTileMode::kClamp;
       break;
   }
@@ -374,7 +374,7 @@ class LinearGradient final : public Gradient {
  public:
   LinearGradient(const gfx::PointF& p0,
                  const gfx::PointF& p1,
-                 GradientSpreadMethod spread_method,
+                 SpreadMethod spread_method,
                  PremultipliedAlpha premultiplied_alpha,
                  DegenerateHandling degenerate_handling)
       : Gradient(Type::kLinear,
@@ -416,7 +416,7 @@ class RadialGradient final : public Gradient {
                  const gfx::PointF& p1,
                  float r1,
                  float aspect_ratio,
-                 GradientSpreadMethod spread_method,
+                 SpreadMethod spread_method,
                  PremultipliedAlpha premultiplied_alpha,
                  DegenerateHandling degenerate_handling)
       : Gradient(Type::kRadial,
@@ -478,7 +478,7 @@ class ConicGradient final : public Gradient {
                 float rotation,
                 float start_angle,
                 float end_angle,
-                GradientSpreadMethod spread_method,
+                SpreadMethod spread_method,
                 PremultipliedAlpha premultiplied_alpha,
                 DegenerateHandling degenerate_handling)
       : Gradient(Type::kConic,
@@ -532,7 +532,7 @@ class ConicGradient final : public Gradient {
 scoped_refptr<Gradient> Gradient::CreateLinear(
     const gfx::PointF& p0,
     const gfx::PointF& p1,
-    GradientSpreadMethod spread_method,
+    SpreadMethod spread_method,
     PremultipliedAlpha premultiplied_alpha,
     DegenerateHandling degenerate_handling) {
   return base::AdoptRef(new LinearGradient(
@@ -545,7 +545,7 @@ scoped_refptr<Gradient> Gradient::CreateRadial(
     const gfx::PointF& p1,
     float r1,
     float aspect_ratio,
-    GradientSpreadMethod spread_method,
+    SpreadMethod spread_method,
     PremultipliedAlpha premultiplied_alpha,
     DegenerateHandling degenerate_handling) {
   return base::AdoptRef(new RadialGradient(p0, r0, p1, r1, aspect_ratio,
@@ -558,7 +558,7 @@ scoped_refptr<Gradient> Gradient::CreateConic(
     float rotation,
     float start_angle,
     float end_angle,
-    GradientSpreadMethod spread_method,
+    SpreadMethod spread_method,
     PremultipliedAlpha premultiplied_alpha,
     DegenerateHandling degenerate_handling) {
   return base::AdoptRef(new ConicGradient(

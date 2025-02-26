@@ -37,10 +37,12 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/webapps/browser/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
@@ -296,7 +298,8 @@ void ManifestUpdateManager::StartCheckAfterPageAndManifestUrlLoad(
   // If web_contents have been destroyed before page load,
   // then no need of running the command.
   if (!web_contents || web_contents->IsBeingDestroyed()) {
-    OnUpdateStopped(url, app_id, ManifestUpdateResult::kWebContentsDestroyed);
+    OnUpdateStopped(/*web_contents=*/nullptr, url, app_id,
+                    ManifestUpdateResult::kWebContentsDestroyed);
     return;
   }
 
@@ -347,7 +350,7 @@ void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(
   CHECK_EQ(update_stage.stage, UpdateStage::Stage::kCheckingManifestDiff);
 
   if (check_result != ManifestUpdateCheckResult::kAppUpdateNeeded) {
-    OnUpdateStopped(url, app_id,
+    OnUpdateStopped(contents, url, app_id,
                     FinalResultFromManifestUpdateCheckResult(check_result));
     return;
   }
@@ -367,7 +370,7 @@ void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(
       url, app_id, std::move(install_info), std::move(keep_alive),
       std::move(profile_keep_alive),
       base::BindOnce(&ManifestUpdateManager::OnUpdateStopped,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), contents));
 }
 
 bool ManifestUpdateManager::IsUpdateConsumed(const webapps::AppId& app_id,
@@ -432,15 +435,27 @@ void ManifestUpdateManager::SetLastUpdateCheckTime(const GURL& origin,
   last_update_check_[app_id] = time;
 }
 
-void ManifestUpdateManager::OnUpdateStopped(const GURL& url,
-                                            const webapps::AppId& app_id,
-                                            ManifestUpdateResult result) {
+void ManifestUpdateManager::OnUpdateStopped(
+    base::WeakPtr<content::WebContents> contents,
+    const GURL& url,
+    const webapps::AppId& app_id,
+    ManifestUpdateResult result) {
   auto update_stage_it = update_stages_.find(app_id);
   // If the app has been uninstalled in the middle of the manifest
   // update, a kAppUninstalled has already been fired.
   if (update_stage_it == update_stages_.end())
     return;
   update_stages_.erase(app_id);
+
+  // If a manifest update happened successfully, record feature usage of
+  // applying a manifest, and update the corresponding WebDXFeature counter for
+  // kManifest as well.
+  if (contents && result == ManifestUpdateResult::kAppUpdated) {
+    page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+        contents->GetPrimaryMainFrame(),
+        blink::mojom::WebFeature::kWebAppManifestUpdate);
+  }
+
   NotifyResult(url, app_id, result);
 }
 
@@ -453,6 +468,7 @@ void ManifestUpdateManager::NotifyResult(
   if (result != ManifestUpdateResult::kNoAppInScope) {
     base::UmaHistogramEnumeration("Webapp.Update.ManifestUpdateResult", result);
   }
+
   if (*GetResultCallbackMutableForTesting()) {
     std::move(*GetResultCallbackMutableForTesting()).Run(url, result);
   }

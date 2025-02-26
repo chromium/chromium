@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
+#include "base/metrics/field_trial.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -548,13 +549,20 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
     pref_service_->ClearPref(prefs::kPrivacySandboxM1PromptSuppressed);
   }
 
-  // Special usecase for Third Party Coookies: Make sure the 3PC suppression
-  // value is overridden in case 3PC Blocking is not a valid reason to block the
-  // Prompt.
+  if (pref_service_->GetBoolean(
+          prefs::kPrivacySandboxAllowNoticeFor3PCBlockedTrial)) {
+    if (base::FieldTrial* field_trial = base::FeatureList::GetFieldTrial(
+            privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies)) {
+      field_trial->Activate();
+    }
+  }
+
+  // Special usecase for Third Party Coookies: Make sure the 3PC
+  // suppression value is overridden in case 3PC Blocking is not a valid
+  // reason to block the Prompt.
   if (prompt_suppressed_reason ==
           PromptSuppressedReason::kThirdPartyCookiesBlocked &&
-      base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies)) {
+      CheckAndRegisterAllowPromptForBlocked3PCookiesTrial()) {
     pref_service_->ClearPref(prefs::kPrivacySandboxM1PromptSuppressed);
   }
 
@@ -696,6 +704,14 @@ void PrivacySandboxServiceImpl::OnExtendedAccountInfoRemoved(
       sign_out_time - first_sign_in_time);
 }
 
+bool PrivacySandboxServiceImpl::
+    CheckAndRegisterAllowPromptForBlocked3PCookiesTrial() {
+  pref_service_->SetBoolean(prefs::kPrivacySandboxAllowNoticeFor3PCBlockedTrial,
+                            true);
+  return base::FeatureList::IsEnabled(
+      privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies);
+}
+
 PrivacySandboxService::PromptType
 // TODO(crbug.com/352575567): Use the SurfaceType passed in.
 PrivacySandboxServiceImpl::GetRequiredPromptType(SurfaceType surface_type) {
@@ -787,8 +803,7 @@ PrivacySandboxServiceImpl::GetRequiredPromptType(SurfaceType surface_type) {
   // do not show a prompt. Unless the prompt is allowed when 3P Cookies are
   // blocked.
   if (third_party_cookies_blocked &&
-      !base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies)) {
+      !CheckAndRegisterAllowPromptForBlocked3PCookiesTrial()) {
     pref_service_->SetInteger(
         prefs::kPrivacySandboxM1PromptSuppressed,
         static_cast<int>(PromptSuppressedReason::kThirdPartyCookiesBlocked));

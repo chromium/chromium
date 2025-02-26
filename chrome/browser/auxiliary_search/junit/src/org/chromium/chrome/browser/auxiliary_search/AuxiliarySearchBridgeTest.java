@@ -5,8 +5,14 @@
 package org.chromium.chrome.browser.auxiliary_search;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
@@ -20,11 +26,17 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Unit tests for {@link AuxiliarySearchBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -38,6 +50,7 @@ public final class AuxiliarySearchBridgeTest {
     @Before
     public void setUp() {
         AuxiliarySearchBridgeJni.setInstanceForTesting(mMockAuxiliarySearchBridgeJni);
+        when(mMockAuxiliarySearchBridgeJni.getForProfile(mProfile)).thenReturn(10L);
     }
 
     @After
@@ -63,5 +76,22 @@ public final class AuxiliarySearchBridgeTest {
         assertNotNull(bridge);
 
         verify(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
+    }
+
+    @Test
+    @SmallTest
+    public void tesGetNonSensitiveTabs_NoNative() {
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        AuxiliarySearchBridge bridge = new AuxiliarySearchBridge(mProfile);
+
+        Tab tab = mock(Tab.class);
+        List<Tab> tabList = new ArrayList<>();
+        tabList.add(tab);
+        Callback callback = mock(Callback.class);
+        ThreadUtils.runOnUiThreadBlocking(() -> bridge.getNonSensitiveTabs(tabList, callback));
+
+        verify(callback).onResult(eq(null));
+        verify(mMockAuxiliarySearchBridgeJni, never())
+                .getNonSensitiveTabs(anyLong(), any(), eq(callback));
     }
 }

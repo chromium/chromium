@@ -119,7 +119,6 @@ generate_jni("features_jni_headers") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/baseline_close_24.xml",
     "java/res/drawable/baseline_more_horiz_24.xml",
     "java/res/drawable/error_24.xml",
     "java/res/drawable/format_ink_highlighter_24.xml",

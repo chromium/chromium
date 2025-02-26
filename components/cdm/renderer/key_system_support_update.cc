@@ -386,21 +386,12 @@ void AddWidevine(const media::KeySystemCapability& capability,
   // On Android we support hardware secure if possible.
   max_audio_robustness = Robustness::HW_SECURE_CRYPTO;
   max_video_robustness = Robustness::HW_SECURE_ALL;
-#else
-  // The hardware secure robustness for the two keys systems are guarded by
-  // different flags. The audio and video robustness should be set differently
-  // for the experimental and normal key system.
-  if (base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
-    max_audio_robustness = Robustness::HW_SECURE_CRYPTO;
-    max_video_robustness = Robustness::HW_SECURE_ALL;
-  }
-#if BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(
           media::kHardwareSecureDecryptionExperiment)) {
     max_experimental_audio_robustness = Robustness::HW_SECURE_CRYPTO;
     max_experimental_video_robustness = Robustness::HW_SECURE_ALL;
   }
-#endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Others.

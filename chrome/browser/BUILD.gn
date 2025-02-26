@@ -511,6 +511,8 @@ static_library("browser") {
     "enterprise/reporting/prefs.h",
     "enterprise/reporting/profile_report_generator_delegate_base.cc",
     "enterprise/reporting/profile_report_generator_delegate_base.h",
+    "enterprise/signin/enterprise_identity_service_factory.cc",
+    "enterprise/signin/enterprise_identity_service_factory.h",
     "enterprise/signin/interstitials/managed_profile_required_controller_client.cc",
     "enterprise/signin/interstitials/managed_profile_required_controller_client.h",
     "enterprise/signin/interstitials/managed_profile_required_page.cc",
@@ -2105,6 +2107,7 @@ static_library("browser") {
     "//components/enterprise/content",
     "//components/enterprise/device_trust",
     "//components/enterprise/obfuscation/core:enterprise_obfuscation",
+    "//components/enterprise/signin",
     "//components/error_page/common",
     "//components/error_page/content/browser",
     "//components/facilitated_payments/core/features",
@@ -6030,6 +6033,16 @@ static_library("browser") {
     ]
   }
 
+  if (enable_background_mode) {
+    deps += [
+      "//chrome/browser/background/extensions:extensions",
+      "//chrome/browser/background/extensions:impl",
+    ]
+
+    allow_circular_includes_from +=
+        [ "//chrome/browser/background/extensions:impl" ]
+  }
+
   if (is_mac || is_win) {
     sources += [
       "enterprise/platform_auth/platform_auth_navigation_throttle.cc",
@@ -7002,28 +7015,6 @@ static_library("browser") {
     ]
   }
 
-  if (enable_background_mode) {
-    sources += [
-      "background/background_application_list_model.cc",
-      "background/background_application_list_model.h",
-      "background/background_mode_manager.cc",
-      "background/background_mode_manager.h",
-      "background/background_mode_optimizer.cc",
-      "background/background_mode_optimizer.h",
-    ]
-    if (is_win) {
-      sources += [ "background/background_mode_manager_win.cc" ]
-    }
-    if (is_mac) {
-      sources += [ "background/background_mode_manager_mac.cc" ]
-    }
-    if (is_chromeos) {
-      sources += [ "background/background_mode_manager_chromeos.cc" ]
-    }
-    if (use_aura && !is_win && !is_chromeos) {
-      sources += [ "background/background_mode_manager_aura.cc" ]
-    }
-  }
   if (enable_background_contents) {
     sources += [
       "background/background_contents_service.cc",
@@ -7812,33 +7803,7 @@ static_library("browser") {
     }
   }
   if (enable_on_device_translation) {
-    sources += [
-      "component_updater/translate_kit_component_installer.cc",
-      "component_updater/translate_kit_component_installer.h",
-      "component_updater/translate_kit_language_pack_component_installer.cc",
-      "component_updater/translate_kit_language_pack_component_installer.h",
-      "on_device_translation/component_manager.cc",
-      "on_device_translation/component_manager.h",
-      "on_device_translation/file_operation_proxy_impl.cc",
-      "on_device_translation/file_operation_proxy_impl.h",
-      "on_device_translation/service_controller.cc",
-      "on_device_translation/service_controller.h",
-      "on_device_translation/service_controller_manager.cc",
-      "on_device_translation/service_controller_manager.h",
-      "on_device_translation/service_controller_manager_factory.cc",
-      "on_device_translation/service_controller_manager_factory.h",
-      "on_device_translation/translation_manager_impl.cc",
-      "on_device_translation/translation_manager_impl.h",
-      "on_device_translation/translator.cc",
-      "on_device_translation/translator.h",
-    ]
-    deps += [
-      "//chrome/browser/on_device_translation:constants",
-      "//chrome/browser/on_device_translation:language_pack_util",
-      "//chrome/browser/on_device_translation:prefs",
-      "//chrome/browser/on_device_translation:translation_metrics",
-      "//components/services/on_device_translation:on_device_translation_service",
-    ]
+    deps += [ "//chrome/browser/on_device_translation" ]
   }
 
   if (enable_pdf) {

@@ -97,6 +97,7 @@ std::string FormatErrorMessage(CloudProvider provider,
     case MigrationUploadError::kServiceUnavailable:
     // TODO: use a dedicated network error string, not generic
     case MigrationUploadError::kNetworkError:
+    case MigrationUploadError::kReconnectTimeout:
       return l10n_util::GetStringUTF8(IDS_OFFICE_UPLOAD_ERROR_GENERIC);
   }
 }
@@ -310,7 +311,6 @@ void OneDriveMigrationUploader::OnUploadDone(
 
   if (base::FeatureList::IsEnabled(features::kSkyVaultV3)) {
     if (error.value() == MigrationUploadError::kNetworkError) {
-      // TODO(396372308): Have a time limit or max # retries
       // Just retry, uploaders handle waiting for connectivity.
       base::FilePath relative_path =
           GetPathRelativeToMyFiles(profile_, file_path);
@@ -434,7 +434,6 @@ void GoogleDriveMigrationUploader::OnUploadDone(
 
   if (base::FeatureList::IsEnabled(features::kSkyVaultV3)) {
     if (error.value() == MigrationUploadError::kNetworkError) {
-      // TODO(396372308): Have a time limit or max # retries
       // Just retry, uploaders handle waiting for connectivity.
       base::FilePath target_path =
           GetPathRelativeToMyFiles(profile_, file_path);

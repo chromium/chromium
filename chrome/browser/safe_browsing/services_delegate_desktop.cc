@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_delegate_desktop.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -139,7 +140,10 @@ ServicesDelegateDesktop::CreateDatabaseManager() {
 
 DownloadProtectionService*
 ServicesDelegateDesktop::CreateDownloadProtectionService() {
-  return new DownloadProtectionService(safe_browsing_service_);
+  auto delegate = std::make_unique<DownloadProtectionDelegateDesktop>();
+  auto download_service = std::make_unique<DownloadProtectionService>(
+      safe_browsing_service_, std::move(delegate));
+  return download_service.release();
 }
 
 IncidentReportingService*

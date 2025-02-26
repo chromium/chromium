@@ -706,7 +706,7 @@ public class ToolbarTablet extends ToolbarLayout
     }
 
     @Override
-    void updateOptionalButton(ButtonData buttonData) {
+    protected void updateOptionalButton(ButtonData buttonData) {
         if (mOptionalButton == null) {
             ViewStub viewStub = findViewById(R.id.optional_button_stub);
             mOptionalButton = (ImageButton) viewStub.inflate();

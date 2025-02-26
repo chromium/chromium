@@ -63,7 +63,7 @@ std::unique_ptr<::boca::OnTaskConfig> OnTaskConfigMojomToProto(
     auto* content_config = active_bundle->mutable_content_configs()->Add();
     content_config->set_title(item->tab->title);
     content_config->set_url(item->tab->url.spec());
-    content_config->set_favicon_url(item->tab->favicon);
+    content_config->set_favicon_url(item->tab->favicon.spec());
     content_config->mutable_locked_navigation_options()->set_navigation_type(
         ::boca::LockedNavigationOptions::NavigationType(item->navigation_type));
   }
@@ -117,7 +117,8 @@ mojom::ConfigPtr SessionConfigProtoToMojom(::boca::Session* session) {
     std::vector<mojom::ControlledTabPtr> tabs;
     for (auto tab : session_on_task_config.active_bundle().content_configs()) {
       tabs.push_back(mojom::ControlledTab::New(
-          mojom::TabInfo::New(tab.title(), GURL(tab.url()), tab.favicon_url()),
+          mojom::TabInfo::New(tab.title(), GURL(tab.url()),
+                              GURL(tab.favicon_url())),
           mojom::NavigationType(
               tab.locked_navigation_options().navigation_type())));
     }
@@ -603,6 +604,11 @@ void BocaAppHandler::CloseTab(const SessionID::id_type tab_id,
 
   system_web_app_manager_->RemoveTabsWithTabIds(window_id, {id});
   std::move(callback).Run(true);
+}
+
+void BocaAppHandler::OpenFeedbackDialog(OpenFeedbackDialogCallback callback) {
+  BocaAppClient::Get()->OpenFeedbackDialog();
+  std::move(callback).Run();
 }
 
 void BocaAppHandler::OnStudentActivityUpdated(

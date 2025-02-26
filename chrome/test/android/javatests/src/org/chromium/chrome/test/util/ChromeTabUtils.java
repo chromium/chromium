@@ -797,15 +797,6 @@ public class ChromeTabUtils {
     }
 
     /**
-     * @param tab The tab to retrieve Root ID for.
-     * @return the Root ID for a supplied tab object.
-     */
-    public static int getRootId(Tab tab) {
-        Assert.assertTrue(ThreadUtils.runningOnUiThread());
-        return tab.getRootId();
-    }
-
-    /**
      * Groups together two tabs.
      * @param tab1 First tab to group.
      * @param tab2 Second tab to group.
@@ -821,7 +812,7 @@ public class ChromeTabUtils {
                         .getTabGroupModelFilter(tab1.isIncognito());
 
         filter.mergeTabsToGroup(tab1.getId(), tab2.getId());
-        Assert.assertEquals(getRootId(tab1), getRootId(tab2));
+        Assert.assertEquals(tab1.getRootId(), tab2.getRootId());
     }
 
     /**

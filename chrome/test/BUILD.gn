@@ -154,6 +154,11 @@ static_library("test_support") {
     "//chrome/browser/ui:ui_features",
     "//chrome/test/data/webui:resources",
   ]
+
+  if (enable_background_mode) {
+    deps += [ "//chrome/browser/background/extensions:extensions" ]
+  }
+
   public_deps = []
   testonly = true
 
@@ -2664,6 +2669,7 @@ if (!is_android) {
         "//chrome/browser/ash/printing",
         "//chrome/browser/ash/printing:test_support",
         "//chrome/browser/ash/printing/print_management",
+        "//chrome/browser/ash/test:test_support",
         "//chrome/browser/chromeos:browser_tests",
         "//chrome/browser/chromeos/app_mode",
         "//chrome/browser/chromeos/arc",
@@ -2688,6 +2694,10 @@ if (!is_android) {
 
     if (is_mac) {
       deps += [ "//device/fido:icloud_keychain_test_support" ]
+    }
+
+    if (enable_background_mode) {
+      deps += [ "//chrome/browser/background/extensions:extensions" ]
     }
 
     # Runtime dependencies
@@ -3056,6 +3066,7 @@ if (!is_android) {
       "../browser/page_load_metrics/observers/core/ukm_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/foreground_duration_ukm_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer_browsertest.cc",
+      "../browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer_browsertest.h",
       "../browser/page_load_metrics/observers/gws_hp_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/javascript_frameworks_ukm_observer_browsertest.cc",
@@ -3325,6 +3336,7 @@ if (!is_android) {
       "../browser/ui/views/eye_dropper/eye_dropper_browsertest.cc",
       "../browser/ui/views/file_system_access/file_system_access_test_utils.cc",
       "../browser/ui/views/file_system_access/file_system_access_test_utils.h",
+      "../browser/ui/views/frame/system_menu_model_builder_browsertest.cc",
       "../browser/ui/views/hats/hats_browsertest.cc",
       "../browser/ui/views/incognito_clear_browsing_data_dialog_browsertest.cc",
       "../browser/ui/views/intent_picker_dialog_browsertest.cc",
@@ -3678,9 +3690,7 @@ if (!is_android) {
         "//chrome/browser/on_device_translation/on_device_translation_browsertest.cc",
       ]
       deps += [
-        "//chrome/browser/on_device_translation:constants",
-        "//chrome/browser/on_device_translation:language_pack_util",
-        "//chrome/browser/on_device_translation:prefs",
+        "//chrome/browser/on_device_translation",
         "//chrome/browser/on_device_translation:test_support",
         "//components/services/on_device_translation:test_support",
         "//components/services/on_device_translation/public/cpp:cpp",
@@ -4634,7 +4644,6 @@ if (!is_android) {
         "../browser/ui/views/frame/browser_non_client_frame_view_browsertest.cc",
         "../browser/ui/views/frame/browser_root_view_browsertest.cc",
         "../browser/ui/views/frame/browser_view_browsertest.cc",
-        "../browser/ui/views/frame/multi_contents_view_browsertest.cc",
         "../browser/ui/views/hung_renderer_view_browsertest.cc",
         "../browser/ui/views/importer/import_lock_dialog_view_browsertest.cc",
         "../browser/ui/views/javascript_tab_modal_dialog_view_views_browsertest.cc",
@@ -7504,6 +7513,7 @@ test("unit_tests") {
       "../browser/devtools/devtools_file_helper_unittest.cc",
       "../browser/devtools/devtools_file_system_indexer_unittest.cc",
       "../browser/devtools/devtools_file_watcher_unittest.cc",
+      "../browser/devtools/devtools_select_file_dialog_unittest.cc",
       "../browser/devtools/devtools_settings_unittest.cc",
       "../browser/devtools/devtools_ui_bindings_unittest.cc",
       "../browser/devtools/protocol/cast_handler_unittest.cc",
@@ -7739,7 +7749,7 @@ test("unit_tests") {
       "../browser/ui/url_identity_unittest.cc",
       "../browser/ui/views/accessibility/theme_tracking_non_accessible_image_view_unittest.cc",
       "../browser/ui/views/autofill/address_editor_view_unittest.cc",
-      "../browser/ui/views/autofill/autofill_ai/save_autofill_ai_data_bubble_view_unittest.cc",
+      "../browser/ui/views/autofill/autofill_ai/save_or_update_autofill_ai_data_bubble_view_unittest.cc",
       "../browser/ui/views/autofill/autofill_field_promo_view_impl_unittest.cc",
       "../browser/ui/views/autofill/edit_address_profile_view_unittest.cc",
       "../browser/ui/views/autofill/save_address_profile_view_unittest.cc",
@@ -8669,11 +8679,7 @@ test("unit_tests") {
         [ "../browser/background/background_contents_service_unittest.cc" ]
   }
   if (enable_background_mode) {
-    sources += [
-      "../browser/background/background_application_list_model_unittest.cc",
-      "../browser/background/background_mode_manager_unittest.cc",
-      "../browser/background/background_mode_optimizer_unittest.cc",
-    ]
+    deps += [ "//chrome/browser/background/extensions:unit_tests" ]
   }
 
   if (enable_spellcheck) {
@@ -10761,10 +10767,6 @@ if (!is_android && !is_chromeos_device) {
       }
     }
 
-    if (enable_dice_support) {
-      sources += [ "../browser/ui/views/promos/autofill_bubble_signin_promo_interactive_uitest.cc" ]
-    }
-
     configs += [ "//build/config:precompiled_headers" ]
     if ((is_linux || is_chromeos) && !is_component_build) {
       configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
@@ -11132,6 +11134,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/find_bar_views_interactive_uitest.cc",
         "../browser/ui/views/frame/browser_view_focus_uitest.cc",
         "../browser/ui/views/frame/browser_view_interactive_uitest.cc",
+        "../browser/ui/views/frame/multi_contents_view_interactive_uitest.cc",
         "../browser/ui/views/frame/picture_in_picture_browser_frame_view_interactive_uitest.cc",
         "../browser/ui/views/frame/tab_strip_region_view_interactive_uitest.cc",
         "../browser/ui/views/fullscreen_control/fullscreen_control_view_interactive_uitest.cc",

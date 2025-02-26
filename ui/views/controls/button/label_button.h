@@ -94,20 +94,10 @@ class VIEWS_EXPORT LabelButton : public Button,
   void ShrinkDownThenClearText();
 
   // Sets the text color shown for the specified button |for_state| to |color|.
-  // TODO(crbug.com/40259212): Get rid of SkColor versions of these functions in
-  // favor of the ColorId versions.
-  void SetTextColor(ButtonState for_state, SkColor color);
-
-  // Sets the text color as above but using ColorId.
-  void SetTextColorId(ButtonState for_state, ui::ColorId color_id);
+  void SetTextColor(ButtonState for_state, ui::ColorVariant color);
 
   // Sets the text colors shown for the non-disabled states to |color|.
-  // TODO(crbug.com/40259212): Get rid of SkColor versions of these functions in
-  // favor of the ColorId versions.
-  virtual void SetEnabledTextColors(std::optional<SkColor> color);
-
-  // Sets the text colors shown for the non-disabled states to |color_id|.
-  void SetEnabledTextColorIds(ui::ColorId color_id);
+  virtual void SetEnabledTextColors(std::optional<ui::ColorVariant> color);
 
   // Gets the current state text color.
   SkColor GetCurrentTextColor() const;
@@ -362,13 +352,12 @@ VIEW_BUILDER_PROPERTY(gfx::HorizontalAlignment, HorizontalAlignment)
 VIEW_BUILDER_PROPERTY(views::style::TextStyle, LabelStyle)
 VIEW_BUILDER_PROPERTY(gfx::Size, MinSize)
 VIEW_BUILDER_PROPERTY(gfx::Size, MaxSize)
-VIEW_BUILDER_PROPERTY(std::optional<SkColor>, EnabledTextColors)
-VIEW_BUILDER_PROPERTY(ui::ColorId, EnabledTextColorIds)
+VIEW_BUILDER_PROPERTY(std::optional<ui::ColorVariant>, EnabledTextColors)
 VIEW_BUILDER_PROPERTY(bool, IsDefault)
 VIEW_BUILDER_PROPERTY(int, ImageLabelSpacing)
 VIEW_BUILDER_PROPERTY(bool, ImageCentered)
 VIEW_BUILDER_METHOD(SetImageModel, Button::ButtonState, const ui::ImageModel&)
-VIEW_BUILDER_METHOD(SetTextColorId, Button::ButtonState, ui::ColorId)
+VIEW_BUILDER_METHOD(SetTextColor, Button::ButtonState, ui::ColorVariant)
 END_VIEW_BUILDER
 
 }  // namespace views

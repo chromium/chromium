@@ -94,6 +94,10 @@ bool ShouldPresentFirstRunExperience() {
     return true;
   }
 
+  if (experimental_flags::NeverDisplayFirstRun()) {
+    return false;
+  }
+
   if (tests_hook::DisableDefaultFirstRun()) {
     return false;
   }

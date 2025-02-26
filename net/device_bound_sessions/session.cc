@@ -17,6 +17,7 @@
 #include "net/device_bound_sessions/cookie_craving.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
+#include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_inclusion_rules.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -50,10 +51,20 @@ Session::Session(Id id,
 Session::~Session() = default;
 
 // static
-std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params) {
-  if (!params.fetcher_url.is_valid() || params.session_id.empty() ||
-      params.refresh_url.empty()) {
-    return nullptr;
+base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
+    const SessionParams& params) {
+  if (!params.fetcher_url.is_valid()) {
+    return base::unexpected(
+        SessionError{SessionError::ErrorType::kInvalidFetcherUrl,
+                     net::SchemefulSite(), /*session_id=*/std::nullopt});
+  } else if (params.refresh_url.empty()) {
+    return base::unexpected(
+        SessionError{SessionError::ErrorType::kInvalidRefreshUrl,
+                     net::SchemefulSite(), /*session_id=*/std::nullopt});
+  } else if (params.session_id.empty()) {
+    return base::unexpected(
+        SessionError{SessionError::ErrorType::kInvalidSessionId,
+                     net::SchemefulSite(), /*session_id=*/std::nullopt});
   }
 
   if (!params.scope.origin.empty() && !params.fetcher_url.host().empty() &&
@@ -64,7 +75,9 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params) {
           net::registry_controlled_domains::GetDomainAndRegistry(
               params.scope.origin,
               net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)) {
-    return nullptr;
+    return base::unexpected(
+        SessionError{SessionError::ErrorType::kInvalidFetcherUrl,
+                     net::SchemefulSite(), /*session_id=*/std::nullopt});
   }
 
   // The refresh endpoint can be a full URL (samesite with request origin)
@@ -80,7 +93,9 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params) {
       !IsSecure(candidate_refresh_endpoint) ||
       net::SchemefulSite(candidate_refresh_endpoint) !=
           net::SchemefulSite(params.fetcher_url)) {
-    return nullptr;
+    return base::unexpected(
+        SessionError{SessionError::ErrorType::kInvalidRefreshUrl,
+                     net::SchemefulSite(), /*session_id=*/std::nullopt});
   }
   std::unique_ptr<Session> session(new Session(
       Id(params.session_id), url::Origin::Create(params.fetcher_url),
@@ -117,7 +132,7 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params) {
   session->set_expiry_date(base::Time::Now() + kSessionTtl);
   session->set_unexportable_key_id(std::move(params.key_id));
 
-  return session;
+  return base::ok(std::move(session));
 }
 
 // static
