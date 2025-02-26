@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PROMOS_BUBBLE_SIGNIN_PROMO_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_PROMOS_BUBBLE_SIGNIN_PROMO_VIEW_H_
+#ifndef CHROME_BROWSER_UI_SIGNIN_PROMOS_BUBBLE_SIGNIN_PROMO_VIEW_H_
+#define CHROME_BROWSER_UI_SIGNIN_PROMOS_BUBBLE_SIGNIN_PROMO_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/signin/bubble_signin_promo_delegate.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/style/typography.h"
@@ -14,6 +13,7 @@
 
 class Profile;
 class BubbleSignInPromoSignInButtonView;
+class BubbleSignInPromoDelegate;
 
 // A personalized sign in promo used when Desktop Identity Consistency is
 // enabled. Its display a message informing the user the benefits of signing in
@@ -54,4 +54,4 @@ class BubbleSignInPromoView : public views::View {
   raw_ptr<BubbleSignInPromoDelegate, DanglingUntriaged> delegate_;
   raw_ptr<BubbleSignInPromoSignInButtonView> signin_button_view_ = nullptr;
 };
-#endif  // CHROME_BROWSER_UI_VIEWS_PROMOS_BUBBLE_SIGNIN_PROMO_VIEW_H_
+#endif  // CHROME_BROWSER_UI_SIGNIN_PROMOS_BUBBLE_SIGNIN_PROMO_VIEW_H_

@@ -1,7 +1,7 @@
 // // Copyright 2024 The Chromium Authors
 // // Use of this source code is governed by a BSD-style license that can be
 // // found in the LICENSE file.
-#include "chrome/browser/ui/autofill/autofill_signin_promo_tab_helper.h"
+#include "chrome/browser/ui/signin/promos/signin_promo_tab_helper.h"
 
 #include "base/test/mock_callback.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -15,7 +15,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 
-class AutofillSigninPromoTabHelperTest : public InProcessBrowserTest {
+class SigninPromoTabHelperTest : public InProcessBrowserTest {
  public:
   signin::IdentityManager* identity_manager() {
     return IdentityManagerFactory::GetForProfile(browser()->profile());
@@ -27,7 +27,7 @@ class AutofillSigninPromoTabHelperTest : public InProcessBrowserTest {
   autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
 };
 
-IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
+IN_PROC_BROWSER_TEST_F(SigninPromoTabHelperTest,
                        CallPasswordMoveCallbackAfterSignInFromTab) {
   // Get the sign in tab with the correct access point.
   signin_ui_util::ShowSigninPromptFromPromo(
@@ -41,8 +41,8 @@ IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
   base::MockOnceClosure move_callback;
   EXPECT_CALL(move_callback, Run()).Times(1);
 
-  autofill::AutofillSigninPromoTabHelper* user_data =
-      autofill::AutofillSigninPromoTabHelper::GetForWebContents(*sign_in_tab);
+  SigninPromoTabHelper* user_data =
+      SigninPromoTabHelper::GetForWebContents(*sign_in_tab);
   user_data->InitializeDataMoveAfterSignIn(
       /*move_callback=*/move_callback.Get(),
       /*access_point=*/signin_metrics::AccessPoint::kPasswordBubble);
@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
           .Build("test@gmail.com"));
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
+IN_PROC_BROWSER_TEST_F(SigninPromoTabHelperTest,
                        CallAddressMoveCallbackAfterReauthenticationFromTab) {
   // Initiate sign in pending state.
   AccountInfo info = signin::MakePrimaryAccountAvailable(
@@ -75,8 +75,8 @@ IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
   base::MockOnceClosure move_callback;
   EXPECT_CALL(move_callback, Run()).Times(1);
 
-  autofill::AutofillSigninPromoTabHelper* user_data =
-      autofill::AutofillSigninPromoTabHelper::GetForWebContents(*reauth_tab);
+  SigninPromoTabHelper* user_data =
+      SigninPromoTabHelper::GetForWebContents(*reauth_tab);
   user_data->InitializeDataMoveAfterSignIn(
       /*move_callback=*/move_callback.Get(),
       /*access_point=*/signin_metrics::AccessPoint::kAddressBubble);

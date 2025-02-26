@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extension_installed_bubble_model.h"
 #include "chrome/browser/ui/extensions/extension_installed_waiter.h"
-#include "chrome/browser/ui/signin/bubble_signin_promo_delegate.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 #include "extensions/common/extension.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 

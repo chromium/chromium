@@ -13,7 +13,7 @@
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/ui/autofill/autofill_bubble_signin_promo_controller.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
@@ -28,55 +28,25 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/fill_layout.h"
 
-class AutofillBubbleSignInPromoView::DiceSigninPromoDelegate
-    : public BubbleSignInPromoDelegate {
- public:
-  explicit DiceSigninPromoDelegate(
-      autofill::AutofillBubbleSignInPromoController* controller);
-  DiceSigninPromoDelegate(const DiceSigninPromoDelegate&) = delete;
-  DiceSigninPromoDelegate& operator=(const DiceSigninPromoDelegate&) = delete;
-  ~DiceSigninPromoDelegate() override;
-
-  // BubbleSignInPromoDelegate:
-  void OnSignIn(const AccountInfo& account) override;
-
- private:
-  raw_ptr<autofill::AutofillBubbleSignInPromoController> controller_;
-};
-
-AutofillBubbleSignInPromoView::DiceSigninPromoDelegate::DiceSigninPromoDelegate(
-    autofill::AutofillBubbleSignInPromoController* controller)
-    : controller_(controller) {
-  CHECK(controller_);
-}
-
-AutofillBubbleSignInPromoView::DiceSigninPromoDelegate::
-    ~DiceSigninPromoDelegate() = default;
-
-void AutofillBubbleSignInPromoView::DiceSigninPromoDelegate::OnSignIn(
-    const AccountInfo& account) {
-  controller_->OnSignInToChromeClicked(account);
-}
-
 AutofillBubbleSignInPromoView::AutofillBubbleSignInPromoView(
     content::WebContents* web_contents,
     signin_metrics::AccessPoint access_point,
     syncer::LocalDataItemModel::DataId data_id)
-    : controller_(*web_contents, access_point, std::move(data_id)),
-      access_point_(access_point) {
+    : access_point_(access_point),
+      delegate_(
+          std::make_unique<BubbleSignInPromoDelegate>(*web_contents,
+                                                      access_point,
+                                                      std::move(data_id))) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   CHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile));
-  dice_sign_in_promo_delegate_ =
-      std::make_unique<AutofillBubbleSignInPromoView::DiceSigninPromoDelegate>(
-          &controller_);
 
   signin::RecordSignInPromoShown(access_point, profile);
 
-  bubble_sign_in_promo_view_ = AddChildViewRaw(new BubbleSignInPromoView(
-      profile, dice_sign_in_promo_delegate_.get(), access_point));
+  bubble_sign_in_promo_view_ = AddChildView(
+      new BubbleSignInPromoView(profile, delegate_.get(), access_point));
 }
 
 views::View* AutofillBubbleSignInPromoView::GetSignInButton() const {
@@ -110,7 +80,7 @@ void AutofillBubbleSignInPromoView::OnWidgetDestroying(views::Widget* widget) {
   }
 
   Profile* profile = Profile::FromBrowserContext(
-      controller_.GetWebContents()->GetBrowserContext());
+      delegate_->GetWebContents()->GetBrowserContext());
   AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
       IdentityManagerFactory::GetForProfile(profile));
 

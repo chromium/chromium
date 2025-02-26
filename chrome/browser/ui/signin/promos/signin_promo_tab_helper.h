@@ -2,35 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_SIGNIN_PROMO_TAB_HELPER_H_
-#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_SIGNIN_PROMO_TAB_HELPER_H_
+#ifndef CHROME_BROWSER_UI_SIGNIN_PROMOS_SIGNIN_PROMO_TAB_HELPER_H_
+#define CHROME_BROWSER_UI_SIGNIN_PROMOS_SIGNIN_PROMO_TAB_HELPER_H_
 
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
-#include "components/password_manager/core/browser/password_form.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-namespace autofill {
-
 // Class used to move a piece of autofill data to the account storage
 // after a successful sign in.
-class AutofillSigninPromoTabHelper
+class SigninPromoTabHelper
     : public signin::IdentityManager::Observer,
-      public content::WebContentsUserData<AutofillSigninPromoTabHelper> {
+      public content::WebContentsUserData<SigninPromoTabHelper> {
  public:
-  explicit AutofillSigninPromoTabHelper(content::WebContents& web_contents);
-  AutofillSigninPromoTabHelper(const AutofillSigninPromoTabHelper&) = delete;
-  AutofillSigninPromoTabHelper& operator=(const AutofillSigninPromoTabHelper&) =
-      delete;
-  ~AutofillSigninPromoTabHelper() override;
+  explicit SigninPromoTabHelper(content::WebContents& web_contents);
+  SigninPromoTabHelper(const SigninPromoTabHelper&) = delete;
+  SigninPromoTabHelper& operator=(const SigninPromoTabHelper&) = delete;
+  ~SigninPromoTabHelper() override;
 
-  // Creates the AutofillSigninPromoTabHelper instance if it does not already
+  // Creates the SigninPromoTabHelper instance if it does not already
   // exist.
-  static AutofillSigninPromoTabHelper* GetForWebContents(
+  static SigninPromoTabHelper* GetForWebContents(
       content::WebContents& web_contents);
 
   // Initializes the autofill data move process by observing the
@@ -57,9 +52,9 @@ class AutofillSigninPromoTabHelper
       signin::IdentityManager* identity_manager) override;
 
  private:
-  friend class content::WebContentsUserData<AutofillSigninPromoTabHelper>;
+  friend class content::WebContentsUserData<SigninPromoTabHelper>;
 
-  // Resets the state of the AutofillSigninPromoTabHelper instance.
+  // Resets the state of the SigninPromoTabHelper instance.
   void Reset();
 
   struct ResetableState {
@@ -84,6 +79,4 @@ class AutofillSigninPromoTabHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-}  // namespace autofill
-
-#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_SIGNIN_PROMO_TAB_HELPER_H_
+#endif  // CHROME_BROWSER_UI_SIGNIN_PROMOS_SIGNIN_PROMO_TAB_HELPER_H_

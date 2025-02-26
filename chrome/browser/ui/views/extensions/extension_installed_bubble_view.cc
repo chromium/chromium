@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
 #include "chrome/browser/ui/extensions/extension_installed_bubble_model.h"
 #include "chrome/browser/ui/extensions/extension_installed_waiter.h"
-#include "chrome/browser/ui/signin/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
@@ -46,7 +45,7 @@
 #include "ui/views/layout/box_layout.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/views/promos/bubble_signin_promo_view.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
 #endif
 
 namespace {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/autofill_signin_promo_tab_helper.h"
+#include "chrome/browser/ui/signin/promos/signin_promo_tab_helper.h"
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -15,47 +15,43 @@
 
 namespace {
 
-// User data key for AutofillSigninPromoTabHelper.
-const void* const kAutofillSigninPromoTabHelperKey =
-    &kAutofillSigninPromoTabHelperKey;
+// User data key for SigninPromoTabHelper.
+const void* const kSigninPromoTabHelperKey = &kSigninPromoTabHelperKey;
 
 }  // namespace
 
-namespace autofill {
-
-AutofillSigninPromoTabHelper::AutofillSigninPromoTabHelper(
-    content::WebContents& web_contents)
-    : WebContentsUserData<AutofillSigninPromoTabHelper>(web_contents),
+SigninPromoTabHelper::SigninPromoTabHelper(content::WebContents& web_contents)
+    : WebContentsUserData<SigninPromoTabHelper>(web_contents),
       state_(std::make_unique<ResetableState>(this)),
       web_contents_(&web_contents) {}
 
-AutofillSigninPromoTabHelper::~AutofillSigninPromoTabHelper() {
+SigninPromoTabHelper::~SigninPromoTabHelper() {
   Reset();
 }
 
-AutofillSigninPromoTabHelper::ResetableState::ResetableState(
+SigninPromoTabHelper::ResetableState::ResetableState(
     signin::IdentityManager::Observer* observer)
     : identity_manager_observation_(observer) {}
 
-AutofillSigninPromoTabHelper::ResetableState::~ResetableState() = default;
+SigninPromoTabHelper::ResetableState::~ResetableState() = default;
 
 // static.
-AutofillSigninPromoTabHelper* AutofillSigninPromoTabHelper::GetForWebContents(
+SigninPromoTabHelper* SigninPromoTabHelper::GetForWebContents(
     content::WebContents& web_contents) {
-  if (!web_contents.GetUserData(kAutofillSigninPromoTabHelperKey)) {
+  if (!web_contents.GetUserData(kSigninPromoTabHelperKey)) {
     web_contents.SetUserData(
-        kAutofillSigninPromoTabHelperKey,
-        std::make_unique<AutofillSigninPromoTabHelper>(web_contents));
+        kSigninPromoTabHelperKey,
+        std::make_unique<SigninPromoTabHelper>(web_contents));
   }
-  return static_cast<AutofillSigninPromoTabHelper*>(
-      web_contents.GetUserData(kAutofillSigninPromoTabHelperKey));
+  return static_cast<SigninPromoTabHelper*>(
+      web_contents.GetUserData(kSigninPromoTabHelperKey));
 }
 
-void AutofillSigninPromoTabHelper::Reset() {
+void SigninPromoTabHelper::Reset() {
   state_ = std::make_unique<ResetableState>(this);
 }
 
-void AutofillSigninPromoTabHelper::InitializeDataMoveAfterSignIn(
+void SigninPromoTabHelper::InitializeDataMoveAfterSignIn(
     base::OnceClosure move_callback,
     signin_metrics::AccessPoint access_point,
     base::TimeDelta time_limit) {
@@ -77,11 +73,11 @@ void AutofillSigninPromoTabHelper::InitializeDataMoveAfterSignIn(
   state_->is_initialized_ = true;
 }
 
-bool AutofillSigninPromoTabHelper::IsInitializedForTesting() const {
+bool SigninPromoTabHelper::IsInitializedForTesting() const {
   return state_->is_initialized_;
 }
 
-void AutofillSigninPromoTabHelper::OnErrorStateOfRefreshTokenUpdatedForAccount(
+void SigninPromoTabHelper::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
     const GoogleServiceAuthError& error,
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
@@ -130,7 +126,7 @@ void AutofillSigninPromoTabHelper::OnErrorStateOfRefreshTokenUpdatedForAccount(
   Reset();
 }
 
-void AutofillSigninPromoTabHelper::OnPrimaryAccountChanged(
+void SigninPromoTabHelper::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   // The user changed their primary account while we were expecting them to
   // reauthenticate. Abandon data move to avoid saving data to a wrong
@@ -171,11 +167,9 @@ void AutofillSigninPromoTabHelper::OnPrimaryAccountChanged(
   Reset();
 }
 
-void AutofillSigninPromoTabHelper::OnIdentityManagerShutdown(
+void SigninPromoTabHelper::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
   Reset();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AutofillSigninPromoTabHelper);
-
-}  // namespace autofill
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SigninPromoTabHelper);

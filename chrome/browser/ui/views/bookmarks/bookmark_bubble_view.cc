@@ -60,7 +60,7 @@
 #include "ui/views/controls/styled_label.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/views/promos/bubble_signin_promo_view.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
 #endif
 
 using base::UserMetricsAction;

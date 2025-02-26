@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/args.gni")
+import("//build/config/ui.gni")
 import("//components/signin/features.gni")
 
 assert(!is_android && !is_fuchsia)
@@ -36,6 +37,9 @@ source_set("signin") {
     sources += [
       "chrome_signout_confirmation_prompt.h",
       "dice_web_signin_interceptor_delegate.h",
+      "promos/bubble_signin_promo_signin_button_view.h",
+      "promos/bubble_signin_promo_view.h",
+      "promos/signin_promo_tab_helper.h",
     ]
     public_deps += [ "//chrome/browser/signin" ]
   }
@@ -77,10 +81,23 @@ source_set("impl") {
     "//url",
   ]
 
+  if (toolkit_views) {
+    sources += [ "promos/bubble_signin_promo_delegate.cc" ]
+  }
+
   if (enable_dice_support) {
     sources += [
       "chrome_signout_confirmation_prompt.cc",
       "dice_web_signin_interceptor_delegate.cc",
+      "promos/bubble_signin_promo_signin_button_view.cc",
+      "promos/bubble_signin_promo_view.cc",
+      "promos/signin_promo_tab_helper.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/extensions:extensions",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/ui/signin:bubble_signin_promo_delegate",
     ]
   }
 }
@@ -88,7 +105,13 @@ source_set("impl") {
 if (enable_dice_support) {
   # Extracted to a separate target to avoid circular deps in //c/b/ui/bookmarks.
   source_set("bubble_signin_promo_delegate") {
-    sources = [ "bubble_signin_promo_delegate.h" ]
+    sources = [ "promos/bubble_signin_promo_delegate.h" ]
+
+    public_deps = [
+      "//base:base",
+      "//components/signin/public/base",
+      "//components/sync/service:service",
+    ]
   }
 }
 
@@ -98,7 +121,10 @@ if (!is_android) {
     source_set("interactive_ui_tests") {
       testonly = true
       defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-      sources = [ "signin_view_controller_interactive_uitest.cc" ]
+      sources = [
+        "promos/autofill_bubble_signin_promo_interactive_uitest.cc",
+        "signin_view_controller_interactive_uitest.cc",
+      ]
       deps = [
         ":signin",
         "//base",
@@ -108,10 +134,15 @@ if (!is_android) {
         "//chrome/browser/ui:browser_element_identifiers",
         "//chrome/browser/ui:ui_features",
         "//chrome/browser/ui/webui/signin:test_support_ui",
+        "//chrome/test:browser_tests",
         "//chrome/test:test_support_ui",
+        "//components/autofill/content/browser",
+        "//components/autofill/core/browser:test_support",
+        "//components/password_manager/core/browser:test_support",
         "//components/signin/public/base",
         "//components/signin/public/identity_manager",
         "//components/signin/public/identity_manager:test_support",
+        "//components/sync:test_support",
         "//content/public/browser",
         "//content/test:test_support",
         "//google_apis",
@@ -151,7 +182,10 @@ if (!is_android) {
     ]
 
     if (enable_dice_support) {
-      sources += [ "signin_view_controller_browsertest.cc" ]
+      sources += [
+        "promos/signin_promo_tab_helper_browsertest.cc",
+        "signin_view_controller_browsertest.cc",
+      ]
       deps += [
         "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation",
         "//chrome/test:test_support",

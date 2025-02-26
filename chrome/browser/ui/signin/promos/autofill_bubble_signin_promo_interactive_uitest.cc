@@ -10,16 +10,16 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/autofill/autofill_signin_promo_tab_helper.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_signin_button_view.h"
+#include "chrome/browser/ui/signin/promos/signin_promo_tab_helper.h"
 #include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 #include "chrome/browser/ui/views/promos/autofill_bubble_signin_promo_view.h"
-#include "chrome/browser/ui/views/promos/bubble_signin_promo_signin_button_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   // Check that there is a helper attached to the sign in tab, because the
   // password still needs to be moved.
-  EXPECT_TRUE(autofill::AutofillSigninPromoTabHelper::GetForWebContents(
+  EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
                   *browser()->tab_strip_model()->GetActiveWebContents())
                   ->IsInitializedForTesting());
 
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   // Check that there is no helper attached to the sign in tab, because the
   // password was already moved.
-  EXPECT_FALSE(autofill::AutofillSigninPromoTabHelper::GetForWebContents(
+  EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
                    *browser()->tab_strip_model()->GetActiveWebContents())
                    ->IsInitializedForTesting());
 
@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   // Check that there is a helper attached to the sign in tab, because the
   // password still needs to be moved.
-  EXPECT_TRUE(autofill::AutofillSigninPromoTabHelper::GetForWebContents(
+  EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
                   *browser()->tab_strip_model()->GetActiveWebContents())
                   ->IsInitializedForTesting());
   EXPECT_FALSE(IsSignedIn());
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   // Check that there is a helper attached to the sign in tab, because the
   // address still needs to be moved.
-  EXPECT_TRUE(autofill::AutofillSigninPromoTabHelper::GetForWebContents(
+  EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
                   *browser()->tab_strip_model()->GetActiveWebContents())
                   ->IsInitializedForTesting());
 
@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   // Check that there is no helper attached to the sign in tab, because the
   // password was already moved.
-  EXPECT_FALSE(autofill::AutofillSigninPromoTabHelper::GetForWebContents(
+  EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
                    *browser()->tab_strip_model()->GetActiveWebContents())
                    ->IsInitializedForTesting());
 
@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
 
   // Check that there is a helper attached to the sign in tab, because the
   // address still needs to be moved.
-  EXPECT_TRUE(autofill::AutofillSigninPromoTabHelper::GetForWebContents(
+  EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
                   *browser()->tab_strip_model()->GetActiveWebContents())
                   ->IsInitializedForTesting());
 

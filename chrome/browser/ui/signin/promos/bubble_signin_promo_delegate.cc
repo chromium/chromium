@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/autofill_bubble_signin_promo_controller.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/autofill/autofill_signin_promo_tab_helper.h"
+#include "chrome/browser/ui/signin/promos/signin_promo_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
-#include "chrome/common/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
+#include "content/public/browser/web_contents.h"
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 namespace {
 
 syncer::DataType GetDataTypeFromAccessPoint(
@@ -33,21 +35,19 @@ syncer::DataType GetDataTypeFromAccessPoint(
 
 }  // namespace
 
-namespace autofill {
-
-AutofillBubbleSignInPromoController::AutofillBubbleSignInPromoController(
+BubbleSignInPromoDelegate::BubbleSignInPromoDelegate(
     content::WebContents& web_contents,
     signin_metrics::AccessPoint access_point,
     syncer::LocalDataItemModel::DataId data_id)
     : data_id_(std::move(data_id)),
       web_contents_(web_contents.GetWeakPtr()),
       access_point_(access_point) {}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-AutofillBubbleSignInPromoController::~AutofillBubbleSignInPromoController() =
-    default;
+BubbleSignInPromoDelegate::BubbleSignInPromoDelegate() = default;
+BubbleSignInPromoDelegate::~BubbleSignInPromoDelegate() = default;
 
-void AutofillBubbleSignInPromoController::OnSignInToChromeClicked(
-    const AccountInfo& account) {
+void BubbleSignInPromoDelegate::OnSignIn(const AccountInfo& account) {
   // Signing in is triggered by the user interacting with the sign-in promo.
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   base::UmaHistogramEnumeration("Signin.SignInPromo.Accepted", access_point_);
@@ -93,12 +93,9 @@ void AutofillBubbleSignInPromoController::OnSignInToChromeClicked(
     return;
   }
 
-  autofill::AutofillSigninPromoTabHelper::GetForWebContents(
-      *sign_in_tab_contents)
+  SigninPromoTabHelper::GetForWebContents(*sign_in_tab_contents)
       ->InitializeDataMoveAfterSignIn(std::move(maybe_move_data),
                                       access_point_);
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
-
-}  // namespace autofill

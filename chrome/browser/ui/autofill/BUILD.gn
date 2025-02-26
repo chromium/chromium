@@ -100,13 +100,6 @@ source_set("autofill") {
     ]
   }
 
-  if (enable_dice_support) {
-    sources += [
-      "autofill_bubble_signin_promo_controller.h",
-      "autofill_signin_promo_tab_helper.h",
-    ]
-  }
-
   if (is_mac) {
     sources += [ "autofill_popup_controller_impl_mac.h" ]
   }
@@ -217,13 +210,6 @@ source_set("impl") {
     if (is_chrome_branded) {
       deps += [ "//components/plus_addresses/resources:vector_icons" ]
     }
-  }
-
-  if (enable_dice_support) {
-    sources += [
-      "autofill_bubble_signin_promo_controller.cc",
-      "autofill_signin_promo_tab_helper.cc",
-    ]
   }
 
   if (is_mac) {
@@ -493,9 +479,5 @@ if (!is_android) {
       "//ui/base",
       "//url",
     ]
-
-    if (enable_dice_support) {
-      sources += [ "autofill_signin_promo_tab_helper_browsertest.cc" ]
-    }
   }
 }
