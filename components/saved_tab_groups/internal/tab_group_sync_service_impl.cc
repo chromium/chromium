@@ -642,6 +642,22 @@ void TabGroupSyncServiceImpl::OnTabGroupUnShareComplete(
     return;
   }
 
+  // The originating saved group for this shared tab group might still be alive.
+  // Remove it.
+  if (saved_group->originating_tab_group_guid().has_value()) {
+    const SavedTabGroup* originating_group =
+        model_->Get(saved_group->originating_tab_group_guid().value());
+    if (originating_group) {
+      DCHECK(!originating_group->local_group_id());
+      RemoveGroup(saved_group->originating_tab_group_guid().value());
+      // Retrieve `saved_group` again as the array index in model might have
+      // changed, and the previous pointer is pointing to another group.
+      // TODO(crbug.com/399198634): fix the dangerous pointer issue in
+      // SavedTabGroupModel.
+      saved_group = model_->Get(local_group_id);
+    }
+  }
+
   // Make a deep copy of shared tab group.
   SavedTabGroup cloned_group = saved_group->CloneAsSavedTabGroup();
   cloned_group.SetCreatedBeforeSyncingTabGroups(

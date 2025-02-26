@@ -2466,6 +2466,7 @@ TEST_F(TabGroupSyncServiceTest, ShouldReturnSavedTabGroupOnly) {
   MakeTabGroupShared(local_group_id_1_, "collaboration");
   ASSERT_THAT(tab_group_sync_service_->GetAllGroups(), SizeIs(3));
   ASSERT_THAT(model_->saved_tab_groups(), SizeIs(4));
+  ASSERT_TRUE(model_->Contains(group->saved_guid()));
   std::optional<SavedTabGroup> shared_group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
 
@@ -2479,13 +2480,14 @@ TEST_F(TabGroupSyncServiceTest, ShouldReturnSavedTabGroupOnly) {
   std::vector<SavedTabGroup> all_groups =
       tab_group_sync_service_->GetAllGroups();
   EXPECT_THAT(all_groups, SizeIs(3));
-  EXPECT_THAT(model_->saved_tab_groups(), SizeIs(5));
+  EXPECT_THAT(model_->saved_tab_groups(), SizeIs(4));
   EXPECT_THAT(all_groups, Contains(HasGuid(shared_group->saved_guid())));
+  EXPECT_FALSE(model_->Contains(group->saved_guid()));
 
   WaitForPostedTasks();
   all_groups = tab_group_sync_service_->GetAllGroups();
   EXPECT_THAT(all_groups, SizeIs(3));
-  EXPECT_THAT(model_->saved_tab_groups(), SizeIs(5));
+  EXPECT_THAT(model_->saved_tab_groups(), SizeIs(4));
   EXPECT_THAT(all_groups, Not(Contains(HasGuid(shared_group->saved_guid()))));
 }
 
