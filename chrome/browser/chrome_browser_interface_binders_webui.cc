@@ -481,6 +481,9 @@ void PopulateChromeWebUIFrameBinders(
       ash::extended_updates::ExtendedUpdatesUI, ash::graduation::GraduationUI,
       policy::local_user_files::LocalFilesMigrationUI,
 #endif
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      SignoutConfirmationUI,
+#endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI,
       UserEducationInternalsUI, ReadingListUI, TabSearchUI, WebuiGalleryUI,
       HistoryClustersSidePanelUI, ShoppingInsightsSidePanelUI,

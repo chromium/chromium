@@ -1055,5 +1055,19 @@
     <message name="IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_NONE" desc="Text read by the screen reader when focusing the toggle button of a section in the Batch Upload dialog and that toggle is turned on. Notifies that the action on the toggle would select no items in this section.">
       Select none
     </message>
+
+    <!-- Signout Confirmation Dialog Desktop -->
+    <message name="IDS_SIGNOUT_CONFIRMATION_EXTENSIONS_SECTION_TITLE" desc="Title of the Extensions section in the Signout Confirmation dialog which allows users to remove extensions linked to their account when signing out.">
+      {ACCOUNT_EXTENSIONS_COUNT, plural,
+      =1 {Remove 1 extension and the data it's saved on this device}
+      other {Remove {ACCOUNT_EXTENSIONS_COUNT} extensions and the data they've saved on this device}
+      }
+    </message>
+    <message name="IDS_SIGNOUT_CONFIRMATION_EXTENSIONS_SECTION_TOOLTIP" desc="Mouse over tooltip for the Extensions section in the Signout Confirmation dialog which allows users to remove extensions linked to their account when signing out.">
+      {ACCOUNT_EXTENSIONS_COUNT, plural,
+      =1 {This extension is saved in your Google Account, but any data it’s saved only on this device may be deleted}
+      other {These extensions are saved in your Google Account, but any data they've saved only on this device may be deleted}
+      }
+    </message>
   </if>
 </grit-part>

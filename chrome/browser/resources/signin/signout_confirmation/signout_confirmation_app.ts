@@ -6,7 +6,9 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '/strings.m.js';
+import './extensions_section.js';
 
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
@@ -24,6 +26,7 @@ const SAMPLE_DATA: SignoutConfirmationData = {
   dialogSubtitle: '',
   acceptButtonLabel: '',
   cancelButtonLabel: '',
+  accountExtensions: [],
 };
 
 export interface SignoutConfirmationAppElement {
@@ -62,6 +65,11 @@ export class SignoutConfirmationAppElement extends CrLitElement {
 
   private onSignoutConfirmationDataReceivedListenerId_: number|null = null;
 
+  constructor() {
+    super();
+    ColorChangeUpdater.forDocument().start();
+  }
+
   override connectedCallback() {
     super.connectedCallback();
 
@@ -70,6 +78,8 @@ export class SignoutConfirmationAppElement extends CrLitElement {
             .sendSignoutConfirmationData.addListener(
                 this.onSignoutConfirmationDataReceived_.bind(this));
     this.eventTracker_.add(window, 'keydown', this.onKeyDown_.bind(this));
+    this.eventTracker_.add(
+        window, 'update-view-height', this.onUpdateViewHeight_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -94,8 +104,12 @@ export class SignoutConfirmationAppElement extends CrLitElement {
     // was set at construction. Since the first view update will trigger showing
     // the view, we should make sure to have valid data to show.
     if (changedPrivateProperties.has('data_') && this.data_ !== SAMPLE_DATA) {
-      this.updateViewHeight_();
+      this.onUpdateViewHeight_();
     }
+  }
+
+  protected showExtensionsSection_(): boolean {
+    return !!this.data_.accountExtensions.length;
   }
 
   protected onAcceptButtonClick_() {
@@ -106,15 +120,15 @@ export class SignoutConfirmationAppElement extends CrLitElement {
     this.signoutConfirmationBrowserProxy_.handler.cancel();
   }
 
-  private onSignoutConfirmationDataReceived_(data: SignoutConfirmationData) {
-    this.data_ = data;
-  }
-
   // Request the browser to update the native view to match the current height
   // of the web view.
-  private updateViewHeight_() {
+  private onUpdateViewHeight_() {
     const height = this.$.signoutConfirmationDialog.clientHeight;
     this.signoutConfirmationBrowserProxy_.handler.updateViewHeight(height);
+  }
+
+  private onSignoutConfirmationDataReceived_(data: SignoutConfirmationData) {
+    this.data_ = data;
   }
 
   private onKeyDown_(e: KeyboardEvent) {

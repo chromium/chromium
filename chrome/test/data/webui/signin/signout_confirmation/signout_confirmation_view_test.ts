@@ -6,10 +6,10 @@ import 'chrome://signout-confirmation/signout_confirmation.js';
 
 import {SignoutConfirmationBrowserProxyImpl} from 'chrome://signout-confirmation/signout_confirmation.js';
 import type {PageRemote, SignoutConfirmationAppElement} from 'chrome://signout-confirmation/signout_confirmation.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import type {ModifiersParam} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestSignoutConfirmationBrowserProxy} from './test_signout_confirmation_browser_proxy.js';
 
@@ -37,14 +37,14 @@ suite('SignoutConfirmationViewTest', function() {
       dialogSubtitle: 'subtitle',
       acceptButtonLabel: 'accept',
       cancelButtonLabel: 'cancel',
+      accountExtensions: [],
     });
 
     return testProxy.handler.whenCalled('updateViewHeight');
   });
 
-  test('HeaderContent', async function() {
+  test('HeaderContent', function() {
     assertTrue(isVisible(signoutConfirmationApp));
-    await microtasksFinished();
 
     // Header.
     assertTrue(isChildVisible(signoutConfirmationApp, '#header'));
@@ -54,6 +54,36 @@ suite('SignoutConfirmationViewTest', function() {
     // Buttons.
     assertTrue(isChildVisible(signoutConfirmationApp, '#acceptButton'));
     assertTrue(isChildVisible(signoutConfirmationApp, '#cancelButton'));
+  });
+
+  test('ExtensionsSectionVisible', async function() {
+    assertTrue(isVisible(signoutConfirmationApp));
+
+    // Extensions section should not be visible if there are no account
+    // extensions.
+    assertFalse(isChildVisible(signoutConfirmationApp, 'extensions-section'));
+
+    // Reset the handler.
+    testProxy.handler.reset();
+
+    // Send an update containing one account extension.
+    callbackRouterRemote.sendSignoutConfirmationData({
+      dialogTitle: 'title',
+      dialogSubtitle: 'subtitle',
+      acceptButtonLabel: 'accept',
+      cancelButtonLabel: 'cancel',
+      accountExtensions: [{
+        name: 'name',
+        iconUrl: 'icon.png',
+      }],
+    });
+
+    // Wait for the new data to actually be updated in the component by waiting
+    // for a height update triggered by receipt of the new data.
+    await testProxy.handler.whenCalled('updateViewHeight');
+
+    // The extensions section should now be visible.
+    assertTrue(isChildVisible(signoutConfirmationApp, 'extensions-section'));
   });
 
   test('ClickAccept', function() {
