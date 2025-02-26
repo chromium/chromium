@@ -425,7 +425,11 @@ void OdfsMigrationUploader::RunInternal() {
   }
 
   waiting_for_connection_ = content::GetNetworkConnectionTracker()->IsOffline();
+  policy::local_user_files::SkyVaultMigrationWaitForConnectionHistogram(
+      policy::local_user_files::CloudProvider::kOneDrive,
+      waiting_for_connection_);
   if (waiting_for_connection_) {
+    connection_wait_start_time_ = base::Time::Now();
     reconnection_timer_.Start(
         FROM_HERE, policy::local_user_files::kReconnectionTimeout,
         base::BindOnce(&OdfsMigrationUploader::OnReconnectionTimeout,
@@ -460,6 +464,10 @@ void OdfsMigrationUploader::OnConnectionChanged(
     if (is_online) {
       LOG(ERROR) << "Reconnected to OneDrive";
       waiting_for_connection_ = false;
+      CHECK(connection_wait_start_time_.has_value());
+      policy::local_user_files::SkyVaultMigrationReconnectionDurationHistogram(
+          policy::local_user_files::CloudProvider::kOneDrive,
+          base::Time::Now() - connection_wait_start_time_.value());
       reconnection_timer_.Stop();
       RunInternal();
     }

@@ -40,6 +40,8 @@ constexpr char kMigrationSuccessDurationSuffix[] = "SuccessDuration";
 constexpr char kMigrationFailureDurationSuffix[] = "FailureDuration";
 constexpr char kMigrationWriteAccessErrorSuffix[] = "WriteAccessError";
 constexpr char kMigrationUploadErrorSuffix[] = "UploadError";
+constexpr char kMigrationWaitForConnectionSuffix[] = "WaitForConnection";
+constexpr char kMigrationReconnectionDurationSuffix[] = "ReconnectionDuration";
 constexpr char kMigrationDialogActionSuffix[] = "DialogAction";
 constexpr char kMigrationDialogShownSuffix[] = "DialogShown";
 
@@ -52,12 +54,19 @@ constexpr char kDownloadTrigger[] = "Download";
 constexpr char kScreenCaptureTrigger[] = "ScreenCapture";
 constexpr char kMigrationTrigger[] = "Migration";
 
-// Min, max, and bucket count for time based histograms.
-constexpr base::TimeDelta kMin = base::Milliseconds(1);
-constexpr base::TimeDelta kMax = base::Hours(36);
+// Min, max, and bucket count for migration duration histograms.
+constexpr base::TimeDelta kMigrationDurationMin = base::Milliseconds(1);
+constexpr base::TimeDelta kMigrationDurationMax = base::Hours(36);
 // Number of buckets calculated to have a bucket size of 5 minutes:
 // (kMax in h * 60 min/h) / 5 min/bucket = 36 * 60 / 5 = 432 buckets
-constexpr int kBuckets = 432;
+constexpr int kMigrationDurationBuckets = 432;
+
+// Min, max, and bucket count for reconnectivity waiting time histograms.
+constexpr base::TimeDelta kReconnectionDurationMin = base::Milliseconds(1);
+constexpr base::TimeDelta kReconnectionDurationMax = base::Hours(4);
+// Number of buckets calculated to have a bucket size of 1 minute:
+// (kMax in h * 60 min/h) / 1 min/bucket = 4 * 60 = 240 buckets
+constexpr int kReconnectionDurationBuckets = 240;
 
 // Converts `provider` to a string representation used to form a metric name.
 std::string GetUMACloudProvider(CloudProvider provider) {
@@ -185,7 +194,7 @@ void SkyVaultMigrationDoneHistograms(CloudProvider provider,
                                      : kMigrationFailureDurationSuffix;
   base::UmaHistogramCustomTimes(
       GetHistogramName(suffix, UploadTrigger::kMigration, provider), duration,
-      kMin, kMax, kBuckets);
+      kMigrationDurationMin, kMigrationDurationMax, kMigrationDurationBuckets);
 }
 
 void SkyVaultMigrationWriteAccessErrorHistogram(bool value) {
@@ -200,6 +209,23 @@ void SkyVaultMigrationUploadErrorHistogram(CloudProvider provider,
       GetHistogramName(kMigrationUploadErrorSuffix, UploadTrigger::kMigration,
                        provider),
       error);
+}
+
+void SkyVaultMigrationWaitForConnectionHistogram(CloudProvider provider,
+                                                 bool waiting_for_connection) {
+  base::UmaHistogramBoolean(
+      GetHistogramName(kMigrationWaitForConnectionSuffix,
+                       UploadTrigger::kMigration, provider),
+      waiting_for_connection);
+}
+
+void SkyVaultMigrationReconnectionDurationHistogram(CloudProvider provider,
+                                                    base::TimeDelta duration) {
+  base::UmaHistogramCustomTimes(
+      GetHistogramName(kMigrationReconnectionDurationSuffix,
+                       UploadTrigger::kMigration, provider),
+      duration, kReconnectionDurationMin, kReconnectionDurationMax,
+      kReconnectionDurationBuckets);
 }
 
 void SkyVaultMigrationDialogActionHistogram(CloudProvider provider,

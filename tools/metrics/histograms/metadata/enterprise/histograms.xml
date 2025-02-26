@@ -3255,6 +3255,20 @@ chromium-metrics-reviews@google.com.
   <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
 </histogram>
 
+<histogram
+    name="Enterprise.SkyVault.Migration.{CloudProvider}.ReconnectionDuration"
+    units="ms" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    The duration, in milliseconds, that a SkyVault migration file upload to
+    {CloudProvider} waited for network reconnection. Recorded only when
+    `Enterprise.SkyVault.Migration.{CloudProvider}.WaitForConnection` is true
+    and the connection was successfully re-established.
+  </summary>
+  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
+</histogram>
+
 <histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.Stopped"
     enum="Boolean" expires_after="2025-10-01">
   <owner>aidazolic@google.com</owner>
@@ -3286,6 +3300,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records upload errors that occur during SkyVault migration of local files to
     {CloudProvider}.
+  </summary>
+  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
+</histogram>
+
+<histogram
+    name="Enterprise.SkyVault.Migration.{CloudProvider}.WaitForConnection"
+    enum="Boolean" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Indicates whether a SkyVault migration file upload to {CloudProvider} was
+    delayed due to a lack of network connectivity. True if the upload was
+    delayed, false if it started immediately.
   </summary>
   <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
 </histogram>

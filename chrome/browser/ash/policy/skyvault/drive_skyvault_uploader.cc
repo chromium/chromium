@@ -117,9 +117,14 @@ void DriveSkyvaultUploader::Run() {
     return;
   }
 
-  if (drive_status != drive::util::ConnectionStatus::kConnected) {
+  waiting_for_connection_ =
+      drive_status != drive::util::ConnectionStatus::kConnected;
+  SkyVaultMigrationWaitForConnectionHistogram(CloudProvider::kGoogleDrive,
+                                              waiting_for_connection_);
+  if (waiting_for_connection_) {
     LOG(ERROR) << "Waiting for connection to Drive";
-    waiting_for_connection_ = true;
+    connection_wait_start_time_ = base::Time::Now();
+
     reconnection_timer_.Start(
         FROM_HERE, kReconnectionTimeout,
         base::BindOnce(&DriveSkyvaultUploader::OnReconnectionTimeout,
@@ -434,6 +439,11 @@ void DriveSkyvaultUploader::OnDriveConnectionStatusChanged(
     if (status == drive::util::ConnectionStatus::kConnected) {
       LOG(ERROR) << "Reconnected to Drive";
       waiting_for_connection_ = false;
+      CHECK(connection_wait_start_time_.has_value());
+      SkyVaultMigrationReconnectionDurationHistogram(
+          CloudProvider::kGoogleDrive,
+          base::Time::Now() - connection_wait_start_time_.value());
+      connection_wait_start_time_.reset();
       reconnection_timer_.Stop();
       drive::DriveIntegrationService::Observer::Reset();
       Run();

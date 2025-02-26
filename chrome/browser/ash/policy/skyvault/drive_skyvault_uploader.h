@@ -152,6 +152,8 @@ class DriveSkyvaultUploader
 
   // Indicates whether there was no connection on starting the task.
   bool waiting_for_connection_ = false;
+  // Time at which we started waiting for connection. Used for UMA.
+  std::optional<base::Time> connection_wait_start_time_;
 
   // Ensures that we don't wait for connection indefinitely
   base::OneShotTimer reconnection_timer_;
