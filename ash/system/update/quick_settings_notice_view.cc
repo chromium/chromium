@@ -65,7 +65,7 @@ QuickSettingsNoticeView::QuickSettingsNoticeView(
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(
                     icon, cros_tokens::kCrosSysOnSurfaceVariant, kIconSize));
-  SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurfaceVariant);
+  SetEnabledTextColors(cros_tokens::kCrosSysOnSurfaceVariant);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label());
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 

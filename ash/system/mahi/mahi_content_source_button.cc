@@ -46,7 +46,7 @@ MahiContentSourceButton::MahiContentSourceButton() {
           base::BindRepeating(&MahiContentSourceButton::OpenContentSourcePage,
                               weak_ptr_factory_.GetWeakPtr()))
       .SetImageLabelSpacing(kContentSourceImageLabelSpacing)
-      .SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurfaceVariant)
+      .SetEnabledTextColors(cros_tokens::kCrosSysOnSurfaceVariant)
       .SetBorder(views::CreateEmptyBorder(kContentSourceButtonBorderInsets))
       .SetBackground(StyleUtil::CreateThemedFullyRoundedRectBackground(
           cros_tokens::kCrosSysSystemOnBase1))

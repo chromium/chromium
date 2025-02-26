@@ -268,7 +268,7 @@ void DownloadShelfView::RemoveDownloadView(View* view) {
 
 void DownloadShelfView::ConfigureButtonForTheme(views::MdTextButton* button) {
   button->SetBgColorIdOverride(kColorDownloadShelfButtonBackground);
-  button->SetEnabledTextColorIds(kColorDownloadShelfButtonText);
+  button->SetEnabledTextColors(kColorDownloadShelfButtonText);
 }
 
 void DownloadShelfView::DoShowDownload(

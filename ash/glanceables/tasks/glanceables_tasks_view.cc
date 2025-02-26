@@ -142,7 +142,7 @@ class AddNewTaskButton : public views::LabelButton {
     SetImageLabelSpacing(12);
     SetBorder(views::CreateEmptyBorder(gfx::Insets()));
     SetProperty(views::kMarginsKey, gfx::Insets::TLBR(4, 0, 8, 0));
-    SetEnabledTextColorIds(cros_tokens::kCrosSysPrimary);
+    SetEnabledTextColors(cros_tokens::kCrosSysPrimary);
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
         TypographyToken::kCrosButton2));
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);

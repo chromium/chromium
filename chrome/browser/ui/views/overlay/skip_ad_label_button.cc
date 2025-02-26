@@ -57,8 +57,8 @@ void SkipAdLabelButton::OnThemeChanged() {
       views::Painter::CreateRoundRectWith1PxBorderPainter(
           color_provider->GetColor(kColorPipWindowSkipAdButtonBackground),
           color_provider->GetColor(kColorPipWindowSkipAdButtonBorder), 1.f)));
-  SetEnabledTextColorIds(kColorPipWindowForeground);
-  SetTextColorId(views::Button::STATE_DISABLED, kColorPipWindowForeground);
+  SetEnabledTextColors(kColorPipWindowForeground);
+  SetTextColor(views::Button::STATE_DISABLED, kColorPipWindowForeground);
 }
 
 BEGIN_METADATA(SkipAdLabelButton)

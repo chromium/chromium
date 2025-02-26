@@ -234,7 +234,7 @@ class VersionButton : public views::LabelButton {
 
  private:
   void SetBackgroundAndFont() {
-    SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurfaceVariant);
+    SetEnabledTextColors(cros_tokens::kCrosSysOnSurfaceVariant);
     label()->SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
         ash::TypographyToken::kCrosBody2));
     label()->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 6)));

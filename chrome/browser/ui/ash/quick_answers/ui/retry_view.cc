@@ -64,7 +64,7 @@ RetryView::RetryView() {
                   .CopyAddressTo(&retry_label_button_)
                   .SetText(
                       l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_RETRY))
-                  .SetEnabledTextColorIds(ui::kColorProgressBar)
+                  .SetEnabledTextColors(ui::kColorProgressBar)
                   .SetRequestFocusOnPress(true)
                   .SetCallback(base::BindRepeating(
                       &RetryView::OnRetryButtonPressed, base::Unretained(this)))

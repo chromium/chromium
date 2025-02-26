@@ -200,7 +200,7 @@ void ToastView::Init() {
             base::BindRepeating(&ToastView::Close, base::Unretained(this),
                                 ToastCloseReason::kActionButton)),
         action_button_text_));
-    action_button_->SetEnabledTextColorIds(ui::kColorToastButton);
+    action_button_->SetEnabledTextColors(ui::kColorToastButton);
     action_button_->SetBgColorIdOverride(ui::kColorToastBackgroundProminent);
     action_button_->SetStrokeColorIdOverride(ui::kColorToastButton);
     action_button_->SetPreferredSize(gfx::Size(

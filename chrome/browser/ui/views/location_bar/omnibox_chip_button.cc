@@ -182,7 +182,7 @@ void OmniboxChipButton::UpdateIconAndColors() {
   if (!GetWidget()) {
     return;
   }
-  SetEnabledTextColorIds(GetForegroundColorId());
+  SetEnabledTextColors(GetForegroundColorId());
   SetImageModel(views::Button::STATE_NORMAL, GetIconImageModel());
   ConfigureInkDropForRefresh2023(this, kColorOmniboxChipInkDropHover,
                                  kColorOmniboxChipInkDropRipple);

@@ -211,7 +211,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                 views::Builder<views::RadioButton>()
                     .SetText(GetSiteAccessRadioButtonText(site_access))
                     .SetLabelStyle(views::style::STYLE_BODY_3)
-                    .SetEnabledTextColorIds(kColorExtensionsMenuText)
+                    .SetEnabledTextColors(kColorExtensionsMenuText)
                     .SetGroup(kSiteAccessButtonsId)
                     // To align the radio button icon under the header back
                     // button we add the back button border to the

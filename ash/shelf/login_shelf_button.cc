@@ -122,7 +122,7 @@ void LoginShelfButton::OnBackgroundTypeChanged(
 
 void LoginShelfButton::OnActiveChanged() {
   SetBackgroundColorId(GetBackgroundColorId(is_active_, background_type_));
-  SetEnabledTextColorIds(GetEnabledTextColorId(is_active_));
+  SetEnabledTextColors(GetEnabledTextColorId(is_active_));
   SetIconColorId(GetIconColorId(is_active_));
 }
 

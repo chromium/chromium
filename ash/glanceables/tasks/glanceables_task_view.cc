@@ -197,7 +197,7 @@ class EditInBrowserButton : public views::LabelButton {
     SetID(base::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel));
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(3, 6)));
     SetProperty(views::kMarginsKey, kEditInBrowserMargins);
-    SetEnabledTextColorIds(cros_tokens::kCrosSysPrimary);
+    SetEnabledTextColors(cros_tokens::kCrosSysPrimary);
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
         TypographyToken::kCrosButton2));
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
@@ -286,8 +286,8 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
   void UpdateLabelForState(bool completed) {
     const auto color_id = completed ? cros_tokens::kCrosSysSecondary
                                     : cros_tokens::kCrosSysOnSurface;
-    SetEnabledTextColorIds(color_id);
-    SetTextColorId(views::Button::ButtonState::STATE_DISABLED, color_id);
+    SetEnabledTextColors(color_id);
+    SetTextColor(views::Button::ButtonState::STATE_DISABLED, color_id);
     label()->SetFontList(
         TypographyProvider::Get()
             ->ResolveTypographyToken(TypographyToken::kCrosButton2)

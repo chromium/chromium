@@ -127,10 +127,10 @@ class MdIPHBubbleButton : public views::MdTextButton {
         is_default_button_
             ? delegate_->GetHelpBubbleDefaultButtonForegroundColorId()
             : delegate_->GetHelpBubbleForegroundColorId();
-    SetEnabledTextColorIds(foreground_color);
+    SetEnabledTextColors(foreground_color);
     // TODO(crbug.com/40709599): Temporary fix for Mac. Bubble shouldn't be in
     // inactive style when the bubble loses focus.
-    SetTextColorId(ButtonState::STATE_DISABLED, foreground_color);
+    SetTextColor(ButtonState::STATE_DISABLED, foreground_color);
 
     // The default behavior in 2023 refresh is for MD buttons is to have the
     // alpha baked into the color, but we currently don't have that yet, so

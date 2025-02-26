@@ -411,7 +411,7 @@ void ContentSettingBubbleContents::Init() {
     for (const auto& radio_item : radio_group.radio_items) {
       auto radio = std::make_unique<views::RadioButton>(radio_item, 0);
       radio->SetLabelStyle(views::style::STYLE_BODY_4);
-      radio->SetEnabledTextColorIds(kColorActivityIndicatorSubtitleForeground);
+      radio->SetEnabledTextColors(kColorActivityIndicatorSubtitleForeground);
       radio->SetVisible(bubble_content.is_user_modifiable);
       radio->SetMultiLine(true);
       radio_group_.push_back(radio.get());
