@@ -8641,6 +8641,23 @@
             ]
         }
     ],
+    "DrawImmediatelyV2": [
+        {
+            "platforms": [
+                "android_webview",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AckOnSurfaceActivationWhenInteractive",
+                        "DrawImmediatelyWhenInteractive"
+                    ]
+                }
+            ]
+        }
+    ],
     "DwaFeature": [
         {
             "platforms": [
@@ -9017,23 +9034,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableFatalCrashEventsObserver"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnableImmediateDrawDuringScrollInteraction": [
-        {
-            "platforms": [
-                "android_webview",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AckOnSurfaceActivationWhenInteractive",
-                        "DrawImmediatelyWhenInteractive"
                     ]
                 }
             ]
