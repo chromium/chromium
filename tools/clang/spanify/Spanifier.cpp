@@ -659,6 +659,29 @@ static void DecaySpanToPointer(const MatchFinder::MatchResult& result) {
       GetReplacementDirective(source_range, replacement_text, source_manager));
 }
 
+// Handles boolean operations that need to be adapted after a span rewrite.
+//   if(expr) => if(!expr.empty())
+//   if(!expr) => if(expr.empty())
+// Tests are in: operator-bool-original.cc
+static void DecaySpanToBooleanOp(const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const std::string& key = GetRHS(result);
+  const auto* boolean_op = result.Nodes.getNodeAs<clang::Expr>("boolean_op");
+
+  if (const auto* logical_not_op =
+          result.Nodes.getNodeAs<clang::UnaryOperator>("logical_not_op")) {
+    EmitReplacement(
+        key, GetReplacementDirective(logical_not_op->getSourceRange(), "",
+                                     source_manager));
+  } else {
+    EmitReplacement(key, GetReplacementDirective(boolean_op->getBeginLoc(), "!",
+                                                 source_manager));
+  }
+
+  EmitReplacement(key, GetReplacementDirective(getSourceRange(result).getEnd(),
+                                               ".empty()", source_manager));
+}
+
 // Erases the member call expression. For example:
 //  ... = member_.get();
 //        ^^^^^^^^^^^^^------ member_expr
@@ -1862,9 +1885,6 @@ class Spanifier {
         has(memberExpr(has(expr(ignoringParenCasts(
             rhs_expr_variations_ignoring_non_spelled_nodes))))));
     // Handles boolean operations that need to be adapted after a span rewrite.
-    // Currently:
-    //   if(expr) => if(expr.size())
-    // TODO(394367201): Rewrite boolean operations as follows:
     //   if(expr) => if(!expr.empty())
     //   if(!expr) => if(expr.empty())
     // Notice here that the implicit cast part of the expression is traversed
@@ -1874,16 +1894,16 @@ class Spanifier {
     // `clang::TK_IgnoreUnlessSpelledInSource`, while very useful in simplifying
     // the matchers, wouldn't detect boolean operations on pointers hence the
     // need for a hybrid traversal mode in this matcher.
-    auto boolean_op = expr(anyOf(
-        implicitCastExpr(hasCastKind(clang::CastKind::CK_PointerToBoolean),
-                         hasSourceExpression(expr(
-                             rhs_expr_variations_ignoring_non_spelled_nodes))),
-        raw_ptr_op_bool));
-    Match(boolean_op, [](const MatchFinder::MatchResult& result) {
-      EmitReplacement(GetRHS(result),
-                      GetReplacementDirective(getSourceRange(result), ".size()",
-                                              *result.SourceManager));
-    });
+    auto boolean_op =
+        expr(anyOf(implicitCastExpr(
+                       hasCastKind(clang::CastKind::CK_PointerToBoolean),
+                       hasSourceExpression(expr(
+                           rhs_expr_variations_ignoring_non_spelled_nodes))),
+                   raw_ptr_op_bool),
+             optionally(hasParent(
+                 unaryOperator(hasOperatorName("!")).bind("logical_not_op"))))
+            .bind("boolean_op");
+    Match(boolean_op, DecaySpanToBooleanOp);
 
     // This is needed to remove the `.get()` call on raw_ptr from rewritten
     // expressions. Example: raw_ptr<T> member; auto* temp = member.get(); if

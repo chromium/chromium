@@ -13,9 +13,9 @@ using Handle = int;
 // Expected rewrite:
 // void f(const base::span<Handle>& handles, size_t num_handles) {
 void f(base::span<Handle> handles, size_t num_handles) {
-  // TODO(358306232): Currently rewritten to !handles.size()
-  // Should be rewritten to: handles.empty()
-  if (!handles.size() || !num_handles) {
+  // Expected rewrite:
+  // if (handles.empty() || !num_handles)
+  if (handles.empty() || !num_handles) {
     return;
   }
 
