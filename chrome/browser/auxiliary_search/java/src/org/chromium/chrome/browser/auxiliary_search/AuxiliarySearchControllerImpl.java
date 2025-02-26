@@ -125,7 +125,7 @@ public class AuxiliarySearchControllerImpl
     @Override
     public void onBackgroundTaskStart(
             @NonNull List<AuxiliarySearchEntry> tabs,
-            @NonNull Map<Integer, Bitmap> tabIdToFaviconMap,
+            @NonNull Map<AuxiliarySearchEntry, Bitmap> tabToFaviconMap,
             @NonNull Callback<Boolean> callback,
             long startTimeMillis) {
         if (!mDonor.canDonate()) return;
@@ -133,7 +133,7 @@ public class AuxiliarySearchControllerImpl
         // mDonor will cache the donation list if the initialization of the donor is in progress.
         mDonor.donateFavicons(
                 tabs,
-                tabIdToFaviconMap,
+                tabToFaviconMap,
                 (success) -> {
                     callback.onResult(success);
                     AuxiliarySearchMetrics.recordScheduledDonateTime(

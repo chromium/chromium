@@ -205,9 +205,9 @@ public class AuxiliarySearchControllerImplUnitTest {
         List<AuxiliarySearchEntry> entries = new ArrayList<>();
         entries.add(entry);
 
-        Map<Integer, Bitmap> map = new HashMap<>();
+        Map<AuxiliarySearchEntry, Bitmap> map = new HashMap<>();
         Bitmap bitmap = Bitmap.createBitmap(20, 20, Config.RGB_565);
-        map.put(entry.getId(), bitmap);
+        map.put(entry, bitmap);
 
         long now = TimeUtils.uptimeMillis();
         int timeDelta = 20;

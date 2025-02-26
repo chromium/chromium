@@ -103,9 +103,9 @@ public final class AuxiliarySearchDonorTest {
             entryList.add(entry);
         }
 
-        Map<Integer, Bitmap> map = new HashMap<>();
-        map.put(mIds[0], mBitmap[0]);
-        map.put(mIds[1], mBitmap[1]);
+        Map<AuxiliarySearchEntry, Bitmap> map = new HashMap<>();
+        map.put(entryList.get(0), mBitmap[0]);
+        map.put(entryList.get(1), mBitmap[1]);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
