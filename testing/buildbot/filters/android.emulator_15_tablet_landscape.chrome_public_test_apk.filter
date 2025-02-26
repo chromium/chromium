@@ -14,3 +14,7 @@
 
 # crbug.com/394606261
 -org.chromium.chrome.browser.compositor.overlays.strip.TabStripGroupContextMenuTest.*
+
+# crbug.com/378557957
+-org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testMessageForMediaStreamMicrophone
+-org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testMessageForMediaStreamCamera
