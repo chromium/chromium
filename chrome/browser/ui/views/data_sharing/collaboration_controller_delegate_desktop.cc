@@ -16,13 +16,16 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
+#include "chrome/browser/ui/views/data_sharing/account_card_view.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/collaboration/public/service_status.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -331,11 +334,15 @@ void CollaborationControllerDelegateDesktop::
 
   DialogText dialog_text = GetPromptDialogTextFromStatus(status);
   if (dialog_text.valid) {
-    // TODO(crbug.org/380287432): Refine UI to match UX.
     std::unique_ptr<ui::DialogModel> dialog_model =
         ui::DialogModel::Builder()
             .SetTitle(dialog_text.title)
             .AddParagraph(ui::DialogModelLabel(dialog_text.body))
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            .SetBannerImage(
+                ui::ImageModel::FromResourceId(IDR_SHARED_TAB_GROUPS_LIGHT),
+                ui::ImageModel::FromResourceId(IDR_SHARED_TAB_GROUPS_DARK))
+#endif
             .AddCancelButton(
                 base::BindOnce(&CollaborationControllerDelegateDesktop::
                                    OnPromptDialogCancel,
@@ -349,6 +356,11 @@ void CollaborationControllerDelegateDesktop::
                 ui::DialogModel::Button::Params()
                     .SetLabel(dialog_text.ok_button_text)
                     .SetEnabled(true))
+            .AddCustomField(
+                std::make_unique<views::BubbleDialogModelHost::CustomView>(
+                    std::make_unique<AccountCardView>(
+                        GetAccountInfoFromProfile(browser_->profile())),
+                    views::BubbleDialogModelHost::FieldType::kText))
             .Build();
     prompt_dialog_widget_ =
         chrome::ShowBrowserModal(browser_, std::move(dialog_model));

@@ -3910,6 +3910,8 @@ static_library("ui") {
       "views/controls/subpage_view.h",
       "views/controls/text_with_controls_view.cc",
       "views/controls/text_with_controls_view.h",
+      "views/data_sharing/account_card_view.cc",
+      "views/data_sharing/account_card_view.h",
       "views/data_sharing/collaboration_controller_delegate_desktop.cc",
       "views/data_sharing/collaboration_controller_delegate_desktop.h",
       "views/data_sharing/data_sharing_bubble_controller.cc",
