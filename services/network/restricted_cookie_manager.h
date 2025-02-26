@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/base/shared_memory_version.h"
@@ -351,6 +352,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
 
   mojo::SharedMemoryVersionController shared_memory_version_controller_;
   base::OneShotTimer shared_memory_invalidation_timer_;
+
+  base::MetricsSubSampler metrics_subsampler_;
 
   base::WeakPtrFactory<RestrictedCookieManager> weak_ptr_factory_{this};
 };
