@@ -151,7 +151,7 @@ void HomeButtonController::OnUiVisibilityChanged(
 }
 
 void HomeButtonController::StartAssistantAnimation() {
-  assistant_overlay_->StartAnimation(false);
+  assistant_overlay_->StartAnimation();
 }
 
 void HomeButtonController::OnAppListShown() {
