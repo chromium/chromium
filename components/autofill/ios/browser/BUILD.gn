@@ -71,8 +71,6 @@ source_set("browser") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
-    "//ui/accessibility",
-    "//ui/gfx/geometry",
     "//url",
   ]
 

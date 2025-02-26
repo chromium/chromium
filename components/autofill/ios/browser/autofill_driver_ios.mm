@@ -38,8 +38,6 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
-#import "ui/accessibility/ax_tree_id.h"
-#import "ui/gfx/geometry/rect_f.h"
 #import "url/origin.h"
 
 namespace autofill {
