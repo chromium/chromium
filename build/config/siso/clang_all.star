@@ -95,6 +95,18 @@ __input_deps = {
     "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe": [
         "build/config/unsafe_buffers_paths.txt",
     ],
+    "third_party/llvm-build/Release+Asserts/bin/lld-link": [
+        "build/config/c++/libc++.natvis",
+        "build/win/as_invoker.manifest",
+        "build/win/common_controls.manifest",
+        "build/win/compatibility.manifest",
+        "build/win/require_administrator.manifest",
+        "build/win/segment_heap.manifest",
+        "remoting/host/win/dpi_aware.manifest",
+        "third_party/llvm-build/Release+Asserts/bin/lld",
+        "tools/win/DebugVisualizers/blink.natvis",
+        "tools/win/DebugVisualizers/chrome.natvis",
+    ],
     "build/toolchain/gcc_solink_wrapper.py": [
         "build/toolchain/whole_archive.py",
         "build/toolchain/wrapper_utils.py",

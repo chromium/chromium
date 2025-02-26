@@ -24,6 +24,14 @@ def __win_toolchain_dir(ctx):
 def __win_sdk_version(ctx):
     return gn_logs.read(ctx).get("windows_sdk_version")
 
+def __target_cpu(ctx):
+    if "args.gn" in ctx.metadata:
+        gn_args = gn.args(ctx)
+        target = gn_args.get("target_cpu")
+        if target:
+            return target
+    return "x64"
+
 def __enabled(ctx):
     if "args.gn" in ctx.metadata:
         gn_args = gn.args(ctx)
@@ -33,10 +41,15 @@ def __enabled(ctx):
 
 def __filegroups(ctx):
     win_toolchain_dir = __win_toolchain_dir(ctx)
+    sdk_version = __win_sdk_version(ctx)
+    target_cpu = __target_cpu(ctx)
     fg = {}
-    if win_toolchain_dir:
+    if win_toolchain_dir and sdk_version:
         fg.update({
-            # for precomputed subtree
+            # for precomputed subtrees.
+            # Case insensitive files are listed by filegroups.
+            # But, case sensitive files are added individually in
+            # __step_config() below.
             win_toolchain_dir + ":headers-ci": {
                 "type": "glob",
                 "includes": [
@@ -50,6 +63,21 @@ def __filegroups(ctx):
                     "VC/Tools/MSVC/*/include/*/*",
                 ],
             },
+            win_toolchain_dir + ":libs-ci": {
+                "type": "glob",
+                "includes": [
+                    "DIA SDK/lib/*.lib",
+                    "DIA SDK/lib/*/*.lib",
+                    path.join("VC/Tools/MSVC/*/lib", target_cpu, "*.lib"),
+                    path.join("VC/Tools/MSVC/*/lib", target_cpu, "*.pdb"),
+                    path.join("VC/Tools/MSVC/*/*/lib", target_cpu, "*.lib"),
+                    path.join("VC/Tools/MSVC/*/*/lib", target_cpu, "*.pdb"),
+                    path.join("VC/Tools/MSVC/*/lib", target_cpu, "*/*.lib"),
+                    path.join("Windows Kits/10/Lib", sdk_version, "ucrt", target_cpu, "*.lib"),
+                    path.join("Windows Kits/10/Lib", sdk_version, "um", target_cpu, "*.lib"),
+                    path.join("Windows Kits/10/Lib", target_cpu, "*.lib"),
+                ],
+            },
         })
     return fg
 
@@ -57,8 +85,12 @@ def __step_config(ctx, step_config):
     win_toolchain_dir = __win_toolchain_dir(ctx)
     if not win_toolchain_dir:
         return
+    target_cpu = __target_cpu(ctx)
     win_toolchain_headers = [
         win_toolchain_dir + ":headers-ci",
+    ]
+    win_toolchain_libs = [
+        win_toolchain_dir + ":libs-ci",
     ]
     sdk_version = __win_sdk_version(ctx)
     if sdk_version:
@@ -209,12 +241,79 @@ def __step_config(ctx, step_config):
             # https://github.com/microsoft/DirectXShaderCompiler/pull/6380
             path.join(win_toolchain_dir, "Windows Kits/10/Include", sdk_version, "um/D3Dcommon.h"),
         ])
+        win_toolchain_libs.extend([
+            # Having the empty "Windows Kits/10/Include/{sdk_version}" directory is necessary
+            # for lld-link to search libs under "Windows Kits/10/Lib/{sdk_version}/um".
+            path.join(win_toolchain_dir, "Windows Kits/10/Include", sdk_version),
+            # The following libs are necessary to resolve case mismatches on
+            # Linux remote workers.
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "Bthprops.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "Cfgmgr32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "Crypt32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "DXGI.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "DbgEng.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "DbgModel.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "Ole32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "Pathcch.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "Propsys.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "Rtworkq.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "RuntimeObject.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "Setupapi.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "Wintrust.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "advapi32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "comctl32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "comdlg32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "credui.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "crypt32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "dbghelp.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "dhcpcsvc.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "dnsapi.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "gdi32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "imagehlp.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "imm32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "kernel32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "mf.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "mfplat.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "msi.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "msimg32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "msxml2.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "netapi32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "ntdsapi.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "ole32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "oleacc.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "oleaut32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "onecore.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "opengl32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "pdh.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "portabledeviceguids.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "rpcns4.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "rpcrt4.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "sapi.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "secur32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "setupapi.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "shlwapi.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "uiautomationcore.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "urlmon.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "user32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "userenv.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "usp10.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "uuid.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "uxtheme.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "version.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "wininet.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "winmm.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "winspool.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "wintrust.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "ws2_32.lib"),
+            path.join(win_toolchain_dir, "Windows Kits/10/Lib", sdk_version, "um", target_cpu, "wtsapi32.lib"),
+        ])
+        step_config["input_deps"].update({
+            win_toolchain_dir + ":headers": win_toolchain_headers,
+            win_toolchain_dir + ":libs": win_toolchain_libs,
+        })
     else:
         # sdk_version may be unknown when first build after `gn clean` (no gn_logs.txt yet)
         print("sdk_version is unknown")
-    step_config["input_deps"].update({
-        win_toolchain_dir + ":headers": win_toolchain_headers,
-    })
 
 win_sdk = module(
     "win_sdk",
