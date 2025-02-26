@@ -4,7 +4,7 @@
 
 // TODO(rickcam): Bug 73183: Add unit tests for image loading
 
-#include "chrome/browser/background/background_application_list_model.h"
+#include "chrome/browser/background/extensions/background_application_list_model.h"
 
 #include <stddef.h>
 
@@ -63,8 +63,7 @@ class BackgroundApplicationListModelTest
   }
 
   bool IsBackgroundApp(const Extension& app) {
-    return BackgroundApplicationListModel::IsBackgroundApp(app,
-                                                           profile_.get());
+    return BackgroundApplicationListModel::IsBackgroundApp(app, profile_.get());
   }
 
   BackgroundApplicationListModel* model() const { return model_.get(); }
@@ -82,9 +81,8 @@ enum PushMessagingOption {
 // Returns a barebones test Extension object with the specified |name|.  The
 // returned extension will include background permission if
 // |background_permission| is true.
-static scoped_refptr<Extension> CreateExtension(
-    const std::string& name,
-    bool background_permission) {
+static scoped_refptr<Extension> CreateExtension(const std::string& name,
+                                                bool background_permission) {
   base::Value::Dict manifest;
   manifest.Set(extensions::manifest_keys::kVersion, "1.0.0.0");
   manifest.Set(extensions::manifest_keys::kManifestVersion, 3);
@@ -322,7 +320,7 @@ TEST_F(BackgroundApplicationListModelTest, LateExtensionSystemReady) {
   EXPECT_EQ(1U, model()->size());
 }
 
-typedef std::set<scoped_refptr<Extension> > ExtensionCollection;
+typedef std::set<scoped_refptr<Extension>> ExtensionCollection;
 
 namespace {
 void AddExtension(extensions::ExtensionService* service,
@@ -366,8 +364,9 @@ void RemoveExtension(extensions::ExtensionService* service,
     // Randomly select which extension to remove
     if (extensions->size() > 1) {
       int offset = rand() % (extensions->size() - 1);
-      for (int index = 0; index < offset; ++index)
+      for (int index = 0; index < offset; ++index) {
         ++cursor;
+      }
     }
     scoped_refptr<Extension> extension = cursor->get();
     std::string id = extension->id();
@@ -402,8 +401,9 @@ void TogglePermission(extensions::ExtensionService* service,
     // Randomly select which extension to toggle.
     if (extensions->size() > 1) {
       int offset = rand() % (extensions->size() - 1);
-      for (int index = 0; index < offset; ++index)
+      for (int index = 0; index < offset; ++index) {
         ++cursor;
+      }
     }
     scoped_refptr<Extension> extension = cursor->get();
     std::string id = extension->id();

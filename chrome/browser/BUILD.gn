@@ -6030,6 +6030,16 @@ static_library("browser") {
     ]
   }
 
+  if (enable_background_mode) {
+    deps += [
+      "//chrome/browser/background/extensions:extensions",
+      "//chrome/browser/background/extensions:impl",
+    ]
+
+    allow_circular_includes_from +=
+        [ "//chrome/browser/background/extensions:impl" ]
+  }
+
   if (is_mac || is_win) {
     sources += [
       "enterprise/platform_auth/platform_auth_navigation_throttle.cc",
@@ -7002,28 +7012,6 @@ static_library("browser") {
     ]
   }
 
-  if (enable_background_mode) {
-    sources += [
-      "background/background_application_list_model.cc",
-      "background/background_application_list_model.h",
-      "background/background_mode_manager.cc",
-      "background/background_mode_manager.h",
-      "background/background_mode_optimizer.cc",
-      "background/background_mode_optimizer.h",
-    ]
-    if (is_win) {
-      sources += [ "background/background_mode_manager_win.cc" ]
-    }
-    if (is_mac) {
-      sources += [ "background/background_mode_manager_mac.cc" ]
-    }
-    if (is_chromeos) {
-      sources += [ "background/background_mode_manager_chromeos.cc" ]
-    }
-    if (use_aura && !is_win && !is_chromeos) {
-      sources += [ "background/background_mode_manager_aura.cc" ]
-    }
-  }
   if (enable_background_contents) {
     sources += [
       "background/background_contents_service.cc",

@@ -154,6 +154,11 @@ static_library("test_support") {
     "//chrome/browser/ui:ui_features",
     "//chrome/test/data/webui:resources",
   ]
+
+  if (enable_background_mode) {
+    deps += [ "//chrome/browser/background/extensions:extensions" ]
+  }
+
   public_deps = []
   testonly = true
 
@@ -2688,6 +2693,10 @@ if (!is_android) {
 
     if (is_mac) {
       deps += [ "//device/fido:icloud_keychain_test_support" ]
+    }
+
+    if (enable_background_mode) {
+      deps += [ "//chrome/browser/background/extensions:extensions" ]
     }
 
     # Runtime dependencies
@@ -8671,11 +8680,7 @@ test("unit_tests") {
         [ "../browser/background/background_contents_service_unittest.cc" ]
   }
   if (enable_background_mode) {
-    sources += [
-      "../browser/background/background_application_list_model_unittest.cc",
-      "../browser/background/background_mode_manager_unittest.cc",
-      "../browser/background/background_mode_optimizer_unittest.cc",
-    ]
+    deps += [ "//chrome/browser/background/extensions:unit_tests" ]
   }
 
   if (enable_spellcheck) {

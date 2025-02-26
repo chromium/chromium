@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_BACKGROUND_BACKGROUND_MODE_MANAGER_H_
-#define CHROME_BROWSER_BACKGROUND_BACKGROUND_MODE_MANAGER_H_
+#ifndef CHROME_BROWSER_BACKGROUND_EXTENSIONS_BACKGROUND_MODE_MANAGER_H_
+#define CHROME_BROWSER_BACKGROUND_EXTENSIONS_BACKGROUND_MODE_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -17,7 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/background/background_application_list_model.h"
+#include "chrome/browser/background/extensions/background_application_list_model.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -127,8 +127,7 @@ class BackgroundModeManager : public BrowserListObserver,
   friend class BackgroundModeManagerTest;
   friend class BackgroundModeManagerWithExtensionsTest;
   friend class AdvancedTestBackgroundModeManager;
-  FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
-                           BackgroundAppLoadUnload);
+  FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest, BackgroundAppLoadUnload);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
                            BackgroundLaunchOnStartup);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
@@ -141,14 +140,11 @@ class BackgroundModeManager : public BrowserListObserver,
                            DisableBackgroundModeUnderTestFlag);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
                            EnableAfterBackgroundAppInstall);
-  FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
-                           MultiProfile);
-  FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
-                           ProfileAttributesStorage);
+  FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest, MultiProfile);
+  FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest, ProfileAttributesStorage);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
                            ProfileAttributesStorageObserver);
-  FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
-                           DeleteBackgroundProfile);
+  FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest, DeleteBackgroundProfile);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
                            ForceInstalledExtensionsKeepAlive);
   FRIEND_TEST_ALL_PREFIXES(
@@ -160,8 +156,7 @@ class BackgroundModeManager : public BrowserListObserver,
                            BackgroundMenuGenerationMultipleProfile);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerWithExtensionsTest,
                            BalloonDisplay);
-  FRIEND_TEST_ALL_PREFIXES(BackgroundAppBrowserTest,
-                           ReloadBackgroundApp);
+  FRIEND_TEST_ALL_PREFIXES(BackgroundAppBrowserTest, ReloadBackgroundApp);
 
   // Manages the background clients and menu items for a single profile. A
   // client is an extension.
@@ -484,4 +479,4 @@ class BackgroundModeManager : public BrowserListObserver,
   base::WeakPtrFactory<BackgroundModeManager> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_BACKGROUND_BACKGROUND_MODE_MANAGER_H_
+#endif  // CHROME_BROWSER_BACKGROUND_EXTENSIONS_BACKGROUND_MODE_MANAGER_H_

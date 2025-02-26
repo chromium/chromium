@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/background/background_mode_manager.h"
+#include "chrome/browser/background/extensions/background_mode_manager.h"
 
 #include <stddef.h>
 
@@ -29,8 +29,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/background/background_application_list_model.h"
-#include "chrome/browser/background/background_mode_optimizer.h"
+#include "chrome/browser/background/extensions/background_application_list_model.h"
+#include "chrome/browser/background/extensions/background_mode_optimizer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/glic/glic_enabling.h"
@@ -128,8 +128,9 @@ void BackgroundModeManager::BackgroundModeData::UpdateProfileKeepAlive() {
     return;
   }
 
-  if (profile_keep_alive_)
+  if (profile_keep_alive_) {
     return;
+  }
   if (!g_browser_process->profile_manager()->IsValidProfile(profile_)) {
     // ScopedProfileKeepAlive will cause issues if we create it now. Wait for
     // OnProfileAdded().
@@ -202,9 +203,10 @@ void BackgroundModeManager::BackgroundModeData::BuildProfileMenu(
           &BackgroundModeManager::LaunchBackgroundApplication, profile_,
           base::RetainedRef(application)));
       menu->AddItem(command_id, base::UTF8ToUTF16(name));
-      if (!icon.isNull())
+      if (!icon.isNull()) {
         menu->SetIcon(menu->GetItemCount() - 1,
                       ui::ImageModel::FromImageSkia(icon));
+      }
 
       // Component extensions with background that do not have an options page
       // will cause this menu item to go to the extensions page with an
@@ -219,8 +221,9 @@ void BackgroundModeManager::BackgroundModeData::BuildProfileMenu(
           extensions::mojom::ManifestLocation::kComponent) {
         GURL options_page =
             extensions::OptionsPageInfo::GetOptionsPage(application.get());
-        if (!options_page.is_valid())
+        if (!options_page.is_valid()) {
           menu->SetCommandIdEnabled(command_id, false);
+        }
       }
     }
 
@@ -329,11 +332,13 @@ BackgroundModeManager::BackgroundModeManager(
 
   // If the --keep-alive-for-test flag is passed, then always keep the browser
   // running in the background until the user explicitly terminates it.
-  if (command_line.HasSwitch(switches::kKeepAliveForTest))
+  if (command_line.HasSwitch(switches::kKeepAliveForTest)) {
     keep_alive_for_test_ = true;
+  }
 
-  if (ShouldBeInBackgroundMode())
+  if (ShouldBeInBackgroundMode()) {
     StartBackgroundMode();
+  }
 
   // Listen for the application shutting down so we can release our KeepAlive.
   on_app_terminating_subscription_ =
@@ -345,8 +350,9 @@ BackgroundModeManager::BackgroundModeManager(
 BackgroundModeManager::~BackgroundModeManager() {
   // Remove ourselves from the application observer list (only needed by unit
   // tests since APP_TERMINATING is what does this in a real running system).
-  for (const auto& it : background_mode_data_)
+  for (const auto& it : background_mode_data_) {
     it.second->applications()->RemoveObserver(this);
+  }
   BrowserList::RemoveObserver(this);
 
   // We're going away, so exit background mode (does nothing if we aren't in
@@ -389,16 +395,18 @@ void BackgroundModeManager::RegisterProfile(Profile* profile) {
 
   // If we're adding a new profile and running in multi-profile mode, this new
   // profile should be added to the status icon if one currently exists.
-  if (in_background_mode_ && status_icon_)
+  if (in_background_mode_ && status_icon_) {
     UpdateStatusTrayIconContextMenu();
+  }
 }
 
 bool BackgroundModeManager::UnregisterProfile(Profile* profile) {
   // Remove the profile from our map of profiles.
   auto it = background_mode_data_.find(profile);
   // If a profile isn't running a background app, it may not be in the map.
-  if (it == background_mode_data_.end())
+  if (it == background_mode_data_.end()) {
     return false;
+  }
 
   it->second->applications()->RemoveObserver(this);
   background_mode_data_.erase(it);
@@ -458,8 +466,9 @@ void BackgroundModeManager::OnAppTerminating() {
   EndBackgroundMode();
   // Shutting down, so don't listen for any more notifications so we don't
   // try to re-enter/exit background mode again.
-  for (const auto& it : background_mode_data_)
+  for (const auto& it : background_mode_data_) {
     it.second->applications()->RemoveObserver(this);
+  }
 }
 
 void BackgroundModeManager::OnExtensionsReady(Profile* profile) {
@@ -473,10 +482,11 @@ void BackgroundModeManager::OnExtensionsReady(Profile* profile) {
   auto* extension_service =
       extensions::ExtensionSystem::Get(profile)->extension_service();
   auto* tracker = extension_service->force_installed_tracker();
-  if (tracker->IsReady() || !bmd)
+  if (tracker->IsReady() || !bmd) {
     ReleaseForceInstalledExtensionsKeepAlive();
-  else
+  } else {
     bmd->SetTracker(tracker);
+  }
 }
 
 void BackgroundModeManager::OnBackgroundModeEnabledPrefChanged() {
@@ -495,19 +505,22 @@ void BackgroundModeManager::OnApplicationDataChanged() {
 }
 
 void BackgroundModeManager::OnApplicationListChanged(const Profile* profile) {
-  if (!IsBackgroundModePrefEnabled())
+  if (!IsBackgroundModePrefEnabled()) {
     return;
+  }
 
   BackgroundModeManager::BackgroundModeData* bmd =
       GetBackgroundModeData(profile);
-  if (!bmd)
+  if (!bmd) {
     return;
+  }
 
   // Get the new apps (if any) and process them.
   std::set<const extensions::Extension*> new_apps = bmd->GetNewBackgroundApps();
   std::vector<std::u16string> new_names;
-  for (auto* app : new_apps)
+  for (auto* app : new_apps) {
     new_names.push_back(base::UTF8ToUTF16(app->name()));
+  }
   OnClientsChanged(profile, new_names);
 }
 
@@ -561,21 +574,23 @@ void BackgroundModeManager::OnProfileNameChanged(
 
 BackgroundModeManager::BackgroundModeData*
 BackgroundModeManager::GetBackgroundModeDataForLastProfile() const {
-  Profile* most_recent_profile = g_browser_process->profile_manager()->
-      GetLastUsedProfileAllowedByPolicy();
+  Profile* most_recent_profile =
+      g_browser_process->profile_manager()->GetLastUsedProfileAllowedByPolicy();
   auto profile_background_data =
       background_mode_data_.find(most_recent_profile);
 
-  if (profile_background_data == background_mode_data_.end())
+  if (profile_background_data == background_mode_data_.end()) {
     return nullptr;
+  }
 
   // Do not permit a locked profile to be used to open a browser.
   ProfileAttributesEntry* entry =
       profile_storage_->GetProfileAttributesWithPath(
           profile_background_data->first->GetPath());
   DCHECK(entry);
-  if (entry->IsSigninRequired())
+  if (entry->IsSigninRequired()) {
     return nullptr;
+  }
 
   return profile_background_data->second.get();
 }
@@ -678,8 +693,9 @@ void BackgroundModeManager::StartBackgroundMode() {
   DCHECK(ShouldBeInBackgroundMode());
   // Don't bother putting ourselves in background mode if we're already there
   // or if background mode is disabled.
-  if (in_background_mode_)
+  if (in_background_mode_) {
     return;
+  }
 
   startup_metric_utils::GetBrowser().SetBackgroundModeEnabled();
 
@@ -690,8 +706,9 @@ void BackgroundModeManager::StartBackgroundMode() {
 }
 
 void BackgroundModeManager::EndBackgroundMode() {
-  if (!in_background_mode_)
+  if (!in_background_mode_) {
     return;
+  }
   in_background_mode_ = false;
 
   UpdateKeepAliveAndTrayIcon();
@@ -726,8 +743,9 @@ void BackgroundModeManager::ResumeBackgroundMode() {
 }
 
 void BackgroundModeManager::UpdateKeepAliveAndTrayIcon() {
-  for (const auto& entry : background_mode_data_)
+  for (const auto& entry : background_mode_data_) {
     entry.second->UpdateProfileKeepAlive();
+  }
 
   if (in_background_mode_ && !background_mode_suspended_) {
     if (!keep_alive_) {
@@ -781,23 +799,26 @@ void BackgroundModeManager::OnClientsChanged(
     UpdateStatusTrayIconContextMenu();
 
     // Notify the user about any new clients.
-    for (const auto& name : new_client_names)
+    for (const auto& name : new_client_names) {
       OnBackgroundClientInstalled(name);
+    }
   }
 }
 
 bool BackgroundModeManager::HasPersistentBackgroundClient() const {
   for (const auto& it : background_mode_data_) {
-    if (it.second->HasPersistentBackgroundClient())
+    if (it.second->HasPersistentBackgroundClient()) {
       return true;
+    }
   }
   return false;
 }
 
 bool BackgroundModeManager::HasAnyBackgroundClient() const {
   for (const auto& it : background_mode_data_) {
-    if (it.second->HasAnyBackgroundClient())
+    if (it.second->HasAnyBackgroundClient()) {
       return true;
+    }
   }
   return false;
 }
@@ -817,8 +838,9 @@ bool BackgroundModeManager::ShouldBeInBackgroundMode() const {
 void BackgroundModeManager::OnBackgroundClientInstalled(
     const std::u16string& name) {
   // Background mode is disabled - don't do anything.
-  if (!IsBackgroundModePrefEnabled())
+  if (!IsBackgroundModePrefEnabled()) {
     return;
+  }
 
   // Ensure we have a tray icon (needed so we can display the app-installed
   // notification below).
@@ -859,8 +881,9 @@ gfx::ImageSkia GetStatusTrayIcon() {
   // Therefore, we fetch the images and do our own high-quality scaling.
   std::unique_ptr<gfx::ImageFamily> family = GetAppIconImageFamily();
   DCHECK(family);
-  if (!family)
+  if (!family) {
     return gfx::ImageSkia();
+  }
 
   return family->CreateExact(size).AsImageSkia();
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -883,20 +906,23 @@ void BackgroundModeManager::CreateStatusTrayIcon() {
   // Since there are multiple profiles which share the status tray, we now
   // use the browser process to keep track of it.
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
-  if (!status_tray_)
+  if (!status_tray_) {
     status_tray_ = g_browser_process->status_tray();
+  }
 #endif
 
   // If the platform doesn't support status icons, or we've already created
   // our status icon, just return.
-  if (!status_tray_ || status_icon_)
+  if (!status_tray_ || status_icon_) {
     return;
+  }
 
   status_icon_ = status_tray_->CreateStatusIcon(
       StatusTray::BACKGROUND_MODE_ICON, GetStatusTrayIcon(),
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
-  if (!status_icon_)
+  if (!status_icon_) {
     return;
+  }
   UpdateStatusTrayIconContextMenu();
 }
 
@@ -906,8 +932,9 @@ void BackgroundModeManager::UpdateStatusTrayIconContextMenu() {
 
   // If we don't have a status icon or one could not be created succesfully,
   // then no need to continue the update.
-  if (!status_icon_)
+  if (!status_icon_) {
     return;
+  }
 
   // We should only get here if we have a profile loaded, or if we're running
   // in test mode.
@@ -927,8 +954,9 @@ void BackgroundModeManager::UpdateStatusTrayIconContextMenu() {
   // If there are multiple profiles they each get a submenu.
   if (profile_storage_->GetNumberOfProfiles() > 1) {
     std::vector<BackgroundModeData*> bmd_vector;
-    for (const auto& it : background_mode_data_)
+    for (const auto& it : background_mode_data_) {
       bmd_vector.push_back(it.second.get());
+    }
     std::sort(bmd_vector.begin(), bmd_vector.end(),
               &BackgroundModeData::BackgroundModeDataCompare);
     int profiles_using_background_mode = 0;

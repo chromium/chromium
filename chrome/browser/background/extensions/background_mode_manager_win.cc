@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/background/extensions/background_mode_manager.h"
+
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -10,7 +12,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/win/registry.h"
-#include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -26,8 +27,10 @@ const char kAppInstalledNotifierId[] = "background-mode.app-installed";
 
 void BackgroundModeManager::EnableLaunchOnStartup(bool should_launch) {
   // This functionality is only defined for default profile, currently.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUserDataDir))
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUserDataDir)) {
     return;
+  }
   task_runner_->PostTask(
       FROM_HERE,
       should_launch

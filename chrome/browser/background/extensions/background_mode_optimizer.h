@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_BACKGROUND_BACKGROUND_MODE_OPTIMIZER_H_
-#define CHROME_BROWSER_BACKGROUND_BACKGROUND_MODE_OPTIMIZER_H_
+#ifndef CHROME_BROWSER_BACKGROUND_EXTENSIONS_BACKGROUND_MODE_OPTIMIZER_H_
+#define CHROME_BROWSER_BACKGROUND_EXTENSIONS_BACKGROUND_MODE_OPTIMIZER_H_
 
 #include <memory>
 
@@ -51,4 +51,4 @@ class BackgroundModeOptimizer : public KeepAliveStateObserver,
   bool browser_was_added_ = false;
 };
 
-#endif  // CHROME_BROWSER_BACKGROUND_BACKGROUND_MODE_OPTIMIZER_H_
+#endif  // CHROME_BROWSER_BACKGROUND_EXTENSIONS_BACKGROUND_MODE_OPTIMIZER_H_

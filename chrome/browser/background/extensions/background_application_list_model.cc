@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/background/background_application_list_model.h"
+#include "chrome/browser/background/extensions/background_application_list_model.h"
 
 #include <algorithm>
 #include <set>
@@ -17,7 +17,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
-#include "chrome/browser/background/background_mode_manager.h"
+#include "chrome/browser/background/extensions/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -133,8 +133,9 @@ BackgroundApplicationListModel::Application::Application(
 
 void BackgroundApplicationListModel::Application::OnImageLoaded(
     const gfx::Image& image) {
-  if (image.IsEmpty())
+  if (image.IsEmpty()) {
     return;
+  }
   icon_ = image.AsImageSkia();
   model_->SendApplicationDataChangedNotifications();
 }
@@ -205,8 +206,7 @@ BackgroundApplicationListModel::FindApplication(
 }
 
 BackgroundApplicationListModel::Application*
-BackgroundApplicationListModel::FindApplication(
-    const Extension* extension) {
+BackgroundApplicationListModel::FindApplication(const Extension* extension) {
   const std::string& id = extension->id();
   auto found = applications_.find(id);
   return (found == applications_.end()) ? nullptr : found->second.get();
@@ -215,8 +215,9 @@ BackgroundApplicationListModel::FindApplication(
 gfx::ImageSkia BackgroundApplicationListModel::GetIcon(
     const Extension* extension) {
   const Application* application = FindApplication(extension);
-  if (application)
+  if (application) {
     return application->icon_;
+  }
   AssociateApplicationData(extension);
   return gfx::ImageSkia();
 }
@@ -226,8 +227,9 @@ int BackgroundApplicationListModel::GetPosition(
   int position = 0;
   const std::string& id = extension->id();
   for (const auto& it : extensions_) {
-    if (id == it->id())
+    if (id == it->id()) {
       return position;
+    }
     ++position;
   }
   NOTREACHED();
@@ -251,12 +253,14 @@ bool BackgroundApplicationListModel::IsPersistentBackgroundApp(
 
   // Extensions and packaged apps with background permission are always treated
   // as background apps.
-  if (!extension.is_hosted_app())
+  if (!extension.is_hosted_app()) {
     return true;
+  }
 
   // Hosted apps with manifest-provided background pages are background apps.
-  if (extensions::BackgroundInfo::HasBackgroundPage(&extension))
+  if (extensions::BackgroundInfo::HasBackgroundPage(&extension)) {
     return true;
+  }
 
   BackgroundContentsService* service =
       BackgroundContentsServiceFactory::GetForProfile(profile);
@@ -294,16 +298,18 @@ bool BackgroundApplicationListModel::HasPersistentBackgroundApps() const {
 }
 
 void BackgroundApplicationListModel::SendApplicationDataChangedNotifications() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnApplicationDataChanged();
+  }
 }
 
 void BackgroundApplicationListModel::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
   // We only care about extensions that are background applications.
-  if (!IsBackgroundApp(*extension, profile_))
+  if (!IsBackgroundApp(*extension, profile_)) {
     return;
+  }
   Update();
   AssociateApplicationData(extension);
 }
@@ -312,8 +318,9 @@ void BackgroundApplicationListModel::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  if (!IsBackgroundApp(*extension, profile_))
+  if (!IsBackgroundApp(*extension, profile_)) {
     return;
+  }
   Update();
   DissociateApplicationData(extension);
 }
@@ -322,8 +329,9 @@ void BackgroundApplicationListModel::OnExtensionSystemReady() {
   // All initial extensions will be loaded when extension system ready. So we
   // can get everything here.
   Update();
-  for (const auto& extension : extensions_)
+  for (const auto& extension : extensions_) {
     AssociateApplicationData(extension.get());
+  }
 
   // If we register for extension loaded notifications in the ctor, we need to
   // know that this object is constructed prior to the initialization process
@@ -406,8 +414,7 @@ void BackgroundApplicationListModel::Update() {
   GetServiceApplications(extension_system->extension_service(), &extensions);
   ExtensionList::const_iterator old_cursor = extensions_.begin();
   ExtensionList::const_iterator new_cursor = extensions.begin();
-  while (old_cursor != extensions_.end() &&
-         new_cursor != extensions.end() &&
+  while (old_cursor != extensions_.end() && new_cursor != extensions.end() &&
          (*old_cursor)->name() == (*new_cursor)->name() &&
          (*old_cursor)->id() == (*new_cursor)->id()) {
     ++old_cursor;
@@ -415,8 +422,9 @@ void BackgroundApplicationListModel::Update() {
   }
   if (old_cursor != extensions_.end() || new_cursor != extensions.end()) {
     extensions_ = extensions;
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnApplicationListChanged(profile_);
+    }
   }
 }
 

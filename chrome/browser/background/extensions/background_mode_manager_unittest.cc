@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/background/background_mode_manager.h"
+#include "chrome/browser/background/extensions/background_mode_manager.h"
 
 #include <stddef.h>
 
@@ -319,7 +319,6 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
 #endif
 };
 
-
 TEST_F(BackgroundModeManagerTest, BackgroundAppLoadUnload) {
   AdvancedTestBackgroundModeManager manager(
       *command_line_, profile_manager_->profile_attributes_storage(), true);
@@ -570,9 +569,8 @@ TEST_F(BackgroundModeManagerTest, ProfileAttributesStorageObserver) {
 
   // Background mode should remain active for the remainder of this test.
 
-  manager.OnProfileNameChanged(
-      profile_->GetPath(),
-      manager.GetBackgroundModeData(profile_)->name());
+  manager.OnProfileNameChanged(profile_->GetPath(),
+                               manager.GetBackgroundModeData(profile_)->name());
 
   EXPECT_EQ(u"p1", manager.GetBackgroundModeData(profile_)->name());
 
@@ -608,9 +606,8 @@ TEST_F(BackgroundModeManagerTest, DeleteBackgroundProfile) {
   manager.OnApplicationListChanged(profile_);
   Mock::VerifyAndClearExpectations(&manager);
 
-  manager.OnProfileNameChanged(
-      profile_->GetPath(),
-      manager.GetBackgroundModeData(profile_)->name());
+  manager.OnProfileNameChanged(profile_->GetPath(),
+                               manager.GetBackgroundModeData(profile_)->name());
 
   EXPECT_CALL(manager, EnableLaunchOnStartup(false)).Times(Exactly(1));
   EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
@@ -790,44 +787,37 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   StatusIconMenuModel* profile1_submenu =
       static_cast<StatusIconMenuModel*>(context_menu->GetSubmenuModelAt(3));
   EXPECT_EQ(profile1_submenu->GetLabelAt(0), u"Component Extension");
-  EXPECT_FALSE(
-      profile1_submenu->IsCommandIdEnabled(
-          profile1_submenu->GetCommandIdAt(0)));
+  EXPECT_FALSE(profile1_submenu->IsCommandIdEnabled(
+      profile1_submenu->GetCommandIdAt(0)));
   EXPECT_EQ(profile1_submenu->GetCommandIdAt(0), 0);
   EXPECT_EQ(profile1_submenu->GetLabelAt(1),
             u"Component Extension with Options");
-  EXPECT_TRUE(
-      profile1_submenu->IsCommandIdEnabled(
-          profile1_submenu->GetCommandIdAt(1)));
+  EXPECT_TRUE(profile1_submenu->IsCommandIdEnabled(
+      profile1_submenu->GetCommandIdAt(1)));
   EXPECT_EQ(profile1_submenu->GetCommandIdAt(1), 1);
   EXPECT_EQ(profile1_submenu->GetLabelAt(2), u"Regular Extension");
-  EXPECT_TRUE(
-      profile1_submenu->IsCommandIdEnabled(
-          profile1_submenu->GetCommandIdAt(2)));
+  EXPECT_TRUE(profile1_submenu->IsCommandIdEnabled(
+      profile1_submenu->GetCommandIdAt(2)));
   EXPECT_EQ(profile1_submenu->GetCommandIdAt(2), 2);
   EXPECT_EQ(profile1_submenu->GetLabelAt(3), u"Regular Extension with Options");
-  EXPECT_TRUE(
-      profile1_submenu->IsCommandIdEnabled(
-          profile1_submenu->GetCommandIdAt(3)));
+  EXPECT_TRUE(profile1_submenu->IsCommandIdEnabled(
+      profile1_submenu->GetCommandIdAt(3)));
   EXPECT_EQ(profile1_submenu->GetCommandIdAt(3), 3);
 
   // Profile 2 Submenu Checks
   StatusIconMenuModel* profile2_submenu =
       static_cast<StatusIconMenuModel*>(context_menu->GetSubmenuModelAt(4));
   EXPECT_EQ(profile2_submenu->GetLabelAt(0), u"Component Extension");
-  EXPECT_FALSE(
-      profile2_submenu->IsCommandIdEnabled(
-          profile2_submenu->GetCommandIdAt(0)));
+  EXPECT_FALSE(profile2_submenu->IsCommandIdEnabled(
+      profile2_submenu->GetCommandIdAt(0)));
   EXPECT_EQ(profile2_submenu->GetCommandIdAt(0), 5);
   EXPECT_EQ(profile2_submenu->GetLabelAt(1), u"Regular Extension");
-  EXPECT_TRUE(
-      profile2_submenu->IsCommandIdEnabled(
-          profile2_submenu->GetCommandIdAt(1)));
+  EXPECT_TRUE(profile2_submenu->IsCommandIdEnabled(
+      profile2_submenu->GetCommandIdAt(1)));
   EXPECT_EQ(profile2_submenu->GetCommandIdAt(1), 6);
   EXPECT_EQ(profile2_submenu->GetLabelAt(2), u"Regular Extension with Options");
-  EXPECT_TRUE(
-      profile2_submenu->IsCommandIdEnabled(
-          profile2_submenu->GetCommandIdAt(2)));
+  EXPECT_TRUE(profile2_submenu->IsCommandIdEnabled(
+      profile2_submenu->GetCommandIdAt(2)));
   EXPECT_EQ(profile2_submenu->GetCommandIdAt(2), 7);
 
   // Model Adapter Checks for crbug.com/315164
