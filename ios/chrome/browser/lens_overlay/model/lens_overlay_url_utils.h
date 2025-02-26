@@ -16,6 +16,9 @@ bool IsGoogleHostURL(GURL url);
 /// Whether the `url` is a lens overlay SRP.
 bool IsLensOverlaySRP(GURL url);
 
+/// Whether the `url` is a lens multimodal SRP.
+bool IsLensMultimodalSRP(GURL url);
+
 /// Returns the search tearm of the lens overlay SRP.
 std::string ExtractQueryFromLensOverlaySRP(GURL url);
 

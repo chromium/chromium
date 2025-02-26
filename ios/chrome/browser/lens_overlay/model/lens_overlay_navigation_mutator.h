@@ -31,7 +31,9 @@
 - (void)onBackNavigationAvailabilityMaybeChanged:(BOOL)canGoBack;
 
 /// Called when a lens overlay SRP is loaded with `omniboxText`.
-- (void)onSRPLoadWithOmniboxText:(NSString*)omniboxText;
+/// `isMultimodal` ensures thumbnail is not removed.
+- (void)onSRPLoadWithOmniboxText:(NSString*)omniboxText
+                    isMultimodal:(BOOL)isMultimodal;
 
 @end
 

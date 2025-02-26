@@ -66,6 +66,16 @@ class LensOverlayNavigationManagerTest : public PlatformTest {
     return url;
   }
 
+  /// Returns a lens multimodal SRP URL with `query_text` as query parameter.
+  GURL LensMultimodalSRPWithQueryText(const std::string& query_text) {
+    GURL url = LensOverlaySRPWithQueryText(query_text);
+    url = net::AppendOrReplaceQueryParameter(
+        url, lens::kLensRequestQueryParameter, "<vsrid>");
+    url = net::AppendOrReplaceQueryParameter(
+        url, lens::kUnifiedDrillDownQueryParameter, "24");
+    return url;
+  }
+
   /// Generates a Lens result.
   id<ChromeLensOverlayResult> GenerateResult(int identifier) {
     FakeChromeLensOverlayResult* result =
@@ -341,18 +351,45 @@ TEST_F(LensOverlayNavigationManagerTest, SRPNavigationUpdatesText) {
   // Web navigation to SRP `URL2` with `text1`.
   NSString* text1 = @"some query text";
   GURL URL2 = LensOverlaySRPWithQueryText(text1.cr_UTF8String);
-  OCMExpect([mock_mutator_ onSRPLoadWithOmniboxText:text1]);
+  OCMExpect([mock_mutator_ onSRPLoadWithOmniboxText:text1 isMultimodal:NO]);
   SimulateWebNavigation(URL2, /*expect_can_go_back=*/YES);
   EXPECT_OCMOCK_VERIFY(mock_mutator_);
 
   // Web navigation to SRP `URL3` with `text2`.
   NSString* text2 = @"some other text";
   GURL URL3 = LensOverlaySRPWithQueryText(text2.cr_UTF8String);
-  OCMExpect([mock_mutator_ onSRPLoadWithOmniboxText:text2]);
+  OCMExpect([mock_mutator_ onSRPLoadWithOmniboxText:text2 isMultimodal:NO]);
   SimulateWebNavigation(URL3, /*expect_can_go_back=*/YES);
   EXPECT_OCMOCK_VERIFY(mock_mutator_);
 
   // Go back expecting `URL2` with `text1`.
+  GoBackExpectingURLReload(URL2, /*expect_can_go_back=*/YES);
+  EXPECT_TRUE([latest_loaded_omnibox_text_ isEqualToString:text1]);
+}
+
+// Tests loading lens multimodal SRP updates the navigation text.
+TEST_F(LensOverlayNavigationManagerTest, MultimodalSRPNavigationUpdatesText) {
+  id<ChromeLensOverlayResult> result1 = GenerateResult(1);
+  SimulateLensDidGenerateResult(result1, /*expect_load=*/YES,
+                                /*expect_can_go_back=*/NO);
+  // Lens navigation loads `URL1`.
+  GURL URL1 = result1.searchResultURL;
+
+  // Web navigation to SRP `URL2` with no text.
+  NSString* text1 = @"";
+  GURL URL2 = LensOverlaySRPWithQueryText(text1.cr_UTF8String);
+  OCMExpect([mock_mutator_ onSRPLoadWithOmniboxText:text1 isMultimodal:NO]);
+  SimulateWebNavigation(URL2, /*expect_can_go_back=*/YES);
+  EXPECT_OCMOCK_VERIFY(mock_mutator_);
+
+  // Web navigation to multi-modal SRP `URL3` with `text2`.
+  NSString* text2 = @"multimodal text query";
+  GURL URL3 = LensMultimodalSRPWithQueryText(text2.cr_UTF8String);
+  OCMExpect([mock_mutator_ onSRPLoadWithOmniboxText:text2 isMultimodal:YES]);
+  SimulateWebNavigation(URL3, /*expect_can_go_back=*/YES);
+  EXPECT_OCMOCK_VERIFY(mock_mutator_);
+
+  // Go back expecting `URL2` with no text.
   GoBackExpectingURLReload(URL2, /*expect_can_go_back=*/YES);
   EXPECT_TRUE([latest_loaded_omnibox_text_ isEqualToString:text1]);
 }

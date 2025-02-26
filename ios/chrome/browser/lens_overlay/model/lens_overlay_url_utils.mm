@@ -30,6 +30,23 @@ bool IsLensOverlaySRP(GURL url) {
          lens_surface == "4";
 }
 
+bool IsLensMultimodalSRP(GURL url) {
+  std::string search_term;
+  bool has_search_terms = net::GetValueForKeyInQuery(url, "q", &search_term);
+  std::string lens_surface;
+  bool has_lens_surface = net::GetValueForKeyInQuery(
+      url, lens::kLensSurfaceQueryParameter, &lens_surface);
+  std::string request_id;
+  bool has_lens_param = net::GetValueForKeyInQuery(
+      url, lens::kLensRequestQueryParameter, &request_id);
+  std::string udm;
+  bool has_unified_drilldown_param = net::GetValueForKeyInQuery(
+      url, lens::kUnifiedDrillDownQueryParameter, &udm);
+
+  return has_search_terms && has_lens_surface && has_lens_param &&
+         has_unified_drilldown_param && lens_surface == "4" && udm == "24";
+}
+
 std::string ExtractQueryFromLensOverlaySRP(GURL url) {
   std::string search_term = "";
   net::GetValueForKeyInQuery(url, "q", &search_term);
