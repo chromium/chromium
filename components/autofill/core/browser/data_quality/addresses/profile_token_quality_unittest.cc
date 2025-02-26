@@ -230,8 +230,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_DynamicChange) {
   FillForm(form, profile);
 
   FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
-  form_structure->field(0)->SetTypeTo(AutofillType(NAME_LAST),
-                                      AutofillPredictionSource::kHeuristics);
+  form_structure->field(0)->SetTypeTo(AutofillType(NAME_LAST));
   EXPECT_TRUE(
       quality.AddObservationsForFilledForm(*form_structure, form, adm()));
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),

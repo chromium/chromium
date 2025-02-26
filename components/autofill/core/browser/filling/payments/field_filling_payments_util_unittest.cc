@@ -263,8 +263,7 @@ class CreditCardVerificationCodeTest
 TEST_P(CreditCardVerificationCodeTest,
        FillFormField_CreditCardVerificationCode) {
   AutofillField field;
-  field.SetTypeTo(AutofillType(CREDIT_CARD_VERIFICATION_CODE),
-                  AutofillPredictionSource::kHeuristics);
+  field.SetTypeTo(AutofillType(CREDIT_CARD_VERIFICATION_CODE));
 
   CreditCard credit_card;
   const std::u16string kCvc = u"1111";
@@ -282,8 +281,7 @@ TEST_P(CreditCardVerificationCodeTest,
 TEST_P(CreditCardVerificationCodeTest,
        FillFormField_CreditCardVerificationCode_Empty) {
   AutofillField field;
-  field.SetTypeTo(AutofillType(CREDIT_CARD_VERIFICATION_CODE),
-                  AutofillPredictionSource::kHeuristics);
+  field.SetTypeTo(AutofillType(CREDIT_CARD_VERIFICATION_CODE));
 
   CreditCard credit_card;
   const std::u16string kEmptyCvc = u"";
@@ -295,8 +293,7 @@ TEST_P(CreditCardVerificationCodeTest,
 // Tests that CVC is correctly previewed and filled for a standalone CVC field.
 TEST_P(CreditCardVerificationCodeTest, FillFormField_StandaloneCVCField) {
   AutofillField field;
-  field.SetTypeTo(AutofillType(CREDIT_CARD_STANDALONE_VERIFICATION_CODE),
-                  AutofillPredictionSource::kHeuristics);
+  field.SetTypeTo(AutofillType(CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
 
   CreditCard credit_card = test::WithCvc(test::GetVirtualCard());
   std::u16string value_to_fill = GetFillingValueForCreditCard(
@@ -319,8 +316,7 @@ TEST_P(CreditCardVerificationCodeTest, FillFormField_StandaloneCVCField) {
 TEST_P(CreditCardVerificationCodeTest,
        FillFormField_StandaloneCVCField_AmericanExpress) {
   AutofillField field;
-  field.SetTypeTo(AutofillType(CREDIT_CARD_STANDALONE_VERIFICATION_CODE),
-                  AutofillPredictionSource::kHeuristics);
+  field.SetTypeTo(AutofillType(CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
 
   CreditCard credit_card = test::GetVirtualCard();
   test_api(credit_card).set_network_for_card(kAmericanExpressCard);

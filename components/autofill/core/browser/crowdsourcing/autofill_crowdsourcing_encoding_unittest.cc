@@ -388,13 +388,11 @@ TEST_F(AutofillCrowdsourcingEncoding,
       AutofillUploadContents_SubmissionIndicatorEvent_NONE);
   upload.set_has_form_tag(true);
 
-  AutofillUploadContents::Field* upload_firstname_field =
-      upload.add_field_data();
+  AutofillUploadContents::Field* upload_firstname_field = upload.add_field_data();
   test::FillUploadField(upload_firstname_field,
                         *form_structure->field(0)->GetFieldSignature(), 3U);
 
-  AutofillUploadContents::Field* upload_lastname_field =
-      upload.add_field_data();
+  AutofillUploadContents::Field* upload_lastname_field = upload.add_field_data();
   test::FillUploadField(upload_lastname_field,
                         *form_structure->field(1)->GetFieldSignature(), 5U);
 
@@ -402,15 +400,13 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::FillUploadField(upload_email_field,
                         *form_structure->field(2)->GetFieldSignature(), 9U);
 
-  AutofillUploadContents::Field* upload_username_field =
-      upload.add_field_data();
+  AutofillUploadContents::Field* upload_username_field = upload.add_field_data();
   test::FillUploadField(upload_username_field,
                         *form_structure->field(3)->GetFieldSignature(), 86U);
   upload_username_field->set_vote_type(
       AutofillUploadContents::Field::CREDENTIALS_REUSED);
 
-  AutofillUploadContents::Field* upload_password_field =
-      upload.add_field_data();
+  AutofillUploadContents::Field* upload_password_field = upload.add_field_data();
   test::FillUploadField(upload_password_field,
                         *form_structure->field(4)->GetFieldSignature(), 76U);
   upload_password_field->set_generation_type(
@@ -495,8 +491,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   upload.set_has_form_tag(true);
 
   test::FillUploadField(upload.add_field_data(), 3763331450U, 3U);
-  upload.mutable_field_data(0)->set_properties_mask(
-      FieldPropertiesFlags::kHadFocus);
+  upload.mutable_field_data(0)->set_properties_mask(FieldPropertiesFlags::kHadFocus);
   test::FillUploadField(upload.add_field_data(), 3494530716U, 5U);
   upload.mutable_field_data(1)->set_properties_mask(
       FieldPropertiesFlags::kHadFocus | FieldPropertiesFlags::kUserTyped);
@@ -2075,13 +2070,11 @@ TEST_F(AutofillCrowdsourcingEncoding,
   EXPECT_EQ(form.field(1)->Type().GetStorableType(), NAME_FULL);
 
   // Validate that the server override cannot be altered.
-  form.field(0)->SetTypeTo(AutofillType(NAME_FULL),
-                           AutofillPredictionSource::kHeuristics);
+  form.field(0)->SetTypeTo(AutofillType(NAME_FULL));
   EXPECT_EQ(form.field(0)->Type().GetStorableType(), NAME_FIRST);
 
   // Validate that that the non-override can be altered.
-  form.field(1)->SetTypeTo(AutofillType(NAME_FIRST),
-                           AutofillPredictionSource::kHeuristics);
+  form.field(1)->SetTypeTo(AutofillType(NAME_FIRST));
   EXPECT_EQ(form.field(1)->Type().GetStorableType(), NAME_FIRST);
 }
 

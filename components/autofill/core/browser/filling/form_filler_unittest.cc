@@ -501,8 +501,7 @@ TEST_F(FormFillerTest,
            {.role = NAME_LAST, .autocomplete_attribute = "family-name"}}});
   FormsSeen({form});
   FormStructure* form_structure = GetFormStructure(form);
-  form_structure->field(1)->SetTypeTo(AutofillType(NAME_MIDDLE),
-                                      AutofillPredictionSource::kHeuristics);
+  form_structure->field(1)->SetTypeTo(AutofillType(NAME_MIDDLE));
   ASSERT_EQ(form_structure->field(1)->html_type(),
             HtmlFieldType::kUnrecognized);
 

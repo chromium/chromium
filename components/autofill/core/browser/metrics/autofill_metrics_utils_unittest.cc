@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
@@ -31,8 +30,7 @@ std::unique_ptr<FormStructure> CreateFormStructure(
       std::make_unique<FormStructure>(test::GetFormData(form_description));
   for (size_t i = 0; i < form_structure->field_count(); i++) {
     form_structure->field(i)->SetTypeTo(
-        AutofillType(form_description.fields[i].role),
-        AutofillPredictionSource::kHeuristics);
+        AutofillType(form_description.fields[i].role));
   }
   return form_structure;
 }

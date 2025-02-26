@@ -10,7 +10,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -210,8 +209,7 @@ class AutofillAiFunnelMetricsTest
     autofill::AutofillField& prediction_improvement_field =
         test_api(*form).PushField();
     prediction_improvement_field.SetTypeTo(
-        autofill::AutofillType(autofill::CREDIT_CARD_NUMBER),
-        autofill::AutofillPredictionSource::kHeuristics);
+        autofill::AutofillType(autofill::CREDIT_CARD_NUMBER));
     return form;
   }
 };
