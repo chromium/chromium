@@ -932,6 +932,7 @@ bool CertProvisioningWorkerDynamic::ProcessResponseErrors(
     last_backend_server_error_ = std::nullopt;
     request_backoff_.InformOfRequest(true);
     fetch_instruction_backoff_.InformOfRequest(true);
+    RecordDmStatusForDynamic(policy::DeviceManagementStatus::DM_STATUS_SUCCESS);
     return true;
   }
 
@@ -942,6 +943,7 @@ bool CertProvisioningWorkerDynamic::ProcessResponseErrors(
 void CertProvisioningWorkerDynamic::ProcessResponseErrors(
     const CertProvisioningClient::Error& error) {
   const policy::DeviceManagementStatus status = error.device_management_status;
+  RecordDmStatusForDynamic(status);
   if ((status ==
        policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE) ||
       (status == policy::DeviceManagementStatus::DM_STATUS_REQUEST_FAILED) ||
@@ -975,6 +977,7 @@ void CertProvisioningWorkerDynamic::ProcessResponseErrors(
   request_backoff_.InformOfRequest(true);
 
   const em::CertProvBackendError& backend_error = error.backend_error;
+  RecordCertProvBackendErrorForDynamic(backend_error.error());
   if (backend_error.error() ==
       em::CertProvBackendError::INSTRUCTION_NOT_YET_AVAILABLE) {
     LOG(WARNING) << "No instruction available yet "
