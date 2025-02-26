@@ -18,7 +18,7 @@ namespace ui {
 
 namespace {
 
-const auto kEventFlagFromModifiers = std::to_array<int>({
+constexpr auto kEventFlagFromModifiers = std::to_array<int>({
     EF_NONE,                  // MODIFIER_NONE,
     EF_SHIFT_DOWN,            // MODIFIER_SHIFT
     EF_CONTROL_DOWN,          // MODIFIER_CONTROL
