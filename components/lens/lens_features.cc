@@ -344,6 +344,13 @@ constexpr base::FeatureParam<int> kZstdCompressionLevel{
 constexpr base::FeatureParam<bool> kPageContentUploadRequestIdFix{
     &kLensOverlayContextualSearchbox, "page-content-request-id-fix", false};
 
+constexpr base::FeatureParam<bool> kShowUploadProgressBar{
+    &kLensOverlayContextualSearchbox, "show-upload-progress-bar", true};
+
+constexpr base::FeatureParam<double> kUploadProgressBarShowHeuristic{
+    &kLensOverlayContextualSearchbox, "upload-progress-bar-show-heuristic",
+    0.1};
+
 constexpr base::FeatureParam<std::string> kTranslateEndpointUrl{
     &kLensOverlayTranslateLanguages, "translate-endpoint-url",
     "https://translate-pa.googleapis.com/v1/supportedLanguages"};
@@ -821,6 +828,14 @@ bool ShouldZstdCompressPdfBytes() {
 
 int GetZstdCompressionLevel() {
   return kZstdCompressionLevel.Get();
+}
+
+bool ShouldShowUploadProgressBar() {
+  return kShowUploadProgressBar.Get();
+}
+
+double GetUploadProgressBarShowHeuristic() {
+  return kUploadProgressBarShowHeuristic.Get();
 }
 
 bool IsSimplifiedSelectionEnabled() {

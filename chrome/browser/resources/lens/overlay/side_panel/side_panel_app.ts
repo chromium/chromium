@@ -40,6 +40,8 @@ export interface LensSidePanelAppElement {
     searchbox: SearchboxElement,
     searchboxContainer: HTMLElement,
     searchboxGhostLoader: SearchboxGhostLoaderElement,
+    uploadProgressBar: HTMLElement,
+    uploadProgressBarContainer: HTMLElement,
   };
 }
 
@@ -122,6 +124,15 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         computed:
             `computePlaceholderText(isContextualSearchbox, pageContentType)`,
       },
+      uploadProgressPercentage: {
+        type: Number,
+        value: 0,
+      },
+      showUploadProgress: {
+        type: Number,
+        computed: `computeShowUploadProgress(uploadProgress, isLoadingResults)`,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -135,6 +146,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   suppressGhostLoader: boolean;
   // Whether the ghost loader should show its error state.
   showErrorState: boolean;
+  // The current progress of the page content upload.
+  uploadProgressPercentage: number;
   // The placeholder text to show in the searchbox.
   private pageContentType: PageContentType = PageContentType.kUnknown;
   // Whether this is an in flight request to autocomplete.
@@ -148,6 +161,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   // The URL for the loading image shown when results frame is loading a new
   // page.
   private readonly loadingImageUrl: string;
+  // The animations for the progress bar. One for the progress bar width
+  // increase, and one for the progress bar height decrease on results load.
+  private progressBarAnimation: Animation|null = null;
+  private progressBarHideAnimation: Animation|null = null;
 
   private browserProxy: SidePanelBrowserProxy =
       SidePanelBrowserProxyImpl.getInstance();
@@ -185,6 +202,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
           this.loadResultsInFrame.bind(this)),
       this.browserProxy.callbackRouter.setIsLoadingResults.addListener(
           this.setIsLoadingResults.bind(this)),
+      this.browserProxy.callbackRouter.setPageContentUploadProgress.addListener(
+          this.setPageContentUploadProgress.bind(this)),
       this.browserProxy.callbackRouter.setBackArrowVisible.addListener(
           this.setBackArrowVisible.bind(this)),
       this.browserProxy.callbackRouter.setShowErrorPage.addListener(
@@ -222,7 +241,57 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   }
 
   private setIsLoadingResults(isLoading: boolean) {
+    if (this.isLoadingResults === isLoading) {
+      return;
+    }
     this.isLoadingResults = isLoading;
+
+    if (this.isLoadingResults) {
+      // The user submitted a new query, therefore the searchbox should not stay
+      // focused.
+      this.blurSearchbox();
+    } else {
+      // Animate away the progress bar once the results are loaded.
+      this.progressBarHideAnimation = this.$.uploadProgressBarContainer.animate(
+          {height: ['0px'], transform: ['scaleY(1)', 'scaleY(0)']}, {
+            duration: 200,
+            easing: 'cubic-bezier(0.3, 0, 0.8, 0.15)',
+            fill: 'forwards',
+          });
+      this.progressBarHideAnimation.onfinish = () => {
+        // Reset progress bar to 0 so the next upload starts from the beginning
+        // and the progress bar stays invisible.
+        this.uploadProgressPercentage = 0;
+      };
+    }
+  }
+
+  private setPageContentUploadProgress(progress: number) {
+    // If the results are not loading, then the progress bar should not be
+    // shown.
+    if (!this.isLoadingResults) {
+      return;
+    }
+
+    if (this.uploadProgressPercentage === 0) {
+      // Restart the progress bar animations to ensure the progress bar is
+      // visible and animates from the beginning.
+      this.progressBarAnimation?.cancel();
+      this.progressBarHideAnimation?.cancel();
+    }
+
+    this.uploadProgressPercentage = progress * 100;
+
+    // Control the progress bar animation.
+    this.progressBarAnimation = this.$.uploadProgressBar.animate(
+        {
+          width: [this.uploadProgressPercentage + '%'],
+        },
+        {
+          duration: this.uploadProgressPercentage === 100 ? 400 : 1000,
+          easing: 'cubic-bezier(0.2, 0.0, 0, 1.0)',
+          fill: 'forwards',
+        });
   }
 
   private loadResultsInFrame(resultsUrl: Url) {
@@ -242,6 +311,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     this.$.results.src = url.href;
     // Remove focus from the input when results are loaded. Does not have
     // any effect if input is not focused.
+    this.blurSearchbox();
+  }
+
+  private blurSearchbox() {
     this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox')
         ?.shadowRoot!.querySelector<HTMLElement>('input')
         ?.blur();
@@ -308,6 +381,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     return this.pageContentType === PageContentType.kPdf ?
         this.i18n('searchBoxHintContextualPdf') :
         this.i18n('searchBoxHintContextualDefault');
+  }
+
+  private computeShowUploadProgress(): boolean {
+    return this.uploadProgressPercentage > 0;
   }
 
   private getSearchboxAriaDescription(): string {

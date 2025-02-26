@@ -575,6 +575,7 @@ class LensOverlayController : public LensSearchboxClient,
       lens::LensOverlayInteractionResponseCallback interaction_callback,
       lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
+      lens::UploadProgressCallback upload_progress_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
       Profile* profile,
@@ -1012,6 +1013,10 @@ class LensOverlayController : public LensSearchboxClient,
   void HandleSuggestInputsResponse(
       lens::proto::LensOverlaySuggestInputs suggest_inputs);
 
+  // Handles the progress of the page content upload. Notifies the side panel
+  // to update the progress bar.
+  void HandlePageContentUploadProgress(uint64_t position, uint64_t total);
+
   // Handles the creation of a new thumbnail based on the user selection.
   void HandleThumbnailCreated(const std::string& thumbnail_bytes);
 
@@ -1256,6 +1261,14 @@ class LensOverlayController : public LensSearchboxClient,
   // session. Note that a trigger does not mean the survey will actually be
   // shown.
   bool hats_triggered_in_session_ = false;
+
+  // Indicates whether this is the first upload handler event received. This is
+  // used to determine whether to show the upload progress bar.
+  bool is_first_upload_handler_event_ = true;
+
+  // Indicates whether the upload progress bar is currently being shown for this
+  // upload.
+  bool is_upload_progress_bar_shown_ = true;
 
   // TODO(384778180): The three `pre_initialization_*` fields below are used to
   // store data that came back before the initialization data was ready. This

@@ -565,6 +565,9 @@ void LensOverlayController::ShowUI(
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&LensOverlayController::HandleThumbnailCreated,
                           weak_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &LensOverlayController::HandlePageContentUploadProgress,
+          weak_factory_.GetWeakPtr()),
       variations_client_, identity_manager_, profile, invocation_source,
       lens::LensOverlayShouldUseDarkMode(theme_service_),
       gen204_controller_.get());
@@ -1471,6 +1474,7 @@ LensOverlayController::CreateLensQueryController(
     lens::LensOverlayInteractionResponseCallback interaction_callback,
     lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
     lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
+    lens::UploadProgressCallback upload_progress_callback,
     variations::VariationsClient* variations_client,
     signin::IdentityManager* identity_manager,
     Profile* profile,
@@ -1480,9 +1484,9 @@ LensOverlayController::CreateLensQueryController(
   return std::make_unique<lens::LensOverlayQueryController>(
       std::move(full_image_callback), std::move(url_callback),
       std::move(interaction_callback), std::move(suggest_inputs_callback),
-      std::move(thumbnail_created_callback), variations_client,
-      identity_manager, profile, invocation_source, use_dark_mode,
-      gen204_controller);
+      std::move(thumbnail_created_callback),
+      std::move(upload_progress_callback), variations_client, identity_manager,
+      profile, invocation_source, use_dark_mode, gen204_controller);
 }
 
 LensOverlayController::OverlayInitializationData::OverlayInitializationData(
@@ -1939,6 +1943,14 @@ LensOverlayController::ConvertSignificantRegionBoxes(
 }
 
 void LensOverlayController::TryUpdatePageContextualization() {
+  // If there is already an upload, do not send another request.
+  // TODO(crbug.com/399154548): Ideally, there could be two uploads in progress
+  // at a time, however, the current query controller implementation does not
+  // support this.
+  if (lens_overlay_query_controller_->IsPageContentUploadInProgress()) {
+    return;
+  }
+
   GetPageContextualization(
       base::BindOnce(&LensOverlayController::UpdatePageContextualization,
                      weak_factory_.GetWeakPtr()));
@@ -1988,6 +2000,8 @@ void LensOverlayController::UpdatePageContextualization(
   }
 #endif
 
+  is_upload_progress_bar_shown_ = true;
+  is_first_upload_handler_event_ = true;
   lens_overlay_query_controller_->SendPageContentUpdateRequest(
       initialization_data_->page_content_bytes_,
       initialization_data_->page_content_type_, GetPageURL());
@@ -3227,6 +3241,7 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
   SetSearchboxInputText(search_box_text);
 
   results_side_panel_coordinator_->RegisterEntryAndShow();
+  SetSidePanelIsLoadingResults(true);
   MaybeLaunchSurvey();
 
   // After the searchbox request is sent, mark the follow up zps as not shown so
@@ -3287,6 +3302,35 @@ void LensOverlayController::HandleSuggestInputsResponse(
     return;
   }
   initialization_data_->suggest_inputs_ = suggest_inputs;
+}
+
+void LensOverlayController::HandlePageContentUploadProgress(uint64_t position,
+                                                            uint64_t total) {
+  // If the progress bar is disabled, do not show it.
+  if (!lens::features::ShouldShowUploadProgressBar() ||
+      !is_upload_progress_bar_shown_ || !IsContextualSearchbox()) {
+    return;
+  }
+
+  float progress = total > 0 ? static_cast<float>(position) / total : 1.0f;
+
+  // For the first upload handler event received, check if the progress is above
+  // the heuristic threshold. If so, do not show the progress bar because it is
+  // assumed that the upload will finish quickly, and showing the progress bar
+  // would be distracting.
+  if (is_first_upload_handler_event_) {
+    is_first_upload_handler_event_ = false;
+    if (total > 0 &&
+        progress > lens::features::GetUploadProgressBarShowHeuristic()) {
+      is_upload_progress_bar_shown_ = false;
+      return;
+    }
+  }
+
+  if (side_panel_page_) {
+    side_panel_page_->SetPageContentUploadProgress(
+        total > 0 ? static_cast<float>(position) / total : 1.0f);
+  }
 }
 
 void LensOverlayController::HandleThumbnailCreated(

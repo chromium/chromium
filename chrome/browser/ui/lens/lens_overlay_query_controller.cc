@@ -381,6 +381,7 @@ LensOverlayQueryController::LensOverlayQueryController(
     LensOverlayInteractionResponseCallback interaction_response_callback,
     LensOverlaySuggestInputsCallback suggest_inputs_callback,
     LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
+    UploadProgressCallback page_content_upload_progress_callback,
     variations::VariationsClient* variations_client,
     signin::IdentityManager* identity_manager,
     Profile* profile,
@@ -391,6 +392,8 @@ LensOverlayQueryController::LensOverlayQueryController(
       interaction_response_callback_(std::move(interaction_response_callback)),
       suggest_inputs_callback_(std::move(suggest_inputs_callback)),
       thumbnail_created_callback_(std::move(thumbnail_created_callback)),
+      page_content_upload_progress_callback_(
+          std::move(page_content_upload_progress_callback)),
       request_id_generator_(
           std::make_unique<lens::LensOverlayRequestIdGenerator>()),
       url_callback_(std::move(url_callback)),
@@ -1246,6 +1249,10 @@ void LensOverlayQueryController::PageContentResponseHandler(
 void LensOverlayQueryController::PageContentUploadProgressHandler(
     uint64_t position,
     uint64_t total) {
+  if(page_content_upload_progress_callback_) {
+    page_content_upload_progress_callback_.Run(position, total);
+  }
+
   if (lens::features::ShouldHoldContextualQueriesUntilAck()) {
     return;
   }

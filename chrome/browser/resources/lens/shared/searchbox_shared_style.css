@@ -11,7 +11,7 @@
   display: flex;
   font-family: Roboto, Arial, sans-serif;
   line-height: 20px;
-  z-index: 2;  /* Searchbox should render in front of the results iframe. */
+  z-index: 3;  /* Searchbox should render in front of the results iframe. */
   /* TODO(jdonnelly): Specify these in a color mixer and consider moving this
    * import from polymer to the top level HTML file. */
   /* Colors used in the cr-searchbox results dropdown */
