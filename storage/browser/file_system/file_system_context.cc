@@ -411,9 +411,8 @@ void FileSystemContext::OpenFileSystem(
   } else {
     // Ensure default bucket for `storage_key` exists so that Quota API
     // is aware of the usage.
-    quota_manager_proxy()->GetOrCreateBucketDeprecated(
-        BucketInitParams::ForDefaultBucket(storage_key),
-        FileSystemTypeToQuotaStorageType(type), io_task_runner_.get(),
+    quota_manager_proxy()->UpdateOrCreateBucket(
+        BucketInitParams::ForDefaultBucket(storage_key), io_task_runner_.get(),
         std::move(got_bucket));
   }
 }
@@ -539,9 +538,8 @@ void FileSystemContext::DeleteFileSystem(const blink::StorageKey& storage_key,
     return;
   }
 
-  quota_manager_proxy()->GetOrCreateBucketDeprecated(
-      BucketInitParams::ForDefaultBucket(storage_key),
-      FileSystemTypeToQuotaStorageType(type), io_task_runner_.get(),
+  quota_manager_proxy()->UpdateOrCreateBucket(
+      BucketInitParams::ForDefaultBucket(storage_key), io_task_runner_.get(),
       base::BindOnce(&FileSystemContext::OnGetBucketForDeleteFileSystem,
                      weak_factory_.GetWeakPtr(), type, std::move(callback)));
 }
