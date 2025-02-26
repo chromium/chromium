@@ -108,6 +108,7 @@ component("cpp") {
     "origin_agent_cluster_parser.h",
     "parsed_headers.cc",
     "parsed_headers.h",
+    "permissions_policy/fenced_frame_permissions_policies.h",
     "permissions_policy/origin_with_possible_wildcards.cc",
     "permissions_policy/origin_with_possible_wildcards.h",
     "permissions_policy/permissions_policy_declaration.cc",

@@ -8,6 +8,7 @@
 #include "base/containers/map_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -15,7 +16,6 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "url/gurl.h"
 
@@ -484,7 +484,7 @@ PermissionsPolicy::CreateFlexibleForFencedFrame(
     const PermissionsPolicyFeatureList& features) {
   PermissionsPolicyFeatureState inherited_policies;
   for (const auto& feature : features) {
-    if (base::Contains(kFencedFrameAllowedFeatures, feature.first)) {
+    if (base::Contains(network::kFencedFrameAllowedFeatures, feature.first)) {
       inherited_policies[feature.first] = InheritedValueForFeature(
           subframe_origin, parent_policy, feature, container_policy);
     } else {

@@ -7,8 +7,8 @@
 #include <optional>
 
 #include "base/metrics/histogram_macros.h"
+#include "services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
-#include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -231,7 +231,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
 
         // Warn if a disallowed permissions policy is attempted to be enabled.
         for (const auto& policy : container_policy) {
-          if (!base::Contains(blink::kFencedFrameAllowedFeatures,
+          if (!base::Contains(network::kFencedFrameAllowedFeatures,
                               policy.feature)) {
             bool is_isolated_context =
                 execution_context_ && execution_context_->IsIsolatedContext();

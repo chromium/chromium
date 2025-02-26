@@ -12,6 +12,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -20,7 +21,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/common/permissions_policy/permissions_policy_features_internal.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
 #include "url/gurl.h"
@@ -3042,8 +3042,8 @@ TEST_F(PermissionsPolicyTest, CreateForFledgeFencedFrame) {
       effective_enabled_permissions;
   effective_enabled_permissions.insert(
       effective_enabled_permissions.end(),
-      std::begin(blink::kFencedFrameFledgeDefaultRequiredFeatures),
-      std::end(blink::kFencedFrameFledgeDefaultRequiredFeatures));
+      std::begin(network::kFencedFrameFledgeDefaultRequiredFeatures),
+      std::end(network::kFencedFrameFledgeDefaultRequiredFeatures));
 
   std::unique_ptr<PermissionsPolicy> policy = CreateFixedForFencedFrame(
       origin_a_, /*header_policy=*/{}, effective_enabled_permissions);
@@ -3060,8 +3060,8 @@ TEST_F(PermissionsPolicyTest, CreateForSharedStorageFencedFrame) {
       effective_enabled_permissions;
   effective_enabled_permissions.insert(
       effective_enabled_permissions.end(),
-      std::begin(blink::kFencedFrameSharedStorageDefaultRequiredFeatures),
-      std::end(blink::kFencedFrameSharedStorageDefaultRequiredFeatures));
+      std::begin(network::kFencedFrameSharedStorageDefaultRequiredFeatures),
+      std::end(network::kFencedFrameSharedStorageDefaultRequiredFeatures));
 
   std::unique_ptr<PermissionsPolicy> policy = CreateFixedForFencedFrame(
       origin_a_, /*header_policy=*/{}, effective_enabled_permissions);

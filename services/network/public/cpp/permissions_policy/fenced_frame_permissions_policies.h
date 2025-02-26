@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_FENCED_FRAME_PERMISSIONS_POLICIES_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_FENCED_FRAME_PERMISSIONS_POLICIES_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_FENCED_FRAME_PERMISSIONS_POLICIES_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_FENCED_FRAME_PERMISSIONS_POLICIES_H_
 
-namespace blink {
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+
+namespace network {
 
 // In fenced frames loaded with a URL, only these permissions policies are
 // allowed to be enabled or inherited. All other permissions policies will be
@@ -36,6 +38,6 @@ static inline constexpr network::mojom::PermissionsPolicyFeature
         network::mojom::PermissionsPolicyFeature::kSharedStorage,
         network::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl};
 
-}  // namespace blink
+}  // namespace network
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_FENCED_FRAME_PERMISSIONS_POLICIES_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_FENCED_FRAME_PERMISSIONS_POLICIES_H_
