@@ -8790,7 +8790,6 @@ void RenderFrameHostImpl::SuddenTerminationDisablerChanged(
       has_unload_handler_ = present;
       break;
     case blink::mojom::SuddenTerminationDisablerType::kVisibilityChangeHandler:
-      DCHECK_NE(has_visibilitychange_handler_, present);
       has_visibilitychange_handler_ = present;
       break;
   }
