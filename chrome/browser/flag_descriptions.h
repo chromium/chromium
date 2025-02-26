@@ -4058,23 +4058,8 @@ extern const char kMediaAppPdfMahiDescription[];
 extern const char kMediaAppImageMantisModelName[];
 extern const char kMediaAppImageMantisModelDescription[];
 
-extern const char kMediaAppImageMantisEraseName[];
-extern const char kMediaAppImageMantisEraseDescription[];
-
-extern const char kMediaAppImageMantisExpandBackgroundName[];
-extern const char kMediaAppImageMantisExpandBackgroundDescription[];
-
-extern const char kMediaAppImageMantisMakeAStickerName[];
-extern const char kMediaAppImageMantisMakeAStickerDescription[];
-
 extern const char kMicrophoneMuteSwitchDeviceName[];
 extern const char kMicrophoneMuteSwitchDeviceDescription[];
-
-extern const char kMediaAppImageMantisReimagineName[];
-extern const char kMediaAppImageMantisReimagineDescription[];
-
-extern const char kMediaAppImageMantisRemoveBackgroundName[];
-extern const char kMediaAppImageMantisRemoveBackgroundDescription[];
 
 extern const char kMultiCalendarSupportName[];
 extern const char kMultiCalendarSupportDescription[];
