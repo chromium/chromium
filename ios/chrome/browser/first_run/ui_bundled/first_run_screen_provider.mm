@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_provider.h"
 
+#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_screen_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider+protected.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
@@ -39,6 +41,12 @@ NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
         [screens addObject:@(kChoice)];
       }
       [screens addObject:@(kDefaultBrowserPromo)];
+      // Only add best features screen if feature kUpdatedFirstRunSequence is
+      // disabled for now.
+      if (base::FeatureList::IsEnabled(
+              first_run::kBestFeaturesScreenInFirstRun)) {
+        [screens addObject:@(kBestFeatures)];
+      }
       break;
     case first_run::UpdatedFRESequenceVariationType::kDBPromoFirst:
       [screens addObject:@(kDefaultBrowserPromo)];
