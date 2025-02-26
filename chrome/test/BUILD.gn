@@ -2669,6 +2669,7 @@ if (!is_android) {
         "//chrome/browser/ash/printing",
         "//chrome/browser/ash/printing:test_support",
         "//chrome/browser/ash/printing/print_management",
+        "//chrome/browser/ash/test:test_support",
         "//chrome/browser/chromeos:browser_tests",
         "//chrome/browser/chromeos/app_mode",
         "//chrome/browser/chromeos/arc",

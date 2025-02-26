@@ -60,7 +60,11 @@ PlatformAppBrowserTest::PlatformAppBrowserTest()
 PlatformAppBrowserTest::~PlatformAppBrowserTest() = default;
 
 void PlatformAppBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
-  // Skips ExtensionApiTest::SetUpCommandLine.
+  // Skip ExtensionApiTest::SetUpCommandLine.
+  // MixinBasedExtensionApiTest::SetUpCommandLine is inlined here, but instead
+  // of calling ExtensionApiTest::SetUpCommandLine, we call
+  // ExtensionBrowserTest::SetUpCommandLine directly.
+  mixin_host_.SetUpCommandLine(command_line);
   ExtensionBrowserTest::SetUpCommandLine(command_line);
 
   // Make event pages get suspended quicker.
@@ -69,7 +73,7 @@ void PlatformAppBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
 }
 
 void PlatformAppBrowserTest::SetUpOnMainThread() {
-  ExtensionApiTest::SetUpOnMainThread();
+  MixinBasedExtensionApiTest::SetUpOnMainThread();
 #if BUILDFLAG(IS_CHROMEOS)
   // Mock the Media Router in extension api tests. Several of the
   // PlatformAppBrowserTest suites call RunAllPendingInMessageLoop() when there
@@ -87,7 +91,7 @@ void PlatformAppBrowserTest::TearDownOnMainThread() {
 #if BUILDFLAG(IS_CHROMEOS)
   CastConfigControllerMediaRouter::SetMediaRouterForTest(nullptr);
 #endif
-  ExtensionApiTest::TearDownOnMainThread();
+  MixinBasedExtensionApiTest::TearDownOnMainThread();
 }
 
 // static

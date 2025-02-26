@@ -52,6 +52,10 @@ class ExtensionApiTest : public ExtensionBrowserTest {
     // Use //extensions/test/data/ as the root path instead of the default
     // path of //chrome/test/data/extensions/api_test/.
     bool use_extensions_root_dir = false;
+
+    // If given, the Profile instance is used. Otherwise, the default Profile
+    // (i.e., taken by browser()->profile()) for the browser_test is used.
+    raw_ptr<Profile> profile = nullptr;
   };
 
   explicit ExtensionApiTest(ContextType context_type = ContextType::kNone);
