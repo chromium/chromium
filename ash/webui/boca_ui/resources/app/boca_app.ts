@@ -12,6 +12,7 @@
  * Declare tab information
  */
 export declare interface TabInfo {
+  id?: number;
   title: string;
   url: string;
   favicon: string;

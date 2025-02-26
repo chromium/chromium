@@ -117,7 +117,7 @@ mojom::ConfigPtr SessionConfigProtoToMojom(::boca::Session* session) {
     std::vector<mojom::ControlledTabPtr> tabs;
     for (auto tab : session_on_task_config.active_bundle().content_configs()) {
       tabs.push_back(mojom::ControlledTab::New(
-          mojom::TabInfo::New(tab.title(), GURL(tab.url()),
+          mojom::TabInfo::New(std::nullopt, tab.title(), GURL(tab.url()),
                               GURL(tab.favicon_url())),
           mojom::NavigationType(
               tab.locked_navigation_options().navigation_type())));

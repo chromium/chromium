@@ -80,11 +80,11 @@ constexpr char kTestUrlBase[] = "https://test";
 mojom::OnTaskConfigPtr GetCommonTestLockOnTaskConfig() {
   std::vector<mojom::ControlledTabPtr> tabs;
   tabs.push_back(mojom::ControlledTab::New(
-      mojom::TabInfo::New("google", GURL("http://google.com/"),
+      mojom::TabInfo::New(1, "google", GURL("http://google.com/"),
                           GURL("http://data/image")),
       /*=navigation_type*/ mojom::NavigationType::kOpen));
   tabs.push_back(mojom::ControlledTab::New(
-      mojom::TabInfo::New("youtube", GURL("http://youtube.com/"),
+      mojom::TabInfo::New(2, "youtube", GURL("http://youtube.com/"),
                           GURL("http://data/image")),
       /*=navigation_type*/ mojom::NavigationType::kBlock));
   return mojom::OnTaskConfig::New(/*=is_locked*/ true, std::move(tabs));
@@ -93,7 +93,7 @@ mojom::OnTaskConfigPtr GetCommonTestLockOnTaskConfig() {
 mojom::OnTaskConfigPtr GetCommonTestUnLockedOnTaskConfig() {
   std::vector<mojom::ControlledTabPtr> tabs;
   tabs.push_back(mojom::ControlledTab::New(
-      mojom::TabInfo::New("google", GURL("http://google.com/"),
+      mojom::TabInfo::New(1, "google", GURL("http://google.com/"),
                           GURL("http://data/image")),
       /*=navigation_type*/ mojom::NavigationType::kOpen));
   return mojom::OnTaskConfig::New(/*=is_locked*/ false, std::move(tabs));
