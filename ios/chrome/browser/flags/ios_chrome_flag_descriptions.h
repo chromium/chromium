@@ -472,6 +472,13 @@ extern const char kLockBottomToolbarDescription[];
 extern const char kMagicStackName[];
 extern const char kMagicStackDescription[];
 
+// Title and description for the flag to enable UMA log uploads after each page
+// in the FRE.
+extern const char kManualLogUploadsInFREName[];
+extern const char kManualLogUploadsInFREDescription[];
+
+// Title and description for the flag that controls sending metrickit non-crash
+// reports.
 extern const char kMetrickitNonCrashReportName[];
 extern const char kMetrickitNonCrashReportDescription[];
 

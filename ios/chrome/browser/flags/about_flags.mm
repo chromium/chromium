@@ -2482,6 +2482,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-passkeys-m2", flag_descriptions::kIOSPasskeysM2Name,
      flag_descriptions::kIOSPasskeysM2Description, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSPasskeysM2)},
+    {"manual-log-uploads-in-the-fre",
+     flag_descriptions::kManualLogUploadsInFREName,
+     flag_descriptions::kManualLogUploadsInFREDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(first_run::kManualLogUploadsInTheFRE)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
