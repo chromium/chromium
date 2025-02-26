@@ -1390,6 +1390,9 @@ void InlineNode::ShapeText(InlineItemsData* data,
 
   const String& text_content = data->text_content;
   InlineItems* items = &data->items;
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  InlineItem::CheckIndex(*items);
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   ShapeResultSpacing<String> spacing(text_content, IsSvgText());
   InlineTextAutoSpace auto_space(*data);
@@ -1661,6 +1664,10 @@ void InlineNode::ShapeTextForFirstLineIfNeeded(InlineNodeData* data) const {
   if (data->segments) {
     first_line_items->segments = data->segments->Clone();
   }
+
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  InlineItem::CheckIndex(first_line_items->items);
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   // Re-shape if the font is different.
   if (needs_reshape || FirstLineNeedsReshape(*first_line_style, *block_style))
