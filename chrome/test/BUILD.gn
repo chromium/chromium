@@ -7505,6 +7505,7 @@ test("unit_tests") {
       "../browser/devtools/devtools_file_helper_unittest.cc",
       "../browser/devtools/devtools_file_system_indexer_unittest.cc",
       "../browser/devtools/devtools_file_watcher_unittest.cc",
+      "../browser/devtools/devtools_select_file_dialog_unittest.cc",
       "../browser/devtools/devtools_settings_unittest.cc",
       "../browser/devtools/devtools_ui_bindings_unittest.cc",
       "../browser/devtools/protocol/cast_handler_unittest.cc",

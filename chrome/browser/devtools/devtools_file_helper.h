@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -20,15 +20,12 @@
 #include "chrome/browser/platform_util.h"
 #include "components/prefs/pref_change_registrar.h"
 
+class GURL;
 class Profile;
 
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
-}
-
-namespace content {
-class WebContents;
 }
 
 class DevToolsFileHelper {
@@ -42,6 +39,13 @@ class DevToolsFileHelper {
                const std::string& root_url,
                const std::string& file_system_path);
 
+    bool operator==(const FileSystem& that) const {
+      return type == that.type && file_system_name == that.file_system_name &&
+             root_url == that.root_url &&
+             file_system_path == that.file_system_path;
+    }
+    bool operator!=(const FileSystem& that) const { return !(*this == that); }
+
     std::string type;
     std::string file_system_name;
     std::string root_url;
@@ -51,6 +55,7 @@ class DevToolsFileHelper {
   class Delegate {
    public:
     virtual ~Delegate() = default;
+
     virtual void FileSystemAdded(const std::string& error,
                                  const FileSystem* file_system) = 0;
     virtual void FileSystemRemoved(const std::string& file_system_path) = 0;
@@ -60,16 +65,33 @@ class DevToolsFileHelper {
         const std::vector<std::string>& removed_paths) = 0;
   };
 
-  DevToolsFileHelper(content::WebContents* web_contents, Profile* profile,
-                     Delegate* delegate);
+  class Storage {
+   public:
+    virtual ~Storage();
+
+    virtual FileSystem RegisterFileSystem(const base::FilePath& path,
+                                          const std::string& type) = 0;
+    virtual void UnregisterFileSystem(const base::FilePath& path) = 0;
+
+    virtual std::vector<base::FilePath> GetDraggedFileSystemPaths(
+        const GURL& file_system_url) = 0;
+  };
+
+  DevToolsFileHelper(Profile* profile, Delegate* delegate, Storage* storage);
 
   DevToolsFileHelper(const DevToolsFileHelper&) = delete;
   DevToolsFileHelper& operator=(const DevToolsFileHelper&) = delete;
 
   ~DevToolsFileHelper();
 
+  using CanceledCallback = base::OnceClosure;
   using ConnectCallback = base::OnceCallback<void(bool)>;
   using SaveCallback = base::OnceCallback<void(const std::string&)>;
+  using SelectedCallback = base::OnceCallback<void(const base::FilePath&)>;
+  using SelectFileCallback =
+      base::OnceCallback<void(SelectedCallback selected_callback,
+                              CanceledCallback canceled_callback,
+                              const base::FilePath& default_path)>;
   using ShowInfoBarCallback =
       base::RepeatingCallback<void(const std::u16string&,
                                    base::OnceCallback<void(bool)>)>;
@@ -81,8 +103,9 @@ class DevToolsFileHelper {
             const std::string& content,
             bool save_as,
             bool is_base64,
-            SaveCallback saveCallback,
-            base::OnceClosure cancelCallback);
+            SelectFileCallback select_file_callback,
+            SaveCallback save_callback,
+            CanceledCallback canceled_callback);
 
   // Append |content| to the file that has been associated with given |url|.
   // The |url| can be associated with a file via calling Save method.
@@ -105,6 +128,7 @@ class DevToolsFileHelper {
   // the exception that it must not be the string "automatic" and it also
   // must not be a valid UUID).
   void AddFileSystem(const std::string& type,
+                     SelectFileCallback select_file_callback,
                      const ShowInfoBarCallback& show_info_bar_callback);
 
   // Upgrades dragged file system permissions to a read-write access.
@@ -153,7 +177,7 @@ class DevToolsFileHelper {
  private:
   void OnOpenItemComplete(const base::FilePath& path,
                           platform_util::OpenOperationResult result);
-  void SaveAsFileSelected(const std::string& url,
+  void SaveToFileSelected(const std::string& url,
                           const std::string& content,
                           bool is_base64,
                           SaveCallback callback,
@@ -181,9 +205,9 @@ class DevToolsFileHelper {
   using PathToType = std::map<std::string, std::string>;
   PathToType GetActiveFileSystemPaths();
 
-  raw_ptr<content::WebContents> web_contents_;
   raw_ptr<Profile> profile_;
   raw_ptr<DevToolsFileHelper::Delegate> delegate_;
+  raw_ptr<DevToolsFileHelper::Storage> storage_;
   typedef std::map<std::string, base::FilePath> PathsMap;
   PathsMap saved_files_;
   PrefChangeRegistrar pref_change_registrar_;

@@ -37,6 +37,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
+#include "chrome/browser/devtools/devtools_select_file_dialog.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/url_constants.h"
@@ -116,6 +117,7 @@
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 
 using content::BrowserThread;
 
@@ -727,7 +729,8 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
       android_bridge_(DevToolsAndroidBridge::Factory::GetForProfile(profile_)),
       web_contents_(web_contents),
       delegate_(new DefaultBindingsDelegate(web_contents_)),
-      file_helper_(web_contents, profile_, this),
+      file_storage_(web_contents),
+      file_helper_(profile_, this, &file_storage_),
       devices_updates_enabled_(false),
       frontend_loaded_(false),
       settings_(profile_) {
@@ -1224,11 +1227,14 @@ void DevToolsUIBindings::SaveToFile(const std::string& url,
                                     const std::string& content,
                                     bool save_as,
                                     bool is_base64) {
-  file_helper_.Save(url, content, save_as, is_base64,
-                    base::BindOnce(&DevToolsUIBindings::FileSavedAs,
-                                   weak_factory_.GetWeakPtr(), url),
-                    base::BindOnce(&DevToolsUIBindings::CanceledFileSaveAs,
-                                   weak_factory_.GetWeakPtr(), url));
+  file_helper_.Save(
+      url, content, save_as, is_base64,
+      base::BindOnce(&DevToolsSelectFileDialog::SelectFile, web_contents_,
+                     ui::SelectFileDialog::SELECT_SAVEAS_FILE),
+      base::BindOnce(&DevToolsUIBindings::FileSavedAs,
+                     weak_factory_.GetWeakPtr(), url),
+      base::BindOnce(&DevToolsUIBindings::CanceledFileSaveAs,
+                     weak_factory_.GetWeakPtr(), url));
 }
 
 void DevToolsUIBindings::AppendToFile(const std::string& url,
@@ -1253,8 +1259,11 @@ void DevToolsUIBindings::AddFileSystem(const std::string& type) {
   CHECK(IsValidFrontendURL(web_contents_->GetLastCommittedURL()) &&
         frontend_host_);
   file_helper_.AddFileSystem(
-      type, base::BindRepeating(&DevToolsUIBindings::ShowDevToolsInfoBar,
-                                weak_factory_.GetWeakPtr()));
+      type,
+      base::BindOnce(&DevToolsSelectFileDialog::SelectFile, web_contents_,
+                     ui::SelectFileDialog::SELECT_FOLDER),
+      base::BindRepeating(&DevToolsUIBindings::ShowDevToolsInfoBar,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void DevToolsUIBindings::RemoveFileSystem(const std::string& file_system_path) {
