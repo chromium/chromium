@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0"
+  name="viewport">
+<meta name="assert"
+  content="env(preferred-text-scale) exposes the user's preferred text scale from the OS">
+<link rel="help"
+  href="https://github.com/w3c/csswg-drafts/issues/10674#issuecomment-2625414100">
+<link rel="match" href="../../reference/ref-filled-green-100px-square.xht">
+<style>
+  div {
+    background-color: green;
+    width: calc(50px * env(preferred-text-scale));
+    height: calc(50px * env(preferred-text-scale));
+  }
+</style>
+
+<p>Test passes if there is a filled green square and <strong>no red</strong>.
+</p>
+<div></div>

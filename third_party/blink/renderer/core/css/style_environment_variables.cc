@@ -50,6 +50,10 @@ void SetDefaultEnvironmentVariables(StyleEnvironmentVariables* instance) {
                         kKeyboardInsetDefault);
   instance->SetVariable(UADefinedVariable::kKeyboardInsetHeight,
                         kKeyboardInsetDefault);
+
+  if (RuntimeEnabledFeatures::CSSPreferredTextScaleEnabled()) {
+    instance->SetVariable(UADefinedVariable::kPreferredTextScale, "1");
+  }
 }
 
 }  // namespace.
@@ -106,6 +110,8 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
       return AtomicString("titlebar-area-width");
     case UADefinedVariable::kTitlebarAreaHeight:
       return AtomicString("titlebar-area-height");
+    case UADefinedVariable::kPreferredTextScale:
+      return AtomicString("preferred-text-scale");
     default:
       break;
   }

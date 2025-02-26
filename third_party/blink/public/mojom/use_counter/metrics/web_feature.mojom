@@ -4715,6 +4715,7 @@ enum WebFeature {
   kV8AILanguageDetectorFactory_Availability_Method = 5329,
   kCrossPartitionSameOriginBlobURLFetch = 5330,
   kWebAppManifestUpdate = 5331,
+  kCSSEnvironmentVariable_PreferredTextScale = 5332,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
