@@ -77,7 +77,9 @@ void PopulateBookmarkTreeNode(
   if (parent) {
     out_bookmark_tree_node->parent_id = base::NumberToString(parent->id());
     out_bookmark_tree_node->index =
-        static_cast<int>(parent->GetIndexOf(node).value());
+        base::FeatureList::IsEnabled(kEnforceBookmarkVisibilityOnExtensionsAPI)
+            ? GetAPIIndexOf(*model, *node)
+            : static_cast<int>(parent->GetIndexOf(node).value());
   }
 
   if (!node->is_folder()) {
@@ -196,6 +198,24 @@ void GetMetaInfo(const BookmarkNode& node,
       GetMetaInfo(*child, id_to_meta_info_map);
     }
   }
+}
+
+size_t GetAPIIndexOf(const bookmarks::BookmarkModel& model,
+                     const BookmarkNode& node) {
+  CHECK(node.parent());
+  CHECK(model.IsNodeVisible(node));
+
+  size_t api_index = 0;
+  for (const auto& child : node.parent()->children()) {
+    if (child.get() == &node) {
+      return api_index;
+    }
+    if (model.IsNodeVisible(*child)) {
+      ++api_index;
+    }
+  }
+
+  NOTREACHED() << "node is not a child of its parent.";
 }
 
 }  // namespace bookmarks_helpers

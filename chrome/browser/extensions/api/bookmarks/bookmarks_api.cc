@@ -8,6 +8,7 @@
 
 #include <limits>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <utility>
 
@@ -88,6 +89,19 @@ void BookmarkEventRouter::BookmarkNodeMoved(const BookmarkNode* old_parent,
                                             size_t old_index,
                                             const BookmarkNode* new_parent,
                                             size_t new_index) {
+  // Only the root node currently has non-visible children, and nodes cannot be
+  // moved from/to it. Validate this assumption here, as otherwise this method
+  // would need to recalculate child indices. This is a debug-only check since
+  // it is not constant-time.
+  DCHECK(std::ranges::all_of(old_parent->children(),
+                             [model = model_](const auto& child) {
+                               return model->IsNodeVisible(*child);
+                             }));
+  DCHECK(std::ranges::all_of(new_parent->children(),
+                             [model = model_](const auto& child) {
+                               return model->IsNodeVisible(*child);
+                             }));
+
   const BookmarkNode* node = new_parent->children()[new_index].get();
   api::bookmarks::OnMoved::MoveInfo move_info;
   move_info.parent_id = base::NumberToString(new_parent->id());
@@ -123,9 +137,23 @@ void BookmarkEventRouter::BookmarkNodeRemoved(
     const BookmarkNode* node,
     const std::set<GURL>& removed_urls,
     const base::Location& location) {
+  if (base::FeatureList::IsEnabled(kEnforceBookmarkVisibilityOnExtensionsAPI) &&
+      !model_->IsNodeVisible(*node)) {
+    return;
+  }
+
   api::bookmarks::OnRemoved::RemoveInfo remove_info;
   remove_info.parent_id = base::NumberToString(parent->id());
+
+  // TODO(crbug.com/395071423): Calculate the API index correctly (account for
+  // visibility of subling nodes). This is not trivial, because a single
+  // operation may trigger an update of the visibility of multiple permanent
+  // nodes (and this code therefore can't know what the visibility that was
+  // last reported on the API was).
+  //
+  // This will require some changes to the BookmarkModel implementation.
   remove_info.index = static_cast<int>(index);
+
   bookmarks_helpers::PopulateBookmarkTreeNode(model_, managed_, node, true,
                                               false, &remove_info.node);
 
@@ -138,16 +166,17 @@ void BookmarkEventRouter::BookmarkNodeRemoved(
 void BookmarkEventRouter::BookmarkAllUserNodesRemoved(
     const std::set<GURL>& removed_urls,
     const base::Location& location) {
-  // TODO(crbug.com/40277078): This used to be used only on Android, but that's
-  // no longer the case. We need to implement a new event to handle this.
+  // TODO(crbug.com/40277078): This used to be used only on Android, but
+  // that's no longer the case. We need to implement a new event to handle
+  // this.
 }
 
 void BookmarkEventRouter::BookmarkNodeChanged(const BookmarkNode* node) {
   // TODO(erikkay) The only three things that BookmarkModel sends this
   // notification for are title, url and favicon.  Since we're currently
   // ignoring favicon and since the notification doesn't say which one anyway,
-  // for now we only include title and url.  The ideal thing would be to change
-  // BookmarkModel to indicate what changed.
+  // for now we only include title and url.  The ideal thing would be to
+  // change BookmarkModel to indicate what changed.
   api::bookmarks::OnChanged::ChangeInfo change_info;
   change_info.title = base::UTF16ToUTF8(node->GetTitle());
   if (node->is_url()) {
@@ -442,7 +471,8 @@ ExtensionFunction::ResponseValue BookmarksCreateFunction::RunOnReady() {
   }
 
   BookmarkTreeNode ret = bookmarks_helpers::GetBookmarkTreeNode(
-      GetBookmarkModel(), GetManagedBookmarkService(), node, /*recurse=*/false,
+      GetBookmarkModel(), GetManagedBookmarkService(), node,
+      /*recurse=*/false,
       /*only_folders=*/false);
   return ArgumentList(api::bookmarks::Create::Results::Create(ret));
 }
@@ -469,6 +499,16 @@ const BookmarkNode* BookmarksCreateFunction::CreateBookmarkNode(
     *error = bookmarks_errors::kInvalidParentError;
     return nullptr;
   }
+
+  // `parent` is not the root node (since the root node cannot be modified).
+  CHECK(!model->is_root_node(parent));
+
+  // Only the root node currently has non-visible children. Validate this
+  // assumption here, as otherwise this method would need to recalculate child
+  // indices. This is a debug-only check since it is not constant-time.
+  DCHECK(std::ranges::all_of(parent->children(), [&model](const auto& child) {
+    return model->IsNodeVisible(*child);
+  }));
 
   size_t index;
   if (!details.index) {  // Optional (defaults to end).
@@ -559,6 +599,16 @@ ExtensionFunction::ResponseValue BookmarksMoveFunction::RunOnReady() {
     return Error(bookmarks_errors::kInvalidMoveDestinationError);
   }
 
+  // `parent` is not the root node (since the root node cannot be modified).
+  CHECK(!model->is_root_node(parent));
+
+  // Only the root node currently has non-visible children. Validate this
+  // assumption here, as otherwise this method would need to recalculate child
+  // indices. This is a debug-only check since it is not constant-time.
+  DCHECK(std::ranges::all_of(parent->children(), [&model](const auto& child) {
+    return model->IsNodeVisible(*child);
+  }));
+
   size_t index;
   if (params->destination.index) {  // Optional (defaults to end).
     if (*params->destination.index < 0 ||
@@ -574,7 +624,8 @@ ExtensionFunction::ResponseValue BookmarksMoveFunction::RunOnReady() {
   model->Move(node, parent, index);
 
   BookmarkTreeNode tree_node = bookmarks_helpers::GetBookmarkTreeNode(
-      GetBookmarkModel(), GetManagedBookmarkService(), node, /*recurse=*/false,
+      GetBookmarkModel(), GetManagedBookmarkService(), node,
+      /*recurse=*/false,
       /*only_folders=*/false);
   return ArgumentList(api::bookmarks::Move::Results::Create(tree_node));
 }
@@ -634,7 +685,8 @@ ExtensionFunction::ResponseValue BookmarksUpdateFunction::RunOnReady() {
   }
 
   BookmarkTreeNode tree_node = bookmarks_helpers::GetBookmarkTreeNode(
-      GetBookmarkModel(), GetManagedBookmarkService(), node, /*recurse=*/false,
+      GetBookmarkModel(), GetManagedBookmarkService(), node,
+      /*recurse=*/false,
       /*only_folders=*/false);
   return ArgumentList(api::bookmarks::Update::Results::Create(tree_node));
 }
